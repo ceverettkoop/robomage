@@ -18,20 +18,17 @@ ODIR=obj
 SRCDIR=src
 BINDIR=bin
 BINNAME=robomage
+GUI=false
 
 CXXFLAGS = -ggdb
 CFLAGS = -ggdb
 IFLAGS = -Iinclude -Icomponents -isystem
 LDFLAGS = -L./lib
-LDLIBS = -lraylib
+LDLIBS =
 CHECKFLAGS = -Wall -Wformat -Wformat=2 -Wconversion -Wimplicit-fallthrough \
 -D_GLIBCXX_ASSERTIONS \
 -fstack-protector-strong
 C_CHECKFLAGS = -Werror=implicit -Werror=incompatible-pointer-types -Werror=int-conversion
-
-ifeq ($(PLATFORM),OSX)
-	LDFLAGS += -framework CoreVideo -framework IOKit -framework Cocoa -framework GLUT -framework OpenGL
-endif
 
 ifeq ($(BUILD),RELEASE)
 	CFLAGS += -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=3 -o2
@@ -40,6 +37,13 @@ else
 	CFLAGS += $(CHECKFLAGS)
 	CFLAGS += $(C_CHECKFLAGS)
 	CXXFLAGS +=$(CHECKFLAGS)
+endif
+
+ifeq ($(GUI),TRUE)
+	LDLIBS += -lraylib
+	ifeq ($(PLATFORM),OSX)
+		LDFLAGS += -framework CoreVideo -framework IOKit -framework Cocoa -framework GLUT -framework OpenGL
+	endif
 endif
 
 C_SRCS := $(wildcard $(SRCDIR)/*.c)
