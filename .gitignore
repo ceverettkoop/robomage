@@ -1,1 +1,4 @@
 /.DS_Store
+lib/libraylib.a
+bin/robomage
+obj/*.o
