@@ -6,7 +6,6 @@
 #include "component.h"
 #include "component_manager.h"
 #include "entity_manager.h"
-#include "event_manager.h"
 #include "system_manager.h"
 
 // credit https://austinmorlan.com/posts/entity_component_system/
@@ -16,7 +15,6 @@ class Coordinator {
         void Init() {
             mComponentManager = std::make_unique<ComponentManager>();
             mEntityManager = std::make_unique<EntityManager>();
-            mEventManager = std::make_unique<EventManager>();
             mSystemManager = std::make_unique<SystemManager>();
         }
 
@@ -80,19 +78,10 @@ class Coordinator {
             mSystemManager->SetSignature<T>(signature);
         }
 
-        // Event methods
-        void AddEventListener(EventId eventId, std::function<void(Event &)> const &listener) {
-            mEventManager->AddListener(eventId, listener);
-        }
-
-        void SendEvent(Event &event) { mEventManager->SendEvent(event); }
-
-        void SendEvent(EventId eventId) { mEventManager->SendEvent(eventId); }
 
     private:
         std::unique_ptr<ComponentManager> mComponentManager;
         std::unique_ptr<EntityManager> mEntityManager;
-        std::unique_ptr<EventManager> mEventManager;
         std::unique_ptr<SystemManager> mSystemManager;
 };
 

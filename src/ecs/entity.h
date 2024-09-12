@@ -6,6 +6,6 @@
 // credit https://austinmorlan.com/posts/entity_component_system/
 
 typedef uint32_t Entity;
-const uint32_t MAX_ENTITIES = 5000;
+const uint32_t MAX_ENTITIES = 512;
 
 #endif /* ENTITY_H */
