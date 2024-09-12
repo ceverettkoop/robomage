@@ -26,8 +26,8 @@ LDFLAGS = -L./lib
 LDLIBS = -lraylib
 CHECKFLAGS = -Wall -Wformat -Wformat=2 -Wconversion -Wimplicit-fallthrough \
 -D_GLIBCXX_ASSERTIONS \
--fstack-protector-strong \
--Werror=implicit -Werror=incompatible-pointer-types -Werror=int-conversion \
+-fstack-protector-strong
+C_CHECKFLAGS = -Werror=implicit -Werror=incompatible-pointer-types -Werror=int-conversion
 
 ifeq ($(PLATFORM),OSX)
 	LDFLAGS += -framework CoreVideo -framework IOKit -framework Cocoa -framework GLUT -framework OpenGL
@@ -38,6 +38,7 @@ ifeq ($(BUILD),RELEASE)
 	CXXFLAGS += += -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=3 -o2
 else
 	CFLAGS += $(CHECKFLAGS)
+	CFLAGS += $(C_CHECKFLAGS)
 	CXXFLAGS +=$(CHECKFLAGS)
 endif
 
