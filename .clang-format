@@ -1,0 +1,9 @@
+BasedOnStyle: Google
+IndentWidth: 4
+ColumnLimit: 120
+AlignAfterOpenBracket: DontAlign
+DerivePointerAlignment: false
+PointerAlignment: Right
+AccessModifierOffset: 0
+IndentAccessModifiers: true
+AllowShortFunctionsOnASingleLine: Inline
