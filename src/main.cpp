@@ -1,6 +1,7 @@
 #include <cstdlib>
 #include <cstdio>
-#include "ecs/coordinator.h"
+#include <unistd.h>
+#include "card_db.h"
 
 #ifndef VERSION_NUMBER
 #define VERSION_NUMBER "0.001"
@@ -11,10 +12,13 @@ extern "C" {
 #include "gui.h"
 }
 */
-
-Coordinator game_coordinator;
+std::string RESOURCE_DIR;
 
 int main(int argc, char const *argv[]) {
+    char buf[FILENAME_MAX];
+    RESOURCE_DIR = getcwd(buf, FILENAME_MAX);
+    RESOURCE_DIR += "/resources";
+
     printf("robomage %s\n", VERSION_NUMBER);
 
     //init state based on decks and shuffle per seed
