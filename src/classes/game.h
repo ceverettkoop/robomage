@@ -19,6 +19,10 @@ enum Step {
 };
 
 struct Game {
+        Game(unsigned int _seed){
+            seed = _seed;
+        };
+        unsigned int seed;
         uint32_t timestamp = 0;
         uint16_t turn = 0;
         Step cur_step = UNTAP;

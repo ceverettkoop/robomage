@@ -2,8 +2,9 @@
 #include <cstdio>
 #include <unistd.h>
 #include "card_db.h"
-#include "game.h"
-#include "player.h"
+#include "classes/game.h"
+#include "classes/player.h"
+#include "classes/deck.h"
 
 #ifndef VERSION_NUMBER
 #define VERSION_NUMBER "0.001"
@@ -22,11 +23,14 @@ int main(int argc, char const *argv[]) {
     RESOURCE_DIR += "/resources";
 
     printf("robomage %s\n", VERSION_NUMBER);
-
-    //init state based on decks and shuffle per seed
-    Game cur_game;
-    Player player_otp;
-    Player player_otd;
+    unsigned int seed = std::time(nullptr);
+    std::srand(seed);
+    Game cur_game(seed);
+    Player player_otp(true);
+    Player player_otd(false);
+    Deck deck_one = DEFAULT_DECK_ONE;
+    Deck dect_two = DEFAULT_DECK_TWO;
+    GameObjectDB objects = init_objects(deck_one, deck_two);
 
 
 //game loop
