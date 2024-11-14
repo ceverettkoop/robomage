@@ -26,3 +26,7 @@ std::string name_to_uid(std::string name) {
     }
     return std::string();
 }
+
+Card parse_card_script(std::__1::ifstream stream) {
+    return Card();
+}

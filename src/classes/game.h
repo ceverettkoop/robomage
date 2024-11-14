@@ -3,7 +3,7 @@
 
 #include <cstdint>
 
-enum Step{
+enum Step {
     UNTAP,
     UPKEEP,
     DRAW,
@@ -18,11 +18,10 @@ enum Step{
     CLEANUP
 };
 
-
-struct Game{
-    uint32_t timestamp;
-    uint16_t turn;
-    Step cur_step;
+struct Game {
+        uint32_t timestamp;
+        uint16_t turn;
+        Step cur_step;
 };
 
 #endif /* GAME_H */

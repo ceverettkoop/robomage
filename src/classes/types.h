@@ -1,19 +1,13 @@
 #ifndef TYPES_H
 #define TYPES_H
 
-#include <set>
+#include <cstdint>
+#include <string>
 
-typedef enum SuperType{
-
-};
-
-typedef enum SubType{
-
-};
-
-struct Types{
-    std::set<SuperType> super_types;
-    std::set<SubType> sub_types;
+struct Type{
+    uint32_t uid;
+    bool is_supertype;
+    std::string name;
 };
 
 #endif /* TYPES_H */
