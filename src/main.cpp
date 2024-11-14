@@ -2,6 +2,8 @@
 #include <cstdio>
 #include <unistd.h>
 #include "card_db.h"
+#include "game.h"
+#include "player.h"
 
 #ifndef VERSION_NUMBER
 #define VERSION_NUMBER "0.001"
@@ -22,6 +24,9 @@ int main(int argc, char const *argv[]) {
     printf("robomage %s\n", VERSION_NUMBER);
 
     //init state based on decks and shuffle per seed
+    Game cur_game;
+    Player player_otp;
+    Player player_otd;
 
 
 //game loop

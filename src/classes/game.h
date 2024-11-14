@@ -19,9 +19,9 @@ enum Step {
 };
 
 struct Game {
-        uint32_t timestamp;
-        uint16_t turn;
-        Step cur_step;
+        uint32_t timestamp = 0;
+        uint16_t turn = 0;
+        Step cur_step = UNTAP;
 };
 
 #endif /* GAME_H */
