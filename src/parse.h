@@ -2,10 +2,9 @@
 #define PARSE_H
 
 #include <string>
-#include <fstream>
 #include "card.h"
 
 std::string name_to_uid(std::string name);
-Card parse_card_script(std::__1::ifstream stream);
+int parse_card_script(Card& card, std::string path);
 
-#endif /* PARSE_H */k
+#endif /* PARSE_H */

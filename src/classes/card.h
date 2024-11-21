@@ -7,6 +7,7 @@
 #include <cstdint>
 #include "types.h"
 #include "colors.h"
+#include "entity.h"
 
 //this is the underlying card, a token or copy would not have these traits
 struct Card{
@@ -18,7 +19,7 @@ struct Card{
     uint32_t power;
     uint32_t toughness;
     //starting loyalty described as a static ability
-    std::vector<Ability> abilities;
+    std::vector<EntityID> abilities;
 };
 
 #endif /* CARD_H */
