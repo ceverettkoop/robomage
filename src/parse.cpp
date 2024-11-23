@@ -1,59 +1,120 @@
 #include "parse.h"
 
-#include <string>
 #include <algorithm>
 #include <cctype>
-#include <vector>
 #include <fstream>
+#include <string>
+#include <vector>
+
 #include "error.h"
 
 const size_t SCRIPT_MAX_LEN = 10000;
 
 static std::string value_from_script(std::string script, std::string key);
+static std::multiset<Colors> parse_mana_cost(std::string value);
+static std::set<Type> parse_types(std::string value);
 
-//all to lowercase, spaces to underscores, other characters removed
+// all to lowercase, spaces to underscores, other characters removed
 std::string name_to_uid(std::string name) {
     auto len = name.size();
     std::vector<size_t> to_rm;
 
-    for (size_t i = 0; i < name.size(); i++){
+    for (size_t i = 0; i < name.size(); i++) {
         char value = name[i];
-        if(std::isalpha(value)){
+        if (std::isalpha(value)) {
             name[i] = std::tolower(value);
-        }else if(value == ' '){
+        } else if (value == ' ') {
             name[i] = '_';
-        }else{
+        } else {
             to_rm.push_back(i);
         }
     }
-    for (size_t i = 0; i < to_rm.size(); i++){
+    for (size_t i = 0; i < to_rm.size(); i++) {
         auto index_to_rm = to_rm[i] - i;
         name.erase(index_to_rm);
     }
     return std::string();
 }
 
-int parse_card_script(Card& card, std::string path) {
+int parse_card_script(Card &card, std::string path) {
     Card ret_val;
     std::string script_data;
     auto stream = std::ifstream(path);
-    if(!stream.is_open()) return FAILED_TO_OPEN_STREAM;
-    for (size_t i = 0; true; i++){
-        if(i > SCRIPT_MAX_LEN) return SCRIPT_TOO_LONG;
+    if (!stream.is_open()) return FAILED_TO_OPEN_STREAM;
+    for (size_t i = 0; true; i++) {
+        if (i > SCRIPT_MAX_LEN) return SCRIPT_TOO_LONG;
         char c = stream.get();
-        if(c == stream.eof()) break;
+        if (c == stream.eof()) break;
         script_data += c;
     }
     card.name = value_from_script(script_data, "Name");
     card.uid = name_to_uid(card.name);
     card.mana_cost = parse_mana_cost(value_from_script(script_data, "ManaCost"));
-    card.types = parse_types(value_from_script(script_data, "Types");
+    card.types = parse_types(value_from_script(script_data, "Types"));
 
     return PARSE_SUCCESS;
 }
 
-//private util functions
-static std::string value_from_script(std::string script, std::string key){
+// private util functions
+static std::string value_from_script(std::string script, std::string key) {
     auto pos = script.find(key);
+    if (pos == std::string::npos) {
+        non_fatal_error("failed to find value for key: " + key);
+        return "";
+    }
+    // advance for key itself and ':'
+    pos += key.length() + 1;
+    auto end_pos = script.find("\n", pos);
+    return script.substr(pos, (end_pos - pos - 1));  // omit linebreak at end
+}
 
+static std::multiset<Colors> parse_mana_cost(std::string value) {
+    auto len = value.length();
+    std::multiset<Colors> ret_val;
+    for (size_t i = 0; i < len; i++) {
+        switch (value[i]) {
+            case 'W':
+                ret_val.emplace(WHITE);
+                break;
+            case 'U':
+                ret_val.emplace(BLUE);
+                break;
+            case 'B':
+                ret_val.emplace(BLACK);
+                break;
+            case 'R':
+                ret_val.emplace(RED);
+                break;
+            case 'G':
+                ret_val.emplace(GREEN);
+                break;
+            case 'C':
+                ret_val.emplace(COLORLESS);
+                break;
+            default:
+                if (std::isdigit(value[i])) {
+                    for (size_t j = 0; j < value[i] - '0'; j++) {
+                        ret_val.emplace(GENERIC);
+                    }
+                }
+                break;
+        }
+    }
+    return ret_val;
+}
+
+static std::set<Type> parse_types(std::string value) {
+    std::set<Type> ret_val;
+    std::vector<std::string> tokens;
+    std::string token;
+    std::string delimiter = " ";
+    size_t pos = 0;
+    while ((pos = value.find(delimiter)) != std::string::npos) {
+        token = value.substr(0, pos);
+        tokens.push_back(token);
+        value.erase(0, pos + delimiter.length());
+
+
+    }
+    return ret_val;
 }

@@ -1,0 +1,1 @@
+{"types":["Artifact","Battle","Conspiracy","Creature","Dragon","Elemental","Enchantment","Goblin","Hero","instant","Instant","Jaguar","Kindred","Knights","Land","Legend","Phenomenon","Plane","Planeswalker","Scheme","Sorcery","Stickers","Summon","Tribal","Universewalker","Vanguard","Wolf"]}
