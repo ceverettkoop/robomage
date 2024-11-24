@@ -16,8 +16,8 @@ struct Card{
     std::string oracle_text;
     std::set<Type> types;
     std::multiset<Colors> mana_cost;
-    uint32_t power;
-    uint32_t toughness;
+    uint32_t power = 0;
+    uint32_t toughness = 0;
     //starting loyalty described as a static ability
     std::vector<EntityID> abilities;
 };
