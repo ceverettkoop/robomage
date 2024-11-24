@@ -6,8 +6,8 @@
 #include <utility>
 #include <cstddef>
 
-const Deck DEFAULT_DECK_ONE;
-const Deck DEFAULT_DECK_TWO;
+extern Deck DEFAULT_DECK_ONE;
+extern Deck DEFAULT_DECK_TWO;
 
 struct Deck{
     std::set<std::pair<size_t, std::string>> cards;    
