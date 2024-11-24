@@ -4,9 +4,15 @@
 #include <cstdint>
 #include <string>
 
+enum TypeCategory{
+    TYPE,
+    SUBTYPE,
+    SUPERTYPE
+};
+
+//uhhh maybe should be entitites idk
 struct Type{
-    uint32_t uid;
-    bool is_supertype;
+    TypeCategory kind;
     std::string name;
 };
 

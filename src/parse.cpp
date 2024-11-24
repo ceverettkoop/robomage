@@ -7,12 +7,15 @@
 #include <vector>
 
 #include "error.h"
+#include "type_constants.h"
 
 const size_t SCRIPT_MAX_LEN = 10000;
 
 static std::string value_from_script(std::string script, std::string key);
 static std::multiset<Colors> parse_mana_cost(std::string value);
 static std::set<Type> parse_types(std::string value);
+static uint32_t parse_power(std::string value);
+static uint32_t parse_toughness(std::string value);
 
 // all to lowercase, spaces to underscores, other characters removed
 std::string name_to_uid(std::string name) {
@@ -51,6 +54,10 @@ int parse_card_script(Card &card, std::string path) {
     card.uid = name_to_uid(card.name);
     card.mana_cost = parse_mana_cost(value_from_script(script_data, "ManaCost"));
     card.types = parse_types(value_from_script(script_data, "Types"));
+    //TODO optimize
+    card.power = parse_power(value_from_script(script_data, "PT"));
+    card.toughness = parse_toughness(value_from_script(script_data, "PT"));
+    card.abilities = parse_abilities(value_from_script(script_data, "S"));
 
     return PARSE_SUCCESS;
 }
@@ -59,7 +66,6 @@ int parse_card_script(Card &card, std::string path) {
 static std::string value_from_script(std::string script, std::string key) {
     auto pos = script.find(key);
     if (pos == std::string::npos) {
-        non_fatal_error("failed to find value for key: " + key);
         return "";
     }
     // advance for key itself and ':'
@@ -108,13 +114,45 @@ static std::set<Type> parse_types(std::string value) {
     std::vector<std::string> tokens;
     std::string token;
     std::string delimiter = " ";
+    Type found;
     size_t pos = 0;
     while ((pos = value.find(delimiter)) != std::string::npos) {
         token = value.substr(0, pos);
         tokens.push_back(token);
         value.erase(0, pos + delimiter.length());
-
-
+    }
+    for (auto &&i : tokens) {
+        found.name = i;
+        if (all_types.find(i) != all_types.end()) {
+            found.kind = TYPE;
+            goto EMPLACE;
+        }
+        if (all_subtypes.find(i) != all_subtypes.end()) {
+            found.kind = SUBTYPE;
+            goto EMPLACE;
+        }
+        if (all_supertypes.find(i) != all_supertypes.end()) {
+            found.kind = SUPERTYPE;
+            goto EMPLACE;
+        }
+        non_fatal_error("UNRECOGNIZED TYPE TOKEN:" + i + "registering as subtype");
+        found.kind = SUBTYPE;
+    EMPLACE:
+        ret_val.emplace(found);
     }
     return ret_val;
+}
+
+static uint32_t parse_power(std::string value){
+    if(value == "") return 0;
+    auto slash_pos = value.find("/");
+    std::string pow_string = value.substr(0, slash_pos);
+    return std::stoi(pow_string);
+}
+
+static uint32_t parse_toughness(std::string value){
+    if(value == "") return 0;
+    auto slash_pos = value.find("/");
+    std::string tough_string = value.substr(slash_pos + 1);
+    return std::stoi(tough_string);
 }
