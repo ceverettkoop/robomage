@@ -135,7 +135,7 @@ static std::set<Type> parse_types(std::string value) {
             found.kind = SUPERTYPE;
             goto EMPLACE;
         }
-        non_fatal_error("UNRECOGNIZED TYPE TOKEN:" + i + "registering as subtype");
+        non_fatal_error("UNRECOGNIZED TYPE TOKEN: " + i + " registering as subtype");
         found.kind = SUBTYPE;
     EMPLACE:
         ret_val.emplace(found);

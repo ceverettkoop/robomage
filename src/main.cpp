@@ -29,7 +29,7 @@ int main(int argc, char const *argv[]) {
     Player player_otp(true);
     Player player_otd(false);
     Deck deck_one = DEFAULT_DECK_ONE;
-    Deck dect_two = DEFAULT_DECK_TWO;
+    Deck deck_two = DEFAULT_DECK_TWO;
     GameObjectDB objects = init_objects(deck_one, deck_two);
 
 

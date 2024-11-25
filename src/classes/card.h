@@ -18,7 +18,7 @@ struct Card{
     std::multiset<Colors> mana_cost;
     uint32_t power = 0;
     uint32_t toughness = 0;
-    //starting loyalty described as a static ability
+    //starting loyalty etc described as a static ability
     std::vector<EntityID> abilities;
 };
 
