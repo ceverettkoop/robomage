@@ -2,7 +2,6 @@
 #ifndef ENTITY_H
 #define ENTITY_H
 
-#include <cassert>
 #include <cstdint>
 
 using Entity = uint32_t;

@@ -3,11 +3,10 @@
 
 #include <string>
 #include <set>
-#include <vector>
 #include <cstdint>
 #include "types.h"
 #include "colors.h"
-#include "entity.h"
+#include "../ecs/entity.h"
 
 //this is the underlying card, a token or copy would not have these traits
 struct Card{
@@ -19,7 +18,7 @@ struct Card{
     uint32_t power = 0;
     uint32_t toughness = 0;
     //starting loyalty etc described as a static ability
-    std::vector<EntityID> abilities;
+    std::set<Entity> abilities;
 };
 
 #endif /* CARD_H */

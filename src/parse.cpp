@@ -14,6 +14,7 @@ const size_t SCRIPT_MAX_LEN = 10000;
 static std::string value_from_script(std::string script, std::string key);
 static std::multiset<Colors> parse_mana_cost(std::string value);
 static std::set<Type> parse_types(std::string value);
+static std::set<Entity> parse_abilities(std::string value);
 static uint32_t parse_power(std::string value);
 static uint32_t parse_toughness(std::string value);
 
@@ -155,4 +156,9 @@ static uint32_t parse_toughness(std::string value){
     auto slash_pos = value.find("/");
     std::string tough_string = value.substr(slash_pos + 1);
     return std::stoi(tough_string);
+}
+
+static std::set<Entity> parse_abilities(std::string value){
+    
+
 }
