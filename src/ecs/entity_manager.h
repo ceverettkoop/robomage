@@ -5,7 +5,9 @@
 #include <array>
 #include "component.h"
 #include "entity.h"
+
 // credit https://austinmorlan.com/posts/entity_component_system/
+
 class EntityManager {
     public:
         EntityManager() {

@@ -10,9 +10,6 @@ class Ability{
         ACTIVATED,
         TRIGGERED
     };
-    
-
-
 };
 
 

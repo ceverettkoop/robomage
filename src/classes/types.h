@@ -10,7 +10,6 @@ enum TypeCategory{
     SUPERTYPE
 };
 
-//uhhh maybe should be entitites idk
 struct Type{
     TypeCategory kind;
     std::string name;
