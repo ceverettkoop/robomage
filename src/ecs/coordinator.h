@@ -12,7 +12,15 @@
 
 class Coordinator {
     public:
+        Coordinator(){
+        };
+
+        static Coordinator& global(){
+            return *singleton;
+        }
+
         void Init() {
+            singleton = this;
             mComponentManager = std::make_unique<ComponentManager>();
             mEntityManager = std::make_unique<EntityManager>();
             mEventManager = std::make_unique<EventManager>();
@@ -75,6 +83,7 @@ class Coordinator {
         std::unique_ptr<EntityManager> mEntityManager;
         std::unique_ptr<EventManager> mEventManager;
         std::unique_ptr<SystemManager> mSystemManager;
+        static Coordinator *singleton;
 };
 
 #endif /* COORDINATOR_H */

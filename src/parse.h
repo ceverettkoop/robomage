@@ -2,9 +2,9 @@
 #define PARSE_H
 
 #include <string>
-#include "card.h"
+#include "ecs/entity.h"
 
 std::string name_to_uid(std::string name);
-int parse_card_script(Card& card, std::string path);
+Entity parse_card_script(std::string path);
 
 #endif /* PARSE_H */

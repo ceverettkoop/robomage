@@ -8,6 +8,13 @@
 
 #include "error.h"
 #include "type_constants.h"
+#include "classes/colors.h"
+#include "classes/types.h"
+
+#include "components/card.h"
+#include "components/spell_ability.h"
+
+#include "ecs/coordinator.h"
 
 const size_t SCRIPT_MAX_LEN = 10000;
 
@@ -40,8 +47,9 @@ std::string name_to_uid(std::string name) {
     return std::string();
 }
 
-int parse_card_script(Card &card, std::string path) {
-    Card ret_val;
+Entity parse_card_script(std::string path) {
+    Coordinator& coordinator = Coordinator::global();
+    auto id = coordinator.CreateEntity();
     std::string script_data;
     auto stream = std::ifstream(path);
     if (!stream.is_open()) return FAILED_TO_OPEN_STREAM;
@@ -51,6 +59,7 @@ int parse_card_script(Card &card, std::string path) {
         if (c == stream.eof()) break;
         script_data += c;
     }
+    Card card;
     card.name = value_from_script(script_data, "Name");
     card.uid = name_to_uid(card.name);
     card.mana_cost = parse_mana_cost(value_from_script(script_data, "ManaCost"));
@@ -58,9 +67,12 @@ int parse_card_script(Card &card, std::string path) {
     //TODO optimize
     card.power = parse_power(value_from_script(script_data, "PT"));
     card.toughness = parse_toughness(value_from_script(script_data, "PT"));
+    //register abilities associated with this card as entities unique to this card
     card.abilities = parse_abilities(value_from_script(script_data, "S"));
 
-    return PARSE_SUCCESS;
+    coordinator.AddComponent(id, card);
+
+    return id;
 }
 
 // private util functions
@@ -78,6 +90,7 @@ static std::string value_from_script(std::string script, std::string key) {
 static std::multiset<Colors> parse_mana_cost(std::string value) {
     auto len = value.length();
     std::multiset<Colors> ret_val;
+    if(value == "no cost") return ret_val;
     for (size_t i = 0; i < len; i++) {
         switch (value[i]) {
             case 'W':
@@ -159,6 +172,30 @@ static uint32_t parse_toughness(std::string value){
 }
 
 static std::set<Entity> parse_abilities(std::string value){
-    
+    //for minimal alpha we are only going to parse spell abilities
+    Coordinator& coordinator = Coordinator::global();
+    size_t pos = 0;
+    std::set<Entity> ret_val;
 
+    while(pos != value.npos){
+        //SPELL ABILITY
+        pos = value.find("SP$",pos);
+        pos += 4;
+        std::string type = value.substr(pos,value.find(" ", pos));
+        if(type == "DealDamage"){
+            auto id = coordinator.CreateEntity();
+            SpellAbility ability;
+            ability.type = type;
+            //note when card becomes a spell source id remains
+            ability.source = id;
+            coordinator.AddComponent(id, ability);
+            ret_val.emplace(id);    
+        }
+
+        
+
+    }
+
+    //basic lands having mana abilities is by virtue of their type
+    return ret_val;
 }

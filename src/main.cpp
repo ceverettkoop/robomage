@@ -4,12 +4,12 @@
 #include <time.h>
 #include "card_db.h"
 #include "classes/game.h"
-#include "classes/player.h"
 #include "classes/deck.h"
 #include "ecs/coordinator.h"
 #include "components/damage.h"
 #include "components/player.h"
 #include "components/spell_ability.h"
+#include "components/card.h"
 
 #ifndef VERSION_NUMBER
 #define VERSION_NUMBER "0.001"
@@ -22,7 +22,7 @@ extern "C" {
 */
 
 std::string RESOURCE_DIR;
-Coordinator global_coordinator;
+Coordinator global_coordinator = Coordinator();
 
 int main(int argc, char const *argv[]) {
     char buf[FILENAME_MAX];
@@ -37,6 +37,7 @@ int main(int argc, char const *argv[]) {
     global_coordinator.RegisterComponent<Damage>();
     global_coordinator.RegisterComponent<Player>();
     global_coordinator.RegisterComponent<SpellAbility>();
+    global_coordinator.RegisterComponent<Card>();
 
     Game cur_game(seed);
     Game.generate_players(DEFAULT_DECK_ONE,DEFAULT_DECK_TWO);
@@ -44,7 +45,6 @@ int main(int argc, char const *argv[]) {
     Player player_otd(false);
     Deck deck_one = DEFAULT_DECK_ONE;
     Deck deck_two = DEFAULT_DECK_TWO;
-
 
 //game loop
 
