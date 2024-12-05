@@ -1,7 +1,7 @@
-#include "spell_ability.h"
+#include "ability.h"
 #include "damage.h"
 
-void SpellAbility::resolve() {
+void Ability::resolve() {
 
     if(type == "DealDamage"){
         deal_damage(source, target, amount);
