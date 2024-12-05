@@ -62,6 +62,14 @@ class Coordinator {
         ComponentType GetComponentType() {
             return mComponentManager->GetComponentType<T>();
         }
+        
+        template <typename T>
+        bool entity_has_component(Entity entity){
+            ComponentType type = mComponentManager->GetComponentType<T>();
+            auto signature = mEntityManager->GetSignature(entity);
+            return signature.test(type);
+        }
+
         // System methods
         template <typename T>
         std::shared_ptr<T> RegisterSystem() {
