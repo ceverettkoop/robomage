@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <unordered_map>
 
-#include "card.h"
+#include "components/card.h"
 
 extern std::unordered_map<std::string, Card> card_db;
 extern std::string RESOURCE_DIR;

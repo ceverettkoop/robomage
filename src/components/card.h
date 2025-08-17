@@ -8,7 +8,7 @@
 #include "colors.h"
 #include "../ecs/entity.h"
 
-//this is the underlying card, a token or copy would not have these traits
+//this is the underlying card, not a permanent or spell 
 struct Card{
     std::string uid;
     std::string name;
