@@ -7,11 +7,11 @@
 
 #include "components/card.h"
 
-extern std::unordered_map<std::string, Card> card_db;
+extern std::unordered_map<std::string, Entity> card_db;
 extern std::string RESOURCE_DIR;
 
 //cards are loaded into db on demand
-const Card& load_card(std::string card_name);
+Entity load_card(std::string card_name);
 
 #endif /* CARD_H */
 

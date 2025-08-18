@@ -10,6 +10,7 @@ extern Deck DEFAULT_DECK_ONE;
 extern Deck DEFAULT_DECK_TWO;
 
 struct Deck{
+    Deck(std::string path);
     std::set<std::pair<size_t, std::string>> cards;    
 };
 

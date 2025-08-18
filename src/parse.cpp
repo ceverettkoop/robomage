@@ -71,6 +71,7 @@ Entity parse_card_script(std::string path) {
     //register abilities associated with this card as entities unique to this card
     card.abilities = parse_abilities(multi_values_from_script(script_data, "A"));
 
+    // no error handling here
     coordinator.AddComponent(id, card);
 
     return id;

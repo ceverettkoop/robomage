@@ -2,7 +2,7 @@
 #define GAME_H
 
 #include <cstdint>
-#include <entity.h>
+#include "../ecs/entity.h"
 
 struct Deck;
 

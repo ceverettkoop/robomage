@@ -4,8 +4,8 @@
 #include <string>
 #include <set>
 #include <cstdint>
-#include "types.h"
-#include "colors.h"
+#include "../classes/types.h"
+#include "../classes/colors.h"
 #include "../ecs/entity.h"
 
 //this is the underlying card, not a permanent or spell 
