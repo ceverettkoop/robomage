@@ -21,7 +21,7 @@ enum Step {
     CLEANUP
 };
 
-class Game {
+struct Game {
         Game(unsigned int _seed){
             seed = _seed;
         };

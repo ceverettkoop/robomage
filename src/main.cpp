@@ -8,7 +8,7 @@
 #include "ecs/coordinator.h"
 #include "components/damage.h"
 #include "components/player.h"
-#include "components/spell_ability.h"
+#include "components/ability.h"
 #include "components/card.h"
 
 #ifndef VERSION_NUMBER
@@ -30,17 +30,17 @@ int main(int argc, char const *argv[]) {
     RESOURCE_DIR += "/resources";
 
     printf("robomage %s\n", VERSION_NUMBER);
-    unsigned int seed = time(nullptr);
+    unsigned int seed = static_cast<unsigned int>(time(nullptr));
     std::srand(seed);
 
     global_coordinator.Init();
     global_coordinator.RegisterComponent<Damage>();
     global_coordinator.RegisterComponent<Player>();
-    global_coordinator.RegisterComponent<SpellAbility>();
+    global_coordinator.RegisterComponent<Ability>();
     global_coordinator.RegisterComponent<Card>();
 
     Game cur_game(seed);
-    Game.generate_players(DEFAULT_DECK_ONE,DEFAULT_DECK_TWO);
+    cur_game.generate_players(DEFAULT_DECK_ONE,DEFAULT_DECK_TWO);
 
 //game loop
 

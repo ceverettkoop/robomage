@@ -20,7 +20,7 @@ BINDIR=bin
 BINNAME=robomage
 GUI=false
 
-CXXFLAGS = -ggdb
+CXXFLAGS = -ggdb -std=c++17
 CFLAGS = -ggdb
 IFLAGS = -Iinclude -Icomponents -isystem
 LDFLAGS = -L./lib
@@ -56,12 +56,15 @@ C_OBJ = $(patsubst %,$(ODIR)/%,$(_C_OBJ))
 CXX_OBJ = $(patsubst %,$(ODIR)/%,$(_CXX_OBJ))
 
 $(ODIR)/%.o: $(SRCDIR)/%.c
+	@mkdir -p $(dir $@)
 	$(CC) -c -o $@ $< $(IFLAGS) $(CFLAGS) $(PLATFLAGS)
 
 $(ODIR)/%.o: $(SRCDIR)/%.cpp
+	@mkdir -p $(dir $@)
 	$(CXX) -c -o $@ $< $(IFLAGS) $(CXXFLAGS) $(PLATFLAGS)
 
 program:$(C_OBJ) $(CXX_OBJ)
+	@mkdir -p $(BINDIR)
 	$(CXX) -o $(BINDIR)/$(BINNAME) $(C_OBJ) $(CXX_OBJ) $(LDFLAGS) $(LDLIBS) $(PLATFLAGS)
 
 .PHONY: clean

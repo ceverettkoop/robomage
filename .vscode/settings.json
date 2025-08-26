@@ -85,6 +85,7 @@
         "fstream": "cpp",
         "queue": "cpp",
         "iostream": "cpp",
-        "stdfloat": "cpp"
+        "stdfloat": "cpp",
+        "forward_list": "cpp"
     }
   }

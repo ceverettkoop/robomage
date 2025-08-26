@@ -3,7 +3,7 @@
 
 void Ability::resolve() {
 
-    if(type == "DealDamage"){
+    if(category == "DealDamage"){
         deal_damage(source, target, amount);
     }
 }

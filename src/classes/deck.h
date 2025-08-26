@@ -6,12 +6,15 @@
 #include <utility>
 #include <cstddef>
 
-extern Deck DEFAULT_DECK_ONE;
-extern Deck DEFAULT_DECK_TWO;
+struct Deck;
+
+extern const Deck DEFAULT_DECK_ONE;
+extern const Deck DEFAULT_DECK_TWO;
 
 struct Deck{
     Deck(std::string path);
-    std::set<std::pair<size_t, std::string>> cards;    
+    std::set<std::pair<size_t, std::string>> main_deck;
+    std::set<std::pair<size_t, std::string>> sideboard;
 };
 
 #endif /* DECK_H */

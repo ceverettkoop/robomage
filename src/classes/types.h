@@ -13,6 +13,13 @@ enum TypeCategory{
 struct Type{
     TypeCategory kind;
     std::string name;
+    
+    bool operator<(const Type& other) const {
+        if (kind != other.kind) {
+            return kind < other.kind;
+        }
+        return name < other.name;
+    }
 };
 
 #endif /* TYPES_H */
