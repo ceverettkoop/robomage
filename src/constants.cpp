@@ -1,5 +1,6 @@
 #include <set>
 #include <string>
+#include "type_constants.h"
 
 const std::set<std::string> all_types = {"Artifact", "Battle", "Conspiracy", "Creature", "Dragon", "Elemental", "Enchantment",
     "Goblin", "Hero", "instant", "Instant", "Jaguar", "Kindred", "Knights", "Land", "Legend", "Phenomenon", "Plane",

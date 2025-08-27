@@ -152,12 +152,13 @@ static std::set<Type> parse_types(std::string value) {
     }
     for (auto &&i : tokens) {
         found.name = i;
-        if (all_types.find(i) != all_types.end()) {
-            found.kind = TYPE;
-            goto EMPLACE;
-        }
+        //subtypes before types as bandaid for weird types in my list due to... unset cards?
         if (all_subtypes.find(i) != all_subtypes.end()) {
             found.kind = SUBTYPE;
+            goto EMPLACE;
+        }
+        if (all_types.find(i) != all_types.end()) {
+            found.kind = TYPE;
             goto EMPLACE;
         }
         if (all_supertypes.find(i) != all_supertypes.end()) {

@@ -3,5 +3,5 @@ lib/libraylib.a
 bin/robomage
 obj/*.o
 obj/*/*.o
-resources/cardsfolder/*
-resources/cardsfolder/.DS_Store
+bin/resources/cardsfolder/*
+bin/resources/cardsfolder/.DS_Store

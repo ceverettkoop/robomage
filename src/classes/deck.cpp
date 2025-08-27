@@ -4,10 +4,6 @@
 
 extern std::string RESOURCE_DIR;
 
-
-const Deck DEFAULT_DECK_ONE = Deck(RESOURCE_DIR + "/decks/deck_one.dk");
-const Deck DEFAULT_DECK_TWO = Deck(RESOURCE_DIR + "/decks/deck_two.dk");
-
 Deck::Deck(std::string path) {
     auto stream = std::fstream(path);
     if(!stream.is_open()) non_fatal_error("Failed to open decklist at " + path);

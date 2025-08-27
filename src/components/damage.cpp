@@ -13,4 +13,5 @@ bool deal_damage(Entity source, Entity target, size_t amount) {
     }
 
     coordinator.GetComponent<Damage>(target).damage_counters += amount;
+    return true;
 }

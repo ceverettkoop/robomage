@@ -23,11 +23,16 @@ extern "C" {
 
 std::string RESOURCE_DIR;
 Coordinator global_coordinator = Coordinator();
+Deck DEFAULT_DECK_ONE;
+Deck DEFAULT_DECK_TWO;
 
 int main(int argc, char const *argv[]) {
     char buf[FILENAME_MAX];
     RESOURCE_DIR = getcwd(buf, FILENAME_MAX);
     RESOURCE_DIR += "/resources";
+
+    DEFAULT_DECK_ONE = Deck(RESOURCE_DIR + "/decks/deck_one.dk");
+    DEFAULT_DECK_TWO = Deck(RESOURCE_DIR + "/decks/deck_two.dk");
 
     printf("robomage %s\n", VERSION_NUMBER);
     unsigned int seed = static_cast<unsigned int>(time(nullptr));
