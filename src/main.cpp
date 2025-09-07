@@ -9,7 +9,6 @@
 #include "components/damage.h"
 #include "components/ability.h"
 #include "components/carddata.h"
-#include "components/owner.h"
 #include "components/player.h"
 #include "components/zone.h"
 
@@ -44,7 +43,6 @@ int main(int argc, char const *argv[]) {
     global_coordinator.RegisterComponent<Ability>();
     global_coordinator.RegisterComponent<CardData>();
     global_coordinator.RegisterComponent<Damage>();
-    global_coordinator.RegisterComponent<Owner>();
     global_coordinator.RegisterComponent<Player>();
     global_coordinator.RegisterComponent<Zone>();
 
@@ -54,15 +52,12 @@ int main(int argc, char const *argv[]) {
     cur_game.generate_players(DEFAULT_DECK_ONE,DEFAULT_DECK_TWO);
     cur_game.generate_libraries(DEFAULT_DECK_ONE, DEFAULT_DECK_TWO);
 
-
-
-
 //game loop
 
     //if something resolves bc of priority passing, resolve that now
-    Stack.resolve();
+
     //state based effects / triggers
-    StateEffects.update();
+
     //active player can take action or pass priority (pass means skip to end)
 
     //special game actions resolve immediately
@@ -70,7 +65,6 @@ int main(int argc, char const *argv[]) {
     //state based effects
 
     //repeat
-
 
     return 0;
 }
