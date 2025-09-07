@@ -29,10 +29,11 @@ struct Game {
         uint32_t timestamp = 0;
         uint16_t turn = 0;
         Step cur_step = UNTAP;
-        Entity player_otp;
-        Entity player_otd;
+        Entity player_a_entity;
+        Entity player_b_entity;
 
-        void generate_players(const Deck& otp_deck, const Deck& otd_deck);
+        void generate_players(const Deck& deck_a, const Deck& deck_b);
+        void generate_libraries(const Deck& deck_a, const Deck& deck_b);
 
     private:
         Entity gen_player(const Deck& deck);

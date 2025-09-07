@@ -7,9 +7,11 @@
 #include "classes/deck.h"
 #include "ecs/coordinator.h"
 #include "components/damage.h"
-#include "components/player.h"
 #include "components/ability.h"
-#include "components/card.h"
+#include "components/carddata.h"
+#include "components/owner.h"
+#include "components/player.h"
+#include "components/zone.h"
 
 #ifndef VERSION_NUMBER
 #define VERSION_NUMBER "0.001"
@@ -39,23 +41,28 @@ int main(int argc, char const *argv[]) {
     std::srand(seed);
 
     global_coordinator.Init();
-    global_coordinator.RegisterComponent<Damage>();
-    global_coordinator.RegisterComponent<Player>();
     global_coordinator.RegisterComponent<Ability>();
-    global_coordinator.RegisterComponent<Card>();
+    global_coordinator.RegisterComponent<CardData>();
+    global_coordinator.RegisterComponent<Damage>();
+    global_coordinator.RegisterComponent<Owner>();
+    global_coordinator.RegisterComponent<Player>();
+    global_coordinator.RegisterComponent<Zone>();
 
+    
+    //one time setup for this game
     Game cur_game(seed);
     cur_game.generate_players(DEFAULT_DECK_ONE,DEFAULT_DECK_TWO);
-    load_deck(DEFAULT_DECK_ONE);
-    load_deck(DEFAULT_DECK_TWO);
+    cur_game.generate_libraries(DEFAULT_DECK_ONE, DEFAULT_DECK_TWO);
+
+
 
 
 //game loop
 
     //if something resolves bc of priority passing, resolve that now
-
+    Stack.resolve();
     //state based effects / triggers
-
+    StateEffects.update();
     //active player can take action or pass priority (pass means skip to end)
 
     //special game actions resolve immediately

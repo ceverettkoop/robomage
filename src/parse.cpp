@@ -9,7 +9,7 @@
 #include "classes/colors.h"
 #include "classes/types.h"
 #include "components/ability.h"
-#include "components/card.h"
+#include "components/carddata.h"
 #include "ecs/coordinator.h"
 #include "error.h"
 #include "type_constants.h"
@@ -58,7 +58,7 @@ Entity parse_card_script(std::string path) {
         if (c == stream.eof()) break;
         script_data += c;
     }
-    Card card;
+    CardData card;
     card.name = value_from_script(script_data, "Name");
     card.uid = name_to_uid(card.name);
     card.mana_cost = parse_mana_cost(value_from_script(script_data, "ManaCost"));

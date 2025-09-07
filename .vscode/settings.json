@@ -86,6 +86,9 @@
         "queue": "cpp",
         "iostream": "cpp",
         "stdfloat": "cpp",
-        "forward_list": "cpp"
+        "forward_list": "cpp",
+        "codecvt": "cpp",
+        "unordered_set": "cpp",
+        "ranges": "cpp"
     }
   }

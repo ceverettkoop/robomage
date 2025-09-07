@@ -3,6 +3,7 @@
 #include "error.h"
 #include "classes/deck.h"
 
+//this should be a system? oh well
 std::unordered_map<std::string, Entity> card_db;
 
 Entity load_card(std::string card_name) {
@@ -22,13 +23,4 @@ Entity load_card(std::string card_name) {
     card_db.emplace(uid, parsed_card_eid);
 
     return parsed_card_eid;
-}
-
-void load_deck(Deck in_deck) {
-    for (auto &&i : in_deck.main_deck){
-        load_card(i.second);
-    }
-    for (auto &&i : in_deck.sideboard){
-        load_card(i.second);
-    }
 }

@@ -6,14 +6,13 @@
 #include <unordered_map>
 struct Deck;
 
-#include "components/card.h"
+#include "components/carddata.h"
 
 extern std::unordered_map<std::string, Entity> card_db;
 extern std::string RESOURCE_DIR;
 
 //cards are loaded into db on demand
 Entity load_card(std::string card_name);
-void load_deck(Deck in_deck);
 
 #endif /* CARD_H */
 

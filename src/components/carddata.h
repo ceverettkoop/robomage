@@ -1,5 +1,5 @@
-#ifndef CARD_H
-#define CARD_H
+#ifndef CARDDATA_H
+#define CARDDATA_H
 
 #include <string>
 #include <set>
@@ -9,7 +9,7 @@
 #include "../ecs/entity.h"
 
 //this is the underlying card, not a permanent or spell 
-struct Card{
+struct CardData{
     std::string uid;
     std::string name;
     std::string oracle_text;
