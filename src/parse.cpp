@@ -5,6 +5,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <cassert>
 
 #include "classes/colors.h"
 #include "classes/types.h"
@@ -51,9 +52,9 @@ Entity parse_card_script(std::string path) {
     auto id = coordinator.CreateEntity();
     std::string script_data;
     auto stream = std::ifstream(path);
-    if (!stream.is_open()) return FAILED_TO_OPEN_STREAM;
+    assert(stream.is_open());
     for (size_t i = 0; true; i++) {
-        if (i > SCRIPT_MAX_LEN) return SCRIPT_TOO_LONG;
+        if (i > SCRIPT_MAX_LEN) fatal_error("Script too long");
         char c = stream.get();
         if (c == stream.eof()) break;
         script_data += c;

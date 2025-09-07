@@ -25,7 +25,8 @@ void Game::generate_libraries(const Deck &deck_a, const Deck &deck_b) {
         for (auto &&card_name : deck_a.main_deck) {
             for (size_t i = 0; i < card_name.first; i++) { //qty
                 Entity card_id = coordinator.CreateEntity();
-                coordinator.AddComponent(card_id, coordinator.GetComponent<CardData>(load_card(card_name.second)));
+                auto card_data_id = load_card(card_name.second);
+                coordinator.AddComponent(card_id, coordinator.GetComponent<CardData>(card_data_id));
                 coordinator.AddComponent(card_id, Zone(Zone::LIBRARY, owner, owner));
             }
         }
