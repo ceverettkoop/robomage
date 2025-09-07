@@ -1,6 +1,7 @@
 #include "deck.h"
 #include <fstream>
 #include "../error.h"
+#include "../card_db.h"
 
 extern std::string RESOURCE_DIR;
 

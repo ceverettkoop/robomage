@@ -4,6 +4,7 @@
 #include <string>
 #include <cstdint>
 #include <unordered_map>
+struct Deck;
 
 #include "components/card.h"
 
@@ -12,6 +13,7 @@ extern std::string RESOURCE_DIR;
 
 //cards are loaded into db on demand
 Entity load_card(std::string card_name);
+void load_deck(Deck in_deck);
 
 #endif /* CARD_H */
 

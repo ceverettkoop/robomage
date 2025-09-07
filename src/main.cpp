@@ -46,6 +46,9 @@ int main(int argc, char const *argv[]) {
 
     Game cur_game(seed);
     cur_game.generate_players(DEFAULT_DECK_ONE,DEFAULT_DECK_TWO);
+    load_deck(DEFAULT_DECK_ONE);
+    load_deck(DEFAULT_DECK_TWO);
+
 
 //game loop
 

@@ -1,6 +1,7 @@
 #include "card_db.h"
 #include "parse.h"
 #include "error.h"
+#include "classes/deck.h"
 
 std::unordered_map<std::string, Entity> card_db;
 
@@ -12,9 +13,22 @@ Entity load_card(std::string card_name) {
     if(itr != card_db.end()) return itr->second;
     //load script
     std::string path = RESOURCE_DIR + "/" + uid[0] + "/" + uid + ".txt";
-    Entity parsed_card = parse_card_script(path);
-    if(parsed_card < 0){
+    Entity parsed_card_eid = parse_card_script(path);
+    if(parsed_card_eid < 0){
         non_fatal_error("Failed to parse card " + card_name);
+        return parsed_card_eid;
     }
-    return parsed_card;
+    //success
+    card_db.emplace(uid, parsed_card_eid);
+
+    return parsed_card_eid;
+}
+
+void load_deck(Deck in_deck) {
+    for (auto &&i : in_deck.main_deck){
+        load_card(i.second);
+    }
+    for (auto &&i : in_deck.sideboard){
+        load_card(i.second);
+    }
 }
