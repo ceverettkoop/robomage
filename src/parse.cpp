@@ -56,7 +56,7 @@ Entity parse_card_script(std::string path) {
     for (size_t i = 0; true; i++) {
         if (i > SCRIPT_MAX_LEN) fatal_error("Script too long");
         char c = stream.get();
-        if (c == stream.eof()) break;
+        if (stream.eof()) break;
         script_data += c;
     }
     CardData card;
