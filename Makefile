@@ -14,6 +14,11 @@ endif
 CC=gcc
 CXX=g++
 
+ifeq ($(PLATFORM), OSX)
+	CC=clang
+	CXX=clang++
+endif
+
 ODIR=obj
 SRCDIR=src
 BINDIR=bin
@@ -23,7 +28,7 @@ GUI=false
 DEBUGFLAGS = -ggdb
 CXXFLAGS = -std=c++17
 CFLAGS =
-IFLAGS = -Iinclude -Icomponents -isystem
+IFLAGS = -Iinclude -Icomponents
 LDFLAGS = -L./lib
 LDLIBS =
 CHECKFLAGS = -Wall -Wformat -Wformat=2 -Wconversion -Wimplicit-fallthrough \
