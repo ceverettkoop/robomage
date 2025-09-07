@@ -20,8 +20,9 @@ BINDIR=bin
 BINNAME=robomage
 GUI=false
 
-CXXFLAGS = -ggdb -std=c++17
-CFLAGS = -ggdb
+DEBUGFLAGS = -ggdb
+CXXFLAGS = -std=c++17
+CFLAGS =
 IFLAGS = -Iinclude -Icomponents -isystem
 LDFLAGS = -L./lib
 LDLIBS =
@@ -32,11 +33,10 @@ C_CHECKFLAGS = -Werror=implicit -Werror=incompatible-pointer-types -Werror=int-c
 
 ifeq ($(BUILD),RELEASE)
 	CFLAGS += -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=3 -o2
-	CXXFLAGS += += -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=3 -o2
+	CXXFLAGS += -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=3 -o2
 else
-	CFLAGS += $(CHECKFLAGS)
-	CFLAGS += $(C_CHECKFLAGS)
-	CXXFLAGS +=$(CHECKFLAGS)
+	CFLAGS += $(DEBUGFLAGS) $(CHECKFLAGS) $(C_CHECKFLAGS)
+	CXXFLAGS += $(DEBUGFLAGS) $(CHECKFLAGS)
 endif
 
 ifeq ($(GUI),TRUE)

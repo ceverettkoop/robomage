@@ -3,6 +3,6 @@
 
 void non_fatal_error(std::string err) {
     err += '\n';
-    printf(err.c_str());
+    printf("%s", err.c_str());
     return;
 }

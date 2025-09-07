@@ -1,9 +1,9 @@
 #ifndef EVENT_H
 #define EVENT_H
 
-#include <any>
 #include <cstdint>
 #include <unordered_map>
+#include <any>
 
 // credit https://austinmorlan.com/posts/entity_component_system/
 
