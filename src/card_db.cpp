@@ -13,7 +13,7 @@ Entity load_card(std::string card_name) {
     //check if already loaded
     if(itr != card_db.end()) return itr->second;
     //load script
-    std::string path = RESOURCE_DIR + "/" + uid[0] + "/" + uid + ".txt";
+    std::string path = RESOURCE_DIR + "/cardsfolder/" + uid[0] + "/" + uid + ".txt";
     Entity parsed_card_eid = parse_card_script(path);
     if(parsed_card_eid < 0){
         non_fatal_error("Failed to parse card " + card_name);
