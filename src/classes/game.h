@@ -33,7 +33,6 @@ struct Game {
         Entity player_b_entity;
 
         void generate_players(const Deck& deck_a, const Deck& deck_b);
-        void generate_libraries(const Deck& deck_a, const Deck& deck_b);
 
     private:
         Entity gen_player(const Deck& deck);

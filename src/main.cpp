@@ -11,6 +11,7 @@
 #include "components/carddata.h"
 #include "components/player.h"
 #include "components/zone.h"
+#include "systems/orderer.h"
 
 #ifndef VERSION_NUMBER
 #define VERSION_NUMBER "0.001"
@@ -45,12 +46,15 @@ int main(int argc, char const *argv[]) {
     global_coordinator.RegisterComponent<Damage>();
     global_coordinator.RegisterComponent<Player>();
     global_coordinator.RegisterComponent<Zone>();
-
     
+    auto orderer = global_coordinator.RegisterSystem<Orderer>();
+    Orderer::init(); //system signature is set here
+
     //one time setup for this game
     Game cur_game(seed);
     cur_game.generate_players(DEFAULT_DECK_ONE,DEFAULT_DECK_TWO);
-    cur_game.generate_libraries(DEFAULT_DECK_ONE, DEFAULT_DECK_TWO);
+    
+    orderer->generate_libraries(DEFAULT_DECK_ONE, DEFAULT_DECK_TWO);
 
 //game loop
 

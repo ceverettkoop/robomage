@@ -16,6 +16,7 @@
 #include "type_constants.h"
 
 const size_t SCRIPT_MAX_LEN = 10000;
+extern Coordinator global_coordinator;
 
 static std::string value_from_script(std::string script, std::string key);
 static std::vector<std::string> multi_values_from_script(std::string script, std::string key);
@@ -48,8 +49,7 @@ std::string name_to_uid(std::string name) {
 }
 
 Entity parse_card_script(std::string path) {
-    Coordinator &coordinator = Coordinator::global();
-    auto id = coordinator.CreateEntity();
+    auto id = global_coordinator.CreateEntity();
     std::string script_data;
     auto stream = std::ifstream(path);
     assert(stream.is_open());
@@ -71,7 +71,7 @@ Entity parse_card_script(std::string path) {
     card.abilities = parse_abilities(multi_values_from_script(script_data, "A"));
 
     // no error handling here
-    coordinator.AddComponent(id, card);
+    global_coordinator.AddComponent(id, card);
 
     return id;
 }
@@ -188,7 +188,6 @@ static uint32_t parse_toughness(std::string value) {
 
 // fed each ability line
 static std::set<Entity> parse_abilities(std::vector<std::string> lines) {
-    Coordinator &coordinator = Coordinator::global();
     size_t pos = 0;
     std::set<Entity> ret_val;
     for (auto &&line : lines) {
@@ -202,11 +201,11 @@ static std::set<Entity> parse_abilities(std::vector<std::string> lines) {
         pos += 4;
         std::string category = line.substr(pos, line.find(" ", pos));
         if (category == "DealDamage") {
-            auto id = coordinator.CreateEntity();
+            auto id = global_coordinator.CreateEntity();
             ability.category = category;
             // spell ability source is card itself?
             ability.source = id;
-            coordinator.AddComponent(id, ability);
+            global_coordinator.AddComponent(id, ability);
             ret_val.emplace(id);
         }
     }
