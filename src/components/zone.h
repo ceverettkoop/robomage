@@ -1,6 +1,8 @@
 #ifndef ZONE_H
 #define ZONE_H
 
+#include <cstddef>
+
 struct Zone {
         enum ZoneValue: int { LIBRARY, BATTLEFIELD, HAND, STACK, GRAVEYARD, EXILE, SIDEBOARD };
         enum Ownership: int {UNKNOWN, PLAYER_A, PLAYER_B};

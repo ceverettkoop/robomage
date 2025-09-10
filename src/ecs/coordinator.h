@@ -94,4 +94,6 @@ class Coordinator {
         static Coordinator *singleton;
 };
 
+extern Coordinator global_coordinator;
+
 #endif /* COORDINATOR_H */

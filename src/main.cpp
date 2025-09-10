@@ -12,6 +12,7 @@
 #include "components/player.h"
 #include "components/zone.h"
 #include "systems/orderer.h"
+#include "debug.h"
 
 #ifndef VERSION_NUMBER
 #define VERSION_NUMBER "0.001"
@@ -27,6 +28,7 @@ std::string RESOURCE_DIR;
 Coordinator global_coordinator = Coordinator();
 Deck DEFAULT_DECK_ONE;
 Deck DEFAULT_DECK_TWO;
+Game cur_game;
 
 int main(int argc, char const *argv[]) {
     char buf[FILENAME_MAX];
@@ -55,6 +57,10 @@ int main(int argc, char const *argv[]) {
     cur_game.generate_players(DEFAULT_DECK_ONE,DEFAULT_DECK_TWO);
     
     orderer->generate_libraries(DEFAULT_DECK_ONE, DEFAULT_DECK_TWO);
+    print_library(orderer, Zone::PLAYER_A);
+    print_library(orderer, Zone::PLAYER_B);
+
+
 
 //game loop
 

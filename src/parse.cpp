@@ -16,7 +16,6 @@
 #include "type_constants.h"
 
 const size_t SCRIPT_MAX_LEN = 10000;
-extern Coordinator global_coordinator;
 
 static std::string value_from_script(std::string script, std::string key);
 static std::vector<std::string> multi_values_from_script(std::string script, std::string key);
