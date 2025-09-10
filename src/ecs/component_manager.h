@@ -6,6 +6,7 @@
 #include "component.h"
 #include "component_array.h"
 #include "entity.h"
+
 // credit https://austinmorlan.com/posts/entity_component_system/
 class ComponentManager {
     public:

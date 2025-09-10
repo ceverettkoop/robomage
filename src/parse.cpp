@@ -84,7 +84,7 @@ static std::string value_from_script(std::string script, std::string key) {
     // advance for key itself and ':'
     pos += key.length() + 1;
     auto end_pos = script.find("\n", pos);
-    return script.substr(pos, (end_pos - pos - 1));  // omit linebreak at end
+    return script.substr(pos, (end_pos - pos));  // omit linebreak at end
 }
 
 static std::vector<std::string> multi_values_from_script(std::string script, std::string key) {
