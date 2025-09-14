@@ -81,7 +81,7 @@ void Orderer::generate_libraries(const Deck &deck_a, const Deck &deck_b) {
             target_deck = deck_b;
         }
         // loop through each card and create an entity in appropriate library per qty
-        for (auto &&card_name : deck_a.main_deck) {
+        for (auto &&card_name : target_deck.main_deck) {
             for (size_t i = 0; i < card_name.first; i++) {  // qty
                 // TODO this will probably need to be made a function for when it is repeated in the case of token
                 // creation

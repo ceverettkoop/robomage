@@ -26,10 +26,10 @@ BINNAME=robomage
 GUI=false
 
 DEBUGFLAGS = -ggdb
-CXXFLAGS = -std=c++17
+CXXFLAGS = -std=c++17 -fno-exceptions
 CFLAGS =
 IFLAGS = -Iinclude -Icomponents
-LDFLAGS = -L./lib
+LDFLAGS = -L./lib -fno-exceptions
 LDLIBS =
 CHECKFLAGS = -Wall -Wformat -Wformat=2 -Wconversion -Wimplicit-fallthrough \
 -D_GLIBCXX_ASSERTIONS \
