@@ -5,5 +5,7 @@
 #include "systems/orderer.h"
 
 void print_library(std::shared_ptr<Orderer> orderer, Zone::Ownership owner);
+void print_hand(std::shared_ptr<Orderer> orderer, Zone::Ownership owner);
+std::string player_name(Zone::Ownership owner);
 
 #endif /* DEBUG_H */

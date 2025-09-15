@@ -55,16 +55,22 @@ int main(int argc, char const *argv[]) {
     //one time setup for this game
     Game cur_game(seed);
     cur_game.generate_players(DEFAULT_DECK_ONE,DEFAULT_DECK_TWO);
-    
     orderer->generate_libraries(DEFAULT_DECK_ONE, DEFAULT_DECK_TWO);
-    print_library(orderer, Zone::PLAYER_A);
-    print_library(orderer, Zone::PLAYER_B);
+    
+    //TODO MULLIGANS, COMPANION ETC
+    orderer->draw_hands();
+    print_hand(orderer, Zone::PLAYER_A);
+    print_hand(orderer, Zone::PLAYER_B);
 
+    //PLAYER A IS ALWAYS ON THE PLAY IN THIS WORLD
 
+    //game loop
+    while(cur_game.ended() != true){
+        
 
-//game loop
+    }
 
-    //if something resolves bc of priority passing, resolve that now
+    //if something resolves bc of priority passing, resolve that now    
 
     //state based effects / triggers
 

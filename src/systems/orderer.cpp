@@ -1,14 +1,15 @@
 #include "orderer.h"
 
+#include <algorithm>
+#include <numeric>
+
 #include "../card_db.h"
 #include "../classes/deck.h"
+#include "../classes/game.h"
 #include "../components/carddata.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
-#include "../classes/game.h"
-
-#include <numeric>
-#include <algorithm>
+#include "../error.h"
 
 // orderer cares about anything that has a zone
 void Orderer::init() {
@@ -41,12 +42,26 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     if (on_bottom) target_zone.distance_from_top = back + 1;
 }
 
+
+//TODO MERGE THESE INTO A GENERIC GETTER
 std::vector<Entity> Orderer::get_library_contents(Zone::Ownership owner) {
     std::vector<Entity> contents;
 
-    for (auto &&card : mEntities){
+    for (auto &&card : mEntities) {
         auto &card_zone = global_coordinator.GetComponent<Zone>(card);
-        if((card_zone.location == Zone::LIBRARY) && (card_zone.owner == owner)){
+        if ((card_zone.location == Zone::LIBRARY) && (card_zone.owner == owner)) {
+            contents.push_back(card);
+        }
+    }
+    return contents;
+}
+
+std::vector<Entity> Orderer::get_hand(Zone::Ownership owner) {
+    std::vector<Entity> contents;
+
+    for (auto &&card : mEntities) {
+        auto &card_zone = global_coordinator.GetComponent<Zone>(card);
+        if ((card_zone.location == Zone::HAND) && (card_zone.owner == owner)) {
             contents.push_back(card);
         }
     }
@@ -61,12 +76,11 @@ void Orderer::shuffle_library(Zone::Ownership owner) {
     std::shuffle(placements.begin(), placements.end(), cur_game.gen);
 
     size_t i = 0;
-    for (auto &&card : contents){
+    for (auto &&card : contents) {
         auto &card_zone = global_coordinator.GetComponent<Zone>(card);
         card_zone.distance_from_top = placements[i];
         i++;
     }
-    
 }
 
 void Orderer::generate_libraries(const Deck &deck_a, const Deck &deck_b) {
@@ -95,4 +109,32 @@ void Orderer::generate_libraries(const Deck &deck_a, const Deck &deck_b) {
 
     shuffle_library(Zone::PLAYER_A);
     shuffle_library(Zone::PLAYER_B);
+}
+
+void Orderer::draw_hands() {
+    draw(Zone::PLAYER_A, 7);
+    draw(Zone::PLAYER_B, 7);
+}
+
+// actual effect here, not considering triggers or replacement
+void Orderer::draw(Zone::Ownership player, size_t ct) {
+    std::vector<Entity> cards_to_draw;
+    for (auto &&card : mEntities) {
+        auto &card_zone = global_coordinator.GetComponent<Zone>(card);
+        if (card_zone.location == Zone::LIBRARY && card_zone.owner == player) {
+            if (card_zone.distance_from_top < ct) {
+                cards_to_draw.push_back(card);
+            } else {
+                card_zone.distance_from_top -= ct;
+            }
+        }
+    }
+    for (auto &&card : cards_to_draw) {
+        auto &card_zone = global_coordinator.GetComponent<Zone>(card);
+        card_zone.location = Zone::HAND;
+    }
+    if (cards_to_draw.size() < ct) {
+        // TODO IMPLEMENT LOSTING VIA DECKING
+        fatal_error("PLAYER DECKED\n");
+    }
 }

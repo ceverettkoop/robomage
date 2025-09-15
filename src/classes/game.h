@@ -38,6 +38,7 @@ struct Game {
         Entity player_a_entity;
         Entity player_b_entity;
         std::mt19937 gen;
+        bool ended = false;
 
         void generate_players(const Deck& deck_a, const Deck& deck_b);
 
