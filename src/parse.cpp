@@ -8,7 +8,7 @@
 #include <cassert>
 
 #include "classes/colors.h"
-#include "classes/types.h"
+#include "components/types.h"
 #include "components/ability.h"
 #include "components/carddata.h"
 #include "ecs/coordinator.h"

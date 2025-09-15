@@ -4,7 +4,7 @@
 #include <string>
 #include <set>
 #include <cstdint>
-#include "../classes/types.h"
+#include "../components/types.h"
 #include "../classes/colors.h"
 #include "../ecs/entity.h"
 
