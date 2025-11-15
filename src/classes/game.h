@@ -27,18 +27,20 @@ enum Step {
 
 struct Game {
         Game(){};
-        Game(unsigned int _seed){
+        Game(size_t _seed){
             seed = _seed;
             gen = std::mt19937(seed);
         };
-        unsigned int seed;
-        uint32_t timestamp = 0;
-        uint16_t turn = 0;
+        size_t seed;
+        size_t timestamp = 0;
+        size_t turn = 0;
         Step cur_step = UNTAP;
         Entity player_a_entity;
         Entity player_b_entity;
         std::mt19937 gen;
         bool ended = false;
+        bool player_a_active = true;
+        bool player_a_turn = true;
 
         void generate_players(const Deck& deck_a, const Deck& deck_b);
 

@@ -12,6 +12,7 @@
 #include "components/player.h"
 #include "components/zone.h"
 #include "systems/orderer.h"
+#include "systems/state_manager.h"
 #include "debug.h"
 
 #ifndef VERSION_NUMBER
@@ -50,7 +51,9 @@ int main(int argc, char const *argv[]) {
     global_coordinator.RegisterComponent<Zone>();
     
     auto orderer = global_coordinator.RegisterSystem<Orderer>();
+    auto state_manager = global_coordinator.RegisterSystem<StateManager>();
     Orderer::init(); //system signature is set here
+    StateManager::init();
 
     //one time setup for this game
     Game cur_game(seed);
@@ -65,8 +68,10 @@ int main(int argc, char const *argv[]) {
     //PLAYER A IS ALWAYS ON THE PLAY IN THIS WORLD
 
     //game loop
-    while(cur_game.ended() != true){
-        
+    while(cur_game.ended != true){
+        print_step(cur_game);  
+        state_manager->state_based_effects();
+
 
     }
 
