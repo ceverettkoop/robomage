@@ -1,19 +1,22 @@
-#include <cstdlib>
-#include <cstdio>
-#include <unistd.h>
 #include <time.h>
+#include <unistd.h>
+
+#include <cstdio>
+#include <cstdlib>
+
 #include "card_db.h"
-#include "classes/game.h"
 #include "classes/deck.h"
-#include "ecs/coordinator.h"
-#include "components/damage.h"
+#include "classes/game.h"
 #include "components/ability.h"
 #include "components/carddata.h"
+#include "components/damage.h"
+#include "components/effect.h"
 #include "components/player.h"
 #include "components/zone.h"
+#include "debug.h"
+#include "ecs/coordinator.h"
 #include "systems/orderer.h"
 #include "systems/state_manager.h"
-#include "debug.h"
 
 #ifndef VERSION_NUMBER
 #define VERSION_NUMBER "0.001"
@@ -49,43 +52,51 @@ int main(int argc, char const *argv[]) {
     global_coordinator.RegisterComponent<Damage>();
     global_coordinator.RegisterComponent<Player>();
     global_coordinator.RegisterComponent<Zone>();
-    
+    global_coordinator.RegisterComponent<Effect>();
+
     auto orderer = global_coordinator.RegisterSystem<Orderer>();
     auto state_manager = global_coordinator.RegisterSystem<StateManager>();
-    Orderer::init(); //system signature is set here
+    Orderer::init();  // system signature is set here
     StateManager::init();
 
-    //one time setup for this game
+    // one time setup for this game
     Game cur_game(seed);
-    cur_game.generate_players(DEFAULT_DECK_ONE,DEFAULT_DECK_TWO);
+    cur_game.generate_players(DEFAULT_DECK_ONE, DEFAULT_DECK_TWO);
     orderer->generate_libraries(DEFAULT_DECK_ONE, DEFAULT_DECK_TWO);
-    
-    //TODO MULLIGANS, COMPANION ETC
+
+    // TODO MULLIGANS, COMPANION ETC
     orderer->draw_hands();
     print_hand(orderer, Zone::PLAYER_A);
     print_hand(orderer, Zone::PLAYER_B);
 
-    //PLAYER A IS ALWAYS ON THE PLAY IN THIS WORLD
+    // PLAYER A IS ALWAYS ON THE PLAY IN THIS WORLD
 
-    //game loop
-    while(cur_game.ended != true){
-        print_step(cur_game);  
+    // game loop
+    while (cur_game.ended != true) {
+        print_step(cur_game);
         state_manager->state_based_effects();
+        // if priority was passed by both players and stack is clear; advance to next step
 
+        if (cur_game.advance_step()) {
+            continue;
+        }
+        print_stack(cur_game);
+        print_legal_actions(cur_game);
 
+        // user input here
     }
 
-    //if something resolves bc of priority passing, resolve that now    
+    // if something resolves bc of priority passing, resolve that now
 
-    //state based effects / triggers
+    // state based effects / triggers
 
-    //active player can take action or pass priority (pass means skip to end)
+    // active player can take action or pass priority (pass means skip to end)
 
-    //special game actions resolve immediately
+    // special game actions resolve immediately
 
-    //state based effects
+    // state based effects
 
-    //repeat
+    // repeat
 
     return 0;
 }
