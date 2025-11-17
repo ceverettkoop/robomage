@@ -7,7 +7,8 @@
 
 void print_library(std::shared_ptr<Orderer> orderer, Zone::Ownership owner);
 void print_hand(std::shared_ptr<Orderer> orderer, Zone::Ownership owner);
-void print_step(Game cur_game);
+void print_stack(std::shared_ptr<Orderer> orderer);
+void print_step(const Game& cur_game);
 std::string player_name(Zone::Ownership owner);
 
 

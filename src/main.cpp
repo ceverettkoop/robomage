@@ -56,8 +56,10 @@ int main(int argc, char const *argv[]) {
 
     auto orderer = global_coordinator.RegisterSystem<Orderer>();
     auto state_manager = global_coordinator.RegisterSystem<StateManager>();
+    auto stack_manager = global_coordinator.RegisterSystem<StackManager>();
     Orderer::init();  // system signature is set here
     StateManager::init();
+    StackManager::init();
 
     // one time setup for this game
     Game cur_game(seed);
@@ -76,11 +78,10 @@ int main(int argc, char const *argv[]) {
         print_step(cur_game);
         state_manager->state_based_effects();
         // if priority was passed by both players and stack is clear; advance to next step
-
         if (cur_game.advance_step()) {
             continue;
         }
-        print_stack(cur_game);
+        print_stack(orderer);
         print_legal_actions(cur_game);
 
         // user input here

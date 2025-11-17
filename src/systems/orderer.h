@@ -20,6 +20,8 @@ public:
     void generate_libraries(const Deck &deck_a, const Deck &deck_b);
     void draw_hands();
     void draw(Zone::Ownership player, size_t ct);
+    std::vector<Entity> get_stack();
+
 };
 
 #endif /* ORDERER_H */

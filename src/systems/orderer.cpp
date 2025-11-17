@@ -42,8 +42,7 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     if (on_bottom) target_zone.distance_from_top = back + 1;
 }
 
-
-//TODO MERGE THESE INTO A GENERIC GETTER
+// TODO MERGE THESE INTO A GENERIC GETTER
 std::vector<Entity> Orderer::get_library_contents(Zone::Ownership owner) {
     std::vector<Entity> contents;
 
@@ -137,4 +136,21 @@ void Orderer::draw(Zone::Ownership player, size_t ct) {
         // TODO IMPLEMENT LOSTING VIA DECKING
         fatal_error("PLAYER DECKED\n");
     }
+}
+
+//ordered stack, top first
+std::vector<Entity> Orderer::get_stack() {
+    std::vector<Entity> on_stack;
+    for (auto &&card : mEntities) {
+        auto &card_zone = global_coordinator.GetComponent<Zone>(card);
+        if (card_zone.location == Zone::STACK) {
+            on_stack.push_back(card);
+        }
+    }
+    std::sort(on_stack.begin(), on_stack.end(), [](Entity const &a, Entity const &b) {
+        return global_coordinator.GetComponent<Zone>(a).distance_from_top <
+               global_coordinator.GetComponent<Zone>(a).distance_from_top;
+    });
+
+    return on_stack;
 }

@@ -49,7 +49,7 @@ const char *step_to_string(Step in_step) {
     }
 }
 
-void print_step(Game cur_game) {
+void print_step(const Game& cur_game) {
     printf("Active player is %s\n", cur_game.player_a_active ? "Player A" : "Player B");
     printf("Current step is %s, turn %zu, player %s's turn\n", step_to_string(cur_game.cur_step), cur_game.turn,
         cur_game.player_a_turn ? "A" : "B");
@@ -82,6 +82,14 @@ void print_hand(std::shared_ptr<Orderer> orderer, Zone::Ownership owner) {
         auto &data = global_coordinator.GetComponent<CardData>(card);
         printf("%s\n", data.name.c_str());
     }
+}
+
+void print_stack(std::shared_ptr<Orderer> orderer) {
+    auto stack = orderer->get_stack();
+    for (size_t i = 0; i < stack.size(); i++){
+        printf("%zu: %s", i, "TODO MAKE THIS A DESCRIPTION OF THE ABILITY");
+    }
+    return;
 }
 
 std::string player_name(Zone::Ownership owner) {
