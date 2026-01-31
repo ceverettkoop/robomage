@@ -17,6 +17,7 @@
 #include "ecs/coordinator.h"
 #include "systems/orderer.h"
 #include "systems/state_manager.h"
+#include "systems/stack_manager.h"
 
 #ifndef VERSION_NUMBER
 #define VERSION_NUMBER "0.001"
@@ -77,12 +78,15 @@ int main(int argc, char const *argv[]) {
     while (cur_game.ended != true) {
         print_step(cur_game);
         state_manager->state_based_effects();
+
+        //TODO IMPLEMENT THIS LOGIC
         // if priority was passed by both players and stack is clear; advance to next step
-        if (cur_game.advance_step()) {
+        if (cur_game.advance_step(stack_manager)) {
             continue;
         }
         print_stack(orderer);
         print_legal_actions(cur_game);
+        //END TODO
 
         // user input here
     }

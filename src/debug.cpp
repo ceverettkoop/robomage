@@ -98,3 +98,17 @@ std::string player_name(Zone::Ownership owner) {
     else
         return "Player B";
 }
+
+void print_legal_actions(const Game& cur_game) {
+    Zone::Ownership priority_player = cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
+    printf("\n%s has priority. Legal actions:\n", player_name(priority_player).c_str());
+
+    // Pass priority is always available
+    printf("  0: Pass priority\n");
+
+    // TODO: Add more legal actions based on game state:
+    // - Cast spells from hand (if timing allows)
+    // - Activate abilities (if timing allows)
+    // - Play land (if main phase, player's turn, haven't played land yet)
+    // - Special turn actions (declare attackers, blockers, etc.)
+}
