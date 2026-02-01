@@ -21,7 +21,7 @@ static std::string value_from_script(std::string script, std::string key);
 static std::vector<std::string> multi_values_from_script(std::string script, std::string key);
 static std::multiset<Colors> parse_mana_cost(std::string value);
 static std::set<Type> parse_types(std::string value);
-static std::set<Entity> parse_abilities(std::vector<std::string> lines);
+static std::set<Entity> parse_abilities(std::vector<std::string> lines, const std::set<Type>& types);
 static uint32_t parse_power(std::string value);
 static uint32_t parse_toughness(std::string value);
 
@@ -67,7 +67,7 @@ Entity parse_card_script(std::string path) {
     card.power = parse_power(value_from_script(script_data, "PT"));
     card.toughness = parse_toughness(value_from_script(script_data, "PT"));
     // register abilities associated with this card as entities unique to this card
-    card.abilities = parse_abilities(multi_values_from_script(script_data, "A"));
+    card.abilities = parse_abilities(multi_values_from_script(script_data, "A"), card.types);
 
     // no error handling here
     global_coordinator.AddComponent(id, card);
@@ -186,7 +186,7 @@ static uint32_t parse_toughness(std::string value) {
 }
 
 // fed each ability line
-static std::set<Entity> parse_abilities(std::vector<std::string> lines) {
+static std::set<Entity> parse_abilities(std::vector<std::string> lines, const std::set<Type>& types) {
     size_t pos = 0;
     std::set<Entity> ret_val;
     for (auto &&line : lines) {
@@ -198,16 +198,114 @@ static std::set<Entity> parse_abilities(std::vector<std::string> lines) {
         // confirmed spell ability, future switch goes here
         ability.ability_type = Ability::AbilityType::SPELL;
         pos += 4;
-        std::string category = line.substr(pos, line.find(" ", pos));
+        // Check if we're past the end of the string
+        if (pos >= line.length()) continue;
+
+        // Extract category (before first space or pipe)
+        size_t category_end = line.find_first_of(" |", pos);
+        if (category_end == std::string::npos) category_end = line.length();
+
+        // Check if category_end is valid
+        if (category_end <= pos) continue;
+
+        std::string category = line.substr(pos, category_end - pos);
+
         if (category == "DealDamage") {
-            auto id = global_coordinator.CreateEntity();
             ability.category = category;
-            // spell ability source is card itself?
+
+            // Parse pipe-delimited parameters
+            size_t param_pos = line.find("|", pos);
+            while (param_pos != std::string::npos) {
+                param_pos++;  // Skip '|'
+
+                // Skip whitespace
+                while (param_pos < line.length() && line[param_pos] == ' ') param_pos++;
+
+                // Find end of this parameter (next '|' or end of line)
+                size_t param_end = line.find("|", param_pos);
+                if (param_end == std::string::npos) param_end = line.length();
+
+                std::string param = line.substr(param_pos, param_end - param_pos);
+
+                // Parse key-value pair (format: "Key$ Value")
+                size_t dollar_pos = param.find("$");
+                if (dollar_pos != std::string::npos) {
+                    std::string key = param.substr(0, dollar_pos);
+                    std::string value = param.substr(dollar_pos + 1);
+
+                    // Trim whitespace from both
+                    size_t key_start = key.find_first_not_of(" ");
+                    size_t key_end = key.find_last_not_of(" ");
+                    if (key_start != std::string::npos) {
+                        key = key.substr(key_start, key_end - key_start + 1);
+                    }
+
+                    size_t value_start = value.find_first_not_of(" ");
+                    size_t value_end = value.find_last_not_of(" ");
+                    if (value_start != std::string::npos) {
+                        value = value.substr(value_start, value_end - value_start + 1);
+                    }
+
+                    // Extract relevant parameters
+                    if (key == "NumDmg") {
+                        ability.amount = static_cast<size_t>(std::stoi(value));
+                    }
+                    // ValidTgts handled during targeting, not during parse
+                }
+
+                param_pos = param_end;
+            }
+
+            auto id = global_coordinator.CreateEntity();
             ability.source = id;
             global_coordinator.AddComponent(id, ability);
             ret_val.emplace(id);
         }
     }
+
     // basic lands having mana abilities is by virtue of their type
+    // Check if this is a basic land and add mana ability
+    bool is_basic = false;
+    bool is_land = false;
+    std::string land_subtype;
+
+    for (auto& type : types) {
+        if (type.kind == SUPERTYPE && type.name == "Basic") {
+            is_basic = true;
+        }
+        if (type.kind == TYPE && type.name == "Land") {
+            is_land = true;
+        }
+        if (type.kind == SUBTYPE && (type.name == "Mountain" || type.name == "Forest" ||
+                                     type.name == "Plains" || type.name == "Island" ||
+                                     type.name == "Swamp")) {
+            land_subtype = type.name;
+        }
+    }
+
+    if (is_basic && is_land && !land_subtype.empty()) {
+        Ability mana_ability;
+        mana_ability.ability_type = Ability::ACTIVATED;
+        mana_ability.category = "AddMana";
+
+        // Determine mana color from subtype (using amount field to store color)
+        if (land_subtype == "Mountain") {
+            mana_ability.amount = static_cast<size_t>(RED);
+        } else if (land_subtype == "Forest") {
+            mana_ability.amount = static_cast<size_t>(GREEN);
+        } else if (land_subtype == "Plains") {
+            mana_ability.amount = static_cast<size_t>(WHITE);
+        } else if (land_subtype == "Island") {
+            mana_ability.amount = static_cast<size_t>(BLUE);
+        } else if (land_subtype == "Swamp") {
+            mana_ability.amount = static_cast<size_t>(BLACK);
+        }
+
+        auto ability_id = global_coordinator.CreateEntity();
+        mana_ability.source = ability_id;
+        global_coordinator.AddComponent(ability_id, mana_ability);
+        ret_val.emplace(ability_id);
+    }
+
     return ret_val;
 }

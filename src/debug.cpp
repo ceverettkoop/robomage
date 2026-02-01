@@ -1,8 +1,12 @@
 #include "debug.h"
 
 #include "components/carddata.h"
+#include "components/damage.h"
+#include "components/permanent.h"
+#include "components/player.h"
 #include "ecs/coordinator.h"
 #include "error.h"
+#include "mana_system.h"
 #include "systems/orderer.h"
 #include "systems/state_manager.h"
 
@@ -51,10 +55,18 @@ const char *step_to_string(Step in_step) {
 }
 
 void print_step(const Game& cur_game) {
-    printf("Active player is %s\n", cur_game.player_a_active ? "Player A" : "Player B");
-    printf("Current step is %s, turn %zu, player %s's turn\n", step_to_string(cur_game.cur_step), cur_game.turn,
-        cur_game.player_a_turn ? "A" : "B");
-};
+    Zone::Ownership active_player = cur_game.player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B;
+
+    // Get life totals
+    auto& player_a = global_coordinator.GetComponent<Player>(cur_game.player_a_entity);
+    auto& player_b = global_coordinator.GetComponent<Player>(cur_game.player_b_entity);
+
+    printf("\n=== Turn %zu - %s's %s ===\n",
+           cur_game.turn,
+           player_name(active_player).c_str(),
+           step_to_string(cur_game.cur_step));
+    printf("Life: Player A=%d, Player B=%d\n", player_a.life_total, player_b.life_total);
+}
 
 void print_library(std::shared_ptr<Orderer> orderer, Zone::Ownership owner) {
     auto library = orderer->get_library_contents(owner);
@@ -100,11 +112,12 @@ std::string player_name(Zone::Ownership owner) {
         return "Player B";
 }
 
-void print_legal_actions(const Game& cur_game, std::shared_ptr<StateManager> state_manager) {
+void print_legal_actions(const Game& cur_game, std::shared_ptr<StateManager> state_manager,
+                         std::shared_ptr<Orderer> orderer, std::shared_ptr<StackManager> stack_manager) {
     Zone::Ownership priority_player = cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
     printf("\n%s has priority. Legal actions:\n", player_name(priority_player).c_str());
 
-    auto legal_actions = state_manager->determine_legal_actions(cur_game);
+    auto legal_actions = state_manager->determine_legal_actions(cur_game, orderer, stack_manager);
 
     for (size_t i = 0; i < legal_actions.size(); i++) {
         printf("  %zu: %s\n", i, legal_actions[i].description.c_str());
@@ -139,5 +152,84 @@ void print_mandatory_choice_description(const Game& cur_game) {
         case NONE:
             // Should not reach here
             break;
+    }
+}
+
+void print_battlefield(std::shared_ptr<Orderer> orderer) {
+    printf("\n--- BATTLEFIELD ---\n");
+    for (auto owner : {Zone::PLAYER_A, Zone::PLAYER_B}) {
+        printf("%s:\n", player_name(owner).c_str());
+
+        bool found_any = false;
+        for (auto entity : orderer->mEntities) {
+            if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
+            auto& zone = global_coordinator.GetComponent<Zone>(entity);
+
+            if (zone.location == Zone::BATTLEFIELD && zone.owner == owner) {
+                found_any = true;
+                auto& card_data = global_coordinator.GetComponent<CardData>(entity);
+                auto& permanent = global_coordinator.GetComponent<Permanent>(entity);
+
+                printf("  %s", card_data.name.c_str());
+                if (permanent.is_tapped) printf(" (TAPPED)");
+                if (permanent.has_summoning_sickness) printf(" (SICK)");
+
+                // Print P/T for creatures
+                if (card_data.power > 0 || card_data.toughness > 0) {
+                    printf(" [%d/%d]", card_data.power, card_data.toughness);
+                    // Print damage if any
+                    if (global_coordinator.entity_has_component<Damage>(entity)) {
+                        auto& damage = global_coordinator.GetComponent<Damage>(entity);
+                        if (damage.damage_counters > 0) {
+                            printf(" (%zu damage)", damage.damage_counters);
+                        }
+                    }
+                }
+                printf("\n");
+            }
+        }
+        if (!found_any) {
+            printf("  (no permanents)\n");
+        }
+    }
+}
+
+void print_mana_pools() {
+    printf("\n--- MANA POOLS ---\n");
+    for (auto owner : {Zone::PLAYER_A, Zone::PLAYER_B}) {
+        Entity player_entity = get_player_entity(owner);
+        auto& player = global_coordinator.GetComponent<Player>(player_entity);
+
+        printf("%s: ", player_name(owner).c_str());
+        if (player.mana.empty()) {
+            printf("(empty)");
+        } else {
+            for (auto color : player.mana) {
+                switch (color) {
+                    case WHITE:
+                        printf("{W} ");
+                        break;
+                    case BLUE:
+                        printf("{U} ");
+                        break;
+                    case BLACK:
+                        printf("{B} ");
+                        break;
+                    case RED:
+                        printf("{R} ");
+                        break;
+                    case GREEN:
+                        printf("{G} ");
+                        break;
+                    case COLORLESS:
+                        printf("{C} ");
+                        break;
+                    case GENERIC:
+                        printf("{1} ");
+                        break;
+                }
+            }
+        }
+        printf("\n");
     }
 }

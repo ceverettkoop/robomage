@@ -1,13 +1,30 @@
 #include "ability.h"
+
+#include "../ecs/coordinator.h"
 #include "damage.h"
+#include "player.h"
+
 #include <cstdio>
 
+extern Coordinator global_coordinator;
+
 void Ability::resolve() {
-    // TODO: Implement ability resolution based on category and type
     printf("Resolving ability (category: %s, amount: %zu)\n", category.c_str(), amount);
 
-    // Example: if category is "damage", deal damage to target
-    if (category == "damage" && target != 0) {
-        deal_damage(source, target, amount);
+    if (category == "DealDamage" && target != 0) {
+        // Deal damage to target
+        if (global_coordinator.entity_has_component<Player>(target)) {
+            // Target is a player
+            auto& player = global_coordinator.GetComponent<Player>(target);
+            player.life_total -= static_cast<int32_t>(amount);
+            printf("Dealt %zu damage to player (now at %d life)\n", amount, player.life_total);
+        } else {
+            // Target is a creature/permanent
+            if (deal_damage(source, target, amount)) {
+                printf("Dealt %zu damage to creature\n", amount);
+            } else {
+                printf("Failed to deal damage to target\n");
+            }
+        }
     }
 }

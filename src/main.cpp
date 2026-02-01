@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <cstdlib>
 
+#include "action_processor.h"
 #include "card_db.h"
 #include "classes/deck.h"
 #include "classes/game.h"
@@ -12,10 +13,12 @@
 #include "components/carddata.h"
 #include "components/damage.h"
 #include "components/effect.h"
+#include "components/permanent.h"
 #include "components/player.h"
 #include "components/zone.h"
 #include "debug.h"
 #include "ecs/coordinator.h"
+#include "input_logger.h"
 #include "systems/orderer.h"
 #include "systems/stack_manager.h"
 #include "systems/state_manager.h"
@@ -42,17 +45,51 @@ int main(int argc, char const *argv[]) {
     RESOURCE_DIR = getcwd(buf, FILENAME_MAX);
     RESOURCE_DIR += "/resources";
 
-    DEFAULT_DECK_ONE = Deck(RESOURCE_DIR + "/decks/deck_one.dk");
-    DEFAULT_DECK_TWO = Deck(RESOURCE_DIR + "/decks/deck_two.dk");
+    // Parse command-line arguments
+    std::string replay_file_path;
+    bool replay_mode = false;
+    for (int i = 1; i < argc; i++) {
+        if (std::string(argv[i]) == "--replay" && i + 1 < argc) {
+            replay_mode = true;
+            replay_file_path = argv[i + 1];
+            i++;
+        } else if (std::string(argv[i]) == "--help" || std::string(argv[i]) == "-h") {
+            printf("robomage %s\n", VERSION_NUMBER);
+            printf("Usage: %s [options]\n", argv[0]);
+            printf("Options:\n");
+            printf("  --replay <logfile>  Replay a previously logged game\n");
+            printf("  --help, -h          Show this help message\n");
+            return 0;
+        }
+    }
+
+    // Use minimal test deck for both players
+    DEFAULT_DECK_ONE = Deck(RESOURCE_DIR + "/decks/test_minimal.dk");
+    DEFAULT_DECK_TWO = Deck(RESOURCE_DIR + "/decks/test_minimal.dk");
 
     printf("robomage %s\n", VERSION_NUMBER);
-    unsigned int seed = static_cast<unsigned int>(time(nullptr));
+
+    // Setup seed and input logging
+    unsigned int seed;
+    if (replay_mode) {
+        InputLogger::instance().init_replay(replay_file_path);
+        seed = InputLogger::instance().get_replay_seed();
+    } else {
+        seed = static_cast<unsigned int>(time(nullptr));
+        // Create logs directory
+        std::string mkdir_cmd = "mkdir -p " + RESOURCE_DIR + "/logs";
+        int result = system(mkdir_cmd.c_str());
+        (void)result;  // Ignore return value
+        InputLogger::instance().init_logging(seed, RESOURCE_DIR);
+    }
     std::srand(seed);
+    printf("Using seed: %u\n", seed);
 
     global_coordinator.Init();
     global_coordinator.RegisterComponent<Ability>();
     global_coordinator.RegisterComponent<CardData>();
     global_coordinator.RegisterComponent<Damage>();
+    global_coordinator.RegisterComponent<Permanent>();
     global_coordinator.RegisterComponent<Player>();
     global_coordinator.RegisterComponent<Zone>();
     global_coordinator.RegisterComponent<Effect>();
@@ -88,11 +125,12 @@ int main(int argc, char const *argv[]) {
             choice = -1;
             while (choice == -1) {
                 print_mandatory_choice_description(cur_game);
-                int choice = get_int_input();
+                choice = InputLogger::instance().get_logged_input();
                 if(choice == -1) printf("Invalid input\n");
             }
-            proc_mandatory_choice(choice);
-            continue;
+            // proc_mandatory_choice(choice);  // TODO: Implement in later phase
+            printf("ERROR: proc_mandatory_choice not yet implemented\n");
+            break;
         }
         // will return true if priority has been passed and there is nothing on stack
         if (cur_game.advance_step(stack_manager)) {
@@ -100,9 +138,18 @@ int main(int argc, char const *argv[]) {
         }
         // prompt for action
         print_stack(orderer);
-        print_legal_actions(cur_game, state_manager);
-        choice = get_int_input();
-        proc_user_action(choice);
+        print_battlefield(orderer);
+        print_mana_pools();
+        print_legal_actions(cur_game, state_manager, orderer, stack_manager);
+
+        auto legal_actions = state_manager->determine_legal_actions(cur_game, orderer, stack_manager);
+        choice = InputLogger::instance().get_logged_input();
+
+        if (choice >= 0 && choice < static_cast<int>(legal_actions.size())) {
+            process_action(legal_actions[static_cast<size_t>(choice)], cur_game, orderer);
+        } else {
+            printf("Invalid action\n");
+        }
     }
 
     // repeat

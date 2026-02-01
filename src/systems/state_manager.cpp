@@ -1,11 +1,18 @@
 #include "state_manager.h"
 
-#include "../components/effect.h"
-#include "../components/zone.h"
+#include "../components/ability.h"
 #include "../components/carddata.h"
+#include "../components/damage.h"
+#include "../components/effect.h"
+#include "../components/permanent.h"
+#include "../components/player.h"
+#include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../error.h"
 #include "../classes/game.h"
+#include "../mana_system.h"
+#include "../systems/orderer.h"
+#include "../systems/stack_manager.h"
 
 void StateManager::init() {
     Signature signature;
@@ -16,6 +23,64 @@ void StateManager::init() {
 
 //layers / timestamps would be implemented here; for now order is arbitrary
 void StateManager::state_based_effects(Game& game) {
+    // Reset pending choice
+    game.pending_choice = NONE;
+
+    // Check for player death (0 or less life) - this ends the game immediately
+    auto& player_a = global_coordinator.GetComponent<Player>(game.player_a_entity);
+    auto& player_b = global_coordinator.GetComponent<Player>(game.player_b_entity);
+
+    if (player_a.life_total <= 0) {
+        printf("\nPlayer A has %d life - Player B wins!\n", player_a.life_total);
+        game.ended = true;
+        return;
+    }
+    if (player_b.life_total <= 0) {
+        printf("\nPlayer B has %d life - Player A wins!\n", player_b.life_total);
+        game.ended = true;
+        return;
+    }
+
+    // Check for lethal damage on creatures
+    std::vector<Entity> creatures_to_destroy;
+    for (auto entity : mEntities) {
+        auto& zone = global_coordinator.GetComponent<Zone>(entity);
+        if (zone.location != Zone::BATTLEFIELD) continue;
+
+        if (!global_coordinator.entity_has_component<CardData>(entity)) continue;
+        auto& card_data = global_coordinator.GetComponent<CardData>(entity);
+
+        // Check if it's a creature
+        bool is_creature = false;
+        for (auto& type : card_data.types) {
+            if (type.kind == TYPE && type.name == "Creature") {
+                is_creature = true;
+                break;
+            }
+        }
+
+        if (is_creature && global_coordinator.entity_has_component<Damage>(entity)) {
+            auto& damage = global_coordinator.GetComponent<Damage>(entity);
+            if (damage.damage_counters >= card_data.toughness) {
+                creatures_to_destroy.push_back(entity);
+            }
+        }
+    }
+
+    // Move destroyed creatures to graveyard
+    for (auto creature : creatures_to_destroy) {
+        auto& zone = global_coordinator.GetComponent<Zone>(creature);
+        auto& card_data = global_coordinator.GetComponent<CardData>(creature);
+        printf("%s is destroyed (lethal damage)\n", card_data.name.c_str());
+
+        zone.location = Zone::GRAVEYARD;
+
+        // Remove Permanent component
+        if (global_coordinator.entity_has_component<Permanent>(creature)) {
+            global_coordinator.RemoveComponent<Permanent>(creature);
+        }
+    }
+
     // Check for mandatory choices based on game step
     // These must be resolved before priority-based actions can occur
 
@@ -45,9 +110,6 @@ void StateManager::state_based_effects(Game& game) {
     //     game.pending_choice = CHOOSE_ENTITY;
     //     return;
 
-    // No mandatory choice pending
-    game.pending_choice = NONE;
-
     // Process continuous effects
     for (auto &&entity : mEntities) {
         // if we are dealing with an effect
@@ -57,27 +119,131 @@ void StateManager::state_based_effects(Game& game) {
     }
 }
 
-// Placeholder implementation - returns minimal legal actions
-// TODO: Implement full legal action determination (see LEGAL_ACTIONS_ROADMAP.md)
-std::vector<LegalAction> StateManager::determine_legal_actions(const Game& game) {
+std::vector<LegalAction> StateManager::determine_legal_actions(const Game& game,
+                                                               std::shared_ptr<Orderer> orderer,
+                                                               std::shared_ptr<StackManager> stack_manager) {
     std::vector<LegalAction> actions;
+
+    // Determine whose turn/priority it is
+    Zone::Ownership priority_player = game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
+    Entity priority_player_entity = get_player_entity(priority_player);
 
     // Pass priority is always legal
     actions.push_back(LegalAction(PASS_PRIORITY, "Pass priority"));
 
-    // TODO: Check for castable spells in hand
-    // - Verify timing restrictions (main phase, stack empty for sorceries)
-    // - Check mana availability
-    // - Check if player has priority
+    // Check for special action: play land
+    if ((game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
+        game.player_a_turn == game.player_a_has_priority &&  // It's their turn
+        global_coordinator.entity_has_component<Player>(priority_player_entity)) {
 
-    // TODO: Check for activatable abilities
-    // - Check activation costs (mana, tap, sacrifice, etc.)
-    // - Verify timing restrictions
-    // - Check if abilities are on battlefield/in appropriate zone
+        auto& player = global_coordinator.GetComponent<Player>(priority_player_entity);
 
-    // TODO: Check for special actions
-    // - Play land (main phase, player's turn, haven't played land this turn, stack empty)
-    // - Turn face-up morph creatures
+        if (player.lands_played_this_turn == 0) {
+            // Check hand for lands
+            auto hand = orderer->get_hand(priority_player);
+            for (auto card_entity : hand) {
+                auto& card_data = global_coordinator.GetComponent<CardData>(card_entity);
+                bool is_land = false;
+                for (auto& type : card_data.types) {
+                    if (type.kind == TYPE && type.name == "Land") {
+                        is_land = true;
+                        break;
+                    }
+                }
+                if (is_land) {
+                    std::string desc = "Play " + card_data.name;
+                    actions.push_back(LegalAction(SPECIAL_ACTION, card_entity, desc));
+                }
+            }
+        }
+    }
+
+    // Check for activated abilities (mana abilities)
+    // Get all permanents controlled by priority player
+    for (auto entity : mEntities) {
+        if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
+
+        auto& zone = global_coordinator.GetComponent<Zone>(entity);
+        if (zone.location != Zone::BATTLEFIELD) continue;
+
+        auto& permanent = global_coordinator.GetComponent<Permanent>(entity);
+        if (permanent.controller != priority_player) continue;
+        if (permanent.is_tapped) continue;  // Can't tap already-tapped permanent
+
+        // Check for mana abilities
+        if (global_coordinator.entity_has_component<CardData>(entity)) {
+            auto& card_data = global_coordinator.GetComponent<CardData>(entity);
+            for (auto ability_entity : card_data.abilities) {
+                auto& ability = global_coordinator.GetComponent<Ability>(ability_entity);
+                if (ability.category == "AddMana" && ability.ability_type == Ability::ACTIVATED) {
+                    Colors mana_color = static_cast<Colors>(ability.amount);
+                    std::string mana_symbol;
+                    switch (mana_color) {
+                        case WHITE:
+                            mana_symbol = "W";
+                            break;
+                        case BLUE:
+                            mana_symbol = "U";
+                            break;
+                        case BLACK:
+                            mana_symbol = "B";
+                            break;
+                        case RED:
+                            mana_symbol = "R";
+                            break;
+                        case GREEN:
+                            mana_symbol = "G";
+                            break;
+                        case COLORLESS:
+                            mana_symbol = "C";
+                            break;
+                        default:
+                            mana_symbol = "?";
+                            break;
+                    }
+                    std::string desc = "Tap " + card_data.name + " for {" + mana_symbol + "}";
+                    actions.push_back(LegalAction(ACTIVATE_ABILITY, entity, ability_entity, desc));
+                }
+            }
+        }
+    }
+
+    // Check for castable spells
+    bool stack_empty = stack_manager->is_empty();
+
+    auto hand = orderer->get_hand(priority_player);
+    for (auto card_entity : hand) {
+        auto& card_data = global_coordinator.GetComponent<CardData>(card_entity);
+
+        // Check if it's a spell (not a land)
+        bool is_instant = false, is_sorcery = false, is_creature = false;
+        for (auto& type : card_data.types) {
+            if (type.kind == TYPE) {
+                if (type.name == "Instant") {
+                    is_instant = true;
+                } else if (type.name == "Sorcery") {
+                    is_sorcery = true;
+                } else if (type.name == "Creature") {
+                    is_creature = true;
+                }
+            }
+        }
+
+        // Timing restrictions
+        bool can_cast_now = false;
+        if (is_instant) {
+            can_cast_now = true;  // Can cast anytime you have priority
+        } else if (is_sorcery || is_creature) {
+            // Sorcery speed: main phase, your turn, stack empty
+            can_cast_now = (game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
+                           (game.player_a_turn == game.player_a_has_priority) && stack_empty;
+        }
+
+        if (can_cast_now && can_afford(priority_player, card_data.mana_cost)) {
+            std::string desc = "Cast " + card_data.name;
+            actions.push_back(LegalAction(CAST_SPELL, card_entity, desc));
+        }
+    }
 
     return actions;
 }
