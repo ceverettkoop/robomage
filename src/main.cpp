@@ -81,12 +81,16 @@ int main(int argc, char const *argv[]) {
         print_step(cur_game);
         state_manager->state_based_effects(cur_game);
         // mandatory choices
-        // e.g. declare target, declare attackers or declare blockers - discard at cleanup - legend rule; choice at resolution; declare
-        // target
+        // e.g. declare target, declare attackers or declare blockers - discard at cleanup - legend rule; choice at
+        // resolution; declare target
         if (cur_game.is_mandatory_choice_pending()) {
             // describe which player has to make a choice and how to input it
-            print_mandatory_choice_description(cur_game);
-            int choice = get_int_input();
+            choice = -1;
+            while (choice == -1) {
+                print_mandatory_choice_description(cur_game);
+                int choice = get_int_input();
+                if(choice == -1) printf("Invalid input\n");
+            }
             proc_mandatory_choice(choice);
             continue;
         }
