@@ -216,6 +216,7 @@ static std::set<Entity> parse_abilities(std::vector<std::string> lines, const st
             // Parse pipe-delimited parameters
             size_t param_pos = line.find("|", pos);
             while (param_pos != std::string::npos) {
+                if(param_pos >= line.size()) break;
                 param_pos++;  // Skip '|'
 
                 // Skip whitespace
@@ -246,7 +247,7 @@ static std::set<Entity> parse_abilities(std::vector<std::string> lines, const st
                         value = value.substr(value_start, value_end - value_start + 1);
                     }
 
-                    // Extract relevant parameters
+                    // Extract relevant parameters; run only num dmg is found
                     if (key == "NumDmg") {
                         ability.amount = static_cast<size_t>(std::stoi(value));
                     }

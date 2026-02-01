@@ -112,12 +112,9 @@ std::string player_name(Zone::Ownership owner) {
         return "Player B";
 }
 
-void print_legal_actions(const Game& cur_game, std::shared_ptr<StateManager> state_manager,
-                         std::shared_ptr<Orderer> orderer, std::shared_ptr<StackManager> stack_manager) {
+void print_legal_actions(const Game& cur_game, std::vector<LegalAction> legal_actions) {
     Zone::Ownership priority_player = cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
     printf("\n%s has priority. Legal actions:\n", player_name(priority_player).c_str());
-
-    auto legal_actions = state_manager->determine_legal_actions(cur_game, orderer, stack_manager);
 
     for (size_t i = 0; i < legal_actions.size(); i++) {
         printf("  %zu: %s\n", i, legal_actions[i].description.c_str());

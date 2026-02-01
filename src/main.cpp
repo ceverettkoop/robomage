@@ -126,7 +126,7 @@ int main(int argc, char const *argv[]) {
             while (choice == -1) {
                 print_mandatory_choice_description(cur_game);
                 choice = InputLogger::instance().get_logged_input();
-                if(choice == -1) printf("Invalid input\n");
+                if (choice == -1) printf("Invalid input\n");
             }
             // proc_mandatory_choice(choice);  // TODO: Implement in later phase
             printf("ERROR: proc_mandatory_choice not yet implemented\n");
@@ -140,10 +140,16 @@ int main(int argc, char const *argv[]) {
         print_stack(orderer);
         print_battlefield(orderer);
         print_mana_pools();
-        print_legal_actions(cur_game, state_manager, orderer, stack_manager);
 
         auto legal_actions = state_manager->determine_legal_actions(cur_game, orderer, stack_manager);
-        choice = InputLogger::instance().get_logged_input();
+
+        if (legal_actions.size() == 1) {
+            printf("No possible action, passing priority\n");
+            choice = 0;    
+        } else {
+            print_legal_actions(cur_game, legal_actions);
+            choice = InputLogger::instance().get_logged_input();
+        }
 
         if (choice >= 0 && choice < static_cast<int>(legal_actions.size())) {
             process_action(legal_actions[static_cast<size_t>(choice)], cur_game, orderer);
