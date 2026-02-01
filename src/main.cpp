@@ -81,7 +81,7 @@ int main(int argc, char const *argv[]) {
         print_step(cur_game);
         state_manager->state_based_effects(cur_game);
         // mandatory choices
-        // e.g. declare attackers or declare blockers - discard at cleanup - legend rule; choice at resolution; declare
+        // e.g. declare target, declare attackers or declare blockers - discard at cleanup - legend rule; choice at resolution; declare
         // target
         if (cur_game.is_mandatory_choice_pending()) {
             // describe which player has to make a choice and how to input it
