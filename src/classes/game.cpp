@@ -3,6 +3,9 @@
 #include "../ecs/coordinator.h"
 #include "../systems/stack_manager.h"
 
+bool Game::ready_to_resolve() {
+    return a_has_passed && b_has_passed;
+}
 
 void Game::generate_players(const Deck &deck_a, const Deck &deck_b) {
     player_a_entity = gen_player(deck_a);
@@ -14,25 +17,26 @@ Entity Game::gen_player(const Deck &deck) {
 }
 
 void Game::pass_priority() {
-    if (last_player_passed) {
-        // Both players have now passed consecutively
-        // This will be handled by advance_step
-    }
-    last_player_passed = true;
+    if(player_a_has_priority) a_has_passed = true;
+    if(!player_a_has_priority) b_has_passed = true;
     player_a_has_priority = !player_a_has_priority;
 }
 
 void Game::take_action() {
     // When a player takes an action, reset the pass tracking
-    last_player_passed = false;
+    a_has_passed = false;
+    b_has_passed = false;
 }
 
 bool Game::advance_step(std::shared_ptr<StackManager> stack_manager) {
     // Check if both players passed priority and stack is empty
-    if (last_player_passed && stack_manager->is_empty()) {
-        // Advance to next step
-        last_player_passed = false;
-
+    if(ready_to_resolve()){
+        if(!stack_manager->is_empty()){
+            stack_manager->resolve_top();
+            //reset pass tracking when something has resolved
+            a_has_passed = false;
+            b_has_passed = false;
+        }else{
         switch (cur_step) {
             case UNTAP:
                 cur_step = UPKEEP;
@@ -48,9 +52,11 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager) {
                 break;
             case BEGIN_COMBAT:
                 cur_step = DECLARE_ATTACKERS;
+                attackers_declared = false;  // Reset for new combat
                 break;
             case DECLARE_ATTACKERS:
                 cur_step = DECLARE_BLOCKERS;
+                blockers_declared = false;  // Reset for new combat
                 break;
             case DECLARE_BLOCKERS:
                 cur_step = COMBAT_DAMAGE;
@@ -74,12 +80,14 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager) {
                 player_a_turn = !player_a_turn;
                 break;
         }
-
         // Active player (whose turn it is) gets priority at start of new step
         player_a_has_priority = player_a_turn;
-
-        return true;
+        }
     }
 
     return false;
+}
+
+bool Game::is_mandatory_choice_pending() const {
+    return pending_choice != NONE;
 }

@@ -1,6 +1,7 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <random>
@@ -26,6 +27,14 @@ enum Step {
     CLEANUP
 };
 
+enum MandatoryChoice {
+    NONE,
+    DECLARE_ATTACKERS_CHOICE,
+    DECLARE_BLOCKERS_CHOICE,
+    CLEANUP_DISCARD,
+    CHOOSE_ENTITY  // Legend rule, replacement effect, choose card name, choose permanent
+};
+
 struct Game {
         Game(){};
         Game(size_t _seed){
@@ -43,8 +52,14 @@ struct Game {
         bool player_a_active = true;
         bool player_a_turn = true;
         bool player_a_has_priority = true;
-        bool last_player_passed = false; // tracks if the player who just had priority passed
+        bool a_has_passed = false;
+        bool b_has_passed = false;
+        MandatoryChoice pending_choice = NONE;
+        bool attackers_declared = false;
+        bool blockers_declared = false;
 
+        bool ready_to_resolve();
+        bool is_mandatory_choice_pending() const;
         void generate_players(const Deck& deck_a, const Deck& deck_b);
         bool advance_step(std::shared_ptr<class StackManager> stack_manager);
         void pass_priority();

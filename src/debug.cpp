@@ -4,6 +4,7 @@
 #include "ecs/coordinator.h"
 #include "error.h"
 #include "systems/orderer.h"
+#include "systems/state_manager.h"
 
 const char *step_to_string(Step in_step) {
     switch (in_step) {
@@ -99,16 +100,44 @@ std::string player_name(Zone::Ownership owner) {
         return "Player B";
 }
 
-void print_legal_actions(const Game& cur_game) {
+void print_legal_actions(const Game& cur_game, std::shared_ptr<StateManager> state_manager) {
     Zone::Ownership priority_player = cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
     printf("\n%s has priority. Legal actions:\n", player_name(priority_player).c_str());
 
-    // Pass priority is always available
-    printf("  0: Pass priority\n");
+    auto legal_actions = state_manager->determine_legal_actions(cur_game);
 
-    // TODO: Add more legal actions based on game state:
-    // - Cast spells from hand (if timing allows)
-    // - Activate abilities (if timing allows)
-    // - Play land (if main phase, player's turn, haven't played land yet)
-    // - Special turn actions (declare attackers, blockers, etc.)
+    for (size_t i = 0; i < legal_actions.size(); i++) {
+        printf("  %zu: %s\n", i, legal_actions[i].description.c_str());
+    }
+}
+
+void print_mandatory_choice_description(const Game& cur_game) {
+    Zone::Ownership active_player = cur_game.player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B;
+
+    printf("\n");
+    switch (cur_game.pending_choice) {
+        case DECLARE_ATTACKERS_CHOICE:
+            printf("%s must declare attackers.\n", player_name(active_player).c_str());
+            printf("TODO: List creatures that can attack\n");
+            break;
+
+        case DECLARE_BLOCKERS_CHOICE:
+            printf("%s must declare blockers.\n", player_name(active_player).c_str());
+            printf("TODO: List creatures that can block and valid attackers to block\n");
+            break;
+
+        case CLEANUP_DISCARD:
+            printf("%s must discard to hand size.\n", player_name(active_player).c_str());
+            printf("TODO: Show current hand size and maximum hand size\n");
+            break;
+
+        case CHOOSE_ENTITY:
+            printf("%s must choose an entity.\n", player_name(active_player).c_str());
+            printf("TODO: Show available choices (legend rule, replacement effects, etc.)\n");
+            break;
+
+        case NONE:
+            // Should not reach here
+            break;
+    }
 }

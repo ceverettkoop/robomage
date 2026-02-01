@@ -13,6 +13,7 @@
 #include "components/effect.h"
 #include "components/player.h"
 #include "components/zone.h"
+#include "cli.h"
 #include "debug.h"
 #include "ecs/coordinator.h"
 #include "systems/orderer.h"
@@ -77,29 +78,26 @@ int main(int argc, char const *argv[]) {
     // game loop
     while (cur_game.ended != true) {
         print_step(cur_game);
-        state_manager->state_based_effects();
-
-        //TODO IMPLEMENT THIS LOGIC
-        // if priority was passed by both players and stack is clear; advance to next step
+        state_manager->state_based_effects(cur_game);
+        //mandatory choices
+        //e.g. declare attackers or declare blockers - discard at cleanup - legend rule; choice at resolution
+        if(cur_game.is_mandatory_choice_pending()){
+            //describe which player has to make a choice and how to input it
+            print_mandatory_choice_description(cur_game);
+            //get input
+            get_mandatory_choice_input(cur_game);
+            continue;
+        }
+        // will return true if priority has been passed and there is nothing on stack
         if (cur_game.advance_step(stack_manager)) {
             continue;
         }
         print_stack(orderer);
-        print_legal_actions(cur_game);
-        //END TODO
-
+        print_legal_actions(cur_game, state_manager);
+        get_user_action_input(cur_game, state_manager);
         // user input here
+
     }
-
-    // if something resolves bc of priority passing, resolve that now
-
-    // state based effects / triggers
-
-    // active player can take action or pass priority (pass means skip to end)
-
-    // special game actions resolve immediately
-
-    // state based effects
 
     // repeat
 
