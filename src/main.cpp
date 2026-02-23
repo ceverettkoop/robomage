@@ -112,7 +112,6 @@ int main(int argc, char const *argv[]) {
     print_hand(orderer, Zone::PLAYER_B);
 
     // PLAYER A IS ALWAYS ON THE PLAY IN THIS WORLD
-
     // game loop
     while (cur_game.ended != true) {
         print_step(cur_game);
@@ -133,7 +132,14 @@ int main(int argc, char const *argv[]) {
             break;
         }
         // will return true if priority has been passed and there is nothing on stack
-        if (cur_game.advance_step(stack_manager)) {
+        //TODO NOT RUN ADVANCE_STEP TWICE
+        if (cur_game.advance_step(true, stack_manager)) {
+            continue;
+        }
+        auto legal_actions = state_manager->determine_legal_actions(cur_game, orderer, stack_manager);
+        if (legal_actions.size() == 1) {
+            printf("No possible action, passing priority\n");
+            cur_game.advance_step(false, stack_manager);
             continue;
         }
         // prompt for action
@@ -141,15 +147,8 @@ int main(int argc, char const *argv[]) {
         print_battlefield(orderer);
         print_mana_pools();
 
-        auto legal_actions = state_manager->determine_legal_actions(cur_game, orderer, stack_manager);
-
-        if (legal_actions.size() == 1) {
-            printf("No possible action, passing priority\n");
-            choice = 0;    
-        } else {
-            print_legal_actions(cur_game, legal_actions);
-            choice = InputLogger::instance().get_logged_input();
-        }
+        print_legal_actions(cur_game, legal_actions);
+        choice = InputLogger::instance().get_logged_input();
 
         if (choice >= 0 && choice < static_cast<int>(legal_actions.size())) {
             process_action(legal_actions[static_cast<size_t>(choice)], cur_game, orderer);

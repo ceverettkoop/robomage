@@ -61,7 +61,7 @@ struct Game {
         bool ready_to_resolve();
         bool is_mandatory_choice_pending() const;
         void generate_players(const Deck& deck_a, const Deck& deck_b);
-        bool advance_step(std::shared_ptr<class StackManager> stack_manager);
+        bool advance_step(bool are_legal_actions, std::shared_ptr<class StackManager> stack_manager);
         void pass_priority();
         void take_action(); // resets last_player_passed since an action was taken
 

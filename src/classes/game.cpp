@@ -45,8 +45,9 @@ void Game::take_action() {
     b_has_passed = false;
 }
 
-bool Game::advance_step(std::shared_ptr<StackManager> stack_manager) {
+bool Game::advance_step(bool are_legal_actions, std::shared_ptr<StackManager> stack_manager) {
     // Check if both players passed priority and stack is empty
+    if(!are_legal_actions) goto ADVANCE;
     if(ready_to_resolve()){
         if(!stack_manager->is_empty()){
             stack_manager->resolve_top();
@@ -54,6 +55,7 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager) {
             a_has_passed = false;
             b_has_passed = false;
         }else{
+    ADVANCE:
         // Get active player entity
         Entity active_player_entity = player_a_turn ? player_a_entity : player_b_entity;
         Zone::Ownership active_player = player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B;
