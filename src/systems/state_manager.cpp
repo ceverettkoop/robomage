@@ -66,9 +66,6 @@ static void apply_land_abilities() {
         }
         if (already_present) continue;
 
-        printf("[DBG] apply_land_abilities: adding %s ability to entity %u\n",
-               land_subtype.c_str(), entity);
-
         Ability mana_ability;
         mana_ability.ability_type = Ability::ACTIVATED;
         mana_ability.category = "AddMana";

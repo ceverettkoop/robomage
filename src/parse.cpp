@@ -148,6 +148,7 @@ static std::set<Type> parse_types(std::string value) {
         tokens.push_back(token);
         value.erase(0, pos + delimiter.length());
     }
+    if (!value.empty()) tokens.push_back(value);
     for (auto &&i : tokens) {
         found.name = i;
         // subtypes before types as bandaid for weird types in my list due to... unset cards?
