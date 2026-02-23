@@ -66,7 +66,7 @@ int InputLogger::get_logged_input(size_t cur_turn) {
 
     int choice = get_int_input();
     if (choice == PASS_TURN_CMD) {
-        printf("Passing until next turn.\n");
+        printf("Auto-passing turn.\n");
         auto_pass_until_turn = (int)cur_turn + 1;
         if (log_file.is_open()) { log_file << 0 << std::endl; log_file.flush(); }
         return 0;

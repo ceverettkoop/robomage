@@ -130,7 +130,6 @@ int main(int argc, char const *argv[]) {
         }
         auto legal_actions = state_manager->determine_legal_actions(cur_game, orderer, stack_manager);
         if (legal_actions.size() == 1) {
-            printf("No possible action, passing priority\n");
             cur_game.pass_priority();
             continue;
         }

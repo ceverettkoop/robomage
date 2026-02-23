@@ -243,7 +243,6 @@ std::vector<LegalAction> StateManager::determine_legal_actions(const Game& game,
     // Get all permanents controlled by priority player
     for (auto entity : orderer->mEntities) {
         if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
-        printf("[DBG] determine_legal_actions: checking entity %u for activated abilities\n", entity);
 
         auto& zone = global_coordinator.GetComponent<Zone>(entity);
         if (zone.location != Zone::BATTLEFIELD) continue;
