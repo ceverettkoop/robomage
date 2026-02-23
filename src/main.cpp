@@ -104,7 +104,7 @@ int main(int argc, char const *argv[]) {
     StackManager::init();
 
     // one time setup for this game
-    Game cur_game(seed);
+    cur_game = Game(seed);
     cur_game.generate_players(DEFAULT_DECK_ONE, DEFAULT_DECK_TWO);
     orderer->generate_libraries(DEFAULT_DECK_ONE, DEFAULT_DECK_TWO);
 
