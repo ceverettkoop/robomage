@@ -30,6 +30,7 @@ static Colors mana_color_for_subtype(const std::string& subtype) {
 static void apply_land_abilities() {
     for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
         if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
+        //TODO make this work for tokens
         if (!global_coordinator.entity_has_component<CardData>(entity)) continue;
 
         auto& zone = global_coordinator.GetComponent<Zone>(entity);
@@ -64,6 +65,9 @@ static void apply_land_abilities() {
             }
         }
         if (already_present) continue;
+
+        printf("[DBG] apply_land_abilities: adding %s ability to entity %u\n",
+               land_subtype.c_str(), entity);
 
         Ability mana_ability;
         mana_ability.ability_type = Ability::ACTIVATED;
@@ -242,6 +246,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(const Game& game,
     // Get all permanents controlled by priority player
     for (auto entity : orderer->mEntities) {
         if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
+        printf("[DBG] determine_legal_actions: checking entity %u for activated abilities\n", entity);
 
         auto& zone = global_coordinator.GetComponent<Zone>(entity);
         if (zone.location != Zone::BATTLEFIELD) continue;

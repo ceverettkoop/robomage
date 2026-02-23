@@ -30,16 +30,12 @@
         },
         {
             "name": "(lldb) ARM Launch",
-            "type": "cppdbg",
+            "type": "lldb",
             "request": "launch",
             "program": "${workspaceFolder}/bin/robomage",
             "args": [],
-            "stopAtEntry": false,
             "cwd": "${workspaceFolder}/bin",
-            "environment": [],
-            "externalConsole": false,
-            "MIMode": "lldb",
-            "targetArchitecture": "arm64"
+            "terminal": "integrated"
         },
 
     ]
