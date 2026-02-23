@@ -2,6 +2,7 @@
 
 #include "../components/ability.h"
 #include "../components/carddata.h"
+#include "../components/creature.h"
 #include "../components/damage.h"
 #include "../components/effect.h"
 #include "../components/permanent.h"
@@ -41,16 +42,15 @@ void StateManager::state_based_effects(Game& game) {
         return;
     }
 
-    // Check for lethal damage on creatures
-    std::vector<Entity> creatures_to_destroy;
-    for (auto entity : mEntities) {
+    // Add Creature component to any battlefield creature that doesn't have one yet
+    for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
+        if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
+        if (!global_coordinator.entity_has_component<CardData>(entity)) continue;
         auto& zone = global_coordinator.GetComponent<Zone>(entity);
         if (zone.location != Zone::BATTLEFIELD) continue;
+        if (global_coordinator.entity_has_component<Creature>(entity)) continue;
 
-        if (!global_coordinator.entity_has_component<CardData>(entity)) continue;
         auto& card_data = global_coordinator.GetComponent<CardData>(entity);
-
-        // Check if it's a creature
         bool is_creature = false;
         for (auto& type : card_data.types) {
             if (type.kind == TYPE && type.name == "Creature") {
@@ -58,27 +58,42 @@ void StateManager::state_based_effects(Game& game) {
                 break;
             }
         }
+        if (is_creature) {
+            Creature creature;
+            creature.power = card_data.power;
+            creature.toughness = card_data.toughness;
+            global_coordinator.AddComponent(entity, creature);
+        }
+    }
 
-        if (is_creature && global_coordinator.entity_has_component<Damage>(entity)) {
-            auto& damage = global_coordinator.GetComponent<Damage>(entity);
-            if (damage.damage_counters >= card_data.toughness) {
-                creatures_to_destroy.push_back(entity);
-            }
+    // Check for lethal damage on creatures
+    std::vector<Entity> creatures_to_destroy;
+    for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
+        if (!global_coordinator.entity_has_component<Creature>(entity)) continue;
+        if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
+        auto& zone = global_coordinator.GetComponent<Zone>(entity);
+        if (zone.location != Zone::BATTLEFIELD) continue;
+
+        if (!global_coordinator.entity_has_component<Damage>(entity)) continue;
+        auto& creature = global_coordinator.GetComponent<Creature>(entity);
+        auto& damage = global_coordinator.GetComponent<Damage>(entity);
+        if (damage.damage_counters >= creature.toughness) {
+            creatures_to_destroy.push_back(entity);
         }
     }
 
     // Move destroyed creatures to graveyard
-    for (auto creature : creatures_to_destroy) {
-        auto& zone = global_coordinator.GetComponent<Zone>(creature);
-        auto& card_data = global_coordinator.GetComponent<CardData>(creature);
+    for (auto entity : creatures_to_destroy) {
+        auto& zone = global_coordinator.GetComponent<Zone>(entity);
+        auto& card_data = global_coordinator.GetComponent<CardData>(entity);
         printf("%s is destroyed (lethal damage)\n", card_data.name.c_str());
 
         zone.location = Zone::GRAVEYARD;
 
-        // Remove Permanent component
-        if (global_coordinator.entity_has_component<Permanent>(creature)) {
-            global_coordinator.RemoveComponent<Permanent>(creature);
+        if (global_coordinator.entity_has_component<Permanent>(entity)) {
+            global_coordinator.RemoveComponent<Permanent>(entity);
         }
+        global_coordinator.RemoveComponent<Creature>(entity);
     }
 
     // Check for mandatory choices based on game step

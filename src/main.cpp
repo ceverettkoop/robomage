@@ -11,6 +11,7 @@
 #include "cli.h"
 #include "components/ability.h"
 #include "components/carddata.h"
+#include "components/creature.h"
 #include "components/damage.h"
 #include "components/effect.h"
 #include "components/permanent.h"
@@ -88,6 +89,7 @@ int main(int argc, char const *argv[]) {
     global_coordinator.Init();
     global_coordinator.RegisterComponent<Ability>();
     global_coordinator.RegisterComponent<CardData>();
+    global_coordinator.RegisterComponent<Creature>();
     global_coordinator.RegisterComponent<Damage>();
     global_coordinator.RegisterComponent<Permanent>();
     global_coordinator.RegisterComponent<Player>();
@@ -120,16 +122,8 @@ int main(int argc, char const *argv[]) {
         // e.g. declare target, declare attackers or declare blockers - discard at cleanup - legend rule; choice at
         // resolution; declare target
         if (cur_game.is_mandatory_choice_pending()) {
-            // describe which player has to make a choice and how to input it
-            choice = -1;
-            while (choice == -1) {
-                print_mandatory_choice_description(cur_game);
-                choice = InputLogger::instance().get_logged_input();
-                if (choice == -1) printf("Invalid input\n");
-            }
-            // proc_mandatory_choice(choice);  // TODO: Implement in later phase
-            printf("ERROR: proc_mandatory_choice not yet implemented\n");
-            break;
+            proc_mandatory_choice(cur_game, orderer);
+            continue;
         }
         // will return true if priority has been passed and there is nothing on stack
         //TODO NOT RUN ADVANCE_STEP TWICE
@@ -146,6 +140,7 @@ int main(int argc, char const *argv[]) {
         print_stack(orderer);
         print_battlefield(orderer);
         print_mana_pools();
+        print_hand(orderer, cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B);
 
         print_legal_actions(cur_game, legal_actions);
         choice = InputLogger::instance().get_logged_input();

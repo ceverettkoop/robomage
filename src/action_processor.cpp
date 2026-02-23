@@ -4,6 +4,7 @@
 
 #include "components/ability.h"
 #include "components/carddata.h"
+#include "components/creature.h"
 #include "components/permanent.h"
 #include "components/player.h"
 #include "components/zone.h"
@@ -163,5 +164,125 @@ void process_action(const LegalAction& action, Game& game, std::shared_ptr<Order
             game.take_action();
             break;
         }
+    }
+}
+
+static void declare_attackers(Game& game, std::shared_ptr<Orderer> orderer) {
+    Zone::Ownership active_player = game.player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B;
+    Entity defending_entity = game.player_a_turn ? game.player_b_entity : game.player_a_entity;
+
+    // Collect eligible attackers with stable indices
+    std::vector<Entity> eligible;
+    for (auto entity : orderer->mEntities) {
+        if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
+        if (!global_coordinator.entity_has_component<Creature>(entity)) continue;
+        auto& permanent = global_coordinator.GetComponent<Permanent>(entity);
+        if (permanent.controller != active_player) continue;
+        if (permanent.is_tapped) continue;
+        if (permanent.has_summoning_sickness) continue;
+        eligible.push_back(entity);
+    }
+
+    if (eligible.empty()) {
+        printf("No creatures eligible to attack.\n");
+        game.attackers_declared = true;
+        game.pending_choice = NONE;
+        return;
+    }
+
+    // Build targets: defending player first, then planeswalkers (TODO)
+    std::vector<Entity> targets;
+    targets.push_back(defending_entity);
+
+    // Selection loop — creature indices stay stable throughout
+    while (true) {
+        printf("\n--- Declare Attackers (%s) ---\n", player_name(active_player).c_str());
+        for (size_t i = 0; i < eligible.size(); i++) {
+            auto& cd = global_coordinator.GetComponent<CardData>(eligible[i]);
+            auto& cr = global_coordinator.GetComponent<Creature>(eligible[i]);
+            printf("  %zu: %s [%d/%d]", i, cd.name.c_str(), cr.power, cr.toughness);
+            if (cr.is_attacking) {
+                Zone::Ownership t = (cr.attack_target == game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
+                printf(" -> %s", player_name(t).c_str());
+            }
+            printf("\n");
+        }
+        printf("  -1: Confirm\n");
+
+        int creature_choice = InputLogger::instance().get_logged_input();
+
+        if (creature_choice == -1) break;
+
+        if (creature_choice < 0 || creature_choice >= static_cast<int>(eligible.size())) {
+            printf("Invalid selection.\n");
+            continue;
+        }
+
+        auto& cr = global_coordinator.GetComponent<Creature>(eligible[static_cast<size_t>(creature_choice)]);
+        auto& cd = global_coordinator.GetComponent<CardData>(eligible[static_cast<size_t>(creature_choice)]);
+
+        if (cr.is_attacking) {
+            cr.is_attacking = false;
+            cr.attack_target = 0;
+            printf("%s removed from attackers.\n", cd.name.c_str());
+        } else {
+            printf("Select target for %s:\n", cd.name.c_str());
+            for (size_t i = 0; i < targets.size(); i++) {
+                auto& player = global_coordinator.GetComponent<Player>(targets[i]);
+                Zone::Ownership t = (targets[i] == game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
+                printf("  %zu: %s (%d life)\n", i, player_name(t).c_str(), player.life_total);
+                // TODO: planeswalker entries here
+            }
+
+            int target_choice = InputLogger::instance().get_logged_input();
+
+            if (target_choice >= 0 && target_choice < static_cast<int>(targets.size())) {
+                cr.is_attacking = true;
+                cr.attack_target = targets[static_cast<size_t>(target_choice)];
+                Zone::Ownership t = (cr.attack_target == game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
+                printf("%s attacking %s.\n", cd.name.c_str(), player_name(t).c_str());
+            } else {
+                printf("Invalid target.\n");
+            }
+        }
+    }
+
+    printf("\nAttackers declared:\n");
+    bool any = false;
+    for (auto entity : eligible) {
+        auto& cr = global_coordinator.GetComponent<Creature>(entity);
+        if (cr.is_attacking) {
+            any = true;
+            auto& cd = global_coordinator.GetComponent<CardData>(entity);
+            Zone::Ownership t = (cr.attack_target == game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
+            printf("  %s -> %s\n", cd.name.c_str(), player_name(t).c_str());
+        }
+    }
+    if (!any) printf("  (none)\n");
+
+    game.attackers_declared = true;
+    game.pending_choice = NONE;
+}
+
+void proc_mandatory_choice(Game& game, std::shared_ptr<Orderer> orderer) {
+    switch (game.pending_choice) {
+        case DECLARE_ATTACKERS_CHOICE:
+            declare_attackers(game, orderer);
+            break;
+        case DECLARE_BLOCKERS_CHOICE:
+            printf("TODO: Declare blockers\n");
+            game.blockers_declared = true;
+            game.pending_choice = NONE;
+            break;
+        case CLEANUP_DISCARD:
+            printf("TODO: Cleanup discard\n");
+            game.pending_choice = NONE;
+            break;
+        case CHOOSE_ENTITY:
+            printf("TODO: Choose entity\n");
+            game.pending_choice = NONE;
+            break;
+        case NONE:
+            break;
     }
 }

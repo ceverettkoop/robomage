@@ -1,6 +1,7 @@
 #include "debug.h"
 
 #include "components/carddata.h"
+#include "components/creature.h"
 #include "components/damage.h"
 #include "components/permanent.h"
 #include "components/player.h"
@@ -172,9 +173,9 @@ void print_battlefield(std::shared_ptr<Orderer> orderer) {
                 if (permanent.has_summoning_sickness) printf(" (SICK)");
 
                 // Print P/T for creatures
-                if (card_data.power > 0 || card_data.toughness > 0) {
-                    printf(" [%d/%d]", card_data.power, card_data.toughness);
-                    // Print damage if any
+                if (global_coordinator.entity_has_component<Creature>(entity)) {
+                    auto& creature = global_coordinator.GetComponent<Creature>(entity);
+                    printf(" [%d/%d]", creature.power, creature.toughness);
                     if (global_coordinator.entity_has_component<Damage>(entity)) {
                         auto& damage = global_coordinator.GetComponent<Damage>(entity);
                         if (damage.damage_counters > 0) {
