@@ -264,49 +264,5 @@ static std::set<Entity> parse_abilities(std::vector<std::string> lines, const st
         }
     }
 
-    // basic lands having mana abilities is by virtue of their type
-    // Check if this is a basic land and add mana ability
-    bool is_basic = false;
-    bool is_land = false;
-    std::string land_subtype;
-
-    for (auto& type : types) {
-        if (type.kind == SUPERTYPE && type.name == "Basic") {
-            is_basic = true;
-        }
-        if (type.kind == TYPE && type.name == "Land") {
-            is_land = true;
-        }
-        if (type.kind == SUBTYPE && (type.name == "Mountain" || type.name == "Forest" ||
-                                     type.name == "Plains" || type.name == "Island" ||
-                                     type.name == "Swamp")) {
-            land_subtype = type.name;
-        }
-    }
-
-    if (is_basic && is_land && !land_subtype.empty()) {
-        Ability mana_ability;
-        mana_ability.ability_type = Ability::ACTIVATED;
-        mana_ability.category = "AddMana";
-
-        // Determine mana color from subtype (using amount field to store color)
-        if (land_subtype == "Mountain") {
-            mana_ability.amount = static_cast<size_t>(RED);
-        } else if (land_subtype == "Forest") {
-            mana_ability.amount = static_cast<size_t>(GREEN);
-        } else if (land_subtype == "Plains") {
-            mana_ability.amount = static_cast<size_t>(WHITE);
-        } else if (land_subtype == "Island") {
-            mana_ability.amount = static_cast<size_t>(BLUE);
-        } else if (land_subtype == "Swamp") {
-            mana_ability.amount = static_cast<size_t>(BLACK);
-        }
-
-        auto ability_id = global_coordinator.CreateEntity();
-        mana_ability.source = ability_id;
-        global_coordinator.AddComponent(ability_id, mana_ability);
-        ret_val.emplace(ability_id);
-    }
-
     return ret_val;
 }

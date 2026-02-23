@@ -15,6 +15,68 @@
 #include "../systems/orderer.h"
 #include "../systems/stack_manager.h"
 
+static Colors mana_color_for_subtype(const std::string& subtype) {
+    if (subtype == "Mountain") return RED;
+    if (subtype == "Forest")   return GREEN;
+    if (subtype == "Plains")   return WHITE;
+    if (subtype == "Island")   return BLUE;
+    if (subtype == "Swamp")    return BLACK;
+    return COLORLESS;
+}
+
+// Called on every SBA check. Land types can change due to effects, so this
+// runs every time. Only skips adding an ability if an identical one (same
+// color) is already present — does not remove stale abilities when types change.
+static void apply_land_abilities() {
+    for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
+        if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
+        if (!global_coordinator.entity_has_component<CardData>(entity)) continue;
+
+        auto& zone = global_coordinator.GetComponent<Zone>(entity);
+        if (zone.location != Zone::BATTLEFIELD) continue;
+
+        auto& card_data = global_coordinator.GetComponent<CardData>(entity);
+
+        bool is_land = false;
+        bool is_basic = false;
+        std::string land_subtype;
+        for (auto& type : card_data.types) {
+            if (type.kind == TYPE      && type.name == "Land")  is_land = true;
+            if (type.kind == SUPERTYPE && type.name == "Basic") is_basic = true;
+            if (type.kind == SUBTYPE   && (type.name == "Mountain" || type.name == "Forest" ||
+                                           type.name == "Plains"   || type.name == "Island"  ||
+                                           type.name == "Swamp")) {
+                land_subtype = type.name;
+            }
+        }
+        if (!is_land || !is_basic || land_subtype.empty()) continue;
+
+        Colors required_color = mana_color_for_subtype(land_subtype);
+
+        // Skip only if this exact color ability already exists
+        bool already_present = false;
+        for (auto ability_entity : card_data.abilities) {
+            if (!global_coordinator.entity_has_component<Ability>(ability_entity)) continue;
+            auto& ab = global_coordinator.GetComponent<Ability>(ability_entity);
+            if (ab.category == "AddMana" && static_cast<Colors>(ab.amount) == required_color) {
+                already_present = true;
+                break;
+            }
+        }
+        if (already_present) continue;
+
+        Ability mana_ability;
+        mana_ability.ability_type = Ability::ACTIVATED;
+        mana_ability.category = "AddMana";
+        mana_ability.amount = static_cast<size_t>(required_color);
+
+        Entity ability_id = global_coordinator.CreateEntity();
+        mana_ability.source = ability_id;
+        global_coordinator.AddComponent(ability_id, mana_ability);
+        card_data.abilities.insert(ability_id);
+    }
+}
+
 void StateManager::init() {
     Signature signature;
     signature.set(global_coordinator.GetComponentType<Zone>());
@@ -65,6 +127,9 @@ void StateManager::state_based_effects(Game& game) {
             global_coordinator.AddComponent(entity, creature);
         }
     }
+
+    // Apply mana abilities to basic land permanents that don't have one yet
+    apply_land_abilities();
 
     // Check for lethal damage on creatures
     std::vector<Entity> creatures_to_destroy;
@@ -175,7 +240,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(const Game& game,
 
     // Check for activated abilities (mana abilities)
     // Get all permanents controlled by priority player
-    for (auto entity : mEntities) {
+    for (auto entity : orderer->mEntities) {
         if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
 
         auto& zone = global_coordinator.GetComponent<Zone>(entity);

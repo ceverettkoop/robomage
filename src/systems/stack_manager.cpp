@@ -15,7 +15,6 @@ extern Game cur_game;
 void StackManager::init() {
     Signature signature;
     signature.set(global_coordinator.GetComponentType<Zone>());
-    signature.set(global_coordinator.GetComponentType<Ability>());
     global_coordinator.SetSystemSignature<StackManager>(signature);
 }
 
