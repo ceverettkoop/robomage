@@ -13,7 +13,7 @@ class InputLogger {
     bool is_replay_mode() const;
     unsigned int get_replay_seed() const;
 
-    int get_logged_input();
+    int get_logged_input(size_t cur_turn);
 
    private:
     InputLogger() = default;
@@ -22,6 +22,7 @@ class InputLogger {
     std::ofstream log_file;
     std::ifstream replay_file;
     std::string log_path;
+    int auto_pass_until_turn = -1;
 };
 
 #endif

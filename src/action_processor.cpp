@@ -142,7 +142,7 @@ void process_action(const LegalAction& action, Game& game, std::shared_ptr<Order
                             }
                         }
 
-                        int target_choice = InputLogger::instance().get_logged_input();
+                        int target_choice = InputLogger::instance().get_logged_input(cur_game.turn);
                         if (target_choice >= 0 && target_choice < static_cast<int>(valid_targets.size())) {
                             ability.target = valid_targets[static_cast<size_t>(target_choice)];
                             printf("Targeting choice %d\n", target_choice);
@@ -209,7 +209,7 @@ static void declare_attackers(Game& game, std::shared_ptr<Orderer> orderer) {
         }
         printf("  -1: Confirm\n");
 
-        int creature_choice = InputLogger::instance().get_logged_input();
+        int creature_choice = InputLogger::instance().get_logged_input(cur_game.turn);
 
         if (creature_choice == -1) break;
 
@@ -234,7 +234,7 @@ static void declare_attackers(Game& game, std::shared_ptr<Orderer> orderer) {
                 // TODO: planeswalker entries here
             }
 
-            int target_choice = InputLogger::instance().get_logged_input();
+            int target_choice = InputLogger::instance().get_logged_input(cur_game.turn);
 
             if (target_choice >= 0 && target_choice < static_cast<int>(targets.size())) {
                 cr.is_attacking = true;
