@@ -125,15 +125,13 @@ int main(int argc, char const *argv[]) {
             proc_mandatory_choice(cur_game, orderer);
             continue;
         }
-        // will return true if priority has been passed and there is nothing on stack
-        //TODO NOT RUN ADVANCE_STEP TWICE
-        if (cur_game.advance_step(true, stack_manager)) {
+        if (cur_game.advance_step(stack_manager)) {
             continue;
         }
         auto legal_actions = state_manager->determine_legal_actions(cur_game, orderer, stack_manager);
         if (legal_actions.size() == 1) {
             printf("No possible action, passing priority\n");
-            cur_game.advance_step(false, stack_manager);
+            cur_game.pass_priority();
             continue;
         }
         // prompt for action
