@@ -15,7 +15,7 @@
 #include "../ecs/events.h"
 #include "../error.h"
 #include "../mana_system.h"
-#include "../systems/orderer.h"
+#include "orderer.h"
 #include "../systems/stack_manager.h"
 
 static Colors mana_color_for_subtype(const std::string &subtype) {
@@ -85,7 +85,7 @@ void StateManager::init() {
 }
 
 // layers / timestamps would be implemented here; for now order is arbitrary
-void StateManager::state_based_effects(Game &game) {
+void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orderer) {
     // Reset pending choice
     game.pending_choice = NONE;
 
@@ -149,11 +149,10 @@ void StateManager::state_based_effects(Game &game) {
 
     // Move destroyed creatures to graveyard
     for (auto entity : creatures_to_destroy) {
-        auto &zone = global_coordinator.GetComponent<Zone>(entity);
         auto &card_data = global_coordinator.GetComponent<CardData>(entity);
         printf("%s is destroyed (lethal damage)\n", card_data.name.c_str());
 
-        zone.location = Zone::GRAVEYARD;
+        orderer->add_to_zone(false, entity, Zone::GRAVEYARD);
 
         if (global_coordinator.entity_has_component<Permanent>(entity)) {
             global_coordinator.RemoveComponent<Permanent>(entity);

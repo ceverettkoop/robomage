@@ -32,7 +32,7 @@ void process_action(const LegalAction& action, Game& game, std::shared_ptr<Order
             auto& card_data = global_coordinator.GetComponent<CardData>(land_entity);
 
             // Move to battlefield
-            zone.location = Zone::BATTLEFIELD;
+            orderer->add_to_zone(false, land_entity, Zone::BATTLEFIELD);
             zone.controller = zone.owner;
 
             // Add Permanent component
@@ -149,7 +149,6 @@ void process_action(const LegalAction& action, Game& game, std::shared_ptr<Order
             global_coordinator.AddComponent(spell_entity, spell);
 
             // Move to stack
-            zone.location = Zone::STACK;
             orderer->add_to_zone(false, spell_entity, Zone::STACK);  // Top of stack
 
             game.take_action();
@@ -398,8 +397,7 @@ void proc_mandatory_choice(Game& game, std::shared_ptr<Orderer> orderer) {
                 if (choice >= 0 && choice < static_cast<int>(hand.size())) {
                     Entity card = hand[static_cast<size_t>(choice)];
                     auto& cd = global_coordinator.GetComponent<CardData>(card);
-                    auto& zone = global_coordinator.GetComponent<Zone>(card);
-                    zone.location = Zone::GRAVEYARD;
+                    orderer->add_to_zone(false, card, Zone::GRAVEYARD);
                     printf("%s discards %s.\n", player_name(active_player).c_str(), cd.name.c_str());
                     break;
                 }

@@ -136,7 +136,7 @@ int main(int argc, char const *argv[]) {
     // PLAYER A IS ALWAYS ON THE PLAY IN THIS WORLD
     // game loop
     while (cur_game.ended != true) {
-        state_manager->state_based_effects(cur_game);
+        state_manager->state_based_effects(cur_game, orderer);
         // mandatory choices
         // e.g. declare target, declare attackers or declare blockers - discard at cleanup - legend rule; choice at
         // resolution; declare target

@@ -1,6 +1,7 @@
 #include "stack_manager.h"
 
 #include <cstddef>
+#include "orderer.h"
 
 #include "../classes/game.h"
 #include "../components/ability.h"
@@ -29,7 +30,7 @@ bool StackManager::is_empty() {
     return true;
 }
 
-void StackManager::resolve_top() {
+void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
     Entity top_entity = 0;
     size_t min_distance = SIZE_MAX;
     bool found = false;
@@ -69,7 +70,7 @@ void StackManager::resolve_top() {
 
         if (is_permanent) {
             // Move to battlefield
-            zone.location = Zone::BATTLEFIELD;
+            orderer->add_to_zone(false, top_entity, Zone::BATTLEFIELD);
 
             // Add Permanent component
             Permanent permanent;
@@ -94,7 +95,7 @@ void StackManager::resolve_top() {
                 global_coordinator.RemoveComponent<Ability>(top_entity);
             }
             global_coordinator.RemoveComponent<Spell>(top_entity);
-            zone.location = Zone::GRAVEYARD;
+            orderer->add_to_zone(false, top_entity, Zone::GRAVEYARD);
         }
     } else if (global_coordinator.entity_has_component<Ability>(top_entity)) {
         // It's a standalone ability (not attached to a card on the stack)

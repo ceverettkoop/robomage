@@ -53,7 +53,7 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
     //otherwise will resove stack or pass priority as needed
     if (ready_to_resolve()) {
         if (!stack_manager->is_empty()) {
-            stack_manager->resolve_top();
+            stack_manager->resolve_top(orderer);
             // reset pass tracking when something has resolved
             a_has_passed = false;
             b_has_passed = false;

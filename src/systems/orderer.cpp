@@ -22,6 +22,24 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     size_t back = 0;
     auto &target_zone = global_coordinator.GetComponent<Zone>(target);
 
+    // If the entity is leaving an ordered zone, close the gap it leaves behind.
+    // LIBRARY, STACK, and GRAVEYARD are ordered zones where distance_from_top is meaningful.
+    Zone::ZoneValue origin = target_zone.location;
+    if (origin == Zone::LIBRARY || origin == Zone::STACK || origin == Zone::GRAVEYARD) {
+        size_t departing_pos = target_zone.distance_from_top;
+        Zone::Ownership owner = target_zone.owner;
+        for (auto &&card : mEntities) {
+            if (card == target) continue;
+            auto &cmp_zone = global_coordinator.GetComponent<Zone>(card);
+            if (cmp_zone.location != origin) continue;
+            // Library and graveyard are per-player; stack is shared
+            if ((origin == Zone::LIBRARY || origin == Zone::GRAVEYARD) && cmp_zone.owner != owner) continue;
+            if (cmp_zone.distance_from_top > departing_pos) {
+                cmp_zone.distance_from_top--;
+            }
+        }
+    }
+
     if (!on_bottom) {
         target_zone.distance_from_top = 0;
     }
@@ -30,16 +48,17 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
         auto &cmp_zone = global_coordinator.GetComponent<Zone>(card);
         if (cmp_zone.location == destination) {
             if (!on_bottom) {
-                // if we are placing on top, move everything else down one
+                // placing on top: shift everything else down one
                 cmp_zone.distance_from_top++;
             } else {
-                // if we are going on the bottom, determine where the bottom is
+                // placing on bottom: find the current bottom position
                 if (cmp_zone.distance_from_top > back) back = cmp_zone.distance_from_top;
             }
         }
     }
 
     if (on_bottom) target_zone.distance_from_top = back + 1;
+    target_zone.location = destination;
 }
 
 // TODO MERGE THESE INTO A GENERIC GETTER
