@@ -9,8 +9,8 @@ Currently only a few cards tested.
 Requires clang (macOS) or gcc (Linux).
 
 ```bash
-make program          # debug build
-BUILD=RELEASE make program  # optimized build
+make
+make BUILD=RELEASE for non-debug
 ```
 
 The binary is written to `bin/robomage`. The game expects to be run from the `bin/`
