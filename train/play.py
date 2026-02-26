@@ -62,6 +62,10 @@ def play(binary_path: str, model_path: str):
             while True:
                 try:
                     raw = input("Choose> ").strip()
+                    if raw.lower() in ("quit", "exit", "q"):
+                        print("Quitting.")
+                        env.close()
+                        sys.exit(0)
                     action = int(raw)
                     if 0 <= action < num_choices:
                         break
