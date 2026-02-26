@@ -10,7 +10,8 @@ enum Colors{
     RED,
     GREEN,
     COLORLESS,
-    GENERIC
+    GENERIC,
+    NO_COLOR
 };
 
 using ManaValue = std::multiset<Colors>;

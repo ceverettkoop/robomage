@@ -13,7 +13,6 @@
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../ecs/events.h"
-#include "../error.h"
 #include "../mana_system.h"
 #include "orderer.h"
 #include "../systems/stack_manager.h"
@@ -24,7 +23,8 @@ static Colors mana_color_for_subtype(const std::string &subtype) {
     if (subtype == "Plains") return WHITE;
     if (subtype == "Island") return BLUE;
     if (subtype == "Swamp") return BLACK;
-    return COLORLESS;
+    if (subtype == "Wastes") return COLORLESS;
+    return NO_COLOR;
 }
 
 // Called on every SBA check. Land types can change due to effects, so this
@@ -42,19 +42,18 @@ static void apply_land_abilities() {
         auto &card_data = global_coordinator.GetComponent<CardData>(entity);
 
         bool is_land = false;
-        bool is_basic = false;
         std::string land_subtype;
         for (auto &type : card_data.types) {
             if (type.kind == TYPE && type.name == "Land") is_land = true;
-            if (type.kind == SUPERTYPE && type.name == "Basic") is_basic = true;
             if (type.kind == SUBTYPE && (type.name == "Mountain" || type.name == "Forest" || type.name == "Plains" ||
-                                            type.name == "Island" || type.name == "Swamp")) {
+                                            type.name == "Island" || type.name == "Swamp" || type.name == "Wastes")) {
                 land_subtype = type.name;
             }
         }
-        if (!is_land || !is_basic || land_subtype.empty()) continue;
+        if (!is_land || land_subtype.empty()) continue;
 
         Colors required_color = mana_color_for_subtype(land_subtype);
+        if(required_color == NO_COLOR) continue;
 
         // Skip only if this exact color ability already exists
         auto &perm_abilities = global_coordinator.GetComponent<Permanent>(entity).abilities;
