@@ -126,7 +126,7 @@ void process_action(const LegalAction& action, Game& game, std::shared_ptr<Order
                         }
                     }
 
-                    int target_choice = InputLogger::instance().get_logged_input(cur_game.turn);
+                    int target_choice = InputLogger::instance().get_logged_input(cur_game.turn, static_cast<int>(valid_targets.size()));
                     if (target_choice >= 0 && target_choice < static_cast<int>(valid_targets.size())) {
                         ability.target = valid_targets[static_cast<size_t>(target_choice)];
                         printf("Targeting choice %d\n", target_choice);
@@ -201,7 +201,8 @@ static void declare_attackers(Game& game, std::shared_ptr<Orderer> orderer) {
         }
         printf("  -1: Confirm\n");
 
-        int creature_choice = InputLogger::instance().get_logged_input(cur_game.turn);
+        // num_choices = eligible creatures + 1 implicit confirm (-1)
+        int creature_choice = InputLogger::instance().get_logged_input(cur_game.turn, static_cast<int>(eligible.size()) + 1);
 
         if (creature_choice == -1) break;
 
@@ -226,7 +227,7 @@ static void declare_attackers(Game& game, std::shared_ptr<Orderer> orderer) {
                 // TODO: planeswalker entries here
             }
 
-            int target_choice = InputLogger::instance().get_logged_input(cur_game.turn);
+            int target_choice = InputLogger::instance().get_logged_input(cur_game.turn, static_cast<int>(targets.size()));
 
             if (target_choice >= 0 && target_choice < static_cast<int>(targets.size())) {
                 cr.is_attacking = true;
@@ -318,7 +319,8 @@ static void declare_blockers(Game& game, std::shared_ptr<Orderer> orderer) {
         }
         printf("  -1: Confirm\n");
 
-        int blocker_choice = InputLogger::instance().get_logged_input(cur_game.turn);
+        // num_choices = eligible blockers + 1 implicit confirm (-1)
+        int blocker_choice = InputLogger::instance().get_logged_input(cur_game.turn, static_cast<int>(eligible.size()) + 1);
 
         if (blocker_choice == -1) break;
 
@@ -343,7 +345,7 @@ static void declare_blockers(Game& game, std::shared_ptr<Orderer> orderer) {
                 printf("  %zu: %s [%d/%d]\n", i, acd.name.c_str(), acr.power, acr.toughness);
             }
 
-            int attacker_choice = InputLogger::instance().get_logged_input(cur_game.turn);
+            int attacker_choice = InputLogger::instance().get_logged_input(cur_game.turn, static_cast<int>(attackers.size()));
 
             if (attacker_choice >= 0 && attacker_choice < static_cast<int>(attackers.size())) {
                 cr.is_blocking = true;

@@ -6,6 +6,7 @@
 #include "cli.h"
 #include "error.h"
 #include "classes/game.h"
+#include "machine_io.h"
 
 extern std::string RESOURCE_DIR;
 
@@ -41,17 +42,50 @@ void InputLogger::init_replay(const std::string& replay_path) {
     printf("REPLAY MODE: Using seed %u from %s\n", replay_seed, replay_path.c_str());
 }
 
+void InputLogger::init_machine(unsigned int seed, const std::string& resource_dir) {
+    log_path = resource_dir + "/logs/game_" + std::to_string(seed) + ".log";
+    log_file.open(log_path);
+    if (!log_file.is_open()) {
+        non_fatal_error("Failed to open log file: " + log_path);
+    } else {
+        log_file << seed << std::endl;
+        log_file.flush();
+    }
+    machine_mode = true;
+    replay_mode = false;
+}
+
 bool InputLogger::is_replay_mode() const { return replay_mode; }
+bool InputLogger::is_machine_mode() const { return machine_mode; }
 
 unsigned int InputLogger::get_replay_seed() const { return replay_seed; }
 
-int InputLogger::get_logged_input(size_t cur_turn) {
+int InputLogger::get_logged_input(size_t cur_turn, int num_choices) {
     if (replay_mode) {
         int choice;
         if (!(replay_file >> choice)) {
             fatal_error("Replay file ended unexpectedly");
         }
         printf("(REPLAY) Input: %d\n", choice);
+        return choice;
+    }
+
+    if (machine_mode) {
+        // Emit QUERY line to stdout: "QUERY: <num_choices> <f0> <f1> ... <fN>"
+        std::vector<float> state = serialize_state();
+        printf("QUERY: %d", num_choices);
+        for (float f : state) printf(" %.4f", f);
+        printf("\n");
+        fflush(stdout);
+
+        // Read response integer from stdin
+        int choice = -1;
+        if (scanf("%d", &choice) != 1) choice = -1;
+        // consume rest of line
+        int c;
+        while ((c = getchar()) != '\n' && c != EOF);
+
+        if (log_file.is_open()) { log_file << choice << std::endl; log_file.flush(); }
         return choice;
     }
 

@@ -51,16 +51,20 @@ int main(int argc, char const *argv[]) {
     // Parse command-line arguments
     std::string replay_file_path;
     bool replay_mode = false;
+    bool machine_mode = false;
     for (int i = 1; i < argc; i++) {
         if (std::string(argv[i]) == "--replay" && i + 1 < argc) {
             replay_mode = true;
             replay_file_path = argv[i + 1];
             i++;
+        } else if (std::string(argv[i]) == "--machine") {
+            machine_mode = true;
         } else if (std::string(argv[i]) == "--help" || std::string(argv[i]) == "-h") {
             printf("robomage %s\n", VERSION_NUMBER);
             printf("Usage: %s [options]\n", argv[0]);
             printf("Options:\n");
             printf("  --replay <logfile>  Replay a previously logged game\n");
+            printf("  --machine           Machine mode: emit QUERY lines for AI input\n");
             printf("  --help, -h          Show this help message\n");
             return 0;
         }
@@ -83,7 +87,11 @@ int main(int argc, char const *argv[]) {
         std::string mkdir_cmd = "mkdir -p " + RESOURCE_DIR + "/logs";
         int result = system(mkdir_cmd.c_str());
         (void)result;  // Ignore return value
-        InputLogger::instance().init_logging(seed, RESOURCE_DIR);
+        if (machine_mode) {
+            InputLogger::instance().init_machine(seed, RESOURCE_DIR);
+        } else {
+            InputLogger::instance().init_logging(seed, RESOURCE_DIR);
+        }
     }
     std::srand(seed);
     printf("Using seed: %u\n", seed);
@@ -157,7 +165,7 @@ int main(int argc, char const *argv[]) {
         print_hand(orderer, cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B);
 
         print_legal_actions(cur_game, legal_actions);
-        choice = InputLogger::instance().get_logged_input(cur_game.turn);
+        choice = InputLogger::instance().get_logged_input(cur_game.turn, static_cast<int>(legal_actions.size()));
 
         if (choice >= 0 && choice < static_cast<int>(legal_actions.size())) {
             process_action(legal_actions[static_cast<size_t>(choice)], cur_game, orderer);
