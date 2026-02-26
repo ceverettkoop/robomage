@@ -1,5 +1,6 @@
 #include "game.h"
 
+#include "../components/creature.h"
 #include "../components/damage.h"
 #include "../components/permanent.h"
 #include "../components/player.h"
@@ -96,11 +97,21 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager) {
                     break;
                 case DECLARE_BLOCKERS:
                     cur_step = COMBAT_DAMAGE;
+                    combat_damage_dealt = false;
                     break;
                 case COMBAT_DAMAGE:
                     cur_step = END_OF_COMBAT;
                     break;
                 case END_OF_COMBAT:
+                    // Clear all combat state from creatures
+                    for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
+                        if (!global_coordinator.entity_has_component<Creature>(entity)) continue;
+                        auto &creature = global_coordinator.GetComponent<Creature>(entity);
+                        creature.is_attacking = false;
+                        creature.attack_target = 0;
+                        creature.is_blocking = false;
+                        creature.blocking_target = 0;
+                    }
                     cur_step = SECOND_MAIN;
                     break;
                 case SECOND_MAIN:

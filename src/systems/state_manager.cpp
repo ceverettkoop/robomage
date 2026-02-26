@@ -166,6 +166,68 @@ void StateManager::state_based_effects(Game &game) {
         global_coordinator.SendEvent(death_event);
     }
 
+    // Deal combat damage
+    if (game.cur_step == COMBAT_DAMAGE && !game.combat_damage_dealt) {
+        printf("\n--- Combat Damage ---\n");
+
+        for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
+            if (!global_coordinator.entity_has_component<Creature>(entity)) continue;
+            auto& cr = global_coordinator.GetComponent<Creature>(entity);
+            if (!cr.is_attacking) continue;
+
+            auto& cd = global_coordinator.GetComponent<CardData>(entity);
+
+            // Collect blockers for this attacker
+            std::vector<Entity> blockers;
+            for (Entity b = 0; b < MAX_ENTITIES; ++b) {
+                if (!global_coordinator.entity_has_component<Creature>(b)) continue;
+                auto& bcr = global_coordinator.GetComponent<Creature>(b);
+                if (bcr.is_blocking && bcr.blocking_target == entity) {
+                    blockers.push_back(b);
+                }
+            }
+
+            if (blockers.empty()) {
+                // Unblocked — deal damage to attack target
+                uint32_t dmg = cr.power;
+                if (dmg > 0) {
+                    deal_damage(entity, cr.attack_target, dmg);
+                    if (global_coordinator.entity_has_component<Player>(cr.attack_target)) {
+                        auto& target_player = global_coordinator.GetComponent<Player>(cr.attack_target);
+                        target_player.life_total -= static_cast<int>(dmg);
+                        const char* tname = (cr.attack_target == game.player_a_entity) ? "Player A" : "Player B";
+                        printf("  %s deals %u damage to %s\n", cd.name.c_str(), dmg, tname);
+                    }
+                }
+            } else {
+                // Blocked — assign damage to blockers in order, blockers deal damage back
+                uint32_t remaining = cr.power;
+                for (auto blocker : blockers) {
+                    auto& bcr = global_coordinator.GetComponent<Creature>(blocker);
+                    auto& bcd = global_coordinator.GetComponent<CardData>(blocker);
+
+                    // Blocker deals damage to attacker
+                    if (bcr.power > 0) {
+                        deal_damage(blocker, entity, bcr.power);
+                        printf("  %s deals %u damage to %s\n", bcd.name.c_str(), bcr.power, cd.name.c_str());
+                    }
+
+                    // Attacker deals damage to blocker (lethal to each in order, overflow to next)
+                    if (remaining > 0) {
+                        uint32_t assigned = (remaining >= bcr.toughness) ? bcr.toughness : remaining;
+                        deal_damage(entity, blocker, assigned);
+                        printf("  %s deals %u damage to %s\n", cd.name.c_str(), assigned, bcd.name.c_str());
+                        remaining -= assigned;
+                    }
+                }
+            }
+        }
+
+        game.combat_damage_dealt = true;
+        printf("--- End Combat Damage ---\n\n");
+        return;  // Re-enter loop so SBAs process deaths from damage
+    }
+
     // Check for mandatory choices based on game step
     // These must be resolved before priority-based actions can occur
 

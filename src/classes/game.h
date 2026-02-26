@@ -57,6 +57,7 @@ struct Game {
         MandatoryChoice pending_choice = NONE;
         bool attackers_declared = false;
         bool blockers_declared = false;
+        bool combat_damage_dealt = false;
 
         bool ready_to_resolve();
         bool is_mandatory_choice_pending() const;

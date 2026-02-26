@@ -248,11 +248,128 @@ static void declare_attackers(Game& game, std::shared_ptr<Orderer> orderer) {
             auto& cd = global_coordinator.GetComponent<CardData>(entity);
             Zone::Ownership t = (cr.attack_target == game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
             printf("  %s -> %s\n", cd.name.c_str(), player_name(t).c_str());
+
+            // Tap the attacker
+            auto& permanent = global_coordinator.GetComponent<Permanent>(entity);
+            permanent.is_tapped = true;
         }
     }
     if (!any) printf("  (none)\n");
 
     game.attackers_declared = true;
+    game.pending_choice = NONE;
+}
+
+static void declare_blockers(Game& game, std::shared_ptr<Orderer> orderer) {
+    Zone::Ownership defending_player = game.player_a_turn ? Zone::PLAYER_B : Zone::PLAYER_A;
+
+    // Collect attackers
+    std::vector<Entity> attackers;
+    for (auto entity : orderer->mEntities) {
+        if (!global_coordinator.entity_has_component<Creature>(entity)) continue;
+        auto& cr = global_coordinator.GetComponent<Creature>(entity);
+        if (cr.is_attacking) attackers.push_back(entity);
+    }
+
+    if (attackers.empty()) {
+        printf("No attackers — skipping declare blockers.\n");
+        game.blockers_declared = true;
+        game.pending_choice = NONE;
+        return;
+    }
+
+    // Collect eligible blockers: defending player's untapped creatures
+    std::vector<Entity> eligible;
+    for (auto entity : orderer->mEntities) {
+        if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
+        if (!global_coordinator.entity_has_component<Creature>(entity)) continue;
+        auto& permanent = global_coordinator.GetComponent<Permanent>(entity);
+        if (permanent.controller != defending_player) continue;
+        if (permanent.is_tapped) continue;
+        eligible.push_back(entity);
+    }
+
+    if (eligible.empty()) {
+        printf("No creatures eligible to block.\n");
+        game.blockers_declared = true;
+        game.pending_choice = NONE;
+        return;
+    }
+
+    // Selection loop
+    while (true) {
+        printf("\n--- Declare Blockers (%s) ---\n", player_name(defending_player).c_str());
+        printf("Attackers:\n");
+        for (size_t i = 0; i < attackers.size(); i++) {
+            auto& cd = global_coordinator.GetComponent<CardData>(attackers[i]);
+            auto& cr = global_coordinator.GetComponent<Creature>(attackers[i]);
+            printf("  %zu: %s [%d/%d]\n", i, cd.name.c_str(), cr.power, cr.toughness);
+        }
+        printf("Your creatures:\n");
+        for (size_t i = 0; i < eligible.size(); i++) {
+            auto& cd = global_coordinator.GetComponent<CardData>(eligible[i]);
+            auto& cr = global_coordinator.GetComponent<Creature>(eligible[i]);
+            printf("  %zu: %s [%d/%d]", i, cd.name.c_str(), cr.power, cr.toughness);
+            if (cr.is_blocking) {
+                auto& attacker_cd = global_coordinator.GetComponent<CardData>(cr.blocking_target);
+                printf(" blocking %s", attacker_cd.name.c_str());
+            }
+            printf("\n");
+        }
+        printf("  -1: Confirm\n");
+
+        int blocker_choice = InputLogger::instance().get_logged_input(cur_game.turn);
+
+        if (blocker_choice == -1) break;
+
+        if (blocker_choice < 0 || blocker_choice >= static_cast<int>(eligible.size())) {
+            printf("Invalid selection.\n");
+            continue;
+        }
+
+        auto& cr = global_coordinator.GetComponent<Creature>(eligible[static_cast<size_t>(blocker_choice)]);
+        auto& cd = global_coordinator.GetComponent<CardData>(eligible[static_cast<size_t>(blocker_choice)]);
+
+        if (cr.is_blocking) {
+            // Toggle off
+            cr.is_blocking = false;
+            cr.blocking_target = 0;
+            printf("%s removed from blockers.\n", cd.name.c_str());
+        } else {
+            printf("Select attacker for %s to block:\n", cd.name.c_str());
+            for (size_t i = 0; i < attackers.size(); i++) {
+                auto& acd = global_coordinator.GetComponent<CardData>(attackers[i]);
+                auto& acr = global_coordinator.GetComponent<Creature>(attackers[i]);
+                printf("  %zu: %s [%d/%d]\n", i, acd.name.c_str(), acr.power, acr.toughness);
+            }
+
+            int attacker_choice = InputLogger::instance().get_logged_input(cur_game.turn);
+
+            if (attacker_choice >= 0 && attacker_choice < static_cast<int>(attackers.size())) {
+                cr.is_blocking = true;
+                cr.blocking_target = attackers[static_cast<size_t>(attacker_choice)];
+                auto& acd = global_coordinator.GetComponent<CardData>(cr.blocking_target);
+                printf("%s blocking %s.\n", cd.name.c_str(), acd.name.c_str());
+            } else {
+                printf("Invalid attacker.\n");
+            }
+        }
+    }
+
+    printf("\nBlockers declared:\n");
+    bool any = false;
+    for (auto entity : eligible) {
+        auto& cr = global_coordinator.GetComponent<Creature>(entity);
+        if (cr.is_blocking) {
+            any = true;
+            auto& cd = global_coordinator.GetComponent<CardData>(entity);
+            auto& acd = global_coordinator.GetComponent<CardData>(cr.blocking_target);
+            printf("  %s blocking %s\n", cd.name.c_str(), acd.name.c_str());
+        }
+    }
+    if (!any) printf("  (none)\n");
+
+    game.blockers_declared = true;
     game.pending_choice = NONE;
 }
 
@@ -262,9 +379,7 @@ void proc_mandatory_choice(Game& game, std::shared_ptr<Orderer> orderer) {
             declare_attackers(game, orderer);
             break;
         case DECLARE_BLOCKERS_CHOICE:
-            printf("TODO: Declare blockers\n");
-            game.blockers_declared = true;
-            game.pending_choice = NONE;
+            declare_blockers(game, orderer);
             break;
         case CLEANUP_DISCARD:
             printf("TODO: Cleanup discard\n");
