@@ -55,6 +55,10 @@ BIN_DIR = os.path.join(_REPO_ROOT, "bin")  # game must be run from here for reso
 class RoboMageEnv(gym.Env):
     metadata = {"render_modes": ["human"]}
 
+    # Maximum decision steps per episode before truncation.  Prevents infinite
+    # loops (e.g. a model that toggles attackers forever) from hanging training.
+    MAX_STEPS = 1000
+
     def __init__(self, binary_path: str = BINARY, render_mode=None):
         super().__init__()
         self.binary_path = os.path.realpath(binary_path)
@@ -71,6 +75,7 @@ class RoboMageEnv(gym.Env):
         self._num_choices = 1
         self._obs = np.zeros(OBS_SIZE, dtype=np.float32)
         self._pending_confirm = False  # True when last query used the -1 convention
+        self._step_count = 0
 
     # ------------------------------------------------------------------
     # gymnasium API
@@ -78,6 +83,7 @@ class RoboMageEnv(gym.Env):
 
     def reset(self, *, seed=None, options=None):
         super().reset(seed=seed)
+        self._step_count = 0
         self._kill_proc()
         self._proc = subprocess.Popen(
             [self.binary_path, "--machine"],
@@ -93,6 +99,11 @@ class RoboMageEnv(gym.Env):
 
     def step(self, action: int):
         assert self._proc is not None, "Call reset() first"
+
+        self._step_count += 1
+        if self._step_count >= self.MAX_STEPS:
+            self._kill_proc()
+            return np.zeros(OBS_SIZE, dtype=np.float32), 0.0, False, True, {}
 
         # Remap: if the last query included a confirm slot (num_choices had +1),
         # and the agent chose the last index, send -1 to the game.
@@ -153,19 +164,6 @@ class RoboMageEnv(gym.Env):
             if line.startswith("QUERY: "):
                 parts = line[7:].split()
                 self._num_choices = min(int(parts[0]), MAX_ACTIONS)
-                # The +1 confirm convention: if num_choices from game is N+1
-                # and the last slot represents -1, we set pending_confirm.
-                # We detect this heuristically: any mandatory-choice query
-                # with num_choices > 1 may use -1. For simplicity we always
-                # allow confirm as the last action — the game will just ignore
-                # invalid inputs from the main loop.
-                self._pending_confirm = True
-
-                # Parse state vector (first STATE_SIZE floats after the count)
-                state_floats = parts[1 : STATE_SIZE + 1]
-                state_arr = np.array(state_floats, dtype=np.float32)
-                if len(state_arr) < STATE_SIZE:
-                    state_arr = np.pad(state_arr, (0, STATE_SIZE - len(state_arr)))
 
                 # Parse per-action category ints (one per legal action, after state)
                 # Normalise by ACTION_CATEGORY_MAX so values are in [0.0, 1.0].
@@ -174,6 +172,19 @@ class RoboMageEnv(gym.Env):
                 cat_arr = np.zeros(MAX_ACTIONS, dtype=np.float32)
                 for i, c in enumerate(cat_raw):
                     cat_arr[i] = int(c) / ACTION_CATEGORY_MAX
+
+                # The -1 confirm convention only applies to mandatory attacker/blocker
+                # choice queries.  Categories 2=SEL_ATK, 3=CONF_ATK, 4=SEL_BLK,
+                # 5=CONF_BLK indicate a mandatory choice; the last action in those
+                # queries must be sent as -1 to the game.
+                _MANDATORY = {2, 3, 4, 5}
+                self._pending_confirm = any(int(c) in _MANDATORY for c in cat_raw)
+
+                # Parse state vector (first STATE_SIZE floats after the count)
+                state_floats = parts[1 : STATE_SIZE + 1]
+                state_arr = np.array(state_floats, dtype=np.float32)
+                if len(state_arr) < STATE_SIZE:
+                    state_arr = np.pad(state_arr, (0, STATE_SIZE - len(state_arr)))
 
                 self._obs = np.concatenate([state_arr, cat_arr])
                 break
@@ -215,12 +226,38 @@ _CAT_CAST       = 7
 _CAT_TARGET     = 8
 _CAT_LAND       = 9
 
+# ── Battlefield layout (mirror machine_io.h) ────────────────────────────────
+_BF_START         = 33
+_BF_SLOT_SIZE     = 40   # 8 status floats + 32 card one-hot
+_BF_A_SLOTS       = 10   # Player A occupies slots 0-9
+# Status offsets within a slot
+_OFF_POWER        = 0
+_OFF_TOUGHNESS    = 1
+_OFF_IS_TAPPED    = 2
+_OFF_IS_ATTACKING = 3
+_OFF_HAS_SICKNESS = 5
+
+
+def _all_eligible_creatures_attacking(obs: np.ndarray, slot_start: int) -> bool:
+    """Return True if every untapped, non-sick creature in the given 10-slot range is attacking."""
+    any_eligible = False
+    for slot in range(_BF_A_SLOTS):
+        base = _BF_START + (slot_start + slot) * _BF_SLOT_SIZE
+        if obs[base + _OFF_POWER] <= 0.0 and obs[base + _OFF_TOUGHNESS] <= 0.0:
+            continue  # empty slot
+        if obs[base + _OFF_IS_TAPPED] > 0.5 or obs[base + _OFF_HAS_SICKNESS] > 0.5:
+            continue  # can't attack
+        any_eligible = True
+        if obs[base + _OFF_IS_ATTACKING] <= 0.5:
+            return False  # eligible but not yet attacking
+    return any_eligible
+
 
 def scripted_action(obs: np.ndarray, num_choices: int) -> int:
     """
     Rule-based Player B:
       - Never blocks (confirms immediately when blockers are requested)
-      - Attacks with every creature
+      - Attacks with every eligible creature
       - Plays the first available land
       - Taps mana whenever the game offers it (only offered when it enables a spell)
       - Casts every spell (Grizzly Bears, Lightning Bolt aimed at Player A)
@@ -235,12 +272,22 @@ def scripted_action(obs: np.ndarray, num_choices: int) -> int:
         if c == _CAT_CONF_BLK:
             return i
 
-    # 2. Select attackers greedily — attack with everything
-    for i, c in enumerate(cats):
-        if c == _CAT_SEL_ATK:
-            return i
+    # 2. Attacker selection: select until all eligible creatures are attacking, then confirm.
+    #    The game re-offers already-attacking creatures as SEL_ATK (for deselection), so we
+    #    must check the battlefield state rather than blindly picking SEL_ATK every time.
+    if any(c == _CAT_SEL_ATK for c in cats):
+        # Player A occupies slots 0-9, Player B occupies slots 10-19
+        slot_start = 0 if obs[31] > 0.5 else _BF_A_SLOTS
+        if _all_eligible_creatures_attacking(obs, slot_start):
+            for i, c in enumerate(cats):
+                if c == _CAT_CONF_ATK:
+                    return i
+        else:
+            for i, c in enumerate(cats):
+                if c == _CAT_SEL_ATK:
+                    return i
 
-    # 3. Confirm attack declaration when no more attackers to add
+    # 3. Confirm attack declaration (fallback, e.g. no eligible attackers)
     for i, c in enumerate(cats):
         if c == _CAT_CONF_ATK:
             return i
@@ -250,19 +297,19 @@ def scripted_action(obs: np.ndarray, num_choices: int) -> int:
         if c == _CAT_TARGET:
             return i
 
-    # 5. Play land (do before tapping so the new land can contribute mana)
+    # 5. Cast any spell immediately if affordable
+    for i, c in enumerate(cats):
+        if c == _CAT_CAST:
+            return i
+
+    # 6. Play land (may unlock mana for a spell next query)
     for i, c in enumerate(cats):
         if c == _CAT_LAND:
             return i
 
-    # 6. Tap mana (game only offers this when it enables a castable spell)
+    # 7. Tap mana to work toward an affordable spell
     for i, c in enumerate(cats):
         if c == _CAT_MANA:
-            return i
-
-    # 7. Cast any spell
-    for i, c in enumerate(cats):
-        if c == _CAT_CAST:
             return i
 
     # Default: pass priority

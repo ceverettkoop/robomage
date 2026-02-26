@@ -23,7 +23,7 @@ import argparse
 import os
 import random as _random
 
-from env import RoboMageEnv, ModelVsScriptedEnv, OBS_SIZE, MAX_ACTIONS, BINARY
+from env import RoboMageEnv, ModelVsScriptedEnv, scripted_action, OBS_SIZE, STATE_SIZE, MAX_ACTIONS, ACTION_CATEGORY_MAX, BINARY
 from extractor import CardGameExtractor
 
 try:
@@ -202,6 +202,52 @@ def observe(binary_path: str, model_path: str):
         print("=== Draw ===")
 
 
+_CAT_NAMES = {
+    0: "PASS", 1: "MANA", 2: "SEL_ATK", 3: "CONF_ATK",
+    4: "SEL_BLK", 5: "CONF_BLK", 6: "ACTIVATE", 7: "CAST",
+    8: "TARGET", 9: "LAND", 10: "OTHER",
+}
+
+
+def watch_scripted(binary_path: str):
+    """Run one game with both players driven by the scripted agent and print every decision."""
+    import numpy as np
+    import sys
+
+    env = RoboMageEnv(binary_path=binary_path, render_mode="human")
+    obs, _ = env.reset()
+    done = False
+    step = 0
+
+    print("=== Scripted (A) vs Scripted (B) ===\n", flush=True)
+
+    while not done:
+        num_choices = env._num_choices
+        player = "A" if obs[31] > 0.5 else "B"
+        action = scripted_action(obs, num_choices)
+
+        cats = np.round(obs[STATE_SIZE:STATE_SIZE + num_choices] * ACTION_CATEGORY_MAX).astype(int)
+        chosen_cat = _CAT_NAMES.get(int(cats[action]), str(cats[action]))
+        all_cats = [_CAT_NAMES.get(int(c), str(c)) for c in cats]
+
+        print(f"[{step:4d}] P{player}  choices={num_choices}  available={all_cats}  -> {action} ({chosen_cat})",
+              flush=True)
+        sys.stderr.flush()
+
+        obs, reward, terminated, truncated, _ = env.step(action)
+        done = terminated or truncated
+        step += 1
+
+    print(flush=True)
+    if reward > 0:
+        print("=== Player A wins ===")
+    elif reward < 0:
+        print("=== Player B wins ===")
+    else:
+        print("=== No reward recorded ===")
+    env.close()
+
+
 def evaluate(binary_path: str, model_path: str, n_games: int = 100):
     """Play n_games with a trained model and report win rate."""
     env = RoboMageEnv(binary_path=binary_path)
@@ -241,10 +287,13 @@ if __name__ == "__main__":
     parser.add_argument("--baseline", default=None, help="Evaluate model .zip vs random agent")
     parser.add_argument("--baseline-games", type=int, default=100)
     parser.add_argument("--observe", default=None, help="Watch model .zip play one game vs random")
+    parser.add_argument("--watch-scripted", action="store_true", help="Watch one game: scripted A vs scripted B")
     parser.add_argument("--tally", action="store_true", help="Print A/B win tally after each rollout")
     args = parser.parse_args()
 
-    if args.observe:
+    if args.watch_scripted:
+        watch_scripted(args.binary)
+    elif args.observe:
         observe(args.binary, args.observe)
     elif args.baseline:
         baseline(args.binary, args.baseline, args.baseline_games)
