@@ -2,6 +2,7 @@
 #define ACTION_H
 
 #include "../ecs/entity.h"
+#include "../components/ability.h"
 #include <string>
 
 enum ActionType {
@@ -13,9 +14,10 @@ enum ActionType {
 
 struct LegalAction {
     ActionType type;
-    Entity source_entity;  // Card/ability being used (if applicable)
-    Entity target_entity;  // Target of the action (if applicable)
-    std::string description;  // Human-readable description
+    Entity source_entity;  // Card/permanent being used (if applicable)
+    Entity target_entity;  // Target entity (if applicable)
+    Ability ability;       // Ability being activated (ACTIVATE_ABILITY only)
+    std::string description;
 
     LegalAction(ActionType t, const std::string& desc)
         : type(t), source_entity(0), target_entity(0), description(desc) {}
@@ -25,6 +27,9 @@ struct LegalAction {
 
     LegalAction(ActionType t, Entity source, Entity target, const std::string& desc)
         : type(t), source_entity(source), target_entity(target), description(desc) {}
+
+    LegalAction(ActionType t, Entity source, const Ability& ab, const std::string& desc)
+        : type(t), source_entity(source), target_entity(0), ability(ab), description(desc) {}
 };
 
 #endif /* ACTION_H */

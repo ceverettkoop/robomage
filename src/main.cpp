@@ -16,6 +16,7 @@
 #include "components/effect.h"
 #include "components/permanent.h"
 #include "components/player.h"
+#include "components/spell.h"
 #include "components/zone.h"
 #include "debug.h"
 #include "ecs/coordinator.h"
@@ -94,6 +95,7 @@ int main(int argc, char const *argv[]) {
     global_coordinator.RegisterComponent<Damage>();
     global_coordinator.RegisterComponent<Permanent>();
     global_coordinator.RegisterComponent<Player>();
+    global_coordinator.RegisterComponent<Spell>();
     global_coordinator.RegisterComponent<Zone>();
     global_coordinator.RegisterComponent<Effect>();
 

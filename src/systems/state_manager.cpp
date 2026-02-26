@@ -1,5 +1,8 @@
 #include "state_manager.h"
 
+#include <vector>
+
+#include "../classes/game.h"
 #include "../components/ability.h"
 #include "../components/carddata.h"
 #include "../components/creature.h"
@@ -11,17 +14,16 @@
 #include "../ecs/coordinator.h"
 #include "../ecs/events.h"
 #include "../error.h"
-#include "../classes/game.h"
 #include "../mana_system.h"
 #include "../systems/orderer.h"
 #include "../systems/stack_manager.h"
 
-static Colors mana_color_for_subtype(const std::string& subtype) {
+static Colors mana_color_for_subtype(const std::string &subtype) {
     if (subtype == "Mountain") return RED;
-    if (subtype == "Forest")   return GREEN;
-    if (subtype == "Plains")   return WHITE;
-    if (subtype == "Island")   return BLUE;
-    if (subtype == "Swamp")    return BLACK;
+    if (subtype == "Forest") return GREEN;
+    if (subtype == "Plains") return WHITE;
+    if (subtype == "Island") return BLUE;
+    if (subtype == "Swamp") return BLACK;
     return COLORLESS;
 }
 
@@ -31,23 +33,22 @@ static Colors mana_color_for_subtype(const std::string& subtype) {
 static void apply_land_abilities() {
     for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
         if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
-        //TODO make this work for tokens
+        // TODO make this work for tokens
         if (!global_coordinator.entity_has_component<CardData>(entity)) continue;
 
-        auto& zone = global_coordinator.GetComponent<Zone>(entity);
+        auto &zone = global_coordinator.GetComponent<Zone>(entity);
         if (zone.location != Zone::BATTLEFIELD) continue;
 
-        auto& card_data = global_coordinator.GetComponent<CardData>(entity);
+        auto &card_data = global_coordinator.GetComponent<CardData>(entity);
 
         bool is_land = false;
         bool is_basic = false;
         std::string land_subtype;
-        for (auto& type : card_data.types) {
-            if (type.kind == TYPE      && type.name == "Land")  is_land = true;
+        for (auto &type : card_data.types) {
+            if (type.kind == TYPE && type.name == "Land") is_land = true;
             if (type.kind == SUPERTYPE && type.name == "Basic") is_basic = true;
-            if (type.kind == SUBTYPE   && (type.name == "Mountain" || type.name == "Forest" ||
-                                           type.name == "Plains"   || type.name == "Island"  ||
-                                           type.name == "Swamp")) {
+            if (type.kind == SUBTYPE && (type.name == "Mountain" || type.name == "Forest" || type.name == "Plains" ||
+                                            type.name == "Island" || type.name == "Swamp")) {
                 land_subtype = type.name;
             }
         }
@@ -56,10 +57,9 @@ static void apply_land_abilities() {
         Colors required_color = mana_color_for_subtype(land_subtype);
 
         // Skip only if this exact color ability already exists
+        auto &perm_abilities = global_coordinator.GetComponent<Permanent>(entity).abilities;
         bool already_present = false;
-        for (auto ability_entity : card_data.abilities) {
-            if (!global_coordinator.entity_has_component<Ability>(ability_entity)) continue;
-            auto& ab = global_coordinator.GetComponent<Ability>(ability_entity);
+        for (auto ab : perm_abilities) {
             if (ab.category == "AddMana" && static_cast<Colors>(ab.amount) == required_color) {
                 already_present = true;
                 break;
@@ -72,10 +72,8 @@ static void apply_land_abilities() {
         mana_ability.category = "AddMana";
         mana_ability.amount = static_cast<size_t>(required_color);
 
-        Entity ability_id = global_coordinator.CreateEntity();
-        mana_ability.source = ability_id;
-        global_coordinator.AddComponent(ability_id, mana_ability);
-        card_data.abilities.insert(ability_id);
+        mana_ability.source = entity;
+        perm_abilities.push_back(mana_ability);
     }
 }
 
@@ -86,14 +84,14 @@ void StateManager::init() {
     global_coordinator.SetSystemSignature<StateManager>(signature);
 }
 
-//layers / timestamps would be implemented here; for now order is arbitrary
-void StateManager::state_based_effects(Game& game) {
+// layers / timestamps would be implemented here; for now order is arbitrary
+void StateManager::state_based_effects(Game &game) {
     // Reset pending choice
     game.pending_choice = NONE;
 
     // Check for player death (0 or less life) - this ends the game immediately
-    auto& player_a = global_coordinator.GetComponent<Player>(game.player_a_entity);
-    auto& player_b = global_coordinator.GetComponent<Player>(game.player_b_entity);
+    auto &player_a = global_coordinator.GetComponent<Player>(game.player_a_entity);
+    auto &player_b = global_coordinator.GetComponent<Player>(game.player_b_entity);
 
     if (player_a.life_total <= 0) {
         printf("\nPlayer A has %d life - Player B wins!\n", player_a.life_total);
@@ -110,13 +108,13 @@ void StateManager::state_based_effects(Game& game) {
     for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
         if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
         if (!global_coordinator.entity_has_component<CardData>(entity)) continue;
-        auto& zone = global_coordinator.GetComponent<Zone>(entity);
+        auto &zone = global_coordinator.GetComponent<Zone>(entity);
         if (zone.location != Zone::BATTLEFIELD) continue;
         if (global_coordinator.entity_has_component<Creature>(entity)) continue;
 
-        auto& card_data = global_coordinator.GetComponent<CardData>(entity);
+        auto &card_data = global_coordinator.GetComponent<CardData>(entity);
         bool is_creature = false;
-        for (auto& type : card_data.types) {
+        for (auto &type : card_data.types) {
             if (type.kind == TYPE && type.name == "Creature") {
                 is_creature = true;
                 break;
@@ -138,12 +136,12 @@ void StateManager::state_based_effects(Game& game) {
     for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
         if (!global_coordinator.entity_has_component<Creature>(entity)) continue;
         if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
-        auto& zone = global_coordinator.GetComponent<Zone>(entity);
+        auto &zone = global_coordinator.GetComponent<Zone>(entity);
         if (zone.location != Zone::BATTLEFIELD) continue;
 
         if (!global_coordinator.entity_has_component<Damage>(entity)) continue;
-        auto& creature = global_coordinator.GetComponent<Creature>(entity);
-        auto& damage = global_coordinator.GetComponent<Damage>(entity);
+        auto &creature = global_coordinator.GetComponent<Creature>(entity);
+        auto &damage = global_coordinator.GetComponent<Damage>(entity);
         if (damage.damage_counters >= creature.toughness) {
             creatures_to_destroy.push_back(entity);
         }
@@ -151,8 +149,8 @@ void StateManager::state_based_effects(Game& game) {
 
     // Move destroyed creatures to graveyard
     for (auto entity : creatures_to_destroy) {
-        auto& zone = global_coordinator.GetComponent<Zone>(entity);
-        auto& card_data = global_coordinator.GetComponent<CardData>(entity);
+        auto &zone = global_coordinator.GetComponent<Zone>(entity);
+        auto &card_data = global_coordinator.GetComponent<CardData>(entity);
         printf("%s is destroyed (lethal damage)\n", card_data.name.c_str());
 
         zone.location = Zone::GRAVEYARD;
@@ -206,9 +204,8 @@ void StateManager::state_based_effects(Game& game) {
     }
 }
 
-std::vector<LegalAction> StateManager::determine_legal_actions(const Game& game,
-                                                               std::shared_ptr<Orderer> orderer,
-                                                               std::shared_ptr<StackManager> stack_manager) {
+std::vector<LegalAction> StateManager::determine_legal_actions(
+    const Game &game, std::shared_ptr<Orderer> orderer, std::shared_ptr<StackManager> stack_manager) {
     std::vector<LegalAction> actions;
 
     // Determine whose turn/priority it is
@@ -222,16 +219,15 @@ std::vector<LegalAction> StateManager::determine_legal_actions(const Game& game,
     if ((game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
         game.player_a_turn == game.player_a_has_priority &&  // It's their turn
         global_coordinator.entity_has_component<Player>(priority_player_entity)) {
-
-        auto& player = global_coordinator.GetComponent<Player>(priority_player_entity);
+        auto &player = global_coordinator.GetComponent<Player>(priority_player_entity);
 
         if (player.lands_played_this_turn == 0) {
             // Check hand for lands
             auto hand = orderer->get_hand(priority_player);
             for (auto card_entity : hand) {
-                auto& card_data = global_coordinator.GetComponent<CardData>(card_entity);
+                auto &card_data = global_coordinator.GetComponent<CardData>(card_entity);
                 bool is_land = false;
-                for (auto& type : card_data.types) {
+                for (auto &type : card_data.types) {
                     if (type.kind == TYPE && type.name == "Land") {
                         is_land = true;
                         break;
@@ -251,11 +247,11 @@ std::vector<LegalAction> StateManager::determine_legal_actions(const Game& game,
 
     auto hand = orderer->get_hand(priority_player);
     for (auto card_entity : hand) {
-        auto& card_data = global_coordinator.GetComponent<CardData>(card_entity);
+        auto &card_data = global_coordinator.GetComponent<CardData>(card_entity);
 
         // Check if it's a spell (not a land)
         bool is_instant = false, is_sorcery = false, is_creature = false;
-        for (auto& type : card_data.types) {
+        for (auto &type : card_data.types) {
             if (type.kind == TYPE) {
                 if (type.name == "Instant") {
                     is_instant = true;
@@ -283,55 +279,53 @@ std::vector<LegalAction> StateManager::determine_legal_actions(const Game& game,
         }
     }
 
-    //checking permanents for activated abilities
-    //TODO timing restrictions 
+    // checking permanents for activated abilities
+    // TODO timing restrictions
     for (auto entity : orderer->mEntities) {
         if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
 
-        auto& zone = global_coordinator.GetComponent<Zone>(entity);
+        auto &zone = global_coordinator.GetComponent<Zone>(entity);
         if (zone.location != Zone::BATTLEFIELD) continue;
 
-        auto& permanent = global_coordinator.GetComponent<Permanent>(entity);
+        auto &permanent = global_coordinator.GetComponent<Permanent>(entity);
         if (permanent.controller != priority_player) continue;
         if (permanent.is_tapped) continue;  // Can't tap already-tapped permanent
 
         // Check for mana abilities
-        if (global_coordinator.entity_has_component<CardData>(entity)) {
-            auto& card_data = global_coordinator.GetComponent<CardData>(entity);
-            for (auto ability_entity : card_data.abilities) {
-                auto& ability = global_coordinator.GetComponent<Ability>(ability_entity);
-                if (ability.category == "AddMana" && ability.ability_type == Ability::ACTIVATED) {
-                    Colors mana_color = static_cast<Colors>(ability.amount);
-                    std::string mana_symbol;
-                    switch (mana_color) {
-                        case WHITE:
-                            mana_symbol = "W";
-                            break;
-                        case BLUE:
-                            mana_symbol = "U";
-                            break;
-                        case BLACK:
-                            mana_symbol = "B";
-                            break;
-                        case RED:
-                            mana_symbol = "R";
-                            break;
-                        case GREEN:
-                            mana_symbol = "G";
-                            break;
-                        case COLORLESS:
-                            mana_symbol = "C";
-                            break;
-                        default:
-                            mana_symbol = "?";
-                            break;
-                    }
-                    std::string desc = "Tap " + card_data.name + " for {" + mana_symbol + "}";
-                    actions.push_back(LegalAction(ACTIVATE_ABILITY, entity, ability_entity, desc));
+        auto &perm_abilities = global_coordinator.GetComponent<Permanent>(entity).abilities;
+        auto &card_data = global_coordinator.GetComponent<CardData>(entity);
+        for (auto ab : perm_abilities) {
+            if (ab.category == "AddMana" && ab.ability_type == Ability::ACTIVATED) {
+                Colors mana_color = static_cast<Colors>(ab.amount);
+                std::string mana_symbol;
+                switch (mana_color) {
+                    case WHITE:
+                        mana_symbol = "W";
+                        break;
+                    case BLUE:
+                        mana_symbol = "U";
+                        break;
+                    case BLACK:
+                        mana_symbol = "B";
+                        break;
+                    case RED:
+                        mana_symbol = "R";
+                        break;
+                    case GREEN:
+                        mana_symbol = "G";
+                        break;
+                    case COLORLESS:
+                        mana_symbol = "C";
+                        break;
+                    default:
+                        mana_symbol = "?";
+                        break;
                 }
+                std::string desc = "Tap " + card_data.name + " for {" + mana_symbol + "}";
+                actions.push_back(LegalAction(ACTIVATE_ABILITY, entity, ab, desc));
             }
         }
-    } 
+    }
 
     return actions;
 }

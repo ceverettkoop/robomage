@@ -7,6 +7,7 @@
 #include "../components/carddata.h"
 #include "../components/damage.h"
 #include "../components/permanent.h"
+#include "../components/spell.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 
@@ -87,13 +88,12 @@ void StackManager::resolve_top() {
 
             printf("%s enters the battlefield\n", card_data.name.c_str());
         } else {
-            // Instant/Sorcery - resolve abilities then go to graveyard
-            for (auto ability_entity : card_data.abilities) {
-                auto& ability = global_coordinator.GetComponent<Ability>(ability_entity);
-                if (ability.ability_type == Ability::SPELL) {
-                    ability.resolve();
-                }
+            // Instant/Sorcery - resolve the Ability component added at cast time, then go to graveyard
+            if (global_coordinator.entity_has_component<Ability>(top_entity)) {
+                global_coordinator.GetComponent<Ability>(top_entity).resolve();
+                global_coordinator.RemoveComponent<Ability>(top_entity);
             }
+            global_coordinator.RemoveComponent<Spell>(top_entity);
             zone.location = Zone::GRAVEYARD;
         }
     } else if (global_coordinator.entity_has_component<Ability>(top_entity)) {
