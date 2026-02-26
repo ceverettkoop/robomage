@@ -368,49 +368,56 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
     }
 
     // checking permanents for activated abilities (mana only for now)
-    // Only offer a tap if it would make at least one currently-unaffordable spell castable.
+    // Collect all untapped mana sources first so we can evaluate multi-tap sequences.
+    struct ManaSource { Entity entity; Ability ab; Colors color; };
+    std::vector<ManaSource> mana_sources;
     for (auto entity : orderer->mEntities) {
         if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
-
         auto &zone = global_coordinator.GetComponent<Zone>(entity);
         if (zone.location != Zone::BATTLEFIELD) continue;
-
         auto &permanent = global_coordinator.GetComponent<Permanent>(entity);
         if (permanent.controller != priority_player) continue;
         if (permanent.is_tapped) continue;
-
-        auto &perm_abilities = global_coordinator.GetComponent<Permanent>(entity).abilities;
-        auto &card_data = global_coordinator.GetComponent<CardData>(entity);
-        for (auto ab : perm_abilities) {
+        for (auto ab : permanent.abilities) {
             if (ab.category != "AddMana" || ab.ability_type != Ability::ACTIVATED) continue;
-
-            Colors mana_color = static_cast<Colors>(ab.amount);
-
-            // Simulate adding this mana to the pool and check if it unlocks any spell.
-            auto trial_pool = priority_player_obj.mana;
-            trial_pool.insert(mana_color);
-            bool would_help = false;
-            for (auto &cost : unaffordable_spell_costs) {
-                if (can_afford_pool(trial_pool, cost)) {
-                    would_help = true;
-                    break;
-                }
-            }
-            if (!would_help) continue;
-
-            std::string mana_symbol;
-            switch (mana_color) {
-                case WHITE:    mana_symbol = "W"; break;
-                case BLUE:     mana_symbol = "U"; break;
-                case BLACK:    mana_symbol = "B"; break;
-                case RED:      mana_symbol = "R"; break;
-                case GREEN:    mana_symbol = "G"; break;
-                case COLORLESS: mana_symbol = "C"; break;
-                default:       mana_symbol = "?"; break;
-            }
-            std::string desc = "Tap " + card_data.name + " for {" + mana_symbol + "}";
-            actions.push_back(LegalAction(ACTIVATE_ABILITY, entity, ab, desc));
+            mana_sources.push_back({entity, ab, static_cast<Colors>(ab.amount)});
         }
+    }
+
+    // Build the maximum reachable pool: current mana + every untapped source.
+    auto max_pool = priority_player_obj.mana;
+    for (auto &ms : mana_sources) max_pool.insert(ms.color);
+
+    // Offer a tap iff it is necessary for at least one spell that is reachable from
+    // the full set of available mana. "Necessary" means removing this source from the
+    // max pool makes that spell unaffordable — handles multi-tap sequences correctly.
+    for (auto &ms : mana_sources) {
+        bool would_help = false;
+        for (auto &cost : unaffordable_spell_costs) {
+            if (!can_afford_pool(max_pool, cost)) continue;  // Spell unreachable regardless
+            auto pool_without = max_pool;
+            auto it = pool_without.find(ms.color);
+            if (it != pool_without.end()) pool_without.erase(it);
+            if (!can_afford_pool(pool_without, cost)) {
+                would_help = true;
+                break;
+            }
+        }
+        if (!would_help) continue;
+
+        auto &card_data = global_coordinator.GetComponent<CardData>(ms.entity);
+        std::string mana_symbol;
+        switch (ms.color) {
+            case WHITE:     mana_symbol = "W"; break;
+            case BLUE:      mana_symbol = "U"; break;
+            case BLACK:     mana_symbol = "B"; break;
+            case RED:       mana_symbol = "R"; break;
+            case GREEN:     mana_symbol = "G"; break;
+            case COLORLESS: mana_symbol = "C"; break;
+            default:        mana_symbol = "?"; break;
+        }
+        std::string desc = "Tap " + card_data.name + " for {" + mana_symbol + "}";
+        actions.push_back(LegalAction(ACTIVATE_ABILITY, ms.entity, ms.ab, desc));
     }
 
     return actions;

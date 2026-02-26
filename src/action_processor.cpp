@@ -95,7 +95,6 @@ void process_action(const LegalAction& action, Game& game, std::shared_ptr<Order
                 // Handle targeting
                 if (ability.valid_tgts != "N_A") {
                     // Build target list: players, creatures, TODO: planeswalkers, battles
-                    printf("Choose target:\n");
                     std::vector<Entity> valid_targets;
 
                     valid_targets.push_back(cur_game.player_a_entity);
@@ -114,27 +113,27 @@ void process_action(const LegalAction& action, Game& game, std::shared_ptr<Order
                         // TODO: check for Battle component when implemented
                     }
 
-                    for (size_t i = 0; i < valid_targets.size(); i++) {
-                        Entity target = valid_targets[i];
-                        if (global_coordinator.entity_has_component<Player>(target)) {
-                            auto& player = global_coordinator.GetComponent<Player>(target);
-                            std::string name = (target == cur_game.player_a_entity) ? "Player A" : "Player B";
-                            printf("  %zu: %s (%d life)\n", i, name.c_str(), player.life_total);
-                        } else {
-                            auto& target_card = global_coordinator.GetComponent<CardData>(target);
-                            printf("  %zu: %s\n", i, target_card.name.c_str());
+                    while (true) {
+                        printf("Choose target:\n");
+                        for (size_t i = 0; i < valid_targets.size(); i++) {
+                            Entity target = valid_targets[i];
+                            if (global_coordinator.entity_has_component<Player>(target)) {
+                                auto& player = global_coordinator.GetComponent<Player>(target);
+                                std::string name = (target == cur_game.player_a_entity) ? "Player A" : "Player B";
+                                printf("  %zu: %s (%d life)\n", i, name.c_str(), player.life_total);
+                            } else {
+                                auto& target_card = global_coordinator.GetComponent<CardData>(target);
+                                printf("  %zu: %s\n", i, target_card.name.c_str());
+                            }
                         }
-                    }
 
-                    int target_choice = InputLogger::instance().get_logged_input(cur_game.turn, static_cast<int>(valid_targets.size()));
-                    if (target_choice >= 0 && target_choice < static_cast<int>(valid_targets.size())) {
-                        ability.target = valid_targets[static_cast<size_t>(target_choice)];
-                        printf("Targeting choice %d\n", target_choice);
-                    } else {
-                        printf("Invalid target, spell fizzles\n");
-                        zone.location = Zone::GRAVEYARD;
-                        game.take_action();
-                        return;
+                        int target_choice = InputLogger::instance().get_logged_input(cur_game.turn, static_cast<int>(valid_targets.size()));
+                        if (target_choice >= 0 && target_choice < static_cast<int>(valid_targets.size())) {
+                            ability.target = valid_targets[static_cast<size_t>(target_choice)];
+                            printf("Targeting choice %d\n", target_choice);
+                            break;
+                        }
+                        printf("Invalid target, must choose a legal target.\n");
                     }
                 }
 
