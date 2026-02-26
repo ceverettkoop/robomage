@@ -1,7 +1,7 @@
 """
 Play interactively against a trained RoboMage model.
 
-You play as Player A. The model plays as Player B.
+The model plays as Player A. You play as Player B.
 
 Usage:
     train/.venv/bin/python train/play.py --model checkpoints/robomage_final.zip
@@ -42,7 +42,7 @@ def play(binary_path: str, model_path: str):
     obs, _ = env.reset()
     done = False
 
-    print("=== You (Player A) vs Model (Player B) ===\n", flush=True)
+    print("=== Model (Player A) vs You (Player B) ===\n", flush=True)
 
     while not done:
         num_choices = env._num_choices
@@ -50,6 +50,12 @@ def play(binary_path: str, model_path: str):
         cats = np.round(obs[STATE_SIZE:STATE_SIZE + num_choices] * ACTION_CATEGORY_MAX).astype(int)
 
         if a_has_priority:
+            masks = env.action_masks() if USE_MASKABLE else None
+            action, _ = model.predict(obs, action_masks=masks, deterministic=True)
+            action = int(action)
+            cat_name = _CAT_NAMES.get(int(cats[action]) if action < len(cats) else -1, "?")
+            print(f"[Model/A] {cat_name}", flush=True)
+        else:
             print(f"\nYour turn — {num_choices} option(s):", flush=True)
             for i, c in enumerate(cats):
                 print(f"  {i}: {_CAT_NAMES.get(int(c), str(c))}")
@@ -62,12 +68,6 @@ def play(binary_path: str, model_path: str):
                     print(f"Enter a number between 0 and {num_choices - 1}.")
                 except (ValueError, EOFError):
                     print("Enter a number.")
-        else:
-            masks = env.action_masks() if USE_MASKABLE else None
-            action, _ = model.predict(obs, action_masks=masks, deterministic=True)
-            action = int(action)
-            cat_name = _CAT_NAMES.get(int(cats[action]) if action < len(cats) else -1, "?")
-            print(f"[Model/B] {cat_name}", flush=True)
 
         obs, reward, terminated, truncated, _ = env.step(action)
         done = terminated or truncated
@@ -75,9 +75,9 @@ def play(binary_path: str, model_path: str):
     env.close()
     print()
     if reward > 0:
-        print("=== You win! ===")
+        print("=== Model (A) wins! ===")
     elif reward < 0:
-        print("=== Model wins! ===")
+        print("=== You (B) win! ===")
     else:
         print("=== Draw ===")
 
