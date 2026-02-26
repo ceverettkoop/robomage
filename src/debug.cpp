@@ -116,7 +116,6 @@ std::string player_name(Zone::Ownership owner) {
 void print_legal_actions(const Game& cur_game, std::vector<LegalAction> legal_actions) {
     Zone::Ownership priority_player = cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
     printf("\n%s has priority. Legal actions:\n", player_name(priority_player).c_str());
-
     for (size_t i = 0; i < legal_actions.size(); i++) {
         printf("  %zu: %s\n", i, legal_actions[i].description.c_str());
     }
@@ -179,7 +178,7 @@ void print_battlefield(std::shared_ptr<Orderer> orderer) {
                     if (global_coordinator.entity_has_component<Damage>(entity)) {
                         auto& damage = global_coordinator.GetComponent<Damage>(entity);
                         if (damage.damage_counters > 0) {
-                            printf(" (%zu damage)", damage.damage_counters);
+                            printf(" (%u damage)", damage.damage_counters);
                         }
                     }
                 }
@@ -193,16 +192,21 @@ void print_battlefield(std::shared_ptr<Orderer> orderer) {
 }
 
 void print_mana_pools() {
-    printf("\n--- MANA POOLS ---\n");
+    bool header_printed = false;
+
     for (auto owner : {Zone::PLAYER_A, Zone::PLAYER_B}) {
         Entity player_entity = get_player_entity(owner);
         auto& player = global_coordinator.GetComponent<Player>(player_entity);
 
-        printf("%s: ", player_name(owner).c_str());
         if (player.mana.empty()) {
-            printf("(empty)");
+            //nothing
         } else {
+            if(!header_printed){
+                printf("\n--- MANA POOLS ---\n");
+                header_printed = true;
+            }
             for (auto color : player.mana) {
+                printf("%s: ", player_name(owner).c_str());
                 switch (color) {
                     case WHITE:
                         printf("{W} ");

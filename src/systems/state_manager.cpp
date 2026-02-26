@@ -9,6 +9,7 @@
 #include "../components/player.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
+#include "../ecs/events.h"
 #include "../error.h"
 #include "../classes/game.h"
 #include "../mana_system.h"
@@ -160,6 +161,11 @@ void StateManager::state_based_effects(Game& game) {
             global_coordinator.RemoveComponent<Permanent>(entity);
         }
         global_coordinator.RemoveComponent<Creature>(entity);
+        global_coordinator.RemoveComponent<Damage>(entity);
+
+        Event death_event(Events::CREATURE_DIED);
+        death_event.SetParam(Params::ENTITY, entity);
+        global_coordinator.SendEvent(death_event);
     }
 
     // Check for mandatory choices based on game step

@@ -34,8 +34,8 @@ Entity Game::gen_player(const Deck &deck) {
 }
 
 void Game::pass_priority() {
-    if(player_a_has_priority) a_has_passed = true;
-    if(!player_a_has_priority) b_has_passed = true;
+    if (player_a_has_priority) a_has_passed = true;
+    if (!player_a_has_priority) b_has_passed = true;
     player_a_has_priority = !player_a_has_priority;
 }
 
@@ -46,96 +46,110 @@ void Game::take_action() {
 }
 
 bool Game::advance_step(std::shared_ptr<StackManager> stack_manager) {
-    if(ready_to_resolve()){
-        if(!stack_manager->is_empty()){
+    //will advance step and return true if step advanced
+    //otherwise will resove stack or pass priority as needed
+    if (ready_to_resolve()) {
+        if (!stack_manager->is_empty()) {
             stack_manager->resolve_top();
-            //reset pass tracking when something has resolved
+            // reset pass tracking when something has resolved
             a_has_passed = false;
             b_has_passed = false;
-        }else{
-        // Get active player entity
-        Entity active_player_entity = player_a_turn ? player_a_entity : player_b_entity;
-        Zone::Ownership active_player = player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B;
+            // remaining in current step
+            return false;
+        } else {
+            //stack is empty and both players have passed
+            // step is changing
+            Entity active_player_entity = player_a_turn ? player_a_entity : player_b_entity;
+            Zone::Ownership active_player = player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B;
 
-        switch (cur_step) {
-            case UNTAP:
-                // Untap all permanents controlled by active player
-                for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
-                    if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
+            switch (cur_step) {
+                case UNTAP:
+                    // Untap all permanents controlled by active player
+                    for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
+                        if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
 
-                    auto& permanent = global_coordinator.GetComponent<Permanent>(entity);
-                    if (permanent.controller == active_player) {
-                        permanent.is_tapped = false;
-                        permanent.has_summoning_sickness = false;  // Clear summoning sickness
+                        auto &permanent = global_coordinator.GetComponent<Permanent>(entity);
+                        if (permanent.controller == active_player) {
+                            permanent.is_tapped = false;
+                            permanent.has_summoning_sickness = false;  // Clear summoning sickness
+                        }
                     }
-                }
 
-                cur_step = UPKEEP;
-                break;
-            case UPKEEP:
-                cur_step = DRAW;
-                break;
-            case DRAW:
-                cur_step = FIRST_MAIN;
-                break;
-            case FIRST_MAIN:
-                cur_step = BEGIN_COMBAT;
-                break;
-            case BEGIN_COMBAT:
-                cur_step = DECLARE_ATTACKERS;
-                attackers_declared = false;  // Reset for new combat
-                break;
-            case DECLARE_ATTACKERS:
-                cur_step = DECLARE_BLOCKERS;
-                blockers_declared = false;  // Reset for new combat
-                break;
-            case DECLARE_BLOCKERS:
-                cur_step = COMBAT_DAMAGE;
-                break;
-            case COMBAT_DAMAGE:
-                cur_step = END_OF_COMBAT;
-                break;
-            case END_OF_COMBAT:
-                cur_step = SECOND_MAIN;
-                break;
-            case SECOND_MAIN:
-                cur_step = END_STEP;
-                break;
-            case END_STEP:
-                cur_step = CLEANUP;
-                break;
-            case CLEANUP:
-                // Clear damage from all creatures
-                for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
-                    if (global_coordinator.entity_has_component<Damage>(entity)) {
-                        auto& damage = global_coordinator.GetComponent<Damage>(entity);
-                        damage.damage_counters = 0;
+                    cur_step = UPKEEP;
+                    break;
+                case UPKEEP:
+                    cur_step = DRAW;
+                    break;
+                case DRAW:
+                    cur_step = FIRST_MAIN;
+                    break;
+                case FIRST_MAIN:
+                    cur_step = BEGIN_COMBAT;
+                    break;
+                case BEGIN_COMBAT:
+                    cur_step = DECLARE_ATTACKERS;
+                    attackers_declared = false;  // Reset for new combat
+                    break;
+                case DECLARE_ATTACKERS:
+                    cur_step = DECLARE_BLOCKERS;
+                    blockers_declared = false;  // Reset for new combat
+                    break;
+                case DECLARE_BLOCKERS:
+                    cur_step = COMBAT_DAMAGE;
+                    break;
+                case COMBAT_DAMAGE:
+                    cur_step = END_OF_COMBAT;
+                    break;
+                case END_OF_COMBAT:
+                    cur_step = SECOND_MAIN;
+                    break;
+                case SECOND_MAIN:
+                    cur_step = END_STEP;
+                    break;
+                case END_STEP:
+                    cur_step = CLEANUP;
+                    break;
+                case CLEANUP:
+                    // Clear damage from all creatures
+                    for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
+                        if (global_coordinator.entity_has_component<Damage>(entity)) {
+                            auto &damage = global_coordinator.GetComponent<Damage>(entity);
+                            damage.damage_counters = 0;
+                        }
                     }
-                }
 
-                // Reset lands played counter
-                auto& player = global_coordinator.GetComponent<Player>(active_player_entity);
-                player.lands_played_this_turn = 0;
+                    // Reset lands played counter
+                    auto &player = global_coordinator.GetComponent<Player>(active_player_entity);
+                    player.lands_played_this_turn = 0;
 
-                // Empty mana pools
-                empty_mana_pool(Zone::PLAYER_A);
-                empty_mana_pool(Zone::PLAYER_B);
+                    // Empty mana pools
+                    empty_mana_pool(Zone::PLAYER_A);
+                    empty_mana_pool(Zone::PLAYER_B);
 
-                // End of turn, move to next turn
-                cur_step = UNTAP;
-                turn++;
-                player_a_turn = !player_a_turn;
-                break;
+                    // End of turn, move to next turn
+                    cur_step = UNTAP;
+                    turn++;
+                    player_a_turn = !player_a_turn;
+                    break;
+            }
+            // if the new step is untap or cleanup, we pretend both players passed
+            // hacky
+            if (cur_step == UNTAP || cur_step == CLEANUP) {
+                a_has_passed = true;
+                b_has_passed = true;
+            } else {
+                //otherwise we now get active player priority
+                player_a_has_priority = player_a_turn;
+                // Reset pass tracking
+                a_has_passed = false;
+                b_has_passed = false;
+            }
+            return true;
         }
-        // Active player (whose turn it is) gets priority at start of new step
-        player_a_has_priority = player_a_turn;
-        // Reset pass tracking
-        a_has_passed = false;
-        b_has_passed = false;
-        }
+    }else{
+        //return false if not ready to resolve, meaning someone has priority
+        return false;
     }
-
-    return false;
 }
 
 bool Game::is_mandatory_choice_pending() const {

@@ -55,9 +55,12 @@ int InputLogger::get_logged_input(size_t cur_turn) {
         return choice;
     }
 
-    // Auto-pass mode: return 0 and log it until we reach the target turn
+    // Auto-pass mode: return 0 and log it until we reach the target turn,
+    // but halt at Declare Attackers so the player can act.
     if (auto_pass_until_turn >= 0) {
-        if ((int)cur_turn < auto_pass_until_turn) {
+        if (cur_game.cur_step == DECLARE_ATTACKERS) {
+            auto_pass_until_turn = -1;
+        } else if ((int)cur_turn < auto_pass_until_turn) {
             if (log_file.is_open()) { log_file << 0 << std::endl; log_file.flush(); }
             return 0;
         }

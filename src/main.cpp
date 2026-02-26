@@ -19,6 +19,7 @@
 #include "components/zone.h"
 #include "debug.h"
 #include "ecs/coordinator.h"
+#include "ecs/events.h"
 #include "input_logger.h"
 #include "systems/orderer.h"
 #include "systems/stack_manager.h"
@@ -103,6 +104,15 @@ int main(int argc, char const *argv[]) {
     StateManager::init();
     StackManager::init();
 
+    // Register event listeners
+    global_coordinator.AddEventListener(Events::CREATURE_DIED, [](Event& event) {
+        Entity dead = event.GetParam<Entity>(Params::ENTITY);
+        if (global_coordinator.entity_has_component<CardData>(dead)) {
+            auto& cd = global_coordinator.GetComponent<CardData>(dead);
+            printf("[EVENT] CREATURE_DIED: %s\n", cd.name.c_str());
+        }
+    });
+
     // one time setup for this game
     cur_game = Game(seed);
     cur_game.generate_players(DEFAULT_DECK_ONE, DEFAULT_DECK_TWO);
@@ -116,7 +126,6 @@ int main(int argc, char const *argv[]) {
     // PLAYER A IS ALWAYS ON THE PLAY IN THIS WORLD
     // game loop
     while (cur_game.ended != true) {
-        print_step(cur_game);
         state_manager->state_based_effects(cur_game);
         // mandatory choices
         // e.g. declare target, declare attackers or declare blockers - discard at cleanup - legend rule; choice at
@@ -125,14 +134,20 @@ int main(int argc, char const *argv[]) {
             proc_mandatory_choice(cur_game, orderer);
             continue;
         }
+        //move to next step if nothing else can occur or if both players have passed priority
+        //in those cases advance_step will return true
         if (cur_game.advance_step(stack_manager)) {
             continue;
         }
+        
+        //active player can do something, list all options
+        //if only option is pass priority we just do it
         auto legal_actions = state_manager->determine_legal_actions(cur_game, orderer, stack_manager);
         if (legal_actions.size() == 1) {
             cur_game.pass_priority();
             continue;
         }
+        print_step(cur_game);
         // prompt for action
         print_stack(orderer);
         print_battlefield(orderer);
