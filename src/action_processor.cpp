@@ -55,7 +55,6 @@ void process_action(const LegalAction& action, Game& game, std::shared_ptr<Order
         }
 
         case ACTIVATE_ABILITY: {
-            // Tap for mana (mana ability doesn't use stack)
             Entity permanent_entity = action.source_entity;
             Entity ability_entity = action.target_entity;
 
@@ -63,18 +62,16 @@ void process_action(const LegalAction& action, Game& game, std::shared_ptr<Order
             auto& ability = global_coordinator.GetComponent<Ability>(ability_entity);
             auto& card_data = global_coordinator.GetComponent<CardData>(permanent_entity);
 
-            // Tap the permanent
             permanent.is_tapped = true;
 
-            // Add mana to player's pool
             Zone::Ownership controller = permanent.controller;
             Colors mana_color = static_cast<Colors>(ability.amount);
             add_mana(controller, mana_color);
 
             printf("%s tapped %s for mana\n", player_name(controller).c_str(), card_data.name.c_str());
 
-            // Mana abilities use take_action()
-            game.take_action();
+            //PRIORITY DOES NOT PASS
+            //TAKE ACTION IS NOT CALLED
             break;
         }
 
@@ -87,8 +84,6 @@ void process_action(const LegalAction& action, Game& game, std::shared_ptr<Order
 
             // Pay mana cost
             spend_mana(caster, card_data.mana_cost);
-
-            printf("%s casts %s\n", player_name(caster).c_str(), card_data.name.c_str());
 
             // Check if spell requires targets
             bool requires_target = false;
@@ -156,6 +151,7 @@ void process_action(const LegalAction& action, Game& game, std::shared_ptr<Order
                     }
                 }
             }
+            printf("%s casts %s\n", player_name(caster).c_str(), card_data.name.c_str());
 
             // Move to stack
             zone.location = Zone::STACK;
