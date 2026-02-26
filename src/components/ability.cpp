@@ -23,7 +23,7 @@ void Ability::resolve() {
             if (deal_damage(source, target, amount)) {
                 printf("Dealt %zu damage to creature\n", amount);
             } else {
-                printf("Failed to deal damage to target\n");
+                printf("Invalid target\n");
             }
         }
     }
