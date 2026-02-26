@@ -23,7 +23,7 @@ import argparse
 import os
 import random as _random
 
-from env import RoboMageEnv, STATE_SIZE, MAX_ACTIONS, BINARY
+from env import RoboMageEnv, ModelVsRandomEnv, OBS_SIZE, MAX_ACTIONS, BINARY
 
 try:
     from sb3_contrib import MaskablePPO
@@ -42,13 +42,13 @@ from stable_baselines3.common.monitor import Monitor
 
 CHECKPOINT_DIR = "checkpoints"
 LOG_DIR = "logs"
-TOTAL_TIMESTEPS = 40_000
+TOTAL_TIMESTEPS = 1_000_000
 N_ENVS = 4  # parallel game processes
 
 
 def make_env(binary_path: str, rank: int):
     def _init():
-        env = RoboMageEnv(binary_path=binary_path)
+        env = ModelVsRandomEnv(binary_path=binary_path)
         if USE_MASKABLE:
             env = ActionMasker(env, lambda e: e.action_masks())
         env = Monitor(env)

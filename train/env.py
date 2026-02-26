@@ -33,6 +33,7 @@ import subprocess
 import sys
 import os
 import re
+import random as _random
 import numpy as np
 
 try:
@@ -201,3 +202,51 @@ class RoboMageEnv(gym.Env):
             except Exception:
                 pass
             self._proc = None
+
+
+class ModelVsRandomEnv(gym.Env):
+    """Wraps RoboMageEnv so the model always plays as Player A.
+
+    All Player B decision points are resolved automatically with uniformly
+    random legal actions before the step is returned to the training loop.
+    The model therefore only ever sees and acts on Player A's turns.
+
+    obs[31] == 1.0 means Player A has priority (guaranteed on every step
+    returned to the caller).  obs[31] == 0.0 would indicate Player B, but
+    that never surfaces here.
+    """
+
+    def __init__(self, binary_path: str = BINARY, render_mode=None):
+        super().__init__()
+        self._env = RoboMageEnv(binary_path=binary_path, render_mode=render_mode)
+        self.observation_space = self._env.observation_space
+        self.action_space = self._env.action_space
+        self.render_mode = render_mode
+
+    def reset(self, *, seed=None, options=None):
+        obs, info = self._env.reset(seed=seed, options=options)
+        obs, _reward, terminated, truncated, info = self._skip_b_turns(
+            obs, 0.0, False, False, info
+        )
+        return obs, info
+
+    def step(self, action: int):
+        obs, reward, terminated, truncated, info = self._env.step(action)
+        if not (terminated or truncated):
+            obs, reward, terminated, truncated, info = self._skip_b_turns(
+                obs, reward, terminated, truncated, info
+            )
+        return obs, reward, terminated, truncated, info
+
+    def _skip_b_turns(self, obs, reward, terminated, truncated, info):
+        """Resolve consecutive Player B turns with random actions."""
+        while not (terminated or truncated) and obs[31] <= 0.5:
+            random_action = _random.randint(0, self._env._num_choices - 1)
+            obs, reward, terminated, truncated, info = self._env.step(random_action)
+        return obs, reward, terminated, truncated, info
+
+    def action_masks(self) -> np.ndarray:
+        return self._env.action_masks()
+
+    def close(self):
+        self._env.close()
