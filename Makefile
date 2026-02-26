@@ -37,8 +37,8 @@ CHECKFLAGS = -Wall -Wformat -Wformat=2 -Wconversion -Wimplicit-fallthrough \
 C_CHECKFLAGS = -Werror=implicit -Werror=incompatible-pointer-types -Werror=int-conversion
 
 ifeq ($(BUILD),RELEASE)
-	CFLAGS += -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=3 -o2
-	CXXFLAGS += -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=3 -o2
+	CFLAGS += -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=3 -O2
+	CXXFLAGS += -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=3 -O2
 else
 	CFLAGS += $(DEBUGFLAGS) $(CHECKFLAGS) $(C_CHECKFLAGS)
 	CXXFLAGS += $(DEBUGFLAGS) $(CHECKFLAGS)

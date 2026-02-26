@@ -21,7 +21,7 @@ static std::string value_from_script(std::string script, std::string key);
 static std::vector<std::string> multi_values_from_script(std::string script, std::string key);
 static std::multiset<Colors> parse_mana_cost(std::string value);
 static std::set<Type> parse_types(std::string value);
-static std::set<Entity> parse_abilities(std::vector<std::string> lines);
+static std::set<Ability> parse_abilities(std::vector<std::string> lines, const std::set<Type>& types);
 static uint32_t parse_power(std::string value);
 static uint32_t parse_toughness(std::string value);
 
@@ -66,8 +66,8 @@ Entity parse_card_script(std::string path) {
     // TODO optimize
     card.power = parse_power(value_from_script(script_data, "PT"));
     card.toughness = parse_toughness(value_from_script(script_data, "PT"));
-    // register abilities associated with this card as entities unique to this card
-    card.abilities = parse_abilities(multi_values_from_script(script_data, "A"));
+    // parse ability templates; entities are only created when abilities go on the stack
+    card.abilities = parse_abilities(multi_values_from_script(script_data, "A"), card.types);
 
     // no error handling here
     global_coordinator.AddComponent(id, card);
@@ -148,6 +148,7 @@ static std::set<Type> parse_types(std::string value) {
         tokens.push_back(token);
         value.erase(0, pos + delimiter.length());
     }
+    if (!value.empty()) tokens.push_back(value);
     for (auto &&i : tokens) {
         found.name = i;
         // subtypes before types as bandaid for weird types in my list due to... unset cards?
@@ -186,9 +187,9 @@ static uint32_t parse_toughness(std::string value) {
 }
 
 // fed each ability line
-static std::set<Entity> parse_abilities(std::vector<std::string> lines) {
+static std::set<Ability> parse_abilities(std::vector<std::string> lines, const std::set<Type>& types) {
     size_t pos = 0;
-    std::set<Entity> ret_val;
+    std::set<Ability> ret_val;
     for (auto &&line : lines) {
         pos = 0;
         // TODO: ONLY CAN DEAL WITH SPELL ABILITY RN
@@ -198,16 +199,58 @@ static std::set<Entity> parse_abilities(std::vector<std::string> lines) {
         // confirmed spell ability, future switch goes here
         ability.ability_type = Ability::AbilityType::SPELL;
         pos += 4;
-        std::string category = line.substr(pos, line.find(" ", pos));
-        if (category == "DealDamage") {
-            auto id = global_coordinator.CreateEntity();
-            ability.category = category;
-            // spell ability source is card itself?
-            ability.source = id;
-            global_coordinator.AddComponent(id, ability);
-            ret_val.emplace(id);
+        // Check if we're past the end of the string
+        if (pos >= line.length()) continue;
+
+        // Extract category (before first space or pipe)
+        size_t category_end = line.find_first_of(" |", pos);
+        if (category_end == std::string::npos) category_end = line.length();
+
+        // Check if category_end is valid
+        if (category_end <= pos) continue;
+
+        std::string category = line.substr(pos, category_end - pos);
+        ability.category = category;
+
+        // Parse pipe-delimited parameters — applies to all ability categories
+        size_t param_pos = line.find("|", pos);
+        while (param_pos != std::string::npos) {
+            if (param_pos >= line.size()) break;
+            param_pos++;  // Skip '|'
+
+            while (param_pos < line.length() && line[param_pos] == ' ') param_pos++;
+
+            size_t param_end = line.find("|", param_pos);
+            if (param_end == std::string::npos) param_end = line.length();
+
+            std::string param = line.substr(param_pos, param_end - param_pos);
+
+            size_t dollar_pos = param.find("$");
+            if (dollar_pos != std::string::npos) {
+                std::string key = param.substr(0, dollar_pos);
+                std::string value = param.substr(dollar_pos + 1);
+
+                size_t key_start = key.find_first_not_of(" ");
+                size_t key_end = key.find_last_not_of(" ");
+                if (key_start != std::string::npos)
+                    key = key.substr(key_start, key_end - key_start + 1);
+
+                size_t value_start = value.find_first_not_of(" ");
+                size_t value_end = value.find_last_not_of(" ");
+                if (value_start != std::string::npos)
+                    value = value.substr(value_start, value_end - value_start + 1);
+
+                if (key == "NumDmg") {
+                    ability.amount = static_cast<size_t>(std::stoi(value));
+                } else if (key == "ValidTgts") {
+                    ability.valid_tgts = value;
+                }
+            }
+
+            param_pos = param_end;
         }
+        ret_val.emplace(ability);
     }
-    // basic lands having mana abilities is by virtue of their type
+
     return ret_val;
 }
