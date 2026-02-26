@@ -146,7 +146,7 @@ int main(int argc, char const *argv[]) {
         }
         //move to next step if nothing else can occur or if both players have passed priority
         //in those cases advance_step will return true
-        if (cur_game.advance_step(stack_manager)) {
+        if (cur_game.advance_step(stack_manager, orderer)) {
             continue;
         }
 

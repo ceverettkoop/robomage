@@ -9,6 +9,8 @@
 #include "../ecs/entity.h"
 #include "../mana_system.h"
 #include "../systems/stack_manager.h"
+#include "../systems/orderer.h"
+#include "../ecs/events.h"
 #include "deck.h"
 
 extern Coordinator global_coordinator;
@@ -46,7 +48,7 @@ void Game::take_action() {
     b_has_passed = false;
 }
 
-bool Game::advance_step(std::shared_ptr<StackManager> stack_manager) {
+bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared_ptr<Orderer> orderer) {
     //will advance step and return true if step advanced
     //otherwise will resove stack or pass priority as needed
     if (ready_to_resolve()) {
@@ -80,6 +82,14 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager) {
                     break;
                 case UPKEEP:
                     cur_step = DRAW;
+                    //first turn first player skips draw!
+                    if(turn == 0 && player_a_turn == true) break;
+                    orderer->draw(active_player, 1);
+                    {
+                        Event draw_event(Events::PLAYER_DREW_CARD);
+                        draw_event.SetParam(Params::PLAYER, active_player_entity);
+                        global_coordinator.SendEvent(draw_event);
+                    }
                     break;
                 case DRAW:
                     cur_step = FIRST_MAIN;
