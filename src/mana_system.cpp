@@ -11,36 +11,31 @@ Entity get_player_entity(Zone::Ownership player) {
     return (player == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
 }
 
+bool can_afford_pool(const std::multiset<Colors>& pool, const std::multiset<Colors>& cost) {
+    auto remaining = pool;
+
+    // Pay specific colors first
+    for (auto color : cost) {
+        if (color == GENERIC) continue;
+        auto it = remaining.find(color);
+        if (it != remaining.end()) {
+            remaining.erase(it);
+        } else {
+            return false;
+        }
+    }
+
+    size_t generic_needed = cost.count(GENERIC);
+    return remaining.size() >= generic_needed;
+}
+
 bool can_afford(Zone::Ownership player_owner, const std::multiset<Colors>& cost) {
     Entity player_entity = get_player_entity(player_owner);
     if (!global_coordinator.entity_has_component<Player>(player_entity)) {
         return false;
     }
     auto& player = global_coordinator.GetComponent<Player>(player_entity);
-
-    auto pool = player.mana;  // Copy mana pool
-
-    // Pay specific colors first
-    for (auto color : cost) {
-        if (color == GENERIC) continue;  // Handle generic last
-
-        auto it = pool.find(color);
-        if (it != pool.end()) {
-            pool.erase(it);
-        } else {
-            return false;  // Can't pay specific color
-        }
-    }
-
-    // Count generic mana required
-    size_t generic_needed = cost.count(GENERIC);
-
-    // Count remaining mana (any color/colorless can pay for generic)
-    if (pool.size() < generic_needed) {
-        return false;
-    }
-
-    return true;
+    return can_afford_pool(player.mana, cost);
 }
 
 void spend_mana(Zone::Ownership player_owner, const std::multiset<Colors>& cost) {

@@ -10,6 +10,9 @@
 // Get player entity from ownership
 Entity get_player_entity(Zone::Ownership player);
 
+// Check if a given mana pool can afford a cost (does not read player state)
+bool can_afford_pool(const std::multiset<Colors>& pool, const std::multiset<Colors>& cost);
+
 // Check if player can afford a mana cost
 bool can_afford(Zone::Ownership player, const std::multiset<Colors>& cost);
 

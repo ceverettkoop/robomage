@@ -341,8 +341,34 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         }
     }
 
-    // checking permanents for activated abilities
-    // TODO timing restrictions
+    // Build list of spell costs that are timing-legal but not yet affordable.
+    // Used below to decide whether tapping a land would actually help.
+    auto &priority_player_obj = global_coordinator.GetComponent<Player>(priority_player_entity);
+    std::vector<std::multiset<Colors>> unaffordable_spell_costs;
+    for (auto card_entity : hand) {
+        auto &card_data = global_coordinator.GetComponent<CardData>(card_entity);
+        bool is_instant = false, is_sorcery = false, is_creature = false;
+        for (auto &type : card_data.types) {
+            if (type.kind == TYPE) {
+                if (type.name == "Instant")        is_instant = true;
+                else if (type.name == "Sorcery")   is_sorcery = true;
+                else if (type.name == "Creature")  is_creature = true;
+            }
+        }
+        bool timing_ok = false;
+        if (is_instant) {
+            timing_ok = true;
+        } else if (is_sorcery || is_creature) {
+            timing_ok = (game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
+                        (game.player_a_turn == game.player_a_has_priority) && stack_empty;
+        }
+        if (timing_ok && !can_afford(priority_player, card_data.mana_cost)) {
+            unaffordable_spell_costs.push_back(card_data.mana_cost);
+        }
+    }
+
+    // checking permanents for activated abilities (mana only for now)
+    // Only offer a tap if it would make at least one currently-unaffordable spell castable.
     for (auto entity : orderer->mEntities) {
         if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
 
@@ -351,41 +377,39 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
 
         auto &permanent = global_coordinator.GetComponent<Permanent>(entity);
         if (permanent.controller != priority_player) continue;
-        if (permanent.is_tapped) continue;  // Can't tap already-tapped permanent
+        if (permanent.is_tapped) continue;
 
-        // Check for mana abilities
         auto &perm_abilities = global_coordinator.GetComponent<Permanent>(entity).abilities;
         auto &card_data = global_coordinator.GetComponent<CardData>(entity);
         for (auto ab : perm_abilities) {
-            if (ab.category == "AddMana" && ab.ability_type == Ability::ACTIVATED) {
-                Colors mana_color = static_cast<Colors>(ab.amount);
-                std::string mana_symbol;
-                switch (mana_color) {
-                    case WHITE:
-                        mana_symbol = "W";
-                        break;
-                    case BLUE:
-                        mana_symbol = "U";
-                        break;
-                    case BLACK:
-                        mana_symbol = "B";
-                        break;
-                    case RED:
-                        mana_symbol = "R";
-                        break;
-                    case GREEN:
-                        mana_symbol = "G";
-                        break;
-                    case COLORLESS:
-                        mana_symbol = "C";
-                        break;
-                    default:
-                        mana_symbol = "?";
-                        break;
+            if (ab.category != "AddMana" || ab.ability_type != Ability::ACTIVATED) continue;
+
+            Colors mana_color = static_cast<Colors>(ab.amount);
+
+            // Simulate adding this mana to the pool and check if it unlocks any spell.
+            auto trial_pool = priority_player_obj.mana;
+            trial_pool.insert(mana_color);
+            bool would_help = false;
+            for (auto &cost : unaffordable_spell_costs) {
+                if (can_afford_pool(trial_pool, cost)) {
+                    would_help = true;
+                    break;
                 }
-                std::string desc = "Tap " + card_data.name + " for {" + mana_symbol + "}";
-                actions.push_back(LegalAction(ACTIVATE_ABILITY, entity, ab, desc));
             }
+            if (!would_help) continue;
+
+            std::string mana_symbol;
+            switch (mana_color) {
+                case WHITE:    mana_symbol = "W"; break;
+                case BLUE:     mana_symbol = "U"; break;
+                case BLACK:    mana_symbol = "B"; break;
+                case RED:      mana_symbol = "R"; break;
+                case GREEN:    mana_symbol = "G"; break;
+                case COLORLESS: mana_symbol = "C"; break;
+                default:       mana_symbol = "?"; break;
+            }
+            std::string desc = "Tap " + card_data.name + " for {" + mana_symbol + "}";
+            actions.push_back(LegalAction(ACTIVATE_ABILITY, entity, ab, desc));
         }
     }
 
