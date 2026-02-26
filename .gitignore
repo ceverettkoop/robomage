@@ -10,4 +10,4 @@ src/classes/game.cpp
 logs/**
 train/__pycache__/**
 train/logs/**
-checkpoints/robomage_final.zip
+checkpoints/*.zip
