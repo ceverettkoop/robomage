@@ -60,7 +60,9 @@ bool InputLogger::is_machine_mode() const { return machine_mode; }
 
 unsigned int InputLogger::get_replay_seed() const { return replay_seed; }
 
-int InputLogger::get_logged_input(size_t cur_turn, int num_choices) {
+int InputLogger::get_logged_input(size_t cur_turn, const std::vector<ActionCategory>& action_categories) {
+    int num_choices = static_cast<int>(action_categories.size());
+
     if (replay_mode) {
         int choice;
         if (!(replay_file >> choice)) {
@@ -71,10 +73,12 @@ int InputLogger::get_logged_input(size_t cur_turn, int num_choices) {
     }
 
     if (machine_mode) {
-        // Emit QUERY line to stdout: "QUERY: <num_choices> <f0> <f1> ... <fN>"
+        // Emit QUERY line: "QUERY: <num_choices> <f0>...<f192> <cat0>...<catN-1>"
+        // State vector is followed by one ActionCategory int per legal action.
         std::vector<float> state = serialize_state();
         printf("QUERY: %d", num_choices);
         for (float f : state) printf(" %.4f", f);
+        for (ActionCategory cat : action_categories) printf(" %d", static_cast<int>(cat));
         printf("\n");
         fflush(stdout);
 

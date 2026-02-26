@@ -280,7 +280,11 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
     Entity priority_player_entity = get_player_entity(priority_player);
 
     // Pass priority is always legal - because mandatory decisions happen in a different function
-    actions.push_back(LegalAction(PASS_PRIORITY, "Pass priority"));
+    {
+        LegalAction la(PASS_PRIORITY, "Pass priority");
+        la.category = ActionCategory::PASS_PRIORITY;
+        actions.push_back(la);
+    }
 
     // Check for special action: play land
     if ((game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
@@ -302,7 +306,9 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 }
                 if (is_land) {
                     std::string desc = "Play " + card_data.name;
-                    actions.push_back(LegalAction(SPECIAL_ACTION, card_entity, desc));
+                    LegalAction la(SPECIAL_ACTION, card_entity, desc);
+                    la.category = ActionCategory::PLAY_LAND;
+                    actions.push_back(la);
                 }
             }
         }
@@ -342,7 +348,9 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
 
         if (can_cast_now && can_afford(priority_player, card_data.mana_cost)) {
             std::string desc = "Cast " + card_data.name;
-            actions.push_back(LegalAction(CAST_SPELL, card_entity, desc));
+            LegalAction la(CAST_SPELL, card_entity, desc);
+            la.category = ActionCategory::CAST_SPELL;
+            actions.push_back(la);
         }
     }
 
@@ -422,7 +430,9 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             default:        mana_symbol = "?"; break;
         }
         std::string desc = "Tap " + card_data.name + " for {" + mana_symbol + "}";
-        actions.push_back(LegalAction(ACTIVATE_ABILITY, ms.entity, ms.ab, desc));
+        LegalAction la(ACTIVATE_ABILITY, ms.entity, ms.ab, desc);
+        la.category = ActionCategory::MANA_ABILITY;
+        actions.push_back(la);
     }
 
     return actions;

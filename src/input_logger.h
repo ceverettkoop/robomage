@@ -3,6 +3,8 @@
 
 #include <fstream>
 #include <string>
+#include <vector>
+#include "classes/action.h"
 
 class InputLogger {
    public:
@@ -15,9 +17,10 @@ class InputLogger {
     bool is_machine_mode() const;
     unsigned int get_replay_seed() const;
 
-    // num_choices: how many valid actions exist at this decision point (-1 = unspecified).
-    // In machine mode this is emitted in the QUERY so the Python side can mask actions.
-    int get_logged_input(size_t cur_turn, int num_choices = -1);
+    // action_categories: one entry per legal action at this decision point.
+    // In machine mode the count and per-action categories are emitted in the
+    // QUERY line so the Python side can mask actions and learn action semantics.
+    int get_logged_input(size_t cur_turn, const std::vector<ActionCategory>& action_categories);
 
    private:
     InputLogger() = default;

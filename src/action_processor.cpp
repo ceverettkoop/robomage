@@ -127,7 +127,8 @@ void process_action(const LegalAction& action, Game& game, std::shared_ptr<Order
                             }
                         }
 
-                        int target_choice = InputLogger::instance().get_logged_input(cur_game.turn, static_cast<int>(valid_targets.size()));
+                        std::vector<ActionCategory> tgt_cats(valid_targets.size(), ActionCategory::SELECT_TARGET);
+                        int target_choice = InputLogger::instance().get_logged_input(cur_game.turn, tgt_cats);
                         if (target_choice >= 0 && target_choice < static_cast<int>(valid_targets.size())) {
                             ability.target = valid_targets[static_cast<size_t>(target_choice)];
                             printf("Targeting choice %d\n", target_choice);
@@ -200,7 +201,9 @@ static void declare_attackers(Game& game, std::shared_ptr<Orderer> orderer) {
         printf("  -1: Confirm\n");
 
         // num_choices = eligible creatures + 1 implicit confirm (-1)
-        int creature_choice = InputLogger::instance().get_logged_input(cur_game.turn, static_cast<int>(eligible.size()) + 1);
+        std::vector<ActionCategory> atk_cats(eligible.size(), ActionCategory::SELECT_ATTACKER);
+        atk_cats.push_back(ActionCategory::CONFIRM_ATTACKERS);
+        int creature_choice = InputLogger::instance().get_logged_input(cur_game.turn, atk_cats);
 
         if (creature_choice == -1) break;
 
@@ -225,7 +228,8 @@ static void declare_attackers(Game& game, std::shared_ptr<Orderer> orderer) {
                 // TODO: planeswalker entries here
             }
 
-            int target_choice = InputLogger::instance().get_logged_input(cur_game.turn, static_cast<int>(targets.size()));
+            std::vector<ActionCategory> atk_tgt_cats(targets.size(), ActionCategory::OTHER_CHOICE);
+            int target_choice = InputLogger::instance().get_logged_input(cur_game.turn, atk_tgt_cats);
 
             if (target_choice >= 0 && target_choice < static_cast<int>(targets.size())) {
                 cr.is_attacking = true;
@@ -318,7 +322,9 @@ static void declare_blockers(Game& game, std::shared_ptr<Orderer> orderer) {
         printf("  -1: Confirm\n");
 
         // num_choices = eligible blockers + 1 implicit confirm (-1)
-        int blocker_choice = InputLogger::instance().get_logged_input(cur_game.turn, static_cast<int>(eligible.size()) + 1);
+        std::vector<ActionCategory> blk_cats(eligible.size(), ActionCategory::SELECT_BLOCKER);
+        blk_cats.push_back(ActionCategory::CONFIRM_BLOCKERS);
+        int blocker_choice = InputLogger::instance().get_logged_input(cur_game.turn, blk_cats);
 
         if (blocker_choice == -1) break;
 
@@ -343,7 +349,8 @@ static void declare_blockers(Game& game, std::shared_ptr<Orderer> orderer) {
                 printf("  %zu: %s [%d/%d]\n", i, acd.name.c_str(), acr.power, acr.toughness);
             }
 
-            int attacker_choice = InputLogger::instance().get_logged_input(cur_game.turn, static_cast<int>(attackers.size()));
+            std::vector<ActionCategory> blk_tgt_cats(attackers.size(), ActionCategory::OTHER_CHOICE);
+            int attacker_choice = InputLogger::instance().get_logged_input(cur_game.turn, blk_tgt_cats);
 
             if (attacker_choice >= 0 && attacker_choice < static_cast<int>(attackers.size())) {
                 cr.is_blocking = true;
@@ -393,7 +400,8 @@ void proc_mandatory_choice(Game& game, std::shared_ptr<Orderer> orderer) {
                     printf("  %zu: %s\n", i, cd.name.c_str());
                 }
 
-                int choice = InputLogger::instance().get_logged_input(game.turn, static_cast<int>(hand.size()));
+                std::vector<ActionCategory> discard_cats(hand.size(), ActionCategory::OTHER_CHOICE);
+                int choice = InputLogger::instance().get_logged_input(game.turn, discard_cats);
                 if (choice >= 0 && choice < static_cast<int>(hand.size())) {
                     Entity card = hand[static_cast<size_t>(choice)];
                     auto& cd = global_coordinator.GetComponent<CardData>(card);

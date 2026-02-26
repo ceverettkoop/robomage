@@ -165,7 +165,10 @@ int main(int argc, char const *argv[]) {
         print_hand(orderer, cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B);
 
         print_legal_actions(cur_game, legal_actions);
-        choice = InputLogger::instance().get_logged_input(cur_game.turn, static_cast<int>(legal_actions.size()));
+        std::vector<ActionCategory> action_cats;
+        action_cats.reserve(legal_actions.size());
+        for (auto& la : legal_actions) action_cats.push_back(la.category);
+        choice = InputLogger::instance().get_logged_input(cur_game.turn, action_cats);
 
         if (choice >= 0 && choice < static_cast<int>(legal_actions.size())) {
             process_action(legal_actions[static_cast<size_t>(choice)], cur_game, orderer);

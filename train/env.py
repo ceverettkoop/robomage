@@ -43,7 +43,9 @@ except ImportError:
     from gym import spaces
 
 STATE_SIZE = 193
-MAX_ACTIONS = 32   # practical upper bound on num_choices per step
+MAX_ACTIONS = 32         # practical upper bound on num_choices per step
+ACTION_CATEGORY_MAX = 10 # highest ActionCategory enum value (OTHER_CHOICE)
+OBS_SIZE = STATE_SIZE + MAX_ACTIONS  # 225: state + per-action category features
 _REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BINARY = os.path.join(_REPO_ROOT, "bin", "robomage")
 BIN_DIR = os.path.join(_REPO_ROOT, "bin")  # game must be run from here for resource lookup
@@ -58,7 +60,7 @@ class RoboMageEnv(gym.Env):
         self.render_mode = render_mode
 
         self.observation_space = spaces.Box(
-            low=-10.0, high=10.0, shape=(STATE_SIZE,), dtype=np.float32
+            low=-10.0, high=10.0, shape=(OBS_SIZE,), dtype=np.float32
         )
         # Discrete action space sized to the max we'd ever see.
         # Invalid actions are masked at each step via `action_masks()`.
@@ -66,7 +68,7 @@ class RoboMageEnv(gym.Env):
 
         self._proc = None
         self._num_choices = 1
-        self._obs = np.zeros(STATE_SIZE, dtype=np.float32)
+        self._obs = np.zeros(OBS_SIZE, dtype=np.float32)
         self._pending_confirm = False  # True when last query used the -1 convention
 
     # ------------------------------------------------------------------
@@ -157,13 +159,22 @@ class RoboMageEnv(gym.Env):
                 # allow confirm as the last action — the game will just ignore
                 # invalid inputs from the main loop.
                 self._pending_confirm = True
+
+                # Parse state vector (first STATE_SIZE floats after the count)
                 state_floats = parts[1 : STATE_SIZE + 1]
-                self._obs = np.array(state_floats, dtype=np.float32)
-                if len(self._obs) < STATE_SIZE:
-                    # Pad if state came through truncated
-                    self._obs = np.pad(
-                        self._obs, (0, STATE_SIZE - len(self._obs))
-                    )
+                state_arr = np.array(state_floats, dtype=np.float32)
+                if len(state_arr) < STATE_SIZE:
+                    state_arr = np.pad(state_arr, (0, STATE_SIZE - len(state_arr)))
+
+                # Parse per-action category ints (one per legal action, after state)
+                # Normalise by ACTION_CATEGORY_MAX so values are in [0.0, 1.0].
+                cat_start = STATE_SIZE + 1
+                cat_raw = parts[cat_start : cat_start + self._num_choices]
+                cat_arr = np.zeros(MAX_ACTIONS, dtype=np.float32)
+                for i, c in enumerate(cat_raw):
+                    cat_arr[i] = int(c) / ACTION_CATEGORY_MAX
+
+                self._obs = np.concatenate([state_arr, cat_arr])
                 break
 
             # Non-QUERY output: optionally print for human render mode
@@ -176,7 +187,7 @@ class RoboMageEnv(gym.Env):
             self._proc.stdout.read()
             self._kill_proc()
             # Return a zero obs on terminal step — will be replaced by reset()
-            return np.zeros(STATE_SIZE, dtype=np.float32), info
+            return np.zeros(OBS_SIZE, dtype=np.float32), info
 
         return self._obs.copy(), info
 
