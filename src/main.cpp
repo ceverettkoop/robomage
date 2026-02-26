@@ -142,7 +142,6 @@ int main(int argc, char const *argv[]) {
 
         //active player can do something, list all options
         //if only option is pass priority we just do it
-        //note that we are going to consider tapping a land ILLEGAL if there is nothing you could reasonably cast or activate given the lands you have
         auto legal_actions = state_manager->determine_legal_actions(cur_game, orderer, stack_manager);
         if (legal_actions.size() == 1) {
             cur_game.pass_priority();

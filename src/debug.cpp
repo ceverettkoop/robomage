@@ -101,7 +101,14 @@ void print_hand(std::shared_ptr<Orderer> orderer, Zone::Ownership owner) {
 void print_stack(std::shared_ptr<Orderer> orderer) {
     auto stack = orderer->get_stack();
     for (size_t i = 0; i < stack.size(); i++){
-        printf("%zu: %s", i, "TODO MAKE THIS A DESCRIPTION OF THE ABILITY");
+        auto entity = stack.at(i);
+        if(global_coordinator.entity_has_component<CardData>(entity)){
+            printf("%zu: %s\n", i, global_coordinator.GetComponent<CardData>(entity).name.c_str());
+        }else{
+            printf("%zu: %s\n", i, "TODO: Generate descriptive names for abilities");
+        }
+
+
     }
     return;
 }
