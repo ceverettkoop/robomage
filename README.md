@@ -16,6 +16,10 @@ BUILD=RELEASE make program  # optimized build
 The binary is written to `bin/robomage`. The game expects to be run from the `bin/`
 directory so it can find `bin/resources/`.
 
+Note that within resources you will need card scripts in the cardsfolder. I have been using ones from the Forge project, compatible ones are found there you could also write your own.
+
+Example deck_one and deck_two are included. They are currently identical. ML will only understand cards described in card_vocab.h. This will need to be updated as decks with more than those 4 cards are introduced.
+
 ## Running
 
 ```bash
