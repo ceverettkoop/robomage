@@ -382,10 +382,33 @@ void proc_mandatory_choice(Game& game, std::shared_ptr<Orderer> orderer) {
         case DECLARE_BLOCKERS_CHOICE:
             declare_blockers(game, orderer);
             break;
-        case CLEANUP_DISCARD:
-            printf("TODO: Cleanup discard\n");
+        case CLEANUP_DISCARD: {
+            Zone::Ownership active_player = game.player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B;
+            auto hand = orderer->get_hand(active_player);
+
+            while (true) {
+                printf("\n--- Discard to hand size (%s) ---\n", player_name(active_player).c_str());
+                printf("Hand (%zu cards, must discard to 7):\n", hand.size());
+                for (size_t i = 0; i < hand.size(); i++) {
+                    auto& cd = global_coordinator.GetComponent<CardData>(hand[i]);
+                    printf("  %zu: %s\n", i, cd.name.c_str());
+                }
+
+                int choice = InputLogger::instance().get_logged_input(game.turn, static_cast<int>(hand.size()));
+                if (choice >= 0 && choice < static_cast<int>(hand.size())) {
+                    Entity card = hand[static_cast<size_t>(choice)];
+                    auto& cd = global_coordinator.GetComponent<CardData>(card);
+                    auto& zone = global_coordinator.GetComponent<Zone>(card);
+                    zone.location = Zone::GRAVEYARD;
+                    printf("%s discards %s.\n", player_name(active_player).c_str(), cd.name.c_str());
+                    break;
+                }
+                printf("Invalid selection, must choose a card to discard.\n");
+            }
+
             game.pending_choice = NONE;
             break;
+        }
         case CHOOSE_ENTITY:
             printf("TODO: Choose entity\n");
             game.pending_choice = NONE;

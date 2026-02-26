@@ -243,13 +243,19 @@ void StateManager::state_based_effects(Game &game) {
         return;
     }
 
-    // Cleanup step - check if active player exceeds maximum hand size
+    // Cleanup step - active player must discard down to 7 cards
     if (game.cur_step == CLEANUP) {
-        // TODO: Check actual hand size vs maximum hand size
-        // For now, assume no discard needed
-        // If hand_size > max_hand_size:
-        //     game.pending_choice = CLEANUP_DISCARD;
-        //     return;
+        Zone::Ownership active_player = game.player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B;
+        size_t hand_size = 0;
+        for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
+            if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
+            auto& zone = global_coordinator.GetComponent<Zone>(entity);
+            if (zone.location == Zone::HAND && zone.owner == active_player) hand_size++;
+        }
+        if (hand_size > 7) {
+            game.pending_choice = CLEANUP_DISCARD;
+            return;
+        }
     }
 
     // TODO: Check for legend rule violations
