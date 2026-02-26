@@ -10,7 +10,7 @@ Requires clang (macOS) or gcc (Linux).
 
 ```bash
 make
-make BUILD=RELEASE for non-debug
+make BUILD=RELEASE #optimized
 ```
 
 The binary is written to `bin/robomage`. The game expects to be run from the `bin/`
