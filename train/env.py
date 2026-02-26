@@ -22,7 +22,8 @@ For mandatory-choice loops (declare attackers / blockers):
 
 Observation space
 -----------------
-193-float vector. See src/machine_io.h for the full layout.
+1153-float state vector + 32 action-category floats = 1185 total.
+See src/machine_io.h for the full state layout.
 
 Reward
 ------
@@ -33,7 +34,6 @@ import subprocess
 import sys
 import os
 import re
-import random as _random
 import numpy as np
 
 try:
@@ -204,16 +204,76 @@ class RoboMageEnv(gym.Env):
             self._proc = None
 
 
-class ModelVsRandomEnv(gym.Env):
+# ── Action category constants (mirror ActionCategory enum in classes/action.h) ─
+_CAT_PASS       = 0
+_CAT_MANA       = 1
+_CAT_SEL_ATK    = 2
+_CAT_CONF_ATK   = 3
+_CAT_SEL_BLK    = 4
+_CAT_CONF_BLK   = 5
+_CAT_CAST       = 7
+_CAT_TARGET     = 8
+_CAT_LAND       = 9
+
+
+def scripted_action(obs: np.ndarray, num_choices: int) -> int:
+    """
+    Rule-based Player B:
+      - Never blocks (confirms immediately when blockers are requested)
+      - Attacks with every creature
+      - Plays the first available land
+      - Taps mana whenever the game offers it (only offered when it enables a spell)
+      - Casts every spell (Grizzly Bears, Lightning Bolt aimed at Player A)
+      - Passes priority otherwise
+
+    Action categories are stored in obs[STATE_SIZE:] normalised by ACTION_CATEGORY_MAX.
+    """
+    cats = np.round(obs[STATE_SIZE:STATE_SIZE + num_choices] * ACTION_CATEGORY_MAX).astype(int)
+
+    # 1. Confirm blockers immediately — never block
+    for i, c in enumerate(cats):
+        if c == _CAT_CONF_BLK:
+            return i
+
+    # 2. Select attackers greedily — attack with everything
+    for i, c in enumerate(cats):
+        if c == _CAT_SEL_ATK:
+            return i
+
+    # 3. Confirm attack declaration when no more attackers to add
+    for i, c in enumerate(cats):
+        if c == _CAT_CONF_ATK:
+            return i
+
+    # 4. Select target — action 0 targets Player A (the opponent)
+    for i, c in enumerate(cats):
+        if c == _CAT_TARGET:
+            return i
+
+    # 5. Play land (do before tapping so the new land can contribute mana)
+    for i, c in enumerate(cats):
+        if c == _CAT_LAND:
+            return i
+
+    # 6. Tap mana (game only offers this when it enables a castable spell)
+    for i, c in enumerate(cats):
+        if c == _CAT_MANA:
+            return i
+
+    # 7. Cast any spell
+    for i, c in enumerate(cats):
+        if c == _CAT_CAST:
+            return i
+
+    # Default: pass priority
+    return 0
+
+
+class ModelVsScriptedEnv(gym.Env):
     """Wraps RoboMageEnv so the model always plays as Player A.
 
-    All Player B decision points are resolved automatically with uniformly
-    random legal actions before the step is returned to the training loop.
-    The model therefore only ever sees and acts on Player A's turns.
-
-    obs[31] == 1.0 means Player A has priority (guaranteed on every step
-    returned to the caller).  obs[31] == 0.0 would indicate Player B, but
-    that never surfaces here.
+    Player B is controlled by the scripted_action rule-based agent instead of
+    a random agent, providing a more meaningful training opponent.
     """
 
     def __init__(self, binary_path: str = BINARY, render_mode=None):
@@ -239,10 +299,10 @@ class ModelVsRandomEnv(gym.Env):
         return obs, reward, terminated, truncated, info
 
     def _skip_b_turns(self, obs, reward, terminated, truncated, info):
-        """Resolve consecutive Player B turns with random actions."""
+        """Resolve consecutive Player B turns with the scripted agent."""
         while not (terminated or truncated) and obs[31] <= 0.5:
-            random_action = _random.randint(0, self._env._num_choices - 1)
-            obs, reward, terminated, truncated, info = self._env.step(random_action)
+            action = scripted_action(obs, self._env._num_choices)
+            obs, reward, terminated, truncated, info = self._env.step(action)
         return obs, reward, terminated, truncated, info
 
     def action_masks(self) -> np.ndarray:

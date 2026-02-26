@@ -73,7 +73,7 @@ int InputLogger::get_logged_input(size_t cur_turn, const std::vector<ActionCateg
     }
 
     if (machine_mode) {
-        // Emit QUERY line: "QUERY: <num_choices> <f0>...<f192> <cat0>...<catN-1>"
+        // Emit QUERY line: "QUERY: <num_choices> <f0>...<f1152> <cat0>...<catN-1>"
         // State vector is followed by one ActionCategory int per legal action.
         std::vector<float> state = serialize_state();
         printf("QUERY: %d", num_choices);

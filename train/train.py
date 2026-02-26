@@ -23,7 +23,7 @@ import argparse
 import os
 import random as _random
 
-from env import RoboMageEnv, ModelVsRandomEnv, OBS_SIZE, MAX_ACTIONS, BINARY
+from env import RoboMageEnv, ModelVsScriptedEnv, OBS_SIZE, MAX_ACTIONS, BINARY
 from extractor import CardGameExtractor
 
 try:
@@ -37,8 +37,36 @@ except ImportError:
     print("Install with: pip install sb3-contrib")
 
 from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv
-from stable_baselines3.common.callbacks import CheckpointCallback, EvalCallback
+from stable_baselines3.common.callbacks import CheckpointCallback, EvalCallback, BaseCallback
 from stable_baselines3.common.monitor import Monitor
+
+
+class WinTallyCallback(BaseCallback):
+    """Prints a running tally of Player A vs Player B wins after each rollout."""
+
+    def __init__(self):
+        super().__init__()
+        self.a_wins = 0
+        self.b_wins = 0
+
+    def _on_step(self) -> bool:
+        for info in self.locals["infos"]:
+            if "episode" not in info:
+                continue
+            r = info["episode"]["r"]
+            if r > 0:
+                self.a_wins += 1
+            elif r < 0:
+                self.b_wins += 1
+        return True
+
+    def _on_rollout_end(self) -> None:
+        total = self.a_wins + self.b_wins
+        if total == 0:
+            return
+        pct = 100.0 * self.a_wins / total
+        print(f"[tally] A wins: {self.a_wins}  B wins: {self.b_wins}  "
+              f"total: {total}  A win rate: {pct:.1f}%")
 
 
 CHECKPOINT_DIR = "checkpoints"
@@ -49,7 +77,7 @@ N_ENVS = 7  # parallel game processes
 
 def make_env(binary_path: str, rank: int):
     def _init():
-        env = ModelVsRandomEnv(binary_path=binary_path)
+        env = ModelVsScriptedEnv(binary_path=binary_path)
         if USE_MASKABLE:
             env = ActionMasker(env, lambda e: e.action_masks())
         env = Monitor(env)
@@ -57,7 +85,7 @@ def make_env(binary_path: str, rank: int):
     return _init
 
 
-def train(binary_path: str, load_path: str | None = None, total_timesteps: int = TOTAL_TIMESTEPS):
+def train(binary_path: str, load_path: str | None = None, total_timesteps: int = TOTAL_TIMESTEPS, tally: bool = False):
     os.makedirs(CHECKPOINT_DIR, exist_ok=True)
     os.makedirs(LOG_DIR, exist_ok=True)
 
@@ -96,6 +124,8 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
             name_prefix="robomage",
         ),
     ]
+    if tally:
+        callbacks.append(WinTallyCallback())
 
     print(f"Training for {total_timesteps:,} timesteps across {N_ENVS} envs...")
     model.learn(total_timesteps=total_timesteps, callback=callbacks, reset_num_timesteps=load_path is None)
@@ -211,6 +241,7 @@ if __name__ == "__main__":
     parser.add_argument("--baseline", default=None, help="Evaluate model .zip vs random agent")
     parser.add_argument("--baseline-games", type=int, default=100)
     parser.add_argument("--observe", default=None, help="Watch model .zip play one game vs random")
+    parser.add_argument("--tally", action="store_true", help="Print A/B win tally after each rollout")
     args = parser.parse_args()
 
     if args.observe:
@@ -220,4 +251,4 @@ if __name__ == "__main__":
     elif args.eval:
         evaluate(args.binary, args.eval, args.eval_games)
     else:
-        train(args.binary, args.load, args.total_timesteps)
+        train(args.binary, args.load, args.total_timesteps, tally=args.tally)

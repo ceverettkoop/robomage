@@ -152,8 +152,12 @@ void Orderer::draw(Zone::Ownership player, size_t ct) {
         card_zone.location = Zone::HAND;
     }
     if (cards_to_draw.size() < ct) {
-        // TODO IMPLEMENT LOSTING VIA DECKING
-        fatal_error("PLAYER DECKED\n");
+        if (player == Zone::PLAYER_A) {
+            printf("\nPlayer A decked - Player B wins!\n");
+        } else {
+            printf("\nPlayer B decked - Player A wins!\n");
+        }
+        cur_game.ended = true;
     }
 }
 
