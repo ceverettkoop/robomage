@@ -24,6 +24,7 @@ import os
 import random as _random
 
 from env import RoboMageEnv, ModelVsRandomEnv, OBS_SIZE, MAX_ACTIONS, BINARY
+from extractor import CardGameExtractor
 
 try:
     from sb3_contrib import MaskablePPO
@@ -43,7 +44,7 @@ from stable_baselines3.common.monitor import Monitor
 CHECKPOINT_DIR = "checkpoints"
 LOG_DIR = "logs"
 TOTAL_TIMESTEPS = 1_000_000
-N_ENVS = 4  # parallel game processes
+N_ENVS = 7  # parallel game processes
 
 
 def make_env(binary_path: str, rank: int):
@@ -64,7 +65,8 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
     vec_env = SubprocVecEnv([make_env(binary_path, i) for i in range(N_ENVS)])
 
     policy_kwargs = dict(
-        net_arch=[256, 256],  # two hidden layers, 256 units each
+        features_extractor_class=CardGameExtractor,
+        net_arch=[256, 256],
     )
 
     if load_path:

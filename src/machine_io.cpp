@@ -3,7 +3,9 @@
 #include <algorithm>
 #include <vector>
 
+#include "card_vocab.h"
 #include "classes/game.h"
+#include "components/carddata.h"
 #include "components/creature.h"
 #include "components/damage.h"
 #include "components/permanent.h"
@@ -66,6 +68,17 @@ std::vector<float> serialize_state() {
     }
     state.push_back(stack_size / 10.0f);
 
+    // Helper: push N_CARD_TYPES one-hot floats for a card entity (all zeros if unregistered)
+    auto push_card_id = [&](Entity e) {
+        int idx = -1;
+        if (global_coordinator.entity_has_component<CardData>(e)) {
+            idx = card_name_to_index(global_coordinator.GetComponent<CardData>(e).name);
+        }
+        for (int i = 0; i < N_CARD_TYPES; i++) {
+            state.push_back(i == idx ? 1.0f : 0.0f);
+        }
+    };
+
     // Battlefield slots: collect A's and B's creatures separately
     std::vector<Entity> a_creatures, b_creatures;
     for (Entity e = 0; e < MAX_ENTITIES; ++e) {
@@ -98,10 +111,11 @@ std::vector<float> serialize_state() {
         state.push_back(perm.has_summoning_sickness ? 1.0f : 0.0f);
         state.push_back(dmg);
         state.push_back((perm.controller == Zone::PLAYER_A) ? 1.0f : 0.0f);
+        push_card_id(e);
     };
 
     auto push_empty_slot = [&]() {
-        for (int i = 0; i < 8; i++) state.push_back(0.0f);
+        for (int i = 0; i < 8 + N_CARD_TYPES; i++) state.push_back(0.0f);
     };
 
     // 10 slots for A, 10 for B
@@ -116,6 +130,25 @@ std::vector<float> serialize_state() {
             push_creature_slot(b_creatures[static_cast<size_t>(i)]);
         else
             push_empty_slot();
+    }
+
+    // Priority player's hand — MAX_HAND_SLOTS slots of N_CARD_TYPES one-hot floats
+    Zone::Ownership priority_owner =
+        cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
+    std::vector<Entity> hand_cards;
+    for (Entity e = 0; e < MAX_ENTITIES; ++e) {
+        if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+        auto& zone = global_coordinator.GetComponent<Zone>(e);
+        if (zone.location == Zone::HAND && zone.owner == priority_owner)
+            hand_cards.push_back(e);
+    }
+    std::sort(hand_cards.begin(), hand_cards.end());
+
+    for (int i = 0; i < MAX_HAND_SLOTS; i++) {
+        if (i < static_cast<int>(hand_cards.size()))
+            push_card_id(hand_cards[static_cast<size_t>(i)]);
+        else
+            for (int j = 0; j < N_CARD_TYPES; j++) state.push_back(0.0f);
     }
 
     return state;

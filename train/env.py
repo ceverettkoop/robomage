@@ -4,7 +4,7 @@ RoboMage gymnasium environment.
 The game runs as a subprocess with --machine mode. On each decision point it
 emits a QUERY line to stdout:
 
-    QUERY: <num_choices> <f0> <f1> ... <f192>
+    QUERY: <num_choices> <f0> <f1> ... <f1152>
 
 The environment sends back a single integer on stdin.
 
@@ -43,10 +43,10 @@ except ImportError:
     import gym
     from gym import spaces
 
-STATE_SIZE = 193
+STATE_SIZE = 1153
 MAX_ACTIONS = 32         # practical upper bound on num_choices per step
 ACTION_CATEGORY_MAX = 10 # highest ActionCategory enum value (OTHER_CHOICE)
-OBS_SIZE = STATE_SIZE + MAX_ACTIONS  # 225: state + per-action category features
+OBS_SIZE = STATE_SIZE + MAX_ACTIONS  # 1185: state + per-action category features
 _REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BINARY = os.path.join(_REPO_ROOT, "bin", "robomage")
 BIN_DIR = os.path.join(_REPO_ROOT, "bin")  # game must be run from here for resource lookup
