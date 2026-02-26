@@ -56,7 +56,7 @@ def make_env(binary_path: str, rank: int):
     return _init
 
 
-def train(binary_path: str, load_path: str | None = None):
+def train(binary_path: str, load_path: str | None = None, total_timesteps: int = TOTAL_TIMESTEPS):
     os.makedirs(CHECKPOINT_DIR, exist_ok=True)
     os.makedirs(LOG_DIR, exist_ok=True)
 
@@ -95,8 +95,8 @@ def train(binary_path: str, load_path: str | None = None):
         ),
     ]
 
-    print(f"Training for {TOTAL_TIMESTEPS:,} timesteps across {N_ENVS} envs...")
-    model.learn(total_timesteps=TOTAL_TIMESTEPS, callback=callbacks, reset_num_timesteps=load_path is None)
+    print(f"Training for {total_timesteps:,} timesteps across {N_ENVS} envs...")
+    model.learn(total_timesteps=total_timesteps, callback=callbacks, reset_num_timesteps=load_path is None)
     model.save(os.path.join(CHECKPOINT_DIR, "robomage_final"))
     print("Saved final model.")
 
@@ -203,7 +203,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--binary", default=BINARY)
     parser.add_argument("--load", default=None, help="Resume from checkpoint .zip")
-    parser.add_argument("--eval", default=None, help="Self-play evaluation (note: always ~50%)")
+    parser.add_argument("--total-timesteps", type=int, default=TOTAL_TIMESTEPS)
+    parser.add_argument("--eval", default=None, help="Self-play evaluation (note: always ~50%%)")
     parser.add_argument("--eval-games", type=int, default=100)
     parser.add_argument("--baseline", default=None, help="Evaluate model .zip vs random agent")
     parser.add_argument("--baseline-games", type=int, default=100)
@@ -217,4 +218,4 @@ if __name__ == "__main__":
     elif args.eval:
         evaluate(args.binary, args.eval, args.eval_games)
     else:
-        train(args.binary, args.load)
+        train(args.binary, args.load, args.total_timesteps)
