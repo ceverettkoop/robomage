@@ -6,6 +6,7 @@
 
 #include "action_processor.h"
 #include "card_db.h"
+#include "classes/action.h"
 #include "classes/deck.h"
 #include "classes/game.h"
 #include "cli.h"
@@ -41,6 +42,89 @@ Coordinator global_coordinator = Coordinator();
 Deck DEFAULT_DECK_ONE;
 Deck DEFAULT_DECK_TWO;
 Game cur_game;
+
+// London Mulligan: both players decide to keep or mulligan, then bottom-deck.
+// Each decision is a serializable integer logged via InputLogger.
+static void do_london_mulligan(std::shared_ptr<Orderer> orderer) {
+    int mulligans_a = 0;
+    int mulligans_b = 0;
+
+    // Phase 1: Player A decides
+    {
+        bool keeping = false;
+        while (!keeping) {
+            print_hand(orderer, Zone::PLAYER_A);
+            printf("Player A: 0=Keep, 1=Mulligan (taken %d)\n", mulligans_a);
+            std::vector<ActionCategory> cats = {ActionCategory::MULLIGAN, ActionCategory::MULLIGAN};
+            int choice = InputLogger::instance().get_logged_input(0, cats);
+            if (choice == 0) {
+                keeping = true;
+            } else {
+                mulligans_a++;
+                auto hand = orderer->get_hand(Zone::PLAYER_A);
+                for (auto card : hand) {
+                    orderer->add_to_zone(false, card, Zone::LIBRARY);
+                }
+                orderer->shuffle_library(Zone::PLAYER_A);
+                orderer->draw(Zone::PLAYER_A, 7);
+            }
+        }
+    }
+
+    // Phase 2: Player B decides
+    {
+        bool keeping = false;
+        while (!keeping) {
+            print_hand(orderer, Zone::PLAYER_B);
+            printf("Player B: 0=Keep, 1=Mulligan (taken %d)\n", mulligans_b);
+            std::vector<ActionCategory> cats = {ActionCategory::MULLIGAN, ActionCategory::MULLIGAN};
+            int choice = InputLogger::instance().get_logged_input(0, cats);
+            if (choice == 0) {
+                keeping = true;
+            } else {
+                mulligans_b++;
+                auto hand = orderer->get_hand(Zone::PLAYER_B);
+                for (auto card : hand) {
+                    orderer->add_to_zone(false, card, Zone::LIBRARY);
+                }
+                orderer->shuffle_library(Zone::PLAYER_B);
+                orderer->draw(Zone::PLAYER_B, 7);
+            }
+        }
+    }
+
+    // Phase 3: Player A bottom-decks mulligans_a cards, one at a time
+    for (int i = 0; i < mulligans_a; i++) {
+        auto hand = orderer->get_hand(Zone::PLAYER_A);
+        if (hand.empty()) break;
+        printf("Player A: Choose card to put on library bottom (%d remaining):\n", mulligans_a - i);
+        for (size_t j = 0; j < hand.size(); j++) {
+            auto& cd = global_coordinator.GetComponent<CardData>(hand[j]);
+            printf("  %zu: %s\n", j, cd.name.c_str());
+        }
+        std::vector<ActionCategory> cats(hand.size(), ActionCategory::BOTTOM_DECK_CARD);
+        int choice = InputLogger::instance().get_logged_input(0, cats);
+        if (choice >= 0 && choice < static_cast<int>(hand.size())) {
+            orderer->add_to_zone(true, hand[static_cast<size_t>(choice)], Zone::LIBRARY);
+        }
+    }
+
+    // Phase 4: Player B bottom-decks mulligans_b cards, one at a time
+    for (int i = 0; i < mulligans_b; i++) {
+        auto hand = orderer->get_hand(Zone::PLAYER_B);
+        if (hand.empty()) break;
+        printf("Player B: Choose card to put on library bottom (%d remaining):\n", mulligans_b - i);
+        for (size_t j = 0; j < hand.size(); j++) {
+            auto& cd = global_coordinator.GetComponent<CardData>(hand[j]);
+            printf("  %zu: %s\n", j, cd.name.c_str());
+        }
+        std::vector<ActionCategory> cats(hand.size(), ActionCategory::BOTTOM_DECK_CARD);
+        int choice = InputLogger::instance().get_logged_input(0, cats);
+        if (choice >= 0 && choice < static_cast<int>(hand.size())) {
+            orderer->add_to_zone(true, hand[static_cast<size_t>(choice)], Zone::LIBRARY);
+        }
+    }
+}
 
 int main(int argc, char const *argv[]) {
     int choice;
@@ -128,10 +212,9 @@ int main(int argc, char const *argv[]) {
     cur_game.generate_players(DEFAULT_DECK_ONE, DEFAULT_DECK_TWO);
     orderer->generate_libraries(DEFAULT_DECK_ONE, DEFAULT_DECK_TWO);
 
-    // TODO MULLIGANS, COMPANION ETC
+    // London Mulligan (companion not yet implemented)
     orderer->draw_hands();
-    print_hand(orderer, Zone::PLAYER_A);
-    print_hand(orderer, Zone::PLAYER_B);
+    do_london_mulligan(orderer);
 
     // PLAYER A IS ALWAYS ON THE PLAY IN THIS WORLD
     // game loop

@@ -7,7 +7,7 @@
 //   "QUERY: <num_choices> <f0>...<f1152> <cat0>...<cat_{num_choices-1}>"
 //
 // The state vector (STATE_SIZE floats) is followed by one ActionCategory
-// integer per legal action (values 0-10, see ActionCategory enum in
+// integer per legal action (values 0-12, see ActionCategory enum in
 // classes/action.h).  The Python env appends these padded to MAX_ACTIONS slots
 // (normalised by ACTION_CATEGORY_MAX) so the full observation is
 // STATE_SIZE + MAX_ACTIONS floats.

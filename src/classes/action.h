@@ -26,9 +26,11 @@ enum class ActionCategory {
     SELECT_TARGET     = 8,
     PLAY_LAND         = 9,
     OTHER_CHOICE      = 10,
+    MULLIGAN          = 11,  // binary: 0=keep, 1=take mulligan
+    BOTTOM_DECK_CARD  = 12,  // select card index from hand to put on library bottom
 };
 
-static constexpr int ACTION_CATEGORY_MAX = 10;  // highest ActionCategory value
+static constexpr int ACTION_CATEGORY_MAX = 12;  // highest ActionCategory value
 
 struct LegalAction {
     ActionType type;

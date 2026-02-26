@@ -45,7 +45,7 @@ except ImportError:
 
 STATE_SIZE = 1153
 MAX_ACTIONS = 32         # practical upper bound on num_choices per step
-ACTION_CATEGORY_MAX = 10 # highest ActionCategory enum value (OTHER_CHOICE)
+ACTION_CATEGORY_MAX = 12 # highest ActionCategory enum value (BOTTOM_DECK_CARD)
 OBS_SIZE = STATE_SIZE + MAX_ACTIONS  # 1185: state + per-action category features
 _REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BINARY = os.path.join(_REPO_ROOT, "bin", "robomage")
