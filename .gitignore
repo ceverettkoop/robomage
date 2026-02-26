@@ -7,3 +7,6 @@ bin/resources/cardsfolder/**
 bin/resources/cardsfolder/.DS_Store
 bin/resources/logs/**
 src/classes/game.cpp
+logs/**
+train/__pycache__/**
+train/logs/**

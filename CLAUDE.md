@@ -85,6 +85,38 @@ SIDEBOARD:
 - `RESOURCE_DIR`: Path to resources directory (set at runtime)
 - `card_db`: Card name to entity ID mapping
 
+## Reinforcement Learning
+
+The `train/` directory contains a Python gymnasium wrapper and PPO training script.
+
+Python venv: `train/.venv/` — activate with `source train/.venv/bin/activate` or invoke directly via `train/.venv/bin/python`.
+
+Dependencies: `gymnasium`, `stable-baselines3`, `sb3-contrib` (for `MaskablePPO` with action masking).
+
+### Training commands (run from repo root)
+
+```bash
+train/.venv/bin/python train/train.py                                          # train from scratch
+train/.venv/bin/python train/train.py --load checkpoints/robomage_final.zip   # resume
+train/.venv/bin/python train/train.py --baseline checkpoints/robomage_final.zip  # win rate vs random
+train/.venv/bin/python train/train.py --observe checkpoints/robomage_final.zip   # watch one game
+```
+
+### Machine mode protocol
+
+`--machine` flag makes the game communicate over stdio for RL training:
+- Game emits `QUERY: <num_choices> <f0>...<f192>` on stdout at each decision
+- Driver writes a single integer back on stdin
+- `obs[31]` in the 193-float state vector is 1.0 when Player A has priority, 0.0 for Player B
+- All non-QUERY stdout lines are game narrative and can be ignored
+
+### Key files
+
+- `train/env.py` — `RoboMageEnv` gymnasium wrapper
+- `train/train.py` — `MaskablePPO` self-play training, baseline evaluation, observe mode
+- `src/machine_io.h` — state vector layout documentation
+- `src/input_logger.cpp` — machine mode and replay implementation
+
 ## Code Style
 
 - C++17 with exceptions disabled (`-fno-exceptions`)
