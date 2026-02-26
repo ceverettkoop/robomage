@@ -195,8 +195,6 @@ class RoboMageEnv(gym.Env):
 
         info = {"reward": reward, "done": done}
         if done:
-            # Drain any remaining output so the process can exit cleanly
-            self._proc.stdout.read()
             self._kill_proc()
             # Return a zero obs on terminal step — will be replaced by reset()
             return np.zeros(OBS_SIZE, dtype=np.float32), info
