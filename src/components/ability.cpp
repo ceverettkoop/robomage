@@ -11,7 +11,7 @@ extern Coordinator global_coordinator;
 void Ability::resolve() {
     printf("Resolving ability (category: %s, amount: %zu)\n", category.c_str(), amount);
 
-    if (category == "DealDamage" && target != 0) {
+    if (category == "DealDamage") {
         // Deal damage to target
         if (global_coordinator.entity_has_component<Player>(target)) {
             // Target is a player
