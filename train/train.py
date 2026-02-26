@@ -119,7 +119,7 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
 
     callbacks = [
         CheckpointCallback(
-            save_freq=25_000,
+            save_freq=25_000 // N_ENVS,
             save_path=CHECKPOINT_DIR,
             name_prefix="robomage",
         ),
