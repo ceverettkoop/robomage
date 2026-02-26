@@ -205,7 +205,7 @@ def observe(binary_path: str, model_path: str):
 _CAT_NAMES = {
     0: "PASS", 1: "MANA", 2: "SEL_ATK", 3: "CONF_ATK",
     4: "SEL_BLK", 5: "CONF_BLK", 6: "ACTIVATE", 7: "CAST",
-    8: "TARGET", 9: "LAND", 10: "OTHER",
+    8: "TARGET", 9: "LAND", 10: "OTHER", 11: "MULLIGAN", 12: "BOTTOM_CARD"
 }
 
 

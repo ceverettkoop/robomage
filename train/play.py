@@ -32,6 +32,8 @@ _CAT_NAMES = {
     8: "select target",
     9: "play land",
     10: "choose",
+    11: "mulligan",
+    12: "bottom card"
 }
 
 

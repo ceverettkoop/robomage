@@ -223,6 +223,7 @@ _CAT_CONF_BLK   = 5
 _CAT_CAST       = 7
 _CAT_TARGET     = 8
 _CAT_LAND       = 9
+_CAT_MULLIGAN   = 11
 
 # ── Battlefield layout (mirror machine_io.h) ────────────────────────────────
 _BF_START         = 33
@@ -264,6 +265,12 @@ def scripted_action(obs: np.ndarray, num_choices: int) -> int:
     Action categories are stored in obs[STATE_SIZE:] normalised by ACTION_CATEGORY_MAX.
     """
     cats = np.round(obs[STATE_SIZE:STATE_SIZE + num_choices] * ACTION_CATEGORY_MAX).astype(int)
+
+    # 0. Mulligan: always keep — return the first non-mulligan action (the keep action)
+    if any(c == _CAT_MULLIGAN for c in cats):
+        for i, c in enumerate(cats):
+            if c != _CAT_MULLIGAN:
+                return i
 
     # 1. Confirm blockers immediately — never block
     for i, c in enumerate(cats):
