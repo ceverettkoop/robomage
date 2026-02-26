@@ -51,6 +51,7 @@ static void do_london_mulligan(std::shared_ptr<Orderer> orderer) {
 
     // Phase 1: Player A decides
     {
+        cur_game.player_a_has_priority = true;
         bool keeping = false;
         while (!keeping) {
             print_hand(orderer, Zone::PLAYER_A);
@@ -73,6 +74,7 @@ static void do_london_mulligan(std::shared_ptr<Orderer> orderer) {
 
     // Phase 2: Player B decides
     {
+        cur_game.player_a_has_priority = false;
         bool keeping = false;
         while (!keeping) {
             print_hand(orderer, Zone::PLAYER_B);
@@ -94,6 +96,7 @@ static void do_london_mulligan(std::shared_ptr<Orderer> orderer) {
     }
 
     // Phase 3: Player A bottom-decks mulligans_a cards, one at a time
+    cur_game.player_a_has_priority = true;
     for (int i = 0; i < mulligans_a; i++) {
         auto hand = orderer->get_hand(Zone::PLAYER_A);
         if (hand.empty()) break;
@@ -110,6 +113,7 @@ static void do_london_mulligan(std::shared_ptr<Orderer> orderer) {
     }
 
     // Phase 4: Player B bottom-decks mulligans_b cards, one at a time
+    cur_game.player_a_has_priority = false;
     for (int i = 0; i < mulligans_b; i++) {
         auto hand = orderer->get_hand(Zone::PLAYER_B);
         if (hand.empty()) break;
@@ -215,6 +219,7 @@ int main(int argc, char const *argv[]) {
     // London Mulligan (companion not yet implemented)
     orderer->draw_hands();
     do_london_mulligan(orderer);
+    cur_game.player_a_has_priority = true;  // restore for game start
 
     // PLAYER A IS ALWAYS ON THE PLAY IN THIS WORLD
     // game loop

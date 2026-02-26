@@ -51,16 +51,32 @@ def play(binary_path: str, model_path: str):
         a_has_priority = obs[31] > 0.5
         cats = np.round(obs[STATE_SIZE:STATE_SIZE + num_choices] * ACTION_CATEGORY_MAX).astype(int)
 
+        is_mulligan_q = num_choices > 0 and all(c == 11 for c in cats)
+        is_bottom_q   = num_choices > 0 and all(c == 12 for c in cats)
+
         if a_has_priority:
             masks = env.action_masks() if USE_MASKABLE else None
             action, _ = model.predict(obs, action_masks=masks, deterministic=True)
             action = int(action)
-            cat_name = _CAT_NAMES.get(int(cats[action]) if action < len(cats) else -1, "?")
-            print(f"[Model/A] {cat_name}", flush=True)
+            if is_mulligan_q:
+                label = "keep" if action == 0 else "mulligan"
+                print(f"[Model/A] {label}", flush=True)
+            else:
+                cat_name = _CAT_NAMES.get(int(cats[action]) if action < len(cats) else -1, "?")
+                print(f"[Model/A] {cat_name}", flush=True)
         else:
-            print(f"\nYour turn — {num_choices} option(s):", flush=True)
-            for i, c in enumerate(cats):
-                print(f"  {i}: {_CAT_NAMES.get(int(c), str(c))}")
+            if is_mulligan_q:
+                print(f"\nYour mulligan decision:", flush=True)
+                print(f"  0: keep")
+                print(f"  1: mulligan")
+            elif is_bottom_q:
+                print(f"\nChoose a card to bottom ({num_choices} in hand):", flush=True)
+                for i in range(num_choices):
+                    print(f"  {i}: bottom card")
+            else:
+                print(f"\nYour turn — {num_choices} option(s):", flush=True)
+                for i, c in enumerate(cats):
+                    print(f"  {i}: {_CAT_NAMES.get(int(c), str(c))}")
             while True:
                 try:
                     raw = input("Choose> ").strip()
