@@ -215,7 +215,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(const Game& game,
     Zone::Ownership priority_player = game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
     Entity priority_player_entity = get_player_entity(priority_player);
 
-    // Pass priority is always legal
+    // Pass priority is always legal - because mandatory decisions happen in a different function
     actions.push_back(LegalAction(PASS_PRIORITY, "Pass priority"));
 
     // Check for special action: play land
@@ -245,8 +245,46 @@ std::vector<LegalAction> StateManager::determine_legal_actions(const Game& game,
         }
     }
 
-    // Check for activated abilities (mana abilities)
-    // Get all permanents controlled by priority player
+    // checking for spells to cast from hand
+    // TODO spells cast from elsewhere
+    bool stack_empty = stack_manager->is_empty();
+
+    auto hand = orderer->get_hand(priority_player);
+    for (auto card_entity : hand) {
+        auto& card_data = global_coordinator.GetComponent<CardData>(card_entity);
+
+        // Check if it's a spell (not a land)
+        bool is_instant = false, is_sorcery = false, is_creature = false;
+        for (auto& type : card_data.types) {
+            if (type.kind == TYPE) {
+                if (type.name == "Instant") {
+                    is_instant = true;
+                } else if (type.name == "Sorcery") {
+                    is_sorcery = true;
+                } else if (type.name == "Creature") {
+                    is_creature = true;
+                }
+            }
+        }
+
+        // Timing restrictions
+        bool can_cast_now = false;
+        if (is_instant) {
+            can_cast_now = true;  // Can cast anytime you have priority
+        } else if (is_sorcery || is_creature) {
+            // Sorcery speed: main phase, your turn, stack empty
+            can_cast_now = (game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
+                           (game.player_a_turn == game.player_a_has_priority) && stack_empty;
+        }
+
+        if (can_cast_now && can_afford(priority_player, card_data.mana_cost)) {
+            std::string desc = "Cast " + card_data.name;
+            actions.push_back(LegalAction(CAST_SPELL, card_entity, desc));
+        }
+    }
+
+    //checking permanents for activated abilities
+    //TODO timing restrictions 
     for (auto entity : orderer->mEntities) {
         if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
 
@@ -293,44 +331,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(const Game& game,
                 }
             }
         }
-    }
-
-    // Check for castable spells
-    bool stack_empty = stack_manager->is_empty();
-
-    auto hand = orderer->get_hand(priority_player);
-    for (auto card_entity : hand) {
-        auto& card_data = global_coordinator.GetComponent<CardData>(card_entity);
-
-        // Check if it's a spell (not a land)
-        bool is_instant = false, is_sorcery = false, is_creature = false;
-        for (auto& type : card_data.types) {
-            if (type.kind == TYPE) {
-                if (type.name == "Instant") {
-                    is_instant = true;
-                } else if (type.name == "Sorcery") {
-                    is_sorcery = true;
-                } else if (type.name == "Creature") {
-                    is_creature = true;
-                }
-            }
-        }
-
-        // Timing restrictions
-        bool can_cast_now = false;
-        if (is_instant) {
-            can_cast_now = true;  // Can cast anytime you have priority
-        } else if (is_sorcery || is_creature) {
-            // Sorcery speed: main phase, your turn, stack empty
-            can_cast_now = (game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
-                           (game.player_a_turn == game.player_a_has_priority) && stack_empty;
-        }
-
-        if (can_cast_now && can_afford(priority_player, card_data.mana_cost)) {
-            std::string desc = "Cast " + card_data.name;
-            actions.push_back(LegalAction(CAST_SPELL, card_entity, desc));
-        }
-    }
+    } 
 
     return actions;
 }
