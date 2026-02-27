@@ -25,6 +25,8 @@ cd bin
 ./robomage --machine              # machine mode for RL training
 ```
 
+in interactive mode you play both sides; numbers select a choice (every choice is logged), z passes to combat or end of turn, q quits.
+
 ### Machine mode protocol
 
 In `--machine` mode the game communicates over stdio. Each time a decision is
