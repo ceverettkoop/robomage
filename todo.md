@@ -1,5 +1,4 @@
-Check if targets are legal on resolution
+Notable things missing from rules engine:
 
-Triggered abilities - will be implemented as cards with them are
-
-Continuous effects - will be implemented as cards with them are
+First strike step
+Holding priority

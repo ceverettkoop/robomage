@@ -312,10 +312,15 @@ def scripted_action(obs: np.ndarray, num_choices: int) -> int:
         if c == _CAT_LAND:
             return i
 
-    # 7. Tap mana to work toward an affordable spell
-    for i, c in enumerate(cats):
-        if c == _CAT_MANA:
-            return i
+    # 7. Tap mana during main phases only
+    _STEP_ONE_HOT_START = 18
+    _STEP_FIRST_MAIN    = _STEP_ONE_HOT_START + 3   # obs[21]
+    _STEP_SECOND_MAIN   = _STEP_ONE_HOT_START + 9   # obs[27]
+    in_main_phase = obs[_STEP_FIRST_MAIN] > 0.5 or obs[_STEP_SECOND_MAIN] > 0.5
+    if in_main_phase:
+        for i, c in enumerate(cats):
+            if c == _CAT_MANA:
+                return i
 
     # Default: pass priority
     return 0
