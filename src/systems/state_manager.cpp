@@ -42,15 +42,19 @@ static void apply_land_abilities() {
         auto &card_data = global_coordinator.GetComponent<CardData>(entity);
 
         bool is_land = false;
-        std::string land_subtype;
+        std::vector<std::string> land_subtypes;
         for (auto &type : card_data.types) {
             if (type.kind == TYPE && type.name == "Land") is_land = true;
             if (type.kind == SUBTYPE && (type.name == "Mountain" || type.name == "Forest" || type.name == "Plains" ||
                                             type.name == "Island" || type.name == "Swamp" || type.name == "Wastes")) {
-                land_subtype = type.name;
+                land_subtypes.push_back(type.name);
             }
         }
-        if (!is_land || land_subtype.empty()) continue;
+        if (!is_land || land_subtypes.empty()) continue;
+
+        for (auto subtype: land_subtypes) {
+        
+        }
 
         Colors required_color = mana_color_for_subtype(land_subtype);
         if(required_color == NO_COLOR) continue;
