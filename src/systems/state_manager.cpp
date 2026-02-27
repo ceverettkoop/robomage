@@ -271,6 +271,9 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
     }
 }
 
+
+//COMMENTING THIS OUT- TO RETURN TO IF WE DECIDE ML NEEDS THE CRUTCH
+/*
 // Returns the subset of legal_mana_abilities that would contribute toward affording
 // at least one pending action (actions that are legal but currently unaffordable).
 //
@@ -368,6 +371,7 @@ static std::vector<LegalAction> useful_mana_abilities(const std::vector<LegalAct
     }
     return useful;
 }
+*/
 
 std::vector<LegalAction> StateManager::determine_legal_actions(
     const Game &game, std::shared_ptr<Orderer> orderer, std::shared_ptr<StackManager> stack_manager) {
@@ -478,8 +482,13 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             }
         }
     }
-    // finally add the mana abilities that serve at least one pending action
+    // not filtering mana abilities based on if they contribute to a spell- will revisit this if it makes ML harder
+    /*
     for (auto &ma : useful_mana_abilities(legal_mana_abilities, pending_actions)) {
+        actions.push_back(ma);
+    }
+    */
+    for (auto &ma : legal_mana_abilities) {
         actions.push_back(ma);
     }
     return actions;

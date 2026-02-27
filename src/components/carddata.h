@@ -4,6 +4,7 @@
 #include <string>
 #include <set>
 #include <cstdint>
+#include <vector>
 #include "../components/types.h"
 #include "../classes/colors.h"
 #include "ability.h"

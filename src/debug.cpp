@@ -100,6 +100,11 @@ void print_hand(std::shared_ptr<Orderer> orderer, Zone::Ownership owner) {
 
 void print_stack(std::shared_ptr<Orderer> orderer) {
     auto stack = orderer->get_stack();
+    if(stack.size() > 0){
+        printf("STACK:\n");
+    }else{
+        return;
+    }
     for (size_t i = 0; i < stack.size(); i++){
         auto entity = stack.at(i);
         if(global_coordinator.entity_has_component<CardData>(entity)){
