@@ -10,13 +10,9 @@
 //
 // To add a new card: append an entry here.  N_CARD_TYPES in machine_io.h must
 // be >= (highest index + 1).
-inline int card_name_to_index(const std::string& name) {
+inline int card_name_to_index(const std::string &name) {
     static const std::unordered_map<std::string, int> vocab = {
-        {"Mountain",       0},
-        {"Forest",         1},
-        {"Lightning Bolt", 2},
-        {"Grizzly Bears",  3},
-    };
+        {"Mountain", 0}, {"Forest", 1}, {"Lightning Bolt", 2}, {"Grizzly Bears", 3}, {"Volcanic Island", 4}};
     auto it = vocab.find(name);
     return it != vocab.end() ? it->second : -1;
 }

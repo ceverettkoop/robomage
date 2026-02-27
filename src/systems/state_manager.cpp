@@ -400,7 +400,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
     auto max_pool = priority_player_obj.mana;
     for (auto &ms : mana_sources) max_pool.insert(ms.color);
 
-    // Offer a tap iff it is necessary for at least one spell that is reachable from
+    // Offer a tap if it is necessary for at least one spell that is reachable from
     // the full set of available mana. "Necessary" means removing this source from the
     // max pool makes that spell unaffordable — handles multi-tap sequences correctly.
     for (auto &ms : mana_sources) {
