@@ -65,6 +65,64 @@ static void process_activate_ability(const LegalAction& action, Game& game, std:
     }
 }
 
+static std::vector<Entity> build_valid_targets(const Ability& ability,
+                                               std::shared_ptr<Orderer> orderer) {
+    std::vector<Entity> valid_targets;
+    const std::string& vt = ability.valid_tgts;
+
+    bool any           = (vt == "Any");
+    bool inc_players   = any || vt.find("Player")   != std::string::npos;
+    bool inc_creatures = any || vt.find("Creature") != std::string::npos;
+    // TODO: inc_planeswalker, inc_battle when those components exist
+
+    if (inc_players) {
+        valid_targets.push_back(cur_game.player_a_entity);
+        valid_targets.push_back(cur_game.player_b_entity);
+    }
+    for (auto entity : orderer->mEntities) {
+        if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
+        auto& tz = global_coordinator.GetComponent<Zone>(entity);
+        if (tz.location != Zone::BATTLEFIELD) continue;
+        if (inc_creatures && global_coordinator.entity_has_component<Creature>(entity)) {
+            valid_targets.push_back(entity);
+            continue;
+        }
+        // TODO: Planeswalker and Battle components
+    }
+    return valid_targets;
+}
+
+bool has_legal_targets(const Ability& ability, std::shared_ptr<Orderer> orderer) {
+    if (ability.valid_tgts == "N_A") return true;
+    return !build_valid_targets(ability, orderer).empty();
+}
+
+void select_target(Ability& ability, std::shared_ptr<Orderer> orderer) {
+    std::vector<Entity> valid_targets = build_valid_targets(ability, orderer);
+    while (true) {
+        printf("Choose target:\n");
+        for (size_t i = 0; i < valid_targets.size(); i++) {
+            Entity target = valid_targets[i];
+            if (global_coordinator.entity_has_component<Player>(target)) {
+                auto& player = global_coordinator.GetComponent<Player>(target);
+                std::string name = (target == cur_game.player_a_entity) ? "Player A" : "Player B";
+                printf("  %zu: %s (%d life)\n", i, name.c_str(), player.life_total);
+            } else {
+                auto& card = global_coordinator.GetComponent<CardData>(target);
+                printf("  %zu: %s\n", i, card.name.c_str());
+            }
+        }
+        std::vector<ActionCategory> tgt_cats(valid_targets.size(), ActionCategory::SELECT_TARGET);
+        int choice = InputLogger::instance().get_logged_input(cur_game.turn, tgt_cats);
+        if (choice >= 0 && choice < static_cast<int>(valid_targets.size())) {
+            ability.target = valid_targets[static_cast<size_t>(choice)];
+            printf("Targeting choice %d\n", choice);
+            return;
+        }
+        printf("Invalid target, must choose a legal target.\n");
+    }
+}
+
 void process_action(const LegalAction& action, Game& game, std::shared_ptr<Orderer> orderer) {
 
     switch (action.type) {
@@ -125,48 +183,7 @@ void process_action(const LegalAction& action, Game& game, std::shared_ptr<Order
 
                 // Handle targeting
                 if (ability.valid_tgts != "N_A") {
-                    // Build target list: players, creatures, TODO: planeswalkers, battles
-                    std::vector<Entity> valid_targets;
-
-                    valid_targets.push_back(cur_game.player_a_entity);
-                    valid_targets.push_back(cur_game.player_b_entity);
-
-                    for (auto entity : orderer->mEntities) {
-                        if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
-                        auto& target_zone = global_coordinator.GetComponent<Zone>(entity);
-                        if (target_zone.location != Zone::BATTLEFIELD) continue;
-
-                        if (global_coordinator.entity_has_component<Creature>(entity)) {
-                            valid_targets.push_back(entity);
-                            continue;
-                        }
-                        // TODO: check for Planeswalker component when implemented
-                        // TODO: check for Battle component when implemented
-                    }
-
-                    while (true) {
-                        printf("Choose target:\n");
-                        for (size_t i = 0; i < valid_targets.size(); i++) {
-                            Entity target = valid_targets[i];
-                            if (global_coordinator.entity_has_component<Player>(target)) {
-                                auto& player = global_coordinator.GetComponent<Player>(target);
-                                std::string name = (target == cur_game.player_a_entity) ? "Player A" : "Player B";
-                                printf("  %zu: %s (%d life)\n", i, name.c_str(), player.life_total);
-                            } else {
-                                auto& target_card = global_coordinator.GetComponent<CardData>(target);
-                                printf("  %zu: %s\n", i, target_card.name.c_str());
-                            }
-                        }
-
-                        std::vector<ActionCategory> tgt_cats(valid_targets.size(), ActionCategory::SELECT_TARGET);
-                        int target_choice = InputLogger::instance().get_logged_input(cur_game.turn, tgt_cats);
-                        if (target_choice >= 0 && target_choice < static_cast<int>(valid_targets.size())) {
-                            ability.target = valid_targets[static_cast<size_t>(target_choice)];
-                            printf("Targeting choice %d\n", target_choice);
-                            break;
-                        }
-                        printf("Invalid target, must choose a legal target.\n");
-                    }
+                    select_target(ability, orderer);
                 }
 
                 global_coordinator.AddComponent(spell_entity, ability);

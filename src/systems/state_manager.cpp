@@ -14,6 +14,7 @@
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../ecs/events.h"
+#include "../action_processor.h"
 #include "../mana_system.h"
 #include "../systems/stack_manager.h"
 #include "orderer.h"
@@ -444,7 +445,14 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             can_cast_now = (game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
                            (game.player_a_turn == game.player_a_has_priority) && stack_empty;
         }
-        if (can_cast_now) {
+        // Check that at least one legal target exists for any targeting requirement
+        bool tgt_ok = true;
+        for (const auto& ab : card_data.abilities) {
+            if (ab.ability_type != Ability::SPELL) continue;
+            tgt_ok = has_legal_targets(ab, orderer);
+            break;
+        }
+        if (can_cast_now && tgt_ok) {
             std::string desc = "Cast " + card_data.name;
             LegalAction la(CAST_SPELL, card_entity, desc);
             la.category = ActionCategory::CAST_SPELL;
