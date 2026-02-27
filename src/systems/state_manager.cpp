@@ -1,5 +1,6 @@
 #include "state_manager.h"
 
+#include <cstddef>
 #include <vector>
 
 #include "../classes/game.h"
@@ -14,8 +15,8 @@
 #include "../ecs/coordinator.h"
 #include "../ecs/events.h"
 #include "../mana_system.h"
-#include "orderer.h"
 #include "../systems/stack_manager.h"
+#include "orderer.h"
 
 static Colors mana_color_for_subtype(const std::string &subtype) {
     if (subtype == "Mountain") return RED;
@@ -27,9 +28,7 @@ static Colors mana_color_for_subtype(const std::string &subtype) {
     return NO_COLOR;
 }
 
-// Called on every SBA check. Land types can change due to effects, so this
-// runs every time. Only skips adding an ability if an identical one (same
-// color) is already present — does not remove stale abilities when types change.
+// Applies abilities to lands based on the land subtypes
 static void apply_land_abilities() {
     for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
         if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
@@ -52,31 +51,31 @@ static void apply_land_abilities() {
         }
         if (!is_land || land_subtypes.empty()) continue;
 
-        for (auto subtype: land_subtypes) {
-        
-        }
+        for (auto subtype : land_subtypes) {
+            Colors required_color = mana_color_for_subtype(subtype);
+            if (required_color == NO_COLOR) continue;
 
-        Colors required_color = mana_color_for_subtype(land_subtype);
-        if(required_color == NO_COLOR) continue;
-
-        // Skip only if this exact color ability already exists
-        auto &perm_abilities = global_coordinator.GetComponent<Permanent>(entity).abilities;
-        bool already_present = false;
-        for (auto ab : perm_abilities) {
-            if (ab.category == "AddMana" && static_cast<Colors>(ab.amount) == required_color) {
-                already_present = true;
-                break;
+            // Skip only if this exact color ability already exists
+            auto &perm_abilities = global_coordinator.GetComponent<Permanent>(entity).abilities;
+            bool already_present = false;
+            for (auto ab : perm_abilities) {
+                if (ab.category == "AddMana" && ab.color == required_color && ab.amount == 1) {
+                    already_present = true;
+                    break;
+                }
             }
+            if (already_present) continue;
+
+            Ability mana_ability;
+            mana_ability.ability_type = Ability::ACTIVATED;
+            mana_ability.category = "AddMana";
+            mana_ability.color = required_color;
+            mana_ability.amount = 1;
+            mana_ability.tap_cost = true;
+
+            mana_ability.source = entity;
+            perm_abilities.push_back(mana_ability);
         }
-        if (already_present) continue;
-
-        Ability mana_ability;
-        mana_ability.ability_type = Ability::ACTIVATED;
-        mana_ability.category = "AddMana";
-        mana_ability.amount = static_cast<size_t>(required_color);
-
-        mana_ability.source = entity;
-        perm_abilities.push_back(mana_ability);
     }
 }
 
@@ -174,16 +173,16 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
 
         for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
             if (!global_coordinator.entity_has_component<Creature>(entity)) continue;
-            auto& cr = global_coordinator.GetComponent<Creature>(entity);
+            auto &cr = global_coordinator.GetComponent<Creature>(entity);
             if (!cr.is_attacking) continue;
 
-            auto& cd = global_coordinator.GetComponent<CardData>(entity);
+            auto &cd = global_coordinator.GetComponent<CardData>(entity);
 
             // Collect blockers for this attacker
             std::vector<Entity> blockers;
             for (Entity b = 0; b < MAX_ENTITIES; ++b) {
                 if (!global_coordinator.entity_has_component<Creature>(b)) continue;
-                auto& bcr = global_coordinator.GetComponent<Creature>(b);
+                auto &bcr = global_coordinator.GetComponent<Creature>(b);
                 if (bcr.is_blocking && bcr.blocking_target == entity) {
                     blockers.push_back(b);
                 }
@@ -195,9 +194,9 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
                 if (dmg > 0) {
                     deal_damage(entity, cr.attack_target, dmg);
                     if (global_coordinator.entity_has_component<Player>(cr.attack_target)) {
-                        auto& target_player = global_coordinator.GetComponent<Player>(cr.attack_target);
+                        auto &target_player = global_coordinator.GetComponent<Player>(cr.attack_target);
                         target_player.life_total -= static_cast<int>(dmg);
-                        const char* tname = (cr.attack_target == game.player_a_entity) ? "Player A" : "Player B";
+                        const char *tname = (cr.attack_target == game.player_a_entity) ? "Player A" : "Player B";
                         printf("  %s deals %u damage to %s\n", cd.name.c_str(), dmg, tname);
                     }
                 }
@@ -205,8 +204,8 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
                 // Blocked — assign damage to blockers in order, blockers deal damage back
                 uint32_t remaining = cr.power;
                 for (auto blocker : blockers) {
-                    auto& bcr = global_coordinator.GetComponent<Creature>(blocker);
-                    auto& bcd = global_coordinator.GetComponent<CardData>(blocker);
+                    auto &bcr = global_coordinator.GetComponent<Creature>(blocker);
+                    auto &bcd = global_coordinator.GetComponent<CardData>(blocker);
 
                     // Blocker deals damage to attacker
                     if (bcr.power > 0) {
@@ -231,27 +230,23 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
     }
 
     // Check for mandatory choices based on game step
-    // These must be resolved before priority-based actions can occur
-
     // Declare attackers step - active player must declare attackers
     if (game.cur_step == DECLARE_ATTACKERS && !game.attackers_declared) {
         game.pending_choice = DECLARE_ATTACKERS_CHOICE;
         return;
     }
-
     // Declare blockers step - defending player must declare blockers
     if (game.cur_step == DECLARE_BLOCKERS && !game.blockers_declared) {
         game.pending_choice = DECLARE_BLOCKERS_CHOICE;
         return;
     }
-
     // Cleanup step - active player must discard down to 7 cards
     if (game.cur_step == CLEANUP) {
         Zone::Ownership active_player = game.player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B;
         size_t hand_size = 0;
         for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
             if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
-            auto& zone = global_coordinator.GetComponent<Zone>(entity);
+            auto &zone = global_coordinator.GetComponent<Zone>(entity);
             if (zone.location == Zone::HAND && zone.owner == active_player) hand_size++;
         }
         if (hand_size > 7) {
@@ -259,7 +254,6 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
             return;
         }
     }
-
     // TODO: Check for legend rule violations
     // If multiple legendary permanents with same name exist:
     //     game.pending_choice = CHOOSE_ENTITY;
@@ -282,16 +276,14 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
     Zone::Ownership priority_player = game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
     Entity priority_player_entity = get_player_entity(priority_player);
 
-    // Pass priority is always legal - because mandatory decisions happen in a different function
-    {
-        LegalAction la(PASS_PRIORITY, "Pass priority");
-        la.category = ActionCategory::PASS_PRIORITY;
-        actions.push_back(la);
-    }
+    // PASS PRIORITY
+    LegalAction la(PASS_PRIORITY, "Pass priority");
+    la.category = ActionCategory::PASS_PRIORITY;
+    actions.push_back(la);
 
-    // Check for special action: play land
+    // LAND FROM HAND
     if ((game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
-        game.player_a_turn == game.player_a_has_priority &&  // It's their turn
+        game.player_a_turn == game.player_a_has_priority &&
         global_coordinator.entity_has_component<Player>(priority_player_entity)) {
         auto &player = global_coordinator.GetComponent<Player>(priority_player_entity);
 
@@ -320,123 +312,64 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
     // checking for spells to cast from hand
     // TODO spells cast from elsewhere
     bool stack_empty = stack_manager->is_empty();
-
     auto hand = orderer->get_hand(priority_player);
     for (auto card_entity : hand) {
         auto &card_data = global_coordinator.GetComponent<CardData>(card_entity);
-
-        // Check if it's a spell (not a land)
-        bool is_instant = false, is_sorcery = false, is_creature = false;
+        // TODO handle flash
+        bool is_instant = false;
         for (auto &type : card_data.types) {
             if (type.kind == TYPE) {
                 if (type.name == "Instant") {
                     is_instant = true;
-                } else if (type.name == "Sorcery") {
-                    is_sorcery = true;
-                } else if (type.name == "Creature") {
-                    is_creature = true;
+                } else if (type.name == "Land") {
+                    continue;  // can't cast land
                 }
             }
-        }
-
-        // Timing restrictions
-        bool can_cast_now = false;
-        if (is_instant) {
-            can_cast_now = true;  // Can cast anytime you have priority
-        } else if (is_sorcery || is_creature) {
-            // Sorcery speed: main phase, your turn, stack empty
-            can_cast_now = (game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
-                           (game.player_a_turn == game.player_a_has_priority) && stack_empty;
-        }
-
-        if (can_cast_now && can_afford(priority_player, card_data.mana_cost)) {
-            std::string desc = "Cast " + card_data.name;
-            LegalAction la(CAST_SPELL, card_entity, desc);
-            la.category = ActionCategory::CAST_SPELL;
-            actions.push_back(la);
-        }
-    }
-
-    // Build list of spell costs that are timing-legal but not yet affordable.
-    // Used below to decide whether tapping a land would actually help.
-    auto &priority_player_obj = global_coordinator.GetComponent<Player>(priority_player_entity);
-    std::vector<std::multiset<Colors>> unaffordable_spell_costs;
-    for (auto card_entity : hand) {
-        auto &card_data = global_coordinator.GetComponent<CardData>(card_entity);
-        bool is_instant = false, is_sorcery = false, is_creature = false;
-        for (auto &type : card_data.types) {
-            if (type.kind == TYPE) {
-                if (type.name == "Instant")        is_instant = true;
-                else if (type.name == "Sorcery")   is_sorcery = true;
-                else if (type.name == "Creature")  is_creature = true;
+            // Timing restrictions
+            bool can_cast_now = false;
+            if (is_instant) {
+                can_cast_now = true;  // cast anytime you have priority... TODO handle edge cases
+            } else {
+                // Sorcery speed: main phase, your turn, stack empty
+                can_cast_now = (game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
+                               (game.player_a_turn == game.player_a_has_priority) && stack_empty;
+            }
+            if (can_cast_now && can_afford(priority_player, card_data.mana_cost)) {
+                std::string desc = "Cast " + card_data.name;
+                LegalAction la(CAST_SPELL, card_entity, desc);
+                la.category = ActionCategory::CAST_SPELL;
+                actions.push_back(la);
             }
         }
-        bool timing_ok = false;
-        if (is_instant) {
-            timing_ok = true;
-        } else if (is_sorcery || is_creature) {
-            timing_ok = (game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
-                        (game.player_a_turn == game.player_a_has_priority) && stack_empty;
-        }
-        if (timing_ok && !can_afford(priority_player, card_data.mana_cost)) {
-            unaffordable_spell_costs.push_back(card_data.mana_cost);
-        }
     }
 
-    // checking permanents for activated abilities (mana only for now)
-    // Collect all untapped mana sources first so we can evaluate multi-tap sequences.
-    struct ManaSource { Entity entity; Ability ab; Colors color; };
-    std::vector<ManaSource> mana_sources;
+    // checking permanents for activated abilities
+    // no longer implemented: treating mana abilities are treated as legal only after vetting they can work towards
+    // casting or activating something; this could be reimplemented if there is evidence that it improves ML
+    // you would think ML would figure out not to tap its mana for no purpose
     for (auto entity : orderer->mEntities) {
         if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
         auto &zone = global_coordinator.GetComponent<Zone>(entity);
         if (zone.location != Zone::BATTLEFIELD) continue;
         auto &permanent = global_coordinator.GetComponent<Permanent>(entity);
         if (permanent.controller != priority_player) continue;
-        if (permanent.is_tapped) continue;
+
         for (auto ab : permanent.abilities) {
-            if (ab.category != "AddMana" || ab.ability_type != Ability::ACTIVATED) continue;
-            mana_sources.push_back({entity, ab, static_cast<Colors>(ab.amount)});
-        }
-    }
-
-    // Build the maximum reachable pool: current mana + every untapped source.
-    auto max_pool = priority_player_obj.mana;
-    for (auto &ms : mana_sources) max_pool.insert(ms.color);
-
-    // Offer a tap if it is necessary for at least one spell that is reachable from
-    // the full set of available mana. "Necessary" means removing this source from the
-    // max pool makes that spell unaffordable — handles multi-tap sequences correctly.
-    for (auto &ms : mana_sources) {
-        bool would_help = false;
-        for (auto &cost : unaffordable_spell_costs) {
-            if (!can_afford_pool(max_pool, cost)) continue;  // Spell unreachable regardless
-            auto pool_without = max_pool;
-            auto it = pool_without.find(ms.color);
-            if (it != pool_without.end()) pool_without.erase(it);
-            if (!can_afford_pool(pool_without, cost)) {
-                would_help = true;
-                break;
+            if (ab.ability_type != Ability::ACTIVATED) continue;
+            if (ab.tap_cost && permanent.is_tapped) continue;
+            // mana ability
+            if (ab.category == "AddMana") {
+                auto &card_data = global_coordinator.GetComponent<CardData>(ab.source);
+                std::string desc = "Tap " + card_data.name + " for {" + mana_symbol(ab.color) + "}";
+                LegalAction la(ACTIVATE_ABILITY, ab.source, ab, desc);
+                la.category = ActionCategory::MANA_ABILITY;
+                actions.push_back(la);
+                continue;
+            }else{
+                //activated ability
+                //TODO
             }
         }
-        if (!would_help) continue;
-
-        auto &card_data = global_coordinator.GetComponent<CardData>(ms.entity);
-        std::string mana_symbol;
-        switch (ms.color) {
-            case WHITE:     mana_symbol = "W"; break;
-            case BLUE:      mana_symbol = "U"; break;
-            case BLACK:     mana_symbol = "B"; break;
-            case RED:       mana_symbol = "R"; break;
-            case GREEN:     mana_symbol = "G"; break;
-            case COLORLESS: mana_symbol = "C"; break;
-            default:        mana_symbol = "?"; break;
-        }
-        std::string desc = "Tap " + card_data.name + " for {" + mana_symbol + "}";
-        LegalAction la(ACTIVATE_ABILITY, ms.entity, ms.ab, desc);
-        la.category = ActionCategory::MANA_ABILITY;
-        actions.push_back(la);
     }
-
     return actions;
 }

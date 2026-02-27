@@ -1,6 +1,7 @@
 #ifndef MANA_SYSTEM_H
 #define MANA_SYSTEM_H
 
+#include <cstddef>
 #include <set>
 
 #include "classes/colors.h"
@@ -20,7 +21,7 @@ bool can_afford(Zone::Ownership player, const std::multiset<Colors>& cost);
 void spend_mana(Zone::Ownership player, const std::multiset<Colors>& cost);
 
 // Add mana to player's pool
-void add_mana(Zone::Ownership player, Colors mana_color);
+void add_mana(Zone::Ownership player, Colors mana_color, size_t amount);
 
 // Empty player's mana pool (called at step transitions)
 void empty_mana_pool(Zone::Ownership player);

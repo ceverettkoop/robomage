@@ -1,6 +1,7 @@
 #ifndef ABILITY_H
 #define ABILITY_H
 
+#include "../classes/colors.h"
 #include "../ecs/entity.h"
 #include <string>
 
@@ -20,16 +21,13 @@ struct Ability{
     Entity target = 0;
     // TODO: support multiple effects per ability (e.g. "deal 3 damage and gain 3 life")
     size_t amount = 0;
+    Colors color = NO_COLOR; //for mana ability
+
+    // Activated ability costs
+    bool tap_cost = false;              // {T} is part of the activation cost
+    ManaValue activation_mana_cost;     // Mana that must be paid to activate
 
     void resolve();
-
-    // TODO order these by the order they appear on the card
-    bool operator<(const Ability& other) const {
-        if (ability_type != other.ability_type) return ability_type < other.ability_type;
-        if (category != other.category) return category < other.category;
-        if (valid_tgts != other.valid_tgts) return valid_tgts < other.valid_tgts;
-        return amount < other.amount;
-    }
 };
 
 #endif /* ABILITY_H */

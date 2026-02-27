@@ -18,7 +18,7 @@ struct CardData{
     uint32_t power = 0;
     uint32_t toughness = 0;
     //starting loyalty etc described as a static ability
-    std::set<Ability> abilities;
+    std::vector<Ability> abilities;
 };
 
 #endif /* CARD_H */

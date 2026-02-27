@@ -18,6 +18,53 @@
 extern Coordinator global_coordinator;
 extern Game cur_game;
 
+static const char* mana_symbol_str(Colors color) {
+    switch (color) {
+        case WHITE:    return "W";
+        case BLUE:     return "U";
+        case BLACK:    return "B";
+        case RED:      return "R";
+        case GREEN:    return "G";
+        case COLORLESS: return "C";
+        default:       return "?";
+    }
+}
+
+static void process_activate_ability(const LegalAction& action, Game& game, std::shared_ptr<Orderer> orderer) {
+    (void)orderer;
+    Entity permanent_entity = action.source_entity;
+    const Ability& ability = action.ability;
+
+    auto& permanent = global_coordinator.GetComponent<Permanent>(permanent_entity);
+    auto& card_data = global_coordinator.GetComponent<CardData>(permanent_entity);
+    Zone::Ownership controller = permanent.controller;
+
+    bool is_mana_ability = (ability.category == "AddMana");
+
+    // Pay costs
+    if (ability.tap_cost) {
+        permanent.is_tapped = true;
+    }
+    if (!ability.activation_mana_cost.empty()) {
+        spend_mana(controller, ability.activation_mana_cost);
+    }
+
+    if (is_mana_ability) {
+        Colors mana_color = ability.color;
+        add_mana(controller, mana_color, ability.amount);
+        printf("%s tapped %s for {%s}\n",
+               player_name(controller).c_str(),
+               card_data.name.c_str(),
+               mana_symbol_str(mana_color));
+        // Mana abilities don't use the stack; priority does not pass
+    } else {
+        // Non-mana activated ability
+        // TODO: put on stack for opponents to respond; for now resolve immediately
+        printf("%s activates %s\n", player_name(controller).c_str(), card_data.name.c_str());
+        game.take_action();
+    }
+}
+
 void process_action(const LegalAction& action, Game& game, std::shared_ptr<Orderer> orderer) {
 
     switch (action.type) {
@@ -55,25 +102,9 @@ void process_action(const LegalAction& action, Game& game, std::shared_ptr<Order
             break;
         }
 
-        case ACTIVATE_ABILITY: {
-            Entity permanent_entity = action.source_entity;
-
-            auto& permanent = global_coordinator.GetComponent<Permanent>(permanent_entity);
-            const Ability& ability = action.ability;
-            auto& card_data = global_coordinator.GetComponent<CardData>(permanent_entity);
-
-            permanent.is_tapped = true;
-
-            Zone::Ownership controller = permanent.controller;
-            Colors mana_color = static_cast<Colors>(ability.amount);
-            add_mana(controller, mana_color);
-
-            printf("%s tapped %s for mana\n", player_name(controller).c_str(), card_data.name.c_str());
-
-            //PRIORITY DOES NOT PASS
-            //TAKE ACTION IS NOT CALLED
+        case ACTIVATE_ABILITY:
+            process_activate_ability(action, game, orderer);
             break;
-        }
 
         case CAST_SPELL: {
             Entity spell_entity = action.source_entity;

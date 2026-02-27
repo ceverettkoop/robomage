@@ -1,6 +1,5 @@
 #include "parse.h"
 
-#include <algorithm>
 #include <cctype>
 #include <fstream>
 #include <string>
@@ -21,7 +20,7 @@ static std::string value_from_script(std::string script, std::string key);
 static std::vector<std::string> multi_values_from_script(std::string script, std::string key);
 static std::multiset<Colors> parse_mana_cost(std::string value);
 static std::set<Type> parse_types(std::string value);
-static std::set<Ability> parse_abilities(std::vector<std::string> lines, const std::set<Type>& types);
+static std::vector<Ability> parse_abilities(std::vector<std::string> lines, const std::set<Type>& types);
 static uint32_t parse_power(std::string value);
 static uint32_t parse_toughness(std::string value);
 
@@ -187,9 +186,9 @@ static uint32_t parse_toughness(std::string value) {
 }
 
 // fed each ability line
-static std::set<Ability> parse_abilities(std::vector<std::string> lines, const std::set<Type>& types) {
+static std::vector<Ability> parse_abilities(std::vector<std::string> lines, const std::set<Type>& types) {
     size_t pos = 0;
-    std::set<Ability> ret_val;
+    std::vector<Ability> ret_val;
     for (auto &&line : lines) {
         pos = 0;
         // TODO: ONLY CAN DEAL WITH SPELL ABILITY RN
@@ -249,7 +248,7 @@ static std::set<Ability> parse_abilities(std::vector<std::string> lines, const s
 
             param_pos = param_end;
         }
-        ret_val.emplace(ability);
+        ret_val.push_back(ability);
     }
 
     return ret_val;

@@ -2,6 +2,7 @@
 #define COLORS_H
 
 #include <set>
+#include <string>
 
 enum Colors{
     WHITE,
@@ -16,5 +17,7 @@ enum Colors{
 
 using ManaValue = std::multiset<Colors>;
 using ColorIdentity = std::set<Colors>;
+
+std::string mana_symbol(Colors color);
 
 #endif /* COLORS_H */

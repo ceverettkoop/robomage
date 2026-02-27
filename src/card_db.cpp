@@ -1,7 +1,6 @@
 #include "card_db.h"
 #include "parse.h"
 #include "error.h"
-#include "classes/deck.h"
 
 //this should be a system? oh well
 std::unordered_map<std::string, Entity> card_db;

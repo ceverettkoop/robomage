@@ -1,5 +1,7 @@
 #include "mana_system.h"
 
+#include <cstddef>
+
 #include "classes/game.h"
 #include "components/player.h"
 #include "ecs/coordinator.h"
@@ -11,7 +13,7 @@ Entity get_player_entity(Zone::Ownership player) {
     return (player == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
 }
 
-bool can_afford_pool(const std::multiset<Colors>& pool, const std::multiset<Colors>& cost) {
+bool can_afford_pool(const std::multiset<Colors> &pool, const std::multiset<Colors> &cost) {
     auto remaining = pool;
 
     // Pay specific colors first
@@ -29,18 +31,18 @@ bool can_afford_pool(const std::multiset<Colors>& pool, const std::multiset<Colo
     return remaining.size() >= generic_needed;
 }
 
-bool can_afford(Zone::Ownership player_owner, const std::multiset<Colors>& cost) {
+bool can_afford(Zone::Ownership player_owner, const std::multiset<Colors> &cost) {
     Entity player_entity = get_player_entity(player_owner);
     if (!global_coordinator.entity_has_component<Player>(player_entity)) {
         return false;
     }
-    auto& player = global_coordinator.GetComponent<Player>(player_entity);
+    auto &player = global_coordinator.GetComponent<Player>(player_entity);
     return can_afford_pool(player.mana, cost);
 }
 
-void spend_mana(Zone::Ownership player_owner, const std::multiset<Colors>& cost) {
+void spend_mana(Zone::Ownership player_owner, const std::multiset<Colors> &cost) {
     Entity player_entity = get_player_entity(player_owner);
-    auto& player = global_coordinator.GetComponent<Player>(player_entity);
+    auto &player = global_coordinator.GetComponent<Player>(player_entity);
 
     // Pay specific colors first
     for (auto color : cost) {
@@ -61,14 +63,16 @@ void spend_mana(Zone::Ownership player_owner, const std::multiset<Colors>& cost)
     }
 }
 
-void add_mana(Zone::Ownership player_owner, Colors mana_color) {
+void add_mana(Zone::Ownership player_owner, Colors mana_color, size_t amount) {
     Entity player_entity = get_player_entity(player_owner);
-    auto& player = global_coordinator.GetComponent<Player>(player_entity);
-    player.mana.insert(mana_color);
+    auto &player = global_coordinator.GetComponent<Player>(player_entity);
+    for (size_t i = 0; i < amount; i++) {
+        player.mana.insert(mana_color);
+    }
 }
 
 void empty_mana_pool(Zone::Ownership player_owner) {
     Entity player_entity = get_player_entity(player_owner);
-    auto& player = global_coordinator.GetComponent<Player>(player_entity);
+    auto &player = global_coordinator.GetComponent<Player>(player_entity);
     player.mana.clear();
 }
