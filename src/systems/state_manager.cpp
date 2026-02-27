@@ -472,7 +472,14 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 auto &card_data = global_coordinator.GetComponent<CardData>(ab.source);
                 std::string desc = "Tap " + card_data.name + " for {" + mana_symbol(ab.color) + "}";
                 LegalAction la(ACTIVATE_ABILITY, ab.source, ab, desc);
-                la.category = ActionCategory::MANA_ABILITY;
+                switch (ab.color) {
+                    case WHITE:     la.category = ActionCategory::MANA_W; break;
+                    case BLUE:      la.category = ActionCategory::MANA_U; break;
+                    case BLACK:     la.category = ActionCategory::MANA_B; break;
+                    case RED:       la.category = ActionCategory::MANA_R; break;
+                    case GREEN:     la.category = ActionCategory::MANA_G; break;
+                    default:        la.category = ActionCategory::MANA_C; break;
+                }
                 legal_mana_abilities.push_back(la);
                 continue;
             } else {

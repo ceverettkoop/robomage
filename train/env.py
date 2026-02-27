@@ -45,7 +45,7 @@ except ImportError:
 
 STATE_SIZE = 1153
 MAX_ACTIONS = 32         # practical upper bound on num_choices per step
-ACTION_CATEGORY_MAX = 12 # highest ActionCategory enum value (BOTTOM_DECK_CARD)
+ACTION_CATEGORY_MAX = 18 # highest ActionCategory enum value (MANA_C)
 OBS_SIZE = STATE_SIZE + MAX_ACTIONS  # 1185: state + per-action category features
 _REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BINARY = os.path.join(_REPO_ROOT, "bin", "robomage")
@@ -215,7 +215,7 @@ class RoboMageEnv(gym.Env):
 
 # ── Action category constants (mirror ActionCategory enum in classes/action.h) ─
 _CAT_PASS       = 0
-_CAT_MANA       = 1
+_CAT_MANA       = 1   # legacy, no longer emitted by the game
 _CAT_SEL_ATK    = 2
 _CAT_CONF_ATK   = 3
 _CAT_SEL_BLK    = 4
@@ -224,6 +224,26 @@ _CAT_CAST       = 7
 _CAT_TARGET     = 8
 _CAT_LAND       = 9
 _CAT_MULLIGAN   = 11
+_CAT_MANA_W     = 13
+_CAT_MANA_U     = 14
+_CAT_MANA_B     = 15
+_CAT_MANA_R     = 16
+_CAT_MANA_G     = 17
+_CAT_MANA_C     = 18
+
+# All mana-producing categories
+_MANA_CATS = {_CAT_MANA_W, _CAT_MANA_U, _CAT_MANA_B, _CAT_MANA_R, _CAT_MANA_G, _CAT_MANA_C}
+
+# Map from mana pool color index (W=0,U=1,B=2,R=3,G=4,C=5) to action category
+_COLOR_TO_MANA_CAT = [_CAT_MANA_W, _CAT_MANA_U, _CAT_MANA_B, _CAT_MANA_R, _CAT_MANA_G, _CAT_MANA_C]
+
+# Colored mana requirements per card vocab index (card_vocab.h).
+# Keys are color pool indices: W=0, U=1, B=2, R=3, G=4, C=5.
+# Generic mana is omitted — any color satisfies it.
+_CARD_COLORED_COSTS = {
+    2: {3: 1},  # Lightning Bolt (1R): needs 1 red
+    3: {4: 1},  # Grizzly Bears (1G): needs 1 green
+}
 
 # ── Battlefield layout (mirror machine_io.h) ────────────────────────────────
 _BF_START         = 33
@@ -258,7 +278,7 @@ def scripted_action(obs: np.ndarray, num_choices: int) -> int:
       - Never blocks (confirms immediately when blockers are requested)
       - Attacks with every eligible creature
       - Plays the first available land
-      - Taps mana whenever the game offers it (only offered when it enables a spell)
+      - Taps mana during main phases, preferring the color the hand needs most
       - Casts every spell (Grizzly Bears, Lightning Bolt aimed at Player A)
       - Passes priority otherwise
 
@@ -312,14 +332,38 @@ def scripted_action(obs: np.ndarray, num_choices: int) -> int:
         if c == _CAT_LAND:
             return i
 
-    # 7. Tap mana during main phases only
+    # 7. Tap mana during main phases only, choosing the color the hand needs most
     _STEP_ONE_HOT_START = 18
     _STEP_FIRST_MAIN    = _STEP_ONE_HOT_START + 3   # obs[21]
     _STEP_SECOND_MAIN   = _STEP_ONE_HOT_START + 9   # obs[27]
     in_main_phase = obs[_STEP_FIRST_MAIN] > 0.5 or obs[_STEP_SECOND_MAIN] > 0.5
-    if in_main_phase:
+    if in_main_phase and any(c in _MANA_CATS for c in cats):
+        # Determine what colored mana is still needed for cards in hand
+        pool_start = 3 if obs[31] > 0.5 else 12
+        pool = [int(round(obs[pool_start + i] * 10)) for i in range(6)]
+        needed = [0] * 6
+        for slot in range(10):
+            base = 833 + slot * 32
+            slot_vec = obs[base:base + 32]
+            card_idx = int(np.argmax(slot_vec))
+            if slot_vec[card_idx] < 0.5:
+                continue  # empty slot
+            for color_idx, count in _CARD_COLORED_COSTS.get(card_idx, {}).items():
+                needed[color_idx] = max(needed[color_idx], count)
+        short = [max(0, needed[i] - pool[i]) for i in range(6)]
+
+        # Prefer the color we're shortest on
+        for color_idx in sorted(range(6), key=lambda c: -short[c]):
+            if short[color_idx] <= 0:
+                break
+            target_cat = _COLOR_TO_MANA_CAT[color_idx]
+            for i, c in enumerate(cats):
+                if c == target_cat:
+                    return i
+
+        # Fallback: tap any available mana source
         for i, c in enumerate(cats):
-            if c == _CAT_MANA:
+            if c in _MANA_CATS:
                 return i
 
     # Default: pass priority

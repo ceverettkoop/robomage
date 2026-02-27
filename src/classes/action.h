@@ -16,7 +16,7 @@ enum ActionType {
 // so the model can learn action semantics across varying game states.
 enum class ActionCategory {
     PASS_PRIORITY     = 0,
-    MANA_ABILITY      = 1,
+    MANA_ABILITY      = 1,  // legacy, unused — color-specific categories below are emitted instead
     SELECT_ATTACKER   = 2,
     CONFIRM_ATTACKERS = 3,
     SELECT_BLOCKER    = 4,
@@ -28,9 +28,15 @@ enum class ActionCategory {
     OTHER_CHOICE      = 10,
     MULLIGAN          = 11,  // binary: 0=keep, 1=take mulligan
     BOTTOM_DECK_CARD  = 12,  // select card index from hand to put on library bottom
+    MANA_W            = 13,  // tap for white mana
+    MANA_U            = 14,  // tap for blue mana
+    MANA_B            = 15,  // tap for black mana
+    MANA_R            = 16,  // tap for red mana
+    MANA_G            = 17,  // tap for green mana
+    MANA_C            = 18,  // tap for colorless mana
 };
 
-static constexpr int ACTION_CATEGORY_MAX = 12;  // highest ActionCategory value
+static constexpr int ACTION_CATEGORY_MAX = 18;  // highest ActionCategory value
 
 struct LegalAction {
     ActionType type;
