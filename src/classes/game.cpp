@@ -109,6 +109,7 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     cur_step = COMBAT_DAMAGE;
                     combat_damage_dealt = false;
                     break;
+                //TODO FIRST STRIKE
                 case COMBAT_DAMAGE:
                     cur_step = END_OF_COMBAT;
                     break;
@@ -165,6 +166,9 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                 a_has_passed = false;
                 b_has_passed = false;
             }
+            //any case where we are returning true, mana pool is now emptied
+            empty_mana_pool(Zone::PLAYER_A);
+            empty_mana_pool(Zone::PLAYER_B);
             return true;
         }
     }else{
