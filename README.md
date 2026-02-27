@@ -9,7 +9,7 @@ Currently working on upgrading the rules engine to accomodate more complicated c
 ## Building
 
 ```bash
-makec
+make
 make BUILD=RELEASE #optimized
 ```
 
