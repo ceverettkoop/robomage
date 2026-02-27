@@ -271,22 +271,40 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
     }
 }
 
-// Returns true if activating the given mana ability would contribute toward affording
-// any of the pending actions (actions that are legal but currently unaffordable).
-static bool ma_serves_pending_action(const LegalAction &ma, const std::vector<LegalAction> &pending_actions) {
-    if (pending_actions.empty()) return false;
+// Returns the subset of legal_mana_abilities that would contribute toward affording
+// at least one pending action (actions that are legal but currently unaffordable).
+//
+// Algorithm per reachable cost:
+//   Rule (a) — specific demand: show every MA whose color appears as a non-generic pip.
+//              All such MAs are shown so the player can pick which to tap.
+//   Rule (b) — generic shortfall: compute how much generic coverage the rule-(a) sources
+//              already provide (current pool + excess specific-color MA mana after paying
+//              the specific pips). If that falls short of the generic requirement, every
+//              non-specific MA is also needed and is shown.
+//
+// This correctly handles interchangeable sources: e.g. with 3 Forests and cost {2GGR},
+// rule (a) shows all 3 forests (any two pay the GG); rule (b) fires because the 1 excess
+// forest only covers 1 of the 2 generic slots, so any other available sources are also shown.
+static std::vector<LegalAction> useful_mana_abilities(const std::vector<LegalAction> &legal_mana_abilities,
+                                                       const std::vector<LegalAction> &pending_actions) {
+    if (pending_actions.empty() || legal_mana_abilities.empty()) return {};
 
     Zone::Ownership priority_player = cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
     Entity priority_player_entity = get_player_entity(priority_player);
-    if (!global_coordinator.entity_has_component<Player>(priority_player_entity)) return false;
+    if (!global_coordinator.entity_has_component<Player>(priority_player_entity)) return {};
 
-    // Simulate adding the mana this ability would produce to the current pool
     auto &player = global_coordinator.GetComponent<Player>(priority_player_entity);
-    ManaValue simulated_pool = player.mana;
-    for (size_t i = 0; i < ma.ability.amount; ++i) {
-        simulated_pool.insert(ma.ability.color);
+
+    // Build total potential pool: current mana + every legal MA activated
+    ManaValue total_potential = player.mana;
+    for (const auto &ma : legal_mana_abilities) {
+        for (size_t i = 0; i < ma.ability.amount; ++i) {
+            total_potential.insert(ma.ability.color);
+        }
     }
 
+    // Collect costs of pending actions reachable with the full potential pool
+    std::vector<ManaValue> reachable_costs;
     for (const auto &pending : pending_actions) {
         ManaValue cost;
         if (pending.type == CAST_SPELL) {
@@ -297,9 +315,58 @@ static bool ma_serves_pending_action(const LegalAction &ma, const std::vector<Le
         } else {
             continue;
         }
-        if (can_afford_pool(simulated_pool, cost)) return true;
+        if (can_afford_pool(total_potential, cost)) {
+            reachable_costs.push_back(std::move(cost));
+        }
     }
-    return false;
+
+    if (reachable_costs.empty()) return {};
+
+    std::vector<LegalAction> useful;
+    for (const auto &ma : legal_mana_abilities) {
+        Colors c = ma.ability.color;
+        bool is_useful = false;
+
+        for (const auto &cost : reachable_costs) {
+            // Rule (a): this color is specifically demanded — show all MAs of this color.
+            if (cost.count(c) > 0) {
+                is_useful = true;
+                break;
+            }
+
+            // Rule (b): MA is a candidate for paying generic mana.
+            // Check whether the rule-(a) sources alone (current pool + all specifically-
+            // demanded-color MAs) already cover the full generic requirement.
+            // If not, this non-specific MA is needed and should be shown.
+            size_t generic_needed = cost.count(GENERIC);
+            if (generic_needed == 0) continue;
+
+            // Build the pool consisting of only rule-(a) sources.
+            ManaValue rule_a_pool = player.mana;
+            for (const auto &other : legal_mana_abilities) {
+                if (cost.count(other.ability.color) > 0) {
+                    for (size_t i = 0; i < other.ability.amount; ++i) {
+                        rule_a_pool.insert(other.ability.color);
+                    }
+                }
+            }
+            // Pay the specific color pips from that pool.
+            for (Colors pip : cost) {
+                if (pip == GENERIC) continue;
+                auto it = rule_a_pool.find(pip);
+                if (it != rule_a_pool.end()) rule_a_pool.erase(it);
+            }
+            // Whatever remains in rule_a_pool can cover generic.
+            // If it falls short, this non-specific MA is needed.
+            if (rule_a_pool.size() < generic_needed) {
+                is_useful = true;
+                break;
+            }
+        }
+
+        if (is_useful) useful.push_back(ma);
+    }
+    return useful;
 }
 
 std::vector<LegalAction> StateManager::determine_legal_actions(
@@ -411,12 +478,9 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             }
         }
     }
-    // finally assess which mana abilities would be in service of a pending ability
-    for (auto ma : legal_mana_abilities) {
-        if(ma_serves_pending_action(ma, pending_actions)){
-            actions.push_back(ma);
-        }
+    // finally add the mana abilities that serve at least one pending action
+    for (auto &ma : useful_mana_abilities(legal_mana_abilities, pending_actions)) {
+        actions.push_back(ma);
     }
-
     return actions;
 }
