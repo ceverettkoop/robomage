@@ -29,6 +29,8 @@ static Colors mana_color_for_subtype(const std::string &subtype) {
 }
 
 // Applies abilities to lands based on the land subtypes
+// TODO recheck in case blood moon or similar nuked one; rn blood moon on a tundra would just add an ability, even if
+// types are successfully replaced
 static void apply_land_abilities() {
     for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
         if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
@@ -87,6 +89,7 @@ void StateManager::init() {
 }
 
 // layers / timestamps would be implemented here; for now order is arbitrary
+// TODO clean this up - more concise code
 void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orderer) {
     // Reset pending choice
     game.pending_choice = NONE;
@@ -270,7 +273,9 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
 
 std::vector<LegalAction> StateManager::determine_legal_actions(
     const Game &game, std::shared_ptr<Orderer> orderer, std::shared_ptr<StackManager> stack_manager) {
-    std::vector<LegalAction> actions;
+    std::vector<LegalAction> actions;          // return value
+    std::vector<LegalAction> pending_actions;  // non mana-ability actions possible if costs could be paid; used to
+                                               // check what mana abilities can be rationally activated
 
     // Determine whose turn/priority it is
     Zone::Ownership priority_player = game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
@@ -308,7 +313,6 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             }
         }
     }
-
     // checking for spells to cast from hand
     // TODO spells cast from elsewhere
     bool stack_empty = stack_manager->is_empty();
@@ -328,7 +332,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 }
             }
         }
-        if(is_land) continue;
+        if (is_land) continue;
         // Timing restrictions
         bool can_cast_now = false;
         if (is_instant) {
@@ -338,41 +342,50 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             can_cast_now = (game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
                            (game.player_a_turn == game.player_a_has_priority) && stack_empty;
         }
-        if (can_cast_now && can_afford(priority_player, card_data.mana_cost)) {
+        if (can_cast_now) {
             std::string desc = "Cast " + card_data.name;
             LegalAction la(CAST_SPELL, card_entity, desc);
             la.category = ActionCategory::CAST_SPELL;
-            actions.push_back(la);
+            if (can_afford(priority_player, card_data.mana_cost)) {
+                actions.push_back(la);
+            } else {  // if we cant currently afford it; it's treated as pending
+                pending_actions.push_back(la);
+            }
         }
     }
-
     // checking permanents for activated abilities
-    // no longer implemented: treating mana abilities are treated as legal only after vetting they can work towards
-    // casting or activating something; this could be reimplemented if there is evidence that it improves ML
-    // you would think ML would figure out not to tap its mana for no purpose
+    // mana abilities parsed last, after pending_actions complete
+    std::vector<LegalAction> legal_mana_abilities;
     for (auto entity : orderer->mEntities) {
         if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
         auto &zone = global_coordinator.GetComponent<Zone>(entity);
         if (zone.location != Zone::BATTLEFIELD) continue;
         auto &permanent = global_coordinator.GetComponent<Permanent>(entity);
         if (permanent.controller != priority_player) continue;
-
         for (auto ab : permanent.abilities) {
             if (ab.ability_type != Ability::ACTIVATED) continue;
+            // todo handle this elswewhere, tapping check
             if (ab.tap_cost && permanent.is_tapped) continue;
-            // mana ability
-            if (ab.category == "AddMana") {
+            if (ab.category == "AddMana") {  //
                 auto &card_data = global_coordinator.GetComponent<CardData>(ab.source);
                 std::string desc = "Tap " + card_data.name + " for {" + mana_symbol(ab.color) + "}";
                 LegalAction la(ACTIVATE_ABILITY, ab.source, ab, desc);
                 la.category = ActionCategory::MANA_ABILITY;
-                actions.push_back(la);
+                legal_mana_abilities.push_back(la);
                 continue;
             } else {
-                // activated ability
-                // TODO
+                // activated ability only will display if costs could be paid
+                // TODO, check timing and if they could can be afforded, tap etc. then add to actions or pending
+                // accordingly
             }
         }
     }
+    // finally assess which mana abilities would be in service of a pending ability
+    for (auto ma : legal_mana_abilities) {
+        if(ma_serves_pending_action(ma, pending_actions)){
+            actions.push_back(ma);
+        }
+    }
+
     return actions;
 }

@@ -31,6 +31,7 @@ bool can_afford_pool(const std::multiset<Colors> &pool, const std::multiset<Colo
     return remaining.size() >= generic_needed;
 }
 
+//TODO incorporate alternate costs incl. tapping
 bool can_afford(Zone::Ownership player_owner, const std::multiset<Colors> &cost) {
     Entity player_entity = get_player_entity(player_owner);
     if (!global_coordinator.entity_has_component<Player>(player_entity)) {
