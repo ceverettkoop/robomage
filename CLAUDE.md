@@ -17,9 +17,6 @@ Robomage is a C++ implementation of a Magic: The Gathering game engine using an 
 
 The goal is to have every game decision logged as an integer, so that games can be replaced deterministically when provided with the correct seed.
 
-Ultimately this would allow the same seed to be iterated through with every possible decisions to attempt to brute force determine best lines of play for given matchups.
-
-
 ## Architecture
 
 ### ECS Pattern

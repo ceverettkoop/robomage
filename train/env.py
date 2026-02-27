@@ -22,7 +22,8 @@ For mandatory-choice loops (declare attackers / blockers):
 
 Observation space
 -----------------
-1153-float state vector + 32 action-category floats = 1185 total.
+1153-float state vector + 32 action-category floats + 70 hand cost floats
++ 140 battlefield ability cost floats = 1395 total.
 See src/machine_io.h for the full state layout.
 
 Reward
@@ -43,10 +44,18 @@ except ImportError:
     import gym
     from gym import spaces
 
+try:
+    from card_costs import _CARD_COST_MATRIX, _CARD_ABILITY_COST_MATRIX, N_CARD_TYPES, _N_COST_FEATS
+except ImportError:
+    from train.card_costs import _CARD_COST_MATRIX, _CARD_ABILITY_COST_MATRIX, N_CARD_TYPES, _N_COST_FEATS
+
 STATE_SIZE = 1153
 MAX_ACTIONS = 32         # practical upper bound on num_choices per step
 ACTION_CATEGORY_MAX = 18 # highest ActionCategory enum value (MANA_C)
-OBS_SIZE = STATE_SIZE + MAX_ACTIONS  # 1185: state + per-action category features
+MAX_HAND_SLOTS = 10
+_HAND_COST_FEATS  = MAX_HAND_SLOTS * _N_COST_FEATS  # 10 * 7 = 70
+_BF_ABILITY_FEATS = 20 * _N_COST_FEATS              # 20 * 7 = 140
+OBS_SIZE = STATE_SIZE + MAX_ACTIONS + _HAND_COST_FEATS + _BF_ABILITY_FEATS  # 1395
 _REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BINARY = os.path.join(_REPO_ROOT, "bin", "robomage")
 BIN_DIR = os.path.join(_REPO_ROOT, "bin")  # game must be run from here for resource lookup
@@ -186,7 +195,21 @@ class RoboMageEnv(gym.Env):
                 if len(state_arr) < STATE_SIZE:
                     state_arr = np.pad(state_arr, (0, STATE_SIZE - len(state_arr)))
 
-                self._obs = np.concatenate([state_arr, cat_arr])
+                # Hand cast costs: matrix-multiply one-hots against cost matrix
+                _HAND_START = 833
+                hand_onehots = state_arr[_HAND_START:_HAND_START + MAX_HAND_SLOTS * N_CARD_TYPES]
+                hand_costs = hand_onehots.reshape(MAX_HAND_SLOTS, N_CARD_TYPES) @ _CARD_COST_MATRIX  # (10,7)
+
+                # Battlefield activated ability costs (all zeros until non-mana abilities are added)
+                _BF_CARD_OFF = 8  # offset of card one-hot within each 40-float slot
+                bf_ability_costs = np.zeros((20, _N_COST_FEATS), dtype=np.float32)
+                for slot in range(20):
+                    base = 33 + slot * 40 + _BF_CARD_OFF
+                    bf_ability_costs[slot] = state_arr[base:base + N_CARD_TYPES] @ _CARD_ABILITY_COST_MATRIX
+
+                self._obs = np.concatenate([state_arr, cat_arr,
+                                            hand_costs.flatten(),
+                                            bf_ability_costs.flatten()])
                 break
 
             # Non-QUERY output: optionally print for human render mode
