@@ -317,29 +317,32 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         auto &card_data = global_coordinator.GetComponent<CardData>(card_entity);
         // TODO handle flash
         bool is_instant = false;
+        bool is_land = false;
         for (auto &type : card_data.types) {
             if (type.kind == TYPE) {
                 if (type.name == "Instant") {
                     is_instant = true;
                 } else if (type.name == "Land") {
-                    continue;  // can't cast land
+                    is_land = true;  // can't cast land
+                    break;
                 }
             }
-            // Timing restrictions
-            bool can_cast_now = false;
-            if (is_instant) {
-                can_cast_now = true;  // cast anytime you have priority... TODO handle edge cases
-            } else {
-                // Sorcery speed: main phase, your turn, stack empty
-                can_cast_now = (game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
-                               (game.player_a_turn == game.player_a_has_priority) && stack_empty;
-            }
-            if (can_cast_now && can_afford(priority_player, card_data.mana_cost)) {
-                std::string desc = "Cast " + card_data.name;
-                LegalAction la(CAST_SPELL, card_entity, desc);
-                la.category = ActionCategory::CAST_SPELL;
-                actions.push_back(la);
-            }
+        }
+        if(is_land) continue;
+        // Timing restrictions
+        bool can_cast_now = false;
+        if (is_instant) {
+            can_cast_now = true;  // cast anytime you have priority... TODO handle edge cases
+        } else {
+            // Sorcery speed: main phase, your turn, stack empty
+            can_cast_now = (game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
+                           (game.player_a_turn == game.player_a_has_priority) && stack_empty;
+        }
+        if (can_cast_now && can_afford(priority_player, card_data.mana_cost)) {
+            std::string desc = "Cast " + card_data.name;
+            LegalAction la(CAST_SPELL, card_entity, desc);
+            la.category = ActionCategory::CAST_SPELL;
+            actions.push_back(la);
         }
     }
 
@@ -365,9 +368,9 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 la.category = ActionCategory::MANA_ABILITY;
                 actions.push_back(la);
                 continue;
-            }else{
-                //activated ability
-                //TODO
+            } else {
+                // activated ability
+                // TODO
             }
         }
     }
