@@ -7,8 +7,8 @@
 | Lightning Bolt | 4 | ✅ Done | DealDamage parsed |
 | Mountain | 1 | ✅ Done | Basic land, mana injected |
 | Island | 1 | ✅ Done | Basic land, mana injected |
-| Volcanic Island | 4 | TO TEST| - should be working becaus removed basic requirement of lands
-| Thundering Falls | 1 | 🟡 Partial | Same dual subtype issue + ETB-tapped + surveil trigger |
+| Volcanic Island | 4 | Done
+| Thundering Falls | 1 | 🟡 Partial | Should tap for mana TODO + ETB-tapped + surveil trigger |
 | Scalding Tarn | 4 | ❌ | Fetch land |
 | Flooded Strand | 1 | ❌ | Fetch land |
 | Polluted Delta | 1 | ❌ | Fetch land |

@@ -271,6 +271,37 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
     }
 }
 
+// Returns true if activating the given mana ability would contribute toward affording
+// any of the pending actions (actions that are legal but currently unaffordable).
+static bool ma_serves_pending_action(const LegalAction &ma, const std::vector<LegalAction> &pending_actions) {
+    if (pending_actions.empty()) return false;
+
+    Zone::Ownership priority_player = cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
+    Entity priority_player_entity = get_player_entity(priority_player);
+    if (!global_coordinator.entity_has_component<Player>(priority_player_entity)) return false;
+
+    // Simulate adding the mana this ability would produce to the current pool
+    auto &player = global_coordinator.GetComponent<Player>(priority_player_entity);
+    ManaValue simulated_pool = player.mana;
+    for (size_t i = 0; i < ma.ability.amount; ++i) {
+        simulated_pool.insert(ma.ability.color);
+    }
+
+    for (const auto &pending : pending_actions) {
+        ManaValue cost;
+        if (pending.type == CAST_SPELL) {
+            if (!global_coordinator.entity_has_component<CardData>(pending.source_entity)) continue;
+            cost = global_coordinator.GetComponent<CardData>(pending.source_entity).mana_cost;
+        } else if (pending.type == ACTIVATE_ABILITY) {
+            cost = pending.ability.activation_mana_cost;
+        } else {
+            continue;
+        }
+        if (can_afford_pool(simulated_pool, cost)) return true;
+    }
+    return false;
+}
+
 std::vector<LegalAction> StateManager::determine_legal_actions(
     const Game &game, std::shared_ptr<Orderer> orderer, std::shared_ptr<StackManager> stack_manager) {
     std::vector<LegalAction> actions;          // return value
