@@ -2,23 +2,19 @@
 
 Card game rules engine built for reinforcement learning.
 
-Currently only a few cards tested.
+Currently training will give both players the same deck, test_minimal.dek. ML will only understand cards described in card_vocab.h. This will need to be updated as decks with more than those 4 cards are introduced. Note that within resources you will need card scripts in the cardsfolder. See the card-forge repository for compatible card scripts or write your own.
+
+Currently working on upgrading the rules engine to accomodate more complicated cards, specifically those listed in IMPLEMENTATION.md (UR delver). Near term goal is have it train on the delver mirror.
 
 ## Building
 
-Requires clang (macOS) or gcc (Linux).
-
 ```bash
-make
+makec
 make BUILD=RELEASE #optimized
 ```
 
 The binary is written to `bin/robomage`. The game expects to be run from the `bin/`
 directory so it can find `bin/resources/`.
-
-Note that within resources you will need card scripts in the cardsfolder. I have been using ones from the Forge project, compatible ones are found there you could also write your own.
-
-Example deck_one and deck_two are included. They are currently identical. ML will only understand cards described in card_vocab.h. This will need to be updated as decks with more than those 4 cards are introduced.
 
 ## Running
 
@@ -28,6 +24,8 @@ cd bin
 ./robomage --replay resources/logs/game_12345.log  # replay a saved game
 ./robomage --machine              # machine mode for RL training
 ```
+
+in interactive mode you play both sides; numbers select a choice (every choice is logged), z passes to combat or end of turn, q quits.
 
 ### Machine mode protocol
 
@@ -62,9 +60,10 @@ illegal actions via the `action_masks()` method on the environment.
 
 ```bash
 # From the repo root:
-train/.venv/bin/python train/train.py                                        # by default this trains against a simple model
+train/.venv/bin/python train/train.py                                        # by default this trains against a simple model (AKA scripted bot) see py.env for bot scripted behavior
 train/.venv/bin/python train/train.py --load checkpoints/robomage_final.zip  # resume
 train/.venv/bin/python train/train.py --tally                                # print A/B win counts each rollout
+train/.venv/bin/python train/train.py --watch-scripted                       #watch the scripted bot play itself; to check engine is functioning
 ```
 
 This launches 7 parallel game subprocesses and trains with MaskablePPO for
