@@ -32,6 +32,9 @@ struct Ability{
 
     void resolve();
     bool identical_activated_ability(const Ability& other);
+private:
+    void resolve_change_zone();
+
 };
 
 #endif /* ABILITY_H */
