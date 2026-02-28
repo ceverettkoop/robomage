@@ -6,6 +6,7 @@
 #include "zone.h"
 #include <memory>
 #include <string>
+#include <vector>
 
 class Orderer;
 
@@ -35,6 +36,8 @@ struct Ability{
     std::string change_type = "";        // ChangeType$ — comma-separated subtypes to search
     Zone::ZoneValue origin = Zone::LIBRARY;          // Origin$ — zone to search
     Zone::ZoneValue destination = Zone::BATTLEFIELD; // Destination$ — zone to move card to
+    //for each AB on a card script there may be multiple SubAbility$, would get parsed into vector below
+    std::vector<Ability> subabilities; // additional abilities resolved at same time this resolves, stored in order
 
     void resolve(std::shared_ptr<Orderer> orderer);
     bool identical_activated_ability(const Ability& other);

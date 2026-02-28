@@ -140,6 +140,11 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
     } else if (category == "Destroy") {
         resolve_destroy(orderer);
     }
+
+    //if there are subabilities, resolve them in sequence
+    for (auto sub_ab : this->subabilities) {
+        sub_ab.resolve(orderer);
+    }
 }
 
 void Ability::resolve_destroy(std::shared_ptr<Orderer> orderer) {
