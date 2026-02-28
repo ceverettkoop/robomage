@@ -46,7 +46,14 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
     Zone::Ownership controller = permanent.controller;
 
     bool is_mana_ability = (ability.category == "AddMana");
+    Ability stack_ab = ability;  // not used for manaabilty
 
+    // SELECT TARGETS BEFORE PAYING COSTS
+    if (!is_mana_ability) {
+        if (stack_ab.valid_tgts != "N_A") {
+            select_target(stack_ab, orderer);
+        }
+    }
     // Tap cost
     if (ability.tap_cost) {
         permanent.is_tapped = true;
@@ -72,24 +79,24 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
         add_mana(controller, mana_color, ability.amount);
         printf("%s tapped %s for {%s}\n", player_name(controller).c_str(), card_data.name.c_str(),
             mana_symbol_str(mana_color));
-        //priority does not pass
-    
+        // priority does not pass
+
         // ACTIVATED ABILITY THAT IS NOT A MANA ABILITY - GOES ON STACK
     } else {
         //  Initialize zone with HAND so add_to_zone removal of the origin zone is a no-op
-        // lol that's hacky but OK 
+        // lol that's hacky but OK
         Entity ability_entity = global_coordinator.CreateEntity();
         Zone ab_zone(Zone::HAND, controller, controller);
         global_coordinator.AddComponent(ability_entity, ab_zone);
-        //puts on stack
+        // puts on stack; we have targets from earlier
         orderer->add_to_zone(false, ability_entity, Zone::STACK);
 
-        Ability stack_ab = ability;
-        stack_ab.source = permanent_entity;  // fetch land (now in graveyard) — owner reference
+        stack_ab.source = permanent_entity;
         global_coordinator.AddComponent(ability_entity, stack_ab);
 
         printf("%s's %s ability is on the stack\n", player_name(controller).c_str(), card_data.name.c_str());
         game.take_action();
+        //if target remains legal checked at resolution
     }
 }
 
@@ -100,6 +107,8 @@ static std::vector<Entity> build_valid_targets(const Ability &ability, std::shar
     bool any = (vt == "Any");
     bool inc_players = any || vt.find("Player") != std::string::npos;
     bool inc_creatures = any || vt.find("Creature") != std::string::npos;
+    bool inc_lands = any || vt.find("Land") != std::string::npos;
+    bool nonbasic_only = vt.find("nonBasic") != std::string::npos;
     // TODO: inc_planeswalker, inc_battle when those components exist
 
     if (inc_players) {
@@ -113,6 +122,19 @@ static std::vector<Entity> build_valid_targets(const Ability &ability, std::shar
         if (inc_creatures && global_coordinator.entity_has_component<Creature>(entity)) {
             valid_targets.push_back(entity);
             continue;
+        }
+        if (inc_lands && global_coordinator.entity_has_component<CardData>(entity)) {
+            auto &tcd = global_coordinator.GetComponent<CardData>(entity);
+            bool is_land = false;
+            bool is_basic = false;
+            for (auto &t : tcd.types) {
+                if (t.kind == TYPE && t.name == "Land") is_land = true;
+                if (t.kind == SUPERTYPE && t.name == "Basic") is_basic = true;
+            }
+            if (is_land && (!nonbasic_only || !is_basic)) {
+                valid_targets.push_back(entity);
+                continue;
+            }
         }
         // TODO: Planeswalker and Battle components
     }

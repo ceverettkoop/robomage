@@ -215,6 +215,8 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
         if (category_end <= pos) continue;
 
         std::string category = line.substr(pos, category_end - pos);
+        // Normalize script category names to internal names used throughout the engine
+        if (category == "Mana") category = "AddMana";
         ability.category = category;
 
         // Parse pipe-delimited parameters — applies to all ability categories
@@ -247,6 +249,17 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
 
                 if (key == "NumDmg") {
                     ability.amount = static_cast<size_t>(std::stoi(value));
+                } else if (key == "Produced") {
+                    // First color letter wins; "Combo" entries handled by first token
+                    for (char c : value) {
+                        if      (c == 'W') { ability.color = WHITE;     break; }
+                        else if (c == 'U') { ability.color = BLUE;      break; }
+                        else if (c == 'B') { ability.color = BLACK;     break; }
+                        else if (c == 'R') { ability.color = RED;       break; }
+                        else if (c == 'G') { ability.color = GREEN;     break; }
+                        else if (c == 'C') { ability.color = COLORLESS; break; }
+                    }
+                    ability.amount = 1;
                 } else if (key == "ValidTgts") {
                     ability.valid_tgts = value;
                 } else if (key == "ChangeType") {

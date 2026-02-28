@@ -138,6 +138,24 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
             }
         }
     } else if (category == "Destroy") {
-
+        resolve_destroy(orderer);
     }
+}
+
+void Ability::resolve_destroy(std::shared_ptr<Orderer> orderer) {
+    if (!global_coordinator.entity_has_component<Zone>(target)) {
+        printf("Destroy: target is no longer in play\n");
+        return;
+    }
+    auto &tz = global_coordinator.GetComponent<Zone>(target);
+    if (tz.location != Zone::BATTLEFIELD) {
+        printf("Destroy: target is no longer on the battlefield\n");
+        return;
+    }
+    //TODO OTHER REASONS TARGET IS NOW ILLEGAL
+    std::string name = global_coordinator.entity_has_component<CardData>(target)
+        ? global_coordinator.GetComponent<CardData>(target).name
+        : "<unknown>";
+    orderer->add_to_zone(false, target, Zone::GRAVEYARD);
+    printf("%s is destroyed\n", name.c_str());
 }

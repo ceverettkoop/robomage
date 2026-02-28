@@ -40,6 +40,7 @@ struct Ability{
     bool identical_activated_ability(const Ability& other);
 private:
     void resolve_change_zone(std::shared_ptr<Orderer> orderer);
+    void resolve_destroy(std::shared_ptr<Orderer> orderer);
 
 };
 

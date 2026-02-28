@@ -179,7 +179,7 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
 
     // Check for lethal damage on creatures
     std::vector<Entity> creatures_to_destroy;
-    for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
+    for (auto entity : mEntities) {
         if (!global_coordinator.entity_has_component<Creature>(entity)) continue;
         if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
         auto &zone = global_coordinator.GetComponent<Zone>(entity);
@@ -209,7 +209,7 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
     if (game.cur_step == COMBAT_DAMAGE && !game.combat_damage_dealt) {
         printf("\n--- Combat Damage ---\n");
 
-        for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
+        for (auto entity : mEntities) {
             if (!global_coordinator.entity_has_component<Creature>(entity)) continue;
             auto &cr = global_coordinator.GetComponent<Creature>(entity);
             if (!cr.is_attacking) continue;
@@ -282,7 +282,7 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
     if (game.cur_step == CLEANUP) {
         Zone::Ownership active_player = game.player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B;
         size_t hand_size = 0;
-        for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
+        for (auto entity : mEntities) {
             if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
             auto &zone = global_coordinator.GetComponent<Zone>(entity);
             if (zone.location == Zone::HAND && zone.owner == active_player) hand_size++;
@@ -435,7 +435,8 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 legal_mana_abilities.push_back(la);
                 continue;
             } else {
-                // Non-mana activated ability (e.g. ChangeZone for fetch lands)
+                // Non-mana activated ability (e.g. ChangeZone for fetch lands, Destroy for Wasteland)
+                if (ab.valid_tgts != "N_A" && !has_legal_targets(ab, orderer)) continue;
                 auto &ab_card_data = global_coordinator.GetComponent<CardData>(ab.source);
                 std::string desc = "Activate " + ab_card_data.name + " (" + ab.category + ")";
                 LegalAction non_mana_la(ACTIVATE_ABILITY, ab.source, ab, desc);
