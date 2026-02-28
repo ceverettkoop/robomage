@@ -74,6 +74,33 @@ Entity parse_card_script(std::string path) {
     auto svars = parse_svars(script_data);
     card.abilities = parse_abilities(multi_values_from_script(script_data, "A"), card.types, svars);
 
+    // Parse S: lines for alternate costs
+    for (auto& line : multi_values_from_script(script_data, "S")) {
+        if (line.find("AlternativeCost") == std::string::npos) continue;
+        size_t cost_pos = line.find("Cost$");
+        if (cost_pos == std::string::npos) continue;
+        cost_pos += 5;
+        while (cost_pos < line.size() && line[cost_pos] == ' ') cost_pos++;
+        size_t cost_end = line.find('|', cost_pos);
+        if (cost_end == std::string::npos) cost_end = line.size();
+        std::string cost_str = line.substr(cost_pos, cost_end - cost_pos);
+        while (!cost_str.empty() && cost_str.back() == ' ') cost_str.pop_back();
+        AltCost ac;
+        ac.has_alt_cost = true;
+        size_t pl = cost_str.find("PayLife<");
+        if (pl != std::string::npos) {
+            size_t close = cost_str.find('>', pl);
+            ac.life_cost = std::stoi(cost_str.substr(pl + 8, close - pl - 8));
+        }
+        size_t ef = cost_str.find("ExileFromHand<");
+        if (ef != std::string::npos) {
+            size_t slash = cost_str.find('/', ef);
+            ac.exile_blue_from_hand = std::stoi(cost_str.substr(ef + 14, slash - ef - 14));
+        }
+        card.alt_cost = ac;
+        break;
+    }
+
     // no error handling here
     global_coordinator.AddComponent(id, card);
 
@@ -250,6 +277,8 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         ability.mandatory = (value == "True");
     } else if (key == "MayShuffle") {
         ability.may_shuffle = (value == "True");
+    } else if (key == "TargetType") {
+        if (value == "Spell") ability.target_type = "Spell";
     } else if (key == "Cost") {
         size_t tok_pos = 0;
         while (tok_pos < value.size()) {

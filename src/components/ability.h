@@ -38,6 +38,7 @@ struct Ability{
     Zone::ZoneValue destination = Zone::BATTLEFIELD; // Destination$ — zone to move card to
     bool mandatory = false;              // Mandatory$ True — player must choose; suppresses fail-to-find when zone non-empty
     bool may_shuffle = false;            // MayShuffle$ True — player may optionally shuffle after
+    std::string target_type = "";        // TargetType$ Spell — restricts targeting to stack spells
     //for each AB on a card script there may be multiple SubAbility$, would get parsed into vector below
     std::vector<Ability> subabilities; // additional abilities resolved at same time this resolves, stored in order
 

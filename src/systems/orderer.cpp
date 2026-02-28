@@ -7,6 +7,7 @@
 #include "../classes/deck.h"
 #include "../classes/game.h"
 #include "../components/carddata.h"
+#include "../components/color_identity.h"
 #include "../components/zone.h"
 #include "../debug.h"
 #include "../ecs/coordinator.h"
@@ -124,6 +125,13 @@ void Orderer::generate_libraries(const Deck &deck_a, const Deck &deck_b) {
                 auto card_data_id = load_card(card_name.second);
                 coordinator.AddComponent(card_id, coordinator.GetComponent<CardData>(card_data_id));
                 coordinator.AddComponent(card_id, Zone(Zone::LIBRARY, owner, owner));
+                ColorIdentity ci;
+                auto& cd = coordinator.GetComponent<CardData>(card_id);
+                for (auto c : cd.mana_cost) {
+                    if (c != GENERIC && c != COLORLESS && c != NO_COLOR)
+                        ci.colors.insert(c);
+                }
+                coordinator.AddComponent(card_id, ci);
             }
         }
     }

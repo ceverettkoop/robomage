@@ -16,7 +16,6 @@ enum Colors{
 };
 
 using ManaValue = std::multiset<Colors>;
-using ColorIdentity = std::set<Colors>;
 
 std::string mana_symbol(Colors color);
 

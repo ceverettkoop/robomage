@@ -14,6 +14,7 @@
 #include "../systems/orderer.h"
 #include "damage.h"
 #include "player.h"
+#include "spell.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;
@@ -247,6 +248,24 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
         }
     } else if (category == "Destroy") {
         resolve_destroy(orderer);
+    } else if (category == "Counter") {
+        if (global_coordinator.entity_has_component<Zone>(target)) {
+            auto& tz = global_coordinator.GetComponent<Zone>(target);
+            if (tz.location == Zone::STACK) {
+                std::string name = global_coordinator.entity_has_component<CardData>(target)
+                    ? global_coordinator.GetComponent<CardData>(target).name : "<unknown>";
+                if (global_coordinator.entity_has_component<Ability>(target))
+                    global_coordinator.RemoveComponent<Ability>(target);
+                if (global_coordinator.entity_has_component<Spell>(target))
+                    global_coordinator.RemoveComponent<Spell>(target);
+                orderer->add_to_zone(false, target, Zone::GRAVEYARD);
+                printf("%s is countered\n", name.c_str());
+            } else {
+                printf("Counter: target is no longer on the stack\n");
+            }
+        } else {
+            printf("Counter: target is no longer on the stack\n");
+        }
     }
 
     //if there are subabilities, resolve them in sequence

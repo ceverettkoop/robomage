@@ -7,6 +7,7 @@
 #include "../classes/game.h"
 #include "../components/ability.h"
 #include "../components/carddata.h"
+#include "../components/color_identity.h"
 #include "../components/creature.h"
 #include "../components/damage.h"
 #include "../components/effect.h"
@@ -388,11 +389,34 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             std::string desc = "Cast " + card_data.name;
             LegalAction la(CAST_SPELL, card_entity, desc);
             la.category = ActionCategory::CAST_SPELL;
-            if (can_afford(priority_player, card_data.mana_cost)) {
-                actions.push_back(la);
-            } else {  // if we cant currently afford it; it's treated as pending
-                pending_actions.push_back(la);
+
+            bool can_regular = can_afford(priority_player, card_data.mana_cost);
+
+            bool can_alt = false;
+            if (card_data.alt_cost.has_alt_cost) {
+                Entity pp_entity = (priority_player == Zone::PLAYER_A)
+                    ? cur_game.player_a_entity : cur_game.player_b_entity;
+                auto& pp = global_coordinator.GetComponent<Player>(pp_entity);
+                bool has_life = pp.life_total >= card_data.alt_cost.life_cost;
+                bool has_blue = false;
+                for (auto e : orderer->get_hand(priority_player)) {
+                    if (e == card_entity) continue;
+                    if (global_coordinator.entity_has_component<ColorIdentity>(e) &&
+                        global_coordinator.GetComponent<ColorIdentity>(e).colors.count(BLUE)) {
+                        has_blue = true; break;
+                    }
+                }
+                can_alt = has_life && has_blue;
             }
+
+            if (can_regular) actions.push_back(la);
+            if (can_alt) {
+                LegalAction alt_la = la;
+                alt_la.use_alt_cost = true;
+                alt_la.description = "Cast " + card_data.name + " (alternate cost)";
+                actions.push_back(alt_la);
+            }
+            if (!can_regular && !can_alt) pending_actions.push_back(la);
         }
     }
     // checking permanents for activated abilities

@@ -48,6 +48,7 @@ struct LegalAction {
     Ability ability;       // Ability being activated (ACTIVATE_ABILITY only)
     std::string description;
     ActionCategory category = ActionCategory::OTHER_CHOICE;
+    bool use_alt_cost = false;
 
     LegalAction(ActionType t, const std::string& desc)
         : type(t), source_entity(0), target_entity(0), description(desc) {}

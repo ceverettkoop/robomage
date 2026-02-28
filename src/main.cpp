@@ -11,6 +11,7 @@
 #include "classes/game.h"
 #include "components/ability.h"
 #include "components/carddata.h"
+#include "components/color_identity.h"
 #include "components/creature.h"
 #include "components/damage.h"
 #include "components/effect.h"
@@ -186,6 +187,7 @@ int main(int argc, char const *argv[]) {
     global_coordinator.Init();
     global_coordinator.RegisterComponent<Ability>();
     global_coordinator.RegisterComponent<CardData>();
+    global_coordinator.RegisterComponent<ColorIdentity>();
     global_coordinator.RegisterComponent<Creature>();
     global_coordinator.RegisterComponent<Damage>();
     global_coordinator.RegisterComponent<Permanent>();

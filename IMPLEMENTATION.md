@@ -16,7 +16,7 @@
 | Misty Rainforest | 1 | ✅  | Fetch land | fetches - implemented
 | Wasteland | 4 | ✅ | Colorless mana + destroy nonbasic |
 | Brainstorm | 4 | ✅ | Draw 3 + put 2 back |
-| Ponder | 4 | ❌ | Rearrange top 3 + draw |
+| Ponder | 4 | ✅ | Rearrange top 3 + draw |
 | Force of Will | 4 | ❌ | Counter spell + alt cost |
 | Daze | 4 | ❌ | Counter unless + alt cost (return Island) |
 | Unholy Heat | 3 | ❌ | 2 or 6 damage with Delirium |

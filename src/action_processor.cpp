@@ -4,6 +4,7 @@
 
 #include "components/ability.h"
 #include "components/carddata.h"
+#include "components/color_identity.h"
 #include "components/creature.h"
 #include "components/permanent.h"
 #include "components/player.h"
@@ -103,6 +104,14 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
 static std::vector<Entity> build_valid_targets(const Ability &ability, std::shared_ptr<Orderer> orderer) {
     std::vector<Entity> valid_targets;
     const std::string &vt = ability.valid_tgts;
+
+    if (ability.target_type == "Spell") {
+        for (auto e : orderer->get_stack()) {
+            if (global_coordinator.entity_has_component<Spell>(e))
+                valid_targets.push_back(e);
+        }
+        return valid_targets;
+    }
 
     bool any = (vt == "Any");
     bool inc_players = any || vt.find("Player") != std::string::npos;
@@ -213,8 +222,36 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
 
             Zone::Ownership caster = zone.owner;
 
-            // Pay mana cost
-            spend_mana(caster, card_data.mana_cost);
+            // Pay mana cost (regular or alternate)
+            if (action.use_alt_cost) {
+                Entity caster_entity = (caster == Zone::PLAYER_A)
+                    ? cur_game.player_a_entity : cur_game.player_b_entity;
+                auto& player = global_coordinator.GetComponent<Player>(caster_entity);
+                player.life_total -= card_data.alt_cost.life_cost;
+                printf("%s pays %d life\n", player_name(caster).c_str(), card_data.alt_cost.life_cost);
+                for (int i = 0; i < card_data.alt_cost.exile_blue_from_hand; i++) {
+                    std::vector<ActionCategory> exile_cats;
+                    std::vector<Entity> exile_entities;
+                    for (auto e : orderer->get_hand(caster)) {
+                        if (e == spell_entity) continue;
+                        if (!global_coordinator.entity_has_component<ColorIdentity>(e)) continue;
+                        if (!global_coordinator.GetComponent<ColorIdentity>(e).colors.count(BLUE)) continue;
+                        printf("  %zu: %s\n", exile_entities.size(),
+                               global_coordinator.GetComponent<CardData>(e).name.c_str());
+                        exile_cats.push_back(ActionCategory::OTHER_CHOICE);
+                        exile_entities.push_back(e);
+                    }
+                    int choice = InputLogger::instance().get_logged_input(cur_game.turn, exile_cats, exile_entities);
+                    if (choice >= 0 && choice < static_cast<int>(exile_entities.size())) {
+                        Entity exiled = exile_entities[static_cast<size_t>(choice)];
+                        printf("%s exiles %s\n", player_name(caster).c_str(),
+                               global_coordinator.GetComponent<CardData>(exiled).name.c_str());
+                        orderer->add_to_zone(false, exiled, Zone::EXILE);
+                    }
+                }
+            } else {
+                spend_mana(caster, card_data.mana_cost);
+            }
 
             // Find the primary spell ability template and copy it onto the entity
             for (const auto &ability_template : card_data.abilities) {
