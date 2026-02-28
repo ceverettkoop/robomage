@@ -45,15 +45,18 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     }
 
     for (auto &&card : mEntities) {
+        if (card == target) continue;
         auto &cmp_zone = global_coordinator.GetComponent<Zone>(card);
-        if (cmp_zone.location == destination) {
-            if (!on_bottom) {
-                // placing on top: shift everything else down one
-                cmp_zone.distance_from_top++;
-            } else {
-                // placing on bottom: find the current bottom position
-                if (cmp_zone.distance_from_top > back) back = cmp_zone.distance_from_top;
-            }
+        if (cmp_zone.location != destination) continue;
+        // Library and graveyard are per-player; only shift cards belonging to the same owner
+        if ((destination == Zone::LIBRARY || destination == Zone::GRAVEYARD) &&
+            cmp_zone.owner != target_zone.owner) continue;
+        if (!on_bottom) {
+            // placing on top: shift everything else down one
+            cmp_zone.distance_from_top++;
+        } else {
+            // placing on bottom: find the current bottom position
+            if (cmp_zone.distance_from_top > back) back = cmp_zone.distance_from_top;
         }
     }
 

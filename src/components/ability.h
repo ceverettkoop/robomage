@@ -36,6 +36,7 @@ struct Ability{
     std::string change_type = "";        // ChangeType$ — comma-separated subtypes to search
     Zone::ZoneValue origin = Zone::LIBRARY;          // Origin$ — zone to search
     Zone::ZoneValue destination = Zone::BATTLEFIELD; // Destination$ — zone to move card to
+    bool mandatory = false;              // Mandatory$ True — player must choose; suppresses fail-to-find when zone non-empty
     //for each AB on a card script there may be multiple SubAbility$, would get parsed into vector below
     std::vector<Ability> subabilities; // additional abilities resolved at same time this resolves, stored in order
 
@@ -47,10 +48,12 @@ private:
 
 };
 
-// Search a zone for cards matching the comma-separated type list in change_type.
-// Presents numbered options; 0 is always "fail to find".
-// Returns the chosen Entity, or 0 if the player fails to find.
+// Search a zone for cards matching the comma-separated type list in change_type
+// (empty change_type matches all cards in the zone).
+// When mandatory=true, "fail to find" is suppressed unless the zone is empty.
+// Returns the chosen Entity, or 0 if the player fails to find / zone is empty.
 Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner,
-                   Zone::ZoneValue zone, const std::string& change_type);
+                   Zone::ZoneValue zone, const std::string& change_type,
+                   bool mandatory = false);
 
 #endif /* ABILITY_H */

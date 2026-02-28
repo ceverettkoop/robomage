@@ -2,6 +2,7 @@
 
 #include <cctype>
 #include <fstream>
+#include <map>
 #include <string>
 #include <vector>
 #include <cassert>
@@ -20,7 +21,10 @@ static std::string value_from_script(std::string script, std::string key);
 static std::vector<std::string> multi_values_from_script(std::string script, std::string key);
 static std::multiset<Colors> parse_mana_cost(std::string value);
 static std::set<Type> parse_types(std::string value);
-static std::vector<Ability> parse_abilities(std::vector<std::string> lines, const std::set<Type>& types);
+static std::map<std::string, std::string> parse_svars(const std::string& script);
+static void apply_param_to_ability(Ability& ability, const std::string& key, const std::string& value);
+static std::vector<Ability> parse_abilities(std::vector<std::string> lines, const std::set<Type>& types,
+                                            const std::map<std::string, std::string>& svars);
 static uint32_t parse_power(std::string value);
 static uint32_t parse_toughness(std::string value);
 
@@ -66,7 +70,8 @@ Entity parse_card_script(std::string path) {
     card.power = parse_power(value_from_script(script_data, "PT"));
     card.toughness = parse_toughness(value_from_script(script_data, "PT"));
     // parse ability templates; entities are only created when abilities go on the stack
-    card.abilities = parse_abilities(multi_values_from_script(script_data, "A"), card.types);
+    auto svars = parse_svars(script_data);
+    card.abilities = parse_abilities(multi_values_from_script(script_data, "A"), card.types, svars);
 
     // no error handling here
     global_coordinator.AddComponent(id, card);
@@ -185,8 +190,121 @@ static uint32_t parse_toughness(std::string value) {
     return std::stoi(tough_string);
 }
 
+// Extracts all SVar:name:content entries from a card script into a name→content map.
+static std::map<std::string, std::string> parse_svars(const std::string& script) {
+    std::map<std::string, std::string> svars;
+    const std::string prefix = "SVar:";
+    size_t pos = 0;
+    while ((pos = script.find(prefix, pos)) != std::string::npos) {
+        pos += prefix.size();
+        size_t colon = script.find(':', pos);
+        if (colon == std::string::npos) break;
+        std::string name = script.substr(pos, colon - pos);
+        pos = colon + 1;
+        size_t end = script.find('\n', pos);
+        if (end == std::string::npos) end = script.size();
+        std::string value = script.substr(pos, end - pos);
+        while (!value.empty() && (value.back() == '\r' || value.back() == ' '))
+            value.pop_back();
+        svars[name] = value;
+        pos = end;
+    }
+    return svars;
+}
+
+// Applies a single key/value parameter to an ability struct.
+static void apply_param_to_ability(Ability& ability, const std::string& key, const std::string& value) {
+    if (key == "NumDmg") {
+        ability.amount = static_cast<size_t>(std::stoi(value));
+    } else if (key == "NumCards" || key == "ChangeNum") {
+        ability.amount = static_cast<size_t>(std::stoi(value));
+    } else if (key == "Produced") {
+        for (char c : value) {
+            if      (c == 'W') { ability.color = WHITE;     break; }
+            else if (c == 'U') { ability.color = BLUE;      break; }
+            else if (c == 'B') { ability.color = BLACK;     break; }
+            else if (c == 'R') { ability.color = RED;       break; }
+            else if (c == 'G') { ability.color = GREEN;     break; }
+            else if (c == 'C') { ability.color = COLORLESS; break; }
+        }
+        ability.amount = 1;
+    } else if (key == "ValidTgts") {
+        ability.valid_tgts = value;
+    } else if (key == "ChangeType") {
+        ability.change_type = value;
+    } else if (key == "Origin") {
+        if (value == "Library")        ability.origin = Zone::LIBRARY;
+        else if (value == "Hand")      ability.origin = Zone::HAND;
+        else if (value == "Graveyard") ability.origin = Zone::GRAVEYARD;
+        else if (value == "Exile")     ability.origin = Zone::EXILE;
+    } else if (key == "Destination") {
+        if (value == "Battlefield")    ability.destination = Zone::BATTLEFIELD;
+        else if (value == "Library")   ability.destination = Zone::LIBRARY;
+        else if (value == "Hand")      ability.destination = Zone::HAND;
+        else if (value == "Graveyard") ability.destination = Zone::GRAVEYARD;
+        else if (value == "Exile")     ability.destination = Zone::EXILE;
+    } else if (key == "Mandatory") {
+        ability.mandatory = (value == "True");
+    } else if (key == "Cost") {
+        size_t tok_pos = 0;
+        while (tok_pos < value.size()) {
+            size_t tok_end = value.find(' ', tok_pos);
+            if (tok_end == std::string::npos) tok_end = value.size();
+            std::string tok = value.substr(tok_pos, tok_end - tok_pos);
+            if (tok == "T") {
+                ability.tap_cost = true;
+            } else if (tok.rfind("PayLife<", 0) == 0) {
+                size_t angle = tok.find('<');
+                size_t close = tok.find('>');
+                if (angle != std::string::npos && close != std::string::npos && close > angle + 1)
+                    ability.life_cost = std::stoi(tok.substr(angle + 1, close - angle - 1));
+            } else if (tok.rfind("Sac<", 0) == 0 && tok.find("CARDNAME") != std::string::npos) {
+                ability.sac_self = true;
+            }
+            tok_pos = (tok_end < value.size()) ? tok_end + 1 : tok_end;
+        }
+    }
+}
+
+// Parses a SVar's DB$ content string into an Ability. The ability_type is inherited from the parent.
+static Ability parse_svar_ability(const std::string& content, Ability::AbilityType ability_type) {
+    Ability sub;
+    sub.ability_type = ability_type;
+    size_t db_pos = content.find("DB$");
+    if (db_pos == std::string::npos) return sub;
+    size_t p = db_pos + 4;  // skip "DB$ "
+    size_t cat_end = content.find_first_of(" |", p);
+    if (cat_end == std::string::npos) cat_end = content.length();
+    if (cat_end > p)
+        sub.category = content.substr(p, cat_end - p);
+
+    size_t param_pos = content.find("|", p);
+    while (param_pos != std::string::npos) {
+        if (param_pos >= content.size()) break;
+        param_pos++;
+        while (param_pos < content.length() && content[param_pos] == ' ') param_pos++;
+        size_t param_end = content.find("|", param_pos);
+        if (param_end == std::string::npos) param_end = content.length();
+        std::string param = content.substr(param_pos, param_end - param_pos);
+
+        size_t dollar_pos = param.find("$");
+        if (dollar_pos != std::string::npos) {
+            std::string key = param.substr(0, dollar_pos);
+            std::string value = param.substr(dollar_pos + 1);
+            size_t ks = key.find_first_not_of(" "), ke = key.find_last_not_of(" ");
+            if (ks != std::string::npos) key = key.substr(ks, ke - ks + 1);
+            size_t vs = value.find_first_not_of(" "), ve = value.find_last_not_of(" ");
+            if (vs != std::string::npos) value = value.substr(vs, ve - vs + 1);
+            apply_param_to_ability(sub, key, value);
+        }
+        param_pos = param_end;
+    }
+    return sub;
+}
+
 // fed each ability line
-static std::vector<Ability> parse_abilities(std::vector<std::string> lines, const std::set<Type>& types) {
+static std::vector<Ability> parse_abilities(std::vector<std::string> lines, const std::set<Type>& types,
+                                            const std::map<std::string, std::string>& svars) {
     size_t pos = 0;
     std::vector<Ability> ret_val;
     for (auto &&line : lines) {
@@ -247,53 +365,12 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
                 if (value_start != std::string::npos)
                     value = value.substr(value_start, value_end - value_start + 1);
 
-                if (key == "NumDmg") {
-                    ability.amount = static_cast<size_t>(std::stoi(value));
-                } else if (key == "Produced") {
-                    // First color letter wins; "Combo" entries handled by first token
-                    for (char c : value) {
-                        if      (c == 'W') { ability.color = WHITE;     break; }
-                        else if (c == 'U') { ability.color = BLUE;      break; }
-                        else if (c == 'B') { ability.color = BLACK;     break; }
-                        else if (c == 'R') { ability.color = RED;       break; }
-                        else if (c == 'G') { ability.color = GREEN;     break; }
-                        else if (c == 'C') { ability.color = COLORLESS; break; }
-                    }
-                    ability.amount = 1;
-                } else if (key == "ValidTgts") {
-                    ability.valid_tgts = value;
-                } else if (key == "ChangeType") {
-                    ability.change_type = value;
-                } else if (key == "Origin") {
-                    if (value == "Library")        ability.origin = Zone::LIBRARY;
-                    else if (value == "Hand")      ability.origin = Zone::HAND;
-                    else if (value == "Graveyard") ability.origin = Zone::GRAVEYARD;
-                    else if (value == "Exile")     ability.origin = Zone::EXILE;
-                } else if (key == "Destination") {
-                    if (value == "Battlefield")    ability.destination = Zone::BATTLEFIELD;
-                    else if (value == "Hand")      ability.destination = Zone::HAND;
-                    else if (value == "Graveyard") ability.destination = Zone::GRAVEYARD;
-                    else if (value == "Exile")     ability.destination = Zone::EXILE;
-                } else if (key == "Cost") {
-                    // space-delimited cost tokens
-                    size_t tok_pos = 0;
-                    while (tok_pos < value.size()) {
-                        size_t tok_end = value.find(' ', tok_pos);
-                        if (tok_end == std::string::npos) tok_end = value.size();
-                        std::string tok = value.substr(tok_pos, tok_end - tok_pos);
-                        if (tok == "T") {
-                            ability.tap_cost = true;
-                        } else if (tok.rfind("PayLife<", 0) == 0) {
-                            size_t angle = tok.find('<');
-                            size_t close = tok.find('>');
-                            if (angle != std::string::npos && close != std::string::npos && close > angle + 1) {
-                                ability.life_cost = std::stoi(tok.substr(angle + 1, close - angle - 1));
-                            }
-                        } else if (tok.rfind("Sac<", 0) == 0 && tok.find("CARDNAME") != std::string::npos) {
-                            ability.sac_self = true;
-                        }
-                        tok_pos = (tok_end < value.size()) ? tok_end + 1 : tok_end;
-                    }
+                if (key == "SubAbility") {
+                    auto it = svars.find(value);
+                    if (it != svars.end())
+                        ability.subabilities.push_back(parse_svar_ability(it->second, ability.ability_type));
+                } else {
+                    apply_param_to_ability(ability, key, value);
                 }
             }
 
