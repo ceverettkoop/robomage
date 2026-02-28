@@ -307,6 +307,47 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
     }
 }
 
+static bool can_afford_alt(const AltCost& alt_cost, Zone::Ownership priority_player,
+                           Entity card_entity, std::shared_ptr<Orderer> orderer) {
+    if (!alt_cost.has_alt_cost) return false;
+
+    if (alt_cost.return_to_hand_count > 0) {
+        int matching = 0;
+        const std::string& sub = alt_cost.return_to_hand_subtype;
+        for (auto e : orderer->mEntities) {
+            if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
+            auto& perm = global_coordinator.GetComponent<Permanent>(e);
+            if (perm.controller != priority_player) continue;
+            auto& cd2 = global_coordinator.GetComponent<CardData>(e);
+            for (auto& t : cd2.types) {
+                if (t.kind == SUBTYPE && t.name == sub) { matching++; break; }
+            }
+        }
+        return matching >= alt_cost.return_to_hand_count;
+    }
+
+    if (alt_cost.life_cost > 0) {
+        Entity pp_entity = (priority_player == Zone::PLAYER_A)
+            ? cur_game.player_a_entity : cur_game.player_b_entity;
+        if (global_coordinator.GetComponent<Player>(pp_entity).life_total < alt_cost.life_cost)
+            return false;
+    }
+
+    if (alt_cost.exile_blue_from_hand > 0) {
+        bool has_blue = false;
+        for (auto e : orderer->get_hand(priority_player)) {
+            if (e == card_entity) continue;
+            if (global_coordinator.entity_has_component<ColorIdentity>(e) &&
+                global_coordinator.GetComponent<ColorIdentity>(e).colors.count(BLUE)) {
+                has_blue = true; break;
+            }
+        }
+        if (!has_blue) return false;
+    }
+
+    return true;
+}
+
 std::vector<LegalAction> StateManager::determine_legal_actions(
     const Game &game, std::shared_ptr<Orderer> orderer, std::shared_ptr<StackManager> stack_manager) {
     std::vector<LegalAction> actions;          // return value
@@ -392,37 +433,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
 
             bool can_regular = can_afford(priority_player, card_data.mana_cost);
 
-            bool can_alt = false;
-            if (card_data.alt_cost.has_alt_cost) {
-                if (card_data.alt_cost.return_to_hand_count > 0) {
-                    int islands_controlled = 0;
-                    const std::string& sub = card_data.alt_cost.return_to_hand_subtype;
-                    for (auto e : orderer->mEntities) {
-                        if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
-                        auto& perm = global_coordinator.GetComponent<Permanent>(e);
-                        if (perm.controller != priority_player) continue;
-                        auto& cd2 = global_coordinator.GetComponent<CardData>(e);
-                        for (auto& t : cd2.types) {
-                            if (t.kind == SUBTYPE && t.name == sub) { islands_controlled++; break; }
-                        }
-                    }
-                    can_alt = islands_controlled >= card_data.alt_cost.return_to_hand_count;
-                } else {
-                    Entity pp_entity = (priority_player == Zone::PLAYER_A)
-                        ? cur_game.player_a_entity : cur_game.player_b_entity;
-                    auto& pp = global_coordinator.GetComponent<Player>(pp_entity);
-                    bool has_life = pp.life_total >= card_data.alt_cost.life_cost;
-                    bool has_blue = false;
-                    for (auto e : orderer->get_hand(priority_player)) {
-                        if (e == card_entity) continue;
-                        if (global_coordinator.entity_has_component<ColorIdentity>(e) &&
-                            global_coordinator.GetComponent<ColorIdentity>(e).colors.count(BLUE)) {
-                            has_blue = true; break;
-                        }
-                    }
-                    can_alt = has_life && has_blue;
-                }
-            }
+            bool can_alt = can_afford_alt(card_data.alt_cost, priority_player, card_entity, orderer);
 
             if (can_regular) actions.push_back(la);
             if (can_alt) {
