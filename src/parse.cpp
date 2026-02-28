@@ -191,13 +191,19 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
     std::vector<Ability> ret_val;
     for (auto &&line : lines) {
         pos = 0;
-        // TODO: ONLY CAN DEAL WITH SPELL ABILITY RN
         Ability ability;
-        pos = line.find("SP$", pos);
-        if (pos == std::string::npos) continue;
-        // confirmed spell ability, future switch goes here
-        ability.ability_type = Ability::AbilityType::SPELL;
-        pos += 4;
+        size_t sp_pos = line.find("SP$");
+        size_t ab_pos = line.find("AB$");
+        bool is_sp = (sp_pos != std::string::npos);
+        bool is_ab = (ab_pos != std::string::npos);
+        if (!is_sp && !is_ab) continue;
+        if (is_sp && (!is_ab || sp_pos < ab_pos)) {
+            ability.ability_type = Ability::AbilityType::SPELL;
+            pos = sp_pos + 4;  // skip "SP$ "
+        } else {
+            ability.ability_type = Ability::AbilityType::ACTIVATED;
+            pos = ab_pos + 4;  // skip "AB$ "
+        }
         // Check if we're past the end of the string
         if (pos >= line.length()) continue;
 
@@ -243,6 +249,28 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
                     ability.amount = static_cast<size_t>(std::stoi(value));
                 } else if (key == "ValidTgts") {
                     ability.valid_tgts = value;
+                } else if (key == "ChangeType") {
+                    ability.change_type = value;
+                } else if (key == "Cost") {
+                    // space-delimited cost tokens
+                    size_t tok_pos = 0;
+                    while (tok_pos < value.size()) {
+                        size_t tok_end = value.find(' ', tok_pos);
+                        if (tok_end == std::string::npos) tok_end = value.size();
+                        std::string tok = value.substr(tok_pos, tok_end - tok_pos);
+                        if (tok == "T") {
+                            ability.tap_cost = true;
+                        } else if (tok.rfind("PayLife<", 0) == 0) {
+                            size_t angle = tok.find('<');
+                            size_t close = tok.find('>');
+                            if (angle != std::string::npos && close != std::string::npos && close > angle + 1) {
+                                ability.life_cost = std::stoi(tok.substr(angle + 1, close - angle - 1));
+                            }
+                        } else if (tok.rfind("Sac<", 0) == 0 && tok.find("CARDNAME") != std::string::npos) {
+                            ability.sac_self = true;
+                        }
+                        tok_pos = (tok_end < value.size()) ? tok_end + 1 : tok_end;
+                    }
                 }
             }
 

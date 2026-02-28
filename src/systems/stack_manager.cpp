@@ -1,16 +1,19 @@
 #include "stack_manager.h"
 
 #include <cstddef>
+#include <string>
+#include <vector>
 #include "orderer.h"
 
 #include "../classes/game.h"
 #include "../components/ability.h"
 #include "../components/carddata.h"
 #include "../components/damage.h"
-#include "../components/permanent.h"
 #include "../components/spell.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
+#include "../debug.h"
+#include "../input_logger.h"
 
 extern Game cur_game;
 
@@ -47,8 +50,6 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
 
     if (!found) return;
 
-    auto& zone = global_coordinator.GetComponent<Zone>(top_entity);
-
     // Check if it's a spell card (not just an ability)
     if (global_coordinator.entity_has_component<CardData>(top_entity)) {
         auto& card_data = global_coordinator.GetComponent<CardData>(top_entity);
@@ -69,16 +70,10 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
         }
 
         if (is_permanent) {
-            // Move to battlefield
+            // Move to battlefield; Permanent component added by apply_permanent_components on next SBA pass
             orderer->add_to_zone(false, top_entity, Zone::BATTLEFIELD);
-
-            // Add Permanent component
-            Permanent permanent;
-            permanent.controller = zone.owner;  // Controller is the owner for now
-            permanent.has_summoning_sickness = is_creature;  // Only creatures have summoning sickness
-            permanent.is_tapped = false;
-            permanent.timestamp_entered_battlefield = cur_game.timestamp++;
-            global_coordinator.AddComponent(top_entity, permanent);
+            auto& top_zone = global_coordinator.GetComponent<Zone>(top_entity);
+            top_zone.controller = top_zone.owner;
 
             // Add Damage component for creatures
             if (is_creature) {
@@ -99,8 +94,69 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
         }
     } else if (global_coordinator.entity_has_component<Ability>(top_entity)) {
         // It's a standalone ability (not attached to a card on the stack)
+        auto &stack_zone = global_coordinator.GetComponent<Zone>(top_entity);
         auto &ability = global_coordinator.GetComponent<Ability>(top_entity);
-        ability.resolve();
+//TODO CHECK THIS NONSENSE
+        if (ability.category == "ChangeZone") {
+            Zone::Ownership owner = stack_zone.owner;
+
+            // Parse comma-separated ChangeType$ subtypes
+            std::vector<std::string> subtypes;
+            std::string ct = ability.change_type;
+            size_t p = 0;
+            while (true) {
+                size_t comma = ct.find(',', p);
+                if (comma == std::string::npos) {
+                    subtypes.push_back(ct.substr(p));
+                    break;
+                }
+                subtypes.push_back(ct.substr(p, comma - p));
+                p = comma + 1;
+            }
+
+            // Collect matching lands from library
+            std::vector<Entity> choices;
+            for (auto lib_entity : orderer->get_library_contents(owner)) {
+                auto& lcd = global_coordinator.GetComponent<CardData>(lib_entity);
+                bool matches = false;
+                for (auto& t : lcd.types) {
+                    for (auto& st : subtypes) {
+                        if (t.name == st) { matches = true; break; }
+                    }
+                    if (matches) break;
+                }
+                if (matches) choices.push_back(lib_entity);
+            }
+
+            // choices[0] = "Fail to find"; choices[1..n] = matching lands
+            printf("Search your library:\n");
+            printf("  0: Fail to find\n");
+            for (size_t i = 0; i < choices.size(); i++) {
+                auto& lcd = global_coordinator.GetComponent<CardData>(choices[i]);
+                printf("  %zu: %s\n", i + 1, lcd.name.c_str());
+            }
+            std::vector<ActionCategory> cats(choices.size() + 1, ActionCategory::OTHER_CHOICE);
+            int choice = InputLogger::instance().get_logged_input(cur_game.turn, cats);
+            if (choice >= 1 && choice <= static_cast<int>(choices.size())) {
+                Entity chosen = choices[static_cast<size_t>(choice - 1)];
+                auto& chosen_cd = global_coordinator.GetComponent<CardData>(chosen);
+                auto& chosen_zone = global_coordinator.GetComponent<Zone>(chosen);
+                orderer->add_to_zone(false, chosen, Zone::BATTLEFIELD);
+                chosen_zone.controller = owner;
+                printf("%s searches and puts %s onto the battlefield\n",
+                       player_name(owner).c_str(), chosen_cd.name.c_str());
+            } else {
+                printf("%s fails to find\n", player_name(owner).c_str());
+            }
+
+            orderer->shuffle_library(owner);
+            printf("%s shuffles their library\n", player_name(owner).c_str());
+        } else {
+            ability.resolve();
+        }
+
+        // Destroy the standalone ability entity — it has no card zone to return to
+        global_coordinator.DestroyEntity(top_entity);
     }
 }
 

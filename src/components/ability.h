@@ -26,6 +26,9 @@ struct Ability{
     // Activated ability costs
     bool tap_cost = false;              // {T} is part of the activation cost
     ManaValue activation_mana_cost;     // Mana that must be paid to activate
+    int life_cost = 0;                  // PayLife<N> — life paid at activation
+    bool sac_self = false;              // Sac<1/CARDNAME> — sacrifice source permanent as cost
+    std::string change_type;            // ChangeType$ — comma-separated land subtypes to search
 
     void resolve();
 };

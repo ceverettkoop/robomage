@@ -29,6 +29,36 @@ static Colors mana_color_for_subtype(const std::string &subtype) {
     return NO_COLOR;
 }
 
+// Adds Permanent component to entities that just entered the battlefield,
+// and removes it from entities that have left the battlefield.
+static void apply_permanent_components(Game& game) {
+    for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
+        if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
+        if (!global_coordinator.entity_has_component<CardData>(entity)) continue;
+        auto& zone = global_coordinator.GetComponent<Zone>(entity);
+
+        if (zone.location == Zone::BATTLEFIELD) {
+            if (!global_coordinator.entity_has_component<Permanent>(entity)) {
+                auto& card_data = global_coordinator.GetComponent<CardData>(entity);
+                bool is_creature = false;
+                for (auto& t : card_data.types) {
+                    if (t.kind == TYPE && t.name == "Creature") { is_creature = true; break; }
+                }
+                Permanent perm;
+                perm.controller = zone.controller;
+                perm.has_summoning_sickness = is_creature;
+                perm.is_tapped = false;
+                perm.timestamp_entered_battlefield = game.timestamp++;
+                global_coordinator.AddComponent(entity, perm);
+            }
+        } else {
+            if (global_coordinator.entity_has_component<Permanent>(entity)) {
+                global_coordinator.RemoveComponent<Permanent>(entity);
+            }
+        }
+    }
+}
+
 // Applies abilities to lands based on the land subtypes
 // TODO recheck in case blood moon or similar nuked one; rn blood moon on a tundra would just add an ability, even if
 // types are successfully replaced
@@ -52,7 +82,24 @@ static void apply_land_abilities() {
                 land_subtypes.push_back(type.name);
             }
         }
-        if (!is_land || land_subtypes.empty()) continue;
+        if (!is_land) continue;
+
+        //TODO THIS SHOULD APPLY TO ALL PERMANENTS
+        // Copy non-mana ACTIVATED abilities (e.g. ChangeZone for fetch lands)
+        for (auto ab : card_data.abilities) {
+            if (ab.ability_type != Ability::ACTIVATED) continue;
+            if (ab.category == "AddMana") continue;
+            auto &perm_abilities = global_coordinator.GetComponent<Permanent>(entity).abilities;
+            bool already_present = false;
+            for (auto& existing : perm_abilities) {
+                if (existing.category == ab.category) { already_present = true; break; }
+            }
+            if (already_present) continue;
+            ab.source = entity;
+            perm_abilities.push_back(ab);
+        }
+
+        if (land_subtypes.empty()) continue;
 
         for (auto subtype : land_subtypes) {
             Colors required_color = mana_color_for_subtype(subtype);
@@ -111,6 +158,7 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
     }
 
     // Add Creature component to any battlefield creature that doesn't have one yet
+    // TODO check does this get removed on death?
     for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
         if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
         if (!global_coordinator.entity_has_component<CardData>(entity)) continue;
@@ -133,6 +181,9 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
             global_coordinator.AddComponent(entity, creature);
         }
     }
+
+    // Add/remove Permanent component as entities enter/leave the battlefield
+    apply_permanent_components(game);
 
     // Apply mana abilities to basic land permanents that don't have one yet
     apply_land_abilities();
@@ -491,9 +542,12 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 legal_mana_abilities.push_back(la);
                 continue;
             } else {
-                // activated ability only will display if costs could be paid
-                // TODO, check timing and if they could can be afforded, tap etc. then add to actions or pending
-                // accordingly
+                // Non-mana activated ability (e.g. ChangeZone for fetch lands)
+                auto& ab_card_data = global_coordinator.GetComponent<CardData>(ab.source);
+                std::string desc = "Activate " + ab_card_data.name + " (" + ab.category + ")";
+                LegalAction non_mana_la(ACTIVATE_ABILITY, ab.source, ab, desc);
+                non_mana_la.category = ActionCategory::ACTIVATE_ABILITY;
+                actions.push_back(non_mana_la);
             }
         }
     }
