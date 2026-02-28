@@ -72,7 +72,12 @@ Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner,
         if (matches) choices.push_back(entity);
     }
 
-    printf("Search your library:\n");
+    const char* zone_name = (zone == Zone::LIBRARY)    ? "library"
+                          : (zone == Zone::HAND)       ? "hand"
+                          : (zone == Zone::GRAVEYARD)  ? "graveyard"
+                          : (zone == Zone::EXILE)      ? "exile"
+                          :                              "zone";
+    printf("Searching %s's %s:\n", player_name(owner).c_str(), zone_name);
     printf("  0: Fail to find\n");
     for (size_t i = 0; i < choices.size(); i++) {
         auto &cd = global_coordinator.GetComponent<CardData>(choices[i]);
