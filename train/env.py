@@ -51,7 +51,7 @@ except ImportError:
 
 STATE_SIZE = 1153
 MAX_ACTIONS = 32         # practical upper bound on num_choices per step
-ACTION_CATEGORY_MAX = 19 # highest ActionCategory enum value (SEARCH_LIBRARY)
+ACTION_CATEGORY_MAX = 21 # highest ActionCategory enum value (SHUFFLE)
 _ACTION_CARD_ID_NULL = -1.0 / N_CARD_TYPES  # -0.03125 — null sentinel for non-card slots
 MAX_HAND_SLOTS = 10
 _HAND_COST_FEATS  = MAX_HAND_SLOTS * _N_COST_FEATS  # 10 * 7 = 70

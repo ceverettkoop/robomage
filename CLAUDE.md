@@ -186,7 +186,7 @@ Total: **1427 floats**
 | Range | Size | Content |
 |---|---|---|
 | `[0:1153]` | 1153 | State vector (see `src/machine_io.h`) |
-| `[1153:1185]` | 32 | Action categories, padded to MAX_ACTIONS, normalised by 19 |
+| `[1153:1185]` | 32 | Action categories, padded to MAX_ACTIONS, normalised by 21 |
 | `[1185:1217]` | 32 | Action card IDs, padded to MAX_ACTIONS |
 | `[1217:1287]` | 70 | Hand cast costs (10 slots × 7 cost features) |
 | `[1287:1427]` | 140 | Battlefield ability costs (20 slots × 7 cost features) |

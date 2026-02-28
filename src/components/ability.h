@@ -54,6 +54,7 @@ private:
 // Returns the chosen Entity, or 0 if the player fails to find / zone is empty.
 Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner,
                    Zone::ZoneValue zone, const std::string& change_type,
-                   bool mandatory = false);
+                   bool mandatory = false,
+                   Zone::ZoneValue destination = Zone::GRAVEYARD);
 
 #endif /* ABILITY_H */

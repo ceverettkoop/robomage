@@ -36,7 +36,7 @@ bool Ability::identical_activated_ability(const Ability &other) {
 // 0 is a valid entity but will always be player a  so is never correct
 Entity search_zone(
     std::shared_ptr<Orderer> orderer, Zone::Ownership owner, Zone::ZoneValue zone, const std::string &change_type,
-    bool mandatory) {
+    bool mandatory, Zone::ZoneValue destination) {
     // Parse comma-separated subtypes
     std::vector<std::string> subtypes;
     size_t p = 0;
@@ -85,9 +85,11 @@ Entity search_zone(
                             : (zone == Zone::GRAVEYARD) ? "graveyard"
                             : (zone == Zone::EXILE)     ? "exile"
                                                         : "zone";
-    // Determine category: library searches are SEARCH_LIBRARY; hand picks use OTHER_CHOICE
-    ActionCategory cat = (zone == Zone::LIBRARY) ? ActionCategory::SEARCH_LIBRARY
-                                                 : ActionCategory::OTHER_CHOICE;
+    // Determine category: library searches going to top of library use TOP_LIBRARY,
+    // other library searches use SEARCH_LIBRARY, hand picks use OTHER_CHOICE
+    ActionCategory cat = (zone == Zone::LIBRARY && destination == Zone::LIBRARY) ? ActionCategory::TOP_LIBRARY
+                       : (zone == Zone::LIBRARY)                                 ? ActionCategory::SEARCH_LIBRARY
+                                                                                 : ActionCategory::OTHER_CHOICE;
 
     // Fail-to-find is shown when: not mandatory, OR zone is empty (nothing else to choose)
     bool show_fail_to_find = !mandatory || choices.empty();
@@ -140,7 +142,7 @@ void Ability::resolve_change_zone(std::shared_ptr<Orderer> orderer) {
     size_t num_to_move = (amount > 0) ? amount : 1;
 
     for (size_t i = 0; i < num_to_move; i++) {
-        Entity chosen = search_zone(orderer, owner, origin, change_type, mandatory);
+        Entity chosen = search_zone(orderer, owner, origin, change_type, mandatory, destination);
         if (chosen != 0) {
             auto &chosen_cd = global_coordinator.GetComponent<CardData>(chosen);
             auto &chosen_zone = global_coordinator.GetComponent<Zone>(chosen);

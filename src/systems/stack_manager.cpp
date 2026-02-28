@@ -55,15 +55,11 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
 
         // Check if it's a permanent type (Creature, Artifact, Enchantment, Planeswalker)
         bool is_permanent = false;
-        bool is_creature = false;
         for (auto &type : card_data.types) {
             if (type.kind == TYPE) {
                 if (type.name == "Creature" || type.name == "Artifact" || type.name == "Enchantment" ||
                     type.name == "Planeswalker") {
                     is_permanent = true;
-                }
-                if (type.name == "Creature") {
-                    is_creature = true;
                 }
             }
         }
