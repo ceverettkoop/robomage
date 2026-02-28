@@ -9,12 +9,12 @@
 | Island | 1 | ✅ Done | Basic land, mana injected |
 | Volcanic Island | 4 | Done
 | Thundering Falls | 1 | 🟡 Partial | Should tap for mana TODO + ETB-tapped + surveil trigger |
-| Scalding Tarn | 4 | ❌ | Fetch land |
-| Flooded Strand | 1 | ❌ | Fetch land |
-| Polluted Delta | 1 | ❌ | Fetch land |
-| Wooded Foothills | 1 | ❌ | Fetch land |
-| Misty Rainforest | 1 | ❌ | Fetch land |
-| Wasteland | 4 | ❌ | Colorless mana + destroy nonbasic |
+| Scalding Tarn | 4 | ✅  | Fetch land |
+| Flooded Strand | 1 | ✅  | Fetch land |
+| Polluted Delta | 1 | ✅  | Fetch land |
+| Wooded Foothills | 1 | ✅  | Fetch land |
+| Misty Rainforest | 1 | ✅  | Fetch land | fetches - implemented
+| Wasteland | 4 | ✅ | Colorless mana + destroy nonbasic |
 | Brainstorm | 4 | ❌ | Draw 3 + put 2 back |
 | Ponder | 4 | ❌ | Rearrange top 3 + draw |
 | Force of Will | 4 | ❌ | Counter spell + alt cost |
