@@ -134,6 +134,7 @@ Entity search_zone(
     }
 }
 
+ 
 void Ability::resolve_change_zone(std::shared_ptr<Orderer> orderer) {
     Zone::Ownership owner = global_coordinator.GetComponent<Zone>(source).owner;
     size_t num_to_move = (amount > 0) ? amount : 1;
@@ -170,7 +171,7 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
     if (category == "Draw") {
         Zone::Ownership owner = global_coordinator.GetComponent<Zone>(source).owner;
         orderer->draw(owner, amount);
-    } else if (category == "ChangeZone") {
+    } else if (category == "ChangeZone" || category == "ChangeZoneDB") { //unclear on exact distinction here
         resolve_change_zone(orderer);
     } else if (category == "DealDamage") {
         if (global_coordinator.entity_has_component<Player>(target)) {

@@ -9,7 +9,6 @@
 #include "../components/carddata.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
-#include "../error.h"
 
 // orderer cares about anything that has a zone
 void Orderer::init() {

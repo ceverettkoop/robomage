@@ -98,7 +98,9 @@ static std::vector<std::string> multi_values_from_script(std::string script, std
         // advance for key itself and ':'
         pos += key.length() + 1;
         auto end_pos = script.find("\n", pos);
-        ret_val.push_back(script.substr(pos, (end_pos - pos - 1)));  // omit linebreak at end
+        std::string line = script.substr(pos, (end_pos - pos));  // end_pos is at \n, so no -1 needed
+        if (!line.empty() && line.back() == '\r') line.pop_back();  // strip \r for Windows line endings
+        ret_val.push_back(line);
         pos = script.find(key, end_pos);                             // find next instance
     }
     return ret_val;
@@ -276,7 +278,7 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
     size_t cat_end = content.find_first_of(" |", p);
     if (cat_end == std::string::npos) cat_end = content.length();
     if (cat_end > p)
-        sub.category = content.substr(p, cat_end - p);
+        sub.category = content.substr(p, cat_end - p) + "DB";  // DB$ ChangeZone -> "ChangeZoneDB"
 
     size_t param_pos = content.find("|", p);
     while (param_pos != std::string::npos) {
