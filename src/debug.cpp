@@ -58,6 +58,7 @@ const char *step_to_string(Step in_step) {
 }
 
 void print_step(const Game& cur_game) {
+    if (InputLogger::instance().is_machine_mode()) return;
     Zone::Ownership active_player = cur_game.player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B;
 
     // Get life totals
@@ -72,6 +73,7 @@ void print_step(const Game& cur_game) {
 }
 
 void print_library(std::shared_ptr<Orderer> orderer, Zone::Ownership owner) {
+    if (InputLogger::instance().is_machine_mode()) return;
     auto library = orderer->get_library_contents(owner);
     size_t n = library.size();
 
@@ -91,6 +93,7 @@ void print_library(std::shared_ptr<Orderer> orderer, Zone::Ownership owner) {
 }
 
 void print_hand(std::shared_ptr<Orderer> orderer, Zone::Ownership owner) {
+    if (InputLogger::instance().is_machine_mode()) return;
     auto hand = orderer->get_hand(owner);
 
     printf("%s hand:\n", player_name(owner).c_str());
@@ -101,6 +104,7 @@ void print_hand(std::shared_ptr<Orderer> orderer, Zone::Ownership owner) {
 }
 
 void print_stack(std::shared_ptr<Orderer> orderer) {
+    if (InputLogger::instance().is_machine_mode()) return;
     auto stack = orderer->get_stack();
     if(stack.size() > 0){
         printf("STACK:\n");
@@ -141,6 +145,7 @@ void print_draw(Zone::Ownership player, const std::vector<Entity>& cards) {
 }
 
 void print_legal_actions(const Game& cur_game, std::vector<LegalAction> legal_actions) {
+    if (InputLogger::instance().is_machine_mode()) return;
     Zone::Ownership priority_player = cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
     printf("\n%s has priority. Legal actions:\n", player_name(priority_player).c_str());
     for (size_t i = 0; i < legal_actions.size(); i++) {
@@ -149,6 +154,7 @@ void print_legal_actions(const Game& cur_game, std::vector<LegalAction> legal_ac
 }
 
 void print_mandatory_choice_description(const Game& cur_game) {
+    if (InputLogger::instance().is_machine_mode()) return;
     Zone::Ownership active_player = cur_game.player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B;
 
     printf("\n");
@@ -180,6 +186,7 @@ void print_mandatory_choice_description(const Game& cur_game) {
 }
 
 void print_battlefield(std::shared_ptr<Orderer> orderer) {
+    if (InputLogger::instance().is_machine_mode()) return;
     printf("\n--- BATTLEFIELD ---\n");
     for (auto owner : {Zone::PLAYER_A, Zone::PLAYER_B}) {
         printf("%s:\n", player_name(owner).c_str());
@@ -219,6 +226,7 @@ void print_battlefield(std::shared_ptr<Orderer> orderer) {
 }
 
 void print_mana_pools() {
+    if (InputLogger::instance().is_machine_mode()) return;
     bool header_printed = false;
 
     for (auto owner : {Zone::PLAYER_A, Zone::PLAYER_B}) {
