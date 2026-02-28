@@ -18,9 +18,13 @@ class InputLogger {
     unsigned int get_replay_seed() const;
 
     // action_categories: one entry per legal action at this decision point.
-    // In machine mode the count and per-action categories are emitted in the
-    // QUERY line so the Python side can mask actions and learn action semantics.
-    int get_logged_input(size_t cur_turn, const std::vector<ActionCategory>& action_categories);
+    // entities: optional parallel vector of entity IDs (one per action slot).
+    // In machine mode the count, per-action categories, and per-action card IDs
+    // are emitted in the QUERY line so the Python side can mask actions and
+    // learn action semantics.
+    int get_logged_input(size_t cur_turn,
+                         const std::vector<ActionCategory>& action_categories,
+                         const std::vector<Entity>& entities = {});
 
    private:
     InputLogger() = default;

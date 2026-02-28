@@ -22,8 +22,8 @@ For mandatory-choice loops (declare attackers / blockers):
 
 Observation space
 -----------------
-1153-float state vector + 32 action-category floats + 70 hand cost floats
-+ 140 battlefield ability cost floats = 1395 total.
+1153-float state vector + 32 action-category floats + 32 action card-ID floats
++ 70 hand cost floats + 140 battlefield ability cost floats = 1427 total.
 See src/machine_io.h for the full state layout.
 
 Reward
@@ -51,11 +51,12 @@ except ImportError:
 
 STATE_SIZE = 1153
 MAX_ACTIONS = 32         # practical upper bound on num_choices per step
-ACTION_CATEGORY_MAX = 18 # highest ActionCategory enum value (MANA_C)
+ACTION_CATEGORY_MAX = 19 # highest ActionCategory enum value (SEARCH_LIBRARY)
+_ACTION_CARD_ID_NULL = -1.0 / N_CARD_TYPES  # -0.03125 — null sentinel for non-card slots
 MAX_HAND_SLOTS = 10
 _HAND_COST_FEATS  = MAX_HAND_SLOTS * _N_COST_FEATS  # 10 * 7 = 70
 _BF_ABILITY_FEATS = 20 * _N_COST_FEATS              # 20 * 7 = 140
-OBS_SIZE = STATE_SIZE + MAX_ACTIONS + _HAND_COST_FEATS + _BF_ABILITY_FEATS  # 1395
+OBS_SIZE = STATE_SIZE + MAX_ACTIONS + MAX_ACTIONS + _HAND_COST_FEATS + _BF_ABILITY_FEATS  # 1427
 _REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BINARY = os.path.join(_REPO_ROOT, "bin", "robomage")
 BIN_DIR = os.path.join(_REPO_ROOT, "bin")  # game must be run from here for resource lookup
@@ -189,6 +190,13 @@ class RoboMageEnv(gym.Env):
                 _MANDATORY = {2, 3, 4, 5}
                 self._pending_confirm = any(int(c) in _MANDATORY for c in cat_raw)
 
+                # Parse per-action card ID floats (after category ints)
+                id_start = cat_start + self._num_choices
+                id_raw = parts[id_start : id_start + self._num_choices]
+                card_id_arr = np.full(MAX_ACTIONS, _ACTION_CARD_ID_NULL, dtype=np.float32)
+                for i, v in enumerate(id_raw):
+                    card_id_arr[i] = float(v)
+
                 # Parse state vector (first STATE_SIZE floats after the count)
                 state_floats = parts[1 : STATE_SIZE + 1]
                 state_arr = np.array(state_floats, dtype=np.float32)
@@ -207,7 +215,7 @@ class RoboMageEnv(gym.Env):
                     base = 33 + slot * 40 + _BF_CARD_OFF
                     bf_ability_costs[slot] = state_arr[base:base + N_CARD_TYPES] @ _CARD_ABILITY_COST_MATRIX
 
-                self._obs = np.concatenate([state_arr, cat_arr,
+                self._obs = np.concatenate([state_arr, cat_arr, card_id_arr,
                                             hand_costs.flatten(),
                                             bf_ability_costs.flatten()])
                 break

@@ -3,12 +3,16 @@
 #include <cstdio>
 #include <iostream>
 
+#include "card_vocab.h"
 #include "cli.h"
+#include "components/carddata.h"
+#include "ecs/coordinator.h"
 #include "error.h"
 #include "classes/game.h"
 #include "machine_io.h"
 
 extern std::string RESOURCE_DIR;
+extern Coordinator global_coordinator;
 
 InputLogger& InputLogger::instance() {
     static InputLogger logger;
@@ -60,7 +64,9 @@ bool InputLogger::is_machine_mode() const { return machine_mode; }
 
 unsigned int InputLogger::get_replay_seed() const { return replay_seed; }
 
-int InputLogger::get_logged_input(size_t cur_turn, const std::vector<ActionCategory>& action_categories) {
+int InputLogger::get_logged_input(size_t cur_turn,
+                                   const std::vector<ActionCategory>& action_categories,
+                                   const std::vector<Entity>& entities) {
     int num_choices = static_cast<int>(action_categories.size());
 
     if (replay_mode) {
@@ -73,12 +79,24 @@ int InputLogger::get_logged_input(size_t cur_turn, const std::vector<ActionCateg
     }
 
     if (machine_mode) {
-        // Emit QUERY line: "QUERY: <num_choices> <f0>...<f1152> <cat0>...<catN-1>"
-        // State vector is followed by one ActionCategory int per legal action.
+        // Emit QUERY line:
+        //   "QUERY: <num_choices> <f0>...<f1152> <cat0>...<catN-1> <id0>...<idN-1>"
+        // State vector is followed by one ActionCategory int per legal action,
+        // then one normalized card vocab index float per action slot.
         std::vector<float> state = serialize_state();
         printf("QUERY: %d", num_choices);
         for (float f : state) printf(" %.4f", f);
         for (ActionCategory cat : action_categories) printf(" %d", static_cast<int>(cat));
+        for (int i = 0; i < num_choices; i++) {
+            int idx = -1;
+            auto ui = static_cast<size_t>(i);
+            if (ui < entities.size() && entities[ui] != 0 &&
+                global_coordinator.entity_has_component<CardData>(entities[ui])) {
+                idx = card_name_to_index(
+                    global_coordinator.GetComponent<CardData>(entities[ui]).name);
+            }
+            printf(" %.4f", idx / static_cast<float>(N_CARD_TYPES));
+        }
         printf("\n");
         fflush(stdout);
 

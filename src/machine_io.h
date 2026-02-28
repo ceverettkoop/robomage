@@ -4,13 +4,17 @@
 #include <vector>
 
 // QUERY line format (machine mode):
-//   "QUERY: <num_choices> <f0>...<f1152> <cat0>...<cat_{num_choices-1}>"
+//   "QUERY: <num_choices> <f0>...<f1152> <cat0>...<cat_{N-1}> <id0>...<id_{N-1}>"
+//   where N = num_choices.
 //
-// The state vector (STATE_SIZE floats) is followed by one ActionCategory
-// integer per legal action (values 0-12, see ActionCategory enum in
-// classes/action.h).  The Python env appends these padded to MAX_ACTIONS slots
-// (normalised by ACTION_CATEGORY_MAX) so the full observation is
-// STATE_SIZE + MAX_ACTIONS floats.
+// The state vector (STATE_SIZE floats) is followed by:
+//   - N ActionCategory integers (values 0-19, see ActionCategory enum).
+//   - N card vocab index floats: card_vocab_index / N_CARD_TYPES for card
+//     entities, or -1.0 / N_CARD_TYPES (-0.03125) as a null sentinel for
+//     non-card entities (players, confirm slots, fail-to-find, empty).
+//
+// The Python env pads both arrays to MAX_ACTIONS slots so the full observation
+// is STATE_SIZE + MAX_ACTIONS + MAX_ACTIONS floats (plus cost features).
 //
 // Fixed-size state vector layout (STATE_SIZE floats):
 //

@@ -1,5 +1,9 @@
 #include "ability.h"
 
+#include <cstdio>
+#include <string>
+#include <vector>
+
 #include "../classes/action.h"
 #include "../classes/game.h"
 #include "../components/carddata.h"
@@ -10,23 +14,19 @@
 #include "damage.h"
 #include "player.h"
 
-#include <cstdio>
-#include <string>
-#include <vector>
-
 extern Coordinator global_coordinator;
 extern Game cur_game;
 
-bool Ability::identical_activated_ability(const Ability &other){
-    if(other.category != this->category) return false;
-    if(other.valid_tgts != this->valid_tgts) return false;
-    if(other.amount != this->amount) return false;
-    if(other.tap_cost != this->tap_cost) return false;
-    if(other.activation_mana_cost != this->activation_mana_cost) return false;
-    if(other.sac_self != this->sac_self) return false;
-    if(other.change_type != this->change_type) return false;
-    if(other.origin != this->origin) return false;
-    if(other.destination != this->destination) return false;        
+bool Ability::identical_activated_ability(const Ability &other) {
+    if (other.category != this->category) return false;
+    if (other.valid_tgts != this->valid_tgts) return false;
+    if (other.amount != this->amount) return false;
+    if (other.tap_cost != this->tap_cost) return false;
+    if (other.activation_mana_cost != this->activation_mana_cost) return false;
+    if (other.sac_self != this->sac_self) return false;
+    if (other.change_type != this->change_type) return false;
+    if (other.origin != this->origin) return false;
+    if (other.destination != this->destination) return false;
     return true;
 };
 
@@ -34,8 +34,8 @@ bool Ability::identical_activated_ability(const Ability &other){
 // change_type string. Presents all matches plus a "fail to find" option (index 0).
 // Returns the chosen Entity, or 0 for fail to find.
 // 0 is a valid entity but will always be player a  so is never correct
-Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner,
-                   Zone::ZoneValue zone, const std::string& change_type) {
+Entity search_zone(
+    std::shared_ptr<Orderer> orderer, Zone::Ownership owner, Zone::ZoneValue zone, const std::string &change_type) {
     // Parse comma-separated subtypes
     std::vector<std::string> subtypes;
     size_t p = 0;
@@ -56,7 +56,7 @@ Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner,
     } else if (zone == Zone::HAND) {
         zone_contents = orderer->get_hand(owner);
     }
-    //TODO OTHER ZONES
+    // TODO OTHER ZONES
 
     // Filter to matching cards
     std::vector<Entity> choices;
@@ -65,18 +65,21 @@ Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner,
         bool matches = false;
         for (auto &t : cd.types) {
             for (auto &st : subtypes) {
-                if (t.name == st) { matches = true; break; }
+                if (t.name == st) {
+                    matches = true;
+                    break;
+                }
             }
             if (matches) break;
         }
         if (matches) choices.push_back(entity);
     }
 
-    const char* zone_name = (zone == Zone::LIBRARY)    ? "library"
-                          : (zone == Zone::HAND)       ? "hand"
-                          : (zone == Zone::GRAVEYARD)  ? "graveyard"
-                          : (zone == Zone::EXILE)      ? "exile"
-                          :                              "zone";
+    const char *zone_name = (zone == Zone::LIBRARY)     ? "library"
+                            : (zone == Zone::HAND)      ? "hand"
+                            : (zone == Zone::GRAVEYARD) ? "graveyard"
+                            : (zone == Zone::EXILE)     ? "exile"
+                                                        : "zone";
     printf("Searching %s's %s:\n", player_name(owner).c_str(), zone_name);
     printf("  0: Fail to find\n");
     for (size_t i = 0; i < choices.size(); i++) {
@@ -85,7 +88,10 @@ Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner,
     }
 
     std::vector<ActionCategory> cats(choices.size() + 1, ActionCategory::SEARCH_LIBRARY);
-    int choice = InputLogger::instance().get_logged_input(cur_game.turn, cats);
+    std::vector<Entity> search_entities;
+    search_entities.push_back(Entity(0));  // index 0 = fail-to-find (null sentinel)
+    for (auto e : choices) search_entities.push_back(e);
+    int choice = InputLogger::instance().get_logged_input(cur_game.turn, cats, search_entities);
     if (choice >= 1 && choice <= static_cast<int>(choices.size())) {
         return choices[static_cast<size_t>(choice - 1)];
     }
@@ -103,8 +109,7 @@ void Ability::resolve_change_zone(std::shared_ptr<Orderer> orderer) {
         if (destination == Zone::BATTLEFIELD) {
             chosen_zone.controller = owner;
         }
-        printf("%s searches and puts %s onto the battlefield\n", player_name(owner).c_str(),
-            chosen_cd.name.c_str());
+        printf("%s searches and puts %s onto the battlefield\n", player_name(owner).c_str(), chosen_cd.name.c_str());
     } else {
         printf("%s fails to find\n", player_name(owner).c_str());
     }
@@ -122,7 +127,7 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
         resolve_change_zone(orderer);
     } else if (category == "DealDamage") {
         if (global_coordinator.entity_has_component<Player>(target)) {
-            auto& player = global_coordinator.GetComponent<Player>(target);
+            auto &player = global_coordinator.GetComponent<Player>(target);
             player.life_total -= static_cast<int32_t>(amount);
             printf("Dealt %zu damage to player (now at %d life)\n", amount, player.life_total);
         } else {
@@ -132,5 +137,7 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
                 printf("Invalid target\n");
             }
         }
+    } else if (category == "Destroy") {
+
     }
 }

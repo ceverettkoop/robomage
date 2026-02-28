@@ -15,6 +15,7 @@ Index layout must stay in sync with src/machine_io.h:
   obs[33:833]     20 battlefield slots × 40 floats each  (8 status + 32 card one-hot)
   obs[833:1153]   10 hand slots × 32 floats each         (32 card one-hot)
   obs[1153:1185]  32 action-category features (appended by env.py)
+  obs[1185:1217]  32 action card-ID features  (appended by env.py)
 """
 
 import torch
@@ -29,6 +30,7 @@ _BF_SLOT_SIZE   = 40   # 8 status floats + 32 card one-hot (N_CARD_TYPES)
 _HAND_SLOTS     = 10
 _HAND_SLOT_SIZE = 32   # N_CARD_TYPES card one-hot
 _ACTION_CATS    = 32   # MAX_ACTIONS, appended by env.py
+_ACTION_CARD_IDS = 32  # MAX_ACTIONS card vocab index floats, appended by env.py
 
 _BF_START   = _GLOBAL_SIZE                             # 33
 _BF_END     = _BF_START + _BF_SLOTS * _BF_SLOT_SIZE   # 833
@@ -42,8 +44,8 @@ class CardGameExtractor(BaseFeaturesExtractor):
     Shared-weight per-entity encoder with mean+max aggregation.
 
     Output fed into the policy MLP head:
-      global(33) + action_cats(32) + bf_agg(embed*2) + hand_agg(embed) floats
-    With default embed_dim=64: 33 + 32 + 128 + 64 = 257 floats.
+      global(33) + action_cats(32) + action_card_ids(32) + bf_agg(embed*2) + hand_agg(embed) floats
+    With default embed_dim=64: 33 + 32 + 32 + 128 + 64 = 289 floats.
     """
 
     def __init__(
@@ -52,7 +54,7 @@ class CardGameExtractor(BaseFeaturesExtractor):
         bf_embed_dim: int = 64,
         hand_embed_dim: int = 64,
     ):
-        features_dim = _GLOBAL_SIZE + _ACTION_CATS + bf_embed_dim * 2 + hand_embed_dim
+        features_dim = _GLOBAL_SIZE + _ACTION_CATS + _ACTION_CARD_IDS + bf_embed_dim * 2 + hand_embed_dim
         super().__init__(observation_space, features_dim=features_dim)
 
         # Shared encoder for each battlefield slot (40 → bf_embed_dim)

@@ -105,7 +105,7 @@ static void do_london_mulligan(std::shared_ptr<Orderer> orderer) {
             printf("  %zu: %s\n", j, cd.name.c_str());
         }
         std::vector<ActionCategory> cats(hand.size(), ActionCategory::BOTTOM_DECK_CARD);
-        int choice = InputLogger::instance().get_logged_input(0, cats);
+        int choice = InputLogger::instance().get_logged_input(0, cats, hand);
         if (choice >= 0 && choice < static_cast<int>(hand.size())) {
             orderer->add_to_zone(true, hand[static_cast<size_t>(choice)], Zone::LIBRARY);
         }
@@ -122,7 +122,7 @@ static void do_london_mulligan(std::shared_ptr<Orderer> orderer) {
             printf("  %zu: %s\n", j, cd.name.c_str());
         }
         std::vector<ActionCategory> cats(hand.size(), ActionCategory::BOTTOM_DECK_CARD);
-        int choice = InputLogger::instance().get_logged_input(0, cats);
+        int choice = InputLogger::instance().get_logged_input(0, cats, hand);
         if (choice >= 0 && choice < static_cast<int>(hand.size())) {
             orderer->add_to_zone(true, hand[static_cast<size_t>(choice)], Zone::LIBRARY);
         }
@@ -253,9 +253,14 @@ int main(int argc, char const *argv[]) {
 
         print_legal_actions(cur_game, legal_actions);
         std::vector<ActionCategory> action_cats;
+        std::vector<Entity> action_ents;
         action_cats.reserve(legal_actions.size());
-        for (auto& la : legal_actions) action_cats.push_back(la.category);
-        choice = InputLogger::instance().get_logged_input(cur_game.turn, action_cats);
+        action_ents.reserve(legal_actions.size());
+        for (auto& la : legal_actions) {
+            action_cats.push_back(la.category);
+            action_ents.push_back(la.source_entity);
+        }
+        choice = InputLogger::instance().get_logged_input(cur_game.turn, action_cats, action_ents);
 
         if (choice >= 0 && choice < static_cast<int>(legal_actions.size())) {
             process_action(legal_actions[static_cast<size_t>(choice)], cur_game, orderer);

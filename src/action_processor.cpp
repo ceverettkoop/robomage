@@ -140,7 +140,7 @@ void select_target(Ability &ability, std::shared_ptr<Orderer> orderer) {
             }
         }
         std::vector<ActionCategory> tgt_cats(valid_targets.size(), ActionCategory::SELECT_TARGET);
-        int choice = InputLogger::instance().get_logged_input(cur_game.turn, tgt_cats);
+        int choice = InputLogger::instance().get_logged_input(cur_game.turn, tgt_cats, valid_targets);
         if (choice >= 0 && choice < static_cast<int>(valid_targets.size())) {
             ability.target = valid_targets[static_cast<size_t>(choice)];
             printf("Targeting choice %d\n", choice);
@@ -283,7 +283,9 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
         // num_choices = not-yet-attacking creatures + 1 implicit confirm (-1)
         std::vector<ActionCategory> atk_cats(not_yet_attacking.size(), ActionCategory::SELECT_ATTACKER);
         atk_cats.push_back(ActionCategory::CONFIRM_ATTACKERS);
-        int creature_choice = InputLogger::instance().get_logged_input(cur_game.turn, atk_cats);
+        std::vector<Entity> atk_ents(not_yet_attacking.begin(), not_yet_attacking.end());
+        atk_ents.push_back(Entity(0));  // confirm slot — null sentinel
+        int creature_choice = InputLogger::instance().get_logged_input(cur_game.turn, atk_cats, atk_ents);
 
         if (creature_choice == -1) break;
 
@@ -304,7 +306,7 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
         }
 
         std::vector<ActionCategory> atk_tgt_cats(targets.size(), ActionCategory::OTHER_CHOICE);
-        int target_choice = InputLogger::instance().get_logged_input(cur_game.turn, atk_tgt_cats);
+        int target_choice = InputLogger::instance().get_logged_input(cur_game.turn, atk_tgt_cats, targets);
 
         if (target_choice >= 0 && target_choice < static_cast<int>(targets.size())) {
             cr.is_attacking = true;
@@ -398,7 +400,9 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
         // num_choices = eligible blockers + 1 implicit confirm (-1)
         std::vector<ActionCategory> blk_cats(eligible.size(), ActionCategory::SELECT_BLOCKER);
         blk_cats.push_back(ActionCategory::CONFIRM_BLOCKERS);
-        int blocker_choice = InputLogger::instance().get_logged_input(cur_game.turn, blk_cats);
+        std::vector<Entity> blk_ents(eligible.begin(), eligible.end());
+        blk_ents.push_back(Entity(0));  // confirm slot — null sentinel
+        int blocker_choice = InputLogger::instance().get_logged_input(cur_game.turn, blk_cats, blk_ents);
 
         if (blocker_choice == -1) break;
 
@@ -424,7 +428,7 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
             }
 
             std::vector<ActionCategory> blk_tgt_cats(attackers.size(), ActionCategory::OTHER_CHOICE);
-            int attacker_choice = InputLogger::instance().get_logged_input(cur_game.turn, blk_tgt_cats);
+            int attacker_choice = InputLogger::instance().get_logged_input(cur_game.turn, blk_tgt_cats, attackers);
 
             if (attacker_choice >= 0 && attacker_choice < static_cast<int>(attackers.size())) {
                 cr.is_blocking = true;
@@ -475,7 +479,7 @@ void proc_mandatory_choice(Game &game, std::shared_ptr<Orderer> orderer) {
                 }
 
                 std::vector<ActionCategory> discard_cats(hand.size(), ActionCategory::OTHER_CHOICE);
-                int choice = InputLogger::instance().get_logged_input(game.turn, discard_cats);
+                int choice = InputLogger::instance().get_logged_input(game.turn, discard_cats, hand);
                 if (choice >= 0 && choice < static_cast<int>(hand.size())) {
                     Entity card = hand[static_cast<size_t>(choice)];
                     auto &cd = global_coordinator.GetComponent<CardData>(card);
