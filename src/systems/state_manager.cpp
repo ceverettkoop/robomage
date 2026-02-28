@@ -394,19 +394,34 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
 
             bool can_alt = false;
             if (card_data.alt_cost.has_alt_cost) {
-                Entity pp_entity = (priority_player == Zone::PLAYER_A)
-                    ? cur_game.player_a_entity : cur_game.player_b_entity;
-                auto& pp = global_coordinator.GetComponent<Player>(pp_entity);
-                bool has_life = pp.life_total >= card_data.alt_cost.life_cost;
-                bool has_blue = false;
-                for (auto e : orderer->get_hand(priority_player)) {
-                    if (e == card_entity) continue;
-                    if (global_coordinator.entity_has_component<ColorIdentity>(e) &&
-                        global_coordinator.GetComponent<ColorIdentity>(e).colors.count(BLUE)) {
-                        has_blue = true; break;
+                if (card_data.alt_cost.return_to_hand_count > 0) {
+                    int islands_controlled = 0;
+                    const std::string& sub = card_data.alt_cost.return_to_hand_subtype;
+                    for (auto e : orderer->mEntities) {
+                        if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
+                        auto& perm = global_coordinator.GetComponent<Permanent>(e);
+                        if (perm.controller != priority_player) continue;
+                        auto& cd2 = global_coordinator.GetComponent<CardData>(e);
+                        for (auto& t : cd2.types) {
+                            if (t.kind == SUBTYPE && t.name == sub) { islands_controlled++; break; }
+                        }
                     }
+                    can_alt = islands_controlled >= card_data.alt_cost.return_to_hand_count;
+                } else {
+                    Entity pp_entity = (priority_player == Zone::PLAYER_A)
+                        ? cur_game.player_a_entity : cur_game.player_b_entity;
+                    auto& pp = global_coordinator.GetComponent<Player>(pp_entity);
+                    bool has_life = pp.life_total >= card_data.alt_cost.life_cost;
+                    bool has_blue = false;
+                    for (auto e : orderer->get_hand(priority_player)) {
+                        if (e == card_entity) continue;
+                        if (global_coordinator.entity_has_component<ColorIdentity>(e) &&
+                            global_coordinator.GetComponent<ColorIdentity>(e).colors.count(BLUE)) {
+                            has_blue = true; break;
+                        }
+                    }
+                    can_alt = has_life && has_blue;
                 }
-                can_alt = has_life && has_blue;
             }
 
             if (can_regular) actions.push_back(la);

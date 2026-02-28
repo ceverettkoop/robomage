@@ -11,8 +11,10 @@
 #include "../debug.h"
 #include "../ecs/coordinator.h"
 #include "../input_logger.h"
+#include "../mana_system.h"
 #include "../systems/orderer.h"
 #include "damage.h"
+#include "permanent.h"
 #include "player.h"
 #include "spell.h"
 
@@ -224,6 +226,79 @@ void Ability::resolve_rearrange_top_of_library(std::shared_ptr<Orderer> orderer)
     }
 }
 
+// Returns true if the spell should be countered (controller declined or couldn't pay).
+static bool run_unless_loop(size_t cost, Zone::Ownership controller,
+                            std::shared_ptr<Orderer> orderer) {
+    std::multiset<Colors> cond_cost;
+    for (size_t i = 0; i < cost; i++) cond_cost.insert(GENERIC);
+
+    while (true) {
+        std::vector<ActionCategory> cats;
+        std::vector<Entity> ents;
+
+        for (auto e : orderer->mEntities) {
+            if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
+            auto& perm = global_coordinator.GetComponent<Permanent>(e);
+            if (perm.controller != controller || perm.is_tapped) continue;
+            for (auto& ab : perm.abilities) {
+                if (ab.category != "AddMana") continue;
+                auto& cd = global_coordinator.GetComponent<CardData>(e);
+                printf("  %zu: Tap %s for {%s}\n", ents.size(),
+                       cd.name.c_str(), mana_symbol(ab.color).c_str());
+                ActionCategory mcat = ActionCategory::MANA_C;
+                switch (ab.color) {
+                    case WHITE: mcat = ActionCategory::MANA_W; break;
+                    case BLUE:  mcat = ActionCategory::MANA_U; break;
+                    case BLACK: mcat = ActionCategory::MANA_B; break;
+                    case RED:   mcat = ActionCategory::MANA_R; break;
+                    case GREEN: mcat = ActionCategory::MANA_G; break;
+                    default: break;
+                }
+                cats.push_back(mcat);
+                ents.push_back(e);
+                break;
+            }
+        }
+
+        bool can_pay = can_afford(controller, cond_cost);
+        size_t pay_idx = cats.size();
+        if (can_pay) {
+            printf("  %zu: Pay {%zu} (spell is not countered)\n", pay_idx, cost);
+            cats.push_back(ActionCategory::OTHER_CHOICE);
+            ents.push_back(Entity(0));
+        }
+        size_t decline_idx = cats.size();
+        printf("  %zu: Don't pay (spell is countered)\n", decline_idx);
+        cats.push_back(ActionCategory::OTHER_CHOICE);
+        ents.push_back(Entity(0));
+
+        int choice = InputLogger::instance().get_logged_input(cur_game.turn, cats, ents);
+
+        if (choice == static_cast<int>(decline_idx)) return true;
+
+        if (can_pay && choice == static_cast<int>(pay_idx)) {
+            spend_mana(controller, cond_cost);
+            printf("%s pays {%zu} — spell is not countered\n",
+                   player_name(controller).c_str(), cost);
+            return false;
+        }
+
+        if (choice >= 0 && choice < static_cast<int>(pay_idx)) {
+            Entity land = ents[static_cast<size_t>(choice)];
+            auto& perm = global_coordinator.GetComponent<Permanent>(land);
+            auto& cd   = global_coordinator.GetComponent<CardData>(land);
+            for (auto& ab : perm.abilities) {
+                if (ab.category != "AddMana") continue;
+                perm.is_tapped = true;
+                add_mana(controller, ab.color, ab.amount);
+                printf("%s tapped %s for {%s}\n", player_name(controller).c_str(),
+                       cd.name.c_str(), mana_symbol(ab.color).c_str());
+                break;
+            }
+        }
+    }
+}
+
 void Ability::resolve(std::shared_ptr<Orderer> orderer) {
     printf("Resolving ability (category: %s, amount: %zu)\n", category.c_str(), amount);
 
@@ -252,14 +327,29 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
         if (global_coordinator.entity_has_component<Zone>(target)) {
             auto& tz = global_coordinator.GetComponent<Zone>(target);
             if (tz.location == Zone::STACK) {
-                std::string name = global_coordinator.entity_has_component<CardData>(target)
-                    ? global_coordinator.GetComponent<CardData>(target).name : "<unknown>";
-                if (global_coordinator.entity_has_component<Ability>(target))
-                    global_coordinator.RemoveComponent<Ability>(target);
-                if (global_coordinator.entity_has_component<Spell>(target))
-                    global_coordinator.RemoveComponent<Spell>(target);
-                orderer->add_to_zone(false, target, Zone::GRAVEYARD);
-                printf("%s is countered\n", name.c_str());
+                Zone::Ownership target_controller = global_coordinator.entity_has_component<Spell>(target)
+                    ? global_coordinator.GetComponent<Spell>(target).caster
+                    : tz.owner;
+
+                bool do_counter = true;
+                if (unless_generic_cost > 0) {
+                    std::string tname = global_coordinator.entity_has_component<CardData>(target)
+                        ? global_coordinator.GetComponent<CardData>(target).name : "<unknown>";
+                    printf("%s's controller may pay {%zu} to save it:\n",
+                           tname.c_str(), unless_generic_cost);
+                    do_counter = run_unless_loop(unless_generic_cost, target_controller, orderer);
+                }
+
+                if (do_counter) {
+                    std::string name = global_coordinator.entity_has_component<CardData>(target)
+                        ? global_coordinator.GetComponent<CardData>(target).name : "<unknown>";
+                    if (global_coordinator.entity_has_component<Ability>(target))
+                        global_coordinator.RemoveComponent<Ability>(target);
+                    if (global_coordinator.entity_has_component<Spell>(target))
+                        global_coordinator.RemoveComponent<Spell>(target);
+                    orderer->add_to_zone(false, target, Zone::GRAVEYARD);
+                    printf("%s is countered\n", name.c_str());
+                }
             } else {
                 printf("Counter: target is no longer on the stack\n");
             }

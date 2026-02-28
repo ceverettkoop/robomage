@@ -249,6 +249,32 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                         orderer->add_to_zone(false, exiled, Zone::EXILE);
                     }
                 }
+                for (int i = 0; i < card_data.alt_cost.return_to_hand_count; i++) {
+                    std::vector<ActionCategory> rth_cats;
+                    std::vector<Entity> rth_entities;
+                    const std::string& sub = card_data.alt_cost.return_to_hand_subtype;
+                    for (auto e : orderer->mEntities) {
+                        if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
+                        auto& perm = global_coordinator.GetComponent<Permanent>(e);
+                        if (perm.controller != caster) continue;
+                        auto& ecd = global_coordinator.GetComponent<CardData>(e);
+                        bool matches = false;
+                        for (auto& t : ecd.types) {
+                            if (t.kind == SUBTYPE && t.name == sub) { matches = true; break; }
+                        }
+                        if (!matches) continue;
+                        printf("  %zu: %s\n", rth_entities.size(), ecd.name.c_str());
+                        rth_cats.push_back(ActionCategory::OTHER_CHOICE);
+                        rth_entities.push_back(e);
+                    }
+                    int choice = InputLogger::instance().get_logged_input(cur_game.turn, rth_cats, rth_entities);
+                    if (choice >= 0 && choice < static_cast<int>(rth_entities.size())) {
+                        Entity returned = rth_entities[static_cast<size_t>(choice)];
+                        printf("%s returns %s to hand\n", player_name(caster).c_str(),
+                               global_coordinator.GetComponent<CardData>(returned).name.c_str());
+                        orderer->add_to_zone(false, returned, Zone::HAND);
+                    }
+                }
             } else {
                 spend_mana(caster, card_data.mana_cost);
             }

@@ -13,6 +13,8 @@ struct AltCost {
     bool has_alt_cost = false;
     int life_cost = 0;
     int exile_blue_from_hand = 0;
+    int return_to_hand_count = 0;
+    std::string return_to_hand_subtype = "";
 };
 
 //this is the underlying card, not a permanent or spell

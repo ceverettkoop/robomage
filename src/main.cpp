@@ -237,6 +237,9 @@ int main(int argc, char const *argv[]) {
         //in those cases advance_step will return true
         if (cur_game.advance_step(stack_manager, orderer)) {
             continue;
+        }else{
+            //check state_based_effects again if something changed bc of resolution
+           state_manager->state_based_effects(cur_game, orderer); 
         }
 
         //active player can do something, list all options

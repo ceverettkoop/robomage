@@ -97,6 +97,13 @@ Entity parse_card_script(std::string path) {
             size_t slash = cost_str.find('/', ef);
             ac.exile_blue_from_hand = std::stoi(cost_str.substr(ef + 14, slash - ef - 14));
         }
+        size_t rf = cost_str.find("Return<");
+        if (rf != std::string::npos) {
+            size_t slash = cost_str.find('/', rf);
+            size_t close = cost_str.find('>', rf);
+            ac.return_to_hand_count = std::stoi(cost_str.substr(rf + 7, slash - rf - 7));
+            ac.return_to_hand_subtype = cost_str.substr(slash + 1, close - slash - 1);
+        }
         card.alt_cost = ac;
         break;
     }
@@ -277,6 +284,8 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         ability.mandatory = (value == "True");
     } else if (key == "MayShuffle") {
         ability.may_shuffle = (value == "True");
+    } else if (key == "UnlessCost") {
+        ability.unless_generic_cost = static_cast<size_t>(std::stoi(value));
     } else if (key == "TargetType") {
         if (value == "Spell") ability.target_type = "Spell";
     } else if (key == "Cost") {
