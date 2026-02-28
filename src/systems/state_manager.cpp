@@ -151,7 +151,6 @@ void StateManager::apply_land_abilities(Entity entity) {
 void StateManager::init() {
     Signature signature;
     signature.set(global_coordinator.GetComponentType<Zone>());
-    signature.set(global_coordinator.GetComponentType<Effect>());
     global_coordinator.SetSystemSignature<StateManager>(signature);
 }
 
