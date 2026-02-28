@@ -8,6 +8,17 @@
 
 extern Coordinator global_coordinator;
 
+bool Ability::identical_activated_ability(const Ability &other){ 
+    if(other.category != this->category) return false;
+    if(other.valid_tgts != this->valid_tgts) return false;    
+    if(other.amount != this->amount) return false;
+    if(other.tap_cost != this->tap_cost) return false;
+    if(other.activation_mana_cost != this->activation_mana_cost) return false;
+    if(other.sac_self != this->sac_self) return false;
+    if(other.change_type != this->change_type) return false;
+    return true;
+};
+
 void Ability::resolve() {
     printf("Resolving ability (category: %s, amount: %zu)\n", category.c_str(), amount);
 

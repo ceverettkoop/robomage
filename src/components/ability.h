@@ -14,7 +14,7 @@ struct Ability{
     };
 
     AbilityType ability_type = SPELL;
-    std::string category;
+    std::string category = "";
     // TODO: support multiple targets (e.g. "deal 1 damage to each of up to two targets")
     std::string valid_tgts = "N_A";  // Value of ValidTgts$ param; "N_A" if no targeting required
     Entity source = 0;
@@ -28,9 +28,10 @@ struct Ability{
     ManaValue activation_mana_cost;     // Mana that must be paid to activate
     int life_cost = 0;                  // PayLife<N> — life paid at activation
     bool sac_self = false;              // Sac<1/CARDNAME> — sacrifice source permanent as cost
-    std::string change_type;            // ChangeType$ — comma-separated land subtypes to search
+    std::string change_type = "";        // ChangeType$ — comma-separated land subtypes to search
 
     void resolve();
+    bool identical_activated_ability(const Ability& other);
 };
 
 #endif /* ABILITY_H */

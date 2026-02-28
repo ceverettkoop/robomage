@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <vector>
 
+#include "../action_processor.h"
 #include "../classes/game.h"
 #include "../components/ability.h"
 #include "../components/carddata.h"
@@ -14,7 +15,6 @@
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../ecs/events.h"
-#include "../action_processor.h"
 #include "../mana_system.h"
 #include "../systems/stack_manager.h"
 #include "orderer.h"
@@ -29,21 +29,30 @@ static Colors mana_color_for_subtype(const std::string &subtype) {
     return NO_COLOR;
 }
 
-// Adds Permanent component to entities that just entered the battlefield,
-// and removes it from entities that have left the battlefield.
-static void apply_permanent_components(Game& game) {
-    for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
+// Permanents on battlefield set to have appropriate components
+// if they are in a different zone these are removed as no longer applicable
+void StateManager::apply_permanent_components(Game &game) {
+    for (auto entity : mEntities) {
         if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
+        // TODO handle tokens w/o carddata
         if (!global_coordinator.entity_has_component<CardData>(entity)) continue;
-        auto& zone = global_coordinator.GetComponent<Zone>(entity);
-
-        if (zone.location == Zone::BATTLEFIELD) {
-            if (!global_coordinator.entity_has_component<Permanent>(entity)) {
-                auto& card_data = global_coordinator.GetComponent<CardData>(entity);
-                bool is_creature = false;
-                for (auto& t : card_data.types) {
-                    if (t.kind == TYPE && t.name == "Creature") { is_creature = true; break; }
+        auto &zone = global_coordinator.GetComponent<Zone>(entity);
+        if (zone.location == Zone::BATTLEFIELD) {  // on battlefield, check to add components
+            // check types
+            // TODO planeswalker here
+            bool is_creature = false;
+            bool is_land = false;
+            auto &card_data = global_coordinator.GetComponent<CardData>(entity);
+            for (auto &t : card_data.types) {
+                if (t.kind == TYPE && t.name == "Creature") {
+                    is_creature = true;
+                }  // can be creature and land
+                if (t.kind == TYPE && t.name == "Land") {
+                    is_land = true;
                 }
+            }
+            // providing permanent component if doesn't have
+            if (!global_coordinator.entity_has_component<Permanent>(entity)) {
                 Permanent perm;
                 perm.controller = zone.controller;
                 perm.has_summoning_sickness = is_creature;
@@ -51,9 +60,47 @@ static void apply_permanent_components(Game& game) {
                 perm.timestamp_entered_battlefield = game.timestamp++;
                 global_coordinator.AddComponent(entity, perm);
             }
-        } else {
+            // copy activated abilities from card_data to permanent; incl mana abilities altough mana abilities innate to basic land types
+            // added elsewhere
+            for (auto ab : card_data.abilities) {
+                if (ab.ability_type != Ability::ACTIVATED) continue;
+                auto &perm_abilities = global_coordinator.GetComponent<Permanent>(entity).abilities;
+                bool already_present = false;
+                for (auto &existing : perm_abilities) {
+                    if (existing.identical_activated_ability(ab)) {
+                        already_present = true;
+                        break;
+                    }
+                }
+                if (already_present) continue;
+                ab.source = entity;
+                perm_abilities.push_back(ab);
+            }
+
+            // providing creature related components if applicable
+            if (is_creature && !global_coordinator.entity_has_component<Creature>(entity)) {
+                Creature creature;
+                creature.power = card_data.power;
+                creature.toughness = card_data.toughness;
+                global_coordinator.AddComponent(entity, creature);
+                // damage component
+                Damage damage;
+                damage.damage_counters = 0;
+                global_coordinator.AddComponent(entity, damage);
+            }
+            if (is_land) {
+                apply_land_abilities(entity);
+            }
+
+        } else {  // off battlefield, check to remove
             if (global_coordinator.entity_has_component<Permanent>(entity)) {
                 global_coordinator.RemoveComponent<Permanent>(entity);
+            }
+            if (global_coordinator.entity_has_component<Creature>(entity)) {
+                global_coordinator.RemoveComponent<Creature>(entity);
+            }
+            if (global_coordinator.entity_has_component<Damage>(entity)) {
+                global_coordinator.RemoveComponent<Damage>(entity);
             }
         }
     }
@@ -62,70 +109,42 @@ static void apply_permanent_components(Game& game) {
 // Applies abilities to lands based on the land subtypes
 // TODO recheck in case blood moon or similar nuked one; rn blood moon on a tundra would just add an ability, even if
 // types are successfully replaced
-static void apply_land_abilities() {
-    for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
-        if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
-        // TODO make this work for tokens
-        if (!global_coordinator.entity_has_component<CardData>(entity)) continue;
+void StateManager::apply_land_abilities(Entity entity) {
+    // assumes called with entity that has permanent component and is on battlefield and is land
+    auto &card_data = global_coordinator.GetComponent<CardData>(entity);
+    std::vector<std::string> land_subtypes;
+    for (auto &type : card_data.types) {
+        if (type.kind == SUBTYPE && (type.name == "Mountain" || type.name == "Forest" || type.name == "Plains" ||
+                                        type.name == "Island" || type.name == "Swamp" || type.name == "Wastes")) {
+            land_subtypes.push_back(type.name);
+        }
+    }
+    if (land_subtypes.empty()) return;
+    // find mana abilities for corresponding land subtype
+    for (auto subtype : land_subtypes) {
+        Colors required_color = mana_color_for_subtype(subtype);
+        if (required_color == NO_COLOR) continue;
 
-        auto &zone = global_coordinator.GetComponent<Zone>(entity);
-        if (zone.location != Zone::BATTLEFIELD) continue;
-
-        auto &card_data = global_coordinator.GetComponent<CardData>(entity);
-
-        bool is_land = false;
-        std::vector<std::string> land_subtypes;
-        for (auto &type : card_data.types) {
-            if (type.kind == TYPE && type.name == "Land") is_land = true;
-            if (type.kind == SUBTYPE && (type.name == "Mountain" || type.name == "Forest" || type.name == "Plains" ||
-                                            type.name == "Island" || type.name == "Swamp" || type.name == "Wastes")) {
-                land_subtypes.push_back(type.name);
+        // Skip only if this exact color ability already exists
+        auto &perm_abilities = global_coordinator.GetComponent<Permanent>(entity).abilities;
+        bool already_present = false;
+        for (auto ab : perm_abilities) {
+            if (ab.category == "AddMana" && ab.color == required_color && ab.amount == 1) {
+                already_present = true;
+                break;
             }
         }
-        if (!is_land) continue;
+        if (already_present) continue;
 
-        //TODO THIS SHOULD APPLY TO ALL PERMANENTS
-        // Copy non-mana ACTIVATED abilities (e.g. ChangeZone for fetch lands)
-        for (auto ab : card_data.abilities) {
-            if (ab.ability_type != Ability::ACTIVATED) continue;
-            if (ab.category == "AddMana") continue;
-            auto &perm_abilities = global_coordinator.GetComponent<Permanent>(entity).abilities;
-            bool already_present = false;
-            for (auto& existing : perm_abilities) {
-                if (existing.category == ab.category) { already_present = true; break; }
-            }
-            if (already_present) continue;
-            ab.source = entity;
-            perm_abilities.push_back(ab);
-        }
+        Ability mana_ability;
+        mana_ability.ability_type = Ability::ACTIVATED;
+        mana_ability.category = "AddMana";
+        mana_ability.color = required_color;
+        mana_ability.amount = 1;
+        mana_ability.tap_cost = true;
 
-        if (land_subtypes.empty()) continue;
-
-        for (auto subtype : land_subtypes) {
-            Colors required_color = mana_color_for_subtype(subtype);
-            if (required_color == NO_COLOR) continue;
-
-            // Skip only if this exact color ability already exists
-            auto &perm_abilities = global_coordinator.GetComponent<Permanent>(entity).abilities;
-            bool already_present = false;
-            for (auto ab : perm_abilities) {
-                if (ab.category == "AddMana" && ab.color == required_color && ab.amount == 1) {
-                    already_present = true;
-                    break;
-                }
-            }
-            if (already_present) continue;
-
-            Ability mana_ability;
-            mana_ability.ability_type = Ability::ACTIVATED;
-            mana_ability.category = "AddMana";
-            mana_ability.color = required_color;
-            mana_ability.amount = 1;
-            mana_ability.tap_cost = true;
-
-            mana_ability.source = entity;
-            perm_abilities.push_back(mana_ability);
-        }
+        mana_ability.source = entity;
+        perm_abilities.push_back(mana_ability);
     }
 }
 
@@ -156,37 +175,8 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
         game.ended = true;
         return;
     }
-
-    // Add Creature component to any battlefield creature that doesn't have one yet
-    // TODO check does this get removed on death?
-    for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
-        if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
-        if (!global_coordinator.entity_has_component<CardData>(entity)) continue;
-        auto &zone = global_coordinator.GetComponent<Zone>(entity);
-        if (zone.location != Zone::BATTLEFIELD) continue;
-        if (global_coordinator.entity_has_component<Creature>(entity)) continue;
-
-        auto &card_data = global_coordinator.GetComponent<CardData>(entity);
-        bool is_creature = false;
-        for (auto &type : card_data.types) {
-            if (type.kind == TYPE && type.name == "Creature") {
-                is_creature = true;
-                break;
-            }
-        }
-        if (is_creature) {
-            Creature creature;
-            creature.power = card_data.power;
-            creature.toughness = card_data.toughness;
-            global_coordinator.AddComponent(entity, creature);
-        }
-    }
-
     // Add/remove Permanent component as entities enter/leave the battlefield
     apply_permanent_components(game);
-
-    // Apply mana abilities to basic land permanents that don't have one yet
-    apply_land_abilities();
 
     // Check for lethal damage on creatures
     std::vector<Entity> creatures_to_destroy;
@@ -210,13 +200,7 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
         printf("%s is destroyed (lethal damage)\n", card_data.name.c_str());
 
         orderer->add_to_zone(false, entity, Zone::GRAVEYARD);
-
-        if (global_coordinator.entity_has_component<Permanent>(entity)) {
-            global_coordinator.RemoveComponent<Permanent>(entity);
-        }
-        global_coordinator.RemoveComponent<Creature>(entity);
-        global_coordinator.RemoveComponent<Damage>(entity);
-
+        // components will be removed by state based effects
         Event death_event(Events::CREATURE_DIED);
         death_event.SetParam(Params::ENTITY, entity);
         global_coordinator.SendEvent(death_event);
@@ -323,108 +307,6 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
     }
 }
 
-
-//COMMENTING THIS OUT- TO RETURN TO IF WE DECIDE ML NEEDS THE CRUTCH
-/*
-// Returns the subset of legal_mana_abilities that would contribute toward affording
-// at least one pending action (actions that are legal but currently unaffordable).
-//
-// Algorithm per reachable cost:
-//   Rule (a) — specific demand: show every MA whose color appears as a non-generic pip.
-//              All such MAs are shown so the player can pick which to tap.
-//   Rule (b) — generic shortfall: compute how much generic coverage the rule-(a) sources
-//              already provide (current pool + excess specific-color MA mana after paying
-//              the specific pips). If that falls short of the generic requirement, every
-//              non-specific MA is also needed and is shown.
-//
-// This correctly handles interchangeable sources: e.g. with 3 Forests and cost {2GGR},
-// rule (a) shows all 3 forests (any two pay the GG); rule (b) fires because the 1 excess
-// forest only covers 1 of the 2 generic slots, so any other available sources are also shown.
-static std::vector<LegalAction> useful_mana_abilities(const std::vector<LegalAction> &legal_mana_abilities,
-                                                       const std::vector<LegalAction> &pending_actions) {
-    if (pending_actions.empty() || legal_mana_abilities.empty()) return {};
-
-    Zone::Ownership priority_player = cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
-    Entity priority_player_entity = get_player_entity(priority_player);
-    if (!global_coordinator.entity_has_component<Player>(priority_player_entity)) return {};
-
-    auto &player = global_coordinator.GetComponent<Player>(priority_player_entity);
-
-    // Build total potential pool: current mana + every legal MA activated
-    ManaValue total_potential = player.mana;
-    for (const auto &ma : legal_mana_abilities) {
-        for (size_t i = 0; i < ma.ability.amount; ++i) {
-            total_potential.insert(ma.ability.color);
-        }
-    }
-
-    // Collect costs of pending actions reachable with the full potential pool
-    std::vector<ManaValue> reachable_costs;
-    for (const auto &pending : pending_actions) {
-        ManaValue cost;
-        if (pending.type == CAST_SPELL) {
-            if (!global_coordinator.entity_has_component<CardData>(pending.source_entity)) continue;
-            cost = global_coordinator.GetComponent<CardData>(pending.source_entity).mana_cost;
-        } else if (pending.type == ACTIVATE_ABILITY) {
-            cost = pending.ability.activation_mana_cost;
-        } else {
-            continue;
-        }
-        if (can_afford_pool(total_potential, cost)) {
-            reachable_costs.push_back(std::move(cost));
-        }
-    }
-
-    if (reachable_costs.empty()) return {};
-
-    std::vector<LegalAction> useful;
-    for (const auto &ma : legal_mana_abilities) {
-        Colors c = ma.ability.color;
-        bool is_useful = false;
-
-        for (const auto &cost : reachable_costs) {
-            // Rule (a): this color is specifically demanded — show all MAs of this color.
-            if (cost.count(c) > 0) {
-                is_useful = true;
-                break;
-            }
-
-            // Rule (b): MA is a candidate for paying generic mana.
-            // Check whether the rule-(a) sources alone (current pool + all specifically-
-            // demanded-color MAs) already cover the full generic requirement.
-            // If not, this non-specific MA is needed and should be shown.
-            size_t generic_needed = cost.count(GENERIC);
-            if (generic_needed == 0) continue;
-
-            // Build the pool consisting of only rule-(a) sources.
-            ManaValue rule_a_pool = player.mana;
-            for (const auto &other : legal_mana_abilities) {
-                if (cost.count(other.ability.color) > 0) {
-                    for (size_t i = 0; i < other.ability.amount; ++i) {
-                        rule_a_pool.insert(other.ability.color);
-                    }
-                }
-            }
-            // Pay the specific color pips from that pool.
-            for (Colors pip : cost) {
-                if (pip == GENERIC) continue;
-                auto it = rule_a_pool.find(pip);
-                if (it != rule_a_pool.end()) rule_a_pool.erase(it);
-            }
-            // Whatever remains in rule_a_pool can cover generic.
-            // If it falls short, this non-specific MA is needed.
-            if (rule_a_pool.size() < generic_needed) {
-                is_useful = true;
-                break;
-            }
-        }
-
-        if (is_useful) useful.push_back(ma);
-    }
-    return useful;
-}
-*/
-
 std::vector<LegalAction> StateManager::determine_legal_actions(
     const Game &game, std::shared_ptr<Orderer> orderer, std::shared_ptr<StackManager> stack_manager) {
     std::vector<LegalAction> actions;          // return value
@@ -498,7 +380,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         }
         // Check that at least one legal target exists for any targeting requirement
         bool tgt_ok = true;
-        for (const auto& ab : card_data.abilities) {
+        for (const auto &ab : card_data.abilities) {
             if (ab.ability_type != Ability::SPELL) continue;
             tgt_ok = has_legal_targets(ab, orderer);
             break;
@@ -532,18 +414,30 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 std::string desc = "Tap " + card_data.name + " for {" + mana_symbol(ab.color) + "}";
                 LegalAction la(ACTIVATE_ABILITY, ab.source, ab, desc);
                 switch (ab.color) {
-                    case WHITE:     la.category = ActionCategory::MANA_W; break;
-                    case BLUE:      la.category = ActionCategory::MANA_U; break;
-                    case BLACK:     la.category = ActionCategory::MANA_B; break;
-                    case RED:       la.category = ActionCategory::MANA_R; break;
-                    case GREEN:     la.category = ActionCategory::MANA_G; break;
-                    default:        la.category = ActionCategory::MANA_C; break;
+                    case WHITE:
+                        la.category = ActionCategory::MANA_W;
+                        break;
+                    case BLUE:
+                        la.category = ActionCategory::MANA_U;
+                        break;
+                    case BLACK:
+                        la.category = ActionCategory::MANA_B;
+                        break;
+                    case RED:
+                        la.category = ActionCategory::MANA_R;
+                        break;
+                    case GREEN:
+                        la.category = ActionCategory::MANA_G;
+                        break;
+                    default:
+                        la.category = ActionCategory::MANA_C;
+                        break;
                 }
                 legal_mana_abilities.push_back(la);
                 continue;
             } else {
                 // Non-mana activated ability (e.g. ChangeZone for fetch lands)
-                auto& ab_card_data = global_coordinator.GetComponent<CardData>(ab.source);
+                auto &ab_card_data = global_coordinator.GetComponent<CardData>(ab.source);
                 std::string desc = "Activate " + ab_card_data.name + " (" + ab.category + ")";
                 LegalAction non_mana_la(ACTIVATE_ABILITY, ab.source, ab, desc);
                 non_mana_la.category = ActionCategory::ACTIVATE_ABILITY;

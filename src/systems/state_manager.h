@@ -22,6 +22,9 @@ public:
     std::vector<LegalAction> determine_legal_actions(const Game& game, std::shared_ptr<Orderer> orderer,
                                                       std::shared_ptr<StackManager> stack_manager);
 
+private:
+    void apply_permanent_components(Game& game);
+    void apply_land_abilities(Entity entity);
 };
 
 #endif /* STATE_MANAGER_H */
