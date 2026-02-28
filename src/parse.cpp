@@ -251,6 +251,16 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
                     ability.valid_tgts = value;
                 } else if (key == "ChangeType") {
                     ability.change_type = value;
+                } else if (key == "Origin") {
+                    if (value == "Library")        ability.origin = Zone::LIBRARY;
+                    else if (value == "Hand")      ability.origin = Zone::HAND;
+                    else if (value == "Graveyard") ability.origin = Zone::GRAVEYARD;
+                    else if (value == "Exile")     ability.origin = Zone::EXILE;
+                } else if (key == "Destination") {
+                    if (value == "Battlefield")    ability.destination = Zone::BATTLEFIELD;
+                    else if (value == "Hand")      ability.destination = Zone::HAND;
+                    else if (value == "Graveyard") ability.destination = Zone::GRAVEYARD;
+                    else if (value == "Exile")     ability.destination = Zone::EXILE;
                 } else if (key == "Cost") {
                     // space-delimited cost tokens
                     size_t tok_pos = 0;

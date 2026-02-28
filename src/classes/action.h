@@ -34,9 +34,10 @@ enum class ActionCategory {
     MANA_R            = 16,  // tap for red mana
     MANA_G            = 17,  // tap for green mana
     MANA_C            = 18,  // tap for colorless mana
+    SEARCH_LIBRARY    = 19,  // select a card from a library search (index 0 = fail to find)
 };
 
-static constexpr int ACTION_CATEGORY_MAX = 18;  // highest ActionCategory value
+static constexpr int ACTION_CATEGORY_MAX = 19;  // highest ActionCategory value
 
 struct LegalAction {
     ActionType type;

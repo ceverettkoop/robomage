@@ -9,7 +9,6 @@
 #include "classes/action.h"
 #include "classes/deck.h"
 #include "classes/game.h"
-#include "cli.h"
 #include "components/ability.h"
 #include "components/carddata.h"
 #include "components/creature.h"

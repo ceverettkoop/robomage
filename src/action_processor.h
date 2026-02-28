@@ -3,7 +3,6 @@
 
 #include <memory>
 #include <vector>
-
 #include "classes/action.h"
 #include "classes/game.h"
 #include "components/ability.h"

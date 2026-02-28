@@ -3,7 +3,11 @@
 
 #include "../classes/colors.h"
 #include "../ecs/entity.h"
+#include "zone.h"
+#include <memory>
 #include <string>
+
+class Orderer;
 
 struct Ability{
 
@@ -28,13 +32,21 @@ struct Ability{
     ManaValue activation_mana_cost;     // Mana that must be paid to activate
     int life_cost = 0;                  // PayLife<N> — life paid at activation
     bool sac_self = false;              // Sac<1/CARDNAME> — sacrifice source permanent as cost
-    std::string change_type = "";        // ChangeType$ — comma-separated land subtypes to search
+    std::string change_type = "";        // ChangeType$ — comma-separated subtypes to search
+    Zone::ZoneValue origin = Zone::LIBRARY;          // Origin$ — zone to search
+    Zone::ZoneValue destination = Zone::BATTLEFIELD; // Destination$ — zone to move card to
 
-    void resolve();
+    void resolve(std::shared_ptr<Orderer> orderer);
     bool identical_activated_ability(const Ability& other);
 private:
-    void resolve_change_zone();
+    void resolve_change_zone(std::shared_ptr<Orderer> orderer);
 
 };
+
+// Search a zone for cards matching the comma-separated type list in change_type.
+// Presents numbered options; 0 is always "fail to find".
+// Returns the chosen Entity, or 0 if the player fails to find.
+Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner,
+                   Zone::ZoneValue zone, const std::string& change_type);
 
 #endif /* ABILITY_H */
