@@ -22,6 +22,7 @@ static std::vector<std::string> multi_values_from_script(std::string script, std
 static std::multiset<Colors> parse_mana_cost(std::string value);
 static std::set<Type> parse_types(std::string value);
 static std::map<std::string, std::string> parse_svars(const std::string& script);
+static std::string normalize_category(std::string category);
 static void apply_param_to_ability(Ability& ability, const std::string& key, const std::string& value);
 static std::vector<Ability> parse_abilities(std::vector<std::string> lines, const std::set<Type>& types,
                                             const std::map<std::string, std::string>& svars);
@@ -247,6 +248,8 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         else if (value == "Exile")     ability.destination = Zone::EXILE;
     } else if (key == "Mandatory") {
         ability.mandatory = (value == "True");
+    } else if (key == "MayShuffle") {
+        ability.may_shuffle = (value == "True");
     } else if (key == "Cost") {
         size_t tok_pos = 0;
         while (tok_pos < value.size()) {
@@ -268,6 +271,12 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
     }
 }
 
+// Normalizes script category names to the internal names used throughout the engine.
+static std::string normalize_category(std::string category) {
+    if (category == "Mana") category = "AddMana";
+    return category;
+}
+
 // Parses a SVar's DB$ content string into an Ability. The ability_type is inherited from the parent.
 static Ability parse_svar_ability(const std::string& content, Ability::AbilityType ability_type) {
     Ability sub;
@@ -278,7 +287,7 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
     size_t cat_end = content.find_first_of(" |", p);
     if (cat_end == std::string::npos) cat_end = content.length();
     if (cat_end > p)
-        sub.category = content.substr(p, cat_end - p) + "DB";  // DB$ ChangeZone -> "ChangeZoneDB"
+        sub.category = normalize_category(content.substr(p, cat_end - p));
 
     size_t param_pos = content.find("|", p);
     while (param_pos != std::string::npos) {
@@ -334,10 +343,7 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
         // Check if category_end is valid
         if (category_end <= pos) continue;
 
-        std::string category = line.substr(pos, category_end - pos);
-        // Normalize script category names to internal names used throughout the engine
-        if (category == "Mana") category = "AddMana";
-        ability.category = category;
+        ability.category = normalize_category(line.substr(pos, category_end - pos));
 
         // Parse pipe-delimited parameters — applies to all ability categories
         size_t param_pos = line.find("|", pos);

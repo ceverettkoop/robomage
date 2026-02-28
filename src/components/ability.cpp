@@ -1,5 +1,6 @@
 #include "ability.h"
 
+#include <algorithm>
 #include <cstdio>
 #include <string>
 #include <vector>
@@ -37,7 +38,7 @@ bool Ability::identical_activated_ability(const Ability &other) {
 Entity search_zone(
     std::shared_ptr<Orderer> orderer, Zone::Ownership owner, Zone::ZoneValue zone, const std::string &change_type,
     bool mandatory, Zone::ZoneValue destination) {
-    // Parse comma-separated subtypes
+    //  comma-separated subtypes
     std::vector<std::string> subtypes;
     size_t p = 0;
     while (true) {
@@ -167,14 +168,71 @@ void Ability::resolve_change_zone(std::shared_ptr<Orderer> orderer) {
     }
 }
 
+void Ability::resolve_rearrange_top_of_library(std::shared_ptr<Orderer> orderer) {
+    Zone::Ownership owner = global_coordinator.GetComponent<Zone>(source).owner;
+
+    std::vector<Entity> lib = orderer->get_library_contents(owner);
+    // Sort by distance_from_top ascending so lib[0] is the actual top card
+    std::sort(lib.begin(), lib.end(), [](Entity a, Entity b) {
+        return global_coordinator.GetComponent<Zone>(a).distance_from_top
+             < global_coordinator.GetComponent<Zone>(b).distance_from_top;
+    });
+    //looking at top n only
+    if (lib.size() > amount) lib.resize(amount);
+    size_t actual = lib.size();
+    std::vector<Entity> remaining = lib;
+    
+    printf("%s looks at the top %zu card(s) of their library.\n", player_name(owner).c_str(), actual);
+
+    std::vector<Entity> chosen_order;
+    // Player picks N-1 cards; the last is automatic
+    for (size_t pick = 0; pick + 1 < actual; pick++) {
+        printf("Choose which card goes on top next (pick %zu of %zu):\n", pick + 1, actual);
+        std::vector<ActionCategory> cats;
+        std::vector<Entity> pick_entities;
+        for (size_t i = 0; i < remaining.size(); i++) {
+            auto &cd = global_coordinator.GetComponent<CardData>(remaining[i]);
+            printf("  %zu: %s\n", i, cd.name.c_str());
+            cats.push_back(ActionCategory::TOP_LIBRARY);
+            pick_entities.push_back(remaining[i]);
+        }
+        int choice = InputLogger::instance().get_logged_input(cur_game.turn, cats, pick_entities);
+        if (choice < 0 || choice >= static_cast<int>(remaining.size())) choice = 0;
+        chosen_order.push_back(remaining[static_cast<size_t>(choice)]);
+        remaining.erase(remaining.begin() + choice);
+    }
+    // Last card is forced
+    if (!remaining.empty()) {
+        chosen_order.push_back(remaining[0]);
+    }
+
+    // Put cards back: chosen_order[0] should end up on top, so place in reverse
+    for (auto it = chosen_order.rbegin(); it != chosen_order.rend(); ++it) {
+        orderer->add_to_zone(false, *it, Zone::LIBRARY);
+    }
+
+    if (may_shuffle) {
+        printf("You may shuffle your library. 0: Don't shuffle  1: Shuffle\n");
+        std::vector<ActionCategory> shuffle_cats = {ActionCategory::SHUFFLE, ActionCategory::SHUFFLE};
+        std::vector<Entity> shuffle_entities = {Entity(0), Entity(0)};
+        int shuffle_choice = InputLogger::instance().get_logged_input(cur_game.turn, shuffle_cats, shuffle_entities);
+        if (shuffle_choice == 1) {
+            orderer->shuffle_library(owner);
+            printf("%s shuffles their library.\n", player_name(owner).c_str());
+        }
+    }
+}
+
 void Ability::resolve(std::shared_ptr<Orderer> orderer) {
     printf("Resolving ability (category: %s, amount: %zu)\n", category.c_str(), amount);
 
     if (category == "Draw") {
         Zone::Ownership owner = global_coordinator.GetComponent<Zone>(source).owner;
         orderer->draw(owner, amount);
-    } else if (category == "ChangeZone" || category == "ChangeZoneDB") { //unclear on exact distinction here
+    } else if (category == "ChangeZone") {
         resolve_change_zone(orderer);
+    } else if (category == "RearrangeTopOfLibrary") {
+        resolve_rearrange_top_of_library(orderer);
     } else if (category == "DealDamage") {
         if (global_coordinator.entity_has_component<Player>(target)) {
             auto &player = global_coordinator.GetComponent<Player>(target);

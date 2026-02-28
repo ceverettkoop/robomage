@@ -37,6 +37,7 @@ struct Ability{
     Zone::ZoneValue origin = Zone::LIBRARY;          // Origin$ — zone to search
     Zone::ZoneValue destination = Zone::BATTLEFIELD; // Destination$ — zone to move card to
     bool mandatory = false;              // Mandatory$ True — player must choose; suppresses fail-to-find when zone non-empty
+    bool may_shuffle = false;            // MayShuffle$ True — player may optionally shuffle after
     //for each AB on a card script there may be multiple SubAbility$, would get parsed into vector below
     std::vector<Ability> subabilities; // additional abilities resolved at same time this resolves, stored in order
 
@@ -45,6 +46,7 @@ struct Ability{
 private:
     void resolve_change_zone(std::shared_ptr<Orderer> orderer);
     void resolve_destroy(std::shared_ptr<Orderer> orderer);
+    void resolve_rearrange_top_of_library(std::shared_ptr<Orderer> orderer);
 
 };
 
