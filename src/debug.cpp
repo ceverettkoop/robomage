@@ -1,6 +1,8 @@
 #include "debug.h"
 
+#include <algorithm>
 #include "components/carddata.h"
+#include "input_logger.h"
 #include "components/creature.h"
 #include "components/damage.h"
 #include "components/permanent.h"
@@ -123,6 +125,19 @@ std::string player_name(Zone::Ownership owner) {
         return "Player A";
     else
         return "Player B";
+}
+
+void print_draw(Zone::Ownership player, const std::vector<Entity>& cards) {
+    if (InputLogger::instance().is_machine_mode()) return;
+    std::vector<Entity> sorted = cards;
+    std::sort(sorted.begin(), sorted.end(), [](Entity a, Entity b) {
+        return global_coordinator.GetComponent<Zone>(a).distance_from_top <
+               global_coordinator.GetComponent<Zone>(b).distance_from_top;
+    });
+    for (auto card : sorted) {
+        printf("%s draws %s\n", player_name(player).c_str(),
+               global_coordinator.GetComponent<CardData>(card).name.c_str());
+    }
 }
 
 void print_legal_actions(const Game& cur_game, std::vector<LegalAction> legal_actions) {

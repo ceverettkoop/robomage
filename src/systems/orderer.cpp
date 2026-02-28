@@ -8,6 +8,7 @@
 #include "../classes/game.h"
 #include "../components/carddata.h"
 #include "../components/zone.h"
+#include "../debug.h"
 #include "../ecs/coordinator.h"
 
 // orderer cares about anything that has a zone
@@ -149,6 +150,8 @@ void Orderer::draw(Zone::Ownership player, size_t ct) {
             }
         }
     }
+    // TODO: first card drawn here is subject to replacement effects (e.g. Miracle, Leyline of Anticipation)
+    print_draw(player, cards_to_draw);
     for (auto &&card : cards_to_draw) {
         auto &card_zone = global_coordinator.GetComponent<Zone>(card);
         card_zone.location = Zone::HAND;
