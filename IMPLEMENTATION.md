@@ -19,14 +19,16 @@
 | Ponder | 4 | ❌ | Rearrange top 3 + draw |
 | Force of Will | 4 | ❌ | Counter spell + alt cost |
 | Daze | 4 | ❌ | Counter unless + alt cost (return Island) |
-| Unholy Heat | 2 | ❌ | 2 or 6 damage with Delirium |
+| Unholy Heat | 3 | ❌ | 2 or 6 damage with Delirium |
 | Dragon's Rage Channeler | 4 | ❌ | Surveil trigger + Delirium pump |
 | Delver of Secrets | 3 | ❌ | Transform, upkeep trigger |
 | Murktide Regent | 3 | ❌ | Delve, Flying, +1/+1 counters |
 | Brazen Borrower | 1 | ❌ | Flash, Flying, Adventure |
 | Mishra's Bauble | 4 | ❌ | 0-cost artifact, tap+sac, delayed draw |
-| Surgical Extraction | 1 | ❌ | Phyrexian mana, multi-zone exile |
-| Cori-Steel Cutter | 3 | ❌ | **Not in cardsfolder** — needs custom script |
+| Cori-Steel Cutter | 3 | ❌ | updated cards folder to have this one- this is a doozy - tokens, triggers |
+
+--cut surgical
+--ignoring sideboard
 
 ---
 
