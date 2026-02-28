@@ -302,7 +302,18 @@ static bool run_unless_loop(size_t cost, Zone::Ownership controller,
 void Ability::resolve(std::shared_ptr<Orderer> orderer) {
     printf("Resolving ability (category: %s, amount: %zu)\n", category.c_str(), amount);
 
-    if (category == "Draw") {
+    if (category == "GainLife") {
+        Zone::Ownership controller;
+        if (global_coordinator.entity_has_component<Permanent>(source)) {
+            controller = global_coordinator.GetComponent<Permanent>(source).controller;
+        } else {
+            controller = global_coordinator.GetComponent<Zone>(source).owner;
+        }
+        Entity ctrl_entity = get_player_entity(controller);
+        auto &player = global_coordinator.GetComponent<Player>(ctrl_entity);
+        player.life_total += static_cast<int32_t>(amount);
+        printf("%s gains %zu life (now at %d)\n", player_name(controller).c_str(), amount, player.life_total);
+    } else if (category == "Draw") {
         Zone::Ownership owner = global_coordinator.GetComponent<Zone>(source).owner;
         orderer->draw(owner, amount);
     } else if (category == "ChangeZone") {

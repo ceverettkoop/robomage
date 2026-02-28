@@ -85,6 +85,7 @@ class Coordinator {
         }
         void SendEvent(Event &event) { mEventManager->SendEvent(event); }
         void SendEvent(EventId eventId) { mEventManager->SendEvent(eventId); }
+        std::vector<Event> drain_pending_events() { return mEventManager->drain_pending_events(); }
         
     private:
         std::unique_ptr<ComponentManager> mComponentManager;

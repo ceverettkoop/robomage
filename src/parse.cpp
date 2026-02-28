@@ -12,6 +12,7 @@
 #include "components/ability.h"
 #include "components/carddata.h"
 #include "ecs/coordinator.h"
+#include "ecs/events.h"
 #include "error.h"
 #include "type_constants.h"
 
@@ -26,6 +27,8 @@ static std::string normalize_category(std::string category);
 static void apply_param_to_ability(Ability& ability, const std::string& key, const std::string& value);
 static std::vector<Ability> parse_abilities(std::vector<std::string> lines, const std::set<Type>& types,
                                             const std::map<std::string, std::string>& svars);
+static std::vector<Ability> parse_triggered_abilities(const std::string& script,
+                                                      const std::map<std::string, std::string>& svars);
 static uint32_t parse_power(std::string value);
 static uint32_t parse_toughness(std::string value);
 
@@ -73,6 +76,9 @@ Entity parse_card_script(std::string path) {
     // parse ability templates; entities are only created when abilities go on the stack
     auto svars = parse_svars(script_data);
     card.abilities = parse_abilities(multi_values_from_script(script_data, "A"), card.types, svars);
+    // parse triggered abilities from T: lines
+    for (auto &trig : parse_triggered_abilities(script_data, svars))
+        card.abilities.push_back(trig);
 
     // Parse S: lines for alternate costs
     for (auto& line : multi_values_from_script(script_data, "S")) {
@@ -286,6 +292,8 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         ability.may_shuffle = (value == "True");
     } else if (key == "UnlessCost") {
         ability.unless_generic_cost = static_cast<size_t>(std::stoi(value));
+    } else if (key == "LifeAmount") {
+        ability.amount = static_cast<size_t>(std::stoi(value));
     } else if (key == "TargetType") {
         if (value == "Spell") ability.target_type = "Spell";
     } else if (key == "Cost") {
@@ -426,4 +434,115 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
     }
 
     return ret_val;
+}
+
+// Finds all lines that start with "T:" (trigger lines) in the card script.
+static std::vector<std::string> find_trigger_lines(const std::string &script) {
+    std::vector<std::string> result;
+    size_t pos = 0;
+    // Check if the script itself starts with "T:"
+    if (script.size() >= 2 && script[0] == 'T' && script[1] == ':') {
+        size_t end = script.find('\n', 0);
+        if (end == std::string::npos) end = script.size();
+        std::string line = script.substr(2, end - 2);
+        if (!line.empty() && line.back() == '\r') line.pop_back();
+        result.push_back(line);
+        pos = end;
+    }
+    while ((pos = script.find("\nT:", pos)) != std::string::npos) {
+        pos += 3;  // skip "\nT:"
+        size_t end = script.find('\n', pos);
+        if (end == std::string::npos) end = script.size();
+        std::string line = script.substr(pos, end - pos);
+        if (!line.empty() && line.back() == '\r') line.pop_back();
+        result.push_back(line);
+        pos = end;
+    }
+    return result;
+}
+
+// Parses a single T: trigger line and its Execute$ SVar into a triggered Ability.
+// Returns a default Ability with trigger_on == 0 if the trigger is unrecognised.
+static Ability parse_one_trigger(const std::string &line, const std::map<std::string, std::string> &svars) {
+    Ability ability;
+    ability.ability_type = Ability::TRIGGERED;
+
+    std::string execute_svar;
+    bool mode_changes_zone = false;
+    bool dest_is_battlefield = false;
+    bool valid_card_creature = false;
+
+    // Walk pipe-delimited params
+    size_t param_pos = 0;
+    while (param_pos <= line.size()) {
+        size_t param_end = line.find('|', param_pos);
+        if (param_end == std::string::npos) param_end = line.size();
+        std::string param = line.substr(param_pos, param_end - param_pos);
+
+        // trim whitespace
+        size_t ks = param.find_first_not_of(" ");
+        size_t ke = param.find_last_not_of(" ");
+        if (ks != std::string::npos) param = param.substr(ks, ke - ks + 1);
+
+        size_t dollar = param.find('$');
+        if (dollar != std::string::npos) {
+            std::string key = param.substr(0, dollar);
+            std::string value = param.substr(dollar + 1);
+            size_t vs = value.find_first_not_of(" ");
+            size_t ve = value.find_last_not_of(" ");
+            if (vs != std::string::npos) value = value.substr(vs, ve - vs + 1);
+            size_t ks2 = key.find_first_not_of(" ");
+            size_t ke2 = key.find_last_not_of(" ");
+            if (ks2 != std::string::npos) key = key.substr(ks2, ke2 - ks2 + 1);
+
+            if (key == "Mode") {
+                if (value == "ChangesZone") mode_changes_zone = true;
+            } else if (key == "Destination") {
+                if (value == "Battlefield") dest_is_battlefield = true;
+            } else if (key == "ValidCard") {
+                if (value.find("Creature") != std::string::npos) valid_card_creature = true;
+                if (value.find(".Other") != std::string::npos) ability.trigger_self_excluded = true;
+            } else if (key == "Execute") {
+                execute_svar = value;
+            }
+        }
+
+        if (param_end >= line.size()) break;
+        param_pos = param_end + 1;
+    }
+
+    // Map trigger condition to event ID.
+    // TODO: Issue generic zone-change events matching the T: line template fields
+    //   (Mode$ ChangesZone, Origin$, Destination$, ValidCard$, ValidTgts$) so that
+    //   triggers beyond creature ETB can be wired up without hardcoding each case.
+    //   Each distinct (Origin, Destination, ValidCard) combination would correspond
+    //   to a unique EventId, and SendEvent would carry the entering/leaving entity
+    //   so that per-trigger ValidCard filters (type, controller, .Other, etc.) can
+    //   be evaluated at check time rather than baked into the event ID.
+    if (mode_changes_zone && dest_is_battlefield && valid_card_creature) {
+        ability.trigger_on = Events::CREATURE_ENTERED;
+    }
+
+    // Resolve effect from Execute$ SVar
+    if (!execute_svar.empty()) {
+        auto it = svars.find(execute_svar);
+        if (it != svars.end()) {
+            Ability effect = parse_svar_ability(it->second, Ability::TRIGGERED);
+            ability.category = effect.category;
+            ability.amount = effect.amount;
+        }
+    }
+
+    return ability;
+}
+
+static std::vector<Ability> parse_triggered_abilities(const std::string &script,
+                                                      const std::map<std::string, std::string> &svars) {
+    std::vector<Ability> result;
+    for (const auto &line : find_trigger_lines(script)) {
+        Ability ab = parse_one_trigger(line, svars);
+        if (ab.trigger_on != 0)  // only keep recognised triggers
+            result.push_back(ab);
+    }
+    return result;
 }

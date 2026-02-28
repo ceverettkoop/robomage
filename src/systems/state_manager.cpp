@@ -60,6 +60,11 @@ void StateManager::apply_permanent_components(Game &game) {
                 perm.is_tapped = false;
                 perm.timestamp_entered_battlefield = game.timestamp++;
                 global_coordinator.AddComponent(entity, perm);
+                if (is_creature) {
+                    Event etb(Events::CREATURE_ENTERED);
+                    etb.SetParam(Params::ENTITY, entity);
+                    global_coordinator.SendEvent(etb);
+                }
             }
             // copy activated abilities from card_data to permanent; incl mana abilities altough mana abilities innate to basic land types
             // added elsewhere
@@ -303,6 +308,47 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
         // if we are dealing with an effect
         if (global_coordinator.entity_has_component<Effect>(entity)) {
             // TODO: Apply continuous effects based on layers/timestamps
+        }
+    }
+
+    check_triggered_abilities(game, orderer);
+}
+
+// Drains all buffered events since the last call and puts any triggered abilities
+// from battlefield permanents whose trigger condition matches onto the stack.
+void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer> orderer) {
+    auto events = global_coordinator.drain_pending_events();
+    if (events.empty()) return;
+
+    for (auto entity : mEntities) {
+        if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
+        auto &zone = global_coordinator.GetComponent<Zone>(entity);
+        if (zone.location != Zone::BATTLEFIELD) continue;
+        if (!global_coordinator.entity_has_component<CardData>(entity)) continue;
+
+        auto &perm = global_coordinator.GetComponent<Permanent>(entity);
+        auto &card_data = global_coordinator.GetComponent<CardData>(entity);
+
+        for (const auto &ev : events) {
+            for (const auto &ab : card_data.abilities) {
+                if (ab.ability_type != Ability::TRIGGERED) continue;
+                if (ab.trigger_on == 0 || ab.trigger_on != ev.GetType()) continue;
+                // "another" check: skip if the entering entity is the source itself
+                if (ab.trigger_self_excluded && ev.HasParam(Params::ENTITY) &&
+                    ev.GetParam<Entity>(Params::ENTITY) == entity) continue;
+
+                // Push the triggered ability onto the stack as a standalone entity
+                Entity trigger_entity = global_coordinator.CreateEntity();
+                Zone ab_zone(Zone::HAND, perm.controller, perm.controller);
+                global_coordinator.AddComponent(trigger_entity, ab_zone);
+                orderer->add_to_zone(false, trigger_entity, Zone::STACK);
+
+                Ability trigger_ab = ab;
+                trigger_ab.source = entity;
+                global_coordinator.AddComponent(trigger_entity, trigger_ab);
+
+                printf("%s triggered\n", card_data.name.c_str());
+            }
         }
     }
 }

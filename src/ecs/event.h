@@ -18,9 +18,10 @@ class Event {
             mData[id] = value;
         }
         template <typename T>
-        T GetParam(EventId id) {
-            return std::any_cast<T>(mData[id]);
+        T GetParam(EventId id) const {
+            return std::any_cast<T>(mData.at(id));
         }
+        bool HasParam(EventId id) const { return mData.count(id) > 0; }
         EventId GetType() const { return mType; }
 
     private:
