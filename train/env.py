@@ -163,6 +163,8 @@ class RoboMageEnv(gym.Env):
         """
         reward = 0.0
         done = False
+        shaping_a = 0.0
+        shaping_b = 0.0
 
         while True:
             line = self._proc.stdout.readline()
@@ -181,6 +183,15 @@ class RoboMageEnv(gym.Env):
             elif "Player B wins" in line:
                 reward = -1.0
                 done = True
+
+            # Shaping signal: mana wasted at end of phase (pool non-empty on drain)
+            if line.startswith("MANA_WASTED: "):
+                side = line[13:].strip()
+                if side == "A":
+                    shaping_a -= 0.1
+                elif side == "B":
+                    shaping_b -= 0.1
+                continue
 
             if line.startswith("QUERY: "):
                 parts = line[7:].split()
@@ -240,7 +251,7 @@ class RoboMageEnv(gym.Env):
             if self.render_mode == "human":
                 self._print_narrative_line(line)
 
-        info = {"reward": reward, "done": done}
+        info = {"reward": reward, "done": done, "shaping_a": shaping_a, "shaping_b": shaping_b}
         if done:
             self._kill_proc()
             # Return a zero obs on terminal step — will be replaced by reset()
@@ -500,30 +511,44 @@ class ModelVsScriptedEnv(gym.Env):
         self.action_space = self._env.action_space
         self.render_mode = render_mode
         self._training_is_a = True
+        self._pending_shaping = 0.0
 
     def reset(self, *, seed=None, options=None):
         self._training_is_a = bool(np.random.random() < 0.5)
+        self._pending_shaping = 0.0
         obs, info = self._env.reset(seed=seed, options=options)
         obs, _reward, terminated, truncated, info = self._skip_opponent_turns(
             obs, 0.0, False, False, info
         )
+        self._pending_shaping = 0.0  # discard any shaping from setup turns
         return obs, info
 
     def step(self, action: int):
         obs, reward, terminated, truncated, info = self._env.step(action)
+        self._accumulate_shaping(info)
         if not (terminated or truncated):
             obs, reward, terminated, truncated, info = self._skip_opponent_turns(
                 obs, reward, terminated, truncated, info
             )
         if not self._training_is_a:
             reward = -reward
+        reward += self._pending_shaping
+        self._pending_shaping = 0.0
         return obs, reward, terminated, truncated, info
+
+    def _accumulate_shaping(self, info):
+        """Add the model's per-step mana-waste penalty to the running total."""
+        if self._training_is_a:
+            self._pending_shaping += info.get("shaping_a", 0.0)
+        else:
+            self._pending_shaping += info.get("shaping_b", 0.0)
 
     def _skip_opponent_turns(self, obs, reward, terminated, truncated, info):
         """Resolve consecutive opponent turns with the scripted agent."""
         while not (terminated or truncated) and (obs[31] > 0.5) != self._training_is_a:
             action = scripted_action(obs, self._env._num_choices)
             obs, reward, terminated, truncated, info = self._env.step(action)
+            self._accumulate_shaping(info)
         return obs, reward, terminated, truncated, info
 
     def action_masks(self) -> np.ndarray:
