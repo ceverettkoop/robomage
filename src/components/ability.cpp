@@ -309,6 +309,8 @@ void Ability::fizzle(std::shared_ptr<Orderer> orderer){
 
 }
 
+//TODO fix
+//redundant with call in action processor and not generalizable!
 bool Ability::is_target_valid() const {
     const std::string &vt = valid_tgts;
 

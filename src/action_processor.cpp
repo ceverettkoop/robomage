@@ -113,6 +113,9 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
     }
 }
 
+
+//TODO fix
+//redundant with call in action processor and not generalizable!
 // Build the list of legal targets for an ability.
 // Targets are sorted from the caster's perspective: opponent entities first (opponent
 // player, then opponent's permanents in entity-ID order), followed by own entities
