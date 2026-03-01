@@ -1,6 +1,7 @@
 #include "debug.h"
 
 #include <algorithm>
+#include "components/ability.h"
 #include "components/carddata.h"
 #include "input_logger.h"
 #include "components/creature.h"
@@ -116,10 +117,12 @@ void print_stack(std::shared_ptr<Orderer> orderer) {
         if(global_coordinator.entity_has_component<CardData>(entity)){
             printf("%zu: %s\n", i, global_coordinator.GetComponent<CardData>(entity).name.c_str());
         }else{
-            printf("%zu: %s\n", i, "TODO: Generate descriptive names for abilities");
+            if(global_coordinator.entity_has_component<Ability>(entity)){
+                printf("%zu: %s\n", i, global_coordinator.GetComponent<Ability>(entity).category.c_str());
+            }else{
+                printf("%zu: %s\n", i, "Unknown ability description");
+            }
         }
-
-
     }
     return;
 }

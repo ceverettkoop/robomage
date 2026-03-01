@@ -19,7 +19,7 @@
 | Ponder | 4 | ✅ | Rearrange top 3 + draw |
 | Force of Will | 4 | ✅ | Counter spell + alt cost |
 | Daze | 4 | ✅ | Counter unless + alt cost (return Island) |
-| Delver of Secrets | 4 | ❌ | Transform, upkeep trigger  FLYING needs to be understood |
+| Delver of Secrets | 4 | ✅ | Transform, upkeep trigger  FLYING needs to be understood |
 | Unholy Heat | 3 | ❌ | 2 or 6 damage with Delirium |
 | Dragon's Rage Channeler | 4 | ❌ | Surveil trigger + Delirium pump |
 | Murktide Regent | 3 | ❌ | Delve, Flying, +1/+1 counters |

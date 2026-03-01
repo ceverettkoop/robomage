@@ -1,5 +1,6 @@
 #include "action_processor.h"
 
+#include <algorithm>
 #include <cstdio>
 
 #include "components/ability.h"
@@ -82,8 +83,8 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
             mana_symbol_str(mana_color));
         // priority does not pass
 
-        // ACTIVATED ABILITY THAT IS NOT A MANA ABILITY - GOES ON STACK
-    } else {
+        
+    } else { // ACTIVATED ABILITY THAT IS NOT A MANA ABILITY - GOES ON STACK
         //  Initialize zone with HAND so add_to_zone removal of the origin zone is a no-op
         // lol that's hacky but OK
         Entity ability_entity = global_coordinator.CreateEntity();
@@ -97,7 +98,7 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
 
         printf("%s's %s ability is on the stack\n", player_name(controller).c_str(), card_data.name.c_str());
         game.take_action();
-        //if target remains legal checked at resolution
+        // if target remains legal checked at resolution
     }
 }
 
@@ -107,8 +108,7 @@ static std::vector<Entity> build_valid_targets(const Ability &ability, std::shar
 
     if (ability.target_type == "Spell") {
         for (auto e : orderer->get_stack()) {
-            if (global_coordinator.entity_has_component<Spell>(e))
-                valid_targets.push_back(e);
+            if (global_coordinator.entity_has_component<Spell>(e)) valid_targets.push_back(e);
         }
         return valid_targets;
     }
@@ -224,9 +224,8 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
 
             // Pay mana cost (regular or alternate)
             if (action.use_alt_cost) {
-                Entity caster_entity = (caster == Zone::PLAYER_A)
-                    ? cur_game.player_a_entity : cur_game.player_b_entity;
-                auto& player = global_coordinator.GetComponent<Player>(caster_entity);
+                Entity caster_entity = (caster == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
+                auto &player = global_coordinator.GetComponent<Player>(caster_entity);
                 player.life_total -= card_data.alt_cost.life_cost;
                 printf("%s pays %d life\n", player_name(caster).c_str(), card_data.alt_cost.life_cost);
                 for (int i = 0; i < card_data.alt_cost.exile_blue_from_hand; i++) {
@@ -237,7 +236,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                         if (!global_coordinator.entity_has_component<ColorIdentity>(e)) continue;
                         if (!global_coordinator.GetComponent<ColorIdentity>(e).colors.count(BLUE)) continue;
                         printf("  %zu: %s\n", exile_entities.size(),
-                               global_coordinator.GetComponent<CardData>(e).name.c_str());
+                            global_coordinator.GetComponent<CardData>(e).name.c_str());
                         exile_cats.push_back(ActionCategory::OTHER_CHOICE);
                         exile_entities.push_back(e);
                     }
@@ -245,22 +244,25 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                     if (choice >= 0 && choice < static_cast<int>(exile_entities.size())) {
                         Entity exiled = exile_entities[static_cast<size_t>(choice)];
                         printf("%s exiles %s\n", player_name(caster).c_str(),
-                               global_coordinator.GetComponent<CardData>(exiled).name.c_str());
+                            global_coordinator.GetComponent<CardData>(exiled).name.c_str());
                         orderer->add_to_zone(false, exiled, Zone::EXILE);
                     }
                 }
                 for (int i = 0; i < card_data.alt_cost.return_to_hand_count; i++) {
                     std::vector<ActionCategory> rth_cats;
                     std::vector<Entity> rth_entities;
-                    const std::string& sub = card_data.alt_cost.return_to_hand_subtype;
+                    const std::string &sub = card_data.alt_cost.return_to_hand_subtype;
                     for (auto e : orderer->mEntities) {
                         if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
-                        auto& perm = global_coordinator.GetComponent<Permanent>(e);
+                        auto &perm = global_coordinator.GetComponent<Permanent>(e);
                         if (perm.controller != caster) continue;
-                        auto& ecd = global_coordinator.GetComponent<CardData>(e);
+                        auto &ecd = global_coordinator.GetComponent<CardData>(e);
                         bool matches = false;
-                        for (auto& t : ecd.types) {
-                            if (t.kind == SUBTYPE && t.name == sub) { matches = true; break; }
+                        for (auto &t : ecd.types) {
+                            if (t.kind == SUBTYPE && t.name == sub) {
+                                matches = true;
+                                break;
+                            }
                         }
                         if (!matches) continue;
                         printf("  %zu: %s\n", rth_entities.size(), ecd.name.c_str());
@@ -271,7 +273,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                     if (choice >= 0 && choice < static_cast<int>(rth_entities.size())) {
                         Entity returned = rth_entities[static_cast<size_t>(choice)];
                         printf("%s returns %s to hand\n", player_name(caster).c_str(),
-                               global_coordinator.GetComponent<CardData>(returned).name.c_str());
+                            global_coordinator.GetComponent<CardData>(returned).name.c_str());
                         orderer->add_to_zone(false, returned, Zone::HAND);
                     }
                 }
@@ -424,19 +426,24 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
     game.pending_choice = NONE;
 }
 
-static std::vector<Entity> determine_blockable_attackers(Entity blocker,
-                                                          const std::vector<Entity>& attackers) {
-    auto& bcr = global_coordinator.GetComponent<Creature>(blocker);
+static std::vector<Entity> determine_blockable_attackers(Entity blocker, const std::vector<Entity> &attackers) {
+    auto &bcr = global_coordinator.GetComponent<Creature>(blocker);
     bool blocker_can_fly = false;
-    for (auto& kw : bcr.keywords)
-        if (kw == "Flying" || kw == "Reach") { blocker_can_fly = true; break; }
+    for (auto &kw : bcr.keywords)
+        if (kw == "Flying" || kw == "Reach") {
+            blocker_can_fly = true;
+            break;
+        }
 
     std::vector<Entity> result;
     for (auto atk : attackers) {
-        auto& acr = global_coordinator.GetComponent<Creature>(atk);
+        auto &acr = global_coordinator.GetComponent<Creature>(atk);
         bool atk_flying = false;
-        for (auto& kw : acr.keywords)
-            if (kw == "Flying") { atk_flying = true; break; }
+        for (auto &kw : acr.keywords)
+            if (kw == "Flying") {
+                atk_flying = true;
+                break;
+            }
 
         if (atk_flying && !blocker_can_fly) continue;
         result.push_back(atk);
@@ -474,12 +481,9 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
     }
 
     // Remove creatures that can't legally block any attacker (e.g. non-flyers vs all-flying attackers)
-    eligible.erase(
-        std::remove_if(eligible.begin(), eligible.end(), [&](Entity blocker) {
-            return determine_blockable_attackers(blocker, attackers).empty();
-        }),
-        eligible.end()
-    );
+    eligible.erase(std::remove_if(eligible.begin(), eligible.end(),
+                       [&](Entity blocker) { return determine_blockable_attackers(blocker, attackers).empty(); }),
+        eligible.end());
 
     if (eligible.empty()) {
         printf("No creatures eligible to block.\n");
@@ -533,7 +537,8 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
             cr.blocking_target = 0;
             printf("%s removed from blockers.\n", cd.name.c_str());
         } else {
-            auto legal_attackers = determine_blockable_attackers(eligible[static_cast<size_t>(blocker_choice)], attackers);
+            auto legal_attackers =
+                determine_blockable_attackers(eligible[static_cast<size_t>(blocker_choice)], attackers);
             printf("Select attacker for %s to block:\n", cd.name.c_str());
             for (size_t i = 0; i < legal_attackers.size(); i++) {
                 auto &acd = global_coordinator.GetComponent<CardData>(legal_attackers[i]);
@@ -542,7 +547,8 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
             }
 
             std::vector<ActionCategory> blk_tgt_cats(legal_attackers.size(), ActionCategory::OTHER_CHOICE);
-            int attacker_choice = InputLogger::instance().get_logged_input(cur_game.turn, blk_tgt_cats, legal_attackers);
+            int attacker_choice =
+                InputLogger::instance().get_logged_input(cur_game.turn, blk_tgt_cats, legal_attackers);
 
             if (attacker_choice >= 0 && attacker_choice < static_cast<int>(legal_attackers.size())) {
                 cr.is_blocking = true;
