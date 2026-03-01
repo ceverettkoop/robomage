@@ -125,7 +125,7 @@ Entity parse_card_script(std::string path) {
             size_t slash = cost_str.find('/', rf);
             size_t close = cost_str.find('>', rf);
             ac.return_to_hand_count = std::stoi(cost_str.substr(rf + 7, slash - rf - 7));
-            ac.return_to_hand_subtype = cost_str.substr(slash + 1, close - slash - 1);
+            ac.return_to_hand_type = cost_str.substr(slash + 1, close - slash - 1);
         }
         card.alt_cost = ac;
         break;

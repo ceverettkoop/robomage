@@ -454,7 +454,7 @@ static bool can_afford_alt(const AltCost& alt_cost, Zone::Ownership priority_pla
 
     if (alt_cost.return_to_hand_count > 0) {
         int matching = 0;
-        const std::string& sub = alt_cost.return_to_hand_subtype;
+        const std::string& sub = alt_cost.return_to_hand_type;
         for (auto e : orderer->mEntities) {
             if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
             auto& perm = global_coordinator.GetComponent<Permanent>(e);

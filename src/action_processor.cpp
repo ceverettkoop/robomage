@@ -186,8 +186,12 @@ static void pay_alternate_cost(const LegalAction &action, Game &game, std::share
     Entity caster_entity = (caster == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
     auto &player = global_coordinator.GetComponent<Player>(caster_entity);
 
-    player.life_total -= card_data.alt_cost.life_cost;
-    printf("%s pays %d life\n", player_name(caster).c_str(), card_data.alt_cost.life_cost);
+    //life
+    if(card_data.alt_cost.life_cost != 0){
+        player.life_total -= card_data.alt_cost.life_cost;
+        printf("%s pays %d life\n", player_name(caster).c_str(), card_data.alt_cost.life_cost);
+    }
+    //pitch cards, currently just looks for blue, TODO make generalizable
     for (int i = 0; i < card_data.alt_cost.exile_blue_from_hand; i++) {
         std::vector<ActionCategory> exile_cats;
         std::vector<Entity> exile_entities;
@@ -207,18 +211,20 @@ static void pay_alternate_cost(const LegalAction &action, Game &game, std::share
             orderer->add_to_zone(false, exiled, Zone::EXILE);
         }
     }
+    //Is generalizable by type? I think
     for (int i = 0; i < card_data.alt_cost.return_to_hand_count; i++) {
         std::vector<ActionCategory> rth_cats;
         std::vector<Entity> rth_entities;
-        const std::string &sub = card_data.alt_cost.return_to_hand_subtype;
+        const std::string &type = card_data.alt_cost.return_to_hand_type;
         for (auto e : orderer->mEntities) {
             if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
             auto &perm = global_coordinator.GetComponent<Permanent>(e);
             if (perm.controller != caster) continue;
             auto &ecd = global_coordinator.GetComponent<CardData>(e);
             bool matches = false;
+            //can be subtype, type or supertype
             for (auto &t : ecd.types) {
-                if (t.kind == SUBTYPE && t.name == sub) {
+                if (t.name == type) {
                     matches = true;
                     break;
                 }

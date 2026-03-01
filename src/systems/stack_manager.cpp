@@ -52,7 +52,6 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
     // Check if it's a spell card (not just an ability)
     if (global_coordinator.entity_has_component<CardData>(top_entity)) {
         auto &card_data = global_coordinator.GetComponent<CardData>(top_entity);
-
         // Check if it's a permanent type (Creature, Artifact, Enchantment, Planeswalker)
         bool is_permanent = false;
         for (auto &type : card_data.types) {
@@ -68,7 +67,7 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
             orderer->add_to_zone(false, top_entity, Zone::BATTLEFIELD);
             auto &top_zone = global_coordinator.GetComponent<Zone>(top_entity);
             top_zone.controller = top_zone.owner;
-            //TODO ETB event here
+            // TODO ETB event here
             printf("%s enters the battlefield\n", card_data.name.c_str());
         } else {
             // Instant/Sorcery - resolve the Ability component added at cast time, then go to graveyard
@@ -77,11 +76,12 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
                 global_coordinator.RemoveComponent<Ability>(top_entity);
             }
             global_coordinator.RemoveComponent<Spell>(top_entity);
-            //TODO handle flashback etc
+            // TODO handle flashback etc
             orderer->add_to_zone(false, top_entity, Zone::GRAVEYARD);
         }
-    } else if (global_coordinator.entity_has_component<Ability>(top_entity)) {
-        // It's a standalone ability (not attached to a card on the stack)
+    }
+    // CASE FOR ABILITY ON STACK; not spell
+    else if (global_coordinator.entity_has_component<Ability>(top_entity)) {
         auto &ability = global_coordinator.GetComponent<Ability>(top_entity);
         ability.resolve(orderer);
 

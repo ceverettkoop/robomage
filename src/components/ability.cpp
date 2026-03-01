@@ -13,6 +13,7 @@
 #include "../input_logger.h"
 #include "../mana_system.h"
 #include "../systems/orderer.h"
+#include "../error.h"
 #include "creature.h"
 #include "damage.h"
 #include "permanent.h"
@@ -300,7 +301,59 @@ static bool run_unless_loop(size_t cost, Zone::Ownership controller,
     }
 }
 
+void Ability::fizzle(std::shared_ptr<Orderer> orderer){
+    //stack manager present behavior moves everything to graveyard or destroys it
+    //so for now this is a stub
+    printf("%s fizzles\n", this->category.c_str());
+    return;
+
+}
+
+bool Ability::is_target_valid() const {
+    const std::string &vt = valid_tgts;
+
+    if (target_type == "Spell") {
+        return global_coordinator.entity_has_component<Zone>(target)
+            && global_coordinator.GetComponent<Zone>(target).location == Zone::STACK
+            && global_coordinator.entity_has_component<Spell>(target);
+    }
+
+    bool any          = (vt == "Any");
+    bool inc_players   = any || vt.find("Player")   != std::string::npos;
+    bool inc_creatures = any || vt.find("Creature") != std::string::npos;
+    bool inc_lands     = any || vt.find("Land")     != std::string::npos;
+    bool nonbasic_only = vt.find("nonBasic")        != std::string::npos;
+
+    if (inc_players && global_coordinator.entity_has_component<Player>(target)) return true;
+
+    if (!global_coordinator.entity_has_component<Zone>(target)) return false;
+    auto &tz = global_coordinator.GetComponent<Zone>(target);
+    if (tz.location != Zone::BATTLEFIELD) return false;
+    if (!global_coordinator.entity_has_component<Permanent>(target)) return false;
+
+    if (inc_creatures && global_coordinator.entity_has_component<Creature>(target)) return true;
+
+    if (inc_lands && global_coordinator.entity_has_component<CardData>(target)) {
+        auto &tcd = global_coordinator.GetComponent<CardData>(target);
+        bool is_land = false, is_basic = false;
+        for (auto &t : tcd.types) {
+            if (t.kind == TYPE && t.name == "Land") is_land = true;
+            if (t.kind == SUPERTYPE && t.name == "Basic") is_basic = true;
+        }
+        if (is_land && (!nonbasic_only || !is_basic)) return true;
+    }
+
+    return false;
+}
+
 void Ability::resolve(std::shared_ptr<Orderer> orderer) {
+    //check if target is still valid!!!
+    if(valid_tgts != "N_A"){
+        if(!is_target_valid()){
+            fizzle(orderer);
+            return; //subabilities do not fire; TODO revisit this in light of cards e.g. k-command
+        }
+    }
     printf("Resolving ability (category: %s, amount: %zu)\n", category.c_str(), amount);
 
     if (category == "GainLife") {
@@ -330,7 +383,7 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
             if (deal_damage(source, target, amount)) {
                 printf("Dealt %zu damage to creature\n", amount);
             } else {
-                printf("Invalid target\n");
+                non_fatal_error("Damage should have fizzled prior to this");
             }
         }
     } else if (category == "Destroy") {
@@ -363,14 +416,17 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
                     printf("%s is countered\n", name.c_str());
                 }
             } else {
-                printf("Counter: target is no longer on the stack\n");
+                non_fatal_error("Counter should have fizzled prior to this");
             }
         } else {
-            printf("Counter: target is no longer on the stack\n");
+            non_fatal_error("Counter should have fizzled prior to this");
         }
     } else if (category == "Surveil") {
         resolve_surveil(orderer);
-        return;  // skip subabilities loop
+        //DONT SKIP SUBABILITIES
+
+    //THIS BLOCK IS ALL SPECIFIC TO DELVER
+    //TODO MAKE THIS GENERALIZABLE AND MOVE TO ITS OWN FUNCTION
     } else if (category == "PeekAndReveal") {
         auto& src_perm = global_coordinator.GetComponent<Permanent>(source);
         Zone::Ownership controller = src_perm.controller;
@@ -390,7 +446,6 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
             printf("Library is empty — nothing to peek.\n");
             return;
         }
-
         auto& top_cd = global_coordinator.GetComponent<CardData>(top_card);
         printf("Top card of library: %s\n", top_cd.name.c_str());
         printf("0: Don't reveal | 1: Reveal\n");

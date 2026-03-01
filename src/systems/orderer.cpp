@@ -1,7 +1,6 @@
 #include "orderer.h"
 
 #include <algorithm>
-#include <memory>
 #include <numeric>
 
 #include "../card_db.h"

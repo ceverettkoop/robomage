@@ -53,6 +53,8 @@ private:
     void resolve_destroy(std::shared_ptr<Orderer> orderer);
     void resolve_rearrange_top_of_library(std::shared_ptr<Orderer> orderer);
     void resolve_surveil(std::shared_ptr<Orderer> orderer);
+    bool is_target_valid() const;
+    void fizzle(std::shared_ptr<Orderer> orderer);
 
 };
 
