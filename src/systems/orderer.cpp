@@ -205,7 +205,17 @@ void Orderer::do_london_mulligan() {
         if (choice == 0) {
             keeping = true;
         } else {
+            // limit
             mulligans_a++;
+            if (mulligans_a == 7) {
+                keeping = true;
+                break;
+            }
+            // Penalise the model for excessive mulliganing (3rd mull and beyond).
+            if (mulligans_a >= 3 && InputLogger::instance().is_machine_mode()) {
+                printf("MULLIGAN_PENALTY: A\n");
+                fflush(stdout);
+            }
             auto hand = this->get_hand(Zone::PLAYER_A);
             for (auto card : hand) {
                 this->add_to_zone(false, card, Zone::LIBRARY);
@@ -226,6 +236,16 @@ void Orderer::do_london_mulligan() {
             keeping = true;
         } else {
             mulligans_b++;
+            // limit
+            if (mulligans_b == 7) {
+                keeping = true;
+                break;
+            }
+            // Penalise the model for excessive mulliganing (3rd mull and beyond).
+            if (mulligans_b >= 3 && InputLogger::instance().is_machine_mode()) {
+                printf("MULLIGAN_PENALTY: B\n");
+                fflush(stdout);
+            }
             auto hand = this->get_hand(Zone::PLAYER_B);
             for (auto card : hand) {
                 this->add_to_zone(false, card, Zone::LIBRARY);

@@ -193,6 +193,15 @@ class RoboMageEnv(gym.Env):
                     shaping_b -= 0.1
                 continue
 
+            # Shaping signal: excessive mulligan (3rd and beyond = -0.1 each)
+            if line.startswith("MULLIGAN_PENALTY: "):
+                side = line[18:].strip()
+                if side == "A":
+                    shaping_a -= 0.1
+                elif side == "B":
+                    shaping_b -= 0.1
+                continue
+
             if line.startswith("QUERY: "):
                 parts = line[7:].split()
                 self._num_choices = min(int(parts[0]), MAX_ACTIONS)

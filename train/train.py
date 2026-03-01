@@ -41,12 +41,12 @@ from stable_baselines3.common.monitor import Monitor
 
 
 class WinTallyCallback(BaseCallback):
-    """Prints a running tally of model vs scripted agent wins after each rollout."""
+    """Prints win rate since the last rollout after each rollout."""
 
     def __init__(self):
         super().__init__()
-        self.model_wins = 0
-        self.scripted_wins = 0
+        self._interval_model_wins = 0
+        self._interval_scripted_wins = 0
 
     def _on_step(self) -> bool:
         for info in self.locals["infos"]:
@@ -54,18 +54,20 @@ class WinTallyCallback(BaseCallback):
                 continue
             r = info["episode"]["r"]
             if r > 0:
-                self.model_wins += 1
+                self._interval_model_wins += 1
             elif r < 0:
-                self.scripted_wins += 1
+                self._interval_scripted_wins += 1
         return True
 
     def _on_rollout_end(self) -> None:
-        total = self.model_wins + self.scripted_wins
+        total = self._interval_model_wins + self._interval_scripted_wins
         if total == 0:
             return
-        pct = 100.0 * self.model_wins / total
-        print(f"[tally] model wins: {self.model_wins}  scripted wins: {self.scripted_wins}  "
+        pct = 100.0 * self._interval_model_wins / total
+        print(f"[tally] model wins: {self._interval_model_wins}  scripted wins: {self._interval_scripted_wins}  "
               f"total: {total}  model win rate: {pct:.1f}%")
+        self._interval_model_wins = 0
+        self._interval_scripted_wins = 0
 
 
 CHECKPOINT_DIR = "checkpoints"
