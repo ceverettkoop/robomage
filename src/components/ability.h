@@ -38,6 +38,7 @@ struct Ability{
     Zone::ZoneValue destination = Zone::BATTLEFIELD; // Destination$ — zone to move card to
     uint32_t trigger_on = 0;             // EventId that fires this ability; 0 = not event-triggered
     bool trigger_self_excluded = false;  // true when ValidCard$ has .Other — won't trigger for the source itself
+    bool trigger_valid_player_is_controller = false;  // true when ValidPlayer$ You
     bool mandatory = false;              // Mandatory$ True — player must choose; suppresses fail-to-find when zone non-empty
     bool may_shuffle = false;            // MayShuffle$ True — player may optionally shuffle after
     size_t unless_generic_cost = 0;      // UnlessCost$ N — target controller pays {N} to prevent counter

@@ -1,6 +1,7 @@
 #ifndef CARDDATA_H
 #define CARDDATA_H
 
+#include <memory>
 #include <string>
 #include <set>
 #include <cstdint>
@@ -30,6 +31,7 @@ struct CardData{
     std::vector<Ability> abilities;
     AltCost alt_cost;
     std::vector<std::string> keywords;
+    std::shared_ptr<CardData> backside;  // populated for DFCs; nullptr for normal cards
 };
 
 #endif /* CARD_H */

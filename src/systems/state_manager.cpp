@@ -337,6 +337,15 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                 // "another" check: skip if the entering entity is the source itself
                 if (ab.trigger_self_excluded && ev.HasParam(Params::ENTITY) &&
                     ev.GetParam<Entity>(Params::ENTITY) == entity) continue;
+                // Don't fire front-face triggers on a transformed permanent
+                if (perm.transformed) continue;
+                // ValidPlayer$ You: only fire when the active player is the permanent's controller
+                if (ab.trigger_valid_player_is_controller && ev.HasParam(Params::PLAYER)) {
+                    Entity event_player = ev.GetParam<Entity>(Params::PLAYER);
+                    Entity ctrl_entity = (perm.controller == Zone::PLAYER_A)
+                                         ? game.player_a_entity : game.player_b_entity;
+                    if (event_player != ctrl_entity) continue;
+                }
 
                 // Push the triggered ability onto the stack as a standalone entity
                 Entity trigger_entity = global_coordinator.CreateEntity();

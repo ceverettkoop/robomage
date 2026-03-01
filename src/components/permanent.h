@@ -13,6 +13,7 @@ struct Permanent {
     std::vector<Ability> abilities;
     Zone::Ownership controller = Zone::UNKNOWN;
     size_t timestamp_entered_battlefield = 0;  // For ordering simultaneous ETBs
+    bool transformed = false;  // true when DFC is showing its back face
 };
 
 #endif /* PERMANENT_H */

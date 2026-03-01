@@ -13,6 +13,7 @@
 #include "../input_logger.h"
 #include "../mana_system.h"
 #include "../systems/orderer.h"
+#include "creature.h"
 #include "damage.h"
 #include "permanent.h"
 #include "player.h"
@@ -367,6 +368,65 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
         } else {
             printf("Counter: target is no longer on the stack\n");
         }
+    } else if (category == "PeekAndReveal") {
+        auto& src_perm = global_coordinator.GetComponent<Permanent>(source);
+        Zone::Ownership controller = src_perm.controller;
+
+        // Find top card of controller's library
+        Entity top_card = 0;
+        for (auto e : orderer->mEntities) {
+            if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+            auto& z = global_coordinator.GetComponent<Zone>(e);
+            if (z.location == Zone::LIBRARY && z.owner == controller && z.distance_from_top == 0) {
+                top_card = e;
+                break;
+            }
+        }
+
+        if (top_card == 0) {
+            printf("Library is empty — nothing to peek.\n");
+            return;
+        }
+
+        auto& top_cd = global_coordinator.GetComponent<CardData>(top_card);
+        printf("Top card of library: %s\n", top_cd.name.c_str());
+        printf("0: Don't reveal | 1: Reveal\n");
+
+        std::vector<ActionCategory> cats = {ActionCategory::OTHER_CHOICE, ActionCategory::OTHER_CHOICE};
+        std::vector<Entity> ents = {Entity(0), Entity(0)};
+        int reveal_choice = InputLogger::instance().get_logged_input(cur_game.turn, cats, ents);
+
+        if (reveal_choice == 1) {
+            printf("Revealed: %s\n", top_cd.name.c_str());
+            bool is_instant_or_sorcery = false;
+            for (auto& t : top_cd.types) {
+                if (t.kind == TYPE && (t.name == "Instant" || t.name == "Sorcery")) {
+                    is_instant_or_sorcery = true;
+                    break;
+                }
+            }
+            if (is_instant_or_sorcery && global_coordinator.entity_has_component<CardData>(source)) {
+                auto& src_cd = global_coordinator.GetComponent<CardData>(source);
+                if (src_cd.backside && !src_perm.transformed) {
+                    src_perm.transformed = true;
+                    if (global_coordinator.entity_has_component<Creature>(source))
+                        global_coordinator.RemoveComponent<Creature>(source);
+                    if (global_coordinator.entity_has_component<Damage>(source))
+                        global_coordinator.RemoveComponent<Damage>(source);
+                    Creature back_creature;
+                    back_creature.power      = src_cd.backside->power;
+                    back_creature.toughness  = src_cd.backside->toughness;
+                    back_creature.keywords   = src_cd.backside->keywords;
+                    global_coordinator.AddComponent(source, back_creature);
+                    Damage dmg;
+                    dmg.damage_counters = 0;
+                    global_coordinator.AddComponent(source, dmg);
+                    printf("%s transforms into %s!\n",
+                           src_cd.name.c_str(), src_cd.backside->name.c_str());
+                }
+            }
+        }
+        return;  // transform logic handled inline; skip subabilities loop
     }
 
     //if there are subabilities, resolve them in sequence

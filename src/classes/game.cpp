@@ -79,6 +79,11 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     }
 
                     cur_step = UPKEEP;
+                    {
+                        Event upkeep_event(Events::UPKEEP_BEGAN);
+                        upkeep_event.SetParam(Params::PLAYER, active_player_entity);
+                        global_coordinator.SendEvent(upkeep_event);
+                    }
                     break;
                 case UPKEEP:
                     cur_step = DRAW;

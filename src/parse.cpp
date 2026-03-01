@@ -65,23 +65,38 @@ Entity parse_card_script(std::string path) {
         if (stream.eof()) break;
         script_data += c;
     }
+
+    // Split at ALTERNATE marker for DFCs
+    std::string front_script = script_data;
+    std::string back_script;
+    size_t alt_pos = script_data.find("\nALTERNATE");
+    if (alt_pos != std::string::npos) {
+        front_script = script_data.substr(0, alt_pos);
+        size_t back_start = alt_pos + 1;  // skip initial '\n'
+        back_start = script_data.find('\n', back_start);  // skip "ALTERNATE" line
+        if (back_start != std::string::npos) {
+            back_start++;
+            back_script = script_data.substr(back_start);
+        }
+    }
+
     CardData card;
-    card.name = value_from_script(script_data, "Name");
+    card.name = value_from_script(front_script, "Name");
     card.uid = name_to_uid(card.name);
-    card.mana_cost = parse_mana_cost(value_from_script(script_data, "ManaCost"));
-    card.types = parse_types(value_from_script(script_data, "Types"));
+    card.mana_cost = parse_mana_cost(value_from_script(front_script, "ManaCost"));
+    card.types = parse_types(value_from_script(front_script, "Types"));
     // TODO optimize
-    card.power = parse_power(value_from_script(script_data, "PT"));
-    card.toughness = parse_toughness(value_from_script(script_data, "PT"));
+    card.power = parse_power(value_from_script(front_script, "PT"));
+    card.toughness = parse_toughness(value_from_script(front_script, "PT"));
     // parse ability templates; entities are only created when abilities go on the stack
-    auto svars = parse_svars(script_data);
-    card.abilities = parse_abilities(multi_values_from_script(script_data, "A"), card.types, svars);
+    auto svars = parse_svars(front_script);
+    card.abilities = parse_abilities(multi_values_from_script(front_script, "A"), card.types, svars);
     // parse triggered abilities from T: lines
-    for (auto &trig : parse_triggered_abilities(script_data, svars))
+    for (auto &trig : parse_triggered_abilities(front_script, svars))
         card.abilities.push_back(trig);
 
     // Parse S: lines for alternate costs
-    for (auto& line : multi_values_from_script(script_data, "S")) {
+    for (auto& line : multi_values_from_script(front_script, "S")) {
         if (line.find("AlternativeCost") == std::string::npos) continue;
         size_t cost_pos = line.find("Cost$");
         if (cost_pos == std::string::npos) continue;
@@ -115,7 +130,7 @@ Entity parse_card_script(std::string path) {
     }
 
     // Parse K: keyword lines
-    for (auto& kw_line : multi_values_from_script(script_data, "K")) {
+    for (auto& kw_line : multi_values_from_script(front_script, "K")) {
         size_t pos = 0;
         while (pos < kw_line.size()) {
             size_t comma = kw_line.find(',', pos);
@@ -127,6 +142,28 @@ Entity parse_card_script(std::string path) {
                 card.keywords.push_back(kw.substr(s, e - s + 1));
             pos = (comma < kw_line.size()) ? comma + 1 : comma;
         }
+    }
+
+    // Parse backside for DFCs
+    if (!back_script.empty()) {
+        auto backside = std::make_shared<CardData>();
+        backside->name = value_from_script(back_script, "Name");
+        backside->uid  = name_to_uid(backside->name);
+        backside->types = parse_types(value_from_script(back_script, "Types"));
+        backside->power     = parse_power(value_from_script(back_script, "PT"));
+        backside->toughness = parse_toughness(value_from_script(back_script, "PT"));
+        for (auto& kw_line : multi_values_from_script(back_script, "K")) {
+            size_t pos = 0;
+            while (pos < kw_line.size()) {
+                size_t comma = kw_line.find(',', pos);
+                if (comma == std::string::npos) comma = kw_line.size();
+                std::string kw = kw_line.substr(pos, comma - pos);
+                size_t s = kw.find_first_not_of(" "), e = kw.find_last_not_of(" ");
+                if (s != std::string::npos) backside->keywords.push_back(kw.substr(s, e - s + 1));
+                pos = (comma < kw_line.size()) ? comma + 1 : comma;
+            }
+        }
+        card.backside = backside;
     }
 
     // no error handling here
@@ -486,6 +523,9 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
     bool mode_changes_zone = false;
     bool dest_is_battlefield = false;
     bool valid_card_creature = false;
+    bool mode_is_phase = false;
+    bool phase_is_upkeep = false;
+    bool valid_player_is_you = false;
 
     // Walk pipe-delimited params
     size_t param_pos = 0;
@@ -512,6 +552,11 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
 
             if (key == "Mode") {
                 if (value == "ChangesZone") mode_changes_zone = true;
+                else if (value == "Phase") mode_is_phase = true;
+            } else if (key == "Phase") {
+                if (value == "Upkeep") phase_is_upkeep = true;
+            } else if (key == "ValidPlayer") {
+                if (value == "You") valid_player_is_you = true;
             } else if (key == "Destination") {
                 if (value == "Battlefield") dest_is_battlefield = true;
             } else if (key == "ValidCard") {
@@ -538,6 +583,11 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
         ability.trigger_on = Events::CREATURE_ENTERED;
     }
 
+    if (mode_is_phase && phase_is_upkeep) {
+        ability.trigger_on = Events::UPKEEP_BEGAN;
+        ability.trigger_valid_player_is_controller = valid_player_is_you;
+    }
+
     // Resolve effect from Execute$ SVar
     if (!execute_svar.empty()) {
         auto it = svars.find(execute_svar);
@@ -545,6 +595,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
             Ability effect = parse_svar_ability(it->second, Ability::TRIGGERED);
             ability.category = effect.category;
             ability.amount = effect.amount;
+            ability.subabilities = effect.subabilities;
         }
     }
 

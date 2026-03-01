@@ -200,8 +200,10 @@ void print_battlefield(std::shared_ptr<Orderer> orderer) {
                 found_any = true;
                 auto& card_data = global_coordinator.GetComponent<CardData>(entity);
                 auto& permanent = global_coordinator.GetComponent<Permanent>(entity);
+                const std::string& display_name = (permanent.transformed && card_data.backside)
+                                                   ? card_data.backside->name : card_data.name;
 
-                printf("  %s", card_data.name.c_str());
+                printf("  %s", display_name.c_str());
                 if (permanent.is_tapped) printf(" (TAPPED)");
                 if (permanent.has_summoning_sickness) printf(" (SICK)");
 
