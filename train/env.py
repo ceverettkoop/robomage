@@ -486,10 +486,11 @@ def scripted_action(obs: np.ndarray, num_choices: int) -> int:
 
 
 class ModelVsScriptedEnv(gym.Env):
-    """Wraps RoboMageEnv so the model always plays as Player A.
+    """Wraps RoboMageEnv so the model plays against a scripted agent.
 
-    Player B is controlled by the scripted_action rule-based agent instead of
-    a random agent, providing a more meaningful training opponent.
+    Each episode the model is randomly assigned to Player A or B; the scripted
+    agent takes the other side.  Reward is negated when the model plays as B so
+    it is always from the model's perspective (+1 win, -1 loss).
     """
 
     def __init__(self, binary_path: str = BINARY, render_mode=None):
@@ -498,10 +499,12 @@ class ModelVsScriptedEnv(gym.Env):
         self.observation_space = self._env.observation_space
         self.action_space = self._env.action_space
         self.render_mode = render_mode
+        self._training_is_a = True
 
     def reset(self, *, seed=None, options=None):
+        self._training_is_a = bool(np.random.random() < 0.5)
         obs, info = self._env.reset(seed=seed, options=options)
-        obs, _reward, terminated, truncated, info = self._skip_b_turns(
+        obs, _reward, terminated, truncated, info = self._skip_opponent_turns(
             obs, 0.0, False, False, info
         )
         return obs, info
@@ -509,14 +512,16 @@ class ModelVsScriptedEnv(gym.Env):
     def step(self, action: int):
         obs, reward, terminated, truncated, info = self._env.step(action)
         if not (terminated or truncated):
-            obs, reward, terminated, truncated, info = self._skip_b_turns(
+            obs, reward, terminated, truncated, info = self._skip_opponent_turns(
                 obs, reward, terminated, truncated, info
             )
+        if not self._training_is_a:
+            reward = -reward
         return obs, reward, terminated, truncated, info
 
-    def _skip_b_turns(self, obs, reward, terminated, truncated, info):
-        """Resolve consecutive Player B turns with the scripted agent."""
-        while not (terminated or truncated) and obs[31] <= 0.5:
+    def _skip_opponent_turns(self, obs, reward, terminated, truncated, info):
+        """Resolve consecutive opponent turns with the scripted agent."""
+        while not (terminated or truncated) and (obs[31] > 0.5) != self._training_is_a:
             action = scripted_action(obs, self._env._num_choices)
             obs, reward, terminated, truncated, info = self._env.step(action)
         return obs, reward, terminated, truncated, info

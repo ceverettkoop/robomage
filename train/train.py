@@ -21,9 +21,8 @@ Usage:
 
 import argparse
 import os
-import random as _random
 
-from env import RoboMageEnv, ModelVsScriptedEnv, SelfPlayEnv, scripted_action, mirror_obs, OBS_SIZE, STATE_SIZE, MAX_ACTIONS, ACTION_CATEGORY_MAX, BINARY
+from env import RoboMageEnv, ModelVsScriptedEnv, SelfPlayEnv, scripted_action, OBS_SIZE, STATE_SIZE, MAX_ACTIONS, ACTION_CATEGORY_MAX, BINARY
 from extractor import CardGameExtractor
 
 try:
@@ -42,12 +41,12 @@ from stable_baselines3.common.monitor import Monitor
 
 
 class WinTallyCallback(BaseCallback):
-    """Prints a running tally of Player A vs Player B wins after each rollout."""
+    """Prints a running tally of model vs scripted agent wins after each rollout."""
 
     def __init__(self):
         super().__init__()
-        self.a_wins = 0
-        self.b_wins = 0
+        self.model_wins = 0
+        self.scripted_wins = 0
 
     def _on_step(self) -> bool:
         for info in self.locals["infos"]:
@@ -55,18 +54,18 @@ class WinTallyCallback(BaseCallback):
                 continue
             r = info["episode"]["r"]
             if r > 0:
-                self.a_wins += 1
+                self.model_wins += 1
             elif r < 0:
-                self.b_wins += 1
+                self.scripted_wins += 1
         return True
 
     def _on_rollout_end(self) -> None:
-        total = self.a_wins + self.b_wins
+        total = self.model_wins + self.scripted_wins
         if total == 0:
             return
-        pct = 100.0 * self.a_wins / total
-        print(f"[tally] A wins: {self.a_wins}  B wins: {self.b_wins}  "
-              f"total: {total}  A win rate: {pct:.1f}%")
+        pct = 100.0 * self.model_wins / total
+        print(f"[tally] model wins: {self.model_wins}  scripted wins: {self.scripted_wins}  "
+              f"total: {total}  model win rate: {pct:.1f}%")
 
 
 CHECKPOINT_DIR = "checkpoints"
@@ -166,69 +165,88 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
     vec_env.close()
 
 
-def _play_model_vs_random(binary_path: str, model, verbose: bool = False) -> float:
-    """Play one game: model controls Player A, random agent controls Player B.
-    Returns +1.0 if model wins, -1.0 if random wins.
-    obs[31] is 1.0 when Player A has priority, 0.0 when Player B does.
+def baseline(binary_path: str, model_path: str, n_games: int = 100):
+    """Evaluate win rate of the model against the scripted agent.
+
+    The model is randomly assigned to Player A or B each game (matching training
+    conditions).  Reward is from the model's perspective so wins/losses are
+    counted directly.
     """
-    env = RoboMageEnv(binary_path=binary_path, render_mode="human" if verbose else None)
+    import numpy as np
+    model = MaskablePPO.load(model_path)
+    env = ModelVsScriptedEnv(binary_path=binary_path)
+    if USE_MASKABLE:
+        env = ActionMasker(env, lambda e: e.action_masks())
+    wins = losses = draws = 0
+
+    for i in range(n_games):
+        obs, _ = env.reset()
+        done = False
+        total_reward = 0.0
+        while not done:
+            masks = env.action_masks() if USE_MASKABLE else None
+            action, _ = model.predict(obs, action_masks=masks, deterministic=True)
+            obs, reward, terminated, truncated, _ = env.step(int(action))
+            total_reward += reward
+            done = terminated or truncated
+        if total_reward > 0:
+            wins += 1
+        elif total_reward < 0:
+            losses += 1
+        else:
+            draws += 1
+        print(f"\rGame {i+1}/{n_games}  W:{wins} L:{losses} D:{draws}", end="", flush=True)
+
+    env.close()
+    print()
+    print(f"vs scripted over {n_games} games: {wins}W / {losses}L / {draws}D "
+          f"({100 * wins / n_games:.1f}% win rate)")
+
+
+def observe(binary_path: str, model_path: str):
+    """Watch the model play one game against the scripted agent.
+
+    The model is randomly assigned to Player A or B.  Both players' decisions
+    are printed so the full game flow is visible.
+    """
+    import numpy as np
+    model = MaskablePPO.load(model_path)
+    env = RoboMageEnv(binary_path=binary_path, render_mode="human")
     obs, _ = env.reset()
+
+    model_is_a = bool(np.random.random() < 0.5)
+    model_side = "A" if model_is_a else "B"
+    scripted_side = "B" if model_is_a else "A"
+    print(f"=== Model (Player {model_side}) vs Scripted (Player {scripted_side}) ===\n")
+
     done = False
     total_reward = 0.0
-
     while not done:
         a_has_priority = obs[31] > 0.5
+        model_has_priority = a_has_priority if model_is_a else not a_has_priority
+        cur_side = "A" if a_has_priority else "B"
         num_choices = env._num_choices
 
-        if a_has_priority:
+        if model_has_priority:
             masks = env.action_masks() if USE_MASKABLE else None
             action, _ = model.predict(obs, action_masks=masks, deterministic=True)
             action = int(action)
-            if verbose:
-                print(f"  [Model/A]  action {action} of {num_choices}")
+            print(f"  [Model/{cur_side}]    action {action} of {num_choices}")
         else:
-            action = _random.randint(0, num_choices - 1)
-            if verbose:
-                print(f"  [Random/B] action {action} of {num_choices}")
+            action = scripted_action(obs, num_choices)
+            print(f"  [Scripted/{cur_side}] action {action} of {num_choices}")
 
         obs, reward, terminated, truncated, _ = env.step(action)
         total_reward += reward
         done = terminated or truncated
 
     env.close()
-    return total_reward
-
-
-def baseline(binary_path: str, model_path: str, n_games: int = 100):
-    """Evaluate win rate of the model against a random opponent."""
-    model = MaskablePPO.load(model_path)
-    wins = losses = draws = 0
-
-    for i in range(n_games):
-        result = _play_model_vs_random(binary_path, model)
-        if result > 0:
-            wins += 1
-        elif result < 0:
-            losses += 1
-        else:
-            draws += 1
-        print(f"\rGame {i+1}/{n_games}  W:{wins} L:{losses} D:{draws}", end="", flush=True)
-
     print()
-    print(f"vs random over {n_games} games: {wins}W / {losses}L / {draws}D "
-          f"({100 * wins / n_games:.1f}% win rate)")
-
-
-def observe(binary_path: str, model_path: str):
-    """Watch the model play one game against a random opponent."""
-    model = MaskablePPO.load(model_path)
-    print("=== Model (Player A) vs Random (Player B) ===\n")
-    result = _play_model_vs_random(binary_path, model, verbose=True)
-    print()
-    if result > 0:
-        print("=== Model (A) wins ===")
-    elif result < 0:
-        print("=== Random (B) wins ===")
+    model_reward = total_reward if model_is_a else -total_reward
+    if model_reward > 0:
+        print(f"=== Model ({model_side}) wins ===")
+    elif model_reward < 0:
+        print(f"=== Scripted ({scripted_side}) wins ===")
     else:
         print("=== Draw ===")
 
@@ -315,9 +333,9 @@ if __name__ == "__main__":
     parser.add_argument("--total-timesteps", type=int, default=TOTAL_TIMESTEPS)
     parser.add_argument("--eval", default=None, help="Self-play evaluation (note: always ~50%%)")
     parser.add_argument("--eval-games", type=int, default=100)
-    parser.add_argument("--baseline", default=None, help="Evaluate model .zip vs random agent")
+    parser.add_argument("--baseline", default=None, help="Evaluate model .zip vs scripted agent")
     parser.add_argument("--baseline-games", type=int, default=100)
-    parser.add_argument("--observe", default=None, help="Watch model .zip play one game vs random")
+    parser.add_argument("--observe", default=None, help="Watch model .zip play one game vs scripted agent")
     parser.add_argument("--watch-scripted", action="store_true", help="Watch one game: scripted A vs scripted B")
     parser.add_argument("--tally", action="store_true", help="Print A/B win tally after each rollout")
     parser.add_argument("--self-play", action="store_true",
