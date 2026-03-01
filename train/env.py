@@ -214,7 +214,6 @@ class RoboMageEnv(gym.Env):
                 hand_costs = hand_onehots.reshape(MAX_HAND_SLOTS, N_CARD_TYPES) @ _CARD_COST_MATRIX  # (10,7)
 
                 # Battlefield activated ability costs (creature slots only; 40-float format)
-                _BF_CARD_OFF = 8  # offset of card one-hot within each 40-float slot
                 bf_ability_costs = np.zeros((20, _N_COST_FEATS), dtype=np.float32)
                 for slot in range(20):
                     base = 33 + slot * 40 + _BF_CARD_OFF
@@ -296,12 +295,17 @@ _CARD_COLORED_COSTS = {
 _BF_START         = 33
 _BF_SLOT_SIZE     = 40   # 8 status floats + 32 card one-hot
 _BF_A_SLOTS       = 10   # Player A occupies slots 0-9
+_BF_CARD_OFF      = 8    # offset of card one-hot within each 40-float permanent slot
 # Status offsets within a slot
 _OFF_POWER        = 0
 _OFF_TOUGHNESS    = 1
 _OFF_IS_TAPPED    = 2
 _OFF_IS_ATTACKING = 3
 _OFF_HAS_SICKNESS = 5
+
+# Vocab indices used for targeting decisions (mirror src/card_vocab.h)
+_WASTELAND_VOCAB_IDX = 10
+_BASIC_LAND_IDS      = frozenset({0, 19})  # Mountain(0), Island(19)
 
 
 def _all_eligible_creatures_attacking(obs: np.ndarray, slot_start: int) -> bool:
@@ -317,6 +321,17 @@ def _all_eligible_creatures_attacking(obs: np.ndarray, slot_start: int) -> bool:
         if obs[base + _OFF_IS_ATTACKING] <= 0.5:
             return False  # eligible but not yet attacking
     return any_eligible
+
+
+def _opponent_has_nonbasic_land(obs: np.ndarray) -> bool:
+    """Return True if Player A has at least one nonbasic land (land slots 0-9)."""
+    for slot in range(10):
+        base = _LAND_START + slot * _BF_SLOT_SIZE
+        card_vec = obs[base + _BF_CARD_OFF : base + _BF_CARD_OFF + N_CARD_TYPES]
+        idx = int(np.argmax(card_vec))
+        if card_vec[idx] > 0.5 and idx not in _BASIC_LAND_IDS:
+            return True
+    return False
 
 
 def scripted_action(obs: np.ndarray, num_choices: int) -> int:
@@ -373,9 +388,10 @@ def scripted_action(obs: np.ndarray, num_choices: int) -> int:
         if c == _CAT_CONF_ATK:
             return i
 
-    # 4. Select target — action 0 is the first legal target
-    # TODO fix this bc we will be wasting our own lands and countering our own spells
-# it's fine for burn spells as long as this model is always player B
+    # 4. Select target — action 0 is the first legal target.
+    #    Entity ID ordering means A's cards always appear before B's in target lists,
+    #    so action 0 = opponent player (burn), opponent spell (counterspell), or
+    #    opponent nonbasic land (Wasteland — only activated if one exists; see step 8).
     for i, c in enumerate(cats):
         if c == _CAT_TARGET:
             return i
@@ -399,10 +415,16 @@ def scripted_action(obs: np.ndarray, num_choices: int) -> int:
     # 8. Activate non-mana abilities during main phase:
     #    - Fetch lands (Scalding Tarn, Misty Rainforest, Polluted Delta, Wooded Foothills):
     #      tap + pay 1 life + sacrifice → search for land (resolved by step 5 above)
-    #    - Wasteland: tap + sacrifice → destroy target nonbasic land (target chosen in step 4)
+    #    - Wasteland: tap + sacrifice → destroy target nonbasic land (target chosen in step 4).
+    #      Guard: only activate if the opponent actually has a nonbasic land to target,
+    #      otherwise action 0 for SELECT_TARGET would be our own land.
     if in_main_phase:
+        card_ids = obs[STATE_SIZE + MAX_ACTIONS : STATE_SIZE + MAX_ACTIONS + num_choices]
         for i, c in enumerate(cats):
             if c == _CAT_ACTIVATE:
+                cid = round(float(card_ids[i]) * N_CARD_TYPES)
+                if cid == _WASTELAND_VOCAB_IDX and not _opponent_has_nonbasic_land(obs):
+                    continue  # no opponent nonbasic land to target — skip
                 return i
 
     # 9. Tap mana during main phases only, choosing the color the hand needs most
