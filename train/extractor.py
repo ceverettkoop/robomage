@@ -5,17 +5,23 @@ Splits the flat observation into sections that are each encoded by a shared-weig
 MLP, then aggregated via mean+max pooling.  The policy head receives a fixed-size
 representation that is invariant to card ordering and slot position.
 
+State is always from the PRIORITY PLAYER'S perspective ("self").
+
 Index layout must stay in sync with src/machine_io.h:
-  obs[0:33]         global context (player stats, step, stack)
-  obs[33:833]       20 creature slots × 40 floats  (8 status + 32 card one-hot)
-  obs[833:1633]     20 land slots    × 40 floats  (same format; status fields 0 for lands)
-  obs[1633:1798]     5 stack slots   × 33 floats  (controller_is_A + 32 card one-hot)
-  obs[1798:2438]    20 graveyard slots × 32 floats (32 card one-hot)
-  obs[2438:2758]    10 hand slots    × 32 floats  (32 card one-hot)
-  obs[2758:2790]    32 action-category features   (appended by env.py)
-  obs[2790:2822]    32 action card-ID features    (appended by env.py)
-  obs[2822:2892]    70 hand cast-cost features    (10 slots × 7 cost feats)
-  obs[2892:3032]   140 BF ability-cost features   (20 slots × 7 cost feats)
+  obs[0:33]          global context (player stats, step, stack)
+  obs[33:1953]       48 creature slots × 40 floats  (8 status + 32 card one-hot)
+                       slots 0-23: self; slots 24-47: opponent
+  obs[1953:3873]     48 land slots    × 40 floats  (same format; status fields 0 for lands)
+                       slots 0-23: self; slots 24-47: opponent
+  obs[3873:4269]     12 stack slots   × 33 floats  (controller_is_self + 32 card one-hot)
+  obs[4269:8365]    128 graveyard slots × 32 floats (32 card one-hot)
+                       slots 0-63: self; slots 64-127: opponent
+  obs[8365:8685]     10 hand slots    × 32 floats  (32 card one-hot)
+  obs[8685:8717]     32 action-category features   (appended by env.py)
+  obs[8717:8749]     32 action card-ID features    (appended by env.py)
+  obs[8749:8781]     32 action controller_is_self  (appended by env.py)
+  obs[8781:8851]     70 hand cast-cost features    (10 slots × 7 cost feats)
+  obs[8851:9187]    336 BF ability-cost features   (48 slots × 7 cost feats)
 """
 
 import torch
@@ -26,32 +32,32 @@ from stable_baselines3.common.torch_layers import BaseFeaturesExtractor
 # ── Layout constants (mirror src/machine_io.h) ──────────────────────────────
 _GLOBAL_SIZE     = 33
 
-_CREATURE_SLOTS  = 20
+_CREATURE_SLOTS  = 48   # 24 self + 24 opponent
 _PERM_SLOT_SIZE  = 40   # 8 status floats + 32 card one-hot
 
-_LAND_SLOTS      = 20
+_LAND_SLOTS      = 48   # 24 self + 24 opponent
 # land slots use the same 40-float format as creature slots
 
-_STACK_SLOTS     = 5
-_STACK_SLOT_SIZE = 33   # controller_is_A(1) + card one-hot(32)
+_STACK_SLOTS     = 12
+_STACK_SLOT_SIZE = 33   # controller_is_self(1) + card one-hot(32)
 
-_GY_SLOTS        = 20   # 10 per player
+_GY_SLOTS        = 128  # 64 self + 64 opponent
 _GY_SLOT_SIZE    = 32   # card one-hot only
 
 _HAND_SLOTS      = 10
 _HAND_SLOT_SIZE  = 32   # card one-hot only
 
 _CREATURE_START = _GLOBAL_SIZE                                       # 33
-_CREATURE_END   = _CREATURE_START + _CREATURE_SLOTS * _PERM_SLOT_SIZE  # 833
-_LAND_START     = _CREATURE_END                                      # 833
-_LAND_END       = _LAND_START + _LAND_SLOTS * _PERM_SLOT_SIZE          # 1633
-_STACK_START    = _LAND_END                                          # 1633
-_STACK_END      = _STACK_START + _STACK_SLOTS * _STACK_SLOT_SIZE       # 1798
-_GY_START       = _STACK_END                                         # 1798
-_GY_END         = _GY_START + _GY_SLOTS * _GY_SLOT_SIZE                # 2438
-_HAND_START     = _GY_END                                            # 2438
-_HAND_END       = _HAND_START + _HAND_SLOTS * _HAND_SLOT_SIZE          # 2758
-# obs[2758:] = action metadata + cost features appended by env.py
+_CREATURE_END   = _CREATURE_START + _CREATURE_SLOTS * _PERM_SLOT_SIZE  # 1953
+_LAND_START     = _CREATURE_END                                      # 1953
+_LAND_END       = _LAND_START + _LAND_SLOTS * _PERM_SLOT_SIZE          # 3873
+_STACK_START    = _LAND_END                                          # 3873
+_STACK_END      = _STACK_START + _STACK_SLOTS * _STACK_SLOT_SIZE       # 4269
+_GY_START       = _STACK_END                                         # 4269
+_GY_END         = _GY_START + _GY_SLOTS * _GY_SLOT_SIZE                # 8365
+_HAND_START     = _GY_END                                            # 8365
+_HAND_END       = _HAND_START + _HAND_SLOTS * _HAND_SLOT_SIZE          # 8685
+# obs[8685:] = action metadata + cost features appended by env.py
 
 
 class CardGameExtractor(BaseFeaturesExtractor):

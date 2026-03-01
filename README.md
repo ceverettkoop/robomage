@@ -31,13 +31,16 @@ In interactive mode, numbers select a choice (every choice is logged), z passes 
 In `--machine` mode the game communicates over stdio. Each decision emits one line:
 
 ```
-QUERY: <num_choices> <f0>...<f2757> <cat0>...<catN-1> <id0>...<idN-1>
+QUERY: <num_choices> <f0>...<f8684> <cat0>...<catN-1> <id0>...<idN-1> <ctrl0>...<ctrlN-1>
 ```
 
 - `num_choices` — number of legal actions at this step
-- `f0..f2757` — 2758-float state vector (see `src/machine_io.h` for layout)
+- `f0..f8684` — 8685-float state vector (see `src/machine_io.h` for layout)
 - `cat0..catN-1` — `ActionCategory` integer per legal action (0–21)
 - `id0..idN-1` — card vocab index float per action (`vocab_idx / N_CARD_TYPES`, or `-0.03125` for non-card entities)
+- `ctrl0..ctrlN-1` — controller flag per action: `1.0` if the entity is controlled by the priority player, `0.0` if controlled by the opponent, `-0.03125` for non-entity actions
+
+The state vector is always emitted from the **priority player's perspective** ("self"): self's permanents occupy slots 0–23, opponent's occupy slots 24–47; player stats at indices 0–8 are self's.
 
 The driver writes a single integer back on stdin; the game continues. All non-QUERY stdout is narrative and can be ignored.
 
@@ -71,7 +74,7 @@ Trains for 1,000,000 steps across 7 parallel game processes. Player B is a rule-
 train/.venv/bin/python train/train.py --self-play --load checkpoints/robomage_final.zip
 ```
 
-Each episode the model is randomly assigned to Player A or B. The opponent is a randomly sampled frozen checkpoint from `train/checkpoints/`. Observations are symmetry-normalised (`mirror_obs`) so the model always sees itself as Player A regardless of which side it actually controls. The opponent is reloaded every 10 episodes. Falls back to random play until the first checkpoint exists.
+Each episode the model is randomly assigned to Player A or B. The opponent is a randomly sampled frozen checkpoint from `train/checkpoints/`. Because the game emits observations from the priority player's perspective, no mirroring is needed — both sides always see themselves in slots 0–23. The opponent is reloaded every 10 episodes. Falls back to random play until the first checkpoint exists.
 
 #### Mixed training (self-play + scripted anchor)
 
@@ -101,10 +104,10 @@ Mixes scripted-agent envs into the self-play pool. With `N_ENVS=7` and `--script
 ### Architecture
 
 **`train/env.py`**
-- `RoboMageEnv` — gymnasium wrapper; spawns the game as a subprocess, parses QUERY lines into 3032-float observations, provides `action_masks()`.
+- `RoboMageEnv` — gymnasium wrapper; spawns the game as a subprocess, parses QUERY lines into 9187-float observations, provides `action_masks()`.
 - `ModelVsScriptedEnv` — wraps `RoboMageEnv`; model always plays Player A, scripted agent handles Player B.
-- `SelfPlayEnv` — wraps `RoboMageEnv`; randomly assigns the model to A or B each episode, loads a frozen opponent from the checkpoint pool, and symmetry-normalises observations via `mirror_obs()`.
-- `mirror_obs(obs)` — flips an observation A↔B: swaps player stats, slot blocks (creatures/lands/graveyard 0–9 ↔ 10–19), `controller_is_A` flags, and the bf_ability_costs block, so the model always perceives itself as Player A.
+- `SelfPlayEnv` — wraps `RoboMageEnv`; randomly assigns the model to A or B each episode, loads a frozen opponent from the checkpoint pool. No mirroring needed — the game already emits from each player's own perspective.
+- `mirror_obs(obs)` — legacy utility to flip an observation A↔B (no longer used in training; retained for offline analysis).
 - `scripted_action(obs, n)` — rule-based agent used as Player B during phase 1 training and as an optional anchor during self-play.
 
 **`train/extractor.py`** — `CardGameExtractor`: per-entity shared-weight MLP encoder (permanent slots, stack, graveyard, hand) with mean+max pooling. Produces a fixed-size representation independent of card ordering.

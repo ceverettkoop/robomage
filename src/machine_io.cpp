@@ -49,19 +49,31 @@ std::vector<float> serialize_state() {
     std::vector<float> state;
     state.reserve(static_cast<size_t>(STATE_SIZE));
 
+    // ── Perspective locals ────────────────────────────────────────────────────
+    // State is always emitted from the priority player's perspective ("self").
+    Zone::Ownership priority_owner = cur_game.player_a_has_priority
+        ? Zone::PLAYER_A : Zone::PLAYER_B;
+    Zone::Ownership opponent_owner = cur_game.player_a_has_priority
+        ? Zone::PLAYER_B : Zone::PLAYER_A;
+    Entity priority_entity = cur_game.player_a_has_priority
+        ? cur_game.player_a_entity : cur_game.player_b_entity;
+    Entity opponent_entity_id = cur_game.player_a_has_priority
+        ? cur_game.player_b_entity : cur_game.player_a_entity;
+
     // ── Header: player states, step, game flags ───────────────────────────────
 
-    // Player states (9 floats each)
-    push_player_state(state, cur_game.player_a_entity, Zone::PLAYER_A);
-    push_player_state(state, cur_game.player_b_entity, Zone::PLAYER_B);
+    // Self first, opponent second (9 floats each)
+    push_player_state(state, priority_entity, priority_owner);
+    push_player_state(state, opponent_entity_id, opponent_owner);
 
     // Step one-hot (12 floats)
     for (int i = 0; i < 12; i++) {
         state.push_back((cur_game.cur_step == static_cast<Step>(i)) ? 1.0f : 0.0f);
     }
 
-    // Active player, priority player (2 floats)
-    state.push_back(cur_game.player_a_turn ? 1.0f : 0.0f);
+    // [30]: 1.0 if priority player is the active player (self's turn)
+    state.push_back((cur_game.player_a_turn == cur_game.player_a_has_priority) ? 1.0f : 0.0f);
+    // [31]: 1.0 if self is Player A
     state.push_back(cur_game.player_a_has_priority ? 1.0f : 0.0f);
 
     // Stack size (1 float)
@@ -90,9 +102,9 @@ std::vector<float> serialize_state() {
         for (int i = 0; i < PERM_SLOT_SIZE; i++) state.push_back(0.0f);
     };
 
-    // ── Creature slots [33-832] ───────────────────────────────────────────────
+    // ── Creature slots [33-1952] ──────────────────────────────────────────────
 
-    std::vector<Entity> a_creatures, b_creatures;
+    std::vector<Entity> self_creatures, opp_creatures;
     for (Entity e = 0; e < MAX_ENTITIES; ++e) {
         if (!global_coordinator.entity_has_component<Creature>(e)) continue;
         if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
@@ -100,13 +112,13 @@ std::vector<float> serialize_state() {
         auto& zone = global_coordinator.GetComponent<Zone>(e);
         if (zone.location != Zone::BATTLEFIELD) continue;
         auto& perm = global_coordinator.GetComponent<Permanent>(e);
-        if (perm.controller == Zone::PLAYER_A)
-            a_creatures.push_back(e);
+        if (perm.controller == priority_owner)
+            self_creatures.push_back(e);
         else
-            b_creatures.push_back(e);
+            opp_creatures.push_back(e);
     }
-    std::sort(a_creatures.begin(), a_creatures.end());
-    std::sort(b_creatures.begin(), b_creatures.end());
+    std::sort(self_creatures.begin(), self_creatures.end());
+    std::sort(opp_creatures.begin(), opp_creatures.end());
 
     auto push_creature_slot = [&](Entity e) {
         auto& cr   = global_coordinator.GetComponent<Creature>(e);
@@ -121,27 +133,27 @@ std::vector<float> serialize_state() {
         state.push_back(cr.is_blocking ? 1.0f : 0.0f);
         state.push_back(perm.has_summoning_sickness ? 1.0f : 0.0f);
         state.push_back(dmg);
-        state.push_back((perm.controller == Zone::PLAYER_A) ? 1.0f : 0.0f);
+        state.push_back((perm.controller == priority_owner) ? 1.0f : 0.0f);
         push_card_id(e);
     };
 
     for (int i = 0; i < MAX_BATTLEFIELD_SLOTS; i++) {
-        if (i < static_cast<int>(a_creatures.size()))
-            push_creature_slot(a_creatures[static_cast<size_t>(i)]);
+        if (i < static_cast<int>(self_creatures.size()))
+            push_creature_slot(self_creatures[static_cast<size_t>(i)]);
         else
             push_empty_perm_slot();
     }
     for (int i = 0; i < MAX_BATTLEFIELD_SLOTS; i++) {
-        if (i < static_cast<int>(b_creatures.size()))
-            push_creature_slot(b_creatures[static_cast<size_t>(i)]);
+        if (i < static_cast<int>(opp_creatures.size()))
+            push_creature_slot(opp_creatures[static_cast<size_t>(i)]);
         else
             push_empty_perm_slot();
     }
 
-    // ── Land slots [833-1632] ─────────────────────────────────────────────────
+    // ── Land slots [1953-3872] ────────────────────────────────────────────────
     // Same 40-float format as creature slots; power/toughness/combat/damage = 0.
 
-    std::vector<Entity> a_lands, b_lands;
+    std::vector<Entity> self_lands, opp_lands;
     for (Entity e = 0; e < MAX_ENTITIES; ++e) {
         if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
         if (!global_coordinator.entity_has_component<Zone>(e)) continue;
@@ -149,13 +161,13 @@ std::vector<float> serialize_state() {
         auto& zone = global_coordinator.GetComponent<Zone>(e);
         if (zone.location != Zone::BATTLEFIELD) continue;
         auto& perm = global_coordinator.GetComponent<Permanent>(e);
-        if (perm.controller == Zone::PLAYER_A)
-            a_lands.push_back(e);
+        if (perm.controller == priority_owner)
+            self_lands.push_back(e);
         else
-            b_lands.push_back(e);
+            opp_lands.push_back(e);
     }
-    std::sort(a_lands.begin(), a_lands.end());
-    std::sort(b_lands.begin(), b_lands.end());
+    std::sort(self_lands.begin(), self_lands.end());
+    std::sort(opp_lands.begin(), opp_lands.end());
 
     auto push_land_slot = [&](Entity e) {
         auto& perm = global_coordinator.GetComponent<Permanent>(e);
@@ -166,25 +178,25 @@ std::vector<float> serialize_state() {
         state.push_back(0.0f);  // is_blocking (unused)
         state.push_back(0.0f);  // has_summoning_sickness (unused)
         state.push_back(0.0f);  // damage (unused)
-        state.push_back((perm.controller == Zone::PLAYER_A) ? 1.0f : 0.0f);
+        state.push_back((perm.controller == priority_owner) ? 1.0f : 0.0f);
         push_card_id(e);
     };
 
     for (int i = 0; i < MAX_LAND_SLOTS; i++) {
-        if (i < static_cast<int>(a_lands.size()))
-            push_land_slot(a_lands[static_cast<size_t>(i)]);
+        if (i < static_cast<int>(self_lands.size()))
+            push_land_slot(self_lands[static_cast<size_t>(i)]);
         else
             push_empty_perm_slot();
     }
     for (int i = 0; i < MAX_LAND_SLOTS; i++) {
-        if (i < static_cast<int>(b_lands.size()))
-            push_land_slot(b_lands[static_cast<size_t>(i)]);
+        if (i < static_cast<int>(opp_lands.size()))
+            push_land_slot(opp_lands[static_cast<size_t>(i)]);
         else
             push_empty_perm_slot();
     }
 
-    // ── Stack slots [1633-1797] ───────────────────────────────────────────────
-    // 5 slots × 33 floats: controller_is_A(1) + card_id one-hot(32).
+    // ── Stack slots [3873-4268] ───────────────────────────────────────────────
+    // 12 slots × 33 floats: controller_is_self(1) + card_id one-hot(32).
     // Ordered by descending entity ID (higher ID = more recently added = nearer top).
     // Standalone activated-ability entities (no CardData) use their source permanent's
     // card identity.
@@ -201,7 +213,7 @@ std::vector<float> serialize_state() {
         if (i < static_cast<int>(stack_ents.size())) {
             Entity e = stack_ents[static_cast<size_t>(i)];
             auto& z  = global_coordinator.GetComponent<Zone>(e);
-            state.push_back((z.owner == Zone::PLAYER_A) ? 1.0f : 0.0f);
+            state.push_back((z.owner == priority_owner) ? 1.0f : 0.0f);
 
             // Activated ability entities have no CardData; resolve via Ability::source
             Entity card_e = e;
@@ -220,33 +232,31 @@ std::vector<float> serialize_state() {
         }
     }
 
-    // ── Graveyard slots [1798-2437] ───────────────────────────────────────────
-    // 10 slots per player × 32 floats (card_id one-hot only).
+    // ── Graveyard slots [4269-8364] ───────────────────────────────────────────
+    // 64 slots per player × 32 floats (card_id one-hot only).
     // Sorted by entity ID for stability; most recently added card has highest ID.
 
-    std::vector<Entity> a_gy, b_gy;
+    std::vector<Entity> self_gy, opp_gy;
     for (Entity e = 0; e < MAX_ENTITIES; ++e) {
         if (!global_coordinator.entity_has_component<Zone>(e)) continue;
         auto& z = global_coordinator.GetComponent<Zone>(e);
         if (z.location != Zone::GRAVEYARD) continue;
-        if (z.owner == Zone::PLAYER_A)      a_gy.push_back(e);
-        else if (z.owner == Zone::PLAYER_B) b_gy.push_back(e);
+        if (z.owner == priority_owner)      self_gy.push_back(e);
+        else if (z.owner == opponent_owner) opp_gy.push_back(e);
     }
-    std::sort(a_gy.begin(), a_gy.end());
-    std::sort(b_gy.begin(), b_gy.end());
+    std::sort(self_gy.begin(), self_gy.end());
+    std::sort(opp_gy.begin(), opp_gy.end());
 
     for (int i = 0; i < MAX_GY_SLOTS; i++) {
-        if (i < static_cast<int>(a_gy.size())) push_card_id(a_gy[static_cast<size_t>(i)]);
+        if (i < static_cast<int>(self_gy.size())) push_card_id(self_gy[static_cast<size_t>(i)]);
         else for (int j = 0; j < GY_SLOT_SIZE; j++) state.push_back(0.0f);
     }
     for (int i = 0; i < MAX_GY_SLOTS; i++) {
-        if (i < static_cast<int>(b_gy.size())) push_card_id(b_gy[static_cast<size_t>(i)]);
+        if (i < static_cast<int>(opp_gy.size())) push_card_id(opp_gy[static_cast<size_t>(i)]);
         else for (int j = 0; j < GY_SLOT_SIZE; j++) state.push_back(0.0f);
     }
 
-    // ── Priority player's hand [2438-2757] ────────────────────────────────────
-    Zone::Ownership priority_owner =
-        cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
+    // ── Priority player's hand [8365-8684] ────────────────────────────────────
     std::vector<Entity> hand_cards;
     for (Entity e = 0; e < MAX_ENTITIES; ++e) {
         if (!global_coordinator.entity_has_component<Zone>(e)) continue;

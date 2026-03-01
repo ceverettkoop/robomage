@@ -5,6 +5,8 @@
 
 #include "card_vocab.h"
 #include "components/carddata.h"
+#include "components/permanent.h"
+#include "components/zone.h"
 #include "ecs/coordinator.h"
 #include "error.h"
 #include "classes/game.h"
@@ -12,6 +14,7 @@
 
 extern std::string RESOURCE_DIR;
 extern Coordinator global_coordinator;
+extern Game cur_game;
 
 //helper migrated from cli.cpp
 #define PASS_TURN_CMD (-2)
@@ -106,9 +109,11 @@ int InputLogger::get_logged_input(size_t cur_turn,
 
     if (machine_mode) {
         // Emit QUERY line:
-        //   "QUERY: <num_choices> <f0>...<f1152> <cat0>...<catN-1> <id0>...<idN-1>"
+        //   "QUERY: <num_choices> <f0>...<f8684> <cat0>...<catN-1> <id0>...<idN-1> <ctrl0>...<ctrlN-1>"
         // State vector is followed by one ActionCategory int per legal action,
-        // then one normalized card vocab index float per action slot.
+        // then one normalized card vocab index float per action slot,
+        // then one controller_is_self float per action slot (1.0 = self, 0.0 = opp,
+        // -0.03125 = null sentinel for non-entity actions).
         std::vector<float> state = serialize_state();
         printf("QUERY: %d", num_choices);
         for (float f : state) printf(" %.4f", f);
@@ -122,6 +127,28 @@ int InputLogger::get_logged_input(size_t cur_turn,
                     global_coordinator.GetComponent<CardData>(entities[ui]).name);
             }
             printf(" %.4f", idx / static_cast<float>(N_CARD_TYPES));
+        }
+        // Emit controller_is_self per action
+        Zone::Ownership priority_owner = cur_game.player_a_has_priority
+            ? Zone::PLAYER_A : Zone::PLAYER_B;
+        Entity priority_ent = cur_game.player_a_has_priority
+            ? cur_game.player_a_entity : cur_game.player_b_entity;
+        const float ctrl_null = -1.0f / static_cast<float>(N_CARD_TYPES);
+        for (int i = 0; i < num_choices; i++) {
+            float ctrl = ctrl_null;
+            auto ui = static_cast<size_t>(i);
+            if (ui < entities.size() && entities[ui] != 0) {
+                Entity ent = entities[ui];
+                if (global_coordinator.entity_has_component<Permanent>(ent)) {
+                    ctrl = (global_coordinator.GetComponent<Permanent>(ent).controller
+                            == priority_owner) ? 1.0f : 0.0f;
+                } else if (ent == priority_ent) {
+                    ctrl = 1.0f;   // self player entity
+                } else if (ent == cur_game.player_a_entity || ent == cur_game.player_b_entity) {
+                    ctrl = 0.0f;   // opponent player entity
+                }
+            }
+            printf(" %.4f", ctrl);
         }
         printf("\n");
         fflush(stdout);

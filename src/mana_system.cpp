@@ -73,6 +73,7 @@ void add_mana(Zone::Ownership player_owner, Colors mana_color, size_t amount) {
 }
 
 void empty_mana_pool(Zone::Ownership player_owner) {
+    //IF THIS IS CALLED AND MODEL IS CONTROLLING, AND PLAYER HAS ANY MANA, NEGATIVE REWARD NEEDS TO BE SENT TO RL
     Entity player_entity = get_player_entity(player_owner);
     auto &player = global_coordinator.GetComponent<Player>(player_entity);
     player.mana.clear();

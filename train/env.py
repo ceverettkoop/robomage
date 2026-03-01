@@ -4,7 +4,7 @@ RoboMage gymnasium environment.
 The game runs as a subprocess with --machine mode. On each decision point it
 emits a QUERY line to stdout:
 
-    QUERY: <num_choices> <f0> <f1> ... <f1152>
+    QUERY: <num_choices> <f0> ... <f8684> <cat0>...<catN-1> <id0>...<idN-1> <ctrl0>...<ctrlN-1>
 
 The environment sends back a single integer on stdin.
 
@@ -22,8 +22,11 @@ For mandatory-choice loops (declare attackers / blockers):
 
 Observation space
 -----------------
-1153-float state vector + 32 action-category floats + 32 action card-ID floats
-+ 70 hand cost floats + 140 battlefield ability cost floats = 1427 total.
+State is always emitted from the PRIORITY PLAYER'S perspective ("self").
+
+8685-float state vector + 32 action-category floats + 32 action card-ID floats
++ 32 action controller_is_self floats + 70 hand cost floats
++ 336 battlefield ability cost floats = 9187 total.
 See src/machine_io.h for the full state layout.
 
 Reward
@@ -50,20 +53,21 @@ try:
 except ImportError:
     from train.card_costs import _CARD_COST_MATRIX, _CARD_ABILITY_COST_MATRIX, N_CARD_TYPES, _N_COST_FEATS
 
-STATE_SIZE = 2758
+STATE_SIZE = 8685
 MAX_ACTIONS = 32         # practical upper bound on num_choices per step
 ACTION_CATEGORY_MAX = 21 # highest ActionCategory enum value (SHUFFLE)
 _ACTION_CARD_ID_NULL = -1.0 / N_CARD_TYPES  # -0.03125 — null sentinel for non-card slots
+_ACTION_CTRL_NULL    = -1.0 / N_CARD_TYPES  # -0.03125 — null sentinel for non-entity actions
 MAX_HAND_SLOTS = 10
 _HAND_COST_FEATS  = MAX_HAND_SLOTS * _N_COST_FEATS  # 10 * 7 = 70
-_BF_ABILITY_FEATS = 20 * _N_COST_FEATS              # 20 * 7 = 140
-OBS_SIZE = STATE_SIZE + MAX_ACTIONS + MAX_ACTIONS + _HAND_COST_FEATS + _BF_ABILITY_FEATS  # 3032
+_BF_ABILITY_FEATS = 48 * _N_COST_FEATS              # 48 * 7 = 336
+OBS_SIZE = STATE_SIZE + 3 * MAX_ACTIONS + _HAND_COST_FEATS + _BF_ABILITY_FEATS  # 9187
 
 # ── State layout offsets (mirror src/machine_io.h) ───────────────────────────
-_LAND_START   = 833    # [833-1632]  land slots  (20 × 40)
-_STACK_START  = 1633   # [1633-1797] stack slots (5 × 33)
-_GY_START     = 1798   # [1798-2437] graveyard   (20 × 32)
-_HAND_START   = 2438   # [2438-2757] hand        (10 × 32)
+_LAND_START   = 33 + 48 * 40   # 1953: land slots  (48 × 40)
+_STACK_START  = 1953 + 48 * 40  # 3873: stack slots (12 × 33)
+_GY_START     = 3873 + 12 * 33  # 4269: graveyard   (128 × 32)
+_HAND_START   = 4269 + 128 * 32 # 8365: hand        (10 × 32)
 _REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BINARY = os.path.join(_REPO_ROOT, "bin", "robomage")
 BIN_DIR = os.path.join(_REPO_ROOT, "bin")  # game must be run from here for resource lookup
@@ -204,6 +208,13 @@ class RoboMageEnv(gym.Env):
                 for i, v in enumerate(id_raw):
                     card_id_arr[i] = float(v)
 
+                # Parse per-action controller_is_self floats (after card ID floats)
+                ctrl_start = id_start + self._num_choices
+                ctrl_raw = parts[ctrl_start : ctrl_start + self._num_choices]
+                ctrl_arr = np.full(MAX_ACTIONS, _ACTION_CTRL_NULL, dtype=np.float32)
+                for i, v in enumerate(ctrl_raw):
+                    ctrl_arr[i] = float(v)
+
                 # Parse state vector (first STATE_SIZE floats after the count)
                 state_floats = parts[1 : STATE_SIZE + 1]
                 state_arr = np.array(state_floats, dtype=np.float32)
@@ -214,13 +225,13 @@ class RoboMageEnv(gym.Env):
                 hand_onehots = state_arr[_HAND_START:_HAND_START + MAX_HAND_SLOTS * N_CARD_TYPES]
                 hand_costs = hand_onehots.reshape(MAX_HAND_SLOTS, N_CARD_TYPES) @ _CARD_COST_MATRIX  # (10,7)
 
-                # Battlefield activated ability costs (creature slots only; 40-float format)
-                bf_ability_costs = np.zeros((20, _N_COST_FEATS), dtype=np.float32)
-                for slot in range(20):
+                # Battlefield activated ability costs (all 48 creature slots; 40-float format)
+                bf_ability_costs = np.zeros((48, _N_COST_FEATS), dtype=np.float32)
+                for slot in range(48):
                     base = 33 + slot * 40 + _BF_CARD_OFF
                     bf_ability_costs[slot] = state_arr[base:base + N_CARD_TYPES] @ _CARD_ABILITY_COST_MATRIX
 
-                self._obs = np.concatenate([state_arr, cat_arr, card_id_arr,
+                self._obs = np.concatenate([state_arr, cat_arr, card_id_arr, ctrl_arr,
                                             hand_costs.flatten(),
                                             bf_ability_costs.flatten()])
                 break
@@ -298,13 +309,14 @@ _CARD_COLORED_COSTS = {
 # ── Battlefield layout (mirror machine_io.h) ────────────────────────────────
 _BF_START         = 33
 _BF_SLOT_SIZE     = 40   # 8 status floats + 32 card one-hot
-_BF_A_SLOTS       = 10   # Player A occupies slots 0-9
+_BF_A_SLOTS       = 24   # self occupies slots 0-23
 _BF_CARD_OFF      = 8    # offset of card one-hot within each 40-float permanent slot
-_CTRL_OFF         = 7    # offset of controller_is_A within a permanent slot
-_STACK_SLOT_SIZE  = 33   # controller_is_A(1) + card one-hot(32)
+_CTRL_OFF         = 7    # offset of controller_is_self within a permanent slot
+_STACK_SLOT_SIZE  = 33   # controller_is_self(1) + card one-hot(32)
 _GY_SLOT_SIZE     = N_CARD_TYPES  # 32 — graveyard slots are just card one-hots
+_GY_A_SLOTS       = 64   # self occupies GY slots 0-63
 # Start of bf_ability_costs block in the full obs vector
-_BF_COST_START    = STATE_SIZE + 2 * MAX_ACTIONS + _HAND_COST_FEATS  # 2892
+_BF_COST_START    = STATE_SIZE + 3 * MAX_ACTIONS + _HAND_COST_FEATS  # 8851
 # Status offsets within a slot
 _OFF_POWER        = 0
 _OFF_TOUGHNESS    = 1
@@ -333,8 +345,8 @@ def _all_eligible_creatures_attacking(obs: np.ndarray, slot_start: int) -> bool:
 
 
 def _opponent_has_nonbasic_land(obs: np.ndarray) -> bool:
-    """Return True if Player A has at least one nonbasic land (land slots 0-9)."""
-    for slot in range(10):
+    """Return True if opponent has at least one nonbasic land (land slots 24-47)."""
+    for slot in range(24, 48):
         base = _LAND_START + slot * _BF_SLOT_SIZE
         card_vec = obs[base + _BF_CARD_OFF : base + _BF_CARD_OFF + N_CARD_TYPES]
         idx = int(np.argmax(card_vec))
@@ -381,9 +393,8 @@ def scripted_action(obs: np.ndarray, num_choices: int) -> int:
     #    The game re-offers already-attacking creatures as SEL_ATK (for deselection), so we
     #    must check the battlefield state rather than blindly picking SEL_ATK every time.
     if any(c == _CAT_SEL_ATK for c in cats):
-        # Player A occupies slots 0-9, Player B occupies slots 10-19
-        slot_start = 0 if obs[31] > 0.5 else _BF_A_SLOTS
-        if _all_eligible_creatures_attacking(obs, slot_start):
+        # Perspective-normalized: self always occupies slots 0-23
+        if _all_eligible_creatures_attacking(obs, 0):
             for i, c in enumerate(cats):
                 if c == _CAT_CONF_ATK:
                     return i
@@ -428,7 +439,8 @@ def scripted_action(obs: np.ndarray, num_choices: int) -> int:
     #      Guard: only activate if the opponent actually has a nonbasic land to target,
     #      otherwise action 0 for SELECT_TARGET would be our own land.
     if in_main_phase:
-        card_ids = obs[STATE_SIZE + MAX_ACTIONS : STATE_SIZE + MAX_ACTIONS + num_choices]
+        # card_id_arr is at STATE_SIZE + MAX_ACTIONS in the obs vector
+        card_ids = obs[STATE_SIZE + MAX_ACTIONS : STATE_SIZE + 2 * MAX_ACTIONS]
         for i, c in enumerate(cats):
             if c == _CAT_ACTIVATE:
                 cid = round(float(card_ids[i]) * N_CARD_TYPES)
@@ -439,7 +451,8 @@ def scripted_action(obs: np.ndarray, num_choices: int) -> int:
     # 9. Tap mana during main phases only, choosing the color the hand needs most
     if in_main_phase and any(c in _MANA_CATS for c in cats):
         # Determine what colored mana is still needed for cards in hand
-        pool_start = 3 if obs[31] > 0.5 else 12
+        # Perspective-normalized: self's mana pool is always at [3-8]
+        pool_start = 3
         pool = [int(round(obs[pool_start + i] * 10)) for i in range(6)]
         needed = [0] * 6
         for slot in range(10):
@@ -518,14 +531,16 @@ class ModelVsScriptedEnv(gym.Env):
 def mirror_obs(obs: np.ndarray) -> np.ndarray:
     """Flip the observation from Player A's perspective to Player B's (or vice versa).
 
+    NOTE: This function is no longer invoked in normal training flow.
+    Perspective normalization is now handled by the game engine (serialize_state
+    always emits from the priority player's view).  mirror_obs is retained for
+    legacy compatibility and offline analysis only.
+
     After mirroring:
       - obs[31] = 1.0 always means "I (the calling player) have priority"
-      - controller_is_A = 1.0 always marks the calling player's permanents
-      - slots 0-9 always contain the calling player's creatures / lands / graveyard
-
-    This lets the same policy generalise across both sides: the model can be
-    trained always "as Player A" and the mirroring handles perspective when it
-    actually controls Player B.
+      - controller_is_self = 1.0 always marks the calling player's permanents
+      - slots 0-23 always contain the calling player's creatures / lands
+      - slots 0-63 always contain the calling player's graveyard
 
     Only the first STATE_SIZE floats and the bf_ability_costs block (derived from
     creature slot ordering) are modified.  Action categories, action card-IDs, and
@@ -540,7 +555,7 @@ def mirror_obs(obs: np.ndarray) -> np.ndarray:
     m[30] = 1.0 - obs[30]
     m[31] = 1.0 - obs[31]
 
-    # 3. Swap creature slots 0-9 ↔ 10-19 and flip controller_is_A in all 20 slots
+    # 3. Swap creature slots 0-23 ↔ 24-47 and flip controller_is_self in all 48 slots
     for i in range(_BF_A_SLOTS):
         a = _BF_START + i * _BF_SLOT_SIZE
         b = _BF_START + (i + _BF_A_SLOTS) * _BF_SLOT_SIZE
@@ -549,7 +564,7 @@ def mirror_obs(obs: np.ndarray) -> np.ndarray:
         m[a + _CTRL_OFF] = 1.0 - obs[b + _CTRL_OFF]
         m[b + _CTRL_OFF] = 1.0 - obs[a + _CTRL_OFF]
 
-    # 4. Swap land slots 0-9 ↔ 10-19 and flip controller_is_A
+    # 4. Swap land slots 0-23 ↔ 24-47 and flip controller_is_self
     for i in range(_BF_A_SLOTS):
         a = _LAND_START + i * _BF_SLOT_SIZE
         b = _LAND_START + (i + _BF_A_SLOTS) * _BF_SLOT_SIZE
@@ -558,15 +573,15 @@ def mirror_obs(obs: np.ndarray) -> np.ndarray:
         m[a + _CTRL_OFF] = 1.0 - obs[b + _CTRL_OFF]
         m[b + _CTRL_OFF] = 1.0 - obs[a + _CTRL_OFF]
 
-    # 5. Flip controller_is_A in stack slots (first float of each 33-float slot)
-    for i in range(5):
+    # 5. Flip controller_is_self in stack slots (first float of each 33-float slot)
+    for i in range(12):
         base = _STACK_START + i * _STACK_SLOT_SIZE
         m[base] = 1.0 - obs[base]
 
-    # 6. Swap graveyard slots 0-9 ↔ 10-19 (pure card one-hots, no flag to flip)
-    for i in range(_BF_A_SLOTS):
+    # 6. Swap graveyard slots 0-63 ↔ 64-127 (pure card one-hots, no flag to flip)
+    for i in range(_GY_A_SLOTS):
         a = _GY_START + i * _GY_SLOT_SIZE
-        b = _GY_START + (i + _BF_A_SLOTS) * _GY_SLOT_SIZE
+        b = _GY_START + (i + _GY_A_SLOTS) * _GY_SLOT_SIZE
         m[a:a + _GY_SLOT_SIZE] = obs[b:b + _GY_SLOT_SIZE]
         m[b:b + _GY_SLOT_SIZE] = obs[a:a + _GY_SLOT_SIZE]
 
@@ -574,7 +589,7 @@ def mirror_obs(obs: np.ndarray) -> np.ndarray:
     #    no change needed; after mirror obs[31]=1.0 still means the acting player's hand
     #    is shown here.
 
-    # 8. Swap bf_ability_costs slots 0-9 ↔ 10-19 (mirrors the creature slot reordering)
+    # 8. Swap bf_ability_costs slots 0-23 ↔ 24-47 (mirrors the creature slot reordering)
     for i in range(_BF_A_SLOTS):
         a = _BF_COST_START + i * _N_COST_FEATS
         b = _BF_COST_START + (i + _BF_A_SLOTS) * _N_COST_FEATS
@@ -590,10 +605,9 @@ class SelfPlayEnv(gym.Env):
     """Self-play: the training model plays against a frozen previous checkpoint.
 
     Each episode one player role (A or B) is randomly assigned to the training
-    model; the other is controlled by the frozen opponent.  Both sides receive
-    symmetry-normalised observations via mirror_obs() so the model always appears
-    to be Player A — slots 0-9 are always "my" permanents, obs[31]=1.0 always
-    means "I have priority", and action 0 for SELECT_TARGET is always the opponent.
+    model; the other is controlled by the frozen opponent.  The game engine emits
+    observations from the priority player's perspective, so both sides always
+    receive a perspective-normalised view without any mirroring.
 
     The opponent checkpoint is sampled from ``checkpoint_dir`` and reloaded every
     ``RELOAD_EVERY`` episodes so it gradually tracks the improving policy.  If no
@@ -660,15 +674,19 @@ class SelfPlayEnv(gym.Env):
         return a_has_priority if self._training_is_a else not a_has_priority
 
     def _training_obs(self, obs: np.ndarray) -> np.ndarray:
-        """Return obs from the training model's perspective (mirrored when playing as B)."""
-        return obs if self._training_is_a else mirror_obs(obs)
+        """Return obs from the training model's perspective.
+
+        Perspective normalization is handled by the game engine, so no mirroring
+        is needed — the observation is already from the priority player's view.
+        """
+        return obs
 
     def _handle_opponent_turns(self, obs, reward, terminated, truncated, info):
         """Step with the frozen opponent until it is the training model's turn."""
         while not (terminated or truncated) and not self._training_has_priority(obs):
             num_choices = self._env._num_choices
-            # Opponent always receives its own symmetry-normalised view
-            opp_obs = mirror_obs(obs) if self._training_is_a else obs
+            # Opponent receives the state as emitted (already from its perspective)
+            opp_obs = obs
             if self._opponent is not None:
                 masks = np.zeros(MAX_ACTIONS, dtype=bool)
                 masks[:num_choices] = True
