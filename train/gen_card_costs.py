@@ -35,20 +35,33 @@ def parse_mana_cost(cost_str):
     return counts
 
 def find_card_file(name):
-    """Find the card script file for a given card name."""
-    filename = name.lower().replace(' ', '_') + '.txt'
-    first_letter = filename[0]
-    # Try subdirectory by first letter (standard layout)
+    """Find the card script file for a given card name.
+
+    Normalization matches parse.cpp name_to_uid: lowercase, spaces→underscores,
+    non-alpha/non-underscore chars removed.  For double-faced cards the file is
+    named after the combined front//back name (e.g. delver_of_secrets_insectile_aberration.txt),
+    so we also try a prefix match when an exact match isn't found.
+    """
+    stem = re.sub(r'[^a-z0-9_]', '', name.lower().replace(' ', '_'))
+    filename = stem + '.txt'
+    first_letter = stem[0]
+    # 1. Exact match in expected subdirectory
     candidate = os.path.join(CARDS_DIR, first_letter, filename)
     if os.path.exists(candidate):
         return candidate
-    # Case-insensitive fallback: search all subdirectories
+    # 2. Prefix match in expected subdirectory (catches DFC combined files)
+    subdir_path = os.path.join(CARDS_DIR, first_letter)
+    if os.path.isdir(subdir_path):
+        for f in sorted(os.listdir(subdir_path)):
+            if f.lower().startswith(stem) and f.lower().endswith('.txt'):
+                return os.path.join(subdir_path, f)
+    # 3. Case-insensitive exact fallback across all subdirectories
     for subdir in sorted(os.listdir(CARDS_DIR)):
         subdir_path = os.path.join(CARDS_DIR, subdir)
         if not os.path.isdir(subdir_path):
             continue
         for f in os.listdir(subdir_path):
-            if f.lower() == filename.lower():
+            if f.lower() == filename:
                 return os.path.join(subdir_path, f)
     return None
 

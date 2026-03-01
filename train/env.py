@@ -275,6 +275,7 @@ _COLOR_TO_MANA_CAT = [_CAT_MANA_W, _CAT_MANA_U, _CAT_MANA_B, _CAT_MANA_R, _CAT_M
 # Generic mana is omitted — any color satisfies it.
 # Deck: test_minimal.dk (blue/red, fetch-heavy)
 _CARD_COLORED_COSTS = {
+    2: {3: 1}, # bolt
     11: {1: 1},   # Ponder        (U)     — 1 blue
     13: {1: 1},   # Daze          (1U)    — 1 blue
     16: {1: 1},   # Delver of Secrets (U) — 1 blue
@@ -283,7 +284,7 @@ _CARD_COLORED_COSTS = {
     21: {1: 2},   # Air Elemental (3UU)   — 2 blue
     22: {1: 2},   # Counterspell  (UU)    — 2 blue
     23: {3: 1},   # Lightning Strike (1R) — 1 red
-    # Brainstorm (U) is not in card_vocab yet; handled by fallback tap-any
+    24: {1: 1},   # Brainstorm      (U)   — 1 blue
 }
 
 # ── Battlefield layout (mirror machine_io.h) ────────────────────────────────
