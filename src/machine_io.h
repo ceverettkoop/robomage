@@ -4,7 +4,7 @@
 #include <vector>
 
 // QUERY line format (machine mode):
-//   "QUERY: <num_choices> <f0>...<f1152> <cat0>...<cat_{N-1}> <id0>...<id_{N-1}>"
+//   "QUERY: <num_choices> <f0>...<f2757> <cat0>...<cat_{N-1}> <id0>...<id_{N-1}>"
 //   where N = num_choices.
 //
 // The state vector (STATE_SIZE floats) is followed by:
@@ -30,20 +30,44 @@
 //  [30]    Active player A's turn (1.0 = A, 0.0 = B)
 //  [31]    Priority player (1.0 = A has priority, 0.0 = B)
 //  [32]    Stack size / 10.0
-//  [33-832] Battlefield slots — 20 slots × 40 floats each
-//           Slots 0-9:  Player A's creatures (sorted by entity id, padded with 0s)
-//           Slots 10-19: Player B's creatures
-//           Per slot: power/10, toughness/10, is_tapped, is_attacking,
-//                     is_blocking, has_summoning_sickness, damage/10,
-//                     controller_is_A, card_id one-hot (N_CARD_TYPES floats)
-//  [833-1152] Priority player's hand — MAX_HAND_SLOTS slots × N_CARD_TYPES floats
-//             Each slot is a one-hot card identity vector (all zeros = empty).
-//             Card vocabulary is defined in card_vocab.h.
+//
+//  [33-832]    Creature slots — 20 slots × 40 floats (unchanged)
+//              Slots 0-9:  Player A's creatures (sorted by entity id)
+//              Slots 10-19: Player B's creatures
+//              Per slot: power/10, toughness/10, is_tapped, is_attacking,
+//                        is_blocking, has_summoning_sickness, damage/10,
+//                        controller_is_A, card_id one-hot (N_CARD_TYPES floats)
+//
+//  [833-1632]  Land slots — 20 slots × 40 floats (same format as creature slots)
+//              Slots 0-9:  Player A's lands (sorted by entity id)
+//              Slots 10-19: Player B's lands
+//              Per slot: 0(power), 0(toughness), is_tapped, 0(attacking),
+//                        0(blocking), 0(sickness), 0(damage),
+//                        controller_is_A, card_id one-hot (N_CARD_TYPES floats)
+//
+//  [1633-1797] Stack slots — 5 slots × 33 floats, top first
+//              Per slot: controller_is_A(1), card_id one-hot(N_CARD_TYPES)
+//              Empty slots are all zeros.  Activated ability entities use
+//              the source permanent's card identity.
+//
+//  [1798-2437] Graveyard slots — 20 slots × 32 floats
+//              Slots 0-9:  Player A's graveyard (sorted by entity id)
+//              Slots 10-19: Player B's graveyard
+//              Per slot: card_id one-hot (N_CARD_TYPES floats)
+//
+//  [2438-2757] Priority player's hand — 10 slots × N_CARD_TYPES floats
+//              Each slot is a one-hot card identity vector (all zeros = empty).
 
-static constexpr int STATE_SIZE          = 1153;
-static constexpr int N_CARD_TYPES        = 32;
-static constexpr int MAX_BATTLEFIELD_SLOTS = 10;  // per player
-static constexpr int MAX_HAND_SLOTS      = 10;
+static constexpr int STATE_SIZE             = 2758;
+static constexpr int N_CARD_TYPES           = 32;
+static constexpr int MAX_BATTLEFIELD_SLOTS  = 10;  // creatures, per player
+static constexpr int MAX_LAND_SLOTS         = 10;  // per player
+static constexpr int MAX_STACK_DISPLAY      = 5;
+static constexpr int MAX_GY_SLOTS           = 10;  // per player
+static constexpr int MAX_HAND_SLOTS         = 10;
+static constexpr int PERM_SLOT_SIZE         = 40;  // creature AND land slots
+static constexpr int STACK_SLOT_SIZE        = 33;  // controller_is_A + card one-hot
+static constexpr int GY_SLOT_SIZE           = 32;  // card one-hot only
 
 std::vector<float> serialize_state();
 

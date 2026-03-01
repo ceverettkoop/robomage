@@ -49,14 +49,20 @@ try:
 except ImportError:
     from train.card_costs import _CARD_COST_MATRIX, _CARD_ABILITY_COST_MATRIX, N_CARD_TYPES, _N_COST_FEATS
 
-STATE_SIZE = 1153
+STATE_SIZE = 2758
 MAX_ACTIONS = 32         # practical upper bound on num_choices per step
 ACTION_CATEGORY_MAX = 21 # highest ActionCategory enum value (SHUFFLE)
 _ACTION_CARD_ID_NULL = -1.0 / N_CARD_TYPES  # -0.03125 — null sentinel for non-card slots
 MAX_HAND_SLOTS = 10
 _HAND_COST_FEATS  = MAX_HAND_SLOTS * _N_COST_FEATS  # 10 * 7 = 70
 _BF_ABILITY_FEATS = 20 * _N_COST_FEATS              # 20 * 7 = 140
-OBS_SIZE = STATE_SIZE + MAX_ACTIONS + MAX_ACTIONS + _HAND_COST_FEATS + _BF_ABILITY_FEATS  # 1427
+OBS_SIZE = STATE_SIZE + MAX_ACTIONS + MAX_ACTIONS + _HAND_COST_FEATS + _BF_ABILITY_FEATS  # 3032
+
+# ── State layout offsets (mirror src/machine_io.h) ───────────────────────────
+_LAND_START   = 833    # [833-1632]  land slots  (20 × 40)
+_STACK_START  = 1633   # [1633-1797] stack slots (5 × 33)
+_GY_START     = 1798   # [1798-2437] graveyard   (20 × 32)
+_HAND_START   = 2438   # [2438-2757] hand        (10 × 32)
 _REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BINARY = os.path.join(_REPO_ROOT, "bin", "robomage")
 BIN_DIR = os.path.join(_REPO_ROOT, "bin")  # game must be run from here for resource lookup
@@ -204,11 +210,10 @@ class RoboMageEnv(gym.Env):
                     state_arr = np.pad(state_arr, (0, STATE_SIZE - len(state_arr)))
 
                 # Hand cast costs: matrix-multiply one-hots against cost matrix
-                _HAND_START = 833
                 hand_onehots = state_arr[_HAND_START:_HAND_START + MAX_HAND_SLOTS * N_CARD_TYPES]
                 hand_costs = hand_onehots.reshape(MAX_HAND_SLOTS, N_CARD_TYPES) @ _CARD_COST_MATRIX  # (10,7)
 
-                # Battlefield activated ability costs (all zeros until non-mana abilities are added)
+                # Battlefield activated ability costs (creature slots only; 40-float format)
                 _BF_CARD_OFF = 8  # offset of card one-hot within each 40-float slot
                 bf_ability_costs = np.zeros((20, _N_COST_FEATS), dtype=np.float32)
                 for slot in range(20):
@@ -368,8 +373,9 @@ def scripted_action(obs: np.ndarray, num_choices: int) -> int:
         if c == _CAT_CONF_ATK:
             return i
 
-    # 4. Select target — action 0 is the first legal target (opponent player for burn,
-    #    opponent's spell for counterspells, opponent's nonbasic land for Wasteland)
+    # 4. Select target — action 0 is the first legal target
+    # TODO fix this bc we will be wasting our own lands and countering our own spells
+# it's fine for burn spells as long as this model is always player B
     for i, c in enumerate(cats):
         if c == _CAT_TARGET:
             return i
@@ -406,8 +412,8 @@ def scripted_action(obs: np.ndarray, num_choices: int) -> int:
         pool = [int(round(obs[pool_start + i] * 10)) for i in range(6)]
         needed = [0] * 6
         for slot in range(10):
-            base = 833 + slot * 32
-            slot_vec = obs[base:base + 32]
+            base = _HAND_START + slot * N_CARD_TYPES
+            slot_vec = obs[base:base + N_CARD_TYPES]
             card_idx = int(np.argmax(slot_vec))
             if slot_vec[card_idx] < 0.5:
                 continue  # empty slot
