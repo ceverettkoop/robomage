@@ -251,6 +251,7 @@ _CAT_SEL_ATK    = 2
 _CAT_CONF_ATK   = 3
 _CAT_SEL_BLK    = 4
 _CAT_CONF_BLK   = 5
+_CAT_ACTIVATE   = 6   # activate a non-mana ability (fetch lands, Wasteland destroy)
 _CAT_CAST       = 7
 _CAT_TARGET     = 8
 _CAT_LAND       = 9
@@ -261,6 +262,7 @@ _CAT_MANA_B     = 15
 _CAT_MANA_R     = 16
 _CAT_MANA_G     = 17
 _CAT_MANA_C     = 18
+_CAT_SEARCH     = 19  # search library (action 0 = fail to find, 1+ = actual cards)
 
 # All mana-producing categories
 _MANA_CATS = {_CAT_MANA_W, _CAT_MANA_U, _CAT_MANA_B, _CAT_MANA_R, _CAT_MANA_G, _CAT_MANA_C}
@@ -271,9 +273,17 @@ _COLOR_TO_MANA_CAT = [_CAT_MANA_W, _CAT_MANA_U, _CAT_MANA_B, _CAT_MANA_R, _CAT_M
 # Colored mana requirements per card vocab index (card_vocab.h).
 # Keys are color pool indices: W=0, U=1, B=2, R=3, G=4, C=5.
 # Generic mana is omitted — any color satisfies it.
+# Deck: test_minimal.dk (blue/red, fetch-heavy)
 _CARD_COLORED_COSTS = {
-    2: {3: 1},  # Lightning Bolt (1R): needs 1 red
-    3: {4: 1},  # Grizzly Bears (1G): needs 1 green
+    11: {1: 1},   # Ponder        (U)     — 1 blue
+    13: {1: 1},   # Daze          (1U)    — 1 blue
+    16: {1: 1},   # Delver of Secrets (U) — 1 blue
+    18: {1: 1},   # Flying Men    (U)     — 1 blue
+    20: {3: 1},   # Dragon's Rage Channeler (R) — 1 red
+    21: {1: 2},   # Air Elemental (3UU)   — 2 blue
+    22: {1: 2},   # Counterspell  (UU)    — 2 blue
+    23: {3: 1},   # Lightning Strike (1R) — 1 red
+    # Brainstorm (U) is not in card_vocab yet; handled by fallback tap-any
 }
 
 # ── Battlefield layout (mirror machine_io.h) ────────────────────────────────
@@ -305,17 +315,26 @@ def _all_eligible_creatures_attacking(obs: np.ndarray, slot_start: int) -> bool:
 
 def scripted_action(obs: np.ndarray, num_choices: int) -> int:
     """
-    Rule-based Player B:
-      - Never blocks (confirms immediately when blockers are requested)
-      - Attacks with every eligible creature
+    Rule-based Player B for test_minimal.dk (blue/red fetch-land deck):
+      - Never blocks (confirms immediately)
+      - Attacks with every eligible creature each combat
+      - Selects target 0 (opponent player or first offered spell/permanent)
+      - Searches library: always finds the first offered card (never fails to find)
+      - Casts every spell the moment it becomes affordable
       - Plays the first available land
+      - Activates non-mana abilities (fetch lands, Wasteland destroy) during main phase
       - Taps mana during main phases, preferring the color the hand needs most
-      - Casts every spell (Grizzly Bears, Lightning Bolt aimed at Player A)
+        (blue for Flying Men, Delver, Ponder, Daze, Counterspell, Air Elemental;
+         red for Dragon's Rage Channeler, Lightning Strike)
       - Passes priority otherwise
 
     Action categories are stored in obs[STATE_SIZE:] normalised by ACTION_CATEGORY_MAX.
     """
     cats = np.round(obs[STATE_SIZE:STATE_SIZE + num_choices] * ACTION_CATEGORY_MAX).astype(int)
+
+    _STEP_FIRST_MAIN  = 21   # obs[18 + 3]
+    _STEP_SECOND_MAIN = 27   # obs[18 + 9]
+    in_main_phase = obs[_STEP_FIRST_MAIN] > 0.5 or obs[_STEP_SECOND_MAIN] > 0.5
 
     # 0. Mulligan: always keep — return the first non-mulligan action (the keep action)
     if any(c == _CAT_MULLIGAN for c in cats):
@@ -348,26 +367,38 @@ def scripted_action(obs: np.ndarray, num_choices: int) -> int:
         if c == _CAT_CONF_ATK:
             return i
 
-    # 4. Select target — action 0 targets Player A (the opponent)
+    # 4. Select target — action 0 is the first legal target (opponent player for burn,
+    #    opponent's spell for counterspells, opponent's nonbasic land for Wasteland)
     for i, c in enumerate(cats):
         if c == _CAT_TARGET:
             return i
 
-    # 5. Cast any spell immediately if affordable
+    # 5. Search library — action 0 = fail to find; pick action 1 (first actual card).
+    #    Used when fetch lands (Scalding Tarn, Misty Rainforest, Polluted Delta,
+    #    Wooded Foothills) resolve their ChangeZone ability.
+    if any(c == _CAT_SEARCH for c in cats):
+        return 1 if num_choices > 1 else 0
+
+    # 6. Cast any spell immediately if affordable (game only offers CAST when legal)
     for i, c in enumerate(cats):
         if c == _CAT_CAST:
             return i
 
-    # 6. Play land (may unlock mana for a spell next query)
+    # 7. Play land (may unlock mana for a spell next query)
     for i, c in enumerate(cats):
         if c == _CAT_LAND:
             return i
 
-    # 7. Tap mana during main phases only, choosing the color the hand needs most
-    _STEP_ONE_HOT_START = 18
-    _STEP_FIRST_MAIN    = _STEP_ONE_HOT_START + 3   # obs[21]
-    _STEP_SECOND_MAIN   = _STEP_ONE_HOT_START + 9   # obs[27]
-    in_main_phase = obs[_STEP_FIRST_MAIN] > 0.5 or obs[_STEP_SECOND_MAIN] > 0.5
+    # 8. Activate non-mana abilities during main phase:
+    #    - Fetch lands (Scalding Tarn, Misty Rainforest, Polluted Delta, Wooded Foothills):
+    #      tap + pay 1 life + sacrifice → search for land (resolved by step 5 above)
+    #    - Wasteland: tap + sacrifice → destroy target nonbasic land (target chosen in step 4)
+    if in_main_phase:
+        for i, c in enumerate(cats):
+            if c == _CAT_ACTIVATE:
+                return i
+
+    # 9. Tap mana during main phases only, choosing the color the hand needs most
     if in_main_phase and any(c in _MANA_CATS for c in cats):
         # Determine what colored mana is still needed for cards in hand
         pool_start = 3 if obs[31] > 0.5 else 12
@@ -384,7 +415,7 @@ def scripted_action(obs: np.ndarray, num_choices: int) -> int:
         short = [max(0, needed[i] - pool[i]) for i in range(6)]
 
         # Prefer the color we're shortest on
-        for color_idx in sorted(range(6), key=lambda c: -short[c]):
+        for color_idx in sorted(range(6), key=lambda ci: -short[ci]):
             if short[color_idx] <= 0:
                 break
             target_cat = _COLOR_TO_MANA_CAT[color_idx]
