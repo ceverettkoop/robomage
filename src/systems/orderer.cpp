@@ -52,8 +52,8 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
         auto &cmp_zone = global_coordinator.GetComponent<Zone>(card);
         if (cmp_zone.location != destination) continue;
         // Library and graveyard are per-player; only shift cards belonging to the same owner
-        if ((destination == Zone::LIBRARY || destination == Zone::GRAVEYARD) &&
-            cmp_zone.owner != target_zone.owner) continue;
+        if ((destination == Zone::LIBRARY || destination == Zone::GRAVEYARD) && cmp_zone.owner != target_zone.owner)
+            continue;
         if (!on_bottom) {
             // placing on top: shift everything else down one
             cmp_zone.distance_from_top++;
@@ -128,10 +128,9 @@ void Orderer::generate_libraries(const Deck &deck_a, const Deck &deck_b) {
                 coordinator.AddComponent(card_id, coordinator.GetComponent<CardData>(card_data_id));
                 coordinator.AddComponent(card_id, Zone(Zone::LIBRARY, owner, owner));
                 ColorIdentity ci;
-                auto& cd = coordinator.GetComponent<CardData>(card_id);
+                auto &cd = coordinator.GetComponent<CardData>(card_id);
                 for (auto c : cd.mana_cost) {
-                    if (c != GENERIC && c != COLORLESS && c != NO_COLOR)
-                        ci.colors.insert(c);
+                    if (c != GENERIC && c != COLORLESS && c != NO_COLOR) ci.colors.insert(c);
                 }
                 coordinator.AddComponent(card_id, ci);
             }
@@ -176,7 +175,7 @@ void Orderer::draw(Zone::Ownership player, size_t ct) {
     }
 }
 
-//ordered stack, top first
+// ordered stack, top first
 std::vector<Entity> Orderer::get_stack() {
     std::vector<Entity> on_stack;
     for (auto &&card : mEntities) {
@@ -193,57 +192,49 @@ std::vector<Entity> Orderer::get_stack() {
     return on_stack;
 }
 
-//TODO revisit why shared ptr
-void Orderer::do_london_mulligan(){
+void Orderer::do_london_mulligan() {
     int mulligans_a = 0;
     int mulligans_b = 0;
-
     // Phase 1: Player A decides
-    {
-        cur_game.player_a_has_priority = true;
-        bool keeping = false;
-        while (!keeping) {
-            print_hand(std::shared_ptr<Orderer>(this), Zone::PLAYER_A);
-            printf("Player A: 0=Keep, 1=Mulligan (taken %d)\n", mulligans_a);
-            std::vector<ActionCategory> cats = {ActionCategory::MULLIGAN, ActionCategory::MULLIGAN};
-            int choice = InputLogger::instance().get_logged_input(0, cats);
-            if (choice == 0) {
-                keeping = true;
-            } else {
-                mulligans_a++;
-                auto hand = this->get_hand(Zone::PLAYER_A);
-                for (auto card : hand) {
-                    this->add_to_zone(false, card, Zone::LIBRARY);
-                }
-                this->shuffle_library(Zone::PLAYER_A);
-                this->draw(Zone::PLAYER_A, 7);
+    cur_game.player_a_has_priority = true;
+    bool keeping = false;
+    while (!keeping) {
+        print_hand(shared_from_this(), Zone::PLAYER_A);
+        printf("Player A: 0=Keep, 1=Mulligan (taken %d)\n", mulligans_a);
+        std::vector<ActionCategory> cats = {ActionCategory::MULLIGAN, ActionCategory::MULLIGAN};
+        int choice = InputLogger::instance().get_logged_input(0, cats);
+        if (choice == 0) {
+            keeping = true;
+        } else {
+            mulligans_a++;
+            auto hand = this->get_hand(Zone::PLAYER_A);
+            for (auto card : hand) {
+                this->add_to_zone(false, card, Zone::LIBRARY);
             }
+            this->shuffle_library(Zone::PLAYER_A);
+            this->draw(Zone::PLAYER_A, 7);
         }
     }
-
     // Phase 2: Player B decides
-    {
-        cur_game.player_a_has_priority = false;
-        bool keeping = false;
-        while (!keeping) {
-            print_hand(std::shared_ptr<Orderer>(this), Zone::PLAYER_B);
-            printf("Player B: 0=Keep, 1=Mulligan (taken %d)\n", mulligans_b);
-            std::vector<ActionCategory> cats = {ActionCategory::MULLIGAN, ActionCategory::MULLIGAN};
-            int choice = InputLogger::instance().get_logged_input(0, cats);
-            if (choice == 0) {
-                keeping = true;
-            } else {
-                mulligans_b++;
-                auto hand = this->get_hand(Zone::PLAYER_B);
-                for (auto card : hand) {
-                    this->add_to_zone(false, card, Zone::LIBRARY);
-                }
-                this->shuffle_library(Zone::PLAYER_B);
-                this->draw(Zone::PLAYER_B, 7);
+    cur_game.player_a_has_priority = false;
+    keeping = false;
+    while (!keeping) {
+        print_hand(shared_from_this(), Zone::PLAYER_B);
+        printf("Player B: 0=Keep, 1=Mulligan (taken %d)\n", mulligans_b);
+        std::vector<ActionCategory> cats = {ActionCategory::MULLIGAN, ActionCategory::MULLIGAN};
+        int choice = InputLogger::instance().get_logged_input(0, cats);
+        if (choice == 0) {
+            keeping = true;
+        } else {
+            mulligans_b++;
+            auto hand = this->get_hand(Zone::PLAYER_B);
+            for (auto card : hand) {
+                this->add_to_zone(false, card, Zone::LIBRARY);
             }
+            this->shuffle_library(Zone::PLAYER_B);
+            this->draw(Zone::PLAYER_B, 7);
         }
     }
-
     // Phase 3: Player A bottom-decks mulligans_a cards, one at a time
     cur_game.player_a_has_priority = true;
     for (int i = 0; i < mulligans_a; i++) {
@@ -251,7 +242,7 @@ void Orderer::do_london_mulligan(){
         if (hand.empty()) break;
         printf("Player A: Choose card to put on library bottom (%d remaining):\n", mulligans_a - i);
         for (size_t j = 0; j < hand.size(); j++) {
-            auto& cd = global_coordinator.GetComponent<CardData>(hand[j]);
+            auto &cd = global_coordinator.GetComponent<CardData>(hand[j]);
             printf("  %zu: %s\n", j, cd.name.c_str());
         }
         std::vector<ActionCategory> cats(hand.size(), ActionCategory::BOTTOM_DECK_CARD);
@@ -260,7 +251,6 @@ void Orderer::do_london_mulligan(){
             this->add_to_zone(true, hand[static_cast<size_t>(choice)], Zone::LIBRARY);
         }
     }
-
     // Phase 4: Player B bottom-decks mulligans_b cards, one at a time
     cur_game.player_a_has_priority = false;
     for (int i = 0; i < mulligans_b; i++) {
@@ -268,7 +258,7 @@ void Orderer::do_london_mulligan(){
         if (hand.empty()) break;
         printf("Player B: Choose card to put on library bottom (%d remaining):\n", mulligans_b - i);
         for (size_t j = 0; j < hand.size(); j++) {
-            auto& cd = global_coordinator.GetComponent<CardData>(hand[j]);
+            auto &cd = global_coordinator.GetComponent<CardData>(hand[j]);
             printf("  %zu: %s\n", j, cd.name.c_str());
         }
         std::vector<ActionCategory> cats(hand.size(), ActionCategory::BOTTOM_DECK_CARD);
@@ -277,5 +267,4 @@ void Orderer::do_london_mulligan(){
             this->add_to_zone(true, hand[static_cast<size_t>(choice)], Zone::LIBRARY);
         }
     }
-
 }

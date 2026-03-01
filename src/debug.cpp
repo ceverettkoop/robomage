@@ -1,6 +1,7 @@
 #include "debug.h"
 
 #include <algorithm>
+#include "classes/colors.h"
 #include "components/ability.h"
 #include "components/carddata.h"
 #include "input_logger.h"
@@ -217,7 +218,7 @@ void print_battlefield(std::shared_ptr<Orderer> orderer) {
                     if (global_coordinator.entity_has_component<Damage>(entity)) {
                         auto& damage = global_coordinator.GetComponent<Damage>(entity);
                         if (damage.damage_counters > 0) {
-                            printf(" (%u damage)", damage.damage_counters);
+                            printf(" (%zu damage)", damage.damage_counters);
                         }
                     }
                 }
@@ -268,6 +269,9 @@ void print_mana_pools() {
                         break;
                     case GENERIC:
                         printf("{1} ");
+                        break;
+                    case NO_COLOR:
+                        non_fatal_error("Call to print NO_COLOR");
                         break;
                 }
             }

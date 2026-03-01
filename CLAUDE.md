@@ -11,6 +11,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 The compiled binary is output to `bin/robomage`.
 
+
+## Code Style
+
+- Don't put any functions in main.cpp besides main!
+- Avoid inline logic for anything that will be repeated; write new functions
+- Declare local functions as private in the class, if the header contains a single class/struct
+- Iterate through mEntities when possible (working with a system class), rather than iterating through all entities
+- Try to consolidate iterations through entities within a function, rather than iterating through many times
+- Static (local) functions should be forward declared at top of source file for clarity
+- C++17 with exceptions disabled (`-fno-exceptions`)
+- Uses clang-format configuration in `.clang-format`
+- Platform-specific: Supports Linux, macOS (Darwin), and Windows
+- On macOS: uses clang/clang++, on Linux: uses gcc/g++
+
 ## Project Overview
 
 Robomage is a C++ implementation of a Magic: The Gathering game engine using an Entity Component System (ECS) architecture. The project aims to simulate MTG game rules including priority, the stack, state-based effects, and turn structure.
@@ -203,10 +217,3 @@ State vector layout is documented in `src/machine_io.h`. Key indices: `obs[30]` 
 - `src/machine_io.h` — state vector layout documentation and constants
 - `src/input_logger.cpp` — machine mode QUERY emission, replay, and CLI input handling
 - `src/card_vocab.h` — card name → vocab index mapping for one-hot encoding
-
-## Code Style
-
-- C++17 with exceptions disabled (`-fno-exceptions`)
-- Uses clang-format configuration in `.clang-format`
-- Platform-specific: Supports Linux, macOS (Darwin), and Windows
-- On macOS: uses clang/clang++, on Linux: uses gcc/g++

@@ -9,7 +9,7 @@
 
 struct Deck;
 
-class Orderer : public System {
+class Orderer : public System, public std::enable_shared_from_this<Orderer>{
 
 public:
     static void init();
