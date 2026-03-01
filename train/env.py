@@ -227,7 +227,7 @@ class RoboMageEnv(gym.Env):
 
             # Non-QUERY output: optionally print for human render mode
             if self.render_mode == "human":
-                print(line, file=sys.stderr)
+                self._print_narrative_line(line)
 
         info = {"reward": reward, "done": done}
         if done:
@@ -236,6 +236,9 @@ class RoboMageEnv(gym.Env):
             return np.zeros(OBS_SIZE, dtype=np.float32), info
 
         return self._obs.copy(), info
+
+    def _print_narrative_line(self, line: str):
+        print(line, file=sys.stderr)
 
     def _kill_proc(self):
         if self._proc is not None:
