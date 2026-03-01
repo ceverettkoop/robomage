@@ -424,6 +424,26 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
     game.pending_choice = NONE;
 }
 
+static std::vector<Entity> determine_blockable_attackers(Entity blocker,
+                                                          const std::vector<Entity>& attackers) {
+    auto& bcr = global_coordinator.GetComponent<Creature>(blocker);
+    bool blocker_can_fly = false;
+    for (auto& kw : bcr.keywords)
+        if (kw == "Flying" || kw == "Reach") { blocker_can_fly = true; break; }
+
+    std::vector<Entity> result;
+    for (auto atk : attackers) {
+        auto& acr = global_coordinator.GetComponent<Creature>(atk);
+        bool atk_flying = false;
+        for (auto& kw : acr.keywords)
+            if (kw == "Flying") { atk_flying = true; break; }
+
+        if (atk_flying && !blocker_can_fly) continue;
+        result.push_back(atk);
+    }
+    return result;
+}
+
 static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
     Zone::Ownership defending_player = game.player_a_turn ? Zone::PLAYER_B : Zone::PLAYER_A;
 
@@ -452,6 +472,14 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
         if (permanent.is_tapped) continue;
         eligible.push_back(entity);
     }
+
+    // Remove creatures that can't legally block any attacker (e.g. non-flyers vs all-flying attackers)
+    eligible.erase(
+        std::remove_if(eligible.begin(), eligible.end(), [&](Entity blocker) {
+            return determine_blockable_attackers(blocker, attackers).empty();
+        }),
+        eligible.end()
+    );
 
     if (eligible.empty()) {
         printf("No creatures eligible to block.\n");
@@ -505,19 +533,20 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
             cr.blocking_target = 0;
             printf("%s removed from blockers.\n", cd.name.c_str());
         } else {
+            auto legal_attackers = determine_blockable_attackers(eligible[static_cast<size_t>(blocker_choice)], attackers);
             printf("Select attacker for %s to block:\n", cd.name.c_str());
-            for (size_t i = 0; i < attackers.size(); i++) {
-                auto &acd = global_coordinator.GetComponent<CardData>(attackers[i]);
-                auto &acr = global_coordinator.GetComponent<Creature>(attackers[i]);
+            for (size_t i = 0; i < legal_attackers.size(); i++) {
+                auto &acd = global_coordinator.GetComponent<CardData>(legal_attackers[i]);
+                auto &acr = global_coordinator.GetComponent<Creature>(legal_attackers[i]);
                 printf("  %zu: %s [%d/%d]\n", i, acd.name.c_str(), acr.power, acr.toughness);
             }
 
-            std::vector<ActionCategory> blk_tgt_cats(attackers.size(), ActionCategory::OTHER_CHOICE);
-            int attacker_choice = InputLogger::instance().get_logged_input(cur_game.turn, blk_tgt_cats, attackers);
+            std::vector<ActionCategory> blk_tgt_cats(legal_attackers.size(), ActionCategory::OTHER_CHOICE);
+            int attacker_choice = InputLogger::instance().get_logged_input(cur_game.turn, blk_tgt_cats, legal_attackers);
 
-            if (attacker_choice >= 0 && attacker_choice < static_cast<int>(attackers.size())) {
+            if (attacker_choice >= 0 && attacker_choice < static_cast<int>(legal_attackers.size())) {
                 cr.is_blocking = true;
-                cr.blocking_target = attackers[static_cast<size_t>(attacker_choice)];
+                cr.blocking_target = legal_attackers[static_cast<size_t>(attacker_choice)];
                 auto &acd = global_coordinator.GetComponent<CardData>(cr.blocking_target);
                 printf("%s blocking %s.\n", cd.name.c_str(), acd.name.c_str());
             } else {

@@ -114,6 +114,21 @@ Entity parse_card_script(std::string path) {
         break;
     }
 
+    // Parse K: keyword lines
+    for (auto& kw_line : multi_values_from_script(script_data, "K")) {
+        size_t pos = 0;
+        while (pos < kw_line.size()) {
+            size_t comma = kw_line.find(',', pos);
+            if (comma == std::string::npos) comma = kw_line.size();
+            std::string kw = kw_line.substr(pos, comma - pos);
+            size_t s = kw.find_first_not_of(" ");
+            size_t e = kw.find_last_not_of(" ");
+            if (s != std::string::npos)
+                card.keywords.push_back(kw.substr(s, e - s + 1));
+            pos = (comma < kw_line.size()) ? comma + 1 : comma;
+        }
+    }
+
     // no error handling here
     global_coordinator.AddComponent(id, card);
 

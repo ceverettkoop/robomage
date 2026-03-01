@@ -29,6 +29,7 @@ struct CardData{
     //starting loyalty etc described as a static ability
     std::vector<Ability> abilities;
     AltCost alt_cost;
+    std::vector<std::string> keywords;
 };
 
 #endif /* CARD_H */

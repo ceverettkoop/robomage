@@ -88,6 +88,7 @@ void StateManager::apply_permanent_components(Game &game) {
                 Creature creature;
                 creature.power = card_data.power;
                 creature.toughness = card_data.toughness;
+                creature.keywords = card_data.keywords;
                 global_coordinator.AddComponent(entity, creature);
                 // damage component
                 Damage damage;
