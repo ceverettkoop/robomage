@@ -16,7 +16,7 @@ inline int card_name_to_index(const std::string &name) {
         {"Scalding Tarn", 5}, {"Flooded Strand", 6}, {"Polluted Delta", 7}, {"Wooded Foothills", 8}, {"Misty Rainforest", 9},
         {"Wasteland", 10}, {"Ponder", 11}, {"Force of Will", 12}, {"Daze", 13}, {"Soul Warden", 14}, {"Tundra", 15},
         {"Delver of Secrets", 16}, {"Insectile Aberration", 17}, {"Flying Men", 18}, {"Mountain", 19},
-        {"Dragon's Rage Channeler", 20}};
+        {"Dragon's Rage Channeler", 20}, {"Air Elemental", 21}, {"Counterspell", 22}, {"Lightning Strike", 23}};
     auto it = vocab.find(name);
     return it != vocab.end() ? it->second : -1;
 }
