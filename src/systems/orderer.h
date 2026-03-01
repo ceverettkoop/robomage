@@ -21,6 +21,7 @@ public:
     void draw_hands();
     void draw(Zone::Ownership player, size_t ct);
     std::vector<Entity> get_stack();
+    void do_london_mulligan();
 
 };
 
