@@ -8,7 +8,8 @@ namespace Events {
     constexpr EventId CREATURE_DIED     = 1;
     constexpr EventId PLAYER_DREW_CARD  = 2;
     constexpr EventId CREATURE_ENTERED  = 3;
-    constexpr EventId UPKEEP_BEGAN      = 4;
+    constexpr EventId UPKEEP_BEGAN             = 4;
+    constexpr EventId NONCREATURE_SPELL_CAST   = 5;
 }
 
 // Param IDs used across events

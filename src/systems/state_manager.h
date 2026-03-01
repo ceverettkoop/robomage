@@ -26,6 +26,7 @@ private:
     void apply_permanent_components(Game& game);
     void apply_land_abilities(Entity entity);
     void check_triggered_abilities(Game& game, std::shared_ptr<Orderer> orderer);
+    void apply_static_ability_effects();
 };
 
 #endif /* STATE_MANAGER_H */

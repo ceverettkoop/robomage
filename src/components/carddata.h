@@ -9,6 +9,7 @@
 #include "../components/types.h"
 #include "../classes/colors.h"
 #include "ability.h"
+#include "static_ability.h"
 
 struct AltCost {
     bool has_alt_cost = false;
@@ -31,6 +32,7 @@ struct CardData{
     std::vector<Ability> abilities;
     AltCost alt_cost;
     std::vector<std::string> keywords;
+    std::vector<StaticAbility> static_abilities;
     std::shared_ptr<CardData> backside;  // populated for DFCs; nullptr for normal cards
 };
 

@@ -368,6 +368,9 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
         } else {
             printf("Counter: target is no longer on the stack\n");
         }
+    } else if (category == "Surveil") {
+        resolve_surveil(orderer);
+        return;  // skip subabilities loop
     } else if (category == "PeekAndReveal") {
         auto& src_perm = global_coordinator.GetComponent<Permanent>(source);
         Zone::Ownership controller = src_perm.controller;
@@ -433,6 +436,44 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
     for (auto sub_ab : this->subabilities) {
         sub_ab.source = this->source;
         sub_ab.resolve(orderer);
+    }
+}
+
+void Ability::resolve_surveil(std::shared_ptr<Orderer> orderer) {
+    Zone::Ownership controller;
+    if (global_coordinator.entity_has_component<Permanent>(source)) {
+        controller = global_coordinator.GetComponent<Permanent>(source).controller;
+    } else {
+        controller = global_coordinator.GetComponent<Zone>(source).owner;
+    }
+
+    for (size_t i = 0; i < amount; i++) {
+        std::vector<Entity> lib = orderer->get_library_contents(controller);
+        if (lib.empty()) {
+            printf("%s's library is empty — nothing to surveil.\n", player_name(controller).c_str());
+            break;
+        }
+
+        // Find the top card (minimum distance_from_top)
+        Entity top_card = lib[0];
+        size_t min_dist = global_coordinator.GetComponent<Zone>(lib[0]).distance_from_top;
+        for (auto e : lib) {
+            size_t d = global_coordinator.GetComponent<Zone>(e).distance_from_top;
+            if (d < min_dist) { min_dist = d; top_card = e; }
+        }
+
+        auto &top_cd = global_coordinator.GetComponent<CardData>(top_card);
+        printf("Top card of %s's library: %s\n", player_name(controller).c_str(), top_cd.name.c_str());
+        printf("0: Keep on top | 1: Put in graveyard\n");
+
+        std::vector<ActionCategory> cats = {ActionCategory::OTHER_CHOICE, ActionCategory::OTHER_CHOICE};
+        std::vector<Entity> ents = {Entity(0), Entity(0)};
+        int choice = InputLogger::instance().get_logged_input(cur_game.turn, cats, ents);
+
+        if (choice == 1) {
+            orderer->add_to_zone(false, top_card, Zone::GRAVEYARD);
+            printf("%s puts %s into the graveyard.\n", player_name(controller).c_str(), top_cd.name.c_str());
+        }
     }
 }
 

@@ -13,6 +13,8 @@
 #include "components/zone.h"
 #include "debug.h"
 #include "ecs/coordinator.h"
+#include "ecs/entity.h"
+#include "ecs/events.h"
 #include "input_logger.h"
 #include "mana_system.h"
 #include "systems/orderer.h"
@@ -83,8 +85,7 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
             mana_symbol_str(mana_color));
         // priority does not pass
 
-        
-    } else { // ACTIVATED ABILITY THAT IS NOT A MANA ABILITY - GOES ON STACK
+    } else {  // ACTIVATED ABILITY THAT IS NOT A MANA ABILITY - GOES ON STACK
         //  Initialize zone with HAND so add_to_zone removal of the origin zone is a no-op
         // lol that's hacky but OK
         Entity ability_entity = global_coordinator.CreateEntity();
@@ -181,6 +182,65 @@ void select_target(Ability &ability, std::shared_ptr<Orderer> orderer) {
     }
 }
 
+//TODO MAKE THIS GENERAL
+static void pay_alternate_cost(const LegalAction &action, Game &game, std::shared_ptr<Orderer> orderer,
+    const CardData &card_data, Entity spell_entity, Zone zone) {
+    Zone::Ownership caster = zone.owner;
+    Entity caster_entity = (caster == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
+    auto &player = global_coordinator.GetComponent<Player>(caster_entity);
+
+    player.life_total -= card_data.alt_cost.life_cost;
+    printf("%s pays %d life\n", player_name(caster).c_str(), card_data.alt_cost.life_cost);
+    for (int i = 0; i < card_data.alt_cost.exile_blue_from_hand; i++) {
+        std::vector<ActionCategory> exile_cats;
+        std::vector<Entity> exile_entities;
+        for (auto e : orderer->get_hand(caster)) {
+            if (e == spell_entity) continue;
+            if (!global_coordinator.entity_has_component<ColorIdentity>(e)) continue;
+            if (!global_coordinator.GetComponent<ColorIdentity>(e).colors.count(BLUE)) continue;
+            printf("  %zu: %s\n", exile_entities.size(), global_coordinator.GetComponent<CardData>(e).name.c_str());
+            exile_cats.push_back(ActionCategory::OTHER_CHOICE);
+            exile_entities.push_back(e);
+        }
+        int choice = InputLogger::instance().get_logged_input(cur_game.turn, exile_cats, exile_entities);
+        if (choice >= 0 && choice < static_cast<int>(exile_entities.size())) {
+            Entity exiled = exile_entities[static_cast<size_t>(choice)];
+            printf("%s exiles %s\n", player_name(caster).c_str(),
+                global_coordinator.GetComponent<CardData>(exiled).name.c_str());
+            orderer->add_to_zone(false, exiled, Zone::EXILE);
+        }
+    }
+    for (int i = 0; i < card_data.alt_cost.return_to_hand_count; i++) {
+        std::vector<ActionCategory> rth_cats;
+        std::vector<Entity> rth_entities;
+        const std::string &sub = card_data.alt_cost.return_to_hand_subtype;
+        for (auto e : orderer->mEntities) {
+            if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
+            auto &perm = global_coordinator.GetComponent<Permanent>(e);
+            if (perm.controller != caster) continue;
+            auto &ecd = global_coordinator.GetComponent<CardData>(e);
+            bool matches = false;
+            for (auto &t : ecd.types) {
+                if (t.kind == SUBTYPE && t.name == sub) {
+                    matches = true;
+                    break;
+                }
+            }
+            if (!matches) continue;
+            printf("  %zu: %s\n", rth_entities.size(), ecd.name.c_str());
+            rth_cats.push_back(ActionCategory::OTHER_CHOICE);
+            rth_entities.push_back(e);
+        }
+        int choice = InputLogger::instance().get_logged_input(cur_game.turn, rth_cats, rth_entities);
+        if (choice >= 0 && choice < static_cast<int>(rth_entities.size())) {
+            Entity returned = rth_entities[static_cast<size_t>(choice)];
+            printf("%s returns %s to hand\n", player_name(caster).c_str(),
+                global_coordinator.GetComponent<CardData>(returned).name.c_str());
+            orderer->add_to_zone(false, returned, Zone::HAND);
+        }
+    }
+}
+
 void process_action(const LegalAction &action, Game &game, std::shared_ptr<Orderer> orderer) {
     switch (action.type) {
         case PASS_PRIORITY:
@@ -219,65 +279,13 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             Entity spell_entity = action.source_entity;
             auto &zone = global_coordinator.GetComponent<Zone>(spell_entity);
             auto &card_data = global_coordinator.GetComponent<CardData>(spell_entity);
-
             Zone::Ownership caster = zone.owner;
 
-            // Pay mana cost (regular or alternate)
+            // ALTERNATE COST
             if (action.use_alt_cost) {
-                Entity caster_entity = (caster == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
-                auto &player = global_coordinator.GetComponent<Player>(caster_entity);
-                player.life_total -= card_data.alt_cost.life_cost;
-                printf("%s pays %d life\n", player_name(caster).c_str(), card_data.alt_cost.life_cost);
-                for (int i = 0; i < card_data.alt_cost.exile_blue_from_hand; i++) {
-                    std::vector<ActionCategory> exile_cats;
-                    std::vector<Entity> exile_entities;
-                    for (auto e : orderer->get_hand(caster)) {
-                        if (e == spell_entity) continue;
-                        if (!global_coordinator.entity_has_component<ColorIdentity>(e)) continue;
-                        if (!global_coordinator.GetComponent<ColorIdentity>(e).colors.count(BLUE)) continue;
-                        printf("  %zu: %s\n", exile_entities.size(),
-                            global_coordinator.GetComponent<CardData>(e).name.c_str());
-                        exile_cats.push_back(ActionCategory::OTHER_CHOICE);
-                        exile_entities.push_back(e);
-                    }
-                    int choice = InputLogger::instance().get_logged_input(cur_game.turn, exile_cats, exile_entities);
-                    if (choice >= 0 && choice < static_cast<int>(exile_entities.size())) {
-                        Entity exiled = exile_entities[static_cast<size_t>(choice)];
-                        printf("%s exiles %s\n", player_name(caster).c_str(),
-                            global_coordinator.GetComponent<CardData>(exiled).name.c_str());
-                        orderer->add_to_zone(false, exiled, Zone::EXILE);
-                    }
-                }
-                for (int i = 0; i < card_data.alt_cost.return_to_hand_count; i++) {
-                    std::vector<ActionCategory> rth_cats;
-                    std::vector<Entity> rth_entities;
-                    const std::string &sub = card_data.alt_cost.return_to_hand_subtype;
-                    for (auto e : orderer->mEntities) {
-                        if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
-                        auto &perm = global_coordinator.GetComponent<Permanent>(e);
-                        if (perm.controller != caster) continue;
-                        auto &ecd = global_coordinator.GetComponent<CardData>(e);
-                        bool matches = false;
-                        for (auto &t : ecd.types) {
-                            if (t.kind == SUBTYPE && t.name == sub) {
-                                matches = true;
-                                break;
-                            }
-                        }
-                        if (!matches) continue;
-                        printf("  %zu: %s\n", rth_entities.size(), ecd.name.c_str());
-                        rth_cats.push_back(ActionCategory::OTHER_CHOICE);
-                        rth_entities.push_back(e);
-                    }
-                    int choice = InputLogger::instance().get_logged_input(cur_game.turn, rth_cats, rth_entities);
-                    if (choice >= 0 && choice < static_cast<int>(rth_entities.size())) {
-                        Entity returned = rth_entities[static_cast<size_t>(choice)];
-                        printf("%s returns %s to hand\n", player_name(caster).c_str(),
-                            global_coordinator.GetComponent<CardData>(returned).name.c_str());
-                        orderer->add_to_zone(false, returned, Zone::HAND);
-                    }
-                }
-            } else {
+                pay_alternate_cost(action, game, orderer, card_data, spell_entity, zone);
+
+            } else {  // REGULAR COST
                 spend_mana(caster, card_data.mana_cost);
             }
 
@@ -303,6 +311,24 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             Spell spell;
             spell.caster = caster;
             global_coordinator.AddComponent(spell_entity, spell);
+
+            // Fire NONCREATURE_SPELL_CAST event for non-creature spells
+            {
+                bool is_creature_spell = false;
+                for (const auto &t : card_data.types)
+                    if (t.kind == TYPE && t.name == "Creature") {
+                        is_creature_spell = true;
+                        break;
+                    }
+                if (!is_creature_spell) {
+                    Event cast_ev(Events::NONCREATURE_SPELL_CAST);
+                    Entity caster_entity =
+                        (caster == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
+                    cast_ev.SetParam(Params::ENTITY, spell_entity);
+                    cast_ev.SetParam(Params::PLAYER, caster_entity);
+                    global_coordinator.SendEvent(cast_ev);
+                }
+            }
 
             // Move to stack
             orderer->add_to_zone(false, spell_entity, Zone::STACK);  // Top of stack

@@ -1,6 +1,8 @@
 #include "state_manager.h"
 
+#include <algorithm>
 #include <cstddef>
+#include <string>
 #include <vector>
 
 #include "../action_processor.h"
@@ -9,6 +11,7 @@
 #include "../components/carddata.h"
 #include "../components/color_identity.h"
 #include "../components/creature.h"
+#include "../components/static_ability.h"
 #include "../components/damage.h"
 #include "../components/effect.h"
 #include "../components/permanent.h"
@@ -28,6 +31,19 @@ static Colors mana_color_for_subtype(const std::string &subtype) {
     if (subtype == "Swamp") return BLACK;
     if (subtype == "Wastes") return COLORLESS;
     return NO_COLOR;
+}
+
+static bool check_delirium(Zone::Ownership owner, const std::set<Entity> &entities) {
+    std::set<std::string> type_names;
+    for (auto entity : entities) {
+        if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
+        auto &z = global_coordinator.GetComponent<Zone>(entity);
+        if (z.location != Zone::GRAVEYARD || z.owner != owner) continue;
+        if (!global_coordinator.entity_has_component<CardData>(entity)) continue;
+        for (auto &t : global_coordinator.GetComponent<CardData>(entity).types)
+            if (t.kind == TYPE) type_names.insert(t.name);
+    }
+    return type_names.size() >= 4;
 }
 
 // Permanents on battlefield set to have appropriate components
@@ -81,6 +97,14 @@ void StateManager::apply_permanent_components(Game &game) {
                 if (already_present) continue;
                 ab.source = entity;
                 perm_abilities.push_back(ab);
+            }
+
+            // copy static abilities from card_data to permanent (applied = false by default)
+            if (global_coordinator.GetComponent<Permanent>(entity).static_abilities.empty() &&
+                !card_data.static_abilities.empty()) {
+                auto &perm_sa = global_coordinator.GetComponent<Permanent>(entity).static_abilities;
+                for (auto &sa : card_data.static_abilities)
+                    perm_sa.push_back(sa);
             }
 
             // providing creature related components if applicable
@@ -155,6 +179,64 @@ void StateManager::apply_land_abilities(Entity entity) {
     }
 }
 
+void StateManager::apply_static_ability_effects() {
+    for (auto entity : mEntities) {
+        if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
+        if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
+        auto &zone = global_coordinator.GetComponent<Zone>(entity);
+        if (zone.location != Zone::BATTLEFIELD) continue;
+        if (!global_coordinator.entity_has_component<CardData>(entity)) continue;
+
+        auto &perm = global_coordinator.GetComponent<Permanent>(entity);
+
+        // Front-face static abilities don't apply while transformed
+        if (perm.transformed) {
+            for (auto &sa : perm.static_abilities)
+                sa.applied = false;
+            continue;
+        }
+
+        bool delirium_now = check_delirium(perm.controller, mEntities);
+
+        for (auto &sa : perm.static_abilities) {
+            bool condition_met = false;
+            if (sa.condition.empty()) {
+                condition_met = true;
+            } else if (sa.condition == "Delirium") {
+                condition_met = delirium_now;
+            }
+
+            if (sa.category == "Continuous") {
+                if (!global_coordinator.entity_has_component<Creature>(entity)) continue;
+                auto &cr = global_coordinator.GetComponent<Creature>(entity);
+
+                if (condition_met && !sa.applied) {
+                    if (sa.add_power != 0)     cr.power     += static_cast<uint32_t>(sa.add_power);
+                    if (sa.add_toughness != 0) cr.toughness += static_cast<uint32_t>(sa.add_toughness);
+                    if (!sa.add_keyword.empty()) cr.keywords.push_back(sa.add_keyword);
+                    sa.applied = true;
+                    auto &cd = global_coordinator.GetComponent<CardData>(entity);
+                    printf("%s gains %s%s%s(Delirium)\n", cd.name.c_str(),
+                           sa.add_power != 0 ? (std::to_string(sa.add_power) + "/" + std::to_string(sa.add_toughness) + " ").c_str() : "",
+                           !sa.add_keyword.empty() ? (sa.add_keyword + " ").c_str() : "",
+                           !sa.condition.empty() ? "" : "");
+                } else if (!condition_met && sa.applied) {
+                    if (sa.add_power != 0)     cr.power     -= static_cast<uint32_t>(sa.add_power);
+                    if (sa.add_toughness != 0) cr.toughness -= static_cast<uint32_t>(sa.add_toughness);
+                    if (!sa.add_keyword.empty()) {
+                        auto it = std::find(cr.keywords.begin(), cr.keywords.end(), sa.add_keyword);
+                        if (it != cr.keywords.end()) cr.keywords.erase(it);
+                    }
+                    sa.applied = false;
+                    auto &cd = global_coordinator.GetComponent<CardData>(entity);
+                    printf("%s loses Delirium bonus\n", cd.name.c_str());
+                }
+            }
+            // MustAttack: enforcement deferred (future work)
+        }
+    }
+}
+
 void StateManager::init() {
     Signature signature;
     signature.set(global_coordinator.GetComponentType<Zone>());
@@ -183,6 +265,9 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
     }
     // Add/remove Permanent component as entities enter/leave the battlefield
     apply_permanent_components(game);
+
+    // Apply/revert static ability effects (e.g. Delirium bonuses)
+    apply_static_ability_effects();
 
     // Check for lethal damage on creatures
     std::vector<Entity> creatures_to_destroy;

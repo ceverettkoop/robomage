@@ -11,6 +11,7 @@
 #include "components/types.h"
 #include "components/ability.h"
 #include "components/carddata.h"
+#include "components/static_ability.h"
 #include "ecs/coordinator.h"
 #include "ecs/events.h"
 #include "error.h"
@@ -29,6 +30,7 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
                                             const std::map<std::string, std::string>& svars);
 static std::vector<Ability> parse_triggered_abilities(const std::string& script,
                                                       const std::map<std::string, std::string>& svars);
+static std::vector<StaticAbility> parse_static_abilities(const std::string& script);
 static uint32_t parse_power(std::string value);
 static uint32_t parse_toughness(std::string value);
 
@@ -128,6 +130,9 @@ Entity parse_card_script(std::string path) {
         card.alt_cost = ac;
         break;
     }
+
+    // Parse S: lines for static abilities (Continuous, MustAttack, etc.)
+    card.static_abilities = parse_static_abilities(front_script);
 
     // Parse K: keyword lines
     for (auto& kw_line : multi_values_from_script(front_script, "K")) {
@@ -344,7 +349,7 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         ability.may_shuffle = (value == "True");
     } else if (key == "UnlessCost") {
         ability.unless_generic_cost = static_cast<size_t>(std::stoi(value));
-    } else if (key == "LifeAmount") {
+    } else if (key == "LifeAmount" || key == "Amount") {
         ability.amount = static_cast<size_t>(std::stoi(value));
     } else if (key == "TargetType") {
         if (value == "Spell") ability.target_type = "Spell";
@@ -526,6 +531,8 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
     bool mode_is_phase = false;
     bool phase_is_upkeep = false;
     bool valid_player_is_you = false;
+    bool mode_is_spell_cast = false;
+    bool valid_card_non_creature = false;
 
     // Walk pipe-delimited params
     size_t param_pos = 0;
@@ -553,14 +560,16 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
             if (key == "Mode") {
                 if (value == "ChangesZone") mode_changes_zone = true;
                 else if (value == "Phase") mode_is_phase = true;
+                else if (value == "SpellCast") mode_is_spell_cast = true;
             } else if (key == "Phase") {
                 if (value == "Upkeep") phase_is_upkeep = true;
-            } else if (key == "ValidPlayer") {
+            } else if (key == "ValidPlayer" || key == "ValidActivatingPlayer") {
                 if (value == "You") valid_player_is_you = true;
             } else if (key == "Destination") {
                 if (value == "Battlefield") dest_is_battlefield = true;
             } else if (key == "ValidCard") {
                 if (value.find("Creature") != std::string::npos) valid_card_creature = true;
+                if (value.find("nonCreature") != std::string::npos) valid_card_non_creature = true;
                 if (value.find(".Other") != std::string::npos) ability.trigger_self_excluded = true;
             } else if (key == "Execute") {
                 execute_svar = value;
@@ -588,6 +597,11 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
         ability.trigger_valid_player_is_controller = valid_player_is_you;
     }
 
+    if (mode_is_spell_cast && valid_card_non_creature) {
+        ability.trigger_on = Events::NONCREATURE_SPELL_CAST;
+        ability.trigger_valid_player_is_controller = valid_player_is_you;
+    }
+
     // Resolve effect from Execute$ SVar
     if (!execute_svar.empty()) {
         auto it = svars.find(execute_svar);
@@ -609,6 +623,58 @@ static std::vector<Ability> parse_triggered_abilities(const std::string &script,
         Ability ab = parse_one_trigger(line, svars);
         if (ab.trigger_on != 0)  // only keep recognised triggers
             result.push_back(ab);
+    }
+    return result;
+}
+
+static std::vector<StaticAbility> parse_static_abilities(const std::string &script) {
+    std::vector<StaticAbility> result;
+    for (const auto &line : multi_values_from_script(script, "S")) {
+        // Skip alt cost lines (handled separately) and garbage matches
+        if (line.find("AlternativeCost") != std::string::npos) continue;
+        if (line.find("Mode$") == std::string::npos) continue;
+
+        StaticAbility sa;
+        size_t param_pos = 0;
+        while (param_pos <= line.size()) {
+            size_t param_end = line.find('|', param_pos);
+            if (param_end == std::string::npos) param_end = line.size();
+            std::string param = line.substr(param_pos, param_end - param_pos);
+
+            // trim whitespace
+            size_t ks = param.find_first_not_of(" ");
+            size_t ke = param.find_last_not_of(" ");
+            if (ks != std::string::npos) param = param.substr(ks, ke - ks + 1);
+
+            size_t dollar = param.find('$');
+            if (dollar != std::string::npos) {
+                std::string key = param.substr(0, dollar);
+                std::string value = param.substr(dollar + 1);
+                size_t vs = value.find_first_not_of(" ");
+                size_t ve = value.find_last_not_of(" ");
+                if (vs != std::string::npos) value = value.substr(vs, ve - vs + 1);
+                size_t ks2 = key.find_first_not_of(" ");
+                size_t ke2 = key.find_last_not_of(" ");
+                if (ks2 != std::string::npos) key = key.substr(ks2, ke2 - ks2 + 1);
+
+                if (key == "Mode") {
+                    sa.category = value;
+                } else if (key == "Condition") {
+                    sa.condition = value;
+                } else if (key == "AddPower") {
+                    sa.add_power = std::stoi(value);
+                } else if (key == "AddToughness") {
+                    sa.add_toughness = std::stoi(value);
+                } else if (key == "AddKeyword") {
+                    sa.add_keyword = value;
+                }
+            }
+
+            if (param_end >= line.size()) break;
+            param_pos = param_end + 1;
+        }
+
+        if (!sa.category.empty()) result.push_back(sa);
     }
     return result;
 }

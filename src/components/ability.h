@@ -15,7 +15,7 @@ struct Ability{
     enum AbilityType{
         TRIGGERED,
         ACTIVATED,
-        SPELL
+        SPELL,
     };
 
     AbilityType ability_type = SPELL;
@@ -52,6 +52,7 @@ private:
     void resolve_change_zone(std::shared_ptr<Orderer> orderer);
     void resolve_destroy(std::shared_ptr<Orderer> orderer);
     void resolve_rearrange_top_of_library(std::shared_ptr<Orderer> orderer);
+    void resolve_surveil(std::shared_ptr<Orderer> orderer);
 
 };
 
