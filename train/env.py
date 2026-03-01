@@ -31,6 +31,7 @@ Reward
 +1.0 for winning, -1.0 for losing (from Player A's perspective).
 """
 
+import glob as _glob
 import subprocess
 import sys
 import os
@@ -296,6 +297,11 @@ _BF_START         = 33
 _BF_SLOT_SIZE     = 40   # 8 status floats + 32 card one-hot
 _BF_A_SLOTS       = 10   # Player A occupies slots 0-9
 _BF_CARD_OFF      = 8    # offset of card one-hot within each 40-float permanent slot
+_CTRL_OFF         = 7    # offset of controller_is_A within a permanent slot
+_STACK_SLOT_SIZE  = 33   # controller_is_A(1) + card one-hot(32)
+_GY_SLOT_SIZE     = N_CARD_TYPES  # 32 — graveyard slots are just card one-hots
+# Start of bf_ability_costs block in the full obs vector
+_BF_COST_START    = STATE_SIZE + 2 * MAX_ACTIONS + _HAND_COST_FEATS  # 2892
 # Status offsets within a slot
 _OFF_POWER        = 0
 _OFF_TOUGHNESS    = 1
@@ -389,9 +395,9 @@ def scripted_action(obs: np.ndarray, num_choices: int) -> int:
             return i
 
     # 4. Select target — action 0 is the first legal target.
-    #    Entity ID ordering means A's cards always appear before B's in target lists,
-    #    so action 0 = opponent player (burn), opponent spell (counterspell), or
-    #    opponent nonbasic land (Wasteland — only activated if one exists; see step 8).
+    #    The C++ game now sorts targets opponent-first (opponent player, then opponent
+    #    permanents, then own player, then own permanents), so action 0 = opponent player
+    #    for burn, opponent spell for counterspell, opponent nonbasic land for Wasteland.
     for i, c in enumerate(cats):
         if c == _CAT_TARGET:
             return i
@@ -502,3 +508,186 @@ class ModelVsScriptedEnv(gym.Env):
 
     def close(self):
         self._env.close()
+
+
+# ── Observation mirroring ─────────────────────────────────────────────────────
+
+def mirror_obs(obs: np.ndarray) -> np.ndarray:
+    """Flip the observation from Player A's perspective to Player B's (or vice versa).
+
+    After mirroring:
+      - obs[31] = 1.0 always means "I (the calling player) have priority"
+      - controller_is_A = 1.0 always marks the calling player's permanents
+      - slots 0-9 always contain the calling player's creatures / lands / graveyard
+
+    This lets the same policy generalise across both sides: the model can be
+    trained always "as Player A" and the mirroring handles perspective when it
+    actually controls Player B.
+
+    Only the first STATE_SIZE floats and the bf_ability_costs block (derived from
+    creature slot ordering) are modified.  Action categories, action card-IDs, and
+    hand cast-costs are perspective-independent and left unchanged.
+    """
+    m = obs.copy()
+
+    # 1. Swap player scalar stats: life, hand size, poison, mana×6 (indices 0-8 ↔ 9-17)
+    m[0:9], m[9:18] = obs[9:18].copy(), obs[0:9].copy()
+
+    # 2. Flip turn/priority flags
+    m[30] = 1.0 - obs[30]
+    m[31] = 1.0 - obs[31]
+
+    # 3. Swap creature slots 0-9 ↔ 10-19 and flip controller_is_A in all 20 slots
+    for i in range(_BF_A_SLOTS):
+        a = _BF_START + i * _BF_SLOT_SIZE
+        b = _BF_START + (i + _BF_A_SLOTS) * _BF_SLOT_SIZE
+        m[a:a + _BF_SLOT_SIZE] = obs[b:b + _BF_SLOT_SIZE]
+        m[b:b + _BF_SLOT_SIZE] = obs[a:a + _BF_SLOT_SIZE]
+        m[a + _CTRL_OFF] = 1.0 - obs[b + _CTRL_OFF]
+        m[b + _CTRL_OFF] = 1.0 - obs[a + _CTRL_OFF]
+
+    # 4. Swap land slots 0-9 ↔ 10-19 and flip controller_is_A
+    for i in range(_BF_A_SLOTS):
+        a = _LAND_START + i * _BF_SLOT_SIZE
+        b = _LAND_START + (i + _BF_A_SLOTS) * _BF_SLOT_SIZE
+        m[a:a + _BF_SLOT_SIZE] = obs[b:b + _BF_SLOT_SIZE]
+        m[b:b + _BF_SLOT_SIZE] = obs[a:a + _BF_SLOT_SIZE]
+        m[a + _CTRL_OFF] = 1.0 - obs[b + _CTRL_OFF]
+        m[b + _CTRL_OFF] = 1.0 - obs[a + _CTRL_OFF]
+
+    # 5. Flip controller_is_A in stack slots (first float of each 33-float slot)
+    for i in range(5):
+        base = _STACK_START + i * _STACK_SLOT_SIZE
+        m[base] = 1.0 - obs[base]
+
+    # 6. Swap graveyard slots 0-9 ↔ 10-19 (pure card one-hots, no flag to flip)
+    for i in range(_BF_A_SLOTS):
+        a = _GY_START + i * _GY_SLOT_SIZE
+        b = _GY_START + (i + _BF_A_SLOTS) * _GY_SLOT_SIZE
+        m[a:a + _GY_SLOT_SIZE] = obs[b:b + _GY_SLOT_SIZE]
+        m[b:b + _GY_SLOT_SIZE] = obs[a:a + _GY_SLOT_SIZE]
+
+    # 7. Hand slots (obs[_HAND_START:STATE_SIZE]): always the priority player's hand —
+    #    no change needed; after mirror obs[31]=1.0 still means the acting player's hand
+    #    is shown here.
+
+    # 8. Swap bf_ability_costs slots 0-9 ↔ 10-19 (mirrors the creature slot reordering)
+    for i in range(_BF_A_SLOTS):
+        a = _BF_COST_START + i * _N_COST_FEATS
+        b = _BF_COST_START + (i + _BF_A_SLOTS) * _N_COST_FEATS
+        m[a:a + _N_COST_FEATS] = obs[b:b + _N_COST_FEATS]
+        m[b:b + _N_COST_FEATS] = obs[a:a + _N_COST_FEATS]
+
+    return m
+
+
+# ── Self-play environment ─────────────────────────────────────────────────────
+
+class SelfPlayEnv(gym.Env):
+    """Self-play: the training model plays against a frozen previous checkpoint.
+
+    Each episode one player role (A or B) is randomly assigned to the training
+    model; the other is controlled by the frozen opponent.  Both sides receive
+    symmetry-normalised observations via mirror_obs() so the model always appears
+    to be Player A — slots 0-9 are always "my" permanents, obs[31]=1.0 always
+    means "I have priority", and action 0 for SELECT_TARGET is always the opponent.
+
+    The opponent checkpoint is sampled from ``checkpoint_dir`` and reloaded every
+    ``RELOAD_EVERY`` episodes so it gradually tracks the improving policy.  If no
+    checkpoints exist yet the opponent acts randomly (bootstrapping phase).
+    """
+
+    RELOAD_EVERY = 10  # episodes between opponent checkpoint reloads
+
+    def __init__(self, checkpoint_dir: str, binary_path: str = BINARY, render_mode=None):
+        super().__init__()
+        self._env = RoboMageEnv(binary_path=binary_path, render_mode=render_mode)
+        self.observation_space = self._env.observation_space
+        self.action_space = self._env.action_space
+        self.render_mode = render_mode
+        self._checkpoint_dir = checkpoint_dir
+        self._opponent = None    # loaded model, or None → random
+        self._episode_count = 0
+        self._training_is_a = True
+        self._reload_opponent()  # attempt to load an initial checkpoint
+
+    # ------------------------------------------------------------------
+    # gymnasium API
+    # ------------------------------------------------------------------
+
+    def reset(self, *, seed=None, options=None):
+        self._episode_count += 1
+        if self._episode_count % self.RELOAD_EVERY == 0:
+            self._reload_opponent()
+
+        obs, info = self._env.reset(seed=seed, options=options)
+        self._training_is_a = bool(np.random.random() < 0.5)
+
+        obs, reward, terminated, truncated, info = self._handle_opponent_turns(
+            obs, 0.0, False, False, info
+        )
+        if terminated or truncated:
+            return np.zeros(OBS_SIZE, dtype=np.float32), info
+        return self._training_obs(obs), info
+
+    def step(self, action: int):
+        obs, reward, terminated, truncated, info = self._env.step(action)
+        if not (terminated or truncated):
+            obs, reward, terminated, truncated, info = self._handle_opponent_turns(
+                obs, reward, terminated, truncated, info
+            )
+        # Reward is from Player A's perspective; negate if training model plays as B.
+        if not self._training_is_a:
+            reward = -reward
+        return self._training_obs(obs), reward, terminated, truncated, info
+
+    def action_masks(self) -> np.ndarray:
+        return self._env.action_masks()
+
+    def close(self):
+        self._env.close()
+
+    # ------------------------------------------------------------------
+    # Internal helpers
+    # ------------------------------------------------------------------
+
+    def _training_has_priority(self, obs: np.ndarray) -> bool:
+        """True when it is the training model's turn to act (raw obs)."""
+        a_has_priority = obs[31] > 0.5
+        return a_has_priority if self._training_is_a else not a_has_priority
+
+    def _training_obs(self, obs: np.ndarray) -> np.ndarray:
+        """Return obs from the training model's perspective (mirrored when playing as B)."""
+        return obs if self._training_is_a else mirror_obs(obs)
+
+    def _handle_opponent_turns(self, obs, reward, terminated, truncated, info):
+        """Step with the frozen opponent until it is the training model's turn."""
+        while not (terminated or truncated) and not self._training_has_priority(obs):
+            num_choices = self._env._num_choices
+            # Opponent always receives its own symmetry-normalised view
+            opp_obs = mirror_obs(obs) if self._training_is_a else obs
+            if self._opponent is not None:
+                masks = np.zeros(MAX_ACTIONS, dtype=bool)
+                masks[:num_choices] = True
+                action, _ = self._opponent.predict(opp_obs, action_masks=masks, deterministic=False)
+                action = int(action)
+            else:
+                action = np.random.randint(0, num_choices)
+            obs, reward, terminated, truncated, info = self._env.step(action)
+        return obs, reward, terminated, truncated, info
+
+    def _reload_opponent(self):
+        """Sample a random checkpoint from the pool as the new frozen opponent."""
+        files = _glob.glob(os.path.join(self._checkpoint_dir, "*.zip"))
+        if not files:
+            self._opponent = None
+            return
+        path = str(np.random.choice(files))
+        try:
+            try:
+                from sb3_contrib import MaskablePPO as _PPO
+            except ImportError:
+                from stable_baselines3 import PPO as _PPO
+            self._opponent = _PPO.load(path, device="cpu")
+        except Exception:
+            self._opponent = None  # fall back to random if load fails

@@ -6,6 +6,7 @@
 #include "classes/action.h"
 #include "classes/game.h"
 #include "components/ability.h"
+#include "components/zone.h"
 #include "ecs/entity.h"
 
 // Forward declarations
@@ -21,7 +22,9 @@ void proc_mandatory_choice(Game& game, std::shared_ptr<Orderer> orderer);
 bool has_legal_targets(const Ability& ability, std::shared_ptr<Orderer> orderer);
 
 // Prompts the active player to choose a target and sets ability.target.
+// Targets are presented opponent-first so action index 0 always refers to an
+// opponent entity (player or permanent), regardless of which player is casting.
 // Caller must ensure has_legal_targets() is true before calling.
-void select_target(Ability& ability, std::shared_ptr<Orderer> orderer);
+void select_target(Ability& ability, std::shared_ptr<Orderer> orderer, Zone::Ownership priority_player);
 
 #endif

@@ -55,7 +55,7 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
     // SELECT TARGETS BEFORE PAYING COSTS
     if (!is_mana_ability) {
         if (stack_ab.valid_tgts != "N_A") {
-            select_target(stack_ab, orderer);
+            select_target(stack_ab, orderer, controller);
         }
     }
     // Tap cost
@@ -103,7 +103,14 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
     }
 }
 
-static std::vector<Entity> build_valid_targets(const Ability &ability, std::shared_ptr<Orderer> orderer) {
+// Build the list of legal targets for an ability.
+// Targets are sorted from the caster's perspective: opponent entities first (opponent
+// player, then opponent's permanents in entity-ID order), followed by own entities
+// (own player, then own permanents in entity-ID order).  This keeps action index 0
+// pointing at the opponent player for burn spells regardless of which player is casting,
+// which makes the action space symmetric and simplifies self-play training.
+static std::vector<Entity> build_valid_targets(const Ability &ability, std::shared_ptr<Orderer> orderer,
+                                               Zone::Ownership priority_player) {
     std::vector<Entity> valid_targets;
     const std::string &vt = ability.valid_tgts;
 
@@ -115,49 +122,61 @@ static std::vector<Entity> build_valid_targets(const Ability &ability, std::shar
     }
 
     bool any = (vt == "Any");
-    bool inc_players = any || vt.find("Player") != std::string::npos;
+    bool inc_players   = any || vt.find("Player")   != std::string::npos;
     bool inc_creatures = any || vt.find("Creature") != std::string::npos;
-    bool inc_lands = any || vt.find("Land") != std::string::npos;
+    bool inc_lands     = any || vt.find("Land")     != std::string::npos;
     bool nonbasic_only = vt.find("nonBasic") != std::string::npos;
     // TODO: inc_planeswalker, inc_battle when those components exist
 
+    Zone::Ownership opp = (priority_player == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+
+    // Players: opponent first, self second
     if (inc_players) {
-        valid_targets.push_back(cur_game.player_a_entity);
-        valid_targets.push_back(cur_game.player_b_entity);
+        valid_targets.push_back(get_player_entity(opp));
+        valid_targets.push_back(get_player_entity(priority_player));
     }
-    for (auto entity : orderer->mEntities) {
-        if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
-        auto &tz = global_coordinator.GetComponent<Zone>(entity);
-        if (tz.location != Zone::BATTLEFIELD) continue;
-        if (inc_creatures && global_coordinator.entity_has_component<Creature>(entity)) {
-            valid_targets.push_back(entity);
-            continue;
-        }
-        if (inc_lands && global_coordinator.entity_has_component<CardData>(entity)) {
-            auto &tcd = global_coordinator.GetComponent<CardData>(entity);
-            bool is_land = false;
-            bool is_basic = false;
-            for (auto &t : tcd.types) {
-                if (t.kind == TYPE && t.name == "Land") is_land = true;
-                if (t.kind == SUPERTYPE && t.name == "Basic") is_basic = true;
-            }
-            if (is_land && (!nonbasic_only || !is_basic)) {
+
+    // Permanents: two passes — opponent's first, then own (entity-ID order within each group)
+    for (int pass = 0; pass < 2; pass++) {
+        Zone::Ownership slot_owner = (pass == 0) ? opp : priority_player;
+        for (auto entity : orderer->mEntities) {
+            if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
+            auto &tz = global_coordinator.GetComponent<Zone>(entity);
+            if (tz.location != Zone::BATTLEFIELD) continue;
+            if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
+            if (global_coordinator.GetComponent<Permanent>(entity).controller != slot_owner) continue;
+
+            if (inc_creatures && global_coordinator.entity_has_component<Creature>(entity)) {
                 valid_targets.push_back(entity);
                 continue;
             }
+            if (inc_lands && global_coordinator.entity_has_component<CardData>(entity)) {
+                auto &tcd = global_coordinator.GetComponent<CardData>(entity);
+                bool is_land = false;
+                bool is_basic = false;
+                for (auto &t : tcd.types) {
+                    if (t.kind == TYPE && t.name == "Land") is_land = true;
+                    if (t.kind == SUPERTYPE && t.name == "Basic") is_basic = true;
+                }
+                if (is_land && (!nonbasic_only || !is_basic)) {
+                    valid_targets.push_back(entity);
+                    continue;
+                }
+            }
+            // TODO: Planeswalker and Battle components
         }
-        // TODO: Planeswalker and Battle components
     }
     return valid_targets;
 }
 
 bool has_legal_targets(const Ability &ability, std::shared_ptr<Orderer> orderer) {
     if (ability.valid_tgts == "N_A") return true;
-    return !build_valid_targets(ability, orderer).empty();
+    // Ordering doesn't matter for existence check; use PLAYER_A as a placeholder.
+    return !build_valid_targets(ability, orderer, Zone::PLAYER_A).empty();
 }
 
-void select_target(Ability &ability, std::shared_ptr<Orderer> orderer) {
-    std::vector<Entity> valid_targets = build_valid_targets(ability, orderer);
+void select_target(Ability &ability, std::shared_ptr<Orderer> orderer, Zone::Ownership priority_player) {
+    std::vector<Entity> valid_targets = build_valid_targets(ability, orderer, priority_player);
     while (true) {
         printf("Choose target:\n");
         for (size_t i = 0; i < valid_targets.size(); i++) {
@@ -298,7 +317,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
 
                 // Handle targeting
                 if (ability.valid_tgts != "N_A") {
-                    select_target(ability, orderer);
+                    select_target(ability, orderer, caster);
                 }
 
                 global_coordinator.AddComponent(spell_entity, ability);

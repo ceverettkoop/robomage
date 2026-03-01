@@ -21,7 +21,7 @@
 | Daze | 4 | ✅ | Counter unless + alt cost (return Island) |
 | Delver of Secrets | 4 | ✅ | Transform, upkeep trigger  FLYING needs to be understood |
 | Unholy Heat | 3 | ❌ | 2 or 6 damage with Delirium |
-| Dragon's Rage Channeler | 4 | ❌ | Surveil trigger + Delirium pump |
+| Dragon's Rage Channeler | 4 | 🟡 | Surveil trigger + Delirium pump | MISSING GOAD
 | Murktide Regent | 3 | ❌ | Delve, Flying, +1/+1 counters |
 | Mishra's Bauble | 4 | ❌ | 0-cost artifact, tap+sac, delayed draw |
 | Cori-Steel Cutter | 3 | ❌ | updated cards folder to have this one- this is a doozy - tokens, triggers |

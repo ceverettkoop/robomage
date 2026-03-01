@@ -23,7 +23,7 @@ import argparse
 import os
 import random as _random
 
-from env import RoboMageEnv, ModelVsScriptedEnv, scripted_action, OBS_SIZE, STATE_SIZE, MAX_ACTIONS, ACTION_CATEGORY_MAX, BINARY
+from env import RoboMageEnv, ModelVsScriptedEnv, SelfPlayEnv, scripted_action, mirror_obs, OBS_SIZE, STATE_SIZE, MAX_ACTIONS, ACTION_CATEGORY_MAX, BINARY
 from extractor import CardGameExtractor
 
 try:
@@ -85,12 +85,43 @@ def make_env(binary_path: str, rank: int):
     return _init
 
 
-def train(binary_path: str, load_path: str | None = None, total_timesteps: int = TOTAL_TIMESTEPS, tally: bool = False):
+def make_self_play_env(binary_path: str, checkpoint_dir: str, rank: int):
+    def _init():
+        env = SelfPlayEnv(checkpoint_dir=checkpoint_dir, binary_path=binary_path)
+        if USE_MASKABLE:
+            env = ActionMasker(env, lambda e: e.action_masks())
+        env = Monitor(env)
+        return env
+    return _init
+
+
+def train(binary_path: str, load_path: str | None = None, total_timesteps: int = TOTAL_TIMESTEPS,
+          tally: bool = False, self_play: bool = False, scripted_fraction: float = 0.0):
+    """Train the model.
+
+    ``scripted_fraction`` controls how many of the N_ENVS parallel environments
+    use the scripted agent instead of self-play.  E.g. 0.0 = all self-play,
+    0.3 = ~2 scripted + 5 self-play (with N_ENVS=7).  Has no effect unless
+    ``self_play`` is also True.  Mixing in scripted environments prevents the
+    policy drifting to strategies that beat itself but lose to general play.
+    """
     os.makedirs(CHECKPOINT_DIR, exist_ok=True)
     os.makedirs(LOG_DIR, exist_ok=True)
 
     # Parallel environments for faster data collection
-    vec_env = SubprocVecEnv([make_env(binary_path, i) for i in range(N_ENVS)])
+    if self_play:
+        checkpoint_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), CHECKPOINT_DIR)
+        n_scripted = round(N_ENVS * scripted_fraction)
+        n_self_play = N_ENVS - n_scripted
+        env_fns = (
+            [make_self_play_env(binary_path, checkpoint_dir, i) for i in range(n_self_play)]
+            + [make_env(binary_path, N_ENVS - n_scripted + i) for i in range(n_scripted)]
+        )
+        if n_scripted:
+            print(f"Env mix: {n_self_play} self-play + {n_scripted} scripted")
+        vec_env = SubprocVecEnv(env_fns)
+    else:
+        vec_env = SubprocVecEnv([make_env(binary_path, i) for i in range(N_ENVS)])
 
     policy_kwargs = dict(
         features_extractor_class=CardGameExtractor,
@@ -289,6 +320,11 @@ if __name__ == "__main__":
     parser.add_argument("--observe", default=None, help="Watch model .zip play one game vs random")
     parser.add_argument("--watch-scripted", action="store_true", help="Watch one game: scripted A vs scripted B")
     parser.add_argument("--tally", action="store_true", help="Print A/B win tally after each rollout")
+    parser.add_argument("--self-play", action="store_true",
+                        help="Train via self-play against frozen previous checkpoints")
+    parser.add_argument("--scripted-fraction", type=float, default=0.0,
+                        help="Fraction of envs that use the scripted opponent during self-play (default 0.0). "
+                             "E.g. 0.3 gives ~2 scripted + 5 self-play with N_ENVS=7.")
     args = parser.parse_args()
 
     if args.watch_scripted:
@@ -300,4 +336,5 @@ if __name__ == "__main__":
     elif args.eval:
         evaluate(args.binary, args.eval, args.eval_games)
     else:
-        train(args.binary, args.load, args.total_timesteps, tally=args.tally)
+        train(args.binary, args.load, args.total_timesteps, tally=args.tally,
+              self_play=args.self_play, scripted_fraction=args.scripted_fraction)
