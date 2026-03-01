@@ -329,11 +329,11 @@ _WASTELAND_VOCAB_IDX = 10
 _BASIC_LAND_IDS      = frozenset({0, 19})  # Mountain(0), Island(19)
 
 
-def _all_eligible_creatures_attacking(obs: np.ndarray, slot_start: int) -> bool:
-    """Return True if every untapped, non-sick creature in the given 10-slot range is attacking."""
+def _all_eligible_creatures_attacking(obs: np.ndarray) -> bool:
+    """Return True if every untapped, non-sick creature in self's slots (0-23) is attacking."""
     any_eligible = False
     for slot in range(_BF_A_SLOTS):
-        base = _BF_START + (slot_start + slot) * _BF_SLOT_SIZE
+        base = _BF_START + slot * _BF_SLOT_SIZE
         if obs[base + _OFF_POWER] <= 0.0 and obs[base + _OFF_TOUGHNESS] <= 0.0:
             continue  # empty slot
         if obs[base + _OFF_IS_TAPPED] > 0.5 or obs[base + _OFF_HAS_SICKNESS] > 0.5:
@@ -357,7 +357,10 @@ def _opponent_has_nonbasic_land(obs: np.ndarray) -> bool:
 
 def scripted_action(obs: np.ndarray, num_choices: int) -> int:
     """
-    Rule-based Player B for test_minimal.dk (blue/red fetch-land deck):
+    Rule-based agent for test_minimal.dk (blue/red fetch-land deck).
+    Works correctly for either Player A or Player B because the observation
+    is always emitted from the priority player's perspective.
+
       - Never blocks (confirms immediately)
       - Attacks with every eligible creature each combat
       - Selects target 0 (opponent player or first offered spell/permanent)
@@ -393,8 +396,7 @@ def scripted_action(obs: np.ndarray, num_choices: int) -> int:
     #    The game re-offers already-attacking creatures as SEL_ATK (for deselection), so we
     #    must check the battlefield state rather than blindly picking SEL_ATK every time.
     if any(c == _CAT_SEL_ATK for c in cats):
-        # Perspective-normalized: self always occupies slots 0-23
-        if _all_eligible_creatures_attacking(obs, 0):
+        if _all_eligible_creatures_attacking(obs):
             for i, c in enumerate(cats):
                 if c == _CAT_CONF_ATK:
                     return i
