@@ -22,6 +22,16 @@
 extern Coordinator global_coordinator;
 extern Game cur_game;
 
+static const char *mana_symbol_str(Colors color);
+static void process_activate_ability(const LegalAction &action, Game &game, std::shared_ptr<Orderer> orderer);
+static std::vector<Entity> build_valid_targets(const Ability &ability, std::shared_ptr<Orderer> orderer,
+                                               Zone::Ownership priority_player);
+static void pay_alternate_cost(const LegalAction &action, Game &game, std::shared_ptr<Orderer> orderer,
+    const CardData &card_data, Entity spell_entity, Zone zone);                         
+static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer);
+static std::vector<Entity> determine_blockable_attackers(Entity blocker, const std::vector<Entity> &attackers);
+static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer);
+
 static const char *mana_symbol_str(Colors color) {
     switch (color) {
         case WHITE:
@@ -169,38 +179,6 @@ static std::vector<Entity> build_valid_targets(const Ability &ability, std::shar
     return valid_targets;
 }
 
-bool has_legal_targets(const Ability &ability, std::shared_ptr<Orderer> orderer) {
-    if (ability.valid_tgts == "N_A") return true;
-    // Ordering doesn't matter for existence check; use PLAYER_A as a placeholder.
-    return !build_valid_targets(ability, orderer, Zone::PLAYER_A).empty();
-}
-
-void select_target(Ability &ability, std::shared_ptr<Orderer> orderer, Zone::Ownership priority_player) {
-    std::vector<Entity> valid_targets = build_valid_targets(ability, orderer, priority_player);
-    while (true) {
-        printf("Choose target:\n");
-        for (size_t i = 0; i < valid_targets.size(); i++) {
-            Entity target = valid_targets[i];
-            if (global_coordinator.entity_has_component<Player>(target)) {
-                auto &player = global_coordinator.GetComponent<Player>(target);
-                std::string name = (target == cur_game.player_a_entity) ? "Player A" : "Player B";
-                printf("  %zu: %s (%d life)\n", i, name.c_str(), player.life_total);
-            } else {
-                auto &card = global_coordinator.GetComponent<CardData>(target);
-                printf("  %zu: %s\n", i, card.name.c_str());
-            }
-        }
-        std::vector<ActionCategory> tgt_cats(valid_targets.size(), ActionCategory::SELECT_TARGET);
-        int choice = InputLogger::instance().get_logged_input(cur_game.turn, tgt_cats, valid_targets);
-        if (choice >= 0 && choice < static_cast<int>(valid_targets.size())) {
-            ability.target = valid_targets[static_cast<size_t>(choice)];
-            printf("Targeting choice %d\n", choice);
-            return;
-        }
-        printf("Invalid target, must choose a legal target.\n");
-    }
-}
-
 //TODO MAKE THIS GENERAL
 static void pay_alternate_cost(const LegalAction &action, Game &game, std::shared_ptr<Orderer> orderer,
     const CardData &card_data, Entity spell_entity, Zone zone) {
@@ -256,104 +234,6 @@ static void pay_alternate_cost(const LegalAction &action, Game &game, std::share
             printf("%s returns %s to hand\n", player_name(caster).c_str(),
                 global_coordinator.GetComponent<CardData>(returned).name.c_str());
             orderer->add_to_zone(false, returned, Zone::HAND);
-        }
-    }
-}
-
-void process_action(const LegalAction &action, Game &game, std::shared_ptr<Orderer> orderer) {
-    switch (action.type) {
-        case PASS_PRIORITY:
-            game.pass_priority();
-            break;
-
-        case SPECIAL_ACTION: {
-            // Play land
-            Entity land_entity = action.source_entity;
-            auto &zone = global_coordinator.GetComponent<Zone>(land_entity);
-            auto &card_data = global_coordinator.GetComponent<CardData>(land_entity);
-
-            // Move to battlefield
-            orderer->add_to_zone(false, land_entity, Zone::BATTLEFIELD);
-            zone.controller = zone.owner;
-
-            // Permanent component added by apply_permanent_components on next SBA pass
-
-            // Update player's lands played counter
-            Entity player_entity = get_player_entity(zone.owner);
-            auto &player = global_coordinator.GetComponent<Player>(player_entity);
-            player.lands_played_this_turn++;
-
-            printf("%s played %s\n", player_name(zone.owner).c_str(), card_data.name.c_str());
-
-            // Playing a land uses take_action() (resets pass tracking)
-            game.take_action();
-            break;
-        }
-
-        case ACTIVATE_ABILITY:
-            process_activate_ability(action, game, orderer);
-            break;
-
-        case CAST_SPELL: {
-            Entity spell_entity = action.source_entity;
-            auto &zone = global_coordinator.GetComponent<Zone>(spell_entity);
-            auto &card_data = global_coordinator.GetComponent<CardData>(spell_entity);
-            Zone::Ownership caster = zone.owner;
-
-            // ALTERNATE COST
-            if (action.use_alt_cost) {
-                pay_alternate_cost(action, game, orderer, card_data, spell_entity, zone);
-
-            } else {  // REGULAR COST
-                spend_mana(caster, card_data.mana_cost);
-            }
-
-            // Find the primary spell ability template and copy it onto the entity
-            for (const auto &ability_template : card_data.abilities) {
-                if (ability_template.ability_type != Ability::SPELL) continue;
-
-                Ability ability = ability_template;
-                ability.source = spell_entity;
-
-                // Handle targeting
-                if (ability.valid_tgts != "N_A") {
-                    select_target(ability, orderer, caster);
-                }
-
-                global_coordinator.AddComponent(spell_entity, ability);
-                break;  // TODO: support spells with multiple abilities
-            }
-
-            printf("%s casts %s\n", player_name(caster).c_str(), card_data.name.c_str());
-
-            // Add Spell component — present only while the entity is on the stack
-            Spell spell;
-            spell.caster = caster;
-            global_coordinator.AddComponent(spell_entity, spell);
-
-            // Fire NONCREATURE_SPELL_CAST event for non-creature spells
-            {
-                bool is_creature_spell = false;
-                for (const auto &t : card_data.types)
-                    if (t.kind == TYPE && t.name == "Creature") {
-                        is_creature_spell = true;
-                        break;
-                    }
-                if (!is_creature_spell) {
-                    Event cast_ev(Events::NONCREATURE_SPELL_CAST);
-                    Entity caster_entity =
-                        (caster == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
-                    cast_ev.SetParam(Params::ENTITY, spell_entity);
-                    cast_ev.SetParam(Params::PLAYER, caster_entity);
-                    global_coordinator.SendEvent(cast_ev);
-                }
-            }
-
-            // Move to stack
-            orderer->add_to_zone(false, spell_entity, Zone::STACK);  // Top of stack
-
-            game.take_action();
-            break;
         }
     }
 }
@@ -621,6 +501,136 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
 
     game.blockers_declared = true;
     game.pending_choice = NONE;
+}
+
+bool has_legal_targets(const Ability &ability, std::shared_ptr<Orderer> orderer) {
+    if (ability.valid_tgts == "N_A") return true;
+    // Ordering doesn't matter for existence check; use PLAYER_A as a placeholder.
+    return !build_valid_targets(ability, orderer, Zone::PLAYER_A).empty();
+}
+
+void select_target(Ability &ability, std::shared_ptr<Orderer> orderer, Zone::Ownership priority_player) {
+    std::vector<Entity> valid_targets = build_valid_targets(ability, orderer, priority_player);
+    while (true) {
+        printf("Choose target:\n");
+        for (size_t i = 0; i < valid_targets.size(); i++) {
+            Entity target = valid_targets[i];
+            if (global_coordinator.entity_has_component<Player>(target)) {
+                auto &player = global_coordinator.GetComponent<Player>(target);
+                std::string name = (target == cur_game.player_a_entity) ? "Player A" : "Player B";
+                printf("  %zu: %s (%d life)\n", i, name.c_str(), player.life_total);
+            } else {
+                auto &card = global_coordinator.GetComponent<CardData>(target);
+                printf("  %zu: %s\n", i, card.name.c_str());
+            }
+        }
+        std::vector<ActionCategory> tgt_cats(valid_targets.size(), ActionCategory::SELECT_TARGET);
+        int choice = InputLogger::instance().get_logged_input(cur_game.turn, tgt_cats, valid_targets);
+        if (choice >= 0 && choice < static_cast<int>(valid_targets.size())) {
+            ability.target = valid_targets[static_cast<size_t>(choice)];
+            printf("Targeting choice %d\n", choice);
+            return;
+        }
+        printf("Invalid target, must choose a legal target.\n");
+    }
+}
+
+void process_action(const LegalAction &action, Game &game, std::shared_ptr<Orderer> orderer) {
+    switch (action.type) {
+        case PASS_PRIORITY:
+            game.pass_priority();
+            break;
+
+        case SPECIAL_ACTION: {
+            // Play land
+            Entity land_entity = action.source_entity;
+            auto &zone = global_coordinator.GetComponent<Zone>(land_entity);
+            auto &card_data = global_coordinator.GetComponent<CardData>(land_entity);
+
+            // Move to battlefield
+            orderer->add_to_zone(false, land_entity, Zone::BATTLEFIELD);
+            zone.controller = zone.owner;
+
+            // Permanent component added by apply_permanent_components on next SBA pass
+
+            // Update player's lands played counter
+            Entity player_entity = get_player_entity(zone.owner);
+            auto &player = global_coordinator.GetComponent<Player>(player_entity);
+            player.lands_played_this_turn++;
+
+            printf("%s played %s\n", player_name(zone.owner).c_str(), card_data.name.c_str());
+
+            // Playing a land uses take_action() (resets pass tracking)
+            game.take_action();
+            break;
+        }
+
+        case ACTIVATE_ABILITY:
+            process_activate_ability(action, game, orderer);
+            break;
+
+        case CAST_SPELL: {
+            Entity spell_entity = action.source_entity;
+            auto &zone = global_coordinator.GetComponent<Zone>(spell_entity);
+            auto &card_data = global_coordinator.GetComponent<CardData>(spell_entity);
+            Zone::Ownership caster = zone.owner;
+
+            // ALTERNATE COST
+            if (action.use_alt_cost) {
+                pay_alternate_cost(action, game, orderer, card_data, spell_entity, zone);
+
+            } else {  // REGULAR COST
+                spend_mana(caster, card_data.mana_cost);
+            }
+
+            // Find the primary spell ability template and copy it onto the entity
+            for (const auto &ability_template : card_data.abilities) {
+                if (ability_template.ability_type != Ability::SPELL) continue;
+
+                Ability ability = ability_template;
+                ability.source = spell_entity;
+
+                // Handle targeting
+                if (ability.valid_tgts != "N_A") {
+                    select_target(ability, orderer, caster);
+                }
+
+                global_coordinator.AddComponent(spell_entity, ability);
+                break;  // TODO: support spells with multiple abilities
+            }
+
+            printf("%s casts %s\n", player_name(caster).c_str(), card_data.name.c_str());
+
+            // Add Spell component — present only while the entity is on the stack
+            Spell spell;
+            spell.caster = caster;
+            global_coordinator.AddComponent(spell_entity, spell);
+
+            // Fire NONCREATURE_SPELL_CAST event for non-creature spells
+            {
+                bool is_creature_spell = false;
+                for (const auto &t : card_data.types)
+                    if (t.kind == TYPE && t.name == "Creature") {
+                        is_creature_spell = true;
+                        break;
+                    }
+                if (!is_creature_spell) {
+                    Event cast_ev(Events::NONCREATURE_SPELL_CAST);
+                    Entity caster_entity =
+                        (caster == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
+                    cast_ev.SetParam(Params::ENTITY, spell_entity);
+                    cast_ev.SetParam(Params::PLAYER, caster_entity);
+                    global_coordinator.SendEvent(cast_ev);
+                }
+            }
+
+            // Move to stack
+            orderer->add_to_zone(false, spell_entity, Zone::STACK);  // Top of stack
+
+            game.take_action();
+            break;
+        }
+    }
 }
 
 void proc_mandatory_choice(Game &game, std::shared_ptr<Orderer> orderer) {
