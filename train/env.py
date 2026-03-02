@@ -283,6 +283,22 @@ class RoboMageEnv(gym.Env):
             self._proc = None
 
 
+class NarrativeEnv(RoboMageEnv):
+    """RoboMageEnv that collects non-QUERY game lines into a list instead of printing them."""
+
+    def __init__(self, **kwargs):
+        kwargs.setdefault("render_mode", "human")
+        super().__init__(**kwargs)
+        self.lines: list = []
+
+    def _print_narrative_line(self, line: str):
+        self.lines.append(line)
+
+    def flush_lines(self) -> list:
+        out, self.lines = self.lines, []
+        return out
+
+
 # ── Action category constants (mirror ActionCategory enum in classes/action.h) ─
 _CAT_PASS       = 0
 _CAT_MANA       = 1   # legacy, no longer emitted by the game
@@ -521,21 +537,25 @@ class ModelVsScriptedEnv(gym.Env):
         self.render_mode = render_mode
         self._training_is_a = True
         self._pending_shaping = 0.0
+        self._opponent_below_10 = False
 
     def reset(self, *, seed=None, options=None):
         self._training_is_a = bool(np.random.random() < 0.5)
         self._pending_shaping = 0.0
+        self._opponent_below_10 = False
         obs, info = self._env.reset(seed=seed, options=options)
         obs, _reward, terminated, truncated, info = self._skip_opponent_turns(
             obs, 0.0, False, False, info
         )
         self._pending_shaping = 0.0  # discard any shaping from setup turns
+        self._opponent_below_10 = False  # reset after mulligan/setup
         return obs, info
 
     def step(self, action: int):
         obs, reward, terminated, truncated, info = self._env.step(action)
         self._accumulate_shaping(info)
         if not (terminated or truncated):
+            self._check_opponent_below_10(obs)
             obs, reward, terminated, truncated, info = self._skip_opponent_turns(
                 obs, reward, terminated, truncated, info
             )
@@ -552,12 +572,28 @@ class ModelVsScriptedEnv(gym.Env):
         else:
             self._pending_shaping += info.get("shaping_b", 0.0)
 
+    def _check_opponent_below_10(self, obs):
+        """Issue +0.2 shaping reward the first time the scripted opponent's life drops below 10."""
+        if self._opponent_below_10:
+            return
+        # obs is always from the priority player's perspective.
+        # When the model has priority, obs[9] = scripted life / 20.
+        # When the scripted agent has priority, obs[0] = scripted ("self") life / 20.
+        a_has_priority = obs[31] > 0.5
+        model_has_priority = a_has_priority if self._training_is_a else not a_has_priority
+        scripted_life = (obs[9] if model_has_priority else obs[0]) * 20.0
+        if scripted_life < 10.0:
+            self._opponent_below_10 = True
+            self._pending_shaping += 0.2
+
     def _skip_opponent_turns(self, obs, reward, terminated, truncated, info):
         """Resolve consecutive opponent turns with the scripted agent."""
         while not (terminated or truncated) and (obs[31] > 0.5) != self._training_is_a:
             action = scripted_action(obs, self._env._num_choices)
             obs, reward, terminated, truncated, info = self._env.step(action)
             self._accumulate_shaping(info)
+            if not (terminated or truncated):
+                self._check_opponent_below_10(obs)
         return obs, reward, terminated, truncated, info
 
     def action_masks(self) -> np.ndarray:

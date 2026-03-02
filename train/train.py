@@ -22,7 +22,7 @@ Usage:
 import argparse
 import os
 
-from env import RoboMageEnv, ModelVsScriptedEnv, SelfPlayEnv, scripted_action, OBS_SIZE, STATE_SIZE, MAX_ACTIONS, ACTION_CATEGORY_MAX, BINARY
+from env import RoboMageEnv, ModelVsScriptedEnv, SelfPlayEnv, NarrativeEnv, scripted_action, OBS_SIZE, STATE_SIZE, MAX_ACTIONS, ACTION_CATEGORY_MAX, BINARY
 from extractor import CardGameExtractor
 
 try:
@@ -70,10 +70,81 @@ class WinTallyCallback(BaseCallback):
         self._interval_scripted_wins = 0
 
 
+class ReplayLogCallback(BaseCallback):
+    """After each rollout, runs one model-vs-scripted game and saves a transcript."""
+
+    def __init__(self, binary_path: str, replay_dir: str = "replays"):
+        super().__init__()
+        self.binary_path = binary_path
+        self.replay_dir = replay_dir
+        self._rollout = 0
+        os.makedirs(replay_dir, exist_ok=True)
+
+    def _on_step(self) -> bool:
+        return True
+
+    def _on_rollout_end(self) -> None:
+        import numpy as np
+        self._rollout += 1
+        log_path = os.path.join(self.replay_dir, f"rollout_{self._rollout:05d}.txt")
+
+        env = NarrativeEnv(binary_path=self.binary_path)
+        if USE_MASKABLE:
+            from sb3_contrib.common.wrappers import ActionMasker as _AM
+            masked = _AM(env, lambda e: e.action_masks())
+        else:
+            masked = env
+
+        try:
+            obs, _ = masked.reset()
+            model_is_a = bool(np.random.random() < 0.5)
+            done = False
+            total_reward = 0.0
+
+            with open(log_path, "w") as f:
+                model_side = "A" if model_is_a else "B"
+                scripted_side = "B" if model_is_a else "A"
+                f.write(f"=== Rollout {self._rollout}: Model ({model_side}) vs Scripted ({scripted_side}) ===\n\n")
+
+                while not done:
+                    for line in env.flush_lines():
+                        f.write(line + "\n")
+
+                    a_has_priority = obs[31] > 0.5
+                    model_has_priority = a_has_priority if model_is_a else not a_has_priority
+                    num_choices = env._num_choices
+                    cur_side = "A" if a_has_priority else "B"
+
+                    if model_has_priority:
+                        masks = env.action_masks() if USE_MASKABLE else None
+                        action, _ = self.model.predict(obs, action_masks=masks, deterministic=True)
+                        action = int(action)
+                        f.write(f"[Model/{cur_side}] chose {action} of {num_choices}\n")
+                    else:
+                        action = scripted_action(obs, num_choices)
+                        f.write(f"[Scripted/{cur_side}] chose {action} of {num_choices}\n")
+
+                    obs, reward, terminated, truncated, _ = masked.step(action)
+                    total_reward += reward
+                    done = terminated or truncated
+
+                for line in env.flush_lines():
+                    f.write(line + "\n")
+
+                result = "Model wins" if total_reward > 0 else "Scripted wins" if total_reward < 0 else "Draw"
+                f.write(f"\n=== {result} ===\n")
+
+            print(f"[replay] rollout {self._rollout}: {result} -> {log_path}")
+        except Exception as exc:
+            print(f"[replay] rollout {self._rollout}: game failed ({exc})")
+        finally:
+            env.close()
+
+
 CHECKPOINT_DIR = "checkpoints"
 LOG_DIR = "logs"
 TOTAL_TIMESTEPS = 1_000_000
-N_ENVS = 7  # parallel game processes
+N_ENVS = 10  # parallel game processes
 
 
 def make_env(binary_path: str, rank: int):
@@ -138,13 +209,13 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
             vec_env,
             policy_kwargs=policy_kwargs,
             learning_rate=3e-4,
-            n_steps=512,           # steps per env per update
-            batch_size=64,
-            n_epochs=10,
+            n_steps=2048,           # steps per env per update
+            batch_size=512,
+            n_epochs=4,
             gamma=0.99,
             gae_lambda=0.95,
             clip_range=0.2,
-            ent_coef=0.01,         # encourage exploration early on
+            ent_coef=0.1,         # encourage exploration early on
             verbose=1,
             tensorboard_log=LOG_DIR,
         )
@@ -158,6 +229,7 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
     ]
     if tally:
         callbacks.append(WinTallyCallback())
+    callbacks.append(ReplayLogCallback(binary_path=binary_path))
 
     print(f"Training for {total_timesteps:,} timesteps across {N_ENVS} envs...")
     model.learn(total_timesteps=total_timesteps, callback=callbacks, reset_num_timesteps=load_path is None)
