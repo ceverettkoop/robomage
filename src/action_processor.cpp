@@ -428,6 +428,13 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
 
     // Selection loop
     while (true) {
+        // Only offer creatures not yet assigned to a blocker slot
+        std::vector<Entity> unblocked;
+        for (auto entity : eligible) {
+            if (!global_coordinator.GetComponent<Creature>(entity).is_blocking)
+                unblocked.push_back(entity);
+        }
+
         printf("\n--- Declare Blockers (%s) ---\n", player_name(defending_player).c_str());
         printf("Attackers:\n");
         for (size_t i = 0; i < attackers.size(); i++) {
@@ -436,62 +443,57 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
             printf("  %zu: %s [%d/%d]\n", i, cd.name.c_str(), cr.power, cr.toughness);
         }
         printf("Your creatures:\n");
-        for (size_t i = 0; i < eligible.size(); i++) {
-            auto &cd = global_coordinator.GetComponent<CardData>(eligible[i]);
-            auto &cr = global_coordinator.GetComponent<Creature>(eligible[i]);
-            printf("  %zu: %s [%d/%d]", i, cd.name.c_str(), cr.power, cr.toughness);
-            if (cr.is_blocking) {
-                auto &attacker_cd = global_coordinator.GetComponent<CardData>(cr.blocking_target);
-                printf(" blocking %s", attacker_cd.name.c_str());
-            }
-            printf("\n");
+        for (auto entity : eligible) {
+            auto &cr = global_coordinator.GetComponent<Creature>(entity);
+            if (!cr.is_blocking) continue;
+            auto &cd = global_coordinator.GetComponent<CardData>(entity);
+            auto &acd = global_coordinator.GetComponent<CardData>(cr.blocking_target);
+            printf("  (assigned) %s [%d/%d] blocking %s\n",
+                   cd.name.c_str(), cr.power, cr.toughness, acd.name.c_str());
+        }
+        for (size_t i = 0; i < unblocked.size(); i++) {
+            auto &cd = global_coordinator.GetComponent<CardData>(unblocked[i]);
+            auto &cr = global_coordinator.GetComponent<Creature>(unblocked[i]);
+            printf("  %zu: %s [%d/%d]\n", i, cd.name.c_str(), cr.power, cr.toughness);
         }
         printf("  -1: Confirm\n");
 
-        // num_choices = eligible blockers + 1 implicit confirm (-1)
-        std::vector<ActionCategory> blk_cats(eligible.size(), ActionCategory::SELECT_BLOCKER);
+        std::vector<ActionCategory> blk_cats(unblocked.size(), ActionCategory::SELECT_BLOCKER);
         blk_cats.push_back(ActionCategory::CONFIRM_BLOCKERS);
-        std::vector<Entity> blk_ents(eligible.begin(), eligible.end());
+        std::vector<Entity> blk_ents(unblocked.begin(), unblocked.end());
         blk_ents.push_back(Entity(0));  // confirm slot — null sentinel
         int blocker_choice = InputLogger::instance().get_logged_input(cur_game.turn, blk_cats, blk_ents);
 
         if (blocker_choice == -1) break;
 
-        if (blocker_choice < 0 || blocker_choice >= static_cast<int>(eligible.size())) {
+        if (blocker_choice < 0 || blocker_choice >= static_cast<int>(unblocked.size())) {
             printf("Invalid selection.\n");
             continue;
         }
 
-        auto &cr = global_coordinator.GetComponent<Creature>(eligible[static_cast<size_t>(blocker_choice)]);
-        auto &cd = global_coordinator.GetComponent<CardData>(eligible[static_cast<size_t>(blocker_choice)]);
+        Entity chosen = unblocked[static_cast<size_t>(blocker_choice)];
+        auto &cr = global_coordinator.GetComponent<Creature>(chosen);
+        auto &cd = global_coordinator.GetComponent<CardData>(chosen);
 
-        if (cr.is_blocking) {
-            // Toggle off
-            cr.is_blocking = false;
-            cr.blocking_target = 0;
-            printf("%s removed from blockers.\n", cd.name.c_str());
+        auto legal_attackers = determine_blockable_attackers(chosen, attackers);
+        printf("Select attacker for %s to block:\n", cd.name.c_str());
+        for (size_t i = 0; i < legal_attackers.size(); i++) {
+            auto &acd = global_coordinator.GetComponent<CardData>(legal_attackers[i]);
+            auto &acr = global_coordinator.GetComponent<Creature>(legal_attackers[i]);
+            printf("  %zu: %s [%d/%d]\n", i, acd.name.c_str(), acr.power, acr.toughness);
+        }
+
+        std::vector<ActionCategory> blk_tgt_cats(legal_attackers.size(), ActionCategory::OTHER_CHOICE);
+        int attacker_choice =
+            InputLogger::instance().get_logged_input(cur_game.turn, blk_tgt_cats, legal_attackers);
+
+        if (attacker_choice >= 0 && attacker_choice < static_cast<int>(legal_attackers.size())) {
+            cr.is_blocking = true;
+            cr.blocking_target = legal_attackers[static_cast<size_t>(attacker_choice)];
+            auto &acd = global_coordinator.GetComponent<CardData>(cr.blocking_target);
+            printf("%s blocking %s.\n", cd.name.c_str(), acd.name.c_str());
         } else {
-            auto legal_attackers =
-                determine_blockable_attackers(eligible[static_cast<size_t>(blocker_choice)], attackers);
-            printf("Select attacker for %s to block:\n", cd.name.c_str());
-            for (size_t i = 0; i < legal_attackers.size(); i++) {
-                auto &acd = global_coordinator.GetComponent<CardData>(legal_attackers[i]);
-                auto &acr = global_coordinator.GetComponent<Creature>(legal_attackers[i]);
-                printf("  %zu: %s [%d/%d]\n", i, acd.name.c_str(), acr.power, acr.toughness);
-            }
-
-            std::vector<ActionCategory> blk_tgt_cats(legal_attackers.size(), ActionCategory::OTHER_CHOICE);
-            int attacker_choice =
-                InputLogger::instance().get_logged_input(cur_game.turn, blk_tgt_cats, legal_attackers);
-
-            if (attacker_choice >= 0 && attacker_choice < static_cast<int>(legal_attackers.size())) {
-                cr.is_blocking = true;
-                cr.blocking_target = legal_attackers[static_cast<size_t>(attacker_choice)];
-                auto &acd = global_coordinator.GetComponent<CardData>(cr.blocking_target);
-                printf("%s blocking %s.\n", cd.name.c_str(), acd.name.c_str());
-            } else {
-                printf("Invalid attacker.\n");
-            }
+            printf("Invalid attacker.\n");
         }
     }
 
