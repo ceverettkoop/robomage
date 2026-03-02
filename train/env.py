@@ -361,8 +361,11 @@ _OFF_IS_ATTACKING = 3
 _OFF_HAS_SICKNESS = 5
 
 # Vocab indices used for targeting decisions (mirror src/card_vocab.h)
-_WASTELAND_VOCAB_IDX = 10
-_BASIC_LAND_IDS      = frozenset({0, 19})  # Mountain(0), Island(19)
+_WASTELAND_VOCAB_IDX     = 10
+_BASIC_LAND_IDS          = frozenset({0, 19})  # Mountain(0), Island(19)
+_COUNTER_SPELL_VOCAB_IDS = frozenset({12, 13, 22})  # Force of Will(12), Daze(13), Counterspell(22)
+_COUNTERSPELL_VOCAB_IDX  = 22
+_BLUE_POOL_IDX           = 4   # obs[3 + 1]; mana pool is at obs[3:9], W/U/B/R/G/C, /10
 
 
 def _all_eligible_creatures_attacking(obs: np.ndarray) -> bool:
@@ -391,6 +394,17 @@ def _opponent_has_nonbasic_land(obs: np.ndarray) -> bool:
     return False
 
 
+def _opponent_has_spell_on_stack(obs: np.ndarray) -> bool:
+    """Return True if at least one spell/ability on the stack is not controlled by self."""
+    for i in range(12):
+        base = _STACK_START + i * _STACK_SLOT_SIZE
+        ctrl_is_self = obs[base]
+        card_vec = obs[base + 1 : base + 1 + N_CARD_TYPES]
+        if np.max(card_vec) > 0.5 and ctrl_is_self < 0.5:
+            return True
+    return False
+
+
 def scripted_action(obs: np.ndarray, num_choices: int) -> int:
     """
     Rule-based agent for test_minimal.dk (blue/red fetch-land deck).
@@ -411,7 +425,9 @@ def scripted_action(obs: np.ndarray, num_choices: int) -> int:
 
     Action categories are stored in obs[STATE_SIZE:] normalised by ACTION_CATEGORY_MAX.
     """
-    cats = np.round(obs[STATE_SIZE:STATE_SIZE + num_choices] * ACTION_CATEGORY_MAX).astype(int)
+    cats     = np.round(obs[STATE_SIZE:STATE_SIZE + num_choices] * ACTION_CATEGORY_MAX).astype(int)
+    card_ids = obs[STATE_SIZE + MAX_ACTIONS     : STATE_SIZE + 2 * MAX_ACTIONS]
+    ctrl_arr = obs[STATE_SIZE + 2 * MAX_ACTIONS : STATE_SIZE + 3 * MAX_ACTIONS]
 
     _STEP_FIRST_MAIN  = 21   # obs[18 + 3]
     _STEP_SECOND_MAIN = 27   # obs[18 + 9]
@@ -446,10 +462,15 @@ def scripted_action(obs: np.ndarray, num_choices: int) -> int:
         if c == _CAT_CONF_ATK:
             return i
 
-    # 4. Select target — action 0 is the first legal target.
-    #    The C++ game now sorts targets opponent-first (opponent player, then opponent
-    #    permanents, then own player, then own permanents), so action 0 = opponent player
-    #    for burn, opponent spell for counterspell, opponent nonbasic land for Wasteland.
+    # 4. Select target — prefer non-self-controlled targets.
+    #    ctrl_arr[i] == 1.0 means self-controlled; 0.0 = opponent permanent/spell;
+    #    _ACTION_CTRL_NULL (-0.03125) = player target (also non-self).
+    #    The C++ game sorts targets opponent-first so action 0 is usually correct,
+    #    but guard against accidentally targeting own spells/permanents.
+    for i, c in enumerate(cats):
+        if c == _CAT_TARGET and ctrl_arr[i] < 0.5:
+            return i
+    # Fallback: all targets are self-controlled — return first (shouldn't happen in practice).
     for i, c in enumerate(cats):
         if c == _CAT_TARGET:
             return i
@@ -460,9 +481,22 @@ def scripted_action(obs: np.ndarray, num_choices: int) -> int:
     if any(c == _CAT_SEARCH for c in cats):
         return 1 if num_choices > 1 else 0
 
-    # 6. Cast any spell immediately if affordable (game only offers CAST when legal)
+    # 6. Cast any spell immediately if affordable (game only offers CAST when legal).
+    #    Counter spells (Counterspell, Daze, Force of Will) require an opponent's spell
+    #    on the stack; skip them when the stack holds only own spells or is empty.
+    opponent_spell_on_stack = _opponent_has_spell_on_stack(obs)
+
+    # Priority: if opponent has a spell on stack and we have UU, cast Counterspell first.
+    if opponent_spell_on_stack and int(round(obs[_BLUE_POOL_IDX] * 10)) >= 2:
+        for i, c in enumerate(cats):
+            if c == _CAT_CAST and round(float(card_ids[i]) * N_CARD_TYPES) == _COUNTERSPELL_VOCAB_IDX:
+                return i
+
     for i, c in enumerate(cats):
         if c == _CAT_CAST:
+            cid = round(float(card_ids[i]) * N_CARD_TYPES)
+            if cid in _COUNTER_SPELL_VOCAB_IDS and not opponent_spell_on_stack:
+                continue
             return i
 
     # 7. Play land (may unlock mana for a spell next query)
@@ -477,8 +511,6 @@ def scripted_action(obs: np.ndarray, num_choices: int) -> int:
     #      Guard: only activate if the opponent actually has a nonbasic land to target,
     #      otherwise action 0 for SELECT_TARGET would be our own land.
     if in_main_phase:
-        # card_id_arr is at STATE_SIZE + MAX_ACTIONS in the obs vector
-        card_ids = obs[STATE_SIZE + MAX_ACTIONS : STATE_SIZE + 2 * MAX_ACTIONS]
         for i, c in enumerate(cats):
             if c == _CAT_ACTIVATE:
                 cid = round(float(card_ids[i]) * N_CARD_TYPES)
