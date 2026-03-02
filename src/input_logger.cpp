@@ -7,6 +7,7 @@
 #include "components/carddata.h"
 #include "components/permanent.h"
 #include "components/zone.h"
+#include "debug.h"
 #include "ecs/coordinator.h"
 #include "error.h"
 #include "classes/game.h"
@@ -103,7 +104,12 @@ int InputLogger::get_logged_input(size_t cur_turn,
         if (!(replay_file >> choice)) {
             fatal_error("Replay file ended unexpectedly");
         }
-        printf("(REPLAY) Input: %d\n", choice);
+        Zone::Ownership priority = cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
+        printf("(REPLAY) [T%zu | %s | %s] Input: %d\n",
+               cur_game.turn,
+               step_to_string(cur_game.cur_step),
+               player_name(priority).c_str(),
+               choice);
         return choice;
     }
 

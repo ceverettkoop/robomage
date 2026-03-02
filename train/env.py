@@ -188,9 +188,9 @@ class RoboMageEnv(gym.Env):
             if line.startswith("MANA_WASTED: "):
                 side = line[13:].strip()
                 if side == "A":
-                    shaping_a -= 0.1
+                    shaping_a -= 0.05
                 elif side == "B":
-                    shaping_b -= 0.1
+                    shaping_b -= 0.05
                 continue
 
             # Shaping signal: excessive mulligan (3rd and beyond = -0.1 each)

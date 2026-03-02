@@ -100,6 +100,9 @@ class ReplayLogCallback(BaseCallback):
             model_is_a = bool(np.random.random() < 0.5)
             done = False
             total_reward = 0.0
+            turn = 0
+            prev_active_is_a = None
+            known_hand = {"A": [], "B": []}
 
             with open(log_path, "w") as f:
                 model_side = "A" if model_is_a else "B"
@@ -108,12 +111,28 @@ class ReplayLogCallback(BaseCallback):
 
                 while not done:
                     for line in env.flush_lines():
-                        f.write(line + "\n")
+                        if line.strip():
+                            f.write(line + "\n")
 
                     a_has_priority = obs[31] > 0.5
                     model_has_priority = a_has_priority if model_is_a else not a_has_priority
                     num_choices = env._num_choices
                     cur_side = "A" if a_has_priority else "B"
+
+                    priority_is_a = a_has_priority
+                    active_is_a = (obs[30] > 0.5) == priority_is_a
+                    cats = np.round(obs[STATE_SIZE:STATE_SIZE + num_choices] * ACTION_CATEGORY_MAX).astype(int)
+                    is_mulligan = any(c == 11 for c in cats)
+
+                    known_hand[cur_side] = _decode_hand(obs)
+
+                    if not is_mulligan and active_is_a != prev_active_is_a:
+                        turn += 1
+                        active_label = "A" if active_is_a else "B"
+                        f.write(f"--- Turn {turn} (Player {active_label}) ---\n")
+                        f.write(f"  PA: {', '.join(known_hand['A']) or '(empty)'}\n")
+                        f.write(f"  PB: {', '.join(known_hand['B']) or '(empty)'}\n")
+                        prev_active_is_a = active_is_a
 
                     if model_has_priority:
                         masks = env.action_masks() if USE_MASKABLE else None
@@ -129,7 +148,8 @@ class ReplayLogCallback(BaseCallback):
                     done = terminated or truncated
 
                 for line in env.flush_lines():
-                    f.write(line + "\n")
+                    if line.strip():
+                        f.write(line + "\n")
 
                 model_reward = total_reward if model_is_a else -total_reward
                 result = "Model wins" if model_reward > 0 else "Scripted wins" if model_reward < 0 else "Draw"
@@ -332,35 +352,95 @@ _CAT_NAMES = {
     8: "TARGET", 9: "LAND", 10: "OTHER", 11: "MULLIGAN", 12: "BOTTOM_CARD"
 }
 
+_STEP_NAMES = [
+    "Untap", "Upkeep", "Draw", "First Main", "Begin Combat",
+    "Declare Atk", "Declare Blk", "Combat Dmg",
+    "End Combat", "Second Main", "End Step", "Cleanup",
+]
+
+# Index → card name, mirrors card_vocab.h
+_VOCAB_NAMES = [
+    "Mountain", "Forest", "Lightning Bolt", "Grizzly Bears", "Volcanic Island",
+    "Scalding Tarn", "Flooded Strand", "Polluted Delta", "Wooded Foothills", "Misty Rainforest",
+    "Wasteland", "Ponder", "Force of Will", "Daze", "Soul Warden", "Tundra",
+    "Delver of Secrets", "Insectile Aberration", "Flying Men", "Island",
+    "Dragon's Rage Channeler", "Air Elemental", "Counterspell", "Lightning Strike",
+    "Brainstorm",
+]
+
+
+def _decode_hand(obs):
+    """Return list of card names for the priority player's hand (obs[8365:8685])."""
+    import numpy as np
+    cards = []
+    for slot in range(10):           # MAX_HAND_SLOTS = 10
+        base = 8365 + slot * 32      # _HAND_START + slot * N_CARD_TYPES
+        vec = obs[base : base + 32]
+        idx = int(np.argmax(vec))
+        if vec[idx] > 0.5:
+            cards.append(_VOCAB_NAMES[idx] if idx < len(_VOCAB_NAMES) else f"?{idx}")
+    return cards
+
 
 def watch_scripted(binary_path: str):
     """Run one game with both players driven by the scripted agent and print every decision."""
     import numpy as np
-    import sys
 
-    env = RoboMageEnv(binary_path=binary_path, render_mode="human")
+    env = NarrativeEnv(binary_path=binary_path)
     obs, _ = env.reset()
     done = False
-    step = 0
+    decision = 0
+    turn = 0
+    prev_active_is_a = None       # None until first non-mulligan query
+    known_hand = {"A": [], "B": []}
 
     print("=== Scripted (A) vs Scripted (B) ===\n", flush=True)
 
     while not done:
+        # Print narrative from the previous step; skip blank lines (e.g. leading \n
+        # from C++ printf("\n--- Declare Attackers...")) to avoid extra whitespace.
+        for line in env.flush_lines():
+            if line.strip():
+                print(line, flush=True)
+
         num_choices = env._num_choices
-        player = "A" if obs[31] > 0.5 else "B"
-        action = scripted_action(obs, num_choices)
+        priority_is_a = obs[31] > 0.5
+        player = "A" if priority_is_a else "B"
+        # active_is_a: obs[30]=1 means priority player IS the active player
+        active_is_a = (obs[30] > 0.5) == priority_is_a
+        step_name = _STEP_NAMES[int(np.argmax(obs[18:30]))]
 
         cats = np.round(obs[STATE_SIZE:STATE_SIZE + num_choices] * ACTION_CATEGORY_MAX).astype(int)
+        is_mulligan = any(c == 11 for c in cats)
+
+        # Cache the priority player's hand on every query
+        known_hand[player] = _decode_hand(obs)
+
+        # Print a turn banner when the active player changes (ignore mulligan phase)
+        if not is_mulligan and active_is_a != prev_active_is_a:
+            turn += 1
+            active_label = "A" if active_is_a else "B"
+            a_hand = ", ".join(known_hand["A"]) or "(empty)"
+            b_hand = ", ".join(known_hand["B"]) or "(empty)"
+            print(f"--- Turn {turn} (Player {active_label}) ---", flush=True)
+            print(f"  PA: {a_hand}", flush=True)
+            print(f"  PB: {b_hand}", flush=True)
+            prev_active_is_a = active_is_a
+
+        action = scripted_action(obs, num_choices)
         chosen_cat = _CAT_NAMES.get(int(cats[action]), str(cats[action]))
         all_cats = [_CAT_NAMES.get(int(c), str(c)) for c in cats]
 
-        print(f"[{step:4d}] P{player}  choices={num_choices}  available={all_cats}  -> {action} ({chosen_cat})",
+        print(f"[{decision:4d}] P{player}  {step_name:<14}  choices={num_choices}  available={all_cats}  -> {action} ({chosen_cat})",
               flush=True)
-        sys.stderr.flush()
 
         obs, reward, terminated, truncated, _ = env.step(action)
         done = terminated or truncated
-        step += 1
+        decision += 1
+
+    for line in env.flush_lines():
+        if line.strip():
+            print(line, flush=True)
 
     print(flush=True)
     if reward > 0:

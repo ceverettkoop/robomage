@@ -8,6 +8,7 @@
 #include "systems/state_manager.h"
 #include "classes/game.h"
 
+const char* step_to_string(Step in_step);
 void print_library(std::shared_ptr<Orderer> orderer, Zone::Ownership owner);
 void print_hand(std::shared_ptr<Orderer> orderer, Zone::Ownership owner);
 void print_stack(std::shared_ptr<Orderer> orderer);

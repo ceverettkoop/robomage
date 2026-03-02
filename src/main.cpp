@@ -137,7 +137,13 @@ int main(int argc, char const *argv[]) {
 
     // PLAYER A IS ALWAYS ON THE PLAY IN THIS WORLD
     // game loop
+    size_t prev_turn = (size_t)-1;
     while (cur_game.ended != true) {
+        if (!InputLogger::instance().is_machine_mode() && cur_game.turn != prev_turn) {
+            Zone::Ownership active = cur_game.player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B;
+            printf("\n======== TURN %zu (%s) ========\n", cur_game.turn, player_name(active).c_str());
+            prev_turn = cur_game.turn;
+        }
         state_manager->state_based_effects(cur_game, orderer);
         // mandatory choices
         // e.g. declare target, declare attackers or declare blockers - discard at cleanup - legend rule; choice at
