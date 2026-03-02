@@ -131,7 +131,8 @@ class ReplayLogCallback(BaseCallback):
                 for line in env.flush_lines():
                     f.write(line + "\n")
 
-                result = "Model wins" if total_reward > 0 else "Scripted wins" if total_reward < 0 else "Draw"
+                model_reward = total_reward if model_is_a else -total_reward
+                result = "Model wins" if model_reward > 0 else "Scripted wins" if model_reward < 0 else "Draw"
                 f.write(f"\n=== {result} ===\n")
 
             print(f"[replay] rollout {self._rollout}: {result} -> {log_path}")
