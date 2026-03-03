@@ -2,7 +2,8 @@
 #define GUI_H
 
 #include <stdbool.h>
+#include "pthread.h"
 
-bool gui_loop();
+void init_gui();
 
 #endif /* GUI_H */

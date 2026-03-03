@@ -36,6 +36,11 @@ CHECKFLAGS = -Wall -Wformat -Wformat=2 -Wconversion -Wimplicit-fallthrough \
 -fstack-protector-strong
 C_CHECKFLAGS = -Werror=implicit -Werror=incompatible-pointer-types -Werror=int-conversion
 
+ifeq ($(GUI),TRUE)
+	CXXFLAGS += -DGUI=TRUE
+	CFLAGS += -DGUI=TRUE
+endif
+
 ifeq ($(BUILD),RELEASE)
 	CFLAGS += -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=3 -O2
 	CXXFLAGS += -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=3 -O2

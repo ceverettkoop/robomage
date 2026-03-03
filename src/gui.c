@@ -1,23 +1,35 @@
-#include "gui.h"
+#ifdef GUI
 
-//#include "raylib.h"
+#include "gui.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include "pthread.h"
+#include "raylib.h"
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
 
-//static bool first_run = true;
+extern pthread_t gui_thread;
 
-/*
-bool gui_loop() {
-    if (first_run) InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "robomage");
-    first_run = false;
 
-    BeginDrawing();
-    ClearBackground(WHITE);
-    DrawText("HELLO", 200, 200, 24, BLACK);
-    EndDrawing();
+static void *gui_loop(void *arg){
 
-    if (WindowShouldClose()) return 1;
-    return 0;
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "robomage");
+    while(!WindowShouldClose()){
+        BeginDrawing();
+        ClearBackground(WHITE);
+        DrawText("HELLO", 200, 200, 24, BLACK);
+        EndDrawing();
+    }
+    return NULL;
 }
-*/
+
+
+void init_gui() {
+    if (pthread_create(&gui_thread, NULL, gui_loop, NULL) != 0){
+        perror("pthread_create");
+        exit(1);
+    }
+}
+
+#endif

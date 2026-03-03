@@ -31,17 +31,22 @@
 #define VERSION_NUMBER "0.001"
 #endif
 
-/*
+#ifdef GUI
 extern "C" {
 #include "gui.h"
+#include "pthread.h"
 }
-*/
+#endif
 
 std::string RESOURCE_DIR;
 Coordinator global_coordinator = Coordinator();
 Deck DEFAULT_DECK_ONE;
 Deck DEFAULT_DECK_TWO;
 Game cur_game;
+
+#ifdef GUI
+pthread_t gui_thread;
+#endif
 
 int main(int argc, char const *argv[]) {
     int choice;
@@ -53,6 +58,7 @@ int main(int argc, char const *argv[]) {
     std::string replay_file_path;
     bool replay_mode = false;
     bool machine_mode = false;
+    bool gui_mode = false;
     for (int i = 1; i < argc; i++) {
         if (std::string(argv[i]) == "--replay" && i + 1 < argc) {
             replay_mode = true;
@@ -60,6 +66,8 @@ int main(int argc, char const *argv[]) {
             i++;
         } else if (std::string(argv[i]) == "--machine") {
             machine_mode = true;
+        } else if (std::string(argv[i]) == "--gui") {
+            gui_mode = true;
         } else if (std::string(argv[i]) == "--help" || std::string(argv[i]) == "-h") {
             printf("robomage %s\n", VERSION_NUMBER);
             printf("Usage: %s [options]\n", argv[0]);
@@ -67,6 +75,7 @@ int main(int argc, char const *argv[]) {
             printf("  --replay <logfile>  Replay a previously logged game\n");
             printf("  --machine           Machine mode: emit QUERY lines for AI input\n");
             printf("  --help, -h          Show this help message\n");
+            printf("  --gui               Launch with GUI\n");
             return 0;
         }
     }
@@ -117,10 +126,10 @@ int main(int argc, char const *argv[]) {
     StackManager::init();
 
     // Register event listeners
-    global_coordinator.AddEventListener(Events::CREATURE_DIED, [](Event& event) {
+    global_coordinator.AddEventListener(Events::CREATURE_DIED, [](Event &event) {
         Entity dead = event.GetParam<Entity>(Params::ENTITY);
         if (global_coordinator.entity_has_component<CardData>(dead)) {
-            auto& cd = global_coordinator.GetComponent<CardData>(dead);
+            auto &cd = global_coordinator.GetComponent<CardData>(dead);
             printf("[EVENT] CREATURE_DIED: %s\n", cd.name.c_str());
         }
     });
@@ -130,7 +139,13 @@ int main(int argc, char const *argv[]) {
     cur_game.generate_players(DEFAULT_DECK_ONE, DEFAULT_DECK_TWO);
     orderer->generate_libraries(DEFAULT_DECK_ONE, DEFAULT_DECK_TWO);
 
-    // London Mulligan (companion not yet implemented)
+    #ifdef GUI
+    if (gui_mode){
+        init_gui();
+    } 
+    #endif 
+
+    // draw 7 and run mulligan
     orderer->draw_hands();
     orderer->do_london_mulligan();
     cur_game.player_a_has_priority = true;  // restore for game start
@@ -139,6 +154,7 @@ int main(int argc, char const *argv[]) {
     // game loop
     size_t prev_turn = (size_t)-1;
     while (cur_game.ended != true) {
+        // if new turn provide update
         if (!InputLogger::instance().is_machine_mode() && cur_game.turn != prev_turn) {
             Zone::Ownership active = cur_game.player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B;
             printf("\n======== TURN %zu (%s) ========\n", cur_game.turn, player_name(active).c_str());
@@ -152,17 +168,17 @@ int main(int argc, char const *argv[]) {
             proc_mandatory_choice(cur_game, orderer);
             continue;
         }
-        //move to next step if nothing else can occur or if both players have passed priority
-        //in those cases advance_step will return true
+        // move to next step if nothing else can occur or if both players have passed priority
+        // in those cases advance_step will return true
         if (cur_game.advance_step(stack_manager, orderer)) {
             continue;
-        }else{
-            //check state_based_effects again if something changed bc of resolution
-           state_manager->state_based_effects(cur_game, orderer); 
+        } else {
+            // check state_based_effects again if something changed bc of resolution
+            state_manager->state_based_effects(cur_game, orderer);
         }
 
-        //active player can do something, list all options
-        //if only option is pass priority we just do it
+        // active player can do something, list all options
+        // if only option is pass priority we just do it
         auto legal_actions = state_manager->determine_legal_actions(cur_game, orderer, stack_manager);
         if (legal_actions.size() == 1) {
             cur_game.pass_priority();
@@ -180,7 +196,7 @@ int main(int argc, char const *argv[]) {
         std::vector<Entity> action_ents;
         action_cats.reserve(legal_actions.size());
         action_ents.reserve(legal_actions.size());
-        for (auto& la : legal_actions) {
+        for (auto &la : legal_actions) {
             action_cats.push_back(la.category);
             action_ents.push_back(la.source_entity);
         }
@@ -192,7 +208,10 @@ int main(int argc, char const *argv[]) {
             printf("Invalid action\n");
         }
     }
-
-    // repeat
+    
+    #ifdef GUI
+    if(gui_mode) pthread_join(gui_thread, NULL);
+    #endif 
+    
     return 0;
 }
