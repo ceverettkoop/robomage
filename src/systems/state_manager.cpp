@@ -19,6 +19,7 @@
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../ecs/events.h"
+#include "../cli_output.h"
 #include "../mana_system.h"
 #include "../systems/stack_manager.h"
 #include "orderer.h"
@@ -216,7 +217,7 @@ void StateManager::apply_static_ability_effects() {
                     if (!sa.add_keyword.empty()) cr.keywords.push_back(sa.add_keyword);
                     sa.applied = true;
                     auto &cd = global_coordinator.GetComponent<CardData>(entity);
-                    printf("%s gains %s%s%s(Delirium)\n", cd.name.c_str(),
+                    game_log("%s gains %s%s%s(Delirium)\n", cd.name.c_str(),
                            sa.add_power != 0 ? (std::to_string(sa.add_power) + "/" + std::to_string(sa.add_toughness) + " ").c_str() : "",
                            !sa.add_keyword.empty() ? (sa.add_keyword + " ").c_str() : "",
                            !sa.condition.empty() ? "" : "");
@@ -229,7 +230,7 @@ void StateManager::apply_static_ability_effects() {
                     }
                     sa.applied = false;
                     auto &cd = global_coordinator.GetComponent<CardData>(entity);
-                    printf("%s loses Delirium bonus\n", cd.name.c_str());
+                    game_log("%s loses Delirium bonus\n", cd.name.c_str());
                 }
             }
             // MustAttack: enforcement deferred (future work)
@@ -254,12 +255,12 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
     auto &player_b = global_coordinator.GetComponent<Player>(game.player_b_entity);
 
     if (player_a.life_total <= 0) {
-        printf("\nPlayer A has %d life - Player B wins!\n", player_a.life_total);
+        game_log("\nPlayer A has %d life - Player B wins!\n", player_a.life_total);
         game.ended = true;
         return;
     }
     if (player_b.life_total <= 0) {
-        printf("\nPlayer B has %d life - Player A wins!\n", player_b.life_total);
+        game_log("\nPlayer B has %d life - Player A wins!\n", player_b.life_total);
         game.ended = true;
         return;
     }
@@ -288,7 +289,7 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
     // Move destroyed creatures to graveyard
     for (auto entity : creatures_to_destroy) {
         auto &card_data = global_coordinator.GetComponent<CardData>(entity);
-        printf("%s is destroyed (lethal damage)\n", card_data.name.c_str());
+        game_log("%s is destroyed (lethal damage)\n", card_data.name.c_str());
 
         orderer->add_to_zone(false, entity, Zone::GRAVEYARD);
         // components will be removed by state based effects
@@ -299,7 +300,7 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
 
     // Deal combat damage
     if (game.cur_step == COMBAT_DAMAGE && !game.combat_damage_dealt) {
-        printf("\n--- Combat Damage ---\n");
+        game_log("\n--- Combat Damage ---\n");
 
         for (auto entity : mEntities) {
             if (!global_coordinator.entity_has_component<Creature>(entity)) continue;
@@ -327,7 +328,7 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
                         auto &target_player = global_coordinator.GetComponent<Player>(cr.attack_target);
                         target_player.life_total -= static_cast<int>(dmg);
                         const char *tname = (cr.attack_target == game.player_a_entity) ? "Player A" : "Player B";
-                        printf("  %s deals %u damage to %s\n", cd.name.c_str(), dmg, tname);
+                        game_log("  %s deals %u damage to %s\n", cd.name.c_str(), dmg, tname);
                     }
                 }
             } else {
@@ -340,14 +341,14 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
                     // Blocker deals damage to attacker
                     if (bcr.power > 0) {
                         deal_damage(blocker, entity, bcr.power);
-                        printf("  %s deals %u damage to %s\n", bcd.name.c_str(), bcr.power, cd.name.c_str());
+                        game_log("  %s deals %u damage to %s\n", bcd.name.c_str(), bcr.power, cd.name.c_str());
                     }
 
                     // Attacker deals damage to blocker (lethal to each in order, overflow to next)
                     if (remaining > 0) {
                         uint32_t assigned = (remaining >= bcr.toughness) ? bcr.toughness : remaining;
                         deal_damage(entity, blocker, assigned);
-                        printf("  %s deals %u damage to %s\n", cd.name.c_str(), assigned, bcd.name.c_str());
+                        game_log("  %s deals %u damage to %s\n", cd.name.c_str(), assigned, bcd.name.c_str());
                         remaining -= assigned;
                     }
                 }
@@ -355,7 +356,7 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
         }
 
         game.combat_damage_dealt = true;
-        printf("--- End Combat Damage ---\n\n");
+        game_log("--- End Combat Damage ---\n\n");
         return;  // Re-enter loop so SBAs process deaths from damage
     }
 
@@ -442,7 +443,7 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                 trigger_ab.source = entity;
                 global_coordinator.AddComponent(trigger_entity, trigger_ab);
 
-                printf("%s triggered\n", card_data.name.c_str());
+                game_log("%s triggered\n", card_data.name.c_str());
             }
         }
     }

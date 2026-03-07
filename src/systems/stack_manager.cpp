@@ -10,7 +10,7 @@
 #include "../components/damage.h"
 #include "../components/spell.h"
 #include "../components/zone.h"
-#include "../debug.h"
+#include "../cli_output.h"
 #include "../ecs/coordinator.h"
 #include "../input_logger.h"
 #include "orderer.h"
@@ -68,7 +68,7 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
             auto &top_zone = global_coordinator.GetComponent<Zone>(top_entity);
             top_zone.controller = top_zone.owner;
             // TODO ETB event here
-            printf("%s enters the battlefield\n", card_data.name.c_str());
+            game_log("%s enters the battlefield\n", card_data.name.c_str());
         } else {
             // Instant/Sorcery - resolve the Ability component added at cast time, then go to graveyard
             if (global_coordinator.entity_has_component<Ability>(top_entity)) {

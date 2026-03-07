@@ -20,7 +20,6 @@
 #include "components/spell.h"
 #include "components/zone.h"
 #include "cli_output.h"
-#include "debug.h"
 #include "ecs/coordinator.h"
 #include "ecs/events.h"
 #include "input_logger.h"
@@ -128,13 +127,13 @@ int main(int argc, char const *argv[]) {
     StateManager::init();
     StackManager::init();
 
-    // Register event listeners
+    // TODO deal with this; move it out of main; move printf to cli_output; implement some cards besides DRC that care about this
     // this has to be moved out of main and into its own unit; and the printf call needs to be handled elsewhere
     global_coordinator.AddEventListener(Events::CREATURE_DIED, [](Event &event) {
         Entity dead = event.GetParam<Entity>(Params::ENTITY);
         if (global_coordinator.entity_has_component<CardData>(dead)) {
             auto &cd = global_coordinator.GetComponent<CardData>(dead);
-            printf("[EVENT] CREATURE_DIED: %s\n", cd.name.c_str());
+            game_log("[EVENT] CREATURE_DIED: %s\n", cd.name.c_str());
         }
     });
 

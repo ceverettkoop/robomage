@@ -33,17 +33,38 @@ static void render_gs(){
 
 //scrollable box that displays everything that would be propogated to the CLI
 static void render_info_log(){
-
+    int line_count = gui_log_line_count();
+    int font_size = 16;
+    int line_height = 18;
+    int area_top = 10;
+    int area_bottom = (int)(SCREEN_HEIGHT * 0.60);
+    int lines_to_show = (area_bottom - area_top) / line_height;
+    int start_idx = (line_count > lines_to_show) ? line_count - lines_to_show : 0;
+    int y = area_top;
+    for (int i = start_idx; i < line_count; i++) {
+        const char* line = gui_log_get_line(i);
+        DrawText(line, 10, y, font_size, BLACK);
+        y += line_height;
+    }
 }
 
 //scrollable box that displays specifically and only the last query
 static void render_query(){
-
+    render_info_log();
 }
 
 
 static void render_choices(){
-    
+    int line_count = gui_query_line_count();
+    int font_size = 16;
+    int line_height = 18;
+    int y = (int)(SCREEN_HEIGHT * 0.62);
+    int y_max = (int)(SCREEN_HEIGHT * 0.68);
+    for (int i = 0; i < line_count && y < y_max; i++) {
+        const char* line = gui_query_get_line(i);
+        DrawText(line, 10, y, font_size, DARKBLUE);
+        y += line_height;
+    }
 }
 
 static void *gui_loop(void *arg) {

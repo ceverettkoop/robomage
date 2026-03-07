@@ -7,8 +7,8 @@
 
 #include "../classes/action.h"
 #include "../classes/game.h"
+#include "../cli_output.h"
 #include "../components/carddata.h"
-#include "../debug.h"
 #include "../ecs/coordinator.h"
 #include "../input_logger.h"
 #include "../mana_system.h"
@@ -106,9 +106,9 @@ Entity search_zone(
     }
 
     if (zone == Zone::LIBRARY) {
-        printf("Searching %s's %s:\n", player_name(owner).c_str(), zone_name);
+        game_log("Searching %s's %s:\n", player_name(owner).c_str(), zone_name);
     } else {
-        printf("%s chooses a card from %s %s:\n", player_name(owner).c_str(), player_name(owner).c_str(), zone_name);
+        game_log("%s chooses a card from %s %s:\n", player_name(owner).c_str(), player_name(owner).c_str(), zone_name);
     }
 
     std::vector<ActionCategory> cats;
@@ -116,14 +116,14 @@ Entity search_zone(
 
     size_t display_index = 0;
     if (show_fail_to_find) {
-        printf("  %zu: Fail to find\n", display_index);
+        game_log("  %zu: Fail to find\n", display_index);
         cats.push_back(cat);
         search_entities.push_back(Entity(0));
         display_index++;
     }
     for (size_t i = 0; i < choices.size(); i++) {
         auto &cd = global_coordinator.GetComponent<CardData>(choices[i]);
-        printf("  %zu: %s\n", display_index + i, cd.name.c_str());
+        game_log("  %zu: %s\n", display_index + i, cd.name.c_str());
         cats.push_back(cat);
         search_entities.push_back(choices[i]);
     }
@@ -142,7 +142,7 @@ Entity search_zone(
     }
 }
 
- 
+
 void Ability::resolve_change_zone(std::shared_ptr<Orderer> orderer) {
     Zone::Ownership owner = global_coordinator.GetComponent<Zone>(source).owner;
     size_t num_to_move = (amount > 0) ? amount : 1;
@@ -156,20 +156,20 @@ void Ability::resolve_change_zone(std::shared_ptr<Orderer> orderer) {
             if (destination == Zone::BATTLEFIELD) {
                 chosen_zone.controller = owner;
             }
-            printf("%s puts %s to %s\n", player_name(owner).c_str(), chosen_cd.name.c_str(),
+            game_log("%s puts %s to %s\n", player_name(owner).c_str(), chosen_cd.name.c_str(),
                    destination == Zone::BATTLEFIELD ? "the battlefield" :
                    destination == Zone::LIBRARY     ? "top of library" :
                    destination == Zone::GRAVEYARD   ? "graveyard"      :
                    destination == Zone::HAND        ? "hand"           : "exile");
         } else {
-            printf("%s fails to find\n", player_name(owner).c_str());
+            game_log("%s fails to find\n", player_name(owner).c_str());
             break;
         }
     }
 
     if (origin == Zone::LIBRARY) {
         orderer->shuffle_library(owner);
-        printf("%s shuffles their library\n", player_name(owner).c_str());
+        game_log("%s shuffles their library\n", player_name(owner).c_str());
     }
 }
 
@@ -186,18 +186,18 @@ void Ability::resolve_rearrange_top_of_library(std::shared_ptr<Orderer> orderer)
     if (lib.size() > amount) lib.resize(amount);
     size_t actual = lib.size();
     std::vector<Entity> remaining = lib;
-    
-    printf("%s looks at the top %zu card(s) of their library.\n", player_name(owner).c_str(), actual);
+
+    game_log("%s looks at the top %zu card(s) of their library.\n", player_name(owner).c_str(), actual);
 
     std::vector<Entity> chosen_order;
     // Player picks N-1 cards; the last is automatic
     for (size_t pick = 0; pick + 1 < actual; pick++) {
-        printf("Choose which card goes on top next (pick %zu of %zu):\n", pick + 1, actual);
+        game_log("Choose which card goes on top next (pick %zu of %zu):\n", pick + 1, actual);
         std::vector<ActionCategory> cats;
         std::vector<Entity> pick_entities;
         for (size_t i = 0; i < remaining.size(); i++) {
             auto &cd = global_coordinator.GetComponent<CardData>(remaining[i]);
-            printf("  %zu: %s\n", i, cd.name.c_str());
+            game_log("  %zu: %s\n", i, cd.name.c_str());
             cats.push_back(ActionCategory::TOP_LIBRARY);
             pick_entities.push_back(remaining[i]);
         }
@@ -217,13 +217,13 @@ void Ability::resolve_rearrange_top_of_library(std::shared_ptr<Orderer> orderer)
     }
 
     if (may_shuffle) {
-        printf("You may shuffle your library. 0: Don't shuffle  1: Shuffle\n");
+        game_log("You may shuffle your library. 0: Don't shuffle  1: Shuffle\n");
         std::vector<ActionCategory> shuffle_cats = {ActionCategory::SHUFFLE, ActionCategory::SHUFFLE};
         std::vector<Entity> shuffle_entities = {Entity(0), Entity(0)};
         int shuffle_choice = InputLogger::instance().get_logged_input(cur_game.turn, shuffle_cats, shuffle_entities);
         if (shuffle_choice == 1) {
             orderer->shuffle_library(owner);
-            printf("%s shuffles their library.\n", player_name(owner).c_str());
+            game_log("%s shuffles their library.\n", player_name(owner).c_str());
         }
     }
 }
@@ -245,7 +245,7 @@ static bool run_unless_loop(size_t cost, Zone::Ownership controller,
             for (auto& ab : perm.abilities) {
                 if (ab.category != "AddMana") continue;
                 auto& cd = global_coordinator.GetComponent<CardData>(e);
-                printf("  %zu: Tap %s for {%s}\n", ents.size(),
+                game_log("  %zu: Tap %s for {%s}\n", ents.size(),
                        cd.name.c_str(), mana_symbol(ab.color).c_str());
                 ActionCategory mcat = ActionCategory::MANA_C;
                 switch (ab.color) {
@@ -265,12 +265,12 @@ static bool run_unless_loop(size_t cost, Zone::Ownership controller,
         bool can_pay = can_afford(controller, cond_cost);
         size_t pay_idx = cats.size();
         if (can_pay) {
-            printf("  %zu: Pay {%zu} (spell is not countered)\n", pay_idx, cost);
+            game_log("  %zu: Pay {%zu} (spell is not countered)\n", pay_idx, cost);
             cats.push_back(ActionCategory::OTHER_CHOICE);
             ents.push_back(Entity(0));
         }
         size_t decline_idx = cats.size();
-        printf("  %zu: Don't pay (spell is countered)\n", decline_idx);
+        game_log("  %zu: Don't pay (spell is countered)\n", decline_idx);
         cats.push_back(ActionCategory::OTHER_CHOICE);
         ents.push_back(Entity(0));
 
@@ -280,7 +280,7 @@ static bool run_unless_loop(size_t cost, Zone::Ownership controller,
 
         if (can_pay && choice == static_cast<int>(pay_idx)) {
             spend_mana(controller, cond_cost);
-            printf("%s pays {%zu} — spell is not countered\n",
+            game_log("%s pays {%zu} — spell is not countered\n",
                    player_name(controller).c_str(), cost);
             return false;
         }
@@ -293,7 +293,7 @@ static bool run_unless_loop(size_t cost, Zone::Ownership controller,
                 if (ab.category != "AddMana") continue;
                 perm.is_tapped = true;
                 add_mana(controller, ab.color, ab.amount);
-                printf("%s tapped %s for {%s}\n", player_name(controller).c_str(),
+                game_log("%s tapped %s for {%s}\n", player_name(controller).c_str(),
                        cd.name.c_str(), mana_symbol(ab.color).c_str());
                 break;
             }
@@ -304,7 +304,7 @@ static bool run_unless_loop(size_t cost, Zone::Ownership controller,
 void Ability::fizzle(std::shared_ptr<Orderer> orderer){
     //stack manager present behavior moves everything to graveyard or destroys it
     //so for now this is a stub
-    printf("%s fizzles\n", this->category.c_str());
+    game_log("%s fizzles\n", this->category.c_str());
     return;
 
 }
@@ -356,7 +356,7 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
             return; //subabilities do not fire; TODO revisit this in light of cards e.g. k-command
         }
     }
-    printf("Resolving ability (category: %s, amount: %zu)\n", category.c_str(), amount);
+    game_log("Resolving ability (category: %s, amount: %zu)\n", category.c_str(), amount);
 
     if (category == "GainLife") {
         Zone::Ownership controller;
@@ -368,7 +368,7 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
         Entity ctrl_entity = get_player_entity(controller);
         auto &player = global_coordinator.GetComponent<Player>(ctrl_entity);
         player.life_total += static_cast<int32_t>(amount);
-        printf("%s gains %zu life (now at %d)\n", player_name(controller).c_str(), amount, player.life_total);
+        game_log("%s gains %zu life (now at %d)\n", player_name(controller).c_str(), amount, player.life_total);
     } else if (category == "Draw") {
         Zone::Ownership owner = global_coordinator.GetComponent<Zone>(source).owner;
         orderer->draw(owner, amount);
@@ -380,10 +380,10 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
         if (global_coordinator.entity_has_component<Player>(target)) {
             auto &player = global_coordinator.GetComponent<Player>(target);
             player.life_total -= static_cast<int32_t>(amount);
-            printf("Dealt %zu damage to player (now at %d life)\n", amount, player.life_total);
+            game_log("Dealt %zu damage to player (now at %d life)\n", amount, player.life_total);
         } else {
             if (deal_damage(source, target, amount)) {
-                printf("Dealt %zu damage to creature\n", amount);
+                game_log("Dealt %zu damage to creature\n", amount);
             } else {
                 non_fatal_error("Damage should have fizzled prior to this");
             }
@@ -402,7 +402,7 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
                 if (unless_generic_cost > 0) {
                     std::string tname = global_coordinator.entity_has_component<CardData>(target)
                         ? global_coordinator.GetComponent<CardData>(target).name : "<unknown>";
-                    printf("%s's controller may pay {%zu} to save it:\n",
+                    game_log("%s's controller may pay {%zu} to save it:\n",
                            tname.c_str(), unless_generic_cost);
                     do_counter = run_unless_loop(unless_generic_cost, target_controller, orderer);
                 }
@@ -415,7 +415,7 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
                     if (global_coordinator.entity_has_component<Spell>(target))
                         global_coordinator.RemoveComponent<Spell>(target);
                     orderer->add_to_zone(false, target, Zone::GRAVEYARD);
-                    printf("%s is countered\n", name.c_str());
+                    game_log("%s is countered\n", name.c_str());
                 }
             } else {
                 non_fatal_error("Counter should have fizzled prior to this");
@@ -445,19 +445,19 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
         }
 
         if (top_card == 0) {
-            printf("Library is empty — nothing to peek.\n");
+            game_log("Library is empty — nothing to peek.\n");
             return;
         }
         auto& top_cd = global_coordinator.GetComponent<CardData>(top_card);
-        printf("Top card of library: %s\n", top_cd.name.c_str());
-        printf("0: Don't reveal | 1: Reveal\n");
+        game_log("Top card of library: %s\n", top_cd.name.c_str());
+        game_log("0: Don't reveal | 1: Reveal\n");
 
         std::vector<ActionCategory> cats = {ActionCategory::OTHER_CHOICE, ActionCategory::OTHER_CHOICE};
         std::vector<Entity> ents = {Entity(0), Entity(0)};
         int reveal_choice = InputLogger::instance().get_logged_input(cur_game.turn, cats, ents);
 
         if (reveal_choice == 1) {
-            printf("Revealed: %s\n", top_cd.name.c_str());
+            game_log("Revealed: %s\n", top_cd.name.c_str());
             bool is_instant_or_sorcery = false;
             for (auto& t : top_cd.types) {
                 if (t.kind == TYPE && (t.name == "Instant" || t.name == "Sorcery")) {
@@ -481,7 +481,7 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
                     Damage dmg;
                     dmg.damage_counters = 0;
                     global_coordinator.AddComponent(source, dmg);
-                    printf("%s transforms into %s!\n",
+                    game_log("%s transforms into %s!\n",
                            src_cd.name.c_str(), src_cd.backside->name.c_str());
                 }
             }
@@ -507,7 +507,7 @@ void Ability::resolve_surveil(std::shared_ptr<Orderer> orderer) {
     for (size_t i = 0; i < amount; i++) {
         std::vector<Entity> lib = orderer->get_library_contents(controller);
         if (lib.empty()) {
-            printf("%s's library is empty — nothing to surveil.\n", player_name(controller).c_str());
+            game_log("%s's library is empty — nothing to surveil.\n", player_name(controller).c_str());
             break;
         }
 
@@ -520,8 +520,8 @@ void Ability::resolve_surveil(std::shared_ptr<Orderer> orderer) {
         }
 
         auto &top_cd = global_coordinator.GetComponent<CardData>(top_card);
-        printf("Top card of %s's library: %s\n", player_name(controller).c_str(), top_cd.name.c_str());
-        printf("0: Keep on top | 1: Put in graveyard\n");
+        game_log("Top card of %s's library: %s\n", player_name(controller).c_str(), top_cd.name.c_str());
+        game_log("0: Keep on top | 1: Put in graveyard\n");
 
         std::vector<ActionCategory> cats = {ActionCategory::OTHER_CHOICE, ActionCategory::OTHER_CHOICE};
         std::vector<Entity> ents = {Entity(0), Entity(0)};
@@ -529,19 +529,19 @@ void Ability::resolve_surveil(std::shared_ptr<Orderer> orderer) {
 
         if (choice == 1) {
             orderer->add_to_zone(false, top_card, Zone::GRAVEYARD);
-            printf("%s puts %s into the graveyard.\n", player_name(controller).c_str(), top_cd.name.c_str());
+            game_log("%s puts %s into the graveyard.\n", player_name(controller).c_str(), top_cd.name.c_str());
         }
     }
 }
 
 void Ability::resolve_destroy(std::shared_ptr<Orderer> orderer) {
     if (!global_coordinator.entity_has_component<Zone>(target)) {
-        printf("Destroy: target is no longer in play\n");
+        game_log("Destroy: target is no longer in play\n");
         return;
     }
     auto &tz = global_coordinator.GetComponent<Zone>(target);
     if (tz.location != Zone::BATTLEFIELD) {
-        printf("Destroy: target is no longer on the battlefield\n");
+        game_log("Destroy: target is no longer on the battlefield\n");
         return;
     }
     //TODO OTHER REASONS TARGET IS NOW ILLEGAL
@@ -549,5 +549,5 @@ void Ability::resolve_destroy(std::shared_ptr<Orderer> orderer) {
         ? global_coordinator.GetComponent<CardData>(target).name
         : "<unknown>";
     orderer->add_to_zone(false, target, Zone::GRAVEYARD);
-    printf("%s is destroyed\n", name.c_str());
+    game_log("%s is destroyed\n", name.c_str());
 }

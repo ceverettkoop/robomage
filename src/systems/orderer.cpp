@@ -6,10 +6,10 @@
 #include "../card_db.h"
 #include "../classes/deck.h"
 #include "../classes/game.h"
+#include "../cli_output.h"
 #include "../components/carddata.h"
 #include "../components/color_identity.h"
 #include "../components/zone.h"
-#include "../debug.h"
 #include "../ecs/coordinator.h"
 #include "../input_logger.h"
 
@@ -159,16 +159,27 @@ void Orderer::draw(Zone::Ownership player, size_t ct) {
         }
     }
     // TODO: first card drawn here is subject to replacement effects (e.g. Miracle, Leyline of Anticipation)
-    print_draw(player, cards_to_draw);
+    // Inline print_draw: sort by distance_from_top then log each draw
+    {
+        std::vector<Entity> sorted = cards_to_draw;
+        std::sort(sorted.begin(), sorted.end(), [](Entity a, Entity b) {
+            return global_coordinator.GetComponent<Zone>(a).distance_from_top <
+                   global_coordinator.GetComponent<Zone>(b).distance_from_top;
+        });
+        for (auto card : sorted) {
+            game_log("%s draws %s\n", player_name(player).c_str(),
+                     global_coordinator.GetComponent<CardData>(card).name.c_str());
+        }
+    }
     for (auto &&card : cards_to_draw) {
         auto &card_zone = global_coordinator.GetComponent<Zone>(card);
         card_zone.location = Zone::HAND;
     }
     if (cards_to_draw.size() < ct) {
         if (player == Zone::PLAYER_A) {
-            printf("\nPlayer A decked - Player B wins!\n");
+            game_log("\nPlayer A decked - Player B wins!\n");
         } else {
-            printf("\nPlayer B decked - Player A wins!\n");
+            game_log("\nPlayer B decked - Player A wins!\n");
         }
         cur_game.ended = true;
     }
@@ -198,8 +209,16 @@ void Orderer::do_london_mulligan() {
     cur_game.player_a_has_priority = true;
     bool keeping = false;
     while (!keeping) {
-        print_hand(shared_from_this(), Zone::PLAYER_A);
-        printf("Player A: 0=Keep, 1=Mulligan (taken %d)\n", mulligans_a);
+        // Inline print_hand for Player A
+        {
+            auto hand_display = this->get_hand(Zone::PLAYER_A);
+            game_log("%s hand:\n", player_name(Zone::PLAYER_A).c_str());
+            for (auto card : hand_display) {
+                auto &data = global_coordinator.GetComponent<CardData>(card);
+                game_log("%s\n", data.name.c_str());
+            }
+        }
+        game_log("Player A: 0=Keep, 1=Mulligan (taken %d)\n", mulligans_a);
         std::vector<ActionCategory> cats = {ActionCategory::MULLIGAN, ActionCategory::MULLIGAN};
         int choice = InputLogger::instance().get_logged_input(0, cats);
         if (choice == 0) {
@@ -228,8 +247,16 @@ void Orderer::do_london_mulligan() {
     cur_game.player_a_has_priority = false;
     keeping = false;
     while (!keeping) {
-        print_hand(shared_from_this(), Zone::PLAYER_B);
-        printf("Player B: 0=Keep, 1=Mulligan (taken %d)\n", mulligans_b);
+        // Inline print_hand for Player B
+        {
+            auto hand_display = this->get_hand(Zone::PLAYER_B);
+            game_log("%s hand:\n", player_name(Zone::PLAYER_B).c_str());
+            for (auto card : hand_display) {
+                auto &data = global_coordinator.GetComponent<CardData>(card);
+                game_log("%s\n", data.name.c_str());
+            }
+        }
+        game_log("Player B: 0=Keep, 1=Mulligan (taken %d)\n", mulligans_b);
         std::vector<ActionCategory> cats = {ActionCategory::MULLIGAN, ActionCategory::MULLIGAN};
         int choice = InputLogger::instance().get_logged_input(0, cats);
         if (choice == 0) {
@@ -259,10 +286,10 @@ void Orderer::do_london_mulligan() {
     for (int i = 0; i < mulligans_a; i++) {
         auto hand = this->get_hand(Zone::PLAYER_A);
         if (hand.empty()) break;
-        printf("Player A: Choose card to put on library bottom (%d remaining):\n", mulligans_a - i);
+        game_log("Player A: Choose card to put on library bottom (%d remaining):\n", mulligans_a - i);
         for (size_t j = 0; j < hand.size(); j++) {
             auto &cd = global_coordinator.GetComponent<CardData>(hand[j]);
-            printf("  %zu: %s\n", j, cd.name.c_str());
+            game_log("  %zu: %s\n", j, cd.name.c_str());
         }
         std::vector<ActionCategory> cats(hand.size(), ActionCategory::BOTTOM_DECK_CARD);
         int choice = InputLogger::instance().get_logged_input(0, cats, hand);
@@ -275,10 +302,10 @@ void Orderer::do_london_mulligan() {
     for (int i = 0; i < mulligans_b; i++) {
         auto hand = this->get_hand(Zone::PLAYER_B);
         if (hand.empty()) break;
-        printf("Player B: Choose card to put on library bottom (%d remaining):\n", mulligans_b - i);
+        game_log("Player B: Choose card to put on library bottom (%d remaining):\n", mulligans_b - i);
         for (size_t j = 0; j < hand.size(); j++) {
             auto &cd = global_coordinator.GetComponent<CardData>(hand[j]);
-            printf("  %zu: %s\n", j, cd.name.c_str());
+            game_log("  %zu: %s\n", j, cd.name.c_str());
         }
         std::vector<ActionCategory> cats(hand.size(), ActionCategory::BOTTOM_DECK_CARD);
         int choice = InputLogger::instance().get_logged_input(0, cats, hand);

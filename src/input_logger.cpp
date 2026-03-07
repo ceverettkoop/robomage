@@ -7,7 +7,6 @@
 #include "classes/game.h"
 #include "components/zone.h"
 #include "cli_output.h"
-#include "debug.h"
 #include "ecs/coordinator.h"
 #include "error.h"
 #include "machine_io.h"
@@ -30,7 +29,7 @@ static int get_int_input() {
         gui_input_requested = true;
         while (!gui_input_sent) {
             if(gui_killed){
-                printf("User exited GUI, quitting\n");
+                game_log("User exited GUI, quitting\n");
                 exit(0);
             }
         }
@@ -44,7 +43,7 @@ static int get_int_input() {
         while ((c = getchar()) == ' ' || c == '\t');
         if (c == EOF || c == '\n') return -1;
         if (c == 'q' || c == 'Q') {
-            printf("Quitting.\n");
+            game_log("Quitting.\n");
             exit(0);
         }
         if (c == 'z' || c == 'Z') {
@@ -78,7 +77,7 @@ void InputLogger::init_logging(unsigned int seed, const std::string &resource_di
     log_file << seed << std::endl;
     log_file.flush();
     replay_mode = false;
-    printf("Logging inputs to: %s\n", log_path.c_str());
+    game_log("Logging inputs to: %s\n", log_path.c_str());
 }
 
 void InputLogger::init_replay(const std::string &replay_path) {
@@ -91,7 +90,7 @@ void InputLogger::init_replay(const std::string &replay_path) {
         fatal_error("Failed to read seed from replay file");
     }
     replay_mode = true;
-    printf("REPLAY MODE: Using seed %u from %s\n", replay_seed, replay_path.c_str());
+    game_log("REPLAY MODE: Using seed %u from %s\n", replay_seed, replay_path.c_str());
 }
 
 void InputLogger::init_machine(unsigned int seed, const std::string &resource_dir) {
@@ -125,7 +124,7 @@ int InputLogger::get_logged_input(size_t cur_turn, const std::vector<LegalAction
             fatal_error("Replay file ended unexpectedly");
         }
         Zone::Ownership priority = cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
-        printf("(REPLAY) [T%zu | %s | %s] Input: %d\n", cur_game.turn, step_to_string(cur_game.cur_step),
+        game_log("(REPLAY) [T%zu | %s | %s] Input: %d\n", cur_game.turn, step_to_string(cur_game.cur_step),
             player_name(priority).c_str(), choice);
         return choice;
     }
@@ -136,26 +135,7 @@ int InputLogger::get_logged_input(size_t cur_turn, const std::vector<LegalAction
         populate_gamestate(&gs);
         populate_query(&q, actions);
 
-        auto state_vec = serialize_state(&gs);
-        printf("QUERY: %d", q.num_choices);
-        for (float f : state_vec) printf(" %.4f", f);
-        for (int i = 0; i < q.num_choices; i++) printf(" %d", q.choices[i].category);
-        const float id_null = -1.0f / static_cast<float>(N_CARD_TYPES);
-        for (int i = 0; i < q.num_choices; i++) {
-            float id_f = q.choices[i].card_vocab_idx >= 0
-                ? static_cast<float>(q.choices[i].card_vocab_idx) / static_cast<float>(N_CARD_TYPES)
-                : id_null;
-            printf(" %.4f", id_f);
-        }
-        const float ctrl_null = -1.0f / static_cast<float>(N_CARD_TYPES);
-        for (int i = 0; i < q.num_choices; i++) {
-            float ctrl = (q.choices[i].zone_ref != REF_NONE)
-                ? (q.choices[i].controller_is_self ? 1.0f : 0.0f)
-                : ctrl_null;
-            printf(" %.4f", ctrl);
-        }
-        printf("\n");
-        fflush(stdout);
+        cli_emit_machine_query(&q, &gs);
 
         int choice = -1;
         if (scanf("%d", &choice) != 1) choice = -1;
@@ -186,7 +166,7 @@ int InputLogger::get_logged_input(size_t cur_turn, const std::vector<LegalAction
     // Typical CLI input
     int choice = get_int_input();
     if (choice == PASS_TURN_CMD) {
-        printf("Auto-passing turn.\n");
+        game_log("Auto-passing turn.\n");
         auto_pass_until_turn = (int)cur_turn + 1;
         if (log_file.is_open()) {
             log_file << 0 << std::endl;
