@@ -1,14 +1,5 @@
 #include "error.h"
-#include <cstdio>
+#include "cli_output.h"
 
-void non_fatal_error(std::string err) {
-    err += '\n';
-    printf("%s", err.c_str());
-    return;
-}
-
-void fatal_error(std::string err) {
-    err += '\n';
-    printf("Fatal error: %s", err.c_str());
-    exit(1);
-}
+void non_fatal_error(std::string err) { cli_error(err); }
+void fatal_error(std::string err) { cli_fatal_error(err); }

@@ -4,11 +4,9 @@
 #include <cstdio>
 #include <iostream>
 
-#include "card_vocab.h"
 #include "classes/game.h"
-#include "components/carddata.h"
-#include "components/permanent.h"
 #include "components/zone.h"
+#include "cli_output.h"
 #include "debug.h"
 #include "ecs/coordinator.h"
 #include "error.h"

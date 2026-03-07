@@ -22,4 +22,17 @@ inline int card_name_to_index(const std::string &name) {
     return it != vocab.end() ? it->second : -1;
 }
 
+inline const char* card_index_to_name(int idx) {
+    static const char* names[] = {
+        "Mountain", "Forest", "Lightning Bolt", "Grizzly Bears", "Volcanic Island",
+        "Scalding Tarn", "Flooded Strand", "Polluted Delta", "Wooded Foothills", "Misty Rainforest",
+        "Wasteland", "Ponder", "Force of Will", "Daze", "Soul Warden", "Tundra",
+        "Delver of Secrets", "Insectile Aberration", "Flying Men", "Island",
+        "Dragon's Rage Channeler", "Air Elemental", "Counterspell", "Lightning Strike",
+        "Brainstorm", "???", "???", "???", "???", "???", "???", "???",
+    };
+    if (idx < 0 || idx >= 32) return "???";
+    return names[idx];
+}
+
 #endif /* CARD_VOCAB_H */

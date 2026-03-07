@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include "classes/colors.h"
+#include "cli_output.h"
 #include "components/ability.h"
 #include "components/carddata.h"
 #include "input_logger.h"
@@ -14,50 +15,6 @@
 #include "mana_system.h"
 #include "systems/orderer.h"
 #include "systems/state_manager.h"
-
-const char *step_to_string(Step in_step) {
-    switch (in_step) {
-        case UNTAP:
-            return "Untap";
-            break;
-        case UPKEEP:
-            return "Upkeep";
-            break;
-        case DRAW:
-            return "Draw";
-            break;
-        case FIRST_MAIN:
-            return "First Main";
-            break;
-        case BEGIN_COMBAT:
-            return "Begin Combat";
-            break;
-        case DECLARE_ATTACKERS:
-            return "Declare Attackers";
-            break;
-        case DECLARE_BLOCKERS:
-            return "Declare Blockers";
-            break;
-        case COMBAT_DAMAGE:
-            return "Combat Damage";
-            break;
-        case END_OF_COMBAT:
-            return "End of Combat";
-            break;
-        case SECOND_MAIN:
-            return "Second Main";
-            break;
-        case END_STEP:
-            return "End Step";
-            break;
-        case CLEANUP:
-            return "Cleanup";
-            break;
-        default:
-            return "ERROR UNREACHABLE";
-            break;
-    }
-}
 
 void print_step(const Game& cur_game) {
     if (InputLogger::instance().is_machine_mode()) return;

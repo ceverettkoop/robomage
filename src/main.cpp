@@ -19,10 +19,12 @@
 #include "components/player.h"
 #include "components/spell.h"
 #include "components/zone.h"
+#include "cli_output.h"
 #include "debug.h"
 #include "ecs/coordinator.h"
 #include "ecs/events.h"
 #include "input_logger.h"
+#include "machine_io.h"
 #include "systems/orderer.h"
 #include "systems/stack_manager.h"
 #include "systems/state_manager.h"
@@ -70,13 +72,7 @@ int main(int argc, char const *argv[]) {
         } else if (std::string(argv[i]) == "--gui") {
             gui_mode = true;
         } else if (std::string(argv[i]) == "--help" || std::string(argv[i]) == "-h") {
-            printf("robomage %s\n", VERSION_NUMBER);
-            printf("Usage: %s [options]\n", argv[0]);
-            printf("Options:\n");
-            printf("  --replay <logfile>  Replay a previously logged game\n");
-            printf("  --machine           Machine mode: emit QUERY lines for AI input\n");
-            printf("  --help, -h          Show this help message\n");
-            printf("  --gui               Launch with GUI\n");
+            cli_print_help(argv[0], VERSION_NUMBER);
             return 0;
         }
     }
@@ -85,7 +81,7 @@ int main(int argc, char const *argv[]) {
     DEFAULT_DECK_ONE = Deck(RESOURCE_DIR + "/decks/test_minimal.dk");
     DEFAULT_DECK_TWO = Deck(RESOURCE_DIR + "/decks/test_minimal.dk");
 
-    printf("robomage %s\n", VERSION_NUMBER);
+    cli_print_version(VERSION_NUMBER);
 
     // Setup seed and input logging
     unsigned int seed;
@@ -105,7 +101,7 @@ int main(int argc, char const *argv[]) {
         }
     }
     std::srand(seed);
-    printf("Using seed: %u\n", seed);
+    cli_print_seed(seed);
 
     global_coordinator.Init();
     global_coordinator.RegisterComponent<Ability>();
@@ -127,6 +123,7 @@ int main(int argc, char const *argv[]) {
     StackManager::init();
 
     // Register event listeners
+    // this has to be moved out of main and into its own unit; and the printf call needs to be handled elsewhere
     global_coordinator.AddEventListener(Events::CREATURE_DIED, [](Event &event) {
         Entity dead = event.GetParam<Entity>(Params::ENTITY);
         if (global_coordinator.entity_has_component<CardData>(dead)) {
@@ -158,8 +155,7 @@ int main(int argc, char const *argv[]) {
         if (gui_killed) goto GUI_KILLED;
         // if new turn provide update
         if (!InputLogger::instance().is_machine_mode() && cur_game.turn != prev_turn) {
-            Zone::Ownership active = cur_game.player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B;
-            printf("\n======== TURN %zu (%s) ========\n", cur_game.turn, player_name(active).c_str());
+            cli_print_turn_header(cur_game.turn, cur_game.player_a_turn);
             prev_turn = cur_game.turn;
         }
         state_manager->state_based_effects(cur_game, orderer);
@@ -186,35 +182,25 @@ int main(int argc, char const *argv[]) {
             cur_game.pass_priority();
             continue;
         }
-        print_step(cur_game);
-        // prompt for action
-        print_stack(orderer);
-        print_battlefield(orderer);
-        print_mana_pools();
-        print_hand(orderer, cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B);
-
-        print_legal_actions(cur_game, legal_actions);
-        std::vector<ActionCategory> action_cats;
-        std::vector<Entity> action_ents;
-        action_cats.reserve(legal_actions.size());
-        action_ents.reserve(legal_actions.size());
-        for (auto &la : legal_actions) {
-            action_cats.push_back(la.category);
-            action_ents.push_back(la.source_entity);
-        }
-        choice = InputLogger::instance().get_logged_input(cur_game.turn, action_cats, action_ents);
+        GameState gs;
+        populate_gamestate(&gs);
+        Query q;
+        populate_query(&q, legal_actions);
+        print_game_state(&gs);
+        print_query(&q, cur_game.player_a_has_priority);
+        choice = InputLogger::instance().get_logged_input(cur_game.turn, legal_actions);
 
         if (choice >= 0 && choice < static_cast<int>(legal_actions.size())) {
             process_action(legal_actions[static_cast<size_t>(choice)], cur_game, orderer);
         } else {
-            printf("Invalid action\n");
+            cli_print_invalid_action();
         }
     }
 
 GUI_KILLED:
 #ifdef GUI
     if (gui_mode) {
-        printf("User exited GUI, quitting\n");
+        cli_print_gui_exit();
         pthread_join(gui_thread, NULL);
     }
 #endif
