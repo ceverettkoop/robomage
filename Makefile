@@ -52,6 +52,7 @@ endif
 ifeq ($(GUI),TRUE)
 	LDLIBS += -lraylib
 	ifeq ($(PLATFORM),OSX)
+		IFLAGS += -I`brew --prefix raylib`/include
 		LDFLAGS += -framework CoreVideo -framework IOKit -framework Cocoa -framework GLUT -framework OpenGL
 	endif
 endif
