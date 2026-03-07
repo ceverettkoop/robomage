@@ -6,6 +6,8 @@ Both players currently use `test_minimal.dk`. The ML agent only understands card
 
 Card scripts live in `bin/resources/cardsfolder/`. See the card-forge repository for compatible scripts.
 
+C and C++ source files are 95% human written - python mostly LLM written so likely a mess, will be revisited.
+
 ## Building
 
 ```bash
