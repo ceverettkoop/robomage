@@ -14,7 +14,6 @@
 #include "components/player.h"
 #include "components/zone.h"
 #include "ecs/coordinator.h"
-#include "systems/stack_manager.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;
