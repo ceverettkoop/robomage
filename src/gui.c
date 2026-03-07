@@ -55,8 +55,8 @@ static void *gui_loop(void *arg) {
         }
     INPUT_END:
         EndDrawing();
-        gui_killed = true;
     }
+    gui_killed = true;
     return NULL;
 }
 
