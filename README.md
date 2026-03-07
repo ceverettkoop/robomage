@@ -2,7 +2,7 @@
 
 Card game rules engine built for reinforcement learning.
 
-Both players currently use `test_minimal.dk` (a blue/red fetch-land deck). The ML agent only understands cards listed in `src/card_vocab.h`. Near-term goal: train on the UR Delver mirror match.
+Both players currently use `test_minimal.dk`. The ML agent only understands cards listed in `src/card_vocab.h`. Near-term goal: train on the UR Delver mirror match.
 
 Card scripts live in `bin/resources/cardsfolder/`. See the card-forge repository for compatible scripts.
 
@@ -13,7 +13,7 @@ make                  # debug build
 make BUILD=RELEASE    # optimized
 ```
 
-The binary is written to `bin/robomage`. The game must be run from the `bin/` directory so it can find `bin/resources/`.
+The binary is written to `bin/robomage`. Game must be run from the bin directory at present.
 
 ## Running
 
@@ -22,6 +22,7 @@ cd bin
 ./robomage                                         # interactive (you play both sides)
 ./robomage --replay resources/logs/game_12345.log  # replay a saved game
 ./robomage --machine                               # machine mode for RL training
+./robomage --gui                                   # gui (under development)
 ```
 
 In interactive mode, numbers select a choice (every choice is logged), z passes priority, q quits.
@@ -57,7 +58,7 @@ train/.venv/bin/pip install gymnasium stable-baselines3 sb3-contrib
 
 ### Training commands
 
-All commands are run from the repo root.
+All commands are run from the repo root, this commands assume a venv with appropriate prereqs.
 
 #### Phase 1 — train against scripted agent
 
@@ -76,13 +77,6 @@ train/.venv/bin/python train/train.py --self-play --load checkpoints/robomage_fi
 
 Each episode the model is randomly assigned to Player A or B. The opponent is a randomly sampled frozen checkpoint from `train/checkpoints/`. Because the game emits observations from the priority player's perspective, no mirroring is needed — both sides always see themselves in slots 0–23. The opponent is reloaded every 10 episodes. Falls back to random play until the first checkpoint exists.
 
-#### Mixed training (self-play + scripted anchor)
-
-```bash
-train/.venv/bin/python train/train.py --self-play --scripted-fraction 0.3 --load checkpoints/robomage_final.zip
-```
-
-Mixes scripted-agent envs into the self-play pool. With `N_ENVS=7` and `--scripted-fraction 0.3`, 2 envs use the scripted opponent and 5 use self-play. The scripted envs act as a permanent anchor that prevents the policy from drifting to strategies that beat itself but lose to general play.
 
 ### All flags
 

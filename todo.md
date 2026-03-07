@@ -1,11 +1,14 @@
-Notable things missing from rules engine:
+Engine problems:
+Input of integers > max choice should be rejected
+Get non fatal and fatal errors to be logged when the training model hits them
 
+
+Rules problems:
 DRC isn't goaded
 First strike step
 Checking ability target on resolution!
 Countering something to exile, e.g. FoN, this is on cards but we are presently ignoring it
 Checking for effects similar to indestructible - will implement as relevant cards emerge
-Get non fatal and fatal errors to be logged when the training model hits them
 
 
 other refactoring stuff:

@@ -15,15 +15,14 @@ The compiled binary is output to `bin/robomage`.
 ## Code Style
 
 - Don't put any functions in main.cpp besides main!
-- Avoid inline logic for anything that will be repeated; write new functions
-- Declare local functions as private in the class, if the header contains a single class/struct
-- Iterate through mEntities when possible (working with a system class), rather than iterating through all entities
+- Avoid inline logic for anything that will be repeated; write new functions that are reusable
+- Declare local functions as private in the class, if the header contains a single class/struct, if header does not contain a class, write them as static functions in global namespace C-style.
+- Iterate through mEntities when possible (working within a system class), rather than iterating through all entities
 - Try to consolidate iterations through entities within a function, rather than iterating through many times
 - Static (local) functions should be forward declared at top of source file for clarity
 - C++17 with exceptions disabled (`-fno-exceptions`)
+- GUI is written in C99 with raylib
 - Uses clang-format configuration in `.clang-format`
-- Platform-specific: Supports Linux, macOS (Darwin), and Windows
-- On macOS: uses clang/clang++, on Linux: uses gcc/g++
 
 ## Project Overview
 
