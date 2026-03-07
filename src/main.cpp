@@ -52,6 +52,12 @@ extern bool gui_killed;
 pthread_t gui_thread;
 #endif
 
+GameState gs;
+Query q;
+const GameState *gs_ptr = &gs;
+const Query *query_ptr = &q;
+
+
 int main(int argc, char const *argv[]) {
     int choice;
     char buf[FILENAME_MAX];
@@ -182,9 +188,8 @@ int main(int argc, char const *argv[]) {
             cur_game.pass_priority();
             continue;
         }
-        GameState gs;
+
         populate_gamestate(&gs);
-        Query q;
         populate_query(&q, legal_actions);
         print_game_state(&gs);
         print_query(&q, cur_game.player_a_has_priority);

@@ -9,8 +9,8 @@
 #include "string.h"
 #include "classes/gamestate.h"
 
-#define SCREEN_WIDTH 800
-#define SCREEN_HEIGHT 600
+#define SCREEN_WIDTH 1920
+#define SCREEN_HEIGHT 1080
 
 extern pthread_t gui_thread;
 extern const GameState *gs_ptr;
@@ -26,21 +26,21 @@ int gui_cmd = 0;
 #define RAYGUI_IMPLEMENTATION
 #include "raygui.h"
 
+//todo later
 static void render_gs(){
-
-
 
 }
 
-//scrollable window that displays everything that would be propogated to the CLI
+//scrollable box that displays everything that would be propogated to the CLI
 static void render_info_log(){
 
 }
 
-//scrollable window that displays specifically and only the last query
+//scrollable box that displays specifically and only the last query
 static void render_query(){
 
 }
+
 
 static void render_choices(){
     
@@ -83,12 +83,7 @@ static void *gui_loop(void *arg) {
         render_info_log();
         //display choices available in query
         render_choices();
-    
-    
-        EndDrawing();
-    
-    
-    
+        EndDrawing();    
     }
     gui_killed = true;
     return NULL;
