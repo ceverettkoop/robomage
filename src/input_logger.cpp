@@ -1,55 +1,75 @@
 #include "input_logger.h"
+#include <pthread.h>
 
 #include <cstdio>
 #include <iostream>
 
 #include "card_vocab.h"
+#include "classes/game.h"
 #include "components/carddata.h"
 #include "components/permanent.h"
 #include "components/zone.h"
 #include "debug.h"
 #include "ecs/coordinator.h"
 #include "error.h"
-#include "classes/game.h"
 #include "machine_io.h"
 
 extern std::string RESOURCE_DIR;
 extern Coordinator global_coordinator;
 extern Game cur_game;
+extern bool gui_mode;
+extern bool gui_input_requested;
+extern bool gui_input_sent;
+extern int gui_cmd;
+extern pthread_mutex_t input_mutex;
+extern bool gui_killed;
 
-//helper migrated from cli.cpp
+// helper migrated from cli.cpp
 #define PASS_TURN_CMD (-2)
 
 static int get_int_input() {
-    int c;
-    while ((c = getchar()) == ' ' || c == '\t');
-    if (c == EOF || c == '\n') return -1;
-    if (c == 'q' || c == 'Q') {
-        printf("Quitting.\n");
-        exit(0);
-    }
-    if (c == 'z' || c == 'Z') {
+    if (gui_mode) {
+        gui_input_requested = true;
+        while (!gui_input_sent) {
+            if(gui_killed){
+                printf("User exited GUI, quitting\n");
+                exit(0);
+            }
+        }
+        pthread_mutex_lock(&input_mutex);
+        gui_input_sent = false;
+        pthread_mutex_unlock(&input_mutex);
+        gui_input_requested = false;
+        return gui_cmd;
+    } else {
+        int c;
+        while ((c = getchar()) == ' ' || c == '\t');
+        if (c == EOF || c == '\n') return -1;
+        if (c == 'q' || c == 'Q') {
+            printf("Quitting.\n");
+            exit(0);
+        }
+        if (c == 'z' || c == 'Z') {
+            while ((c = getchar()) != '\n' && c != EOF);
+            return PASS_TURN_CMD;
+        }
+        ungetc(c, stdin);
+        int choice = -1;
+        if (scanf("%d", &choice) != 1) {
+            while ((c = getchar()) != '\n' && c != EOF);
+            return -1;
+        }
         while ((c = getchar()) != '\n' && c != EOF);
-        return PASS_TURN_CMD;
+        return choice;
     }
-    ungetc(c, stdin);
-    int choice = -1;
-    if (scanf("%d", &choice) != 1) {
-        while ((c = getchar()) != '\n' && c != EOF);
-        return -1;
-    }
-    while ((c = getchar()) != '\n' && c != EOF);
-    return choice;
 }
-//
 
-
-InputLogger& InputLogger::instance() {
+InputLogger &InputLogger::instance() {
     static InputLogger logger;
     return logger;
 }
 
-void InputLogger::init_logging(unsigned int seed, const std::string& resource_dir) {
+void InputLogger::init_logging(unsigned int seed, const std::string &resource_dir) {
     log_path = resource_dir + "/logs/game_" + std::to_string(seed) + ".log";
     log_file.open(log_path);
     if (!log_file.is_open()) {
@@ -63,7 +83,7 @@ void InputLogger::init_logging(unsigned int seed, const std::string& resource_di
     printf("Logging inputs to: %s\n", log_path.c_str());
 }
 
-void InputLogger::init_replay(const std::string& replay_path) {
+void InputLogger::init_replay(const std::string &replay_path) {
     replay_file.open(replay_path);
     if (!replay_file.is_open()) {
         fatal_error("Failed to open replay file: " + replay_path);
@@ -76,7 +96,7 @@ void InputLogger::init_replay(const std::string& replay_path) {
     printf("REPLAY MODE: Using seed %u from %s\n", replay_seed, replay_path.c_str());
 }
 
-void InputLogger::init_machine(unsigned int seed, const std::string& resource_dir) {
+void InputLogger::init_machine(unsigned int seed, const std::string &resource_dir) {
     log_path = resource_dir + "/logs/game_" + std::to_string(seed) + ".log";
     log_file.open(log_path);
     if (!log_file.is_open()) {
@@ -89,14 +109,19 @@ void InputLogger::init_machine(unsigned int seed, const std::string& resource_di
     replay_mode = false;
 }
 
-bool InputLogger::is_replay_mode() const { return replay_mode; }
-bool InputLogger::is_machine_mode() const { return machine_mode; }
+bool InputLogger::is_replay_mode() const {
+    return replay_mode;
+}
+bool InputLogger::is_machine_mode() const {
+    return machine_mode;
+}
 
-unsigned int InputLogger::get_replay_seed() const { return replay_seed; }
+unsigned int InputLogger::get_replay_seed() const {
+    return replay_seed;
+}
 
-int InputLogger::get_logged_input(size_t cur_turn,
-                                   const std::vector<ActionCategory>& action_categories,
-                                   const std::vector<Entity>& entities) {
+int InputLogger::get_logged_input(
+    size_t cur_turn, const std::vector<ActionCategory> &action_categories, const std::vector<Entity> &entities) {
     int num_choices = static_cast<int>(action_categories.size());
 
     if (replay_mode) {
@@ -105,11 +130,8 @@ int InputLogger::get_logged_input(size_t cur_turn,
             fatal_error("Replay file ended unexpectedly");
         }
         Zone::Ownership priority = cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
-        printf("(REPLAY) [T%zu | %s | %s] Input: %d\n",
-               cur_game.turn,
-               step_to_string(cur_game.cur_step),
-               player_name(priority).c_str(),
-               choice);
+        printf("(REPLAY) [T%zu | %s | %s] Input: %d\n", cur_game.turn, step_to_string(cur_game.cur_step),
+            player_name(priority).c_str(), choice);
         return choice;
     }
 
@@ -129,16 +151,13 @@ int InputLogger::get_logged_input(size_t cur_turn,
             auto ui = static_cast<size_t>(i);
             if (ui < entities.size() && entities[ui] != 0 &&
                 global_coordinator.entity_has_component<CardData>(entities[ui])) {
-                idx = card_name_to_index(
-                    global_coordinator.GetComponent<CardData>(entities[ui]).name);
+                idx = card_name_to_index(global_coordinator.GetComponent<CardData>(entities[ui]).name);
             }
             printf(" %.4f", idx / static_cast<float>(N_CARD_TYPES));
         }
         // Emit controller_is_self per action
-        Zone::Ownership priority_owner = cur_game.player_a_has_priority
-            ? Zone::PLAYER_A : Zone::PLAYER_B;
-        Entity priority_ent = cur_game.player_a_has_priority
-            ? cur_game.player_a_entity : cur_game.player_b_entity;
+        Zone::Ownership priority_owner = cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
+        Entity priority_ent = cur_game.player_a_has_priority ? cur_game.player_a_entity : cur_game.player_b_entity;
         const float ctrl_null = -1.0f / static_cast<float>(N_CARD_TYPES);
         for (int i = 0; i < num_choices; i++) {
             float ctrl = ctrl_null;
@@ -146,12 +165,11 @@ int InputLogger::get_logged_input(size_t cur_turn,
             if (ui < entities.size() && entities[ui] != 0) {
                 Entity ent = entities[ui];
                 if (global_coordinator.entity_has_component<Permanent>(ent)) {
-                    ctrl = (global_coordinator.GetComponent<Permanent>(ent).controller
-                            == priority_owner) ? 1.0f : 0.0f;
+                    ctrl = (global_coordinator.GetComponent<Permanent>(ent).controller == priority_owner) ? 1.0f : 0.0f;
                 } else if (ent == priority_ent) {
-                    ctrl = 1.0f;   // self player entity
+                    ctrl = 1.0f;  // self player entity
                 } else if (ent == cur_game.player_a_entity || ent == cur_game.player_b_entity) {
-                    ctrl = 0.0f;   // opponent player entity
+                    ctrl = 0.0f;  // opponent player entity
                 }
             }
             printf(" %.4f", ctrl);
@@ -166,27 +184,36 @@ int InputLogger::get_logged_input(size_t cur_turn,
         int c;
         while ((c = getchar()) != '\n' && c != EOF);
 
-        if (log_file.is_open()) { log_file << choice << std::endl; log_file.flush(); }
+        if (log_file.is_open()) {
+            log_file << choice << std::endl;
+            log_file.flush();
+        }
         return choice;
     }
 
     // Auto-pass mode: return 0 and log it until we reach the target turn,
-    // but halt at Declare Attackers so the player can act.
     if (auto_pass_until_turn >= 0) {
         if (cur_game.cur_step == DECLARE_ATTACKERS) {
             auto_pass_until_turn = -1;
         } else if ((int)cur_turn < auto_pass_until_turn) {
-            if (log_file.is_open()) { log_file << 0 << std::endl; log_file.flush(); }
+            if (log_file.is_open()) {
+                log_file << 0 << std::endl;
+                log_file.flush();
+            }
             return 0;
         }
         auto_pass_until_turn = -1;
     }
 
+    // typical input
     int choice = get_int_input();
     if (choice == PASS_TURN_CMD) {
         printf("Auto-passing turn.\n");
         auto_pass_until_turn = (int)cur_turn + 1;
-        if (log_file.is_open()) { log_file << 0 << std::endl; log_file.flush(); }
+        if (log_file.is_open()) {
+            log_file << 0 << std::endl;
+            log_file.flush();
+        }
         return 0;
     }
     if (choice != -1 && log_file.is_open()) {

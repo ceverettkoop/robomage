@@ -34,7 +34,7 @@ LDLIBS =
 CHECKFLAGS = -Wall -Wformat -Wformat=2 -Wconversion -Wimplicit-fallthrough \
 -D_GLIBCXX_ASSERTIONS \
 -fstack-protector-strong
-C_CHECKFLAGS = -Werror=implicit -Werror=incompatible-pointer-types -Werror=int-conversion
+C_CHECKFLAGS = -Werror=implicit -Werror=incompatible-pointer-types -Werror=int-conversion -Wno-sign-conversion -Wno-conversion
 
 ifeq ($(GUI),TRUE)
 	CXXFLAGS += -DGUI=TRUE

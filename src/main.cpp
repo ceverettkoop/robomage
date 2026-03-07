@@ -43,6 +43,8 @@ Coordinator global_coordinator = Coordinator();
 Deck DEFAULT_DECK_ONE;
 Deck DEFAULT_DECK_TWO;
 Game cur_game;
+bool gui_mode = false;
+extern bool gui_killed;
 
 #ifdef GUI
 pthread_t gui_thread;
@@ -58,7 +60,6 @@ int main(int argc, char const *argv[]) {
     std::string replay_file_path;
     bool replay_mode = false;
     bool machine_mode = false;
-    bool gui_mode = false;
     for (int i = 1; i < argc; i++) {
         if (std::string(argv[i]) == "--replay" && i + 1 < argc) {
             replay_mode = true;
@@ -139,11 +140,11 @@ int main(int argc, char const *argv[]) {
     cur_game.generate_players(DEFAULT_DECK_ONE, DEFAULT_DECK_TWO);
     orderer->generate_libraries(DEFAULT_DECK_ONE, DEFAULT_DECK_TWO);
 
-    #ifdef GUI
-    if (gui_mode){
+#ifdef GUI
+    if (gui_mode) {
         init_gui();
-    } 
-    #endif 
+    }
+#endif
 
     // draw 7 and run mulligan
     orderer->draw_hands();
@@ -154,6 +155,7 @@ int main(int argc, char const *argv[]) {
     // game loop
     size_t prev_turn = (size_t)-1;
     while (cur_game.ended != true) {
+        if (gui_killed) goto GUI_KILLED;
         // if new turn provide update
         if (!InputLogger::instance().is_machine_mode() && cur_game.turn != prev_turn) {
             Zone::Ownership active = cur_game.player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B;
@@ -208,10 +210,14 @@ int main(int argc, char const *argv[]) {
             printf("Invalid action\n");
         }
     }
-    
-    #ifdef GUI
-    if(gui_mode) pthread_join(gui_thread, NULL);
-    #endif 
-    
+
+GUI_KILLED:
+#ifdef GUI
+    if (gui_mode) {
+        printf("User exited GUI, quitting\n");
+        pthread_join(gui_thread, NULL);
+    }
+#endif
+
     return 0;
 }

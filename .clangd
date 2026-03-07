@@ -1,5 +1,5 @@
 CompileFlags:
-  Add: [-fno-exceptions, -DGUI=TRUE]
+  Add: [-fno-exceptions, -DGUI=TRUE, -I../include]
 ---
 If:
     PathExclude: [.*\.c]
