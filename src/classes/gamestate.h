@@ -64,7 +64,7 @@ typedef struct ActionChoice_tag {
     bool          controller_is_self;
     ActionRefZone zone_ref;
     int           slot_idx;                    // index into zone array (-1 = N/A)
-    char          description[MAX_CHOICE_DESC];
+    char          description[MAX_CHOICE_DESC]; //NOT SERIALIZED TO ML
 } ActionChoice;
 
 typedef struct Query_tag {
@@ -88,8 +88,8 @@ typedef struct GameState_tag {
 
     int  self_graveyard[MAX_GY_SLOTS];   // card_vocab_idx, -1 = empty
     int  opp_graveyard[MAX_GY_SLOTS];
-    int  self_exile[MAX_GY_SLOTS];
-    int  opp_exile[MAX_GY_SLOTS];
+    int  self_exile[MAX_GY_SLOTS]; //NOT SERIALIZED TO ML FOR NOW -too expensive -TODO Revisit when exile matters 
+    int  opp_exile[MAX_GY_SLOTS];//NOT SERIALIZED TO ML FOR NOW -too expensive -TODO Revisit when exile matters
 
     int  self_hand[MAX_HAND_SLOTS];      // card_vocab_idx, -1 = empty
     int  opp_hand_ct;                    // == opponent.hand_ct (backwards compat)

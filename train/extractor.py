@@ -7,21 +7,25 @@ representation that is invariant to card ordering and slot position.
 
 State is always from the PRIORITY PLAYER'S perspective ("self").
 
+NOTE: Exile zones are tracked in GameState but not serialized to the observation.
+NOTE: ActionChoice.description is never part of the observation — it is for
+      human-readable display only (GUI/CLI) and is not passed to the ML model.
+
 Index layout must stay in sync with src/machine_io.h:
   obs[0:33]          global context (player stats, step, stack)
-  obs[33:1953]       48 creature slots × 40 floats  (8 status + 32 card one-hot)
-                       slots 0-23: self; slots 24-47: opponent
-  obs[1953:3873]     48 land slots    × 40 floats  (same format; status fields 0 for lands)
-                       slots 0-23: self; slots 24-47: opponent
-  obs[3873:4269]     12 stack slots   × 33 floats  (controller_is_self + 32 card one-hot)
-  obs[4269:8365]    128 graveyard slots × 32 floats (32 card one-hot)
+  obs[33:4065]       96 permanent slots × 42 floats  (10 status + 32 card one-hot)
+                       slots 0-47: self; slots 48-95: opponent
+                       status: power, toughness, tapped, attacking, blocking,
+                               sickness, damage, controller_is_self, is_creature, is_land
+  obs[4065:4461]     12 stack slots   × 33 floats  (controller_is_self + 32 card one-hot)
+  obs[4461:8557]    128 graveyard slots × 32 floats (32 card one-hot)
                        slots 0-63: self; slots 64-127: opponent
-  obs[8365:8685]     10 hand slots    × 32 floats  (32 card one-hot)
-  obs[8685:8717]     32 action-category features   (appended by env.py)
-  obs[8717:8749]     32 action card-ID features    (appended by env.py)
-  obs[8749:8781]     32 action controller_is_self  (appended by env.py)
-  obs[8781:8851]     70 hand cast-cost features    (10 slots × 7 cost feats)
-  obs[8851:9187]    336 BF ability-cost features   (48 slots × 7 cost feats)
+  obs[8557:8877]     10 hand slots    × 32 floats  (32 card one-hot)
+  obs[8877:8909]     32 action-category features   (appended by env.py)
+  obs[8909:8941]     32 action card-ID features    (appended by env.py)
+  obs[8941:8973]     32 action controller_is_self  (appended by env.py)
+  obs[8973:9043]     70 hand cast-cost features    (10 slots × 7 cost feats)
+  obs[9043:9379]    336 BF ability-cost features   (48 slots × 7 cost feats)
 """
 
 import torch
@@ -32,11 +36,8 @@ from stable_baselines3.common.torch_layers import BaseFeaturesExtractor
 # ── Layout constants (mirror src/machine_io.h) ──────────────────────────────
 _GLOBAL_SIZE     = 33
 
-_CREATURE_SLOTS  = 48   # 24 self + 24 opponent
-_PERM_SLOT_SIZE  = 40   # 8 status floats + 32 card one-hot
-
-_LAND_SLOTS      = 48   # 24 self + 24 opponent
-# land slots use the same 40-float format as creature slots
+_PERM_SLOTS      = 96   # 48 self + 48 opponent (unified: creatures, lands, other)
+_PERM_SLOT_SIZE  = 42   # 10 status floats + 32 card one-hot
 
 _STACK_SLOTS     = 12
 _STACK_SLOT_SIZE = 33   # controller_is_self(1) + card one-hot(32)
@@ -47,17 +48,15 @@ _GY_SLOT_SIZE    = 32   # card one-hot only
 _HAND_SLOTS      = 10
 _HAND_SLOT_SIZE  = 32   # card one-hot only
 
-_CREATURE_START = _GLOBAL_SIZE                                       # 33
-_CREATURE_END   = _CREATURE_START + _CREATURE_SLOTS * _PERM_SLOT_SIZE  # 1953
-_LAND_START     = _CREATURE_END                                      # 1953
-_LAND_END       = _LAND_START + _LAND_SLOTS * _PERM_SLOT_SIZE          # 3873
-_STACK_START    = _LAND_END                                          # 3873
-_STACK_END      = _STACK_START + _STACK_SLOTS * _STACK_SLOT_SIZE       # 4269
-_GY_START       = _STACK_END                                         # 4269
-_GY_END         = _GY_START + _GY_SLOTS * _GY_SLOT_SIZE                # 8365
-_HAND_START     = _GY_END                                            # 8365
-_HAND_END       = _HAND_START + _HAND_SLOTS * _HAND_SLOT_SIZE          # 8685
-# obs[8685:] = action metadata + cost features appended by env.py
+_PERM_START  = _GLOBAL_SIZE                                    # 33
+_PERM_END    = _PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE     # 4065
+_STACK_START = _PERM_END                                       # 4065
+_STACK_END   = _STACK_START + _STACK_SLOTS * _STACK_SLOT_SIZE  # 4461
+_GY_START    = _STACK_END                                      # 4461
+_GY_END      = _GY_START + _GY_SLOTS * _GY_SLOT_SIZE           # 8557
+_HAND_START  = _GY_END                                         # 8557
+_HAND_END    = _HAND_START + _HAND_SLOTS * _HAND_SLOT_SIZE     # 8877
+# obs[8877:] = action metadata + cost features appended by env.py
 
 
 class CardGameExtractor(BaseFeaturesExtractor):
@@ -85,17 +84,16 @@ class CardGameExtractor(BaseFeaturesExtractor):
     ):
         half = embed_dim // 2
         features_dim = (
-            _GLOBAL_SIZE                   # 33
-            + (observation_space.shape[0] - _HAND_END)  # action extras (274)
-            + embed_dim * 2                # creature mean+max
-            + embed_dim * 2                # land mean+max
-            + half * 2                     # stack mean+max
-            + embed_dim                    # graveyard mean
-            + embed_dim                    # hand mean
+            _GLOBAL_SIZE                                 # 33
+            + (observation_space.shape[0] - _HAND_END)  # action extras
+            + embed_dim * 2                              # perm mean+max (creatures, lands, other)
+            + half * 2                                   # stack mean+max
+            + embed_dim                                  # graveyard mean
+            + embed_dim                                  # hand mean
         )
         super().__init__(observation_space, features_dim=features_dim)
 
-        # Shared encoder for 40-float permanent slots (creatures AND lands)
+        # Shared encoder for 42-float unified permanent slots
         self.perm_encoder = nn.Sequential(
             nn.Linear(_PERM_SLOT_SIZE, embed_dim),
             nn.ReLU(),
@@ -120,27 +118,24 @@ class CardGameExtractor(BaseFeaturesExtractor):
         )
 
     def forward(self, obs: torch.Tensor) -> torch.Tensor:
-        global_ctx  = obs[:, :_GLOBAL_SIZE]
+        global_ctx    = obs[:, :_GLOBAL_SIZE]
         action_extras = obs[:, _HAND_END:]   # action cats + card IDs + cost features
 
-        creatures  = obs[:, _CREATURE_START:_CREATURE_END].reshape(-1, _CREATURE_SLOTS, _PERM_SLOT_SIZE)
-        lands      = obs[:, _LAND_START:_LAND_END].reshape(-1, _LAND_SLOTS, _PERM_SLOT_SIZE)
-        stack      = obs[:, _STACK_START:_STACK_END].reshape(-1, _STACK_SLOTS, _STACK_SLOT_SIZE)
-        graveyard  = obs[:, _GY_START:_GY_END].reshape(-1, _GY_SLOTS, _GY_SLOT_SIZE)
-        hand       = obs[:, _HAND_START:_HAND_END].reshape(-1, _HAND_SLOTS, _HAND_SLOT_SIZE)
+        perms     = obs[:, _PERM_START:_PERM_END].reshape(-1, _PERM_SLOTS, _PERM_SLOT_SIZE)
+        stack     = obs[:, _STACK_START:_STACK_END].reshape(-1, _STACK_SLOTS, _STACK_SLOT_SIZE)
+        graveyard = obs[:, _GY_START:_GY_END].reshape(-1, _GY_SLOTS, _GY_SLOT_SIZE)
+        hand      = obs[:, _HAND_START:_HAND_END].reshape(-1, _HAND_SLOTS, _HAND_SLOT_SIZE)
 
         # Encode each slot type with its shared-weight encoder
-        cr_emb  = self.perm_encoder(creatures)    # (B, 20, embed)
-        land_emb = self.perm_encoder(lands)        # (B, 20, embed)  — shared weights
-        stk_emb  = self.stack_encoder(stack)       # (B,  5, embed//2)
-        gy_emb   = self.entity_encoder(graveyard)  # (B, 20, embed)
+        perm_emb = self.perm_encoder(perms)        # (B, 96, embed)
+        stk_emb  = self.stack_encoder(stack)       # (B, 12, embed//2)
+        gy_emb   = self.entity_encoder(graveyard)  # (B, 128, embed)
         hand_emb = self.entity_encoder(hand)       # (B, 10, embed)  — shared weights
 
-        # Aggregate: mean+max for creatures, lands, stack; mean for graveyard and hand
-        cr_agg   = torch.cat([cr_emb.mean(1),   cr_emb.max(1).values],   dim=-1)
-        land_agg = torch.cat([land_emb.mean(1), land_emb.max(1).values], dim=-1)
+        # Aggregate: mean+max for perms and stack; mean for graveyard and hand
+        perm_agg = torch.cat([perm_emb.mean(1), perm_emb.max(1).values], dim=-1)
         stk_agg  = torch.cat([stk_emb.mean(1),  stk_emb.max(1).values],  dim=-1)
         gy_agg   = gy_emb.mean(1)
         hand_agg = hand_emb.mean(1)
 
-        return torch.cat([global_ctx, action_extras, cr_agg, land_agg, stk_agg, gy_agg, hand_agg], dim=-1)
+        return torch.cat([global_ctx, action_extras, perm_agg, stk_agg, gy_agg, hand_agg], dim=-1)

@@ -374,7 +374,7 @@ def _decode_hand(obs):
     import numpy as np
     cards = []
     for slot in range(10):           # MAX_HAND_SLOTS = 10
-        base = 8365 + slot * 32      # _HAND_START + slot * N_CARD_TYPES
+        base = 8557 + slot * 32      # _HAND_START + slot * N_CARD_TYPES
         vec = obs[base : base + 32]
         idx = int(np.argmax(vec))
         if vec[idx] > 0.5:

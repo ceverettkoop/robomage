@@ -352,19 +352,8 @@ std::vector<float> serialize_state(const GameState* gs) {
             state.push_back(j == idx ? 1.0f : 0.0f);
     }
 
-    // Self exile (64 x 32 = 2048)
-    for (int i = 0; i < MAX_GY_SLOTS; i++) {
-        int idx = gs->self_exile[i];
-        for (int j = 0; j < GY_SLOT_SIZE; j++)
-            state.push_back(j == idx ? 1.0f : 0.0f);
-    }
-
-    // Opp exile (64 x 32 = 2048)
-    for (int i = 0; i < MAX_GY_SLOTS; i++) {
-        int idx = gs->opp_exile[i];
-        for (int j = 0; j < GY_SLOT_SIZE; j++)
-            state.push_back(j == idx ? 1.0f : 0.0f);
-    }
+    // NOTE: exile zones are populated in GameState but not serialized here.
+    // Add them back once cards that use exile are implemented.
 
     // Self hand (10 x 32 = 320)
     for (int i = 0; i < MAX_HAND_SLOTS; i++) {

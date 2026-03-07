@@ -4,7 +4,7 @@ RoboMage gymnasium environment.
 The game runs as a subprocess with --machine mode. On each decision point it
 emits a QUERY line to stdout:
 
-    QUERY: <num_choices> <f0> ... <f8684> <cat0>...<catN-1> <id0>...<idN-1> <ctrl0>...<ctrlN-1>
+    QUERY: <num_choices> <f0> ... <f8876> <cat0>...<catN-1> <id0>...<idN-1> <ctrl0>...<ctrlN-1>
 
 The environment sends back a single integer on stdin.
 
@@ -24,9 +24,12 @@ Observation space
 -----------------
 State is always emitted from the PRIORITY PLAYER'S perspective ("self").
 
-8685-float state vector + 32 action-category floats + 32 action card-ID floats
+8877-float state vector + 32 action-category floats + 32 action card-ID floats
 + 32 action controller_is_self floats + 70 hand cost floats
-+ 336 battlefield ability cost floats = 9187 total.
++ 336 battlefield ability cost floats = 9379 total.
+NOTE: ActionChoice.description is NOT part of the observation — it is for
+human-readable display only (GUI/CLI) and is never sent to the ML model.
+NOTE: Exile zones are tracked in GameState but not serialized to the observation.
 See src/machine_io.h for the full state layout.
 
 Reward
@@ -53,7 +56,10 @@ try:
 except ImportError:
     from train.card_costs import _CARD_COST_MATRIX, _CARD_ABILITY_COST_MATRIX, N_CARD_TYPES, _N_COST_FEATS
 
-STATE_SIZE = 8685
+STATE_SIZE = 8877
+# NOTE: Exile zones are tracked in GameState but not serialized to the observation.
+# NOTE: ActionChoice.description is never emitted in the QUERY line — it is for
+#       human-readable display only and is not part of the ML observation.
 MAX_ACTIONS = 32         # practical upper bound on num_choices per step
 ACTION_CATEGORY_MAX = 21 # highest ActionCategory enum value (SHUFFLE)
 _ACTION_CARD_ID_NULL = -1.0 / N_CARD_TYPES  # -0.03125 — null sentinel for non-card slots
@@ -61,13 +67,13 @@ _ACTION_CTRL_NULL    = -1.0 / N_CARD_TYPES  # -0.03125 — null sentinel for non
 MAX_HAND_SLOTS = 10
 _HAND_COST_FEATS  = MAX_HAND_SLOTS * _N_COST_FEATS  # 10 * 7 = 70
 _BF_ABILITY_FEATS = 48 * _N_COST_FEATS              # 48 * 7 = 336
-OBS_SIZE = STATE_SIZE + 3 * MAX_ACTIONS + _HAND_COST_FEATS + _BF_ABILITY_FEATS  # 9187
+OBS_SIZE = STATE_SIZE + 3 * MAX_ACTIONS + _HAND_COST_FEATS + _BF_ABILITY_FEATS  # 9379
 
 # ── State layout offsets (mirror src/machine_io.h) ───────────────────────────
-_LAND_START   = 33 + 48 * 40   # 1953: land slots  (48 × 40)
-_STACK_START  = 1953 + 48 * 40  # 3873: stack slots (12 × 33)
-_GY_START     = 3873 + 12 * 33  # 4269: graveyard   (128 × 32)
-_HAND_START   = 4269 + 128 * 32 # 8365: hand        (10 × 32)
+# Creatures, lands, and other permanents share one unified section (no separate land slots).
+_STACK_START  = 33 + 96 * 42    # 4065: stack slots (12 × 33)
+_GY_START     = 4065 + 12 * 33  # 4461: graveyard   (128 × 32)
+_HAND_START   = 4461 + 128 * 32 # 8557: hand        (10 × 32)
 _REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BINARY = os.path.join(_REPO_ROOT, "bin", "robomage")
 BIN_DIR = os.path.join(_REPO_ROOT, "bin")  # game must be run from here for resource lookup
@@ -344,21 +350,24 @@ _CARD_COLORED_COSTS = {
 
 # ── Battlefield layout (mirror machine_io.h) ────────────────────────────────
 _BF_START         = 33
-_BF_SLOT_SIZE     = 40   # 8 status floats + 32 card one-hot
-_BF_A_SLOTS       = 24   # self occupies slots 0-23
-_BF_CARD_OFF      = 8    # offset of card one-hot within each 40-float permanent slot
+_BF_SLOT_SIZE     = 42   # 10 status floats + 32 card one-hot
+_PERM_A_SLOTS     = 48   # self occupies perm slots 0-47, opponent slots 48-95
+_BF_A_SLOTS       = 24   # ability cost slots per player (unchanged)
+_BF_CARD_OFF      = 10   # offset of card one-hot within each 42-float permanent slot
 _CTRL_OFF         = 7    # offset of controller_is_self within a permanent slot
 _STACK_SLOT_SIZE  = 33   # controller_is_self(1) + card one-hot(32)
 _GY_SLOT_SIZE     = N_CARD_TYPES  # 32 — graveyard slots are just card one-hots
 _GY_A_SLOTS       = 64   # self occupies GY slots 0-63
 # Start of bf_ability_costs block in the full obs vector
-_BF_COST_START    = STATE_SIZE + 3 * MAX_ACTIONS + _HAND_COST_FEATS  # 8851
-# Status offsets within a slot
+_BF_COST_START    = STATE_SIZE + 3 * MAX_ACTIONS + _HAND_COST_FEATS  # 9043
+# Status offsets within a permanent slot
 _OFF_POWER        = 0
 _OFF_TOUGHNESS    = 1
 _OFF_IS_TAPPED    = 2
 _OFF_IS_ATTACKING = 3
 _OFF_HAS_SICKNESS = 5
+_OFF_IS_CREATURE  = 8    # new: 1.0 if this slot is a creature
+_OFF_IS_LAND      = 9    # new: 1.0 if this slot is a land
 
 # Vocab indices used for targeting decisions (mirror src/card_vocab.h)
 _WASTELAND_VOCAB_IDX     = 10
@@ -369,12 +378,12 @@ _BLUE_POOL_IDX           = 4   # obs[3 + 1]; mana pool is at obs[3:9], W/U/B/R/G
 
 
 def _all_eligible_creatures_attacking(obs: np.ndarray) -> bool:
-    """Return True if every untapped, non-sick creature in self's slots (0-23) is attacking."""
+    """Return True if every untapped, non-sick creature in self's slots (0-47) is attacking."""
     any_eligible = False
-    for slot in range(_BF_A_SLOTS):
+    for slot in range(_PERM_A_SLOTS):
         base = _BF_START + slot * _BF_SLOT_SIZE
-        if obs[base + _OFF_POWER] <= 0.0 and obs[base + _OFF_TOUGHNESS] <= 0.0:
-            continue  # empty slot
+        if obs[base + _OFF_IS_CREATURE] < 0.5:
+            continue  # not a creature (empty slot, land, or other permanent)
         if obs[base + _OFF_IS_TAPPED] > 0.5 or obs[base + _OFF_HAS_SICKNESS] > 0.5:
             continue  # can't attack
         any_eligible = True
@@ -384,9 +393,11 @@ def _all_eligible_creatures_attacking(obs: np.ndarray) -> bool:
 
 
 def _opponent_has_nonbasic_land(obs: np.ndarray) -> bool:
-    """Return True if opponent has at least one nonbasic land (land slots 24-47)."""
-    for slot in range(24, 48):
-        base = _LAND_START + slot * _BF_SLOT_SIZE
+    """Return True if opponent has at least one nonbasic land (opp perm slots 48-95)."""
+    for slot in range(_PERM_A_SLOTS):
+        base = _BF_START + (slot + _PERM_A_SLOTS) * _BF_SLOT_SIZE
+        if obs[base + _OFF_IS_LAND] < 0.5:
+            continue  # not a land
         card_vec = obs[base + _BF_CARD_OFF : base + _BF_CARD_OFF + N_CARD_TYPES]
         idx = int(np.argmax(card_vec))
         if card_vec[idx] > 0.5 and idx not in _BASIC_LAND_IDS:
@@ -664,41 +675,32 @@ def mirror_obs(obs: np.ndarray) -> np.ndarray:
     m[30] = 1.0 - obs[30]
     m[31] = 1.0 - obs[31]
 
-    # 3. Swap creature slots 0-23 ↔ 24-47 and flip controller_is_self in all 48 slots
-    for i in range(_BF_A_SLOTS):
+    # 3. Swap unified perm slots 0-47 (self) ↔ 48-95 (opp) and flip controller_is_self
+    for i in range(_PERM_A_SLOTS):
         a = _BF_START + i * _BF_SLOT_SIZE
-        b = _BF_START + (i + _BF_A_SLOTS) * _BF_SLOT_SIZE
+        b = _BF_START + (i + _PERM_A_SLOTS) * _BF_SLOT_SIZE
         m[a:a + _BF_SLOT_SIZE] = obs[b:b + _BF_SLOT_SIZE]
         m[b:b + _BF_SLOT_SIZE] = obs[a:a + _BF_SLOT_SIZE]
         m[a + _CTRL_OFF] = 1.0 - obs[b + _CTRL_OFF]
         m[b + _CTRL_OFF] = 1.0 - obs[a + _CTRL_OFF]
 
-    # 4. Swap land slots 0-23 ↔ 24-47 and flip controller_is_self
-    for i in range(_BF_A_SLOTS):
-        a = _LAND_START + i * _BF_SLOT_SIZE
-        b = _LAND_START + (i + _BF_A_SLOTS) * _BF_SLOT_SIZE
-        m[a:a + _BF_SLOT_SIZE] = obs[b:b + _BF_SLOT_SIZE]
-        m[b:b + _BF_SLOT_SIZE] = obs[a:a + _BF_SLOT_SIZE]
-        m[a + _CTRL_OFF] = 1.0 - obs[b + _CTRL_OFF]
-        m[b + _CTRL_OFF] = 1.0 - obs[a + _CTRL_OFF]
-
-    # 5. Flip controller_is_self in stack slots (first float of each 33-float slot)
+    # 4. Flip controller_is_self in stack slots (first float of each 33-float slot)
     for i in range(12):
         base = _STACK_START + i * _STACK_SLOT_SIZE
         m[base] = 1.0 - obs[base]
 
-    # 6. Swap graveyard slots 0-63 ↔ 64-127 (pure card one-hots, no flag to flip)
+    # 5. Swap graveyard slots 0-63 ↔ 64-127 (pure card one-hots, no flag to flip)
     for i in range(_GY_A_SLOTS):
         a = _GY_START + i * _GY_SLOT_SIZE
         b = _GY_START + (i + _GY_A_SLOTS) * _GY_SLOT_SIZE
         m[a:a + _GY_SLOT_SIZE] = obs[b:b + _GY_SLOT_SIZE]
         m[b:b + _GY_SLOT_SIZE] = obs[a:a + _GY_SLOT_SIZE]
 
-    # 7. Hand slots (obs[_HAND_START:STATE_SIZE]): always the priority player's hand —
+    # 6. Hand slots (obs[_HAND_START:STATE_SIZE]): always the priority player's hand —
     #    no change needed; after mirror obs[31]=1.0 still means the acting player's hand
     #    is shown here.
 
-    # 8. Swap bf_ability_costs slots 0-23 ↔ 24-47 (mirrors the creature slot reordering)
+    # 7. Swap bf_ability_costs slots 0-23 ↔ 24-47 (mirrors the permanent slot reordering)
     for i in range(_BF_A_SLOTS):
         a = _BF_COST_START + i * _N_COST_FEATS
         b = _BF_COST_START + (i + _BF_A_SLOTS) * _N_COST_FEATS

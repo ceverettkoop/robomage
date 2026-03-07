@@ -6,7 +6,7 @@
 #include <vector>
 
 // QUERY line format (machine mode):
-//   "QUERY: <num_choices> <f0>...<f12972> <cat0>...<cat_{N-1}> <id0>...<id_{N-1}> <ctrl0>...<ctrl_{N-1}>"
+//   "QUERY: <num_choices> <f0>...<f8876> <cat0>...<cat_{N-1}> <id0>...<id_{N-1}> <ctrl0>...<ctrl_{N-1}>"
 //   where N = num_choices.
 //
 // The state vector (STATE_SIZE floats) is followed by:
@@ -18,13 +18,19 @@
 //     player, 0.0 if controlled by the opponent, -0.03125 null sentinel for
 //     non-entity actions (pass priority, confirm slots, etc.).
 //
+// NOTE: ActionChoice.description is NOT emitted in the QUERY line.
+// It is stored in Query for human-readable display (GUI/CLI) only.
+//
 // The Python env pads all three arrays to MAX_ACTIONS slots so the full
 // observation is STATE_SIZE + 3*MAX_ACTIONS floats (plus cost features).
 //
 // State is always serialized from the PRIORITY PLAYER'S perspective ("self").
 // "Self" refers to the player who currently holds priority.
 //
-// Fixed-size state vector layout (STATE_SIZE = 12973 floats):
+// NOTE: Exile zones are populated in GameState but NOT serialized.
+// Add them back once cards that use exile are implemented.
+//
+// Fixed-size state vector layout (STATE_SIZE = 8877 floats):
 //
 //  [0-8]    Self player block (9 floats):
 //             life/20, hand_ct/10, poison/10, mana[W,U,B,R,G,C]/10
@@ -34,27 +40,25 @@
 //  [31]     1.0 if self is Player A, 0.0 if self is Player B
 //  [32]     Stack size / 10.0
 //
-//  [33-2048]    Self permanents: 48 slots x 42 floats = 2016
-//  [2049-4064]  Opp permanents:  48 slots x 42 floats = 2016
-//               Per slot: power/10, toughness/10, is_tapped, is_attacking,
-//                         is_blocking, has_summoning_sickness, damage/10,
-//                         controller_is_self, is_creature, is_land,
-//                         card_id one-hot (N_CARD_TYPES floats)
-//               Empty slots (card_vocab_idx == -1) are all zeros.
+//  [33-2048]   Self permanents: 48 slots x 42 floats = 2016
+//  [2049-4064] Opp permanents:  48 slots x 42 floats = 2016
+//              Per slot: power/10, toughness/10, is_tapped, is_attacking,
+//                        is_blocking, has_summoning_sickness, damage/10,
+//                        controller_is_self, is_creature, is_land,
+//                        card_id one-hot (N_CARD_TYPES floats)
+//              Empty slots (card_vocab_idx == -1) are all zeros.
 //
-//  [4065-4460]  Stack: 12 slots x 33 floats = 396
-//               Per slot: controller_is_self(1), card_id one-hot(32)
+//  [4065-4460] Stack: 12 slots x 33 floats = 396
+//              Per slot: controller_is_self(1), card_id one-hot(32)
 //
-//  [4461-6508]  Self graveyard:  64 slots x 32 floats = 2048
-//  [6509-8556]  Opp graveyard:   64 slots x 32 floats = 2048
-//  [8557-10604] Self exile:      64 slots x 32 floats = 2048
-//  [10605-12652] Opp exile:      64 slots x 32 floats = 2048
-//               Per slot: card_id one-hot (all zeros = empty)
+//  [4461-6508] Self graveyard: 64 slots x 32 floats = 2048
+//  [6509-8556] Opp graveyard:  64 slots x 32 floats = 2048
+//              Per slot: card_id one-hot (all zeros = empty)
 //
-//  [12653-12972] Self hand: 10 slots x 32 floats = 320
-//               Per slot: card_id one-hot (all zeros = empty)
+//  [8557-8876] Self hand: 10 slots x 32 floats = 320
+//              Per slot: card_id one-hot (all zeros = empty)
 
-static constexpr int STATE_SIZE      = 12973;
+static constexpr int STATE_SIZE      = 8877;
 static constexpr int N_CARD_TYPES    = 32;
 static constexpr int PERM_SLOT_SIZE  = 42;  // 8 stat/combat + 2 type flags + N_CARD_TYPES
 static constexpr int STACK_SLOT_SIZE = 33;  // controller_is_self + card one-hot
