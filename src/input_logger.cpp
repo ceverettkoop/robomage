@@ -120,10 +120,7 @@ unsigned int InputLogger::get_replay_seed() const {
     return replay_seed;
 }
 
-int InputLogger::get_logged_input(
-    size_t cur_turn, const std::vector<ActionCategory> &action_categories, const std::vector<Entity> &entities) {
-    int num_choices = static_cast<int>(action_categories.size());
-
+int InputLogger::get_logged_input(size_t cur_turn, const std::vector<LegalAction>& actions) {
     if (replay_mode) {
         int choice;
         if (!(replay_file >> choice)) {
@@ -136,51 +133,34 @@ int InputLogger::get_logged_input(
     }
 
     if (machine_mode) {
-        // Emit QUERY line:
-        //   "QUERY: <num_choices> <f0>...<f8684> <cat0>...<catN-1> <id0>...<idN-1> <ctrl0>...<ctrlN-1>"
-        // State vector is followed by one ActionCategory int per legal action,
-        // then one normalized card vocab index float per action slot,
-        // then one controller_is_self float per action slot (1.0 = self, 0.0 = opp,
-        // -0.03125 = null sentinel for non-entity actions).
-        std::vector<float> state = serialize_state();
-        printf("QUERY: %d", num_choices);
-        for (float f : state) printf(" %.4f", f);
-        for (ActionCategory cat : action_categories) printf(" %d", static_cast<int>(cat));
-        for (int i = 0; i < num_choices; i++) {
-            int idx = -1;
-            auto ui = static_cast<size_t>(i);
-            if (ui < entities.size() && entities[ui] != 0 &&
-                global_coordinator.entity_has_component<CardData>(entities[ui])) {
-                idx = card_name_to_index(global_coordinator.GetComponent<CardData>(entities[ui]).name);
-            }
-            printf(" %.4f", idx / static_cast<float>(N_CARD_TYPES));
+        GameState gs;
+        Query q;
+        populate_gamestate(&gs);
+        populate_query(&q, actions);
+
+        auto state_vec = serialize_state(&gs);
+        printf("QUERY: %d", q.num_choices);
+        for (float f : state_vec) printf(" %.4f", f);
+        for (int i = 0; i < q.num_choices; i++) printf(" %d", q.choices[i].category);
+        const float id_null = -1.0f / static_cast<float>(N_CARD_TYPES);
+        for (int i = 0; i < q.num_choices; i++) {
+            float id_f = q.choices[i].card_vocab_idx >= 0
+                ? static_cast<float>(q.choices[i].card_vocab_idx) / static_cast<float>(N_CARD_TYPES)
+                : id_null;
+            printf(" %.4f", id_f);
         }
-        // Emit controller_is_self per action
-        Zone::Ownership priority_owner = cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
-        Entity priority_ent = cur_game.player_a_has_priority ? cur_game.player_a_entity : cur_game.player_b_entity;
         const float ctrl_null = -1.0f / static_cast<float>(N_CARD_TYPES);
-        for (int i = 0; i < num_choices; i++) {
-            float ctrl = ctrl_null;
-            auto ui = static_cast<size_t>(i);
-            if (ui < entities.size() && entities[ui] != 0) {
-                Entity ent = entities[ui];
-                if (global_coordinator.entity_has_component<Permanent>(ent)) {
-                    ctrl = (global_coordinator.GetComponent<Permanent>(ent).controller == priority_owner) ? 1.0f : 0.0f;
-                } else if (ent == priority_ent) {
-                    ctrl = 1.0f;  // self player entity
-                } else if (ent == cur_game.player_a_entity || ent == cur_game.player_b_entity) {
-                    ctrl = 0.0f;  // opponent player entity
-                }
-            }
+        for (int i = 0; i < q.num_choices; i++) {
+            float ctrl = (q.choices[i].zone_ref != REF_NONE)
+                ? (q.choices[i].controller_is_self ? 1.0f : 0.0f)
+                : ctrl_null;
             printf(" %.4f", ctrl);
         }
         printf("\n");
         fflush(stdout);
 
-        // Read response integer from stdin
         int choice = -1;
         if (scanf("%d", &choice) != 1) choice = -1;
-        // consume rest of line
         int c;
         while ((c = getchar()) != '\n' && c != EOF);
 
@@ -191,7 +171,7 @@ int InputLogger::get_logged_input(
         return choice;
     }
 
-    // Auto-pass mode: return 0 and log it until we reach the target turn,
+    // Auto-pass mode: return 0 until we reach the target turn
     if (auto_pass_until_turn >= 0) {
         if (cur_game.cur_step == DECLARE_ATTACKERS) {
             auto_pass_until_turn = -1;
@@ -205,7 +185,7 @@ int InputLogger::get_logged_input(
         auto_pass_until_turn = -1;
     }
 
-    // typical input
+    // Typical CLI input
     int choice = get_int_input();
     if (choice == PASS_TURN_CMD) {
         printf("Auto-passing turn.\n");
@@ -221,4 +201,17 @@ int InputLogger::get_logged_input(
         log_file.flush();
     }
     return choice;
+}
+
+int InputLogger::get_logged_input(
+    size_t cur_turn, const std::vector<ActionCategory>& action_categories, const std::vector<Entity>& entities) {
+    std::vector<LegalAction> actions;
+    actions.reserve(action_categories.size());
+    for (size_t i = 0; i < action_categories.size(); i++) {
+        Entity e = (i < entities.size()) ? entities[i] : static_cast<Entity>(0);
+        LegalAction la(PASS_PRIORITY, e, "");
+        la.category = action_categories[i];
+        actions.push_back(la);
+    }
+    return get_logged_input(cur_turn, actions);
 }

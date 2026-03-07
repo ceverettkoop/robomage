@@ -1,6 +1,4 @@
 #include <ctype.h>
-#ifdef GUI
-
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -9,19 +7,44 @@
 #include "raylib.h"
 #include "stdbool.h"
 #include "string.h"
-#define RAYGUI_IMPLEMENTATION
-#include "raygui.h"
+#include "classes/gamestate.h"
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
 
 extern pthread_t gui_thread;
+extern const GameState *gs_ptr;
+extern const Query *query_ptr;
 pthread_mutex_t input_mutex = PTHREAD_MUTEX_INITIALIZER;
 char gui_input[GUI_INPUT_MAX] = {'\0'};
 bool gui_input_requested = false;
 bool gui_input_sent = false;
 bool gui_killed = false;
 int gui_cmd = 0;
+
+#ifdef GUI
+#define RAYGUI_IMPLEMENTATION
+#include "raygui.h"
+
+static void render_gs(){
+
+
+
+}
+
+//scrollable window that displays everything that would be propogated to the CLI
+static void render_info_log(){
+
+}
+
+//scrollable window that displays specifically and only the last query
+static void render_query(){
+
+}
+
+static void render_choices(){
+    
+}
 
 static void *gui_loop(void *arg) {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "robomage");
@@ -32,7 +55,7 @@ static void *gui_loop(void *arg) {
         ClearBackground(WHITE);
         DrawText("HELLO", 200, 200, 24, BLACK);
 
-        // INPUT TEXT BOX DRAW AND UPDATE
+        // INPUT TEXT BOX DRAW AND UPDATE; this could be a function
         if (GuiTextInputBox((Rectangle){SCREEN_WIDTH * .2, SCREEN_HEIGHT * .7, SCREEN_WIDTH * .6, SCREEN_HEIGHT * .2},
                 "Input Command", "", "OK", gui_input, GUI_INPUT_MAX, NULL) == true) {
             if (gui_input_requested) {
@@ -54,7 +77,18 @@ static void *gui_loop(void *arg) {
             }
         }
     INPUT_END:
+        //display game state
+        render_gs();
+        //display info log
+        render_info_log();
+        //display choices available in query
+        render_choices();
+    
+    
         EndDrawing();
+    
+    
+    
     }
     gui_killed = true;
     return NULL;

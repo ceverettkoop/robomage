@@ -6,7 +6,7 @@
 extern "C" {
 #endif
 
-enum Step {
+typedef enum Step {
     UNTAP,
     UPKEEP,
     DRAW,
@@ -19,7 +19,8 @@ enum Step {
     SECOND_MAIN,
     END_STEP,
     CLEANUP
-};
+}Step;
+
 #ifdef __cplusplus
 }  // end extern "C"
 #endif

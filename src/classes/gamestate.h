@@ -9,49 +9,92 @@ extern "C" {
 #include "game.h"
 #endif
 
+// relevant limits, also used in machine_io.h
+#define MAX_BATTLEFIELD_SLOTS 48  // all permanents (creatures + lands + other) per player
+#define MAX_STACK_DISPLAY 12
+#define MAX_GY_SLOTS 64  // per player
+#define MAX_HAND_SLOTS 10
+#define MAX_ACTIONS 32
+#define MAX_CHOICE_DESC 128
+
 typedef struct PlayerState_tag {
-        int life;
-        int poison_counters;
-        int mana[6];  // WUBRGC
-        int lands_played_this_turn;
+    int life;
+    int poison_counters;
+    int mana[6];               // WUBRGC
+    int lands_played_this_turn;
+    int hand_ct;               // actual hand size
 } PlayerState;
 
 typedef struct PermanentState_tag {
-        int card_vocab_idx;  // -1 = empty slot
-        bool controller_is_self;
-        bool is_tapped;
-        int power;  // 0 for lands
-        int toughness;
-        bool is_attacking;
-        bool is_blocking;
-        bool has_summoning_sickness;
-        int damage;
+    int  card_vocab_idx;         // -1 = empty slot
+    bool controller_is_self;
+    bool is_tapped;
+    bool is_creature;
+    bool is_land;
+    int  power;                  // 0 for non-creatures
+    int  toughness;
+    bool is_attacking;
+    bool is_blocking;
+    bool has_summoning_sickness;
+    int  damage;
 } PermanentState;
 
 typedef struct StackEntry_tag {
-        int card_vocab_idx;
-        bool controller_is_self;
+    int  card_vocab_idx;  // -1 = unknown/empty
+    bool controller_is_self;
 } StackEntry;
 
+typedef enum ActionRefZone_tag {
+    REF_NONE = 0,
+    REF_SELF_BATTLEFIELD,
+    REF_OPP_BATTLEFIELD,
+    REF_SELF_HAND,
+    REF_STACK,
+    REF_SELF_GY,
+    REF_OPP_GY,
+    REF_SELF_EXILE,
+    REF_OPP_EXILE,
+    REF_PLAYER_SELF,
+    REF_PLAYER_OPP,
+} ActionRefZone;
+
+typedef struct ActionChoice_tag {
+    int           category;                    // ActionCategory value
+    int           card_vocab_idx;              // -1 = null sentinel
+    bool          controller_is_self;
+    ActionRefZone zone_ref;
+    int           slot_idx;                    // index into zone array (-1 = N/A)
+    char          description[MAX_CHOICE_DESC];
+} ActionChoice;
+
+typedef struct Query_tag {
+    int          num_choices;
+    ActionChoice choices[MAX_ACTIONS];
+} Query;
+
 typedef struct GameState_tag {
-        PlayerState self;
-        PlayerState opponent;
-        Step cur_step;
-        bool is_active_player;  // essentially is it our turn, we always have priority when state is transmitted to us
-        bool self_is_player_a;
-        int stack_size;
+    PlayerState self;
+    PlayerState opponent;
+    int         turn;
+    Step        cur_step;
+    bool        is_active_player;  // true when priority player is the active player
+    bool        self_is_player_a;
+    int         stack_size;
 
-        PermanentState self_creatures[MAX_BATTLEFIELD_SLOTS];
-        PermanentState opp_creatures[MAX_BATTLEFIELD_SLOTS];
-        PermanentState self_lands[MAX_LAND_SLOTS];
-        PermanentState opp_lands[MAX_LAND_SLOTS];
+    PermanentState self_permanents[MAX_BATTLEFIELD_SLOTS];
+    PermanentState opp_permanents[MAX_BATTLEFIELD_SLOTS];
 
-        StackEntry stack[MAX_STACK_DISPLAY];
+    StackEntry  stack[MAX_STACK_DISPLAY];
 
-        int self_graveyard[MAX_GY_SLOTS];  // card_vocab_idx, -1 = empty
-        int opp_graveyard[MAX_GY_SLOTS];
+    int  self_graveyard[MAX_GY_SLOTS];   // card_vocab_idx, -1 = empty
+    int  opp_graveyard[MAX_GY_SLOTS];
+    int  self_exile[MAX_GY_SLOTS];
+    int  opp_exile[MAX_GY_SLOTS];
 
-        int self_hand[MAX_HAND_SLOTS];  // card_vocab_idx, -1 = empty
+    int  self_hand[MAX_HAND_SLOTS];      // card_vocab_idx, -1 = empty
+    int  opp_hand_ct;                    // == opponent.hand_ct (backwards compat)
+    int  self_library_ct;
+    int  opp_library_ct;
 } GameState;
 
 #ifdef __cplusplus
