@@ -261,26 +261,94 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
 
 
 def diag(binary_path: str, n_games: int = 10):
-    """Quick diagnostic: spin up a fresh random model and run n_games vs scripted."""
-    env = ModelVsScriptedEnv(binary_path=binary_path)
-    if USE_MASKABLE:
-        env = ActionMasker(env, lambda e: e.action_masks())
+    """Quick diagnostic: spin up a fresh random model and run n_games vs scripted.
+
+    Logs every decision (like watch_scripted).  On a draw the full log is saved
+    to diag_draw_<game>.txt and printed to stdout, since draws should not occur.
+    """
+    import numpy as np
 
     policy_kwargs = dict(features_extractor_class=CardGameExtractor, net_arch=[256, 256])
-    model = MaskablePPO("MlpPolicy", env, policy_kwargs=policy_kwargs, verbose=0)
+
+    # Create a throw-away env just to give MaskablePPO the spaces it needs.
+    _tmp_env = NarrativeEnv(binary_path=binary_path)
+    if USE_MASKABLE:
+        _tmp_env = ActionMasker(_tmp_env, lambda e: e.action_masks())
+    model = MaskablePPO("MlpPolicy", _tmp_env, policy_kwargs=policy_kwargs, verbose=0)
+    _tmp_env.close()
 
     wins = losses = draws = 0
     print(f"Running {n_games} games (random model vs scripted)...")
     for i in range(n_games):
+        env = NarrativeEnv(binary_path=binary_path)
+        if USE_MASKABLE:
+            env = ActionMasker(env, lambda e: e.action_masks())
+
         obs, _ = env.reset()
         done = False
         total_reward = 0.0
+        decision = 0
+        turn = 0
+        prev_active_is_a = None
+        known_hand = {"A": [], "B": []}
+        log_lines = [f"=== Game {i+1}: Random Model (A) vs Scripted (B) ===\n"]
+
         while not done:
-            masks = env.action_masks() if USE_MASKABLE else None
-            action, _ = model.predict(obs, action_masks=masks, deterministic=False)
-            obs, reward, terminated, truncated, _ = env.step(int(action))
+            # Flush narrative lines from the game process
+            raw_env = env.env if hasattr(env, "env") else env
+            for line in raw_env.flush_lines():
+                if line.strip():
+                    log_lines.append(line)
+
+            num_choices = raw_env._num_choices
+            priority_is_a = obs[31] > 0.5
+            player = "A" if priority_is_a else "B"
+            active_is_a = (obs[30] > 0.5) == priority_is_a
+            step_name = _STEP_NAMES[int(np.argmax(obs[18:30]))]
+
+            cats = np.round(obs[STATE_SIZE:STATE_SIZE + num_choices] * ACTION_CATEGORY_MAX).astype(int)
+            is_mulligan = any(c == 11 for c in cats)
+
+            known_hand[player] = _decode_hand(obs)
+
+            if not is_mulligan and active_is_a != prev_active_is_a:
+                turn += 1
+                active_label = "A" if active_is_a else "B"
+                a_hand = ", ".join(known_hand["A"]) or "(empty)"
+                b_hand = ", ".join(known_hand["B"]) or "(empty)"
+                log_lines.append(f"--- Turn {turn} (Player {active_label}) ---")
+                log_lines.append(f"  PA: {a_hand}")
+                log_lines.append(f"  PB: {b_hand}")
+                prev_active_is_a = active_is_a
+
+            # Model controls player A, scripted controls player B
+            if priority_is_a:
+                masks = raw_env.action_masks() if USE_MASKABLE else None
+                action, _ = model.predict(obs, action_masks=masks, deterministic=False)
+                action = int(action)
+                agent_label = "Model/A"
+            else:
+                action = scripted_action(obs, num_choices)
+                agent_label = "Scripted/B"
+
+            chosen_cat = _CAT_NAMES.get(int(cats[action]), str(cats[action]))
+            all_cats = [_CAT_NAMES.get(int(c), str(c)) for c in cats]
+            log_lines.append(
+                f"[{decision:4d}] P{player}  {step_name:<14}  choices={num_choices}"
+                f"  available={all_cats}  -> {action} ({chosen_cat})  [{agent_label}]"
+            )
+
+            obs, reward, terminated, truncated, _ = env.step(action)
             total_reward += reward
             done = terminated or truncated
+            decision += 1
+
+        for line in raw_env.flush_lines():
+            if line.strip():
+                log_lines.append(line)
+
+        env.close()
+
         if total_reward > 0:
             wins += 1
             result = "W"
@@ -290,9 +358,19 @@ def diag(binary_path: str, n_games: int = 10):
         else:
             draws += 1
             result = "D"
+            # Draws should not occur — save and print the full log
+            log_path = f"diag_draw_{i+1}.txt"
+            log_lines.append("\n=== DRAW (should not occur) ===")
+            log_text = "\n".join(log_lines)
+            with open(log_path, "w") as f:
+                f.write(log_text + "\n")
+            print(f"\n{'='*60}")
+            print(f"DRAW in game {i+1} — saving log to {log_path}")
+            print('='*60)
+            print(log_text, flush=True)
+
         print(f"  game {i+1:2d}/{n_games}: {result}  (W:{wins} L:{losses} D:{draws})", flush=True)
 
-    env.close()
     total = wins + losses + draws
     win_pct = 100 * wins / total if total else 0
     print(f"\n{wins}W / {losses}L / {draws}D over {n_games} games ({win_pct:.1f}% win rate)")
