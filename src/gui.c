@@ -111,10 +111,7 @@ static void *gui_loop(void *arg) {
 }
 
 void init_gui() {
-    if (pthread_create(&gui_thread, NULL, gui_loop, NULL) != 0) {
-        perror("pthread_create");
-        exit(1);
-    }
+    gui_loop(NULL);
 }
 
 #endif

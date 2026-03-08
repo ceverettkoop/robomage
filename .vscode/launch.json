@@ -33,7 +33,7 @@
             "type": "lldb",
             "request": "launch",
             "program": "${workspaceFolder}/bin/robomage",
-            "args": [],
+            "args": ["--gui"],
             "cwd": "${workspaceFolder}/bin",
             "terminal": "integrated"
         },

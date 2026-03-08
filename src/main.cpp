@@ -6,9 +6,9 @@
 
 #include "action_processor.h"
 #include "card_db.h"
-#include "classes/action.h"
 #include "classes/deck.h"
 #include "classes/game.h"
+#include "cli_output.h"
 #include "components/ability.h"
 #include "components/carddata.h"
 #include "components/color_identity.h"
@@ -19,7 +19,6 @@
 #include "components/player.h"
 #include "components/spell.h"
 #include "components/zone.h"
-#include "cli_output.h"
 #include "ecs/coordinator.h"
 #include "ecs/events.h"
 #include "input_logger.h"
@@ -55,33 +54,14 @@ GameState gs;
 Query q;
 const GameState *gs_ptr = &gs;
 const Query *query_ptr = &q;
+std::string replay_file_path;
+bool replay_mode = false;
+bool machine_mode = false;
 
 
-int main(int argc, char const *argv[]) {
+//runs in thread seperate from gui
+static void *game_loop(void *args) {
     int choice;
-    char buf[FILENAME_MAX];
-    RESOURCE_DIR = getcwd(buf, FILENAME_MAX);
-    RESOURCE_DIR += "/resources";
-
-    // Parse command-line arguments
-    std::string replay_file_path;
-    bool replay_mode = false;
-    bool machine_mode = false;
-    for (int i = 1; i < argc; i++) {
-        if (std::string(argv[i]) == "--replay" && i + 1 < argc) {
-            replay_mode = true;
-            replay_file_path = argv[i + 1];
-            i++;
-        } else if (std::string(argv[i]) == "--machine") {
-            machine_mode = true;
-        } else if (std::string(argv[i]) == "--gui") {
-            gui_mode = true;
-        } else if (std::string(argv[i]) == "--help" || std::string(argv[i]) == "-h") {
-            cli_print_help(argv[0], VERSION_NUMBER);
-            return 0;
-        }
-    }
-
     // Use minimal test deck for both players
     DEFAULT_DECK_ONE = Deck(RESOURCE_DIR + "/decks/test_minimal.dk");
     DEFAULT_DECK_TWO = Deck(RESOURCE_DIR + "/decks/test_minimal.dk");
@@ -127,8 +107,9 @@ int main(int argc, char const *argv[]) {
     StateManager::init();
     StackManager::init();
 
-    // TODO deal with this; move it out of main; move printf to cli_output; implement some cards besides DRC that care about this
-    // this has to be moved out of main and into its own unit; and the printf call needs to be handled elsewhere
+    // TODO deal with this; move it out of main; move printf to cli_output; implement some cards besides DRC that care
+    // about this this has to be moved out of main and into its own unit; and the printf call needs to be handled
+    // elsewhere
     global_coordinator.AddEventListener(Events::CREATURE_DIED, [](Event &event) {
         Entity dead = event.GetParam<Entity>(Params::ENTITY);
         if (global_coordinator.entity_has_component<CardData>(dead)) {
@@ -142,12 +123,6 @@ int main(int argc, char const *argv[]) {
     cur_game.generate_players(DEFAULT_DECK_ONE, DEFAULT_DECK_TWO);
     orderer->generate_libraries(DEFAULT_DECK_ONE, DEFAULT_DECK_TWO);
 
-#ifdef GUI
-    if (gui_mode) {
-        init_gui();
-    }
-#endif
-
     // draw 7 and run mulligan
     orderer->draw_hands();
     orderer->do_london_mulligan();
@@ -157,7 +132,7 @@ int main(int argc, char const *argv[]) {
     // game loop
     size_t prev_turn = (size_t)-1;
     while (cur_game.ended != true) {
-        if (gui_killed) goto GUI_KILLED;
+        if (gui_killed) return NULL;
         // if new turn provide update
         if (!InputLogger::instance().is_machine_mode() && cur_game.turn != prev_turn) {
             cli_print_turn_header(cur_game.turn, cur_game.player_a_turn);
@@ -200,14 +175,43 @@ int main(int argc, char const *argv[]) {
             cli_print_invalid_action();
         }
     }
+    return NULL;
+}
 
-GUI_KILLED:
-#ifdef GUI
-    if (gui_mode) {
-        cli_print_gui_exit();
-        pthread_join(gui_thread, NULL);
+int main(int argc, char const *argv[]) {
+    char buf[FILENAME_MAX];
+    RESOURCE_DIR = getcwd(buf, FILENAME_MAX);
+    RESOURCE_DIR += "/resources";
+
+    // Parse command-line arguments
+    for (int i = 1; i < argc; i++) {
+        if (std::string(argv[i]) == "--replay" && i + 1 < argc) {
+            replay_mode = true;
+            replay_file_path = argv[i + 1];
+            i++;
+        } else if (std::string(argv[i]) == "--machine") {
+            machine_mode = true;
+        } else if (std::string(argv[i]) == "--gui") {
+            gui_mode = true;
+        } else if (std::string(argv[i]) == "--help" || std::string(argv[i]) == "-h") {
+            cli_print_help(argv[0], VERSION_NUMBER);
+            return 0;
+        }
     }
-#endif
 
+    if (pthread_create(&gui_thread, NULL, game_loop, NULL) != 0) {
+        perror("pthread_create");
+        exit(1);
+    }
+
+    if (gui_mode) {
+#ifdef GUI
+        init_gui();
+#else
+        fatal_error("NOTE TO USE GUI; MUST BE COMPILED WITH FLAG GUI==TRUE, RUN AGAIN WITHOUT --gui FLAG OR RECOMPILE");
+#endif
+    }
+    
+    pthread_join(gui_thread, NULL);
     return 0;
 }
