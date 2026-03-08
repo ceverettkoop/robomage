@@ -207,120 +207,108 @@ std::vector<Entity> Orderer::get_stack() {
 void Orderer::do_london_mulligan() {
     int mulligans_a = 0;
     int mulligans_b = 0;
-    // Phase 1: Player A decides
-    cur_game.player_a_has_priority = true;
-    bool keeping = false;
-    while (!keeping) {
-        // Inline print_hand for Player A
-        {
-            auto hand_display = this->get_hand(Zone::PLAYER_A);
-            game_log("%s hand:\n", player_name(Zone::PLAYER_A).c_str());
-            for (auto card : hand_display) {
-                auto &data = global_coordinator.GetComponent<CardData>(card);
-                game_log("%s\n", data.name.c_str());
-            }
-        }
-        std::vector<LegalAction> mull_actions = {
-            LegalAction(PASS_PRIORITY, std::string("Keep")),
-            LegalAction(PASS_PRIORITY, std::string("Mulligan")),
-        };
-        mull_actions[0].category = ActionCategory::MULLIGAN;
-        mull_actions[1].category = ActionCategory::MULLIGAN;
-        int choice = InputLogger::instance().get_input(mull_actions);
-        if (choice == 0) {
-            keeping = true;
-        } else {
-            // limit
-            mulligans_a++;
-            if (mulligans_a == 7) {
-                keeping = true;
-                break;
-            }
-            // Penalise the model for excessive mulliganing (3rd mull and beyond).
-            if (mulligans_a >= 3 && InputLogger::instance().is_machine_mode()) {
-                printf("MULLIGAN_PENALTY: A\n");
-                fflush(stdout);
-            }
-            auto hand = this->get_hand(Zone::PLAYER_A);
+    bool a_kept = false;
+    bool b_kept = false;
+
+    auto do_bottom_deck = [&](Zone::Ownership owner, int count) {
+        std::string pname = player_name(owner);
+        for (int i = 0; i < count; i++) {
+            auto hand = this->get_hand(owner);
+            if (hand.empty()) break;
+            game_log("%s: Choose card to put on library bottom (%d remaining):\n", pname.c_str(), count - i);
+            std::vector<LegalAction> btm_actions;
             for (auto card : hand) {
-                this->add_to_zone(false, card, Zone::LIBRARY);
+                auto &cd = global_coordinator.GetComponent<CardData>(card);
+                LegalAction la(PASS_PRIORITY, card, cd.name);
+                la.category = ActionCategory::BOTTOM_DECK_CARD;
+                btm_actions.push_back(la);
             }
-            this->shuffle_library(Zone::PLAYER_A);
-            this->draw(Zone::PLAYER_A, 7);
+            int choice = InputLogger::instance().get_input(btm_actions);
+            this->add_to_zone(true, hand[static_cast<size_t>(choice)], Zone::LIBRARY);
         }
-    }
-    // Phase 2: Player B decides
-    cur_game.player_a_has_priority = false;
-    keeping = false;
-    while (!keeping) {
-        // Inline print_hand for Player B
-        {
-            auto hand_display = this->get_hand(Zone::PLAYER_B);
-            game_log("%s hand:\n", player_name(Zone::PLAYER_B).c_str());
-            for (auto card : hand_display) {
-                auto &data = global_coordinator.GetComponent<CardData>(card);
-                game_log("%s\n", data.name.c_str());
+    };
+
+    while (!a_kept || !b_kept) {
+        // Player A decides
+        if (!a_kept) {
+            cur_game.player_a_has_priority = true;
+            {
+                auto hand_display = this->get_hand(Zone::PLAYER_A);
+                game_log("%s hand:\n", player_name(Zone::PLAYER_A).c_str());
+                for (auto card : hand_display) {
+                    auto &data = global_coordinator.GetComponent<CardData>(card);
+                    game_log("%s\n", data.name.c_str());
+                }
+            }
+            std::vector<LegalAction> mull_actions = {
+                LegalAction(PASS_PRIORITY, std::string("Keep")),
+                LegalAction(PASS_PRIORITY, std::string("Mulligan")),
+            };
+            mull_actions[0].category = ActionCategory::MULLIGAN;
+            mull_actions[1].category = ActionCategory::MULLIGAN;
+            int choice = InputLogger::instance().get_input(mull_actions);
+            if (choice == 0) {
+                a_kept = true;
+                do_bottom_deck(Zone::PLAYER_A, mulligans_a);
+            } else {
+                mulligans_a++;
+                if (mulligans_a == 7) {
+                    a_kept = true;
+                    do_bottom_deck(Zone::PLAYER_A, mulligans_a);
+                } else {
+                    if (mulligans_a >= 3 && InputLogger::instance().is_machine_mode()) {
+                        printf("MULLIGAN_PENALTY: A\n");
+                        fflush(stdout);
+                    }
+                    auto hand = this->get_hand(Zone::PLAYER_A);
+                    for (auto card : hand) {
+                        this->add_to_zone(false, card, Zone::LIBRARY);
+                    }
+                    this->shuffle_library(Zone::PLAYER_A);
+                    this->draw(Zone::PLAYER_A, 7);
+                }
             }
         }
-        std::vector<LegalAction> mull_actions = {
-            LegalAction(PASS_PRIORITY, std::string("Keep")),
-            LegalAction(PASS_PRIORITY, std::string("Mulligan")),
-        };
-        mull_actions[0].category = ActionCategory::MULLIGAN;
-        mull_actions[1].category = ActionCategory::MULLIGAN;
-        int choice = InputLogger::instance().get_input(mull_actions);
-        if (choice == 0) {
-            keeping = true;
-        } else {
-            mulligans_b++;
-            // limit
-            if (mulligans_b == 7) {
-                keeping = true;
-                break;
+
+        // Player B decides
+        if (!b_kept) {
+            cur_game.player_a_has_priority = false;
+            {
+                auto hand_display = this->get_hand(Zone::PLAYER_B);
+                game_log("%s hand:\n", player_name(Zone::PLAYER_B).c_str());
+                for (auto card : hand_display) {
+                    auto &data = global_coordinator.GetComponent<CardData>(card);
+                    game_log("%s\n", data.name.c_str());
+                }
             }
-            // Penalise the model for excessive mulliganing (3rd mull and beyond).
-            if (mulligans_b >= 3 && InputLogger::instance().is_machine_mode()) {
-                printf("MULLIGAN_PENALTY: B\n");
-                fflush(stdout);
+            std::vector<LegalAction> mull_actions = {
+                LegalAction(PASS_PRIORITY, std::string("Keep")),
+                LegalAction(PASS_PRIORITY, std::string("Mulligan")),
+            };
+            mull_actions[0].category = ActionCategory::MULLIGAN;
+            mull_actions[1].category = ActionCategory::MULLIGAN;
+            int choice = InputLogger::instance().get_input(mull_actions);
+            if (choice == 0) {
+                b_kept = true;
+                do_bottom_deck(Zone::PLAYER_B, mulligans_b);
+            } else {
+                mulligans_b++;
+                if (mulligans_b == 7) {
+                    b_kept = true;
+                    do_bottom_deck(Zone::PLAYER_B, mulligans_b);
+                } else {
+                    if (mulligans_b >= 3 && InputLogger::instance().is_machine_mode()) {
+                        printf("MULLIGAN_PENALTY: B\n");
+                        fflush(stdout);
+                    }
+                    auto hand = this->get_hand(Zone::PLAYER_B);
+                    for (auto card : hand) {
+                        this->add_to_zone(false, card, Zone::LIBRARY);
+                    }
+                    this->shuffle_library(Zone::PLAYER_B);
+                    this->draw(Zone::PLAYER_B, 7);
+                }
             }
-            auto hand = this->get_hand(Zone::PLAYER_B);
-            for (auto card : hand) {
-                this->add_to_zone(false, card, Zone::LIBRARY);
-            }
-            this->shuffle_library(Zone::PLAYER_B);
-            this->draw(Zone::PLAYER_B, 7);
         }
-    }
-    // Phase 3: Player A bottom-decks mulligans_a cards, one at a time
-    cur_game.player_a_has_priority = true;
-    for (int i = 0; i < mulligans_a; i++) {
-        auto hand = this->get_hand(Zone::PLAYER_A);
-        if (hand.empty()) break;
-        game_log("Player A: Choose card to put on library bottom (%d remaining):\n", mulligans_a - i);
-        std::vector<LegalAction> btm_actions;
-        for (auto card : hand) {
-            auto &cd = global_coordinator.GetComponent<CardData>(card);
-            LegalAction la(PASS_PRIORITY, card, cd.name);
-            la.category = ActionCategory::BOTTOM_DECK_CARD;
-            btm_actions.push_back(la);
-        }
-        int choice = InputLogger::instance().get_input(btm_actions);
-        this->add_to_zone(true, hand[static_cast<size_t>(choice)], Zone::LIBRARY);
-    }
-    // Phase 4: Player B bottom-decks mulligans_b cards, one at a time
-    cur_game.player_a_has_priority = false;
-    for (int i = 0; i < mulligans_b; i++) {
-        auto hand = this->get_hand(Zone::PLAYER_B);
-        if (hand.empty()) break;
-        game_log("Player B: Choose card to put on library bottom (%d remaining):\n", mulligans_b - i);
-        std::vector<LegalAction> btm_actions;
-        for (auto card : hand) {
-            auto &cd = global_coordinator.GetComponent<CardData>(card);
-            LegalAction la(PASS_PRIORITY, card, cd.name);
-            la.category = ActionCategory::BOTTOM_DECK_CARD;
-            btm_actions.push_back(la);
-        }
-        int choice = InputLogger::instance().get_input(btm_actions);
-        this->add_to_zone(true, hand[static_cast<size_t>(choice)], Zone::LIBRARY);
     }
 }
