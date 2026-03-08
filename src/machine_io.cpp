@@ -266,6 +266,8 @@ void populate_query(Query* q, const std::vector<LegalAction>& actions) {
                 ac.controller_is_self = (global_coordinator.GetComponent<Permanent>(src).controller == priority_owner);
             else if (src == priority_ent)
                 ac.controller_is_self = true;
+            else if (global_coordinator.entity_has_component<Zone>(src))
+                ac.controller_is_self = (global_coordinator.GetComponent<Zone>(src).owner == priority_owner);
         }
 
         // Zone reference

@@ -13,6 +13,7 @@ C and C++ source files are 95% human written - python mostly LLM written so like
 ```bash
 make                  # debug build
 make BUILD=RELEASE    # optimized
+make HEADLESS=TRUE    # no GUI, no raylib dependancy
 ```
 
 The binary is written to `bin/robomage`. Game must be run from the bin directory at present.
@@ -24,7 +25,7 @@ cd bin
 ./robomage                                         # interactive (you play both sides)
 ./robomage --replay resources/logs/game_12345.log  # replay a saved game
 ./robomage --machine                               # machine mode for RL training
-./robomage --gui                                   # gui (under development)
+./robomage --gui                                   # gui 
 ```
 
 In interactive mode, numbers select a choice (every choice is logged), z passes priority, q quits.

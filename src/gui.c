@@ -1,12 +1,13 @@
+#include "gui.h"
+
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "gui.h"
+#include "classes/gamestate.h"
 #include "pthread.h"
 #include "stdbool.h"
 #include "string.h"
-#include "classes/gamestate.h"
 
 #define SCREEN_WIDTH 1280
 #define SCREEN_HEIGHT 720
@@ -32,31 +33,40 @@ void gui_set_resource_dir(const char *path) {
 
 static Font g_font;
 
-//todo later
-static void render_gs(){
+// todo later
+static void render_gs() {}
 
-}
-
-//scrollable box that displays everything that would be propogated to the CLI
-static void render_info_log(){
+// scrollable box that displays everything that would be propogated to the CLI
+static void render_info_log() {
     static Vector2 scroll = {0, 0};
     static int last_line_count = 0;
+    static float max_content_width = 0;
 
     int line_count = gui_log_line_count();
     float font_size = 16.0f;
     float line_height = 18.0f;
 
-    Rectangle bounds = {10, 10, SCREEN_WIDTH  * 0.4, SCREEN_HEIGHT * 0.70f - 10};
-    float content_height = line_count * line_height;
-    if (content_height < bounds.height) content_height = bounds.height;
-    Rectangle content = {bounds.x, bounds.y, bounds.width - 12, content_height};
+    Rectangle bounds = {10, 10, SCREEN_WIDTH * 0.3, SCREEN_HEIGHT * 0.70f - 10};
 
-    // auto-scroll to bottom when new lines arrive
+    // recompute max line width and auto-scroll when new lines arrive
     if (line_count != last_line_count) {
-        scroll.y = -(content_height - bounds.height) - line_height;
+        max_content_width = 0;
+        for (int i = 0; i < line_count; i++) {
+            const char *line = gui_log_get_line(i);
+            float w = MeasureTextEx(g_font, line, font_size, 1.0f).x;
+            if (w > max_content_width) max_content_width = w;
+        }
+        float content_height_new = line_count * line_height;
+        scroll.y = -(content_height_new - bounds.height) - line_height;
         if (scroll.y > 0) scroll.y = 0;
         last_line_count = line_count;
     }
+
+    float content_height = line_count * line_height;
+    if (content_height < bounds.height) content_height = bounds.height;
+    float content_width = max_content_width + 8;
+    if (content_width < bounds.width - 12) content_width = bounds.width - 12;
+    Rectangle content = {bounds.x, bounds.y, content_width, content_height};
 
     Rectangle view = {0};
     GuiScrollPanel(bounds, NULL, content, &scroll, &view);
@@ -65,7 +75,7 @@ static void render_info_log(){
     float y = bounds.y + scroll.y;
     for (int i = 0; i < line_count; i++) {
         if (y + line_height >= view.y && y <= view.y + view.height) {
-            const char* line = gui_log_get_line(i);
+            const char *line = gui_log_get_line(i);
             DrawTextEx(g_font, line, (Vector2){bounds.x + 4 + scroll.x, y}, font_size, 1.0f, BLACK);
         }
         y += line_height;
@@ -73,19 +83,14 @@ static void render_info_log(){
     EndScissorMode();
 }
 
-//scrollable box that displays specifically and only the last query
-static void render_query(){
-//
-}
-
-static void render_choices(){
+static void render_choices() {
     int line_count = gui_query_line_count();
     float font_size = 16.0f;
     float line_height = 18.0f;
     float y = (float)(int)(SCREEN_HEIGHT * 0.74);
     float y_max = (float)(int)(SCREEN_HEIGHT * 0.82);
-    for (int i = 0; i < line_count && y < y_max; i++) {
-        const char* line = gui_query_get_line(i);
+    for (int i = 0; i < line_count; i++) {
+        const char *line = gui_query_get_line(i);
         DrawTextEx(g_font, line, (Vector2){10, y}, font_size, 1.0f, DARKBLUE);
         y += line_height;
     }
@@ -105,7 +110,7 @@ static void *gui_loop(void *arg) {
 
         // INPUT TEXT BOX DRAW AND UPDATE; this could be a function
         if (GuiTextBox((Rectangle){SCREEN_WIDTH * .3, SCREEN_HEIGHT * .8, SCREEN_WIDTH * .4, SCREEN_HEIGHT * .05},
-                 gui_input, GUI_INPUT_MAX, true) == true) {
+                gui_input, GUI_INPUT_MAX, true) == true) {
             if (gui_input_requested) {
                 // validate input
                 for (size_t i = 0; i < GUI_INPUT_MAX; ++i) {
@@ -125,11 +130,11 @@ static void *gui_loop(void *arg) {
             }
         }
     INPUT_END:
-        //display game state
+        // display game state
         render_gs();
-        //display info log
+        // display info log
         render_info_log();
-        //display choices available in query
+        // display choices available in query
         render_choices();
         EndDrawing();
     }

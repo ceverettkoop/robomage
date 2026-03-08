@@ -74,10 +74,20 @@ void game_log(const char* fmt, ...) {
         char buf[GUI_LOG_LINE_LEN];
         vsnprintf(buf, sizeof(buf), fmt, ap);
         pthread_mutex_lock(&g_buf_mutex);
-        strncpy(g_gui_log[g_gui_log_head], buf, GUI_LOG_LINE_LEN - 1);
-        g_gui_log[g_gui_log_head][GUI_LOG_LINE_LEN - 1] = '\0';
-        g_gui_log_head = (g_gui_log_head + 1) % GUI_LOG_CAPACITY;
-        if (g_gui_log_count < GUI_LOG_CAPACITY) g_gui_log_count++;
+        char* p = buf;
+        while (true) {
+            char* nl = strchr(p, '\n');
+            if (nl) *nl = '\0';
+            // store segment if it has content, or if there's a following newline (blank line)
+            if (nl != NULL || *p != '\0') {
+                strncpy(g_gui_log[g_gui_log_head], p, GUI_LOG_LINE_LEN - 1);
+                g_gui_log[g_gui_log_head][GUI_LOG_LINE_LEN - 1] = '\0';
+                g_gui_log_head = (g_gui_log_head + 1) % GUI_LOG_CAPACITY;
+                if (g_gui_log_count < GUI_LOG_CAPACITY) g_gui_log_count++;
+            }
+            if (!nl) break;
+            p = nl + 1;
+        }
         pthread_mutex_unlock(&g_buf_mutex);
     } else {
         vprintf(fmt, ap);
