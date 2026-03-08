@@ -46,7 +46,7 @@ class WinTallyCallback(BaseCallback):
     def __init__(self):
         super().__init__()
         self._interval_model_wins = 0
-        self._interval_scripted_wins = 0
+        self._interval_opponent_wins = 0
 
     def _on_step(self) -> bool:
         for info in self.locals["infos"]:
@@ -56,18 +56,18 @@ class WinTallyCallback(BaseCallback):
             if r > 0:
                 self._interval_model_wins += 1
             elif r < 0:
-                self._interval_scripted_wins += 1
+                self._interval_opponent_wins += 1
         return True
 
     def _on_rollout_end(self) -> None:
-        total = self._interval_model_wins + self._interval_scripted_wins
+        total = self._interval_model_wins + self._interval_opponent_wins
         if total == 0:
             return
         pct = 100.0 * self._interval_model_wins / total
-        print(f"[tally] model wins: {self._interval_model_wins}  scripted wins: {self._interval_scripted_wins}  "
+        print(f"[tally] model wins: {self._interval_model_wins}  opponent wins: {self._interval_opponent_wins}  "
               f"total: {total}  model win rate: {pct:.1f}%")
         self._interval_model_wins = 0
-        self._interval_scripted_wins = 0
+        self._interval_opponent_wins = 0
 
 
 class ReplayLogCallback(BaseCallback):
@@ -198,12 +198,12 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
     ``self_play`` is also True.  Mixing in scripted environments prevents the
     policy drifting to strategies that beat itself but lose to general play.
     """
-    os.makedirs(CHECKPOINT_DIR, exist_ok=True)
+    checkpoint_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), CHECKPOINT_DIR)
+    os.makedirs(checkpoint_dir, exist_ok=True)
     os.makedirs(LOG_DIR, exist_ok=True)
 
     # Parallel environments for faster data collection
     if self_play:
-        checkpoint_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), CHECKPOINT_DIR)
         n_scripted = round(N_ENVS * scripted_fraction)
         n_self_play = N_ENVS - n_scripted
         env_fns = (
@@ -235,8 +235,8 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
             n_epochs=4,
             gamma=0.99,
             gae_lambda=0.95,
-            clip_range=0.2,
-            ent_coef=0.1,         # encourage exploration early on
+            clip_range=0.25,
+            ent_coef=0.05,         # encourage exploration early on
             verbose=1,
             tensorboard_log=LOG_DIR,
         )
@@ -244,7 +244,7 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
     callbacks = [
         CheckpointCallback(
             save_freq=25_000 // N_ENVS,
-            save_path=CHECKPOINT_DIR,
+            save_path=checkpoint_dir,
             name_prefix="robomage",
         ),
     ]
@@ -254,7 +254,7 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
 
     print(f"Training for {total_timesteps:,} timesteps across {N_ENVS} envs...")
     model.learn(total_timesteps=total_timesteps, callback=callbacks, reset_num_timesteps=load_path is None)
-    model.save(os.path.join(CHECKPOINT_DIR, "robomage_final"))
+    model.save(os.path.join(checkpoint_dir, "robomage_final"))
     print("Saved final model.")
 
     vec_env.close()
