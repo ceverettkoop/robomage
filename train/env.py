@@ -251,10 +251,10 @@ class RoboMageEnv(gym.Env):
                 hand_onehots = state_arr[_HAND_START:_HAND_START + MAX_HAND_SLOTS * N_CARD_TYPES]
                 hand_costs = hand_onehots.reshape(MAX_HAND_SLOTS, N_CARD_TYPES) @ _CARD_COST_MATRIX  # (10,7)
 
-                # Battlefield activated ability costs (all 48 creature slots; 40-float format)
+                # Battlefield activated ability costs (48 self permanent slots)
                 bf_ability_costs = np.zeros((48, _N_COST_FEATS), dtype=np.float32)
                 for slot in range(48):
-                    base = 33 + slot * 40 + _BF_CARD_OFF
+                    base = _BF_START + slot * _BF_SLOT_SIZE + _BF_CARD_OFF
                     bf_ability_costs[slot] = state_arr[base:base + N_CARD_TYPES] @ _CARD_ABILITY_COST_MATRIX
 
                 self._obs = np.concatenate([state_arr, cat_arr, card_id_arr, ctrl_arr,

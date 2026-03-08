@@ -204,7 +204,7 @@ Total: **1427 floats**
 | `[1217:1287]` | 70 | Hand cast costs (10 slots × 7 cost features) |
 | `[1287:1427]` | 140 | Battlefield ability costs (20 slots × 7 cost features) |
 
-State vector layout is documented in `src/machine_io.h`. Key indices: `obs[30]` = active player is A, `obs[31]` = priority player is A.
+State vector layout is documented in `src/machine_io.h`. Key indices: `obs[30]` = priority player is the active player (perspective-relative), `obs[31]` = priority player is Player A (absolute). To get `active_is_a`: `(obs[30] > 0.5) == (obs[31] > 0.5)`.
 
 ### Key files
 

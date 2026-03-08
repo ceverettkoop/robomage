@@ -408,7 +408,7 @@ _VOCAB_NAMES = [
 
 
 def _decode_hand(obs):
-    """Return list of card names for the priority player's hand (obs[8365:8685])."""
+    """Return list of card names for the priority player's hand (obs[8557:8877])."""
     import numpy as np
     cards = []
     for slot in range(10):           # MAX_HAND_SLOTS = 10

@@ -44,17 +44,18 @@ _VOCAB = {
 _N_VOCAB = 32
 
 # ── State layout (mirrors env.py / machine_io.h) ──────────────────────────────
-_BF_CREATURE_OFF = 33
-_BF_LAND_OFF     = 1953   # 33 + 48 * 40
-_BF_SLOT_SIZE    = 40
-_BF_A_SLOTS      = 24     # self occupies slots 0-23; opponent slots 24-47
-_BF_CARD_OFF     = 8
+_BF_START        = 33
+_BF_SLOT_SIZE    = 42     # 10 status floats + 32 card one-hot
+_BF_PERM_SLOTS   = 48     # self occupies slots 0-47; opponent slots 48-95
+_BF_CARD_OFF     = 10
 _OFF_POWER       = 0
 _OFF_TOUGHNESS   = 1
 _OFF_TAPPED      = 2
 _OFF_ATTACKING   = 3
 _OFF_SICKNESS    = 5
-_HAND_OBS_START  = 8365   # 4269 + 128 * 32
+_OFF_IS_CREATURE = 8
+_OFF_IS_LAND     = 9
+_HAND_OBS_START  = 8557   # 4461 + 128 * 32
 _HAND_SLOTS      = 10
 _STEP_NAMES = [
     "Untap", "Upkeep", "Draw", "First Main",
@@ -101,48 +102,55 @@ def _decode_step(obs) -> str:
     return _STEP_NAMES[idx] if obs[18 + idx] > 0.5 else "?"
 
 
-def _creature_str(obs, base):
+def _perm_str(obs, base):
+    """Return a display string for a permanent slot, or None if empty."""
     card = _card_name(obs[base + _BF_CARD_OFF : base + _BF_CARD_OFF + _N_VOCAB])
     if card is None:
         return None
-    pw = int(round(float(obs[base + _OFF_POWER]) * 10))
-    tg = int(round(float(obs[base + _OFF_TOUGHNESS]) * 10))
-    tags = []
-    if obs[base + _OFF_TAPPED]    > 0.5: tags.append("tapped")
-    if obs[base + _OFF_ATTACKING] > 0.5: tags.append("atk")
-    if obs[base + _OFF_SICKNESS]  > 0.5: tags.append("sick")
-    suffix = f"[{','.join(tags)}]" if tags else ""
-    return f"{card} {pw}/{tg}{suffix}"
-
-
-def _land_str(obs, base):
-    card = _card_name(obs[base + _BF_CARD_OFF : base + _BF_CARD_OFF + _N_VOCAB])
-    if card is None:
-        return None
+    if obs[base + _OFF_IS_CREATURE] > 0.5:
+        pw = int(round(float(obs[base + _OFF_POWER]) * 10))
+        tg = int(round(float(obs[base + _OFF_TOUGHNESS]) * 10))
+        tags = []
+        if obs[base + _OFF_TAPPED]    > 0.5: tags.append("tapped")
+        if obs[base + _OFF_ATTACKING] > 0.5: tags.append("atk")
+        if obs[base + _OFF_SICKNESS]  > 0.5: tags.append("sick")
+        suffix = f"[{','.join(tags)}]" if tags else ""
+        return f"{card} {pw}/{tg}{suffix}"
+    # land or other permanent
     return f"{card}{'*' if obs[base + _OFF_TAPPED] > 0.5 else ''}"
+
+
+def _split_bf(obs, slot_offset):
+    """Return (creatures, lands) lists for the 48 permanent slots starting at slot_offset."""
+    creatures, lands = [], []
+    for i in range(_BF_PERM_SLOTS):
+        base = _BF_START + (slot_offset + i) * _BF_SLOT_SIZE
+        card = _card_name(obs[base + _BF_CARD_OFF : base + _BF_CARD_OFF + _N_VOCAB])
+        if card is None:
+            continue
+        if obs[base + _OFF_IS_CREATURE] > 0.5:
+            s = _perm_str(obs, base)
+            if s: creatures.append(s)
+        elif obs[base + _OFF_IS_LAND] > 0.5:
+            s = _perm_str(obs, base)
+            if s: lands.append(s)
+    return creatures, lands
 
 
 def _format_state(obs) -> str:
     """Format battlefield from the current priority player's (human's) perspective.
 
-    obs is always perspective-normalised: obs[0:9] = self (human), obs[9:18] = opponent
-    (model).  Self occupies creature/land slots 0-23; opponent occupies slots 24-47.
-    Hand at _HAND_OBS_START is always the priority player's (human's) hand.
+    obs is always perspective-normalised: self occupies permanent slots 0-47,
+    opponent slots 48-95. Hand at _HAND_OBS_START is the priority player's hand.
     """
     my_life  = int(round(float(obs[0]) * 20))
     opp_life = int(round(float(obs[9]) * 20))
 
-    my_creatures  = [s for i in range(_BF_A_SLOTS)
-                     if (s := _creature_str(obs, _BF_CREATURE_OFF + i * _BF_SLOT_SIZE))]
-    opp_creatures = [s for i in range(_BF_A_SLOTS)
-                     if (s := _creature_str(obs, _BF_CREATURE_OFF + (i + _BF_A_SLOTS) * _BF_SLOT_SIZE))]
-    my_lands      = [s for i in range(_BF_A_SLOTS)
-                     if (s := _land_str(obs, _BF_LAND_OFF + i * _BF_SLOT_SIZE))]
-    opp_lands     = [s for i in range(_BF_A_SLOTS)
-                     if (s := _land_str(obs, _BF_LAND_OFF + (i + _BF_A_SLOTS) * _BF_SLOT_SIZE))]
-    hand          = [s for i in range(_HAND_SLOTS)
-                     if (s := _card_name(obs[_HAND_OBS_START + i * _N_VOCAB :
-                                            _HAND_OBS_START + (i + 1) * _N_VOCAB]))]
+    my_creatures,  my_lands  = _split_bf(obs, 0)
+    opp_creatures, opp_lands = _split_bf(obs, _BF_PERM_SLOTS)
+    hand = [s for i in range(_HAND_SLOTS)
+            if (s := _card_name(obs[_HAND_OBS_START + i * _N_VOCAB :
+                                    _HAND_OBS_START + (i + 1) * _N_VOCAB]))]
 
     return (
         "--- Battlefield ---\n"
@@ -193,7 +201,7 @@ def play(binary_path: str, model_path: str):
 
     while not done:
         num_choices = env._num_choices
-        # obs[31] > 0.5 means Player A has priority (absolute, not perspective-relative)
+        # obs[31]=1 means self (priority player) is Player A; obs[30]=1 means priority player is active player
         a_has_priority = obs[31] > 0.5
         model_has_priority = a_has_priority == model_is_a
 
@@ -233,7 +241,10 @@ def play(binary_path: str, model_path: str):
                 for i, c in enumerate(cats):
                     print(f"  {i}: {_action_label(int(c), float(card_ids[i]))}")
             else:
-                active = "A" if obs[30] > 0.5 else "B"
+                # obs[30]=1 means priority player is active; obs[31]=1 means priority player is A
+                priority_is_a = obs[31] > 0.5
+                active_is_a = (obs[30] > 0.5) == priority_is_a
+                active = "A" if active_is_a else "B"
                 step = _decode_step(obs)
                 print(f"[{active}'s turn — {step}]  {num_choices} option(s):")
                 for i, c in enumerate(cats):
@@ -350,7 +361,7 @@ def play_gui(binary_path: str, model_path: str, human_player: str = None):
             hand_costs = hand_onehots.reshape(MAX_HAND_SLOTS, N_CARD_TYPES) @ _CARD_COST_MATRIX
             bf_ability_costs = np.zeros((48, _N_COST_FEATS), dtype=np.float32)
             for slot in range(48):
-                base = 33 + slot * 40 + _env._BF_CARD_OFF
+                base = _env._BF_START + slot * _env._BF_SLOT_SIZE + _env._BF_CARD_OFF
                 bf_ability_costs[slot] = state_arr[base : base + N_CARD_TYPES] @ _CARD_ABILITY_COST_MATRIX
 
             obs = np.concatenate([
