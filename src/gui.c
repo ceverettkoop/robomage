@@ -46,7 +46,7 @@ static void render_info_log() {
     float font_size = 16.0f;
     float line_height = 18.0f;
 
-    Rectangle bounds = {10, 10, SCREEN_WIDTH * 0.3, SCREEN_HEIGHT * 0.70f - 10};
+    Rectangle bounds = {10, 10, SCREEN_WIDTH * 0.25, SCREEN_HEIGHT * 0.65f - 10};
 
     // recompute max line width and auto-scroll when new lines arrive
     if (line_count != last_line_count) {
@@ -87,8 +87,7 @@ static void render_choices() {
     int line_count = gui_query_line_count();
     float font_size = 16.0f;
     float line_height = 18.0f;
-    float y = (float)(int)(SCREEN_HEIGHT * 0.74);
-    float y_max = (float)(int)(SCREEN_HEIGHT * 0.82);
+    float y = (SCREEN_HEIGHT * 0.7);
     for (int i = 0; i < line_count; i++) {
         const char *line = gui_query_get_line(i);
         DrawTextEx(g_font, line, (Vector2){10, y}, font_size, 1.0f, DARKBLUE);
@@ -108,8 +107,8 @@ static void *gui_loop(void *arg) {
 
         ClearBackground(WHITE);
 
-        // INPUT TEXT BOX DRAW AND UPDATE; this could be a function
-        if (GuiTextBox((Rectangle){SCREEN_WIDTH * .3, SCREEN_HEIGHT * .8, SCREEN_WIDTH * .4, SCREEN_HEIGHT * .05},
+        // INPUT TEXT BOX DRAW AND UPDATE; this could be a functions
+        if (GuiTextBox((Rectangle){SCREEN_WIDTH * .4, SCREEN_HEIGHT * .9, SCREEN_WIDTH * .4, SCREEN_HEIGHT * .05},
                 gui_input, GUI_INPUT_MAX, true) == true) {
             if (gui_input_requested) {
                 // validate input

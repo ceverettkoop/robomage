@@ -119,6 +119,10 @@ unsigned int InputLogger::get_replay_seed() const {
 }
 
 int InputLogger::get_input(const std::vector<LegalAction>& actions) {
+    extern bool has_human_player;
+    extern bool human_player_is_a;
+    bool human_has_priority = has_human_player && (human_player_is_a == cur_game.player_a_has_priority);
+
     if (replay_mode) {
         int choice;
         if (!(replay_file >> choice)) {
@@ -134,7 +138,7 @@ int InputLogger::get_input(const std::vector<LegalAction>& actions) {
         return choice;
     }
 
-    if (machine_mode) {
+    if (machine_mode && !human_has_priority) {
         GameState gs;
         Query q;
         populate_gamestate(&gs);

@@ -13,7 +13,15 @@ import argparse
 import sys
 import numpy as np
 
-from env import RoboMageEnv, STATE_SIZE, ACTION_CATEGORY_MAX, BINARY, MAX_ACTIONS
+from env import (RoboMageEnv, STATE_SIZE, ACTION_CATEGORY_MAX, BINARY, MAX_ACTIONS,
+                 BIN_DIR, OBS_SIZE, _ACTION_CARD_ID_NULL, _ACTION_CTRL_NULL,
+                 _HAND_START, MAX_HAND_SLOTS)
+import env as _env
+
+try:
+    from card_costs import _CARD_COST_MATRIX, _CARD_ABILITY_COST_MATRIX, N_CARD_TYPES, _N_COST_FEATS
+except ImportError:
+    from train.card_costs import _CARD_COST_MATRIX, _CARD_ABILITY_COST_MATRIX, N_CARD_TYPES, _N_COST_FEATS
 
 try:
     from sb3_contrib import MaskablePPO
@@ -263,9 +271,135 @@ def play(binary_path: str, model_path: str):
         print("=== Draw ===")
 
 
+def play_gui(binary_path: str, model_path: str, human_player: str = None):
+    """Launch the raylib GUI window; model auto-responds on AI turns, human uses GUI."""
+    import subprocess
+
+    model = MaskablePPO.load(model_path)
+
+    if human_player is None:
+        human_player = "A" if np.random.random() < 0.5 else "B"
+    model_player = "B" if human_player == "A" else "A"
+    print(f"=== You (Player {human_player}) vs Model (Player {model_player}) ===", flush=True)
+
+    cmd = [binary_path, "--machine", "--gui", "--player", human_player]
+    proc = subprocess.Popen(
+        cmd,
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+        text=True,
+        bufsize=1,
+        cwd=BIN_DIR,
+    )
+
+    _MANDATORY = {2, 3, 4, 5}
+    _HAND_COST_FEATS = MAX_HAND_SLOTS * _N_COST_FEATS
+    _BF_ABILITY_FEATS = 48 * _N_COST_FEATS
+
+    reward = 0.0
+    try:
+        while True:
+            line = proc.stdout.readline()
+            if not line:
+                break
+
+            line = line.rstrip("\n")
+
+            if "Player A wins" in line:
+                reward = 1.0
+            elif "Player B wins" in line:
+                reward = -1.0
+
+            if not line.startswith("QUERY: "):
+                continue
+
+            # Parse QUERY line
+            parts = line[7:].split()
+            num_choices = min(int(parts[0]), MAX_ACTIONS)
+
+            # State vector
+            state_arr = np.array(parts[1 : STATE_SIZE + 1], dtype=np.float32)
+            if len(state_arr) < STATE_SIZE:
+                state_arr = np.pad(state_arr, (0, STATE_SIZE - len(state_arr)))
+
+            # Action categories
+            cat_start = STATE_SIZE + 1
+            cat_raw = parts[cat_start : cat_start + num_choices]
+            cat_arr = np.zeros(MAX_ACTIONS, dtype=np.float32)
+            for i, c in enumerate(cat_raw):
+                cat_arr[i] = int(c) / ACTION_CATEGORY_MAX
+            pending_confirm = any(int(c) in _MANDATORY for c in cat_raw)
+
+            # Card IDs
+            id_start = cat_start + num_choices
+            id_raw = parts[id_start : id_start + num_choices]
+            card_id_arr = np.full(MAX_ACTIONS, _ACTION_CARD_ID_NULL, dtype=np.float32)
+            for i, v in enumerate(id_raw):
+                card_id_arr[i] = float(v)
+
+            # Controller floats
+            ctrl_start = id_start + num_choices
+            ctrl_raw = parts[ctrl_start : ctrl_start + num_choices]
+            ctrl_arr = np.full(MAX_ACTIONS, _ACTION_CTRL_NULL, dtype=np.float32)
+            for i, v in enumerate(ctrl_raw):
+                ctrl_arr[i] = float(v)
+
+            # Hand and battlefield ability costs
+            hand_onehots = state_arr[_HAND_START : _HAND_START + MAX_HAND_SLOTS * N_CARD_TYPES]
+            hand_costs = hand_onehots.reshape(MAX_HAND_SLOTS, N_CARD_TYPES) @ _CARD_COST_MATRIX
+            bf_ability_costs = np.zeros((48, _N_COST_FEATS), dtype=np.float32)
+            for slot in range(48):
+                base = 33 + slot * 40 + _env._BF_CARD_OFF
+                bf_ability_costs[slot] = state_arr[base : base + N_CARD_TYPES] @ _CARD_ABILITY_COST_MATRIX
+
+            obs = np.concatenate([
+                state_arr, cat_arr, card_id_arr, ctrl_arr,
+                hand_costs.flatten(), bf_ability_costs.flatten(),
+            ])
+
+            # Build mask and predict
+            mask = np.zeros(MAX_ACTIONS, dtype=bool)
+            mask[:num_choices] = True
+            action, _ = model.predict(obs, action_masks=mask if USE_MASKABLE else None, deterministic=True)
+            action = int(action)
+
+            # Log model action
+            cat = int(round(float(cat_arr[action]) * ACTION_CATEGORY_MAX)) if action < num_choices else -1
+            cid = float(card_id_arr[action]) if action < MAX_ACTIONS else float(_ACTION_CARD_ID_NULL)
+            print(f"[Model/{model_player}] {_action_label(cat, cid)}", flush=True)
+
+            # Remap confirm slot to -1
+            game_action = -1 if (pending_confirm and action == num_choices - 1) else action
+            proc.stdin.write(f"{game_action}\n")
+            proc.stdin.flush()
+    finally:
+        try:
+            proc.stdin.close()
+        except Exception:
+            pass
+        proc.wait()
+
+    print()
+    model_wins = (reward > 0 and model_player == "A") or (reward < 0 and model_player == "B")
+    human_wins = (reward > 0 and human_player == "A") or (reward < 0 and human_player == "B")
+    if model_wins:
+        print(f"=== Model ({model_player}) wins! ===")
+    elif human_wins:
+        print("=== You win! ===")
+    else:
+        print("=== Draw ===")
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--binary", default=BINARY)
     parser.add_argument("--model", required=True, help="Path to trained model .zip")
+    parser.add_argument("--gui", action="store_true", help="Launch raylib GUI window for human input")
+    parser.add_argument("--player", choices=["A", "B"], default=None,
+                        help="Which player the human controls (default: random)")
     args = parser.parse_args()
-    play(args.binary, args.model)
+    if args.gui:
+        play_gui(args.binary, args.model, human_player=args.player)
+    else:
+        play(args.binary, args.model)

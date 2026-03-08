@@ -45,6 +45,8 @@ Deck DEFAULT_DECK_ONE;
 Deck DEFAULT_DECK_TWO;
 Game cur_game;
 bool gui_mode = false;
+bool has_human_player = false;
+bool human_player_is_a = false;
 extern bool gui_killed;
 pthread_t game_loop_thread;
 
@@ -181,6 +183,11 @@ int main(int argc, char const *argv[]) {
             machine_mode = true;
         } else if (std::string(argv[i]) == "--gui") {
             gui_mode = true;
+        } else if (std::string(argv[i]) == "--player" && i + 1 < argc) {
+            has_human_player = true;
+            std::string p = argv[i + 1];
+            human_player_is_a = (p == "A" || p == "a");
+            i++;
         } else if (std::string(argv[i]) == "--help" || std::string(argv[i]) == "-h") {
             cli_print_help(argv[0], VERSION_NUMBER);
             return 0;
