@@ -221,6 +221,12 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
         net_arch=[256, 256],
     )
 
+    if not load_path and self_play:
+        candidate = os.path.join(checkpoint_dir, "robomage_final.zip")
+        if os.path.exists(candidate):
+            load_path = candidate
+            print(f"Auto-loading self-play checkpoint: {candidate}")
+
     if load_path:
         print(f"Resuming from {load_path}")
         model = MaskablePPO.load(load_path, env=vec_env)

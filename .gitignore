@@ -12,3 +12,4 @@ train/__pycache__/**
 train/logs/**
 checkpoints/*.zip
 replays/*.txt
+train/checkpoints/*
