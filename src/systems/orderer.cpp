@@ -6,12 +6,14 @@
 #include "../card_db.h"
 #include "../classes/deck.h"
 #include "../classes/game.h"
+#include "../classes/action.h"
 #include "../cli_output.h"
 #include "../components/carddata.h"
 #include "../components/color_identity.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../input_logger.h"
+#include "../machine_io.h"
 
 // orderer cares about anything that has a zone
 void Orderer::init() {
@@ -202,6 +204,22 @@ std::vector<Entity> Orderer::get_stack() {
     return on_stack;
 }
 
+static void emit_mulligan_query(int mulligans_taken, bool player_a) {
+    std::vector<LegalAction> actions = {
+        LegalAction(PASS_PRIORITY, std::string("Keep")),
+        LegalAction(PASS_PRIORITY, std::string("Mulligan")),
+    };
+    actions[0].category = ActionCategory::MULLIGAN;
+    actions[1].category = ActionCategory::MULLIGAN;
+    Query q;
+    GameState gs;
+    populate_gamestate(&gs);
+    populate_query(&q, actions);
+    (void)mulligans_taken;
+    (void)player_a;
+    print_query(&q, player_a);
+}
+
 void Orderer::do_london_mulligan() {
     int mulligans_a = 0;
     int mulligans_b = 0;
@@ -219,6 +237,7 @@ void Orderer::do_london_mulligan() {
             }
         }
         game_log("Player A: 0=Keep, 1=Mulligan (taken %d)\n", mulligans_a);
+        emit_mulligan_query(mulligans_a, true);
         std::vector<ActionCategory> cats = {ActionCategory::MULLIGAN, ActionCategory::MULLIGAN};
         int choice = InputLogger::instance().get_logged_input(0, cats);
         if (choice == 0) {
@@ -257,6 +276,7 @@ void Orderer::do_london_mulligan() {
             }
         }
         game_log("Player B: 0=Keep, 1=Mulligan (taken %d)\n", mulligans_b);
+        emit_mulligan_query(mulligans_b, false);
         std::vector<ActionCategory> cats = {ActionCategory::MULLIGAN, ActionCategory::MULLIGAN};
         int choice = InputLogger::instance().get_logged_input(0, cats);
         if (choice == 0) {
