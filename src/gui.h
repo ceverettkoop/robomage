@@ -7,6 +7,7 @@
 #define GUI_INPUT_MAX 64
 
 void init_gui();
+void gui_set_resource_dir(const char *path);
 
 // C-API log buffer accessors (implemented in cli_output.cpp)
 int gui_log_line_count(void);

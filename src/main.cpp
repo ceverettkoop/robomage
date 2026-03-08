@@ -26,6 +26,7 @@
 #include "systems/orderer.h"
 #include "systems/stack_manager.h"
 #include "systems/state_manager.h"
+#include "error.h"
 
 #ifndef VERSION_NUMBER
 #define VERSION_NUMBER "0.001"
@@ -45,10 +46,7 @@ Deck DEFAULT_DECK_TWO;
 Game cur_game;
 bool gui_mode = false;
 extern bool gui_killed;
-
-#ifdef GUI
 pthread_t game_loop_thread;
-#endif
 
 GameState gs;
 Query q;
@@ -166,13 +164,15 @@ static void *game_loop(void *args) {
         populate_gamestate(&gs);
         populate_query(&q, legal_actions);
         print_game_state(&gs);
+QUERY:
         print_query(&q, cur_game.player_a_has_priority);
         choice = InputLogger::instance().get_logged_input(cur_game.turn, legal_actions);
 
-        if (choice >= 0 && choice < static_cast<int>(legal_actions.size())) {
+        if (choice >= 0 && choice < legal_actions.size()) {
             process_action(legal_actions[static_cast<size_t>(choice)], cur_game, orderer);
         } else {
             cli_print_invalid_action();
+            goto QUERY;
         }
     }
     return NULL;
@@ -206,6 +206,7 @@ int main(int argc, char const *argv[]) {
 
     if (gui_mode) {
 #ifdef GUI
+        gui_set_resource_dir(RESOURCE_DIR.c_str());
         init_gui();
 #else
         fatal_error("NOTE TO USE GUI; MUST BE COMPILED WITH FLAG GUI==TRUE, RUN AGAIN WITHOUT --gui FLAG OR RECOMPILE");

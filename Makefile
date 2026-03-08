@@ -23,8 +23,8 @@ ODIR=obj
 SRCDIR=src
 BINDIR=bin
 BINNAME=robomage
-GUI=false
-
+GUI=TRUE
+HEADLESS:=FALSE
 DEBUGFLAGS = -ggdb
 CXXFLAGS = -std=c++17 -fno-exceptions
 CFLAGS =
@@ -35,6 +35,10 @@ CHECKFLAGS = -Wall -Wformat -Wformat=2 -Wconversion -Wimplicit-fallthrough \
 -D_GLIBCXX_ASSERTIONS \
 -fstack-protector-strong
 C_CHECKFLAGS = -Werror=implicit -Werror=incompatible-pointer-types -Werror=int-conversion -Wno-sign-conversion -Wno-conversion
+
+ifeq ($(HEADLESS), TRUE)
+	GUI=FALSE
+endif
 
 ifeq ($(GUI),TRUE)
 	CXXFLAGS += -DGUI=TRUE
