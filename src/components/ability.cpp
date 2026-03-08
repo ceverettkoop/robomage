@@ -111,24 +111,20 @@ Entity search_zone(
         game_log("%s chooses a card from %s %s:\n", player_name(owner).c_str(), player_name(owner).c_str(), zone_name);
     }
 
-    std::vector<ActionCategory> cats;
-    std::vector<Entity> search_entities;
-
-    size_t display_index = 0;
+    std::vector<LegalAction> search_actions;
     if (show_fail_to_find) {
-        game_log("  %zu: Fail to find\n", display_index);
-        cats.push_back(cat);
-        search_entities.push_back(Entity(0));
-        display_index++;
+        LegalAction ftf(PASS_PRIORITY, Entity(0), std::string("Fail to find"));
+        ftf.category = cat;
+        search_actions.push_back(ftf);
     }
-    for (size_t i = 0; i < choices.size(); i++) {
-        auto &cd = global_coordinator.GetComponent<CardData>(choices[i]);
-        game_log("  %zu: %s\n", display_index + i, cd.name.c_str());
-        cats.push_back(cat);
-        search_entities.push_back(choices[i]);
+    for (auto entity : choices) {
+        auto &cd = global_coordinator.GetComponent<CardData>(entity);
+        LegalAction la(PASS_PRIORITY, entity, cd.name);
+        la.category = cat;
+        search_actions.push_back(la);
     }
 
-    int choice = InputLogger::instance().get_logged_input(cur_game.turn, cats, search_entities);
+    int choice = InputLogger::instance().get_input(search_actions);
     // Map choice back: if fail-to-find is shown, index 0 = fail-to-find, 1..N = choices
     // If fail-to-find suppressed, index 0..N-1 = choices directly
     if (show_fail_to_find) {
@@ -193,16 +189,14 @@ void Ability::resolve_rearrange_top_of_library(std::shared_ptr<Orderer> orderer)
     // Player picks N-1 cards; the last is automatic
     for (size_t pick = 0; pick + 1 < actual; pick++) {
         game_log("Choose which card goes on top next (pick %zu of %zu):\n", pick + 1, actual);
-        std::vector<ActionCategory> cats;
-        std::vector<Entity> pick_entities;
-        for (size_t i = 0; i < remaining.size(); i++) {
-            auto &cd = global_coordinator.GetComponent<CardData>(remaining[i]);
-            game_log("  %zu: %s\n", i, cd.name.c_str());
-            cats.push_back(ActionCategory::TOP_LIBRARY);
-            pick_entities.push_back(remaining[i]);
+        std::vector<LegalAction> pick_actions;
+        for (auto card : remaining) {
+            auto &cd = global_coordinator.GetComponent<CardData>(card);
+            LegalAction la(PASS_PRIORITY, card, cd.name);
+            la.category = ActionCategory::TOP_LIBRARY;
+            pick_actions.push_back(la);
         }
-        int choice = InputLogger::instance().get_logged_input(cur_game.turn, cats, pick_entities);
-        if (choice < 0 || choice >= static_cast<int>(remaining.size())) choice = 0;
+        int choice = InputLogger::instance().get_input(pick_actions);
         chosen_order.push_back(remaining[static_cast<size_t>(choice)]);
         remaining.erase(remaining.begin() + choice);
     }
@@ -217,10 +211,13 @@ void Ability::resolve_rearrange_top_of_library(std::shared_ptr<Orderer> orderer)
     }
 
     if (may_shuffle) {
-        game_log("You may shuffle your library. 0: Don't shuffle  1: Shuffle\n");
-        std::vector<ActionCategory> shuffle_cats = {ActionCategory::SHUFFLE, ActionCategory::SHUFFLE};
-        std::vector<Entity> shuffle_entities = {Entity(0), Entity(0)};
-        int shuffle_choice = InputLogger::instance().get_logged_input(cur_game.turn, shuffle_cats, shuffle_entities);
+        std::vector<LegalAction> shuffle_actions = {
+            LegalAction(PASS_PRIORITY, std::string("Don't shuffle")),
+            LegalAction(PASS_PRIORITY, std::string("Shuffle")),
+        };
+        shuffle_actions[0].category = ActionCategory::SHUFFLE;
+        shuffle_actions[1].category = ActionCategory::SHUFFLE;
+        int shuffle_choice = InputLogger::instance().get_input(shuffle_actions);
         if (shuffle_choice == 1) {
             orderer->shuffle_library(owner);
             game_log("%s shuffles their library.\n", player_name(owner).c_str());
@@ -235,8 +232,7 @@ static bool run_unless_loop(size_t cost, Zone::Ownership controller,
     for (size_t i = 0; i < cost; i++) cond_cost.insert(GENERIC);
 
     while (true) {
-        std::vector<ActionCategory> cats;
-        std::vector<Entity> ents;
+        std::vector<LegalAction> unless_actions;
 
         for (auto e : orderer->mEntities) {
             if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
@@ -245,8 +241,6 @@ static bool run_unless_loop(size_t cost, Zone::Ownership controller,
             for (auto& ab : perm.abilities) {
                 if (ab.category != "AddMana") continue;
                 auto& cd = global_coordinator.GetComponent<CardData>(e);
-                game_log("  %zu: Tap %s for {%s}\n", ents.size(),
-                       cd.name.c_str(), mana_symbol(ab.color).c_str());
                 ActionCategory mcat = ActionCategory::MANA_C;
                 switch (ab.color) {
                     case WHITE: mcat = ActionCategory::MANA_W; break;
@@ -256,25 +250,28 @@ static bool run_unless_loop(size_t cost, Zone::Ownership controller,
                     case GREEN: mcat = ActionCategory::MANA_G; break;
                     default: break;
                 }
-                cats.push_back(mcat);
-                ents.push_back(e);
+                LegalAction la(PASS_PRIORITY, e, std::string("Tap ") + cd.name + " for {" + mana_symbol(ab.color) + "}");
+                la.category = mcat;
+                unless_actions.push_back(la);
                 break;
             }
         }
 
         bool can_pay = can_afford(controller, cond_cost);
-        size_t pay_idx = cats.size();
+        size_t pay_idx = unless_actions.size();
         if (can_pay) {
-            game_log("  %zu: Pay {%zu} (spell is not countered)\n", pay_idx, cost);
-            cats.push_back(ActionCategory::OTHER_CHOICE);
-            ents.push_back(Entity(0));
+            LegalAction pay(PASS_PRIORITY, std::string("Pay {") + std::to_string(cost) + "} (spell is not countered)");
+            pay.category = ActionCategory::OTHER_CHOICE;
+            unless_actions.push_back(pay);
         }
-        size_t decline_idx = cats.size();
-        game_log("  %zu: Don't pay (spell is countered)\n", decline_idx);
-        cats.push_back(ActionCategory::OTHER_CHOICE);
-        ents.push_back(Entity(0));
+        size_t decline_idx = unless_actions.size();
+        {
+            LegalAction decline(PASS_PRIORITY, std::string("Don't pay (spell is countered)"));
+            decline.category = ActionCategory::OTHER_CHOICE;
+            unless_actions.push_back(decline);
+        }
 
-        int choice = InputLogger::instance().get_logged_input(cur_game.turn, cats, ents);
+        int choice = InputLogger::instance().get_input(unless_actions);
 
         if (choice == static_cast<int>(decline_idx)) return true;
 
@@ -286,7 +283,7 @@ static bool run_unless_loop(size_t cost, Zone::Ownership controller,
         }
 
         if (choice >= 0 && choice < static_cast<int>(pay_idx)) {
-            Entity land = ents[static_cast<size_t>(choice)];
+            Entity land = unless_actions[static_cast<size_t>(choice)].source_entity;
             auto& perm = global_coordinator.GetComponent<Permanent>(land);
             auto& cd   = global_coordinator.GetComponent<CardData>(land);
             for (auto& ab : perm.abilities) {
@@ -450,11 +447,11 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
         }
         auto& top_cd = global_coordinator.GetComponent<CardData>(top_card);
         game_log("Top card of library: %s\n", top_cd.name.c_str());
-        game_log("0: Don't reveal | 1: Reveal\n");
-
-        std::vector<ActionCategory> cats = {ActionCategory::OTHER_CHOICE, ActionCategory::OTHER_CHOICE};
-        std::vector<Entity> ents = {Entity(0), Entity(0)};
-        int reveal_choice = InputLogger::instance().get_logged_input(cur_game.turn, cats, ents);
+        std::vector<LegalAction> reveal_actions = {
+            LegalAction(PASS_PRIORITY, std::string("Don't reveal")),
+            LegalAction(PASS_PRIORITY, std::string("Reveal")),
+        };
+        int reveal_choice = InputLogger::instance().get_input(reveal_actions);
 
         if (reveal_choice == 1) {
             game_log("Revealed: %s\n", top_cd.name.c_str());
@@ -521,11 +518,11 @@ void Ability::resolve_surveil(std::shared_ptr<Orderer> orderer) {
 
         auto &top_cd = global_coordinator.GetComponent<CardData>(top_card);
         game_log("Top card of %s's library: %s\n", player_name(controller).c_str(), top_cd.name.c_str());
-        game_log("0: Keep on top | 1: Put in graveyard\n");
-
-        std::vector<ActionCategory> cats = {ActionCategory::OTHER_CHOICE, ActionCategory::OTHER_CHOICE};
-        std::vector<Entity> ents = {Entity(0), Entity(0)};
-        int choice = InputLogger::instance().get_logged_input(cur_game.turn, cats, ents);
+        std::vector<LegalAction> surveil_actions = {
+            LegalAction(PASS_PRIORITY, std::string("Keep on top")),
+            LegalAction(PASS_PRIORITY, std::string("Put in graveyard")),
+        };
+        int choice = InputLogger::instance().get_input(surveil_actions);
 
         if (choice == 1) {
             orderer->add_to_zone(false, top_card, Zone::GRAVEYARD);

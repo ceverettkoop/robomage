@@ -49,9 +49,7 @@ extern bool gui_killed;
 pthread_t game_loop_thread;
 
 GameState gs;
-Query q;
 const GameState *gs_ptr = &gs;
-const Query *query_ptr = &q;
 std::string replay_file_path;
 bool replay_mode = false;
 bool machine_mode = false;
@@ -59,7 +57,6 @@ bool machine_mode = false;
 
 //runs in thread seperate from gui
 static void *game_loop(void *args) {
-    int choice;
     // Use minimal test deck for both players
     DEFAULT_DECK_ONE = Deck(RESOURCE_DIR + "/decks/test_minimal.dk");
     DEFAULT_DECK_TWO = Deck(RESOURCE_DIR + "/decks/test_minimal.dk");
@@ -162,18 +159,9 @@ static void *game_loop(void *args) {
         }
 
         populate_gamestate(&gs);
-        populate_query(&q, legal_actions);
         print_game_state(&gs);
-QUERY:
-        print_query(&q, cur_game.player_a_has_priority);
-        choice = InputLogger::instance().get_logged_input(cur_game.turn, legal_actions);
-
-        if (choice >= 0 && choice < legal_actions.size()) {
-            process_action(legal_actions[static_cast<size_t>(choice)], cur_game, orderer);
-        } else {
-            cli_print_invalid_action();
-            goto QUERY;
-        }
+        int choice = InputLogger::instance().get_input(legal_actions);
+        process_action(legal_actions[static_cast<size_t>(choice)], cur_game, orderer);
     }
     return NULL;
 }

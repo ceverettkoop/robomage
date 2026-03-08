@@ -13,7 +13,6 @@
 
 extern pthread_t game_loop_thread;
 extern const GameState *gs_ptr;
-extern const Query *query_ptr;
 pthread_mutex_t input_mutex = PTHREAD_MUTEX_INITIALIZER;
 char gui_input[GUI_INPUT_MAX] = {'\0'};
 bool gui_input_requested = false;

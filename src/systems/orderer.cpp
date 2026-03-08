@@ -13,7 +13,6 @@
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../input_logger.h"
-#include "../machine_io.h"
 
 // orderer cares about anything that has a zone
 void Orderer::init() {
@@ -204,21 +203,6 @@ std::vector<Entity> Orderer::get_stack() {
     return on_stack;
 }
 
-static void emit_mulligan_query(int mulligans_taken, bool player_a) {
-    std::vector<LegalAction> actions = {
-        LegalAction(PASS_PRIORITY, std::string("Keep")),
-        LegalAction(PASS_PRIORITY, std::string("Mulligan")),
-    };
-    actions[0].category = ActionCategory::MULLIGAN;
-    actions[1].category = ActionCategory::MULLIGAN;
-    Query q;
-    GameState gs;
-    populate_gamestate(&gs);
-    populate_query(&q, actions);
-    (void)mulligans_taken;
-    (void)player_a;
-    print_query(&q, player_a);
-}
 
 void Orderer::do_london_mulligan() {
     int mulligans_a = 0;
@@ -236,10 +220,13 @@ void Orderer::do_london_mulligan() {
                 game_log("%s\n", data.name.c_str());
             }
         }
-        game_log("Player A: 0=Keep, 1=Mulligan (taken %d)\n", mulligans_a);
-        emit_mulligan_query(mulligans_a, true);
-        std::vector<ActionCategory> cats = {ActionCategory::MULLIGAN, ActionCategory::MULLIGAN};
-        int choice = InputLogger::instance().get_logged_input(0, cats);
+        std::vector<LegalAction> mull_actions = {
+            LegalAction(PASS_PRIORITY, std::string("Keep")),
+            LegalAction(PASS_PRIORITY, std::string("Mulligan")),
+        };
+        mull_actions[0].category = ActionCategory::MULLIGAN;
+        mull_actions[1].category = ActionCategory::MULLIGAN;
+        int choice = InputLogger::instance().get_input(mull_actions);
         if (choice == 0) {
             keeping = true;
         } else {
@@ -275,10 +262,13 @@ void Orderer::do_london_mulligan() {
                 game_log("%s\n", data.name.c_str());
             }
         }
-        game_log("Player B: 0=Keep, 1=Mulligan (taken %d)\n", mulligans_b);
-        emit_mulligan_query(mulligans_b, false);
-        std::vector<ActionCategory> cats = {ActionCategory::MULLIGAN, ActionCategory::MULLIGAN};
-        int choice = InputLogger::instance().get_logged_input(0, cats);
+        std::vector<LegalAction> mull_actions = {
+            LegalAction(PASS_PRIORITY, std::string("Keep")),
+            LegalAction(PASS_PRIORITY, std::string("Mulligan")),
+        };
+        mull_actions[0].category = ActionCategory::MULLIGAN;
+        mull_actions[1].category = ActionCategory::MULLIGAN;
+        int choice = InputLogger::instance().get_input(mull_actions);
         if (choice == 0) {
             keeping = true;
         } else {
@@ -307,15 +297,15 @@ void Orderer::do_london_mulligan() {
         auto hand = this->get_hand(Zone::PLAYER_A);
         if (hand.empty()) break;
         game_log("Player A: Choose card to put on library bottom (%d remaining):\n", mulligans_a - i);
-        for (size_t j = 0; j < hand.size(); j++) {
-            auto &cd = global_coordinator.GetComponent<CardData>(hand[j]);
-            game_log("  %zu: %s\n", j, cd.name.c_str());
+        std::vector<LegalAction> btm_actions;
+        for (auto card : hand) {
+            auto &cd = global_coordinator.GetComponent<CardData>(card);
+            LegalAction la(PASS_PRIORITY, card, cd.name);
+            la.category = ActionCategory::BOTTOM_DECK_CARD;
+            btm_actions.push_back(la);
         }
-        std::vector<ActionCategory> cats(hand.size(), ActionCategory::BOTTOM_DECK_CARD);
-        int choice = InputLogger::instance().get_logged_input(0, cats, hand);
-        if (choice >= 0 && choice < static_cast<int>(hand.size())) {
-            this->add_to_zone(true, hand[static_cast<size_t>(choice)], Zone::LIBRARY);
-        }
+        int choice = InputLogger::instance().get_input(btm_actions);
+        this->add_to_zone(true, hand[static_cast<size_t>(choice)], Zone::LIBRARY);
     }
     // Phase 4: Player B bottom-decks mulligans_b cards, one at a time
     cur_game.player_a_has_priority = false;
@@ -323,14 +313,14 @@ void Orderer::do_london_mulligan() {
         auto hand = this->get_hand(Zone::PLAYER_B);
         if (hand.empty()) break;
         game_log("Player B: Choose card to put on library bottom (%d remaining):\n", mulligans_b - i);
-        for (size_t j = 0; j < hand.size(); j++) {
-            auto &cd = global_coordinator.GetComponent<CardData>(hand[j]);
-            game_log("  %zu: %s\n", j, cd.name.c_str());
+        std::vector<LegalAction> btm_actions;
+        for (auto card : hand) {
+            auto &cd = global_coordinator.GetComponent<CardData>(card);
+            LegalAction la(PASS_PRIORITY, card, cd.name);
+            la.category = ActionCategory::BOTTOM_DECK_CARD;
+            btm_actions.push_back(la);
         }
-        std::vector<ActionCategory> cats(hand.size(), ActionCategory::BOTTOM_DECK_CARD);
-        int choice = InputLogger::instance().get_logged_input(0, cats, hand);
-        if (choice >= 0 && choice < static_cast<int>(hand.size())) {
-            this->add_to_zone(true, hand[static_cast<size_t>(choice)], Zone::LIBRARY);
-        }
+        int choice = InputLogger::instance().get_input(btm_actions);
+        this->add_to_zone(true, hand[static_cast<size_t>(choice)], Zone::LIBRARY);
     }
 }

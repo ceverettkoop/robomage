@@ -17,14 +17,7 @@ class InputLogger {
     bool is_machine_mode() const;
     unsigned int get_replay_seed() const;
 
-    // Primary overload: takes full LegalAction list for richest query data.
-    int get_logged_input(size_t cur_turn, const std::vector<LegalAction>& actions);
-
-    // Backward-compat overload: builds trivial LegalActions from category+entity
-    // pairs and delegates to the primary overload.
-    int get_logged_input(size_t cur_turn,
-                         const std::vector<ActionCategory>& action_categories,
-                         const std::vector<Entity>& entities = {});
+    int get_input(const std::vector<LegalAction>& actions);
 
    private:
     InputLogger() = default;

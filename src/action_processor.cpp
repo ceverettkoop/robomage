@@ -196,28 +196,24 @@ static void pay_alternate_cost(const LegalAction &action, Game &game, std::share
     }
     //pitch cards, currently just looks for blue, TODO make generalizable
     for (int i = 0; i < card_data.alt_cost.exile_blue_from_hand; i++) {
-        std::vector<ActionCategory> exile_cats;
-        std::vector<Entity> exile_entities;
+        std::vector<LegalAction> exile_actions;
         for (auto e : orderer->get_hand(caster)) {
             if (e == spell_entity) continue;
             if (!global_coordinator.entity_has_component<ColorIdentity>(e)) continue;
             if (!global_coordinator.GetComponent<ColorIdentity>(e).colors.count(BLUE)) continue;
-            game_log("  %zu: %s\n", exile_entities.size(), global_coordinator.GetComponent<CardData>(e).name.c_str());
-            exile_cats.push_back(ActionCategory::OTHER_CHOICE);
-            exile_entities.push_back(e);
+            LegalAction la(PASS_PRIORITY, e, "Exile " + global_coordinator.GetComponent<CardData>(e).name);
+            la.category = ActionCategory::OTHER_CHOICE;
+            exile_actions.push_back(la);
         }
-        int choice = InputLogger::instance().get_logged_input(cur_game.turn, exile_cats, exile_entities);
-        if (choice >= 0 && choice < static_cast<int>(exile_entities.size())) {
-            Entity exiled = exile_entities[static_cast<size_t>(choice)];
-            game_log("%s exiles %s\n", player_name(caster).c_str(),
-                global_coordinator.GetComponent<CardData>(exiled).name.c_str());
-            orderer->add_to_zone(false, exiled, Zone::EXILE);
-        }
+        int choice = InputLogger::instance().get_input(exile_actions);
+        Entity exiled = exile_actions[static_cast<size_t>(choice)].source_entity;
+        game_log("%s exiles %s\n", player_name(caster).c_str(),
+            global_coordinator.GetComponent<CardData>(exiled).name.c_str());
+        orderer->add_to_zone(false, exiled, Zone::EXILE);
     }
     //Is generalizable by type? I think
     for (int i = 0; i < card_data.alt_cost.return_to_hand_count; i++) {
-        std::vector<ActionCategory> rth_cats;
-        std::vector<Entity> rth_entities;
+        std::vector<LegalAction> rth_actions;
         const std::string &type = card_data.alt_cost.return_to_hand_type;
         for (auto e : orderer->mEntities) {
             if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
@@ -233,17 +229,15 @@ static void pay_alternate_cost(const LegalAction &action, Game &game, std::share
                 }
             }
             if (!matches) continue;
-            game_log("  %zu: %s\n", rth_entities.size(), ecd.name.c_str());
-            rth_cats.push_back(ActionCategory::OTHER_CHOICE);
-            rth_entities.push_back(e);
+            LegalAction la(PASS_PRIORITY, e, "Return " + ecd.name);
+            la.category = ActionCategory::OTHER_CHOICE;
+            rth_actions.push_back(la);
         }
-        int choice = InputLogger::instance().get_logged_input(cur_game.turn, rth_cats, rth_entities);
-        if (choice >= 0 && choice < static_cast<int>(rth_entities.size())) {
-            Entity returned = rth_entities[static_cast<size_t>(choice)];
-            game_log("%s returns %s to hand\n", player_name(caster).c_str(),
-                global_coordinator.GetComponent<CardData>(returned).name.c_str());
-            orderer->add_to_zone(false, returned, Zone::HAND);
-        }
+        int choice = InputLogger::instance().get_input(rth_actions);
+        Entity returned = rth_actions[static_cast<size_t>(choice)].source_entity;
+        game_log("%s returns %s to hand\n", player_name(caster).c_str(),
+            global_coordinator.GetComponent<CardData>(returned).name.c_str());
+        orderer->add_to_zone(false, returned, Zone::HAND);
     }
 }
 
@@ -293,49 +287,43 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
             Zone::Ownership t = (cr.attack_target == game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
             game_log("  [attacking] %s [%d/%d] -> %s\n", cd.name.c_str(), cr.power, cr.toughness, player_name(t).c_str());
         }
-        // Show available choices (not-yet-attacking creatures)
-        for (size_t i = 0; i < not_yet_attacking.size(); i++) {
-            auto &cd = global_coordinator.GetComponent<CardData>(not_yet_attacking[i]);
-            auto &cr = global_coordinator.GetComponent<Creature>(not_yet_attacking[i]);
-            game_log("  %zu: %s [%d/%d]\n", i, cd.name.c_str(), cr.power, cr.toughness);
+        // Build attacker selection actions
+        std::vector<LegalAction> atk_actions;
+        for (auto entity : not_yet_attacking) {
+            auto &cd = global_coordinator.GetComponent<CardData>(entity);
+            auto &cr = global_coordinator.GetComponent<Creature>(entity);
+            LegalAction la(PASS_PRIORITY, entity, cd.name + " [" + std::to_string(cr.power) + "/" + std::to_string(cr.toughness) + "]");
+            la.category = ActionCategory::SELECT_ATTACKER;
+            atk_actions.push_back(la);
         }
-        game_log("  -1: Confirm\n");
-
-        // num_choices = not-yet-attacking creatures + 1 implicit confirm (-1)
-        std::vector<ActionCategory> atk_cats(not_yet_attacking.size(), ActionCategory::SELECT_ATTACKER);
-        atk_cats.push_back(ActionCategory::CONFIRM_ATTACKERS);
-        std::vector<Entity> atk_ents(not_yet_attacking.begin(), not_yet_attacking.end());
-        atk_ents.push_back(Entity(0));  // confirm slot — null sentinel
-        int creature_choice = InputLogger::instance().get_logged_input(cur_game.turn, atk_cats, atk_ents);
-
-        if (creature_choice == -1) break;
-
-        if (creature_choice < 0 || creature_choice >= static_cast<int>(not_yet_attacking.size())) {
-            game_log("Invalid selection.\n");
-            continue;
+        {
+            LegalAction confirm(PASS_PRIORITY, std::string("Confirm attackers"));
+            confirm.category = ActionCategory::CONFIRM_ATTACKERS;
+            atk_actions.push_back(confirm);
         }
+        int creature_choice = InputLogger::instance().get_input(atk_actions);
+
+        if (creature_choice == static_cast<int>(atk_actions.size()) - 1) break;
 
         auto &cr = global_coordinator.GetComponent<Creature>(not_yet_attacking[static_cast<size_t>(creature_choice)]);
         auto &cd = global_coordinator.GetComponent<CardData>(not_yet_attacking[static_cast<size_t>(creature_choice)]);
 
         game_log("Select target for %s:\n", cd.name.c_str());
-        for (size_t i = 0; i < targets.size(); i++) {
-            auto &player = global_coordinator.GetComponent<Player>(targets[i]);
-            Zone::Ownership t = (targets[i] == game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
-            game_log("  %zu: %s (%d life)\n", i, player_name(t).c_str(), player.life_total);
+        std::vector<LegalAction> tgt_actions;
+        for (auto t_entity : targets) {
+            auto &player = global_coordinator.GetComponent<Player>(t_entity);
+            Zone::Ownership t = (t_entity == game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
+            LegalAction la(PASS_PRIORITY, t_entity, player_name(t) + " (" + std::to_string(player.life_total) + " life)");
+            la.category = ActionCategory::OTHER_CHOICE;
+            tgt_actions.push_back(la);
             // TODO: planeswalker entries here
         }
-
-        std::vector<ActionCategory> atk_tgt_cats(targets.size(), ActionCategory::OTHER_CHOICE);
-        int target_choice = InputLogger::instance().get_logged_input(cur_game.turn, atk_tgt_cats, targets);
-
-        if (target_choice >= 0 && target_choice < static_cast<int>(targets.size())) {
-            cr.is_attacking = true;
-            cr.attack_target = targets[static_cast<size_t>(target_choice)];
+        int target_choice = InputLogger::instance().get_input(tgt_actions);
+        cr.is_attacking = true;
+        cr.attack_target = tgt_actions[static_cast<size_t>(target_choice)].source_entity;
+        {
             Zone::Ownership t = (cr.attack_target == game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
             game_log("%s attacking %s.\n", cd.name.c_str(), player_name(t).c_str());
-        } else {
-            game_log("Invalid target.\n");
         }
     }
 
@@ -451,25 +439,23 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
             game_log("  (assigned) %s [%d/%d] blocking %s\n",
                    cd.name.c_str(), cr.power, cr.toughness, acd.name.c_str());
         }
-        for (size_t i = 0; i < unblocked.size(); i++) {
-            auto &cd = global_coordinator.GetComponent<CardData>(unblocked[i]);
-            auto &cr = global_coordinator.GetComponent<Creature>(unblocked[i]);
-            game_log("  %zu: %s [%d/%d]\n", i, cd.name.c_str(), cr.power, cr.toughness);
+        // Build blocker selection actions
+        std::vector<LegalAction> blk_actions;
+        for (auto entity : unblocked) {
+            auto &cd = global_coordinator.GetComponent<CardData>(entity);
+            auto &cr = global_coordinator.GetComponent<Creature>(entity);
+            LegalAction la(PASS_PRIORITY, entity, cd.name + " [" + std::to_string(cr.power) + "/" + std::to_string(cr.toughness) + "]");
+            la.category = ActionCategory::SELECT_BLOCKER;
+            blk_actions.push_back(la);
         }
-        game_log("  -1: Confirm\n");
-
-        std::vector<ActionCategory> blk_cats(unblocked.size(), ActionCategory::SELECT_BLOCKER);
-        blk_cats.push_back(ActionCategory::CONFIRM_BLOCKERS);
-        std::vector<Entity> blk_ents(unblocked.begin(), unblocked.end());
-        blk_ents.push_back(Entity(0));  // confirm slot — null sentinel
-        int blocker_choice = InputLogger::instance().get_logged_input(cur_game.turn, blk_cats, blk_ents);
-
-        if (blocker_choice == -1) break;
-
-        if (blocker_choice < 0 || blocker_choice >= static_cast<int>(unblocked.size())) {
-            game_log("Invalid selection.\n");
-            continue;
+        {
+            LegalAction confirm(PASS_PRIORITY, std::string("Confirm blockers"));
+            confirm.category = ActionCategory::CONFIRM_BLOCKERS;
+            blk_actions.push_back(confirm);
         }
+        int blocker_choice = InputLogger::instance().get_input(blk_actions);
+
+        if (blocker_choice == static_cast<int>(blk_actions.size()) - 1) break;
 
         Entity chosen = unblocked[static_cast<size_t>(blocker_choice)];
         auto &cr = global_coordinator.GetComponent<Creature>(chosen);
@@ -477,23 +463,20 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
 
         auto legal_attackers = determine_blockable_attackers(chosen, attackers);
         game_log("Select attacker for %s to block:\n", cd.name.c_str());
-        for (size_t i = 0; i < legal_attackers.size(); i++) {
-            auto &acd = global_coordinator.GetComponent<CardData>(legal_attackers[i]);
-            auto &acr = global_coordinator.GetComponent<Creature>(legal_attackers[i]);
-            game_log("  %zu: %s [%d/%d]\n", i, acd.name.c_str(), acr.power, acr.toughness);
+        std::vector<LegalAction> blk_tgt_actions;
+        for (auto atk_entity : legal_attackers) {
+            auto &acd = global_coordinator.GetComponent<CardData>(atk_entity);
+            auto &acr = global_coordinator.GetComponent<Creature>(atk_entity);
+            LegalAction la(PASS_PRIORITY, atk_entity, acd.name + " [" + std::to_string(acr.power) + "/" + std::to_string(acr.toughness) + "]");
+            la.category = ActionCategory::OTHER_CHOICE;
+            blk_tgt_actions.push_back(la);
         }
-
-        std::vector<ActionCategory> blk_tgt_cats(legal_attackers.size(), ActionCategory::OTHER_CHOICE);
-        int attacker_choice =
-            InputLogger::instance().get_logged_input(cur_game.turn, blk_tgt_cats, legal_attackers);
-
-        if (attacker_choice >= 0 && attacker_choice < static_cast<int>(legal_attackers.size())) {
-            cr.is_blocking = true;
-            cr.blocking_target = legal_attackers[static_cast<size_t>(attacker_choice)];
+        int attacker_choice = InputLogger::instance().get_input(blk_tgt_actions);
+        cr.is_blocking = true;
+        cr.blocking_target = blk_tgt_actions[static_cast<size_t>(attacker_choice)].source_entity;
+        {
             auto &acd = global_coordinator.GetComponent<CardData>(cr.blocking_target);
             game_log("%s blocking %s.\n", cd.name.c_str(), acd.name.c_str());
-        } else {
-            game_log("Invalid attacker.\n");
         }
     }
 
@@ -522,28 +505,25 @@ bool has_legal_targets(const Ability &ability, std::shared_ptr<Orderer> orderer)
 
 void select_target(Ability &ability, std::shared_ptr<Orderer> orderer, Zone::Ownership priority_player) {
     std::vector<Entity> valid_targets = build_valid_targets(ability, orderer, priority_player);
-    while (true) {
-        game_log("Choose target:\n");
-        for (size_t i = 0; i < valid_targets.size(); i++) {
-            Entity target = valid_targets[i];
-            if (global_coordinator.entity_has_component<Player>(target)) {
-                auto &player = global_coordinator.GetComponent<Player>(target);
-                std::string name = (target == cur_game.player_a_entity) ? "Player A" : "Player B";
-                game_log("  %zu: %s (%d life)\n", i, name.c_str(), player.life_total);
-            } else {
-                auto &card = global_coordinator.GetComponent<CardData>(target);
-                game_log("  %zu: %s\n", i, card.name.c_str());
-            }
+    game_log("Choose target:\n");
+    std::vector<LegalAction> tgt_actions;
+    for (auto target : valid_targets) {
+        std::string desc;
+        if (global_coordinator.entity_has_component<Player>(target)) {
+            auto &player = global_coordinator.GetComponent<Player>(target);
+            std::string name = (target == cur_game.player_a_entity) ? "Player A" : "Player B";
+            desc = name + " (" + std::to_string(player.life_total) + " life)";
+        } else {
+            auto &card = global_coordinator.GetComponent<CardData>(target);
+            desc = card.name;
         }
-        std::vector<ActionCategory> tgt_cats(valid_targets.size(), ActionCategory::SELECT_TARGET);
-        int choice = InputLogger::instance().get_logged_input(cur_game.turn, tgt_cats, valid_targets);
-        if (choice >= 0 && choice < static_cast<int>(valid_targets.size())) {
-            ability.target = valid_targets[static_cast<size_t>(choice)];
-            game_log("Targeting choice %d\n", choice);
-            return;
-        }
-        game_log("Invalid target, must choose a legal target.\n");
+        LegalAction la(PASS_PRIORITY, target, desc);
+        la.category = ActionCategory::SELECT_TARGET;
+        tgt_actions.push_back(la);
     }
+    int choice = InputLogger::instance().get_input(tgt_actions);
+    ability.target = tgt_actions[static_cast<size_t>(choice)].source_entity;
+    game_log("Targeting choice %d\n", choice);
 }
 
 void process_action(const LegalAction &action, Game &game, std::shared_ptr<Orderer> orderer) {
@@ -656,25 +636,20 @@ void proc_mandatory_choice(Game &game, std::shared_ptr<Orderer> orderer) {
             Zone::Ownership active_player = game.player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B;
             auto hand = orderer->get_hand(active_player);
 
-            while (true) {
-                game_log("\n--- Discard to hand size (%s) ---\n", player_name(active_player).c_str());
-                game_log("Hand (%zu cards, must discard to 7):\n", hand.size());
-                for (size_t i = 0; i < hand.size(); i++) {
-                    auto &cd = global_coordinator.GetComponent<CardData>(hand[i]);
-                    game_log("  %zu: %s\n", i, cd.name.c_str());
-                }
-
-                std::vector<ActionCategory> discard_cats(hand.size(), ActionCategory::OTHER_CHOICE);
-                int choice = InputLogger::instance().get_logged_input(game.turn, discard_cats, hand);
-                if (choice >= 0 && choice < static_cast<int>(hand.size())) {
-                    Entity card = hand[static_cast<size_t>(choice)];
-                    auto &cd = global_coordinator.GetComponent<CardData>(card);
-                    orderer->add_to_zone(false, card, Zone::GRAVEYARD);
-                    game_log("%s discards %s.\n", player_name(active_player).c_str(), cd.name.c_str());
-                    break;
-                }
-                game_log("Invalid selection, must choose a card to discard.\n");
+            game_log("\n--- Discard to hand size (%s) ---\n", player_name(active_player).c_str());
+            game_log("Hand (%zu cards, must discard to 7):\n", hand.size());
+            std::vector<LegalAction> discard_actions;
+            for (auto card : hand) {
+                auto &cd = global_coordinator.GetComponent<CardData>(card);
+                LegalAction la(PASS_PRIORITY, card, cd.name);
+                la.category = ActionCategory::OTHER_CHOICE;
+                discard_actions.push_back(la);
             }
+            int choice = InputLogger::instance().get_input(discard_actions);
+            Entity card = discard_actions[static_cast<size_t>(choice)].source_entity;
+            auto &cd = global_coordinator.GetComponent<CardData>(card);
+            orderer->add_to_zone(false, card, Zone::GRAVEYARD);
+            game_log("%s discards %s.\n", player_name(active_player).c_str(), cd.name.c_str());
 
             game.pending_choice = NONE;
             break;
