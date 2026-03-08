@@ -47,7 +47,7 @@ bool gui_mode = false;
 extern bool gui_killed;
 
 #ifdef GUI
-pthread_t gui_thread;
+pthread_t game_loop_thread;
 #endif
 
 GameState gs;
@@ -199,7 +199,7 @@ int main(int argc, char const *argv[]) {
         }
     }
 
-    if (pthread_create(&gui_thread, NULL, game_loop, NULL) != 0) {
+    if (pthread_create(&game_loop_thread, NULL, game_loop, NULL) != 0) {
         perror("pthread_create");
         exit(1);
     }
@@ -212,6 +212,6 @@ int main(int argc, char const *argv[]) {
 #endif
     }
     
-    pthread_join(gui_thread, NULL);
+    pthread_join(game_loop_thread, NULL);
     return 0;
 }

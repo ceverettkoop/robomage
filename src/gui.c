@@ -12,7 +12,7 @@
 #define SCREEN_WIDTH 1920
 #define SCREEN_HEIGHT 1080
 
-extern pthread_t gui_thread;
+extern pthread_t game_loop_thread;
 extern const GameState *gs_ptr;
 extern const Query *query_ptr;
 pthread_mutex_t input_mutex = PTHREAD_MUTEX_INITIALIZER;
