@@ -260,6 +260,44 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
     vec_env.close()
 
 
+def diag(binary_path: str, n_games: int = 10):
+    """Quick diagnostic: spin up a fresh random model and run n_games vs scripted."""
+    env = ModelVsScriptedEnv(binary_path=binary_path)
+    if USE_MASKABLE:
+        env = ActionMasker(env, lambda e: e.action_masks())
+
+    policy_kwargs = dict(features_extractor_class=CardGameExtractor, net_arch=[256, 256])
+    model = MaskablePPO("MlpPolicy", env, policy_kwargs=policy_kwargs, verbose=0)
+
+    wins = losses = draws = 0
+    print(f"Running {n_games} games (random model vs scripted)...")
+    for i in range(n_games):
+        obs, _ = env.reset()
+        done = False
+        total_reward = 0.0
+        while not done:
+            masks = env.action_masks() if USE_MASKABLE else None
+            action, _ = model.predict(obs, action_masks=masks, deterministic=False)
+            obs, reward, terminated, truncated, _ = env.step(int(action))
+            total_reward += reward
+            done = terminated or truncated
+        if total_reward > 0:
+            wins += 1
+            result = "W"
+        elif total_reward < 0:
+            losses += 1
+            result = "L"
+        else:
+            draws += 1
+            result = "D"
+        print(f"  game {i+1:2d}/{n_games}: {result}  (W:{wins} L:{losses} D:{draws})", flush=True)
+
+    env.close()
+    total = wins + losses + draws
+    win_pct = 100 * wins / total if total else 0
+    print(f"\n{wins}W / {losses}L / {draws}D over {n_games} games ({win_pct:.1f}% win rate)")
+
+
 def baseline(binary_path: str, model_path: str, n_games: int = 100):
     """Evaluate win rate of the model against the scripted agent.
 
@@ -491,6 +529,8 @@ if __name__ == "__main__":
     parser.add_argument("--baseline", default=None, help="Evaluate model .zip vs scripted agent")
     parser.add_argument("--baseline-games", type=int, default=100)
     parser.add_argument("--observe", default=None, help="Watch model .zip play one game vs scripted agent")
+    parser.add_argument("--diag", action="store_true", help="Run 10 quick games (random model vs scripted) to verify the env")
+    parser.add_argument("--diag-games", type=int, default=10)
     parser.add_argument("--watch-scripted", action="store_true", help="Watch one game: scripted A vs scripted B")
     parser.add_argument("--tally", action="store_true", help="Print A/B win tally after each rollout")
     parser.add_argument("--self-play", action="store_true",
@@ -500,7 +540,9 @@ if __name__ == "__main__":
                              "E.g. 0.3 gives ~2 scripted + 5 self-play with N_ENVS=7.")
     args = parser.parse_args()
 
-    if args.watch_scripted:
+    if args.diag:
+        diag(args.binary, args.diag_games)
+    elif args.watch_scripted:
         watch_scripted(args.binary)
     elif args.observe:
         observe(args.binary, args.observe)
