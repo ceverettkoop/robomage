@@ -178,9 +178,9 @@ void Orderer::draw(Zone::Ownership player, size_t ct) {
     }
     if (cards_to_draw.size() < ct) {
         if (player == Zone::PLAYER_A) {
-            game_log("\nPlayer A decked - Player B wins!\n");
+            printf("\nPlayer A decked - Player B wins!\n");
         } else {
-            game_log("\nPlayer B decked - Player A wins!\n");
+            printf("\nPlayer B decked - Player A wins!\n");
         }
         cur_game.ended = true;
     }

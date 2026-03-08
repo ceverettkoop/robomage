@@ -255,12 +255,12 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
     auto &player_b = global_coordinator.GetComponent<Player>(game.player_b_entity);
 
     if (player_a.life_total <= 0) {
-        game_log("\nPlayer A has %d life - Player B wins!\n", player_a.life_total);
+        printf("\nPlayer A has %d life - Player B wins!\n", player_a.life_total);
         game.ended = true;
         return;
     }
     if (player_b.life_total <= 0) {
-        game_log("\nPlayer B has %d life - Player A wins!\n", player_b.life_total);
+        printf("\nPlayer B has %d life - Player A wins!\n", player_b.life_total);
         game.ended = true;
         return;
     }
