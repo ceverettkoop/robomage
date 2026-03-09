@@ -16,4 +16,18 @@ void gui_query_clear(void);
 int gui_query_line_count(void);
 const char* gui_query_get_line(int idx);
 
+// C-API card info accessors (implemented in gui_card_info.cpp)
+#ifdef __cplusplus
+extern "C" {
+#endif
+const char* gui_card_name(int vocab_idx);
+const char* gui_card_oracle(int vocab_idx);
+const char* gui_card_type_line(int vocab_idx);
+const char* gui_step_name(int step);
+int gui_card_base_power(int vocab_idx);
+int gui_card_base_toughness(int vocab_idx);
+#ifdef __cplusplus
+}
+#endif
+
 #endif /* GUI_H */
