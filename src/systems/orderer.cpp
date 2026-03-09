@@ -168,7 +168,7 @@ void Orderer::draw(Zone::Ownership player, size_t ct) {
                    global_coordinator.GetComponent<Zone>(b).distance_from_top;
         });
         for (auto card : sorted) {
-            game_log("%s draws %s\n", player_name(player).c_str(),
+            game_log_private(player, "%s draws %s\n", player_name(player).c_str(),
                      global_coordinator.GetComponent<CardData>(card).name.c_str());
         }
     }
@@ -234,10 +234,10 @@ void Orderer::do_london_mulligan() {
             cur_game.player_a_has_priority = true;
             {
                 auto hand_display = this->get_hand(Zone::PLAYER_A);
-                game_log("%s hand:\n", player_name(Zone::PLAYER_A).c_str());
+                game_log_private(Zone::PLAYER_A, "%s hand:\n", player_name(Zone::PLAYER_A).c_str());
                 for (auto card : hand_display) {
                     auto &data = global_coordinator.GetComponent<CardData>(card);
-                    game_log("%s\n", data.name.c_str());
+                    game_log_private(Zone::PLAYER_A, "%s\n", data.name.c_str());
                 }
             }
             std::vector<LegalAction> mull_actions = {
@@ -275,10 +275,10 @@ void Orderer::do_london_mulligan() {
             cur_game.player_a_has_priority = false;
             {
                 auto hand_display = this->get_hand(Zone::PLAYER_B);
-                game_log("%s hand:\n", player_name(Zone::PLAYER_B).c_str());
+                game_log_private(Zone::PLAYER_B, "%s hand:\n", player_name(Zone::PLAYER_B).c_str());
                 for (auto card : hand_display) {
                     auto &data = global_coordinator.GetComponent<CardData>(card);
-                    game_log("%s\n", data.name.c_str());
+                    game_log_private(Zone::PLAYER_B, "%s\n", data.name.c_str());
                 }
             }
             std::vector<LegalAction> mull_actions = {

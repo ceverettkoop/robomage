@@ -66,10 +66,7 @@ static const char* mana_symbol(int idx) {
 
 // ── game_log ──────────────────────────────────────────────────────────────────
 
-void game_log(const char* fmt, ...) {
-    if (InputLogger::instance().is_machine_mode()) return;
-    va_list ap;
-    va_start(ap, fmt);
+static void game_log_va(const char* fmt, va_list ap) {
     if (gui_mode) {
         char buf[GUI_LOG_LINE_LEN];
         vsnprintf(buf, sizeof(buf), fmt, ap);
@@ -92,6 +89,27 @@ void game_log(const char* fmt, ...) {
     } else {
         vprintf(fmt, ap);
     }
+}
+
+void game_log(const char* fmt, ...) {
+    if (InputLogger::instance().is_machine_mode() && !gui_mode) return;
+    va_list ap;
+    va_start(ap, fmt);
+    game_log_va(fmt, ap);
+    va_end(ap);
+}
+
+void game_log_private(Zone::Ownership private_to, const char* fmt, ...) {
+    if (InputLogger::instance().is_machine_mode() && !gui_mode) return;
+    extern bool has_human_player;
+    extern bool human_player_is_a;
+    if (has_human_player) {
+        Zone::Ownership human_owner = human_player_is_a ? Zone::PLAYER_A : Zone::PLAYER_B;
+        if (private_to != human_owner) return;
+    }
+    va_list ap;
+    va_start(ap, fmt);
+    game_log_va(fmt, ap);
     va_end(ap);
 }
 
@@ -202,7 +220,7 @@ void cli_print_gui_exit() {
 // ── Game state display ────────────────────────────────────────────────────────
 
 void print_game_state(const GameState* gs) {
-    if (InputLogger::instance().is_machine_mode()) return;
+    if (InputLogger::instance().is_machine_mode() && !gui_mode) return;
 
     const char* self_name   = gs->self_is_player_a ? "Player A" : "Player B";
     const char* opp_name    = gs->self_is_player_a ? "Player B" : "Player A";
@@ -274,20 +292,25 @@ void print_game_state(const GameState* gs) {
         game_log("%s\n", line);
     }
 
-    game_log("\n%s hand:\n", self_name);
-    bool hand_empty = true;
-    for (int i = 0; i < MAX_HAND_SLOTS; i++) {
-        if (gs->self_hand[i] < 0) continue;
-        hand_empty = false;
-        game_log("  %s\n", card_index_to_name(gs->self_hand[i]));
+    extern bool has_human_player;
+    extern bool human_player_is_a;
+    bool show_hand = !has_human_player || (human_player_is_a == gs->self_is_player_a);
+    if (show_hand) {
+        game_log("\n%s hand:\n", self_name);
+        bool hand_empty = true;
+        for (int i = 0; i < MAX_HAND_SLOTS; i++) {
+            if (gs->self_hand[i] < 0) continue;
+            hand_empty = false;
+            game_log("  %s\n", card_index_to_name(gs->self_hand[i]));
+        }
+        if (hand_empty) game_log("  (empty)\n");
     }
-    if (hand_empty) game_log("  (empty)\n");
 }
 
 // ── Choice display ────────────────────────────────────────────────────────────
 
 void print_query(const Query* q, bool player_a_has_priority) {
-    if (InputLogger::instance().is_machine_mode()) return;
+    if (InputLogger::instance().is_machine_mode() && !gui_mode) return;
     const char* pname = player_a_has_priority ? "Player A" : "Player B";
     if (gui_mode) {
         pthread_mutex_lock(&g_buf_mutex);

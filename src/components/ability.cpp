@@ -152,11 +152,19 @@ void Ability::resolve_change_zone(std::shared_ptr<Orderer> orderer) {
             if (destination == Zone::BATTLEFIELD) {
                 chosen_zone.controller = owner;
             }
-            game_log("%s puts %s to %s\n", player_name(owner).c_str(), chosen_cd.name.c_str(),
-                   destination == Zone::BATTLEFIELD ? "the battlefield" :
-                   destination == Zone::LIBRARY     ? "top of library" :
-                   destination == Zone::GRAVEYARD   ? "graveyard"      :
-                   destination == Zone::HAND        ? "hand"           : "exile");
+            const char* dest_str = destination == Zone::BATTLEFIELD ? "the battlefield" :
+                                   destination == Zone::LIBRARY     ? "top of library" :
+                                   destination == Zone::GRAVEYARD   ? "graveyard"      :
+                                   destination == Zone::HAND        ? "hand"           : "exile";
+            bool dest_public = (destination == Zone::BATTLEFIELD ||
+                                destination == Zone::GRAVEYARD   ||
+                                destination == Zone::EXILE);
+            if (dest_public) {
+                game_log("%s puts %s to %s\n", player_name(owner).c_str(), chosen_cd.name.c_str(), dest_str);
+            } else {
+                game_log_private(owner, "%s puts %s to %s\n", player_name(owner).c_str(), chosen_cd.name.c_str(), dest_str);
+                game_log("%s puts a card to %s\n", player_name(owner).c_str(), dest_str);
+            }
         } else {
             game_log("%s fails to find\n", player_name(owner).c_str());
             break;
@@ -446,7 +454,7 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
             return;
         }
         auto& top_cd = global_coordinator.GetComponent<CardData>(top_card);
-        game_log("Top card of library: %s\n", top_cd.name.c_str());
+        game_log_private(controller, "Top card of library: %s\n", top_cd.name.c_str());
         std::vector<LegalAction> reveal_actions = {
             LegalAction(PASS_PRIORITY, std::string("Don't reveal")),
             LegalAction(PASS_PRIORITY, std::string("Reveal")),
@@ -517,7 +525,7 @@ void Ability::resolve_surveil(std::shared_ptr<Orderer> orderer) {
         }
 
         auto &top_cd = global_coordinator.GetComponent<CardData>(top_card);
-        game_log("Top card of %s's library: %s\n", player_name(controller).c_str(), top_cd.name.c_str());
+        game_log_private(controller, "Top card of %s's library: %s\n", player_name(controller).c_str(), top_cd.name.c_str());
         std::vector<LegalAction> surveil_actions = {
             LegalAction(PASS_PRIORITY, std::string("Keep on top")),
             LegalAction(PASS_PRIORITY, std::string("Put in graveyard")),

@@ -15,11 +15,11 @@ extern std::string RESOURCE_DIR;
 extern Coordinator global_coordinator;
 extern Game cur_game;
 extern bool gui_mode;
-extern bool gui_input_requested;
-extern bool gui_input_sent;
-extern int gui_cmd;
+extern volatile bool gui_input_requested;
+extern volatile bool gui_input_sent;
+extern volatile int gui_cmd;
 extern pthread_mutex_t input_mutex;
-extern bool gui_killed;
+extern volatile bool gui_killed;
 
 // helper migrated from cli.cpp
 #define PASS_TURN_CMD (-2)

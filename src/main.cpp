@@ -47,7 +47,7 @@ Game cur_game;
 bool gui_mode = false;
 bool has_human_player = false;
 bool human_player_is_a = false;
-extern bool gui_killed;
+extern volatile bool gui_killed;
 pthread_t game_loop_thread;
 
 GameState gs;

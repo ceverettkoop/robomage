@@ -16,10 +16,10 @@ extern pthread_t game_loop_thread;
 extern const GameState *gs_ptr;
 pthread_mutex_t input_mutex = PTHREAD_MUTEX_INITIALIZER;
 char gui_input[GUI_INPUT_MAX] = {'\0'};
-bool gui_input_requested = false;
-bool gui_input_sent = false;
-bool gui_killed = false;
-int gui_cmd = 0;
+volatile bool gui_input_requested = false;
+volatile bool gui_input_sent = false;
+volatile bool gui_killed = false;
+volatile int gui_cmd = 0;
 static char gui_resource_dir[512] = "resources";
 
 void gui_set_resource_dir(const char *path) {

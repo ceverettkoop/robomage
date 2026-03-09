@@ -283,8 +283,20 @@ def play(binary_path: str, model_path: str):
 
 
 def play_gui(binary_path: str, model_path: str, human_player: str = None):
-    """Launch the raylib GUI window; model auto-responds on AI turns, human uses GUI."""
+    """Launch the raylib GUI window; model auto-responds on AI turns, human types in GUI text box.
+
+    Architecture:
+    - Binary runs with --machine --gui --player <human_player>
+    - Model turns: binary emits QUERY on stdout; Python reads it, predicts, writes to stdin
+    - Human turns: binary displays choices in the GUI window and spins waiting for GUI text-box
+      input; Python's reader thread collects narrative lines but sees no QUERY, so the main
+      thread simply waits for the next QUERY to arrive after the human has acted
+    - A background reader thread drains stdout continuously so Python never blocks on readline()
+      while the binary is waiting for GUI input
+    """
     import subprocess
+    import queue
+    import threading
 
     model = MaskablePPO.load(model_path)
 
@@ -292,6 +304,7 @@ def play_gui(binary_path: str, model_path: str, human_player: str = None):
         human_player = "A" if np.random.random() < 0.5 else "B"
     model_player = "B" if human_player == "A" else "A"
     print(f"=== You (Player {human_player}) vs Model (Player {model_player}) ===", flush=True)
+    print("(Type your choice number into the GUI text box and press Enter)", flush=True)
 
     cmd = [binary_path, "--machine", "--gui", "--player", human_player]
     proc = subprocess.Popen(
@@ -304,18 +317,25 @@ def play_gui(binary_path: str, model_path: str, human_player: str = None):
         cwd=BIN_DIR,
     )
 
+    # Reader thread: drains stdout into a queue so the main thread never blocks on readline()
+    # while the binary is waiting for human GUI input.
+    line_queue: queue.Queue = queue.Queue()
+
+    def _reader():
+        for raw in proc.stdout:
+            line_queue.put(raw.rstrip("\n"))
+        line_queue.put(None)  # EOF sentinel
+
+    threading.Thread(target=_reader, daemon=True).start()
+
     _MANDATORY = {2, 3, 4, 5}
-    _HAND_COST_FEATS = MAX_HAND_SLOTS * _N_COST_FEATS
-    _BF_ABILITY_FEATS = 48 * _N_COST_FEATS
 
     reward = 0.0
     try:
         while True:
-            line = proc.stdout.readline()
-            if not line:
+            line = line_queue.get()
+            if line is None:
                 break
-
-            line = line.rstrip("\n")
 
             if "Player A wins" in line:
                 reward = 1.0
@@ -325,7 +345,7 @@ def play_gui(binary_path: str, model_path: str, human_player: str = None):
             if not line.startswith("QUERY: "):
                 continue
 
-            # Parse QUERY line
+            # Parse QUERY line — this is a model turn (human turns never emit QUERY)
             parts = line[7:].split()
             num_choices = min(int(parts[0]), MAX_ACTIONS)
 
