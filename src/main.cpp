@@ -163,14 +163,6 @@ static void *game_loop(void *args) {
         populate_gamestate(&gs);
         print_game_state(&gs);
         int choice = InputLogger::instance().get_input(legal_actions);
-
-        //handling non game input
-        switch (choice) {
-            case FLAG_QUIT:
-                exit(0);
-            default:
-                break;
-        }
         process_action(legal_actions[static_cast<size_t>(choice)], cur_game, orderer);
     }
     return NULL;
@@ -215,7 +207,7 @@ int main(int argc, char const *argv[]) {
         fatal_error("NOTE TO USE GUI; MUST BE COMPILED WITH FLAG GUI==TRUE, RUN AGAIN WITHOUT --gui FLAG OR RECOMPILE");
 #endif
     }
-    
+
     pthread_join(game_loop_thread, NULL);
     return 0;
 }

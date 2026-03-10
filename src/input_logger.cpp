@@ -1,12 +1,13 @@
 #include "input_logger.h"
+
 #include <pthread.h>
 
 #include <cstdio>
 #include <iostream>
 
 #include "classes/game.h"
-#include "components/zone.h"
 #include "cli_output.h"
+#include "components/zone.h"
 #include "ecs/coordinator.h"
 #include "error.h"
 #include "gui_flags.h"
@@ -21,13 +22,14 @@ extern volatile bool gui_input_sent;
 extern volatile int gui_cmd;
 extern pthread_mutex_t input_mutex;
 extern volatile bool gui_killed;
+extern volatile bool quit_gui;
 
 static int get_int_input() {
-    //GUI will only pass ints, but does not filter for range
+    // GUI will only pass ints, but does not filter for range
     if (gui_mode) {
         gui_input_requested = true;
         while (!gui_input_sent) {
-            if(gui_killed){
+            if (gui_killed) {
                 game_log("User exited GUI, quitting\n");
                 exit(0);
             }
@@ -116,7 +118,7 @@ unsigned int InputLogger::get_replay_seed() const {
     return replay_seed;
 }
 
-int InputLogger::get_input(const std::vector<LegalAction>& actions) {
+int InputLogger::get_input(const std::vector<LegalAction> &actions) {
     extern bool has_human_player;
     extern bool human_player_is_a;
     bool human_has_priority = has_human_player && (human_player_is_a == cur_game.player_a_has_priority);
@@ -181,21 +183,28 @@ int InputLogger::get_input(const std::vector<LegalAction>& actions) {
         populate_query(&q, actions);
         print_query(&q, cur_game.player_a_has_priority);
         int choice = get_int_input();
-        //deprecated
-        if (choice == PASS_TURN_CMD) {
-            game_log("Auto-passing turn.\n");
-            auto_pass_until_turn = (int)cur_game.turn + 1;
-            if (log_file.is_open()) {
-                log_file << 0 << std::endl;
-                log_file.flush();
-            }
-            return 0;
+        // handling flagged choices
+        switch (choice) {
+            case PASS_TURN_CMD:
+                game_log("Auto-passing turn.\n");
+                auto_pass_until_turn = (int)cur_game.turn + 1;
+                if (log_file.is_open()) {
+                    log_file << 0 << std::endl;
+                    log_file.flush();
+                }
+                return 0;
+                break;
+            case FLAG_QUIT:
+                if(gui_mode){
+                    quit_gui = true;
+                }else{
+                    pthread_exit(NULL);
+                }
+                break;
+            default:
+                break;
         }
-        // GUI flags returned naively
-        if(choice >= FLAG_MIN && choice <= FLAG_MAX){
-            return choice;
-        }
-        //other input checked against choices 
+        // other input checked against choices
         if (choice < 0 || choice >= static_cast<int>(actions.size())) {
             cli_print_invalid_action();
             continue;

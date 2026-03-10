@@ -15,6 +15,7 @@ pthread_mutex_t input_mutex = PTHREAD_MUTEX_INITIALIZER;
 char gui_input[GUI_INPUT_MAX] = {'\0'};
 volatile bool gui_input_requested = false;
 volatile bool gui_input_sent = false;
+volatile bool quit_gui = false;
 volatile bool gui_killed = false;
 volatile int gui_cmd = 0;
 static char gui_resource_dir[512] = "resources";
@@ -684,7 +685,7 @@ static void *gui_loop(void *arg) {
 
     bool input_focused = false;
 
-    while (!WindowShouldClose()) {
+    while (!WindowShouldClose() && !quit_gui) {
         SCREEN_WIDTH = GetScreenWidth();
         SCREEN_HEIGHT = GetScreenHeight();
 
