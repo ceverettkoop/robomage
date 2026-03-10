@@ -14,7 +14,8 @@ The compiled binary is output to `bin/robomage`.
 
 ## Code Style
 
-- Don't put any functions in main.cpp besides main!
+- Don't put new functions in main.cpp
+- Don't edit my comments for spelling or punctuation. Only change them if something substantive changed.
 - Avoid inline logic for anything that will be repeated; write new functions that are reusable
 - Declare local functions as private in the class, if the header contains a single class/struct, if header does not contain a class, write them as static functions in global namespace C-style.
 - Iterate through mEntities when possible (working within a system class), rather than iterating through all entities

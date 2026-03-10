@@ -26,7 +26,6 @@
 #include "systems/orderer.h"
 #include "systems/stack_manager.h"
 #include "systems/state_manager.h"
-#include "error.h"
 
 #ifndef VERSION_NUMBER
 #define VERSION_NUMBER "0.001"

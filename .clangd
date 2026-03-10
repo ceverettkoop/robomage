@@ -1,8 +1,2 @@
 CompileFlags:
   Add: [-fno-exceptions, -DGUI=TRUE, -I../include, -I/opt/homebrew/opt/raylib/include]
----
-If:
-    PathExclude: [.*\.c]
-CompileFlags:
-    Add:
-        - "-std=c++17"

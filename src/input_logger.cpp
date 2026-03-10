@@ -9,6 +9,7 @@
 #include "cli_output.h"
 #include "ecs/coordinator.h"
 #include "error.h"
+#include "gui_flags.h"
 #include "machine_io.h"
 
 extern std::string RESOURCE_DIR;
@@ -20,9 +21,6 @@ extern volatile bool gui_input_sent;
 extern volatile int gui_cmd;
 extern pthread_mutex_t input_mutex;
 extern volatile bool gui_killed;
-
-// helper migrated from cli.cpp
-#define PASS_TURN_CMD (-2)
 
 static int get_int_input() {
     //GUI will only pass ints, but does not filter for range
@@ -183,6 +181,7 @@ int InputLogger::get_input(const std::vector<LegalAction>& actions) {
         populate_query(&q, actions);
         print_query(&q, cur_game.player_a_has_priority);
         int choice = get_int_input();
+        //deprecated
         if (choice == PASS_TURN_CMD) {
             game_log("Auto-passing turn.\n");
             auto_pass_until_turn = (int)cur_game.turn + 1;
@@ -192,6 +191,11 @@ int InputLogger::get_input(const std::vector<LegalAction>& actions) {
             }
             return 0;
         }
+        // GUI flags returned naively
+        if(choice >= FLAG_MIN && choice <= FLAG_MAX){
+            return choice;
+        }
+        //other input checked against choices 
         if (choice < 0 || choice >= static_cast<int>(actions.size())) {
             cli_print_invalid_action();
             continue;

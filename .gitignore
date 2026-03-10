@@ -13,3 +13,4 @@ train/logs/**
 checkpoints/*.zip
 replays/*.txt
 train/checkpoints/*
+.cache/*

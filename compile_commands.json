@@ -29,6 +29,35 @@
     "output": "obj/gui.o"
   },
   {
+    "file": "src/gui.h",
+    "arguments": [
+      "clang",
+      "-c",
+      "-o",
+      "obj/gui.o",
+      "src/gui.c",
+      "-Iinclude",
+      "-Icomponents",
+      "-I/opt/homebrew/opt/raylib/include",
+      "-DGUI=TRUE",
+      "-ggdb",
+      "-Wall",
+      "-Wformat",
+      "-Wformat=2",
+      "-Wconversion",
+      "-Wimplicit-fallthrough",
+      "-D_GLIBCXX_ASSERTIONS",
+      "-fstack-protector-strong",
+      "-Werror=implicit",
+      "-Werror=incompatible-pointer-types",
+      "-Werror=int-conversion",
+      "-Wno-sign-conversion",
+      "-Wno-conversion"
+    ],
+    "directory": "/Users/sean/development/robomage",
+    "output": "obj/gui.o"
+  },
+  {
     "file": "src/action_processor.cpp",
     "arguments": [
       "clang++",
