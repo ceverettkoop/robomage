@@ -4,6 +4,7 @@
 #include "card_vocab.h"
 #include "components/carddata.h"
 #include "ecs/coordinator.h"
+#include "parse.h"
 
 #include <cstring>
 
@@ -15,11 +16,12 @@ const char* gui_card_name(int vocab_idx) {
     return card_index_to_name(vocab_idx);
 }
 
+//convoluated way to find it here, TOOD revisit
 const char* gui_card_oracle(int vocab_idx) {
     static char buf[1024];
-    const char* name = card_index_to_name(vocab_idx);
-    if (name[0] == '?') return "";
-    auto it = card_db.find(name);
+    auto uid = name_to_uid(card_index_to_name(vocab_idx)) ;
+    if (uid[0] == '?') return "";
+    auto it = card_db.find(uid);
     if (it == card_db.end()) return "";
     if (!global_coordinator.entity_has_component<CardData>(it->second)) return "";
     const CardData& cd = global_coordinator.GetComponent<CardData>(it->second);

@@ -32,9 +32,59 @@ void gui_set_resource_dir(const char *path) {
 
 #include "raygui.h"
 
-static Font g_font;
+// ──────────────────────────────────────────────────────────────────────────
+// Layout & visual constants — edit these to adjust GUI proportions
+// ──────────────────────────────────────────────────────────────────────────
 
-// Hover state — reset each frame, set by draw_perm_chip / hand rendering
+// Left sidebar (log + choices): fraction of screen width
+#define LAYOUT_SIDEBAR_W_RATIO      0.25f
+// Padding / gaps in pixels (small fixed values, intentionally not scaled)
+#define LAYOUT_SIDEBAR_PAD          10.0f   // padding inside sidebar
+#define LAYOUT_RIGHT_PAD            10.0f   // right edge padding
+#define LAYOUT_MAIN_LEFT_PAD        20.0f   // gap between sidebar right edge and main area
+#define LAYOUT_SECTION_GAP          4.0f    // vertical gap between sections
+#define LAYOUT_CARD_GAP             4.0f    // gap between cards in hand / battlefield
+
+// Main game area row heights — fractions of screen height
+#define LAYOUT_STATUS_BAR_H         0.0405f // turn bar / player info bars (150% of original)
+#define LAYOUT_OPP_BF_H             0.240f  // opponent battlefield
+#define LAYOUT_STACK_H              0.060f  // stack display
+#define LAYOUT_SELF_BF_H            0.240f  // self battlefield
+#define LAYOUT_SELF_HAND_H          0.145f  // self hand cards
+
+// Sidebar vertical splits — fractions of screen height
+#define LAYOUT_LOG_BOTTOM_RATIO     0.65f   // log panel bottom edge
+#define LAYOUT_CHOICES_Y_RATIO      0.70f   // choices list starts here
+
+// Input text box — width/height as fractions of screen; anchored to bottom-right corner
+#define LAYOUT_INPUT_W_RATIO        0.35f
+#define LAYOUT_INPUT_H_RATIO        0.050f
+#define LAYOUT_INPUT_MARGIN         10.0f   // gap from right and bottom edges
+
+// Font rendering sizes — fractions of screen height
+#define FONT_SIZE_MAIN_RATIO        0.021f  // log text, choices
+#define FONT_SIZE_BAR_RATIO         0.021f  // turn/player info bar text (150% of original label)
+#define FONT_SIZE_LABEL_RATIO       0.014f  // battlefield/stack labels
+#define FONT_SIZE_CARD_RATIO        0.011f  // card name / P/T text on cards
+#define FONT_SIZE_TINY_RATIO        0.009f  // oracle text inside hand cards
+
+// Card proportions
+#define CARD_ASPECT_RATIO           1.36f   // height / width for all rendered cards
+
+// Tooltip dimensions — fractions of screen
+#define LAYOUT_TOOLTIP_W_RATIO      0.21f
+#define LAYOUT_TOOLTIP_H_RATIO      0.27f
+
+// Font texture rasterisation: load size = GetMonitorHeight() / FONT_LOAD_DIVISOR
+// Smaller divisor = larger texture = crisper text when scaled up
+#define FONT_LOAD_DIVISOR           28
+
+// ──────────────────────────────────────────────────────────────────────────
+
+static Font g_font;
+static Font g_font_oracle;  // serif font (Merriweather) for oracle text
+
+// Hover state — reset each frame, set by draw_perm_card / hand rendering
 static int gs_hover_vocab_idx = -1;
 static float gs_hover_tx = 0.0f;
 static float gs_hover_ty = 0.0f;
@@ -44,11 +94,13 @@ static int gs_hover_perm_damage = 0;
 
 // Forward declarations
 static int count_gy(const int *gy, int max);
-static void draw_wrapped_text(const char *text, float x, float y, float max_w, float font_size, Color color);
-static void draw_perm_chip(float sx, float sy, float sw, float sh, const PermanentState *perm, Vector2 mouse);
+static void draw_wrapped_text(Font font, const char *text, float x, float y, float max_w, float font_size, Color color);
+static void draw_perm_card(float cx, float cy, float cw, float ch, const PermanentState *perm, Vector2 mouse);
 static void render_battlefield(float px, float py, float pw, float ph, const PermanentState *perms, int max_slots,
     Vector2 mouse, const char *label);
 static void render_gs(void);
+static void render_info_log(void);
+static void render_choices(void);
 
 static int count_gy(const int *gy, int max) {
     int n = 0;
@@ -58,17 +110,18 @@ static int count_gy(const int *gy, int max) {
     return n;
 }
 
-static void determine_screen_size() {
+static void determine_screen_size(void) {
     InitWindow(10, 10, "robomage");
+    SetWindowState(FLAG_WINDOW_RESIZABLE);
     int monitor = GetCurrentMonitor();
-    SCREEN_WIDTH = GetMonitorWidth(monitor) * 0.8;
-    SCREEN_HEIGHT = GetMonitorHeight(monitor) * 0.8;
+    SCREEN_WIDTH = (int)(GetMonitorWidth(monitor) * 0.8f);
+    SCREEN_HEIGHT = (int)(GetMonitorHeight(monitor) * 0.8f);
     SetWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);
     SetWindowPosition((GetMonitorWidth(monitor) - SCREEN_WIDTH) / 2, (GetMonitorHeight(monitor) - SCREEN_HEIGHT) / 2);
 }
 
-// Simple word-wrap renderer; stops drawing if it would exceed max_lines lines.
-static void draw_wrapped_text(const char *text, float x, float y, float max_w, float font_size, Color color) {
+// Simple word-wrap renderer
+static void draw_wrapped_text(Font font, const char *text, float x, float y, float max_w, float font_size, Color color) {
     char word[256];
     char line[512];
     int line_pos = 0;
@@ -77,14 +130,13 @@ static void draw_wrapped_text(const char *text, float x, float y, float max_w, f
     line[0] = '\0';
 
     while (*p) {
-        // Collect next word
         int wlen = 0;
         while (*p && *p != ' ' && *p != '\n' && wlen < 254) word[wlen++] = *p++;
         word[wlen] = '\0';
 
         if (wlen == 0) {
             if (*p == '\n') {
-                DrawTextEx(g_font, line, (Vector2){x, line_y}, font_size, 1.0f, color);
+                DrawTextEx(font, line, (Vector2){x, line_y}, font_size, 1.0f, color);
                 line_y += font_size + 2.0f;
                 line[0] = '\0';
                 line_pos = 0;
@@ -93,16 +145,15 @@ static void draw_wrapped_text(const char *text, float x, float y, float max_w, f
             continue;
         }
 
-        // Try appending word to current line
         char test[512];
         if (line_pos == 0)
             snprintf(test, sizeof(test), "%s", word);
         else
             snprintf(test, sizeof(test), "%s %s", line, word);
 
-        float tw = MeasureTextEx(g_font, test, font_size, 1.0f).x;
+        float tw = MeasureTextEx(font, test, font_size, 1.0f).x;
         if (tw > max_w && line_pos > 0) {
-            DrawTextEx(g_font, line, (Vector2){x, line_y}, font_size, 1.0f, color);
+            DrawTextEx(font, line, (Vector2){x, line_y}, font_size, 1.0f, color);
             line_y += font_size + 2.0f;
             snprintf(line, sizeof(line), "%s", word);
             line_pos = wlen;
@@ -112,7 +163,7 @@ static void draw_wrapped_text(const char *text, float x, float y, float max_w, f
         }
 
         if (*p == '\n') {
-            DrawTextEx(g_font, line, (Vector2){x, line_y}, font_size, 1.0f, color);
+            DrawTextEx(font, line, (Vector2){x, line_y}, font_size, 1.0f, color);
             line_y += font_size + 2.0f;
             line[0] = '\0';
             line_pos = 0;
@@ -121,13 +172,17 @@ static void draw_wrapped_text(const char *text, float x, float y, float max_w, f
             p++;
         }
     }
-    if (line_pos > 0) DrawTextEx(g_font, line, (Vector2){x, line_y}, font_size, 1.0f, color);
+    if (line_pos > 0) DrawTextEx(font, line, (Vector2){x, line_y}, font_size, 1.0f, color);
 }
 
-static void draw_perm_chip(float sx, float sy, float sw, float sh, const PermanentState *perm, Vector2 mouse) {
+// Draw a single card as a portrait rectangle (CARD_ASPECT_RATIO height/width).
+// cx/cy = top-left of the card rect, cw/ch = card dimensions.
+static void draw_perm_card(float cx, float cy, float cw, float ch, const PermanentState *perm, Vector2 mouse) {
+    float font_sz = (float)GetScreenHeight() * FONT_SIZE_CARD_RATIO;
+
     if (perm->card_vocab_idx < 0) {
         // Empty slot — faint outline only
-        DrawRectangleLinesEx((Rectangle){sx + 1, sy + 1, sw - 2, sh - 2}, 0.5f, (Color){190, 190, 190, 60});
+        DrawRectangleLinesEx((Rectangle){cx + 1, cy + 1, cw - 2, ch - 2}, 0.5f, (Color){190, 190, 190, 60});
         return;
     }
 
@@ -139,87 +194,103 @@ static void draw_perm_chip(float sx, float sy, float sw, float sh, const Permane
     } else if (perm->is_blocking) {
         bg = (Color){175, 175, 255, 255};
         border_col = BLUE;
+    } else if (perm->is_tapped) {
+        bg = (Color){185, 195, 210, 255};
+        border_col = (Color){90, 110, 140, 255};
     } else if (perm->has_summoning_sickness) {
         bg = (Color){255, 255, 175, 255};
         border_col = ORANGE;
-    } else if (perm->is_tapped) {
-        bg = (Color){195, 195, 195, 255};
-        border_col = DARKGRAY;
     } else {
         bg = (Color){238, 238, 238, 255};
         border_col = GRAY;
     }
-    // Opponent cards: slightly cooler tint
     if (!perm->controller_is_self) {
         bg.r = (unsigned char)((int)bg.r * 85 / 100);
         bg.g = (unsigned char)((int)bg.g * 90 / 100);
     }
 
-    float cx = sx + sw * 0.5f;
-    float cy = sy + sh * 0.5f;
-    float cw = sw - 4.0f;
-    float ch = sh - 4.0f;
+    // Card centre in screen space — constant regardless of tap state
+    float card_cx = cx + cw * 0.5f;
+    float card_cy = cy + ch * 0.5f;
     float rot = perm->is_tapped ? 90.0f : 0.0f;
+    float hw = cw * 0.5f, hh = ch * 0.5f;
 
     // Filled rotated rectangle
-    DrawRectanglePro((Rectangle){cx, cy, cw, ch}, (Vector2){cw * 0.5f, ch * 0.5f}, rot, bg);
+    DrawRectanglePro((Rectangle){card_cx, card_cy, cw, ch}, (Vector2){hw, hh}, rot, bg);
 
-    // Border: 4 rotated lines
+    // Rotated border
     float cos_r = cosf(rot * DEG2RAD);
     float sin_r = sinf(rot * DEG2RAD);
-    float hw = cw * 0.5f, hh = ch * 0.5f;
     float lc[4][2] = {{-hw, -hh}, {hw, -hh}, {hw, hh}, {-hw, hh}};
     Vector2 sc[4];
     for (int i = 0; i < 4; i++) {
-        sc[i].x = lc[i][0] * cos_r - lc[i][1] * sin_r + cx;
-        sc[i].y = lc[i][0] * sin_r + lc[i][1] * cos_r + cy;
+        sc[i].x = lc[i][0] * cos_r - lc[i][1] * sin_r + card_cx;
+        sc[i].y = lc[i][0] * sin_r + lc[i][1] * cos_r + card_cy;
     }
     for (int i = 0; i < 4; i++) DrawLineEx(sc[i], sc[(i + 1) % 4], 1.5f, border_col);
 
-    // Text
     const char *name = gui_card_name(perm->card_vocab_idx);
-    float font_sz = 10.0f;
+    const char *oracle = gui_card_oracle(perm->card_vocab_idx);
+    float oracle_sz = font_sz * 0.85f;
 
     if (!perm->is_tapped) {
-        if (sw >= 30.0f) {
-            DrawTextEx(g_font, name, (Vector2){sx + 3.0f, sy + 3.0f}, font_sz, 1.0f, BLACK);
-            if (perm->is_creature && sw >= 40.0f) {
-                char pt[32];
-                if (perm->damage > 0)
-                    snprintf(pt, sizeof(pt), "%d/%d (%ddmg)", perm->power, perm->toughness, perm->damage);
-                else
-                    snprintf(pt, sizeof(pt), "%d/%d", perm->power, perm->toughness);
-                DrawTextEx(g_font, pt, (Vector2){sx + 3.0f, sy + sh - font_sz - 3.0f}, font_sz, 1.0f, DARKGRAY);
-            }
+        // Upright: scissor to card bounds, draw name / oracle / P/T normally
+        BeginScissorMode((int)cx, (int)cy, (int)cw, (int)ch);
+
+        DrawTextEx(g_font, name, (Vector2){cx + 3.0f, cy + 3.0f}, font_sz, 1.0f, BLACK);
+
+        float oracle_y = cy + font_sz + 5.0f;
+        float pt_reserve = perm->is_creature ? (font_sz + 5.0f) : 0.0f;
+        float oracle_clip_h = ch - (oracle_y - cy) - pt_reserve - 3.0f;
+        if (oracle_clip_h > oracle_sz && oracle[0] != '\0') {
+            draw_wrapped_text(g_font_oracle, oracle, cx + 3.0f, oracle_y, cw - 6.0f, oracle_sz, DARKGRAY);
         }
-    } else {
-        // Tapped 90° CW: card's local "up" = screen right (+x).
-        // Local point (0, -ch*0.25) maps to screen (cx - ch*0.25, cy).
-        // Draw text with -90° rotation so it reads when you tilt head right.
-        if (ch >= 30.0f) {
-            float name_w = MeasureTextEx(g_font, name, font_sz, 1.0f).x;
-            DrawTextPro(g_font, name, (Vector2){cx - ch * 0.25f, cy}, (Vector2){name_w * 0.5f, font_sz * 0.5f}, -90.0f,
-                font_sz, 1.0f, BLACK);
-            if (perm->is_creature) {
-                char pt[16];
+
+        if (perm->is_creature) {
+            char pt[32];
+            if (perm->damage > 0)
+                snprintf(pt, sizeof(pt), "%d/%d (%d)", perm->power, perm->toughness, perm->damage);
+            else
                 snprintf(pt, sizeof(pt), "%d/%d", perm->power, perm->toughness);
-                float pt_w = MeasureTextEx(g_font, pt, font_sz, 1.0f).x;
-                DrawTextPro(g_font, pt, (Vector2){cx + ch * 0.25f, cy}, (Vector2){pt_w * 0.5f, font_sz * 0.5f}, -90.0f,
-                    font_sz, 1.0f, DARKGRAY);
-            }
+            DrawTextEx(g_font, pt, (Vector2){cx + 3.0f, cy + ch - font_sz - 3.0f}, font_sz, 1.0f, DARKGRAY);
         }
+        EndScissorMode();
+    } else {
+        // Tapped 90° CW: card's local "up" points screen-right.
+        // Draw text at -90° so it reads when the viewer tilts their head right.
+        // Local offset (lx, ly) → screen: (card_cx - ly, card_cy + lx)
+        float name_w = MeasureTextEx(g_font, name, font_sz, 1.0f).x;
+        // Place name near the "top" of the card (local top = screen left)
+        DrawTextPro(g_font, name,
+            (Vector2){card_cx - hh + 3.0f, card_cy},
+            (Vector2){0.0f, font_sz * 0.5f},
+            -90.0f, font_sz, 1.0f, BLACK);
+
+        if (perm->is_creature) {
+            char pt[32];
+            if (perm->damage > 0)
+                snprintf(pt, sizeof(pt), "%d/%d (%d)", perm->power, perm->toughness, perm->damage);
+            else
+                snprintf(pt, sizeof(pt), "%d/%d", perm->power, perm->toughness);
+            float pt_w = MeasureTextEx(g_font, pt, font_sz, 1.0f).x;
+            // Place P/T near the "bottom" of the card (local bottom = screen right)
+            DrawTextPro(g_font, pt,
+                (Vector2){card_cx + hh - 3.0f, card_cy},
+                (Vector2){pt_w, font_sz * 0.5f},
+                -90.0f, font_sz, 1.0f, DARKGRAY);
+        }
+        (void)name_w;
     }
 
-    // Hover detection
+    // Hover detection — inverse-rotate mouse for tapped cards
     bool hovered;
     if (!perm->is_tapped) {
-        hovered = (mouse.x >= sx && mouse.x < sx + sw && mouse.y >= sy && mouse.y < sy + sh);
+        hovered = (mouse.x >= cx && mouse.x < cx + cw && mouse.y >= cy && mouse.y < cy + ch);
     } else {
-        // Inverse-rotate mouse into card local frame (90° CCW = reverse of 90° CW)
-        float dx = mouse.x - cx;
-        float dy = mouse.y - cy;
-        float local_x = dy;   // cos(-90)*dx - sin(-90)*dy = dy
-        float local_y = -dx;  // sin(-90)*dx + cos(-90)*dy = -dx
+        float dx = mouse.x - card_cx;
+        float dy = mouse.y - card_cy;
+        float local_x = dy;   // inverse of 90° CW rotation
+        float local_y = -dx;
         hovered = (local_x > -hw && local_x < hw && local_y > -hh && local_y < hh);
     }
     if (hovered) {
@@ -234,31 +305,36 @@ static void draw_perm_chip(float sx, float sy, float sw, float sh, const Permane
 
 static void render_battlefield(float px, float py, float pw, float ph, const PermanentState *perms, int max_slots,
     Vector2 mouse, const char *label) {
-    // Count active permanents
+    float label_sz = (float)GetScreenHeight() * FONT_SIZE_LABEL_RATIO;
+
+    // Background
+    DrawRectangle((int)px, (int)py, (int)pw, (int)ph, (Color){245, 245, 235, 255});
+    DrawRectangleLinesEx((Rectangle){px, py, pw, ph}, 1.0f, LIGHTGRAY);
+    DrawTextEx(g_font, label, (Vector2){px + 3.0f, py + 2.0f}, label_sz, 1.0f, GRAY);
+
+    // Card dimensions from area height and aspect ratio
+    float card_h = ph - 4.0f;
+    float card_w = card_h / CARD_ASPECT_RATIO;
+    float gap = LAYOUT_CARD_GAP;
+
+    // Collect active permanents
     int active_idx[MAX_BATTLEFIELD_SLOTS];
     int active = 0;
     for (int i = 0; i < max_slots; i++) {
         if (perms[i].card_vocab_idx >= 0) active_idx[active++] = i;
     }
 
-    int display_slots = (active < 4) ? 4 : active;
-    float slot_w = pw / (float)display_slots;
-
-    // Background
-    DrawRectangle((int)px, (int)py, (int)pw, (int)ph, (Color){245, 245, 235, 255});
-    DrawRectangleLinesEx((Rectangle){px, py, pw, ph}, 1.0f, LIGHTGRAY);
-    DrawTextEx(g_font, label, (Vector2){px + 3.0f, py + 2.0f}, 9.0f, 1.0f, GRAY);
-
-    // Active permanents
+    // Draw active permanents left-to-right
     for (int d = 0; d < active; d++) {
-        float sx = px + (float)d * slot_w;
-        draw_perm_chip(sx, py, slot_w, ph, &perms[active_idx[d]], mouse);
+        float card_x = px + gap + (float)d * (card_w + gap);
+        draw_perm_card(card_x, py + 2.0f, card_w, card_h, &perms[active_idx[d]], mouse);
     }
-    // Empty filler slots
-    for (int d = active; d < display_slots; d++) {
-        float sx = px + (float)d * slot_w;
+    // Empty placeholder slots (up to 4 visible)
+    int empties = (active < 4) ? (4 - active) : 0;
+    for (int d = 0; d < empties; d++) {
+        float card_x = px + gap + (float)(active + d) * (card_w + gap);
         DrawRectangleLinesEx(
-            (Rectangle){sx + 1.0f, py + 1.0f, slot_w - 2.0f, ph - 2.0f}, 0.5f, (Color){190, 190, 190, 60});
+            (Rectangle){card_x, py + 2.0f, card_w, card_h}, 0.5f, (Color){190, 190, 190, 60});
     }
 }
 
@@ -272,22 +348,34 @@ static void render_gs(void) {
     gs_hover_perm_toughness = -1;
     gs_hover_perm_damage = 0;
 
+    float sw = (float)GetScreenWidth();
+    float sh = (float)GetScreenHeight();
     Vector2 mouse = GetMousePosition();
     bool q_held = IsKeyDown(KEY_Q);
 
-    float px = SCREEN_WIDTH * 0.25f + 20.0f;
-    float pw = (float)SCREEN_WIDTH - px - 10.0f;
+    // Derived layout values
+    float px = sw * LAYOUT_SIDEBAR_W_RATIO + LAYOUT_MAIN_LEFT_PAD;
+    float pw = sw - px - LAYOUT_RIGHT_PAD;
+    float bar_sz = sh * FONT_SIZE_BAR_RATIO;
+    float small_sz = sh * FONT_SIZE_LABEL_RATIO;
+
+    float bar_slot = roundf(sh * LAYOUT_STATUS_BAR_H);
+    float bar_h = bar_slot - 2.0f;
+    float opp_bf_h = roundf(sh * LAYOUT_OPP_BF_H);
+    float stack_h = roundf(sh * LAYOUT_STACK_H);
+    float self_bf_h = roundf(sh * LAYOUT_SELF_BF_H);
+    float self_hand_h = roundf(sh * LAYOUT_SELF_HAND_H);
+
     float y = 2.0f;
-    float small_sz = 10.0f;
 
     // ── 1. Turn / Step bar ──────────────────────────────────────────────
     {
         char bar[256];
         snprintf(bar, sizeof(bar), "Turn %d  |  %s  |  %s  |  Priority: %s", gs->turn, gui_step_name((int)gs->cur_step),
             gs->is_active_player ? "Your turn" : "Opp turn", gs->is_active_player ? "You" : "Opp");
-        DrawRectangle((int)px, (int)y, (int)pw, 18, (Color){55, 55, 75, 255});
-        DrawTextEx(g_font, bar, (Vector2){px + 4.0f, y + 3.0f}, small_sz, 1.0f, WHITE);
-        y += 20.0f;
+        DrawRectangle((int)px, (int)y, (int)pw, (int)bar_h, (Color){55, 55, 75, 255});
+        DrawTextEx(g_font, bar, (Vector2){px + 4.0f, y + (bar_h - bar_sz) * 0.5f}, bar_sz, 1.0f, WHITE);
+        y += bar_slot;
     }
 
     // ── 2. Opponent info bar ────────────────────────────────────────────
@@ -297,117 +385,99 @@ static void render_gs(void) {
             gs->opponent.life, gs->opponent.poison_counters, gs->opponent.mana[0], gs->opponent.mana[1],
             gs->opponent.mana[2], gs->opponent.mana[3], gs->opponent.mana[4], gs->opponent.mana[5],
             gs->opponent.hand_ct, gs->opp_library_ct);
-        DrawRectangle((int)px, (int)y, (int)pw, 18, (Color){185, 65, 65, 230});
-        DrawTextEx(g_font, bar, (Vector2){px + 4.0f, y + 3.0f}, small_sz, 1.0f, WHITE);
-        y += 20.0f;
+        DrawRectangle((int)px, (int)y, (int)pw, (int)bar_h, (Color){185, 65, 65, 230});
+        DrawTextEx(g_font, bar, (Vector2){px + 4.0f, y + (bar_h - bar_sz) * 0.5f}, bar_sz, 1.0f, WHITE);
+        y += bar_slot;
     }
 
-    // ── 3. Opponent hand (face-down) ────────────────────────────────────
+    // ── 3. Opponent battlefield ─────────────────────────────────────────
     {
-        float hand_h = 50.0f;
-        DrawRectangle((int)px, (int)y, (int)pw, (int)hand_h, (Color){220, 200, 200, 180});
-        int n = gs->opponent.hand_ct;
-        if (n > MAX_HAND_SLOTS) n = MAX_HAND_SLOTS;
-        float card_w = 58.0f;
-        float gap = 5.0f;
-        float start_x = px + (pw - (float)n * (card_w + gap)) * 0.5f;
-        for (int i = 0; i < n; i++) {
-            float cx_i = start_x + (float)i * (card_w + gap);
-            DrawRectangle((int)cx_i, (int)(y + 4.0f), (int)card_w, (int)(hand_h - 8.0f), (Color){75, 35, 115, 210});
-            DrawRectangleLinesEx((Rectangle){cx_i, y + 4.0f, card_w, hand_h - 8.0f}, 1.0f, (Color){40, 20, 75, 255});
-        }
-        y += hand_h + 4.0f;
+        render_battlefield(px, y, pw, opp_bf_h, gs->opp_permanents, MAX_BATTLEFIELD_SLOTS, mouse, "Opponent");
+        y += opp_bf_h + LAYOUT_SECTION_GAP;
     }
 
-    // ── 4. Opponent battlefield ─────────────────────────────────────────
+    // ── 4. Stack ────────────────────────────────────────────────────────
     {
-        float bf_h = 175.0f;
-        render_battlefield(px, y, pw, bf_h, gs->opp_permanents, MAX_BATTLEFIELD_SLOTS, mouse, "Opponent");
-        y += bf_h + 4.0f;
-    }
-
-    // ── 5. Stack ────────────────────────────────────────────────────────
-    {
-        float stack_h = 42.0f;
         DrawRectangle((int)px, (int)y, (int)pw, (int)stack_h, (Color){215, 215, 170, 210});
         char stack_label[32];
         snprintf(stack_label, sizeof(stack_label), "Stack (%d)", gs->stack_size);
         DrawTextEx(g_font, stack_label, (Vector2){px + 4.0f, y + 3.0f}, small_sz, 1.0f, DARKGRAY);
-        float ex = px + 85.0f;
+        float ex = px + MeasureTextEx(g_font, stack_label, small_sz, 1.0f).x + small_sz * 2.0f;
         for (int i = 0; i < gs->stack_size && i < MAX_STACK_DISPLAY; i++) {
             const StackEntry *se = &gs->stack[i];
             const char *sname = (se->card_vocab_idx >= 0) ? gui_card_name(se->card_vocab_idx) : "?";
             char chip[80];
             snprintf(chip, sizeof(chip), "[%s - %s]", sname, se->controller_is_self ? "You" : "Opp");
             float chip_w = MeasureTextEx(g_font, chip, small_sz, 1.0f).x + 8.0f;
+            float chip_h = small_sz * 1.8f;
+            float chip_y = y + (stack_h - chip_h) * 0.5f;
             Color chip_col = se->controller_is_self ? (Color){90, 150, 240, 220} : (Color){240, 110, 90, 220};
-            DrawRectangle((int)ex, (int)(y + 12.0f), (int)chip_w, 22, chip_col);
-            DrawTextEx(g_font, chip, (Vector2){ex + 4.0f, y + 15.0f}, small_sz, 1.0f, WHITE);
+            DrawRectangle((int)ex, (int)chip_y, (int)chip_w, (int)chip_h, chip_col);
+            DrawTextEx(g_font, chip, (Vector2){ex + 4.0f, chip_y + (chip_h - small_sz) * 0.5f}, small_sz, 1.0f, WHITE);
             ex += chip_w + 4.0f;
         }
-        y += stack_h + 4.0f;
+        y += stack_h + LAYOUT_SECTION_GAP;
     }
 
-    // ── 6. Self battlefield ─────────────────────────────────────────────
+    // ── 5. Self battlefield ─────────────────────────────────────────────
     {
-        float bf_h = 175.0f;
-        render_battlefield(px, y, pw, bf_h, gs->self_permanents, MAX_BATTLEFIELD_SLOTS, mouse, "You");
-        y += bf_h + 4.0f;
+        render_battlefield(px, y, pw, self_bf_h, gs->self_permanents, MAX_BATTLEFIELD_SLOTS, mouse, "You");
+        y += self_bf_h + LAYOUT_SECTION_GAP;
     }
 
-    // ── 7. Self hand ────────────────────────────────────────────────────
+    // ── 6. Self hand ────────────────────────────────────────────────────
     {
-        float hand_h = 85.0f;
-        DrawRectangle((int)px, (int)y, (int)pw, (int)hand_h, (Color){200, 225, 200, 190});
+        float card_h = self_hand_h - 4.0f;
+        float card_w = card_h / CARD_ASPECT_RATIO;
+        float gap = LAYOUT_CARD_GAP;
+        float font_card = sh * FONT_SIZE_CARD_RATIO;
+        float font_tiny = sh * FONT_SIZE_TINY_RATIO;
 
-        int n = 0;
-        for (int i = 0; i < MAX_HAND_SLOTS; i++) {
-            if (gs->self_hand[i] >= 0) n++;
-        }
-        int display_n = (n < 4) ? 4 : n;
-        float card_w = pw / (float)display_n;
+        DrawRectangle((int)px, (int)y, (int)pw, (int)self_hand_h, (Color){200, 225, 200, 190});
 
         int col = 0;
         for (int i = 0; i < MAX_HAND_SLOTS; i++) {
             int vi = gs->self_hand[i];
-            if (col >= display_n) break;
-            float hx = px + (float)col * card_w;
-            float hy = y;
-            if (vi >= 0) {
-                const char *cname = gui_card_name(vi);
-                const char *ctype = gui_card_type_line(vi);
-                const char *coracle = gui_card_oracle(vi);
+            if (vi < 0) continue;
 
-                DrawRectangle((int)(hx + 2.0f), (int)(hy + 2.0f), (int)(card_w - 4.0f), (int)(hand_h - 4.0f),
-                    (Color){195, 225, 195, 255});
-                DrawRectangleLinesEx((Rectangle){hx + 2.0f, hy + 2.0f, card_w - 4.0f, hand_h - 4.0f}, 1.0f, DARKGREEN);
+            float card_x = px + gap + (float)col * (card_w + gap);
+            float card_y = y + 2.0f;
 
-                DrawTextEx(g_font, cname, (Vector2){hx + 4.0f, hy + 4.0f}, small_sz, 1.0f, BLACK);
-                DrawTextEx(g_font, ctype, (Vector2){hx + 4.0f, hy + 16.0f}, 9.0f, 1.0f, DARKGRAY);
-                // Oracle text: first ~3 lines
-                BeginScissorMode((int)(hx + 2.0f), (int)(hy + 26.0f), (int)(card_w - 4.0f), (int)(hand_h - 30.0f));
-                draw_wrapped_text(coracle, hx + 4.0f, hy + 27.0f, card_w - 8.0f, 8.5f, DARKGRAY);
-                EndScissorMode();
+            const char *cname = gui_card_name(vi);
+            const char *ctype = gui_card_type_line(vi);
+            const char *coracle = gui_card_oracle(vi);
 
-                // Hover check for tooltip (hand cards use base stats)
-                if (mouse.x >= hx && mouse.x < hx + card_w && mouse.y >= hy && mouse.y < hy + hand_h) {
-                    gs_hover_vocab_idx = vi;
-                    gs_hover_tx = mouse.x;
-                    gs_hover_ty = mouse.y;
-                    gs_hover_perm_power = -1;  // signal: use base stats
-                    gs_hover_perm_toughness = -1;
-                    gs_hover_perm_damage = 0;
-                }
-            } else {
-                DrawRectangleLinesEx(
-                    (Rectangle){hx + 2.0f, hy + 2.0f, card_w - 4.0f, hand_h - 4.0f}, 0.5f, (Color){170, 210, 170, 90});
+            DrawRectangle((int)card_x, (int)card_y, (int)card_w, (int)card_h, (Color){195, 225, 195, 255});
+            DrawRectangleLinesEx((Rectangle){card_x, card_y, card_w, card_h}, 1.5f, DARKGREEN);
+
+            float name_y = card_y + 3.0f;
+            float type_y = card_y + font_card + 5.0f;
+            float oracle_y = card_y + font_card + font_tiny + 8.0f;
+            float oracle_clip_h = card_h - (oracle_y - card_y) - 3.0f;
+
+            BeginScissorMode((int)card_x, (int)card_y, (int)card_w, (int)card_h);
+            DrawTextEx(g_font, cname, (Vector2){card_x + 3.0f, name_y}, font_card, 1.0f, BLACK);
+            DrawTextEx(g_font_oracle, ctype, (Vector2){card_x + 3.0f, type_y}, font_tiny, 1.0f, DARKGRAY);
+            if (oracle_clip_h > font_tiny && coracle[0] != '\0') {
+                draw_wrapped_text(g_font_oracle, coracle, card_x + 3.0f, oracle_y, card_w - 6.0f, font_tiny, DARKGRAY);
+            }
+            EndScissorMode();
+
+            // Hover check for tooltip
+            if (mouse.x >= card_x && mouse.x < card_x + card_w && mouse.y >= card_y && mouse.y < card_y + card_h) {
+                gs_hover_vocab_idx = vi;
+                gs_hover_tx = mouse.x;
+                gs_hover_ty = mouse.y;
+                gs_hover_perm_power = -1;
+                gs_hover_perm_toughness = -1;
+                gs_hover_perm_damage = 0;
             }
             col++;
         }
-        y += hand_h + 4.0f;
+        y += self_hand_h + LAYOUT_SECTION_GAP;
     }
 
-    // ── 8. Self info bar ────────────────────────────────────────────────
+    // ── 7. Self info bar ────────────────────────────────────────────────
     {
         char bar[256];
         int self_gy = count_gy(gs->self_graveyard, MAX_GY_SLOTS);
@@ -415,15 +485,16 @@ static void render_gs(void) {
             gs->self.life, gs->self.poison_counters, gs->self.mana[0], gs->self.mana[1], gs->self.mana[2],
             gs->self.mana[3], gs->self.mana[4], gs->self.mana[5], gs->self.lands_played_this_turn, gs->self_library_ct,
             self_gy);
-        DrawRectangle((int)px, (int)y, (int)pw, 18, (Color){50, 95, 50, 255});
-        DrawTextEx(g_font, bar, (Vector2){px + 4.0f, y + 3.0f}, small_sz, 1.0f, WHITE);
-        y += 20.0f;
+        DrawRectangle((int)px, (int)y, (int)pw, (int)bar_h, (Color){50, 95, 50, 255});
+        DrawTextEx(g_font, bar, (Vector2){px + 4.0f, y + (bar_h - bar_sz) * 0.5f}, bar_sz, 1.0f, WHITE);
+        y += bar_slot;
     }
 
-    // ── 9. Graveyard / exile summary ────────────────────────────────────
+    // ── 8. Graveyard summary ────────────────────────────────────────────
     {
-        // Self graveyard
+        float gy_line_h = small_sz * 1.3f;
         char line[640];
+
         int self_gy_ct = count_gy(gs->self_graveyard, MAX_GY_SLOTS);
         snprintf(line, sizeof(line), "Your GY (%d):", self_gy_ct);
         for (int i = 0; i < MAX_GY_SLOTS; i++) {
@@ -434,9 +505,8 @@ static void render_gs(void) {
             }
         }
         DrawTextEx(g_font, line, (Vector2){px + 4.0f, y}, small_sz, 1.0f, DARKBROWN);
-        y += 13.0f;
+        y += gy_line_h;
 
-        // Opponent graveyard
         int opp_gy_ct = count_gy(gs->opp_graveyard, MAX_GY_SLOTS);
         snprintf(line, sizeof(line), "Opp GY  (%d):", opp_gy_ct);
         for (int i = 0; i < MAX_GY_SLOTS; i++) {
@@ -455,24 +525,27 @@ static void render_gs(void) {
         const char *toracle = gui_card_oracle(gs_hover_vocab_idx);
         const char *ttype = gui_card_type_line(gs_hover_vocab_idx);
 
-        float tp_w = 300.0f, tp_h = 210.0f;
+        float tp_w = sw * LAYOUT_TOOLTIP_W_RATIO;
+        float tp_h = sh * LAYOUT_TOOLTIP_H_RATIO;
         float tp_x = gs_hover_tx + 14.0f;
         float tp_y = gs_hover_ty - tp_h * 0.5f;
-        // Clamp to screen
-        if (tp_x + tp_w > (float)SCREEN_WIDTH - 5.0f) tp_x = gs_hover_tx - tp_w - 14.0f;
+        if (tp_x + tp_w > sw - 5.0f) tp_x = gs_hover_tx - tp_w - 14.0f;
         if (tp_y < 5.0f) tp_y = 5.0f;
-        if (tp_y + tp_h > (float)SCREEN_HEIGHT - 5.0f) tp_y = (float)SCREEN_HEIGHT - tp_h - 5.0f;
+        if (tp_y + tp_h > sh - 5.0f) tp_y = sh - tp_h - 5.0f;
+
+        float tt_title_sz = sh * FONT_SIZE_LABEL_RATIO * 1.2f;
+        float tt_body_sz = sh * FONT_SIZE_CARD_RATIO;
+        float tt_line_h = tt_body_sz * 1.4f;
 
         DrawRectangle((int)tp_x, (int)tp_y, (int)tp_w, (int)tp_h, (Color){252, 248, 218, 252});
         DrawRectangleLinesEx((Rectangle){tp_x, tp_y, tp_w, tp_h}, 2.0f, (Color){100, 80, 20, 255});
 
-        float ty = tp_y + 6.0f;
-        DrawTextEx(g_font, tname, (Vector2){tp_x + 6.0f, ty}, 13.0f, 1.0f, BLACK);
-        ty += 16.0f;
-        DrawTextEx(g_font, ttype, (Vector2){tp_x + 6.0f, ty}, small_sz, 1.0f, DARKGRAY);
-        ty += 14.0f;
+        float ty = tp_y + tp_h * 0.03f;
+        DrawTextEx(g_font, tname, (Vector2){tp_x + 6.0f, ty}, tt_title_sz, 1.0f, BLACK);
+        ty += tt_title_sz + tt_line_h * 0.3f;
+        DrawTextEx(g_font, ttype, (Vector2){tp_x + 6.0f, ty}, tt_body_sz, 1.0f, DARKGRAY);
+        ty += tt_line_h;
 
-        // P/T line: perm-hover uses actual stats; hand-hover uses base stats
         bool show_pt = false;
         int disp_p = 0, disp_t = 0, disp_d = 0;
         if (gs_hover_perm_power >= 0) {
@@ -495,30 +568,37 @@ static void render_gs(void) {
                 snprintf(pt, sizeof(pt), "%d/%d  (%d damage)", disp_p, disp_t, disp_d);
             else
                 snprintf(pt, sizeof(pt), "%d/%d", disp_p, disp_t);
-            DrawTextEx(g_font, pt, (Vector2){tp_x + 6.0f, ty}, small_sz, 1.0f, BLACK);
-            ty += 14.0f;
+            DrawTextEx(g_font, pt, (Vector2){tp_x + 6.0f, ty}, tt_body_sz, 1.0f, BLACK);
+            ty += tt_line_h;
         }
 
-        // Oracle text clipped to tooltip
-        BeginScissorMode((int)(tp_x + 4.0f), (int)ty, (int)(tp_w - 8.0f), (int)(tp_y + tp_h - ty - 4.0f));
-        draw_wrapped_text(toracle, tp_x + 6.0f, ty, tp_w - 12.0f, small_sz, BLACK);
+        float clip_h = (tp_y + tp_h) - ty - 4.0f;
+        BeginScissorMode((int)(tp_x + 4.0f), (int)ty, (int)(tp_w - 8.0f), (int)clip_h);
+        draw_wrapped_text(g_font_oracle, toracle, tp_x + 6.0f, ty, tp_w - 12.0f, tt_body_sz, BLACK);
         EndScissorMode();
     }
 }
 
-// scrollable box that displays everything that would be propogated to the CLI
-static void render_info_log() {
+// Scrollable box that displays everything that would be propagated to the CLI
+static void render_info_log(void) {
     static Vector2 scroll = {0, 0};
     static int last_line_count = 0;
     static float max_content_width = 0;
 
+    float sh = (float)GetScreenHeight();
+    float sw = (float)GetScreenWidth();
+    float font_size = sh * FONT_SIZE_MAIN_RATIO;
+    float line_height = font_size * 1.15f;
+
+    Rectangle bounds = {
+        LAYOUT_SIDEBAR_PAD,
+        LAYOUT_SIDEBAR_PAD,
+        sw * LAYOUT_SIDEBAR_W_RATIO - LAYOUT_SIDEBAR_PAD * 2.0f,
+        sh * LAYOUT_LOG_BOTTOM_RATIO - LAYOUT_SIDEBAR_PAD,
+    };
+
     int line_count = gui_log_line_count();
-    float font_size = 16.0f;
-    float line_height = 18.0f;
 
-    Rectangle bounds = {10, 10, SCREEN_WIDTH * 0.25, SCREEN_HEIGHT * 0.65f - 10};
-
-    // recompute max line width and auto-scroll when new lines arrive
     if (line_count != last_line_count) {
         max_content_width = 0;
         for (int i = 0; i < line_count; i++) {
@@ -553,34 +633,61 @@ static void render_info_log() {
     EndScissorMode();
 }
 
-static void render_choices() {
+static void render_choices(void) {
+    float sh = (float)GetScreenHeight();
+    float font_size = sh * FONT_SIZE_MAIN_RATIO;
+    float line_height = font_size * 1.15f;
+    float y = sh * LAYOUT_CHOICES_Y_RATIO;
     int line_count = gui_query_line_count();
-    float font_size = 16.0f;
-    float line_height = 18.0f;
-    float y = (SCREEN_HEIGHT * 0.7);
     for (int i = 0; i < line_count; i++) {
         const char *line = gui_query_get_line(i);
-        DrawTextEx(g_font, line, (Vector2){10, y}, font_size, 1.0f, DARKBLUE);
+        DrawTextEx(g_font, line, (Vector2){LAYOUT_SIDEBAR_PAD, y}, font_size, 1.0f, DARKBLUE);
         y += line_height;
     }
 }
 
 static void *gui_loop(void *arg) {
     determine_screen_size();
+
+    int monitor = GetCurrentMonitor();
+    int font_load_size = GetMonitorHeight(monitor) / FONT_LOAD_DIVISOR;
     char font_path[512];
     snprintf(font_path, sizeof(font_path), "%s/Magicmedieval-pRV1.ttf", gui_resource_dir);
-    g_font = LoadFontEx(font_path, 32, NULL, 0);
+    g_font = LoadFontEx(font_path, font_load_size, NULL, 0);
+    char oracle_font_path[512];
+    snprintf(oracle_font_path, sizeof(oracle_font_path), "%s/Merriweather-VariableFont_opsz,wdth,wght.ttf",
+        gui_resource_dir);
+    g_font_oracle = LoadFontEx(oracle_font_path, font_load_size, NULL, 0);
+
+    bool input_focused = false;
 
     while (!WindowShouldClose()) {
-        BeginDrawing();
+        SCREEN_WIDTH = GetScreenWidth();
+        SCREEN_HEIGHT = GetScreenHeight();
 
+        BeginDrawing();
         ClearBackground(WHITE);
 
-        // INPUT TEXT BOX DRAW AND UPDATE; this could be a functions
-        if (GuiTextBox((Rectangle){SCREEN_WIDTH * .4, SCREEN_HEIGHT * .9, SCREEN_WIDTH * .4, SCREEN_HEIGHT * .05},
-                gui_input, GUI_INPUT_MAX, true) == true) {
+        float sh = (float)SCREEN_HEIGHT;
+        float sw = (float)SCREEN_WIDTH;
+        float input_w = sw * LAYOUT_INPUT_W_RATIO;
+        float input_h = sh * LAYOUT_INPUT_H_RATIO;
+        Rectangle input_rect = {
+            sw - input_w - LAYOUT_INPUT_MARGIN,
+            sh - input_h - LAYOUT_INPUT_MARGIN,
+            input_w,
+            input_h,
+        };
+
+        // Click outside the box → lose focus; click inside → gain focus
+        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+            Vector2 m = GetMousePosition();
+            input_focused = CheckCollisionPointRec(m, input_rect);
+        }
+
+        if (GuiTextBox(input_rect, gui_input, GUI_INPUT_MAX, input_focused) == 1) {
+            input_focused = false;
             if (gui_input_requested) {
-                // validate input
                 for (size_t i = 0; i < GUI_INPUT_MAX; ++i) {
                     if (!isdigit(gui_input[i]) && gui_input[i] != '\0') {
                         memset(gui_input, '\0', GUI_INPUT_MAX);
@@ -588,25 +695,21 @@ static void *gui_loop(void *arg) {
                     }
                 }
                 if (gui_input[0] == '\0') goto INPUT_END;
-                // valid input, send it and clear
                 pthread_mutex_lock(&input_mutex);
-                int parsed = atoi(gui_input);
-                gui_cmd = parsed;
+                gui_cmd = atoi(gui_input);
                 gui_input_sent = true;
                 pthread_mutex_unlock(&input_mutex);
                 memset(gui_input, '\0', GUI_INPUT_MAX);
             }
         }
     INPUT_END:
-        // display game state
         render_gs();
-        // display info log
         render_info_log();
-        // display choices available in query
         render_choices();
         EndDrawing();
     }
     UnloadFont(g_font);
+    UnloadFont(g_font_oracle);
     gui_killed = true;
     return NULL;
 }

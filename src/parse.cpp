@@ -87,6 +87,13 @@ Entity parse_card_script(std::string path) {
     card.uid = name_to_uid(card.name);
     card.mana_cost = parse_mana_cost(value_from_script(front_script, "ManaCost"));
     card.types = parse_types(value_from_script(front_script, "Types"));
+    card.oracle_text = value_from_script(front_script, "Oracle");
+    // Expand literal \n escape sequences to real newlines for word-wrap rendering
+    for (size_t i = 0; i + 1 < card.oracle_text.size(); ++i) {
+        if (card.oracle_text[i] == '\\' && card.oracle_text[i + 1] == 'n') {
+            card.oracle_text.replace(i, 2, "\n");
+        }
+    }
     // TODO optimize
     card.power = parse_power(value_from_script(front_script, "PT"));
     card.toughness = parse_toughness(value_from_script(front_script, "PT"));
