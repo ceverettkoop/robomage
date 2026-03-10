@@ -414,7 +414,9 @@ static void render_gs(void) {
             const StackEntry *se = &gs->stack[i];
             const char *sname = (se->card_vocab_idx >= 0) ? gui_card_name(se->card_vocab_idx) : "?";
             char chip[80];
-            snprintf(chip, sizeof(chip), "[%s - %s]", sname, se->controller_is_self ? "You" : "Opp");
+            snprintf(chip, sizeof(chip), "[%s (%s) - %s]", sname,
+                se->is_spell ? "Spell" : "Trigger",
+                se->controller_is_self ? "You" : "Opp");
             float chip_w = MeasureTextEx(g_font, chip, small_sz, 1.0f).x + 8.0f;
             float chip_h = small_sz * 1.8f;
             float chip_y = y + (stack_h - chip_h) * 0.5f;

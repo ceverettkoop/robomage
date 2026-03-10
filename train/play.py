@@ -55,7 +55,7 @@ _OFF_ATTACKING   = 3
 _OFF_SICKNESS    = 5
 _OFF_IS_CREATURE = 8
 _OFF_IS_LAND     = 9
-_HAND_OBS_START  = 8557   # 4461 + 128 * 32
+_HAND_OBS_START  = 8569   # 4473 + 128 * 32
 _HAND_SLOTS      = 10
 _STEP_NAMES = [
     "Untap", "Upkeep", "Draw", "First Main",

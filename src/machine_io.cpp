@@ -13,6 +13,7 @@
 #include "components/damage.h"
 #include "components/permanent.h"
 #include "components/player.h"
+#include "components/spell.h"
 #include "components/zone.h"
 #include "ecs/coordinator.h"
 
@@ -177,6 +178,7 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
                     StackEntry se;
                     se.card_vocab_idx    = get_stack_card_vocab_idx(e);
                     se.controller_is_self = (zone.owner == viewer);
+                    se.is_spell           = global_coordinator.entity_has_component<Spell>(e);
                     stack_items[stack_item_count++] = {e, se};
                 }
                 break;
@@ -331,7 +333,7 @@ std::vector<float> serialize_state(const GameState* gs) {
     for (int i = 0; i < MAX_BATTLEFIELD_SLOTS; i++)
         push_perm_slot(state, gs->opp_permanents[i]);
 
-    // Stack (12 x 33 = 396)
+    // Stack (12 x 34 = 408): controller_is_self(1) + card_id one-hot(32) + is_spell(1)
     int stored_stack = std::min(gs->stack_size, MAX_STACK_DISPLAY);
     for (int i = 0; i < MAX_STACK_DISPLAY; i++) {
         if (i < stored_stack) {
@@ -339,6 +341,7 @@ std::vector<float> serialize_state(const GameState* gs) {
             int idx = gs->stack[i].card_vocab_idx;
             for (int j = 0; j < N_CARD_TYPES; j++)
                 state.push_back(j == idx ? 1.0f : 0.0f);
+            state.push_back(gs->stack[i].is_spell ? 1.0f : 0.0f);
         } else {
             for (int j = 0; j < STACK_SLOT_SIZE; j++) state.push_back(0.0f);
         }

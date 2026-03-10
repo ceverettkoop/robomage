@@ -24,9 +24,9 @@ Observation space
 -----------------
 State is always emitted from the PRIORITY PLAYER'S perspective ("self").
 
-8877-float state vector + 32 action-category floats + 32 action card-ID floats
+8889-float state vector + 32 action-category floats + 32 action card-ID floats
 + 32 action controller_is_self floats + 70 hand cost floats
-+ 336 battlefield ability cost floats = 9379 total.
++ 336 battlefield ability cost floats = 9391 total.
 NOTE: ActionChoice.description is NOT part of the observation — it is for
 human-readable display only (GUI/CLI) and is never sent to the ML model.
 NOTE: Exile zones are tracked in GameState but not serialized to the observation.
@@ -56,7 +56,7 @@ try:
 except ImportError:
     from train.card_costs import _CARD_COST_MATRIX, _CARD_ABILITY_COST_MATRIX, N_CARD_TYPES, _N_COST_FEATS
 
-STATE_SIZE = 8877
+STATE_SIZE = 8889
 # NOTE: Exile zones are tracked in GameState but not serialized to the observation.
 # NOTE: ActionChoice.description is never emitted in the QUERY line — it is for
 #       human-readable display only and is not part of the ML observation.
@@ -67,13 +67,13 @@ _ACTION_CTRL_NULL    = -1.0 / N_CARD_TYPES  # -0.03125 — null sentinel for non
 MAX_HAND_SLOTS = 10
 _HAND_COST_FEATS  = MAX_HAND_SLOTS * _N_COST_FEATS  # 10 * 7 = 70
 _BF_ABILITY_FEATS = 48 * _N_COST_FEATS              # 48 * 7 = 336
-OBS_SIZE = STATE_SIZE + 3 * MAX_ACTIONS + _HAND_COST_FEATS + _BF_ABILITY_FEATS  # 9379
+OBS_SIZE = STATE_SIZE + 3 * MAX_ACTIONS + _HAND_COST_FEATS + _BF_ABILITY_FEATS  # 9391
 
 # ── State layout offsets (mirror src/machine_io.h) ───────────────────────────
 # Creatures, lands, and other permanents share one unified section (no separate land slots).
-_STACK_START  = 33 + 96 * 42    # 4065: stack slots (12 × 33)
-_GY_START     = 4065 + 12 * 33  # 4461: graveyard   (128 × 32)
-_HAND_START   = 4461 + 128 * 32 # 8557: hand        (10 × 32)
+_STACK_START  = 33 + 96 * 42    # 4065: stack slots (12 × 34)
+_GY_START     = 4065 + 12 * 34  # 4473: graveyard   (128 × 32)
+_HAND_START   = 4473 + 128 * 32 # 8569: hand        (10 × 32)
 _REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BINARY = os.path.join(_REPO_ROOT, "bin", "robomage")
 BIN_DIR = os.path.join(_REPO_ROOT, "bin")  # game must be run from here for resource lookup
@@ -355,11 +355,11 @@ _PERM_A_SLOTS     = 48   # self occupies perm slots 0-47, opponent slots 48-95
 _BF_A_SLOTS       = 24   # ability cost slots per player (unchanged)
 _BF_CARD_OFF      = 10   # offset of card one-hot within each 42-float permanent slot
 _CTRL_OFF         = 7    # offset of controller_is_self within a permanent slot
-_STACK_SLOT_SIZE  = 33   # controller_is_self(1) + card one-hot(32)
+_STACK_SLOT_SIZE  = 34   # controller_is_self(1) + card one-hot(32) + is_spell(1)
 _GY_SLOT_SIZE     = N_CARD_TYPES  # 32 — graveyard slots are just card one-hots
 _GY_A_SLOTS       = 64   # self occupies GY slots 0-63
 # Start of bf_ability_costs block in the full obs vector
-_BF_COST_START    = STATE_SIZE + 3 * MAX_ACTIONS + _HAND_COST_FEATS  # 9043
+_BF_COST_START    = STATE_SIZE + 3 * MAX_ACTIONS + _HAND_COST_FEATS  # 9055
 # Status offsets within a permanent slot
 _OFF_POWER        = 0
 _OFF_TOUGHNESS    = 1

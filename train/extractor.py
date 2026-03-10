@@ -17,15 +17,15 @@ Index layout must stay in sync with src/machine_io.h:
                        slots 0-47: self; slots 48-95: opponent
                        status: power, toughness, tapped, attacking, blocking,
                                sickness, damage, controller_is_self, is_creature, is_land
-  obs[4065:4461]     12 stack slots   × 33 floats  (controller_is_self + 32 card one-hot)
-  obs[4461:8557]    128 graveyard slots × 32 floats (32 card one-hot)
+  obs[4065:4473]     12 stack slots   × 34 floats  (controller_is_self + 32 card one-hot + is_spell)
+  obs[4473:8569]    128 graveyard slots × 32 floats (32 card one-hot)
                        slots 0-63: self; slots 64-127: opponent
-  obs[8557:8877]     10 hand slots    × 32 floats  (32 card one-hot)
-  obs[8877:8909]     32 action-category features   (appended by env.py)
-  obs[8909:8941]     32 action card-ID features    (appended by env.py)
-  obs[8941:8973]     32 action controller_is_self  (appended by env.py)
-  obs[8973:9043]     70 hand cast-cost features    (10 slots × 7 cost feats)
-  obs[9043:9379]    336 BF ability-cost features   (48 slots × 7 cost feats)
+  obs[8569:8889]     10 hand slots    × 32 floats  (32 card one-hot)
+  obs[8889:8921]     32 action-category features   (appended by env.py)
+  obs[8921:8953]     32 action card-ID features    (appended by env.py)
+  obs[8953:8985]     32 action controller_is_self  (appended by env.py)
+  obs[8985:9055]     70 hand cast-cost features    (10 slots × 7 cost feats)
+  obs[9055:9391]    336 BF ability-cost features   (48 slots × 7 cost feats)
 """
 
 import torch
@@ -40,7 +40,7 @@ _PERM_SLOTS      = 96   # 48 self + 48 opponent (unified: creatures, lands, othe
 _PERM_SLOT_SIZE  = 42   # 10 status floats + 32 card one-hot
 
 _STACK_SLOTS     = 12
-_STACK_SLOT_SIZE = 33   # controller_is_self(1) + card one-hot(32)
+_STACK_SLOT_SIZE = 34   # controller_is_self(1) + card one-hot(32) + is_spell(1)
 
 _GY_SLOTS        = 128  # 64 self + 64 opponent
 _GY_SLOT_SIZE    = 32   # card one-hot only
@@ -51,12 +51,12 @@ _HAND_SLOT_SIZE  = 32   # card one-hot only
 _PERM_START  = _GLOBAL_SIZE                                    # 33
 _PERM_END    = _PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE     # 4065
 _STACK_START = _PERM_END                                       # 4065
-_STACK_END   = _STACK_START + _STACK_SLOTS * _STACK_SLOT_SIZE  # 4461
-_GY_START    = _STACK_END                                      # 4461
-_GY_END      = _GY_START + _GY_SLOTS * _GY_SLOT_SIZE           # 8557
-_HAND_START  = _GY_END                                         # 8557
-_HAND_END    = _HAND_START + _HAND_SLOTS * _HAND_SLOT_SIZE     # 8877
-# obs[8877:] = action metadata + cost features appended by env.py
+_STACK_END   = _STACK_START + _STACK_SLOTS * _STACK_SLOT_SIZE  # 4473
+_GY_START    = _STACK_END                                      # 4473
+_GY_END      = _GY_START + _GY_SLOTS * _GY_SLOT_SIZE           # 8569
+_HAND_START  = _GY_END                                         # 8569
+_HAND_END    = _HAND_START + _HAND_SLOTS * _HAND_SLOT_SIZE     # 8889
+# obs[8889:] = action metadata + cost features appended by env.py
 
 
 class CardGameExtractor(BaseFeaturesExtractor):

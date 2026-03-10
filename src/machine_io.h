@@ -30,7 +30,7 @@
 // NOTE: Exile zones are populated in GameState but NOT serialized.
 // Add them back once cards that use exile are implemented.
 //
-// Fixed-size state vector layout (STATE_SIZE = 8877 floats):
+// Fixed-size state vector layout (STATE_SIZE = 8889 floats):
 //
 //  [0-8]    Self player block (9 floats):
 //             life/20, hand_ct/10, poison/10, mana[W,U,B,R,G,C]/10
@@ -48,20 +48,21 @@
 //                        card_id one-hot (N_CARD_TYPES floats)
 //              Empty slots (card_vocab_idx == -1) are all zeros.
 //
-//  [4065-4460] Stack: 12 slots x 33 floats = 396
-//              Per slot: controller_is_self(1), card_id one-hot(32)
+//  [4065-4472] Stack: 12 slots x 34 floats = 408
+//              Per slot: controller_is_self(1), card_id one-hot(32), is_spell(1)
+//              is_spell=1.0 for a cast spell; 0.0 for a triggered/activated ability
 //
-//  [4461-6508] Self graveyard: 64 slots x 32 floats = 2048
-//  [6509-8556] Opp graveyard:  64 slots x 32 floats = 2048
+//  [4473-6520] Self graveyard: 64 slots x 32 floats = 2048
+//  [6521-8568] Opp graveyard:  64 slots x 32 floats = 2048
 //              Per slot: card_id one-hot (all zeros = empty)
 //
-//  [8557-8876] Self hand: 10 slots x 32 floats = 320
+//  [8569-8888] Self hand: 10 slots x 32 floats = 320
 //              Per slot: card_id one-hot (all zeros = empty)
 
-static constexpr int STATE_SIZE      = 8877;
+static constexpr int STATE_SIZE      = 8889;
 static constexpr int N_CARD_TYPES    = 32;
 static constexpr int PERM_SLOT_SIZE  = 42;  // 8 stat/combat + 2 type flags + N_CARD_TYPES
-static constexpr int STACK_SLOT_SIZE = 33;  // controller_is_self + card one-hot
+static constexpr int STACK_SLOT_SIZE = 34;  // controller_is_self(1) + card one-hot(32) + is_spell(1)
 static constexpr int GY_SLOT_SIZE    = 32;  // card one-hot only
 
 // viewer: which player's perspective to fill from. Zone::UNKNOWN defaults to the priority player.

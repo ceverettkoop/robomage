@@ -42,6 +42,7 @@ typedef struct PermanentState_tag {
 typedef struct StackEntry_tag {
     int  card_vocab_idx;  // -1 = unknown/empty
     bool controller_is_self;
+    bool is_spell;        // true = card spell on stack; false = triggered/activated ability
 } StackEntry;
 
 typedef enum ActionRefZone_tag {
