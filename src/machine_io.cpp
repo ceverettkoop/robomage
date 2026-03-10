@@ -79,7 +79,7 @@ static void push_perm_slot(std::vector<float>& out, const PermanentState& p) {
 
 // ── populate_gamestate ────────────────────────────────────────────────────────
 
-void populate_gamestate(GameState* gs) {
+void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
     memset(gs, 0, sizeof(*gs));
 
     // Mark all card_vocab_idx slots as empty (-1)
@@ -96,13 +96,17 @@ void populate_gamestate(GameState* gs) {
     }
 
     Zone::Ownership priority_owner = cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
-    Entity priority_entity = cur_game.player_a_has_priority ? cur_game.player_a_entity : cur_game.player_b_entity;
-    Entity opp_entity      = cur_game.player_a_has_priority ? cur_game.player_b_entity : cur_game.player_a_entity;
+    if (viewer == Zone::UNKNOWN) viewer = priority_owner;
 
-    gs->cur_step         = cur_game.cur_step;
-    gs->turn             = static_cast<int>(cur_game.turn);
-    gs->is_active_player = (cur_game.player_a_turn == cur_game.player_a_has_priority);
-    gs->self_is_player_a = cur_game.player_a_has_priority;
+    Zone::Ownership active_owner = cur_game.player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B;
+    Entity viewer_entity = (viewer == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
+    Entity opp_entity    = (viewer == Zone::PLAYER_A) ? cur_game.player_b_entity : cur_game.player_a_entity;
+
+    gs->cur_step            = cur_game.cur_step;
+    gs->turn                = static_cast<int>(cur_game.turn);
+    gs->is_active_player    = (viewer == active_owner);
+    gs->viewer_has_priority = (viewer == priority_owner);
+    gs->self_is_player_a    = (viewer == Zone::PLAYER_A);
 
     // Fill player stat fields (hand_ct filled in the entity pass below)
     auto fill_player_stats = [&](PlayerState& ps, Entity ent) {
@@ -117,7 +121,7 @@ void populate_gamestate(GameState* gs) {
         }
         for (int i = 0; i < 6; i++) ps.mana[i] = mana_counts[i];
     };
-    fill_player_stats(gs->self, priority_entity);
+    fill_player_stats(gs->self, viewer_entity);
     fill_player_stats(gs->opponent, opp_entity);
 
     // Stack items collected during the pass, sorted descending by entity ID afterward
@@ -135,7 +139,7 @@ void populate_gamestate(GameState* gs) {
     for (Entity e = 0; e < MAX_ENTITIES; ++e) {
         if (!global_coordinator.entity_has_component<Zone>(e)) continue;
         auto& zone = global_coordinator.GetComponent<Zone>(e);
-        bool is_self = (zone.owner == priority_owner);
+        bool is_self = (zone.owner == viewer);
 
         switch (zone.location) {
             case Zone::HAND:
@@ -172,7 +176,7 @@ void populate_gamestate(GameState* gs) {
                 if (stack_item_count < MAX_STACK_DISPLAY + 8) {
                     StackEntry se;
                     se.card_vocab_idx    = get_stack_card_vocab_idx(e);
-                    se.controller_is_self = (zone.owner == priority_owner);
+                    se.controller_is_self = (zone.owner == viewer);
                     stack_items[stack_item_count++] = {e, se};
                 }
                 break;
@@ -184,7 +188,7 @@ void populate_gamestate(GameState* gs) {
 
                 PermanentState ps;
                 ps.card_vocab_idx        = get_card_vocab_idx(e);
-                ps.controller_is_self    = (perm.controller == priority_owner);
+                ps.controller_is_self    = (perm.controller == viewer);
                 ps.is_tapped             = perm.is_tapped;
                 ps.has_summoning_sickness = perm.has_summoning_sickness;
                 ps.is_creature           = global_coordinator.entity_has_component<Creature>(e);

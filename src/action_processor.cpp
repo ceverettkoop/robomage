@@ -375,6 +375,8 @@ static std::vector<Entity> determine_blockable_attackers(Entity blocker, const s
 
 static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
     Zone::Ownership defending_player = game.player_a_turn ? Zone::PLAYER_B : Zone::PLAYER_A;
+    // defending player declares blockers — priority must be theirs for the input routing to work correctly
+    game.player_a_has_priority = !game.player_a_turn;
 
     // Collect attackers
     std::vector<Entity> attackers;

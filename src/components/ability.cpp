@@ -239,6 +239,10 @@ static bool run_unless_loop(size_t cost, Zone::Ownership controller,
     std::multiset<Colors> cond_cost;
     for (size_t i = 0; i < cost; i++) cond_cost.insert(GENERIC);
 
+    // the target's controller decides whether to pay, not the Daze caster
+    bool prev_priority = cur_game.player_a_has_priority;
+    cur_game.player_a_has_priority = (controller == Zone::PLAYER_A);
+
     while (true) {
         std::vector<LegalAction> unless_actions;
 
@@ -281,12 +285,16 @@ static bool run_unless_loop(size_t cost, Zone::Ownership controller,
 
         int choice = InputLogger::instance().get_input(unless_actions);
 
-        if (choice == static_cast<int>(decline_idx)) return true;
+        if (choice == static_cast<int>(decline_idx)) {
+            cur_game.player_a_has_priority = prev_priority;
+            return true;
+        }
 
         if (can_pay && choice == static_cast<int>(pay_idx)) {
             spend_mana(controller, cond_cost);
             game_log("%s pays {%zu} — spell is not countered\n",
                    player_name(controller).c_str(), cost);
+            cur_game.player_a_has_priority = prev_priority;
             return false;
         }
 

@@ -64,7 +64,8 @@ static constexpr int PERM_SLOT_SIZE  = 42;  // 8 stat/combat + 2 type flags + N_
 static constexpr int STACK_SLOT_SIZE = 33;  // controller_is_self + card one-hot
 static constexpr int GY_SLOT_SIZE    = 32;  // card one-hot only
 
-void populate_gamestate(GameState* gs);
+// viewer: which player's perspective to fill from. Zone::UNKNOWN defaults to the priority player.
+void populate_gamestate(GameState* gs, Zone::Ownership viewer = Zone::UNKNOWN);
 void populate_query(Query* q, const std::vector<LegalAction>& actions);
 std::vector<float> serialize_state(const GameState* gs);
 

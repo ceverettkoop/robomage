@@ -47,15 +47,15 @@ void gui_set_resource_dir(const char *path) {
 #define LAYOUT_CARD_GAP             4.0f    // gap between cards in hand / battlefield
 
 // Main game area row heights — fractions of screen height
-#define LAYOUT_STATUS_BAR_H         0.0405f // turn bar / player info bars (150% of original)
-#define LAYOUT_OPP_BF_H             0.240f  // opponent battlefield
-#define LAYOUT_STACK_H              0.060f  // stack display
-#define LAYOUT_SELF_BF_H            0.240f  // self battlefield
-#define LAYOUT_SELF_HAND_H          0.145f  // self hand cards
+#define LAYOUT_STATUS_BAR_H         0.046f  // turn bar / player info bars
+#define LAYOUT_OPP_BF_H             0.155f  // opponent battlefield
+#define LAYOUT_STACK_H              0.038f  // stack display
+#define LAYOUT_SELF_BF_H            0.155f  // self battlefield
+#define LAYOUT_SELF_HAND_H          0.3f  // self hand cards
 
 // Sidebar vertical splits — fractions of screen height
-#define LAYOUT_LOG_BOTTOM_RATIO     0.65f   // log panel bottom edge
-#define LAYOUT_CHOICES_Y_RATIO      0.70f   // choices list starts here
+#define LAYOUT_LOG_BOTTOM_RATIO     0.62f   // log panel bottom edge
+#define LAYOUT_CHOICES_Y_RATIO      0.63f   // choices list starts here
 
 // Input text box — width/height as fractions of screen; anchored to bottom-right corner
 #define LAYOUT_INPUT_W_RATIO        0.35f
@@ -67,11 +67,12 @@ void gui_set_resource_dir(const char *path) {
 #define LAYOUT_BUTTON_GAP           6.0f    // gap between buttons
 
 // Font rendering sizes — fractions of screen height
-#define FONT_SIZE_MAIN_RATIO        0.017f  // log text, choices
-#define FONT_SIZE_BAR_RATIO         0.021f  // turn/player info bar text (150% of original label)
-#define FONT_SIZE_LABEL_RATIO       0.014f  // battlefield/stack labels
-#define FONT_SIZE_CARD_RATIO        0.011f  // card name / P/T text on cards
-#define FONT_SIZE_TINY_RATIO        0.009f  // oracle text inside hand cards
+#define FONT_SIZE_MAIN_RATIO        0.017f  // log text (do not increase — user preference)
+#define FONT_SIZE_CHOICES_RATIO     0.020f  // clickable action list
+#define FONT_SIZE_BAR_RATIO         0.026f  // turn/player info bar text
+#define FONT_SIZE_LABEL_RATIO       0.019f  // battlefield/stack labels
+#define FONT_SIZE_CARD_RATIO        0.015f  // card name / P/T text on cards
+#define FONT_SIZE_TINY_RATIO        0.012f  // oracle text inside hand cards
 
 // Card proportions
 #define CARD_ASPECT_RATIO           1.36f   // height / width for all rendered cards
@@ -378,7 +379,7 @@ static void render_gs(void) {
     {
         char bar[256];
         snprintf(bar, sizeof(bar), "Turn %d  |  %s  |  %s  |  Priority: %s", gs->turn, gui_step_name((int)gs->cur_step),
-            gs->is_active_player ? "Your turn" : "Opp turn", gs->is_active_player ? "You" : "Opp");
+            gs->is_active_player ? "Your turn" : "Opp turn", gs->viewer_has_priority ? "You" : "Opp");
         DrawRectangle((int)px, (int)y, (int)pw, (int)bar_h, (Color){55, 55, 75, 255});
         DrawTextEx(g_font, bar, (Vector2){px + 4.0f, y + (bar_h - bar_sz) * 0.5f}, bar_sz, 1.0f, WHITE);
         y += bar_slot;
@@ -641,13 +642,40 @@ static void render_info_log(void) {
 
 static void render_choices(void) {
     float sh = (float)GetScreenHeight();
-    float font_size = sh * FONT_SIZE_MAIN_RATIO;
-    float line_height = font_size * 1.15f;
+    float sw = (float)GetScreenWidth();
+    float font_size = sh * FONT_SIZE_CHOICES_RATIO;
+    float line_height = font_size * 1.55f;
+    float panel_x = LAYOUT_SIDEBAR_PAD;
+    float panel_w = sw * LAYOUT_SIDEBAR_W_RATIO - LAYOUT_SIDEBAR_PAD * 2.0f;
     float y = sh * LAYOUT_CHOICES_Y_RATIO;
+    Vector2 mouse = GetMousePosition();
+    bool clicked = IsMouseButtonPressed(MOUSE_LEFT_BUTTON);
+
     int line_count = gui_query_line_count();
+    //first line is always prompt
     for (int i = 0; i < line_count; i++) {
         const char *line = gui_query_get_line(i);
-        DrawTextEx(g_font, line, (Vector2){LAYOUT_SIDEBAR_PAD, y}, font_size, 1.0f, DARKBLUE);
+        //ASSUMES FIRST LINE IS ALWAYS PROMPT
+        if(i != 0){
+            Rectangle row = {panel_x, y, panel_w, line_height - 2.0f};
+            bool hovered = CheckCollisionPointRec(mouse, row);
+            Color bg = hovered ? (Color){180, 210, 255, 220} : (Color){220, 235, 255, 180};
+            DrawRectangleRec(row, bg);
+            DrawRectangleLinesEx(row, 1.0f, (Color){90, 130, 200, 160});
+            DrawTextEx(g_font, line, (Vector2){panel_x + 6.0f, y + (line_height - font_size) * 0.4f},
+                font_size, 1.0f, (Color){20, 40, 160, 255});
+            if (hovered && clicked && gui_input_requested) {
+                pthread_mutex_lock(&input_mutex);
+                //ASSUMES CHOICES ALWAYS STARTING WITH 0 - TO VERIFY
+                gui_cmd = i - 1;
+                gui_input_sent = true;
+                pthread_mutex_unlock(&input_mutex);
+            }
+        } else {
+            // Header / label line
+            DrawTextEx(g_font, line, (Vector2){panel_x, y + (line_height - font_size) * 0.4f},
+                font_size, 1.0f, (Color){40, 40, 160, 255});
+        }
         y += line_height;
     }
 }
@@ -714,12 +742,9 @@ static void *gui_loop(void *arg) {
         if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             Vector2 m = GetMousePosition();
             input_focused = CheckCollisionPointRec(m, input_rect);
-        } else if (!input_focused && IsKeyPressed(KEY_ENTER)) {
-            input_focused = true;
-        }
+        } 
 
         if (GuiTextBox(input_rect, gui_input, GUI_INPUT_MAX, input_focused) == 1) {
-            input_focused = false;
             if (gui_input_requested) {
                 for (size_t i = 0; i < GUI_INPUT_MAX; ++i) {
                     if (!isdigit(gui_input[i]) && gui_input[i] != '\0') {

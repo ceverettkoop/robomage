@@ -77,7 +77,8 @@ typedef struct GameState_tag {
     PlayerState opponent;
     int         turn;
     Step        cur_step;
-    bool        is_active_player;  // true when priority player is the active player
+    bool        is_active_player;  // true when the viewer (self) is the active player
+    bool        viewer_has_priority; // true when the viewer (self) currently holds priority
     bool        self_is_player_a;
     int         stack_size;
 

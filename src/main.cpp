@@ -139,7 +139,13 @@ static void *game_loop(void *args) {
         // mandatory choices
         // e.g. declare target, declare attackers or declare blockers - discard at cleanup - legend rule; choice at
         // resolution; declare target
+        // compute viewer once per iteration: human player when present, else priority player
+        Zone::Ownership viewer = (has_human_player)
+            ? (human_player_is_a ? Zone::PLAYER_A : Zone::PLAYER_B)
+            : Zone::UNKNOWN;
+
         if (cur_game.is_mandatory_choice_pending()) {
+            populate_gamestate(&gs, viewer);
             proc_mandatory_choice(cur_game, orderer);
             continue;
         }
@@ -160,7 +166,7 @@ static void *game_loop(void *args) {
             continue;
         }
 
-        populate_gamestate(&gs);
+        populate_gamestate(&gs, viewer);
         print_game_state(&gs);
         int choice = InputLogger::instance().get_input(legal_actions);
         process_action(legal_actions[static_cast<size_t>(choice)], cur_game, orderer);

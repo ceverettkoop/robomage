@@ -176,10 +176,13 @@ int InputLogger::get_input(const std::vector<LegalAction> &actions) {
     }
 
     // CLI/GUI input loop: print query, validate, log
+    Zone::Ownership viewer = (has_human_player)
+        ? (human_player_is_a ? Zone::PLAYER_A : Zone::PLAYER_B)
+        : Zone::UNKNOWN;
     GameState gs;
     Query q;
     while (true) {
-        populate_gamestate(&gs);
+        populate_gamestate(&gs, viewer);
         populate_query(&q, actions);
         print_query(&q, cur_game.player_a_has_priority);
         int choice = get_int_input();
