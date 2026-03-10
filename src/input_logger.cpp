@@ -25,7 +25,7 @@ extern volatile bool gui_killed;
 #define PASS_TURN_CMD (-2)
 
 static int get_int_input() {
-    //GUI will only pass ints, but does not filter for ranger
+    //GUI will only pass ints, but does not filter for range
     if (gui_mode) {
         gui_input_requested = true;
         while (!gui_input_sent) {

@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include "classes/action.h"
+#include "gui_flags.h"
 
 class InputLogger {
    public:

@@ -37,7 +37,7 @@ void gui_set_resource_dir(const char *path) {
 // ──────────────────────────────────────────────────────────────────────────
 
 // Left sidebar (log + choices): fraction of screen width
-#define LAYOUT_SIDEBAR_W_RATIO      0.25f
+#define LAYOUT_SIDEBAR_W_RATIO      0.2f
 // Padding / gaps in pixels (small fixed values, intentionally not scaled)
 #define LAYOUT_SIDEBAR_PAD          10.0f   // padding inside sidebar
 #define LAYOUT_RIGHT_PAD            10.0f   // right edge padding
@@ -61,8 +61,12 @@ void gui_set_resource_dir(const char *path) {
 #define LAYOUT_INPUT_H_RATIO        0.050f
 #define LAYOUT_INPUT_MARGIN         10.0f   // gap from right and bottom edges
 
+// Button bar — sits between sidebar right edge and input box, same height as input box
+#define LAYOUT_N_BUTTONS            6       // total button slots (fill left-to-right as needed)
+#define LAYOUT_BUTTON_GAP           6.0f    // gap between buttons
+
 // Font rendering sizes — fractions of screen height
-#define FONT_SIZE_MAIN_RATIO        0.021f  // log text, choices
+#define FONT_SIZE_MAIN_RATIO        0.017f  // log text, choices
 #define FONT_SIZE_BAR_RATIO         0.021f  // turn/player info bar text (150% of original label)
 #define FONT_SIZE_LABEL_RATIO       0.014f  // battlefield/stack labels
 #define FONT_SIZE_CARD_RATIO        0.011f  // card name / P/T text on cards
@@ -101,6 +105,7 @@ static void render_battlefield(float px, float py, float pw, float ph, const Per
 static void render_gs(void);
 static void render_info_log(void);
 static void render_choices(void);
+static void render_button_bar(Rectangle bar);
 
 static int count_gy(const int *gy, int max) {
     int n = 0;
@@ -646,6 +651,24 @@ static void render_choices(void) {
     }
 }
 
+// Button bar: bar.x/y/width/height define the full available strip.
+// Buttons fill left-to-right; empty slots are left blank.
+static void render_button_bar(Rectangle bar) {
+    float btn_w = (bar.width - (LAYOUT_N_BUTTONS - 1) * LAYOUT_BUTTON_GAP) / LAYOUT_N_BUTTONS;
+    float btn_h = bar.height;
+
+    // Slot 0: QUIT
+    Rectangle quit_rect = {bar.x, bar.y, btn_w, btn_h};
+    if (GuiButton(quit_rect, "QUIT")) {
+        pthread_mutex_lock(&input_mutex);
+        gui_cmd = FLAG_QUIT;
+        gui_input_sent = true;
+        pthread_mutex_unlock(&input_mutex);
+    }
+
+    // Slots 1-5: reserved for future buttons
+}
+
 static void *gui_loop(void *arg) {
     determine_screen_size();
 
@@ -672,17 +695,26 @@ static void *gui_loop(void *arg) {
         float sw = (float)SCREEN_WIDTH;
         float input_w = sw * LAYOUT_INPUT_W_RATIO;
         float input_h = sh * LAYOUT_INPUT_H_RATIO;
+        float bottom_y = sh - input_h - LAYOUT_INPUT_MARGIN;
         Rectangle input_rect = {
             sw - input_w - LAYOUT_INPUT_MARGIN,
-            sh - input_h - LAYOUT_INPUT_MARGIN,
+            bottom_y,
             input_w,
             input_h,
         };
 
-        // Click outside the box → lose focus; click inside → gain focus
+        // Button bar: from sidebar right edge to input box left edge
+        float bar_x = sw * LAYOUT_SIDEBAR_W_RATIO + LAYOUT_SIDEBAR_PAD;
+        float bar_right = input_rect.x - LAYOUT_BUTTON_GAP;
+        Rectangle button_bar = {bar_x, bottom_y, bar_right - bar_x, input_h};
+        render_button_bar(button_bar);
+
+        // Click outside the box → lose focus; click inside or press Enter → gain focus
         if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
             Vector2 m = GetMousePosition();
             input_focused = CheckCollisionPointRec(m, input_rect);
+        } else if (!input_focused && IsKeyPressed(KEY_ENTER)) {
+            input_focused = true;
         }
 
         if (GuiTextBox(input_rect, gui_input, GUI_INPUT_MAX, input_focused) == 1) {

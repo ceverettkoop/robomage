@@ -6,6 +6,8 @@
 
 #define GUI_INPUT_MAX 64
 
+#include "gui_flags.h"
+
 void init_gui();
 void gui_set_resource_dir(const char *path);
 

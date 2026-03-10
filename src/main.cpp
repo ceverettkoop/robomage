@@ -59,6 +59,7 @@ bool machine_mode = false;
 
 //runs in thread seperate from gui
 static void *game_loop(void *args) {
+
     // Use minimal test deck for both players
     DEFAULT_DECK_ONE = Deck(RESOURCE_DIR + "/decks/test_minimal.dk");
     DEFAULT_DECK_TWO = Deck(RESOURCE_DIR + "/decks/test_minimal.dk");
@@ -163,6 +164,14 @@ static void *game_loop(void *args) {
         populate_gamestate(&gs);
         print_game_state(&gs);
         int choice = InputLogger::instance().get_input(legal_actions);
+
+        //handling non game input
+        switch (choice) {
+            case FLAG_QUIT:
+                exit(0);
+            default:
+                break;
+        }
         process_action(legal_actions[static_cast<size_t>(choice)], cur_game, orderer);
     }
     return NULL;
