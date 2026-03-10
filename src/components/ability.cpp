@@ -196,7 +196,7 @@ void Ability::resolve_rearrange_top_of_library(std::shared_ptr<Orderer> orderer)
     std::vector<Entity> chosen_order;
     // Player picks N-1 cards; the last is automatic
     for (size_t pick = 0; pick + 1 < actual; pick++) {
-        game_log("Choose which card goes on top next (pick %zu of %zu):\n", pick + 1, actual);
+        game_log("Choose which card goes %zu from top:\n", actual - pick);
         std::vector<LegalAction> pick_actions;
         for (auto card : remaining) {
             auto &cd = global_coordinator.GetComponent<CardData>(card);
@@ -214,8 +214,8 @@ void Ability::resolve_rearrange_top_of_library(std::shared_ptr<Orderer> orderer)
     }
 
     // Put cards back: chosen_order[0] should end up on top, so place in reverse
-    for (auto it = chosen_order.rbegin(); it != chosen_order.rend(); ++it) {
-        orderer->add_to_zone(false, *it, Zone::LIBRARY);
+    for (auto it : chosen_order) {
+        orderer->add_to_zone(false, it, Zone::LIBRARY);
     }
 
     if (may_shuffle) {
