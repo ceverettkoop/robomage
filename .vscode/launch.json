@@ -29,7 +29,7 @@
             ]
         },
         {
-            "name": "(lldb) ARM Launch",
+            "name": "(lldb) ARM Launch GUI",
             "type": "lldb",
             "request": "launch",
             "program": "${workspaceFolder}/bin/robomage",
@@ -37,6 +37,14 @@
             "cwd": "${workspaceFolder}/bin",
             "terminal": "integrated"
         },
-
+        {
+            "name": "(lldb) ARM Launch",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/robomage",
+            "args": ["--deck", "trigger_test"],
+            "cwd": "${workspaceFolder}/bin",
+            "terminal": "integrated"
+        },
     ]
 }

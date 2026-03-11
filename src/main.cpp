@@ -54,14 +54,15 @@ const GameState *gs_ptr = &gs;
 std::string replay_file_path;
 bool replay_mode = false;
 bool machine_mode = false;
+std::string deck_a_name = "test_minimal";
+std::string deck_b_name = "test_minimal";
 
 
 //runs in thread seperate from gui
 static void *game_loop(void *args) {
 
-    // Use minimal test deck for both players
-    DEFAULT_DECK_ONE = Deck(RESOURCE_DIR + "/decks/test_minimal.dk");
-    DEFAULT_DECK_TWO = Deck(RESOURCE_DIR + "/decks/test_minimal.dk");
+    DEFAULT_DECK_ONE = Deck(RESOURCE_DIR + "/decks/" + deck_a_name + ".dk");
+    DEFAULT_DECK_TWO = Deck(RESOURCE_DIR + "/decks/" + deck_b_name + ".dk");
 
     cli_print_version(VERSION_NUMBER);
 
@@ -193,6 +194,16 @@ int main(int argc, char const *argv[]) {
             has_human_player = true;
             std::string p = argv[i + 1];
             human_player_is_a = (p == "A" || p == "a");
+            i++;
+        } else if (std::string(argv[i]) == "--deck" && i + 1 < argc) {
+            deck_a_name = argv[i + 1];
+            deck_b_name = argv[i + 1];
+            i++;
+        } else if (std::string(argv[i]) == "--deck-a" && i + 1 < argc) {
+            deck_a_name = argv[i + 1];
+            i++;
+        } else if (std::string(argv[i]) == "--deck-b" && i + 1 < argc) {
+            deck_b_name = argv[i + 1];
             i++;
         } else if (std::string(argv[i]) == "--help" || std::string(argv[i]) == "-h") {
             cli_print_help(argv[0], VERSION_NUMBER);

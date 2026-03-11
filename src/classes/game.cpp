@@ -132,6 +132,11 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     break;
                 case SECOND_MAIN:
                     cur_step = END_STEP;
+                    {
+                        Event end_step_event(Events::END_STEP_BEGAN);
+                        end_step_event.SetParam(Params::PLAYER, active_player_entity);
+                        global_coordinator.SendEvent(end_step_event);
+                    }
                     break;
                 case END_STEP:
                     cur_step = CLEANUP;

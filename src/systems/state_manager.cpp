@@ -77,6 +77,11 @@ void StateManager::apply_permanent_components(Game &game) {
                 perm.is_tapped = false;
                 perm.timestamp_entered_battlefield = game.timestamp++;
                 global_coordinator.AddComponent(entity, perm);
+                {
+                    Event etb(Events::PERMANENT_ENTERED);
+                    etb.SetParam(Params::ENTITY, entity);
+                    global_coordinator.SendEvent(etb);
+                }
                 if (is_creature) {
                     Event etb(Events::CREATURE_ENTERED);
                     etb.SetParam(Params::ENTITY, entity);
@@ -423,6 +428,9 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                 // "another" check: skip if the entering entity is the source itself
                 if (ab.trigger_self_excluded && ev.HasParam(Params::ENTITY) &&
                     ev.GetParam<Entity>(Params::ENTITY) == entity) continue;
+                // Card.Self: only fire when the event entity is the source itself
+                if (ab.trigger_only_self && ev.HasParam(Params::ENTITY) &&
+                    ev.GetParam<Entity>(Params::ENTITY) != entity) continue;
                 // Don't fire front-face triggers on a transformed permanent
                 if (perm.transformed) continue;
                 // ValidPlayer$ You: only fire when the active player is the permanent's controller

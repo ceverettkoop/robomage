@@ -323,7 +323,7 @@ static std::map<std::string, std::string> parse_svars(const std::string& script)
 static void apply_param_to_ability(Ability& ability, const std::string& key, const std::string& value) {
     if (key == "NumDmg") {
         ability.amount = static_cast<size_t>(std::stoi(value));
-    } else if (key == "NumCards" || key == "ChangeNum") {
+    } else if (key == "NumCards" || key == "ChangeNum" || key == "Amount") {
         ability.amount = static_cast<size_t>(std::stoi(value));
     } else if (key == "Produced") {
         for (char c : value) {
@@ -356,7 +356,7 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         ability.may_shuffle = (value == "True");
     } else if (key == "UnlessCost") {
         ability.unless_generic_cost = static_cast<size_t>(std::stoi(value));
-    } else if (key == "LifeAmount" || key == "Amount") {
+    } else if (key == "LifeAmount") {
         ability.amount = static_cast<size_t>(std::stoi(value));
     } else if (key == "TargetType") {
         if (value == "Spell") ability.target_type = "Spell";
@@ -534,9 +534,13 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
     std::string execute_svar;
     bool mode_changes_zone = false;
     bool dest_is_battlefield = false;
+    bool dest_is_graveyard = false;
+    bool origin_is_battlefield = false;
     bool valid_card_creature = false;
+    bool valid_card_self = false;
     bool mode_is_phase = false;
     bool phase_is_upkeep = false;
+    bool phase_is_end_step = false;
     bool valid_player_is_you = false;
     bool mode_is_spell_cast = false;
     bool valid_card_non_creature = false;
@@ -569,15 +573,20 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
                 else if (value == "Phase") mode_is_phase = true;
                 else if (value == "SpellCast") mode_is_spell_cast = true;
             } else if (key == "Phase") {
-                if (value == "Upkeep") phase_is_upkeep = true;
+                if (value == "Upkeep")   phase_is_upkeep   = true;
+                if (value == "EndStep")  phase_is_end_step = true;
             } else if (key == "ValidPlayer" || key == "ValidActivatingPlayer") {
                 if (value == "You") valid_player_is_you = true;
+            } else if (key == "Origin") {
+                if (value == "Battlefield") origin_is_battlefield = true;
             } else if (key == "Destination") {
                 if (value == "Battlefield") dest_is_battlefield = true;
+                if (value == "Graveyard")   dest_is_graveyard   = true;
             } else if (key == "ValidCard") {
-                if (value.find("Creature") != std::string::npos) valid_card_creature = true;
+                if (value.find("Creature")    != std::string::npos) valid_card_creature     = true;
                 if (value.find("nonCreature") != std::string::npos) valid_card_non_creature = true;
-                if (value.find(".Other") != std::string::npos) ability.trigger_self_excluded = true;
+                if (value.find(".Other")      != std::string::npos) ability.trigger_self_excluded = true;
+                if (value == "Card.Self")                            valid_card_self         = true;
             } else if (key == "Execute") {
                 execute_svar = value;
             }
@@ -588,13 +597,6 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
     }
 
     // Map trigger condition to event ID.
-    // TODO: Issue generic zone-change events matching the T: line template fields
-    //   (Mode$ ChangesZone, Origin$, Destination$, ValidCard$, ValidTgts$) so that
-    //   triggers beyond creature ETB can be wired up without hardcoding each case.
-    //   Each distinct (Origin, Destination, ValidCard) combination would correspond
-    //   to a unique EventId, and SendEvent would carry the entering/leaving entity
-    //   so that per-trigger ValidCard filters (type, controller, .Other, etc.) can
-    //   be evaluated at check time rather than baked into the event ID.
     if (mode_changes_zone && dest_is_battlefield && valid_card_creature) {
         ability.trigger_on = Events::CREATURE_ENTERED;
     }
@@ -602,6 +604,22 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
     if (mode_is_phase && phase_is_upkeep) {
         ability.trigger_on = Events::UPKEEP_BEGAN;
         ability.trigger_valid_player_is_controller = valid_player_is_you;
+    }
+
+    if (mode_is_phase && phase_is_end_step) {
+        ability.trigger_on = Events::END_STEP_BEGAN;
+        ability.trigger_valid_player_is_controller = valid_player_is_you;
+    }
+
+    // "when this permanent enters the battlefield" — uses PERMANENT_ENTERED so it fires for non-creatures too
+    if (mode_changes_zone && dest_is_battlefield && valid_card_self) {
+        ability.trigger_on = Events::PERMANENT_ENTERED;
+        ability.trigger_only_self = true;
+    }
+
+    // "when a creature dies"
+    if (mode_changes_zone && origin_is_battlefield && dest_is_graveyard && valid_card_creature) {
+        ability.trigger_on = Events::CREATURE_DIED;
     }
 
     if (mode_is_spell_cast && valid_card_non_creature) {

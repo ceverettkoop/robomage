@@ -194,10 +194,15 @@ void cli_print_help(const char* program, const char* version) {
     printf("robomage %s\n", version);
     printf("Usage: %s [options]\n", program);
     printf("Options:\n");
+    printf("  --deck <name>       Load named deck for both players (default: test_minimal)\n");
+    printf("  --deck-a <name>     Load named deck for player A\n");
+    printf("  --deck-b <name>     Load named deck for player B\n");
+    printf("  --player <A|B>      Designate a human player (A or B)\n");
     printf("  --replay <logfile>  Replay a previously logged game\n");
     printf("  --machine           Machine mode: emit QUERY lines for AI input\n");
-    printf("  --help, -h          Show this help message\n");
     printf("  --gui               Launch with GUI\n");
+    printf("  --help, -h          Show this help message\n");
+    printf("\nDeck names are filenames without .dk, relative to resources/decks/.\n");
 }
 
 void cli_print_seed(unsigned int seed) {
