@@ -11,6 +11,7 @@
 #include "components/permanent.h"
 #include "components/player.h"
 #include "components/spell.h"
+#include "components/token.h"
 #include "components/zone.h"
 #include "ecs/coordinator.h"
 #include "ecs/entity.h"
@@ -22,6 +23,7 @@
 extern Coordinator global_coordinator;
 extern Game cur_game;
 
+static std::string entity_name(Entity e);
 static const char *mana_symbol_str(Colors color);
 static void process_activate_ability(const LegalAction &action, Game &game, std::shared_ptr<Orderer> orderer);
 static std::vector<Entity> build_valid_targets(const Ability &ability, std::shared_ptr<Orderer> orderer,
@@ -31,6 +33,14 @@ static void pay_alternate_cost(const LegalAction &action, Game &game, std::share
 static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer);
 static std::vector<Entity> determine_blockable_attackers(Entity blocker, const std::vector<Entity> &attackers);
 static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer);
+
+static std::string entity_name(Entity e) {
+    if (global_coordinator.entity_has_component<CardData>(e))
+        return global_coordinator.GetComponent<CardData>(e).name;
+    if (global_coordinator.entity_has_component<Token>(e))
+        return global_coordinator.GetComponent<Token>(e).name + " token";
+    return "<unknown>";
+}
 
 static const char *mana_symbol_str(Colors color) {
     switch (color) {
@@ -61,6 +71,49 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
 
     bool is_mana_ability = (ability.category == "AddMana");
     Ability stack_ab = ability;  // not used for mana ability
+
+    // EQUIP: special activated ability — attach equipment to a creature
+    if (ability.category == "Equip") {
+        // Present list of creatures controlled by the equipment owner
+        std::vector<LegalAction> equip_targets;
+        for (auto e : orderer->mEntities) {
+            if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
+            if (!global_coordinator.entity_has_component<Creature>(e)) continue;
+            auto &ep = global_coordinator.GetComponent<Permanent>(e);
+            if (ep.controller != controller) continue;
+            std::string ename = global_coordinator.entity_has_component<CardData>(e)
+                ? global_coordinator.GetComponent<CardData>(e).name : "<token>";
+            auto &ecr = global_coordinator.GetComponent<Creature>(e);
+            LegalAction la(PASS_PRIORITY, e,
+                ename + " [" + std::to_string(ecr.power) + "/" + std::to_string(ecr.toughness) + "]");
+            la.category = ActionCategory::SELECT_TARGET;
+            equip_targets.push_back(la);
+        }
+        if (equip_targets.empty()) {
+            game_log("No valid creatures to equip.\n");
+            return;
+        }
+        // Pay equip cost
+        if (ability.tap_cost) permanent.is_tapped = true;
+        if (!ability.activation_mana_cost.empty()) spend_mana(controller, ability.activation_mana_cost);
+
+        game_log("Choose creature to equip:\n");
+        int choice = InputLogger::instance().get_input(equip_targets);
+        Entity target_creature = equip_targets[static_cast<size_t>(choice)].source_entity;
+
+        // Detach from previous creature if any
+        if (permanent.equipped_to != 0 &&
+            global_coordinator.entity_has_component<Permanent>(permanent.equipped_to)) {
+            global_coordinator.GetComponent<Permanent>(permanent.equipped_to).equipped_by = 0;
+        }
+        permanent.equipped_to = target_creature;
+        global_coordinator.GetComponent<Permanent>(target_creature).equipped_by = permanent_entity;
+        std::string tname = global_coordinator.entity_has_component<CardData>(target_creature)
+            ? global_coordinator.GetComponent<CardData>(target_creature).name : "<token>";
+        game_log("%s equipped to %s.\n", card_data.name.c_str(), tname.c_str());
+        game.take_action();
+        return;
+    }
 
     // SELECT TARGETS BEFORE PAYING COSTS
     if (!is_mana_ability) {
@@ -268,6 +321,17 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
     std::vector<Entity> targets;
     targets.push_back(defending_entity);
 
+    // Pre-declare must_attack creatures — they attack without player input
+    for (auto entity : eligible) {
+        auto &cr = global_coordinator.GetComponent<Creature>(entity);
+        if (!cr.must_attack || cr.is_attacking) continue;
+        cr.is_attacking = true;
+        cr.attack_target = defending_entity;
+        std::string name = global_coordinator.entity_has_component<CardData>(entity)
+            ? global_coordinator.GetComponent<CardData>(entity).name : "<token>";
+        game_log("%s must attack and is declared as an attacker.\n", name.c_str());
+    }
+
     // Selection loop — only un-declared creatures are offered each iteration.
     // Once a creature is declared as an attacker it cannot be removed.
     while (true) {
@@ -283,16 +347,16 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
         for (auto entity : eligible) {
             auto &cr = global_coordinator.GetComponent<Creature>(entity);
             if (!cr.is_attacking) continue;
-            auto &cd = global_coordinator.GetComponent<CardData>(entity);
+            std::string ename = entity_name(entity);
             Zone::Ownership t = (cr.attack_target == game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
-            game_log("  [attacking] %s [%d/%d] -> %s\n", cd.name.c_str(), cr.power, cr.toughness, player_name(t).c_str());
+            game_log("  [attacking] %s [%d/%d] -> %s\n", ename.c_str(), cr.power, cr.toughness, player_name(t).c_str());
         }
         // Build attacker selection actions
         std::vector<LegalAction> atk_actions;
         for (auto entity : not_yet_attacking) {
-            auto &cd = global_coordinator.GetComponent<CardData>(entity);
+            std::string ename = entity_name(entity);
             auto &cr = global_coordinator.GetComponent<Creature>(entity);
-            LegalAction la(PASS_PRIORITY, entity, cd.name + " [" + std::to_string(cr.power) + "/" + std::to_string(cr.toughness) + "]");
+            LegalAction la(PASS_PRIORITY, entity, ename + " [" + std::to_string(cr.power) + "/" + std::to_string(cr.toughness) + "]");
             la.category = ActionCategory::SELECT_ATTACKER;
             atk_actions.push_back(la);
         }
@@ -305,10 +369,11 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
 
         if (creature_choice == static_cast<int>(atk_actions.size()) - 1) break;
 
-        auto &cr = global_coordinator.GetComponent<Creature>(not_yet_attacking[static_cast<size_t>(creature_choice)]);
-        auto &cd = global_coordinator.GetComponent<CardData>(not_yet_attacking[static_cast<size_t>(creature_choice)]);
+        Entity chosen_attacker = not_yet_attacking[static_cast<size_t>(creature_choice)];
+        auto &cr = global_coordinator.GetComponent<Creature>(chosen_attacker);
+        std::string chosen_name = entity_name(chosen_attacker);
 
-        game_log("Select target for %s:\n", cd.name.c_str());
+        game_log("Select target for %s:\n", chosen_name.c_str());
         std::vector<LegalAction> tgt_actions;
         for (auto t_entity : targets) {
             auto &player = global_coordinator.GetComponent<Player>(t_entity);
@@ -323,7 +388,7 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
         cr.attack_target = tgt_actions[static_cast<size_t>(target_choice)].source_entity;
         {
             Zone::Ownership t = (cr.attack_target == game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
-            game_log("%s attacking %s.\n", cd.name.c_str(), player_name(t).c_str());
+            game_log("%s attacking %s.\n", chosen_name.c_str(), player_name(t).c_str());
         }
     }
 
@@ -333,9 +398,9 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
         auto &cr = global_coordinator.GetComponent<Creature>(entity);
         if (cr.is_attacking) {
             any = true;
-            auto &cd = global_coordinator.GetComponent<CardData>(entity);
+            std::string ename = entity_name(entity);
             Zone::Ownership t = (cr.attack_target == game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
-            game_log("  %s -> %s\n", cd.name.c_str(), player_name(t).c_str());
+            game_log("  %s -> %s\n", ename.c_str(), player_name(t).c_str());
 
             // Tap the attacker
             auto &permanent = global_coordinator.GetComponent<Permanent>(entity);
@@ -428,25 +493,25 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
         game_log("\n--- Declare Blockers (%s) ---\n", player_name(defending_player).c_str());
         game_log("Attackers:\n");
         for (size_t i = 0; i < attackers.size(); i++) {
-            auto &cd = global_coordinator.GetComponent<CardData>(attackers[i]);
+            std::string aname = entity_name(attackers[i]);
             auto &cr = global_coordinator.GetComponent<Creature>(attackers[i]);
-            game_log("  %zu: %s [%d/%d]\n", i, cd.name.c_str(), cr.power, cr.toughness);
+            game_log("  %zu: %s [%d/%d]\n", i, aname.c_str(), cr.power, cr.toughness);
         }
         game_log("Your creatures:\n");
         for (auto entity : eligible) {
             auto &cr = global_coordinator.GetComponent<Creature>(entity);
             if (!cr.is_blocking) continue;
-            auto &cd = global_coordinator.GetComponent<CardData>(entity);
-            auto &acd = global_coordinator.GetComponent<CardData>(cr.blocking_target);
+            std::string ename = entity_name(entity);
+            std::string atk_name = entity_name(cr.blocking_target);
             game_log("  (assigned) %s [%d/%d] blocking %s\n",
-                   cd.name.c_str(), cr.power, cr.toughness, acd.name.c_str());
+                   ename.c_str(), cr.power, cr.toughness, atk_name.c_str());
         }
         // Build blocker selection actions
         std::vector<LegalAction> blk_actions;
         for (auto entity : unblocked) {
-            auto &cd = global_coordinator.GetComponent<CardData>(entity);
+            std::string ename = entity_name(entity);
             auto &cr = global_coordinator.GetComponent<Creature>(entity);
-            LegalAction la(PASS_PRIORITY, entity, cd.name + " [" + std::to_string(cr.power) + "/" + std::to_string(cr.toughness) + "]");
+            LegalAction la(PASS_PRIORITY, entity, ename + " [" + std::to_string(cr.power) + "/" + std::to_string(cr.toughness) + "]");
             la.category = ActionCategory::SELECT_BLOCKER;
             blk_actions.push_back(la);
         }
@@ -461,25 +526,22 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
 
         Entity chosen = unblocked[static_cast<size_t>(blocker_choice)];
         auto &cr = global_coordinator.GetComponent<Creature>(chosen);
-        auto &cd = global_coordinator.GetComponent<CardData>(chosen);
+        std::string chosen_name = entity_name(chosen);
 
         auto legal_attackers = determine_blockable_attackers(chosen, attackers);
-        game_log("Select attacker for %s to block:\n", cd.name.c_str());
+        game_log("Select attacker for %s to block:\n", chosen_name.c_str());
         std::vector<LegalAction> blk_tgt_actions;
         for (auto atk_entity : legal_attackers) {
-            auto &acd = global_coordinator.GetComponent<CardData>(atk_entity);
+            std::string aname = entity_name(atk_entity);
             auto &acr = global_coordinator.GetComponent<Creature>(atk_entity);
-            LegalAction la(PASS_PRIORITY, atk_entity, acd.name + " [" + std::to_string(acr.power) + "/" + std::to_string(acr.toughness) + "]");
+            LegalAction la(PASS_PRIORITY, atk_entity, aname + " [" + std::to_string(acr.power) + "/" + std::to_string(acr.toughness) + "]");
             la.category = ActionCategory::OTHER_CHOICE;
             blk_tgt_actions.push_back(la);
         }
         int attacker_choice = InputLogger::instance().get_input(blk_tgt_actions);
         cr.is_blocking = true;
         cr.blocking_target = blk_tgt_actions[static_cast<size_t>(attacker_choice)].source_entity;
-        {
-            auto &acd = global_coordinator.GetComponent<CardData>(cr.blocking_target);
-            game_log("%s blocking %s.\n", cd.name.c_str(), acd.name.c_str());
-        }
+        game_log("%s blocking %s.\n", chosen_name.c_str(), entity_name(cr.blocking_target).c_str());
     }
 
     game_log("\nBlockers declared:\n");
@@ -488,9 +550,7 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
         auto &cr = global_coordinator.GetComponent<Creature>(entity);
         if (cr.is_blocking) {
             any = true;
-            auto &cd = global_coordinator.GetComponent<CardData>(entity);
-            auto &acd = global_coordinator.GetComponent<CardData>(cr.blocking_target);
-            game_log("  %s blocking %s\n", cd.name.c_str(), acd.name.c_str());
+            game_log("  %s blocking %s\n", entity_name(entity).c_str(), entity_name(cr.blocking_target).c_str());
         }
     }
     if (!any) game_log("  (none)\n");
@@ -573,7 +633,53 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                 pay_alternate_cost(action, game, orderer, card_data, spell_entity, zone);
 
             } else {  // REGULAR COST
-                spend_mana(caster, card_data.mana_cost);
+                ManaValue cost_to_pay = card_data.mana_cost;
+
+                // DELVE: exile instants/sorceries from graveyard to reduce generic cost
+                if (card_data.has_delve) {
+                    game_log("%s: exile cards from graveyard to pay generic cost (0=done):\n",
+                             player_name(caster).c_str());
+                    while (true) {
+                        // Build list of exilable instants/sorceries
+                        std::vector<LegalAction> delve_actions;
+                        {
+                            LegalAction done(PASS_PRIORITY, std::string("Done exiling"));
+                            done.category = ActionCategory::SEARCH_LIBRARY;
+                            delve_actions.push_back(done);
+                        }
+                        for (auto e : orderer->mEntities) {
+                            if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+                            auto &ez = global_coordinator.GetComponent<Zone>(e);
+                            if (ez.location != Zone::GRAVEYARD || ez.owner != caster) continue;
+                            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+                            auto &ecd = global_coordinator.GetComponent<CardData>(e);
+                            bool is_instant_or_sorcery = false;
+                            for (auto &t : ecd.types)
+                                if (t.kind == TYPE && (t.name == "Instant" || t.name == "Sorcery")) {
+                                    is_instant_or_sorcery = true; break;
+                                }
+                            if (!is_instant_or_sorcery) continue;
+                            LegalAction la(PASS_PRIORITY, e, ecd.name);
+                            la.category = ActionCategory::SEARCH_LIBRARY;
+                            delve_actions.push_back(la);
+                        }
+                        // Count generic mana remaining in cost_to_pay
+                        size_t generic_remaining = cost_to_pay.count(GENERIC);
+                        if (generic_remaining == 0 || delve_actions.size() <= 1) break;
+
+                        int choice = InputLogger::instance().get_input(delve_actions);
+                        if (choice == 0) break;  // done exiling
+
+                        Entity exiled = delve_actions[static_cast<size_t>(choice)].source_entity;
+                        orderer->add_to_zone(false, exiled, Zone::EXILE);
+                        cur_game.delve_exiled.push_back(exiled);
+                        cost_to_pay.erase(cost_to_pay.find(GENERIC));
+                        auto &ecd2 = global_coordinator.GetComponent<CardData>(exiled);
+                        game_log("%s exiles %s via Delve.\n", player_name(caster).c_str(), ecd2.name.c_str());
+                    }
+                }
+
+                spend_mana(caster, cost_to_pay);
             }
 
             // Find the primary spell ability template and copy it onto the entity
@@ -619,6 +725,16 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
 
             // Move to stack
             orderer->add_to_zone(false, spell_entity, Zone::STACK);  // Top of stack
+
+            // Track spells cast and fire SPELL_CAST event
+            {
+                Entity caster_entity = (caster == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
+                auto &caster_player = global_coordinator.GetComponent<Player>(caster_entity);
+                caster_player.spells_cast_this_turn++;
+                Event spell_event(Events::SPELL_CAST);
+                spell_event.SetParam(Params::PLAYER, caster_entity);
+                global_coordinator.SendEvent(spell_event);
+            }
 
             game.take_action();
             break;

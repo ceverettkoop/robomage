@@ -16,10 +16,13 @@
 #include "../components/effect.h"
 #include "../components/permanent.h"
 #include "../components/player.h"
+#include "../components/token.h"
+#include "../components/types.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../ecs/events.h"
 #include "../cli_output.h"
+#include "../game_queries.h"
 #include "../mana_system.h"
 #include "../systems/stack_manager.h"
 #include "orderer.h"
@@ -34,26 +37,62 @@ static Colors mana_color_for_subtype(const std::string &subtype) {
     return NO_COLOR;
 }
 
-static bool check_delirium(Zone::Ownership owner, const std::set<Entity> &entities) {
-    std::set<std::string> type_names;
-    for (auto entity : entities) {
-        if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
-        auto &z = global_coordinator.GetComponent<Zone>(entity);
-        if (z.location != Zone::GRAVEYARD || z.owner != owner) continue;
-        if (!global_coordinator.entity_has_component<CardData>(entity)) continue;
-        for (auto &t : global_coordinator.GetComponent<CardData>(entity).types)
-            if (t.kind == TYPE) type_names.insert(t.name);
-    }
-    return type_names.size() >= 4;
-}
-
 // Permanents on battlefield set to have appropriate components
 // if they are in a different zone these are removed as no longer applicable
 void StateManager::apply_permanent_components(Game &game) {
+    // Collect token entities that have left the battlefield for destruction after iteration.
+    std::vector<Entity> tokens_to_destroy;
+
     for (auto entity : mEntities) {
         if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
-        // TODO handle tokens w/o carddata
-        if (!global_coordinator.entity_has_component<CardData>(entity)) continue;
+
+        // Handle token entities (no CardData)
+        if (!global_coordinator.entity_has_component<CardData>(entity)) {
+            if (!global_coordinator.entity_has_component<Token>(entity)) continue;
+            auto &zone = global_coordinator.GetComponent<Zone>(entity);
+            auto &token = global_coordinator.GetComponent<Token>(entity);
+            if (zone.location == Zone::BATTLEFIELD) {
+                if (!global_coordinator.entity_has_component<Permanent>(entity)) {
+                    Permanent perm;
+                    perm.controller = zone.controller;
+                    perm.has_summoning_sickness = true;
+                    perm.is_tapped = false;
+                    perm.timestamp_entered_battlefield = game.timestamp++;
+                    global_coordinator.AddComponent(entity, perm);
+                    {
+                        Event etb(Events::PERMANENT_ENTERED);
+                        etb.SetParam(Params::ENTITY, entity);
+                        global_coordinator.SendEvent(etb);
+                    }
+                    {
+                        Event etb(Events::CREATURE_ENTERED);
+                        etb.SetParam(Params::ENTITY, entity);
+                        global_coordinator.SendEvent(etb);
+                    }
+                }
+                if (!global_coordinator.entity_has_component<Creature>(entity)) {
+                    Creature creature;
+                    creature.power = token.power;
+                    creature.toughness = token.toughness;
+                    creature.keywords = token.keywords;
+                    global_coordinator.AddComponent(entity, creature);
+                    Damage damage;
+                    damage.damage_counters = 0;
+                    global_coordinator.AddComponent(entity, damage);
+                }
+            } else {
+                // Token has left the battlefield — schedule for destruction
+                if (global_coordinator.entity_has_component<Permanent>(entity))
+                    global_coordinator.RemoveComponent<Permanent>(entity);
+                if (global_coordinator.entity_has_component<Creature>(entity))
+                    global_coordinator.RemoveComponent<Creature>(entity);
+                if (global_coordinator.entity_has_component<Damage>(entity))
+                    global_coordinator.RemoveComponent<Damage>(entity);
+                tokens_to_destroy.push_back(entity);
+            }
+            continue;
+        }
+
         auto &zone = global_coordinator.GetComponent<Zone>(entity);
         if (zone.location == Zone::BATTLEFIELD) {  // on battlefield, check to add components
             // check types
@@ -137,6 +176,16 @@ void StateManager::apply_permanent_components(Game &game) {
                 Damage damage;
                 damage.damage_counters = 0;
                 global_coordinator.AddComponent(entity, damage);
+                // ETB +1/+1 counters from Delve (Murktide Regent): apply exactly once on ETB
+                if (card_data.etb_counters_from_delve && !game.delve_exiled.empty()) {
+                    auto &cr = global_coordinator.GetComponent<Creature>(entity);
+                    int n = static_cast<int>(game.delve_exiled.size());
+                    cr.plus_one_counters += n;
+                    cr.power     += static_cast<uint32_t>(n);
+                    cr.toughness += static_cast<uint32_t>(n);
+                    game_log("%s enters with %d +1/+1 counter(s) from Delve.\n", card_data.name.c_str(), n);
+                    game.delve_exiled.clear();
+                }
             }
             if (is_land) {
                 apply_land_abilities(entity);
@@ -154,6 +203,13 @@ void StateManager::apply_permanent_components(Game &game) {
             }
         }
     }
+
+    // Destroy token entities that left the battlefield (done after iteration to avoid invalidating iterators)
+    for (auto e : tokens_to_destroy) {
+        game_log("Token is destroyed.\n");
+        global_coordinator.DestroyEntity(e);
+    }
+
 }
 
 // Applies abilities to lands based on the land subtypes
@@ -249,16 +305,58 @@ void StateManager::apply_static_ability_effects() {
         }
 
         if (a.sa->category == "Continuous") {
-            if (!global_coordinator.entity_has_component<Creature>(a.entity)) continue;
-            auto &cr = global_coordinator.GetComponent<Creature>(a.entity);
-            auto &cd = global_coordinator.GetComponent<CardData>(a.entity);
+            // Determine which entity receives the buff (source or equipped creature)
+            Entity target_entity = a.entity;
+            if (a.sa->affected == "EquippedBy") {
+                if (!global_coordinator.entity_has_component<Permanent>(a.entity)) continue;
+                target_entity = global_coordinator.GetComponent<Permanent>(a.entity).equipped_to;
+            }
+
+            // If applied to a different entity than before, revert from the previous one
+            if (a.sa->applied && a.sa->last_applied_entity != target_entity) {
+                Entity prev = static_cast<Entity>(a.sa->last_applied_entity);
+                if (prev != 0 && global_coordinator.entity_has_component<Creature>(prev)) {
+                    auto &pcr = global_coordinator.GetComponent<Creature>(prev);
+                    if (a.sa->add_power     != 0) pcr.power     -= static_cast<uint32_t>(a.sa->add_power);
+                    if (a.sa->add_toughness != 0) pcr.toughness -= static_cast<uint32_t>(a.sa->add_toughness);
+                    if (!a.sa->add_keyword.empty()) {
+                        auto it = std::find(pcr.keywords.begin(), pcr.keywords.end(), a.sa->add_keyword);
+                        if (it != pcr.keywords.end()) pcr.keywords.erase(it);
+                    }
+                }
+                a.sa->applied = false;
+            }
+
+            if (target_entity == 0 || !global_coordinator.entity_has_component<Creature>(target_entity)) {
+                // No valid target; revert if currently applied
+                if (a.sa->applied) {
+                    a.sa->applied = false;
+                }
+                continue;
+            }
+
+            auto &cr = global_coordinator.GetComponent<Creature>(target_entity);
+            const std::string &name_for_log = global_coordinator.entity_has_component<CardData>(target_entity)
+                ? global_coordinator.GetComponent<CardData>(target_entity).name : "Token";
 
             if (condition_met && !a.sa->applied) {
                 if (a.sa->add_power     != 0) cr.power     += static_cast<uint32_t>(a.sa->add_power);
                 if (a.sa->add_toughness != 0) cr.toughness += static_cast<uint32_t>(a.sa->add_toughness);
-                if (!a.sa->add_keyword.empty()) cr.keywords.push_back(a.sa->add_keyword);
+                if (!a.sa->add_keyword.empty()) {
+                    // Split multi-keywords on " & " and add each separately
+                    const std::string &kws = a.sa->add_keyword;
+                    size_t p = 0;
+                    while (p < kws.size()) {
+                        size_t sep = kws.find(" & ", p);
+                        if (sep == std::string::npos) sep = kws.size();
+                        std::string kw = kws.substr(p, sep - p);
+                        if (!kw.empty()) cr.keywords.push_back(kw);
+                        p = (sep < kws.size()) ? sep + 3 : sep;
+                    }
+                }
                 a.sa->applied = true;
-                game_log("%s gains %s%s(%s)\n", cd.name.c_str(),
+                a.sa->last_applied_entity = static_cast<uint32_t>(target_entity);
+                game_log("%s gains %s%s(%s)\n", name_for_log.c_str(),
                          a.sa->add_power != 0 ? (std::to_string(a.sa->add_power) + "/" +
                                                   std::to_string(a.sa->add_toughness) + " ").c_str() : "",
                          !a.sa->add_keyword.empty() ? (a.sa->add_keyword + " ").c_str() : "",
@@ -267,15 +365,31 @@ void StateManager::apply_static_ability_effects() {
                 if (a.sa->add_power     != 0) cr.power     -= static_cast<uint32_t>(a.sa->add_power);
                 if (a.sa->add_toughness != 0) cr.toughness -= static_cast<uint32_t>(a.sa->add_toughness);
                 if (!a.sa->add_keyword.empty()) {
-                    auto it = std::find(cr.keywords.begin(), cr.keywords.end(), a.sa->add_keyword);
-                    if (it != cr.keywords.end()) cr.keywords.erase(it);
+                    const std::string &kws = a.sa->add_keyword;
+                    size_t p = 0;
+                    while (p < kws.size()) {
+                        size_t sep = kws.find(" & ", p);
+                        if (sep == std::string::npos) sep = kws.size();
+                        std::string kw = kws.substr(p, sep - p);
+                        if (!kw.empty()) {
+                            auto it = std::find(cr.keywords.begin(), cr.keywords.end(), kw);
+                            if (it != cr.keywords.end()) cr.keywords.erase(it);
+                        }
+                        p = (sep < kws.size()) ? sep + 3 : sep;
+                    }
                 }
                 a.sa->applied = false;
-                game_log("%s loses %s bonus\n", cd.name.c_str(),
+                game_log("%s loses %s bonus\n", name_for_log.c_str(),
                          a.sa->condition.empty() ? "static" : a.sa->condition.c_str());
             }
         }
-        // MustAttack: enforcement deferred (future work)
+
+        if (a.sa->category == "MustAttack") {
+            if (!global_coordinator.entity_has_component<Creature>(a.entity)) continue;
+            auto &cr = global_coordinator.GetComponent<Creature>(a.entity);
+            cr.must_attack = condition_met;
+            a.sa->applied = condition_met;
+        }
     }
 }
 
@@ -468,19 +582,62 @@ void StateManager::apply_replacement_effects() {
 // from battlefield permanents whose trigger condition matches onto the stack.
 void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer> orderer) {
     auto events = global_coordinator.drain_pending_events();
+
+    // Fire any delayed triggers that match current events
+    {
+        std::vector<size_t> to_remove;
+        for (size_t i = 0; i < game.delayed_triggers.size(); i++) {
+            auto &dt = game.delayed_triggers[i];
+            bool matched = false;
+            for (const auto &ev : events) {
+                if (ev.GetType() != dt.fire_on) continue;
+                if (dt.fire_on == Events::UPKEEP_BEGAN && game.turn < dt.fire_on_turn) continue;
+                // Owner check: only fire on the correct player's upkeep
+                if (ev.HasParam(Params::PLAYER) &&
+                    ev.GetParam<Entity>(Params::PLAYER) != dt.owner_entity) continue;
+                matched = true;
+                break;
+            }
+            if (matched) {
+                // Determine controller from owner_entity
+                Zone::Ownership ctrl = (dt.owner_entity == game.player_a_entity)
+                                       ? Zone::PLAYER_A : Zone::PLAYER_B;
+                Entity trigger_entity = global_coordinator.CreateEntity();
+                Zone ab_zone(Zone::HAND, ctrl, ctrl);
+                global_coordinator.AddComponent(trigger_entity, ab_zone);
+                orderer->add_to_zone(false, trigger_entity, Zone::STACK);
+                Ability trigger_ab = dt.ability;
+                global_coordinator.AddComponent(trigger_entity, trigger_ab);
+                game_log("Delayed trigger fires.\n");
+                to_remove.push_back(i);
+            }
+        }
+        for (auto it = to_remove.rbegin(); it != to_remove.rend(); ++it)
+            game.delayed_triggers.erase(game.delayed_triggers.begin() + static_cast<ptrdiff_t>(*it));
+    }
+
     if (events.empty()) return;
 
     for (auto entity : mEntities) {
         if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
         auto &zone = global_coordinator.GetComponent<Zone>(entity);
         if (zone.location != Zone::BATTLEFIELD) continue;
-        if (!global_coordinator.entity_has_component<CardData>(entity)) continue;
 
         auto &perm = global_coordinator.GetComponent<Permanent>(entity);
-        auto &card_data = global_coordinator.GetComponent<CardData>(entity);
+
+        // Gather triggered abilities — from CardData for normal cards, from Token for token entities
+        const std::vector<Ability>* ab_source = nullptr;
+        if (global_coordinator.entity_has_component<CardData>(entity))
+            ab_source = &global_coordinator.GetComponent<CardData>(entity).abilities;
+        else if (global_coordinator.entity_has_component<Token>(entity))
+            ab_source = &global_coordinator.GetComponent<Token>(entity).abilities;
+        else continue;
+
+        const std::string entity_name = global_coordinator.entity_has_component<CardData>(entity)
+            ? global_coordinator.GetComponent<CardData>(entity).name : "Token";
 
         for (const auto &ev : events) {
-            for (const auto &ab : card_data.abilities) {
+            for (const auto &ab : *ab_source) {
                 if (ab.ability_type != Ability::TRIGGERED) continue;
                 if (ab.trigger_on == 0 || ab.trigger_on != ev.GetType()) continue;
                 // "another" check: skip if the entering entity is the source itself
@@ -498,6 +655,22 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                                          ? game.player_a_entity : game.player_b_entity;
                     if (event_player != ctrl_entity) continue;
                 }
+                // Instant/sorcery filter for CARD_LEFT_GRAVEYARD (Murktide Regent)
+                if (ab.trigger_valid_card_is_instant_or_sorcery && ev.HasParam(Params::ENTITY)) {
+                    Entity ev_card = ev.GetParam<Entity>(Params::ENTITY);
+                    if (!global_coordinator.entity_has_component<CardData>(ev_card)) continue;
+                    bool ok = false;
+                    for (auto &t : global_coordinator.GetComponent<CardData>(ev_card).types)
+                        if (t.kind == TYPE && (t.name == "Instant" || t.name == "Sorcery")) { ok = true; break; }
+                    if (!ok) continue;
+                }
+                // Spell count filter (Cori-Steel Cutter)
+                if (ab.trigger_spell_count_eq > 0 && ev.HasParam(Params::PLAYER)) {
+                    Entity ev_player = ev.GetParam<Entity>(Params::PLAYER);
+                    if (!global_coordinator.entity_has_component<Player>(ev_player)) continue;
+                    auto &pl = global_coordinator.GetComponent<Player>(ev_player);
+                    if (pl.spells_cast_this_turn != ab.trigger_spell_count_eq) continue;
+                }
 
                 // Push the triggered ability onto the stack as a standalone entity
                 Entity trigger_entity = global_coordinator.CreateEntity();
@@ -509,7 +682,7 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                 trigger_ab.source = entity;
                 global_coordinator.AddComponent(trigger_entity, trigger_ab);
 
-                game_log("%s triggered\n", card_data.name.c_str());
+                game_log("%s triggered\n", entity_name.c_str());
             }
         }
     }
@@ -554,6 +727,33 @@ static bool can_afford_alt(const AltCost& alt_cost, Zone::Ownership priority_pla
     }
 
     return true;
+}
+
+// Count instants/sorceries in the player's graveyard that can be exiled for Delve
+static size_t count_delve_fuel(Zone::Ownership player, std::shared_ptr<Orderer> orderer) {
+    size_t count = 0;
+    for (auto e : orderer->mEntities) {
+        if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+        auto &ez = global_coordinator.GetComponent<Zone>(e);
+        if (ez.location != Zone::GRAVEYARD || ez.owner != player) continue;
+        if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+        for (auto &t : global_coordinator.GetComponent<CardData>(e).types)
+            if (t.kind == TYPE && (t.name == "Instant" || t.name == "Sorcery")) { count++; break; }
+    }
+    return count;
+}
+
+// Check if player can afford cost using mana pool + Delve (exiling graveyard instants/sorceries)
+static bool can_afford_with_delve(Zone::Ownership player, const ManaValue &cost,
+                                  std::shared_ptr<Orderer> orderer) {
+    size_t generic_in_cost = cost.count(GENERIC);
+    if (generic_in_cost == 0) return can_afford(player, cost);
+    // Reduce generic by however many cards can be exiled
+    size_t fuel = count_delve_fuel(player, orderer);
+    size_t to_exile = std::min(generic_in_cost, fuel);
+    ManaValue reduced_cost = cost;
+    for (size_t i = 0; i < to_exile; i++) reduced_cost.erase(reduced_cost.find(GENERIC));
+    return can_afford(player, reduced_cost);
 }
 
 std::vector<LegalAction> StateManager::determine_legal_actions(
@@ -639,7 +839,9 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             LegalAction la(CAST_SPELL, card_entity, desc);
             la.category = ActionCategory::CAST_SPELL;
 
-            bool can_regular = can_afford(priority_player, card_data.mana_cost);
+            bool can_regular = card_data.has_delve
+                ? can_afford_with_delve(priority_player, card_data.mana_cost, orderer)
+                : can_afford(priority_player, card_data.mana_cost);
 
             bool can_alt = can_afford_alt(card_data.alt_cost, priority_player, card_entity, orderer);
 

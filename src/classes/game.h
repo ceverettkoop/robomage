@@ -31,13 +31,23 @@ typedef enum Step {
 #include <cstdint>
 #include <memory>
 #include <random>
+#include <vector>
 
 #include "../ecs/entity.h"
+#include "../components/ability.h"
 
 struct Deck;
 struct Game;
+struct DelayedTrigger;
 
 extern Game cur_game;
+
+struct DelayedTrigger {
+    Ability ability;        // what to push onto the stack when it fires
+    uint32_t fire_on;       // event ID (e.g. Events::UPKEEP_BEGAN)
+    Entity owner_entity;    // player entity who controls it
+    size_t fire_on_turn;    // game.turn value at which to fire (cur_game.turn + 1 at registration)
+};
 
 enum MandatoryChoice {
     NONE,
@@ -70,6 +80,9 @@ struct Game {
         bool attackers_declared = false;
         bool blockers_declared = false;
         bool combat_damage_dealt = false;
+        std::vector<DelayedTrigger> delayed_triggers;
+        std::vector<Entity> delve_exiled;   // entities exiled during current delve cast; cleared after ETB
+        Entity remembered_entity = 0;       // Defined$ Remembered — used by Attach sub-ability
 
         bool ready_to_resolve();
         bool is_mandatory_choice_pending() const;

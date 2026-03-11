@@ -8,7 +8,7 @@
 | Mountain | 1 | ✅ Done | Basic land, mana injected |
 | Island | 1 | ✅ Done | Basic land, mana injected |
 | Volcanic Island | 4 | Done
-| Thundering Falls | 1 | 🟡 Partial | Should tap for mana TODO + ETB-tapped + surveil trigger |
+| Thundering Falls | 1 | ✅ Partial | Should tap for mana TODO + ETB-tapped + surveil trigger |
 | Scalding Tarn | 4 | ✅  | Fetch land |
 | Flooded Strand | 1 | ✅  | Fetch land |
 | Polluted Delta | 1 | ✅  | Fetch land |
@@ -20,15 +20,11 @@
 | Force of Will | 4 | ✅ | Counter spell + alt cost |
 | Daze | 4 | ✅ | Counter unless + alt cost (return Island) |
 | Delver of Secrets | 4 | ✅ | Transform, upkeep trigger  FLYING needs to be understood |
-| Unholy Heat | 3 | ❌ | 2 or 6 damage with Delirium |
-| Dragon's Rage Channeler | 4 | 🟡 | Surveil trigger + Delirium pump | MISSING GOAD
-| Murktide Regent | 3 | ❌ | Delve, Flying, +1/+1 counters |
-| Mishra's Bauble | 4 | ❌ | 0-cost artifact, tap+sac, delayed draw |
-| Cori-Steel Cutter | 3 | ❌ | updated cards folder to have this one- this is a doozy - tokens, triggers |
-
---cut surgical
---replacing Brazen Borrower with a 4th delver bc brazen borrow confusing af
---ignoring sideboard
+| Unholy Heat | 3 | ✅ | Delirium-conditional 2 or 6 damage |
+| Dragon's Rage Channeler | 4 | ✅ | Surveil trigger + Delirium pump + MustAttack |
+| Murktide Regent | 3 | ✅ | Delve, Flying, ETB counters, zone-change trigger |
+| Mishra's Bauble | 4 | ✅ | 0-cost artifact, tap+sac peek, delayed upkeep draw |
+| Cori-Steel Cutter | 3 | ✅ | Equipment, 2nd-spell token trigger, prowess, equip |
 
 ---
 

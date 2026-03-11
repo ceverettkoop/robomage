@@ -13,6 +13,8 @@ namespace Events {
     constexpr EventId NONCREATURE_SPELL_CAST = 5;  // "whenever [you cast] a noncreature spell" / SpellCast ValidCard$nonCreature
     constexpr EventId END_STEP_BEGAN         = 6;  // "at the beginning of [your] end step" / Phase$ EndStep
     constexpr EventId PERMANENT_ENTERED      = 7;  // "when this permanent enters" / ChangesZone Destination$Battlefield ValidCard$Card.Self
+    constexpr EventId CARD_LEFT_GRAVEYARD    = 8;  // instant/sorcery moves out of graveyard; Params: ENTITY=card, PLAYER=owner
+    constexpr EventId SPELL_CAST             = 9;  // every spell cast; Params: PLAYER=caster
 }
 
 // Param IDs used across events

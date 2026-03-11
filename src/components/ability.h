@@ -44,6 +44,38 @@ struct Ability{
     bool may_shuffle = false;            // MayShuffle$ True — player may optionally shuffle after
     size_t unless_generic_cost = 0;      // UnlessCost$ N — target controller pays {N} to prevent counter
     std::string target_type = "";        // TargetType$ Spell — restricts targeting to stack spells
+
+    // Delirium-conditional damage (Unholy Heat)
+    bool amount_is_delirium_scale = false;  // if true, use amount_delirium when delirium active
+    size_t amount_delirium = 0;             // damage when delirium is active
+    std::string amount_svar = "";           // raw SVar key for non-numeric NumDmg$ (resolved at parse time)
+
+    // Counter abilities (Murktide Regent)
+    std::string counter_type = "";  // "P1P1" for +1/+1 counters
+    int counter_count = 0;          // number of counters to add
+
+    // Peek variant (Mishra's Bauble): look at target player's top card, skip reveal choice
+    bool is_peek_no_reveal = false;
+
+    // Delayed trigger (Mishra's Bauble)
+    bool delayed_trigger_next_turn = false;  // NextTurn$ True
+
+    // Zone-change trigger filter (Murktide Regent)
+    bool trigger_valid_card_is_instant_or_sorcery = false;
+
+    // Spell count trigger (Cori-Steel Cutter)
+    size_t trigger_spell_count_eq = 0;  // ActivatorThisTurnCast$ EQN — fires on Nth spell
+
+    // Token creation (Cori-Steel Cutter)
+    std::string token_script = "";  // TokenScript$ w_1_1_monk_prowess
+
+    // Attach / Equip sub-ability
+    bool optional = false;           // Optional$ True — player may decline
+    bool defined_remembered = false; // Defined$ Remembered — target is cur_game.remembered_entity
+
+    // Cleanup sub-ability
+    bool clear_remembered = false;   // ClearRemembered$ True
+
     //for each AB on a card script there may be multiple SubAbility$, would get parsed into vector below
     std::vector<Ability> subabilities; // additional abilities resolved at same time this resolves, stored in order
 
@@ -54,6 +86,9 @@ private:
     void resolve_destroy(std::shared_ptr<Orderer> orderer);
     void resolve_rearrange_top_of_library(std::shared_ptr<Orderer> orderer);
     void resolve_surveil(std::shared_ptr<Orderer> orderer);
+    void resolve_put_counter();
+    void resolve_token(std::shared_ptr<Orderer> orderer);
+    void resolve_delayed_trigger();
     bool is_target_valid() const;
     void fizzle(std::shared_ptr<Orderer> orderer);
 

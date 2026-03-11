@@ -142,17 +142,26 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     cur_step = CLEANUP;
                     break;
                 case CLEANUP:
-                    // Clear damage from all creatures
+                    // Clear damage from all creatures; reset prowess bonus
                     for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
                         if (global_coordinator.entity_has_component<Damage>(entity)) {
                             auto &damage = global_coordinator.GetComponent<Damage>(entity);
                             damage.damage_counters = 0;
                         }
+                        if (global_coordinator.entity_has_component<Creature>(entity)) {
+                            auto &cr = global_coordinator.GetComponent<Creature>(entity);
+                            if (cr.prowess_bonus > 0) {
+                                cr.power     -= static_cast<uint32_t>(cr.prowess_bonus);
+                                cr.toughness -= static_cast<uint32_t>(cr.prowess_bonus);
+                                cr.prowess_bonus = 0;
+                            }
+                        }
                     }
 
-                    // Reset lands played counter
+                    // Reset lands played counter and spells cast counter
                     auto &player = global_coordinator.GetComponent<Player>(active_player_entity);
                     player.lands_played_this_turn = 0;
+                    player.spells_cast_this_turn = 0;
 
                     // Empty mana pools
                     empty_mana_pool(Zone::PLAYER_A);

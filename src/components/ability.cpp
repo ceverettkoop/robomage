@@ -9,7 +9,11 @@
 #include "../classes/game.h"
 #include "../cli_output.h"
 #include "../components/carddata.h"
+#include "../components/token.h"
+#include "../components/types.h"
 #include "../ecs/coordinator.h"
+#include "../ecs/events.h"
+#include "../game_queries.h"
 #include "../input_logger.h"
 #include "../mana_system.h"
 #include "../systems/orderer.h"
@@ -390,17 +394,72 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
     } else if (category == "RearrangeTopOfLibrary") {
         resolve_rearrange_top_of_library(orderer);
     } else if (category == "DealDamage") {
+        // Delirium-conditional damage (Unholy Heat)
+        size_t dmg = amount;
+        if (amount_is_delirium_scale) {
+            Zone::Ownership caster = global_coordinator.entity_has_component<Permanent>(source)
+                ? global_coordinator.GetComponent<Permanent>(source).controller
+                : global_coordinator.GetComponent<Zone>(source).owner;
+            if (check_delirium(caster, orderer->mEntities)) dmg = amount_delirium;
+        }
         if (global_coordinator.entity_has_component<Player>(target)) {
             auto &player = global_coordinator.GetComponent<Player>(target);
-            player.life_total -= static_cast<int32_t>(amount);
-            game_log("Dealt %zu damage to player (now at %d life)\n", amount, player.life_total);
+            player.life_total -= static_cast<int32_t>(dmg);
+            game_log("Dealt %zu damage to player (now at %d life)\n", dmg, player.life_total);
         } else {
-            if (deal_damage(source, target, amount)) {
-                game_log("Dealt %zu damage to creature\n", amount);
+            if (deal_damage(source, target, dmg)) {
+                game_log("Dealt %zu damage to creature\n", dmg);
             } else {
                 non_fatal_error("Damage should have fizzled prior to this");
             }
         }
+    } else if (category == "PutCounter") {
+        resolve_put_counter();
+    } else if (category == "ProwessBonus") {
+        if (global_coordinator.entity_has_component<Creature>(source)) {
+            auto &cr = global_coordinator.GetComponent<Creature>(source);
+            cr.prowess_bonus += static_cast<int>(amount);
+            cr.power     += static_cast<uint32_t>(amount);
+            cr.toughness += static_cast<uint32_t>(amount);
+            game_log("Prowess: creature gets +%zu/+%zu until end of turn.\n", amount, amount);
+        }
+    } else if (category == "Token") {
+        resolve_token(orderer);
+    } else if (category == "Attach") {
+        // Equip the source equipment to the remembered entity
+        Entity equip_entity = source;
+        Entity target_creature = defined_remembered ? cur_game.remembered_entity : target;
+
+        if (optional) {
+            // Ask the controller whether to attach
+            game_log("Attach equipment to token? (0=No 1=Yes)\n");
+            std::vector<LegalAction> attach_actions = {
+                LegalAction(PASS_PRIORITY, std::string("No")),
+                LegalAction(PASS_PRIORITY, std::string("Yes")),
+            };
+            attach_actions[0].category = ActionCategory::OTHER_CHOICE;
+            attach_actions[1].category = ActionCategory::OTHER_CHOICE;
+            int choice = InputLogger::instance().get_input(attach_actions);
+            if (choice == 0) goto attach_done;
+        }
+        if (target_creature != 0 &&
+            global_coordinator.entity_has_component<Permanent>(equip_entity) &&
+            global_coordinator.entity_has_component<Permanent>(target_creature)) {
+            auto &eq_perm = global_coordinator.GetComponent<Permanent>(equip_entity);
+            // Detach from previous creature
+            if (eq_perm.equipped_to != 0 &&
+                global_coordinator.entity_has_component<Permanent>(eq_perm.equipped_to)) {
+                global_coordinator.GetComponent<Permanent>(eq_perm.equipped_to).equipped_by = 0;
+            }
+            eq_perm.equipped_to = target_creature;
+            global_coordinator.GetComponent<Permanent>(target_creature).equipped_by = equip_entity;
+            game_log("Equipment attached.\n");
+        }
+        attach_done:;
+    } else if (category == "Cleanup") {
+        if (clear_remembered) cur_game.remembered_entity = 0;
+    } else if (category == "DelayedTrigger") {
+        resolve_delayed_trigger();
     } else if (category == "Destroy") {
         resolve_destroy(orderer);
     } else if (category == "Counter") {
@@ -440,66 +499,90 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
         resolve_surveil(orderer);
         //DONT SKIP SUBABILITIES
 
-    //THIS BLOCK IS ALL SPECIFIC TO DELVER
+    //THIS BLOCK IS ALL SPECIFIC TO DELVER (and Mishra's Bauble peek variant)
     //TODO MAKE THIS GENERALIZABLE AND MOVE TO ITS OWN FUNCTION
     } else if (category == "PeekAndReveal") {
         auto& src_perm = global_coordinator.GetComponent<Permanent>(source);
         Zone::Ownership controller = src_perm.controller;
 
-        // Find top card of controller's library
-        Entity top_card = 0;
-        for (auto e : orderer->mEntities) {
-            if (!global_coordinator.entity_has_component<Zone>(e)) continue;
-            auto& z = global_coordinator.GetComponent<Zone>(e);
-            if (z.location == Zone::LIBRARY && z.owner == controller && z.distance_from_top == 0) {
-                top_card = e;
-                break;
-            }
-        }
-
-        if (top_card == 0) {
-            game_log("Library is empty — nothing to peek.\n");
-            return;
-        }
-        auto& top_cd = global_coordinator.GetComponent<CardData>(top_card);
-        game_log_private(controller, "Top card of library: %s\n", top_cd.name.c_str());
-        std::vector<LegalAction> reveal_actions = {
-            LegalAction(PASS_PRIORITY, std::string("Don't reveal")),
-            LegalAction(PASS_PRIORITY, std::string("Reveal")),
-        };
-        int reveal_choice = InputLogger::instance().get_input(reveal_actions);
-
-        if (reveal_choice == 1) {
-            game_log("Revealed: %s\n", top_cd.name.c_str());
-            bool is_instant_or_sorcery = false;
-            for (auto& t : top_cd.types) {
-                if (t.kind == TYPE && (t.name == "Instant" || t.name == "Sorcery")) {
-                    is_instant_or_sorcery = true;
+        if (is_peek_no_reveal) {
+            // Mishra's Bauble: look at target player's top card privately, no reveal choice
+            Zone::Ownership peek_owner = global_coordinator.entity_has_component<Player>(target)
+                ? (target == cur_game.player_a_entity ? Zone::PLAYER_A : Zone::PLAYER_B)
+                : controller;
+            Entity top_card = 0;
+            for (auto e : orderer->mEntities) {
+                if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+                auto& z = global_coordinator.GetComponent<Zone>(e);
+                if (z.location == Zone::LIBRARY && z.owner == peek_owner && z.distance_from_top == 0) {
+                    top_card = e;
                     break;
                 }
             }
-            if (is_instant_or_sorcery && global_coordinator.entity_has_component<CardData>(source)) {
-                auto& src_cd = global_coordinator.GetComponent<CardData>(source);
-                if (src_cd.backside && !src_perm.transformed) {
-                    src_perm.transformed = true;
-                    if (global_coordinator.entity_has_component<Creature>(source))
-                        global_coordinator.RemoveComponent<Creature>(source);
-                    if (global_coordinator.entity_has_component<Damage>(source))
-                        global_coordinator.RemoveComponent<Damage>(source);
-                    Creature back_creature;
-                    back_creature.power      = src_cd.backside->power;
-                    back_creature.toughness  = src_cd.backside->toughness;
-                    back_creature.keywords   = src_cd.backside->keywords;
-                    global_coordinator.AddComponent(source, back_creature);
-                    Damage dmg;
-                    dmg.damage_counters = 0;
-                    global_coordinator.AddComponent(source, dmg);
-                    game_log("%s transforms into %s!\n",
-                           src_cd.name.c_str(), src_cd.backside->name.c_str());
+            if (top_card == 0) {
+                game_log("%s's library is empty — nothing to peek.\n", player_name(peek_owner).c_str());
+            } else if (global_coordinator.entity_has_component<CardData>(top_card)) {
+                auto& top_cd = global_coordinator.GetComponent<CardData>(top_card);
+                game_log_private(controller, "%s looks at top of %s's library: %s\n",
+                    player_name(controller).c_str(), player_name(peek_owner).c_str(), top_cd.name.c_str());
+            }
+            // fall through to subabilities (DelayedTrigger sub-ability fires next upkeep)
+        } else {
+            // Delver of Secrets: peek own library top, optionally reveal
+            Entity top_card = 0;
+            for (auto e : orderer->mEntities) {
+                if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+                auto& z = global_coordinator.GetComponent<Zone>(e);
+                if (z.location == Zone::LIBRARY && z.owner == controller && z.distance_from_top == 0) {
+                    top_card = e;
+                    break;
                 }
             }
+
+            if (top_card == 0) {
+                game_log("Library is empty — nothing to peek.\n");
+                return;
+            }
+            auto& top_cd = global_coordinator.GetComponent<CardData>(top_card);
+            game_log_private(controller, "Top card of library: %s\n", top_cd.name.c_str());
+            std::vector<LegalAction> reveal_actions = {
+                LegalAction(PASS_PRIORITY, std::string("Don't reveal")),
+                LegalAction(PASS_PRIORITY, std::string("Reveal")),
+            };
+            int reveal_choice = InputLogger::instance().get_input(reveal_actions);
+
+            if (reveal_choice == 1) {
+                game_log("Revealed: %s\n", top_cd.name.c_str());
+                bool is_instant_or_sorcery = false;
+                for (auto& t : top_cd.types) {
+                    if (t.kind == TYPE && (t.name == "Instant" || t.name == "Sorcery")) {
+                        is_instant_or_sorcery = true;
+                        break;
+                    }
+                }
+                if (is_instant_or_sorcery && global_coordinator.entity_has_component<CardData>(source)) {
+                    auto& src_cd = global_coordinator.GetComponent<CardData>(source);
+                    if (src_cd.backside && !src_perm.transformed) {
+                        src_perm.transformed = true;
+                        if (global_coordinator.entity_has_component<Creature>(source))
+                            global_coordinator.RemoveComponent<Creature>(source);
+                        if (global_coordinator.entity_has_component<Damage>(source))
+                            global_coordinator.RemoveComponent<Damage>(source);
+                        Creature back_creature;
+                        back_creature.power      = src_cd.backside->power;
+                        back_creature.toughness  = src_cd.backside->toughness;
+                        back_creature.keywords   = src_cd.backside->keywords;
+                        global_coordinator.AddComponent(source, back_creature);
+                        Damage dmg;
+                        dmg.damage_counters = 0;
+                        global_coordinator.AddComponent(source, dmg);
+                        game_log("%s transforms into %s!\n",
+                               src_cd.name.c_str(), src_cd.backside->name.c_str());
+                    }
+                }
+            }
+            return;  // transform logic handled inline; skip subabilities loop
         }
-        return;  // transform logic handled inline; skip subabilities loop
     }
 
     //if there are subabilities, resolve them in sequence
@@ -545,6 +628,105 @@ void Ability::resolve_surveil(std::shared_ptr<Orderer> orderer) {
             game_log("%s puts %s into the graveyard.\n", player_name(controller).c_str(), top_cd.name.c_str());
         }
     }
+}
+
+void Ability::resolve_put_counter() {
+    if (!global_coordinator.entity_has_component<Creature>(source)) return;
+    auto &cr = global_coordinator.GetComponent<Creature>(source);
+    if (counter_type == "P1P1") {
+        cr.plus_one_counters += counter_count;
+        cr.power     += static_cast<uint32_t>(counter_count);
+        cr.toughness += static_cast<uint32_t>(counter_count);
+        game_log("Put %d +1/+1 counter(s) on creature (now %u/%u).\n",
+                 counter_count, cr.power, cr.toughness);
+    }
+}
+
+// Parses a token script string of the form "<color>_<power>_<toughness>_<name>[_<kw1>[_<kw2>...]]"
+// e.g. "w_1_1_monk_prowess"
+void Ability::resolve_token(std::shared_ptr<Orderer> orderer) {
+    // Split token_script on '_'
+    std::vector<std::string> parts;
+    {
+        size_t p = 0;
+        while (true) {
+            size_t sep = token_script.find('_', p);
+            if (sep == std::string::npos) {
+                parts.push_back(token_script.substr(p));
+                break;
+            }
+            parts.push_back(token_script.substr(p, sep - p));
+            p = sep + 1;
+        }
+    }
+    if (parts.size() < 4) {
+        game_log("resolve_token: malformed token_script '%s'\n", token_script.c_str());
+        return;
+    }
+
+    uint32_t tok_power     = static_cast<uint32_t>(std::stoi(parts[1]));
+    uint32_t tok_toughness = static_cast<uint32_t>(std::stoi(parts[2]));
+    std::string tok_name   = parts[3];
+    // Capitalize first letter for display
+    if (!tok_name.empty()) tok_name[0] = static_cast<char>(std::toupper(static_cast<unsigned char>(tok_name[0])));
+
+    std::vector<std::string> tok_keywords;
+    for (size_t i = 4; i < parts.size(); i++) {
+        std::string kw = parts[i];
+        if (!kw.empty()) kw[0] = static_cast<char>(std::toupper(static_cast<unsigned char>(kw[0])));
+        tok_keywords.push_back(kw);
+    }
+
+    Zone::Ownership ctrl = global_coordinator.entity_has_component<Permanent>(source)
+        ? global_coordinator.GetComponent<Permanent>(source).controller
+        : global_coordinator.GetComponent<Zone>(source).owner;
+
+    // Build prowess triggered ability if keyword is present
+    Token tok;
+    tok.name       = tok_name;
+    tok.power      = tok_power;
+    tok.toughness  = tok_toughness;
+    tok.keywords   = tok_keywords;
+    for (auto &kw : tok_keywords) {
+        if (kw == "Prowess") {
+            Ability prowess_ab;
+            prowess_ab.ability_type = Ability::TRIGGERED;
+            prowess_ab.trigger_on   = Events::NONCREATURE_SPELL_CAST;
+            prowess_ab.trigger_valid_player_is_controller = true;
+            prowess_ab.category = "ProwessBonus";
+            prowess_ab.amount   = 1;
+            tok.abilities.push_back(prowess_ab);
+        }
+    }
+
+    Entity tok_entity = global_coordinator.CreateEntity();
+    global_coordinator.AddComponent(tok_entity, Zone(Zone::HAND, ctrl, ctrl));
+    global_coordinator.AddComponent(tok_entity, tok);
+    orderer->add_to_zone(false, tok_entity, Zone::BATTLEFIELD);
+
+    cur_game.remembered_entity = tok_entity;
+    game_log("Token created: %u/%u %s\n", tok_power, tok_toughness, tok_name.c_str());
+}
+
+void Ability::resolve_delayed_trigger() {
+    Zone::Ownership owner = global_coordinator.entity_has_component<Permanent>(source)
+        ? global_coordinator.GetComponent<Permanent>(source).controller
+        : global_coordinator.GetComponent<Zone>(source).owner;
+    Entity owner_entity = get_player_entity(owner);
+
+    Ability draw_ab;
+    draw_ab.ability_type = Ability::TRIGGERED;
+    draw_ab.category     = "Draw";
+    draw_ab.amount       = 1;
+    draw_ab.source       = source;
+
+    DelayedTrigger dt;
+    dt.ability       = draw_ab;
+    dt.fire_on       = Events::UPKEEP_BEGAN;
+    dt.owner_entity  = owner_entity;
+    dt.fire_on_turn  = cur_game.turn + 1;
+    cur_game.delayed_triggers.push_back(dt);
+    game_log("Delayed trigger registered: draw 1 at next upkeep.\n");
 }
 
 void Ability::resolve_destroy(std::shared_ptr<Orderer> orderer) {

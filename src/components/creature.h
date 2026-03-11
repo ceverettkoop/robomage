@@ -14,6 +14,9 @@ struct Creature {
     bool is_blocking = false;
     Entity blocking_target = 0;  // Entity of attacker being blocked (0 = none)
     std::vector<std::string> keywords;
+    bool must_attack = false;        // set by MustAttack static ability; enforced in declare_attackers
+    int plus_one_counters = 0;       // +1/+1 counters; power/toughness adjusted when added/removed
+    int prowess_bonus = 0;           // temporary +1/+1 from prowess; cleared at cleanup step
 };
 
 #endif /* CREATURE_H */

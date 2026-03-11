@@ -18,6 +18,7 @@
 #include "components/permanent.h"
 #include "components/player.h"
 #include "components/spell.h"
+#include "components/token.h"
 #include "components/zone.h"
 #include "ecs/coordinator.h"
 #include "ecs/events.h"
@@ -97,6 +98,7 @@ static void *game_loop(void *args) {
     global_coordinator.RegisterComponent<Spell>();
     global_coordinator.RegisterComponent<Zone>();
     global_coordinator.RegisterComponent<Effect>();
+    global_coordinator.RegisterComponent<Token>();
 
     auto orderer = global_coordinator.RegisterSystem<Orderer>();
     auto state_manager = global_coordinator.RegisterSystem<StateManager>();

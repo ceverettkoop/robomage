@@ -29,7 +29,11 @@ static void push_player_block(std::vector<float>& out, const PlayerState& ps);
 static void push_perm_slot(std::vector<float>& out, const PermanentState& p);
 
 static int get_card_vocab_idx(Entity e) {
-    if (!global_coordinator.entity_has_component<CardData>(e)) return -1;
+    // Token entities have no CardData; use the reserved TOKEN_SENTINEL slot.
+    if (!global_coordinator.entity_has_component<CardData>(e)) {
+        // Check if it's a token (import avoided by using the sentinel constant directly)
+        return TOKEN_SENTINEL;
+    }
     return card_name_to_index(global_coordinator.GetComponent<CardData>(e).name);
 }
 

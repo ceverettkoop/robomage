@@ -10,12 +10,14 @@
 struct Permanent {
     bool is_token = false;
     bool is_tapped = false;
-    bool has_summoning_sickness = true; 
+    bool has_summoning_sickness = true;
     std::vector<Ability> abilities;
     std::vector<StaticAbility> static_abilities;
     Zone::Ownership controller = Zone::UNKNOWN;
     size_t timestamp_entered_battlefield = 0;  // For ordering simultaneous ETBs
     bool transformed = false;  // true when DFC is showing its back face
+    Entity equipped_to = 0;   // for equipment: which creature entity is equipped (0 = unattached)
+    Entity equipped_by = 0;   // for creatures: which equipment is attached (0 = none)
 };
 
 #endif /* PERMANENT_H */

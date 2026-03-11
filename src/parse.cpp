@@ -149,6 +149,40 @@ Entity parse_card_script(std::string path) {
 
     // Parse K: keyword lines
     for (auto& kw_line : multi_values_from_script(front_script, "K")) {
+        // K:Delve
+        if (kw_line == "Delve" || kw_line.rfind("Delve", 0) == 0) {
+            card.has_delve = true;
+            card.keywords.push_back("Delve");
+            continue;
+        }
+        // K:etbCounter:P1P1:X:...
+        if (kw_line.rfind("etbCounter", 0) == 0) {
+            // parse "etbCounter:P1P1:X:..." — P1P1 from delve exile count
+            card.etb_counters_from_delve = true;
+            continue;
+        }
+        // K:Equip:1 R  (equip cost after "Equip:")
+        if (kw_line.rfind("Equip", 0) == 0) {
+            card.is_equipment = true;
+            size_t colon = kw_line.find(':');
+            if (colon != std::string::npos) {
+                card.equip_cost = parse_mana_cost(kw_line.substr(colon + 1));
+            }
+            card.keywords.push_back("Equip");
+            continue;
+        }
+        // K:Prowess — inject triggered ability: noncreature spell → +1/+1 until EOT
+        if (kw_line == "Prowess" || kw_line.rfind("Prowess", 0) == 0) {
+            card.keywords.push_back("Prowess");
+            Ability prowess_ab;
+            prowess_ab.ability_type = Ability::TRIGGERED;
+            prowess_ab.trigger_on = Events::NONCREATURE_SPELL_CAST;
+            prowess_ab.trigger_valid_player_is_controller = true;
+            prowess_ab.category = "ProwessBonus";
+            prowess_ab.amount = 1;
+            card.abilities.push_back(prowess_ab);
+            continue;
+        }
         size_t pos = 0;
         while (pos < kw_line.size()) {
             size_t comma = kw_line.find(',', pos);
@@ -327,9 +361,7 @@ static std::map<std::string, std::string> parse_svars(const std::string& script)
 
 // Applies a single key/value parameter to an ability struct.
 static void apply_param_to_ability(Ability& ability, const std::string& key, const std::string& value) {
-    if (key == "NumDmg") {
-        ability.amount = static_cast<size_t>(std::stoi(value));
-    } else if (key == "NumCards" || key == "ChangeNum" || key == "Amount") {
+    if (key == "NumCards" || key == "ChangeNum" || key == "Amount") {
         ability.amount = static_cast<size_t>(std::stoi(value));
     } else if (key == "Produced") {
         for (char c : value) {
@@ -366,6 +398,31 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         ability.amount = static_cast<size_t>(std::stoi(value));
     } else if (key == "TargetType") {
         if (value == "Spell") ability.target_type = "Spell";
+    } else if (key == "NumDmg") {
+        // Check if value is numeric; if not, store as SVar key for resolution later
+        if (!value.empty() && (std::isdigit(static_cast<unsigned char>(value[0])) ||
+                               (value[0] == '-' && value.size() > 1 && std::isdigit(static_cast<unsigned char>(value[1]))))) {
+            ability.amount = static_cast<size_t>(std::stoi(value));
+        } else {
+            ability.amount_svar = value;
+        }
+        return;  // handled here so we don't fall into the old NumDmg below
+    } else if (key == "NoReveal") {
+        ability.is_peek_no_reveal = (value == "True");
+    } else if (key == "NextTurn") {
+        ability.delayed_trigger_next_turn = (value == "True");
+    } else if (key == "TokenScript") {
+        ability.token_script = value;
+    } else if (key == "CounterType") {
+        ability.counter_type = value;
+    } else if (key == "CounterNum") {
+        ability.counter_count = std::stoi(value);
+    } else if (key == "Optional") {
+        ability.optional = (value == "True");
+    } else if (key == "Defined") {
+        if (value == "Remembered") ability.defined_remembered = true;
+    } else if (key == "ClearRemembered") {
+        ability.clear_remembered = (value == "True");
     } else if (key == "Cost") {
         size_t tok_pos = 0;
         while (tok_pos < value.size()) {
@@ -393,8 +450,13 @@ static std::string normalize_category(std::string category) {
     return category;
 }
 
-// Parses a SVar's DB$ content string into an Ability. The ability_type is inherited from the parent.
-static Ability parse_svar_ability(const std::string& content, Ability::AbilityType ability_type) {
+// Forward declaration so parse_svar_ability can recurse via SubAbility$.
+static Ability parse_svar_ability(const std::string& content, Ability::AbilityType ability_type,
+                                  const std::map<std::string, std::string>& svars);
+
+// Parses a SVar's DB$ content string into an Ability. Resolves SubAbility$ chains.
+static Ability parse_svar_ability(const std::string& content, Ability::AbilityType ability_type,
+                                  const std::map<std::string, std::string>& svars) {
     Ability sub;
     sub.ability_type = ability_type;
     size_t db_pos = content.find("DB$");
@@ -422,7 +484,14 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
             if (ks != std::string::npos) key = key.substr(ks, ke - ks + 1);
             size_t vs = value.find_first_not_of(" "), ve = value.find_last_not_of(" ");
             if (vs != std::string::npos) value = value.substr(vs, ve - vs + 1);
-            apply_param_to_ability(sub, key, value);
+
+            if (key == "SubAbility") {
+                auto it = svars.find(value);
+                if (it != svars.end())
+                    sub.subabilities.push_back(parse_svar_ability(it->second, ability_type, svars));
+            } else {
+                apply_param_to_ability(sub, key, value);
+            }
         }
         param_pos = param_end;
     }
@@ -492,7 +561,7 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
                 if (key == "SubAbility") {
                     auto it = svars.find(value);
                     if (it != svars.end())
-                        ability.subabilities.push_back(parse_svar_ability(it->second, ability.ability_type));
+                        ability.subabilities.push_back(parse_svar_ability(it->second, ability.ability_type, svars));
                 } else {
                     apply_param_to_ability(ability, key, value);
                 }
@@ -500,6 +569,33 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
 
             param_pos = param_end;
         }
+        // Resolve amount_svar for delirium-conditional damage (Unholy Heat pattern).
+        // SVar:X:Count$Compare Y GE4.6.2 where Y resolves to a graveyard card-type count.
+        if (!ability.amount_svar.empty()) {
+            auto it = svars.find(ability.amount_svar);
+            if (it != svars.end()) {
+                const std::string &sv = it->second;
+                // Pattern: "Count$Compare Y GE4.<delirium_amount>.<default_amount>"
+                size_t ge_pos = sv.find("GE");
+                if (ge_pos != std::string::npos) {
+                    std::string rest = sv.substr(ge_pos + 2);
+                    // rest = "4.6.2" — skip threshold, then delirium_amount, then default_amount
+                    size_t d1 = rest.find('.');
+                    if (d1 != std::string::npos) {
+                        size_t d2 = rest.find('.', d1 + 1);
+                        if (d2 != std::string::npos) {
+                            size_t delirium_amt = static_cast<size_t>(std::stoi(rest.substr(d1 + 1, d2 - d1 - 1)));
+                            size_t default_amt  = static_cast<size_t>(std::stoi(rest.substr(d2 + 1)));
+                            ability.amount = default_amt;
+                            ability.amount_delirium = delirium_amt;
+                            ability.amount_is_delirium_scale = true;
+                        }
+                    }
+                }
+            }
+            ability.amount_svar = "";
+        }
+
         ret_val.push_back(ability);
     }
 
@@ -542,6 +638,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
     bool dest_is_battlefield = false;
     bool dest_is_graveyard = false;
     bool origin_is_battlefield = false;
+    bool origin_is_graveyard = false;
     bool valid_card_creature = false;
     bool valid_card_self = false;
     bool mode_is_phase = false;
@@ -550,6 +647,10 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
     bool valid_player_is_you = false;
     bool mode_is_spell_cast = false;
     bool valid_card_non_creature = false;
+    bool valid_card_instant = false;
+    bool valid_card_sorcery = false;
+    bool valid_card_owner_you = false;
+    size_t activator_this_turn_cast_eq = 0;
 
     // Walk pipe-delimited params
     size_t param_pos = 0;
@@ -585,6 +686,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
                 if (value == "You") valid_player_is_you = true;
             } else if (key == "Origin") {
                 if (value == "Battlefield") origin_is_battlefield = true;
+                if (value == "Graveyard")   origin_is_graveyard   = true;
             } else if (key == "Destination") {
                 if (value == "Battlefield") dest_is_battlefield = true;
                 if (value == "Graveyard")   dest_is_graveyard   = true;
@@ -593,6 +695,13 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
                 if (value.find("nonCreature") != std::string::npos) valid_card_non_creature = true;
                 if (value.find(".Other")      != std::string::npos) ability.trigger_self_excluded = true;
                 if (value == "Card.Self")                            valid_card_self         = true;
+                if (value.find("Instant")     != std::string::npos) valid_card_instant      = true;
+                if (value.find("Sorcery")     != std::string::npos) valid_card_sorcery      = true;
+                if (value.find(".YouOwn")     != std::string::npos) valid_card_owner_you    = true;
+            } else if (key == "ActivatorThisTurnCast") {
+                if (value.rfind("EQ", 0) == 0) {
+                    activator_this_turn_cast_eq = static_cast<size_t>(std::stoi(value.substr(2)));
+                }
             } else if (key == "Execute") {
                 execute_svar = value;
             }
@@ -633,13 +742,30 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
         ability.trigger_valid_player_is_controller = valid_player_is_you;
     }
 
+    // "whenever an instant or sorcery you own leaves your graveyard" — Murktide Regent
+    if (mode_changes_zone && origin_is_graveyard && (valid_card_instant || valid_card_sorcery)) {
+        ability.trigger_on = Events::CARD_LEFT_GRAVEYARD;
+        ability.trigger_valid_player_is_controller = valid_card_owner_you;
+        ability.trigger_valid_card_is_instant_or_sorcery = true;
+    }
+
+    // "whenever you cast your Nth spell" — Cori-Steel Cutter
+    if (mode_is_spell_cast && activator_this_turn_cast_eq > 0) {
+        ability.trigger_on = Events::SPELL_CAST;
+        ability.trigger_valid_player_is_controller = valid_player_is_you;
+        ability.trigger_spell_count_eq = activator_this_turn_cast_eq;
+    }
+
     // Resolve effect from Execute$ SVar
     if (!execute_svar.empty()) {
         auto it = svars.find(execute_svar);
         if (it != svars.end()) {
-            Ability effect = parse_svar_ability(it->second, Ability::TRIGGERED);
+            Ability effect = parse_svar_ability(it->second, Ability::TRIGGERED, svars);
             ability.category = effect.category;
             ability.amount = effect.amount;
+            ability.counter_type = effect.counter_type;
+            ability.counter_count = effect.counter_count;
+            ability.token_script = effect.token_script;
             ability.subabilities = effect.subabilities;
         }
     }
@@ -698,6 +824,9 @@ static std::vector<StaticAbility> parse_static_abilities(const std::string &scri
                     sa.add_toughness = std::stoi(value);
                 } else if (key == "AddKeyword") {
                     sa.add_keyword = value;
+                } else if (key == "Affected") {
+                    if (value.find("EquippedBy") != std::string::npos)
+                        sa.affected = "EquippedBy";
                 }
             }
 

@@ -12,6 +12,7 @@ struct Player {
     uint8_t energy_counters = 0;
     std::multiset<Colors> mana;
     uint8_t lands_played_this_turn = 0;
+    size_t spells_cast_this_turn = 0;
 };
 
 #endif /* PLAYER_H */
