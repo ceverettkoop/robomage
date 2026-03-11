@@ -34,7 +34,7 @@ _CARD_COST_MATRIX = np.array([
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 25: Thundering Falls
     [0.0, 0.2, 0.0, 0.0, 0.0, 0.0, 0.5],  # 26: Murktide Regent
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 27: Mishra's Bauble
-    [0.0, 0.0, 0.0, 0.1, 0.0, 0.0, 0.1],  # 28: Cori-Steel Cutter
+    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 28: Cori-Steel Cutter
     [0.0, 0.0, 0.0, 0.1, 0.0, 0.0, 0.0],  # 29: Unholy Heat
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 30: 
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 31: 
@@ -42,3 +42,39 @@ _CARD_COST_MATRIX = np.array([
 
 # Populated manually when non-mana activated abilities are added.
 _CARD_ABILITY_COST_MATRIX = np.zeros((N_CARD_TYPES, _N_COST_FEATS), dtype=np.float32)
+
+# Index → card name, mirrors card_vocab.h
+_VOCAB_NAMES = [
+    "Mountain",  # 0
+    "Forest",  # 1
+    "Lightning Bolt",  # 2
+    "Grizzly Bears",  # 3
+    "Volcanic Island",  # 4
+    "Scalding Tarn",  # 5
+    "Flooded Strand",  # 6
+    "Polluted Delta",  # 7
+    "Wooded Foothills",  # 8
+    "Misty Rainforest",  # 9
+    "Wasteland",  # 10
+    "Ponder",  # 11
+    "Force of Will",  # 12
+    "Daze",  # 13
+    "Soul Warden",  # 14
+    "Tundra",  # 15
+    "Delver of Secrets",  # 16
+    "Insectile Aberration",  # 17
+    "Flying Men",  # 18
+    "Island",  # 19
+    "Dragon's Rage Channeler",  # 20
+    "Air Elemental",  # 21
+    "Counterspell",  # 22
+    "Lightning Strike",  # 23
+    "Brainstorm",  # 24
+    "Thundering Falls",  # 25
+    "Murktide Regent",  # 26
+    "Mishra's Bauble",  # 27
+    "Cori-Steel Cutter",  # 28
+    "Unholy Heat",  # 29
+    "",  # 30
+    "",  # 31
+]

@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <cassert>
+#include <cstring>
 
 #include "classes/colors.h"
 #include "components/types.h"

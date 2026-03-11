@@ -55,8 +55,8 @@ const GameState *gs_ptr = &gs;
 std::string replay_file_path;
 bool replay_mode = false;
 bool machine_mode = false;
-std::string deck_a_name = "test_minimal";
-std::string deck_b_name = "test_minimal";
+std::string deck_a_name = "delver";
+std::string deck_b_name = "delver";
 
 
 //runs in thread seperate from gui

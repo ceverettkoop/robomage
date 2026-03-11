@@ -110,7 +110,15 @@ def main():
         "",
         "# Populated manually when non-mana activated abilities are added.",
         "_CARD_ABILITY_COST_MATRIX = np.zeros((N_CARD_TYPES, _N_COST_FEATS), dtype=np.float32)",
+        "",
+        "# Index → card name, mirrors card_vocab.h",
+        "_VOCAB_NAMES = [",
     ]
+    vocab_by_idx = {i: n for n, i in vocab.items()}
+    for idx in range(N_TYPES):
+        name = vocab_by_idx.get(idx, "")
+        lines.append(f'    "{name}",  # {idx}')
+    lines += ["]"]
     with open(OUT_FILE, "w") as f:
         f.write("\n".join(lines) + "\n")
     print(f"Wrote {OUT_FILE}")

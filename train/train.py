@@ -24,6 +24,7 @@ import os
 
 from env import RoboMageEnv, ModelVsScriptedEnv, SelfPlayEnv, NarrativeEnv, scripted_action, OBS_SIZE, STATE_SIZE, MAX_ACTIONS, ACTION_CATEGORY_MAX, BINARY
 from extractor import CardGameExtractor
+from card_costs import _VOCAB_NAMES
 
 try:
     from sb3_contrib import MaskablePPO
@@ -242,7 +243,7 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
             gamma=0.99,
             gae_lambda=0.95,
             clip_range=0.25,
-            ent_coef=0.05,         # encourage exploration early on
+            ent_coef=0.08,         # encourage exploration early on
             verbose=1,
             tensorboard_log=LOG_DIR,
         )
@@ -478,16 +479,6 @@ _STEP_NAMES = [
     "Untap", "Upkeep", "Draw", "First Main", "Begin Combat",
     "Declare Atk", "Declare Blk", "Combat Dmg",
     "End Combat", "Second Main", "End Step", "Cleanup",
-]
-
-# Index → card name, mirrors card_vocab.h
-_VOCAB_NAMES = [
-    "Mountain", "Forest", "Lightning Bolt", "Grizzly Bears", "Volcanic Island",
-    "Scalding Tarn", "Flooded Strand", "Polluted Delta", "Wooded Foothills", "Misty Rainforest",
-    "Wasteland", "Ponder", "Force of Will", "Daze", "Soul Warden", "Tundra",
-    "Delver of Secrets", "Insectile Aberration", "Flying Men", "Island",
-    "Dragon's Rage Channeler", "Air Elemental", "Counterspell", "Lightning Strike",
-    "Brainstorm",
 ]
 
 
