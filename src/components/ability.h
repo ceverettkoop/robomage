@@ -24,6 +24,7 @@ struct Ability{
     std::string valid_tgts = "N_A";  // Value of ValidTgts$ param; "N_A" if no targeting required
     Entity source = 0;
     Entity target = 0;
+    Zone::Ownership controller = Zone::PLAYER_A;  // set when pushed onto stack; stable even if source loses Permanent
     // TODO: support multiple effects per ability (e.g. "deal 3 damage and gain 3 life")
     size_t amount = 0;
     Colors color = NO_COLOR; //for mana ability
@@ -50,9 +51,10 @@ struct Ability{
     size_t amount_delirium = 0;             // damage when delirium is active
     std::string amount_svar = "";           // raw SVar key for non-numeric NumDmg$ (resolved at parse time)
 
-    // Counter abilities (Murktide Regent)
-    std::string counter_type = "";  // "P1P1" for +1/+1 counters
-    int counter_count = 0;          // number of counters to add
+    // Counter abilities (PutCounter category)
+    std::string counter_type = "";          // "P1P1" for +1/+1 counters
+    int counter_count = 0;                  // static number of counters; 0 when dynamic
+    bool counter_count_from_delve = false;  // if true, counter_count = cur_game.delve_exiled.size() at resolve
 
     // Peek variant (Mishra's Bauble): look at target player's top card, skip reveal choice
     bool is_peek_no_reveal = false;
@@ -60,8 +62,11 @@ struct Ability{
     // Delayed trigger (Mishra's Bauble)
     bool delayed_trigger_next_turn = false;  // NextTurn$ True
 
-    // Zone-change trigger filter (Murktide Regent)
-    bool trigger_valid_card_is_instant_or_sorcery = false;
+    // Zone-change trigger filters for CARD_CHANGED_ZONE (set by Mode$ ChangesZone triggers)
+    int trigger_zone_origin = -1;       // Zone::ZoneValue origin filter; -1 = any
+    int trigger_zone_destination = -1;  // Zone::ZoneValue destination filter; -1 = any
+    bool trigger_valid_card_is_creature = false;        // ValidCard$ Creature
+    bool trigger_valid_card_is_instant_or_sorcery = false;  // ValidCard$ Instant/Sorcery
 
     // Spell count trigger (Cori-Steel Cutter)
     size_t trigger_spell_count_eq = 0;  // ActivatorThisTurnCast$ EQN — fires on Nth spell

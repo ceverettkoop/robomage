@@ -158,6 +158,7 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
         orderer->add_to_zone(false, ability_entity, Zone::STACK);
 
         stack_ab.source = permanent_entity;
+        stack_ab.controller = controller;
         global_coordinator.AddComponent(ability_entity, stack_ab);
 
         game_log("%s's %s ability is on the stack\n", player_name(controller).c_str(), card_data.name.c_str());
@@ -637,6 +638,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
 
                 // DELVE: exile instants/sorceries from graveyard to reduce generic cost
                 if (card_data.has_delve) {
+                    cur_game.delve_exiled.clear();
                     game_log("%s: exile cards from graveyard to pay generic cost (0=done):\n",
                              player_name(caster).c_str());
                     while (true) {
@@ -688,6 +690,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
 
                 Ability ability = ability_template;
                 ability.source = spell_entity;
+                ability.controller = caster;
 
                 // Handle targeting
                 if (ability.valid_tgts != "N_A") {

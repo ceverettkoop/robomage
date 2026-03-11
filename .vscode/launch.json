@@ -42,7 +42,7 @@
             "type": "lldb",
             "request": "launch",
             "program": "${workspaceFolder}/bin/robomage",
-            "args": ["--deck", "trigger_test"],
+            "args": ["--deck", "delver"],
             "cwd": "${workspaceFolder}/bin",
             "terminal": "integrated"
         },

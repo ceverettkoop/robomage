@@ -45,7 +45,7 @@ std::string name_to_uid(std::string name) {
         char value = name[i];
         if (std::isalpha(value)) {
             name[i] = std::tolower(value);
-        } else if( (value == ' ') && (i != name.size() - 1) )   { // we will excise up to 1 trailing space, rest to underscores
+        } else if( ((value == '-') || (value == ' ')) && (i != name.size() - 1) )   { // we will excise up to 1 trailing space, rest to underscores
                 name[i] = '_';
         } else {
             to_rm.push_back(i);
@@ -155,10 +155,40 @@ Entity parse_card_script(std::string path) {
             card.keywords.push_back("Delve");
             continue;
         }
-        // K:etbCounter:P1P1:X:...
+        // K:etbCounter:P1P1:X:... — "this card enters with counters based on a condition"
+        // Parsed as a triggered ETB ability so the condition is encoded on Ability, not CardData.
         if (kw_line.rfind("etbCounter", 0) == 0) {
-            // parse "etbCounter:P1P1:X:..." — P1P1 from delve exile count
-            card.etb_counters_from_delve = true;
+            // Split on ':' to extract counter type and SVar key
+            // Format: etbCounter:P1P1:X:...
+            std::string sub = kw_line.substr(strlen("etbCounter"));
+            std::string counter_type_str = "P1P1";
+            bool from_delve = false;
+            if (!sub.empty() && sub[0] == ':') {
+                size_t c1 = sub.find(':', 1);
+                if (c1 != std::string::npos) {
+                    counter_type_str = sub.substr(1, c1 - 1);
+                    size_t c2 = sub.find(':', c1 + 1);
+                    std::string svar_key = (c2 != std::string::npos)
+                        ? sub.substr(c1 + 1, c2 - c1 - 1)
+                        : sub.substr(c1 + 1);
+                    // If the SVar key resolves to a delve-exile count, mark accordingly.
+                    // SVar:X:Count$ValidExile Instant.ExiledWithSource,Sorcery.ExiledWithSource
+                    auto svar_it = svars.find(svar_key);
+                    if (svar_it != svars.end() &&
+                        svar_it->second.find("ExiledWithSource") != std::string::npos) {
+                        from_delve = true;
+                    }
+                }
+            }
+            Ability etb_ab;
+            etb_ab.ability_type              = Ability::TRIGGERED;
+            etb_ab.trigger_on                = Events::CARD_CHANGED_ZONE;
+            etb_ab.trigger_only_self         = true;
+            etb_ab.trigger_zone_destination  = Zone::BATTLEFIELD;
+            etb_ab.category                  = "PutCounter";
+            etb_ab.counter_type              = counter_type_str;
+            etb_ab.counter_count_from_delve  = from_delve;
+            card.abilities.push_back(etb_ab);
             continue;
         }
         // K:Equip:1 R  (equip cost after "Equip:")
@@ -712,8 +742,18 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
     }
 
     // Map trigger condition to event ID.
-    if (mode_changes_zone && dest_is_battlefield && valid_card_creature) {
-        ability.trigger_on = Events::CREATURE_ENTERED;
+
+    // All ChangesZone triggers use CARD_CHANGED_ZONE; origin/destination/type filters applied at match time.
+    if (mode_changes_zone) {
+        ability.trigger_on = Events::CARD_CHANGED_ZONE;
+        if (origin_is_battlefield)       ability.trigger_zone_origin      = Zone::BATTLEFIELD;
+        else if (origin_is_graveyard)    ability.trigger_zone_origin      = Zone::GRAVEYARD;
+        if (dest_is_battlefield)         ability.trigger_zone_destination = Zone::BATTLEFIELD;
+        else if (dest_is_graveyard)      ability.trigger_zone_destination = Zone::GRAVEYARD;
+        ability.trigger_valid_card_is_creature            = valid_card_creature;
+        ability.trigger_valid_card_is_instant_or_sorcery  = valid_card_instant || valid_card_sorcery;
+        ability.trigger_valid_player_is_controller        = valid_card_owner_you || valid_player_is_you;
+        if (valid_card_self) ability.trigger_only_self = true;
     }
 
     if (mode_is_phase && phase_is_upkeep) {
@@ -726,27 +766,9 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
         ability.trigger_valid_player_is_controller = valid_player_is_you;
     }
 
-    // "when this permanent enters the battlefield" — uses PERMANENT_ENTERED so it fires for non-creatures too
-    if (mode_changes_zone && dest_is_battlefield && valid_card_self) {
-        ability.trigger_on = Events::PERMANENT_ENTERED;
-        ability.trigger_only_self = true;
-    }
-
-    // "when a creature dies"
-    if (mode_changes_zone && origin_is_battlefield && dest_is_graveyard && valid_card_creature) {
-        ability.trigger_on = Events::CREATURE_DIED;
-    }
-
     if (mode_is_spell_cast && valid_card_non_creature) {
         ability.trigger_on = Events::NONCREATURE_SPELL_CAST;
         ability.trigger_valid_player_is_controller = valid_player_is_you;
-    }
-
-    // "whenever an instant or sorcery you own leaves your graveyard" — Murktide Regent
-    if (mode_changes_zone && origin_is_graveyard && (valid_card_instant || valid_card_sorcery)) {
-        ability.trigger_on = Events::CARD_LEFT_GRAVEYARD;
-        ability.trigger_valid_player_is_controller = valid_card_owner_you;
-        ability.trigger_valid_card_is_instant_or_sorcery = true;
     }
 
     // "whenever you cast your Nth spell" — Cori-Steel Cutter

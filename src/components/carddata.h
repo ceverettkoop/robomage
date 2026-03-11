@@ -37,12 +37,6 @@ struct CardData{
     std::vector<Effect::Replacement> replacement_effects;  // parsed from R: lines TODO expand this to parse SVAR below
     std::shared_ptr<CardData> backside;  // populated for DFCs; nullptr for normal cards
     bool has_delve = false;              // K:Delve — exile from graveyard to reduce generic cost
-
-    //This was implemented for murktide
-    //TODO FIX THIS; murktide's ability 
-    // should be a static abiility that triggers once on ETB, relative to the casting cost that was paid
-    bool etb_counters_from_delve = false; // K:etbCounter:P1P1:X — add P1P1 counters = delve exile count
-    
     bool is_equipment = false;           // has K:Equip line
     ManaValue equip_cost;                // parsed from K:Equip:cost
 };

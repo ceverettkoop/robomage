@@ -59,16 +59,6 @@ void StateManager::apply_permanent_components(Game &game) {
                     perm.is_tapped = false;
                     perm.timestamp_entered_battlefield = game.timestamp++;
                     global_coordinator.AddComponent(entity, perm);
-                    {
-                        Event etb(Events::PERMANENT_ENTERED);
-                        etb.SetParam(Params::ENTITY, entity);
-                        global_coordinator.SendEvent(etb);
-                    }
-                    {
-                        Event etb(Events::CREATURE_ENTERED);
-                        etb.SetParam(Params::ENTITY, entity);
-                        global_coordinator.SendEvent(etb);
-                    }
                 }
                 if (!global_coordinator.entity_has_component<Creature>(entity)) {
                     Creature creature;
@@ -129,16 +119,6 @@ void StateManager::apply_permanent_components(Game &game) {
                             eff.replacements.push_back(r);
                     }
                 }
-                {
-                    Event etb(Events::PERMANENT_ENTERED);
-                    etb.SetParam(Params::ENTITY, entity);
-                    global_coordinator.SendEvent(etb);
-                }
-                if (is_creature) {
-                    Event etb(Events::CREATURE_ENTERED);
-                    etb.SetParam(Params::ENTITY, entity);
-                    global_coordinator.SendEvent(etb);
-                }
             }
             // copy activated abilities from card_data to permanent; incl mana abilities altough mana abilities innate to basic land types
             // added elsewhere
@@ -176,16 +156,7 @@ void StateManager::apply_permanent_components(Game &game) {
                 Damage damage;
                 damage.damage_counters = 0;
                 global_coordinator.AddComponent(entity, damage);
-                // ETB +1/+1 counters from Delve (Murktide Regent): apply exactly once on ETB
-                if (card_data.etb_counters_from_delve && !game.delve_exiled.empty()) {
-                    auto &cr = global_coordinator.GetComponent<Creature>(entity);
-                    int n = static_cast<int>(game.delve_exiled.size());
-                    cr.plus_one_counters += n;
-                    cr.power     += static_cast<uint32_t>(n);
-                    cr.toughness += static_cast<uint32_t>(n);
-                    game_log("%s enters with %d +1/+1 counter(s) from Delve.\n", card_data.name.c_str(), n);
-                    game.delve_exiled.clear();
-                }
+
             }
             if (is_land) {
                 apply_land_abilities(entity);
@@ -447,10 +418,7 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
         game_log("%s is destroyed (lethal damage)\n", card_data.name.c_str());
 
         orderer->add_to_zone(false, entity, Zone::GRAVEYARD);
-        // components will be removed by state based effects
-        Event death_event(Events::CREATURE_DIED);
-        death_event.SetParam(Params::ENTITY, entity);
-        global_coordinator.SendEvent(death_event);
+        // CARD_CHANGED_ZONE event is fired from orderer->add_to_zone; components removed by SBE
     }
 
     // Deal combat damage
@@ -607,6 +575,7 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                 global_coordinator.AddComponent(trigger_entity, ab_zone);
                 orderer->add_to_zone(false, trigger_entity, Zone::STACK);
                 Ability trigger_ab = dt.ability;
+                trigger_ab.controller = ctrl;
                 global_coordinator.AddComponent(trigger_entity, trigger_ab);
                 game_log("Delayed trigger fires.\n");
                 to_remove.push_back(i);
@@ -640,29 +609,48 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
             for (const auto &ab : *ab_source) {
                 if (ab.ability_type != Ability::TRIGGERED) continue;
                 if (ab.trigger_on == 0 || ab.trigger_on != ev.GetType()) continue;
-                // "another" check: skip if the entering entity is the source itself
+                // "another" check: skip if the event entity is the triggering permanent itself
                 if (ab.trigger_self_excluded && ev.HasParam(Params::ENTITY) &&
                     ev.GetParam<Entity>(Params::ENTITY) == entity) continue;
-                // Card.Self: only fire when the event entity is the source itself
+                // Card.Self: only fire when the event entity is the triggering permanent itself
                 if (ab.trigger_only_self && ev.HasParam(Params::ENTITY) &&
                     ev.GetParam<Entity>(Params::ENTITY) != entity) continue;
                 // Don't fire front-face triggers on a transformed permanent
                 if (perm.transformed) continue;
-                // ValidPlayer$ You: only fire when the active player is the permanent's controller
+                // ValidPlayer$ You: only fire when the event's player matches the permanent's controller
                 if (ab.trigger_valid_player_is_controller && ev.HasParam(Params::PLAYER)) {
                     Entity event_player = ev.GetParam<Entity>(Params::PLAYER);
                     Entity ctrl_entity = (perm.controller == Zone::PLAYER_A)
                                          ? game.player_a_entity : game.player_b_entity;
                     if (event_player != ctrl_entity) continue;
                 }
-                // Instant/sorcery filter for CARD_LEFT_GRAVEYARD (Murktide Regent)
-                if (ab.trigger_valid_card_is_instant_or_sorcery && ev.HasParam(Params::ENTITY)) {
-                    Entity ev_card = ev.GetParam<Entity>(Params::ENTITY);
-                    if (!global_coordinator.entity_has_component<CardData>(ev_card)) continue;
-                    bool ok = false;
-                    for (auto &t : global_coordinator.GetComponent<CardData>(ev_card).types)
-                        if (t.kind == TYPE && (t.name == "Instant" || t.name == "Sorcery")) { ok = true; break; }
-                    if (!ok) continue;
+                // CARD_CHANGED_ZONE filters: origin, destination, card type
+                if (ev.GetType() == Events::CARD_CHANGED_ZONE) {
+                    Zone::ZoneValue ev_origin = ev.GetParam<Zone::ZoneValue>(Params::ORIGIN);
+                    Zone::ZoneValue ev_dest   = ev.GetParam<Zone::ZoneValue>(Params::DESTINATION);
+                    if (ab.trigger_zone_origin >= 0 &&
+                        ev_origin != static_cast<Zone::ZoneValue>(ab.trigger_zone_origin)) continue;
+                    if (ab.trigger_zone_destination >= 0 &&
+                        ev_dest != static_cast<Zone::ZoneValue>(ab.trigger_zone_destination)) continue;
+                    // ValidCard$ Creature filter
+                    if (ab.trigger_valid_card_is_creature && ev.HasParam(Params::ENTITY)) {
+                        Entity ev_card = ev.GetParam<Entity>(Params::ENTITY);
+                        bool is_creature = global_coordinator.entity_has_component<Token>(ev_card);
+                        if (!is_creature && global_coordinator.entity_has_component<CardData>(ev_card)) {
+                            for (auto &t : global_coordinator.GetComponent<CardData>(ev_card).types)
+                                if (t.kind == TYPE && t.name == "Creature") { is_creature = true; break; }
+                        }
+                        if (!is_creature) continue;
+                    }
+                    // ValidCard$ Instant/Sorcery filter (Murktide Regent)
+                    if (ab.trigger_valid_card_is_instant_or_sorcery && ev.HasParam(Params::ENTITY)) {
+                        Entity ev_card = ev.GetParam<Entity>(Params::ENTITY);
+                        if (!global_coordinator.entity_has_component<CardData>(ev_card)) continue;
+                        bool ok = false;
+                        for (auto &t : global_coordinator.GetComponent<CardData>(ev_card).types)
+                            if (t.kind == TYPE && (t.name == "Instant" || t.name == "Sorcery")) { ok = true; break; }
+                        if (!ok) continue;
+                    }
                 }
                 // Spell count filter (Cori-Steel Cutter)
                 if (ab.trigger_spell_count_eq > 0 && ev.HasParam(Params::PLAYER)) {
@@ -680,6 +668,7 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
 
                 Ability trigger_ab = ab;
                 trigger_ab.source = entity;
+                trigger_ab.controller = perm.controller;
                 global_coordinator.AddComponent(trigger_entity, trigger_ab);
 
                 game_log("%s triggered\n", entity_name.c_str());

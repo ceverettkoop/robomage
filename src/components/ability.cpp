@@ -502,9 +502,6 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
     //THIS BLOCK IS ALL SPECIFIC TO DELVER (and Mishra's Bauble peek variant)
     //TODO MAKE THIS GENERALIZABLE AND MOVE TO ITS OWN FUNCTION
     } else if (category == "PeekAndReveal") {
-        auto& src_perm = global_coordinator.GetComponent<Permanent>(source);
-        Zone::Ownership controller = src_perm.controller;
-
         if (is_peek_no_reveal) {
             // Mishra's Bauble: look at target player's top card privately, no reveal choice
             Zone::Ownership peek_owner = global_coordinator.entity_has_component<Player>(target)
@@ -529,6 +526,11 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
             // fall through to subabilities (DelayedTrigger sub-ability fires next upkeep)
         } else {
             // Delver of Secrets: peek own library top, optionally reveal
+            if (!global_coordinator.entity_has_component<Permanent>(source)) {
+                fizzle(orderer);
+                return;
+            }
+            auto& src_perm = global_coordinator.GetComponent<Permanent>(source);
             Entity top_card = 0;
             for (auto e : orderer->mEntities) {
                 if (!global_coordinator.entity_has_component<Zone>(e)) continue;
@@ -634,11 +636,16 @@ void Ability::resolve_put_counter() {
     if (!global_coordinator.entity_has_component<Creature>(source)) return;
     auto &cr = global_coordinator.GetComponent<Creature>(source);
     if (counter_type == "P1P1") {
-        cr.plus_one_counters += counter_count;
-        cr.power     += static_cast<uint32_t>(counter_count);
-        cr.toughness += static_cast<uint32_t>(counter_count);
-        game_log("Put %d +1/+1 counter(s) on creature (now %u/%u).\n",
-                 counter_count, cr.power, cr.toughness);
+        int n = counter_count;
+        if (counter_count_from_delve) {
+            n = static_cast<int>(cur_game.delve_exiled.size());
+            cur_game.delve_exiled.clear();
+        }
+        if (n <= 0) return;
+        cr.plus_one_counters += n;
+        cr.power     += static_cast<uint32_t>(n);
+        cr.toughness += static_cast<uint32_t>(n);
+        game_log("Put %d +1/+1 counter(s) on creature (now %u/%u).\n", n, cr.power, cr.toughness);
     }
 }
 

@@ -107,17 +107,6 @@ static void *game_loop(void *args) {
     StateManager::init();
     StackManager::init();
 
-    // TODO deal with this; move it out of main; move printf to cli_output; implement some cards besides DRC that care
-    // about this this has to be moved out of main and into its own unit; and the printf call needs to be handled
-    // elsewhere
-    global_coordinator.AddEventListener(Events::CREATURE_DIED, [](Event &event) {
-        Entity dead = event.GetParam<Entity>(Params::ENTITY);
-        if (global_coordinator.entity_has_component<CardData>(dead)) {
-            auto &cd = global_coordinator.GetComponent<CardData>(dead);
-            game_log("[EVENT] CREATURE_DIED: %s\n", cd.name.c_str());
-        }
-    });
-
     // one time setup for this game
     cur_game = Game(seed);
     cur_game.generate_players(DEFAULT_DECK_ONE, DEFAULT_DECK_TWO);

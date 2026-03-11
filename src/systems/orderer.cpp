@@ -10,7 +10,6 @@
 #include "../cli_output.h"
 #include "../components/carddata.h"
 #include "../components/color_identity.h"
-#include "../components/types.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../ecs/events.h"
@@ -27,30 +26,16 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     size_t back = 0;
     auto &target_zone = global_coordinator.GetComponent<Zone>(target);
 
-    //TODO CHANGE THIS SO IT FIRES A CARD CHANGED ZONE EVENT ON EVERY CALL
-    //parameters are set so that any card that was parsed with a "change zone" trigger
-    //will trigger in the case the parameters match
-    //concrete examples of currently implemented cards that should be reworked to trigger in this way
-    //are soul warden and murktide regent
-
-    // If an instant or sorcery is leaving the graveyard, fire CARD_LEFT_GRAVEYARD.
-    if (target_zone.location == Zone::GRAVEYARD && destination != Zone::GRAVEYARD) {
-        if (global_coordinator.entity_has_component<CardData>(target)) {
-            bool is_instant_or_sorcery = false;
-            for (auto &t : global_coordinator.GetComponent<CardData>(target).types) {
-                if (t.kind == TYPE && (t.name == "Instant" || t.name == "Sorcery")) {
-                    is_instant_or_sorcery = true;
-                    break;
-                }
-            }
-            if (is_instant_or_sorcery) {
-                Event left_gy(Events::CARD_LEFT_GRAVEYARD);
-                left_gy.SetParam(Params::ENTITY, target);
-                left_gy.SetParam(Params::PLAYER,
-                    target_zone.owner == Zone::PLAYER_A ? cur_game.player_a_entity : cur_game.player_b_entity);
-                global_coordinator.SendEvent(left_gy);
-            }
-        }
+    // Fire CARD_CHANGED_ZONE on every zone transition so any parsed ChangesZone trigger can match.
+    {
+        Entity owner_entity = target_zone.owner == Zone::PLAYER_A
+                              ? cur_game.player_a_entity : cur_game.player_b_entity;
+        Event ev(Events::CARD_CHANGED_ZONE);
+        ev.SetParam(Params::ENTITY,      target);
+        ev.SetParam(Params::PLAYER,      owner_entity);
+        ev.SetParam(Params::ORIGIN,      target_zone.location);
+        ev.SetParam(Params::DESTINATION, destination);
+        global_coordinator.SendEvent(ev);
     }
 
     // If the entity is leaving an ordered zone, close the gap it leaves behind.
