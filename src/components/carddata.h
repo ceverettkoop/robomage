@@ -9,6 +9,7 @@
 #include "../components/types.h"
 #include "../classes/colors.h"
 #include "ability.h"
+#include "effect.h"
 #include "static_ability.h"
 
 struct AltCost {
@@ -33,6 +34,7 @@ struct CardData{
     AltCost alt_cost;
     std::vector<std::string> keywords;
     std::vector<StaticAbility> static_abilities;
+    std::vector<Effect::Replacement> replacement_effects;  // parsed from R: lines
     std::shared_ptr<CardData> backside;  // populated for DFCs; nullptr for normal cards
 };
 

@@ -11,6 +11,7 @@
 #include "components/types.h"
 #include "components/ability.h"
 #include "components/carddata.h"
+#include "components/effect.h"
 #include "components/static_ability.h"
 #include "ecs/coordinator.h"
 #include "ecs/events.h"
@@ -31,6 +32,8 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
 static std::vector<Ability> parse_triggered_abilities(const std::string& script,
                                                       const std::map<std::string, std::string>& svars);
 static std::vector<StaticAbility> parse_static_abilities(const std::string& script);
+static std::vector<Effect::Replacement> parse_replacement_effects(const std::string& script,
+                                                                   const std::map<std::string, std::string>& svars);
 static uint32_t parse_power(std::string value);
 static uint32_t parse_toughness(std::string value);
 
@@ -140,6 +143,9 @@ Entity parse_card_script(std::string path) {
 
     // Parse S: lines for static abilities (Continuous, MustAttack, etc.)
     card.static_abilities = parse_static_abilities(front_script);
+
+    // Parse R: lines for replacement effects (e.g. enters tapped)
+    card.replacement_effects = parse_replacement_effects(front_script, svars);
 
     // Parse K: keyword lines
     for (auto& kw_line : multi_values_from_script(front_script, "K")) {
@@ -701,5 +707,80 @@ static std::vector<StaticAbility> parse_static_abilities(const std::string &scri
 
         if (!sa.category.empty()) result.push_back(sa);
     }
+    return result;
+}
+
+// Parses R: replacement-effect lines from a card script.
+// Only the ETB-tapped pattern is recognised for now:
+//   Event$ Moved | ValidCard$ Card.Self | Destination$ Battlefield | ReplaceWith$ ETBTapped
+static std::vector<Effect::Replacement> parse_replacement_effects(const std::string& script,
+                                                                   const std::map<std::string, std::string>& svars) {
+    (void)svars;
+    std::vector<Effect::Replacement> result;
+
+    // Collect all R: lines
+    std::vector<std::string> lines;
+    size_t pos = 0;
+    if (script.size() >= 2 && script[0] == 'R' && script[1] == ':') {
+        size_t end = script.find('\n', 0);
+        if (end == std::string::npos) end = script.size();
+        std::string line = script.substr(2, end - 2);
+        if (!line.empty() && line.back() == '\r') line.pop_back();
+        lines.push_back(line);
+        pos = end;
+    }
+    while ((pos = script.find("\nR:", pos)) != std::string::npos) {
+        pos += 3;
+        size_t end = script.find('\n', pos);
+        if (end == std::string::npos) end = script.size();
+        std::string line = script.substr(pos, end - pos);
+        if (!line.empty() && line.back() == '\r') line.pop_back();
+        lines.push_back(line);
+        pos = end;
+    }
+
+    for (const auto& line : lines) {
+        bool event_is_moved       = false;
+        bool valid_card_self      = false;
+        bool dest_is_battlefield  = false;
+        bool replace_with_etb_tapped = false;
+
+        size_t param_pos = 0;
+        while (param_pos <= line.size()) {
+            size_t param_end = line.find('|', param_pos);
+            if (param_end == std::string::npos) param_end = line.size();
+            std::string param = line.substr(param_pos, param_end - param_pos);
+
+            size_t ks = param.find_first_not_of(" ");
+            size_t ke = param.find_last_not_of(" ");
+            if (ks != std::string::npos) param = param.substr(ks, ke - ks + 1);
+
+            size_t dollar = param.find('$');
+            if (dollar != std::string::npos) {
+                std::string key = param.substr(0, dollar);
+                std::string value = param.substr(dollar + 1);
+                size_t vs = value.find_first_not_of(" "), ve = value.find_last_not_of(" ");
+                if (vs != std::string::npos) value = value.substr(vs, ve - vs + 1);
+                size_t ks2 = key.find_first_not_of(" "), ke2 = key.find_last_not_of(" ");
+                if (ks2 != std::string::npos) key = key.substr(ks2, ke2 - ks2 + 1);
+
+                if      (key == "Event"       && value == "Moved")       event_is_moved          = true;
+                else if (key == "ValidCard"   && value == "Card.Self")   valid_card_self         = true;
+                else if (key == "Destination" && value == "Battlefield") dest_is_battlefield     = true;
+                else if (key == "ReplaceWith" && value == "ETBTapped")   replace_with_etb_tapped = true;
+            }
+
+            if (param_end >= line.size()) break;
+            param_pos = param_end + 1;
+        }
+
+        if (event_is_moved && valid_card_self && dest_is_battlefield && replace_with_etb_tapped) {
+            Effect::Replacement r;
+            r.kind = Effect::Replacement::ENTERS_TAPPED;
+            r.applies_to_self_only = true;
+            result.push_back(r);
+        }
+    }
+
     return result;
 }

@@ -77,6 +77,19 @@ void StateManager::apply_permanent_components(Game &game) {
                 perm.is_tapped = false;
                 perm.timestamp_entered_battlefield = game.timestamp++;
                 global_coordinator.AddComponent(entity, perm);
+                // Attach any replacement effects declared on the card (e.g. enters tapped).
+                // These are picked up and consumed by apply_replacement_effects().
+                if (!card_data.replacement_effects.empty()) {
+                    if (!global_coordinator.entity_has_component<Effect>(entity)) {
+                        Effect eff;
+                        eff.replacements = card_data.replacement_effects;
+                        global_coordinator.AddComponent(entity, eff);
+                    } else {
+                        auto &eff = global_coordinator.GetComponent<Effect>(entity);
+                        for (const auto &r : card_data.replacement_effects)
+                            eff.replacements.push_back(r);
+                    }
+                }
                 {
                     Event etb(Events::PERMANENT_ENTERED);
                     etb.SetParam(Params::ENTITY, entity);
@@ -395,15 +408,37 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
     //     game.pending_choice = CHOOSE_ENTITY;
     //     return;
 
-    // Process continuous effects
-    for (auto &&entity : mEntities) {
-        // if we are dealing with an effect
-        if (global_coordinator.entity_has_component<Effect>(entity)) {
-            // TODO: Apply continuous effects based on layers/timestamps
-        }
-    }
+    apply_replacement_effects();
 
     check_triggered_abilities(game, orderer);
+}
+
+// Processes unapplied replacement effects on battlefield permanents.
+// Each Replacement is consumed (applied = true) exactly once.
+void StateManager::apply_replacement_effects() {
+    for (auto entity : mEntities) {
+        if (!global_coordinator.entity_has_component<Effect>(entity)) continue;
+        if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
+        auto &zone = global_coordinator.GetComponent<Zone>(entity);
+        if (zone.location != Zone::BATTLEFIELD) continue;
+
+        auto &eff = global_coordinator.GetComponent<Effect>(entity);
+        auto &perm = global_coordinator.GetComponent<Permanent>(entity);
+
+        for (auto &r : eff.replacements) {
+            if (r.applied) continue;
+            switch (r.kind) {
+                case Effect::Replacement::ENTERS_TAPPED:
+                    perm.is_tapped = true;
+                    r.applied = true;
+                    if (global_coordinator.entity_has_component<CardData>(entity)) {
+                        auto &cd = global_coordinator.GetComponent<CardData>(entity);
+                        game_log("%s enters tapped.\n", cd.name.c_str());
+                    }
+                    break;
+            }
+        }
+    }
 }
 
 // Drains all buffered events since the last call and puts any triggered abilities
