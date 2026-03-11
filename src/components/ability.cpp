@@ -548,8 +548,8 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
             auto& top_cd = global_coordinator.GetComponent<CardData>(top_card);
             game_log_private(controller, "Top card of library: %s\n", top_cd.name.c_str());
             std::vector<LegalAction> reveal_actions = {
-                LegalAction(PASS_PRIORITY, std::string("Don't reveal")),
-                LegalAction(PASS_PRIORITY, std::string("Reveal")),
+                LegalAction(PASS_PRIORITY, top_card, std::string("Don't reveal")),
+                LegalAction(PASS_PRIORITY, top_card, std::string("Reveal")),
             };
             int reveal_choice = InputLogger::instance().get_input(reveal_actions);
 
@@ -620,8 +620,8 @@ void Ability::resolve_surveil(std::shared_ptr<Orderer> orderer) {
         auto &top_cd = global_coordinator.GetComponent<CardData>(top_card);
         game_log_private(controller, "Top card of %s's library: %s\n", player_name(controller).c_str(), top_cd.name.c_str());
         std::vector<LegalAction> surveil_actions = {
-            LegalAction(PASS_PRIORITY, std::string("Keep on top")),
-            LegalAction(PASS_PRIORITY, std::string("Put in graveyard")),
+            LegalAction(PASS_PRIORITY, top_card, std::string("Keep on top")),
+            LegalAction(PASS_PRIORITY, top_card, std::string("Put in graveyard")),
         };
         int choice = InputLogger::instance().get_input(surveil_actions);
 

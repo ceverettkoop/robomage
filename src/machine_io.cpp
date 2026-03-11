@@ -9,6 +9,7 @@
 #include "classes/game.h"
 #include "components/ability.h"
 #include "components/carddata.h"
+#include "components/token.h"
 #include "components/creature.h"
 #include "components/damage.h"
 #include "components/permanent.h"
@@ -44,6 +45,8 @@ static int get_stack_card_vocab_idx(Entity e) {
         Entity src = global_coordinator.GetComponent<Ability>(e).source;
         if (global_coordinator.entity_has_component<CardData>(src))
             return card_name_to_index(global_coordinator.GetComponent<CardData>(src).name);
+        if (global_coordinator.entity_has_component<Token>(src))
+            return TOKEN_SENTINEL;
     }
     return -1;
 }
