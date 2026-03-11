@@ -164,6 +164,8 @@ static void *game_loop(void *args) {
         auto legal_actions = state_manager->determine_legal_actions(cur_game, orderer, stack_manager);
         if (legal_actions.size() == 1) {
             cur_game.pass_priority();
+            //TODO OPTION HERE WHEN GUI IS OPEN TO SLOWLY STEP THROUGH WHAT IS HAPPENING
+            populate_gamestate(&gs, viewer); 
             continue;
         }
 

@@ -199,60 +199,83 @@ void StateManager::apply_land_abilities(Entity entity) {
 }
 
 void StateManager::apply_static_ability_effects() {
+    // Phase 1: gather active static abilities from all battlefield permanents.
+    struct ActiveSA {
+        Entity           entity;
+        StaticAbility   *sa;
+        Zone::Ownership  controller;
+    };
+    std::vector<ActiveSA> active;
+
     for (auto entity : mEntities) {
         if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
         if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
         auto &zone = global_coordinator.GetComponent<Zone>(entity);
         if (zone.location != Zone::BATTLEFIELD) continue;
-        if (!global_coordinator.entity_has_component<CardData>(entity)) continue;
 
         auto &perm = global_coordinator.GetComponent<Permanent>(entity);
-
-        // Front-face static abilities don't apply while transformed
+        // Front-face static abilities don't apply while transformed; clear and skip.
         if (perm.transformed) {
-            for (auto &sa : perm.static_abilities)
-                sa.applied = false;
+            for (auto &sa : perm.static_abilities) sa.applied = false;
             continue;
         }
+        for (auto &sa : perm.static_abilities)
+            active.push_back({entity, &sa, perm.controller});
+    }
 
-        bool delirium_now = check_delirium(perm.controller, mEntities);
+    if (active.empty()) return;
 
-        for (auto &sa : perm.static_abilities) {
-            bool condition_met = false;
-            if (sa.condition.empty()) {
-                condition_met = true;
-            } else if (sa.condition == "Delirium") {
-                condition_met = delirium_now;
-            }
-
-            if (sa.category == "Continuous") {
-                if (!global_coordinator.entity_has_component<Creature>(entity)) continue;
-                auto &cr = global_coordinator.GetComponent<Creature>(entity);
-
-                if (condition_met && !sa.applied) {
-                    if (sa.add_power != 0)     cr.power     += static_cast<uint32_t>(sa.add_power);
-                    if (sa.add_toughness != 0) cr.toughness += static_cast<uint32_t>(sa.add_toughness);
-                    if (!sa.add_keyword.empty()) cr.keywords.push_back(sa.add_keyword);
-                    sa.applied = true;
-                    auto &cd = global_coordinator.GetComponent<CardData>(entity);
-                    game_log("%s gains %s%s%s(Delirium)\n", cd.name.c_str(),
-                           sa.add_power != 0 ? (std::to_string(sa.add_power) + "/" + std::to_string(sa.add_toughness) + " ").c_str() : "",
-                           !sa.add_keyword.empty() ? (sa.add_keyword + " ").c_str() : "",
-                           !sa.condition.empty() ? "" : "");
-                } else if (!condition_met && sa.applied) {
-                    if (sa.add_power != 0)     cr.power     -= static_cast<uint32_t>(sa.add_power);
-                    if (sa.add_toughness != 0) cr.toughness -= static_cast<uint32_t>(sa.add_toughness);
-                    if (!sa.add_keyword.empty()) {
-                        auto it = std::find(cr.keywords.begin(), cr.keywords.end(), sa.add_keyword);
-                        if (it != cr.keywords.end()) cr.keywords.erase(it);
-                    }
-                    sa.applied = false;
-                    auto &cd = global_coordinator.GetComponent<CardData>(entity);
-                    game_log("%s loses Delirium bonus\n", cd.name.c_str());
-                }
-            }
-            // MustAttack: enforcement deferred (future work)
+    // Phase 2: evaluate only the conditions actually referenced by gathered abilities.
+    // Each condition is computed at most once per player rather than once per permanent.
+    bool need_delirium_a = false, need_delirium_b = false;
+    for (auto &a : active) {
+        if (a.sa->condition == "Delirium") {
+            if (a.controller == Zone::PLAYER_A) need_delirium_a = true;
+            else                                need_delirium_b = true;
         }
+    }
+    bool delirium_a = need_delirium_a ? check_delirium(Zone::PLAYER_A, mEntities) : false;
+    bool delirium_b = need_delirium_b ? check_delirium(Zone::PLAYER_B, mEntities) : false;
+
+    // Phase 3: apply or revert effects based on condition results.
+    for (auto &a : active) {
+        bool condition_met;
+        if (a.sa->condition.empty()) {
+            condition_met = true;
+        } else if (a.sa->condition == "Delirium") {
+            condition_met = (a.controller == Zone::PLAYER_A) ? delirium_a : delirium_b;
+        } else {
+            condition_met = false;  // unrecognised condition — treat as unmet
+        }
+
+        if (a.sa->category == "Continuous") {
+            if (!global_coordinator.entity_has_component<Creature>(a.entity)) continue;
+            auto &cr = global_coordinator.GetComponent<Creature>(a.entity);
+            auto &cd = global_coordinator.GetComponent<CardData>(a.entity);
+
+            if (condition_met && !a.sa->applied) {
+                if (a.sa->add_power     != 0) cr.power     += static_cast<uint32_t>(a.sa->add_power);
+                if (a.sa->add_toughness != 0) cr.toughness += static_cast<uint32_t>(a.sa->add_toughness);
+                if (!a.sa->add_keyword.empty()) cr.keywords.push_back(a.sa->add_keyword);
+                a.sa->applied = true;
+                game_log("%s gains %s%s(%s)\n", cd.name.c_str(),
+                         a.sa->add_power != 0 ? (std::to_string(a.sa->add_power) + "/" +
+                                                  std::to_string(a.sa->add_toughness) + " ").c_str() : "",
+                         !a.sa->add_keyword.empty() ? (a.sa->add_keyword + " ").c_str() : "",
+                         a.sa->condition.empty() ? "always" : a.sa->condition.c_str());
+            } else if (!condition_met && a.sa->applied) {
+                if (a.sa->add_power     != 0) cr.power     -= static_cast<uint32_t>(a.sa->add_power);
+                if (a.sa->add_toughness != 0) cr.toughness -= static_cast<uint32_t>(a.sa->add_toughness);
+                if (!a.sa->add_keyword.empty()) {
+                    auto it = std::find(cr.keywords.begin(), cr.keywords.end(), a.sa->add_keyword);
+                    if (it != cr.keywords.end()) cr.keywords.erase(it);
+                }
+                a.sa->applied = false;
+                game_log("%s loses %s bonus\n", cd.name.c_str(),
+                         a.sa->condition.empty() ? "static" : a.sa->condition.c_str());
+            }
+        }
+        // MustAttack: enforcement deferred (future work)
     }
 }
 
