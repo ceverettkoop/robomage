@@ -2,7 +2,7 @@
 
 Card game rules engine built for reinforcement learning.
 
-Both players currently use `test_minimal.dk`. The ML agent only understands cards listed in `src/card_vocab.h`. Near-term goal: train on the UR Delver mirror match.
+Both players currently use `delver.dk`. The ML agent only understands cards listed in `src/card_vocab.h`.
 
 Card scripts live in `bin/resources/cardsfolder/`. See the card-forge repository for compatible scripts.
 

@@ -1,9 +1,11 @@
-play.py GUI does not work
+SCRIPTED AGENT CANT CAST MURKTIDE
 
-Rules problems:
-DRC isn't goaded
+Known rules problems:
 First strike step
-Checking ability target on resolution!
-Countering something to exile, e.g. FoN, this is on cards but we are presently ignoring it
+Countering something to exile
 Checking for effects similar to indestructible - will implement as relevant cards emerge
+
+Known ML problems:
+Does not know what's in exile
+Does not know storm count or steel cutter count
 
