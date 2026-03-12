@@ -156,11 +156,9 @@ Entity parse_card_script(std::string path) {
             card.keywords.push_back("Delve");
             continue;
         }
-        // K:etbCounter:P1P1:X:... — "this card enters with counters based on a condition"
-        // Parsed as a triggered ETB ability so the condition is encoded on Ability, not CardData.
+        // K:etbCounter:P1P1:X:... — "this card enters with counters"
+        // Parsed as a static ability; counters applied in apply_permanent_components on ETB.
         if (kw_line.rfind("etbCounter", 0) == 0) {
-            // Split on ':' to extract counter type and SVar key
-            // Format: etbCounter:P1P1:X:...
             std::string sub = kw_line.substr(strlen("etbCounter"));
             std::string counter_type_str = "P1P1";
             bool from_delve = false;
@@ -172,8 +170,6 @@ Entity parse_card_script(std::string path) {
                     std::string svar_key = (c2 != std::string::npos)
                         ? sub.substr(c1 + 1, c2 - c1 - 1)
                         : sub.substr(c1 + 1);
-                    // If the SVar key resolves to a delve-exile count, mark accordingly.
-                    // SVar:X:Count$ValidExile Instant.ExiledWithSource,Sorcery.ExiledWithSource
                     auto svar_it = svars.find(svar_key);
                     if (svar_it != svars.end() &&
                         svar_it->second.find("ExiledWithSource") != std::string::npos) {
@@ -181,15 +177,11 @@ Entity parse_card_script(std::string path) {
                     }
                 }
             }
-            Ability etb_ab;
-            etb_ab.ability_type              = Ability::TRIGGERED;
-            etb_ab.trigger_on                = Events::CARD_CHANGED_ZONE;
-            etb_ab.trigger_only_self         = true;
-            etb_ab.trigger_zone_destination  = Zone::BATTLEFIELD;
-            etb_ab.category                  = "PutCounter";
-            etb_ab.counter_type              = counter_type_str;
-            etb_ab.counter_count_from_delve  = from_delve;
-            card.abilities.push_back(etb_ab);
+            StaticAbility sa;
+            sa.category = "EtbCounter";
+            sa.counter_type = counter_type_str;
+            sa.counter_count_from_delve = from_delve;
+            card.static_abilities.push_back(sa);
             continue;
         }
         // K:Equip:1 R  (equip cost after "Equip:")

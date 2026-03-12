@@ -157,6 +157,23 @@ void StateManager::apply_permanent_components(Game &game) {
                 damage.damage_counters = 0;
                 global_coordinator.AddComponent(entity, damage);
 
+                // Apply "enters with" counters from static abilities
+                for (auto &sa : card_data.static_abilities) {
+                    if (sa.category != "EtbCounter") continue;
+                    if (sa.counter_type != "P1P1") continue;
+                    int n = 0;
+                    if (sa.counter_count_from_delve) {
+                        n = static_cast<int>(cur_game.delve_exiled.size());
+                        cur_game.delve_exiled.clear();
+                    }
+                    if (n <= 0) continue;
+                    auto &cr = global_coordinator.GetComponent<Creature>(entity);
+                    cr.plus_one_counters += n;
+                    cr.power     += static_cast<uint32_t>(n);
+                    cr.toughness += static_cast<uint32_t>(n);
+                    game_log("%s enters with %d +1/+1 counter(s) (%u/%u).\n",
+                        card_data.name.c_str(), n, cr.power, cr.toughness);
+                }
             }
             if (is_land) {
                 apply_land_abilities(entity);
