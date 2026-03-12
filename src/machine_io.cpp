@@ -238,6 +238,30 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
         gs->stack[i] = stack_items[i].entry;
 
     gs->opp_hand_ct = gs->opponent.hand_ct;
+
+    // Action history: copy from ring buffer, newest first, with perspective normalization
+    gs->action_history_len = cur_game.action_history_count;
+    bool viewer_is_a = (viewer == Zone::PLAYER_A);
+    float cat_max = static_cast<float>(ACTION_CATEGORY_MAX);
+    float card_types = static_cast<float>(N_CARD_TYPES);
+    float id_null = -1.0f / card_types;
+    for (int i = 0; i < ACTION_HISTORY_SIZE; i++) {
+        int base = i * 3;
+        if (i < gs->action_history_len) {
+            // Read newest first: walk backwards from write position
+            int ring_idx = (cur_game.action_history_write - 1 - i + ACTION_HISTORY_SIZE) % ACTION_HISTORY_SIZE;
+            const auto& entry = cur_game.action_history[ring_idx];
+            gs->action_history[base + 0] = static_cast<float>(entry.category) / cat_max;
+            gs->action_history[base + 1] = entry.card_vocab_idx >= 0
+                ? static_cast<float>(entry.card_vocab_idx) / card_types
+                : id_null;
+            gs->action_history[base + 2] = (entry.player_a == viewer_is_a) ? 1.0f : 0.0f;
+        } else {
+            gs->action_history[base + 0] = 0.0f;
+            gs->action_history[base + 1] = 0.0f;
+            gs->action_history[base + 2] = 0.0f;
+        }
+    }
 }
 
 // ── populate_query ────────────────────────────────────────────────────────────
@@ -377,6 +401,10 @@ std::vector<float> serialize_state(const GameState* gs) {
         for (int j = 0; j < N_CARD_TYPES; j++)
             state.push_back(j == idx ? 1.0f : 0.0f);
     }
+
+    // Action history (15 x 3 = 45, newest first)
+    for (int i = 0; i < ACTION_HISTORY_SIZE * 3; i++)
+        state.push_back(gs->action_history[i]);
 
     assert(static_cast<int>(state.size()) == STATE_SIZE);
     return state;

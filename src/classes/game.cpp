@@ -36,6 +36,13 @@ Entity Game::gen_player(const Deck &deck) {
     return player_entity;
 }
 
+void Game::record_action(int category, int card_vocab_idx, bool player_a) {
+    action_history[action_history_write] = {category, card_vocab_idx, player_a};
+    action_history_write = (action_history_write + 1) % ACTION_HISTORY_SIZE;
+    if (action_history_count < ACTION_HISTORY_SIZE)
+        action_history_count++;
+}
+
 void Game::pass_priority() {
     if (player_a_has_priority) a_has_passed = true;
     if (!player_a_has_priority) b_has_passed = true;

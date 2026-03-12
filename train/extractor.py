@@ -21,11 +21,13 @@ Index layout must stay in sync with src/machine_io.h:
   obs[4473:8569]    128 graveyard slots × 32 floats (32 card one-hot)
                        slots 0-63: self; slots 64-127: opponent
   obs[8569:8889]     10 hand slots    × 32 floats  (32 card one-hot)
-  obs[8889:8921]     32 action-category features   (appended by env.py)
-  obs[8921:8953]     32 action card-ID features    (appended by env.py)
-  obs[8953:8985]     32 action controller_is_self  (appended by env.py)
-  obs[8985:9055]     70 hand cast-cost features    (10 slots × 7 cost feats)
-  obs[9055:9391]    336 BF ability-cost features   (48 slots × 7 cost feats)
+  obs[8889:8934]     15 action history entries × 3 floats (newest first)
+                       per entry: category_norm, card_id_norm, is_self
+  obs[8934:8966]     32 action-category features   (appended by env.py)
+  obs[8966:8998]     32 action card-ID features    (appended by env.py)
+  obs[8998:9030]     32 action controller_is_self  (appended by env.py)
+  obs[9030:9100]     70 hand cast-cost features    (10 slots × 7 cost feats)
+  obs[9100:9436]    336 BF ability-cost features   (48 slots × 7 cost feats)
 """
 
 import torch
@@ -48,6 +50,9 @@ _GY_SLOT_SIZE    = 32   # card one-hot only
 _HAND_SLOTS      = 10
 _HAND_SLOT_SIZE  = 32   # card one-hot only
 
+_HIST_ENTRIES    = 15   # action history entries (newest first)
+_HIST_ENTRY_SIZE = 3    # category_norm, card_id_norm, is_self
+
 _PERM_START  = _GLOBAL_SIZE                                    # 33
 _PERM_END    = _PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE     # 4065
 _STACK_START = _PERM_END                                       # 4065
@@ -56,7 +61,9 @@ _GY_START    = _STACK_END                                      # 4473
 _GY_END      = _GY_START + _GY_SLOTS * _GY_SLOT_SIZE           # 8569
 _HAND_START  = _GY_END                                         # 8569
 _HAND_END    = _HAND_START + _HAND_SLOTS * _HAND_SLOT_SIZE     # 8889
-# obs[8889:] = action metadata + cost features appended by env.py
+_HIST_START  = _HAND_END                                       # 8889
+_HIST_END    = _HIST_START + _HIST_ENTRIES * _HIST_ENTRY_SIZE  # 8934
+# obs[8934:] = action metadata + cost features appended by env.py
 
 
 class CardGameExtractor(BaseFeaturesExtractor):
@@ -69,12 +76,12 @@ class CardGameExtractor(BaseFeaturesExtractor):
       entity_encoder (32 → embed_dim): graveyard and hand (card one-hot only)
 
     Output fed into the policy MLP head:
-      global(33) + action_extras(274) +
-      creature_agg(embed*2) + land_agg(embed*2) +
+      global(33) + hist(45) + action_extras(274) +
+      perm_agg(embed*2) +
       stack_agg(embed//2 * 2) + graveyard_agg(embed) + hand_agg(embed)
 
     With default embed_dim=64:
-      33 + 274 + 128 + 128 + 64 + 64 + 64 = 755 floats.
+      33 + 45 + 274 + 128 + 64 + 64 + 64 = 672 floats.
     """
 
     def __init__(
@@ -83,9 +90,11 @@ class CardGameExtractor(BaseFeaturesExtractor):
         embed_dim: int = 64,
     ):
         half = embed_dim // 2
+        _hist_size = _HIST_ENTRIES * _HIST_ENTRY_SIZE     # 45
         features_dim = (
             _GLOBAL_SIZE                                 # 33
-            + (observation_space.shape[0] - _HAND_END)  # action extras
+            + _hist_size                                 # 45 action history
+            + (observation_space.shape[0] - _HIST_END)   # action extras
             + embed_dim * 2                              # perm mean+max (creatures, lands, other)
             + half * 2                                   # stack mean+max
             + embed_dim                                  # graveyard mean
@@ -119,7 +128,8 @@ class CardGameExtractor(BaseFeaturesExtractor):
 
     def forward(self, obs: torch.Tensor) -> torch.Tensor:
         global_ctx    = obs[:, :_GLOBAL_SIZE]
-        action_extras = obs[:, _HAND_END:]   # action cats + card IDs + cost features
+        hist_ctx      = obs[:, _HIST_START:_HIST_END]  # action history (15 × 3)
+        action_extras = obs[:, _HIST_END:]   # action cats + card IDs + cost features
 
         perms     = obs[:, _PERM_START:_PERM_END].reshape(-1, _PERM_SLOTS, _PERM_SLOT_SIZE)
         stack     = obs[:, _STACK_START:_STACK_END].reshape(-1, _STACK_SLOTS, _STACK_SLOT_SIZE)
@@ -138,4 +148,4 @@ class CardGameExtractor(BaseFeaturesExtractor):
         gy_agg   = gy_emb.mean(1)
         hand_agg = hand_emb.mean(1)
 
-        return torch.cat([global_ctx, action_extras, perm_agg, stk_agg, gy_agg, hand_agg], dim=-1)
+        return torch.cat([global_ctx, hist_ctx, action_extras, perm_agg, stk_agg, gy_agg, hand_agg], dim=-1)

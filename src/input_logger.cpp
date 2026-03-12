@@ -5,8 +5,11 @@
 #include <cstdio>
 #include <iostream>
 
+#include "card_vocab.h"
 #include "classes/game.h"
 #include "cli_output.h"
+#include "components/carddata.h"
+#include "components/ability.h"
 #include "components/zone.h"
 #include "ecs/coordinator.h"
 #include "error.h"
@@ -118,6 +121,24 @@ unsigned int InputLogger::get_replay_seed() const {
     return replay_seed;
 }
 
+static void record_chosen_action(const std::vector<LegalAction> &actions, int choice) {
+    if (choice < 0 || choice >= static_cast<int>(actions.size())) return;
+    const LegalAction &la = actions[static_cast<size_t>(choice)];
+    int cat = static_cast<int>(la.category);
+    int vocab = -1;
+    Entity src = la.source_entity;
+    if (src != 0) {
+        if (global_coordinator.entity_has_component<CardData>(src)) {
+            vocab = card_name_to_index(global_coordinator.GetComponent<CardData>(src).name);
+        } else if (global_coordinator.entity_has_component<Ability>(src)) {
+            Entity ab_src = global_coordinator.GetComponent<Ability>(src).source;
+            if (global_coordinator.entity_has_component<CardData>(ab_src))
+                vocab = card_name_to_index(global_coordinator.GetComponent<CardData>(ab_src).name);
+        }
+    }
+    cur_game.record_action(cat, vocab, cur_game.player_a_has_priority);
+}
+
 int InputLogger::get_input(const std::vector<LegalAction> &actions) {
     extern bool has_human_player;
     extern bool human_player_is_a;
@@ -135,6 +156,7 @@ int InputLogger::get_input(const std::vector<LegalAction> &actions) {
         Zone::Ownership priority = cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
         game_log("(REPLAY) [T%zu | %s | %s] Input: %d\n", cur_game.turn, step_to_string(cur_game.cur_step),
             player_name(priority).c_str(), choice);
+        record_chosen_action(actions, choice);
         return choice;
     }
 
@@ -158,6 +180,7 @@ int InputLogger::get_input(const std::vector<LegalAction> &actions) {
             log_file << choice << std::endl;
             log_file.flush();
         }
+        record_chosen_action(actions, choice);
         return choice;
     }
 
@@ -170,6 +193,7 @@ int InputLogger::get_input(const std::vector<LegalAction> &actions) {
                 log_file << 0 << std::endl;
                 log_file.flush();
             }
+            record_chosen_action(actions, 0);
             return 0;
         }
         auto_pass_until_turn = -1;
@@ -195,6 +219,7 @@ int InputLogger::get_input(const std::vector<LegalAction> &actions) {
                     log_file << 0 << std::endl;
                     log_file.flush();
                 }
+                record_chosen_action(actions, 0);
                 return 0;
                 break;
             case FLAG_QUIT:
@@ -216,6 +241,7 @@ int InputLogger::get_input(const std::vector<LegalAction> &actions) {
             log_file << choice << std::endl;
             log_file.flush();
         }
+        record_chosen_action(actions, choice);
         return choice;
     }
 }

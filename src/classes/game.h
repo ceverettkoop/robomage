@@ -2,6 +2,8 @@
 #define GAME_H
 
 //passing Step enum to C for GUI
+#define ACTION_HISTORY_SIZE 15
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -57,6 +59,12 @@ enum MandatoryChoice {
     CHOOSE_ENTITY  // Legend rule, replacement effect, choose card name, choose permanent
 };
 
+struct ActionHistoryEntry {
+    int category;        // ActionCategory value
+    int card_vocab_idx;  // -1 for non-card entities
+    bool player_a;       // true if Player A took this action
+};
+
 struct Game {
         Game() {};
         Game(size_t _seed) {
@@ -83,6 +91,12 @@ struct Game {
         std::vector<DelayedTrigger> delayed_triggers;
         std::vector<Entity> delve_exiled;   // entities exiled during current delve cast; cleared after ETB
         Entity remembered_entity = 0;       // Defined$ Remembered — used by Attach sub-ability
+
+        // Recent action history ring buffer for ML observation
+        ActionHistoryEntry action_history[ACTION_HISTORY_SIZE] = {};
+        int action_history_write = 0;  // next write position (circular)
+        int action_history_count = 0;  // total entries written (capped at ACTION_HISTORY_SIZE)
+        void record_action(int category, int card_vocab_idx, bool player_a);
 
         bool ready_to_resolve();
         bool is_mandatory_choice_pending() const;

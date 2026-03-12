@@ -97,6 +97,11 @@ typedef struct GameState_tag {
     int  opp_hand_ct;                    // == opponent.hand_ct (backwards compat)
     int  self_library_ct;
     int  opp_library_ct;
+
+    // Recent action history (newest first), 3 floats per entry:
+    //   category / ACTION_CATEGORY_MAX, card_vocab_idx / N_CARD_TYPES, is_self
+    float action_history[ACTION_HISTORY_SIZE * 3];
+    int   action_history_len;  // valid entries (0 to ACTION_HISTORY_SIZE)
 } GameState;
 
 #ifdef __cplusplus

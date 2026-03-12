@@ -58,8 +58,14 @@
 //
 //  [8569-8888] Self hand: 10 slots x 32 floats = 320
 //              Per slot: card_id one-hot (all zeros = empty)
+//
+//  [8889-8933] Action history: 15 entries x 3 floats = 45 (newest first)
+//              Per entry: category / ACTION_CATEGORY_MAX,
+//                         card_vocab_idx / N_CARD_TYPES (or -1/N_CARD_TYPES sentinel),
+//                         is_self (1.0 = viewer's action, 0.0 = opponent's)
+//              Empty entries (beyond action_history_len) are all zeros.
 
-static constexpr int STATE_SIZE      = 8889;
+static constexpr int STATE_SIZE      = 8934;
 static constexpr int N_CARD_TYPES    = 32;
 static constexpr int PERM_SLOT_SIZE  = 42;  // 8 stat/combat + 2 type flags + N_CARD_TYPES
 static constexpr int STACK_SLOT_SIZE = 34;  // controller_is_self(1) + card one-hot(32) + is_spell(1)
