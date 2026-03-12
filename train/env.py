@@ -61,7 +61,7 @@ STATE_SIZE = 8889
 # NOTE: ActionChoice.description is never emitted in the QUERY line — it is for
 #       human-readable display only and is not part of the ML observation.
 MAX_ACTIONS = 32         # practical upper bound on num_choices per step
-ACTION_CATEGORY_MAX = 21 # highest ActionCategory enum value (SHUFFLE)
+ACTION_CATEGORY_MAX = 22 # highest ActionCategory enum value (PAYING_COSTS)
 _ACTION_CARD_ID_NULL = -1.0 / N_CARD_TYPES  # -0.03125 — null sentinel for non-card slots
 _ACTION_CTRL_NULL    = -1.0 / N_CARD_TYPES  # -0.03125 — null sentinel for non-entity actions
 MAX_HAND_SLOTS = 10

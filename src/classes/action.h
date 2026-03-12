@@ -37,9 +37,10 @@ enum class ActionCategory {
     SEARCH_LIBRARY    = 19,  // select a card from a library search (index 0 = fail to find)
     TOP_LIBRARY       = 20,  // select a card to place on top of library
     SHUFFLE           = 21,  // shuffle a library
+    PAYING_COSTS      = 22,  // delve exile or pitch card from hand to pay costs
 };
 
-static constexpr int ACTION_CATEGORY_MAX = 21;  // highest ActionCategory value
+static constexpr int ACTION_CATEGORY_MAX = 22;  // highest ActionCategory value
 
 struct LegalAction {
     ActionType type;

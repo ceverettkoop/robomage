@@ -10,7 +10,7 @@
 //   where N = num_choices.
 //
 // The state vector (STATE_SIZE floats) is followed by:
-//   - N ActionCategory integers (values 0-21, see ActionCategory enum).
+//   - N ActionCategory integers (values 0-22, see ActionCategory enum).
 //   - N card vocab index floats: card_vocab_index / N_CARD_TYPES for card
 //     entities, or -1.0 / N_CARD_TYPES (-0.03125) as a null sentinel for
 //     non-card entities (players, confirm slots, fail-to-find, empty).

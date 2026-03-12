@@ -74,6 +74,36 @@ void add_mana(Zone::Ownership player_owner, Colors mana_color, size_t amount) {
     }
 }
 
+ManaValue pay_partial(Zone::Ownership player_owner, const ManaValue &cost) {
+    Entity player_entity = get_player_entity(player_owner);
+    auto &player = global_coordinator.GetComponent<Player>(player_entity);
+    ManaValue remaining;
+
+    // Pay specific colors first
+    for (auto color : cost) {
+        if (color == GENERIC) continue;
+        auto it = player.mana.find(color);
+        if (it != player.mana.end()) {
+            player.mana.erase(it);
+        } else {
+            remaining.insert(color);
+        }
+    }
+
+    // Pay generic with any remaining mana
+    size_t generic_needed = cost.count(GENERIC);
+    for (size_t i = 0; i < generic_needed; i++) {
+        if (!player.mana.empty()) {
+            auto it = player.mana.begin();
+            player.mana.erase(it);
+        } else {
+            remaining.insert(GENERIC);
+        }
+    }
+
+    return remaining;
+}
+
 void empty_mana_pool(Zone::Ownership player_owner) {
     Entity player_entity = get_player_entity(player_owner);
     auto &player = global_coordinator.GetComponent<Player>(player_entity);

@@ -26,6 +26,8 @@ const char* gui_card_name(int vocab_idx);
 const char* gui_card_oracle(int vocab_idx);
 const char* gui_card_type_line(int vocab_idx);
 const char* gui_step_name(int step);
+const char* gui_card_mana_cost(int vocab_idx);
+int gui_card_color_identity(int vocab_idx);  // bitmask: W=1 U=2 B=4 R=8 G=16
 int gui_card_base_power(int vocab_idx);
 int gui_card_base_toughness(int vocab_idx);
 #ifdef __cplusplus

@@ -23,6 +23,9 @@ void spend_mana(Zone::Ownership player, const std::multiset<Colors>& cost);
 // Add mana to player's pool
 void add_mana(Zone::Ownership player, Colors mana_color, size_t amount);
 
+// Pay as much of cost as possible from player's pool, return the unpaid remainder
+ManaValue pay_partial(Zone::Ownership player, const ManaValue& cost);
+
 // Empty player's mana pool (called at step transitions)
 void empty_mana_pool(Zone::Ownership player);
 

@@ -47,11 +47,12 @@ void gui_set_resource_dir(const char *path) {
 #define LAYOUT_CARD_GAP             4.0f    // gap between cards in hand / battlefield
 
 // Main game area row heights — fractions of screen height
+#define LAYOUT_PHASE_BAR_H          0.030f  // phase indicator bar
 #define LAYOUT_STATUS_BAR_H         0.046f  // turn bar / player info bars
 #define LAYOUT_OPP_BF_H             0.155f  // opponent battlefield
 #define LAYOUT_STACK_H              0.038f  // stack display
 #define LAYOUT_SELF_BF_H            0.155f  // self battlefield
-#define LAYOUT_SELF_HAND_H          0.3f  // self hand cards
+#define LAYOUT_SELF_HAND_H          0.24f  // self hand cards
 
 // Sidebar vertical splits — fractions of screen height
 #define LAYOUT_LOG_BOTTOM_RATIO     0.62f   // log panel bottom edge
@@ -101,7 +102,9 @@ static int gs_hover_perm_damage = 0;
 // Forward declarations
 static int count_gy(const int *gy, int max);
 static void draw_wrapped_text(Font font, const char *text, float x, float y, float max_w, float font_size, Color color);
+static Color card_bg_from_identity(int color_identity, bool is_land);
 static void draw_perm_card(float cx, float cy, float cw, float ch, const PermanentState *perm, Vector2 mouse);
+static void render_phase_bar(float px, float py, float pw, float ph, int cur_step);
 static void render_battlefield(float px, float py, float pw, float ph, const PermanentState *perms, int max_slots,
     Vector2 mouse, const char *label);
 static void render_gs(void);
@@ -115,6 +118,58 @@ static int count_gy(const int *gy, int max) {
         if (gy[i] >= 0) n++;
     }
     return n;
+}
+
+static Color card_bg_from_identity(int color_identity, bool is_land) {
+    if (is_land && color_identity == 0) return (Color){215, 200, 175, 255};
+    int pop = 0;
+    for (int i = 0; i < 5; i++) pop += (color_identity >> i) & 1;
+    if (pop >= 2) return (Color){235, 220, 170, 255};  // multicolor = gold
+    if (color_identity & 1)  return (Color){255, 252, 220, 255};  // white
+    if (color_identity & 2)  return (Color){200, 220, 255, 255};  // blue
+    if (color_identity & 4)  return (Color){200, 195, 210, 255};  // black
+    if (color_identity & 8)  return (Color){255, 210, 200, 255};  // red
+    if (color_identity & 16) return (Color){200, 235, 200, 255};  // green
+    return (Color){220, 225, 230, 255};  // colorless
+}
+
+static void render_phase_bar(float px, float py, float pw, float ph, int cur_step) {
+    static const char *phase_labels[] = {
+        "UNT", "UPK", "DRW", "M1",
+        "CMB", "ATK", "BLK",
+        "DMG", "EOC", "M2",
+        "END", "CLN"
+    };
+    int n_phases = 12;
+    float gap = 2.0f;
+    float total_gap = gap * (float)(n_phases - 1);
+    float box_w = (pw - total_gap) / (float)n_phases;
+    float font_sz = ph * 0.55f;
+    if (font_sz < 6.0f) font_sz = 6.0f;
+
+    DrawRectangle((int)px, (int)py, (int)pw, (int)ph, (Color){35, 35, 50, 255});
+
+    for (int i = 0; i < n_phases; i++) {
+        float bx = px + (float)i * (box_w + gap);
+        bool active = (i == cur_step);
+        Color bg = active ? (Color){255, 200, 60, 255} : (Color){70, 70, 95, 255};
+        Color fg = active ? BLACK : (Color){180, 180, 200, 255};
+        DrawRectangle((int)bx, (int)(py + 2.0f), (int)box_w, (int)(ph - 4.0f), bg);
+        float tw = MeasureTextEx(g_font, phase_labels[i], font_sz, 1.0f).x;
+        float tx = bx + (box_w - tw) * 0.5f;
+        float ty = py + (ph - font_sz) * 0.5f;
+        DrawTextEx(g_font, phase_labels[i], (Vector2){tx, ty}, font_sz, 1.0f, fg);
+        if (active) {
+            // draw small triangle below the box
+            float tri_cx = bx + box_w * 0.5f;
+            float tri_y = py + ph - 1.0f;
+            DrawTriangle(
+                (Vector2){tri_cx - 4.0f, tri_y},
+                (Vector2){tri_cx + 4.0f, tri_y},
+                (Vector2){tri_cx, tri_y + 5.0f},
+                (Color){255, 200, 60, 255});
+        }
+    }
 }
 
 static void determine_screen_size(void) {
@@ -195,20 +250,25 @@ static void draw_perm_card(float cx, float cy, float cw, float ch, const Permane
 
     // Pick fill and border colours
     Color bg, border_col;
+    int ci = gui_card_color_identity(perm->card_vocab_idx);
     if (perm->is_attacking) {
         bg = (Color){255, 175, 175, 255};
         border_col = RED;
     } else if (perm->is_blocking) {
         bg = (Color){175, 175, 255, 255};
         border_col = BLUE;
-    } else if (perm->is_tapped) {
-        bg = (Color){185, 195, 210, 255};
-        border_col = (Color){90, 110, 140, 255};
     } else if (perm->has_summoning_sickness) {
-        bg = (Color){255, 255, 175, 255};
+        bg = card_bg_from_identity(ci, perm->is_land);
         border_col = ORANGE;
+    } else if (perm->is_tapped) {
+        bg = card_bg_from_identity(ci, perm->is_land);
+        // dim the color for tapped
+        bg.r = (unsigned char)((int)bg.r * 80 / 100);
+        bg.g = (unsigned char)((int)bg.g * 80 / 100);
+        bg.b = (unsigned char)((int)bg.b * 80 / 100);
+        border_col = (Color){90, 110, 140, 255};
     } else {
-        bg = (Color){238, 238, 238, 255};
+        bg = card_bg_from_identity(ci, perm->is_land);
         border_col = GRAY;
     }
     if (!perm->controller_is_self) {
@@ -240,11 +300,18 @@ static void draw_perm_card(float cx, float cy, float cw, float ch, const Permane
     const char *oracle = gui_card_oracle(perm->card_vocab_idx);
     float oracle_sz = font_sz * 0.85f;
 
+    const char *mana_cost = gui_card_mana_cost(perm->card_vocab_idx);
+
     if (!perm->is_tapped) {
         // Upright: scissor to card bounds, draw name / oracle / P/T normally
         BeginScissorMode((int)cx, (int)cy, (int)cw, (int)ch);
 
         DrawTextEx(g_font, name, (Vector2){cx + 3.0f, cy + 3.0f}, font_sz, 1.0f, BLACK);
+        if (mana_cost[0] != '\0') {
+            float mc_w = MeasureTextEx(g_font, mana_cost, font_sz * 0.85f, 1.0f).x;
+            DrawTextEx(g_font, mana_cost, (Vector2){cx + cw - mc_w - 3.0f, cy + 3.0f},
+                font_sz * 0.85f, 1.0f, (Color){100, 60, 20, 255});
+        }
 
         float oracle_y = cy + font_sz + 5.0f;
         float pt_reserve = perm->is_creature ? (font_sz + 5.0f) : 0.0f;
@@ -272,6 +339,14 @@ static void draw_perm_card(float cx, float cy, float cw, float ch, const Permane
             (Vector2){card_cx - hh + 3.0f, card_cy},
             (Vector2){0.0f, font_sz * 0.5f},
             -90.0f, font_sz, 1.0f, BLACK);
+
+        if (mana_cost[0] != '\0') {
+            float mc_sz = font_sz * 0.85f;
+            DrawTextPro(g_font, mana_cost,
+                (Vector2){card_cx - hh + 3.0f, card_cy},
+                (Vector2){0.0f, -(hw - mc_sz - 3.0f)},
+                -90.0f, mc_sz, 1.0f, (Color){100, 60, 20, 255});
+        }
 
         if (perm->is_creature) {
             char pt[32];
@@ -374,6 +449,14 @@ static void render_gs(void) {
     float self_hand_h = roundf(sh * LAYOUT_SELF_HAND_H);
 
     float y = 2.0f;
+    float phase_bar_h = roundf(sh * LAYOUT_PHASE_BAR_H);
+    float opp_bf_y = 0.0f, self_bf_y = 0.0f;
+
+    // ── 0. Phase indicator bar ──────────────────────────────────────────
+    {
+        render_phase_bar(px, y, pw, phase_bar_h, (int)gs->cur_step);
+        y += phase_bar_h + LAYOUT_SECTION_GAP;
+    }
 
     // ── 1. Turn / Step bar ──────────────────────────────────────────────
     {
@@ -399,6 +482,7 @@ static void render_gs(void) {
 
     // ── 3. Opponent battlefield ─────────────────────────────────────────
     {
+        opp_bf_y = y;
         render_battlefield(px, y, pw, opp_bf_h, gs->opp_permanents, MAX_BATTLEFIELD_SLOTS, mouse, "Opponent");
         y += opp_bf_h + LAYOUT_SECTION_GAP;
     }
@@ -430,6 +514,7 @@ static void render_gs(void) {
 
     // ── 5. Self battlefield ─────────────────────────────────────────────
     {
+        self_bf_y = y;
         render_battlefield(px, y, pw, self_bf_h, gs->self_permanents, MAX_BATTLEFIELD_SLOTS, mouse, "You");
         y += self_bf_h + LAYOUT_SECTION_GAP;
     }
@@ -455,9 +540,25 @@ static void render_gs(void) {
             const char *cname = gui_card_name(vi);
             const char *ctype = gui_card_type_line(vi);
             const char *coracle = gui_card_oracle(vi);
+            const char *cmana = gui_card_mana_cost(vi);
+            int cci = gui_card_color_identity(vi);
+            // check if this is a land by type line
+            bool hand_is_land = (ctype[0] != '\0' && strstr(ctype, "Land") != NULL);
+            Color hand_bg = card_bg_from_identity(cci, hand_is_land);
 
-            DrawRectangle((int)card_x, (int)card_y, (int)card_w, (int)card_h, (Color){195, 225, 195, 255});
-            DrawRectangleLinesEx((Rectangle){card_x, card_y, card_w, card_h}, 1.5f, DARKGREEN);
+            DrawRectangle((int)card_x, (int)card_y, (int)card_w, (int)card_h, hand_bg);
+            // pick border color from identity
+            Color hand_border;
+            int hand_pop = 0;
+            for (int b = 0; b < 5; b++) hand_pop += (cci >> b) & 1;
+            if (hand_pop >= 2) hand_border = (Color){180, 160, 50, 255};       // gold
+            else if (cci & 1)  hand_border = (Color){180, 170, 80, 255};       // white-ish
+            else if (cci & 2)  hand_border = (Color){50, 80, 180, 255};        // blue
+            else if (cci & 4)  hand_border = (Color){60, 50, 70, 255};         // black
+            else if (cci & 8)  hand_border = (Color){180, 60, 50, 255};        // red
+            else if (cci & 16) hand_border = (Color){50, 140, 50, 255};        // green
+            else               hand_border = (Color){120, 125, 130, 255};      // colorless
+            DrawRectangleLinesEx((Rectangle){card_x, card_y, card_w, card_h}, 1.5f, hand_border);
 
             float name_y = card_y + 3.0f;
             float type_y = card_y + font_card + 5.0f;
@@ -466,6 +567,11 @@ static void render_gs(void) {
 
             BeginScissorMode((int)card_x, (int)card_y, (int)card_w, (int)card_h);
             DrawTextEx(g_font, cname, (Vector2){card_x + 3.0f, name_y}, font_card, 1.0f, BLACK);
+            if (cmana[0] != '\0') {
+                float mc_w = MeasureTextEx(g_font, cmana, font_card * 0.85f, 1.0f).x;
+                DrawTextEx(g_font, cmana, (Vector2){card_x + card_w - mc_w - 3.0f, name_y},
+                    font_card * 0.85f, 1.0f, (Color){100, 60, 20, 255});
+            }
             DrawTextEx(g_font_oracle, ctype, (Vector2){card_x + 3.0f, type_y}, font_tiny, 1.0f, DARKGRAY);
             if (oracle_clip_h > font_tiny && coracle[0] != '\0') {
                 draw_wrapped_text(g_font_oracle, coracle, card_x + 3.0f, oracle_y, card_w - 6.0f, font_tiny, DARKGRAY);
@@ -526,6 +632,21 @@ static void render_gs(void) {
             }
         }
         DrawTextEx(g_font, line, (Vector2){px + 4.0f, y}, small_sz, 1.0f, DARKBROWN);
+    }
+
+    // ── Active player indicator arrow (in gap between sidebar and battlefield) ──
+    {
+        float arrow_bf_y = gs->is_active_player ? self_bf_y : opp_bf_y;
+        float arrow_bf_h = gs->is_active_player ? self_bf_h : opp_bf_h;
+        float arrow_cy = arrow_bf_y + arrow_bf_h * 0.5f;
+        float arrow_x = sw * LAYOUT_SIDEBAR_W_RATIO + 3.0f;
+        float arrow_sz = 8.0f;
+        Color arrow_col = (Color){255, 200, 60, 255};
+        DrawTriangle(
+            (Vector2){arrow_x, arrow_cy - arrow_sz},
+            (Vector2){arrow_x, arrow_cy + arrow_sz},
+            (Vector2){arrow_x + arrow_sz * 1.2f, arrow_cy},
+            arrow_col);
     }
 
     // ── Tooltip (Q + hover) ─────────────────────────────────────────────

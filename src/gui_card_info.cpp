@@ -69,6 +69,64 @@ const char* gui_step_name(int step) {
     return names[step];
 }
 
+const char* gui_card_mana_cost(int vocab_idx) {
+    static char buf[128];
+    buf[0] = '\0';
+    auto uid = name_to_uid(card_index_to_name(vocab_idx));
+    if (uid[0] == '?') return "";
+    auto it = card_db.find(uid);
+    if (it == card_db.end()) return "";
+    if (!global_coordinator.entity_has_component<CardData>(it->second)) return "";
+    const CardData& cd = global_coordinator.GetComponent<CardData>(it->second);
+    if (cd.mana_cost.empty()) return "";
+    int generic = 0;
+    int pos = 0;
+    for (Colors c : cd.mana_cost) {
+        if (c == GENERIC) { generic++; continue; }
+        const char* sym = "";
+        switch (c) {
+            case WHITE:     sym = "W"; break;
+            case BLUE:      sym = "U"; break;
+            case BLACK:     sym = "B"; break;
+            case RED:       sym = "R"; break;
+            case GREEN:     sym = "G"; break;
+            case COLORLESS: sym = "C"; break;
+            default: break;
+        }
+        pos += snprintf(buf + pos, sizeof(buf) - (size_t)pos, "{%s}", sym);
+    }
+    if (generic > 0) {
+        // prepend generic cost
+        char tmp[128];
+        snprintf(tmp, sizeof(tmp), "{%d}", generic);
+        strncat(tmp, buf, sizeof(tmp) - strlen(tmp) - 1);
+        strncpy(buf, tmp, sizeof(buf) - 1);
+        buf[sizeof(buf) - 1] = '\0';
+    }
+    return buf;
+}
+
+int gui_card_color_identity(int vocab_idx) {
+    auto uid = name_to_uid(card_index_to_name(vocab_idx));
+    if (uid[0] == '?') return 0;
+    auto it = card_db.find(uid);
+    if (it == card_db.end()) return 0;
+    if (!global_coordinator.entity_has_component<CardData>(it->second)) return 0;
+    const CardData& cd = global_coordinator.GetComponent<CardData>(it->second);
+    int mask = 0;
+    for (Colors c : cd.mana_cost) {
+        switch (c) {
+            case WHITE: mask |= 1; break;
+            case BLUE:  mask |= 2; break;
+            case BLACK: mask |= 4; break;
+            case RED:   mask |= 8; break;
+            case GREEN: mask |= 16; break;
+            default: break;
+        }
+    }
+    return mask;
+}
+
 int gui_card_base_power(int vocab_idx) {
     const char* name = card_index_to_name(vocab_idx);
     if (name[0] == '?') return 0;
