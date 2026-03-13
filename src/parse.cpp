@@ -199,16 +199,9 @@ Entity parse_card_script(std::string path) {
             card.keywords.push_back("Equip");
             continue;
         }
-        // K:Prowess — inject triggered ability: noncreature spell → +1/+1 until EOT
+        // K:Prowess — keyword stored; triggered ability applied by apply_keyword_abilities
         if (kw_line == "Prowess" || kw_line.rfind("Prowess", 0) == 0) {
             card.keywords.push_back("Prowess");
-            Ability prowess_ab;
-            prowess_ab.ability_type = Ability::TRIGGERED;
-            prowess_ab.trigger_on = Events::NONCREATURE_SPELL_CAST;
-            prowess_ab.trigger_valid_player_is_controller = true;
-            prowess_ab.category = "ProwessBonus";
-            prowess_ab.amount = 1;
-            card.abilities.push_back(prowess_ab);
             continue;
         }
         size_t pos = 0;
@@ -275,20 +268,8 @@ Token parse_token_script(const std::string &script_name) {
     tok.power = parse_power(pt);
     tok.toughness = parse_toughness(pt);
 
-    // Parse K: keyword lines — same logic as card parser
+    // Parse K: keyword lines — keyword stored; triggered ability applied by apply_keyword_abilities
     for (auto &kw_line : multi_values_from_script(script_data, "K")) {
-        if (kw_line == "Prowess" || kw_line.rfind("Prowess", 0) == 0) {
-            tok.keywords.push_back("Prowess");
-            Ability prowess_ab;
-            prowess_ab.ability_type = Ability::TRIGGERED;
-            prowess_ab.trigger_on = Events::NONCREATURE_SPELL_CAST;
-            prowess_ab.trigger_valid_player_is_controller = true;
-            prowess_ab.category = "ProwessBonus";
-            prowess_ab.amount = 1;
-            tok.abilities.push_back(prowess_ab);
-            continue;
-        }
-        // Generic keywords (Haste, Trample, Flying, etc.)
         size_t pos = 0;
         while (pos < kw_line.size()) {
             size_t comma = kw_line.find(',', pos);

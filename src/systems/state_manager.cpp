@@ -78,6 +78,7 @@ void StateManager::apply_permanent_components(Game &game) {
                     damage.damage_counters = 0;
                     global_coordinator.AddComponent(entity, damage);
                 }
+                apply_keyword_abilities(entity);
             } else {
                 // Token has left the battlefield — schedule for destruction
                 if (global_coordinator.entity_has_component<Permanent>(entity))
@@ -186,6 +187,7 @@ void StateManager::apply_permanent_components(Game &game) {
             if (is_land) {
                 apply_land_abilities(entity);
             }
+            apply_keyword_abilities(entity);
 
         } else {  // off battlefield, check to remove
             if (global_coordinator.entity_has_component<Permanent>(entity)) {
@@ -248,6 +250,47 @@ void StateManager::apply_land_abilities(Entity entity) {
         mana_ability.source = entity;
         perm_abilities.push_back(mana_ability);
     }
+}
+
+static Ability keyword_triggered_ability(const std::string &keyword);
+
+void StateManager::apply_keyword_abilities(Entity entity) {
+    if (!global_coordinator.entity_has_component<Creature>(entity)) return;
+    auto &cr = global_coordinator.GetComponent<Creature>(entity);
+    auto &perm_abilities = global_coordinator.GetComponent<Permanent>(entity).abilities;
+
+    for (const auto &kw : cr.keywords) {
+        Ability ab = keyword_triggered_ability(kw);
+        if (ab.trigger_on == 0) continue;
+
+        bool already_present = false;
+        for (const auto &existing : perm_abilities) {
+            if (existing.ability_type == Ability::TRIGGERED &&
+                existing.category == ab.category &&
+                existing.trigger_on == ab.trigger_on) {
+                already_present = true;
+                break;
+            }
+        }
+        if (already_present) continue;
+
+        ab.source = entity;
+        perm_abilities.push_back(ab);
+    }
+}
+
+// Maps keywords to their corresponding triggered abilities.
+// Returns an ability with trigger_on == 0 if the keyword has no triggered ability.
+static Ability keyword_triggered_ability(const std::string &keyword) {
+    Ability ab;
+    if (keyword == "Prowess") {
+        ab.ability_type = Ability::TRIGGERED;
+        ab.trigger_on = Events::NONCREATURE_SPELL_CAST;
+        ab.trigger_valid_player_is_controller = true;
+        ab.category = "ProwessBonus";
+        ab.amount = 1;
+    }
+    return ab;
 }
 
 void StateManager::apply_static_ability_effects() {
@@ -643,18 +686,21 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
 
         auto &perm = global_coordinator.GetComponent<Permanent>(entity);
 
-        // Gather triggered abilities — from CardData for normal cards, from Token for token entities
-        const std::vector<Ability>* ab_source = nullptr;
+        // Gather triggered abilities from all sources:
+        // CardData/Token for innate abilities, Permanent for keyword-granted abilities
+        std::vector<const std::vector<Ability>*> ab_sources;
         if (global_coordinator.entity_has_component<CardData>(entity))
-            ab_source = &global_coordinator.GetComponent<CardData>(entity).abilities;
-        else if (global_coordinator.entity_has_component<Token>(entity))
-            ab_source = &global_coordinator.GetComponent<Token>(entity).abilities;
-        else continue;
+            ab_sources.push_back(&global_coordinator.GetComponent<CardData>(entity).abilities);
+        if (global_coordinator.entity_has_component<Token>(entity))
+            ab_sources.push_back(&global_coordinator.GetComponent<Token>(entity).abilities);
+        ab_sources.push_back(&perm.abilities);
+        if (ab_sources.empty()) continue;
 
         const std::string ent_name = entity_name(entity);
 
         for (const auto &ev : events) {
-            for (const auto &ab : *ab_source) {
+            for (const auto *src : ab_sources) {
+            for (const auto &ab : *src) {
                 if (ab.ability_type != Ability::TRIGGERED) continue;
                 if (ab.trigger_on == 0 || ab.trigger_on != ev.GetType()) continue;
                 // "another" check: skip if the event entity is the triggering permanent itself
@@ -720,6 +766,7 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                 global_coordinator.AddComponent(trigger_entity, trigger_ab);
 
                 game_log("%s triggered\n", ent_name.c_str());
+            }
             }
         }
     }
