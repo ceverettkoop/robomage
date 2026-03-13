@@ -66,8 +66,14 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
     const Ability &ability = action.ability;
 
     auto &permanent = global_coordinator.GetComponent<Permanent>(permanent_entity);
-    auto &card_data = global_coordinator.GetComponent<CardData>(permanent_entity);
     Zone::Ownership controller = permanent.controller;
+    // Tokens have no CardData — guard all accesses. The card_data ref is only valid when has_card_data is true.
+    bool has_card_data = global_coordinator.entity_has_component<CardData>(permanent_entity);
+    // Declare a safe reference (only dereference when has_card_data is true)
+    static CardData dummy_card_data;
+    auto &card_data = has_card_data
+                          ? global_coordinator.GetComponent<CardData>(permanent_entity)
+                          : dummy_card_data;
 
     bool is_mana_ability = (ability.category == "AddMana");
     Ability stack_ab = ability;  // not used for mana ability
@@ -271,6 +277,7 @@ static void pay_alternate_cost(const LegalAction &action, Game &game, std::share
         const std::string &type = card_data.alt_cost.return_to_hand_type;
         for (auto e : orderer->mEntities) {
             if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
+            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
             auto &perm = global_coordinator.GetComponent<Permanent>(e);
             if (perm.controller != caster) continue;
             auto &ecd = global_coordinator.GetComponent<CardData>(e);
@@ -587,8 +594,7 @@ void select_target(Ability &ability, std::shared_ptr<Orderer> orderer, Zone::Own
             std::string name = (target == cur_game.player_a_entity) ? "Player A" : "Player B";
             desc = name + " (" + std::to_string(player.life_total) + " life)";
         } else {
-            auto &card = global_coordinator.GetComponent<CardData>(target);
-            desc = card.name;
+            desc = entity_name(target);
         }
         LegalAction la(PASS_PRIORITY, target, desc);
         la.category = ActionCategory::SELECT_TARGET;

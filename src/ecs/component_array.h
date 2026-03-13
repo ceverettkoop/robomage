@@ -2,9 +2,9 @@
 #define COMPONENT_ARRAY_H
 #include <array>
 #include <cassert>
+#include <execinfo.h>
+#include <typeinfo>
 #include <unordered_map>
-
-#include "component.h"
 #include "entity.h"
 // credit https://austinmorlan.com/posts/entity_component_system/
 class IComponentArray {
@@ -40,7 +40,14 @@ class ComponentArray : public IComponentArray {
             --mSize;
         }
         T &GetData(Entity entity) {
-            assert(mEntityToIndexMap.find(entity) != mEntityToIndexMap.end() && "Retrieving non-existent component.");
+            if (mEntityToIndexMap.find(entity) == mEntityToIndexMap.end()) {
+                fprintf(stderr, "CRASH: GetData<%s> on entity %u\n",
+                        typeid(T).name(), entity);
+                void *bt[20];
+                int n = backtrace(bt, 20);
+                backtrace_symbols_fd(bt, n, 2);
+                abort();
+            }
             return mComponentArray[mEntityToIndexMap[entity]];
         }
         void EntityDestroyed(Entity entity) override {

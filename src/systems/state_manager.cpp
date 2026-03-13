@@ -113,21 +113,17 @@ void StateManager::apply_permanent_components(Game &game) {
                 perm.controller = zone.controller;
                 perm.has_summoning_sickness = is_creature;
                 perm.is_tapped = false;
-                perm.timestamp_entered_battlefield = game.timestamp++;
-                global_coordinator.AddComponent(entity, perm);
-                // Attach any replacement effects declared on the card (e.g. enters tapped).
-                // These are picked up and consumed by apply_replacement_effects().
-                if (!card_data.replacement_effects.empty()) {
-                    if (!global_coordinator.entity_has_component<Effect>(entity)) {
-                        Effect eff;
-                        eff.replacements = card_data.replacement_effects;
-                        global_coordinator.AddComponent(entity, eff);
-                    } else {
-                        auto &eff = global_coordinator.GetComponent<Effect>(entity);
-                        for (const auto &r : card_data.replacement_effects)
-                            eff.replacements.push_back(r);
+                // Apply replacement effects at the point the permanent enters (rule 614)
+                for (const auto &r : card_data.replacement_effects) {
+                    switch (r.kind) {
+                        case Effect::Replacement::ENTERS_TAPPED:
+                            perm.is_tapped = true;
+                            game_log("%s enters tapped.\n", card_data.name.c_str());
+                            break;
                     }
                 }
+                perm.timestamp_entered_battlefield = game.timestamp++;
+                global_coordinator.AddComponent(entity, perm);
             }
             // copy activated abilities from card_data to permanent; incl mana abilities altough mana abilities innate to basic land types
             // added elsewhere
@@ -448,145 +444,101 @@ void StateManager::init() {
     global_coordinator.SetSystemSignature<StateManager>(signature);
 }
 
-// layers / timestamps would be implemented here; for now order is arbitrary
-// TODO clean this up - more concise code
-void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orderer) {
-    // Reset pending choice
-    game.pending_choice = NONE;
+// Combat damage is a turn-based action (rule 510.2), not a state-based action
+void StateManager::deal_combat_damage(Game &game) {
+    game_log("\n--- Combat Damage ---\n");
 
-    // Check for player death (0 or less life) - this ends the game immediately
-    auto &player_a = global_coordinator.GetComponent<Player>(game.player_a_entity);
-    auto &player_b = global_coordinator.GetComponent<Player>(game.player_b_entity);
-
-    if (player_a.life_total <= 0) {
-        printf("\nPlayer A has %d life - Player B wins!\n", player_a.life_total);
-        game.ended = true;
-        return;
-    }
-    if (player_b.life_total <= 0) {
-        printf("\nPlayer B has %d life - Player A wins!\n", player_b.life_total);
-        game.ended = true;
-        return;
-    }
-    // Add/remove Permanent component as entities enter/leave the battlefield
-    apply_permanent_components(game);
-
-    // Apply/revert static ability effects (e.g. Delirium bonuses)
-    apply_static_ability_effects();
-
-    // Check for lethal damage on creatures
-    std::vector<Entity> creatures_to_destroy;
     for (auto entity : mEntities) {
         if (!global_coordinator.entity_has_component<Creature>(entity)) continue;
-        if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
-        auto &zone = global_coordinator.GetComponent<Zone>(entity);
-        if (zone.location != Zone::BATTLEFIELD) continue;
+        auto &cr = global_coordinator.GetComponent<Creature>(entity);
+        if (!cr.is_attacking) continue;
 
-        if (!global_coordinator.entity_has_component<Damage>(entity)) continue;
-        auto &creature = global_coordinator.GetComponent<Creature>(entity);
-        auto &damage = global_coordinator.GetComponent<Damage>(entity);
-        if (damage.damage_counters >= creature.toughness) {
-            creatures_to_destroy.push_back(entity);
+        std::string attacker_name = entity_name(entity);
+
+        // Collect blockers for this attacker
+        std::vector<Entity> blockers;
+        for (auto b : mEntities) {
+            if (!global_coordinator.entity_has_component<Creature>(b)) continue;
+            auto &bcr = global_coordinator.GetComponent<Creature>(b);
+            if (bcr.is_blocking && bcr.blocking_target == entity) {
+                blockers.push_back(b);
+            }
         }
-    }
 
-    // Move destroyed creatures to graveyard
-    for (auto entity : creatures_to_destroy) {
-        std::string name = entity_name(entity);
-        game_log("%s is destroyed (lethal damage)\n", name.c_str());
-
-        orderer->add_to_zone(false, entity, Zone::GRAVEYARD);
-        // CARD_CHANGED_ZONE event is fired from orderer->add_to_zone; components removed by SBE
-    }
-
-    // Deal combat damage
-    if (game.cur_step == COMBAT_DAMAGE && !game.combat_damage_dealt) {
-        game_log("\n--- Combat Damage ---\n");
-
-        for (auto entity : mEntities) {
-            if (!global_coordinator.entity_has_component<Creature>(entity)) continue;
-            auto &cr = global_coordinator.GetComponent<Creature>(entity);
-            if (!cr.is_attacking) continue;
-
-            std::string attacker_name = entity_name(entity);
-
-            // Collect blockers for this attacker
-            std::vector<Entity> blockers;
-            for (Entity b = 0; b < MAX_ENTITIES; ++b) {
-                if (!global_coordinator.entity_has_component<Creature>(b)) continue;
-                auto &bcr = global_coordinator.GetComponent<Creature>(b);
-                if (bcr.is_blocking && bcr.blocking_target == entity) {
-                    blockers.push_back(b);
+        if (blockers.empty()) {
+            // Unblocked — deal damage to attack target
+            uint32_t dmg = cr.power;
+            if (dmg > 0) {
+                deal_damage(entity, cr.attack_target, dmg);
+                if (global_coordinator.entity_has_component<Player>(cr.attack_target)) {
+                    auto &target_player = global_coordinator.GetComponent<Player>(cr.attack_target);
+                    target_player.life_total -= static_cast<int>(dmg);
+                    const char *tname = (cr.attack_target == game.player_a_entity) ? "Player A" : "Player B";
+                    game_log("  %s deals %u damage to %s\n", attacker_name.c_str(), dmg, tname);
                 }
             }
+        } else {
+            // Blocked — assign damage to blockers in order, blockers deal damage back
+            uint32_t remaining = cr.power;
+            for (auto blocker : blockers) {
+                auto &bcr = global_coordinator.GetComponent<Creature>(blocker);
+                std::string blocker_name = entity_name(blocker);
 
-            if (blockers.empty()) {
-                // Unblocked — deal damage to attack target
-                uint32_t dmg = cr.power;
-                if (dmg > 0) {
-                    deal_damage(entity, cr.attack_target, dmg);
-                    if (global_coordinator.entity_has_component<Player>(cr.attack_target)) {
-                        auto &target_player = global_coordinator.GetComponent<Player>(cr.attack_target);
-                        target_player.life_total -= static_cast<int>(dmg);
-                        const char *tname = (cr.attack_target == game.player_a_entity) ? "Player A" : "Player B";
-                        game_log("  %s deals %u damage to %s\n", attacker_name.c_str(), dmg, tname);
-                    }
+                // Blocker deals damage to attacker
+                if (bcr.power > 0) {
+                    deal_damage(blocker, entity, bcr.power);
+                    game_log("  %s deals %u damage to %s\n", blocker_name.c_str(), bcr.power, attacker_name.c_str());
                 }
-            } else {
-                // Blocked — assign damage to blockers in order, blockers deal damage back
-                uint32_t remaining = cr.power;
-                for (auto blocker : blockers) {
-                    auto &bcr = global_coordinator.GetComponent<Creature>(blocker);
-                    std::string blocker_name = entity_name(blocker);
 
-                    // Blocker deals damage to attacker
-                    if (bcr.power > 0) {
-                        deal_damage(blocker, entity, bcr.power);
-                        game_log("  %s deals %u damage to %s\n", blocker_name.c_str(), bcr.power, attacker_name.c_str());
-                    }
-
-                    // Attacker deals damage to blocker (lethal to each in order, overflow to next)
-                    if (remaining > 0) {
-                        uint32_t assigned = (remaining >= bcr.toughness) ? bcr.toughness : remaining;
-                        deal_damage(entity, blocker, assigned);
-                        game_log("  %s deals %u damage to %s\n", attacker_name.c_str(), assigned, blocker_name.c_str());
-                        remaining -= assigned;
-                    }
-                }
-                // Trample: excess damage goes to attack target
+                // Attacker deals damage to blocker (lethal to each in order, overflow to next)
                 if (remaining > 0) {
-                    bool has_trample = false;
-                    for (const auto &kw : cr.keywords) {
-                        if (kw == "Trample") { has_trample = true; break; }
-                    }
-                    if (has_trample && global_coordinator.entity_has_component<Player>(cr.attack_target)) {
-                        deal_damage(entity, cr.attack_target, remaining);
-                        auto &target_player = global_coordinator.GetComponent<Player>(cr.attack_target);
-                        target_player.life_total -= static_cast<int>(remaining);
-                        const char *tname = (cr.attack_target == game.player_a_entity) ? "Player A" : "Player B";
-                        game_log("  %s tramples %u damage to %s\n", attacker_name.c_str(), remaining, tname);
-                    }
+                    uint32_t assigned = (remaining >= bcr.toughness) ? bcr.toughness : remaining;
+                    deal_damage(entity, blocker, assigned);
+                    game_log("  %s deals %u damage to %s\n", attacker_name.c_str(), assigned, blocker_name.c_str());
+                    remaining -= assigned;
+                }
+            }
+            // Trample: excess damage goes to attack target
+            if (remaining > 0) {
+                bool has_trample = false;
+                for (const auto &kw : cr.keywords) {
+                    if (kw == "Trample") { has_trample = true; break; }
+                }
+                if (has_trample && global_coordinator.entity_has_component<Player>(cr.attack_target)) {
+                    deal_damage(entity, cr.attack_target, remaining);
+                    auto &target_player = global_coordinator.GetComponent<Player>(cr.attack_target);
+                    target_player.life_total -= static_cast<int>(remaining);
+                    const char *tname = (cr.attack_target == game.player_a_entity) ? "Player A" : "Player B";
+                    game_log("  %s tramples %u damage to %s\n", attacker_name.c_str(), remaining, tname);
                 }
             }
         }
-
-        game.combat_damage_dealt = true;
-        game_log("--- End Combat Damage ---\n\n");
-        return;  // Re-enter loop so SBAs process deaths from damage
     }
 
-    // Check for mandatory choices based on game step
-    // Declare attackers step - active player must declare attackers
+    game.combat_damage_dealt = true;
+    game_log("--- End Combat Damage ---\n\n");
+}
+
+// Turn-based actions happen at the start of specific steps (rules 508, 509, 510, 514)
+void StateManager::process_turn_based_actions(Game &game, std::shared_ptr<Orderer> orderer) {
+    game.pending_choice = NONE;
+
+    // Combat damage (rule 510.2)
+    if (game.cur_step == COMBAT_DAMAGE && !game.combat_damage_dealt) {
+        deal_combat_damage(game);
+    }
+
+    // Declare attackers (rule 508.1)
     if (game.cur_step == DECLARE_ATTACKERS && !game.attackers_declared) {
         game.pending_choice = DECLARE_ATTACKERS_CHOICE;
         return;
     }
-    // Declare blockers step - defending player must declare blockers
+    // Declare blockers (rule 509.1)
     if (game.cur_step == DECLARE_BLOCKERS && !game.blockers_declared) {
         game.pending_choice = DECLARE_BLOCKERS_CHOICE;
         return;
     }
-    // Cleanup step - active player must discard down to 7 cards
+    // Cleanup discard (rule 514.1)
     if (game.cur_step == CLEANUP) {
         Zone::Ownership active_player = game.player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B;
         size_t hand_size = 0;
@@ -600,42 +552,72 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
             return;
         }
     }
-    // TODO: Check for legend rule violations
-    // If multiple legendary permanents with same name exist:
-    //     game.pending_choice = CHOOSE_ENTITY;
-    //     return;
-
-    apply_replacement_effects();
-
-    check_triggered_abilities(game, orderer);
 }
 
-// Processes unapplied replacement effects on battlefield permanents.
-// Each Replacement is consumed (applied = true) exactly once.
-void StateManager::apply_replacement_effects() {
-    for (auto entity : mEntities) {
-        if (!global_coordinator.entity_has_component<Effect>(entity)) continue;
-        if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
-        auto &zone = global_coordinator.GetComponent<Zone>(entity);
-        if (zone.location != Zone::BATTLEFIELD) continue;
+// State-based actions are checked simultaneously and loop until stable (rule 704.3)
+void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orderer) {
+    for (;;) {
+        // Continuous effects define the game state that SBAs evaluate
+        apply_permanent_components(game);
+        apply_static_ability_effects();
 
-        auto &eff = global_coordinator.GetComponent<Effect>(entity);
-        auto &perm = global_coordinator.GetComponent<Permanent>(entity);
+        bool any_applied = false;
 
-        for (auto &r : eff.replacements) {
-            if (r.applied) continue;
-            switch (r.kind) {
-                case Effect::Replacement::ENTERS_TAPPED:
-                    perm.is_tapped = true;
-                    r.applied = true;
-                    if (global_coordinator.entity_has_component<CardData>(entity)) {
-                        auto &cd = global_coordinator.GetComponent<CardData>(entity);
-                        game_log("%s enters tapped.\n", cd.name.c_str());
-                    }
-                    break;
+        // 704.5a - player with 0 or less life loses
+        auto &player_a = global_coordinator.GetComponent<Player>(game.player_a_entity);
+        auto &player_b = global_coordinator.GetComponent<Player>(game.player_b_entity);
+        if (player_a.life_total <= 0) {
+            printf("\nPlayer A has %d life - Player B wins!\n", player_a.life_total);
+            game.ended = true;
+            return;
+        }
+        if (player_b.life_total <= 0) {
+            printf("\nPlayer B has %d life - Player A wins!\n", player_b.life_total);
+            game.ended = true;
+            return;
+        }
+
+        // 704.5d - tokens in zones other than battlefield cease to exist
+        // (handled by apply_permanent_components above)
+
+        // 704.5f - creature with toughness 0 or less goes to graveyard
+        // 704.5g - creature with lethal damage is destroyed
+        std::vector<Entity> creatures_to_destroy;
+        for (auto entity : mEntities) {
+            if (!global_coordinator.entity_has_component<Creature>(entity)) continue;
+            if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
+            auto &zone = global_coordinator.GetComponent<Zone>(entity);
+            if (zone.location != Zone::BATTLEFIELD) continue;
+
+            auto &creature = global_coordinator.GetComponent<Creature>(entity);
+            if (creature.toughness == 0) {
+                creatures_to_destroy.push_back(entity);
+            } else if (global_coordinator.entity_has_component<Damage>(entity)) {
+                auto &damage = global_coordinator.GetComponent<Damage>(entity);
+                if (damage.damage_counters >= creature.toughness) {
+                    creatures_to_destroy.push_back(entity);
+                }
             }
         }
+
+        for (auto entity : creatures_to_destroy) {
+            std::string name = entity_name(entity);
+            auto &creature = global_coordinator.GetComponent<Creature>(entity);
+            if (creature.toughness == 0)
+                game_log("%s dies (zero toughness)\n", name.c_str());
+            else
+                game_log("%s is destroyed (lethal damage)\n", name.c_str());
+            orderer->add_to_zone(false, entity, Zone::GRAVEYARD);
+            any_applied = true;
+        }
+
+        // TODO 704.5j - legend rule
+
+        if (!any_applied) break;
     }
+
+    // SBA loop settled; triggered abilities go on the stack (rule 704.3)
+    check_triggered_abilities(game, orderer);
 }
 
 // Drains all buffered events since the last call and puts any triggered abilities
@@ -781,6 +763,7 @@ static bool can_afford_alt(const AltCost& alt_cost, Zone::Ownership priority_pla
         const std::string& sub = alt_cost.return_to_hand_type;
         for (auto e : orderer->mEntities) {
             if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
+            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
             auto& perm = global_coordinator.GetComponent<Permanent>(e);
             if (perm.controller != priority_player) continue;
             auto& cd2 = global_coordinator.GetComponent<CardData>(e);
@@ -962,8 +945,8 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 if (!has_haste) continue;
             }
             if (ab.category == "AddMana") {  //
-                auto &card_data = global_coordinator.GetComponent<CardData>(ab.source);
-                std::string desc = "Tap " + card_data.name + " for {" + mana_symbol(ab.color) + "}";
+                std::string src_name = entity_name(ab.source);
+                std::string desc = "Tap " + src_name + " for {" + mana_symbol(ab.color) + "}";
                 LegalAction la(ACTIVATE_ABILITY, ab.source, ab, desc);
                 switch (ab.color) {
                     case WHITE:
@@ -990,8 +973,8 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             } else {
                 // Non-mana activated ability (e.g. ChangeZone for fetch lands, Destroy for Wasteland)
                 if (ab.valid_tgts != "N_A" && !has_legal_targets(ab, orderer)) continue;
-                auto &ab_card_data = global_coordinator.GetComponent<CardData>(ab.source);
-                std::string desc = "Activate " + ab_card_data.name + " (" + ab.category + ")";
+                std::string src_name = entity_name(ab.source);
+                std::string desc = "Activate " + src_name + " (" + ab.category + ")";
                 LegalAction non_mana_la(ACTIVATE_ABILITY, ab.source, ab, desc);
                 non_mana_la.category = ActionCategory::ACTIVATE_ABILITY;
                 actions.push_back(non_mana_la);

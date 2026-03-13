@@ -127,20 +127,21 @@ static void *game_loop(void *args) {
             cli_print_turn_header(cur_game.turn, cur_game.player_a_turn);
             prev_turn = cur_game.turn;
         }
-        state_manager->state_based_effects(cur_game, orderer);
-        // mandatory choices
-        // e.g. declare target, declare attackers or declare blockers - discard at cleanup - legend rule; choice at
-        // resolution; declare target
         // compute viewer once per iteration: human player when present, else priority player
         Zone::Ownership viewer = (has_human_player)
             ? (human_player_is_a ? Zone::PLAYER_A : Zone::PLAYER_B)
             : Zone::UNKNOWN;
 
+        // Turn-based actions: combat damage, declare attackers/blockers, cleanup discard
+        state_manager->process_turn_based_actions(cur_game, orderer);
         if (cur_game.is_mandatory_choice_pending()) {
             populate_gamestate(&gs, viewer);
             proc_mandatory_choice(cur_game, orderer);
             continue;
         }
+        // State-based actions loop until stable, then triggered abilities go on stack
+        state_manager->state_based_effects(cur_game, orderer);
+        if (cur_game.ended) break;
         // move to next step if nothing else can occur or if both players have passed priority
         // in those cases advance_step will return true
         if (cur_game.advance_step(stack_manager, orderer)) {
@@ -148,6 +149,7 @@ static void *game_loop(void *args) {
         } else {
             // check state_based_effects again if something changed bc of resolution
             state_manager->state_based_effects(cur_game, orderer);
+            if (cur_game.ended) break;
         }
 
         // active player can do something, list all options
