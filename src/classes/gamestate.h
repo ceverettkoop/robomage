@@ -37,6 +37,7 @@ typedef struct PermanentState_tag {
     bool is_blocking;
     bool has_summoning_sickness;
     int  damage;
+    char token_name[32];         // non-empty for tokens (card_vocab_idx == TOKEN_SENTINEL)
 } PermanentState;
 
 typedef struct StackEntry_tag {

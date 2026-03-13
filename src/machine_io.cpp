@@ -218,6 +218,13 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
                 if (global_coordinator.entity_has_component<Damage>(e))
                     ps.damage = static_cast<int>(global_coordinator.GetComponent<Damage>(e).damage_counters);
 
+                ps.token_name[0] = '\0';
+                if (perm.is_token && global_coordinator.entity_has_component<Token>(e)) {
+                    const auto& tok = global_coordinator.GetComponent<Token>(e);
+                    strncpy(ps.token_name, tok.name.c_str(), sizeof(ps.token_name) - 1);
+                    ps.token_name[sizeof(ps.token_name) - 1] = '\0';
+                }
+
                 if (ps.controller_is_self && self_bf < MAX_BATTLEFIELD_SLOTS)
                     gs->self_permanents[self_bf++] = ps;
                 else if (!ps.controller_is_self && opp_bf < MAX_BATTLEFIELD_SLOTS)

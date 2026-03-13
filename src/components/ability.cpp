@@ -18,6 +18,7 @@
 #include "../mana_system.h"
 #include "../systems/orderer.h"
 #include "../error.h"
+#include "../parse.h"
 #include "creature.h"
 #include "damage.h"
 #include "permanent.h"
@@ -652,67 +653,43 @@ void Ability::resolve_put_counter() {
 // Parses a token script string of the form "<color>_<power>_<toughness>_<name>[_<kw1>[_<kw2>...]]"
 // e.g. "w_1_1_monk_prowess"
 void Ability::resolve_token(std::shared_ptr<Orderer> orderer) {
-    // Split token_script on '_'
-    std::vector<std::string> parts;
-    {
-        size_t p = 0;
-        while (true) {
-            size_t sep = token_script.find('_', p);
-            if (sep == std::string::npos) {
-                parts.push_back(token_script.substr(p));
-                break;
-            }
-            parts.push_back(token_script.substr(p, sep - p));
-            p = sep + 1;
-        }
-    }
-    if (parts.size() < 4) {
-        game_log("resolve_token: malformed token_script '%s'\n", token_script.c_str());
+    Token tok = parse_token_script(token_script);
+    if (tok.name.empty()) {
+        game_log("resolve_token: failed to parse token script '%s'\n", token_script.c_str());
         return;
-    }
-
-    uint32_t tok_power     = static_cast<uint32_t>(std::stoi(parts[1]));
-    uint32_t tok_toughness = static_cast<uint32_t>(std::stoi(parts[2]));
-    std::string tok_name   = parts[3];
-    // Capitalize first letter for display
-    if (!tok_name.empty()) tok_name[0] = static_cast<char>(std::toupper(static_cast<unsigned char>(tok_name[0])));
-
-    std::vector<std::string> tok_keywords;
-    for (size_t i = 4; i < parts.size(); i++) {
-        std::string kw = parts[i];
-        if (!kw.empty()) kw[0] = static_cast<char>(std::toupper(static_cast<unsigned char>(kw[0])));
-        tok_keywords.push_back(kw);
     }
 
     Zone::Ownership ctrl = global_coordinator.entity_has_component<Permanent>(source)
         ? global_coordinator.GetComponent<Permanent>(source).controller
         : global_coordinator.GetComponent<Zone>(source).owner;
 
-    // Build prowess triggered ability if keyword is present
-    Token tok;
-    tok.name       = tok_name;
-    tok.power      = tok_power;
-    tok.toughness  = tok_toughness;
-    tok.keywords   = tok_keywords;
-    for (auto &kw : tok_keywords) {
-        if (kw == "Prowess") {
-            Ability prowess_ab;
-            prowess_ab.ability_type = Ability::TRIGGERED;
-            prowess_ab.trigger_on   = Events::NONCREATURE_SPELL_CAST;
-            prowess_ab.trigger_valid_player_is_controller = true;
-            prowess_ab.category = "ProwessBonus";
-            prowess_ab.amount   = 1;
-            tok.abilities.push_back(prowess_ab);
-        }
-    }
-
     Entity tok_entity = global_coordinator.CreateEntity();
     global_coordinator.AddComponent(tok_entity, Zone(Zone::HAND, ctrl, ctrl));
     global_coordinator.AddComponent(tok_entity, tok);
     orderer->add_to_zone(false, tok_entity, Zone::BATTLEFIELD);
 
+    // Add Permanent + Creature + Damage immediately so subabilities (e.g. Attach) can see them
+    // before the next apply_permanent_components pass.
+    Permanent perm;
+    perm.is_token = true;
+    perm.controller = ctrl;
+    perm.has_summoning_sickness = true;
+    perm.is_tapped = false;
+    perm.timestamp_entered_battlefield = cur_game.timestamp++;
+    global_coordinator.AddComponent(tok_entity, perm);
+
+    Creature creature;
+    creature.power = tok.power;
+    creature.toughness = tok.toughness;
+    creature.keywords = tok.keywords;
+    global_coordinator.AddComponent(tok_entity, creature);
+
+    Damage damage;
+    damage.damage_counters = 0;
+    global_coordinator.AddComponent(tok_entity, damage);
+
     cur_game.remembered_entity = tok_entity;
-    game_log("Token created: %u/%u %s\n", tok_power, tok_toughness, tok_name.c_str());
+    game_log("Token created: %u/%u %s\n", tok.power, tok.toughness, tok.name.c_str());
 }
 
 void Ability::resolve_delayed_trigger() {

@@ -27,6 +27,14 @@
 #include "../systems/stack_manager.h"
 #include "orderer.h"
 
+static std::string entity_name(Entity e) {
+    if (global_coordinator.entity_has_component<CardData>(e))
+        return global_coordinator.GetComponent<CardData>(e).name;
+    if (global_coordinator.entity_has_component<Token>(e))
+        return global_coordinator.GetComponent<Token>(e).name + " token";
+    return "<unknown>";
+}
+
 static Colors mana_color_for_subtype(const std::string &subtype) {
     if (subtype == "Mountain") return RED;
     if (subtype == "Forest") return GREEN;
@@ -308,8 +316,18 @@ void StateManager::apply_static_ability_effects() {
                     if (a.sa->add_power     != 0) pcr.power     -= static_cast<uint32_t>(a.sa->add_power);
                     if (a.sa->add_toughness != 0) pcr.toughness -= static_cast<uint32_t>(a.sa->add_toughness);
                     if (!a.sa->add_keyword.empty()) {
-                        auto it = std::find(pcr.keywords.begin(), pcr.keywords.end(), a.sa->add_keyword);
-                        if (it != pcr.keywords.end()) pcr.keywords.erase(it);
+                        const std::string &kws = a.sa->add_keyword;
+                        size_t p = 0;
+                        while (p < kws.size()) {
+                            size_t sep = kws.find(" & ", p);
+                            if (sep == std::string::npos) sep = kws.size();
+                            std::string kw = kws.substr(p, sep - p);
+                            if (!kw.empty()) {
+                                auto it = std::find(pcr.keywords.begin(), pcr.keywords.end(), kw);
+                                if (it != pcr.keywords.end()) pcr.keywords.erase(it);
+                            }
+                            p = (sep < kws.size()) ? sep + 3 : sep;
+                        }
                     }
                 }
                 a.sa->applied = false;
@@ -431,8 +449,8 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
 
     // Move destroyed creatures to graveyard
     for (auto entity : creatures_to_destroy) {
-        auto &card_data = global_coordinator.GetComponent<CardData>(entity);
-        game_log("%s is destroyed (lethal damage)\n", card_data.name.c_str());
+        std::string name = entity_name(entity);
+        game_log("%s is destroyed (lethal damage)\n", name.c_str());
 
         orderer->add_to_zone(false, entity, Zone::GRAVEYARD);
         // CARD_CHANGED_ZONE event is fired from orderer->add_to_zone; components removed by SBE
@@ -447,7 +465,7 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
             auto &cr = global_coordinator.GetComponent<Creature>(entity);
             if (!cr.is_attacking) continue;
 
-            auto &cd = global_coordinator.GetComponent<CardData>(entity);
+            std::string attacker_name = entity_name(entity);
 
             // Collect blockers for this attacker
             std::vector<Entity> blockers;
@@ -468,7 +486,7 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
                         auto &target_player = global_coordinator.GetComponent<Player>(cr.attack_target);
                         target_player.life_total -= static_cast<int>(dmg);
                         const char *tname = (cr.attack_target == game.player_a_entity) ? "Player A" : "Player B";
-                        game_log("  %s deals %u damage to %s\n", cd.name.c_str(), dmg, tname);
+                        game_log("  %s deals %u damage to %s\n", attacker_name.c_str(), dmg, tname);
                     }
                 }
             } else {
@@ -476,20 +494,34 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
                 uint32_t remaining = cr.power;
                 for (auto blocker : blockers) {
                     auto &bcr = global_coordinator.GetComponent<Creature>(blocker);
-                    auto &bcd = global_coordinator.GetComponent<CardData>(blocker);
+                    std::string blocker_name = entity_name(blocker);
 
                     // Blocker deals damage to attacker
                     if (bcr.power > 0) {
                         deal_damage(blocker, entity, bcr.power);
-                        game_log("  %s deals %u damage to %s\n", bcd.name.c_str(), bcr.power, cd.name.c_str());
+                        game_log("  %s deals %u damage to %s\n", blocker_name.c_str(), bcr.power, attacker_name.c_str());
                     }
 
                     // Attacker deals damage to blocker (lethal to each in order, overflow to next)
                     if (remaining > 0) {
                         uint32_t assigned = (remaining >= bcr.toughness) ? bcr.toughness : remaining;
                         deal_damage(entity, blocker, assigned);
-                        game_log("  %s deals %u damage to %s\n", cd.name.c_str(), assigned, bcd.name.c_str());
+                        game_log("  %s deals %u damage to %s\n", attacker_name.c_str(), assigned, blocker_name.c_str());
                         remaining -= assigned;
+                    }
+                }
+                // Trample: excess damage goes to attack target
+                if (remaining > 0) {
+                    bool has_trample = false;
+                    for (const auto &kw : cr.keywords) {
+                        if (kw == "Trample") { has_trample = true; break; }
+                    }
+                    if (has_trample && global_coordinator.entity_has_component<Player>(cr.attack_target)) {
+                        deal_damage(entity, cr.attack_target, remaining);
+                        auto &target_player = global_coordinator.GetComponent<Player>(cr.attack_target);
+                        target_player.life_total -= static_cast<int>(remaining);
+                        const char *tname = (cr.attack_target == game.player_a_entity) ? "Player A" : "Player B";
+                        game_log("  %s tramples %u damage to %s\n", attacker_name.c_str(), remaining, tname);
                     }
                 }
             }
@@ -619,8 +651,7 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
             ab_source = &global_coordinator.GetComponent<Token>(entity).abilities;
         else continue;
 
-        const std::string entity_name = global_coordinator.entity_has_component<CardData>(entity)
-            ? global_coordinator.GetComponent<CardData>(entity).name : "Token";
+        const std::string ent_name = entity_name(entity);
 
         for (const auto &ev : events) {
             for (const auto &ab : *ab_source) {
@@ -688,7 +719,7 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                 trigger_ab.controller = perm.controller;
                 global_coordinator.AddComponent(trigger_entity, trigger_ab);
 
-                game_log("%s triggered\n", entity_name.c_str());
+                game_log("%s triggered\n", ent_name.c_str());
             }
         }
     }
@@ -874,6 +905,15 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             if (ab.ability_type != Ability::ACTIVATED) continue;
             // todo handle this elswewhere, tapping check
             if (ab.tap_cost && permanent.is_tapped) continue;
+            if (ab.tap_cost && permanent.has_summoning_sickness &&
+                global_coordinator.entity_has_component<Creature>(entity)) {
+                auto &cr = global_coordinator.GetComponent<Creature>(entity);
+                bool has_haste = false;
+                for (const auto &kw : cr.keywords) {
+                    if (kw == "Haste") { has_haste = true; break; }
+                }
+                if (!has_haste) continue;
+            }
             if (ab.category == "AddMana") {  //
                 auto &card_data = global_coordinator.GetComponent<CardData>(ab.source);
                 std::string desc = "Tap " + card_data.name + " for {" + mana_symbol(ab.color) + "}";

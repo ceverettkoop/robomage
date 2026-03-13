@@ -296,7 +296,7 @@ static void draw_perm_card(float cx, float cy, float cw, float ch, const Permane
     }
     for (int i = 0; i < 4; i++) DrawLineEx(sc[i], sc[(i + 1) % 4], 1.5f, border_col);
 
-    const char *name = gui_card_name(perm->card_vocab_idx);
+    const char *name = perm->token_name[0] != '\0' ? perm->token_name : gui_card_name(perm->card_vocab_idx);
     const char *oracle = gui_card_oracle(perm->card_vocab_idx);
     float oracle_sz = font_sz * 0.85f;
 

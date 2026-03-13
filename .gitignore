@@ -14,3 +14,4 @@ checkpoints/*.zip
 replays/*.txt
 train/checkpoints/*
 .cache/*
+bin/resources/tokenscripts/*

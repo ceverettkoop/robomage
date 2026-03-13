@@ -13,11 +13,14 @@
 #include "components/ability.h"
 #include "components/carddata.h"
 #include "components/effect.h"
+#include "components/token.h"
 #include "components/static_ability.h"
 #include "ecs/coordinator.h"
 #include "ecs/events.h"
 #include "error.h"
 #include "type_constants.h"
+
+extern std::string RESOURCE_DIR;
 
 const size_t SCRIPT_MAX_LEN = 10000;
 
@@ -37,6 +40,8 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
                                                                    const std::map<std::string, std::string>& svars);
 static uint32_t parse_power(std::string value);
 static uint32_t parse_toughness(std::string value);
+static std::vector<std::string> find_trigger_lines(const std::string &script);
+static Ability parse_one_trigger(const std::string &line, const std::map<std::string, std::string> &svars);
 
 // all to lowercase, spaces to underscores, other characters removed
 std::string name_to_uid(std::string name) {
@@ -245,6 +250,67 @@ Entity parse_card_script(std::string path) {
     global_coordinator.AddComponent(id, card);
 
     return id;
+}
+
+Token parse_token_script(const std::string &script_name) {
+    Token tok;
+    std::string path = RESOURCE_DIR + "/tokenscripts/" + script_name + ".txt";
+    std::ifstream stream(path);
+    if (!stream.is_open()) {
+        non_fatal_error("Could not open token script: " + path);
+        return tok;
+    }
+    std::string script_data;
+    char buffer[SCRIPT_MAX_LEN];
+    while (stream.getline(buffer, SCRIPT_MAX_LEN)) {
+        script_data += buffer;
+        script_data += "\n";
+    }
+    stream.close();
+
+    tok.name = value_from_script(script_data, "Name");
+    tok.types = parse_types(value_from_script(script_data, "Types"));
+
+    std::string pt = value_from_script(script_data, "PT");
+    tok.power = parse_power(pt);
+    tok.toughness = parse_toughness(pt);
+
+    // Parse K: keyword lines — same logic as card parser
+    for (auto &kw_line : multi_values_from_script(script_data, "K")) {
+        if (kw_line == "Prowess" || kw_line.rfind("Prowess", 0) == 0) {
+            tok.keywords.push_back("Prowess");
+            Ability prowess_ab;
+            prowess_ab.ability_type = Ability::TRIGGERED;
+            prowess_ab.trigger_on = Events::NONCREATURE_SPELL_CAST;
+            prowess_ab.trigger_valid_player_is_controller = true;
+            prowess_ab.category = "ProwessBonus";
+            prowess_ab.amount = 1;
+            tok.abilities.push_back(prowess_ab);
+            continue;
+        }
+        // Generic keywords (Haste, Trample, Flying, etc.)
+        size_t pos = 0;
+        while (pos < kw_line.size()) {
+            size_t comma = kw_line.find(',', pos);
+            if (comma == std::string::npos) comma = kw_line.size();
+            std::string kw = kw_line.substr(pos, comma - pos);
+            size_t s = kw.find_first_not_of(" ");
+            size_t e = kw.find_last_not_of(" ");
+            if (s != std::string::npos)
+                tok.keywords.push_back(kw.substr(s, e - s + 1));
+            pos = (comma < kw_line.size()) ? comma + 1 : comma;
+        }
+    }
+
+    // Parse T: triggered abilities
+    auto svars = parse_svars(script_data);
+    for (const auto &line : find_trigger_lines(script_data)) {
+        Ability ab = parse_one_trigger(line, svars);
+        if (ab.trigger_on != 0)
+            tok.abilities.push_back(ab);
+    }
+
+    return tok;
 }
 
 // private util functions
