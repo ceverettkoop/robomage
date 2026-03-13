@@ -4,10 +4,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Build Commands
 
-- **Build the project**: `make`
+- **Build the project**: `make clean && make`
 - **Clean build artifacts**: `make clean`
 - **Build for release**: `make BUILD=RELEASE`
-- **Enable GUI build**: `make GUI=TRUE`
+- **Disable GUI**: `make HEADLESS=TRUE`
 
 The compiled binary is output to `bin/robomage`.
 

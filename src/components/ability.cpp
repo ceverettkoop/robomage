@@ -257,7 +257,6 @@ static bool run_unless_loop(size_t cost, Zone::Ownership controller,
             if (perm.controller != controller || perm.is_tapped) continue;
             for (auto& ab : perm.abilities) {
                 if (ab.category != "AddMana") continue;
-                auto& cd = global_coordinator.GetComponent<CardData>(e);
                 ActionCategory mcat = ActionCategory::MANA_C;
                 switch (ab.color) {
                     case WHITE: mcat = ActionCategory::MANA_W; break;
@@ -267,7 +266,7 @@ static bool run_unless_loop(size_t cost, Zone::Ownership controller,
                     case GREEN: mcat = ActionCategory::MANA_G; break;
                     default: break;
                 }
-                LegalAction la(PASS_PRIORITY, e, std::string("Tap ") + cd.name + " for {" + mana_symbol(ab.color) + "}");
+                LegalAction la(PASS_PRIORITY, e, std::string("Tap ") + perm.name + " for {" + mana_symbol(ab.color) + "}");
                 la.category = mcat;
                 unless_actions.push_back(la);
                 break;
@@ -306,13 +305,12 @@ static bool run_unless_loop(size_t cost, Zone::Ownership controller,
         if (choice >= 0 && choice < static_cast<int>(pay_idx)) {
             Entity land = unless_actions[static_cast<size_t>(choice)].source_entity;
             auto& perm = global_coordinator.GetComponent<Permanent>(land);
-            auto& cd   = global_coordinator.GetComponent<CardData>(land);
             for (auto& ab : perm.abilities) {
                 if (ab.category != "AddMana") continue;
                 perm.is_tapped = true;
                 add_mana(controller, ab.color, ab.amount);
                 game_log("%s tapped %s for {%s}\n", player_name(controller).c_str(),
-                       cd.name.c_str(), mana_symbol(ab.color).c_str());
+                       perm.name.c_str(), mana_symbol(ab.color).c_str());
                 break;
             }
         }
@@ -353,10 +351,10 @@ bool Ability::is_target_valid() const {
 
     if (inc_creatures && global_coordinator.entity_has_component<Creature>(target)) return true;
 
-    if (inc_lands && global_coordinator.entity_has_component<CardData>(target)) {
-        auto &tcd = global_coordinator.GetComponent<CardData>(target);
+    if (inc_lands) {
+        auto &tperm = global_coordinator.GetComponent<Permanent>(target);
         bool is_land = false, is_basic = false;
-        for (auto &t : tcd.types) {
+        for (auto &t : tperm.types) {
             if (t.kind == TYPE && t.name == "Land") is_land = true;
             if (t.kind == SUPERTYPE && t.name == "Basic") is_basic = true;
         }
@@ -580,7 +578,7 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
                         dmg.damage_counters = 0;
                         global_coordinator.AddComponent(source, dmg);
                         game_log("%s transforms into %s!\n",
-                               src_cd.name.c_str(), src_cd.backside->name.c_str());
+                               src_perm.name.c_str(), src_cd.backside->name.c_str());
                     }
                 }
             }
@@ -671,6 +669,8 @@ void Ability::resolve_token(std::shared_ptr<Orderer> orderer) {
     // Add Permanent + Creature + Damage immediately so subabilities (e.g. Attach) can see them
     // before the next apply_permanent_components pass.
     Permanent perm;
+    perm.name = tok.name;
+    perm.types = tok.types;
     perm.is_token = true;
     perm.controller = ctrl;
     perm.has_summoning_sickness = true;
@@ -724,8 +724,8 @@ void Ability::resolve_destroy(std::shared_ptr<Orderer> orderer) {
         return;
     }
     //TODO OTHER REASONS TARGET IS NOW ILLEGAL
-    std::string name = global_coordinator.entity_has_component<CardData>(target)
-        ? global_coordinator.GetComponent<CardData>(target).name
+    std::string name = global_coordinator.entity_has_component<Permanent>(target)
+        ? global_coordinator.GetComponent<Permanent>(target).name
         : "<unknown>";
     orderer->add_to_zone(false, target, Zone::GRAVEYARD);
     game_log("%s is destroyed\n", name.c_str());

@@ -36,6 +36,10 @@ static std::vector<Entity> determine_blockable_attackers(Entity blocker, const s
 static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer);
 
 static std::string entity_name(Entity e) {
+    if (global_coordinator.entity_has_component<Permanent>(e)) {
+        auto &perm = global_coordinator.GetComponent<Permanent>(e);
+        return perm.is_token ? perm.name + " token" : perm.name;
+    }
     if (global_coordinator.entity_has_component<CardData>(e)) return global_coordinator.GetComponent<CardData>(e).name;
     if (global_coordinator.entity_has_component<Token>(e))
         return global_coordinator.GetComponent<Token>(e).name + " token";
@@ -67,13 +71,6 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
 
     auto &permanent = global_coordinator.GetComponent<Permanent>(permanent_entity);
     Zone::Ownership controller = permanent.controller;
-    // Tokens have no CardData — guard all accesses. The card_data ref is only valid when has_card_data is true.
-    bool has_card_data = global_coordinator.entity_has_component<CardData>(permanent_entity);
-    // Declare a safe reference (only dereference when has_card_data is true)
-    static CardData dummy_card_data;
-    auto &card_data = has_card_data
-                          ? global_coordinator.GetComponent<CardData>(permanent_entity)
-                          : dummy_card_data;
 
     bool is_mana_ability = (ability.category == "AddMana");
     Ability stack_ab = ability;  // not used for mana ability
@@ -87,9 +84,7 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
             if (!global_coordinator.entity_has_component<Creature>(e)) continue;
             auto &ep = global_coordinator.GetComponent<Permanent>(e);
             if (ep.controller != controller) continue;
-            std::string ename = global_coordinator.entity_has_component<CardData>(e)
-                                    ? global_coordinator.GetComponent<CardData>(e).name
-                                    : "<token>";
+            std::string ename = ep.name;
             auto &ecr = global_coordinator.GetComponent<Creature>(e);
             LegalAction la(
                 PASS_PRIORITY, e, ename + " [" + std::to_string(ecr.power) + "/" + std::to_string(ecr.toughness) + "]");
@@ -114,10 +109,8 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
         }
         permanent.equipped_to = target_creature;
         global_coordinator.GetComponent<Permanent>(target_creature).equipped_by = permanent_entity;
-        std::string tname = global_coordinator.entity_has_component<CardData>(target_creature)
-                                ? global_coordinator.GetComponent<CardData>(target_creature).name
-                                : "<token>";
-        game_log("%s equipped to %s.\n", card_data.name.c_str(), tname.c_str());
+        std::string tname = global_coordinator.GetComponent<Permanent>(target_creature).name;
+        game_log("%s equipped to %s.\n", permanent.name.c_str(), tname.c_str());
         game.take_action();
         return;
     }
@@ -145,13 +138,13 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
     // Pay sacrifice cost: move to graveyard; apply_permanent_components SBA removes Permanent next pass
     if (ability.sac_self) {
         orderer->add_to_zone(false, permanent_entity, Zone::GRAVEYARD);
-        game_log("%s sacrifices %s\n", player_name(controller).c_str(), card_data.name.c_str());
+        game_log("%s sacrifices %s\n", player_name(controller).c_str(), permanent.name.c_str());
     }
     // MANA ABILITY
     if (is_mana_ability) {
         Colors mana_color = ability.color;
         add_mana(controller, mana_color, ability.amount);
-        game_log("%s tapped %s for {%s}\n", player_name(controller).c_str(), card_data.name.c_str(),
+        game_log("%s tapped %s for {%s}\n", player_name(controller).c_str(), permanent.name.c_str(),
             mana_symbol_str(mana_color));
         // priority does not pass
 
@@ -168,7 +161,7 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
         stack_ab.controller = controller;
         global_coordinator.AddComponent(ability_entity, stack_ab);
 
-        game_log("%s's %s ability is on the stack\n", player_name(controller).c_str(), card_data.name.c_str());
+        game_log("%s's %s ability is on the stack\n", player_name(controller).c_str(), permanent.name.c_str());
         game.take_action();
         // if target remains legal checked at resolution
     }
@@ -223,11 +216,11 @@ static std::vector<Entity> build_valid_targets(
                 valid_targets.push_back(entity);
                 continue;
             }
-            if (inc_lands && global_coordinator.entity_has_component<CardData>(entity)) {
-                auto &tcd = global_coordinator.GetComponent<CardData>(entity);
+            if (inc_lands) {
+                auto &tperm = global_coordinator.GetComponent<Permanent>(entity);
                 bool is_land = false;
                 bool is_basic = false;
-                for (auto &t : tcd.types) {
+                for (auto &t : tperm.types) {
                     if (t.kind == TYPE && t.name == "Land") is_land = true;
                     if (t.kind == SUPERTYPE && t.name == "Basic") is_basic = true;
                 }
@@ -277,27 +270,25 @@ static void pay_alternate_cost(const LegalAction &action, Game &game, std::share
         const std::string &type = card_data.alt_cost.return_to_hand_type;
         for (auto e : orderer->mEntities) {
             if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
-            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
-            auto &perm = global_coordinator.GetComponent<Permanent>(e);
-            if (perm.controller != caster) continue;
-            auto &ecd = global_coordinator.GetComponent<CardData>(e);
+            auto &eperm = global_coordinator.GetComponent<Permanent>(e);
+            if (eperm.controller != caster) continue;
             bool matches = false;
             // can be subtype, type or supertype
-            for (auto &t : ecd.types) {
+            for (auto &t : eperm.types) {
                 if (t.name == type) {
                     matches = true;
                     break;
                 }
             }
             if (!matches) continue;
-            LegalAction la(PASS_PRIORITY, e, "Return " + ecd.name);
+            LegalAction la(PASS_PRIORITY, e, "Return " + eperm.name);
             la.category = ActionCategory::OTHER_CHOICE;
             rth_actions.push_back(la);
         }
         int choice = InputLogger::instance().get_input(rth_actions);
         Entity returned = rth_actions[static_cast<size_t>(choice)].source_entity;
         game_log("%s returns %s to hand\n", player_name(caster).c_str(),
-            global_coordinator.GetComponent<CardData>(returned).name.c_str());
+            global_coordinator.GetComponent<Permanent>(returned).name.c_str());
         orderer->add_to_zone(false, returned, Zone::HAND);
     }
 }
@@ -342,10 +333,8 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
         if (!cr.must_attack || cr.is_attacking) continue;
         cr.is_attacking = true;
         cr.attack_target = defending_entity;
-        std::string name = global_coordinator.entity_has_component<CardData>(entity)
-                               ? global_coordinator.GetComponent<CardData>(entity).name
-                               : "<token>";
-        game_log("%s must attack and is declared as an attacker.\n", name.c_str());
+        game_log("%s must attack and is declared as an attacker.\n",
+            global_coordinator.GetComponent<Permanent>(entity).name.c_str());
     }
 
     // Selection loop — only un-declared creatures are offered each iteration.

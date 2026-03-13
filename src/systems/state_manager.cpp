@@ -28,6 +28,10 @@
 #include "orderer.h"
 
 static std::string entity_name(Entity e) {
+    if (global_coordinator.entity_has_component<Permanent>(e)) {
+        auto &perm = global_coordinator.GetComponent<Permanent>(e);
+        return perm.is_token ? perm.name + " token" : perm.name;
+    }
     if (global_coordinator.entity_has_component<CardData>(e))
         return global_coordinator.GetComponent<CardData>(e).name;
     if (global_coordinator.entity_has_component<Token>(e))
@@ -62,6 +66,9 @@ void StateManager::apply_permanent_components(Game &game) {
             if (zone.location == Zone::BATTLEFIELD) {
                 if (!global_coordinator.entity_has_component<Permanent>(entity)) {
                     Permanent perm;
+                    perm.name = token.name;
+                    perm.types = token.types;
+                    perm.is_token = true;
                     perm.controller = zone.controller;
                     perm.has_summoning_sickness = true;
                     perm.is_tapped = false;
@@ -110,6 +117,8 @@ void StateManager::apply_permanent_components(Game &game) {
             // providing permanent component if doesn't have
             if (!global_coordinator.entity_has_component<Permanent>(entity)) {
                 Permanent perm;
+                perm.name = card_data.name;
+                perm.types = card_data.types;
                 perm.controller = zone.controller;
                 perm.has_summoning_sickness = is_creature;
                 perm.is_tapped = false;
@@ -118,7 +127,7 @@ void StateManager::apply_permanent_components(Game &game) {
                     switch (r.kind) {
                         case Effect::Replacement::ENTERS_TAPPED:
                             perm.is_tapped = true;
-                            game_log("%s enters tapped.\n", card_data.name.c_str());
+                            game_log("%s enters tapped.\n", perm.name.c_str());
                             break;
                     }
                 }
@@ -211,9 +220,9 @@ void StateManager::apply_permanent_components(Game &game) {
 // types are successfully replaced
 void StateManager::apply_land_abilities(Entity entity) {
     // assumes called with entity that has permanent component and is on battlefield and is land
-    auto &card_data = global_coordinator.GetComponent<CardData>(entity);
+    auto &perm = global_coordinator.GetComponent<Permanent>(entity);
     std::vector<std::string> land_subtypes;
-    for (auto &type : card_data.types) {
+    for (auto &type : perm.types) {
         if (type.kind == SUBTYPE && (type.name == "Mountain" || type.name == "Forest" || type.name == "Plains" ||
                                         type.name == "Island" || type.name == "Swamp" || type.name == "Wastes")) {
             land_subtypes.push_back(type.name);
@@ -226,7 +235,7 @@ void StateManager::apply_land_abilities(Entity entity) {
         if (required_color == NO_COLOR) continue;
 
         // Skip only if this exact color ability already exists
-        auto &perm_abilities = global_coordinator.GetComponent<Permanent>(entity).abilities;
+        auto &perm_abilities = perm.abilities;
         bool already_present = false;
         for (auto ab : perm_abilities) {
             if (ab.category == "AddMana" && ab.color == required_color && ab.amount == 1) {
@@ -381,8 +390,8 @@ void StateManager::apply_static_ability_effects() {
             }
 
             auto &cr = global_coordinator.GetComponent<Creature>(target_entity);
-            const std::string &name_for_log = global_coordinator.entity_has_component<CardData>(target_entity)
-                ? global_coordinator.GetComponent<CardData>(target_entity).name : "Token";
+            const std::string name_for_log = global_coordinator.entity_has_component<Permanent>(target_entity)
+                ? global_coordinator.GetComponent<Permanent>(target_entity).name : "Token";
 
             if (condition_met && !a.sa->applied) {
                 if (a.sa->add_power     != 0) cr.power     += static_cast<uint32_t>(a.sa->add_power);
@@ -763,11 +772,9 @@ static bool can_afford_alt(const AltCost& alt_cost, Zone::Ownership priority_pla
         const std::string& sub = alt_cost.return_to_hand_type;
         for (auto e : orderer->mEntities) {
             if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
-            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
             auto& perm = global_coordinator.GetComponent<Permanent>(e);
             if (perm.controller != priority_player) continue;
-            auto& cd2 = global_coordinator.GetComponent<CardData>(e);
-            for (auto& t : cd2.types) {
+            for (auto& t : perm.types) {
                 if (t.kind == SUBTYPE && t.name == sub) { matching++; break; }
             }
         }

@@ -5,9 +5,14 @@
 #include "zone.h"
 #include "ability.h"
 #include "static_ability.h"
+#include "types.h"
+#include <set>
+#include <string>
 #include <vector>
 
 struct Permanent {
+    std::string name;
+    std::set<Type> types;
     bool is_token = false;
     bool is_tapped = false;
     bool has_summoning_sickness = true;

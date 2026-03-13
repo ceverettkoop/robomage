@@ -30,11 +30,12 @@ static void push_player_block(std::vector<float>& out, const PlayerState& ps);
 static void push_perm_slot(std::vector<float>& out, const PermanentState& p);
 
 static int get_card_vocab_idx(Entity e) {
-    // Token entities have no CardData; use the reserved TOKEN_SENTINEL slot.
-    if (!global_coordinator.entity_has_component<CardData>(e)) {
-        // Check if it's a token (import avoided by using the sentinel constant directly)
-        return TOKEN_SENTINEL;
+    if (global_coordinator.entity_has_component<Permanent>(e)) {
+        auto& perm = global_coordinator.GetComponent<Permanent>(e);
+        if (perm.is_token) return TOKEN_SENTINEL;
+        return card_name_to_index(perm.name);
     }
+    if (!global_coordinator.entity_has_component<CardData>(e)) return TOKEN_SENTINEL;
     return card_name_to_index(global_coordinator.GetComponent<CardData>(e).name);
 }
 
@@ -52,6 +53,11 @@ static int get_stack_card_vocab_idx(Entity e) {
 }
 
 static bool entity_is_land(Entity e) {
+    if (global_coordinator.entity_has_component<Permanent>(e)) {
+        for (auto& t : global_coordinator.GetComponent<Permanent>(e).types)
+            if (t.name == "Land") return true;
+        return false;
+    }
     if (!global_coordinator.entity_has_component<CardData>(e)) return false;
     for (auto& t : global_coordinator.GetComponent<CardData>(e).types)
         if (t.name == "Land") return true;
@@ -293,11 +299,17 @@ void populate_query(Query* q, const std::vector<LegalAction>& actions) {
         Entity src = la.source_entity;
         int vocab_idx = -1;
         if (src != 0) {
-            if (global_coordinator.entity_has_component<CardData>(src)) {
+            if (global_coordinator.entity_has_component<Permanent>(src)) {
+                auto& sp = global_coordinator.GetComponent<Permanent>(src);
+                vocab_idx = sp.is_token ? TOKEN_SENTINEL : card_name_to_index(sp.name);
+            } else if (global_coordinator.entity_has_component<CardData>(src)) {
                 vocab_idx = card_name_to_index(global_coordinator.GetComponent<CardData>(src).name);
             } else if (global_coordinator.entity_has_component<Ability>(src)) {
                 Entity ab_src = global_coordinator.GetComponent<Ability>(src).source;
-                if (global_coordinator.entity_has_component<CardData>(ab_src))
+                if (global_coordinator.entity_has_component<Permanent>(ab_src)) {
+                    auto& ap = global_coordinator.GetComponent<Permanent>(ab_src);
+                    vocab_idx = ap.is_token ? TOKEN_SENTINEL : card_name_to_index(ap.name);
+                } else if (global_coordinator.entity_has_component<CardData>(ab_src))
                     vocab_idx = card_name_to_index(global_coordinator.GetComponent<CardData>(ab_src).name);
             }
         }
