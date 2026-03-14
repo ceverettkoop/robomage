@@ -4,7 +4,7 @@ RoboMage gymnasium environment.
 The game runs as a subprocess with --machine mode. On each decision point it
 emits a QUERY line to stdout:
 
-    QUERY: <num_choices> <f0> ... <f32677> <cat0>...<catN-1> <id0>...<idN-1> <ctrl0>...<ctrlN-1>
+    BQUERY: <num_choices>\n<float32[STATE_SIZE] binary><int32[MAX_ACTIONS] cats><float32[MAX_ACTIONS] ids><float32[MAX_ACTIONS] ctrl>
 
 The environment sends back a single integer on stdin.
 
@@ -39,6 +39,7 @@ Reward
 """
 
 import glob as _glob
+import struct
 import subprocess
 import sys
 import os
@@ -62,6 +63,11 @@ STATE_SIZE = 32678
 # NOTE: ActionChoice.description is never emitted in the QUERY line — it is for
 #       human-readable display only and is not part of the ML observation.
 MAX_ACTIONS = 32         # practical upper bound on num_choices per step
+# Binary BQUERY payload sizes (bytes): state float32s + MAX_ACTIONS each of cats(int32)/ids/ctrl(float32)
+_BQUERY_STATE_BYTES = STATE_SIZE * 4
+_BQUERY_CATS_BYTES  = MAX_ACTIONS * 4  # int32
+_BQUERY_IDS_BYTES   = MAX_ACTIONS * 4  # float32
+_BQUERY_CTRL_BYTES  = MAX_ACTIONS * 4  # float32
 ACTION_CATEGORY_MAX = 22 # highest ActionCategory enum value (PAYING_COSTS)
 _ACTION_CARD_ID_NULL = -1.0 / N_CARD_TYPES  # null sentinel for non-card slots
 _ACTION_CTRL_NULL    = -1.0 / N_CARD_TYPES  # null sentinel for non-entity actions
@@ -120,8 +126,7 @@ class RoboMageEnv(gym.Env):
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.DEVNULL,  # suppress game chatter
-            text=True,
-            bufsize=1,
+            bufsize=-1,  # binary mode, fully buffered
             cwd=BIN_DIR,  # game uses getcwd() to locate resources/
         )
         obs, info = self._read_until_query()
@@ -162,13 +167,26 @@ class RoboMageEnv(gym.Env):
     # ------------------------------------------------------------------
 
     def _send(self, action: int):
-        self._proc.stdin.write(f"{action}\n")
+        self._proc.stdin.write(f"{action}\n".encode())
         self._proc.stdin.flush()
+
+    def _read_exactly(self, n: int) -> bytes:
+        """Read exactly n bytes from stdout, blocking until available."""
+        buf = bytearray()
+        while len(buf) < n:
+            chunk = self._proc.stdout.read(n - len(buf))
+            if not chunk:
+                raise EOFError("Game process ended while reading binary payload")
+            buf.extend(chunk)
+        return bytes(buf)
 
     def _read_until_query(self):
         """
-        Read lines from the game process until a QUERY line appears or the
-        process exits (game over).  Returns (obs, info).
+        Read lines from the game process until a BQUERY line appears or the
+        process exits (game over).  After the BQUERY header line, reads the
+        binary payload: float32[STATE_SIZE], int32[MAX_ACTIONS] cats,
+        float32[MAX_ACTIONS] ids, float32[MAX_ACTIONS] ctrl.
+        Returns (obs, info).
         """
         reward = 0.0
         done = False
@@ -183,91 +201,73 @@ class RoboMageEnv(gym.Env):
                 done = True
                 break
 
-            line = line.rstrip("\n")
+            line = line.rstrip(b"\n")
 
             # Detect win/loss
-            if "Player A wins" in line:
+            if b"Player A wins" in line:
                 reward = 1.0
                 done = True
-            elif "Player B wins" in line:
+            elif b"Player B wins" in line:
                 reward = -1.0
                 done = True
 
             # Shaping signal: mana wasted at end of phase (pool non-empty on drain)
-            if line.startswith("MANA_WASTED: "):
-                side = line[13:].strip()
-                if side == "A":
+            if line.startswith(b"MANA_WASTED: "):
+                if line.endswith(b"A"):
                     shaping_a -= 0.05
-                elif side == "B":
+                elif line.endswith(b"B"):
                     shaping_b -= 0.05
                 continue
 
             # Shaping signal: excessive mulligan (3rd and beyond = -0.1 each)
-            if line.startswith("MULLIGAN_PENALTY: "):
-                side = line[18:].strip()
-                if side == "A":
+            if line.startswith(b"MULLIGAN_PENALTY: "):
+                if line.endswith(b"A"):
                     shaping_a -= 0.1
-                elif side == "B":
+                elif line.endswith(b"B"):
                     shaping_b -= 0.1
                 continue
 
-            if line.startswith("QUERY: "):
-                parts = line[7:].split()
-                self._num_choices = min(int(parts[0]), MAX_ACTIONS)
+            if line.startswith(b"BQUERY: "):
+                n = int(line[8:])
+                self._num_choices = min(n, MAX_ACTIONS)
 
-                # Parse per-action category ints (one per legal action, after state)
-                # Normalise by ACTION_CATEGORY_MAX so values are in [0.0, 1.0].
-                cat_start = STATE_SIZE + 1
-                cat_raw = parts[cat_start : cat_start + self._num_choices]
-                cat_arr = np.zeros(MAX_ACTIONS, dtype=np.float32)
-                for i, c in enumerate(cat_raw):
-                    cat_arr[i] = int(c) / ACTION_CATEGORY_MAX
+                # Binary reads: state floats, then padded action metadata
+                state_arr = np.frombuffer(
+                    self._read_exactly(_BQUERY_STATE_BYTES), dtype=np.float32).copy()
+                cats_int = np.frombuffer(
+                    self._read_exactly(_BQUERY_CATS_BYTES), dtype=np.int32)
+                id_arr = np.frombuffer(
+                    self._read_exactly(_BQUERY_IDS_BYTES), dtype=np.float32).copy()
+                ctrl_arr = np.frombuffer(
+                    self._read_exactly(_BQUERY_CTRL_BYTES), dtype=np.float32).copy()
 
-                # The -1 confirm convention only applies to mandatory attacker/blocker
-                # choice queries.  Categories 2=SEL_ATK, 3=CONF_ATK, 4=SEL_BLK,
-                # 5=CONF_BLK indicate a mandatory choice; the last action in those
-                # queries must be sent as -1 to the game.
+                # Normalise categories
+                cat_arr = (cats_int / ACTION_CATEGORY_MAX).astype(np.float32)
+
+                # The -1 confirm convention applies to mandatory attacker/blocker queries.
                 _MANDATORY = {2, 3, 4, 5}
-                self._pending_confirm = any(int(c) in _MANDATORY for c in cat_raw)
-
-                # Parse per-action card ID floats (after category ints)
-                id_start = cat_start + self._num_choices
-                id_raw = parts[id_start : id_start + self._num_choices]
-                card_id_arr = np.full(MAX_ACTIONS, _ACTION_CARD_ID_NULL, dtype=np.float32)
-                for i, v in enumerate(id_raw):
-                    card_id_arr[i] = float(v)
-
-                # Parse per-action controller_is_self floats (after card ID floats)
-                ctrl_start = id_start + self._num_choices
-                ctrl_raw = parts[ctrl_start : ctrl_start + self._num_choices]
-                ctrl_arr = np.full(MAX_ACTIONS, _ACTION_CTRL_NULL, dtype=np.float32)
-                for i, v in enumerate(ctrl_raw):
-                    ctrl_arr[i] = float(v)
-
-                # Parse state vector (first STATE_SIZE floats after the count)
-                state_floats = parts[1 : STATE_SIZE + 1]
-                state_arr = np.array(state_floats, dtype=np.float32)
-                if len(state_arr) < STATE_SIZE:
-                    state_arr = np.pad(state_arr, (0, STATE_SIZE - len(state_arr)))
+                self._pending_confirm = any(
+                    cats_int[i] in _MANDATORY for i in range(self._num_choices))
 
                 # Hand cast costs: matrix-multiply one-hots against cost matrix
                 hand_onehots = state_arr[_HAND_START:_HAND_START + MAX_HAND_SLOTS * N_CARD_TYPES]
-                hand_costs = hand_onehots.reshape(MAX_HAND_SLOTS, N_CARD_TYPES) @ _CARD_COST_MATRIX  # (10,7)
+                hand_costs = hand_onehots.reshape(MAX_HAND_SLOTS, N_CARD_TYPES) @ _CARD_COST_MATRIX
 
                 # Battlefield activated ability costs (48 self permanent slots)
                 bf_ability_costs = np.zeros((48, _N_COST_FEATS), dtype=np.float32)
+                bf_card_bases = _BF_START + np.arange(48) * _BF_SLOT_SIZE + _BF_CARD_OFF
                 for slot in range(48):
-                    base = _BF_START + slot * _BF_SLOT_SIZE + _BF_CARD_OFF
-                    bf_ability_costs[slot] = state_arr[base:base + N_CARD_TYPES] @ _CARD_ABILITY_COST_MATRIX
+                    b = bf_card_bases[slot]
+                    bf_ability_costs[slot] = state_arr[b:b + N_CARD_TYPES] @ _CARD_ABILITY_COST_MATRIX
 
-                self._obs = np.concatenate([state_arr, cat_arr, card_id_arr, ctrl_arr,
+                self._obs = np.concatenate([state_arr, cat_arr, id_arr, ctrl_arr,
                                             hand_costs.flatten(),
                                             bf_ability_costs.flatten()])
                 break
 
             # Non-QUERY output: optionally print for human render mode
             if self.render_mode == "human":
-                self._print_narrative_line(line)
+                self._print_narrative_line(line.decode("ascii", errors="replace"))
 
         info = {"reward": reward, "done": done, "shaping_a": shaping_a, "shaping_b": shaping_b}
         if done:
@@ -355,13 +355,13 @@ _CARD_COLORED_COSTS = {
 
 # ── Battlefield layout (mirror machine_io.h) ────────────────────────────────
 _BF_START         = 33
-_BF_SLOT_SIZE     = 42   # 10 status floats + 32 card one-hot
+_BF_SLOT_SIZE     = 138  # 10 status floats + 128 card one-hot
 _PERM_A_SLOTS     = 48   # self occupies perm slots 0-47, opponent slots 48-95
 _BF_A_SLOTS       = 24   # ability cost slots per player (unchanged)
-_BF_CARD_OFF      = 10   # offset of card one-hot within each 42-float permanent slot
+_BF_CARD_OFF      = 10   # offset of card one-hot within each permanent slot
 _CTRL_OFF         = 7    # offset of controller_is_self within a permanent slot
-_STACK_SLOT_SIZE  = 34   # controller_is_self(1) + card one-hot(32) + is_spell(1)
-_GY_SLOT_SIZE     = N_CARD_TYPES  # 32 — graveyard slots are just card one-hots
+_STACK_SLOT_SIZE  = 130  # controller_is_self(1) + card one-hot(128) + is_spell(1)
+_GY_SLOT_SIZE     = N_CARD_TYPES  # 128 — graveyard slots are just card one-hots
 _GY_A_SLOTS       = 64   # self occupies GY slots 0-63
 # Start of bf_ability_costs block in the full obs vector
 _BF_COST_START    = STATE_SIZE + 3 * MAX_ACTIONS + _HAND_COST_FEATS  # 9100

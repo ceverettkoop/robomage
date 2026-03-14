@@ -1,5 +1,6 @@
 #include "cli_output.h"
 
+#include <algorithm>
 #include <cstdarg>
 #include <cstdio>
 #include <cstdlib>
@@ -163,24 +164,36 @@ const char* gui_query_get_line(int idx) {
 
 void cli_emit_machine_query(const Query* q, const GameState* gs) {
     auto state_vec = serialize_state(gs);
-    printf("QUERY: %d", q->num_choices);
-    for (float f : state_vec) printf(" %.4f", f);
-    for (int i = 0; i < q->num_choices; i++) printf(" %d", q->choices[i].category);
-    const float id_null = -1.0f / static_cast<float>(N_CARD_TYPES);
+
+    // Text header line: "BQUERY: N\n"
+    // Followed immediately by binary payload (no text parsing needed on Python side).
+    printf("BQUERY: %d\n", q->num_choices);
+
+    // Binary state vector (STATE_SIZE float32s)
+    fwrite(state_vec.data(), sizeof(float), static_cast<size_t>(STATE_SIZE), stdout);
+
+    // Per-action metadata padded to MAX_ACTIONS for fixed-size reads.
+    const float id_null   = -1.0f / static_cast<float>(N_CARD_TYPES);
+    const float ctrl_null = -1.0f / static_cast<float>(N_CARD_TYPES);
+    int32_t cats[MAX_ACTIONS]  = {};
+    float   ids [MAX_ACTIONS];
+    float   ctrl[MAX_ACTIONS];
+    std::fill(ids,  ids  + MAX_ACTIONS, id_null);
+    std::fill(ctrl, ctrl + MAX_ACTIONS, ctrl_null);
+
     for (int i = 0; i < q->num_choices; i++) {
-        float id_f = q->choices[i].card_vocab_idx >= 0
+        cats[i] = q->choices[i].category;
+        ids[i]  = q->choices[i].card_vocab_idx >= 0
             ? static_cast<float>(q->choices[i].card_vocab_idx) / static_cast<float>(N_CARD_TYPES)
             : id_null;
-        printf(" %.4f", id_f);
-    }
-    const float ctrl_null = -1.0f / static_cast<float>(N_CARD_TYPES);
-    for (int i = 0; i < q->num_choices; i++) {
-        float ctrl = (q->choices[i].zone_ref != REF_NONE)
+        ctrl[i] = (q->choices[i].zone_ref != REF_NONE)
             ? (q->choices[i].controller_is_self ? 1.0f : 0.0f)
             : ctrl_null;
-        printf(" %.4f", ctrl);
     }
-    printf("\n");
+
+    fwrite(cats, sizeof(int32_t), MAX_ACTIONS, stdout);
+    fwrite(ids,  sizeof(float),   MAX_ACTIONS, stdout);
+    fwrite(ctrl, sizeof(float),   MAX_ACTIONS, stdout);
     fflush(stdout);
 }
 
