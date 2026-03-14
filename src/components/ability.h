@@ -22,6 +22,7 @@ struct Ability{
     std::string category = "";
     // TODO: support multiple targets (e.g. "deal 1 damage to each of up to two targets")
     std::string valid_tgts = "N_A";  // Value of ValidTgts$ param; "N_A" if no targeting required
+    int target_min = 1;              // TargetMin$ 0 = optional targeting (can choose no target)
     Entity source = 0;
     Entity target = 0;
     Zone::Ownership controller = Zone::PLAYER_A;  // set when pushed onto stack; stable even if source loses Permanent
@@ -39,6 +40,7 @@ struct Ability{
     std::string return_cost_type = "";  // Return<N/Type> — bounce a land of this subtype as cost
     int return_cost_count = 0;          // number of lands to return
     int activation_limit = 0;           // ActivationLimit$ N — max activations per turn (0 = unlimited)
+    int activation_zone = -1;           // ActivationZone$ Hand → Zone::HAND; -1 = default (battlefield)
     int activations_this_turn = 0;      // runtime counter, reset at UNTAP
     std::string change_type = "";        // ChangeType$ — comma-separated subtypes to search
     Zone::ZoneValue origin = Zone::LIBRARY;          // Origin$ — zone to search
@@ -89,6 +91,12 @@ struct Ability{
 
     // Cleanup sub-ability
     bool clear_remembered = false;   // ClearRemembered$ True
+
+    // Dig ability (Once Upon a Time)
+    size_t dig_num = 0;              // DigNum$ N — how many cards to look at from top of library
+    std::string change_valid = "";   // ChangeValid$ — comma-separated filter like "Card.Creature,Card.Land"
+    bool rest_random_order = false;  // RestRandomOrder$ True
+    bool optional_choice = false;    // Optional$ True in Dig context — can choose nothing
 
     // Conditional subability execution (Scythecat Cub)
     std::string condition_check_svar = "";   // ConditionCheckSVar$ — resolved expression e.g. "Count$ResolvedThisTurn"

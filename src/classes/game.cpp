@@ -1,6 +1,7 @@
 #include "game.h"
 
 #include "../card_vocab.h"
+#include "../cli_output.h"
 #include "../components/creature.h"
 #include "../components/damage.h"
 #include "../components/permanent.h"
@@ -85,12 +86,22 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
 
             switch (cur_step) {
                 case UNTAP:
+                    // Phase in phased-out permanents controlled by active player
+                    for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
+                        if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
+                        auto &perm_phase = global_coordinator.GetComponent<Permanent>(entity);
+                        if (perm_phase.controller == active_player && perm_phase.is_phased_out) {
+                            perm_phase.is_phased_out = false;
+                            game_log("%s phases in\n", perm_phase.name.c_str());
+                        }
+                    }
                     // Untap all permanents controlled by active player; reset per-turn counters
                     for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
                         if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
 
                         auto &permanent = global_coordinator.GetComponent<Permanent>(entity);
                         if (permanent.controller == active_player) {
+                            if (permanent.is_phased_out) continue;  // don't untap phased-out permanents
                             permanent.is_tapped = false;
                             permanent.has_summoning_sickness = false;  // Clear summoning sickness
                             for (auto &ab : permanent.abilities)
@@ -107,6 +118,12 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     break;
                 case UPKEEP:
                     cur_step = DRAW;
+                    // Fire DRAW_STEP_BEGAN before drawing
+                    {
+                        Event draw_step_event(Events::DRAW_STEP_BEGAN);
+                        draw_step_event.SetParam(Params::PLAYER, active_player_entity);
+                        global_coordinator.SendEvent(draw_step_event);
+                    }
                     //first turn first player skips draw!
                     if(turn == 0 && player_a_turn == true) break;
                     orderer->draw(active_player, 1);
@@ -130,11 +147,33 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     cur_step = DECLARE_BLOCKERS;
                     blockers_declared = false;  // Reset for new combat
                     break;
-                case DECLARE_BLOCKERS:
+                case DECLARE_BLOCKERS: {
+                    // Scan for first strikers / double strikers
+                    has_first_strikers = false;
+                    for (Entity e = 0; e < MAX_ENTITIES; ++e) {
+                        if (!global_coordinator.entity_has_component<Creature>(e)) continue;
+                        auto &cr = global_coordinator.GetComponent<Creature>(e);
+                        if (!cr.is_attacking && !cr.is_blocking) continue;
+                        for (const auto &kw : cr.keywords) {
+                            if (kw == "First Strike" || kw == "Double Strike") {
+                                has_first_strikers = true;
+                                break;
+                            }
+                        }
+                        if (has_first_strikers) break;
+                    }
+                    if (has_first_strikers) {
+                        cur_step = FIRST_STRIKE_DAMAGE;
+                    } else {
+                        cur_step = COMBAT_DAMAGE;
+                    }
+                    combat_damage_dealt = false;
+                    break;
+                }
+                case FIRST_STRIKE_DAMAGE:
                     cur_step = COMBAT_DAMAGE;
                     combat_damage_dealt = false;
                     break;
-                //TODO FIRST STRIKE
                 case COMBAT_DAMAGE:
                     cur_step = END_OF_COMBAT;
                     break;
@@ -182,6 +221,13 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     auto &player = global_coordinator.GetComponent<Player>(active_player_entity);
                     player.lands_played_this_turn = 0;
                     player.spells_cast_this_turn = 0;
+                    player.cards_drawn_this_turn.clear();
+                    // Also clear opponent's drawn-this-turn tracking
+                    {
+                        Entity opp_entity = player_a_turn ? player_b_entity : player_a_entity;
+                        auto &opp = global_coordinator.GetComponent<Player>(opp_entity);
+                        opp.cards_drawn_this_turn.clear();
+                    }
 
                     // Reset per-trigger resolution counts
                     ability_resolution_counts.clear();

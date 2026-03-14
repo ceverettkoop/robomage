@@ -23,6 +23,8 @@ struct Permanent {
     bool transformed = false;  // true when DFC is showing its back face
     Entity equipped_to = 0;   // for equipment: which creature entity is equipped (0 = unattached)
     Entity equipped_by = 0;   // for creatures: which equipment is attached (0 = none)
+    bool is_phased_out = false;
+    std::vector<Entity> exiled_with;  // entities exiled by this permanent (for Keen-Eyed Curator)
 };
 
 #endif /* PERMANENT_H */

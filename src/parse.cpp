@@ -172,6 +172,10 @@ Entity parse_card_script(std::string path) {
         while (!cost_str.empty() && cost_str.back() == ' ') cost_str.pop_back();
         AltCost ac;
         ac.has_alt_cost = true;
+        // Cost$ 0 means free
+        if (cost_str == "0") {
+            ac.is_free = true;
+        }
         size_t pl = cost_str.find("PayLife<");
         if (pl != std::string::npos) {
             size_t close = cost_str.find('>', pl);
@@ -188,6 +192,33 @@ Entity parse_card_script(std::string path) {
             size_t close = cost_str.find('>', rf);
             ac.return_to_hand_count = std::stoi(cost_str.substr(rf + 7, slash - rf - 7));
             ac.return_to_hand_type = cost_str.substr(slash + 1, close - slash - 1);
+        }
+        // Parse CheckSVar$ and SVarCompare$ conditions
+        // Walk remaining pipe-separated params for condition fields
+        size_t pp = cost_end;
+        while (pp < line.size()) {
+            if (line[pp] == '|') pp++;
+            while (pp < line.size() && line[pp] == ' ') pp++;
+            size_t pe = line.find('|', pp);
+            if (pe == std::string::npos) pe = line.size();
+            std::string param = line.substr(pp, pe - pp);
+            while (!param.empty() && param.back() == ' ') param.pop_back();
+            size_t dollar = param.find('$');
+            if (dollar != std::string::npos) {
+                std::string key = param.substr(0, dollar);
+                std::string value = param.substr(dollar + 1);
+                while (!key.empty() && key.front() == ' ') key.erase(key.begin());
+                while (!key.empty() && key.back() == ' ') key.pop_back();
+                while (!value.empty() && value.front() == ' ') value.erase(value.begin());
+                while (!value.empty() && value.back() == ' ') value.pop_back();
+                if (key == "CheckSVar") {
+                    auto it = svars.find(value);
+                    ac.condition_svar = (it != svars.end()) ? it->second : value;
+                } else if (key == "SVarCompare") {
+                    ac.condition_compare = value;
+                }
+            }
+            pp = pe;
         }
         card.alt_cost = ac;
         break;
@@ -574,13 +605,24 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         ability.counter_count = std::stoi(value);
     } else if (key == "Optional") {
         ability.optional = (value == "True");
+        ability.optional_choice = (value == "True");
     } else if (key == "Defined") {
         if (value == "Remembered") ability.defined_remembered = true;
         else if (value == "TargetedController") ability.defined_targeted_controller = true;
     } else if (key == "ClearRemembered") {
         ability.clear_remembered = (value == "True");
+    } else if (key == "TargetMin") {
+        ability.target_min = std::stoi(value);
+    } else if (key == "ActivationZone") {
+        if (value == "Hand") ability.activation_zone = Zone::HAND;
     } else if (key == "ActivationLimit") {
         ability.activation_limit = std::stoi(value);
+    } else if (key == "DigNum") {
+        ability.dig_num = static_cast<size_t>(std::stoi(value));
+    } else if (key == "ChangeValid") {
+        ability.change_valid = value;
+    } else if (key == "RestRandomOrder") {
+        ability.rest_random_order = (value == "True");
     } else if (key == "Cost") {
         size_t tok_pos = 0;
         while (tok_pos < value.size()) {
@@ -863,6 +905,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
     bool mode_is_phase = false;
     bool phase_is_upkeep = false;
     bool phase_is_end_step = false;
+    bool phase_is_draw = false;
     bool valid_player_is_you = false;
     bool mode_is_spell_cast = false;
     bool valid_card_non_creature = false;
@@ -902,6 +945,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
             } else if (key == "Phase") {
                 if (value == "Upkeep")   phase_is_upkeep   = true;
                 if (value == "EndStep")  phase_is_end_step = true;
+                if (value == "Draw")     phase_is_draw     = true;
             } else if (key == "ValidPlayer" || key == "ValidActivatingPlayer") {
                 if (value == "You") valid_player_is_you = true;
             } else if (key == "Origin") {
@@ -959,6 +1003,11 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
         ability.trigger_valid_player_is_controller = valid_player_is_you;
     }
 
+    if (mode_is_phase && phase_is_draw) {
+        ability.trigger_on = Events::DRAW_STEP_BEGAN;
+        ability.trigger_valid_player_is_controller = valid_player_is_you;
+    }
+
     if (mode_is_spell_cast && valid_card_non_creature) {
         ability.trigger_on = Events::NONCREATURE_SPELL_CAST;
         ability.trigger_valid_player_is_controller = valid_player_is_you;
@@ -975,13 +1024,19 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
     if (!execute_svar.empty()) {
         auto it = svars.find(execute_svar);
         if (it != svars.end()) {
-            Ability effect = parse_svar_ability(it->second, Ability::TRIGGERED, svars);
-            ability.category = effect.category;
-            ability.amount = effect.amount;
-            ability.counter_type = effect.counter_type;
-            ability.counter_count = effect.counter_count;
-            ability.token_script = effect.token_script;
-            ability.subabilities = effect.subabilities;
+            // Check for Sylvan Library pattern: ChooseCard with DrawnThisTurn
+            if (it->second.find("ChooseCard") != std::string::npos &&
+                it->second.find("DrawnThisTurn") != std::string::npos) {
+                ability.category = "SylvanLibrary";
+            } else {
+                Ability effect = parse_svar_ability(it->second, Ability::TRIGGERED, svars);
+                ability.category = effect.category;
+                ability.amount = effect.amount;
+                ability.counter_type = effect.counter_type;
+                ability.counter_count = effect.counter_count;
+                ability.token_script = effect.token_script;
+                ability.subabilities = effect.subabilities;
+            }
         }
     }
 
@@ -1069,6 +1124,11 @@ static std::vector<StaticAbility> parse_static_abilities(const std::string &scri
                         sa.adjust_land_plays = std::stoi(value);
                 } else if (key == "MayPlay") {
                     if (value == "True") sa.may_play_from_graveyard = true;
+                } else if (key == "CheckSVar") {
+                    auto it = svars.find(value);
+                    sa.check_svar_expr = (it != svars.end()) ? it->second : value;
+                } else if (key == "SVarCompare") {
+                    sa.svar_compare = value;
                 }
             }
 

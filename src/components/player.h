@@ -3,7 +3,9 @@
 
 #include <cstdint>
 #include <set>
+#include <vector>
 #include "../classes/colors.h"
+#include "../ecs/entity.h"
 
 struct Player {
     bool otp;
@@ -13,6 +15,8 @@ struct Player {
     std::multiset<Colors> mana;
     uint8_t lands_played_this_turn = 0;
     size_t spells_cast_this_turn = 0;
+    size_t spells_cast_this_game = 0;
+    std::vector<Entity> cards_drawn_this_turn;
 };
 
 #endif /* PLAYER_H */

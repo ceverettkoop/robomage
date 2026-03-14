@@ -19,6 +19,9 @@ struct AltCost {
     int exile_blue_from_hand = 0;
     int return_to_hand_count = 0;
     std::string return_to_hand_type = "";
+    std::string condition_svar = "";    // e.g. "Count$YouCastThisGame" — condition checked before allowing alt cost
+    std::string condition_compare = ""; // e.g. "EQ0" — comparison for condition_svar
+    bool is_free = false;               // Cost$ 0 — no mana required
 };
 
 //this is the underlying card, not a permanent or spell

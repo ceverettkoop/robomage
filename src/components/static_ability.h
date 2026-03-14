@@ -26,6 +26,10 @@ struct StaticAbility {
     // Icetill Explorer statics (category = "Continuous"):
     int adjust_land_plays = 0;            // AdjustLandPlays$ N — additional land plays per turn
     bool may_play_from_graveyard = false; // MayPlay$ True with AffectedZone$ Graveyard
+    // SVar-based condition (Keen-Eyed Curator)
+    std::string check_svar_expr = "";   // resolved CheckSVar$ expression (e.g. "Count$ValidExile Card.ExiledWithSource$CardTypes")
+    std::string svar_compare = "";      // SVarCompare$ value (e.g. "GE4")
+
     // State tracking — lives in the Permanent's copy, not in CardData template:
     bool applied = false;             // true when the condition was met on the last SBE pass
     uint32_t last_applied_entity = 0; // for EquippedBy: entity that last received the buff

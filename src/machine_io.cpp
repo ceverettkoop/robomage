@@ -190,6 +190,7 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
             case Zone::BATTLEFIELD: {
                 if (!global_coordinator.entity_has_component<Permanent>(e)) break;
                 auto& perm = global_coordinator.GetComponent<Permanent>(e);
+                if (perm.is_phased_out) break;
 
                 PermanentState ps;
                 ps.card_vocab_idx        = get_card_vocab_idx(e);
@@ -368,10 +369,10 @@ std::vector<float> serialize_state(const GameState* gs) {
     std::vector<float> state;
     state.reserve(static_cast<size_t>(STATE_SIZE));
 
-    // Header: self (9) + opp (9) + step one-hot (12) + flags (3) = 33
+    // Header: self (9) + opp (9) + step one-hot (13) + flags (3) = 34
     push_player_block(state, gs->self);
     push_player_block(state, gs->opponent);
-    for (int i = 0; i < 12; i++)
+    for (int i = 0; i < 13; i++)
         state.push_back((gs->cur_step == static_cast<Step>(i)) ? 1.0f : 0.0f);
     state.push_back(gs->is_active_player ? 1.0f : 0.0f);
     state.push_back(gs->self_is_player_a ? 1.0f : 0.0f);

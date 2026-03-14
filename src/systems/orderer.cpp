@@ -10,6 +10,7 @@
 #include "../cli_output.h"
 #include "../components/carddata.h"
 #include "../components/color_identity.h"
+#include "../components/player.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../ecs/events.h"
@@ -190,9 +191,13 @@ void Orderer::draw(Zone::Ownership player, size_t ct) {
                      global_coordinator.GetComponent<CardData>(card).name.c_str());
         }
     }
+    // Track drawn cards on the player's cards_drawn_this_turn list (for Sylvan Library)
+    Entity player_entity = (player == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
+    auto &pl = global_coordinator.GetComponent<Player>(player_entity);
     for (auto &&card : cards_to_draw) {
         auto &card_zone = global_coordinator.GetComponent<Zone>(card);
         card_zone.location = Zone::HAND;
+        pl.cards_drawn_this_turn.push_back(card);
     }
     if (cards_to_draw.size() < ct) {
         if (player == Zone::PLAYER_A) {

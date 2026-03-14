@@ -27,6 +27,8 @@
 #include "../systems/stack_manager.h"
 #include "orderer.h"
 
+static bool compare_svar(int value, const std::string &compare);
+
 static std::string entity_name(Entity e) {
     if (global_coordinator.entity_has_component<Permanent>(e)) {
         auto &perm = global_coordinator.GetComponent<Permanent>(e);
@@ -336,6 +338,8 @@ void StateManager::apply_static_ability_effects() {
         if (zone.location != Zone::BATTLEFIELD) continue;
 
         auto &perm = global_coordinator.GetComponent<Permanent>(entity);
+        // Phased-out permanents don't contribute static abilities
+        if (perm.is_phased_out) continue;
         // Front-face static abilities don't apply while transformed; clear and skip.
         if (perm.transformed) {
             for (auto &sa : perm.static_abilities) sa.applied = false;
@@ -362,10 +366,30 @@ void StateManager::apply_static_ability_effects() {
     // Phase 3: apply or revert effects based on condition results.
     for (auto &a : active) {
         bool condition_met;
-        if (a.sa->condition.empty()) {
+        if (a.sa->condition.empty() && a.sa->check_svar_expr.empty()) {
             condition_met = true;
         } else if (a.sa->condition == "Delirium") {
             condition_met = (a.controller == Zone::PLAYER_A) ? delirium_a : delirium_b;
+        } else if (!a.sa->check_svar_expr.empty()) {
+            // SVar-based condition (e.g. Keen-Eyed Curator: GE4 distinct card types among exiled_with)
+            int svar_val = 0;
+            if (a.sa->check_svar_expr.find("Count$ValidExile") != std::string::npos &&
+                a.sa->check_svar_expr.find("CardTypes") != std::string::npos) {
+                // Count distinct card types among entities in this permanent's exiled_with
+                if (global_coordinator.entity_has_component<Permanent>(a.entity)) {
+                    auto &eperm = global_coordinator.GetComponent<Permanent>(a.entity);
+                    std::set<std::string> type_names;
+                    for (auto ex_e : eperm.exiled_with) {
+                        if (!global_coordinator.entity_has_component<CardData>(ex_e)) continue;
+                        for (auto &t : global_coordinator.GetComponent<CardData>(ex_e).types)
+                            if (t.kind == TYPE) type_names.insert(t.name);
+                    }
+                    svar_val = static_cast<int>(type_names.size());
+                }
+            } else {
+                svar_val = evaluate_sa_svar(a.sa->check_svar_expr, a.controller);
+            }
+            condition_met = compare_svar(svar_val, a.sa->svar_compare);
         } else {
             condition_met = false;  // unrecognised condition — treat as unmet
         }
@@ -508,14 +532,32 @@ void StateManager::init() {
     global_coordinator.SetSystemSignature<StateManager>(signature);
 }
 
+// Returns true if the creature has the given keyword
+static bool creature_has_keyword(const Creature &cr, const char *kw) {
+    for (const auto &k : cr.keywords)
+        if (k == kw) return true;
+    return false;
+}
+
+// Should this creature deal damage during this combat damage step?
+static bool should_deal_damage(const Creature &cr, bool first_strike_only) {
+    bool has_fs = creature_has_keyword(cr, "First Strike");
+    bool has_ds = creature_has_keyword(cr, "Double Strike");
+    if (first_strike_only) return has_fs || has_ds;
+    // Regular damage step: skip first-strikers (they already dealt), but double strikers hit again
+    if (has_fs && !has_ds) return false;
+    return true;
+}
+
 // Combat damage is a turn-based action (rule 510.2), not a state-based action
-void StateManager::deal_combat_damage(Game &game) {
-    game_log("\n--- Combat Damage ---\n");
+void StateManager::deal_combat_damage(Game &game, bool first_strike_only) {
+    game_log("\n--- %sCombat Damage ---\n", first_strike_only ? "First Strike " : "");
 
     for (auto entity : mEntities) {
         if (!global_coordinator.entity_has_component<Creature>(entity)) continue;
         auto &cr = global_coordinator.GetComponent<Creature>(entity);
         if (!cr.is_attacking) continue;
+        if (!should_deal_damage(cr, first_strike_only)) continue;
 
         std::string attacker_name = entity_name(entity);
 
@@ -548,8 +590,8 @@ void StateManager::deal_combat_damage(Game &game) {
                 auto &bcr = global_coordinator.GetComponent<Creature>(blocker);
                 std::string blocker_name = entity_name(blocker);
 
-                // Blocker deals damage to attacker
-                if (bcr.power > 0) {
+                // Blocker deals damage to attacker (only if the blocker qualifies for this step)
+                if (bcr.power > 0 && should_deal_damage(bcr, first_strike_only)) {
                     deal_damage(blocker, entity, bcr.power);
                     game_log("  %s deals %u damage to %s\n", blocker_name.c_str(), bcr.power, attacker_name.c_str());
                 }
@@ -564,10 +606,7 @@ void StateManager::deal_combat_damage(Game &game) {
             }
             // Trample: excess damage goes to attack target
             if (remaining > 0) {
-                bool has_trample = false;
-                for (const auto &kw : cr.keywords) {
-                    if (kw == "Trample") { has_trample = true; break; }
-                }
+                bool has_trample = creature_has_keyword(cr, "Trample");
                 if (has_trample && global_coordinator.entity_has_component<Player>(cr.attack_target)) {
                     deal_damage(entity, cr.attack_target, remaining);
                     auto &target_player = global_coordinator.GetComponent<Player>(cr.attack_target);
@@ -580,16 +619,20 @@ void StateManager::deal_combat_damage(Game &game) {
     }
 
     game.combat_damage_dealt = true;
-    game_log("--- End Combat Damage ---\n\n");
+    game_log("--- End %sCombat Damage ---\n\n", first_strike_only ? "First Strike " : "");
 }
 
 // Turn-based actions happen at the start of specific steps (rules 508, 509, 510, 514)
 void StateManager::process_turn_based_actions(Game &game, std::shared_ptr<Orderer> orderer) {
     game.pending_choice = NONE;
 
-    // Combat damage (rule 510.2)
+    // First strike combat damage (rule 510.1)
+    if (game.cur_step == FIRST_STRIKE_DAMAGE && !game.combat_damage_dealt) {
+        deal_combat_damage(game, true);
+    }
+    // Regular combat damage (rule 510.2)
     if (game.cur_step == COMBAT_DAMAGE && !game.combat_damage_dealt) {
-        deal_combat_damage(game);
+        deal_combat_damage(game, false);
     }
 
     // Declare attackers (rule 508.1)
@@ -652,6 +695,8 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
             if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
             auto &zone = global_coordinator.GetComponent<Zone>(entity);
             if (zone.location != Zone::BATTLEFIELD) continue;
+            if (global_coordinator.entity_has_component<Permanent>(entity) &&
+                global_coordinator.GetComponent<Permanent>(entity).is_phased_out) continue;
 
             auto &creature = global_coordinator.GetComponent<Creature>(entity);
             if (creature.toughness == 0) {
@@ -731,6 +776,7 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
         if (zone.location != Zone::BATTLEFIELD) continue;
 
         auto &perm = global_coordinator.GetComponent<Permanent>(entity);
+        if (perm.is_phased_out) continue;
 
         // Gather triggered abilities from all sources:
         // CardData/Token for innate abilities, Permanent for keyword-granted abilities
@@ -828,9 +874,34 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
     }
 }
 
+// Simple SVar comparison logic (shared between statics and alt costs)
+static bool compare_svar(int value, const std::string &compare) {
+    if (compare.rfind("EQ", 0) == 0)  return value == std::stoi(compare.substr(2));
+    if (compare.rfind("NE", 0) == 0)  return value != std::stoi(compare.substr(2));
+    if (compare.rfind("GE", 0) == 0)  return value >= std::stoi(compare.substr(2));
+    if (compare.rfind("LE", 0) == 0)  return value <= std::stoi(compare.substr(2));
+    if (compare.rfind("GT", 0) == 0)  return value >  std::stoi(compare.substr(2));
+    if (compare.rfind("LT", 0) == 0)  return value <  std::stoi(compare.substr(2));
+    return false;
+}
+
 static bool can_afford_alt(const AltCost& alt_cost, Zone::Ownership priority_player,
                            Entity card_entity, std::shared_ptr<Orderer> orderer) {
     if (!alt_cost.has_alt_cost) return false;
+
+    // Check SVar condition (e.g. Once Upon a Time: free only if first spell this game)
+    if (!alt_cost.condition_svar.empty()) {
+        int svar_value = 0;
+        if (alt_cost.condition_svar.find("Count$YouCastThisGame") != std::string::npos) {
+            Entity pp_entity = (priority_player == Zone::PLAYER_A)
+                ? cur_game.player_a_entity : cur_game.player_b_entity;
+            svar_value = static_cast<int>(global_coordinator.GetComponent<Player>(pp_entity).spells_cast_this_game);
+        }
+        if (!compare_svar(svar_value, alt_cost.condition_compare)) return false;
+    }
+
+    // Free alt cost: no further affordability checks needed
+    if (alt_cost.is_free) return true;
 
     if (alt_cost.return_to_hand_count > 0) {
         int matching = 0;
@@ -1063,6 +1134,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         if (zone.location != Zone::BATTLEFIELD) continue;
         auto &permanent = global_coordinator.GetComponent<Permanent>(entity);
         if (permanent.controller != priority_player) continue;
+        if (permanent.is_phased_out) continue;
 
         // Check if any CantBeActivated static suppresses this permanent's abilities
         bool cant_activate = false;
@@ -1071,6 +1143,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             auto &z2 = global_coordinator.GetComponent<Zone>(e2);
             if (z2.location != Zone::BATTLEFIELD) continue;
             auto &p2 = global_coordinator.GetComponent<Permanent>(e2);
+            if (p2.is_phased_out) continue;
             for (auto &sa : p2.static_abilities) {
                 if (sa.category != "CantBeActivated" || sa.cant_activate_card_filter.empty()) continue;
                 // Check if this permanent matches the filter
@@ -1185,6 +1258,23 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             }
         }
     }
+    // Check hand for cards with ActivationZone$ Hand abilities (e.g. Talon Gates of Madara)
+    for (auto card_entity : hand) {
+        auto &card_data = global_coordinator.GetComponent<CardData>(card_entity);
+        for (const auto &ab : card_data.abilities) {
+            if (ab.ability_type != Ability::ACTIVATED) continue;
+            if (ab.activation_zone != Zone::HAND) continue;
+            // Check mana affordability
+            if (!ab.activation_mana_cost.empty() && !can_afford(priority_player, ab.activation_mana_cost)) continue;
+            // Check target legality
+            if (ab.valid_tgts != "N_A" && ab.target_min > 0 && !has_legal_targets(ab, orderer)) continue;
+            std::string desc = "Activate " + card_data.name + " from hand (" + ab.category + ")";
+            LegalAction la(ACTIVATE_ABILITY, card_entity, ab, desc);
+            la.category = ActionCategory::ACTIVATE_ABILITY;
+            actions.push_back(la);
+        }
+    }
+
     // not filtering mana abilities based on if they contribute to a spell- will revisit this if it makes ML harder
     /*
     for (auto &ma : useful_mana_abilities(legal_mana_abilities, pending_actions)) {

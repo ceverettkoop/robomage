@@ -69,6 +69,39 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
     Entity permanent_entity = action.source_entity;
     const Ability &ability = action.ability;
 
+    // ActivationZone$ Hand: card in hand, no Permanent component
+    if (ability.activation_zone == Zone::HAND &&
+        !global_coordinator.entity_has_component<Permanent>(permanent_entity)) {
+        auto &card_zone = global_coordinator.GetComponent<Zone>(permanent_entity);
+        Zone::Ownership ctrl = card_zone.owner;
+        Ability stack_ab = ability;
+
+        // Select targets before paying costs
+        if (stack_ab.valid_tgts != "N_A") {
+            select_target(stack_ab, orderer, ctrl);
+        }
+        // Pay mana cost
+        if (!ability.activation_mana_cost.empty()) {
+            spend_mana(ctrl, ability.activation_mana_cost);
+        }
+        // Move card from hand to graveyard (it's consumed by activation, similar to discarding)
+        orderer->add_to_zone(false, permanent_entity, Zone::GRAVEYARD);
+
+        // Create standalone ability entity on the stack
+        Entity ability_entity = global_coordinator.CreateEntity();
+        Zone ab_zone(Zone::HAND, ctrl, ctrl);
+        global_coordinator.AddComponent(ability_entity, ab_zone);
+        orderer->add_to_zone(false, ability_entity, Zone::STACK);
+        stack_ab.source = permanent_entity;
+        stack_ab.controller = ctrl;
+        global_coordinator.AddComponent(ability_entity, stack_ab);
+
+        auto &cd = global_coordinator.GetComponent<CardData>(permanent_entity);
+        game_log("%s activates %s from hand\n", player_name(ctrl).c_str(), cd.name.c_str());
+        game.take_action();
+        return;
+    }
+
     auto &permanent = global_coordinator.GetComponent<Permanent>(permanent_entity);
     Zone::Ownership controller = permanent.controller;
 
@@ -306,7 +339,9 @@ static std::vector<Entity> build_valid_targets(
             auto &tz = global_coordinator.GetComponent<Zone>(entity);
             if (tz.location != Zone::BATTLEFIELD) continue;
             if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
-            if (global_coordinator.GetComponent<Permanent>(entity).controller != slot_owner) continue;
+            auto &tgt_perm = global_coordinator.GetComponent<Permanent>(entity);
+            if (tgt_perm.controller != slot_owner) continue;
+            if (tgt_perm.is_phased_out) continue;
 
             if (inc_creatures && global_coordinator.entity_has_component<Creature>(entity)) {
                 if (legendary_only) {
@@ -344,6 +379,12 @@ static void pay_alternate_cost(const LegalAction &action, Game &game, std::share
     Zone::Ownership caster = zone.owner;
     Entity caster_entity = (caster == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
     auto &player = global_coordinator.GetComponent<Player>(caster_entity);
+
+    // Free alt cost (e.g. Once Upon a Time first spell)
+    if (card_data.alt_cost.is_free) {
+        game_log("%s casts for free (alternate cost)\n", player_name(caster).c_str());
+        return;
+    }
 
     // life
     if (card_data.alt_cost.life_cost != 0) {
@@ -699,6 +740,7 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
 
 bool has_legal_targets(const Ability &ability, std::shared_ptr<Orderer> orderer) {
     if (ability.valid_tgts == "N_A") return true;
+    if (ability.target_min == 0) return true;  // optional targeting always has "legal targets"
     // Ordering doesn't matter for existence check; use PLAYER_A as a placeholder.
     return !build_valid_targets(ability, orderer, Zone::PLAYER_A).empty();
 }
@@ -707,6 +749,12 @@ void select_target(Ability &ability, std::shared_ptr<Orderer> orderer, Zone::Own
     std::vector<Entity> valid_targets = build_valid_targets(ability, orderer, priority_player);
     game_log("Choose target:\n");
     std::vector<LegalAction> tgt_actions;
+    // If target_min == 0, add a "No target" option
+    if (ability.target_min == 0) {
+        LegalAction la(PASS_PRIORITY, "No target");
+        la.category = ActionCategory::SELECT_TARGET;
+        tgt_actions.push_back(la);
+    }
     for (auto target : valid_targets) {
         std::string desc;
         if (global_coordinator.entity_has_component<Player>(target)) {
@@ -900,6 +948,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                 Entity caster_entity = (caster == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
                 auto &caster_player = global_coordinator.GetComponent<Player>(caster_entity);
                 caster_player.spells_cast_this_turn++;
+                caster_player.spells_cast_this_game++;
                 Event spell_event(Events::SPELL_CAST);
                 spell_event.SetParam(Params::PLAYER, caster_entity);
                 global_coordinator.SendEvent(spell_event);

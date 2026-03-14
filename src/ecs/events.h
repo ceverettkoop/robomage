@@ -11,6 +11,7 @@ namespace Events {
     constexpr EventId UPKEEP_BEGAN           = 4;  // "at the beginning of [your] upkeep" / Phase$ Upkeep
     constexpr EventId NONCREATURE_SPELL_CAST = 5;  // "whenever [you cast] a noncreature spell" / SpellCast ValidCard$nonCreature
     constexpr EventId END_STEP_BEGAN         = 6;  // "at the beginning of [your] end step" / Phase$ EndStep
+    constexpr EventId DRAW_STEP_BEGAN        = 7;  // "at the beginning of [your] draw step" / Phase$ Draw
     constexpr EventId SPELL_CAST             = 9;  // every spell cast; Params: PLAYER=caster
 }
 

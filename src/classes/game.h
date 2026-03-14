@@ -16,6 +16,7 @@ typedef enum Step {
     BEGIN_COMBAT,
     DECLARE_ATTACKERS,
     DECLARE_BLOCKERS,
+    FIRST_STRIKE_DAMAGE,
     COMBAT_DAMAGE,
     END_OF_COMBAT,
     SECOND_MAIN,
@@ -89,6 +90,7 @@ struct Game {
         bool attackers_declared = false;
         bool blockers_declared = false;
         bool combat_damage_dealt = false;
+        bool has_first_strikers = false;
         std::vector<DelayedTrigger> delayed_triggers;
         std::vector<Entity> delve_exiled;   // entities exiled during current delve cast; cleared after ETB
         size_t x_paid = 0;                  // X value chosen at cast time for X-cost spells

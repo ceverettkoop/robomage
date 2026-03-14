@@ -40,6 +40,7 @@ const char* step_to_string(Step in_step) {
         case BEGIN_COMBAT:      return "Begin Combat";
         case DECLARE_ATTACKERS: return "Declare Attackers";
         case DECLARE_BLOCKERS:  return "Declare Blockers";
+        case FIRST_STRIKE_DAMAGE: return "First Strike Damage";
         case COMBAT_DAMAGE:     return "Combat Damage";
         case END_OF_COMBAT:     return "End of Combat";
         case SECOND_MAIN:       return "Second Main";

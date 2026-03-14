@@ -58,7 +58,7 @@ try:
 except ImportError:
     from train.card_costs import _CARD_COST_MATRIX, _CARD_ABILITY_COST_MATRIX, N_CARD_TYPES, _N_COST_FEATS
 
-STATE_SIZE = 32678
+STATE_SIZE = 32679
 # NOTE: Exile zones are tracked in GameState but not serialized to the observation.
 # NOTE: ActionChoice.description is never emitted in the QUERY line — it is for
 #       human-readable display only and is not part of the ML observation.
@@ -68,7 +68,7 @@ _BQUERY_STATE_BYTES = STATE_SIZE * 4
 _BQUERY_CATS_BYTES  = MAX_ACTIONS * 4  # int32
 _BQUERY_IDS_BYTES   = MAX_ACTIONS * 4  # float32
 _BQUERY_CTRL_BYTES  = MAX_ACTIONS * 4  # float32
-ACTION_CATEGORY_MAX = 22 # highest ActionCategory enum value (PAYING_COSTS)
+ACTION_CATEGORY_MAX = 23 # highest ActionCategory enum value (DIG_CHOICE)
 _ACTION_CARD_ID_NULL = -1.0 / N_CARD_TYPES  # null sentinel for non-card slots
 _ACTION_CTRL_NULL    = -1.0 / N_CARD_TYPES  # null sentinel for non-entity actions
 MAX_HAND_SLOTS = 10
@@ -78,11 +78,11 @@ OBS_SIZE = STATE_SIZE + 3 * MAX_ACTIONS + _HAND_COST_FEATS + _BF_ABILITY_FEATS  
 
 # ── State layout offsets (mirror src/machine_io.h) ───────────────────────────
 # Creatures, lands, and other permanents share one unified section (no separate land slots).
-_STACK_START  = 33 + 96 * 138    # 13281: stack slots (12 × 130)
-_GY_START     = 13281 + 12 * 130 # 14841: graveyard   (128 × 128)
-_HAND_START   = 14841 + 128 * 128 # 31225: hand        (10 × 128)
-_HIST_START   = 31225 + 10 * 128  # 32505: action history (15 × 3)
-_DECK_START   = 32505 + 15 * 3   # 32550: opp starting decklist (128 floats)
+_STACK_START  = 34 + 96 * 138    # 13282: stack slots (12 × 130)
+_GY_START     = 13282 + 12 * 130 # 14842: graveyard   (128 × 128)
+_HAND_START   = 14842 + 128 * 128 # 31226: hand        (10 × 128)
+_HIST_START   = 31226 + 10 * 128  # 32506: action history (15 × 3)
+_DECK_START   = 32506 + 15 * 3   # 32551: opp starting decklist (128 floats)
 _REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BINARY = os.path.join(_REPO_ROOT, "bin", "robomage")
 BIN_DIR = os.path.join(_REPO_ROOT, "bin")  # game must be run from here for resource lookup
@@ -362,7 +362,7 @@ _CARD_COLORED_COSTS = {
 }
 
 # ── Battlefield layout (mirror machine_io.h) ────────────────────────────────
-_BF_START         = 33
+_BF_START         = 34
 _BF_SLOT_SIZE     = 138  # 10 status floats + 128 card one-hot
 _PERM_A_SLOTS     = 48   # self occupies perm slots 0-47, opponent slots 48-95
 _BF_A_SLOTS       = 24   # ability cost slots per player (unchanged)
@@ -454,7 +454,7 @@ def scripted_action(obs: np.ndarray, num_choices: int) -> int:
     ctrl_arr = obs[STATE_SIZE + 2 * MAX_ACTIONS : STATE_SIZE + 3 * MAX_ACTIONS]
 
     _STEP_FIRST_MAIN  = 21   # obs[18 + 3]
-    _STEP_SECOND_MAIN = 27   # obs[18 + 9]
+    _STEP_SECOND_MAIN = 28   # obs[18 + 10] (shifted +1 by FIRST_STRIKE_DAMAGE step)
     in_main_phase = obs[_STEP_FIRST_MAIN] > 0.5 or obs[_STEP_SECOND_MAIN] > 0.5
 
     # 0. Mulligan: always keep — return the first non-mulligan action (the keep action)

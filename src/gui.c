@@ -137,11 +137,11 @@ static Color card_bg_from_identity(int color_identity, bool is_land) {
 static void render_phase_bar(float px, float py, float pw, float ph, int cur_step) {
     static const char *phase_labels[] = {
         "UNT", "UPK", "DRW", "M1",
-        "CMB", "ATK", "BLK",
+        "CMB", "ATK", "BLK", "FS",
         "DMG", "EOC", "M2",
         "END", "CLN"
     };
-    int n_phases = 12;
+    int n_phases = 13;
     float gap = 2.0f;
     float total_gap = gap * (float)(n_phases - 1);
     float box_w = (pw - total_gap) / (float)n_phases;

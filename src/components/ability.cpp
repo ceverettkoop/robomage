@@ -232,6 +232,11 @@ void Ability::resolve_change_zone(std::shared_ptr<Orderer> orderer) {
             : (global_coordinator.entity_has_component<Permanent>(target)
                 ? global_coordinator.GetComponent<Permanent>(target).name : "<unknown>");
         orderer->add_to_zone(false, target, destination);
+        // Track exiled_with on the source permanent (for Keen-Eyed Curator)
+        if (destination == Zone::EXILE && source != 0 &&
+            global_coordinator.entity_has_component<Permanent>(source)) {
+            global_coordinator.GetComponent<Permanent>(source).exiled_with.push_back(target);
+        }
         game_log("%s is moved to %s\n", tname.c_str(), dest_str);
         return;
     }
@@ -415,6 +420,9 @@ void Ability::fizzle(std::shared_ptr<Orderer> orderer){
 //TODO fix
 //redundant with call in action processor and not generalizable!
 bool Ability::is_target_valid() const {
+    // Optional targeting: no target chosen is valid
+    if (target == 0 && target_min == 0) return true;
+
     const std::string &vt = valid_tgts;
 
     if (target_type == "Spell") {
@@ -797,6 +805,167 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
                 }
             }
             return;  // transform logic handled inline; skip subabilities loop
+        }
+    } else if (category == "Phases") {
+        // Phase out target permanent
+        if (target != 0 && global_coordinator.entity_has_component<Permanent>(target)) {
+            auto &tgt_perm = global_coordinator.GetComponent<Permanent>(target);
+            tgt_perm.is_phased_out = true;
+            game_log("%s phases out\n", tgt_perm.name.c_str());
+        }
+    } else if (category == "Dig") {
+        // Look at top N cards, player picks one matching filter, rest go to bottom
+        Zone::Ownership dig_owner = controller;
+        std::vector<Entity> lib = orderer->get_library_contents(dig_owner);
+        std::sort(lib.begin(), lib.end(), [](Entity a, Entity b) {
+            return global_coordinator.GetComponent<Zone>(a).distance_from_top
+                 < global_coordinator.GetComponent<Zone>(b).distance_from_top;
+        });
+        if (lib.size() > dig_num) lib.resize(dig_num);
+
+        // Parse change_valid filters (comma-separated "Card.Creature,Card.Land" etc.)
+        std::vector<std::string> filters;
+        if (!change_valid.empty()) {
+            size_t fp = 0;
+            while (true) {
+                size_t comma = change_valid.find(',', fp);
+                if (comma == std::string::npos) {
+                    filters.push_back(change_valid.substr(fp));
+                    break;
+                }
+                filters.push_back(change_valid.substr(fp, comma - fp));
+                fp = comma + 1;
+            }
+        }
+
+        // Filter matching cards
+        std::vector<Entity> matching;
+        for (auto e : lib) {
+            if (filters.empty()) { matching.push_back(e); continue; }
+            bool card_matches = false;
+            auto &cd = global_coordinator.GetComponent<CardData>(e);
+            for (auto &f : filters) {
+                // "Card.Creature" → check for Creature type
+                // "Card.Land" → check for Land type
+                std::string type_name;
+                size_t dot = f.find('.');
+                if (dot != std::string::npos) type_name = f.substr(dot + 1);
+                else type_name = f;
+                for (auto &t : cd.types) {
+                    if (t.name == type_name) { card_matches = true; break; }
+                }
+                if (card_matches) break;
+            }
+            if (card_matches) matching.push_back(e);
+        }
+
+        game_log("%s looks at the top %zu card(s) of their library.\n",
+                 player_name(dig_owner).c_str(), lib.size());
+
+        // Present choices
+        std::vector<LegalAction> dig_actions;
+        if (optional_choice) {
+            LegalAction la(PASS_PRIORITY, "Take nothing");
+            la.category = ActionCategory::DIG_CHOICE;
+            dig_actions.push_back(la);
+        }
+        for (auto e : matching) {
+            auto &cd = global_coordinator.GetComponent<CardData>(e);
+            LegalAction la(PASS_PRIORITY, e, cd.name);
+            la.category = ActionCategory::DIG_CHOICE;
+            dig_actions.push_back(la);
+        }
+        // If no matching and not optional, fall through (all go to bottom)
+        Entity chosen = 0;
+        if (!dig_actions.empty()) {
+            int choice = InputLogger::instance().get_input(dig_actions);
+            chosen = dig_actions[static_cast<size_t>(choice)].source_entity;
+        }
+
+        if (chosen != 0) {
+            orderer->add_to_zone(false, chosen, Zone::HAND);
+            auto &cd = global_coordinator.GetComponent<CardData>(chosen);
+            game_log_private(dig_owner, "%s puts %s into hand.\n",
+                     player_name(dig_owner).c_str(), cd.name.c_str());
+        }
+
+        // Remaining cards go to bottom of library
+        std::vector<Entity> remaining;
+        for (auto e : lib) {
+            if (e != chosen) remaining.push_back(e);
+        }
+        if (rest_random_order) {
+            // Shuffle remaining with game RNG
+            for (size_t i = remaining.size(); i > 1; --i) {
+                std::uniform_int_distribution<size_t> dist(0, i - 1);
+                size_t j = dist(cur_game.gen);
+                std::swap(remaining[i - 1], remaining[j]);
+            }
+        }
+        for (auto e : remaining) {
+            orderer->add_to_zone(true, e, Zone::LIBRARY);
+        }
+        game_log("%s puts %zu card(s) on the bottom of their library.\n",
+                 player_name(dig_owner).c_str(), remaining.size());
+    } else if (category == "SylvanLibrary") {
+        // Draw 2, then for each card drawn this turn still in hand, choose: pay 4 life or put on top
+        Zone::Ownership ctrl = controller;
+        Entity ctrl_entity = (ctrl == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
+        auto &pl = global_coordinator.GetComponent<Player>(ctrl_entity);
+
+        // Draw 2 cards
+        orderer->draw(ctrl, 2);
+        game_log("%s draws 2 cards (Sylvan Library)\n", player_name(ctrl).c_str());
+
+        // Get cards drawn this turn that are still in hand
+        std::vector<Entity> drawn_in_hand;
+        for (auto e : pl.cards_drawn_this_turn) {
+            if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+            auto &z = global_coordinator.GetComponent<Zone>(e);
+            if (z.location == Zone::HAND && z.owner == ctrl) {
+                drawn_in_hand.push_back(e);
+            }
+        }
+
+        // Player chooses 2 cards (or fewer if not enough in hand)
+        size_t to_choose = std::min(drawn_in_hand.size(), static_cast<size_t>(2));
+        std::vector<Entity> chosen_cards;
+        for (size_t pick = 0; pick < to_choose; pick++) {
+            game_log("Choose a card drawn this turn (%zu remaining):\n", to_choose - pick);
+            std::vector<LegalAction> choose_actions;
+            for (auto e : drawn_in_hand) {
+                // Skip already chosen
+                bool already = false;
+                for (auto c : chosen_cards) { if (c == e) { already = true; break; } }
+                if (already) continue;
+                auto &cd = global_coordinator.GetComponent<CardData>(e);
+                LegalAction la(PASS_PRIORITY, e, cd.name);
+                la.category = ActionCategory::OTHER_CHOICE;
+                choose_actions.push_back(la);
+            }
+            if (choose_actions.empty()) break;
+            int choice = InputLogger::instance().get_input(choose_actions);
+            chosen_cards.push_back(choose_actions[static_cast<size_t>(choice)].source_entity);
+        }
+
+        // For each chosen card: pay 4 life or put on top of library
+        for (auto card : chosen_cards) {
+            auto &cd = global_coordinator.GetComponent<CardData>(card);
+            game_log("For %s: pay 4 life or put on top of library?\n", cd.name.c_str());
+            std::vector<LegalAction> pay_actions = {
+                LegalAction(PASS_PRIORITY, std::string("Pay 4 life")),
+                LegalAction(PASS_PRIORITY, std::string("Put on top of library")),
+            };
+            pay_actions[0].category = ActionCategory::OTHER_CHOICE;
+            pay_actions[1].category = ActionCategory::OTHER_CHOICE;
+            int choice = InputLogger::instance().get_input(pay_actions);
+            if (choice == 0) {
+                pl.life_total -= 4;
+                game_log("%s pays 4 life (now at %d)\n", player_name(ctrl).c_str(), pl.life_total);
+            } else {
+                orderer->add_to_zone(false, card, Zone::LIBRARY);
+                game_log("%s puts %s on top of library\n", player_name(ctrl).c_str(), cd.name.c_str());
+            }
         }
     }
 
