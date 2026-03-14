@@ -594,6 +594,13 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
                 if (angle != std::string::npos && close != std::string::npos && close > angle + 1)
                     ability.life_cost = std::stoi(tok.substr(angle + 1, close - angle - 1));
             } else if (tok.rfind("Sac<", 0) == 0) {
+                // Consume additional tokens if '>' not found (label may contain spaces)
+                while (tok.find('>') == std::string::npos && tok_pos < value.size()) {
+                    tok_end = value.find(' ', tok_pos);
+                    if (tok_end == std::string::npos) tok_end = value.size();
+                    tok += " " + value.substr(tok_pos, tok_end - tok_pos);
+                    tok_pos = (tok_end < value.size()) ? tok_end + 1 : tok_end;
+                }
                 size_t slash = tok.find('/');
                 size_t close = tok.find('>');
                 if (slash != std::string::npos && close != std::string::npos && close > slash + 1) {
