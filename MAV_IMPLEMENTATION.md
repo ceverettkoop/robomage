@@ -16,7 +16,7 @@
 | Noble Hierarch | ✅ vocab + engine | idx 42; Produced$ Combo W U G; Exalted implemented |
 | Ignoble Hierarch | ✅ vocab + engine | idx 38; Produced$ Combo B R G; Exalted implemented |
 | Horizon Canopy | ✅ vocab + engine | idx 36; Combo G W + AB$ Draw functional |
-| Thalia, Guardian of Thraben | ✅ vocab + engine | idx 51; RaiseCost static implemented |
+| Thalia, Guardian of Thraben | ⬜  vocab + engine | idx 51; RaiseCost static implemented | FIRST STRIKE IS NOT
 | Gaea's Cradle | ✅ vocab + engine | idx 34; dynamic Count$Valid Creature.YouCtrl implemented |
 | Karakas | ✅ vocab + engine | idx 39; Creature.Legendary filter implemented |
 | Knight of the Reliquary | ✅ vocab + engine | idx 41; Sac<1/Forest;Plains/> conditional sac + graveyard count static |
