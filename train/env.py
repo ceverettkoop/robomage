@@ -4,7 +4,7 @@ RoboMage gymnasium environment.
 The game runs as a subprocess with --machine mode. On each decision point it
 emits a QUERY line to stdout:
 
-    QUERY: <num_choices> <f0> ... <f8876> <cat0>...<catN-1> <id0>...<idN-1> <ctrl0>...<ctrlN-1>
+    QUERY: <num_choices> <f0> ... <f32677> <cat0>...<catN-1> <id0>...<idN-1> <ctrl0>...<ctrlN-1>
 
 The environment sends back a single integer on stdin.
 
@@ -24,10 +24,10 @@ Observation space
 -----------------
 State is always emitted from the PRIORITY PLAYER'S perspective ("self").
 
-8934-float state vector (8889 game state + 45 action history)
+32678-float state vector (32550 game state + 45 action history + 128 opp decklist)
 + 32 action-category floats + 32 action card-ID floats
 + 32 action controller_is_self floats + 70 hand cost floats
-+ 336 battlefield ability cost floats = 9436 total.
++ 336 battlefield ability cost floats = 33180 total.
 NOTE: ActionChoice.description is NOT part of the observation — it is for
 human-readable display only (GUI/CLI) and is never sent to the ML model.
 NOTE: Exile zones are tracked in GameState but not serialized to the observation.
@@ -57,25 +57,26 @@ try:
 except ImportError:
     from train.card_costs import _CARD_COST_MATRIX, _CARD_ABILITY_COST_MATRIX, N_CARD_TYPES, _N_COST_FEATS
 
-STATE_SIZE = 8934
+STATE_SIZE = 32678
 # NOTE: Exile zones are tracked in GameState but not serialized to the observation.
 # NOTE: ActionChoice.description is never emitted in the QUERY line — it is for
 #       human-readable display only and is not part of the ML observation.
 MAX_ACTIONS = 32         # practical upper bound on num_choices per step
 ACTION_CATEGORY_MAX = 22 # highest ActionCategory enum value (PAYING_COSTS)
-_ACTION_CARD_ID_NULL = -1.0 / N_CARD_TYPES  # -0.03125 — null sentinel for non-card slots
-_ACTION_CTRL_NULL    = -1.0 / N_CARD_TYPES  # -0.03125 — null sentinel for non-entity actions
+_ACTION_CARD_ID_NULL = -1.0 / N_CARD_TYPES  # null sentinel for non-card slots
+_ACTION_CTRL_NULL    = -1.0 / N_CARD_TYPES  # null sentinel for non-entity actions
 MAX_HAND_SLOTS = 10
 _HAND_COST_FEATS  = MAX_HAND_SLOTS * _N_COST_FEATS  # 10 * 7 = 70
 _BF_ABILITY_FEATS = 48 * _N_COST_FEATS              # 48 * 7 = 336
-OBS_SIZE = STATE_SIZE + 3 * MAX_ACTIONS + _HAND_COST_FEATS + _BF_ABILITY_FEATS  # 9436
+OBS_SIZE = STATE_SIZE + 3 * MAX_ACTIONS + _HAND_COST_FEATS + _BF_ABILITY_FEATS  # 33180
 
 # ── State layout offsets (mirror src/machine_io.h) ───────────────────────────
 # Creatures, lands, and other permanents share one unified section (no separate land slots).
-_STACK_START  = 33 + 96 * 42    # 4065: stack slots (12 × 34)
-_GY_START     = 4065 + 12 * 34  # 4473: graveyard   (128 × 32)
-_HAND_START   = 4473 + 128 * 32 # 8569: hand        (10 × 32)
-_HIST_START   = 8569 + 10 * 32  # 8889: action history (15 × 3)
+_STACK_START  = 33 + 96 * 138    # 13281: stack slots (12 × 130)
+_GY_START     = 13281 + 12 * 130 # 14841: graveyard   (128 × 128)
+_HAND_START   = 14841 + 128 * 128 # 31225: hand        (10 × 128)
+_HIST_START   = 31225 + 10 * 128  # 32505: action history (15 × 3)
+_DECK_START   = 32505 + 15 * 3   # 32550: opp starting decklist (128 floats)
 _REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BINARY = os.path.join(_REPO_ROOT, "bin", "robomage")
 BIN_DIR = os.path.join(_REPO_ROOT, "bin")  # game must be run from here for resource lookup
@@ -336,18 +337,20 @@ _COLOR_TO_MANA_CAT = [_CAT_MANA_W, _CAT_MANA_U, _CAT_MANA_B, _CAT_MANA_R, _CAT_M
 # Colored mana requirements per card vocab index (card_vocab.h).
 # Keys are color pool indices: W=0, U=1, B=2, R=3, G=4, C=5.
 # Generic mana is omitted — any color satisfies it.
-# Deck: test_minimal.dk (blue/red, fetch-heavy)
 _CARD_COLORED_COSTS = {
-    2: {3: 1}, # bolt
-    11: {1: 1},   # Ponder        (U)     — 1 blue
-    13: {1: 1},   # Daze          (1U)    — 1 blue
-    16: {1: 1},   # Delver of Secrets (U) — 1 blue
-    18: {1: 1},   # Flying Men    (U)     — 1 blue
-    20: {3: 1},   # Dragon's Rage Channeler (R) — 1 red
-    21: {1: 2},   # Air Elemental (3UU)   — 2 blue
-    22: {1: 2},   # Counterspell  (UU)    — 2 blue
-    23: {3: 1},   # Lightning Strike (1R) — 1 red
-    24: {1: 1},   # Brainstorm      (U)   — 1 blue
+    2:  {3: 1},   # Lightning Bolt          (R)   — 1 red
+    11: {1: 1},   # Ponder                  (U)   — 1 blue
+    13: {1: 1},   # Daze                    (1U)  — 1 blue
+    16: {1: 1},   # Delver of Secrets       (U)   — 1 blue
+    18: {1: 1},   # Flying Men              (U)   — 1 blue
+    20: {3: 1},   # Dragon's Rage Channeler (R)   — 1 red
+    21: {1: 2},   # Air Elemental           (3UU) — 2 blue
+    22: {1: 2},   # Counterspell            (UU)  — 2 blue
+    23: {3: 1},   # Lightning Strike        (1R)  — 1 red
+    24: {1: 1},   # Brainstorm              (U)   — 1 blue
+    26: {1: 2},   # Murktide Regent         (5UU, Delve) — 2 blue
+    28: {3: 1},   # Cori-Steel Cutter       (1R)  — 1 red
+    29: {3: 1},   # Unholy Heat             (R)   — 1 red
 }
 
 # ── Battlefield layout (mirror machine_io.h) ────────────────────────────────
@@ -561,6 +564,16 @@ def scripted_action(obs: np.ndarray, num_choices: int) -> int:
         for i, c in enumerate(cats):
             if c in _MANA_CATS:
                 return i
+
+    # 10. Surveil / Delver reveal: both use two PASS_PRIORITY (0) choices whose
+    #     source entity is the same library card (non-null, equal card IDs).
+    #     For surveil: action 1 = put in graveyard (good for delirium and Murktide).
+    #     For Delver's PeekAndReveal: action 1 = reveal (safe; triggers transform
+    #     only if the top card is an instant or sorcery, which is desirable).
+    if num_choices == 2 and all(c == _CAT_PASS for c in cats[:2]):
+        id0, id1 = card_ids[0], card_ids[1]
+        if id0 > _ACTION_CARD_ID_NULL + 0.01 and abs(id1 - id0) < 0.001:
+            return 1
 
     # Default: pass priority
     return 0

@@ -10,7 +10,7 @@ REPO_ROOT   = os.path.dirname(os.path.abspath(__file__)) + "/.."
 VOCAB_H     = os.path.join(REPO_ROOT, "src/card_vocab.h")
 CARDS_DIR   = os.path.join(REPO_ROOT, "bin/resources/cardsfolder")
 OUT_FILE    = os.path.join(REPO_ROOT, "train/card_costs.py")
-N_TYPES     = 32
+N_TYPES     = 128
 N_FEATS     = 7   # W U B R G C generic
 
 COLOR_MAP = {'W': 0, 'U': 1, 'B': 2, 'R': 3, 'G': 4, 'C': 5}
@@ -42,7 +42,7 @@ def find_card_file(name):
     named after the combined front//back name (e.g. delver_of_secrets_insectile_aberration.txt),
     so we also try a prefix match when an exact match isn't found.
     """
-    stem = re.sub(r'[^a-z0-9_]', '', name.lower().replace(' ', '_'))
+    stem = re.sub(r'[^a-z0-9_]', '', name.lower().replace(' ', '_').replace('-', '_'))
     filename = stem + '.txt'
     first_letter = stem[0]
     # 1. Exact match in expected subdirectory
@@ -96,7 +96,7 @@ def main():
         "# Re-run after updating src/card_vocab.h or card script files.",
         "import numpy as np",
         "",
-        "N_CARD_TYPES = 32",
+        "N_CARD_TYPES = 128",
         "_N_COST_FEATS = 7  # W, U, B, R, G, C, generic (pip counts / 10.0)",
         "",
         "_CARD_COST_MATRIX = np.array([",

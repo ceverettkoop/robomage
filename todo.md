@@ -7,5 +7,3 @@ Checking for effects similar to indestructible - will implement as relevant card
 
 Known ML problems:
 Does not know what's in exile
-Does not know storm count or steel cutter count
-

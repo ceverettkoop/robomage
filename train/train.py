@@ -483,12 +483,12 @@ _STEP_NAMES = [
 
 
 def _decode_hand(obs):
-    """Return list of card names for the priority player's hand (obs[8569:8889])."""
+    """Return list of card names for the priority player's hand (obs[31225:32505])."""
     import numpy as np
     cards = []
-    for slot in range(10):           # MAX_HAND_SLOTS = 10
-        base = 8569 + slot * 32      # _HAND_START + slot * N_CARD_TYPES
-        vec = obs[base : base + 32]
+    for slot in range(10):            # MAX_HAND_SLOTS = 10
+        base = 31225 + slot * 128     # _HAND_START + slot * N_CARD_TYPES
+        vec = obs[base : base + 128]
         idx = int(np.argmax(vec))
         if vec[idx] > 0.5:
             cards.append(_VOCAB_NAMES[idx] if idx < len(_VOCAB_NAMES) else f"?{idx}")

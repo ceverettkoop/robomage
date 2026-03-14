@@ -30,46 +30,50 @@
 // NOTE: Exile zones are populated in GameState but NOT serialized.
 // Add them back once cards that use exile are implemented.
 //
-// Fixed-size state vector layout (STATE_SIZE = 8889 floats):
+// Fixed-size state vector layout (STATE_SIZE = 32678 floats):
 //
-//  [0-8]    Self player block (9 floats):
-//             life/20, hand_ct/10, poison/10, mana[W,U,B,R,G,C]/10
-//  [9-17]   Opponent player block (9 floats, same layout)
-//  [18-29]  Current step one-hot (12 steps: UNTAP..CLEANUP)
-//  [30]     1.0 if priority player is the active player (self's turn), 0.0 otherwise
-//  [31]     1.0 if self is Player A, 0.0 if self is Player B
-//  [32]     Stack size / 10.0
+//  [0-8]      Self player block (9 floats):
+//               life/20, hand_ct/10, poison/10, mana[W,U,B,R,G,C]/10
+//  [9-17]     Opponent player block (9 floats, same layout)
+//  [18-29]    Current step one-hot (12 steps: UNTAP..CLEANUP)
+//  [30]       1.0 if priority player is the active player (self's turn), 0.0 otherwise
+//  [31]       1.0 if self is Player A, 0.0 if self is Player B
+//  [32]       Stack size / 10.0
 //
-//  [33-2048]   Self permanents: 48 slots x 42 floats = 2016
-//  [2049-4064] Opp permanents:  48 slots x 42 floats = 2016
-//              Per slot: power/10, toughness/10, is_tapped, is_attacking,
-//                        is_blocking, has_summoning_sickness, damage/10,
-//                        controller_is_self, is_creature, is_land,
-//                        card_id one-hot (N_CARD_TYPES floats)
-//              Empty slots (card_vocab_idx == -1) are all zeros.
+//  [33-6656]     Self permanents: 48 slots x 138 floats = 6624
+//  [6657-13280]  Opp permanents:  48 slots x 138 floats = 6624
+//                Per slot: power/10, toughness/10, is_tapped, is_attacking,
+//                          is_blocking, has_summoning_sickness, damage/10,
+//                          controller_is_self, is_creature, is_land,
+//                          card_id one-hot (N_CARD_TYPES floats)
+//                Empty slots (card_vocab_idx == -1) are all zeros.
 //
-//  [4065-4472] Stack: 12 slots x 34 floats = 408
-//              Per slot: controller_is_self(1), card_id one-hot(32), is_spell(1)
-//              is_spell=1.0 for a cast spell; 0.0 for a triggered/activated ability
+//  [13281-14840] Stack: 12 slots x 130 floats = 1560
+//                Per slot: controller_is_self(1), card_id one-hot(128), is_spell(1)
+//                is_spell=1.0 for a cast spell; 0.0 for a triggered/activated ability
 //
-//  [4473-6520] Self graveyard: 64 slots x 32 floats = 2048
-//  [6521-8568] Opp graveyard:  64 slots x 32 floats = 2048
-//              Per slot: card_id one-hot (all zeros = empty)
+//  [14841-23032] Self graveyard: 64 slots x 128 floats = 8192
+//  [23033-31224] Opp graveyard:  64 slots x 128 floats = 8192
+//                Per slot: card_id one-hot (all zeros = empty)
 //
-//  [8569-8888] Self hand: 10 slots x 32 floats = 320
-//              Per slot: card_id one-hot (all zeros = empty)
+//  [31225-32504] Self hand: 10 slots x 128 floats = 1280
+//                Per slot: card_id one-hot (all zeros = empty)
 //
-//  [8889-8933] Action history: 15 entries x 3 floats = 45 (newest first)
-//              Per entry: category / ACTION_CATEGORY_MAX,
-//                         card_vocab_idx / N_CARD_TYPES (or -1/N_CARD_TYPES sentinel),
-//                         is_self (1.0 = viewer's action, 0.0 = opponent's)
-//              Empty entries (beyond action_history_len) are all zeros.
+//  [32505-32549] Action history: 15 entries x 3 floats = 45 (newest first)
+//                Per entry: category / ACTION_CATEGORY_MAX,
+//                           card_vocab_idx / N_CARD_TYPES (or -1/N_CARD_TYPES sentinel),
+//                           is_self (1.0 = viewer's action, 0.0 = opponent's)
+//                Empty entries (beyond action_history_len) are all zeros.
+//
+//  [32550-32677] Opponent starting decklist: N_CARD_TYPES floats
+//                Per slot: (count of that card in opponent's starting main deck) / 4.0
+//                All zeros if the game was not started from a deck file.
 
-static constexpr int STATE_SIZE      = 8934;
-static constexpr int N_CARD_TYPES    = 32;
-static constexpr int PERM_SLOT_SIZE  = 42;  // 8 stat/combat + 2 type flags + N_CARD_TYPES
-static constexpr int STACK_SLOT_SIZE = 34;  // controller_is_self(1) + card one-hot(32) + is_spell(1)
-static constexpr int GY_SLOT_SIZE    = 32;  // card one-hot only
+static constexpr int STATE_SIZE      = 32678;
+static constexpr int N_CARD_TYPES    = 128;
+static constexpr int PERM_SLOT_SIZE  = 138;  // 8 stat/combat + 2 type flags + N_CARD_TYPES
+static constexpr int STACK_SLOT_SIZE = 130;  // controller_is_self(1) + card one-hot(128) + is_spell(1)
+static constexpr int GY_SLOT_SIZE    = 128;  // card one-hot only
 
 // viewer: which player's perspective to fill from. Zone::UNKNOWN defaults to the priority player.
 void populate_gamestate(GameState* gs, Zone::Ownership viewer = Zone::UNKNOWN);

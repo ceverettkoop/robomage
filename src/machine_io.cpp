@@ -252,6 +252,14 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
 
     gs->opp_hand_ct = gs->opponent.hand_ct;
 
+    // Opponent starting decklist
+    {
+        const int* opp_list = (viewer == Zone::PLAYER_A)
+            ? cur_game.starting_decklist_b
+            : cur_game.starting_decklist_a;
+        for (int i = 0; i < N_CARD_TYPES; i++) gs->opp_decklist[i] = opp_list[i];
+    }
+
     // Action history: copy from ring buffer, newest first, with perspective normalization
     gs->action_history_len = cur_game.action_history_count;
     bool viewer_is_a = (viewer == Zone::PLAYER_A);
@@ -424,6 +432,10 @@ std::vector<float> serialize_state(const GameState* gs) {
     // Action history (15 x 3 = 45, newest first)
     for (int i = 0; i < ACTION_HISTORY_SIZE * 3; i++)
         state.push_back(gs->action_history[i]);
+
+    // Opp starting decklist (N_CARD_TYPES floats, count / 4.0)
+    for (int i = 0; i < N_CARD_TYPES; i++)
+        state.push_back(static_cast<float>(gs->opp_decklist[i]) / 4.0f);
 
     assert(static_cast<int>(state.size()) == STATE_SIZE);
     return state;
