@@ -3,7 +3,7 @@ lib/libraylib.a
 bin/robomage
 obj/*.o
 obj/*/*.o
-bin/resources/cardsfolder/**
+bin/resources/cardsfolder/*/*.txt
 bin/resources/cardsfolder/.DS_Store
 bin/resources/logs/**
 src/classes/game.cpp
@@ -14,5 +14,5 @@ checkpoints/*.zip
 replays/*.txt
 train/checkpoints/*
 .cache/*
-bin/resources/tokenscripts/*
+bin/resources/tokenscripts/*.txt
 resources/logs/*
