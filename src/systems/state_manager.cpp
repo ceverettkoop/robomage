@@ -1036,6 +1036,8 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             ManaValue effective_cost = card_data.mana_cost;
             for (int ri = 0; ri < raise_total; ri++) effective_cost.insert(GENERIC);
 
+            // X-cost spells: base cost (without X) is enough to be castable;
+            // X value is chosen at cast time in action_processor
             bool can_regular = card_data.has_delve
                 ? can_afford_with_delve(priority_player, effective_cost, orderer)
                 : can_afford(priority_player, effective_cost);

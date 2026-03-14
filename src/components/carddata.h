@@ -38,6 +38,8 @@ struct CardData{
     std::vector<Effect::Replacement> replacement_effects;  // parsed from R: lines TODO expand this to parse SVAR below
     std::shared_ptr<CardData> backside;  // populated for DFCs; nullptr for normal cards
     bool has_delve = false;              // K:Delve — exile from graveyard to reduce generic cost
+    bool has_x_cost = false;             // ManaCost contains X — variable generic cost chosen at cast time
+    bool shuffle_into_library = false;   // card shuffles into library instead of going to graveyard on resolution
     bool is_equipment = false;           // has K:Equip line
     ManaValue equip_cost;                // parsed from K:Equip:cost
     std::set<Colors> explicit_colors;    // Colors: field override (e.g. Dryad Arbor)

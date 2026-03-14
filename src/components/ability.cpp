@@ -41,6 +41,66 @@ bool Ability::identical_activated_ability(const Ability &other) {
     return true;
 };
 
+// Checks if a card entity matches a single filter spec.
+// Supports: plain type name ("Forest"), dot-qualified color ("Creature.Green"),
+// and +cmcLEX (CMC <= cur_game.x_paid).
+static bool matches_filter_spec(Entity entity, const std::string &spec) {
+    auto &cd = global_coordinator.GetComponent<CardData>(entity);
+
+    // Split on '+' for additional constraints (e.g. "Creature.Green+cmcLEX")
+    std::string type_part = spec;
+    bool has_cmc_le_x = false;
+    size_t plus_pos = spec.find('+');
+    if (plus_pos != std::string::npos) {
+        type_part = spec.substr(0, plus_pos);
+        std::string constraint = spec.substr(plus_pos + 1);
+        if (constraint == "cmcLEX") has_cmc_le_x = true;
+    }
+
+    // Split type_part on '.' for color qualifier (e.g. "Creature.Green")
+    std::string type_name = type_part;
+    std::string color_qualifier;
+    size_t dot_pos = type_part.find('.');
+    if (dot_pos != std::string::npos) {
+        type_name = type_part.substr(0, dot_pos);
+        color_qualifier = type_part.substr(dot_pos + 1);
+    }
+
+    // Check type match
+    bool type_matches = false;
+    for (auto &t : cd.types) {
+        if (t.name == type_name) { type_matches = true; break; }
+    }
+    if (!type_matches) return false;
+
+    // Check color qualifier
+    if (!color_qualifier.empty()) {
+        Colors required_color = NO_COLOR;
+        if      (color_qualifier == "Green") required_color = GREEN;
+        else if (color_qualifier == "White") required_color = WHITE;
+        else if (color_qualifier == "Blue")  required_color = BLUE;
+        else if (color_qualifier == "Black") required_color = BLACK;
+        else if (color_qualifier == "Red")   required_color = RED;
+
+        // Check explicit_colors first, then mana cost colors
+        bool has_color = false;
+        if (!cd.explicit_colors.empty()) {
+            has_color = cd.explicit_colors.count(required_color) > 0;
+        } else {
+            has_color = cd.mana_cost.count(required_color) > 0;
+        }
+        if (!has_color) return false;
+    }
+
+    // Check CMC <= X constraint
+    if (has_cmc_le_x) {
+        size_t cmc = cd.mana_cost.size();
+        if (cmc > cur_game.x_paid) return false;
+    }
+
+    return true;
+}
+
 // Searches a zone for cards whose types match any entry in the comma-separated
 // change_type string. Presents all matches plus a "fail to find" option (index 0).
 // Returns the chosen Entity, or 0 for fail to find.
@@ -75,17 +135,29 @@ Entity search_zone(
     if (change_type.empty()) {
         choices = zone_contents;
     } else {
+        // Check if any filter spec uses extended syntax (dot/plus qualifiers)
+        bool has_extended = false;
+        for (auto &st : subtypes) {
+            if (st.find('.') != std::string::npos || st.find('+') != std::string::npos) {
+                has_extended = true;
+                break;
+            }
+        }
+
         for (auto entity : zone_contents) {
-            auto &cd = global_coordinator.GetComponent<CardData>(entity);
             bool matches = false;
-            for (auto &t : cd.types) {
+            if (has_extended) {
                 for (auto &st : subtypes) {
-                    if (t.name == st) {
-                        matches = true;
-                        break;
-                    }
+                    if (matches_filter_spec(entity, st)) { matches = true; break; }
                 }
-                if (matches) break;
+            } else {
+                auto &cd = global_coordinator.GetComponent<CardData>(entity);
+                for (auto &t : cd.types) {
+                    for (auto &st : subtypes) {
+                        if (t.name == st) { matches = true; break; }
+                    }
+                    if (matches) break;
+                }
             }
             if (matches) choices.push_back(entity);
         }
@@ -146,6 +218,25 @@ Entity search_zone(
 
 void Ability::resolve_change_zone(std::shared_ptr<Orderer> orderer) {
     Zone::Ownership owner = global_coordinator.GetComponent<Zone>(source).owner;
+
+    const char* dest_str = destination == Zone::BATTLEFIELD ? "the battlefield" :
+                           destination == Zone::LIBRARY     ? "top of library" :
+                           destination == Zone::GRAVEYARD   ? "graveyard"      :
+                           destination == Zone::HAND        ? "hand"           : "exile";
+
+    // Targeted ChangeZone (e.g. Swords to Plowshares): move the target directly
+    if (valid_tgts != "N_A" && target != 0) {
+        if (!global_coordinator.entity_has_component<Zone>(target)) return;
+        std::string tname = global_coordinator.entity_has_component<CardData>(target)
+            ? global_coordinator.GetComponent<CardData>(target).name
+            : (global_coordinator.entity_has_component<Permanent>(target)
+                ? global_coordinator.GetComponent<Permanent>(target).name : "<unknown>");
+        orderer->add_to_zone(false, target, destination);
+        game_log("%s is moved to %s\n", tname.c_str(), dest_str);
+        return;
+    }
+
+    // Search-based ChangeZone (e.g. fetch lands, Green Sun's Zenith)
     size_t num_to_move = (amount > 0) ? amount : 1;
 
     for (size_t i = 0; i < num_to_move; i++) {
@@ -157,10 +248,6 @@ void Ability::resolve_change_zone(std::shared_ptr<Orderer> orderer) {
             if (destination == Zone::BATTLEFIELD) {
                 chosen_zone.controller = owner;
             }
-            const char* dest_str = destination == Zone::BATTLEFIELD ? "the battlefield" :
-                                   destination == Zone::LIBRARY     ? "top of library" :
-                                   destination == Zone::GRAVEYARD   ? "graveyard"      :
-                                   destination == Zone::HAND        ? "hand"           : "exile";
             bool dest_public = (destination == Zone::BATTLEFIELD ||
                                 destination == Zone::GRAVEYARD   ||
                                 destination == Zone::EXILE);

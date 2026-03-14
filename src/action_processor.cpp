@@ -772,6 +772,35 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             } else {  // REGULAR COST + DELVE
                 ManaValue cost_to_pay = card_data.mana_cost;
 
+                // X-COST: prompt player to choose X value, add X generic to cost
+                if (card_data.has_x_cost) {
+                    // Calculate max X: total pool minus colored requirements
+                    Entity caster_entity = get_player_entity(caster);
+                    auto &caster_player = global_coordinator.GetComponent<Player>(caster_entity);
+                    auto pool_copy = caster_player.mana;
+                    // Subtract colored costs from pool copy to find remaining for generic+X
+                    for (auto c : cost_to_pay) {
+                        if (c == GENERIC) continue;
+                        auto it = pool_copy.find(c);
+                        if (it != pool_copy.end()) pool_copy.erase(it);
+                    }
+                    size_t generic_in_base = cost_to_pay.count(GENERIC);
+                    size_t max_x = (pool_copy.size() > generic_in_base) ? pool_copy.size() - generic_in_base : 0;
+
+                    game_log("Choose X value (0-%zu):\n", max_x);
+                    std::vector<LegalAction> x_actions;
+                    for (size_t xv = 0; xv <= max_x; xv++) {
+                        LegalAction la(PASS_PRIORITY, std::string("X = " + std::to_string(xv)));
+                        la.category = ActionCategory::OTHER_CHOICE;
+                        x_actions.push_back(la);
+                    }
+                    int x_choice = InputLogger::instance().get_input(x_actions);
+                    size_t x_val = static_cast<size_t>(x_choice);
+                    cur_game.x_paid = x_val;
+                    for (size_t i = 0; i < x_val; i++) cost_to_pay.insert(GENERIC);
+                    game_log("%s chooses X = %zu\n", player_name(caster).c_str(), x_val);
+                }
+
                 // DELVE: exile instants/sorceries from graveyard to reduce generic cost
                 if (card_data.has_delve && !can_afford(caster, cost_to_pay)) {
                     cur_game.delve_exiled.clear();

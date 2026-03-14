@@ -76,8 +76,15 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
                 global_coordinator.RemoveComponent<Ability>(top_entity);
             }
             global_coordinator.RemoveComponent<Spell>(top_entity);
-            // TODO handle flashback etc
-            orderer->add_to_zone(false, top_entity, Zone::GRAVEYARD);
+            // Shuffle into library instead of graveyard (e.g. Green Sun's Zenith)
+            if (card_data.shuffle_into_library) {
+                orderer->add_to_zone(false, top_entity, Zone::LIBRARY);
+                orderer->shuffle_library(global_coordinator.GetComponent<Zone>(top_entity).owner);
+                game_log("%s is shuffled into its owner's library\n", card_data.name.c_str());
+            } else {
+                // TODO handle flashback etc
+                orderer->add_to_zone(false, top_entity, Zone::GRAVEYARD);
+            }
         }
     }
     // CASE FOR ABILITY ON STACK; not spell

@@ -1,5 +1,6 @@
 #include "parse.h"
 
+#include <algorithm>
 #include <cctype>
 #include <fstream>
 #include <map>
@@ -97,7 +98,9 @@ Entity parse_card_script(std::string path) {
     CardData card;
     card.name = value_from_script(front_script, "Name");
     card.uid = name_to_uid(card.name);
-    card.mana_cost = parse_mana_cost(value_from_script(front_script, "ManaCost"));
+    std::string mana_cost_str = value_from_script(front_script, "ManaCost");
+    card.mana_cost = parse_mana_cost(mana_cost_str);
+    card.has_x_cost = (mana_cost_str.find('X') != std::string::npos);
     card.types = parse_types(value_from_script(front_script, "Types"));
     // Parse explicit Colors: override (e.g. Dryad Arbor which is a land/creature with green identity)
     std::string colors_field = value_from_script(front_script, "Colors");
@@ -129,6 +132,29 @@ Entity parse_card_script(std::string path) {
     // parse ability templates; entities are only created when abilities go on the stack
     auto svars = parse_svars(front_script);
     card.abilities = parse_abilities(multi_values_from_script(front_script, "A"), card.types, svars);
+    // Detect "shuffle into library" pattern: SVar with DB$ ChangeZone from Stack to Library + Defined$ Parent
+    // (e.g. Green Sun's Zenith) — sets a flag so stack manager moves to library instead of graveyard.
+    // Strip the sub-ability since the stack manager handles it via the flag.
+    for (auto &sv : svars) {
+        if (sv.second.find("DB$ ChangeZone") != std::string::npos &&
+            sv.second.find("Origin$ Stack") != std::string::npos &&
+            sv.second.find("Destination$ Library") != std::string::npos &&
+            sv.second.find("Defined$ Parent") != std::string::npos) {
+            card.shuffle_into_library = true;
+            // Remove the sub-ability from all spell abilities so it doesn't resolve as a ChangeZone
+            for (auto &ab : card.abilities) {
+                ab.subabilities.erase(
+                    std::remove_if(ab.subabilities.begin(), ab.subabilities.end(),
+                        [](const Ability &sub) {
+                            return sub.category == "ChangeZone" &&
+                                   sub.origin == Zone::STACK &&
+                                   sub.destination == Zone::LIBRARY;
+                        }),
+                    ab.subabilities.end());
+            }
+            break;
+        }
+    }
     // parse triggered abilities from T: lines
     for (auto &trig : parse_triggered_abilities(front_script, svars))
         card.abilities.push_back(trig);
@@ -364,6 +390,9 @@ static std::multiset<Colors> parse_mana_cost(std::string value) {
                 break;
             case 'C':
                 ret_val.emplace(COLORLESS);
+                break;
+            case 'X':
+                // X is variable; handled separately by has_x_cost flag
                 break;
             default:
                 if (std::isdigit(value[i])) {
@@ -648,6 +677,30 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
             }
         }
         param_pos = param_end;
+    }
+    // Resolve amount_svar through SVars map (same logic as parse_abilities)
+    if (!sub.amount_svar.empty()) {
+        auto it = svars.find(sub.amount_svar);
+        if (it != svars.end()) {
+            const std::string &sv = it->second;
+            size_t ge_pos = sv.find("GE");
+            if (ge_pos != std::string::npos) {
+                std::string rest = sv.substr(ge_pos + 2);
+                size_t d1 = rest.find('.');
+                if (d1 != std::string::npos) {
+                    size_t d2 = rest.find('.', d1 + 1);
+                    if (d2 != std::string::npos) {
+                        sub.amount = static_cast<size_t>(std::stoi(rest.substr(d1 + 1, d2 - d1 - 1)));
+                        sub.amount_delirium = static_cast<size_t>(std::stoi(rest.substr(d2 + 1)));
+                        sub.amount_is_delirium_scale = true;
+                    }
+                }
+            } else if (sv.find("Count$Valid") != std::string::npos ||
+                       sv.find("Targeted$") != std::string::npos) {
+                sub.dynamic_amount_expr = sv;
+            }
+        }
+        sub.amount_svar = "";
     }
     return sub;
 }

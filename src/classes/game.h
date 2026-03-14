@@ -91,6 +91,7 @@ struct Game {
         bool combat_damage_dealt = false;
         std::vector<DelayedTrigger> delayed_triggers;
         std::vector<Entity> delve_exiled;   // entities exiled during current delve cast; cleared after ETB
+        size_t x_paid = 0;                  // X value chosen at cast time for X-cost spells
         Entity remembered_entity = 0;       // Defined$ Remembered — used by Attach sub-ability
         std::map<Entity, int> ability_resolution_counts;  // Count$ResolvedThisTurn: incremented per triggered-ability resolve
 
