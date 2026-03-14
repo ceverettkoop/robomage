@@ -532,6 +532,7 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         else if (value == "Hand")      ability.origin = Zone::HAND;
         else if (value == "Graveyard") ability.origin = Zone::GRAVEYARD;
         else if (value == "Exile")     ability.origin = Zone::EXILE;
+        else if (value == "Stack")     ability.origin = Zone::STACK;
     } else if (key == "Destination") {
         if (value == "Battlefield")    ability.destination = Zone::BATTLEFIELD;
         else if (value == "Library")   ability.destination = Zone::LIBRARY;
