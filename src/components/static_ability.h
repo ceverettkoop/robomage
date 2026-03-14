@@ -21,6 +21,11 @@ struct StaticAbility {
     // RaiseCost fields (category = "RaiseCost"):
     int raise_cost = 0;               // generic mana added to cost of matching spells
     std::string raise_cost_filter = ""; // "nonCreature" = apply to non-creature spells
+    // CantBeActivated fields (category = "CantBeActivated"):
+    std::string cant_activate_card_filter = "";  // "Artifact" — card type whose activated abilities are suppressed
+    // Icetill Explorer statics (category = "Continuous"):
+    int adjust_land_plays = 0;            // AdjustLandPlays$ N — additional land plays per turn
+    bool may_play_from_graveyard = false; // MayPlay$ True with AffectedZone$ Graveyard
     // State tracking — lives in the Permanent's copy, not in CardData template:
     bool applied = false;             // true when the condition was met on the last SBE pass
     uint32_t last_applied_entity = 0; // for EquippedBy: entity that last received the buff

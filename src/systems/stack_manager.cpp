@@ -83,6 +83,9 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
     // CASE FOR ABILITY ON STACK; not spell
     else if (global_coordinator.entity_has_component<Ability>(top_entity)) {
         auto &ability = global_coordinator.GetComponent<Ability>(top_entity);
+        // Track resolution count for Count$ResolvedThisTurn (Scythecat Cub)
+        if (ability.ability_type == Ability::TRIGGERED)
+            cur_game.ability_resolution_counts[ability.source]++;
         ability.resolve(orderer);
 
         // Destroy the standalone ability entity — it has no card zone to return to

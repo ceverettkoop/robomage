@@ -519,6 +519,34 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
     }
     if (!any) game_log("  (none)\n");
 
+    // Exalted: if exactly one creature is attacking, give it +1/+1 until end of turn for each Exalted source
+    int attacker_count = 0;
+    Entity sole_attacker = 0;
+    for (auto entity : eligible) {
+        auto &cr = global_coordinator.GetComponent<Creature>(entity);
+        if (cr.is_attacking) { attacker_count++; sole_attacker = entity; }
+    }
+    if (attacker_count == 1) {
+        int exalted_count = 0;
+        for (Entity e = 0; e < MAX_ENTITIES; ++e) {
+            if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
+            auto &ep = global_coordinator.GetComponent<Permanent>(e);
+            if (ep.controller != active_player) continue;
+            if (!global_coordinator.entity_has_component<Creature>(e)) continue;
+            auto &ecr = global_coordinator.GetComponent<Creature>(e);
+            for (auto &kw : ecr.keywords)
+                if (kw == "Exalted") { exalted_count++; break; }
+        }
+        if (exalted_count > 0) {
+            auto &acr = global_coordinator.GetComponent<Creature>(sole_attacker);
+            acr.prowess_bonus += exalted_count;
+            acr.power     += static_cast<uint32_t>(exalted_count);
+            acr.toughness += static_cast<uint32_t>(exalted_count);
+            game_log("Exalted: %s gets +%d/+%d until end of turn.\n",
+                     entity_name(sole_attacker).c_str(), exalted_count, exalted_count);
+        }
+    }
+
     game.attackers_declared = true;
     game.pending_choice = NONE;
 }

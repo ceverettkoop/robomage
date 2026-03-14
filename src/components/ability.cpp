@@ -374,15 +374,54 @@ bool Ability::is_target_valid() const {
     return false;
 }
 
+// Evaluates a condition SVar expression against cur_game state.
+static int evaluate_condition_svar(const std::string &expr, Entity src) {
+    if (expr == "Count$ResolvedThisTurn") {
+        auto it = cur_game.ability_resolution_counts.find(src);
+        return (it != cur_game.ability_resolution_counts.end()) ? it->second : 0;
+    }
+    return 0;
+}
+
+// Returns true if val passes the compare spec (e.g. "EQ2", "NE2", "GE1", "LE3").
+static bool compare_svar(int val, const std::string &spec) {
+    if (spec.size() < 3) return true;  // unknown spec: always pass
+    std::string op = spec.substr(0, 2);
+    int rhs = std::stoi(spec.substr(2));
+    if (op == "EQ") return val == rhs;
+    if (op == "NE") return val != rhs;
+    if (op == "GE") return val >= rhs;
+    if (op == "LE") return val <= rhs;
+    if (op == "GT") return val >  rhs;
+    if (op == "LT") return val <  rhs;
+    return true;
+}
+
 void Ability::resolve(std::shared_ptr<Orderer> orderer) {
-    //check if target is still valid!!!
-    if(valid_tgts != "N_A"){
-        if(!is_target_valid()){
+    // Pre-resolve target validity check — skipped for categories that select their own target internally
+    if (valid_tgts != "N_A" && category != "Pump") {
+        if (!is_target_valid()) {
             fizzle(orderer);
             return; //subabilities do not fire; TODO revisit this in light of cards e.g. k-command
         }
     }
     game_log("Resolving ability (category: %s, amount: %zu)\n", category.c_str(), amount);
+
+    // Conditional execution: if condition fails, skip this ability's body but still chain subabilities
+    bool condition_passed = true;
+    if (!condition_check_svar.empty()) {
+        int val = evaluate_condition_svar(condition_check_svar, source);
+        condition_passed = compare_svar(val, condition_svar_compare);
+    }
+    if (!condition_passed) {
+        for (auto sub_ab : this->subabilities) {
+            sub_ab.source = this->source;
+            sub_ab.target = this->target;
+            sub_ab.controller = this->controller;
+            sub_ab.resolve(orderer);
+        }
+        return;
+    }
 
     if (category == "GainLife") {
         Zone::Ownership gain_controller;
@@ -479,6 +518,63 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
             game_log("Equipment attached.\n");
         }
         attach_done:;
+    } else if (category == "Mill") {
+        // Move top N cards from target player's library to graveyard
+        Zone::Ownership mill_owner = controller;
+        size_t mill_count = (amount > 0) ? amount : 1;
+        std::vector<Entity> lib = orderer->get_library_contents(mill_owner);
+        std::sort(lib.begin(), lib.end(), [](Entity a, Entity b) {
+            return global_coordinator.GetComponent<Zone>(a).distance_from_top
+                 < global_coordinator.GetComponent<Zone>(b).distance_from_top;
+        });
+        for (size_t i = 0; i < mill_count && i < lib.size(); i++) {
+            std::string cname = global_coordinator.entity_has_component<CardData>(lib[i])
+                ? global_coordinator.GetComponent<CardData>(lib[i]).name : "card";
+            orderer->add_to_zone(false, lib[i], Zone::GRAVEYARD);
+            game_log("%s mills %s.\n", player_name(mill_owner).c_str(), cname.c_str());
+        }
+    } else if (category == "Pump") {
+        // Present target selection, then chain subabilities with that target
+        Zone::Ownership ctrl = controller;
+        std::vector<Entity> pump_targets;
+        for (Entity e = 0; e < MAX_ENTITIES; ++e) {
+            if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
+            if (!global_coordinator.entity_has_component<Creature>(e)) continue;
+            auto &z = global_coordinator.GetComponent<Zone>(e);
+            if (z.location != Zone::BATTLEFIELD) continue;
+            auto &p = global_coordinator.GetComponent<Permanent>(e);
+            if (valid_tgts.find("YouCtrl") != std::string::npos && p.controller != ctrl) continue;
+            pump_targets.push_back(e);
+        }
+        if (pump_targets.empty()) {
+            game_log("Pump: no valid targets.\n");
+            // still chain subabilities with no target
+        } else {
+            game_log("Choose a creature for Pump:\n");
+            std::vector<LegalAction> tgt_actions;
+            for (auto te : pump_targets) {
+                std::string ename = global_coordinator.GetComponent<Permanent>(te).name;
+                auto &tcr = global_coordinator.GetComponent<Creature>(te);
+                LegalAction la(PASS_PRIORITY, te, ename + " [" + std::to_string(tcr.power) + "/" + std::to_string(tcr.toughness) + "]");
+                la.category = ActionCategory::SELECT_TARGET;
+                tgt_actions.push_back(la);
+            }
+            int choice = InputLogger::instance().get_input(tgt_actions);
+            if (choice >= 0 && choice < static_cast<int>(pump_targets.size()))
+                this->target = pump_targets[static_cast<size_t>(choice)];
+        }
+    } else if (category == "MultiplyCounter") {
+        // Double all P1P1 counters on target creature
+        Entity tgt = (target != 0) ? target : source;
+        if (global_coordinator.entity_has_component<Creature>(tgt)) {
+            auto &cr = global_coordinator.GetComponent<Creature>(tgt);
+            if (cr.plus_one_counters > 0) {
+                cr.plus_one_counters *= 2;
+                cr.power     += static_cast<uint32_t>(cr.plus_one_counters / 2);
+                cr.toughness += static_cast<uint32_t>(cr.plus_one_counters / 2);
+                game_log("MultiplyCounter: doubled +1/+1 counters on creature (now %u/%u).\n", cr.power, cr.toughness);
+            }
+        }
     } else if (category == "Cleanup") {
         if (clear_remembered) cur_game.remembered_entity = 0;
     } else if (category == "DelayedTrigger") {
@@ -665,8 +761,11 @@ void Ability::resolve_surveil(std::shared_ptr<Orderer> orderer) {
 }
 
 void Ability::resolve_put_counter() {
-    if (!global_coordinator.entity_has_component<Creature>(source)) return;
-    auto &cr = global_coordinator.GetComponent<Creature>(source);
+    // Use target if set (e.g. from a Pump parent), otherwise put counters on source
+    Entity counter_tgt = (target != 0 && global_coordinator.entity_has_component<Creature>(target))
+                         ? target : source;
+    if (!global_coordinator.entity_has_component<Creature>(counter_tgt)) return;
+    auto &cr = global_coordinator.GetComponent<Creature>(counter_tgt);
     if (counter_type == "P1P1") {
         int n = counter_count;
         if (counter_count_from_delve) {

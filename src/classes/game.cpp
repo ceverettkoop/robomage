@@ -183,6 +183,9 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     player.lands_played_this_turn = 0;
                     player.spells_cast_this_turn = 0;
 
+                    // Reset per-trigger resolution counts
+                    ability_resolution_counts.clear();
+
                     // Empty mana pools
                     empty_mana_pool(Zone::PLAYER_A);
                     empty_mana_pool(Zone::PLAYER_B);

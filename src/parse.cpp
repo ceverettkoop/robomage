@@ -637,6 +637,12 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
                 auto it = svars.find(value);
                 if (it != svars.end())
                     sub.subabilities.push_back(parse_svar_ability(it->second, ability_type, svars));
+            } else if (key == "ConditionCheckSVar") {
+                // Resolve SVar reference to its expression (e.g. "X" → "Count$ResolvedThisTurn")
+                auto it = svars.find(value);
+                sub.condition_check_svar = (it != svars.end()) ? it->second : value;
+            } else if (key == "ConditionSVarCompare") {
+                sub.condition_svar_compare = value;
             } else {
                 apply_param_to_ability(sub, key, value);
             }
@@ -802,6 +808,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
     bool valid_card_instant = false;
     bool valid_card_sorcery = false;
     bool valid_card_owner_you = false;
+    bool valid_card_land = false;
     size_t activator_this_turn_cast_eq = 0;
 
     // Walk pipe-delimited params
@@ -850,6 +857,8 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
                 if (value.find("Instant")     != std::string::npos) valid_card_instant      = true;
                 if (value.find("Sorcery")     != std::string::npos) valid_card_sorcery      = true;
                 if (value.find(".YouOwn")     != std::string::npos) valid_card_owner_you    = true;
+                if (value.find("Land")        != std::string::npos) valid_card_land         = true;
+                if (value.find(".YouCtrl")    != std::string::npos) valid_player_is_you     = true;
             } else if (key == "ActivatorThisTurnCast") {
                 if (value.rfind("EQ", 0) == 0) {
                     activator_this_turn_cast_eq = static_cast<size_t>(std::stoi(value.substr(2)));
@@ -874,6 +883,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
         else if (dest_is_graveyard)      ability.trigger_zone_destination = Zone::GRAVEYARD;
         ability.trigger_valid_card_is_creature            = valid_card_creature;
         ability.trigger_valid_card_is_instant_or_sorcery  = valid_card_instant || valid_card_sorcery;
+        ability.trigger_valid_card_is_land                = valid_card_land;
         ability.trigger_valid_player_is_controller        = valid_card_owner_you || valid_player_is_you;
         if (valid_card_self) ability.trigger_only_self = true;
     }
@@ -986,9 +996,18 @@ static std::vector<StaticAbility> parse_static_abilities(const std::string &scri
                     if (!value.empty() && std::isdigit(static_cast<unsigned char>(value[0])))
                         sa.raise_cost = std::stoi(value);
                 } else if (key == "ValidCard") {
-                    // RaiseCost filter — detect non-creature spells
-                    if (value.find("nonCreature") != std::string::npos)
-                        sa.raise_cost_filter = "nonCreature";
+                    if (sa.category == "RaiseCost") {
+                        if (value.find("nonCreature") != std::string::npos)
+                            sa.raise_cost_filter = "nonCreature";
+                    } else if (sa.category == "CantBeActivated") {
+                        if (value.find("Artifact") != std::string::npos)
+                            sa.cant_activate_card_filter = "Artifact";
+                    }
+                } else if (key == "AdjustLandPlays") {
+                    if (!value.empty() && std::isdigit(static_cast<unsigned char>(value[0])))
+                        sa.adjust_land_plays = std::stoi(value);
+                } else if (key == "MayPlay") {
+                    if (value == "True") sa.may_play_from_graveyard = true;
                 }
             }
 

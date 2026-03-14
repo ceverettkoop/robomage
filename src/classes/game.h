@@ -31,6 +31,7 @@ typedef enum Step {
 
 #include <cstddef>
 #include <cstdint>
+#include <map>
 #include <memory>
 #include <random>
 #include <vector>
@@ -91,6 +92,7 @@ struct Game {
         std::vector<DelayedTrigger> delayed_triggers;
         std::vector<Entity> delve_exiled;   // entities exiled during current delve cast; cleared after ETB
         Entity remembered_entity = 0;       // Defined$ Remembered — used by Attach sub-ability
+        std::map<Entity, int> ability_resolution_counts;  // Count$ResolvedThisTurn: incremented per triggered-ability resolve
 
         // Recent action history ring buffer for ML observation
         ActionHistoryEntry action_history[ACTION_HISTORY_SIZE] = {};

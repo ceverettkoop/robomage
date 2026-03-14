@@ -791,6 +791,16 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                             if (t.kind == TYPE && (t.name == "Instant" || t.name == "Sorcery")) { ok = true; break; }
                         if (!ok) continue;
                     }
+                    // ValidCard$ Land.* filter (landfall)
+                    if (ab.trigger_valid_card_is_land && ev.HasParam(Params::ENTITY)) {
+                        Entity ev_card = ev.GetParam<Entity>(Params::ENTITY);
+                        bool is_land = false;
+                        if (global_coordinator.entity_has_component<CardData>(ev_card)) {
+                            for (auto &t : global_coordinator.GetComponent<CardData>(ev_card).types)
+                                if (t.kind == TYPE && t.name == "Land") { is_land = true; break; }
+                        }
+                        if (!is_land) continue;
+                    }
                 }
                 // Spell count filter (Cori-Steel Cutter)
                 if (ab.trigger_spell_count_eq > 0 && ev.HasParam(Params::PLAYER)) {
@@ -906,7 +916,22 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         global_coordinator.entity_has_component<Player>(priority_player_entity)) {
         auto &player = global_coordinator.GetComponent<Player>(priority_player_entity);
 
-        if (player.lands_played_this_turn == 0) {
+        // Compute effective land play limit (base 1 + AdjustLandPlays statics)
+        int land_play_limit = 1;
+        bool may_play_from_graveyard = false;
+        for (auto e2 : orderer->mEntities) {
+            if (!global_coordinator.entity_has_component<Permanent>(e2)) continue;
+            auto &z2 = global_coordinator.GetComponent<Zone>(e2);
+            if (z2.location != Zone::BATTLEFIELD) continue;
+            auto &p2 = global_coordinator.GetComponent<Permanent>(e2);
+            if (p2.controller != priority_player) continue;
+            for (auto &sa : p2.static_abilities) {
+                if (sa.adjust_land_plays > 0) land_play_limit += sa.adjust_land_plays;
+                if (sa.may_play_from_graveyard) may_play_from_graveyard = true;
+            }
+        }
+
+        if (player.lands_played_this_turn < land_play_limit) {
             // Check hand for lands
             auto hand = orderer->get_hand(priority_player);
             for (auto card_entity : hand) {
@@ -923,6 +948,25 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                     LegalAction la(SPECIAL_ACTION, card_entity, desc);
                     la.category = ActionCategory::PLAY_LAND;
                     actions.push_back(la);
+                }
+            }
+            // Check graveyard for lands if MayPlay from graveyard is active
+            if (may_play_from_graveyard) {
+                for (Entity gy_e = 0; gy_e < MAX_ENTITIES; ++gy_e) {
+                    if (!global_coordinator.entity_has_component<Zone>(gy_e)) continue;
+                    auto &gz = global_coordinator.GetComponent<Zone>(gy_e);
+                    if (gz.location != Zone::GRAVEYARD || gz.owner != priority_player) continue;
+                    if (!global_coordinator.entity_has_component<CardData>(gy_e)) continue;
+                    auto &gcd = global_coordinator.GetComponent<CardData>(gy_e);
+                    bool is_land = false;
+                    for (auto &t : gcd.types)
+                        if (t.kind == TYPE && t.name == "Land") { is_land = true; break; }
+                    if (is_land) {
+                        std::string desc = "Play " + gcd.name + " (from graveyard)";
+                        LegalAction la(SPECIAL_ACTION, gy_e, desc);
+                        la.category = ActionCategory::PLAY_LAND;
+                        actions.push_back(la);
+                    }
                 }
             }
         }
@@ -1017,6 +1061,27 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         if (zone.location != Zone::BATTLEFIELD) continue;
         auto &permanent = global_coordinator.GetComponent<Permanent>(entity);
         if (permanent.controller != priority_player) continue;
+
+        // Check if any CantBeActivated static suppresses this permanent's abilities
+        bool cant_activate = false;
+        for (auto e2 : orderer->mEntities) {
+            if (!global_coordinator.entity_has_component<Permanent>(e2)) continue;
+            auto &z2 = global_coordinator.GetComponent<Zone>(e2);
+            if (z2.location != Zone::BATTLEFIELD) continue;
+            auto &p2 = global_coordinator.GetComponent<Permanent>(e2);
+            for (auto &sa : p2.static_abilities) {
+                if (sa.category != "CantBeActivated" || sa.cant_activate_card_filter.empty()) continue;
+                // Check if this permanent matches the filter
+                if (sa.cant_activate_card_filter == "Artifact") {
+                    for (auto &t : permanent.types)
+                        if (t.kind == TYPE && t.name == "Artifact") { cant_activate = true; break; }
+                }
+                if (cant_activate) break;
+            }
+            if (cant_activate) break;
+        }
+        if (cant_activate) continue;
+
         for (auto ab : permanent.abilities) {
             if (ab.ability_type != Ability::ACTIVATED) continue;
             // todo handle this elswewhere, tapping check

@@ -75,6 +75,7 @@ struct Ability{
     int trigger_zone_destination = -1;  // Zone::ZoneValue destination filter; -1 = any
     bool trigger_valid_card_is_creature = false;        // ValidCard$ Creature
     bool trigger_valid_card_is_instant_or_sorcery = false;  // ValidCard$ Instant/Sorcery
+    bool trigger_valid_card_is_land = false;            // ValidCard$ Land.*
 
     // Spell count trigger (Cori-Steel Cutter)
     size_t trigger_spell_count_eq = 0;  // ActivatorThisTurnCast$ EQN — fires on Nth spell
@@ -88,6 +89,10 @@ struct Ability{
 
     // Cleanup sub-ability
     bool clear_remembered = false;   // ClearRemembered$ True
+
+    // Conditional subability execution (Scythecat Cub)
+    std::string condition_check_svar = "";   // ConditionCheckSVar$ — resolved expression e.g. "Count$ResolvedThisTurn"
+    std::string condition_svar_compare = ""; // ConditionSVarCompare$ — e.g. "EQ2", "NE2", "GE1"
 
     //for each AB on a card script there may be multiple SubAbility$, would get parsed into vector below
     std::vector<Ability> subabilities; // additional abilities resolved at same time this resolves, stored in order
