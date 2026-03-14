@@ -174,6 +174,7 @@ static void render_phase_bar(float px, float py, float pw, float ph, int cur_ste
 }
 
 static void determine_screen_size(void) {
+    SetTargetFPS(30);
     InitWindow(10, 10, "robomage");
     SetWindowState(FLAG_WINDOW_RESIZABLE);
     int monitor = GetCurrentMonitor();
