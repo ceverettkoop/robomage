@@ -298,6 +298,28 @@ static Ability keyword_triggered_ability(const std::string &keyword) {
     return ab;
 }
 
+// Evaluate a StaticAbility SVar expression such as "Count$TypeInYourYard.Land".
+// Returns the computed integer value.
+static int evaluate_sa_svar(const std::string &expr, Zone::Ownership controller) {
+    // Count$TypeInYourYard.<TypeName> — count cards of that type in controller's graveyard
+    if (expr.rfind("Count$TypeInYourYard.", 0) == 0) {
+        std::string type_name = expr.substr(21);  // after "Count$TypeInYourYard."
+        int count = 0;
+        for (Entity e = 0; e < MAX_ENTITIES; ++e) {
+            if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+            auto &z = global_coordinator.GetComponent<Zone>(e);
+            if (z.location != Zone::GRAVEYARD || z.owner != controller) continue;
+            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+            auto &cd = global_coordinator.GetComponent<CardData>(e);
+            for (auto &t : cd.types) {
+                if (t.name == type_name) { count++; break; }
+            }
+        }
+        return count;
+    }
+    return 0;
+}
+
 void StateManager::apply_static_ability_effects() {
     // Phase 1: gather active static abilities from all battlefield permanents.
     struct ActiveSA {
@@ -361,8 +383,10 @@ void StateManager::apply_static_ability_effects() {
                 Entity prev = static_cast<Entity>(a.sa->last_applied_entity);
                 if (prev != 0 && global_coordinator.entity_has_component<Creature>(prev)) {
                     auto &pcr = global_coordinator.GetComponent<Creature>(prev);
-                    if (a.sa->add_power     != 0) pcr.power     -= static_cast<uint32_t>(a.sa->add_power);
-                    if (a.sa->add_toughness != 0) pcr.toughness -= static_cast<uint32_t>(a.sa->add_toughness);
+                    int rev_p = !a.sa->add_power_svar.empty()     ? a.sa->last_applied_power     : a.sa->add_power;
+                    int rev_t = !a.sa->add_toughness_svar.empty() ? a.sa->last_applied_toughness : a.sa->add_toughness;
+                    if (rev_p != 0) pcr.power     = static_cast<uint32_t>(static_cast<int>(pcr.power)     - rev_p);
+                    if (rev_t != 0) pcr.toughness = static_cast<uint32_t>(static_cast<int>(pcr.toughness) - rev_t);
                     if (!a.sa->add_keyword.empty()) {
                         const std::string &kws = a.sa->add_keyword;
                         size_t p = 0;
@@ -378,6 +402,8 @@ void StateManager::apply_static_ability_effects() {
                         }
                     }
                 }
+                a.sa->last_applied_power = 0;
+                a.sa->last_applied_toughness = 0;
                 a.sa->applied = false;
             }
 
@@ -391,6 +417,36 @@ void StateManager::apply_static_ability_effects() {
 
             auto &cr = global_coordinator.GetComponent<Creature>(target_entity);
             const std::string name_for_log = entity_name(target_entity);
+
+            // Dynamic svar P/T: re-evaluate every SBE pass and apply the delta.
+            bool has_dynamic_pt = !a.sa->add_power_svar.empty() || !a.sa->add_toughness_svar.empty();
+            if (has_dynamic_pt) {
+                if (condition_met) {
+                    int new_p = a.sa->add_power_svar.empty()
+                                    ? a.sa->add_power
+                                    : evaluate_sa_svar(a.sa->add_power_svar, a.controller);
+                    int new_t = a.sa->add_toughness_svar.empty()
+                                    ? a.sa->add_toughness
+                                    : evaluate_sa_svar(a.sa->add_toughness_svar, a.controller);
+                    int dp = new_p - a.sa->last_applied_power;
+                    int dt = new_t - a.sa->last_applied_toughness;
+                    if (dp != 0) cr.power     = static_cast<uint32_t>(static_cast<int>(cr.power)     + dp);
+                    if (dt != 0) cr.toughness = static_cast<uint32_t>(static_cast<int>(cr.toughness) + dt);
+                    a.sa->last_applied_power     = new_p;
+                    a.sa->last_applied_toughness = new_t;
+                    a.sa->applied = true;
+                    a.sa->last_applied_entity = static_cast<uint32_t>(target_entity);
+                } else if (a.sa->applied) {
+                    if (a.sa->last_applied_power != 0)
+                        cr.power     = static_cast<uint32_t>(static_cast<int>(cr.power)     - a.sa->last_applied_power);
+                    if (a.sa->last_applied_toughness != 0)
+                        cr.toughness = static_cast<uint32_t>(static_cast<int>(cr.toughness) - a.sa->last_applied_toughness);
+                    a.sa->last_applied_power = 0;
+                    a.sa->last_applied_toughness = 0;
+                    a.sa->applied = false;
+                }
+                continue;
+            }
 
             if (condition_met && !a.sa->applied) {
                 if (a.sa->add_power     != 0) cr.power     += static_cast<uint32_t>(a.sa->add_power);

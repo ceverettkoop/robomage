@@ -35,7 +35,7 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
                                             const std::map<std::string, std::string>& svars);
 static std::vector<Ability> parse_triggered_abilities(const std::string& script,
                                                       const std::map<std::string, std::string>& svars);
-static std::vector<StaticAbility> parse_static_abilities(const std::string& script);
+static std::vector<StaticAbility> parse_static_abilities(const std::string& script, const std::map<std::string, std::string>& svars);
 static std::vector<Effect::Replacement> parse_replacement_effects(const std::string& script,
                                                                    const std::map<std::string, std::string>& svars);
 static uint32_t parse_power(std::string value);
@@ -168,7 +168,7 @@ Entity parse_card_script(std::string path) {
     }
 
     // Parse S: lines for static abilities (Continuous, MustAttack, etc.)
-    card.static_abilities = parse_static_abilities(front_script);
+    card.static_abilities = parse_static_abilities(front_script, svars);
 
     // Parse R: lines for replacement effects (e.g. enters tapped)
     card.replacement_effects = parse_replacement_effects(front_script, svars);
@@ -928,7 +928,7 @@ static std::vector<Ability> parse_triggered_abilities(const std::string &script,
     return result;
 }
 
-static std::vector<StaticAbility> parse_static_abilities(const std::string &script) {
+static std::vector<StaticAbility> parse_static_abilities(const std::string &script, const std::map<std::string, std::string> &svars) {
     std::vector<StaticAbility> result;
     for (const auto &line : multi_values_from_script(script, "S")) {
         // Skip alt cost lines (handled separately) and garbage matches
@@ -963,9 +963,19 @@ static std::vector<StaticAbility> parse_static_abilities(const std::string &scri
                 } else if (key == "Condition") {
                     sa.condition = value;
                 } else if (key == "AddPower") {
-                    sa.add_power = std::stoi(value);
+                    if (!value.empty() && (std::isdigit(static_cast<unsigned char>(value[0])) || value[0] == '-'))
+                        sa.add_power = std::stoi(value);
+                    else if (!value.empty()) {
+                        auto it = svars.find(value);
+                        sa.add_power_svar = (it != svars.end()) ? it->second : value;
+                    }
                 } else if (key == "AddToughness") {
-                    sa.add_toughness = std::stoi(value);
+                    if (!value.empty() && (std::isdigit(static_cast<unsigned char>(value[0])) || value[0] == '-'))
+                        sa.add_toughness = std::stoi(value);
+                    else if (!value.empty()) {
+                        auto it = svars.find(value);
+                        sa.add_toughness_svar = (it != svars.end()) ? it->second : value;
+                    }
                 } else if (key == "AddKeyword") {
                     sa.add_keyword = value;
                 } else if (key == "Affected") {

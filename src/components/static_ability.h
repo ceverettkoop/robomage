@@ -9,6 +9,10 @@ struct StaticAbility {
     // Continuous mode fields:
     int add_power     = 0;
     int add_toughness = 0;
+    std::string add_power_svar = "";      // e.g. "Count$TypeInYourYard.Land" — evaluated at SBE time
+    std::string add_toughness_svar = "";
+    int last_applied_power = 0;           // tracks dynamic delta last applied (reset when condition lost)
+    int last_applied_toughness = 0;
     std::string add_keyword = "";
     std::string affected = "";        // "EquippedBy" = apply buff to equipped creature, not source
     // ETB counter fields (category = "EtbCounter"):
