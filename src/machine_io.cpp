@@ -25,7 +25,6 @@ extern Game cur_game;
 
 static int get_card_vocab_idx(Entity e);
 static int get_stack_card_vocab_idx(Entity e);
-static bool entity_is_land(Entity e);
 static void push_player_block(std::vector<float>& out, const PlayerState& ps);
 static void push_perm_slot(std::vector<float>& out, const PermanentState& p);
 
@@ -52,17 +51,6 @@ static int get_stack_card_vocab_idx(Entity e) {
     return -1;
 }
 
-static bool entity_is_land(Entity e) {
-    if (global_coordinator.entity_has_component<Permanent>(e)) {
-        for (auto& t : global_coordinator.GetComponent<Permanent>(e).types)
-            if (t.name == "Land") return true;
-        return false;
-    }
-    if (!global_coordinator.entity_has_component<CardData>(e)) return false;
-    for (auto& t : global_coordinator.GetComponent<CardData>(e).types)
-        if (t.name == "Land") return true;
-    return false;
-}
 
 static void push_player_block(std::vector<float>& out, const PlayerState& ps) {
     out.push_back(static_cast<float>(ps.life) / 20.0f);
@@ -149,8 +137,10 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
     int self_ex = 0, opp_ex = 0;
     int self_hand_idx = 0;
 
-    // Single pass over all entities (naturally ascending entity ID order)
-    for (Entity e = 0; e < MAX_ENTITIES; ++e) {
+    // Single pass over all entities (naturally ascending entity ID order).
+    // Use high-water-mark instead of MAX_ENTITIES to skip unallocated slots.
+    Entity max_e = global_coordinator.GetMaxIssuedEntity();
+    for (Entity e = 0; e < max_e; ++e) {
         if (!global_coordinator.entity_has_component<Zone>(e)) continue;
         auto& zone = global_coordinator.GetComponent<Zone>(e);
         bool is_self = (zone.owner == viewer);
@@ -207,7 +197,11 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
                 ps.is_tapped             = perm.is_tapped;
                 ps.has_summoning_sickness = perm.has_summoning_sickness;
                 ps.is_creature           = global_coordinator.entity_has_component<Creature>(e);
-                ps.is_land               = entity_is_land(e);
+                // Inline land check using already-retrieved perm.types (avoids redundant GetComponent)
+                ps.is_land = false;
+                for (auto& t : perm.types) {
+                    if (t.name == "Land") { ps.is_land = true; break; }
+                }
 
                 if (ps.is_creature) {
                     auto& cr     = global_coordinator.GetComponent<Creature>(e);

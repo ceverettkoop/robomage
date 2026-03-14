@@ -390,8 +390,7 @@ void StateManager::apply_static_ability_effects() {
             }
 
             auto &cr = global_coordinator.GetComponent<Creature>(target_entity);
-            const std::string name_for_log = global_coordinator.entity_has_component<Permanent>(target_entity)
-                ? global_coordinator.GetComponent<Permanent>(target_entity).name : "Token";
+            const std::string name_for_log = entity_name(target_entity);
 
             if (condition_met && !a.sa->applied) {
                 if (a.sa->add_power     != 0) cr.power     += static_cast<uint32_t>(a.sa->add_power);

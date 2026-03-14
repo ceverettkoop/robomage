@@ -22,8 +22,10 @@ class EntityManager {
             Entity id = mAvailableEntities.front();
             mAvailableEntities.pop();
             ++mLivingEntityCount;
+            if (id >= mMaxIssuedEntity) mMaxIssuedEntity = id + 1;
             return id;
         }
+        Entity GetMaxIssuedEntity() const { return mMaxIssuedEntity; }
         void DestroyEntity(Entity entity) {
             assert(entity < MAX_ENTITIES && "Entity out of range.");
             // Invalidate the destroyed entity's signature
@@ -49,5 +51,7 @@ class EntityManager {
         std::array<Signature, MAX_ENTITIES> mSignatures{};
         // Total living entities - used to keep limits on how many exist
         uint32_t mLivingEntityCount{};
+        // Highest entity ID ever issued + 1; used to bound linear scans
+        Entity mMaxIssuedEntity{};
 };
 #endif /* ENTITY_MANAGER_H */

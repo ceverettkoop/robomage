@@ -158,7 +158,7 @@ static void *game_loop(void *args) {
         if (legal_actions.size() == 1) {
             cur_game.pass_priority();
             //TODO OPTION HERE WHEN GUI IS OPEN TO SLOWLY STEP THROUGH WHAT IS HAPPENING
-            populate_gamestate(&gs, viewer); 
+            if (!machine_mode) populate_gamestate(&gs, viewer);
             continue;
         }
 

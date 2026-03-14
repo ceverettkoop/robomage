@@ -63,6 +63,9 @@ class Coordinator {
             return mComponentManager->GetComponentType<T>();
         }
         
+        // Upper bound for linear entity scans: iterate [0, GetMaxIssuedEntity()) instead of [0, MAX_ENTITIES).
+        Entity GetMaxIssuedEntity() const { return mEntityManager->GetMaxIssuedEntity(); }
+
         template <typename T>
         bool entity_has_component(Entity entity){
             ComponentType type = mComponentManager->GetComponentType<T>();
