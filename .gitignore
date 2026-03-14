@@ -15,3 +15,4 @@ replays/*.txt
 train/checkpoints/*
 .cache/*
 bin/resources/tokenscripts/*
+resources/logs/*

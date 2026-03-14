@@ -59,7 +59,7 @@ std::string name_to_uid(std::string name) {
     }
     for (size_t i = 0; i < to_rm.size(); i++) {
         auto index_to_rm = to_rm[i] - i;
-        name.erase(index_to_rm);
+        name.erase(index_to_rm, 1);
     }
 
     return name;
@@ -69,7 +69,10 @@ Entity parse_card_script(std::string path) {
     auto id = global_coordinator.CreateEntity();
     std::string script_data;
     auto stream = std::ifstream(path);
-    assert(stream.is_open());
+    if (!stream.is_open()) {
+        fprintf(stderr, "parse_card_script: failed to open '%s'\n", path.c_str());
+        assert(false);
+    }
     for (size_t i = 0; true; i++) {
         if (i > SCRIPT_MAX_LEN) fatal_error("Script too long");
         char c = stream.get();
