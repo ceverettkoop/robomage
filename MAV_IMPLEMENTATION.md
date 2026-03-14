@@ -16,19 +16,19 @@
 | Noble Hierarch | ✅ vocab + engine | idx 42; Produced$ Combo W U G; Exalted implemented |
 | Ignoble Hierarch | ✅ vocab + engine | idx 38; Produced$ Combo B R G; Exalted implemented |
 | Horizon Canopy | ✅ vocab + engine | idx 36; Combo G W + AB$ Draw functional |
-| Thalia, Guardian of Thraben | ⬜  vocab + engine | idx 51; RaiseCost static implemented | FIRST STRIKE IS NOT
 | Gaea's Cradle | ✅ vocab + engine | idx 34; dynamic Count$Valid Creature.YouCtrl implemented |
 | Karakas | ✅ vocab + engine | idx 39; Creature.Legendary filter implemented |
 | Knight of the Reliquary | ✅ vocab + engine | idx 41; Sac<1/Forest;Plains/> conditional sac + graveyard count static |
 | Scythecat Cub | ✅ vocab + engine | idx 47; landfall trigger + DB$ Pump/PutCounter/MultiplyCounter + Count$ResolvedThisTurn |
 | Icetill Explorer | ✅ vocab + engine | idx 37; AdjustLandPlays$ + MayPlay from graveyard + DB$ Mill |
 | Scryb Ranger | ✅ vocab + engine | idx 46; Flash + Return<1/Forest> + ActivationLimit + AB$ Untap implemented |
-| Green Sun's Zenith | ⬜ vocab only | idx 35; X spells pending (Phase 5a) |
+| Green Sun's Zenith | ✅  | idx 35; X spells pending (Phase 5a) |implemented needs more testing
 | Once Upon a Time | ⬜ vocab only | idx 43; SP$ Dig + AlternativeCost condition pending |
 | Talon Gates of Madara | ⬜ vocab only | idx 50; DB$ Phases pending |
 | Endurance | ⬜ vocab only | idx 33; Flash + Evoke + DB$ ChangeZoneAll + DB$ Phases pending |
 | Collector Ouphe | ✅ vocab + engine | idx 31; Mode$ CantBeActivated static suppresses artifact activated abilities |
 | Keen-Eyed Curator | ⬜ vocab only | idx 40; exile-with-source count static + AB$ ChangeZone (graveyard→exile) |
+| Thalia, Guardian of Thraben | ⬜  vocab + engine | idx 51; RaiseCost static implemented | FIRST STRIKE IS NOT IMPLEMENTED
 | Sylvan Library | ⬜ vocab only | idx 49; complex DB$ chain pending (Phase 5f) |
 
 ## Completed Phases

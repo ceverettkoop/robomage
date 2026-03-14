@@ -24,6 +24,7 @@ extern volatile bool gui_input_requested;
 extern volatile bool gui_input_sent;
 extern volatile int gui_cmd;
 extern pthread_mutex_t input_mutex;
+extern pthread_cond_t input_cond;
 extern volatile bool gui_killed;
 extern volatile bool quit_gui;
 
@@ -31,13 +32,15 @@ static int get_int_input() {
     // GUI will only pass ints, but does not filter for range
     if (gui_mode) {
         gui_input_requested = true;
-        while (!gui_input_sent) {
-            if (gui_killed) {
-                game_log("User exited GUI, quitting\n");
-                exit(0);
-            }
-        }
         pthread_mutex_lock(&input_mutex);
+        while (!gui_input_sent && !gui_killed) {
+            pthread_cond_wait(&input_cond, &input_mutex);
+        }
+        if (gui_killed) {
+            pthread_mutex_unlock(&input_mutex);
+            game_log("User exited GUI, quitting\n");
+            exit(0);
+        }
         gui_input_sent = false;
         pthread_mutex_unlock(&input_mutex);
         gui_input_requested = false;

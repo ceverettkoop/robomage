@@ -12,6 +12,7 @@
 extern pthread_t game_loop_thread;
 extern const GameState *gs_ptr;
 pthread_mutex_t input_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t input_cond = PTHREAD_COND_INITIALIZER;
 char gui_input[GUI_INPUT_MAX] = {'\0'};
 volatile bool gui_input_requested = false;
 volatile bool gui_input_sent = false;
@@ -792,6 +793,7 @@ static void render_choices(void) {
                 //ASSUMES CHOICES ALWAYS STARTING WITH 0 - TO VERIFY
                 gui_cmd = i - 1;
                 gui_input_sent = true;
+                pthread_cond_signal(&input_cond);
                 pthread_mutex_unlock(&input_mutex);
             }
         } else {
@@ -815,6 +817,7 @@ static void render_button_bar(Rectangle bar) {
         pthread_mutex_lock(&input_mutex);
         gui_cmd = FLAG_QUIT;
         gui_input_sent = true;
+        pthread_cond_signal(&input_cond);
         pthread_mutex_unlock(&input_mutex);
     }
 
@@ -879,6 +882,7 @@ static void *gui_loop(void *arg) {
                 pthread_mutex_lock(&input_mutex);
                 gui_cmd = atoi(gui_input);
                 gui_input_sent = true;
+                pthread_cond_signal(&input_cond);
                 pthread_mutex_unlock(&input_mutex);
                 memset(gui_input, '\0', GUI_INPUT_MAX);
             }
@@ -891,7 +895,10 @@ static void *gui_loop(void *arg) {
     }
     UnloadFont(g_font);
     UnloadFont(g_font_oracle);
+    pthread_mutex_lock(&input_mutex);
     gui_killed = true;
+    pthread_cond_signal(&input_cond);
+    pthread_mutex_unlock(&input_mutex);
     return NULL;
 }
 
