@@ -10,12 +10,14 @@ Usage:
 """
 
 import argparse
+import subprocess
 import sys
 import numpy as np
 
 from env import (RoboMageEnv, STATE_SIZE, ACTION_CATEGORY_MAX, BINARY, MAX_ACTIONS,
                  BIN_DIR, OBS_SIZE, _ACTION_CARD_ID_NULL, _ACTION_CTRL_NULL,
-                 _HAND_START, MAX_HAND_SLOTS)
+                 _HAND_START, MAX_HAND_SLOTS,
+                 _BQUERY_STATE_BYTES, _BQUERY_CATS_BYTES, _BQUERY_IDS_BYTES, _BQUERY_CTRL_BYTES)
 import env as _env
 
 try:
@@ -187,16 +189,19 @@ class PlayEnv(RoboMageEnv):
 
 # ── Main play loop ────────────────────────────────────────────────────────────
 
-def play(binary_path: str, model_path: str):
+def play(binary_path: str, model_path: str, human_deck: str = "delver"):
     model = MaskablePPO.load(model_path)
-    env = PlayEnv(binary_path=binary_path, render_mode="human")
+
+    model_is_a = bool(np.random.random() < 0.5)
+    deck_a = "delver" if model_is_a else human_deck
+    deck_b = human_deck if model_is_a else "delver"
+    env = PlayEnv(binary_path=binary_path, render_mode="human", deck_a=deck_a, deck_b=deck_b)
     obs, _ = env.reset()
     done = False
 
-    model_is_a = bool(np.random.random() < 0.5)
     model_role = "A" if model_is_a else "B"
     human_role = "B" if model_is_a else "A"
-    print(f"=== Model (Player {model_role}) vs You (Player {human_role}) ===", flush=True)
+    print(f"=== Model (Player {model_role}, delver) vs You (Player {human_role}, {human_deck}) ===", flush=True)
     print("(type 'quit' to exit)\n", flush=True)
 
     while not done:
@@ -282,19 +287,18 @@ def play(binary_path: str, model_path: str):
         print("=== Draw ===")
 
 
-def play_gui(binary_path: str, model_path: str, human_player: str = None):
+def play_gui(binary_path: str, model_path: str, human_player: str = None, human_deck: str = "delver"):
     """Launch the raylib GUI window; model auto-responds on AI turns, human types in GUI text box.
 
     Architecture:
     - Binary runs with --machine --gui --player <human_player>
-    - Model turns: binary emits QUERY on stdout; Python reads it, predicts, writes to stdin
+    - Model turns: binary emits BQUERY on stdout; Python reads it, predicts, writes to stdin
     - Human turns: binary displays choices in the GUI window and spins waiting for GUI text-box
-      input; Python's reader thread collects narrative lines but sees no QUERY, so the main
-      thread simply waits for the next QUERY to arrive after the human has acted
+      input; Python's reader thread collects narrative lines but sees no BQUERY, so the main
+      thread simply waits for the next BQUERY to arrive after the human has acted
     - A background reader thread drains stdout continuously so Python never blocks on readline()
       while the binary is waiting for GUI input
     """
-    import subprocess
     import queue
     import threading
 
@@ -303,80 +307,97 @@ def play_gui(binary_path: str, model_path: str, human_player: str = None):
     if human_player is None:
         human_player = "A" if np.random.random() < 0.5 else "B"
     model_player = "B" if human_player == "A" else "A"
-    print(f"=== You (Player {human_player}) vs Model (Player {model_player}) ===", flush=True)
+    deck_a = human_deck if human_player == "A" else "delver"
+    deck_b = "delver" if human_player == "A" else human_deck
+    print(f"=== You (Player {human_player}, {human_deck}) vs Model (Player {model_player}, delver) ===", flush=True)
     print("(Type your choice number into the GUI text box and press Enter)", flush=True)
 
-    cmd = [binary_path, "--machine", "--gui", "--player", human_player]
+    cmd = [binary_path, "--machine", "--gui", "--player", human_player,
+           "--deck-a", deck_a, "--deck-b", deck_b]
     proc = subprocess.Popen(
         cmd,
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.DEVNULL,
-        text=True,
-        bufsize=1,
         cwd=BIN_DIR,
     )
 
-    # Reader thread: drains stdout into a queue so the main thread never blocks on readline()
-    # while the binary is waiting for human GUI input.
+    # Items put in queue are either:
+    #   str  — a decoded narrative line
+    #   dict — a parsed BQUERY with keys: num_choices, state_arr, cat_arr, card_id_arr,
+    #           ctrl_arr, pending_confirm
+    #   None — EOF sentinel
     line_queue: queue.Queue = queue.Queue()
 
+    _MANDATORY = {2, 3, 4, 5}
+    _PAYLOAD = _BQUERY_STATE_BYTES + _BQUERY_CATS_BYTES + _BQUERY_IDS_BYTES + _BQUERY_CTRL_BYTES
+
+    def _read_exactly(n: int) -> bytes:
+        buf = bytearray()
+        while len(buf) < n:
+            chunk = proc.stdout.read(n - len(buf))
+            if not chunk:
+                raise EOFError("game process ended mid-payload")
+            buf.extend(chunk)
+        return bytes(buf)
+
     def _reader():
-        for raw in proc.stdout:
-            line_queue.put(raw.rstrip("\n"))
-        line_queue.put(None)  # EOF sentinel
+        try:
+            while True:
+                line = proc.stdout.readline()
+                if not line:
+                    break
+                line = line.rstrip(b"\n")
+                if line.startswith(b"BQUERY: "):
+                    n = min(int(line[8:]), MAX_ACTIONS)
+                    payload = _read_exactly(_PAYLOAD)
+                    offset = 0
+                    state_arr = np.frombuffer(payload[offset:offset + _BQUERY_STATE_BYTES],
+                                              dtype=np.float32).copy()
+                    offset += _BQUERY_STATE_BYTES
+                    cats_int = np.frombuffer(payload[offset:offset + _BQUERY_CATS_BYTES],
+                                             dtype=np.int32).copy()
+                    offset += _BQUERY_CATS_BYTES
+                    id_arr = np.frombuffer(payload[offset:offset + _BQUERY_IDS_BYTES],
+                                           dtype=np.float32).copy()
+                    offset += _BQUERY_IDS_BYTES
+                    ctrl_arr = np.frombuffer(payload[offset:offset + _BQUERY_CTRL_BYTES],
+                                             dtype=np.float32).copy()
+                    cat_arr = (cats_int / ACTION_CATEGORY_MAX).astype(np.float32)
+                    pending_confirm = any(cats_int[i] in _MANDATORY for i in range(n))
+                    line_queue.put({"num_choices": n, "state_arr": state_arr,
+                                    "cat_arr": cat_arr, "card_id_arr": id_arr,
+                                    "ctrl_arr": ctrl_arr, "pending_confirm": pending_confirm})
+                else:
+                    line_queue.put(line.decode("ascii", errors="replace"))
+        except Exception:
+            pass
+        line_queue.put(None)
 
     threading.Thread(target=_reader, daemon=True).start()
-
-    _MANDATORY = {2, 3, 4, 5}
 
     reward = 0.0
     try:
         while True:
-            line = line_queue.get()
-            if line is None:
+            item = line_queue.get()
+            if item is None:
                 break
 
-            if "Player A wins" in line:
-                reward = 1.0
-            elif "Player B wins" in line:
-                reward = -1.0
-
-            if not line.startswith("QUERY: "):
+            if isinstance(item, str):
+                if "Player A wins" in item:
+                    reward = 1.0
+                elif "Player B wins" in item:
+                    reward = -1.0
                 continue
 
-            # Parse QUERY line — this is a model turn (human turns never emit QUERY)
-            parts = line[7:].split()
-            num_choices = min(int(parts[0]), MAX_ACTIONS)
+            # BQUERY dict — model's turn
+            num_choices  = item["num_choices"]
+            state_arr    = item["state_arr"]
+            cat_arr      = item["cat_arr"]
+            card_id_arr  = item["card_id_arr"]
+            ctrl_arr     = item["ctrl_arr"]
+            pending_confirm = item["pending_confirm"]
 
-            # State vector
-            state_arr = np.array(parts[1 : STATE_SIZE + 1], dtype=np.float32)
-            if len(state_arr) < STATE_SIZE:
-                state_arr = np.pad(state_arr, (0, STATE_SIZE - len(state_arr)))
-
-            # Action categories
-            cat_start = STATE_SIZE + 1
-            cat_raw = parts[cat_start : cat_start + num_choices]
-            cat_arr = np.zeros(MAX_ACTIONS, dtype=np.float32)
-            for i, c in enumerate(cat_raw):
-                cat_arr[i] = int(c) / ACTION_CATEGORY_MAX
-            pending_confirm = any(int(c) in _MANDATORY for c in cat_raw)
-
-            # Card IDs
-            id_start = cat_start + num_choices
-            id_raw = parts[id_start : id_start + num_choices]
-            card_id_arr = np.full(MAX_ACTIONS, _ACTION_CARD_ID_NULL, dtype=np.float32)
-            for i, v in enumerate(id_raw):
-                card_id_arr[i] = float(v)
-
-            # Controller floats
-            ctrl_start = id_start + num_choices
-            ctrl_raw = parts[ctrl_start : ctrl_start + num_choices]
-            ctrl_arr = np.full(MAX_ACTIONS, _ACTION_CTRL_NULL, dtype=np.float32)
-            for i, v in enumerate(ctrl_raw):
-                ctrl_arr[i] = float(v)
-
-            # Hand and battlefield ability costs
             hand_onehots = state_arr[_HAND_START : _HAND_START + MAX_HAND_SLOTS * N_CARD_TYPES]
             hand_costs = hand_onehots.reshape(MAX_HAND_SLOTS, N_CARD_TYPES) @ _CARD_COST_MATRIX
             bf_ability_costs = np.zeros((48, _N_COST_FEATS), dtype=np.float32)
@@ -389,20 +410,17 @@ def play_gui(binary_path: str, model_path: str, human_player: str = None):
                 hand_costs.flatten(), bf_ability_costs.flatten(),
             ])
 
-            # Build mask and predict
             mask = np.zeros(MAX_ACTIONS, dtype=bool)
             mask[:num_choices] = True
             action, _ = model.predict(obs, action_masks=mask if USE_MASKABLE else None, deterministic=True)
             action = int(action)
 
-            # Log model action
             cat = int(round(float(cat_arr[action]) * ACTION_CATEGORY_MAX)) if action < num_choices else -1
             cid = float(card_id_arr[action]) if action < MAX_ACTIONS else float(_ACTION_CARD_ID_NULL)
             print(f"[Model/{model_player}] {_action_label(cat, cid)}", flush=True)
 
-            # Remap confirm slot to -1
             game_action = -1 if (pending_confirm and action == num_choices - 1) else action
-            proc.stdin.write(f"{game_action}\n")
+            proc.stdin.write(f"{game_action}\n".encode())
             proc.stdin.flush()
     finally:
         try:
@@ -426,11 +444,14 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--binary", default=BINARY)
     parser.add_argument("--model", required=True, help="Path to trained model .zip")
+    parser.add_argument("--human-deck", default="delver",
+                        help="Deck the human plays (stem of .dk file, default: delver). "
+                             "Model always plays delver.")
     parser.add_argument("--gui", action="store_true", help="Launch raylib GUI window for human input")
     parser.add_argument("--player", choices=["A", "B"], default=None,
                         help="Which player the human controls (default: random)")
     args = parser.parse_args()
     if args.gui:
-        play_gui(args.binary, args.model, human_player=args.player)
+        play_gui(args.binary, args.model, human_player=args.player, human_deck=args.human_deck)
     else:
-        play(args.binary, args.model)
+        play(args.binary, args.model, human_deck=args.human_deck)

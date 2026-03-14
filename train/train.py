@@ -166,12 +166,25 @@ class ReplayLogCallback(BaseCallback):
 CHECKPOINT_DIR = "checkpoints"
 LOG_DIR = "logs"
 TOTAL_TIMESTEPS = 1_000_000
-N_ENVS = 10  # parallel game processes
+N_ENVS = 32  # parallel game processes
+_DECKS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                          "bin", "resources", "decks")
 
 
-def make_env(binary_path: str, rank: int):
+def _random_opponent_deck(model_deck: str) -> str:
+    """Return a random deck name from the decks folder, excluding model_deck."""
+    import random
+    all_decks = [os.path.splitext(p)[0]
+                 for p in os.listdir(_DECKS_DIR) if p.endswith(".dk")]
+    choices = [d for d in all_decks if d != model_deck] or all_decks
+    return random.choice(choices)
+
+
+def make_env(binary_path: str, rank: int, model_deck: str = "delver"):
     def _init():
-        env = ModelVsScriptedEnv(binary_path=binary_path)
+        opp_deck = _random_opponent_deck(model_deck)
+        env = ModelVsScriptedEnv(binary_path=binary_path,
+                                 model_deck=model_deck, opp_deck=opp_deck)
         if USE_MASKABLE:
             env = ActionMasker(env, lambda e: e.action_masks())
         env = Monitor(env)
@@ -179,9 +192,10 @@ def make_env(binary_path: str, rank: int):
     return _init
 
 
-def make_self_play_env(binary_path: str, checkpoint_dir: str, rank: int):
+def make_self_play_env(binary_path: str, checkpoint_dir: str, rank: int, model_deck: str = "delver"):
     def _init():
-        env = SelfPlayEnv(checkpoint_dir=checkpoint_dir, binary_path=binary_path)
+        env = SelfPlayEnv(checkpoint_dir=checkpoint_dir, binary_path=binary_path,
+                          deck_a=model_deck, deck_b=model_deck)
         if USE_MASKABLE:
             env = ActionMasker(env, lambda e: e.action_masks())
         env = Monitor(env)
@@ -190,7 +204,8 @@ def make_self_play_env(binary_path: str, checkpoint_dir: str, rank: int):
 
 
 def train(binary_path: str, load_path: str | None = None, total_timesteps: int = TOTAL_TIMESTEPS,
-          tally: bool = False, self_play: bool = False, scripted_fraction: float = 0.0):
+          tally: bool = False, self_play: bool = False, scripted_fraction: float = 0.0,
+          model_deck: str = "delver"):
     """Train the model.
 
     ``scripted_fraction`` controls how many of the N_ENVS parallel environments
@@ -208,14 +223,14 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
         n_scripted = round(N_ENVS * scripted_fraction)
         n_self_play = N_ENVS - n_scripted
         env_fns = (
-            [make_self_play_env(binary_path, checkpoint_dir, i) for i in range(n_self_play)]
-            + [make_env(binary_path, N_ENVS - n_scripted + i) for i in range(n_scripted)]
+            [make_self_play_env(binary_path, checkpoint_dir, i, model_deck) for i in range(n_self_play)]
+            + [make_env(binary_path, N_ENVS - n_scripted + i, model_deck) for i in range(n_scripted)]
         )
         if n_scripted:
             print(f"Env mix: {n_self_play} self-play + {n_scripted} scripted")
         vec_env = SubprocVecEnv(env_fns)
     else:
-        vec_env = SubprocVecEnv([make_env(binary_path, i) for i in range(N_ENVS)])
+        vec_env = SubprocVecEnv([make_env(binary_path, i, model_deck) for i in range(N_ENVS)])
 
     policy_kwargs = dict(
         features_extractor_class=CardGameExtractor,
@@ -597,6 +612,9 @@ def evaluate(binary_path: str, model_path: str, n_games: int = 100):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--binary", default=BINARY)
+    parser.add_argument("--deck", default="delver",
+                        help="Deck the model plays (stem of .dk file, default: delver). "
+                             "Opponent deck is chosen randomly from the decks folder each episode.")
     parser.add_argument("--load", default=None, help="Resume from checkpoint .zip")
     parser.add_argument("--total-timesteps", type=int, default=TOTAL_TIMESTEPS)
     parser.add_argument("--eval", default=None, help="Self-play evaluation (note: always ~50%%)")
@@ -627,4 +645,5 @@ if __name__ == "__main__":
         evaluate(args.binary, args.eval, args.eval_games)
     else:
         train(args.binary, args.load, args.total_timesteps, tally=args.tally,
-              self_play=args.self_play, scripted_fraction=args.scripted_fraction)
+              self_play=args.self_play, scripted_fraction=args.scripted_fraction,
+              model_deck=args.deck)

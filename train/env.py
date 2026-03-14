@@ -95,10 +95,13 @@ class RoboMageEnv(gym.Env):
     # loops (e.g. a model that toggles attackers forever) from hanging training.
     MAX_STEPS = 1000
 
-    def __init__(self, binary_path: str = BINARY, render_mode=None):
+    def __init__(self, binary_path: str = BINARY, render_mode=None,
+                 deck_a: str | None = None, deck_b: str | None = None):
         super().__init__()
         self.binary_path = os.path.realpath(binary_path)
         self.render_mode = render_mode
+        self._deck_a = deck_a
+        self._deck_b = deck_b
 
         self.observation_space = spaces.Box(
             low=-10.0, high=10.0, shape=(OBS_SIZE,), dtype=np.float32
@@ -121,8 +124,13 @@ class RoboMageEnv(gym.Env):
         super().reset(seed=seed)
         self._step_count = 0
         self._kill_proc()
+        cmd = [self.binary_path, "--machine"]
+        if self._deck_a:
+            cmd += ["--deck-a", self._deck_a]
+        if self._deck_b:
+            cmd += ["--deck-b", self._deck_b]
         self._proc = subprocess.Popen(
-            [self.binary_path, "--machine"],
+            cmd,
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.DEVNULL,  # suppress game chatter
@@ -587,9 +595,16 @@ class ModelVsScriptedEnv(gym.Env):
     it is always from the model's perspective (+1 win, -1 loss).
     """
 
-    def __init__(self, binary_path: str = BINARY, render_mode=None):
+    def __init__(self, binary_path: str = BINARY, render_mode=None,
+                 deck_a: str | None = None, deck_b: str | None = None,
+                 model_deck: str | None = None, opp_deck: str | None = None):
         super().__init__()
-        self._env = RoboMageEnv(binary_path=binary_path, render_mode=render_mode)
+        # model_deck/opp_deck override deck_a/deck_b: decks are swapped each episode
+        # to match which side the model is assigned to.
+        self._model_deck = model_deck
+        self._opp_deck = opp_deck
+        self._env = RoboMageEnv(binary_path=binary_path, render_mode=render_mode,
+                                deck_a=deck_a, deck_b=deck_b)
         self.observation_space = self._env.observation_space
         self.action_space = self._env.action_space
         self.render_mode = render_mode
@@ -599,6 +614,9 @@ class ModelVsScriptedEnv(gym.Env):
 
     def reset(self, *, seed=None, options=None):
         self._training_is_a = bool(np.random.random() < 0.5)
+        if self._model_deck is not None:
+            self._env._deck_a = self._model_deck if self._training_is_a else self._opp_deck
+            self._env._deck_b = self._opp_deck if self._training_is_a else self._model_deck
         self._pending_shaping = 0.0
         self._opponent_below_10 = False
         obs, info = self._env.reset(seed=seed, options=options)
@@ -742,9 +760,11 @@ class SelfPlayEnv(gym.Env):
 
     RELOAD_EVERY = 10  # episodes between opponent checkpoint reloads
 
-    def __init__(self, checkpoint_dir: str, binary_path: str = BINARY, render_mode=None):
+    def __init__(self, checkpoint_dir: str, binary_path: str = BINARY, render_mode=None,
+                 deck_a: str | None = None, deck_b: str | None = None):
         super().__init__()
-        self._env = RoboMageEnv(binary_path=binary_path, render_mode=render_mode)
+        self._env = RoboMageEnv(binary_path=binary_path, render_mode=render_mode,
+                                deck_a=deck_a, deck_b=deck_b)
         self.observation_space = self._env.observation_space
         self.action_space = self._env.action_space
         self.render_mode = render_mode
