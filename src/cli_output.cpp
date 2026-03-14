@@ -358,10 +358,10 @@ void print_query(const Query* q, bool player_a_has_priority) {
 // ── Errors ────────────────────────────────────────────────────────────────────
 
 void cli_error(const std::string& msg) {
-    printf("%s\n", msg.c_str());
+    fprintf(stderr, "ERROR: %s\n", msg.c_str());
 }
 
 [[noreturn]] void cli_fatal_error(const std::string& msg) {
-    printf("Fatal error: %s\n", msg.c_str());
+    fprintf(stderr, "FATAL: %s\n", msg.c_str());
     exit(1);
 }

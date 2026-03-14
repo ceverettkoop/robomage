@@ -241,6 +241,19 @@ void Ability::resolve_change_zone(std::shared_ptr<Orderer> orderer) {
         return;
     }
 
+    // Defined$ Self — move the source card directly (e.g. Talon Gates putting itself onto battlefield from hand)
+    if (defined_self && source != 0) {
+        std::string sname = global_coordinator.entity_has_component<CardData>(source)
+            ? global_coordinator.GetComponent<CardData>(source).name : "<unknown>";
+        orderer->add_to_zone(false, source, destination);
+        if (destination == Zone::BATTLEFIELD) {
+            auto &src_zone = global_coordinator.GetComponent<Zone>(source);
+            src_zone.controller = owner;
+        }
+        game_log("%s is moved to %s\n", sname.c_str(), dest_str);
+        return;
+    }
+
     // Search-based ChangeZone (e.g. fetch lands, Green Sun's Zenith)
     size_t num_to_move = (amount > 0) ? amount : 1;
 

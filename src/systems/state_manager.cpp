@@ -1159,6 +1159,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
 
         for (auto ab : permanent.abilities) {
             if (ab.ability_type != Ability::ACTIVATED) continue;
+            if (ab.activation_zone == Zone::HAND) continue;  // hand-only ability, not usable from battlefield
             // todo handle this elswewhere, tapping check
             if (ab.tap_cost && permanent.is_tapped) continue;
             if (ab.tap_cost && permanent.has_summoning_sickness &&
@@ -1249,6 +1250,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 continue;
             } else {
                 // Non-mana activated ability (e.g. ChangeZone for fetch lands, Destroy for Wasteland)
+                if (!ab.activation_mana_cost.empty() && !can_afford(priority_player, ab.activation_mana_cost)) continue;
                 if (ab.valid_tgts != "N_A" && !has_legal_targets(ab, orderer)) continue;
                 std::string src_name = entity_name(ab.source);
                 std::string desc = "Activate " + src_name + " (" + ab.category + ")";

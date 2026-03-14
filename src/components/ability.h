@@ -60,6 +60,7 @@ struct Ability{
     std::string amount_svar = "";           // raw SVar key for non-numeric NumDmg$ (resolved at parse time)
     std::string dynamic_amount_expr = "";   // runtime SVar expression (e.g. "Count$Valid Creature.YouCtrl" or "Targeted$CardPower")
     bool defined_targeted_controller = false;  // Defined$ TargetedController — GainLife goes to target's controller
+    bool defined_self = false;                  // Defined$ Self — ability moves its own source
 
     // Counter abilities (PutCounter category)
     std::string counter_type = "";          // "P1P1" for +1/+1 counters

@@ -84,8 +84,10 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
         if (!ability.activation_mana_cost.empty()) {
             spend_mana(ctrl, ability.activation_mana_cost);
         }
-        // Move card from hand to graveyard (it's consumed by activation, similar to discarding)
-        orderer->add_to_zone(false, permanent_entity, Zone::GRAVEYARD);
+        // Move card from hand to graveyard unless the ability moves itself (Defined$ Self)
+        if (!ability.defined_self) {
+            orderer->add_to_zone(false, permanent_entity, Zone::GRAVEYARD);
+        }
 
         // Create standalone ability entity on the stack
         Entity ability_entity = global_coordinator.CreateEntity();

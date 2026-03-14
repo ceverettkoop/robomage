@@ -609,6 +609,7 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
     } else if (key == "Defined") {
         if (value == "Remembered") ability.defined_remembered = true;
         else if (value == "TargetedController") ability.defined_targeted_controller = true;
+        else if (value == "Self") ability.defined_self = true;
     } else if (key == "ClearRemembered") {
         ability.clear_remembered = (value == "True");
     } else if (key == "TargetMin") {
@@ -665,6 +666,10 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
                     ability.return_cost_count = std::stoi(tok.substr(7, slash - 7));
                     ability.return_cost_type = tok.substr(slash + 1, close - slash - 1);
                 }
+            } else {
+                // Remaining tokens are mana symbols (e.g. "4", "1", "W", "2 B")
+                auto mana = parse_mana_cost(tok);
+                ability.activation_mana_cost.insert(mana.begin(), mana.end());
             }
             tok_pos = (tok_end < value.size()) ? tok_end + 1 : tok_end;
         }

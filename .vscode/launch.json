@@ -9,7 +9,7 @@
             "type": "lldb",
             "request": "launch",
             "program": "${workspaceFolder}/bin/robomage",
-            "args": ["--gui", "--deck", "mav_test"],
+            "args": ["--gui", "--deck", "boomer_mav"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/bin/",
             "environment": [],

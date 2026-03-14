@@ -133,7 +133,7 @@ class RoboMageEnv(gym.Env):
             cmd,
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
-            stderr=subprocess.DEVNULL,  # suppress game chatter
+            stderr=None,  # inherit parent stderr so engine errors are visible
             bufsize=-1,  # binary mode, fully buffered
             cwd=BIN_DIR,  # game uses getcwd() to locate resources/
         )

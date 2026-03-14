@@ -6,6 +6,7 @@
 #include "classes/game.h"
 #include "components/player.h"
 #include "ecs/coordinator.h"
+#include "error.h"
 #include "input_logger.h"
 
 extern Coordinator global_coordinator;
@@ -46,6 +47,10 @@ bool can_afford(Zone::Ownership player_owner, const std::multiset<Colors> &cost)
 void spend_mana(Zone::Ownership player_owner, const std::multiset<Colors> &cost) {
     Entity player_entity = get_player_entity(player_owner);
     auto &player = global_coordinator.GetComponent<Player>(player_entity);
+
+    if (!can_afford_pool(player.mana, cost)) {
+        non_fatal_error("spend_mana called with insufficient mana in pool");
+    }
 
     // Pay specific colors first
     for (auto color : cost) {
