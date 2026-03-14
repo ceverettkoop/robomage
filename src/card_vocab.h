@@ -18,7 +18,13 @@ inline int card_name_to_index(const std::string &name) {
         {"Delver of Secrets", 16}, {"Insectile Aberration", 17}, {"Flying Men", 18}, {"Island", 19},
         {"Dragon's Rage Channeler", 20}, {"Air Elemental", 21}, {"Counterspell", 22}, {"Lightning Strike", 23},
         {"Brainstorm", 24}, {"Thundering Falls", 25},
-        {"Murktide Regent", 26}, {"Mishra's Bauble", 27}, {"Cori-Steel Cutter", 28}, {"Unholy Heat", 29}};
+        {"Murktide Regent", 26}, {"Mishra's Bauble", 27}, {"Cori-Steel Cutter", 28}, {"Unholy Heat", 29},
+        {"Birds of Paradise", 30}, {"Collector Ouphe", 31}, {"Dryad Arbor", 32}, {"Endurance", 33},
+        {"Gaea's Cradle", 34}, {"Green Sun's Zenith", 35}, {"Horizon Canopy", 36}, {"Icetill Explorer", 37},
+        {"Ignoble Hierarch", 38}, {"Karakas", 39}, {"Keen-Eyed Curator", 40}, {"Knight of the Reliquary", 41},
+        {"Noble Hierarch", 42}, {"Once Upon a Time", 43}, {"Plains", 44}, {"Savannah", 45},
+        {"Scryb Ranger", 46}, {"Scythecat Cub", 47}, {"Swords to Plowshares", 48}, {"Sylvan Library", 49},
+        {"Talon Gates of Madara", 50}, {"Thalia, Guardian of Thraben", 51}, {"Windswept Heath", 52}};
     auto it = vocab.find(name);
     return it != vocab.end() ? it->second : -1;
 }
@@ -35,12 +41,17 @@ inline const char* card_index_to_name(int idx) {
         "Dragon's Rage Channeler", "Air Elemental", "Counterspell", "Lightning Strike", // 20-23
         "Brainstorm", "Thundering Falls",                                               // 24-25
         "Murktide Regent", "Mishra's Bauble", "Cori-Steel Cutter", "Unholy Heat",     // 26-29
-        // 30-126: reserved for future cards
-        "","","","","","","","","","","","","","","","","","","","","", // 30-50
-        "","","","","","","","","","","","","","","","","","","","","", // 51-71
-        "","","","","","","","","","","","","","","","","","","","","", // 72-92
-        "","","","","","","","","","","","","","","","","","","","","", // 93-113
-        "","","","","","","","","","","","","",                         // 114-126
+        "Birds of Paradise", "Collector Ouphe", "Dryad Arbor", "Endurance",          // 30-33
+        "Gaea's Cradle", "Green Sun's Zenith", "Horizon Canopy", "Icetill Explorer", // 34-37
+        "Ignoble Hierarch", "Karakas", "Keen-Eyed Curator", "Knight of the Reliquary", // 38-41
+        "Noble Hierarch", "Once Upon a Time", "Plains", "Savannah",                  // 42-45
+        "Scryb Ranger", "Scythecat Cub", "Swords to Plowshares", "Sylvan Library",  // 46-49
+        "Talon Gates of Madara", "Thalia, Guardian of Thraben", "Windswept Heath",   // 50-52
+        // 53-126: reserved for future cards
+        "","","","","","","","","","","","","","","","","","","","","", // 53-73
+        "","","","","","","","","","","","","","","","","","","","","", // 74-94
+        "","","","","","","","","","","","","","","","","","","","","", // 95-115
+        "","","","","","","","","","","",                               // 116-126
         "Token",                                                        // 127
     };
     if (idx < 0 || idx >= 128) return "???";

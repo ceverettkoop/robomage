@@ -6,6 +6,7 @@
 #include <set>
 #include <cstdint>
 #include <vector>
+#include <unordered_set>
 #include "../components/types.h"
 #include "../classes/colors.h"
 #include "ability.h"
@@ -39,6 +40,7 @@ struct CardData{
     bool has_delve = false;              // K:Delve — exile from graveyard to reduce generic cost
     bool is_equipment = false;           // has K:Equip line
     ManaValue equip_cost;                // parsed from K:Equip:cost
+    std::set<Colors> explicit_colors;    // Colors: field override (e.g. Dryad Arbor)
 };
 
 #endif /* CARD_H */

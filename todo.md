@@ -1,5 +1,3 @@
-test cori steel cutter
-
 Known rules problems:
 First strike step
 Countering something to exile

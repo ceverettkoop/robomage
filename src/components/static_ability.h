@@ -14,6 +14,9 @@ struct StaticAbility {
     // ETB counter fields (category = "EtbCounter"):
     std::string counter_type = "";    // "P1P1" for +1/+1 counters
     bool counter_count_from_delve = false;  // counter count = cur_game.delve_exiled.size()
+    // RaiseCost fields (category = "RaiseCost"):
+    int raise_cost = 0;               // generic mana added to cost of matching spells
+    std::string raise_cost_filter = ""; // "nonCreature" = apply to non-creature spells
     // State tracking — lives in the Permanent's copy, not in CardData template:
     bool applied = false;             // true when the condition was met on the last SBE pass
     uint32_t last_applied_entity = 0; // for EquippedBy: entity that last received the buff

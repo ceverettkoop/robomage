@@ -336,11 +336,12 @@ bool Ability::is_target_valid() const {
             && global_coordinator.entity_has_component<Spell>(target);
     }
 
-    bool any          = (vt == "Any");
+    bool any           = (vt == "Any");
     bool inc_players   = any || vt.find("Player")   != std::string::npos;
     bool inc_creatures = any || vt.find("Creature") != std::string::npos;
     bool inc_lands     = any || vt.find("Land")     != std::string::npos;
     bool nonbasic_only = vt.find("nonBasic")        != std::string::npos;
+    bool legendary_only = vt.find("Legendary")      != std::string::npos;
 
     if (inc_players && global_coordinator.entity_has_component<Player>(target)) return true;
 
@@ -349,7 +350,16 @@ bool Ability::is_target_valid() const {
     if (tz.location != Zone::BATTLEFIELD) return false;
     if (!global_coordinator.entity_has_component<Permanent>(target)) return false;
 
-    if (inc_creatures && global_coordinator.entity_has_component<Creature>(target)) return true;
+    if (inc_creatures && global_coordinator.entity_has_component<Creature>(target)) {
+        if (legendary_only) {
+            auto &cperm = global_coordinator.GetComponent<Permanent>(target);
+            bool is_legendary = false;
+            for (auto &t : cperm.types)
+                if (t.kind == SUPERTYPE && t.name == "Legendary") { is_legendary = true; break; }
+            if (!is_legendary) return false;
+        }
+        return true;
+    }
 
     if (inc_lands) {
         auto &tperm = global_coordinator.GetComponent<Permanent>(target);
@@ -375,16 +385,30 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
     game_log("Resolving ability (category: %s, amount: %zu)\n", category.c_str(), amount);
 
     if (category == "GainLife") {
-        Zone::Ownership controller;
-        if (global_coordinator.entity_has_component<Permanent>(source)) {
-            controller = global_coordinator.GetComponent<Permanent>(source).controller;
+        Zone::Ownership gain_controller;
+        if (defined_targeted_controller && global_coordinator.entity_has_component<Zone>(target)) {
+            // Swords to Plowshares: gain life goes to the exiled creature's controller
+            gain_controller = global_coordinator.GetComponent<Zone>(target).controller;
+            if (gain_controller == Zone::UNKNOWN && global_coordinator.entity_has_component<Permanent>(target))
+                gain_controller = global_coordinator.GetComponent<Permanent>(target).controller;
+        } else if (global_coordinator.entity_has_component<Permanent>(source)) {
+            gain_controller = global_coordinator.GetComponent<Permanent>(source).controller;
         } else {
-            controller = global_coordinator.GetComponent<Zone>(source).owner;
+            gain_controller = global_coordinator.GetComponent<Zone>(source).owner;
         }
-        Entity ctrl_entity = get_player_entity(controller);
+        // Evaluate dynamic amount if set (e.g. "Targeted$CardPower")
+        size_t gain_amount = amount;
+        if (!dynamic_amount_expr.empty() && dynamic_amount_expr.find("Targeted$CardPower") != std::string::npos) {
+            if (global_coordinator.entity_has_component<CardData>(target)) {
+                gain_amount = static_cast<size_t>(global_coordinator.GetComponent<CardData>(target).power);
+            } else if (global_coordinator.entity_has_component<Creature>(target)) {
+                gain_amount = static_cast<size_t>(global_coordinator.GetComponent<Creature>(target).power);
+            }
+        }
+        Entity ctrl_entity = get_player_entity(gain_controller);
         auto &player = global_coordinator.GetComponent<Player>(ctrl_entity);
-        player.life_total += static_cast<int32_t>(amount);
-        game_log("%s gains %zu life (now at %d)\n", player_name(controller).c_str(), amount, player.life_total);
+        player.life_total += static_cast<int32_t>(gain_amount);
+        game_log("%s gains %zu life (now at %d)\n", player_name(gain_controller).c_str(), gain_amount, player.life_total);
     } else if (category == "Draw") {
         Zone::Ownership owner = global_coordinator.GetComponent<Zone>(source).owner;
         orderer->draw(owner, amount);
@@ -459,6 +483,13 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
         if (clear_remembered) cur_game.remembered_entity = 0;
     } else if (category == "DelayedTrigger") {
         resolve_delayed_trigger();
+    } else if (category == "Untap") {
+        if (global_coordinator.entity_has_component<Permanent>(target)) {
+            auto &tperm = global_coordinator.GetComponent<Permanent>(target);
+            tperm.is_tapped = false;
+            std::string tname = tperm.name;
+            game_log("%s untaps\n", tname.c_str());
+        }
     } else if (category == "Destroy") {
         resolve_destroy(orderer);
     } else if (category == "Counter") {
@@ -589,6 +620,8 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
     //if there are subabilities, resolve them in sequence
     for (auto sub_ab : this->subabilities) {
         sub_ab.source = this->source;
+        sub_ab.target = this->target;  // propagate target so GainLife etc. can reference it
+        sub_ab.controller = this->controller;
         sub_ab.resolve(orderer);
     }
 }

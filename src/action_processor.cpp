@@ -140,14 +140,98 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
         orderer->add_to_zone(false, permanent_entity, Zone::GRAVEYARD);
         game_log("%s sacrifices %s\n", player_name(controller).c_str(), permanent.name.c_str());
     }
+    // Type-based sacrifice cost (Knight of the Reliquary: sac a Forest or Plains)
+    if (!ability.sac_cost_spec.empty()) {
+        std::vector<LegalAction> sac_choices;
+        const std::string &spec = ability.sac_cost_spec;
+        for (auto e : orderer->mEntities) {
+            if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
+            auto &sz = global_coordinator.GetComponent<Zone>(e);
+            if (sz.location != Zone::BATTLEFIELD) continue;
+            auto &sp = global_coordinator.GetComponent<Permanent>(e);
+            if (sp.controller != controller) continue;
+            size_t pp = 0;
+            bool matches = false;
+            while (pp <= spec.size() && !matches) {
+                size_t sc = spec.find(';', pp);
+                if (sc == std::string::npos) sc = spec.size();
+                std::string sub = spec.substr(pp, sc - pp);
+                for (auto &t2 : sp.types) if (t2.name == sub) matches = true;
+                pp = sc + 1;
+            }
+            if (matches) {
+                LegalAction la(PASS_PRIORITY, e, "Sacrifice " + sp.name);
+                la.category = ActionCategory::OTHER_CHOICE;
+                sac_choices.push_back(la);
+            }
+        }
+        if (!sac_choices.empty()) {
+            int sac_choice = InputLogger::instance().get_input(sac_choices);
+            Entity to_sac = sac_choices[static_cast<size_t>(sac_choice)].source_entity;
+            std::string sac_name = global_coordinator.GetComponent<Permanent>(to_sac).name;
+            orderer->add_to_zone(false, to_sac, Zone::GRAVEYARD);
+            game_log("%s sacrifices %s\n", player_name(controller).c_str(), sac_name.c_str());
+        }
+    }
+    // Return cost (Scryb Ranger: return a Forest to hand)
+    if (!ability.return_cost_type.empty()) {
+        std::vector<LegalAction> ret_choices;
+        for (auto e : orderer->mEntities) {
+            if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
+            auto &sz = global_coordinator.GetComponent<Zone>(e);
+            if (sz.location != Zone::BATTLEFIELD) continue;
+            auto &sp = global_coordinator.GetComponent<Permanent>(e);
+            if (sp.controller != controller) continue;
+            for (auto &t2 : sp.types) {
+                if (t2.name == ability.return_cost_type) {
+                    LegalAction la(PASS_PRIORITY, e, "Return " + sp.name + " to hand");
+                    la.category = ActionCategory::OTHER_CHOICE;
+                    ret_choices.push_back(la);
+                    break;
+                }
+            }
+        }
+        if (!ret_choices.empty()) {
+            int ret_choice = InputLogger::instance().get_input(ret_choices);
+            Entity to_ret = ret_choices[static_cast<size_t>(ret_choice)].source_entity;
+            std::string ret_name = global_coordinator.GetComponent<Permanent>(to_ret).name;
+            orderer->add_to_zone(false, to_ret, Zone::HAND);
+            game_log("%s returns %s to hand\n", player_name(controller).c_str(), ret_name.c_str());
+        }
+    }
     // MANA ABILITY
     if (is_mana_ability) {
+        // Evaluate dynamic amount (e.g. Gaea's Cradle: Count$Valid Creature.YouCtrl)
+        size_t mana_amount = ability.amount;
+        if (!ability.dynamic_amount_expr.empty() &&
+            ability.dynamic_amount_expr.find("Count$Valid Creature.YouCtrl") != std::string::npos) {
+            mana_amount = 0;
+            for (auto e : orderer->mEntities) {
+                if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
+                if (!global_coordinator.entity_has_component<Creature>(e)) continue;
+                auto &sz = global_coordinator.GetComponent<Zone>(e);
+                if (sz.location != Zone::BATTLEFIELD) continue;
+                if (global_coordinator.GetComponent<Permanent>(e).controller == controller)
+                    mana_amount++;
+            }
+        }
         Colors mana_color = ability.color;
-        add_mana(controller, mana_color, ability.amount);
-        game_log("%s tapped %s for {%s}\n", player_name(controller).c_str(), permanent.name.c_str(),
-            mana_symbol_str(mana_color));
+        add_mana(controller, mana_color, mana_amount);
+        game_log("%s tapped %s for %zu{%s}\n", player_name(controller).c_str(), permanent.name.c_str(),
+            mana_amount, mana_symbol_str(mana_color));
         // priority does not pass
 
+        // Increment activation counter if this ability has a limit
+        if (ability.activation_limit > 0) {
+            for (auto &perm_ab : permanent.abilities) {
+                if (perm_ab.category == ability.category &&
+                    perm_ab.tap_cost == ability.tap_cost &&
+                    perm_ab.color == ability.color) {
+                    perm_ab.activations_this_turn++;
+                    break;
+                }
+            }
+        }
     } else {  // ACTIVATED ABILITY THAT IS NOT A MANA ABILITY - GOES ON STACK
         //  Initialize zone with HAND so add_to_zone removal of the origin zone is a no-op
         // lol that's hacky but OK
@@ -163,6 +247,17 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
 
         game_log("%s's %s ability is on the stack\n", player_name(controller).c_str(), permanent.name.c_str());
         game.take_action();
+
+        // Increment activation counter for limited abilities (e.g. Scryb Ranger)
+        if (ability.activation_limit > 0) {
+            for (auto &perm_ab : permanent.abilities) {
+                if (perm_ab.category == ability.category &&
+                    perm_ab.return_cost_type == ability.return_cost_type) {
+                    perm_ab.activations_this_turn++;
+                    break;
+                }
+            }
+        }
         // if target remains legal checked at resolution
     }
 }
@@ -192,6 +287,7 @@ static std::vector<Entity> build_valid_targets(
     bool inc_creatures = any || vt.find("Creature") != std::string::npos;
     bool inc_lands = any || vt.find("Land") != std::string::npos;
     bool nonbasic_only = vt.find("nonBasic") != std::string::npos;
+    bool legendary_only = vt.find("Legendary") != std::string::npos;
     // TODO: inc_planeswalker, inc_battle when those components exist
 
     Zone::Ownership opp = (priority_player == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
@@ -213,6 +309,13 @@ static std::vector<Entity> build_valid_targets(
             if (global_coordinator.GetComponent<Permanent>(entity).controller != slot_owner) continue;
 
             if (inc_creatures && global_coordinator.entity_has_component<Creature>(entity)) {
+                if (legendary_only) {
+                    auto &cperm = global_coordinator.GetComponent<Permanent>(entity);
+                    bool is_legendary = false;
+                    for (auto &t : cperm.types)
+                        if (t.kind == SUPERTYPE && t.name == "Legendary") { is_legendary = true; break; }
+                    if (!is_legendary) continue;
+                }
                 valid_targets.push_back(entity);
                 continue;
             }

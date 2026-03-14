@@ -96,6 +96,23 @@ Entity parse_card_script(std::string path) {
     card.uid = name_to_uid(card.name);
     card.mana_cost = parse_mana_cost(value_from_script(front_script, "ManaCost"));
     card.types = parse_types(value_from_script(front_script, "Types"));
+    // Parse explicit Colors: override (e.g. Dryad Arbor which is a land/creature with green identity)
+    std::string colors_field = value_from_script(front_script, "Colors");
+    if (!colors_field.empty()) {
+        size_t cp = 0;
+        while (cp <= colors_field.size()) {
+            size_t sp = colors_field.find(' ', cp);
+            if (sp == std::string::npos) sp = colors_field.size();
+            std::string ctok = colors_field.substr(cp, sp - cp);
+            if      (ctok == "white")    card.explicit_colors.insert(WHITE);
+            else if (ctok == "blue")     card.explicit_colors.insert(BLUE);
+            else if (ctok == "black")    card.explicit_colors.insert(BLACK);
+            else if (ctok == "red")      card.explicit_colors.insert(RED);
+            else if (ctok == "green")    card.explicit_colors.insert(GREEN);
+            else if (ctok == "colorless")card.explicit_colors.insert(COLORLESS);
+            cp = (sp < colors_field.size()) ? sp + 1 : sp + 1;
+        }
+    }
     card.oracle_text = value_from_script(front_script, "Oracle");
     // Expand literal \n escape sequences to real newlines for word-wrap rendering
     for (size_t i = 0; i + 1 < card.oracle_text.size(); ++i) {
@@ -432,17 +449,48 @@ static std::map<std::string, std::string> parse_svars(const std::string& script)
 // Applies a single key/value parameter to an ability struct.
 static void apply_param_to_ability(Ability& ability, const std::string& key, const std::string& value) {
     if (key == "NumCards" || key == "ChangeNum" || key == "Amount") {
-        ability.amount = static_cast<size_t>(std::stoi(value));
-    } else if (key == "Produced") {
-        for (char c : value) {
-            if      (c == 'W') { ability.color = WHITE;     break; }
-            else if (c == 'U') { ability.color = BLUE;      break; }
-            else if (c == 'B') { ability.color = BLACK;     break; }
-            else if (c == 'R') { ability.color = RED;       break; }
-            else if (c == 'G') { ability.color = GREEN;     break; }
-            else if (c == 'C') { ability.color = COLORLESS; break; }
+        if (!value.empty() && std::isdigit(static_cast<unsigned char>(value[0]))) {
+            ability.amount = static_cast<size_t>(std::stoi(value));
+        } else if (!value.empty()) {
+            // Non-numeric value is a SVar key — store for runtime resolution
+            ability.amount_svar = value;
         }
-        ability.amount = 1;
+    } else if (key == "Produced") {
+        if (value == "Any") {
+            // Birds of Paradise: produce any color
+            ability.mana_choices = {WHITE, BLUE, BLACK, RED, GREEN};
+            ability.amount = 1;
+        } else if (value.find("Combo") != std::string::npos) {
+            // Noble Hierarch: "Combo W U G" — space-separated colors after "Combo"
+            size_t combo_pos = value.find("Combo");
+            size_t start = combo_pos + 5;  // skip "Combo"
+            while (start < value.size() && value[start] == ' ') start++;
+            for (size_t ci = start; ci <= value.size(); ci++) {
+                if (ci == value.size() || value[ci] == ' ') {
+                    if (ci > start) {
+                        char tok = value[start];
+                        if      (tok == 'W') ability.mana_choices.push_back(WHITE);
+                        else if (tok == 'U') ability.mana_choices.push_back(BLUE);
+                        else if (tok == 'B') ability.mana_choices.push_back(BLACK);
+                        else if (tok == 'R') ability.mana_choices.push_back(RED);
+                        else if (tok == 'G') ability.mana_choices.push_back(GREEN);
+                        else if (tok == 'C') ability.mana_choices.push_back(COLORLESS);
+                    }
+                    start = ci + 1;
+                }
+            }
+            ability.amount = 1;
+        } else {
+            for (char c : value) {
+                if      (c == 'W') { ability.color = WHITE;     break; }
+                else if (c == 'U') { ability.color = BLUE;      break; }
+                else if (c == 'B') { ability.color = BLACK;     break; }
+                else if (c == 'R') { ability.color = RED;       break; }
+                else if (c == 'G') { ability.color = GREEN;     break; }
+                else if (c == 'C') { ability.color = COLORLESS; break; }
+            }
+            ability.amount = 1;
+        }
     } else if (key == "ValidTgts") {
         ability.valid_tgts = value;
     } else if (key == "ChangeType") {
@@ -465,7 +513,11 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
     } else if (key == "UnlessCost") {
         ability.unless_generic_cost = static_cast<size_t>(std::stoi(value));
     } else if (key == "LifeAmount") {
-        ability.amount = static_cast<size_t>(std::stoi(value));
+        if (!value.empty() && std::isdigit(static_cast<unsigned char>(value[0]))) {
+            ability.amount = static_cast<size_t>(std::stoi(value));
+        } else if (!value.empty()) {
+            ability.amount_svar = value;
+        }
     } else if (key == "TargetType") {
         if (value == "Spell") ability.target_type = "Spell";
     } else if (key == "NumDmg") {
@@ -491,8 +543,11 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         ability.optional = (value == "True");
     } else if (key == "Defined") {
         if (value == "Remembered") ability.defined_remembered = true;
+        else if (value == "TargetedController") ability.defined_targeted_controller = true;
     } else if (key == "ClearRemembered") {
         ability.clear_remembered = (value == "True");
+    } else if (key == "ActivationLimit") {
+        ability.activation_limit = std::stoi(value);
     } else if (key == "Cost") {
         size_t tok_pos = 0;
         while (tok_pos < value.size()) {
@@ -506,8 +561,28 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
                 size_t close = tok.find('>');
                 if (angle != std::string::npos && close != std::string::npos && close > angle + 1)
                     ability.life_cost = std::stoi(tok.substr(angle + 1, close - angle - 1));
-            } else if (tok.rfind("Sac<", 0) == 0 && tok.find("CARDNAME") != std::string::npos) {
-                ability.sac_self = true;
+            } else if (tok.rfind("Sac<", 0) == 0) {
+                size_t slash = tok.find('/');
+                size_t close = tok.find('>');
+                if (slash != std::string::npos && close != std::string::npos && close > slash + 1) {
+                    std::string spec = tok.substr(slash + 1, close - slash - 1);
+                    // Remove second slash and label (e.g. "Forest;Plains/Forest or Plains" → "Forest;Plains")
+                    size_t spec_slash = spec.find('/');
+                    if (spec_slash != std::string::npos) spec = spec.substr(0, spec_slash);
+                    if (spec == "CARDNAME") {
+                        ability.sac_self = true;
+                    } else {
+                        ability.sac_cost_spec = spec;
+                    }
+                }
+            } else if (tok.rfind("Return<", 0) == 0) {
+                // Return<1/Forest> — bounce a land of given subtype
+                size_t slash = tok.find('/');
+                size_t close = tok.find('>');
+                if (slash != std::string::npos && close != std::string::npos) {
+                    ability.return_cost_count = std::stoi(tok.substr(7, slash - 7));
+                    ability.return_cost_type = tok.substr(slash + 1, close - slash - 1);
+                }
             }
             tok_pos = (tok_end < value.size()) ? tok_end + 1 : tok_end;
         }
@@ -641,6 +716,7 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
         }
         // Resolve amount_svar for delirium-conditional damage (Unholy Heat pattern).
         // SVar:X:Count$Compare Y GE4.6.2 where Y resolves to a graveyard card-type count.
+        // Also handles runtime SVar expressions: Count$Valid ..., Targeted$CardPower
         if (!ability.amount_svar.empty()) {
             auto it = svars.find(ability.amount_svar);
             if (it != svars.end()) {
@@ -649,7 +725,6 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
                 size_t ge_pos = sv.find("GE");
                 if (ge_pos != std::string::npos) {
                     std::string rest = sv.substr(ge_pos + 2);
-                    // rest = "4.6.2" — skip threshold, then delirium_amount, then default_amount
                     size_t d1 = rest.find('.');
                     if (d1 != std::string::npos) {
                         size_t d2 = rest.find('.', d1 + 1);
@@ -661,6 +736,10 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
                             ability.amount_is_delirium_scale = true;
                         }
                     }
+                } else if (sv.find("Count$Valid") != std::string::npos ||
+                           sv.find("Targeted$") != std::string::npos) {
+                    // Runtime expression — preserve for evaluation at activation/resolve time
+                    ability.dynamic_amount_expr = sv;
                 }
             }
             ability.amount_svar = "";
@@ -889,6 +968,14 @@ static std::vector<StaticAbility> parse_static_abilities(const std::string &scri
                 } else if (key == "Affected") {
                     if (value.find("EquippedBy") != std::string::npos)
                         sa.affected = "EquippedBy";
+                } else if (key == "Amount") {
+                    // Used by RaiseCost
+                    if (!value.empty() && std::isdigit(static_cast<unsigned char>(value[0])))
+                        sa.raise_cost = std::stoi(value);
+                } else if (key == "ValidCard") {
+                    // RaiseCost filter — detect non-creature spells
+                    if (value.find("nonCreature") != std::string::npos)
+                        sa.raise_cost_filter = "nonCreature";
                 }
             }
 

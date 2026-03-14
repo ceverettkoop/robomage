@@ -877,7 +877,6 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
     auto hand = orderer->get_hand(priority_player);
     for (auto card_entity : hand) {
         auto &card_data = global_coordinator.GetComponent<CardData>(card_entity);
-        // TODO handle flash
         bool is_instant = false;
         bool is_land = false;
         for (auto &type : card_data.types) {
@@ -888,6 +887,12 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                     is_land = true;  // can't cast land
                     break;
                 }
+            }
+        }
+        // Flash keyword grants instant-speed casting
+        if (!is_instant) {
+            for (const auto &kw : card_data.keywords) {
+                if (kw == "Flash") { is_instant = true; break; }
             }
         }
         if (is_land) continue;
@@ -912,9 +917,28 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             LegalAction la(CAST_SPELL, card_entity, desc);
             la.category = ActionCategory::CAST_SPELL;
 
+            // Check RaiseCost statics (e.g. Thalia): add extra generic mana to cost
+            bool card_is_creature = false;
+            for (auto &t : card_data.types)
+                if (t.kind == TYPE && t.name == "Creature") { card_is_creature = true; break; }
+            int raise_total = 0;
+            for (auto e2 : mEntities) {
+                if (!global_coordinator.entity_has_component<Permanent>(e2)) continue;
+                auto &rzone = global_coordinator.GetComponent<Zone>(e2);
+                if (rzone.location != Zone::BATTLEFIELD) continue;
+                auto &rperm = global_coordinator.GetComponent<Permanent>(e2);
+                for (const auto &rsa : rperm.static_abilities) {
+                    if (rsa.category != "RaiseCost") continue;
+                    if (rsa.raise_cost_filter == "nonCreature" && card_is_creature) continue;
+                    raise_total += rsa.raise_cost;
+                }
+            }
+            ManaValue effective_cost = card_data.mana_cost;
+            for (int ri = 0; ri < raise_total; ri++) effective_cost.insert(GENERIC);
+
             bool can_regular = card_data.has_delve
-                ? can_afford_with_delve(priority_player, card_data.mana_cost, orderer)
-                : can_afford(priority_player, card_data.mana_cost);
+                ? can_afford_with_delve(priority_player, effective_cost, orderer)
+                : can_afford(priority_player, effective_cost);
 
             bool can_alt = can_afford_alt(card_data.alt_cost, priority_player, card_entity, orderer);
 
@@ -950,31 +974,82 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 }
                 if (!has_haste) continue;
             }
-            if (ab.category == "AddMana") {  //
-                std::string src_name = entity_name(ab.source);
-                std::string desc = "Tap " + src_name + " for {" + mana_symbol(ab.color) + "}";
-                LegalAction la(ACTIVATE_ABILITY, ab.source, ab, desc);
-                switch (ab.color) {
-                    case WHITE:
-                        la.category = ActionCategory::MANA_W;
-                        break;
-                    case BLUE:
-                        la.category = ActionCategory::MANA_U;
-                        break;
-                    case BLACK:
-                        la.category = ActionCategory::MANA_B;
-                        break;
-                    case RED:
-                        la.category = ActionCategory::MANA_R;
-                        break;
-                    case GREEN:
-                        la.category = ActionCategory::MANA_G;
-                        break;
-                    default:
-                        la.category = ActionCategory::MANA_C;
-                        break;
+            // Activation limit check
+            if (ab.activation_limit > 0 && ab.activations_this_turn >= ab.activation_limit) continue;
+            // sac_cost_spec: require controller has a permanent matching type
+            if (!ab.sac_cost_spec.empty()) {
+                bool found_sac = false;
+                for (auto e2 : orderer->mEntities) {
+                    if (!global_coordinator.entity_has_component<Permanent>(e2)) continue;
+                    auto &sz = global_coordinator.GetComponent<Zone>(e2);
+                    if (sz.location != Zone::BATTLEFIELD) continue;
+                    auto &sp = global_coordinator.GetComponent<Permanent>(e2);
+                    if (sp.controller != priority_player) continue;
+                    // match semicolon-separated subtypes in sac_cost_spec
+                    const std::string &spec = ab.sac_cost_spec;
+                    size_t pp = 0;
+                    while (pp <= spec.size()) {
+                        size_t sc = spec.find(';', pp);
+                        if (sc == std::string::npos) sc = spec.size();
+                        std::string sub = spec.substr(pp, sc - pp);
+                        for (auto &t2 : sp.types) {
+                            if (t2.name == sub) { found_sac = true; break; }
+                        }
+                        if (found_sac) break;
+                        pp = sc + 1;
+                    }
+                    if (found_sac) break;
                 }
-                legal_mana_abilities.push_back(la);
+                if (!found_sac) continue;
+            }
+            // Return cost: require controller has a land of given subtype
+            if (!ab.return_cost_type.empty()) {
+                bool found_ret = false;
+                for (auto e2 : orderer->mEntities) {
+                    if (!global_coordinator.entity_has_component<Permanent>(e2)) continue;
+                    auto &sz = global_coordinator.GetComponent<Zone>(e2);
+                    if (sz.location != Zone::BATTLEFIELD) continue;
+                    auto &sp = global_coordinator.GetComponent<Permanent>(e2);
+                    if (sp.controller != priority_player) continue;
+                    for (auto &t2 : sp.types) {
+                        if (t2.name == ab.return_cost_type) { found_ret = true; break; }
+                    }
+                    if (found_ret) break;
+                }
+                if (!found_ret) continue;
+            }
+            if (ab.category == "AddMana") {
+                std::string src_name = entity_name(ab.source);
+                if (!ab.mana_choices.empty()) {
+                    // Combo or Any mana: emit one action per color choice
+                    for (Colors choice_color : ab.mana_choices) {
+                        std::string desc = "Tap " + src_name + " for {" + mana_symbol(choice_color) + "}";
+                        Ability choice_ab = ab;
+                        choice_ab.color = choice_color;
+                        LegalAction la(ACTIVATE_ABILITY, ab.source, choice_ab, desc);
+                        switch (choice_color) {
+                            case WHITE:    la.category = ActionCategory::MANA_W; break;
+                            case BLUE:     la.category = ActionCategory::MANA_U; break;
+                            case BLACK:    la.category = ActionCategory::MANA_B; break;
+                            case RED:      la.category = ActionCategory::MANA_R; break;
+                            case GREEN:    la.category = ActionCategory::MANA_G; break;
+                            default:       la.category = ActionCategory::MANA_C; break;
+                        }
+                        legal_mana_abilities.push_back(la);
+                    }
+                } else {
+                    std::string desc = "Tap " + src_name + " for {" + mana_symbol(ab.color) + "}";
+                    LegalAction la(ACTIVATE_ABILITY, ab.source, ab, desc);
+                    switch (ab.color) {
+                        case WHITE:    la.category = ActionCategory::MANA_W; break;
+                        case BLUE:     la.category = ActionCategory::MANA_U; break;
+                        case BLACK:    la.category = ActionCategory::MANA_B; break;
+                        case RED:      la.category = ActionCategory::MANA_R; break;
+                        case GREEN:    la.category = ActionCategory::MANA_G; break;
+                        default:       la.category = ActionCategory::MANA_C; break;
+                    }
+                    legal_mana_abilities.push_back(la);
+                }
                 continue;
             } else {
                 // Non-mana activated ability (e.g. ChangeZone for fetch lands, Destroy for Wasteland)

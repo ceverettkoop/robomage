@@ -142,8 +142,13 @@ void Orderer::generate_libraries(const Deck &deck_a, const Deck &deck_b) {
                 coordinator.AddComponent(card_id, Zone(Zone::LIBRARY, owner, owner));
                 ColorIdentity ci;
                 auto &cd = coordinator.GetComponent<CardData>(card_id);
-                for (auto c : cd.mana_cost) {
-                    if (c != GENERIC && c != COLORLESS && c != NO_COLOR) ci.colors.insert(c);
+                if (!cd.explicit_colors.empty()) {
+                    // Use explicit color identity override (e.g. Dryad Arbor)
+                    ci.colors = cd.explicit_colors;
+                } else {
+                    for (auto c : cd.mana_cost) {
+                        if (c != GENERIC && c != COLORLESS && c != NO_COLOR) ci.colors.insert(c);
+                    }
                 }
                 coordinator.AddComponent(card_id, ci);
             }

@@ -28,12 +28,18 @@ struct Ability{
     // TODO: support multiple effects per ability (e.g. "deal 3 damage and gain 3 life")
     size_t amount = 0;
     Colors color = NO_COLOR; //for mana ability
+    std::vector<Colors> mana_choices;   // Produced$ Combo or Any — ordered list of selectable mana colors
 
     // Activated ability costs
     bool tap_cost = false;              // {T} is part of the activation cost
     ManaValue activation_mana_cost;     // Mana that must be paid to activate
     int life_cost = 0;                  // PayLife<N> — life paid at activation
     bool sac_self = false;              // Sac<1/CARDNAME> — sacrifice source permanent as cost
+    std::string sac_cost_spec = "";     // Sac<1/Type;Type/> — type-based sac cost; empty = none
+    std::string return_cost_type = "";  // Return<N/Type> — bounce a land of this subtype as cost
+    int return_cost_count = 0;          // number of lands to return
+    int activation_limit = 0;           // ActivationLimit$ N — max activations per turn (0 = unlimited)
+    int activations_this_turn = 0;      // runtime counter, reset at UNTAP
     std::string change_type = "";        // ChangeType$ — comma-separated subtypes to search
     Zone::ZoneValue origin = Zone::LIBRARY;          // Origin$ — zone to search
     Zone::ZoneValue destination = Zone::BATTLEFIELD; // Destination$ — zone to move card to
@@ -50,6 +56,8 @@ struct Ability{
     bool amount_is_delirium_scale = false;  // if true, use amount_delirium when delirium active
     size_t amount_delirium = 0;             // damage when delirium is active
     std::string amount_svar = "";           // raw SVar key for non-numeric NumDmg$ (resolved at parse time)
+    std::string dynamic_amount_expr = "";   // runtime SVar expression (e.g. "Count$Valid Creature.YouCtrl" or "Targeted$CardPower")
+    bool defined_targeted_controller = false;  // Defined$ TargetedController — GainLife goes to target's controller
 
     // Counter abilities (PutCounter category)
     std::string counter_type = "";          // "P1P1" for +1/+1 counters

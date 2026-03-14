@@ -85,7 +85,7 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
 
             switch (cur_step) {
                 case UNTAP:
-                    // Untap all permanents controlled by active player
+                    // Untap all permanents controlled by active player; reset per-turn counters
                     for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
                         if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
 
@@ -93,6 +93,8 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                         if (permanent.controller == active_player) {
                             permanent.is_tapped = false;
                             permanent.has_summoning_sickness = false;  // Clear summoning sickness
+                            for (auto &ab : permanent.abilities)
+                                ab.activations_this_turn = 0;
                         }
                     }
 
