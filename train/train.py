@@ -42,33 +42,42 @@ from stable_baselines3.common.monitor import Monitor
 
 
 class WinTallyCallback(BaseCallback):
-    """Prints win rate since the last rollout after each rollout."""
+    """Prints win rate since the last rollout, broken down by opponent deck."""
 
     def __init__(self):
         super().__init__()
-        self._interval_model_wins = 0
-        self._interval_opponent_wins = 0
+        self._matchups: dict[str, list[int]] = {}  # deck -> [wins, losses]
 
     def _on_step(self) -> bool:
         for info in self.locals["infos"]:
             if "episode" not in info:
                 continue
             r = info["episode"]["r"]
+            if r == 0:
+                continue
+            deck = info.get("opp_deck", "unknown")
+            if deck not in self._matchups:
+                self._matchups[deck] = [0, 0]
             if r > 0:
-                self._interval_model_wins += 1
-            elif r < 0:
-                self._interval_opponent_wins += 1
+                self._matchups[deck][0] += 1
+            else:
+                self._matchups[deck][1] += 1
         return True
 
     def _on_rollout_end(self) -> None:
-        total = self._interval_model_wins + self._interval_opponent_wins
-        if total == 0:
+        if not self._matchups:
             return
-        pct = 100.0 * self._interval_model_wins / total
-        print(f"[tally] model wins: {self._interval_model_wins}  opponent wins: {self._interval_opponent_wins}  "
-              f"total: {total}  model win rate: {pct:.1f}%")
-        self._interval_model_wins = 0
-        self._interval_opponent_wins = 0
+        total_w = total_l = 0
+        for deck in sorted(self._matchups):
+            w, l = self._matchups[deck]
+            total = w + l
+            pct = 100.0 * w / total
+            print(f"[tally] vs {deck}: {w}W {l}L ({pct:.1f}%)")
+            total_w += w
+            total_l += l
+        grand = total_w + total_l
+        print(f"[tally] overall: {total_w}W {total_l}L ({100.0 * total_w / grand:.1f}%)")
+        self._matchups.clear()
 
 
 class ReplayLogCallback(BaseCallback):

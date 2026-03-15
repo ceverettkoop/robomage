@@ -639,6 +639,8 @@ class ModelVsScriptedEnv(gym.Env):
             reward = -reward
         reward += self._pending_shaping
         self._pending_shaping = 0.0
+        if terminated or truncated:
+            info["opp_deck"] = self._opp_deck or "unknown"
         return obs, reward, terminated, truncated, info
 
     def _accumulate_shaping(self, info):

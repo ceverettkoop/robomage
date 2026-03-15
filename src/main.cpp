@@ -9,6 +9,7 @@
 #include "classes/deck.h"
 #include "classes/game.h"
 #include "cli_output.h"
+#include "error.h"
 #include "components/ability.h"
 #include "components/carddata.h"
 #include "components/color_identity.h"
