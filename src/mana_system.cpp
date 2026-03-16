@@ -50,7 +50,9 @@ void spend_mana(Zone::Ownership player_owner, const std::multiset<Colors> &cost,
 
     if (!can_afford_pool(player.mana, cost)) {
         non_fatal_error("spend_mana called with insufficient mana in pool");
+        #ifndef NDEBUG
         dump_entity(paid_for);
+        #endif
     }
 
     // Pay specific colors first

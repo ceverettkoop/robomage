@@ -580,10 +580,12 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
             if (deal_damage(source, target, dmg)) {
                 game_log("Dealt %zu damage to creature\n", dmg);
             } else {
+                #ifndef NDEBUG
                 fprintf(stderr,"SOURCE:");
                 dump_entity(source);
                 fprintf(stderr,"TARGET:");
                 dump_entity(target);
+                #endif
                 non_fatal_error("Damage should have fizzled prior to this");
             }
         }
