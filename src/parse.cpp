@@ -78,6 +78,7 @@ Entity parse_card_script(std::string path) {
         if (i > SCRIPT_MAX_LEN) fatal_error("Script too long");
         char c = stream.get();
         if (stream.eof()) break;
+        if (c == '\r') continue;
         script_data += c;
     }
 
@@ -333,7 +334,9 @@ Token parse_token_script(const std::string &script_name) {
     std::string script_data;
     char buffer[SCRIPT_MAX_LEN];
     while (stream.getline(buffer, SCRIPT_MAX_LEN)) {
-        script_data += buffer;
+        std::string line(buffer);
+        if (!line.empty() && line.back() == '\r') line.pop_back();
+        script_data += line;
         script_data += "\n";
     }
     stream.close();
