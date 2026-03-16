@@ -1216,6 +1216,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 if (!found_ret) continue;
             }
             if (ab.category == "AddMana") {
+                if (!ab.activation_mana_cost.empty() && !can_afford(priority_player, ab.activation_mana_cost)) continue;
                 std::string src_name = entity_name(ab.source);
                 if (!ab.mana_choices.empty()) {
                     // Combo or Any mana: emit one action per color choice
