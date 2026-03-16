@@ -44,12 +44,13 @@ bool can_afford(Zone::Ownership player_owner, const std::multiset<Colors> &cost)
     return can_afford_pool(player.mana, cost);
 }
 
-void spend_mana(Zone::Ownership player_owner, const std::multiset<Colors> &cost) {
+void spend_mana(Zone::Ownership player_owner, const std::multiset<Colors> &cost, Entity paid_for) {
     Entity player_entity = get_player_entity(player_owner);
     auto &player = global_coordinator.GetComponent<Player>(player_entity);
 
     if (!can_afford_pool(player.mana, cost)) {
         non_fatal_error("spend_mana called with insufficient mana in pool");
+        dump_entity(paid_for);
     }
 
     // Pay specific colors first

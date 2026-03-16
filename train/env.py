@@ -44,6 +44,7 @@ import subprocess
 import sys
 import os
 import re
+import random
 import numpy as np
 
 try:
@@ -335,6 +336,8 @@ _CAT_MANA_R     = 16
 _CAT_MANA_G     = 17
 _CAT_MANA_C     = 18
 _CAT_SEARCH     = 19  # search library (action 0 = fail to find, 1+ = actual cards)
+_CAT_OTHER      = 10  # generic choice (Sylvan Library pay/return, unless costs, etc.)
+_CAT_DIG        = 23  # dig choice (Once Upon a Time: pick creature/land from top N)
 
 # All mana-producing categories
 _MANA_CATS = {_CAT_MANA_W, _CAT_MANA_U, _CAT_MANA_B, _CAT_MANA_R, _CAT_MANA_G, _CAT_MANA_C}
@@ -573,7 +576,16 @@ def scripted_action(obs: np.ndarray, num_choices: int) -> int:
             if c in _MANA_CATS:
                 return i
 
-    # 10. Surveil / Delver reveal: both use two PASS_PRIORITY (0) choices whose
+    # 10. Dig choice (Once Upon a Time): pick action 1 (first matching card) if available.
+    if any(c == _CAT_DIG for c in cats):
+        return 1 if num_choices > 1 else 0
+
+    # 11. Other choice (Sylvan Library pay/return, unless costs): pick randomly.
+    other_idxs = [i for i, c in enumerate(cats) if c == _CAT_OTHER]
+    if other_idxs:
+        return random.choice(other_idxs)
+
+    # 12. Surveil / Delver reveal: both use two PASS_PRIORITY (0) choices whose
     #     source entity is the same library card (non-null, equal card IDs).
     #     For surveil: action 1 = put in graveyard (good for delirium and Murktide).
     #     For Delver's PeekAndReveal: action 1 = reveal (safe; triggers transform

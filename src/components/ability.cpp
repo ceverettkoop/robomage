@@ -345,7 +345,7 @@ void Ability::resolve_rearrange_top_of_library(std::shared_ptr<Orderer> orderer)
 
 // Returns true if the spell should be countered (controller declined or couldn't pay).
 static bool run_unless_loop(size_t cost, Zone::Ownership controller,
-                            std::shared_ptr<Orderer> orderer) {
+                            std::shared_ptr<Orderer> orderer, Entity paid_for) {
     std::multiset<Colors> cond_cost;
     for (size_t i = 0; i < cost; i++) cond_cost.insert(GENERIC);
 
@@ -400,7 +400,7 @@ static bool run_unless_loop(size_t cost, Zone::Ownership controller,
         }
 
         if (can_pay && choice == static_cast<int>(pay_idx)) {
-            spend_mana(controller, cond_cost);
+            spend_mana(controller, cond_cost, paid_for);
             game_log("%s pays {%zu} — spell is not countered\n",
                    player_name(controller).c_str(), cost);
             cur_game.player_a_has_priority = prev_priority;
@@ -447,7 +447,7 @@ bool Ability::is_target_valid() const {
     bool any           = (vt == "Any");
     bool inc_players   = any || vt.find("Player")   != std::string::npos;
     bool inc_creatures = any || vt.find("Creature") != std::string::npos;
-    bool inc_lands     = any || vt.find("Land")     != std::string::npos;
+    bool inc_lands     = vt.find("Land")     != std::string::npos;
     bool nonbasic_only = vt.find("nonBasic")        != std::string::npos;
     bool legendary_only = vt.find("Legendary")      != std::string::npos;
 
@@ -580,6 +580,10 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
             if (deal_damage(source, target, dmg)) {
                 game_log("Dealt %zu damage to creature\n", dmg);
             } else {
+                fprintf(stderr,"SOURCE:");
+                dump_entity(source);
+                fprintf(stderr,"TARGET:");
+                dump_entity(target);
                 non_fatal_error("Damage should have fizzled prior to this");
             }
         }
@@ -710,7 +714,7 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
                         ? global_coordinator.GetComponent<CardData>(target).name : "<unknown>";
                     game_log("%s's controller may pay {%zu} to save it:\n",
                            tname.c_str(), unless_generic_cost);
-                    do_counter = run_unless_loop(unless_generic_cost, target_controller, orderer);
+                    do_counter = run_unless_loop(unless_generic_cost, target_controller, orderer, target);
                 }
 
                 if (do_counter) {

@@ -82,7 +82,7 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
         }
         // Pay mana cost
         if (!ability.activation_mana_cost.empty()) {
-            spend_mana(ctrl, ability.activation_mana_cost);
+            spend_mana(ctrl, ability.activation_mana_cost, permanent_entity);
         }
         // Move card from hand to graveyard unless the ability moves itself (Defined$ Self)
         if (!ability.defined_self) {
@@ -132,7 +132,7 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
         }
         // Pay equip cost
         if (ability.tap_cost) permanent.is_tapped = true;
-        if (!ability.activation_mana_cost.empty()) spend_mana(controller, ability.activation_mana_cost);
+        if (!ability.activation_mana_cost.empty()) spend_mana(controller, ability.activation_mana_cost, permanent_entity);
 
         game_log("Choose creature to equip:\n");
         int choice = InputLogger::instance().get_input(equip_targets);
@@ -162,7 +162,7 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
     }
     // Mana cost
     if (!ability.activation_mana_cost.empty()) {
-        spend_mana(controller, ability.activation_mana_cost);
+        spend_mana(controller, ability.activation_mana_cost, permanent_entity);
     }
     // Pay life cost //TODO VERIFY THIS WAS CHECKED AS POSSIBLE PRIOR TO HERE
     if (ability.life_cost > 0) {
@@ -320,7 +320,7 @@ static std::vector<Entity> build_valid_targets(
     bool any = (vt == "Any");
     bool inc_players = any || vt.find("Player") != std::string::npos;
     bool inc_creatures = any || vt.find("Creature") != std::string::npos;
-    bool inc_lands = any || vt.find("Land") != std::string::npos;
+    bool inc_lands = vt.find("Land") != std::string::npos;
     bool nonbasic_only = vt.find("nonBasic") != std::string::npos;
     bool legendary_only = vt.find("Legendary") != std::string::npos;
     // TODO: inc_planeswalker, inc_battle when those components exist
@@ -854,11 +854,12 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                 // DELVE: exile instants/sorceries from graveyard to reduce generic cost
                 if (card_data.has_delve && !can_afford(caster, cost_to_pay)) {
                     cur_game.delve_exiled.clear();
-                    auto remaining_generic_to_pay = pay_partial(caster, cost_to_pay);
-                    auto gen_ct = remaining_generic_to_pay.count(Colors::GENERIC);
+                    // pay_partial spends colored mana (and any generic it can) from the pool
+                    auto remaining = pay_partial(caster, cost_to_pay);
+                    auto gen_ct = remaining.count(Colors::GENERIC);
                     game_log(
                         "%s: exile %zu cards from graveyard to pay generic cost (0=done):\n", player_name(caster).c_str(), gen_ct);
-                    int gen_paid = 0;
+                    size_t gen_paid = 0;
                     while (gen_paid < gen_ct) {
                         // Build list of exilable instants/sorceries
                         std::vector<LegalAction> delve_actions;
@@ -890,14 +891,16 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                         Entity exiled = delve_actions[static_cast<size_t>(choice)].source_entity;
                         orderer->add_to_zone(false, exiled, Zone::EXILE);
                         cur_game.delve_exiled.push_back(exiled);
-                        cost_to_pay.erase(cost_to_pay.find(GENERIC));
+                        remaining.erase(remaining.find(GENERIC));
                         gen_paid++;
                         auto &ecd2 = global_coordinator.GetComponent<CardData>(exiled);
                         game_log("%s exiles %s via Delve.\n", player_name(caster).c_str(), ecd2.name.c_str());
                     }
+                    // Colored costs already paid by pay_partial; spend only what delve didn't cover
+                    spend_mana(caster, remaining, spell_entity);
+                } else {
+                    spend_mana(caster, cost_to_pay, spell_entity);
                 }
-
-                spend_mana(caster, cost_to_pay);
             }
 
             // Find the primary spell ability template and copy it onto the entity

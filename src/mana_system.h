@@ -18,7 +18,8 @@ bool can_afford_pool(const std::multiset<Colors>& pool, const std::multiset<Colo
 bool can_afford(Zone::Ownership player, const std::multiset<Colors>& cost);
 
 // Spend mana from player's pool (assumes can_afford was checked)
-void spend_mana(Zone::Ownership player, const std::multiset<Colors>& cost);
+// paid_for: the entity being paid for (used for diagnostics on insufficient mana)
+void spend_mana(Zone::Ownership player, const std::multiset<Colors>& cost, Entity paid_for);
 
 // Add mana to player's pool
 void add_mana(Zone::Ownership player, Colors mana_color, size_t amount);
