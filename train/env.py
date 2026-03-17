@@ -631,6 +631,12 @@ class ModelVsScriptedEnv(gym.Env):
             self._env._deck_b = self._opp_deck if self._training_is_a else self._model_deck
         self._pending_shaping = 0.0
         self._opponent_below_10 = False
+        self._decision_idx = 0
+        self._game_meta = {
+            "model_is_a": self._training_is_a,
+            "opp_deck": self._opp_deck or "unknown",
+            "opp_type": "scripted",
+        }
         obs, info = self._env.reset(seed=seed, options=options)
         obs, _reward, terminated, truncated, info = self._skip_opponent_turns(
             obs, 0.0, False, False, info
@@ -640,6 +646,7 @@ class ModelVsScriptedEnv(gym.Env):
         return obs, info
 
     def step(self, action: int):
+        self._decision_idx += 1
         obs, reward, terminated, truncated, info = self._env.step(action)
         self._accumulate_shaping(info)
         if not (terminated or truncated):
@@ -651,6 +658,8 @@ class ModelVsScriptedEnv(gym.Env):
             reward = -reward
         reward += self._pending_shaping
         self._pending_shaping = 0.0
+        info["game_meta"] = self._game_meta
+        info["decision_idx"] = self._decision_idx
         if terminated or truncated:
             info["opp_deck"] = self._opp_deck or "unknown"
         return obs, reward, terminated, truncated, info
@@ -802,6 +811,15 @@ class SelfPlayEnv(gym.Env):
         if self._model_deck is not None:
             self._env._deck_a = self._model_deck if self._training_is_a else self._opp_deck
             self._env._deck_b = self._opp_deck if self._training_is_a else self._model_deck
+        self._decision_idx = 0
+        opp_name = "random"
+        if self._opponent is not None:
+            opp_name = getattr(self, "_opp_checkpoint_path", "checkpoint")
+        self._game_meta = {
+            "model_is_a": self._training_is_a,
+            "opp_deck": self._opp_deck or "unknown",
+            "opp_type": opp_name,
+        }
         obs, info = self._env.reset(seed=seed, options=options)
 
         obs, reward, terminated, truncated, info = self._handle_opponent_turns(
@@ -812,6 +830,7 @@ class SelfPlayEnv(gym.Env):
         return self._training_obs(obs), info
 
     def step(self, action: int):
+        self._decision_idx += 1
         obs, reward, terminated, truncated, info = self._env.step(action)
         if not (terminated or truncated):
             obs, reward, terminated, truncated, info = self._handle_opponent_turns(
@@ -820,6 +839,8 @@ class SelfPlayEnv(gym.Env):
         # Reward is from Player A's perspective; negate if training model plays as B.
         if not self._training_is_a:
             reward = -reward
+        info["game_meta"] = self._game_meta
+        info["decision_idx"] = self._decision_idx
         return self._training_obs(obs), reward, terminated, truncated, info
 
     def action_masks(self) -> np.ndarray:
@@ -871,6 +892,7 @@ class SelfPlayEnv(gym.Env):
             self._opponent = None
             return
         path = str(np.random.choice(files))
+        self._opp_checkpoint_path = path
         try:
             try:
                 from sb3_contrib import MaskablePPO as _PPO

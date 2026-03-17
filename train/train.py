@@ -21,6 +21,8 @@ Usage:
 
 import argparse
 import os
+import struct
+import time
 
 from env import (RoboMageEnv, ModelVsScriptedEnv, SelfPlayEnv, NarrativeEnv, scripted_action,
                  OBS_SIZE, STATE_SIZE, MAX_ACTIONS, ACTION_CATEGORY_MAX, BINARY,
@@ -41,6 +43,195 @@ except ImportError:
 from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv
 from stable_baselines3.common.callbacks import CheckpointCallback, EvalCallback, BaseCallback
 from stable_baselines3.common.monitor import Monitor
+
+import numpy as np
+
+# ── Recording format constants (.rmrec) ──────────────────────────────────────
+RECORD_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "recordings")
+REC_MAGIC = b"RMRC"
+REC_VERSION = 1
+REC_GAME_START = 0x01
+REC_DECISION   = 0x02
+REC_GAME_END   = 0x03
+
+# struct formats (all little-endian)
+_SESSION_HDR_FMT = "<4sHqH"   # magic(4) + version(u16) + timestamp(i64) + n_envs(u16)
+_GAME_START_FMT  = "<BHIb"    # type(u8) + env_id(u16) + game_id(u32) + model_is_a(i8)
+_DECISION_FMT    = "<BHIHbbbBBBB6s32s32s32sBBBB"
+# type(u8) + env_id(u16) + game_id(u32) + decision_idx(u16) + step_idx(i8)
+# + priority_is_a(i8) + active_is_a(i8) + num_choices(u8) + action_chosen(u8)
+# + self_life(u8) + opp_life(u8) + self_mana(6B)
+# + categories(32B) + card_ids(32B) + ctrl_flags(32B)
+# + self_creatures(u8) + self_lands(u8) + opp_creatures(u8) + opp_lands(u8)
+_GAME_END_FMT    = "<BHIbHfI"
+# type(u8) + env_id(u16) + game_id(u32) + result(i8) + n_decisions(u16)
+# + total_reward(f32) + timestep(u32)
+
+
+def _write_length_prefixed(f, s: str):
+    """Write a u16-length-prefixed UTF-8 string."""
+    encoded = s.encode("utf-8")
+    f.write(struct.pack("<H", len(encoded)))
+    f.write(encoded)
+
+
+def _read_length_prefixed(f) -> str:
+    """Read a u16-length-prefixed UTF-8 string."""
+    (length,) = struct.unpack("<H", f.read(2))
+    return f.read(length).decode("utf-8")
+
+
+class RecordCallback(BaseCallback):
+    """Records every game decision to a binary .rmrec file during training."""
+
+    def __init__(self, path: str, n_envs: int, model_path: str, model_deck: str,
+                 self_play: bool):
+        super().__init__()
+        self._path = path
+        self._n_envs = n_envs
+        self._model_path = model_path or "scratch"
+        self._model_deck = model_deck
+        self._self_play = self_play
+        self._file = None
+        self._game_id_counter = 0
+        self._env_game_ids = {}      # env_id -> current game_id
+        self._env_seen_game = set()  # env_ids that have had their Game Start written
+        self._env_decisions = {}     # env_id -> count of decisions this game
+        self._env_rewards = {}       # env_id -> accumulated reward this game
+        self._step_counter = 0
+
+    def _on_training_start(self) -> None:
+        os.makedirs(os.path.dirname(self._path), exist_ok=True)
+        self._file = open(self._path, "wb")
+        # Write session header
+        self._file.write(struct.pack(_SESSION_HDR_FMT, REC_MAGIC, REC_VERSION,
+                                     int(time.time()), self._n_envs))
+        _write_length_prefixed(self._file, self._model_path)
+        _write_length_prefixed(self._file, self._model_deck)
+        self._file.write(struct.pack("B", 1 if self._self_play else 0))
+        self._file.flush()
+
+    def _on_step(self) -> bool:
+        self._step_counter += 1
+        infos = self.locals["infos"]
+        obs = self.locals.get("obs_tensor")
+        if obs is not None:
+            obs = obs.cpu().numpy() if hasattr(obs, "cpu") else np.asarray(obs)
+        actions = self.locals.get("actions")
+        if actions is not None:
+            actions = np.asarray(actions).flatten()
+
+        for i, info in enumerate(infos):
+            meta = info.get("game_meta")
+            if meta is None:
+                continue
+
+            # New game detection: write Game Start if not seen yet
+            if i not in self._env_seen_game:
+                self._game_id_counter += 1
+                gid = self._game_id_counter
+                self._env_game_ids[i] = gid
+                self._env_seen_game.add(i)
+                self._env_decisions[i] = 0
+                self._env_rewards[i] = 0.0
+                self._file.write(struct.pack(_GAME_START_FMT, REC_GAME_START,
+                                             i, gid, 1 if meta["model_is_a"] else 0))
+                _write_length_prefixed(self._file, meta.get("opp_deck", "unknown"))
+                _write_length_prefixed(self._file, meta.get("opp_type", "scripted"))
+
+            gid = self._env_game_ids.get(i, 0)
+            dec_idx = info.get("decision_idx", self._env_decisions.get(i, 0))
+            self._env_decisions[i] = dec_idx
+
+            # Write Decision record
+            if obs is not None and i < len(obs):
+                o = obs[i]
+                step_idx = int(np.argmax(o[18:31]))
+                priority_is_a = 1 if o[32] > 0.5 else 0
+                active_is_a = 1 if ((o[31] > 0.5) == (priority_is_a == 1)) else 0
+                self_life = min(255, max(0, int(round(o[0] * 20))))
+                opp_life = min(255, max(0, int(round(o[9] * 20))))
+                self_mana = bytes([min(255, max(0, int(round(o[3 + j] * 10)))) for j in range(6)])
+
+                cats_raw = np.round(o[STATE_SIZE:STATE_SIZE + MAX_ACTIONS] * ACTION_CATEGORY_MAX).astype(int)
+                ids_raw = o[STATE_SIZE + MAX_ACTIONS:STATE_SIZE + 2 * MAX_ACTIONS]
+                ctrl_raw = o[STATE_SIZE + 2 * MAX_ACTIONS:STATE_SIZE + 3 * MAX_ACTIONS]
+
+                num_c = int(info.get("decision_idx", 0))  # approximate
+                # Determine num_choices from the action mask pattern
+                num_choices = int(np.sum(cats_raw[:MAX_ACTIONS] >= 0))  # heuristic
+                # Better: count non-padded
+                for nc in range(MAX_ACTIONS):
+                    if nc > 0 and cats_raw[nc] == 0 and ids_raw[nc] < -0.5:
+                        num_choices = nc
+                        break
+                else:
+                    num_choices = MAX_ACTIONS
+
+                cats_bytes = bytes([max(0, min(127, int(c))) if j < num_choices else 255
+                                    for j, c in enumerate(cats_raw[:MAX_ACTIONS])])
+                ids_bytes = bytes([max(0, min(127, int(round(float(v) * N_CARD_TYPES)))) if v >= 0 else 255
+                                   for v in ids_raw[:MAX_ACTIONS]])
+                ctrl_bytes = bytes([1 if v > 0.5 else (0 if v > -0.01 else 255)
+                                    for v in ctrl_raw[:MAX_ACTIONS]])
+
+                action_chosen = int(actions[i]) if actions is not None and i < len(actions) else 0
+
+                # Count creatures and lands on each side
+                from env import _BF_START, _BF_SLOT_SIZE, _PERM_A_SLOTS, _OFF_IS_CREATURE, _OFF_IS_LAND
+                self_creatures = self_lands = opp_creatures = opp_lands = 0
+                for s in range(_PERM_A_SLOTS):
+                    base = _BF_START + s * _BF_SLOT_SIZE
+                    if o[base + _OFF_IS_CREATURE] > 0.5:
+                        self_creatures += 1
+                    if o[base + _OFF_IS_LAND] > 0.5:
+                        self_lands += 1
+                    base_opp = _BF_START + (s + _PERM_A_SLOTS) * _BF_SLOT_SIZE
+                    if o[base_opp + _OFF_IS_CREATURE] > 0.5:
+                        opp_creatures += 1
+                    if o[base_opp + _OFF_IS_LAND] > 0.5:
+                        opp_lands += 1
+
+                self._file.write(struct.pack(
+                    _DECISION_FMT, REC_DECISION, i, gid, dec_idx,
+                    step_idx, priority_is_a, active_is_a,
+                    min(255, num_choices), min(255, action_chosen),
+                    self_life, opp_life, self_mana,
+                    cats_bytes, ids_bytes, ctrl_bytes,
+                    min(255, self_creatures), min(255, self_lands),
+                    min(255, opp_creatures), min(255, opp_lands),
+                ))
+
+            # Track reward
+            reward = self.locals.get("rewards")
+            if reward is not None:
+                self._env_rewards[i] = self._env_rewards.get(i, 0.0) + float(reward[i])
+
+            # Game End
+            if "episode" in info:
+                ep_reward = info["episode"]["r"]
+                result = 1 if ep_reward > 0 else (-1 if ep_reward < 0 else 0)
+                self._file.write(struct.pack(
+                    _GAME_END_FMT, REC_GAME_END, i, gid, result,
+                    self._env_decisions.get(i, 0),
+                    float(self._env_rewards.get(i, 0.0)),
+                    self.num_timesteps,
+                ))
+                # Reset for next game on this env
+                self._env_seen_game.discard(i)
+
+        # Periodic flush
+        if self._step_counter % 1000 == 0:
+            self._file.flush()
+
+        return True
+
+    def _on_training_end(self) -> None:
+        if self._file is not None:
+            self._file.flush()
+            self._file.close()
+            self._file = None
+            print(f"[record] Saved recording to {self._path}")
 
 
 class WinTallyCallback(BaseCallback):
@@ -219,7 +410,7 @@ def make_self_play_env(binary_path: str, checkpoint_dir: str, rank: int, model_d
 
 def train(binary_path: str, load_path: str | None = None, total_timesteps: int = TOTAL_TIMESTEPS,
           tally: bool = False, self_play: bool = False, scripted_fraction: float = 0.0,
-          model_deck: str = "delver"):
+          model_deck: str = "delver", record: bool = False):
     """Train the model.
 
     ``scripted_fraction`` controls how many of the N_ENVS parallel environments
@@ -287,6 +478,12 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
     if tally:
         callbacks.append(WinTallyCallback())
     callbacks.append(ReplayLogCallback(binary_path=binary_path))
+    if record:
+        rec_path = os.path.join(RECORD_DIR, f"session_{int(time.time())}.rmrec")
+        callbacks.append(RecordCallback(
+            path=rec_path, n_envs=N_ENVS, model_path=load_path,
+            model_deck=model_deck, self_play=self_play,
+        ))
 
     print(f"Training for {total_timesteps:,} timesteps across {N_ENVS} envs...")
     model.learn(total_timesteps=total_timesteps, callback=callbacks, reset_num_timesteps=load_path is None)
@@ -663,6 +860,8 @@ if __name__ == "__main__":
     parser.add_argument("--scripted-fraction", type=float, default=0.0,
                         help="Fraction of envs that use the scripted opponent during self-play (default 0.0). "
                              "E.g. 0.3 gives ~2 scripted + 5 self-play with N_ENVS=7.")
+    parser.add_argument("--record", action="store_true",
+                        help="Record all game decisions to a .rmrec binary file in recordings/")
     args = parser.parse_args()
 
     if args.diag:
@@ -678,4 +877,4 @@ if __name__ == "__main__":
     else:
         train(args.binary, args.load, args.total_timesteps, tally=args.tally,
               self_play=args.self_play, scripted_fraction=args.scripted_fraction,
-              model_deck=args.deck)
+              model_deck=args.deck, record=args.record)
