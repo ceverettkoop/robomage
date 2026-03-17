@@ -203,8 +203,9 @@ def make_env(binary_path: str, rank: int, model_deck: str = "delver"):
 
 def make_self_play_env(binary_path: str, checkpoint_dir: str, rank: int, model_deck: str = "delver"):
     def _init():
+        opp_deck = _random_opponent_deck(model_deck)
         env = SelfPlayEnv(checkpoint_dir=checkpoint_dir, binary_path=binary_path,
-                          deck_a=model_deck, deck_b=model_deck)
+                          model_deck=model_deck, opp_deck=opp_deck)
         if USE_MASKABLE:
             env = ActionMasker(env, lambda e: e.action_masks())
         env = Monitor(env)
@@ -247,7 +248,7 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
     )
 
     if not load_path and self_play:
-        candidate = os.path.join(checkpoint_dir, "robomage_final.zip")
+        candidate = os.path.join(checkpoint_dir, f"{model_deck}_final.zip")
         if os.path.exists(candidate):
             load_path = candidate
             print(f"Auto-loading self-play checkpoint: {candidate}")
@@ -276,7 +277,7 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
         CheckpointCallback(
             save_freq=25_000 // N_ENVS,
             save_path=checkpoint_dir,
-            name_prefix="robomage",
+            name_prefix=model_deck,
         ),
     ]
     if tally:
@@ -285,8 +286,8 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
 
     print(f"Training for {total_timesteps:,} timesteps across {N_ENVS} envs...")
     model.learn(total_timesteps=total_timesteps, callback=callbacks, reset_num_timesteps=load_path is None)
-    model.save(os.path.join(checkpoint_dir, "robomage_final"))
-    print("Saved final model.")
+    model.save(os.path.join(checkpoint_dir, f"{model_deck}_final"))
+    print(f"Saved final model as {model_deck}_final.")
 
     vec_env.close()
 

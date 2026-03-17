@@ -6,7 +6,7 @@ The observation is always emitted from the priority player's perspective,
 so no manual mirroring is required.
 
 Usage:
-    train/.venv/bin/python train/play.py --model checkpoints/robomage_final.zip
+    train/.venv/bin/python train/play.py --human-deck delver --model-deck burn
 """
 
 import argparse
@@ -189,19 +189,19 @@ class PlayEnv(RoboMageEnv):
 
 # ── Main play loop ────────────────────────────────────────────────────────────
 
-def play(binary_path: str, model_path: str, human_deck: str = "delver"):
+def play(binary_path: str, model_path: str, human_deck: str = "delver", model_deck: str = "delver"):
     model = MaskablePPO.load(model_path)
 
     model_is_a = bool(np.random.random() < 0.5)
-    deck_a = "delver" if model_is_a else human_deck
-    deck_b = human_deck if model_is_a else "delver"
+    deck_a = model_deck if model_is_a else human_deck
+    deck_b = human_deck if model_is_a else model_deck
     env = PlayEnv(binary_path=binary_path, render_mode="human", deck_a=deck_a, deck_b=deck_b)
     obs, _ = env.reset()
     done = False
 
     model_role = "A" if model_is_a else "B"
     human_role = "B" if model_is_a else "A"
-    print(f"=== Model (Player {model_role}, delver) vs You (Player {human_role}, {human_deck}) ===", flush=True)
+    print(f"=== Model (Player {model_role}, {model_deck}) vs You (Player {human_role}, {human_deck}) ===", flush=True)
     print("(type 'quit' to exit)\n", flush=True)
 
     while not done:
@@ -287,7 +287,8 @@ def play(binary_path: str, model_path: str, human_deck: str = "delver"):
         print("=== Draw ===")
 
 
-def play_gui(binary_path: str, model_path: str, human_player: str = None, human_deck: str = "delver"):
+def play_gui(binary_path: str, model_path: str, human_player: str = None,
+             human_deck: str = "delver", model_deck: str = "delver"):
     """Launch the raylib GUI window; model auto-responds on AI turns, human types in GUI text box.
 
     Architecture:
@@ -307,9 +308,9 @@ def play_gui(binary_path: str, model_path: str, human_player: str = None, human_
     if human_player is None:
         human_player = "A" if np.random.random() < 0.5 else "B"
     model_player = "B" if human_player == "A" else "A"
-    deck_a = human_deck if human_player == "A" else "delver"
-    deck_b = "delver" if human_player == "A" else human_deck
-    print(f"=== You (Player {human_player}, {human_deck}) vs Model (Player {model_player}, delver) ===", flush=True)
+    deck_a = human_deck if human_player == "A" else model_deck
+    deck_b = model_deck if human_player == "A" else human_deck
+    print(f"=== You (Player {human_player}, {human_deck}) vs Model (Player {model_player}, {model_deck}) ===", flush=True)
     print("(Type your choice number into the GUI text box and press Enter)", flush=True)
 
     cmd = [binary_path, "--machine", "--gui", "--player", human_player,
@@ -441,17 +442,33 @@ def play_gui(binary_path: str, model_path: str, human_player: str = None, human_
 
 
 if __name__ == "__main__":
+    import os as _os
+    _CHECKPOINT_DIR = _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), "checkpoints")
+
     parser = argparse.ArgumentParser()
     parser.add_argument("--binary", default=BINARY)
-    parser.add_argument("--model", required=True, help="Path to trained model .zip")
-    parser.add_argument("--human-deck", default="delver",
-                        help="Deck the human plays (stem of .dk file, default: delver). "
-                             "Model always plays delver.")
+    parser.add_argument("--human-deck", required=True,
+                        help="Deck the human plays (stem of .dk file)")
+    parser.add_argument("--model-deck", required=True,
+                        help="Deck the model plays (stem of .dk file). "
+                             "Automatically loads checkpoints/<model-deck>_final.zip")
+    parser.add_argument("--model", default=None,
+                        help="Override: explicit path to trained model .zip "
+                             "(default: checkpoints/<model-deck>_final.zip)")
     parser.add_argument("--gui", action="store_true", help="Launch raylib GUI window for human input")
     parser.add_argument("--player", choices=["A", "B"], default=None,
                         help="Which player the human controls (default: random)")
     args = parser.parse_args()
+
+    model_path = args.model
+    if model_path is None:
+        model_path = _os.path.join(_CHECKPOINT_DIR, f"{args.model_deck}_final.zip")
+        if not _os.path.exists(model_path):
+            parser.error(f"No checkpoint found at {model_path}. "
+                         f"Train a model with --deck {args.model_deck} first, or use --model to specify a path.")
+
     if args.gui:
-        play_gui(args.binary, args.model, human_player=args.player, human_deck=args.human_deck)
+        play_gui(args.binary, model_path, human_player=args.player,
+                 human_deck=args.human_deck, model_deck=args.model_deck)
     else:
-        play(args.binary, args.model, human_deck=args.human_deck)
+        play(args.binary, model_path, human_deck=args.human_deck, model_deck=args.model_deck)

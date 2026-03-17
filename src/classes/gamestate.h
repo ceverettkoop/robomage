@@ -44,6 +44,7 @@ typedef struct StackEntry_tag {
     int  card_vocab_idx;  // -1 = unknown/empty
     bool controller_is_self;
     bool is_spell;        // true = card spell on stack; false = triggered/activated ability
+    char target_name[48]; // display name of target, empty = no target
 } StackEntry;
 
 typedef enum ActionRefZone_tag {

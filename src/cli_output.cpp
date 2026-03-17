@@ -260,31 +260,33 @@ void print_game_state(const GameState* gs) {
         }
     }
 
-    game_log("\n--- BATTLEFIELD ---\n");
+    if (!gui_mode) {
+        game_log("\n--- BATTLEFIELD ---\n");
 
-    const PermanentState* perm_arrays[2] = { gs->self_permanents, gs->opp_permanents };
-    const char* perm_names[2] = { self_name, opp_name };
+        const PermanentState* perm_arrays[2] = { gs->self_permanents, gs->opp_permanents };
+        const char* perm_names[2] = { self_name, opp_name };
 
-    for (int p = 0; p < 2; p++) {
-        game_log("%s:\n", perm_names[p]);
-        bool found_any = false;
-        for (int i = 0; i < MAX_BATTLEFIELD_SLOTS; i++) {
-            const PermanentState* slot = &perm_arrays[p][i];
-            if (slot->card_vocab_idx < 0) continue;
-            found_any = true;
-            char line[512];
-            int len = snprintf(line, sizeof(line), "  %s", card_index_to_name(slot->card_vocab_idx));
-            if (slot->is_creature && len < (int)sizeof(line))
-                len += snprintf(line + len, (size_t)((int)sizeof(line) - len), " [%d/%d]", slot->power, slot->toughness);
-            if (slot->is_tapped && len < (int)sizeof(line))
-                len += snprintf(line + len, (size_t)((int)sizeof(line) - len), " (TAPPED)");
-            if (slot->has_summoning_sickness && len < (int)sizeof(line))
-                len += snprintf(line + len, (size_t)((int)sizeof(line) - len), " (SICK)");
-            if (slot->damage > 0 && len < (int)sizeof(line))
-                snprintf(line + len, (size_t)((int)sizeof(line) - len), " (%d damage)", slot->damage);
-            game_log("%s\n", line);
+        for (int p = 0; p < 2; p++) {
+            game_log("%s:\n", perm_names[p]);
+            bool found_any = false;
+            for (int i = 0; i < MAX_BATTLEFIELD_SLOTS; i++) {
+                const PermanentState* slot = &perm_arrays[p][i];
+                if (slot->card_vocab_idx < 0) continue;
+                found_any = true;
+                char line[512];
+                int len = snprintf(line, sizeof(line), "  %s", card_index_to_name(slot->card_vocab_idx));
+                if (slot->is_creature && len < (int)sizeof(line))
+                    len += snprintf(line + len, (size_t)((int)sizeof(line) - len), " [%d/%d]", slot->power, slot->toughness);
+                if (slot->is_tapped && len < (int)sizeof(line))
+                    len += snprintf(line + len, (size_t)((int)sizeof(line) - len), " (TAPPED)");
+                if (slot->has_summoning_sickness && len < (int)sizeof(line))
+                    len += snprintf(line + len, (size_t)((int)sizeof(line) - len), " (SICK)");
+                if (slot->damage > 0 && len < (int)sizeof(line))
+                    snprintf(line + len, (size_t)((int)sizeof(line) - len), " (%d damage)", slot->damage);
+                game_log("%s\n", line);
+            }
+            if (!found_any) game_log("  (no permanents)\n");
         }
-        if (!found_any) game_log("  (no permanents)\n");
     }
 
     bool header_printed = false;
@@ -311,18 +313,20 @@ void print_game_state(const GameState* gs) {
         game_log("%s\n", line);
     }
 
-    extern bool has_human_player;
-    extern bool human_player_is_a;
-    bool show_hand = !has_human_player || (human_player_is_a == gs->self_is_player_a);
-    if (show_hand) {
-        game_log("\n%s hand:\n", self_name);
-        bool hand_empty = true;
-        for (int i = 0; i < MAX_HAND_SLOTS; i++) {
-            if (gs->self_hand[i] < 0) continue;
-            hand_empty = false;
-            game_log("  %s\n", card_index_to_name(gs->self_hand[i]));
+    if (!gui_mode) {
+        extern bool has_human_player;
+        extern bool human_player_is_a;
+        bool show_hand = !has_human_player || (human_player_is_a == gs->self_is_player_a);
+        if (show_hand) {
+            game_log("\n%s hand:\n", self_name);
+            bool hand_empty = true;
+            for (int i = 0; i < MAX_HAND_SLOTS; i++) {
+                if (gs->self_hand[i] < 0) continue;
+                hand_empty = false;
+                game_log("  %s\n", card_index_to_name(gs->self_hand[i]));
+            }
+            if (hand_empty) game_log("  (empty)\n");
         }
-        if (hand_empty) game_log("  (empty)\n");
     }
 }
 

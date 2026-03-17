@@ -99,7 +99,17 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
         global_coordinator.AddComponent(ability_entity, stack_ab);
 
         auto &cd = global_coordinator.GetComponent<CardData>(permanent_entity);
-        game_log("%s activates %s from hand\n", player_name(ctrl).c_str(), cd.name.c_str());
+        if (stack_ab.target != 0) {
+            std::string tgt_name;
+            if (global_coordinator.entity_has_component<Player>(stack_ab.target))
+                tgt_name = (stack_ab.target == cur_game.player_a_entity) ? "Player A" : "Player B";
+            else
+                tgt_name = entity_name(stack_ab.target);
+            game_log("%s activates %s from hand targeting %s\n",
+                player_name(ctrl).c_str(), cd.name.c_str(), tgt_name.c_str());
+        } else {
+            game_log("%s activates %s from hand\n", player_name(ctrl).c_str(), cd.name.c_str());
+        }
         game.take_action();
         return;
     }
@@ -280,7 +290,17 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
         stack_ab.controller = controller;
         global_coordinator.AddComponent(ability_entity, stack_ab);
 
-        game_log("%s's %s ability is on the stack\n", player_name(controller).c_str(), permanent.name.c_str());
+        if (stack_ab.target != 0) {
+            std::string tgt_name;
+            if (global_coordinator.entity_has_component<Player>(stack_ab.target))
+                tgt_name = (stack_ab.target == cur_game.player_a_entity) ? "Player A" : "Player B";
+            else
+                tgt_name = entity_name(stack_ab.target);
+            game_log("%s's %s ability targeting %s is on the stack\n",
+                player_name(controller).c_str(), permanent.name.c_str(), tgt_name.c_str());
+        } else {
+            game_log("%s's %s ability is on the stack\n", player_name(controller).c_str(), permanent.name.c_str());
+        }
         game.take_action();
 
         // Increment activation counter for limited abilities (e.g. Scryb Ranger)
@@ -920,7 +940,23 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                 break;  // TODO: support spells with multiple abilities
             }
 
-            game_log("%s casts %s\n", player_name(caster).c_str(), card_data.name.c_str());
+            // Log cast with target if applicable
+            if (global_coordinator.entity_has_component<Ability>(spell_entity)) {
+                Entity tgt = global_coordinator.GetComponent<Ability>(spell_entity).target;
+                if (tgt != 0) {
+                    std::string tgt_name;
+                    if (global_coordinator.entity_has_component<Player>(tgt))
+                        tgt_name = (tgt == cur_game.player_a_entity) ? "Player A" : "Player B";
+                    else
+                        tgt_name = entity_name(tgt);
+                    game_log("%s casts %s targeting %s\n", player_name(caster).c_str(),
+                        card_data.name.c_str(), tgt_name.c_str());
+                } else {
+                    game_log("%s casts %s\n", player_name(caster).c_str(), card_data.name.c_str());
+                }
+            } else {
+                game_log("%s casts %s\n", player_name(caster).c_str(), card_data.name.c_str());
+            }
 
             // Add Spell component — present only while the entity is on the stack
             Spell spell;

@@ -100,6 +100,11 @@ static int gs_hover_perm_power = -1;  // -1 = not a perm hover
 static int gs_hover_perm_toughness = -1;
 static int gs_hover_perm_damage = 0;
 
+// Stack hover state — separate from card hover
+static int gs_stack_hover_idx = -1;  // index into gs->stack[], -1 = none
+static float gs_stack_hover_tx = 0.0f;
+static float gs_stack_hover_ty = 0.0f;
+
 // Forward declarations
 static int count_gy(const int *gy, int max);
 static void draw_wrapped_text(Font font, const char *text, float x, float y, float max_w, float font_size, Color color);
@@ -431,6 +436,7 @@ static void render_gs(void) {
     gs_hover_perm_power = -1;
     gs_hover_perm_toughness = -1;
     gs_hover_perm_damage = 0;
+    gs_stack_hover_idx = -1;
 
     float sw = (float)GetScreenWidth();
     float sh = (float)GetScreenHeight();
@@ -507,6 +513,16 @@ static void render_gs(void) {
             float chip_h = small_sz * 1.8f;
             float chip_y = y + (stack_h - chip_h) * 0.5f;
             Color chip_col = se->controller_is_self ? (Color){90, 150, 240, 220} : (Color){240, 110, 90, 220};
+            Rectangle chip_rect = {ex, chip_y, chip_w, chip_h};
+            bool chip_hovered = CheckCollisionPointRec(mouse, chip_rect);
+            if (chip_hovered) {
+                chip_col.r = (unsigned char)((int)chip_col.r * 80 / 100 + 50);
+                chip_col.g = (unsigned char)((int)chip_col.g * 80 / 100 + 50);
+                chip_col.b = (unsigned char)((int)chip_col.b * 80 / 100 + 50);
+                gs_stack_hover_idx = i;
+                gs_stack_hover_tx = mouse.x;
+                gs_stack_hover_ty = mouse.y;
+            }
             DrawRectangle((int)ex, (int)chip_y, (int)chip_w, (int)chip_h, chip_col);
             DrawTextEx(g_font, chip, (Vector2){ex + 4.0f, chip_y + (chip_h - small_sz) * 0.5f}, small_sz, 1.0f, WHITE);
             ex += chip_w + 4.0f;
@@ -651,6 +667,58 @@ static void render_gs(void) {
             arrow_col);
     }
 
+    // ── Stack tooltip (Q + hover over stack chip) ────────────────────────
+    if (q_held && gs_stack_hover_idx >= 0 && gs_stack_hover_idx < gs->stack_size) {
+        const StackEntry *se = &gs->stack[gs_stack_hover_idx];
+        const char *sname = (se->card_vocab_idx >= 0) ? gui_card_name(se->card_vocab_idx) : "?";
+        const char *soracle = (se->card_vocab_idx >= 0) ? gui_card_oracle(se->card_vocab_idx) : "";
+        const char *stype = (se->card_vocab_idx >= 0) ? gui_card_type_line(se->card_vocab_idx) : "";
+
+        float tp_w = sw * LAYOUT_TOOLTIP_W_RATIO;
+        float tp_h = sh * LAYOUT_TOOLTIP_H_RATIO;
+        float tp_x = gs_stack_hover_tx + 14.0f;
+        float tp_y = gs_stack_hover_ty - tp_h * 0.5f;
+        if (tp_x + tp_w > sw - 5.0f) tp_x = gs_stack_hover_tx - tp_w - 14.0f;
+        if (tp_y < 5.0f) tp_y = 5.0f;
+        if (tp_y + tp_h > sh - 5.0f) tp_y = sh - tp_h - 5.0f;
+
+        float tt_title_sz = sh * FONT_SIZE_LABEL_RATIO * 1.2f;
+        float tt_body_sz = sh * FONT_SIZE_CARD_RATIO;
+        float tt_line_h = tt_body_sz * 1.4f;
+
+        DrawRectangle((int)tp_x, (int)tp_y, (int)tp_w, (int)tp_h, (Color){252, 248, 218, 252});
+        DrawRectangleLinesEx((Rectangle){tp_x, tp_y, tp_w, tp_h}, 2.0f, (Color){100, 80, 20, 255});
+
+        float ty = tp_y + tp_h * 0.03f;
+        DrawTextEx(g_font, sname, (Vector2){tp_x + 6.0f, ty}, tt_title_sz, 1.0f, BLACK);
+        ty += tt_title_sz + tt_line_h * 0.3f;
+
+        char stack_info[128];
+        snprintf(stack_info, sizeof(stack_info), "%s - %s",
+            se->is_spell ? "Spell" : "Ability",
+            se->controller_is_self ? "You" : "Opp");
+        DrawTextEx(g_font, stack_info, (Vector2){tp_x + 6.0f, ty}, tt_body_sz, 1.0f, DARKGRAY);
+        ty += tt_line_h;
+
+        DrawTextEx(g_font, stype, (Vector2){tp_x + 6.0f, ty}, tt_body_sz, 1.0f, DARKGRAY);
+        ty += tt_line_h;
+
+        if (se->target_name[0] != '\0') {
+            char tgt_line[80];
+            snprintf(tgt_line, sizeof(tgt_line), "Target: %s", se->target_name);
+            DrawTextEx(g_font, tgt_line, (Vector2){tp_x + 6.0f, ty}, tt_body_sz, 1.0f,
+                (Color){180, 50, 50, 255});
+            ty += tt_line_h;
+        }
+
+        float clip_h = (tp_y + tp_h) - ty - 4.0f;
+        if (clip_h > tt_body_sz && soracle[0] != '\0') {
+            BeginScissorMode((int)(tp_x + 4.0f), (int)ty, (int)(tp_w - 8.0f), (int)clip_h);
+            draw_wrapped_text(g_font_oracle, soracle, tp_x + 6.0f, ty, tp_w - 12.0f, tt_body_sz, BLACK);
+            EndScissorMode();
+        }
+    }
+
     // ── Tooltip (Q + hover) ─────────────────────────────────────────────
     if (q_held && gs_hover_vocab_idx >= 0) {
         const char *tname = gui_card_name(gs_hover_vocab_idx);
@@ -766,43 +834,95 @@ static void render_info_log(void) {
 }
 
 static void render_choices(void) {
+    static Vector2 choice_scroll = {0, 0};
+    static int last_choice_count = 0;
+
     float sh = (float)GetScreenHeight();
     float sw = (float)GetScreenWidth();
     float font_size = sh * FONT_SIZE_CHOICES_RATIO;
     float line_height = font_size * 1.55f;
     float panel_x = LAYOUT_SIDEBAR_PAD;
     float panel_w = sw * LAYOUT_SIDEBAR_W_RATIO - LAYOUT_SIDEBAR_PAD * 2.0f;
-    float y = sh * LAYOUT_CHOICES_Y_RATIO;
+    float panel_y = sh * LAYOUT_CHOICES_Y_RATIO;
     Vector2 mouse = GetMousePosition();
     bool clicked = IsMouseButtonPressed(MOUSE_LEFT_BUTTON);
 
     int line_count = gui_query_line_count();
-    //first line is always prompt
-    for (int i = 0; i < line_count; i++) {
-        const char *line = gui_query_get_line(i);
-        //ASSUMES FIRST LINE IS ALWAYS PROMPT
-        if(i != 0){
-            Rectangle row = {panel_x, y, panel_w, line_height - 2.0f};
-            bool hovered = CheckCollisionPointRec(mouse, row);
-            Color bg = hovered ? (Color){180, 210, 255, 220} : (Color){220, 235, 255, 180};
-            DrawRectangleRec(row, bg);
-            DrawRectangleLinesEx(row, 1.0f, (Color){90, 130, 200, 160});
-            DrawTextEx(g_font, line, (Vector2){panel_x + 6.0f, y + (line_height - font_size) * 0.4f},
-                font_size, 1.0f, (Color){20, 40, 160, 255});
-            if (hovered && clicked && gui_input_requested) {
-                pthread_mutex_lock(&input_mutex);
-                //ASSUMES CHOICES ALWAYS STARTING WITH 0 - TO VERIFY
-                gui_cmd = i - 1;
-                gui_input_sent = true;
-                pthread_cond_signal(&input_cond);
-                pthread_mutex_unlock(&input_mutex);
+    float content_h = line_count * line_height;
+    float available_h = sh - panel_y - LAYOUT_SIDEBAR_PAD;
+    bool use_scroll = (line_count > 9);
+
+    // Reset scroll when choices change
+    if (line_count != last_choice_count) {
+        choice_scroll.x = 0;
+        choice_scroll.y = 0;
+        last_choice_count = line_count;
+    }
+
+    if (use_scroll) {
+        Rectangle bounds = {panel_x, panel_y, panel_w, available_h};
+        Rectangle content = {panel_x, panel_y, panel_w - 14.0f, content_h};
+        Rectangle view = {0};
+        GuiScrollPanel(bounds, NULL, content, &choice_scroll, &view);
+
+        BeginScissorMode((int)view.x, (int)view.y, (int)view.width, (int)view.height);
+        float y = panel_y + choice_scroll.y;
+        for (int i = 0; i < line_count; i++) {
+            if (y + line_height >= view.y && y <= view.y + view.height) {
+                const char *line = gui_query_get_line(i);
+                if (i != 0) {
+                    Rectangle row = {panel_x, y, view.width, line_height - 2.0f};
+                    bool hovered = CheckCollisionPointRec(mouse, row)
+                        && CheckCollisionPointRec(mouse, view);
+                    Color bg = hovered ? (Color){180, 210, 255, 220} : (Color){220, 235, 255, 180};
+                    DrawRectangleRec(row, bg);
+                    DrawRectangleLinesEx(row, 1.0f, (Color){90, 130, 200, 160});
+                    DrawTextEx(g_font, line, (Vector2){panel_x + 6.0f, y + (line_height - font_size) * 0.4f},
+                        font_size, 1.0f, (Color){20, 40, 160, 255});
+                    if (hovered && clicked && gui_input_requested) {
+                        pthread_mutex_lock(&input_mutex);
+                        gui_cmd = i - 1;
+                        gui_input_sent = true;
+                        pthread_cond_signal(&input_cond);
+                        pthread_mutex_unlock(&input_mutex);
+                    }
+                } else {
+                    DrawTextEx(g_font, line, (Vector2){panel_x, y + (line_height - font_size) * 0.4f},
+                        font_size, 1.0f, (Color){40, 40, 160, 255});
+                }
             }
-        } else {
-            // Header / label line
-            DrawTextEx(g_font, line, (Vector2){panel_x, y + (line_height - font_size) * 0.4f},
-                font_size, 1.0f, (Color){40, 40, 160, 255});
+            y += line_height;
         }
-        y += line_height;
+        EndScissorMode();
+    } else {
+        float y = panel_y;
+        //first line is always prompt
+        for (int i = 0; i < line_count; i++) {
+            const char *line = gui_query_get_line(i);
+            //ASSUMES FIRST LINE IS ALWAYS PROMPT
+            if(i != 0){
+                Rectangle row = {panel_x, y, panel_w, line_height - 2.0f};
+                bool hovered = CheckCollisionPointRec(mouse, row);
+                Color bg = hovered ? (Color){180, 210, 255, 220} : (Color){220, 235, 255, 180};
+                DrawRectangleRec(row, bg);
+                DrawRectangleLinesEx(row, 1.0f, (Color){90, 130, 200, 160});
+                DrawTextEx(g_font, line, (Vector2){panel_x + 6.0f, y + (line_height - font_size) * 0.4f},
+                    font_size, 1.0f, (Color){20, 40, 160, 255});
+                if (hovered && clicked && gui_input_requested) {
+                    pthread_mutex_lock(&input_mutex);
+                    //ASSUMES CHOICES ALWAYS STARTING WITH 0 - TO VERIFY
+                    gui_cmd = i - 1;
+                    gui_input_sent = true;
+                    pthread_cond_signal(&input_cond);
+                    pthread_mutex_unlock(&input_mutex);
+                }
+            } else {
+                // Header / label line
+                DrawTextEx(g_font, line, (Vector2){panel_x, y + (line_height - font_size) * 0.4f},
+                    font_size, 1.0f, (Color){40, 40, 160, 255});
+            }
+            y += line_height;
+        }
     }
 }
 

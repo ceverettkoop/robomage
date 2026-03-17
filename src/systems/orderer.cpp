@@ -15,6 +15,7 @@
 #include "../ecs/coordinator.h"
 #include "../ecs/events.h"
 #include "../input_logger.h"
+#include "../machine_io.h"
 
 // orderer cares about anything that has a zone
 void Orderer::init() {
@@ -228,10 +229,23 @@ std::vector<Entity> Orderer::get_stack() {
 
 
 void Orderer::do_london_mulligan() {
+    extern bool gui_mode;
+    extern bool has_human_player;
+    extern bool human_player_is_a;
+    extern GameState gs;
+
     int mulligans_a = 0;
     int mulligans_b = 0;
     bool a_kept = false;
     bool b_kept = false;
+
+    auto populate_gs_for_mulligan = [&]() {
+        if (!gui_mode) return;
+        Zone::Ownership viewer = has_human_player
+            ? (human_player_is_a ? Zone::PLAYER_A : Zone::PLAYER_B)
+            : (cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B);
+        populate_gamestate(&gs, viewer);
+    };
 
     auto do_bottom_deck = [&](Zone::Ownership owner, int count) {
         std::string pname = player_name(owner);
@@ -246,6 +260,7 @@ void Orderer::do_london_mulligan() {
                 la.category = ActionCategory::BOTTOM_DECK_CARD;
                 btm_actions.push_back(la);
             }
+            populate_gs_for_mulligan();
             int choice = InputLogger::instance().get_input(btm_actions);
             this->add_to_zone(true, hand[static_cast<size_t>(choice)], Zone::LIBRARY);
         }
@@ -269,6 +284,7 @@ void Orderer::do_london_mulligan() {
             };
             mull_actions[0].category = ActionCategory::MULLIGAN;
             mull_actions[1].category = ActionCategory::MULLIGAN;
+            populate_gs_for_mulligan();
             int choice = InputLogger::instance().get_input(mull_actions);
             if (choice == 0) {
                 a_kept = true;
@@ -310,6 +326,7 @@ void Orderer::do_london_mulligan() {
             };
             mull_actions[0].category = ActionCategory::MULLIGAN;
             mull_actions[1].category = ActionCategory::MULLIGAN;
+            populate_gs_for_mulligan();
             int choice = InputLogger::instance().get_input(mull_actions);
             if (choice == 0) {
                 b_kept = true;

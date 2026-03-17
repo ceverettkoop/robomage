@@ -775,10 +775,11 @@ class SelfPlayEnv(gym.Env):
     RELOAD_EVERY = 10  # episodes between opponent checkpoint reloads
 
     def __init__(self, checkpoint_dir: str, binary_path: str = BINARY, render_mode=None,
-                 deck_a: str | None = None, deck_b: str | None = None):
+                 model_deck: str | None = None, opp_deck: str | None = None):
         super().__init__()
-        self._env = RoboMageEnv(binary_path=binary_path, render_mode=render_mode,
-                                deck_a=deck_a, deck_b=deck_b)
+        self._model_deck = model_deck
+        self._opp_deck = opp_deck
+        self._env = RoboMageEnv(binary_path=binary_path, render_mode=render_mode)
         self.observation_space = self._env.observation_space
         self.action_space = self._env.action_space
         self.render_mode = render_mode
@@ -797,8 +798,11 @@ class SelfPlayEnv(gym.Env):
         if self._episode_count % self.RELOAD_EVERY == 0:
             self._reload_opponent()
 
-        obs, info = self._env.reset(seed=seed, options=options)
         self._training_is_a = bool(np.random.random() < 0.5)
+        if self._model_deck is not None:
+            self._env._deck_a = self._model_deck if self._training_is_a else self._opp_deck
+            self._env._deck_b = self._opp_deck if self._training_is_a else self._model_deck
+        obs, info = self._env.reset(seed=seed, options=options)
 
         obs, reward, terminated, truncated, info = self._handle_opponent_turns(
             obs, 0.0, False, False, info
@@ -858,8 +862,11 @@ class SelfPlayEnv(gym.Env):
         return obs, reward, terminated, truncated, info
 
     def _reload_opponent(self):
-        """Sample a random checkpoint from the pool as the new frozen opponent."""
-        files = _glob.glob(os.path.join(self._checkpoint_dir, "*.zip"))
+        """Sample a random checkpoint matching the opponent deck as the new frozen opponent."""
+        if self._opp_deck:
+            files = _glob.glob(os.path.join(self._checkpoint_dir, f"{self._opp_deck}_*.zip"))
+        else:
+            files = _glob.glob(os.path.join(self._checkpoint_dir, "*.zip"))
         if not files:
             self._opponent = None
             return
