@@ -100,7 +100,7 @@ def _action_label(cat: int, card_id_float: float) -> str:
 
 
 def _decode_step(obs) -> str:
-    idx = int(np.argmax(obs[18:30]))
+    idx = int(np.argmax(obs[18:31]))
     return _STEP_NAMES[idx] if obs[18 + idx] > 0.5 else "?"
 
 
@@ -206,8 +206,8 @@ def play(binary_path: str, model_path: str, human_deck: str = "delver", model_de
 
     while not done:
         num_choices = env._num_choices
-        # obs[31]=1 means self (priority player) is Player A; obs[30]=1 means priority player is active player
-        a_has_priority = obs[31] > 0.5
+        # obs[32]=1 means self (priority player) is Player A; obs[31]=1 means priority player is active player
+        a_has_priority = obs[32] > 0.5
         model_has_priority = a_has_priority == model_is_a
 
         cats     = np.round(obs[STATE_SIZE : STATE_SIZE + num_choices] * ACTION_CATEGORY_MAX).astype(int)
@@ -246,9 +246,9 @@ def play(binary_path: str, model_path: str, human_deck: str = "delver", model_de
                 for i, c in enumerate(cats):
                     print(f"  {i}: {_action_label(int(c), float(card_ids[i]))}")
             else:
-                # obs[30]=1 means priority player is active; obs[31]=1 means priority player is A
-                priority_is_a = obs[31] > 0.5
-                active_is_a = (obs[30] > 0.5) == priority_is_a
+                # obs[31]=1 means priority player is active; obs[32]=1 means priority player is A
+                priority_is_a = obs[32] > 0.5
+                active_is_a = (obs[31] > 0.5) == priority_is_a
                 active = "A" if active_is_a else "B"
                 step = _decode_step(obs)
                 print(f"[{active}'s turn — {step}]  {num_choices} option(s):")

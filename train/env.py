@@ -669,7 +669,7 @@ class ModelVsScriptedEnv(gym.Env):
         # obs is always from the priority player's perspective.
         # When the model has priority, obs[9] = scripted life / 20.
         # When the scripted agent has priority, obs[0] = scripted ("self") life / 20.
-        a_has_priority = obs[31] > 0.5
+        a_has_priority = obs[32] > 0.5
         model_has_priority = a_has_priority if self._training_is_a else not a_has_priority
         scripted_life = (obs[9] if model_has_priority else obs[0]) * 20.0
         if scripted_life < 10.0:
@@ -678,7 +678,7 @@ class ModelVsScriptedEnv(gym.Env):
 
     def _skip_opponent_turns(self, obs, reward, terminated, truncated, info):
         """Resolve consecutive opponent turns with the scripted agent."""
-        while not (terminated or truncated) and (obs[31] > 0.5) != self._training_is_a:
+        while not (terminated or truncated) and (obs[32] > 0.5) != self._training_is_a:
             action = scripted_action(obs, self._env._num_choices)
             obs, reward, terminated, truncated, info = self._env.step(action)
             self._accumulate_shaping(info)
@@ -704,9 +704,9 @@ def mirror_obs(obs: np.ndarray) -> np.ndarray:
     legacy compatibility and offline analysis only.
 
     After mirroring:
-      - obs[31] = 1.0 always means "I (the calling player) have priority"
+      - obs[32] = 1.0 always means "I (the calling player) have priority"
       - controller_is_self = 1.0 always marks the calling player's permanents
-      - slots 0-23 always contain the calling player's creatures / lands
+      - slots 0-47 always contain the calling player's permanents
       - slots 0-63 always contain the calling player's graveyard
 
     Only the first STATE_SIZE floats and the bf_ability_costs block (derived from
@@ -719,8 +719,8 @@ def mirror_obs(obs: np.ndarray) -> np.ndarray:
     m[0:9], m[9:18] = obs[9:18].copy(), obs[0:9].copy()
 
     # 2. Flip turn/priority flags
-    m[30] = 1.0 - obs[30]
     m[31] = 1.0 - obs[31]
+    m[32] = 1.0 - obs[32]
 
     # 3. Swap unified perm slots 0-47 (self) ↔ 48-95 (opp) and flip controller_is_self
     for i in range(_PERM_A_SLOTS):
@@ -744,7 +744,7 @@ def mirror_obs(obs: np.ndarray) -> np.ndarray:
         m[b:b + _GY_SLOT_SIZE] = obs[a:a + _GY_SLOT_SIZE]
 
     # 6. Hand slots (obs[_HAND_START:STATE_SIZE]): always the priority player's hand —
-    #    no change needed; after mirror obs[31]=1.0 still means the acting player's hand
+    #    no change needed; after mirror obs[32]=1.0 still means the acting player's hand
     #    is shown here.
 
     # 7. Swap bf_ability_costs slots 0-23 ↔ 24-47 (mirrors the permanent slot reordering)
@@ -834,7 +834,7 @@ class SelfPlayEnv(gym.Env):
 
     def _training_has_priority(self, obs: np.ndarray) -> bool:
         """True when it is the training model's turn to act (raw obs)."""
-        a_has_priority = obs[31] > 0.5
+        a_has_priority = obs[32] > 0.5
         return a_has_priority if self._training_is_a else not a_has_priority
 
     def _training_obs(self, obs: np.ndarray) -> np.ndarray:

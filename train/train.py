@@ -124,13 +124,13 @@ class ReplayLogCallback(BaseCallback):
                         if line.strip():
                             f.write(line + "\n")
 
-                    a_has_priority = obs[31] > 0.5
+                    a_has_priority = obs[32] > 0.5
                     model_has_priority = a_has_priority if model_is_a else not a_has_priority
                     num_choices = env._num_choices
                     cur_side = "A" if a_has_priority else "B"
 
                     priority_is_a = a_has_priority
-                    active_is_a = (obs[30] > 0.5) == priority_is_a
+                    active_is_a = (obs[31] > 0.5) == priority_is_a
                     cats = np.round(obs[STATE_SIZE:STATE_SIZE + num_choices] * ACTION_CATEGORY_MAX).astype(int)
                     is_mulligan = any(c == 11 for c in cats)
 
@@ -333,10 +333,10 @@ def diag(binary_path: str, n_games: int = 10):
                     log_lines.append(line)
 
             num_choices = raw_env._num_choices
-            priority_is_a = obs[31] > 0.5
+            priority_is_a = obs[32] > 0.5
             player = "A" if priority_is_a else "B"
-            active_is_a = (obs[30] > 0.5) == priority_is_a
-            step_name = _STEP_NAMES[int(np.argmax(obs[18:30]))]
+            active_is_a = (obs[31] > 0.5) == priority_is_a
+            step_name = _STEP_NAMES[int(np.argmax(obs[18:31]))]
 
             cats = np.round(obs[STATE_SIZE:STATE_SIZE + num_choices] * ACTION_CATEGORY_MAX).astype(int)
             is_mulligan = any(c == 11 for c in cats)
@@ -465,7 +465,7 @@ def observe(binary_path: str, model_path: str):
     done = False
     total_reward = 0.0
     while not done:
-        a_has_priority = obs[31] > 0.5
+        a_has_priority = obs[32] > 0.5
         model_has_priority = a_has_priority if model_is_a else not a_has_priority
         cur_side = "A" if a_has_priority else "B"
         num_choices = env._num_choices
@@ -542,11 +542,11 @@ def watch_scripted(binary_path: str):
                 print(line, flush=True)
 
         num_choices = env._num_choices
-        priority_is_a = obs[31] > 0.5
+        priority_is_a = obs[32] > 0.5
         player = "A" if priority_is_a else "B"
-        # active_is_a: obs[30]=1 means priority player IS the active player
-        active_is_a = (obs[30] > 0.5) == priority_is_a
-        step_name = _STEP_NAMES[int(np.argmax(obs[18:30]))]
+        # active_is_a: obs[31]=1 means priority player IS the active player
+        active_is_a = (obs[31] > 0.5) == priority_is_a
+        step_name = _STEP_NAMES[int(np.argmax(obs[18:31]))]
 
         cats = np.round(obs[STATE_SIZE:STATE_SIZE + num_choices] * ACTION_CATEGORY_MAX).astype(int)
         is_mulligan = any(c == 11 for c in cats)
