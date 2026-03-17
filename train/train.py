@@ -22,9 +22,11 @@ Usage:
 import argparse
 import os
 
-from env import RoboMageEnv, ModelVsScriptedEnv, SelfPlayEnv, NarrativeEnv, scripted_action, OBS_SIZE, STATE_SIZE, MAX_ACTIONS, ACTION_CATEGORY_MAX, BINARY
+from env import (RoboMageEnv, ModelVsScriptedEnv, SelfPlayEnv, NarrativeEnv, scripted_action,
+                 OBS_SIZE, STATE_SIZE, MAX_ACTIONS, ACTION_CATEGORY_MAX, BINARY,
+                 _HAND_START)
 from extractor import CardGameExtractor
-from card_costs import _VOCAB_NAMES
+from card_costs import _VOCAB_NAMES, N_CARD_TYPES
 
 try:
     from sb3_contrib import MaskablePPO
@@ -132,6 +134,7 @@ class ReplayLogCallback(BaseCallback):
                     priority_is_a = a_has_priority
                     active_is_a = (obs[31] > 0.5) == priority_is_a
                     cats = np.round(obs[STATE_SIZE:STATE_SIZE + num_choices] * ACTION_CATEGORY_MAX).astype(int)
+                    card_ids = obs[STATE_SIZE + MAX_ACTIONS:STATE_SIZE + 2 * MAX_ACTIONS]
                     is_mulligan = any(c == 11 for c in cats)
 
                     known_hand[cur_side] = _decode_hand(obs)
@@ -148,10 +151,12 @@ class ReplayLogCallback(BaseCallback):
                         masks = env.action_masks() if USE_MASKABLE else None
                         action, _ = self.model.predict(obs, action_masks=masks, deterministic=True)
                         action = int(action)
-                        f.write(f"[Model/{cur_side}] chose {action} of {num_choices}\n")
+                        desc = _describe_action(cats, card_ids, action, num_choices)
+                        f.write(f"[Model/{cur_side}] {desc}  ({action} of {num_choices})\n")
                     else:
                         action = scripted_action(obs, num_choices)
-                        f.write(f"[Scripted/{cur_side}] chose {action} of {num_choices}\n")
+                        desc = _describe_action(cats, card_ids, action, num_choices)
+                        f.write(f"[Scripted/{cur_side}] {desc}  ({action} of {num_choices})\n")
 
                     obs, reward, terminated, truncated, _ = masked.step(action)
                     total_reward += reward
@@ -507,16 +512,34 @@ _STEP_NAMES = [
 
 
 def _decode_hand(obs):
-    """Return list of card names for the priority player's hand (obs[31225:32505])."""
+    """Return list of card names for the priority player's hand."""
     import numpy as np
     cards = []
     for slot in range(10):            # MAX_HAND_SLOTS = 10
-        base = 31225 + slot * 128     # _HAND_START + slot * N_CARD_TYPES
-        vec = obs[base : base + 128]
+        base = _HAND_START + slot * N_CARD_TYPES
+        vec = obs[base : base + N_CARD_TYPES]
         idx = int(np.argmax(vec))
         if vec[idx] > 0.5:
             cards.append(_VOCAB_NAMES[idx] if idx < len(_VOCAB_NAMES) else f"?{idx}")
     return cards
+
+
+def _describe_action(cats, card_ids, action, num_choices):
+    """Return a human-readable string for the chosen action."""
+    cat = int(cats[action])
+    cat_name = _CAT_NAMES.get(cat, str(cat))
+
+    # Decode card name from the normalized card ID float
+    raw_id = float(card_ids[action])
+    card_name = None
+    if raw_id >= 0:
+        vocab_idx = round(raw_id * N_CARD_TYPES)
+        if vocab_idx < len(_VOCAB_NAMES) and _VOCAB_NAMES[vocab_idx]:
+            card_name = _VOCAB_NAMES[vocab_idx]
+
+    if card_name:
+        return f"{cat_name} {card_name}"
+    return cat_name
 
 
 def watch_scripted(binary_path: str):
