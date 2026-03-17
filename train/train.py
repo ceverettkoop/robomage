@@ -502,7 +502,7 @@ _CAT_NAMES = {
 
 _STEP_NAMES = [
     "Untap", "Upkeep", "Draw", "First Main", "Begin Combat",
-    "Declare Atk", "Declare Blk", "Combat Dmg",
+    "Declare Atk", "Declare Blk", "First Strike Dmg", "Combat Dmg",
     "End Combat", "Second Main", "End Step", "Cleanup",
 ]
 

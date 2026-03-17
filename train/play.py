@@ -62,7 +62,8 @@ _HAND_SLOTS      = 10
 _STEP_NAMES = [
     "Untap", "Upkeep", "Draw", "First Main",
     "Begin Combat", "Declare Attackers", "Declare Blockers",
-    "Combat Damage", "End Combat", "Second Main", "End", "Cleanup",
+    "First Strike Damage", "Combat Damage", "End Combat",
+    "Second Main", "End", "Cleanup",
 ]
 _MANA_CAT_COLOR = {13: "W", 14: "U", 15: "B", 16: "R", 17: "G", 18: "C"}
 
