@@ -181,12 +181,11 @@ _DECKS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file
 
 
 def _random_opponent_deck(model_deck: str) -> str:
-    """Return a random deck name from the decks folder, excluding model_deck."""
+    """Return a random deck name from the decks folder."""
     import random
     all_decks = [os.path.splitext(p)[0]
                  for p in os.listdir(_DECKS_DIR) if p.endswith(".dk")]
-    choices = [d for d in all_decks if d != model_deck] or all_decks
-    return random.choice(choices)
+    return random.choice(all_decks)
 
 
 def make_env(binary_path: str, rank: int, model_deck: str = "delver"):
