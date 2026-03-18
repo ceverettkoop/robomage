@@ -883,9 +883,11 @@ class SelfPlayEnv(gym.Env):
         return obs, reward, terminated, truncated, info
 
     def _reload_opponent(self):
-        """Sample a random checkpoint matching the opponent deck as the new frozen opponent."""
-        if self._opp_deck:
-            files = _glob.glob(os.path.join(self._checkpoint_dir, f"{self._opp_deck}_*.zip"))
+        """Sample a random checkpoint with the same deck matchup as the new frozen opponent."""
+        if self._model_deck and self._opp_deck:
+            files = _glob.glob(os.path.join(self._checkpoint_dir, f"{self._model_deck}_{self._opp_deck}_*.zip"))
+        elif self._model_deck:
+            files = _glob.glob(os.path.join(self._checkpoint_dir, f"{self._model_deck}_*.zip"))
         else:
             files = _glob.glob(os.path.join(self._checkpoint_dir, "*.zip"))
         if not files:

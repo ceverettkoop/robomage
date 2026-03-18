@@ -17,13 +17,17 @@ import numpy as np
 from env import (RoboMageEnv, STATE_SIZE, ACTION_CATEGORY_MAX, BINARY, MAX_ACTIONS,
                  BIN_DIR, OBS_SIZE, _ACTION_CARD_ID_NULL, _ACTION_CTRL_NULL,
                  _HAND_START, MAX_HAND_SLOTS,
-                 _BQUERY_STATE_BYTES, _BQUERY_CATS_BYTES, _BQUERY_IDS_BYTES, _BQUERY_CTRL_BYTES)
+                 _BQUERY_STATE_BYTES, _BQUERY_CATS_BYTES, _BQUERY_IDS_BYTES, _BQUERY_CTRL_BYTES,
+                 _BF_START as _ENV_BF_START, _BF_SLOT_SIZE as _ENV_BF_SLOT_SIZE,
+                 _BF_CARD_OFF as _ENV_BF_CARD_OFF, _PERM_A_SLOTS as _ENV_PERM_A_SLOTS)
 import env as _env
 
 try:
-    from card_costs import _CARD_COST_MATRIX, _CARD_ABILITY_COST_MATRIX, N_CARD_TYPES, _N_COST_FEATS
+    from card_costs import (_CARD_COST_MATRIX, _CARD_ABILITY_COST_MATRIX, N_CARD_TYPES, _N_COST_FEATS,
+                            _VOCAB_NAMES)
 except ImportError:
-    from train.card_costs import _CARD_COST_MATRIX, _CARD_ABILITY_COST_MATRIX, N_CARD_TYPES, _N_COST_FEATS
+    from train.card_costs import (_CARD_COST_MATRIX, _CARD_ABILITY_COST_MATRIX, N_CARD_TYPES, _N_COST_FEATS,
+                                  _VOCAB_NAMES)
 
 try:
     from sb3_contrib import MaskablePPO
@@ -32,24 +36,11 @@ except ImportError:
     from stable_baselines3 import PPO as MaskablePPO
     USE_MASKABLE = False
 
-# ── Card vocab (mirrors src/card_vocab.h) ─────────────────────────────────────
-_VOCAB = {
-    0: "Mountain", 1: "Forest", 2: "Lightning Bolt", 3: "Grizzly Bears",
-    4: "Volcanic Island", 5: "Scalding Tarn", 6: "Flooded Strand",
-    7: "Polluted Delta", 8: "Wooded Foothills", 9: "Misty Rainforest",
-    10: "Wasteland", 11: "Ponder", 12: "Force of Will", 13: "Daze",
-    14: "Soul Warden", 15: "Tundra", 16: "Delver of Secrets",
-    17: "Insectile Aberration", 18: "Flying Men", 19: "Island",
-    20: "Dragon's Rage Channeler", 21: "Air Elemental", 22: "Counterspell",
-    23: "Lightning Strike", 24: "Brainstorm",
-}
-_N_VOCAB = 32
-
 # ── State layout (mirrors env.py / machine_io.h) ──────────────────────────────
-_BF_START        = 33
-_BF_SLOT_SIZE    = 42     # 10 status floats + 32 card one-hot
-_BF_PERM_SLOTS   = 48     # self occupies slots 0-47; opponent slots 48-95
-_BF_CARD_OFF     = 10
+_BF_START        = _ENV_BF_START       # 34
+_BF_SLOT_SIZE    = _ENV_BF_SLOT_SIZE   # 138 (10 status floats + 128 card one-hot)
+_BF_PERM_SLOTS   = _ENV_PERM_A_SLOTS  # 48 (self occupies slots 0-47; opponent slots 48-95)
+_BF_CARD_OFF     = _ENV_BF_CARD_OFF    # 10
 _OFF_POWER       = 0
 _OFF_TOUGHNESS   = 1
 _OFF_TAPPED      = 2
@@ -57,7 +48,6 @@ _OFF_ATTACKING   = 3
 _OFF_SICKNESS    = 5
 _OFF_IS_CREATURE = 8
 _OFF_IS_LAND     = 9
-_HAND_OBS_START  = 8569   # 4473 + 128 * 32
 _HAND_SLOTS      = 10
 _STEP_NAMES = [
     "Untap", "Upkeep", "Draw", "First Main",
@@ -72,13 +62,17 @@ _MANA_CAT_COLOR = {13: "W", 14: "U", 15: "B", 16: "R", 17: "G", 18: "C"}
 
 def _card_name(one_hot):
     idx = int(np.argmax(one_hot))
-    return _VOCAB.get(idx) if one_hot[idx] > 0.5 else None
+    if idx < len(one_hot) and one_hot[idx] > 0.5 and idx < len(_VOCAB_NAMES):
+        return _VOCAB_NAMES[idx] if _VOCAB_NAMES[idx] else None
+    return None
 
 
 def _card_from_id(val: float):
     """Decode a card name from a normalised card-ID float (None for null sentinel)."""
-    cid = round(float(val) * _N_VOCAB)
-    return _VOCAB.get(cid) if cid >= 0 else None
+    cid = round(float(val) * N_CARD_TYPES)
+    if cid >= 0 and cid < len(_VOCAB_NAMES) and _VOCAB_NAMES[cid]:
+        return _VOCAB_NAMES[cid]
+    return None
 
 
 def _action_label(cat: int, card_id_float: float) -> str:
@@ -107,7 +101,7 @@ def _decode_step(obs) -> str:
 
 def _perm_str(obs, base):
     """Return a display string for a permanent slot, or None if empty."""
-    card = _card_name(obs[base + _BF_CARD_OFF : base + _BF_CARD_OFF + _N_VOCAB])
+    card = _card_name(obs[base + _BF_CARD_OFF : base + _BF_CARD_OFF + N_CARD_TYPES])
     if card is None:
         return None
     if obs[base + _OFF_IS_CREATURE] > 0.5:
@@ -128,7 +122,7 @@ def _split_bf(obs, slot_offset):
     creatures, lands = [], []
     for i in range(_BF_PERM_SLOTS):
         base = _BF_START + (slot_offset + i) * _BF_SLOT_SIZE
-        card = _card_name(obs[base + _BF_CARD_OFF : base + _BF_CARD_OFF + _N_VOCAB])
+        card = _card_name(obs[base + _BF_CARD_OFF : base + _BF_CARD_OFF + N_CARD_TYPES])
         if card is None:
             continue
         if obs[base + _OFF_IS_CREATURE] > 0.5:
@@ -144,7 +138,7 @@ def _format_state(obs) -> str:
     """Format battlefield from the current priority player's (human's) perspective.
 
     obs is always perspective-normalised: self occupies permanent slots 0-47,
-    opponent slots 48-95. Hand at _HAND_OBS_START is the priority player's hand.
+    opponent slots 48-95. Hand at _HAND_START is the priority player's hand.
     """
     my_life  = int(round(float(obs[0]) * 20))
     opp_life = int(round(float(obs[9]) * 20))
@@ -152,8 +146,8 @@ def _format_state(obs) -> str:
     my_creatures,  my_lands  = _split_bf(obs, 0)
     opp_creatures, opp_lands = _split_bf(obs, _BF_PERM_SLOTS)
     hand = [s for i in range(_HAND_SLOTS)
-            if (s := _card_name(obs[_HAND_OBS_START + i * _N_VOCAB :
-                                    _HAND_OBS_START + (i + 1) * _N_VOCAB]))]
+            if (s := _card_name(obs[_HAND_START + i * N_CARD_TYPES :
+                                    _HAND_START + (i + 1) * N_CARD_TYPES]))]
 
     return (
         "--- Battlefield ---\n"
@@ -226,7 +220,7 @@ def play(binary_path: str, model_path: str, human_deck: str = "delver", model_de
                 label = "keep" if action == 0 else "mulligan"
             else:
                 cat = int(cats[action]) if action < len(cats) else -1
-                cid = float(card_ids[action]) if action < MAX_ACTIONS else -1.0 / _N_VOCAB
+                cid = float(card_ids[action]) if action < MAX_ACTIONS else -1.0 / N_CARD_TYPES
                 label = _action_label(cat, cid)
             print(f"[Model/{model_role}] {label}", flush=True)
         else:
@@ -463,10 +457,14 @@ if __name__ == "__main__":
 
     model_path = args.model
     if model_path is None:
-        model_path = _os.path.join(_CHECKPOINT_DIR, f"{args.model_deck}_final.zip")
-        if not _os.path.exists(model_path):
-            parser.error(f"No checkpoint found at {model_path}. "
-                         f"Train a model with --deck {args.model_deck} first, or use --model to specify a path.")
+        # Try matchup-specific checkpoint first, then model-deck-only fallback
+        matchup_path = _os.path.join(_CHECKPOINT_DIR, f"{args.model_deck}_{args.human_deck}_final.zip")
+        if _os.path.exists(matchup_path):
+            model_path = matchup_path
+        else:
+            parser.error(f"No checkpoint found at {matchup_path}. "
+                         f"Train with --deck {args.model_deck} --opponent {args.human_deck} first, "
+                         f"or use --model to specify a path.")
 
     if args.gui:
         play_gui(args.binary, model_path, human_player=args.player,

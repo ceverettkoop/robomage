@@ -471,7 +471,7 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
         callbacks.append(WinTallyCallback())
     callbacks.append(ReplayLogCallback(binary_path=binary_path))
     if record:
-        rec_path = os.path.join(RECORD_DIR, f"session_{int(time.time())}.rmrec")
+        rec_path = os.path.join(RECORD_DIR, f"{model_prefix}_{int(time.time())}.rmrec")
         callbacks.append(RecordCallback(
             path=rec_path, n_envs=N_ENVS, model_path=load_path,
             model_deck=model_deck, self_play=self_play,
@@ -855,9 +855,27 @@ if __name__ == "__main__":
                              "E.g. 0.3 gives ~2 scripted + 5 self-play with N_ENVS=7.")
     parser.add_argument("--record", action="store_true",
                         help="Record all game decisions to a .rmrec binary file in recordings/")
+    parser.add_argument("--train-all", action="store_true",
+                        help="Train every deck×deck matchup sequentially (ignores --deck/--opponent)")
     args = parser.parse_args()
 
-    if args.diag:
+    if args.train_all:
+        all_decks = sorted(os.path.splitext(p)[0]
+                           for p in os.listdir(_DECKS_DIR) if p.endswith(".dk"))
+        matchups = [(d, o) for d in all_decks for o in all_decks]
+        print(f"Training all {len(matchups)} matchups for {args.total_timesteps:,} timesteps each:")
+        for d, o in matchups:
+            print(f"  {d} vs {o}")
+        for i, (d, o) in enumerate(matchups):
+            print(f"\n{'='*60}")
+            print(f"[{i+1}/{len(matchups)}] {d} vs {o}")
+            print(f"{'='*60}")
+            train(args.binary, load_path=None, total_timesteps=args.total_timesteps,
+                  tally=args.tally, self_play=args.self_play,
+                  scripted_fraction=args.scripted_fraction,
+                  model_deck=d, opp_deck=o, record=args.record)
+        print(f"\nAll {len(matchups)} matchups complete.")
+    elif args.diag:
         diag(args.binary, args.diag_games)
     elif args.watch_scripted:
         watch_scripted(args.binary)
