@@ -296,6 +296,12 @@ static Ability keyword_triggered_ability(const std::string &keyword) {
         ab.trigger_valid_player_is_controller = true;
         ab.category = "ProwessBonus";
         ab.amount = 1;
+    } else if (keyword == "Exalted") {
+        ab.ability_type = Ability::TRIGGERED;
+        ab.trigger_on = Events::CREATURE_ATTACKED_ALONE;
+        ab.trigger_valid_player_is_controller = true;
+        ab.category = "ExaltedBonus";
+        ab.amount = 1;
     }
     return ab;
 }
@@ -865,6 +871,9 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                 Ability trigger_ab = ab;
                 trigger_ab.source = entity;
                 trigger_ab.controller = perm.controller;
+                // For exalted, target the sole attacker from the event
+                if (trigger_ab.category == "ExaltedBonus" && ev.HasParam(Params::ENTITY))
+                    trigger_ab.target = ev.GetParam<Entity>(Params::ENTITY);
                 global_coordinator.AddComponent(trigger_entity, trigger_ab);
 
                 game_log("%s triggered\n", ent_name.c_str());

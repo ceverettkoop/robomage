@@ -13,6 +13,7 @@ namespace Events {
     constexpr EventId END_STEP_BEGAN         = 6;  // "at the beginning of [your] end step" / Phase$ EndStep
     constexpr EventId DRAW_STEP_BEGAN        = 7;  // "at the beginning of [your] draw step" / Phase$ Draw
     constexpr EventId SPELL_CAST             = 9;  // every spell cast; Params: PLAYER=caster
+    constexpr EventId CREATURE_ATTACKED_ALONE = 10; // exactly one creature declared as attacker; Params: ENTITY=sole attacker, PLAYER=controller
 }
 
 // Param IDs used across events

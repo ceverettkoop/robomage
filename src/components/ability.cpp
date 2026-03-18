@@ -599,6 +599,23 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
             cr.toughness += static_cast<uint32_t>(amount);
             game_log("Prowess: creature gets +%zu/+%zu until end of turn.\n", amount, amount);
         }
+    } else if (category == "ExaltedBonus") {
+        if (target != 0 && global_coordinator.entity_has_component<Creature>(target)) {
+            auto &cr = global_coordinator.GetComponent<Creature>(target);
+            cr.prowess_bonus += static_cast<int>(amount);
+            cr.power     += static_cast<uint32_t>(amount);
+            cr.toughness += static_cast<uint32_t>(amount);
+            std::string tgt_name = global_coordinator.entity_has_component<CardData>(target)
+                ? global_coordinator.GetComponent<CardData>(target).name
+                : (global_coordinator.entity_has_component<Permanent>(target)
+                    ? global_coordinator.GetComponent<Permanent>(target).name : "creature");
+            std::string src_name = global_coordinator.entity_has_component<CardData>(source)
+                ? global_coordinator.GetComponent<CardData>(source).name
+                : (global_coordinator.entity_has_component<Permanent>(source)
+                    ? global_coordinator.GetComponent<Permanent>(source).name : "permanent");
+            game_log("Exalted (%s): %s gets +%zu/+%zu until end of turn.\n",
+                     src_name.c_str(), tgt_name.c_str(), amount, amount);
+        }
     } else if (category == "Token") {
         resolve_token(orderer);
     } else if (category == "Attach") {
