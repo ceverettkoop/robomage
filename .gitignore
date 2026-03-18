@@ -16,3 +16,4 @@ train/checkpoints/*
 .cache/*
 bin/resources/tokenscripts/*.txt
 resources/logs/*
+train/recordings/*.rmrec

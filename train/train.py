@@ -376,17 +376,8 @@ _DECKS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file
                           "bin", "resources", "decks")
 
 
-def _random_opponent_deck(model_deck: str) -> str:
-    """Return a random deck name from the decks folder."""
-    import random
-    all_decks = [os.path.splitext(p)[0]
-                 for p in os.listdir(_DECKS_DIR) if p.endswith(".dk")]
-    return random.choice(all_decks)
-
-
-def make_env(binary_path: str, rank: int, model_deck: str = "delver"):
+def make_env(binary_path: str, rank: int, model_deck: str = "delver", opp_deck: str = "delver"):
     def _init():
-        opp_deck = _random_opponent_deck(model_deck)
         env = ModelVsScriptedEnv(binary_path=binary_path,
                                  model_deck=model_deck, opp_deck=opp_deck)
         if USE_MASKABLE:
@@ -396,9 +387,9 @@ def make_env(binary_path: str, rank: int, model_deck: str = "delver"):
     return _init
 
 
-def make_self_play_env(binary_path: str, checkpoint_dir: str, rank: int, model_deck: str = "delver"):
+def make_self_play_env(binary_path: str, checkpoint_dir: str, rank: int,
+                       model_deck: str = "delver", opp_deck: str = "delver"):
     def _init():
-        opp_deck = _random_opponent_deck(model_deck)
         env = SelfPlayEnv(checkpoint_dir=checkpoint_dir, binary_path=binary_path,
                           model_deck=model_deck, opp_deck=opp_deck)
         if USE_MASKABLE:
@@ -410,7 +401,7 @@ def make_self_play_env(binary_path: str, checkpoint_dir: str, rank: int, model_d
 
 def train(binary_path: str, load_path: str | None = None, total_timesteps: int = TOTAL_TIMESTEPS,
           tally: bool = False, self_play: bool = False, scripted_fraction: float = 0.0,
-          model_deck: str = "delver", record: bool = False):
+          model_deck: str = "delver", opp_deck: str = "delver", record: bool = False):
     """Train the model.
 
     ``scripted_fraction`` controls how many of the N_ENVS parallel environments
@@ -428,22 +419,23 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
         n_scripted = round(N_ENVS * scripted_fraction)
         n_self_play = N_ENVS - n_scripted
         env_fns = (
-            [make_self_play_env(binary_path, checkpoint_dir, i, model_deck) for i in range(n_self_play)]
-            + [make_env(binary_path, N_ENVS - n_scripted + i, model_deck) for i in range(n_scripted)]
+            [make_self_play_env(binary_path, checkpoint_dir, i, model_deck, opp_deck) for i in range(n_self_play)]
+            + [make_env(binary_path, N_ENVS - n_scripted + i, model_deck, opp_deck) for i in range(n_scripted)]
         )
         if n_scripted:
             print(f"Env mix: {n_self_play} self-play + {n_scripted} scripted")
         vec_env = SubprocVecEnv(env_fns)
     else:
-        vec_env = SubprocVecEnv([make_env(binary_path, i, model_deck) for i in range(N_ENVS)])
+        vec_env = SubprocVecEnv([make_env(binary_path, i, model_deck, opp_deck) for i in range(N_ENVS)])
 
     policy_kwargs = dict(
         features_extractor_class=CardGameExtractor,
         net_arch=[256, 256],
     )
 
+    model_prefix = f"{model_deck}_{opp_deck}"
     if not load_path and self_play:
-        candidate = os.path.join(checkpoint_dir, f"{model_deck}_final.zip")
+        candidate = os.path.join(checkpoint_dir, f"{model_prefix}_final.zip")
         if os.path.exists(candidate):
             load_path = candidate
             print(f"Auto-loading self-play checkpoint: {candidate}")
@@ -472,7 +464,7 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
         CheckpointCallback(
             save_freq=25_000 // N_ENVS,
             save_path=checkpoint_dir,
-            name_prefix=model_deck,
+            name_prefix=model_prefix,
         ),
     ]
     if tally:
@@ -487,8 +479,8 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
 
     print(f"Training for {total_timesteps:,} timesteps across {N_ENVS} envs...")
     model.learn(total_timesteps=total_timesteps, callback=callbacks, reset_num_timesteps=load_path is None)
-    model.save(os.path.join(checkpoint_dir, f"{model_deck}_final"))
-    print(f"Saved final model as {model_deck}_final.")
+    model.save(os.path.join(checkpoint_dir, f"{model_prefix}_final"))
+    print(f"Saved final model as {model_prefix}_final.")
 
     vec_env.close()
 
@@ -842,8 +834,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--binary", default=BINARY)
     parser.add_argument("--deck", default="delver",
-                        help="Deck the model plays (stem of .dk file, default: delver). "
-                             "Opponent deck is chosen randomly from the decks folder each episode.")
+                        help="Deck the model plays (stem of .dk file, default: delver)")
+    parser.add_argument("--opponent", required=False, default=None,
+                        help="Opponent deck (stem of .dk file). Required for training.")
     parser.add_argument("--load", default=None, help="Resume from checkpoint .zip")
     parser.add_argument("--total-timesteps", type=int, default=TOTAL_TIMESTEPS)
     parser.add_argument("--eval", default=None, help="Self-play evaluation (note: always ~50%%)")
@@ -875,6 +868,8 @@ if __name__ == "__main__":
     elif args.eval:
         evaluate(args.binary, args.eval, args.eval_games)
     else:
+        if args.opponent is None:
+            parser.error("--opponent is required for training")
         train(args.binary, args.load, args.total_timesteps, tally=args.tally,
               self_play=args.self_play, scripted_fraction=args.scripted_fraction,
-              model_deck=args.deck, record=args.record)
+              model_deck=args.deck, opp_deck=args.opponent, record=args.record)
