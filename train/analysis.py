@@ -11,6 +11,8 @@ Usage:
     python analysis.py wl-split <file.rmrec>
     python analysis.py cast-timing <file.rmrec>
     python analysis.py choice-rates <file.rmrec>
+    python analysis.py shap <model.zip> [--n-games 50 --n-samples 200 --n-background 50]
+    python analysis.py value-swings <model.zip> [--n-games 50 --top 10]
 """
 
 import argparse
@@ -31,7 +33,9 @@ from train import (
     _CAT_NAMES, _STEP_NAMES,
 )
 from card_costs import _VOCAB_NAMES, N_CARD_TYPES
-from env import ACTION_CATEGORY_MAX
+from env import (ACTION_CATEGORY_MAX, RoboMageEnv, scripted_action,
+                 OBS_SIZE, STATE_SIZE, MAX_ACTIONS, BINARY,
+                 _HAND_START)
 
 
 # ── Data classes for parsed records ──────────────────────────────────────────
@@ -757,6 +761,539 @@ def cmd_choice_rates(args):
         print(f"  {cat_name:<14} win {win_rate:5.1f}%  loss {loss_rate:5.1f}%  delta {delta:+5.1f}%{marker}")
 
 
+# ── SHAP / value-function analysis ────────────────────────────────────────────
+
+# Human-readable feature names extracted from the raw observation vector.
+# These are the features SHAP will explain.
+_INTERP_FEATURE_NAMES = [
+    "self_life", "opp_life", "life_diff",
+    "self_mana_W", "self_mana_U", "self_mana_B",
+    "self_mana_R", "self_mana_G", "self_mana_C", "self_total_mana",
+    "opp_mana_W", "opp_mana_U", "opp_mana_B",
+    "opp_mana_R", "opp_mana_G", "opp_mana_C", "opp_total_mana",
+    "self_hand_size",
+    "self_creatures", "self_lands", "self_other_perms",
+    "opp_creatures", "opp_lands", "opp_other_perms",
+    "creature_diff", "land_diff",
+    "self_tapped_lands", "opp_tapped_lands",
+    "self_attacking", "self_blocking",
+    "opp_attacking", "opp_blocking",
+    "self_total_power", "opp_total_power", "power_diff",
+    "self_total_toughness", "opp_total_toughness",
+    "self_gy_size", "opp_gy_size",
+    "stack_size",
+    "is_active_player",
+    "step_untap", "step_upkeep", "step_draw",
+    "step_first_main", "step_begin_combat",
+    "step_declare_atk", "step_declare_blk",
+    "step_first_strike", "step_combat_dmg",
+    "step_end_combat", "step_second_main",
+    "step_end", "step_cleanup",
+]
+
+# Permanent slot layout (from extractor.py / machine_io.h)
+_PERM_START   = 34
+_PERM_SLOTS   = 96
+_PERM_SLOT_SZ = 138
+_SELF_PERM_SLOTS = 48  # slots 0-47 = self, 48-95 = opponent
+# Per-slot offsets: power(0), toughness(1), tapped(2), attacking(3), blocking(4),
+#                   sickness(5), damage(6), controller_is_self(7), is_creature(8), is_land(9)
+_GY_START_OBS = 14842
+_GY_SLOTS     = 128
+_GY_SLOT_SZ   = 128
+
+
+def _extract_interpretable(obs):
+    """Extract human-readable features from a raw observation vector."""
+    f = np.zeros(len(_INTERP_FEATURE_NAMES), dtype=np.float32)
+    i = 0
+
+    # Player stats (denormalize: life * 20, mana * 10)
+    self_life = obs[0] * 20.0
+    opp_life  = obs[9] * 20.0
+    f[i] = self_life;     i += 1  # self_life
+    f[i] = opp_life;      i += 1  # opp_life
+    f[i] = self_life - opp_life; i += 1  # life_diff
+
+    # Self mana (obs[2:8])
+    for j in range(6):
+        f[i] = obs[2 + j] * 10.0; i += 1
+    f[i] = sum(obs[2 + j] * 10.0 for j in range(6)); i += 1  # total mana
+
+    # Opp mana (obs[11:17])
+    for j in range(6):
+        f[i] = obs[11 + j] * 10.0; i += 1
+    f[i] = sum(obs[11 + j] * 10.0 for j in range(6)); i += 1  # total mana
+
+    # Hand size (count non-empty hand slots)
+    hand_count = 0
+    for slot in range(10):
+        base = _HAND_START + slot * N_CARD_TYPES
+        if np.max(obs[base:base + N_CARD_TYPES]) > 0.5:
+            hand_count += 1
+    f[i] = hand_count; i += 1
+
+    # Permanent counts and stats
+    self_creatures = self_lands = self_other = 0
+    opp_creatures = opp_lands = opp_other = 0
+    self_tapped_lands = opp_tapped_lands = 0
+    self_attacking = self_blocking = 0
+    opp_attacking = opp_blocking = 0
+    self_power = self_toughness = 0.0
+    opp_power = opp_toughness = 0.0
+
+    for slot in range(_PERM_SLOTS):
+        base = _PERM_START + slot * _PERM_SLOT_SZ
+        power     = obs[base + 0] * 10.0
+        toughness = obs[base + 1] * 10.0
+        tapped    = obs[base + 2] > 0.5
+        attacking = obs[base + 3] > 0.5
+        blocking  = obs[base + 4] > 0.5
+        is_creat  = obs[base + 8] > 0.5
+        is_land   = obs[base + 9] > 0.5
+
+        # Check if slot is occupied (any card one-hot active)
+        card_vec = obs[base + 10 : base + 10 + N_CARD_TYPES]
+        if np.max(card_vec) < 0.5:
+            continue
+
+        is_self = slot < _SELF_PERM_SLOTS
+        if is_self:
+            if is_creat:
+                self_creatures += 1
+                self_power += power
+                self_toughness += toughness
+                if attacking: self_attacking += 1
+                if blocking:  self_blocking += 1
+            elif is_land:
+                self_lands += 1
+                if tapped: self_tapped_lands += 1
+            else:
+                self_other += 1
+        else:
+            if is_creat:
+                opp_creatures += 1
+                opp_power += power
+                opp_toughness += toughness
+                if attacking: opp_attacking += 1
+                if blocking:  opp_blocking += 1
+            elif is_land:
+                opp_lands += 1
+                if tapped: opp_tapped_lands += 1
+            else:
+                opp_other += 1
+
+    f[i] = self_creatures; i += 1
+    f[i] = self_lands;     i += 1
+    f[i] = self_other;     i += 1
+    f[i] = opp_creatures;  i += 1
+    f[i] = opp_lands;      i += 1
+    f[i] = opp_other;      i += 1
+    f[i] = self_creatures - opp_creatures; i += 1
+    f[i] = self_lands - opp_lands;         i += 1
+    f[i] = self_tapped_lands;  i += 1
+    f[i] = opp_tapped_lands;   i += 1
+    f[i] = self_attacking;     i += 1
+    f[i] = self_blocking;      i += 1
+    f[i] = opp_attacking;      i += 1
+    f[i] = opp_blocking;       i += 1
+    f[i] = self_power;        i += 1
+    f[i] = opp_power;         i += 1
+    f[i] = self_power - opp_power; i += 1
+    f[i] = self_toughness;    i += 1
+    f[i] = opp_toughness;     i += 1
+
+    # Graveyard sizes
+    self_gy = opp_gy = 0
+    for slot in range(_GY_SLOTS):
+        base = _GY_START_OBS + slot * _GY_SLOT_SZ
+        if np.max(obs[base:base + _GY_SLOT_SZ]) > 0.5:
+            if slot < 64:
+                self_gy += 1
+            else:
+                opp_gy += 1
+    f[i] = self_gy; i += 1
+    f[i] = opp_gy;  i += 1
+
+    # Stack size
+    f[i] = obs[33] * 10.0; i += 1
+
+    # Is active player
+    f[i] = 1.0 if obs[31] > 0.5 else 0.0; i += 1
+
+    # Step one-hot (obs[18:31])
+    for j in range(13):
+        f[i] = obs[18 + j]; i += 1
+
+    return f
+
+
+def _infer_deck(model_path):
+    """Try to extract deck name from model filename like 'delver_delver_final.zip'."""
+    basename = os.path.splitext(os.path.basename(model_path))[0]
+    # Pattern: {model_deck}_{opp_deck}_{suffix}
+    parts = basename.split("_")
+    if len(parts) >= 2:
+        return parts[0]
+    return None
+
+
+def _load_model_and_env(args):
+    """Load model, set up env with the right decks and opponent. Returns (model, env, opp_model_or_none)."""
+    try:
+        from sb3_contrib import MaskablePPO
+    except ImportError:
+        from stable_baselines3 import PPO as MaskablePPO
+
+    binary = getattr(args, "binary", BINARY)
+
+    # Deck inference
+    deck_a = getattr(args, "deck_a", None)
+    deck_b = getattr(args, "deck_b", None)
+    if not deck_a:
+        inferred = _infer_deck(args.model)
+        if inferred:
+            deck_a = inferred
+            print(f"Inferred model deck from filename: {deck_a}")
+        else:
+            print("Could not infer model deck from filename; use --deck-a", file=sys.stderr)
+            sys.exit(1)
+    if not deck_b:
+        if args.opponent == "scripted":
+            deck_b = deck_a  # mirror match by default
+        else:
+            inferred = _infer_deck(args.opponent)
+            if inferred:
+                deck_b = inferred
+                print(f"Inferred opponent deck from filename: {deck_b}")
+            else:
+                print("Could not infer opponent deck from filename; use --deck-b", file=sys.stderr)
+                sys.exit(1)
+
+    model = MaskablePPO.load(args.model)
+    opp_model = None
+    if args.opponent != "scripted":
+        opp_model = MaskablePPO.load(args.opponent)
+
+    env = RoboMageEnv(binary_path=binary, deck_a=deck_a, deck_b=deck_b)
+    return model, env, opp_model
+
+
+def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
+    """Play n_games and collect per-step (obs, value) traces.
+
+    Returns a list of game dicts:
+      { "observations": [obs, ...],
+        "values": [float, ...],
+        "interp_features": [array, ...],
+        "result": float,  # +1 win, -1 loss from model perspective
+        "model_is_a": bool }
+    """
+    import torch
+
+    games = []
+    for g in range(n_games):
+        obs, _ = env.reset()
+        model_is_a = bool(np.random.random() < 0.5)
+        # Swap decks so model always plays its deck
+        if not model_is_a:
+            old_a, old_b = env._deck_a, env._deck_b
+            env._deck_a, env._deck_b = old_b, old_a
+            obs, _ = env.reset()
+            env._deck_a, env._deck_b = old_a, old_b
+
+        trace_obs = []
+        trace_vals = []
+        trace_interp = []
+        done = False
+        total_reward = 0.0
+
+        while not done:
+            a_has_priority = obs[32] > 0.5
+            model_has_priority = a_has_priority if model_is_a else not a_has_priority
+            num_choices = env._num_choices
+
+            if model_has_priority:
+                # Record observation and value for model's decisions
+                obs_t = torch.as_tensor(obs, dtype=torch.float32).unsqueeze(0)
+                with torch.no_grad():
+                    value = model.policy.predict_values(obs_t).item()
+                trace_obs.append(obs.copy())
+                trace_vals.append(value)
+                trace_interp.append(_extract_interpretable(obs))
+
+                mask = np.zeros(MAX_ACTIONS, dtype=bool)
+                mask[:num_choices] = True
+                action, _ = model.predict(obs, action_masks=mask, deterministic=True)
+                action = int(action)
+            else:
+                if opp_model is not None:
+                    mask = np.zeros(MAX_ACTIONS, dtype=bool)
+                    mask[:num_choices] = True
+                    action, _ = opp_model.predict(obs, action_masks=mask, deterministic=True)
+                    action = int(action)
+                else:
+                    action = scripted_action(obs, num_choices)
+
+            obs, reward, terminated, truncated, _ = env.step(action)
+            total_reward += reward
+            done = terminated or truncated
+
+        model_reward = total_reward if model_is_a else -total_reward
+        games.append({
+            "observations": trace_obs,
+            "values": trace_vals,
+            "interp_features": trace_interp,
+            "result": model_reward,
+            "model_is_a": model_is_a,
+        })
+        if verbose:
+            result_str = "W" if model_reward > 0 else ("L" if model_reward < 0 else "D")
+            print(f"  game {g + 1}/{n_games}: {len(trace_obs)} decisions, {result_str}",
+                  flush=True)
+    return games
+
+
+def _add_sim_args(parser):
+    """Add common simulation arguments to a subparser."""
+    parser.add_argument("model", help="Path to model .zip")
+    parser.add_argument("--opponent", required=True,
+                        help="Opponent model .zip path, or 'scripted' for rule-based agent")
+    parser.add_argument("--deck-a", default=None,
+                        help="Model's deck (.dk stem). Inferred from model filename if omitted.")
+    parser.add_argument("--deck-b", default=None,
+                        help="Opponent's deck (.dk stem). Inferred from opponent filename if omitted; "
+                             "defaults to --deck-a for scripted opponent.")
+    parser.add_argument("--binary", default=BINARY, help="Path to robomage binary")
+
+
+def cmd_shap(args):
+    """SHAP analysis of the value function over simulated games."""
+    import shap
+    import torch
+
+    n_games = args.n_games
+    n_samples = args.n_samples
+    n_background = args.n_background
+
+    model, env, opp_model = _load_model_and_env(args)
+
+    print(f"\nCollecting {n_games} game traces...")
+    games = _collect_game_traces(model, env, opp_model, n_games)
+    env.close()
+
+    # Pool all model decision points
+    all_interp = np.array([f for g in games for f in g["interp_features"]])
+    all_obs    = np.array([o for g in games for o in g["observations"]])
+    all_vals   = np.array([v for g in games for v in g["values"]])
+    print(f"Collected {len(all_interp)} decision points across {n_games} games.")
+    print(f"Value stats: mean={all_vals.mean():.3f}  std={all_vals.std():.3f}  "
+          f"min={all_vals.min():.3f}  max={all_vals.max():.3f}")
+
+    if len(all_interp) < n_background + 10:
+        print("Not enough data points for SHAP analysis.", file=sys.stderr)
+        return
+
+    # Build a wrapper that maps interpretable features -> value prediction.
+    # We need the raw observations paired with the interpretable features so we
+    # can look up (or interpolate) the value. Since SHAP perturbs the
+    # interpretable features, we use a nearest-neighbor approach: for each
+    # perturbed sample, find the closest real observation in interpretable space
+    # and return its value. This is valid because KernelExplainer works by
+    # masking/replacing features with background values.
+    #
+    # But a cleaner approach: SHAP KernelExplainer on the actual value-function
+    # with the interpretable features requires a function f(interp) -> value.
+    # We fit a lightweight surrogate (gradient-boosted trees) on
+    # (interp_features -> raw_value) to make SHAP tractable.
+
+    from sklearn.ensemble import GradientBoostingRegressor
+
+    print("\nFitting surrogate model on interpretable features...")
+    surrogate = GradientBoostingRegressor(
+        n_estimators=200, max_depth=5, learning_rate=0.1, subsample=0.8,
+    )
+    surrogate.fit(all_interp, all_vals)
+    r2 = surrogate.score(all_interp, all_vals)
+    print(f"Surrogate R^2 on training data: {r2:.4f}")
+    if r2 < 0.5:
+        print("Warning: surrogate fit is poor — SHAP results may be unreliable.", file=sys.stderr)
+
+    # SHAP on the surrogate
+    background_idx = np.random.choice(len(all_interp), size=min(n_background, len(all_interp)),
+                                      replace=False)
+    background = all_interp[background_idx]
+
+    sample_idx = np.random.choice(len(all_interp), size=min(n_samples, len(all_interp)),
+                                  replace=False)
+    samples = all_interp[sample_idx]
+
+    print(f"\nRunning SHAP KernelExplainer ({n_background} background, {len(samples)} samples)...")
+    explainer = shap.KernelExplainer(surrogate.predict, background)
+    shap_values = explainer.shap_values(samples)
+
+    # Print feature importance (mean |SHAP|)
+    mean_abs_shap = np.abs(shap_values).mean(axis=0)
+    sorted_idx = np.argsort(-mean_abs_shap)
+
+    print(f"\n{'Feature':<25} {'Mean |SHAP|':>12} {'Std SHAP':>12} {'Surrogate Importance':>20}")
+    print("-" * 72)
+    feat_importance = surrogate.feature_importances_
+    for rank, idx in enumerate(sorted_idx):
+        name = _INTERP_FEATURE_NAMES[idx]
+        print(f"  {name:<23} {mean_abs_shap[idx]:12.4f} {shap_values[:, idx].std():12.4f}"
+              f" {feat_importance[idx]:20.4f}")
+
+    # Try to plot
+    try:
+        import matplotlib
+        matplotlib.use("TkAgg")
+        import matplotlib.pyplot as plt
+        shap.summary_plot(shap_values, samples, feature_names=_INTERP_FEATURE_NAMES,
+                          show=False)
+        plt.tight_layout()
+        plt.show()
+    except Exception as e:
+        print(f"\nCould not display SHAP plot: {e}", file=sys.stderr)
+        print("SHAP values printed above.", file=sys.stderr)
+
+
+def cmd_value_swings(args):
+    """Find games where the value function swung most dramatically."""
+    import torch
+
+    n_games = args.n_games
+    top_n = args.top
+
+    model, env, opp_model = _load_model_and_env(args)
+
+    print(f"\nCollecting {n_games} game traces...")
+    games = _collect_game_traces(model, env, opp_model, n_games)
+    env.close()
+
+    # For each game, find the max single-step value swing
+    swing_data = []
+    for g_idx, game in enumerate(games):
+        vals = game["values"]
+        if len(vals) < 2:
+            continue
+        deltas = [abs(vals[i + 1] - vals[i]) for i in range(len(vals) - 1)]
+        max_delta_idx = int(np.argmax(deltas))
+        max_delta = deltas[max_delta_idx]
+        swing_data.append({
+            "game_idx": g_idx,
+            "swing_step": max_delta_idx,
+            "swing_magnitude": max_delta,
+            "swing_from": vals[max_delta_idx],
+            "swing_to": vals[max_delta_idx + 1],
+            "result": game["result"],
+            "n_decisions": len(vals),
+            "model_is_a": game["model_is_a"],
+        })
+
+    swing_data.sort(key=lambda x: -x["swing_magnitude"])
+    top_swings = swing_data[:top_n]
+
+    print(f"\nTop {min(top_n, len(top_swings))} value function swings:\n")
+    print(f"{'Game':<6} {'Step':<6} {'From':>8} {'To':>8} {'Delta':>8} {'Result':<8} {'Decisions':<10}")
+    print("-" * 60)
+
+    for s in top_swings:
+        result_str = "WIN" if s["result"] > 0 else ("LOSS" if s["result"] < 0 else "DRAW")
+        side = "A" if s["model_is_a"] else "B"
+        print(f"  {s['game_idx']:<4}   {s['swing_step']:<4}   {s['swing_from']:>+7.3f} {s['swing_to']:>+7.3f}"
+              f" {s['swing_to'] - s['swing_from']:>+7.3f}   {result_str:<6}({side}) {s['n_decisions']}")
+
+    # Detailed breakdowns of the top swings
+    print(f"\n{'='*70}")
+    print("Detailed breakdown of top swings:\n")
+
+    for rank, s in enumerate(top_swings[:min(5, len(top_swings))]):
+        g = games[s["game_idx"]]
+        step = s["swing_step"]
+        result_str = "WIN" if g["result"] > 0 else ("LOSS" if g["result"] < 0 else "DRAW")
+        side = "A" if g["model_is_a"] else "B"
+
+        print(f"--- Game {s['game_idx']} (Model={side}, {result_str}, "
+              f"{s['n_decisions']} decisions) ---")
+        print(f"    Swing at step {step}: {s['swing_from']:+.3f} -> {s['swing_to']:+.3f} "
+              f"(delta {s['swing_to'] - s['swing_from']:+.3f})")
+
+        # Show board state before and after the swing
+        for label, idx in [("Before", step), ("After", step + 1)]:
+            if idx >= len(g["interp_features"]):
+                continue
+            feat = g["interp_features"][idx]
+            print(f"    {label}: "
+                  f"Life {feat[0]:.0f}/{feat[1]:.0f}  "
+                  f"Creatures {feat[18]:.0f}v{feat[21]:.0f}  "
+                  f"Lands {feat[19]:.0f}v{feat[22]:.0f}  "
+                  f"Hand {feat[17]:.0f}  "
+                  f"Power {feat[32]:.0f}v{feat[33]:.0f}  "
+                  f"GY {feat[37]:.0f}/{feat[38]:.0f}")
+
+        # Show value trajectory for this game
+        vals = g["values"]
+        n = len(vals)
+        # Show a compressed trajectory: every Nth step + the swing point
+        stride = max(1, n // 20)
+        keypoints = set(range(0, n, stride))
+        keypoints.add(step)
+        if step + 1 < n:
+            keypoints.add(step + 1)
+        keypoints.add(n - 1)
+
+        trajectory = []
+        for i in sorted(keypoints):
+            marker = " <-- SWING" if i == step else ""
+            trajectory.append(f"      [{i:3d}] V={vals[i]:+.3f}{marker}")
+        print("    Value trajectory:")
+        for line in trajectory:
+            print(line)
+        print()
+
+    # Aggregate statistics
+    if swing_data:
+        all_swings = [s["swing_magnitude"] for s in swing_data]
+        win_swings = [s["swing_magnitude"] for s in swing_data if s["result"] > 0]
+        loss_swings = [s["swing_magnitude"] for s in swing_data if s["result"] < 0]
+        print(f"\nSwing statistics across {len(swing_data)} games:")
+        print(f"  Overall: mean={np.mean(all_swings):.3f}  "
+              f"median={np.median(all_swings):.3f}  max={np.max(all_swings):.3f}")
+        if win_swings:
+            print(f"  Wins:    mean={np.mean(win_swings):.3f}  "
+                  f"median={np.median(win_swings):.3f}")
+        if loss_swings:
+            print(f"  Losses:  mean={np.mean(loss_swings):.3f}  "
+                  f"median={np.median(loss_swings):.3f}")
+
+    # Try to plot value curves for top swing games
+    try:
+        import matplotlib
+        matplotlib.use("TkAgg")
+        import matplotlib.pyplot as plt
+        n_plot = min(5, len(top_swings))
+        fig, axes = plt.subplots(n_plot, 1, figsize=(10, 3 * n_plot), squeeze=False)
+        for i, s in enumerate(top_swings[:n_plot]):
+            ax = axes[i, 0]
+            g = games[s["game_idx"]]
+            vals = g["values"]
+            result_str = "WIN" if g["result"] > 0 else ("LOSS" if g["result"] < 0 else "DRAW")
+            ax.plot(vals, color="steelblue", linewidth=1.2)
+            ax.axhline(0, color="gray", linewidth=0.5, linestyle="--")
+            ax.axvline(s["swing_step"], color="red", linewidth=1, linestyle="--",
+                       label=f"swing ({s['swing_to'] - s['swing_from']:+.2f})")
+            ax.set_ylabel("V(s)")
+            ax.set_title(f"Game {s['game_idx']} ({result_str})")
+            ax.legend(loc="upper right", fontsize=8)
+            ax.grid(True, alpha=0.3)
+        axes[-1, 0].set_xlabel("Decision step")
+        plt.tight_layout()
+        plt.show()
+    except Exception as e:
+        print(f"\nCould not display plot: {e}", file=sys.stderr)
+
+
 # ── Main ─────────────────────────────────────────────────────────────────────
 
 def main():
@@ -792,6 +1329,17 @@ def main():
     p = sub.add_parser("choice-rates", help="P(chose X | X legal) by board state")
     p.add_argument("file")
 
+    p = sub.add_parser("shap", help="SHAP analysis of value function over simulated games")
+    _add_sim_args(p)
+    p.add_argument("--n-games", type=int, default=50, help="Number of games to simulate (default: 50)")
+    p.add_argument("--n-samples", type=int, default=200, help="SHAP sample count (default: 200)")
+    p.add_argument("--n-background", type=int, default=50, help="SHAP background size (default: 50)")
+
+    p = sub.add_parser("value-swings", help="Find games with largest value function swings")
+    _add_sim_args(p)
+    p.add_argument("--n-games", type=int, default=50, help="Number of games to simulate (default: 50)")
+    p.add_argument("--top", type=int, default=10, help="Show top N swings (default: 10)")
+
     args = parser.parse_args()
     {
         "summary": cmd_summary,
@@ -803,6 +1351,8 @@ def main():
         "wl-split": cmd_wl_split,
         "cast-timing": cmd_cast_timing,
         "choice-rates": cmd_choice_rates,
+        "shap": cmd_shap,
+        "value-swings": cmd_value_swings,
     }[args.command](args)
 
 
