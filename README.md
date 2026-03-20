@@ -2,7 +2,7 @@
 
 Card game rules engine built for reinforcement learning.
 
-Both players currently use `delver.dk`. The ML agent only understands cards listed in `src/card_vocab.h`.
+The ML agent only understands cards listed in `src/card_vocab.h`. The decks in this repos `bin/resources/decks` are fully implemented. Other cards may or may not work.
 
 Card scripts live in `bin/resources/cardsfolder/`. See the card-forge repository for compatible scripts.
 
@@ -31,8 +31,18 @@ In interactive mode, numbers select a choice (every choice is logged), z passes 
 
 ## Reinforcement Learning
 
-### Prereqs
+### Prereqs:
+Game engine and CLI:
 
+C++17
+
+GUI:
+
+Raylib
+
+Machine learning:
+
+Python venv and packages per below commands:
 ```bash
 python -m venv train/.venv
 train/.venv/bin/pip install gymnasium stable-baselines3 sb3-contrib shap
