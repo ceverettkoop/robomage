@@ -70,6 +70,12 @@ _BQUERY_CATS_BYTES  = MAX_ACTIONS * 4  # int32
 _BQUERY_IDS_BYTES   = MAX_ACTIONS * 4  # float32
 _BQUERY_CTRL_BYTES  = MAX_ACTIONS * 4  # float32
 ACTION_CATEGORY_MAX = 23 # highest ActionCategory enum value (DIG_CHOICE)
+
+# ── Shaping reward magnitudes ─────────────────────────────────────────────────
+SHAPING_MANA_WASTED      = -0.15  # per drain event with mana remaining in pool
+SHAPING_MULLIGAN_PENALTY =  0.00  # per mulligan taken beyond the 2nd (C++: >= 3rd)
+SHAPING_OPPONENT_BELOW10 =  0.10  # one-time bonus when opponent life first drops < 10
+SHAPING_HAND_ADV_PER_CARD = 0.01  # potential weight per card of hand advantage (potential-based)
 _ACTION_CARD_ID_NULL = -1.0 / N_CARD_TYPES  # null sentinel for non-card slots
 _ACTION_CTRL_NULL    = -1.0 / N_CARD_TYPES  # null sentinel for non-entity actions
 MAX_HAND_SLOTS = 10
@@ -225,17 +231,17 @@ class RoboMageEnv(gym.Env):
             # Shaping signal: mana wasted at end of phase (pool non-empty on drain)
             if line.startswith(b"MANA_WASTED: "):
                 if line.endswith(b"A"):
-                    shaping_a -= 0.15
+                    shaping_a += SHAPING_MANA_WASTED
                 elif line.endswith(b"B"):
-                    shaping_b -= 0.15
+                    shaping_b += SHAPING_MANA_WASTED
                 continue
 
-            # Shaping signal: excessive mulligan (3rd and beyond = -0.1 each)
+            # Shaping signal: excessive mulligan (3rd and beyond)
             if line.startswith(b"MULLIGAN_PENALTY: "):
                 if line.endswith(b"A"):
-                    shaping_a -= 0.1
+                    shaping_a += SHAPING_MULLIGAN_PENALTY
                 elif line.endswith(b"B"):
-                    shaping_b -= 0.1
+                    shaping_b += SHAPING_MULLIGAN_PENALTY
                 continue
 
             if line.startswith(b"BQUERY: "):
@@ -623,16 +629,19 @@ class ModelVsScriptedEnv(gym.Env):
         self.action_space = self._env.action_space
         self.render_mode = render_mode
         self._training_is_a = True
-        self._pending_shaping = 0.0
         self._opponent_below_10 = False
+        self._last_obs = None
+        # Scale applied to all shaping signals. Set externally (e.g. via SB3 callback)
+        # to anneal shaping toward 0 as training matures.
+        self.shaping_scale = 1.0
 
     def reset(self, *, seed=None, options=None):
         self._training_is_a = bool(np.random.random() < 0.5)
         if self._model_deck is not None:
             self._env._deck_a = self._model_deck if self._training_is_a else self._opp_deck
             self._env._deck_b = self._opp_deck if self._training_is_a else self._model_deck
-        self._pending_shaping = 0.0
         self._opponent_below_10 = False
+        self._last_obs = None
         self._decision_idx = 0
         self._game_meta = {
             "model_is_a": self._training_is_a,
@@ -640,62 +649,83 @@ class ModelVsScriptedEnv(gym.Env):
             "opp_type": "scripted",
         }
         obs, info = self._env.reset(seed=seed, options=options)
-        obs, _reward, terminated, truncated, info = self._skip_opponent_turns(
+        obs, _reward, terminated, truncated, info, _shaping = self._skip_opponent_turns(
             obs, 0.0, False, False, info
         )
-        self._pending_shaping = 0.0  # discard any shaping from setup turns
-        self._opponent_below_10 = False  # reset after mulligan/setup
+        self._opponent_below_10 = False  # reset after mulligan/setup turns
+        self._last_obs = obs.copy()
         return obs, info
 
     def step(self, action: int):
         self._decision_idx += 1
         obs, reward, terminated, truncated, info = self._env.step(action)
-        self._accumulate_shaping(info)
+
+        # Shaping: mana waste and mulligan penalties for the model player
+        shaping_key = "shaping_a" if self._training_is_a else "shaping_b"
+        shaping = info.get(shaping_key, 0.0)
+
+        # Shaping: +0.2 the first time the opponent's life drops below 10.
+        # obs is always from the priority player's perspective:
+        #   model has priority → obs[9] = opponent life / 20
+        #   opponent has priority → obs[0] = opponent ("self") life / 20
+        if not (terminated or truncated) and not self._opponent_below_10:
+            a_has_priority = obs[32] > 0.5
+            model_has_priority = a_has_priority if self._training_is_a else not a_has_priority
+            scripted_life = (obs[9] if model_has_priority else obs[0]) * 20.0
+            if scripted_life < 10.0:
+                self._opponent_below_10 = True
+                shaping += SHAPING_OPPONENT_BELOW10
+
         if not (terminated or truncated):
-            self._check_opponent_below_10(obs)
-            obs, reward, terminated, truncated, info = self._skip_opponent_turns(
+            obs, reward, terminated, truncated, info, opp_shaping = self._skip_opponent_turns(
                 obs, reward, terminated, truncated, info
             )
+            shaping += opp_shaping
+
+        # Potential-based hand advantage: F = Φ(s') - Φ(s), Φ(s) = k·max(0, self_hand - opp_hand).
+        # After _skip_opponent_turns the model has priority: obs[1]=model hand/10, obs[10]=opp hand/10.
+        # Episodic with γ=1, so the sum over an episode equals k·(final_adv - initial_adv): bounded,
+        # Markovian, and guaranteed not to change the optimal policy.
+        if not (terminated or truncated) and self._last_obs is not None:
+            phi_prev = max(0.0, self._last_obs[1] - self._last_obs[10]) * 10.0
+            phi_curr = max(0.0, obs[1] - obs[10]) * 10.0
+            shaping += SHAPING_HAND_ADV_PER_CARD * (phi_curr - phi_prev)
+
+        shaping *= self.shaping_scale
+        self._last_obs = obs.copy() if not (terminated or truncated) else None
+
         if not self._training_is_a:
             reward = -reward
-        reward += self._pending_shaping
-        self._pending_shaping = 0.0
+        reward += shaping
         info["game_meta"] = self._game_meta
         info["decision_idx"] = self._decision_idx
         if terminated or truncated:
             info["opp_deck"] = self._opp_deck or "unknown"
         return obs, reward, terminated, truncated, info
 
-    def _accumulate_shaping(self, info):
-        """Add the model's per-step mana-waste penalty to the running total."""
-        if self._training_is_a:
-            self._pending_shaping += info.get("shaping_a", 0.0)
-        else:
-            self._pending_shaping += info.get("shaping_b", 0.0)
-
-    def _check_opponent_below_10(self, obs):
-        """Issue +0.2 shaping reward the first time the scripted opponent's life drops below 10."""
-        if self._opponent_below_10:
-            return
-        # obs is always from the priority player's perspective.
-        # When the model has priority, obs[9] = scripted life / 20.
-        # When the scripted agent has priority, obs[0] = scripted ("self") life / 20.
-        a_has_priority = obs[32] > 0.5
-        model_has_priority = a_has_priority if self._training_is_a else not a_has_priority
-        scripted_life = (obs[9] if model_has_priority else obs[0]) * 20.0
-        if scripted_life < 10.0:
-            self._opponent_below_10 = True
-            self._pending_shaping += 0.2
-
     def _skip_opponent_turns(self, obs, reward, terminated, truncated, info):
-        """Resolve consecutive opponent turns with the scripted agent."""
+        """Resolve consecutive opponent turns with the scripted agent.
+
+        Returns the updated (obs, reward, terminated, truncated, info) tuple plus
+        the shaping reward accumulated across all opponent steps.
+        """
+        shaping_key = "shaping_a" if self._training_is_a else "shaping_b"
+        shaping = 0.0
         while not (terminated or truncated) and (obs[32] > 0.5) != self._training_is_a:
             action = scripted_action(obs, self._env._num_choices)
             obs, reward, terminated, truncated, info = self._env.step(action)
-            self._accumulate_shaping(info)
-            if not (terminated or truncated):
-                self._check_opponent_below_10(obs)
-        return obs, reward, terminated, truncated, info
+
+            shaping += info.get(shaping_key, 0.0)
+
+            if not (terminated or truncated) and not self._opponent_below_10:
+                a_has_priority = obs[32] > 0.5
+                model_has_priority = a_has_priority if self._training_is_a else not a_has_priority
+                scripted_life = (obs[9] if model_has_priority else obs[0]) * 20.0
+                if scripted_life < 10.0:
+                    self._opponent_below_10 = True
+                    shaping += SHAPING_OPPONENT_BELOW10
+
+        return obs, reward, terminated, truncated, info, shaping
 
     def action_masks(self) -> np.ndarray:
         return self._env.action_masks()

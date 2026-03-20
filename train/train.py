@@ -273,6 +273,43 @@ class WinTallyCallback(BaseCallback):
         self._matchups.clear()
 
 
+class ShapingScaleCallback(BaseCallback):
+    """After each rollout, sets shaping_scale on all envs to (1 - win_rate).
+
+    A 25% win rate → 75% shaping; 100% win rate → 0% shaping.
+    Requires at least one completed game before it takes effect; scale
+    stays at 1.0 until then.
+    """
+
+    def __init__(self, vec_env):
+        super().__init__()
+        self._vec_env = vec_env
+        self._wins = 0
+        self._losses = 0
+
+    def _on_step(self) -> bool:
+        for info in self.locals["infos"]:
+            if "episode" not in info:
+                continue
+            r = info["episode"]["r"]
+            if r > 0:
+                self._wins += 1
+            elif r < 0:
+                self._losses += 1
+        return True
+
+    def _on_rollout_end(self) -> None:
+        total = self._wins + self._losses
+        if total == 0:
+            return
+        win_rate = self._wins / total
+        scale = 1.0 - win_rate
+        self._vec_env.set_attr("shaping_scale", scale)
+        print(f"[shaping] win_rate={win_rate:.2f}  shaping_scale={scale:.2f}")
+        self._wins = 0
+        self._losses = 0
+
+
 class ReplayLogCallback(BaseCallback):
     """After each rollout, runs one model-vs-scripted game and saves a transcript."""
 
@@ -469,6 +506,7 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
             save_path=checkpoint_dir,
             name_prefix=model_prefix,
         ),
+        ShapingScaleCallback(vec_env),
     ]
     if tally:
         callbacks.append(WinTallyCallback())
