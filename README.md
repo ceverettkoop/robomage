@@ -2,7 +2,7 @@
 
 Card game rules engine built for reinforcement learning.
 
-Both players currently use `delver.dk`. The ML agent only understands cards listed in `src/card_vocab.h`.
+The ML agent only understands cards listed in `src/card_vocab.h`. The decks in this repos bin/resources/decks are fully implemented. Other cards may or may not work.
 
 Card scripts live in `bin/resources/cardsfolder/`. See the card-forge repository for compatible scripts.
 
