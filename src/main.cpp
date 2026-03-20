@@ -58,6 +58,8 @@ bool replay_mode = false;
 bool machine_mode = false;
 std::string deck_a_name = "delver";
 std::string deck_b_name = "delver";
+bool seed_override = false;
+unsigned int seed_value = 0;
 
 
 //runs in thread seperate from gui
@@ -74,7 +76,7 @@ static void *game_loop(void *args) {
         InputLogger::instance().init_replay(replay_file_path);
         seed = InputLogger::instance().get_replay_seed();
     } else {
-        seed = static_cast<unsigned int>(time(nullptr));
+        seed = seed_override ? seed_value : static_cast<unsigned int>(time(nullptr));
         // Create logs directory
         std::string mkdir_cmd = "mkdir -p " + RESOURCE_DIR + "/logs";
         int result = system(mkdir_cmd.c_str());
@@ -200,6 +202,10 @@ int main(int argc, char const *argv[]) {
             i++;
         } else if (std::string(argv[i]) == "--deck-b" && i + 1 < argc) {
             deck_b_name = argv[i + 1];
+            i++;
+        } else if (std::string(argv[i]) == "--seed" && i + 1 < argc) {
+            seed_override = true;
+            seed_value = static_cast<unsigned int>(std::stoul(argv[i + 1]));
             i++;
         } else if (std::string(argv[i]) == "--help" || std::string(argv[i]) == "-h") {
             cli_print_help(argv[0], VERSION_NUMBER);

@@ -13,6 +13,20 @@ Usage:
     python analysis.py choice-rates <file.rmrec>
     python analysis.py shap <model.zip> [--n-games 50 --n-samples 200 --n-background 50]
     python analysis.py value-swings <model.zip> [--n-games 50 --top 10]
+    python analysis.py interactive <model.zip> [--n-games 20]
+
+Interactive session commands (available after shap, value-swings, or via 'interactive'):
+    list                  list all games
+    replay <N>            board-state trace for game N
+    boardstate <N> [step] full board + decision detail; enters GDB-style stepping mode
+    summary               win/loss/draw stats
+    swings [N]            top N value-function swings
+    shap                  run SHAP analysis on collected data
+    chart <N>             value curve plot for game N
+    chart swings [N]      value curve plots for top N swing games
+    chart shap            SHAP summary plot
+    run <N>               simulate N more games (interactive command only)
+    quit                  exit
 """
 
 import argparse
@@ -798,9 +812,22 @@ _PERM_SLOT_SZ = 138
 _SELF_PERM_SLOTS = 48  # slots 0-47 = self, 48-95 = opponent
 # Per-slot offsets: power(0), toughness(1), tapped(2), attacking(3), blocking(4),
 #                   sickness(5), damage(6), controller_is_self(7), is_creature(8), is_land(9)
-_GY_START_OBS = 14842
-_GY_SLOTS     = 128
-_GY_SLOT_SZ   = 128
+_GY_START_OBS    = 14842
+_GY_SLOTS        = 128
+_GY_SLOT_SZ      = 128
+_GY_SELF_SLOTS   = 64   # slots 0-63 = self GY, 64-127 = opp GY
+
+# Stack layout: [13282-14841] 12 slots x 130 floats
+# Per slot: controller_is_self(1), card_id one-hot(128), is_spell(1)
+_STACK_START   = 13282
+_STACK_SLOTS   = 12
+_STACK_SLOT_SZ = 130
+
+# Hand layout: [31226-32505] 10 slots x 128 floats (imported _HAND_START from env.py)
+_HAND_SLOTS = 10
+
+# Mana color labels
+_MANA_COLORS = ["W", "U", "B", "R", "G", "C"]
 
 
 def _extract_interpretable(obs):
@@ -938,6 +965,19 @@ def _infer_deck(model_path):
     return None
 
 
+_CHECKPOINTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "checkpoints")
+
+
+def _resolve_model_path(path):
+    """Return path as-is if it exists, else try train/checkpoints/<path>."""
+    if os.path.exists(path):
+        return path
+    candidate = os.path.join(_CHECKPOINTS_DIR, path)
+    if os.path.exists(candidate):
+        return candidate
+    return path  # let the loader raise a meaningful error
+
+
 def _load_model_and_env(args):
     """Load model, set up env with the right decks and opponent. Returns (model, env, opp_model_or_none)."""
     try:
@@ -947,11 +987,13 @@ def _load_model_and_env(args):
 
     binary = getattr(args, "binary", BINARY)
 
+    model_path = _resolve_model_path(args.model)
+
     # Deck inference
     deck_a = getattr(args, "deck_a", None)
     deck_b = getattr(args, "deck_b", None)
     if not deck_a:
-        inferred = _infer_deck(args.model)
+        inferred = _infer_deck(model_path)
         if inferred:
             deck_a = inferred
             print(f"Inferred model deck from filename: {deck_a}")
@@ -962,7 +1004,8 @@ def _load_model_and_env(args):
         if args.opponent == "scripted":
             deck_b = deck_a  # mirror match by default
         else:
-            inferred = _infer_deck(args.opponent)
+            opp_path = _resolve_model_path(args.opponent)
+            inferred = _infer_deck(opp_path)
             if inferred:
                 deck_b = inferred
                 print(f"Inferred opponent deck from filename: {deck_b}")
@@ -970,22 +1013,24 @@ def _load_model_and_env(args):
                 print("Could not infer opponent deck from filename; use --deck-b", file=sys.stderr)
                 sys.exit(1)
 
-    model = MaskablePPO.load(args.model)
+    model = MaskablePPO.load(model_path)
     opp_model = None
     if args.opponent != "scripted":
-        opp_model = MaskablePPO.load(args.opponent)
+        opp_model = MaskablePPO.load(_resolve_model_path(args.opponent))
 
     env = RoboMageEnv(binary_path=binary, deck_a=deck_a, deck_b=deck_b)
     return model, env, opp_model
 
 
 def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
-    """Play n_games and collect per-step (obs, value) traces.
+    """Play n_games and collect per-step (obs, value, action) traces.
 
     Returns a list of game dicts:
       { "observations": [obs, ...],
         "values": [float, ...],
         "interp_features": [array, ...],
+        "actions": [int, ...],       # model's chosen action index at each step
+        "num_choices": [int, ...],   # number of legal actions at each step
         "result": float,  # +1 win, -1 loss from model perspective
         "model_is_a": bool }
     """
@@ -1005,6 +1050,8 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
         trace_obs = []
         trace_vals = []
         trace_interp = []
+        trace_actions = []
+        trace_num_choices = []
         done = False
         total_reward = 0.0
 
@@ -1021,11 +1068,13 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
                 trace_obs.append(obs.copy())
                 trace_vals.append(value)
                 trace_interp.append(_extract_interpretable(obs))
+                trace_num_choices.append(num_choices)
 
                 mask = np.zeros(MAX_ACTIONS, dtype=bool)
                 mask[:num_choices] = True
                 action, _ = model.predict(obs, action_masks=mask, deterministic=True)
                 action = int(action)
+                trace_actions.append(action)
             else:
                 if opp_model is not None:
                     mask = np.zeros(MAX_ACTIONS, dtype=bool)
@@ -1044,6 +1093,8 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
             "observations": trace_obs,
             "values": trace_vals,
             "interp_features": trace_interp,
+            "actions": trace_actions,
+            "num_choices": trace_num_choices,
             "result": model_reward,
             "model_is_a": model_is_a,
         })
@@ -1052,6 +1103,29 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
             print(f"  game {g + 1}/{n_games}: {len(trace_obs)} decisions, {result_str}",
                   flush=True)
     return games
+
+
+def _decode_legal_actions(obs, num_choices, chosen_action):
+    """Return a list of strings describing each legal action, marking the chosen one."""
+    lines = []
+    for i in range(num_choices):
+        cat_raw = obs[STATE_SIZE + i]
+        cat = int(round(cat_raw * ACTION_CATEGORY_MAX))
+        cat_name = _CAT_NAMES.get(cat, str(cat))
+
+        card_raw = obs[STATE_SIZE + MAX_ACTIONS + i]
+        if card_raw < 0:
+            card_str = ""
+        else:
+            cid = int(round(card_raw * N_CARD_TYPES))
+            if 0 <= cid < len(_VOCAB_NAMES):
+                card_str = f" ({_VOCAB_NAMES[cid]})"
+            else:
+                card_str = f" (card#{cid})"
+
+        marker = " <-- chosen" if i == chosen_action else ""
+        lines.append(f"    [{i}] {cat_name}{card_str}{marker}")
+    return lines
 
 
 def _add_sim_args(parser):
@@ -1157,21 +1231,73 @@ def cmd_shap(args):
         print(f"\nCould not display SHAP plot: {e}", file=sys.stderr)
         print("SHAP values printed above.", file=sys.stderr)
 
+    _interactive_session({
+        "games": games, "swing_data": None,
+        "shap_values": shap_values, "shap_samples": samples,
+        "model": None, "env": None, "opp_model": None, "args": args,
+    })
 
-def cmd_value_swings(args):
-    """Find games where the value function swung most dramatically."""
-    import torch
 
-    n_games = args.n_games
-    top_n = args.top
+_INTERP_STEP_NAMES = [
+    "UNTAP", "UPKEEP", "DRAW", "FIRST_MAIN", "BEGIN_COMBAT",
+    "DECLARE_ATK", "DECLARE_BLK", "FIRST_STRIKE", "COMBAT_DMG",
+    "END_COMBAT", "SECOND_MAIN", "END", "CLEANUP",
+]
+_INTERP_STEP_OFFSET = 41  # index of step_untap in _INTERP_FEATURE_NAMES
 
-    model, env, opp_model = _load_model_and_env(args)
 
-    print(f"\nCollecting {n_games} game traces...")
-    games = _collect_game_traces(model, env, opp_model, n_games)
-    env.close()
+def _step_name_from_feat(feat):
+    """Decode step one-hot from interp feature vector."""
+    best = -1
+    best_val = -1.0
+    for i, name in enumerate(_INTERP_STEP_NAMES):
+        v = feat[_INTERP_STEP_OFFSET + i]
+        if v > best_val:
+            best_val = v
+            best = i
+    if best < 0:
+        return "?"
+    return _INTERP_STEP_NAMES[best]
 
-    # For each game, find the max single-step value swing
+
+def _replay_sim_game(game, game_idx):
+    """Print a human-readable trace for a simulation game."""
+    result_str = "WIN" if game["result"] > 0 else ("LOSS" if game["result"] < 0 else "DRAW")
+    side = "A" if game["model_is_a"] else "B"
+    print(f"\nGame {game_idx} — Model={side}, {result_str}, {len(game['values'])} model decisions")
+    print()
+
+    feats = game["interp_features"]
+    vals = game["values"]
+    for i, (feat, val) in enumerate(zip(feats, vals)):
+        step = _step_name_from_feat(feat)
+        mana_total = feat[9]
+        print(f"  [{i:3d}] {step:<14}  "
+              f"Life {feat[0]:.0f}/{feat[1]:.0f}  "
+              f"Board {feat[18]:.0f}c+{feat[19]:.0f}l / {feat[21]:.0f}c+{feat[22]:.0f}l  "
+              f"Mana {mana_total:.0f}  "
+              f"GY {feat[37]:.0f}/{feat[38]:.0f}  "
+              f"V={val:+.3f}")
+    print()
+
+
+def _sim_summary(games):
+    """Print win/loss/draw summary for a list of sim games."""
+    wins   = sum(1 for g in games if g["result"] > 0)
+    losses = sum(1 for g in games if g["result"] < 0)
+    draws  = sum(1 for g in games if g["result"] == 0)
+    total  = len(games)
+    if total == 0:
+        print("  No games.")
+        return
+    lengths = [len(g["values"]) for g in games]
+    arr = np.array(lengths)
+    print(f"  {total} games: {wins}W / {losses}L / {draws}D  ({100 * wins / total:.1f}% win rate)")
+    print(f"  Decisions/game: mean={arr.mean():.1f}  min={arr.min()}  max={arr.max()}")
+
+
+def _compute_swings(games):
+    """Return swing_data list sorted by magnitude."""
     swing_data = []
     for g_idx, game in enumerate(games):
         vals = game["values"]
@@ -1190,19 +1316,488 @@ def cmd_value_swings(args):
             "n_decisions": len(vals),
             "model_is_a": game["model_is_a"],
         })
-
     swing_data.sort(key=lambda x: -x["swing_magnitude"])
-    top_swings = swing_data[:top_n]
+    return swing_data
 
-    print(f"\nTop {min(top_n, len(top_swings))} value function swings:\n")
+
+def _print_swing_table(top_swings):
     print(f"{'Game':<6} {'Step':<6} {'From':>8} {'To':>8} {'Delta':>8} {'Result':<8} {'Decisions':<10}")
     print("-" * 60)
-
     for s in top_swings:
         result_str = "WIN" if s["result"] > 0 else ("LOSS" if s["result"] < 0 else "DRAW")
         side = "A" if s["model_is_a"] else "B"
         print(f"  {s['game_idx']:<4}   {s['swing_step']:<4}   {s['swing_from']:>+7.3f} {s['swing_to']:>+7.3f}"
               f" {s['swing_to'] - s['swing_from']:>+7.3f}   {result_str:<6}({side}) {s['n_decisions']}")
+
+
+def _decode_board_state(obs, value=None):
+    """Print a detailed board state decoded from a raw observation vector."""
+    # obs[32] = 1.0 if "self" (priority player) is Player A
+    priority_is_a    = obs[32] > 0.5
+    priority_is_active = obs[31] > 0.5
+    self_label = "A" if priority_is_a else "B"
+    opp_label  = "B" if priority_is_a else "A"
+
+    self_life    = obs[0] * 20.0
+    opp_life     = obs[9] * 20.0
+    self_hand_ct = obs[1] * 10.0
+    opp_hand_ct  = obs[10] * 10.0
+    self_mana    = [obs[2 + j] * 10.0 for j in range(6)]
+    opp_mana     = [obs[11 + j] * 10.0 for j in range(6)]
+    stack_size   = int(round(obs[33] * 10.0))
+
+    step_idx  = int(np.argmax(obs[18:31]))
+    step_name = _INTERP_STEP_NAMES[step_idx] if step_idx < len(_INTERP_STEP_NAMES) else f"?{step_idx}"
+    val_str   = f"  V={value:+.3f}" if value is not None else ""
+
+    def mana_str(mana):
+        parts = [f"{_MANA_COLORS[j]}:{mana[j]:.0f}" for j in range(6) if mana[j] > 0.4]
+        return " ".join(parts) if parts else "—"
+
+    def card_at(base):
+        """Decode card name from one-hot starting at obs[base]."""
+        vec = obs[base:base + N_CARD_TYPES]
+        if np.max(vec) < 0.5:
+            return None
+        cid = int(np.argmax(vec))
+        return _VOCAB_NAMES[cid] if cid < len(_VOCAB_NAMES) else f"card#{cid}"
+
+    def perm_lines(slot_range):
+        lines = []
+        for slot in slot_range:
+            base = _PERM_START + slot * _PERM_SLOT_SZ
+            name = card_at(base + 10)
+            if name is None:
+                continue
+            power     = obs[base + 0] * 10.0
+            toughness = obs[base + 1] * 10.0
+            tapped    = obs[base + 2] > 0.5
+            attacking = obs[base + 3] > 0.5
+            blocking  = obs[base + 4] > 0.5
+            sickness  = obs[base + 5] > 0.5
+            damage    = obs[base + 6] * 10.0
+            is_creat  = obs[base + 8] > 0.5
+            flags = []
+            if tapped:       flags.append("tapped")
+            if attacking:    flags.append("atk")
+            if blocking:     flags.append("blk")
+            if sickness:     flags.append("sick")
+            if damage > 0.4: flags.append(f"dmg={damage:.0f}")
+            flag_str = f" [{', '.join(flags)}]" if flags else ""
+            if is_creat:
+                lines.append(f"    {name}  {power:.0f}/{toughness:.0f}{flag_str}")
+            else:
+                lines.append(f"    {name}{flag_str}")
+        return lines
+
+    print(f"Step: {step_name}  ({'active' if priority_is_active else 'non-active'} player has priority){val_str}")
+    print(f"Stack: {stack_size} item(s)")
+
+    if stack_size > 0:
+        print("  Stack (top first):")
+        for slot in range(_STACK_SLOTS):
+            base = _STACK_START + slot * _STACK_SLOT_SZ
+            name = card_at(base + 1)
+            if name is None:
+                continue
+            ctrl_is_self = obs[base] > 0.5
+            is_spell     = obs[base + _STACK_SLOT_SZ - 1] > 0.5
+            ctrl_str     = self_label if ctrl_is_self else opp_label
+            type_str     = "spell" if is_spell else "ability"
+            print(f"    [{ctrl_str}] {name} ({type_str})")
+
+    print()
+    print(f"  [{self_label}] Priority player  "
+          f"Life={self_life:.0f}  Hand={self_hand_ct:.0f}  Mana=[{mana_str(self_mana)}]")
+
+    sp = perm_lines(range(_SELF_PERM_SLOTS))
+    if sp:
+        print(f"  Battlefield ({len(sp)}):")
+        for ln in sp: print(ln)
+    else:
+        print("  Battlefield: empty")
+
+    hand_cards = [card_at(_HAND_START + s * N_CARD_TYPES)
+                  for s in range(_HAND_SLOTS)]
+    hand_cards = [n for n in hand_cards if n is not None]
+    if hand_cards:
+        print(f"  Hand ({len(hand_cards)}): {', '.join(hand_cards)}")
+    else:
+        print("  Hand: empty")
+
+    self_gy = [card_at(_GY_START_OBS + s * _GY_SLOT_SZ)
+               for s in range(_GY_SELF_SLOTS)]
+    self_gy = [n for n in self_gy if n is not None]
+    if self_gy:
+        print(f"  Graveyard ({len(self_gy)}): {', '.join(self_gy)}")
+    else:
+        print("  Graveyard: empty")
+
+    print()
+    print(f"  [{opp_label}] Opponent          "
+          f"Life={opp_life:.0f}  Hand={opp_hand_ct:.0f}  Mana=[{mana_str(opp_mana)}]")
+
+    op = perm_lines(range(_SELF_PERM_SLOTS, _PERM_SLOTS))
+    if op:
+        print(f"  Battlefield ({len(op)}):")
+        for ln in op: print(ln)
+    else:
+        print("  Battlefield: empty")
+
+    opp_gy = [card_at(_GY_START_OBS + s * _GY_SLOT_SZ)
+              for s in range(_GY_SELF_SLOTS, _GY_SLOTS)]
+    opp_gy = [n for n in opp_gy if n is not None]
+    if opp_gy:
+        print(f"  Graveyard ({len(opp_gy)}): {', '.join(opp_gy)}")
+    else:
+        print("  Graveyard: empty")
+    print()
+
+
+def _interactive_session(ctx):
+    """Interactive REPL for inspecting simulation results.
+
+    ctx keys: games, swing_data, shap_values, shap_samples,
+              model, env, opp_model, args
+    """
+    try:
+        import readline
+        readline.set_history_length(500)
+    except ImportError:
+        pass
+
+    games = ctx["games"]
+    args  = ctx.get("args")
+
+    def _banner():
+        can_run = ctx.get("env") is not None
+        print("\n" + "=" * 60)
+        print(f"Interactive session — {len(games)} games in memory.")
+        cmds = ["list", "replay <N>", "boardstate <N> <step>", "summary",
+                "swings [N]", "shap", "chart <N>", "chart swings [N]",
+                "chart shap"]
+        if can_run:
+            cmds.append("run <N>")
+        cmds += ["help", "quit"]
+        print("Commands: " + ", ".join(cmds))
+        print("=" * 60)
+
+    _banner()
+
+    while True:
+        try:
+            line = input("\n> ").strip()
+        except (EOFError, KeyboardInterrupt):
+            print()
+            break
+        if not line:
+            continue
+
+        parts = line.split()
+        cmd = parts[0].lower()
+
+        if cmd in ("quit", "exit", "q"):
+            break
+
+        elif cmd in ("help", "?", "h"):
+            can_run = ctx.get("env") is not None
+            print("  list / games              — list all games with result/decisions/side")
+            print("  replay <N>                — print board-state trace for game N")
+            print("  boardstate <N> [step]     — full board + decision at step in game N (default 0)")
+            print("  bs <N> [step]             — alias; enters GDB-style stepping mode")
+            print("  summary                   — win/loss/draw stats for all simulated games")
+            print("  swings [N]                — show top N value-function swings (default 10)")
+            print("  shap [n_bg N] [n_smp N]   — run SHAP analysis on collected game data")
+            print("  chart <N>                 — value curve plot for game N")
+            print("  chart swings [N]          — value curve plots for top N swing games")
+            print("  chart shap                — SHAP summary plot (requires shap run first)")
+            if can_run:
+                print("  run <N>                   — simulate N more games and add to pool")
+            print("  quit / exit               — leave interactive session")
+
+        elif cmd in ("list", "games", "ls"):
+            print(f"  {'Game':<6} {'Result':<8} {'Decisions':<12} {'Side'}")
+            print(f"  {'-'*6} {'-'*8} {'-'*12} {'-'*4}")
+            for i, g in enumerate(games):
+                r = "WIN" if g["result"] > 0 else ("LOSS" if g["result"] < 0 else "DRAW")
+                side = "A" if g["model_is_a"] else "B"
+                print(f"  {i:<6} {r:<8} {len(g['values']):<12} {side}")
+
+        elif cmd == "summary":
+            _sim_summary(games)
+
+        elif cmd == "replay":
+            if len(parts) < 2:
+                print("  Usage: replay <game_index>")
+                continue
+            try:
+                n = int(parts[1])
+            except ValueError:
+                print("  Expected an integer game index.")
+                continue
+            if n < 0 or n >= len(games):
+                print(f"  Game index out of range. Valid range: 0–{len(games) - 1}")
+                continue
+            _replay_sim_game(games[n], n)
+
+        elif cmd in ("boardstate", "bs"):
+            if len(parts) < 2:
+                print("  Usage: boardstate <game_index> [decision_step]")
+                continue
+            try:
+                gn = int(parts[1])
+                step = int(parts[2]) if len(parts) >= 3 else 0
+            except ValueError:
+                print("  Expected integer game_index and optional decision_step.")
+                continue
+            if gn < 0 or gn >= len(games):
+                print(f"  Game index out of range. Valid range: 0–{len(games) - 1}")
+                continue
+
+            def _show_step(g, gn, step):
+                n_obs = len(g["observations"])
+                obs = g["observations"][step]
+                val = g["values"][step] if step < len(g["values"]) else None
+                result_str = "WIN" if g["result"] > 0 else ("LOSS" if g["result"] < 0 else "DRAW")
+                print(f"\nGame {gn} [{result_str}]  —  decision {step}/{n_obs - 1}")
+
+                # Model's decision at this step
+                has_action = "actions" in g and step < len(g["actions"])
+                if has_action:
+                    action_idx  = g["actions"][step]
+                    num_ch      = g["num_choices"][step]
+                    action_lines = _decode_legal_actions(obs, num_ch, action_idx)
+                    print(f"  Legal actions ({num_ch}):")
+                    for ln in action_lines:
+                        print(ln)
+                print()
+                _decode_board_state(obs, value=val)
+
+            g = games[gn]
+            n_obs = len(g["observations"])
+            if step < 0 or step >= n_obs:
+                print(f"  Step out of range for game {gn}. Valid range: 0–{n_obs - 1}")
+                continue
+            _show_step(g, gn, step)
+
+            # GDB-style stepping sub-loop
+            last_step_cmd = "n"
+            print("  Stepping mode: n/Enter=next  p=prev  g <N>=go to step  q=quit stepping")
+            while True:
+                try:
+                    raw = input(f"(g{gn}:{step}) ").strip()
+                except (EOFError, KeyboardInterrupt):
+                    print()
+                    break
+                sc = raw.lower() if raw else last_step_cmd
+                sp2 = sc.split()
+                scmd = sp2[0] if sp2 else last_step_cmd
+
+                if scmd in ("n", "next", ""):
+                    last_step_cmd = "n"
+                    if step < n_obs - 1:
+                        step += 1
+                        _show_step(g, gn, step)
+                    else:
+                        print("  End of game.")
+                elif scmd in ("p", "prev", "previous", "b", "back"):
+                    last_step_cmd = "p"
+                    if step > 0:
+                        step -= 1
+                        _show_step(g, gn, step)
+                    else:
+                        print("  Beginning of game.")
+                elif scmd == "g":
+                    if len(sp2) < 2:
+                        print("  Usage: g <step>")
+                        continue
+                    try:
+                        target = int(sp2[1])
+                    except ValueError:
+                        print("  Expected an integer step.")
+                        continue
+                    if target < 0 or target >= n_obs:
+                        print(f"  Step out of range. Valid range: 0–{n_obs - 1}")
+                        continue
+                    step = target
+                    _show_step(g, gn, step)
+                elif scmd in ("q", "quit", "exit"):
+                    break
+                else:
+                    print("  n/Enter=next  p=prev  g <N>=go to step  q=quit stepping")
+
+        elif cmd == "swings":
+            top_n = 10
+            if len(parts) >= 2:
+                try:
+                    top_n = int(parts[1])
+                except ValueError:
+                    pass
+            if ctx["swing_data"] is None:
+                print("  Computing value swings...")
+                ctx["swing_data"] = _compute_swings(games)
+            top = ctx["swing_data"][:top_n]
+            print(f"\nTop {min(top_n, len(top))} value swings:")
+            _print_swing_table(top)
+
+        elif cmd == "shap":
+            n_background = 50
+            n_samples    = 200
+            for j in range(1, len(parts) - 1, 2):
+                if parts[j] == "n_bg":
+                    try: n_background = int(parts[j + 1])
+                    except ValueError: pass
+                elif parts[j] == "n_smp":
+                    try: n_samples = int(parts[j + 1])
+                    except ValueError: pass
+            if args is not None:
+                n_background = getattr(args, "n_background", n_background)
+                n_samples    = getattr(args, "n_samples", n_samples)
+            try:
+                import shap
+                from sklearn.ensemble import GradientBoostingRegressor
+                all_interp = np.array([f for g in games for f in g["interp_features"]])
+                all_vals   = np.array([v for g in games for v in g["values"]])
+                print(f"\nFitting surrogate on {len(all_interp)} points...")
+                surrogate = GradientBoostingRegressor(
+                    n_estimators=200, max_depth=5, learning_rate=0.1, subsample=0.8)
+                surrogate.fit(all_interp, all_vals)
+                r2 = surrogate.score(all_interp, all_vals)
+                print(f"Surrogate R^2: {r2:.4f}")
+                bg_idx  = np.random.choice(len(all_interp),
+                                           size=min(n_background, len(all_interp)), replace=False)
+                smp_idx = np.random.choice(len(all_interp),
+                                           size=min(n_samples, len(all_interp)), replace=False)
+                print(f"Running SHAP ({n_background} background, {len(smp_idx)} samples)...")
+                explainer  = shap.KernelExplainer(surrogate.predict, all_interp[bg_idx])
+                shap_vals  = explainer.shap_values(all_interp[smp_idx])
+                ctx["shap_values"]  = shap_vals
+                ctx["shap_samples"] = all_interp[smp_idx]
+                mean_abs = np.abs(shap_vals).mean(axis=0)
+                sidx = np.argsort(-mean_abs)
+                print(f"\n{'Feature':<25} {'Mean |SHAP|':>12}")
+                print("-" * 40)
+                for idx in sidx:
+                    print(f"  {_INTERP_FEATURE_NAMES[idx]:<23} {mean_abs[idx]:12.4f}")
+            except ImportError as e:
+                print(f"  Missing dependency: {e}")
+            except Exception as e:
+                print(f"  Error running SHAP: {e}")
+
+        elif cmd == "chart":
+            sub = parts[1].lower() if len(parts) >= 2 else ""
+            try:
+                import matplotlib
+                matplotlib.use("TkAgg")
+                import matplotlib.pyplot as plt
+            except Exception as e:
+                print(f"  matplotlib unavailable: {e}")
+                continue
+
+            if sub == "shap":
+                if ctx["shap_values"] is None or ctx["shap_samples"] is None:
+                    print("  Run 'shap' first to generate SHAP values.")
+                    continue
+                try:
+                    import shap
+                    shap.summary_plot(ctx["shap_values"], ctx["shap_samples"],
+                                      feature_names=_INTERP_FEATURE_NAMES, show=False)
+                    plt.tight_layout()
+                    plt.show()
+                except Exception as e:
+                    print(f"  SHAP plot error: {e}")
+
+            elif sub == "swings":
+                top_n = 5
+                if len(parts) >= 3:
+                    try: top_n = int(parts[2])
+                    except ValueError: pass
+                if ctx["swing_data"] is None:
+                    ctx["swing_data"] = _compute_swings(games)
+                top = ctx["swing_data"][:top_n]
+                if not top:
+                    print("  No swing data.")
+                    continue
+                fig, axes = plt.subplots(len(top), 1, figsize=(10, 3 * len(top)), squeeze=False)
+                for i, s in enumerate(top):
+                    ax = games[s["game_idx"]]
+                    vals = ax["values"]
+                    result_str = "WIN" if ax["result"] > 0 else ("LOSS" if ax["result"] < 0 else "DRAW")
+                    a = axes[i, 0]
+                    a.plot(vals, color="steelblue", linewidth=1.2)
+                    a.axhline(0, color="gray", linewidth=0.5, linestyle="--")
+                    a.axvline(s["swing_step"], color="red", linewidth=1, linestyle="--",
+                              label=f"swing ({s['swing_to'] - s['swing_from']:+.2f})")
+                    a.set_ylabel("V(s)")
+                    a.set_title(f"Game {s['game_idx']} ({result_str})")
+                    a.legend(loc="upper right", fontsize=8)
+                    a.grid(True, alpha=0.3)
+                axes[-1, 0].set_xlabel("Decision step")
+                plt.tight_layout()
+                plt.show()
+
+            else:
+                # chart <N> — value curve for a single game
+                try:
+                    gn = int(sub)
+                except ValueError:
+                    print("  Usage: chart <game_index> | chart swings [N] | chart shap")
+                    continue
+                if gn < 0 or gn >= len(games):
+                    print(f"  Game index out of range. Valid range: 0–{len(games) - 1}")
+                    continue
+                g = games[gn]
+                vals = g["values"]
+                result_str = "WIN" if g["result"] > 0 else ("LOSS" if g["result"] < 0 else "DRAW")
+                side = "A" if g["model_is_a"] else "B"
+                fig, ax = plt.subplots(figsize=(10, 4))
+                ax.plot(vals, color="steelblue", linewidth=1.2)
+                ax.axhline(0, color="gray", linewidth=0.5, linestyle="--")
+                ax.set_xlabel("Decision step")
+                ax.set_ylabel("V(s)")
+                ax.set_title(f"Game {gn} — Model={side}, {result_str}")
+                ax.grid(True, alpha=0.3)
+                plt.tight_layout()
+                plt.show()
+
+        elif cmd == "run":
+            if ctx.get("env") is None or ctx.get("model") is None:
+                print("  No live env available. Use the 'interactive' command to enable 'run'.")
+                continue
+            try:
+                n = int(parts[1]) if len(parts) >= 2 else 10
+            except ValueError:
+                print("  Usage: run <N>")
+                continue
+            print(f"  Simulating {n} more games...")
+            new_games = _collect_game_traces(ctx["model"], ctx["env"],
+                                             ctx.get("opp_model"), n)
+            games.extend(new_games)
+            ctx["swing_data"] = None  # invalidate cached swings
+            print(f"  Pool now has {len(games)} games.")
+
+        else:
+            print(f"  Unknown command: {cmd!r}. Type 'help' for available commands.")
+
+
+def cmd_value_swings(args):
+    """Find games where the value function swung most dramatically."""
+    import torch
+
+    n_games = args.n_games
+    top_n = args.top
+
+    model, env, opp_model = _load_model_and_env(args)
+
+    print(f"\nCollecting {n_games} game traces...")
+    games = _collect_game_traces(model, env, opp_model, n_games)
+    env.close()
+
+    swing_data = _compute_swings(games)
+    top_swings = swing_data[:top_n]
+
+    print(f"\nTop {min(top_n, len(top_swings))} value function swings:\n")
+    _print_swing_table(top_swings)
 
     # Detailed breakdowns of the top swings
     print(f"\n{'='*70}")
@@ -1293,6 +1888,38 @@ def cmd_value_swings(args):
     except Exception as e:
         print(f"\nCould not display plot: {e}", file=sys.stderr)
 
+    _interactive_session({
+        "games": games, "swing_data": swing_data,
+        "shap_values": None, "shap_samples": None,
+        "model": None, "env": None, "opp_model": None, "args": args,
+    })
+
+
+def cmd_interactive(args):
+    """Load model, simulate games, then enter the interactive session."""
+    model, env, opp_model = _load_model_and_env(args)
+
+    games = []
+    if args.n_games > 0:
+        print(f"\nSimulating {args.n_games} games...")
+        games = _collect_game_traces(model, env, opp_model, args.n_games)
+
+    ctx = {
+        "games": games,
+        "swing_data": None,
+        "shap_values": None,
+        "shap_samples": None,
+        "model": model,
+        "env": env,
+        "opp_model": opp_model,
+        "args": args,
+    }
+
+    try:
+        _interactive_session(ctx)
+    finally:
+        env.close()
+
 
 # ── Main ─────────────────────────────────────────────────────────────────────
 
@@ -1340,6 +1967,15 @@ def main():
     p.add_argument("--n-games", type=int, default=50, help="Number of games to simulate (default: 50)")
     p.add_argument("--top", type=int, default=10, help="Show top N swings (default: 10)")
 
+    p = sub.add_parser("interactive",
+                       help="Interactive session: simulate games then inspect replays, "
+                            "board states, value charts, SHAP, and more")
+    _add_sim_args(p)
+    p.add_argument("--n-games", type=int, default=20,
+                   help="Games to pre-simulate before entering session (default: 20; 0 = skip)")
+    p.add_argument("--n-samples", type=int, default=200, help="SHAP sample count (default: 200)")
+    p.add_argument("--n-background", type=int, default=50, help="SHAP background size (default: 50)")
+
     args = parser.parse_args()
     {
         "summary": cmd_summary,
@@ -1353,6 +1989,7 @@ def main():
         "choice-rates": cmd_choice_rates,
         "shap": cmd_shap,
         "value-swings": cmd_value_swings,
+        "interactive": cmd_interactive,
     }[args.command](args)
 
 

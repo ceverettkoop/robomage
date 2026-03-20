@@ -125,7 +125,10 @@ class RoboMageEnv(gym.Env):
         super().reset(seed=seed)
         self._step_count = 0
         self._kill_proc()
-        cmd = [self.binary_path, "--machine"]
+        # Generate a unique seed for each game so time(nullptr) collisions don't
+        # produce repeated games when many resets happen within the same second.
+        rng_seed = self.np_random.integers(0, 2**31 - 1)
+        cmd = [self.binary_path, "--machine", "--seed", str(rng_seed)]
         if self._deck_a:
             cmd += ["--deck-a", self._deck_a]
         if self._deck_b:
