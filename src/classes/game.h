@@ -102,10 +102,6 @@ struct Game {
         int action_history_write = 0;  // next write position (circular)
         int action_history_count = 0;  // total entries written (capped at ACTION_HISTORY_SIZE)
 
-        // Starting decklist snapshots for ML observation (count per card vocab slot).
-        // Size 128 must equal N_CARD_TYPES in machine_io.h.
-        int starting_decklist_a[128] = {};
-        int starting_decklist_b[128] = {};
         void record_action(int category, int card_vocab_idx, bool player_a);
 
         bool ready_to_resolve();

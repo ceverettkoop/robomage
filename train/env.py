@@ -24,10 +24,10 @@ Observation space
 -----------------
 State is always emitted from the PRIORITY PLAYER'S perspective ("self").
 
-32678-float state vector (32550 game state + 45 action history + 128 opp decklist)
+32550-float state vector (32506 game state + 45 action history)
 + 32 action-category floats + 32 action card-ID floats
 + 32 action controller_is_self floats + 70 hand cost floats
-+ 336 battlefield ability cost floats = 33180 total.
++ 336 battlefield ability cost floats = 33053 total.
 NOTE: ActionChoice.description is NOT part of the observation — it is for
 human-readable display only (GUI/CLI) and is never sent to the ML model.
 NOTE: Exile zones are tracked in GameState but not serialized to the observation.
@@ -59,7 +59,7 @@ try:
 except ImportError:
     from train.card_costs import _CARD_COST_MATRIX, _CARD_ABILITY_COST_MATRIX, N_CARD_TYPES, _N_COST_FEATS
 
-STATE_SIZE = 32679
+STATE_SIZE = 32551
 # NOTE: Exile zones are tracked in GameState but not serialized to the observation.
 # NOTE: ActionChoice.description is never emitted in the QUERY line — it is for
 #       human-readable display only and is not part of the ML observation.
@@ -75,7 +75,7 @@ _ACTION_CTRL_NULL    = -1.0 / N_CARD_TYPES  # null sentinel for non-entity actio
 MAX_HAND_SLOTS = 10
 _HAND_COST_FEATS  = MAX_HAND_SLOTS * _N_COST_FEATS  # 10 * 7 = 70
 _BF_ABILITY_FEATS = 48 * _N_COST_FEATS              # 48 * 7 = 336
-OBS_SIZE = STATE_SIZE + 3 * MAX_ACTIONS + _HAND_COST_FEATS + _BF_ABILITY_FEATS  # 33180
+OBS_SIZE = STATE_SIZE + 3 * MAX_ACTIONS + _HAND_COST_FEATS + _BF_ABILITY_FEATS  # 33053
 
 # ── State layout offsets (mirror src/machine_io.h) ───────────────────────────
 # Creatures, lands, and other permanents share one unified section (no separate land slots).
@@ -83,7 +83,6 @@ _STACK_START  = 34 + 96 * 138    # 13282: stack slots (12 × 130)
 _GY_START     = 13282 + 12 * 130 # 14842: graveyard   (128 × 128)
 _HAND_START   = 14842 + 128 * 128 # 31226: hand        (10 × 128)
 _HIST_START   = 31226 + 10 * 128  # 32506: action history (15 × 3)
-_DECK_START   = 32506 + 15 * 3   # 32551: opp starting decklist (128 floats)
 _REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BINARY = os.path.join(_REPO_ROOT, "bin", "robomage")
 BIN_DIR = os.path.join(_REPO_ROOT, "bin")  # game must be run from here for resource lookup
@@ -226,9 +225,9 @@ class RoboMageEnv(gym.Env):
             # Shaping signal: mana wasted at end of phase (pool non-empty on drain)
             if line.startswith(b"MANA_WASTED: "):
                 if line.endswith(b"A"):
-                    shaping_a -= 0.05
+                    shaping_a -= 0.15
                 elif line.endswith(b"B"):
-                    shaping_b -= 0.05
+                    shaping_b -= 0.15
                 continue
 
             # Shaping signal: excessive mulligan (3rd and beyond = -0.1 each)
@@ -378,7 +377,7 @@ _STACK_SLOT_SIZE  = 130  # controller_is_self(1) + card one-hot(128) + is_spell(
 _GY_SLOT_SIZE     = N_CARD_TYPES  # 128 — graveyard slots are just card one-hots
 _GY_A_SLOTS       = 64   # self occupies GY slots 0-63
 # Start of bf_ability_costs block in the full obs vector
-_BF_COST_START    = STATE_SIZE + 3 * MAX_ACTIONS + _HAND_COST_FEATS  # 9100
+_BF_COST_START    = STATE_SIZE + 3 * MAX_ACTIONS + _HAND_COST_FEATS  # 32717
 # Status offsets within a permanent slot
 _OFF_POWER        = 0
 _OFF_TOUGHNESS    = 1

@@ -104,10 +104,6 @@ typedef struct GameState_tag {
     //   category / ACTION_CATEGORY_MAX, card_vocab_idx / N_CARD_TYPES, is_self
     float action_history[ACTION_HISTORY_SIZE * 3];
     int   action_history_len;  // valid entries (0 to ACTION_HISTORY_SIZE)
-
-    // Opponent's starting decklist snapshot — count per card vocab slot (128 entries,
-    // must equal N_CARD_TYPES in machine_io.h).  Populated once at game start.
-    int  opp_decklist[128];
 } GameState;
 
 #ifdef __cplusplus

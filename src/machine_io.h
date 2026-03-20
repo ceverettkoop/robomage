@@ -30,7 +30,7 @@
 // NOTE: Exile zones are populated in GameState but NOT serialized.
 // Add them back once cards that use exile are implemented.
 //
-// Fixed-size state vector layout (STATE_SIZE = 32679 floats):
+// Fixed-size state vector layout (STATE_SIZE = 32551 floats):
 //
 //  [0-8]      Self player block (9 floats):
 //               life/20, hand_ct/10, poison/10, mana[W,U,B,R,G,C]/10
@@ -64,12 +64,8 @@
 //                           card_vocab_idx / N_CARD_TYPES (or -1/N_CARD_TYPES sentinel),
 //                           is_self (1.0 = viewer's action, 0.0 = opponent's)
 //                Empty entries (beyond action_history_len) are all zeros.
-//
-//  [32551-32678] Opponent starting decklist: N_CARD_TYPES floats
-//                Per slot: (count of that card in opponent's starting main deck) / 4.0
-//                All zeros if the game was not started from a deck file.
 
-static constexpr int STATE_SIZE      = 32679;
+static constexpr int STATE_SIZE      = 32551;
 static constexpr int N_CARD_TYPES    = 128;
 static constexpr int PERM_SLOT_SIZE  = 138;  // 8 stat/combat + 2 type flags + N_CARD_TYPES
 static constexpr int STACK_SLOT_SIZE = 130;  // controller_is_self(1) + card one-hot(128) + is_spell(1)

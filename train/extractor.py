@@ -23,8 +23,7 @@ Index layout must stay in sync with src/machine_io.h:
   obs[31226:32506]     10 hand slots    × 128 floats  (128 card one-hot)
   obs[32506:32551]     15 action history entries × 3 floats (newest first)
                          per entry: category_norm, card_id_norm, is_self
-  obs[32551:32679]    128 opponent starting decklist floats (count/4 per card vocab slot)
-  obs[32679:]          action metadata + cost features (appended by env.py)
+  obs[32551:]          action metadata + cost features (appended by env.py)
 """
 
 import torch
@@ -50,8 +49,6 @@ _HAND_SLOT_SIZE  = 128  # card one-hot only
 _HIST_ENTRIES    = 15   # action history entries (newest first)
 _HIST_ENTRY_SIZE = 3    # category_norm, card_id_norm, is_self
 
-_DECK_SIZE       = 128  # opponent starting decklist (N_CARD_TYPES floats)
-
 _PERM_START  = _GLOBAL_SIZE                                    # 34
 _PERM_END    = _PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE     # 13282
 _STACK_START = _PERM_END                                       # 13282
@@ -62,9 +59,7 @@ _HAND_START  = _GY_END                                         # 31226
 _HAND_END    = _HAND_START + _HAND_SLOTS * _HAND_SLOT_SIZE     # 32506
 _HIST_START  = _HAND_END                                       # 32506
 _HIST_END    = _HIST_START + _HIST_ENTRIES * _HIST_ENTRY_SIZE  # 32551
-_DECK_START  = _HIST_END                                       # 32551
-_DECK_END    = _DECK_START + _DECK_SIZE                        # 32679
-# obs[32678:] = action metadata + cost features appended by env.py
+# obs[32551:] = action metadata + cost features appended by env.py
 
 
 class CardGameExtractor(BaseFeaturesExtractor):
@@ -77,7 +72,7 @@ class CardGameExtractor(BaseFeaturesExtractor):
       entity_encoder (128 → embed_dim): graveyard and hand (card one-hot only)
 
     Output fed into the policy MLP head:
-      global(33) + hist(45) + action_extras(includes 128 opp decklist + action metadata + cost feats) +
+      global(34) + hist(45) + action_extras(action metadata + cost feats) +
       perm_agg(embed*2) +
       stack_agg(embed//2 * 2) + graveyard_agg(embed) + hand_agg(embed)
     """

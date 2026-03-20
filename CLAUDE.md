@@ -27,9 +27,11 @@ The compiled binary is output to `bin/robomage`.
 
 ## Project Overview
 
-Robomage is a C++ implementation of a Magic: The Gathering game engine using an Entity Component System (ECS) architecture. The project aims to simulate MTG game rules including priority, the stack, state-based effects, and turn structure.
+Robomage is a C++ implementation of a Magic: The Gathering game engine using an Entity Component System (ECS) architecture.
 
-The goal is to have every game decision logged as an integer, so that games can be replayed deterministically when provided with the correct seed.
+Every game decision logged as an integer. Games can be replayed deterministically when provided with the correct seed.
+
+The python side of the project enables machine learning of the game and analysis.
 
 ## Architecture
 
@@ -165,10 +167,10 @@ train/.venv/bin/python train/train.py --observe checkpoints/robomage_final.zip  
 
 **QUERY line format:**
 ```
-QUERY: <N> <f0>...<f1152> <cat0>...<catN-1> <id0>...<idN-1>
+QUERY: <N> <f0>...<f32550> <cat0>...<catN-1> <id0>...<idN-1>
 ```
 - `N` = number of legal choices
-- `f0..f1152` = 1153-float state vector (see `src/machine_io.h` for layout)
+- `f0..f32550` = 32551-float state vector (see `src/machine_io.h` for layout)
 - `cat0..catN-1` = ActionCategory integer per choice (0–19, see `ActionCategory` enum in `src/classes/action.h`)
 - `id0..idN-1` = card vocab index float per choice: `card_vocab_index / N_CARD_TYPES` for card entities, `-0.03125` as null sentinel for players/confirm slots/non-card actions
 
@@ -195,17 +197,18 @@ QUERY: <N> <f0>...<f1152> <cat0>...<catN-1> <id0>...<idN-1>
 
 ### Observation space
 
-Total: **1427 floats**
+Total: **33053 floats**
 
 | Range | Size | Content |
 |---|---|---|
-| `[0:1153]` | 1153 | State vector (see `src/machine_io.h`) |
-| `[1153:1185]` | 32 | Action categories, padded to MAX_ACTIONS, normalised by 21 |
-| `[1185:1217]` | 32 | Action card IDs, padded to MAX_ACTIONS |
-| `[1217:1287]` | 70 | Hand cast costs (10 slots × 7 cost features) |
-| `[1287:1427]` | 140 | Battlefield ability costs (20 slots × 7 cost features) |
+| `[0:32551]` | 32551 | State vector (see `src/machine_io.h`) |
+| `[32551:32583]` | 32 | Action categories, padded to MAX_ACTIONS, normalised by 23 |
+| `[32583:32615]` | 32 | Action card IDs, padded to MAX_ACTIONS |
+| `[32615:32647]` | 32 | Action controller_is_self flags, padded to MAX_ACTIONS |
+| `[32647:32717]` | 70 | Hand cast costs (10 slots × 7 cost features) |
+| `[32717:33053]` | 336 | Battlefield ability costs (48 slots × 7 cost features) |
 
-State vector layout is documented in `src/machine_io.h`. Key indices: `obs[30]` = priority player is the active player (perspective-relative), `obs[31]` = priority player is Player A (absolute). To get `active_is_a`: `(obs[30] > 0.5) == (obs[31] > 0.5)`.
+State vector layout is documented in `src/machine_io.h`. Key indices: `obs[31]` = priority player is the active player (perspective-relative), `obs[32]` = priority player is Player A (absolute). To get `active_is_a`: `(obs[31] > 0.5) == (obs[32] > 0.5)`.
 
 ### Key files
 

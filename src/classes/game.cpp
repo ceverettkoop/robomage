@@ -25,15 +25,6 @@ void Game::generate_players(const Deck &deck_a, const Deck &deck_b) {
     player_a_entity = gen_player(deck_a);
     player_b_entity = gen_player(deck_b);
 
-    // Snapshot starting decklists for ML observation
-    for (auto& [qty, name] : deck_a.main_deck) {
-        int idx = card_name_to_index(name);
-        if (idx >= 0 && idx < 128) starting_decklist_a[idx] += static_cast<int>(qty);
-    }
-    for (auto& [qty, name] : deck_b.main_deck) {
-        int idx = card_name_to_index(name);
-        if (idx >= 0 && idx < 128) starting_decklist_b[idx] += static_cast<int>(qty);
-    }
 }
 
 Entity Game::gen_player(const Deck &deck) {
