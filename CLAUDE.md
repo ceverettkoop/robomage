@@ -54,6 +54,7 @@ The codebase follows an Entity Component System architecture based on [Austin Mo
 - **Damage**: Damage counter tracking for creatures
 - **Spell**: Marks a card entity that is currently on the stack as a spell
 - **Effect**: Continuous effects (framework present, not yet applied)
+- **Token**: Token permanent data (name, type)
 - **Player**: Life total, mana pool, lands played this turn
 
 ### System Types
@@ -65,10 +66,12 @@ The codebase follows an Entity Component System architecture based on [Austin Mo
 ### Game Flow
 
 The `Game` struct (`src/classes/game.h`) tracks:
-- Current turn/step (UNTAP, UPKEEP, DRAW, FIRST_MAIN, BEGIN_COMBAT, DECLARE_ATTACKERS, DECLARE_BLOCKERS, COMBAT_DAMAGE, END_COMBAT, SECOND_MAIN, END, CLEANUP)
+- Current turn/step (UNTAP, UPKEEP, DRAW, FIRST_MAIN, BEGIN_COMBAT, DECLARE_ATTACKERS, DECLARE_BLOCKERS, FIRST_STRIKE_DAMAGE, COMBAT_DAMAGE, END_OF_COMBAT, SECOND_MAIN, END_STEP, CLEANUP)
 - Active player and turn order
 - Timestamp for ordering simultaneous events
 - RNG seed and generator for reproducibility
+- Delayed triggers (fire on specific future game events)
+- Action history ring buffer (last 15 actions, used in ML observation)
 
 Game loop in `src/main.cpp`:
 1. State-based effects check (lethal damage, player death, permanent lifecycle, mandatory choices)
@@ -85,6 +88,19 @@ Ability categories resolved by `Ability::resolve()` in `src/components/ability.c
 - `"ChangeZone"` — zone search (e.g. fetch lands); prompts player to search, then moves card
 - `"DealDamage"` — deals `amount` damage to `target` (player or creature)
 - `"Destroy"` — moves `target` from battlefield to graveyard (checks target still on battlefield)
+- `"Draw"` — draw cards
+- `"Mill"` — put cards from library to graveyard
+- `"Pump"` — add +X/+Y to a permanent's power/toughness
+- `"Counter"` / `"PutCounter"` — put a counter on target permanent
+- `"Token"` — create token permanents
+- `"Attach"` — attach equipment or aura to target
+- `"Untap"` — untap a permanent
+- `"Phases"` — phase out target permanent
+- `"Dig"` — look at top N cards, choose one matching filter; rest go to bottom
+- `"Surveil"` / `"RearrangeTopOfLibrary"` / `"PeekAndReveal"` — look at and arrange top of library
+- `"SylvanLibrary"` — draw 2, then choose: pay 4 life each or put on top
+- `"DelayedTrigger"` — register ability to fire on a future game event
+- `"ExaltedBonus"` / `"ProwessBonus"` — grant combat bonuses based on keyword count
 
 Activated abilities with `valid_tgts != "N_A"` have their target selected before costs are paid and before the ability entity is pushed onto the stack. Target legality is re-verified at resolution.
 
@@ -92,17 +108,43 @@ Activated abilities with `valid_tgts != "N_A"` have their target selected before
 
 Parses `.txt` card scripts from `bin/resources/cardsfolder/`. Key script fields:
 
+**Top-level card fields:**
+
 | Field | Notes |
 |---|---|
-| `AB$ <category>` | Activated ability; category `Mana` is normalized to `AddMana` |
+| `Name` | Card name |
+| `ManaCost` | Mana cost string; `X` flag detected automatically |
+| `Types` | Space-separated type line |
+| `Oracle` | Oracle text; `\n` expanded to newlines |
+| `PT` | Power/toughness as `P/T` |
+| `A` | Activated or spell ability line (`AB$` / `SP$`) |
+| `T` | Triggered ability line |
+| `S` | Static ability or alternate cost line |
+| `K` | Keyword list (Delve, Prowess, Equip, etc.) |
+| `R` | Replacement effect line |
+| `SVar` | Named variable substitution used in ability params |
+
+**Ability parameter fields (within A/T lines):**
+
+| Field | Notes |
+|---|---|
+| `AB$ <category>` | Activated ability; `Mana` normalized to `AddMana` |
 | `SP$ <category>` | Spell ability |
-| `Cost$ T` | Tap cost; `Sac<1/CARDNAME>` = sacrifice self; `PayLife<N>` = pay N life |
-| `Produced$ C/R/G/W/U/B` | Mana color for `AddMana` abilities (sets `color` and `amount=1`) |
-| `ValidTgts$ <spec>` | Target spec: `Any`, `Player`, `Creature`, `Land`, `Land.nonBasic`, combinations |
-| `NumDmg$ N` | Damage amount for `DealDamage` abilities |
-| `ChangeType$ <types>` | Comma-separated subtypes to search (for `ChangeZone`) |
-| `Origin$ <zone>` | Source zone for zone-change search |
-| `Destination$ <zone>` | Destination zone for zone-change |
+| `Cost$` | Activation cost: `T` = tap, `PayLife<N>`, `Sac<qty/spec>`, `Return<qty/type>` |
+| `Produced$` | Mana color for `AddMana`: `W/U/B/R/G/C`, `Any`, or `Combo W U G` |
+| `ValidTgts$` | Target spec: `Any`, `Player`, `Creature`, `Land`, `Land.nonBasic`, combinations |
+| `NumDmg$` | Damage amount for `DealDamage` |
+| `ChangeType$` | Comma-separated subtypes to search (for `ChangeZone`) |
+| `Origin$` | Source zone: `Library`, `Hand`, `Graveyard`, `Exile`, `Stack` |
+| `Destination$` | Destination zone: `Battlefield`, `Library`, `Hand`, `Graveyard`, `Exile` |
+| `Amount$` / `NumCards$` | Numeric amount or SVar reference |
+| `TokenScript$` | Token name to create (for `Token` abilities) |
+| `CounterType$` | Counter type string |
+| `CounterNum$` | Counter count |
+| `DigNum$` | Number of cards to look at (for `Dig`) |
+| `Mandatory$` | `True` if the ability is mandatory |
+| `SubAbility$` | SVar reference for chained sub-ability |
+| `ActivationLimit$` | Max activations per turn |
 
 Basic lands (Mountain, Forest, etc.) get their mana ability injected by `StateManager::apply_land_abilities` based on land subtypes, not from the script.
 
@@ -152,27 +194,35 @@ Dependencies: `gymnasium`, `stable-baselines3`, `sb3-contrib` (for `MaskablePPO`
 ### Training commands (run from repo root)
 
 ```bash
-train/.venv/bin/python train/train.py                                          # train from scratch
-train/.venv/bin/python train/train.py --load checkpoints/robomage_final.zip   # resume
-train/.venv/bin/python train/train.py --baseline checkpoints/robomage_final.zip  # win rate vs random
+train/.venv/bin/python train/train.py                                             # train from scratch
+train/.venv/bin/python train/train.py --load checkpoints/robomage_final.zip      # resume
+train/.venv/bin/python train/train.py --baseline checkpoints/robomage_final.zip  # win rate vs scripted
 train/.venv/bin/python train/train.py --observe checkpoints/robomage_final.zip   # watch one game
+train/.venv/bin/python train/train.py --self-play                                 # self-play training
+train/.venv/bin/python train/train.py --diag                                      # verify env (10 quick games)
+train/.venv/bin/python train/train.py --watch-scripted                            # watch scripted vs scripted
 ```
 
 ### Machine mode protocol
 
 `--machine` flag makes the game communicate over stdio for RL training:
-- Game emits a `QUERY` line on stdout at each decision point
+- Game emits a `BQUERY` line on stdout at each decision point, followed by a binary payload
 - Driver writes a single integer back on stdin
-- All non-QUERY stdout lines are game narrative and can be ignored
+- All non-BQUERY stdout lines are game narrative and can be ignored
 
-**QUERY line format:**
+**BQUERY format:**
 ```
-QUERY: <N> <f0>...<f32550> <cat0>...<catN-1> <id0>...<idN-1>
+BQUERY: <N>\n
+[float32 × STATE_SIZE  — state vector]
+[int32   × MAX_ACTIONS — action categories (padded)]
+[float32 × MAX_ACTIONS — action card IDs (padded)]
+[float32 × MAX_ACTIONS — action controller_is_self flags (padded)]
 ```
 - `N` = number of legal choices
-- `f0..f32550` = 32551-float state vector (see `src/machine_io.h` for layout)
-- `cat0..catN-1` = ActionCategory integer per choice (0–19, see `ActionCategory` enum in `src/classes/action.h`)
-- `id0..idN-1` = card vocab index float per choice: `card_vocab_index / N_CARD_TYPES` for card entities, `-0.03125` as null sentinel for players/confirm slots/non-card actions
+- State vector: 32551 floats (see `src/machine_io.h` for layout)
+- Action categories: ActionCategory enum integers (0–23)
+- Card IDs: `card_vocab_index / N_CARD_TYPES`, or `-1.0 / N_CARD_TYPES` (-0.03125) as null sentinel
+- Controller flags: `1.0` = self-controlled, `0.0` = opponent, null sentinel for non-entity actions
 
 **ActionCategory values** (emitted per legal action):
 
@@ -187,11 +237,15 @@ QUERY: <N> <f0>...<f32550> <cat0>...<catN-1> <id0>...<idN-1>
 | 7 | CAST_SPELL | Cast a spell from hand |
 | 8 | SELECT_TARGET | Choose a target for a spell/ability |
 | 9 | PLAY_LAND | Play a land from hand |
-| 10 | OTHER_CHOICE | Generic choice (e.g. attack target, block assignment) |
+| 10 | OTHER_CHOICE | Generic choice (e.g. Sylvan Library pay/return, unless costs) |
 | 11 | MULLIGAN | Keep (0) or mulligan (1) |
-| 12 | BOTTOM_DECK_CARD | Choose card to put on library bottom |
+| 12 | BOTTOM_DECK_CARD | Choose card to put on library bottom (post-mulligan) |
 | 13–18 | MANA_W/U/B/R/G/C | Tap a land for the corresponding color |
 | 19 | SEARCH_LIBRARY | Choose card from library search (0 = fail to find) |
+| 20 | TOP_LIBRARY | Choose card to put on top of library |
+| 21 | SHUFFLE | Choose whether to shuffle |
+| 22 | PAYING_COSTS | Pay an optional cost |
+| 23 | DIG_CHOICE | Choose creature/land from top N cards (e.g. Once Upon a Time) |
 
 **Confirm slot convention:** mandatory attacker/blocker queries end with a confirm action. The Python env remaps `action = num_choices - 1` to `-1` before sending to the game.
 
@@ -212,11 +266,13 @@ State vector layout is documented in `src/machine_io.h`. Key indices: `obs[31]` 
 
 ### Key files
 
-- `train/env.py` — `RoboMageEnv` gymnasium wrapper; `ModelVsScriptedEnv` self-play wrapper; `scripted_action` rule-based agent
+- `train/env.py` — `RoboMageEnv` gymnasium wrapper; `ModelVsScriptedEnv` scripted-opponent wrapper; `SelfPlayEnv` self-play wrapper; `scripted_action` rule-based agent
 - `train/extractor.py` — `CardGameExtractor` per-entity feature extractor for the policy network
-- `train/train.py` — `MaskablePPO` self-play training, baseline evaluation, observe mode
+- `train/train.py` — `MaskablePPO` training, baseline evaluation, observe mode, self-play
+- `train/analysis.py` — post-game analysis tool (win rates, action frequencies, SHAP, replay from `.rmrec` recordings)
+- `train/play.py` — interactive human-vs-model play
 - `train/gen_card_costs.py` — regenerates `train/card_costs.py` from `src/card_vocab.h`
 - `train/card_costs.py` — auto-generated cast-cost and ability-cost matrices (do not edit manually)
 - `src/machine_io.h` — state vector layout documentation and constants
-- `src/input_logger.cpp` — machine mode QUERY emission, replay, and CLI input handling
+- `src/input_logger.cpp` — machine mode BQUERY emission, replay, and CLI input handling
 - `src/card_vocab.h` — card name → vocab index mapping for one-hot encoding

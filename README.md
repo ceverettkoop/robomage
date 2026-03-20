@@ -6,7 +6,6 @@ Both players currently use `delver.dk`. The ML agent only understands cards list
 
 Card scripts live in `bin/resources/cardsfolder/`. See the card-forge repository for compatible scripts.
 
-Python mostly LLM written so likely a mess, will be revisited.
 
 ## Building
 
@@ -16,7 +15,7 @@ make BUILD=RELEASE    # optimized
 make HEADLESS=TRUE    # no GUI, no raylib dependancy
 ```
 
-The binary is written to `bin/robomage`. Game must be run from the bin directory at present.
+The binary is written to `bin/robomage`. Game must be run from the bin directory.
 
 ## Running
 
@@ -32,30 +31,34 @@ In interactive mode, numbers select a choice (every choice is logged), z passes 
 
 ## Reinforcement Learning
 
-### Setup
+### Prereqs
 
 ```bash
 python -m venv train/.venv
-train/.venv/bin/pip install gymnasium stable-baselines3 sb3-contrib
+train/.venv/bin/pip install gymnasium stable-baselines3 sb3-contrib shap
 ```
-
-`sb3-contrib` provides `MaskablePPO`, which prevents the agent from sampling illegal actions via `action_masks()`.
 
 ### Training commands
 
-All commands are run from the repo root, this commands assume a venv with appropriate prereqs.
+All commands are run from the repo root, these commands assume a venv with appropriate prereqs.
 
-#### Phase 1 — train against scripted agent
+#### Training
 
 ```bash
-train/.venv/bin/python train/train.py
+train/.venv/bin/python train/train.py #trains against a scripted agent
 train/.venv/bin/python train/train.py --load checkpoints/robomage_final.zip  # resume
+train/.venv/bin/python train/train.py --train-all #trains all possible matchup pairs from decks in bin/resources/decks
+train/.venv/bin/python train/train.py --self-play #trains against models for the corresponding match
 ```
 
-Trains for 1,000,000 steps across 7 parallel game processes. Player B is a rule-based scripted agent (always attacks, never blocks, casts every affordable spell). Checkpoints are saved to `train/checkpoints/` every 25,000 steps.
-
-#### Phase 2 — self-play against frozen checkpoints
+#### Play against model
 
 ```bash
-train/.venv/bin/python train/train.py --self-play --load checkpoints/robomage_final.zip
+train/.venv/bin/python train/play.py --human-deck (deck) --model-deck (deck) --gui #will load appropriate model if present, otherwise you specify 
+```
+
+### Run N games and analyze them
+
+```bash
+train/.venv/bin/python train/analysis.py interactive --model (model for player A) --opponent (model for player B, or 'scripted' for scripted) #will load appropriate model if present, otherwise you specify 
 ```
