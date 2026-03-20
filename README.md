@@ -31,8 +31,18 @@ In interactive mode, numbers select a choice (every choice is logged), z passes 
 
 ## Reinforcement Learning
 
-### Prereqs
+### Prereqs:
+Game engine and CLI:
 
+C++17
+
+GUI:
+
+Raylib
+
+Machine learning:
+
+Python venv and packages per below commands:
 ```bash
 python -m venv train/.venv
 train/.venv/bin/pip install gymnasium stable-baselines3 sb3-contrib shap
