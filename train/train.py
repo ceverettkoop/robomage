@@ -371,7 +371,8 @@ class ReplayLogCallback(BaseCallback):
 CHECKPOINT_DIR = "checkpoints"
 LOG_DIR = "logs"
 TOTAL_TIMESTEPS = 1_000_000
-N_ENVS = 32  # parallel game processes
+N_ENVS = 32           # parallel game processes
+N_ENVS_SELF_PLAY = 10 # fewer envs for self-play (each loads an opponent model)
 _DECKS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                           "bin", "resources", "decks")
 
@@ -416,11 +417,12 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
 
     # Parallel environments for faster data collection
     if self_play:
-        n_scripted = round(N_ENVS * scripted_fraction)
-        n_self_play = N_ENVS - n_scripted
+        n_envs = N_ENVS_SELF_PLAY
+        n_scripted = round(n_envs * scripted_fraction)
+        n_self_play = n_envs - n_scripted
         env_fns = (
             [make_self_play_env(binary_path, checkpoint_dir, i, model_deck, opp_deck) for i in range(n_self_play)]
-            + [make_env(binary_path, N_ENVS - n_scripted + i, model_deck, opp_deck) for i in range(n_scripted)]
+            + [make_env(binary_path, n_envs - n_scripted + i, model_deck, opp_deck) for i in range(n_scripted)]
         )
         if n_scripted:
             print(f"Env mix: {n_self_play} self-play + {n_scripted} scripted")
@@ -460,9 +462,10 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
             tensorboard_log=LOG_DIR,
         )
 
+    actual_n_envs = n_envs if self_play else N_ENVS
     callbacks = [
         CheckpointCallback(
-            save_freq=25_000 // N_ENVS,
+            save_freq=25_000 // actual_n_envs,
             save_path=checkpoint_dir,
             name_prefix=model_prefix,
         ),
@@ -473,11 +476,11 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
     if record:
         rec_path = os.path.join(RECORD_DIR, f"{model_prefix}_{int(time.time())}.rmrec")
         callbacks.append(RecordCallback(
-            path=rec_path, n_envs=N_ENVS, model_path=load_path,
+            path=rec_path, n_envs=actual_n_envs, model_path=load_path,
             model_deck=model_deck, self_play=self_play,
         ))
 
-    print(f"Training for {total_timesteps:,} timesteps across {N_ENVS} envs...")
+    print(f"Training for {total_timesteps:,} timesteps across {actual_n_envs} envs...")
     model.learn(total_timesteps=total_timesteps, callback=callbacks, reset_num_timesteps=load_path is None)
     model.save(os.path.join(checkpoint_dir, f"{model_prefix}_final"))
     print(f"Saved final model as {model_prefix}_final.")

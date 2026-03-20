@@ -796,7 +796,7 @@ class SelfPlayEnv(gym.Env):
         self._opponent = None    # loaded model, or None → random
         self._episode_count = 0
         self._training_is_a = True
-        self._reload_opponent()  # attempt to load an initial checkpoint
+        self._opponent_loaded = False  # defer loading to first reset()
 
     # ------------------------------------------------------------------
     # gymnasium API
@@ -804,8 +804,9 @@ class SelfPlayEnv(gym.Env):
 
     def reset(self, *, seed=None, options=None):
         self._episode_count += 1
-        if self._episode_count % self.RELOAD_EVERY == 0:
+        if not self._opponent_loaded or self._episode_count % self.RELOAD_EVERY == 0:
             self._reload_opponent()
+            self._opponent_loaded = True
 
         self._training_is_a = bool(np.random.random() < 0.5)
         if self._model_deck is not None:
