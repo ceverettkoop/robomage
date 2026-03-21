@@ -243,7 +243,7 @@ static std::vector<std::pair<Entity, Ability>> collect_available_mana_sources(
 }
 
 bool can_afford_with_sources(Zone::Ownership player_owner, const std::multiset<Colors> &cost,
-                             std::shared_ptr<Orderer> orderer) {
+                             std::shared_ptr<Orderer> orderer, Entity exclude_entity) {
     Entity player_entity = get_player_entity(player_owner);
     if (!global_coordinator.entity_has_component<Player>(player_entity)) return false;
     auto &player = global_coordinator.GetComponent<Player>(player_entity);
@@ -260,6 +260,7 @@ bool can_afford_with_sources(Zone::Ownership player_owner, const std::multiset<C
 
     auto sources = collect_available_mana_sources(player_owner, orderer);
     for (auto &[entity, ab] : sources) {
+        if (entity == exclude_entity) continue;
         if (counted_entities.count(entity)) continue;
         size_t amount = eval_mana_amount(ab, player_owner, orderer);
         if (!ab.mana_choices.empty()) {

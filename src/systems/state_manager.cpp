@@ -1227,7 +1227,12 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 if (!found_ret) continue;
             }
             if (ab.category == "AddMana") {
-                if (!ab.activation_mana_cost.empty() && !can_afford_with_sources(priority_player, ab.activation_mana_cost, orderer)) continue;
+                if (!ab.activation_mana_cost.empty()) {
+                    Entity exclude = ab.tap_cost ? entity : 0;
+                    if (!can_afford_with_sources(priority_player, ab.activation_mana_cost, orderer, exclude)) continue;
+                    auto it = cur_game.payment_fail_counts.find(ab.source);
+                    if (it != cur_game.payment_fail_counts.end() && it->second >= 2) continue;
+                }
                 std::string src_name = entity_name(ab.source);
                 if (!ab.mana_choices.empty()) {
                     // Combo or Any mana: emit one action per color choice

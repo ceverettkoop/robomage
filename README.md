@@ -70,5 +70,5 @@ train/.venv/bin/python train/play.py --human-deck (deck) --model-deck (deck) --g
 ### Run N games and analyze them
 
 ```bash
-train/.venv/bin/python train/analysis.py interactive --model (model for player A) --opponent (model for player B, or 'scripted' for scripted) #will load appropriate model if present, otherwise you specify 
+train/.venv/bin/python train/analysis.py interactive --opponent (model for player B, or 'scripted' for scripted) (model for player A) 
 ```

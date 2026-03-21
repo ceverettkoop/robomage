@@ -23,8 +23,10 @@ bool can_afford_pool(const std::multiset<Colors>& pool, const std::multiset<Colo
 bool can_afford(Zone::Ownership player, const std::multiset<Colors>& cost);
 
 // Check if player can afford a cost considering current pool plus untapped tap-only mana sources
+// exclude_entity: if nonzero, skip this entity when counting available sources (used when
+// the ability being checked will tap the source as part of its own cost)
 bool can_afford_with_sources(Zone::Ownership player, const std::multiset<Colors>& cost,
-                             std::shared_ptr<Orderer> orderer);
+                             std::shared_ptr<Orderer> orderer, Entity exclude_entity = 0);
 
 // Return the maximum total mana producible (pool + untapped sources) minus colored base cost
 // obligations; used for computing max X value
