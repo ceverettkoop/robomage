@@ -345,6 +345,7 @@ _CAT_MANA_G     = 17
 _CAT_MANA_C     = 18
 _CAT_SEARCH     = 19  # search library (action 0 = fail to find, 1+ = actual cards)
 _CAT_OTHER      = 10  # generic choice (Sylvan Library pay/return, unless costs, etc.)
+_CAT_PAYING     = 22  # paying costs (tap lands for mana, delve exile, pitch cards)
 _CAT_DIG        = 23  # dig choice (Once Upon a Time: pick creature/land from top N)
 
 # All mana-producing categories
@@ -515,6 +516,11 @@ def scripted_action(obs: np.ndarray, num_choices: int) -> int:
     #    Wooded Foothills) resolve their ChangeZone ability.
     if any(c == _CAT_SEARCH for c in cats):
         return 1 if num_choices > 1 else 0
+
+    # 5b. Paying costs (tapping lands for mana during spell/ability payment, delve exile).
+    #     Pick the first available option — this taps a source to pay the cost.
+    if any(c == _CAT_PAYING for c in cats):
+        return 0
 
     # 6. Cast any spell immediately if affordable (game only offers CAST when legal).
     #    Counter spells (Counterspell, Daze, Force of Will) require an opponent's spell

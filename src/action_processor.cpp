@@ -82,7 +82,12 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
         }
         // Pay mana cost
         if (!ability.activation_mana_cost.empty()) {
-            spend_mana(ctrl, ability.activation_mana_cost, permanent_entity);
+            auto mana_snap = snapshot_mana_state(ctrl, orderer);
+            if (!prompt_mana_payment(ctrl, ability.activation_mana_cost, permanent_entity, orderer)) {
+                restore_mana_state(ctrl, mana_snap, orderer);
+                game_log("Payment cancelled.\n");
+                return;
+            }
         }
         // Move card from hand to graveyard unless the ability moves itself (Defined$ Self)
         if (!ability.defined_self) {
@@ -142,7 +147,15 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
         }
         // Pay equip cost
         if (ability.tap_cost) permanent.is_tapped = true;
-        if (!ability.activation_mana_cost.empty()) spend_mana(controller, ability.activation_mana_cost, permanent_entity);
+        if (!ability.activation_mana_cost.empty()) {
+            auto mana_snap = snapshot_mana_state(controller, orderer);
+            if (!prompt_mana_payment(controller, ability.activation_mana_cost, permanent_entity, orderer)) {
+                restore_mana_state(controller, mana_snap, orderer);
+                if (ability.tap_cost) permanent.is_tapped = false;
+                game_log("Payment cancelled.\n");
+                return;
+            }
+        }
 
         game_log("Choose creature to equip:\n");
         int choice = InputLogger::instance().get_input(equip_targets);
@@ -172,7 +185,13 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
     }
     // Mana cost
     if (!ability.activation_mana_cost.empty()) {
-        spend_mana(controller, ability.activation_mana_cost, permanent_entity);
+        auto mana_snap = snapshot_mana_state(controller, orderer);
+        if (!prompt_mana_payment(controller, ability.activation_mana_cost, permanent_entity, orderer)) {
+            restore_mana_state(controller, mana_snap, orderer);
+            if (ability.tap_cost) permanent.is_tapped = false;
+            game_log("Payment cancelled.\n");
+            return;
+        }
     }
     // Pay life cost //TODO VERIFY THIS WAS CHECKED AS POSSIBLE PRIOR TO HERE
     if (ability.life_cost > 0) {
@@ -823,6 +842,9 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             auto &card_data = global_coordinator.GetComponent<CardData>(spell_entity);
             Zone::Ownership caster = zone.owner;
 
+            // Snapshot mana state for rewind on payment failure
+            auto mana_snap = snapshot_mana_state(caster, orderer);
+
             // ALTERNATE COST
             if (action.use_alt_cost) {
                 pay_alternate_cost(action, game, orderer, card_data, spell_entity, zone);
@@ -830,20 +852,27 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             } else {  // REGULAR COST + DELVE
                 ManaValue cost_to_pay = card_data.mana_cost;
 
+                // Check RaiseCost statics (same calculation as determine_legal_actions)
+                bool card_is_creature = false;
+                for (auto &t : card_data.types)
+                    if (t.kind == TYPE && t.name == "Creature") { card_is_creature = true; break; }
+                int raise_total = 0;
+                for (auto e2 : orderer->mEntities) {
+                    if (!global_coordinator.entity_has_component<Permanent>(e2)) continue;
+                    auto &rzone = global_coordinator.GetComponent<Zone>(e2);
+                    if (rzone.location != Zone::BATTLEFIELD) continue;
+                    auto &rperm = global_coordinator.GetComponent<Permanent>(e2);
+                    for (const auto &rsa : rperm.static_abilities) {
+                        if (rsa.category != "RaiseCost") continue;
+                        if (rsa.raise_cost_filter == "nonCreature" && card_is_creature) continue;
+                        raise_total += rsa.raise_cost;
+                    }
+                }
+                for (int ri = 0; ri < raise_total; ri++) cost_to_pay.insert(GENERIC);
+
                 // X-COST: prompt player to choose X value, add X generic to cost
                 if (card_data.has_x_cost) {
-                    // Calculate max X: total pool minus colored requirements
-                    Entity caster_entity = get_player_entity(caster);
-                    auto &caster_player = global_coordinator.GetComponent<Player>(caster_entity);
-                    auto pool_copy = caster_player.mana;
-                    // Subtract colored costs from pool copy to find remaining for generic+X
-                    for (auto c : cost_to_pay) {
-                        if (c == GENERIC) continue;
-                        auto it = pool_copy.find(c);
-                        if (it != pool_copy.end()) pool_copy.erase(it);
-                    }
-                    size_t generic_in_base = cost_to_pay.count(GENERIC);
-                    size_t max_x = (pool_copy.size() > generic_in_base) ? pool_copy.size() - generic_in_base : 0;
+                    size_t max_x = max_available_mana(caster, cost_to_pay, orderer);
 
                     game_log("Choose X value (0-%zu):\n", max_x);
                     std::vector<LegalAction> x_actions;
@@ -859,55 +888,11 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                     game_log("%s chooses X = %zu\n", player_name(caster).c_str(), x_val);
                 }
 
-                // DELVE: exile instants/sorceries from graveyard to reduce generic cost
-                if (card_data.has_delve && !can_afford(caster, cost_to_pay)) {
-                    cur_game.delve_exiled.clear();
-                    // pay_partial spends colored mana (and any generic it can) from the pool
-                    auto remaining = pay_partial(caster, cost_to_pay);
-                    auto gen_ct = remaining.count(Colors::GENERIC);
-                    game_log(
-                        "%s: exile %zu cards from graveyard to pay generic cost (0=done):\n", player_name(caster).c_str(), gen_ct);
-                    size_t gen_paid = 0;
-                    while (gen_paid < gen_ct) {
-                        // Build list of exilable instants/sorceries
-                        std::vector<LegalAction> delve_actions;
-                        //we can't be done until everything has been paid for, no early exit
-                        //should not be allowed to get here unless we can afford it
-                        for (auto e : orderer->mEntities) {
-                            if (!global_coordinator.entity_has_component<Zone>(e)) continue;
-                            auto &ez = global_coordinator.GetComponent<Zone>(e);
-                            if (ez.location != Zone::GRAVEYARD || ez.owner != caster) continue;
-                            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
-                            auto &ecd = global_coordinator.GetComponent<CardData>(e);
-                            bool is_instant_or_sorcery = false;
-                            for (auto &t : ecd.types)
-                                if (t.kind == TYPE && (t.name == "Instant" || t.name == "Sorcery")) {
-                                    is_instant_or_sorcery = true;
-                                    break;
-                                }
-                            if (!is_instant_or_sorcery) continue;
-                            LegalAction la(PASS_PRIORITY, e, ecd.name);
-                            la.category = ActionCategory::PAYING_COSTS;
-                            delve_actions.push_back(la);
-                        }
-
-                        if (delve_actions.size() < 1){
-                            fatal_error("error paying delve costs, not enough delve cards");
-                        }
-
-                        int choice = InputLogger::instance().get_input(delve_actions);
-                        Entity exiled = delve_actions[static_cast<size_t>(choice)].source_entity;
-                        orderer->add_to_zone(false, exiled, Zone::EXILE);
-                        cur_game.delve_exiled.push_back(exiled);
-                        remaining.erase(remaining.find(GENERIC));
-                        gen_paid++;
-                        auto &ecd2 = global_coordinator.GetComponent<CardData>(exiled);
-                        game_log("%s exiles %s via Delve.\n", player_name(caster).c_str(), ecd2.name.c_str());
-                    }
-                    // Colored costs already paid by pay_partial; spend only what delve didn't cover
-                    spend_mana(caster, remaining, spell_entity);
-                } else {
-                    spend_mana(caster, cost_to_pay, spell_entity);
+                if (card_data.has_delve) cur_game.delve_exiled.clear();
+                if (!prompt_mana_payment(caster, cost_to_pay, spell_entity, orderer, card_data.has_delve)) {
+                    restore_mana_state(caster, mana_snap, orderer);
+                    game_log("Payment cancelled.\n");
+                    break;
                 }
             }
 

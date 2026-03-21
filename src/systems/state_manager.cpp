@@ -966,13 +966,13 @@ static size_t count_delve_fuel(Zone::Ownership player, std::shared_ptr<Orderer> 
 static bool can_afford_with_delve(Zone::Ownership player, const ManaValue &cost,
                                   std::shared_ptr<Orderer> orderer) {
     size_t generic_in_cost = cost.count(GENERIC);
-    if (generic_in_cost == 0) return can_afford(player, cost);
+    if (generic_in_cost == 0) return can_afford_with_sources(player, cost, orderer);
     // Reduce generic by however many cards can be exiled
     size_t fuel = count_delve_fuel(player, orderer);
     size_t to_exile = std::min(generic_in_cost, fuel);
     ManaValue reduced_cost = cost;
     for (size_t i = 0; i < to_exile; i++) reduced_cost.erase(reduced_cost.find(GENERIC));
-    return can_afford(player, reduced_cost);
+    return can_afford_with_sources(player, reduced_cost, orderer);
 }
 
 std::vector<LegalAction> StateManager::determine_legal_actions(
@@ -1120,7 +1120,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             // X value is chosen at cast time in action_processor
             bool can_regular = card_data.has_delve
                 ? can_afford_with_delve(priority_player, effective_cost, orderer)
-                : can_afford(priority_player, effective_cost);
+                : can_afford_with_sources(priority_player, effective_cost, orderer);
 
             bool can_alt = can_afford_alt(card_data.alt_cost, priority_player, card_entity, orderer);
 
@@ -1225,7 +1225,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 if (!found_ret) continue;
             }
             if (ab.category == "AddMana") {
-                if (!ab.activation_mana_cost.empty() && !can_afford(priority_player, ab.activation_mana_cost)) continue;
+                if (!ab.activation_mana_cost.empty() && !can_afford_with_sources(priority_player, ab.activation_mana_cost, orderer)) continue;
                 std::string src_name = entity_name(ab.source);
                 if (!ab.mana_choices.empty()) {
                     // Combo or Any mana: emit one action per color choice
@@ -1260,7 +1260,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 continue;
             } else {
                 // Non-mana activated ability (e.g. ChangeZone for fetch lands, Destroy for Wasteland)
-                if (!ab.activation_mana_cost.empty() && !can_afford(priority_player, ab.activation_mana_cost)) continue;
+                if (!ab.activation_mana_cost.empty() && !can_afford_with_sources(priority_player, ab.activation_mana_cost, orderer)) continue;
                 if (ab.valid_tgts != "N_A" && !has_legal_targets(ab, orderer)) continue;
                 std::string src_name = entity_name(ab.source);
                 std::string desc = "Activate " + src_name + " (" + ab.category + ")";
@@ -1277,7 +1277,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             if (ab.ability_type != Ability::ACTIVATED) continue;
             if (ab.activation_zone != Zone::HAND) continue;
             // Check mana affordability
-            if (!ab.activation_mana_cost.empty() && !can_afford(priority_player, ab.activation_mana_cost)) continue;
+            if (!ab.activation_mana_cost.empty() && !can_afford_with_sources(priority_player, ab.activation_mana_cost, orderer)) continue;
             // Check target legality
             if (ab.valid_tgts != "N_A" && ab.target_min > 0 && !has_legal_targets(ab, orderer)) continue;
             std::string desc = "Activate " + card_data.name + " from hand (" + ab.category + ")";
