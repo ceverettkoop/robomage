@@ -313,10 +313,13 @@ class ShapingScaleCallback(BaseCallback):
 class ReplayLogCallback(BaseCallback):
     """After each rollout, runs one model-vs-scripted game and saves a transcript."""
 
-    def __init__(self, binary_path: str, replay_dir: str = "replays"):
+    def __init__(self, binary_path: str, replay_dir: str = "replays",
+                 model_deck: str | None = None, opp_deck: str | None = None):
         super().__init__()
         self.binary_path = binary_path
         self.replay_dir = replay_dir
+        self._model_deck = model_deck
+        self._opp_deck = opp_deck
         self._rollout = 0
         os.makedirs(replay_dir, exist_ok=True)
 
@@ -328,7 +331,8 @@ class ReplayLogCallback(BaseCallback):
         self._rollout += 1
         log_path = os.path.join(self.replay_dir, f"rollout_{self._rollout:05d}.txt")
 
-        env = NarrativeEnv(binary_path=self.binary_path)
+        env = NarrativeEnv(binary_path=self.binary_path,
+                           deck_a=self._model_deck, deck_b=self._opp_deck)
         if USE_MASKABLE:
             from sb3_contrib.common.wrappers import ActionMasker as _AM
             masked = _AM(env, lambda e: e.action_masks())
@@ -510,7 +514,8 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
     ]
     if tally:
         callbacks.append(WinTallyCallback())
-    callbacks.append(ReplayLogCallback(binary_path=binary_path))
+    callbacks.append(ReplayLogCallback(binary_path=binary_path,
+                                       model_deck=model_deck, opp_deck=opp_deck))
     if record:
         rec_path = os.path.join(RECORD_DIR, f"{model_prefix}_{int(time.time())}.rmrec")
         callbacks.append(RecordCallback(

@@ -77,7 +77,7 @@ SHAPING_MULLIGAN_PENALTY =  0.00  # per mulligan taken beyond the 2nd (C++: >= 3
 SHAPING_OPPONENT_BELOW10 =  0.10  # one-time bonus when opponent life first drops < 10
 SHAPING_HAND_ADV_PER_CARD = 0.01  # potential weight per card of hand advantage (potential-based)
 SHAPING_POWER_ADV_PER_PT  = 0.005 # potential weight per point of power advantage on board
-SHAPING_BONUS_CAP         = 0.3   # max absolute shaping bonus per step
+SHAPING_EPISODE_CAP       = 0.4   # max absolute shaping bonus per episode
 _ACTION_CARD_ID_NULL = -1.0 / N_CARD_TYPES  # null sentinel for non-card slots
 _ACTION_CTRL_NULL    = -1.0 / N_CARD_TYPES  # null sentinel for non-entity actions
 MAX_HAND_SLOTS = 10
@@ -670,6 +670,7 @@ class ModelVsScriptedEnv(gym.Env):
         self._opponent_below_10 = False
         self._last_obs = None
         self._decision_idx = 0
+        self._episode_shaping = 0.0
         self._game_meta = {
             "model_is_a": self._training_is_a,
             "opp_deck": self._opp_deck or "unknown",
@@ -723,8 +724,12 @@ class ModelVsScriptedEnv(gym.Env):
             power_curr = _board_power_advantage(obs)
             shaping += SHAPING_POWER_ADV_PER_PT * (power_curr - power_prev)
 
-        shaping = max(-SHAPING_BONUS_CAP, min(SHAPING_BONUS_CAP, shaping))
         shaping *= self.shaping_scale
+        # Clamp to remaining episode budget
+        remaining = SHAPING_EPISODE_CAP - self._episode_shaping
+        floor = -(SHAPING_EPISODE_CAP + self._episode_shaping)
+        shaping = max(floor, min(remaining, shaping))
+        self._episode_shaping += shaping
         self._last_obs = obs.copy() if not (terminated or truncated) else None
 
         if not self._training_is_a:
