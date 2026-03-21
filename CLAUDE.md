@@ -11,6 +11,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 The compiled binary is output to `bin/robomage`.
 
+## Testing guidelines
+-Non fatal errors are not acceptable
+-Draws are not acceptable
+
 
 ## Code Style
 
