@@ -11,9 +11,12 @@ Usage:
     python analysis.py wl-split <file.rmrec>
     python analysis.py cast-timing <file.rmrec>
     python analysis.py choice-rates <file.rmrec>
-    python analysis.py shap <model.zip> [--n-games 50 --n-samples 200 --n-background 50]
-    python analysis.py value-swings <model.zip> [--n-games 50 --top 10]
-    python analysis.py interactive <model.zip> [--n-games 20]
+    python analysis.py shap <model.zip> --opponent scripted [--n-games 50 --n-samples 200 --n-background 50]
+    python analysis.py value-swings <model.zip> --opponent scripted [--n-games 50 --top 10]
+    python analysis.py regret <model.zip> --opponent scripted [--n-games 50 --top 20]
+    python analysis.py entropy <model.zip> --opponent scripted [--n-games 50]
+    python analysis.py consistency <model.zip> --opponent scripted [--n-games 50 --top 20]
+    python analysis.py interactive <model.zip> --opponent scripted [--n-games 20]
 
 Interactive session commands (available after shap, value-swings, or via 'interactive'):
     list                  list all games
@@ -22,6 +25,9 @@ Interactive session commands (available after shap, value-swings, or via 'intera
     summary               win/loss/draw stats
     swings [N]            top N value-function swings
     shap                  run SHAP analysis on collected data
+    regret [N]            policy regret analysis (top N high-regret decisions)
+    entropy               policy entropy by game phase and board state
+    consistency [N]       decision consistency for similar states (top N pairs)
     chart <N>             value curve plot for game N
     chart swings [N]      value curve plots for top N swing games
     chart shap            SHAP summary plot
@@ -1022,6 +1028,26 @@ def _load_model_and_env(args):
     return model, env, opp_model
 
 
+def _get_policy_probs(model, obs, num_choices):
+    """Get masked action probability distribution from the policy.
+
+    Returns numpy array of shape (num_choices,) with probabilities for each
+    legal action.
+    """
+    import torch
+    obs_t = torch.as_tensor(obs, dtype=torch.float32).unsqueeze(0)
+    with torch.no_grad():
+        try:
+            features = model.policy.extract_features(obs_t, model.policy.features_extractor)
+        except TypeError:
+            features = model.policy.extract_features(obs_t)
+        latent_pi, _ = model.policy.mlp_extractor(features)
+        logits = model.policy.action_net(latent_pi)[0].clone()
+        logits[num_choices:] = float('-inf')
+        probs = torch.softmax(logits, dim=0).cpu().numpy()
+    return probs[:num_choices].astype(np.float64)
+
+
 def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
     """Play n_games and collect per-step (obs, value, action) traces.
 
@@ -1052,6 +1078,7 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
         trace_interp = []
         trace_actions = []
         trace_num_choices = []
+        trace_probs = []
         done = False
         total_reward = 0.0
 
@@ -1065,10 +1092,12 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
                 obs_t = torch.as_tensor(obs, dtype=torch.float32).unsqueeze(0)
                 with torch.no_grad():
                     value = model.policy.predict_values(obs_t).item()
+                probs = _get_policy_probs(model, obs, num_choices)
                 trace_obs.append(obs.copy())
                 trace_vals.append(value)
                 trace_interp.append(_extract_interpretable(obs))
                 trace_num_choices.append(num_choices)
+                trace_probs.append(probs)
 
                 mask = np.zeros(MAX_ACTIONS, dtype=bool)
                 mask[:num_choices] = True
@@ -1095,6 +1124,7 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
             "interp_features": trace_interp,
             "actions": trace_actions,
             "num_choices": trace_num_choices,
+            "action_probs": trace_probs,
             "result": model_reward,
             "model_is_a": model_is_a,
         })
@@ -1474,8 +1504,8 @@ def _interactive_session(ctx):
         print("\n" + "=" * 60)
         print(f"Interactive session — {len(games)} games in memory.")
         cmds = ["list", "replay <N>", "boardstate <N> <step>", "summary",
-                "swings [N]", "shap", "chart <N>", "chart swings [N]",
-                "chart shap"]
+                "swings [N]", "shap", "regret [N]", "entropy", "consistency [N]",
+                "chart <N>", "chart swings [N]", "chart shap"]
         if can_run:
             cmds.append("run <N>")
         cmds += ["help", "quit"]
@@ -1508,6 +1538,9 @@ def _interactive_session(ctx):
             print("  summary                   — win/loss/draw stats for all simulated games")
             print("  swings [N]                — show top N value-function swings (default 10)")
             print("  shap [n_bg N] [n_smp N]   — run SHAP analysis on collected game data")
+            print("  regret [N]                — policy regret analysis (top N high-regret decisions)")
+            print("  entropy                   — policy entropy by phase and board state")
+            print("  consistency [N]           — find similar states with different actions (top N pairs)")
             print("  chart <N>                 — value curve plot for game N")
             print("  chart swings [N]          — value curve plots for top N swing games")
             print("  chart shap                — SHAP summary plot (requires shap run first)")
@@ -1760,6 +1793,31 @@ def _interactive_session(ctx):
                 plt.tight_layout()
                 plt.show()
 
+        elif cmd == "regret":
+            top_n = 20
+            if len(parts) >= 2:
+                try: top_n = int(parts[1])
+                except ValueError: pass
+            has_probs = any(g.get("action_probs") for g in games)
+            if not has_probs:
+                print("  No action probability data. Re-collect games with a model to enable regret analysis.")
+            else:
+                _analyze_regret(games, top_n=top_n)
+
+        elif cmd == "entropy":
+            has_probs = any(g.get("action_probs") for g in games)
+            if not has_probs:
+                print("  No action probability data. Re-collect games with a model to enable entropy analysis.")
+            else:
+                _analyze_entropy(games)
+
+        elif cmd == "consistency":
+            top_n = 20
+            if len(parts) >= 2:
+                try: top_n = int(parts[1])
+                except ValueError: pass
+            _analyze_consistency(games, top_n=top_n)
+
         elif cmd == "run":
             if ctx.get("env") is None or ctx.get("model") is None:
                 print("  No live env available. Use the 'interactive' command to enable 'run'.")
@@ -1895,6 +1953,552 @@ def cmd_value_swings(args):
     })
 
 
+def _board_bucket_from_feat(feat):
+    """Categorize board state from interpretable features into (life_bucket, board_bucket, timing_bucket)."""
+    life_diff = feat[2]  # life_diff
+    creature_diff = feat[24]  # creature_diff
+    # Timing: use hand size + land count as a rough game-phase proxy
+    self_lands = feat[19]
+    if self_lands <= 2:
+        timing = "early"
+    elif self_lands <= 4:
+        timing = "mid"
+    else:
+        timing = "late"
+
+    if life_diff <= -5:
+        life = "behind"
+    elif life_diff >= 5:
+        life = "ahead"
+    else:
+        life = "even"
+
+    if creature_diff <= -1:
+        board = "behind"
+    elif creature_diff >= 1:
+        board = "ahead"
+    else:
+        board = "even"
+
+    return life, board, timing
+
+
+def _analyze_regret(games, top_n=20, verbose=True):
+    """Compute policy-based regret proxy from collected game traces.
+
+    Regret proxy = 1 - P(chosen action). High values mean the model spread
+    probability across alternatives — it was uncertain about its choice.
+    Also computes margin = P(chosen) - P(second best).
+
+    Returns list of regret entries sorted by descending regret.
+    """
+    entries = []
+    for g_idx, game in enumerate(games):
+        probs_list = game.get("action_probs", [])
+        if not probs_list:
+            continue
+        for step, (probs, action, nc, obs, feat) in enumerate(zip(
+                probs_list, game["actions"], game["num_choices"],
+                game["observations"], game["interp_features"])):
+            chosen_prob = probs[action]
+            sorted_probs = np.sort(probs)[::-1]
+            second_best = sorted_probs[1] if len(sorted_probs) > 1 else 0.0
+            regret = 1.0 - chosen_prob
+            margin = chosen_prob - second_best
+            best_alt_idx = -1
+            if nc > 1:
+                alt_probs = probs.copy()
+                alt_probs[action] = -1.0
+                best_alt_idx = int(np.argmax(alt_probs))
+            entries.append({
+                "game_idx": g_idx, "step": step,
+                "regret": regret, "margin": margin,
+                "chosen_prob": chosen_prob, "chosen_action": action,
+                "best_alt_idx": best_alt_idx, "best_alt_prob": second_best,
+                "num_choices": nc, "obs": obs, "feat": feat,
+                "result": game["result"],
+            })
+
+    entries.sort(key=lambda e: -e["regret"])
+
+    if not entries:
+        print("No decisions with action probabilities found.")
+        return entries
+
+    if not verbose:
+        return entries
+
+    n_decisions = len(entries)
+    mean_regret = np.mean([e["regret"] for e in entries])
+    mean_margin = np.mean([e["margin"] for e in entries])
+
+    print(f"\nPolicy regret analysis — {len(games)} games, {n_decisions} model decisions")
+    print(f"  NOTE: Regret proxy = 1 - P(chosen). High = model spread probability")
+    print(f"        across alternatives. Margin = P(chosen) - P(2nd best).")
+    print(f"\n  Overall: mean regret={mean_regret:.3f}  mean margin={mean_margin:.3f}")
+
+    # By game outcome
+    win_regrets = [e["regret"] for e in entries if e["result"] > 0]
+    loss_regrets = [e["regret"] for e in entries if e["result"] < 0]
+    if win_regrets and loss_regrets:
+        print(f"\n  By outcome:")
+        print(f"    Wins:   mean regret={np.mean(win_regrets):.3f}  "
+              f"mean margin={np.mean([e['margin'] for e in entries if e['result'] > 0]):.3f}")
+        print(f"    Losses: mean regret={np.mean(loss_regrets):.3f}  "
+              f"mean margin={np.mean([e['margin'] for e in entries if e['result'] < 0]):.3f}")
+
+    # By game phase
+    phase_regrets = {}
+    for e in entries:
+        step_name = _step_name_from_feat(e["feat"])
+        phase_regrets.setdefault(step_name, []).append(e["regret"])
+
+    print(f"\n  By game phase:")
+    print(f"    {'Phase':<14} {'Mean Regret':>12} {'Mean Margin':>12} {'N':>6}")
+    phase_margins = {}
+    for e in entries:
+        step_name = _step_name_from_feat(e["feat"])
+        phase_margins.setdefault(step_name, []).append(e["margin"])
+    for phase in _INTERP_STEP_NAMES:
+        if phase not in phase_regrets:
+            continue
+        regs = phase_regrets[phase]
+        mars = phase_margins[phase]
+        print(f"    {phase:<14} {np.mean(regs):12.3f} {np.mean(mars):12.3f} {len(regs):6d}")
+
+    # By board state
+    bucket_regrets = {}
+    for e in entries:
+        life, board, timing = _board_bucket_from_feat(e["feat"])
+        key = f"{life}/{board}"
+        bucket_regrets.setdefault(key, []).append(e["regret"])
+
+    print(f"\n  By board state (life/creatures):")
+    for key in sorted(bucket_regrets):
+        regs = bucket_regrets[key]
+        if len(regs) < 5:
+            continue
+        print(f"    {key:<16} regret={np.mean(regs):.3f}  (n={len(regs)})")
+
+    # Top regret decisions
+    top = entries[:min(top_n, len(entries))]
+    print(f"\n  Top {len(top)} highest-regret decisions:")
+    print(f"    {'Game':<6} {'Step':<6} {'Phase':<14} {'Regret':>7} {'Margin':>7} "
+          f"{'Chosen':>7} {'2nd Best':>9} {'#Acts':>5} {'Result':<6}")
+    print(f"    {'-'*6} {'-'*6} {'-'*14} {'-'*7} {'-'*7} {'-'*7} {'-'*9} {'-'*5} {'-'*6}")
+    for e in top:
+        phase = _step_name_from_feat(e["feat"])
+        result_str = "W" if e["result"] > 0 else ("L" if e["result"] < 0 else "D")
+        print(f"    {e['game_idx']:<6} {e['step']:<6} {phase:<14} "
+              f"{e['regret']:7.3f} {e['margin']:7.3f} "
+              f"{e['chosen_prob']:7.3f} {e['best_alt_prob']:9.3f} "
+              f"{e['num_choices']:5d} {result_str:<6}")
+
+    # Detailed board states for top 5
+    print(f"\n  Detailed board states for top {min(5, len(top))} regret decisions:\n")
+    for rank, e in enumerate(top[:5]):
+        phase = _step_name_from_feat(e["feat"])
+        result_str = "WIN" if e["result"] > 0 else ("LOSS" if e["result"] < 0 else "DRAW")
+        print(f"  --- #{rank + 1}: Game {e['game_idx']} step {e['step']} "
+              f"({result_str}, regret={e['regret']:.3f}) ---")
+        action_lines = _decode_legal_actions(e["obs"], e["num_choices"], e["chosen_action"])
+        # Annotate with probabilities
+        probs = games[e["game_idx"]]["action_probs"][e["step"]]
+        for i, line in enumerate(action_lines):
+            prob = probs[i] if i < len(probs) else 0.0
+            print(f"  {line}  P={prob:.3f}")
+        print()
+        _decode_board_state(e["obs"], value=games[e["game_idx"]]["values"][e["step"]])
+        print()
+
+    return entries
+
+
+def _analyze_entropy(games, verbose=True):
+    """Compute policy entropy at each decision point.
+
+    H = -sum(p * ln(p)) for legal actions. Normalized entropy H_norm = H / ln(N)
+    ranges from 0 (certain) to 1 (uniform).
+
+    Returns list of (entropy, normalized_entropy, feat, step_name, result, game_idx, step) tuples.
+    """
+    records = []
+    for g_idx, game in enumerate(games):
+        probs_list = game.get("action_probs", [])
+        if not probs_list:
+            continue
+        for step, (probs, nc, feat) in enumerate(zip(
+                probs_list, game["num_choices"], game["interp_features"])):
+            # Entropy: -sum(p * ln(p)), skip zero-probability actions
+            p = probs[:nc]
+            p_safe = p[p > 1e-10]
+            entropy = -np.sum(p_safe * np.log(p_safe))
+            max_entropy = np.log(nc) if nc > 1 else 1.0
+            norm_entropy = entropy / max_entropy if max_entropy > 0 else 0.0
+            records.append({
+                "entropy": entropy, "norm_entropy": norm_entropy,
+                "feat": feat, "num_choices": nc,
+                "result": game["result"], "game_idx": g_idx, "step": step,
+            })
+
+    if not records:
+        print("No decisions with action probabilities found.")
+        return records
+
+    if not verbose:
+        return records
+
+    all_h = np.array([r["entropy"] for r in records])
+    all_hn = np.array([r["norm_entropy"] for r in records])
+
+    print(f"\nPolicy entropy analysis — {len(games)} games, {len(records)} decisions")
+    print(f"  Raw entropy:  mean={all_h.mean():.3f}  std={all_h.std():.3f}  "
+          f"min={all_h.min():.3f}  max={all_h.max():.3f}")
+    print(f"  Norm entropy: mean={all_hn.mean():.3f}  std={all_hn.std():.3f}  "
+          f"(0=certain, 1=uniform)")
+
+    # By game outcome
+    win_h = [r["norm_entropy"] for r in records if r["result"] > 0]
+    loss_h = [r["norm_entropy"] for r in records if r["result"] < 0]
+    if win_h and loss_h:
+        print(f"\n  By outcome:")
+        print(f"    Wins:   norm_H={np.mean(win_h):.3f} +/- {np.std(win_h):.3f}")
+        print(f"    Losses: norm_H={np.mean(loss_h):.3f} +/- {np.std(loss_h):.3f}")
+        if np.mean(loss_h) > np.mean(win_h) + 0.05:
+            print(f"    ** Model is more uncertain in losing games — "
+                  f"suggests confusion rather than deliberate unpredictability.")
+
+    # By game phase
+    print(f"\n  By game phase:")
+    print(f"    {'Phase':<14} {'Mean H':>8} {'Norm H':>8} {'Std':>8} {'N':>6}")
+    phase_data = {}
+    for r in records:
+        step_name = _step_name_from_feat(r["feat"])
+        phase_data.setdefault(step_name, []).append(r)
+    for phase in _INTERP_STEP_NAMES:
+        if phase not in phase_data:
+            continue
+        recs = phase_data[phase]
+        h_vals = [r["entropy"] for r in recs]
+        hn_vals = [r["norm_entropy"] for r in recs]
+        print(f"    {phase:<14} {np.mean(h_vals):8.3f} {np.mean(hn_vals):8.3f} "
+              f"{np.std(hn_vals):8.3f} {len(recs):6d}")
+
+    # By board state bucket
+    print(f"\n  By board state (life / creatures / timing):")
+    print(f"    {'Bucket':<28} {'Norm H':>8} {'Std':>8} {'N':>6}")
+    bucket_data = {}
+    for r in records:
+        life, board, timing = _board_bucket_from_feat(r["feat"])
+        key = f"{life:<7} {board:<7} {timing}"
+        bucket_data.setdefault(key, []).append(r["norm_entropy"])
+    for key in sorted(bucket_data):
+        vals = bucket_data[key]
+        if len(vals) < 5:
+            continue
+        flag = " **" if np.mean(vals) > all_hn.mean() + all_hn.std() else ""
+        print(f"    {key:<28} {np.mean(vals):8.3f} {np.std(vals):8.3f} {len(vals):6d}{flag}")
+
+    # Low entropy check (potential overfit)
+    low_entropy_frac = np.mean(all_hn < 0.1)
+    if low_entropy_frac > 0.8:
+        print(f"\n  WARNING: {low_entropy_frac:.0%} of decisions have norm_H < 0.1 — "
+              f"potential overfit to a narrow strategy.")
+
+    # Phase × outcome breakdown for phases with interesting patterns
+    print(f"\n  Phase × Outcome breakdown:")
+    print(f"    {'Phase':<14} {'Win H':>8} {'Loss H':>8} {'Delta':>8}")
+    for phase in _INTERP_STEP_NAMES:
+        if phase not in phase_data:
+            continue
+        recs = phase_data[phase]
+        w_h = [r["norm_entropy"] for r in recs if r["result"] > 0]
+        l_h = [r["norm_entropy"] for r in recs if r["result"] < 0]
+        if len(w_h) < 3 or len(l_h) < 3:
+            continue
+        delta = np.mean(l_h) - np.mean(w_h)
+        marker = " *" if abs(delta) > 0.05 else ""
+        print(f"    {phase:<14} {np.mean(w_h):8.3f} {np.mean(l_h):8.3f} {delta:+8.3f}{marker}")
+
+    return records
+
+
+def _analyze_consistency(games, top_n=20, verbose=True):
+    """Find similar observations where the model chose different actions.
+
+    Uses cosine similarity on _INTERP_FEATURE_NAMES vectors. Reports
+    inconsistency rates for simple game states.
+
+    Returns list of inconsistent pairs sorted by descending similarity.
+    """
+    # Collect all (interp_feat, action_category, game_idx, step) tuples
+    points = []
+    for g_idx, game in enumerate(games):
+        for step, (feat, action, nc, obs) in enumerate(zip(
+                game["interp_features"], game["actions"],
+                game["num_choices"], game["observations"])):
+            # Decode chosen action category
+            cat_raw = obs[STATE_SIZE + action]
+            cat = int(round(cat_raw * ACTION_CATEGORY_MAX))
+            points.append({
+                "feat": feat, "action": action, "cat": cat,
+                "game_idx": g_idx, "step": step,
+                "num_choices": nc, "obs": obs,
+                "result": game["result"],
+            })
+
+    if len(points) < 10:
+        print("Not enough decision points for consistency analysis.")
+        return []
+
+    # Build feature matrix and normalize for cosine similarity
+    feat_mat = np.array([p["feat"] for p in points], dtype=np.float64)
+    norms = np.linalg.norm(feat_mat, axis=1, keepdims=True)
+    norms[norms < 1e-10] = 1.0
+    feat_norm = feat_mat / norms
+
+    # For efficiency, sample if too many points
+    max_compare = 5000
+    if len(points) > max_compare:
+        idx = np.random.choice(len(points), size=max_compare, replace=False)
+        idx.sort()
+        points_sub = [points[i] for i in idx]
+        feat_sub = feat_norm[idx]
+    else:
+        points_sub = points
+        feat_sub = feat_norm
+
+    # Compute pairwise cosine similarity (dot product of normalized vectors)
+    sim_matrix = feat_sub @ feat_sub.T
+
+    # Find pairs with high similarity but different action categories
+    pairs = []
+    n = len(points_sub)
+    for i in range(n):
+        for j in range(i + 1, n):
+            if sim_matrix[i, j] < 0.95:
+                continue
+            if points_sub[i]["cat"] == points_sub[j]["cat"]:
+                continue
+            pairs.append({
+                "similarity": sim_matrix[i, j],
+                "i": points_sub[i], "j": points_sub[j],
+            })
+
+    pairs.sort(key=lambda p: -p["similarity"])
+
+    if not verbose:
+        return pairs
+
+    n_high_sim = np.sum(sim_matrix > 0.95) // 2  # upper triangle
+    n_same_action = 0
+    n_diff_action = 0
+    for i in range(n):
+        for j in range(i + 1, n):
+            if sim_matrix[i, j] < 0.95:
+                continue
+            if points_sub[i]["cat"] == points_sub[j]["cat"]:
+                n_same_action += 1
+            else:
+                n_diff_action += 1
+
+    print(f"\nDecision consistency analysis — {len(games)} games, {len(points)} decisions")
+    if len(points) > max_compare:
+        print(f"  (sampled {max_compare} decisions for pairwise comparison)")
+    print(f"\n  Pairs with cosine similarity > 0.95: {n_high_sim}")
+    if n_high_sim > 0:
+        consistency_rate = n_same_action / (n_same_action + n_diff_action) * 100
+        print(f"    Same action category: {n_same_action} ({consistency_rate:.1f}%)")
+        print(f"    Different action:     {n_diff_action} ({100 - consistency_rate:.1f}%)")
+    else:
+        print("    No highly similar state pairs found.")
+        return pairs
+
+    # Simple state inconsistency: few creatures, plenty of mana
+    simple_mask = []
+    for p in points_sub:
+        f = p["feat"]
+        total_creatures = f[18] + f[21]  # self + opp creatures
+        total_mana = f[9]  # self total mana
+        simple_mask.append(total_creatures <= 2 and total_mana >= 3)
+
+    simple_idx = [i for i, m in enumerate(simple_mask) if m]
+    if len(simple_idx) >= 10:
+        simple_feat = feat_sub[simple_idx]
+        simple_sim = simple_feat @ simple_feat.T
+        simple_same = simple_diff = 0
+        for i in range(len(simple_idx)):
+            for j in range(i + 1, len(simple_idx)):
+                if simple_sim[i, j] < 0.95:
+                    continue
+                if points_sub[simple_idx[i]]["cat"] == points_sub[simple_idx[j]]["cat"]:
+                    simple_same += 1
+                else:
+                    simple_diff += 1
+        simple_total = simple_same + simple_diff
+        if simple_total > 0:
+            simple_inconsistent = simple_diff / simple_total * 100
+            flag = " ** RED FLAG" if simple_inconsistent > 20 else ""
+            print(f"\n  Simple states (<=2 creatures, >=3 mana): "
+                  f"{len(simple_idx)} decisions")
+            print(f"    High-similarity pairs: {simple_total}")
+            print(f"    Inconsistency rate: {simple_inconsistent:.1f}%{flag}")
+
+    # Top inconsistent pairs
+    top = pairs[:min(top_n, len(pairs))]
+    if top:
+        print(f"\n  Top {len(top)} most inconsistent pairs (high sim, different action):")
+        print(f"    {'#':<4} {'Sim':>6} {'Game A':>7} {'Step A':>7} "
+              f"{'Game B':>7} {'Step B':>7} {'Action A':<14} {'Action B':<14}")
+        print(f"    {'-'*4} {'-'*6} {'-'*7} {'-'*7} {'-'*7} {'-'*7} {'-'*14} {'-'*14}")
+        for rank, pair in enumerate(top):
+            pi, pj = pair["i"], pair["j"]
+            cat_a = _CAT_NAMES.get(pi["cat"], str(pi["cat"]))
+            cat_b = _CAT_NAMES.get(pj["cat"], str(pj["cat"]))
+            print(f"    {rank + 1:<4} {pair['similarity']:6.3f} "
+                  f"{pi['game_idx']:>7} {pi['step']:>7} "
+                  f"{pj['game_idx']:>7} {pj['step']:>7} "
+                  f"{cat_a:<14} {cat_b:<14}")
+
+        # Detailed comparison for top 3
+        print(f"\n  Detailed comparison for top {min(3, len(top))} pairs:\n")
+        for rank, pair in enumerate(top[:3]):
+            pi, pj = pair["i"], pair["j"]
+            print(f"  --- Pair #{rank + 1} (similarity={pair['similarity']:.4f}) ---")
+            for label, p in [("A", pi), ("B", pj)]:
+                cat_name = _CAT_NAMES.get(p["cat"], str(p["cat"]))
+                f = p["feat"]
+                result_str = "W" if p["result"] > 0 else ("L" if p["result"] < 0 else "D")
+                print(f"    [{label}] Game {p['game_idx']} step {p['step']} ({result_str})  "
+                      f"Action: {cat_name}")
+                print(f"        Life {f[0]:.0f}/{f[1]:.0f}  "
+                      f"Creatures {f[18]:.0f}v{f[21]:.0f}  "
+                      f"Lands {f[19]:.0f}v{f[22]:.0f}  "
+                      f"Hand {f[17]:.0f}  Mana {f[9]:.0f}  "
+                      f"Phase: {_step_name_from_feat(f)}")
+            # Show what features differ most
+            diff = np.abs(pi["feat"] - pj["feat"])
+            top_diff_idx = np.argsort(-diff)[:5]
+            diffs_str = ", ".join(
+                f"{_INTERP_FEATURE_NAMES[k]}({pi['feat'][k]:.1f}→{pj['feat'][k]:.1f})"
+                for k in top_diff_idx if diff[k] > 0.01)
+            if diffs_str:
+                print(f"    Largest feature diffs: {diffs_str}")
+            print()
+
+    return pairs
+
+
+def cmd_regret(args):
+    """Action regret / counterfactual analysis using policy distribution."""
+    model, env, opp_model = _load_model_and_env(args)
+
+    print(f"\nCollecting {args.n_games} game traces...")
+    games = _collect_game_traces(model, env, opp_model, args.n_games)
+    env.close()
+
+    _analyze_regret(games, top_n=args.top)
+
+    _interactive_session({
+        "games": games, "swing_data": None,
+        "shap_values": None, "shap_samples": None,
+        "model": None, "env": None, "opp_model": None, "args": args,
+    })
+
+
+def cmd_entropy(args):
+    """Policy entropy analysis over game phases and board states."""
+    model, env, opp_model = _load_model_and_env(args)
+
+    print(f"\nCollecting {args.n_games} game traces...")
+    games = _collect_game_traces(model, env, opp_model, args.n_games)
+    env.close()
+
+    records = _analyze_entropy(games)
+
+    # Try to plot
+    try:
+        import matplotlib
+        matplotlib.use("TkAgg")
+        import matplotlib.pyplot as plt
+
+        # Entropy by phase
+        phase_data = {}
+        for r in records:
+            step_name = _step_name_from_feat(r["feat"])
+            phase_data.setdefault(step_name, []).append(r["norm_entropy"])
+
+        phases_present = [p for p in _INTERP_STEP_NAMES if p in phase_data]
+        if phases_present:
+            fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+
+            # Box plot by phase
+            ax = axes[0]
+            bp_data = [phase_data[p] for p in phases_present]
+            ax.boxplot(bp_data, labels=phases_present, vert=True)
+            ax.set_xticklabels(phases_present, rotation=45, ha="right", fontsize=8)
+            ax.set_ylabel("Normalized Entropy")
+            ax.set_title("Policy Entropy by Game Phase")
+            ax.grid(True, alpha=0.3)
+
+            # Entropy by outcome over time (game progress)
+            ax = axes[1]
+            win_records = [r for r in records if r["result"] > 0]
+            loss_records = [r for r in records if r["result"] < 0]
+            for label, recs, color in [("Wins", win_records, "steelblue"),
+                                       ("Losses", loss_records, "firebrick")]:
+                if not recs:
+                    continue
+                # Bin by step index within game
+                max_step = max(r["step"] for r in recs)
+                if max_step < 5:
+                    continue
+                n_bins = min(20, max_step)
+                bin_edges = np.linspace(0, max_step + 1, n_bins + 1)
+                bin_means = []
+                bin_centers = []
+                for b in range(n_bins):
+                    in_bin = [r["norm_entropy"] for r in recs
+                              if bin_edges[b] <= r["step"] < bin_edges[b + 1]]
+                    if in_bin:
+                        bin_means.append(np.mean(in_bin))
+                        bin_centers.append((bin_edges[b] + bin_edges[b + 1]) / 2)
+                ax.plot(bin_centers, bin_means, color=color, label=label, linewidth=1.5)
+            ax.set_xlabel("Decision Step in Game")
+            ax.set_ylabel("Mean Normalized Entropy")
+            ax.set_title("Entropy Over Game Progress")
+            ax.legend()
+            ax.grid(True, alpha=0.3)
+
+            plt.tight_layout()
+            plt.show()
+    except Exception as e:
+        print(f"\nCould not display plot: {e}", file=sys.stderr)
+
+    _interactive_session({
+        "games": games, "swing_data": None,
+        "shap_values": None, "shap_samples": None,
+        "model": None, "env": None, "opp_model": None, "args": args,
+    })
+
+
+def cmd_consistency(args):
+    """Decision consistency analysis for similar game states."""
+    model, env, opp_model = _load_model_and_env(args)
+
+    print(f"\nCollecting {args.n_games} game traces...")
+    games = _collect_game_traces(model, env, opp_model, args.n_games)
+    env.close()
+
+    _analyze_consistency(games, top_n=args.top)
+
+    _interactive_session({
+        "games": games, "swing_data": None,
+        "shap_values": None, "shap_samples": None,
+        "model": None, "env": None, "opp_model": None, "args": args,
+    })
+
+
 def cmd_interactive(args):
     """Load model, simulate games, then enter the interactive session."""
     model, env, opp_model = _load_model_and_env(args)
@@ -1967,6 +2571,23 @@ def main():
     p.add_argument("--n-games", type=int, default=50, help="Number of games to simulate (default: 50)")
     p.add_argument("--top", type=int, default=10, help="Show top N swings (default: 10)")
 
+    p = sub.add_parser("regret",
+                       help="Action regret analysis using policy distribution")
+    _add_sim_args(p)
+    p.add_argument("--n-games", type=int, default=50, help="Number of games to simulate (default: 50)")
+    p.add_argument("--top", type=int, default=20, help="Show top N high-regret decisions (default: 20)")
+
+    p = sub.add_parser("entropy",
+                       help="Policy entropy by game phase and board state")
+    _add_sim_args(p)
+    p.add_argument("--n-games", type=int, default=50, help="Number of games to simulate (default: 50)")
+
+    p = sub.add_parser("consistency",
+                       help="Decision consistency for similar game states")
+    _add_sim_args(p)
+    p.add_argument("--n-games", type=int, default=50, help="Number of games to simulate (default: 50)")
+    p.add_argument("--top", type=int, default=20, help="Show top N inconsistent pairs (default: 20)")
+
     p = sub.add_parser("interactive",
                        help="Interactive session: simulate games then inspect replays, "
                             "board states, value charts, SHAP, and more")
@@ -1989,6 +2610,9 @@ def main():
         "choice-rates": cmd_choice_rates,
         "shap": cmd_shap,
         "value-swings": cmd_value_swings,
+        "regret": cmd_regret,
+        "entropy": cmd_entropy,
+        "consistency": cmd_consistency,
         "interactive": cmd_interactive,
     }[args.command](args)
 

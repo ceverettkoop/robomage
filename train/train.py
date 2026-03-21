@@ -912,11 +912,14 @@ if __name__ == "__main__":
         print(f"Training all {len(matchups)} matchups for {args.total_timesteps:,} timesteps each:")
         for d, o in matchups:
             print(f"  {d} vs {o}")
+        checkpoint_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), CHECKPOINT_DIR)
         for i, (d, o) in enumerate(matchups):
             print(f"\n{'='*60}")
             print(f"[{i+1}/{len(matchups)}] {d} vs {o}")
             print(f"{'='*60}")
-            train(args.binary, load_path=None, total_timesteps=args.total_timesteps,
+            candidate = os.path.join(checkpoint_dir, f"{d}_{o}_final.zip")
+            resume_path = candidate if os.path.exists(candidate) else None
+            train(args.binary, load_path=resume_path, total_timesteps=args.total_timesteps,
                   tally=args.tally, self_play=args.self_play,
                   scripted_fraction=args.scripted_fraction,
                   model_deck=d, opp_deck=o, record=args.record)
