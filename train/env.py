@@ -76,6 +76,8 @@ SHAPING_MANA_WASTED      = -0.15  # per drain event with mana remaining in pool
 SHAPING_MULLIGAN_PENALTY =  0.00  # per mulligan taken beyond the 2nd (C++: >= 3rd)
 SHAPING_OPPONENT_BELOW10 =  0.10  # one-time bonus when opponent life first drops < 10
 SHAPING_HAND_ADV_PER_CARD = 0.01  # potential weight per card of hand advantage (potential-based)
+SHAPING_POWER_ADV_PER_PT  = 0.005 # potential weight per point of power advantage on board
+SHAPING_BONUS_CAP         = 0.3   # max absolute shaping bonus per step
 _ACTION_CARD_ID_NULL = -1.0 / N_CARD_TYPES  # null sentinel for non-card slots
 _ACTION_CTRL_NULL    = -1.0 / N_CARD_TYPES  # null sentinel for non-entity actions
 MAX_HAND_SLOTS = 10
@@ -89,6 +91,25 @@ _STACK_START  = 34 + 96 * 138    # 13282: stack slots (12 × 130)
 _GY_START     = 13282 + 12 * 130 # 14842: graveyard   (128 × 128)
 _HAND_START   = 14842 + 128 * 128 # 31226: hand        (10 × 128)
 _HIST_START   = 31226 + 10 * 128  # 32506: action history (15 × 3)
+_SELF_PERM_START = 34
+_OPP_PERM_START  = 34 + 48 * 138  # 6658
+_PERM_SLOTS      = 48
+_PERM_SLOT_SIZE  = 138
+
+def _board_power_advantage(obs):
+    """Return self_power - opp_power from the observation vector."""
+    self_power = 0.0
+    for i in range(_PERM_SLOTS):
+        base = _SELF_PERM_START + i * _PERM_SLOT_SIZE
+        if obs[base + 8] > 0.5:  # is_creature
+            self_power += obs[base] * 10.0  # power/10 → power
+    opp_power = 0.0
+    for i in range(_PERM_SLOTS):
+        base = _OPP_PERM_START + i * _PERM_SLOT_SIZE
+        if obs[base + 8] > 0.5:
+            opp_power += obs[base] * 10.0
+    return self_power - opp_power
+
 _REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BINARY = os.path.join(_REPO_ROOT, "bin", "robomage")
 BIN_DIR = os.path.join(_REPO_ROOT, "bin")  # game must be run from here for resource lookup
@@ -697,6 +718,12 @@ class ModelVsScriptedEnv(gym.Env):
             phi_curr = max(0.0, obs[1] - obs[10]) * 10.0
             shaping += SHAPING_HAND_ADV_PER_CARD * (phi_curr - phi_prev)
 
+            # Potential-based board power advantage
+            power_prev = _board_power_advantage(self._last_obs)
+            power_curr = _board_power_advantage(obs)
+            shaping += SHAPING_POWER_ADV_PER_PT * (power_curr - power_prev)
+
+        shaping = max(-SHAPING_BONUS_CAP, min(SHAPING_BONUS_CAP, shaping))
         shaping *= self.shaping_scale
         self._last_obs = obs.copy() if not (terminated or truncated) else None
 

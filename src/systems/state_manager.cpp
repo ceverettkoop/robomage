@@ -1092,7 +1092,9 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             tgt_ok = has_legal_targets(ab, orderer);
             break;
         }
-        if (can_cast_now && tgt_ok) {
+        auto pf_it = cur_game.payment_fail_counts.find(card_entity);
+        bool payment_blocked = pf_it != cur_game.payment_fail_counts.end() && pf_it->second >= 2;
+        if (can_cast_now && tgt_ok && !payment_blocked) {
             std::string desc = "Cast " + card_data.name;
             LegalAction la(CAST_SPELL, card_entity, desc);
             la.category = ActionCategory::CAST_SPELL;
@@ -1262,6 +1264,8 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 // Non-mana activated ability (e.g. ChangeZone for fetch lands, Destroy for Wasteland)
                 if (!ab.activation_mana_cost.empty() && !can_afford_with_sources(priority_player, ab.activation_mana_cost, orderer)) continue;
                 if (ab.valid_tgts != "N_A" && !has_legal_targets(ab, orderer)) continue;
+                { auto it = cur_game.payment_fail_counts.find(ab.source);
+                  if (it != cur_game.payment_fail_counts.end() && it->second >= 2) continue; }
                 std::string src_name = entity_name(ab.source);
                 std::string desc = "Activate " + src_name + " (" + ab.category + ")";
                 LegalAction non_mana_la(ACTIVATE_ABILITY, ab.source, ab, desc);
@@ -1280,6 +1284,8 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             if (!ab.activation_mana_cost.empty() && !can_afford_with_sources(priority_player, ab.activation_mana_cost, orderer)) continue;
             // Check target legality
             if (ab.valid_tgts != "N_A" && ab.target_min > 0 && !has_legal_targets(ab, orderer)) continue;
+            { auto it = cur_game.payment_fail_counts.find(card_entity);
+              if (it != cur_game.payment_fail_counts.end() && it->second >= 2) continue; }
             std::string desc = "Activate " + card_data.name + " from hand (" + ab.category + ")";
             LegalAction la(ACTIVATE_ABILITY, card_entity, ab, desc);
             la.category = ActionCategory::ACTIVATE_ABILITY;

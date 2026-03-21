@@ -56,6 +56,7 @@ void Game::take_action() {
     // When a player takes an action, reset the pass tracking
     a_has_passed = false;
     b_has_passed = false;
+    payment_fail_counts.clear();
 }
 
 bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared_ptr<Orderer> orderer) {

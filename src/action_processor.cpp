@@ -85,6 +85,7 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
             auto mana_snap = snapshot_mana_state(ctrl, orderer);
             if (!prompt_mana_payment(ctrl, ability.activation_mana_cost, permanent_entity, orderer)) {
                 restore_mana_state(ctrl, mana_snap, orderer);
+                cur_game.payment_fail_counts[permanent_entity]++;
                 game_log("Payment cancelled.\n");
                 return;
             }
@@ -152,6 +153,7 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
             if (!prompt_mana_payment(controller, ability.activation_mana_cost, permanent_entity, orderer)) {
                 restore_mana_state(controller, mana_snap, orderer);
                 if (ability.tap_cost) permanent.is_tapped = false;
+                cur_game.payment_fail_counts[permanent_entity]++;
                 game_log("Payment cancelled.\n");
                 return;
             }
@@ -189,6 +191,7 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
         if (!prompt_mana_payment(controller, ability.activation_mana_cost, permanent_entity, orderer)) {
             restore_mana_state(controller, mana_snap, orderer);
             if (ability.tap_cost) permanent.is_tapped = false;
+            cur_game.payment_fail_counts[permanent_entity]++;
             game_log("Payment cancelled.\n");
             return;
         }
@@ -891,6 +894,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                 if (card_data.has_delve) cur_game.delve_exiled.clear();
                 if (!prompt_mana_payment(caster, cost_to_pay, spell_entity, orderer, card_data.has_delve)) {
                     restore_mana_state(caster, mana_snap, orderer);
+                    cur_game.payment_fail_counts[spell_entity]++;
                     game_log("Payment cancelled.\n");
                     break;
                 }
