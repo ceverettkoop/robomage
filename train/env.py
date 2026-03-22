@@ -74,10 +74,10 @@ ACTION_CATEGORY_MAX = 23 # highest ActionCategory enum value (DIG_CHOICE)
 # ── Shaping reward magnitudes ─────────────────────────────────────────────────
 SHAPING_MANA_WASTED      = -0.15  # per drain event with mana remaining in pool
 SHAPING_MULLIGAN_PENALTY =  0.00  # per mulligan taken beyond the 2nd (C++: >= 3rd)
-SHAPING_OPPONENT_BELOW10 =  0.10  # one-time bonus when opponent life first drops < 10
+SHAPING_OPPONENT_BELOW10 =  0.00  # one-time bonus when opponent life first drops < 10
 SHAPING_HAND_ADV_PER_CARD = 0.01  # potential weight per card of hand advantage (potential-based)
 SHAPING_POWER_ADV_PER_PT  = 0.005 # potential weight per point of power advantage on board
-SHAPING_EPISODE_CAP       = 0.4   # max absolute shaping bonus per episode
+SHAPING_EPISODE_CAP       = 0.2   # max absolute shaping bonus per episode
 _ACTION_CARD_ID_NULL = -1.0 / N_CARD_TYPES  # null sentinel for non-card slots
 _ACTION_CTRL_NULL    = -1.0 / N_CARD_TYPES  # null sentinel for non-entity actions
 MAX_HAND_SLOTS = 10

@@ -14,7 +14,7 @@ The compiled binary is output to `bin/robomage`.
 ## Testing guidelines
 -Non fatal errors are not acceptable
 -Draws are not acceptable
-
+-train.py --diag and train.py --watch-scripted are helpful for checking new builds
 
 ## Code Style
 
