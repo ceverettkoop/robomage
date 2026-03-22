@@ -492,13 +492,13 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
             vec_env,
             policy_kwargs=policy_kwargs,
             learning_rate=3e-4,
-            n_steps=2048,           # steps per env per update
-            batch_size=512,
+            n_steps=4096,           # steps per env per update
+            batch_size=1024,
             n_epochs=4,
             gamma=0.99,
             gae_lambda=0.95,
             clip_range=0.25,
-            ent_coef=0.05,         
+            ent_coef=0.08,         
             verbose=1,
             tensorboard_log=LOG_DIR,
         )
@@ -506,7 +506,7 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
     actual_n_envs = n_envs if self_play else N_ENVS
     callbacks = [
         CheckpointCallback(
-            save_freq=25_000 // actual_n_envs,
+            save_freq=100_000 // actual_n_envs,
             save_path=checkpoint_dir,
             name_prefix=model_prefix,
         ),

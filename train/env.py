@@ -72,12 +72,12 @@ _BQUERY_CTRL_BYTES  = MAX_ACTIONS * 4  # float32
 ACTION_CATEGORY_MAX = 23 # highest ActionCategory enum value (DIG_CHOICE)
 
 # ── Shaping reward magnitudes ─────────────────────────────────────────────────
-SHAPING_MANA_WASTED      = -0.15  # per drain event with mana remaining in pool
+SHAPING_MANA_WASTED      = -0.00  # per drain event with mana remaining in pool; commented out because we aren't letting it float anymore
 SHAPING_MULLIGAN_PENALTY =  0.00  # per mulligan taken beyond the 2nd (C++: >= 3rd)
 SHAPING_OPPONENT_BELOW10 =  0.00  # one-time bonus when opponent life first drops < 10
 SHAPING_HAND_ADV_PER_CARD = 0.01  # potential weight per card of hand advantage (potential-based)
 SHAPING_POWER_ADV_PER_PT  = 0.005 # potential weight per point of power advantage on board
-SHAPING_EPISODE_CAP       = 0.2   # max absolute shaping bonus per episode
+SHAPING_EPISODE_CAP       = 0.3   # max absolute shaping bonus per episode
 _ACTION_CARD_ID_NULL = -1.0 / N_CARD_TYPES  # null sentinel for non-card slots
 _ACTION_CTRL_NULL    = -1.0 / N_CARD_TYPES  # null sentinel for non-entity actions
 MAX_HAND_SLOTS = 10
@@ -358,22 +358,10 @@ _CAT_CAST       = 7
 _CAT_TARGET     = 8
 _CAT_LAND       = 9
 _CAT_MULLIGAN   = 11
-_CAT_MANA_W     = 13
-_CAT_MANA_U     = 14
-_CAT_MANA_B     = 15
-_CAT_MANA_R     = 16
-_CAT_MANA_G     = 17
-_CAT_MANA_C     = 18
 _CAT_SEARCH     = 19  # search library (action 0 = fail to find, 1+ = actual cards)
 _CAT_OTHER      = 10  # generic choice (Sylvan Library pay/return, unless costs, etc.)
 _CAT_PAYING     = 22  # paying costs (tap lands for mana, delve exile, pitch cards)
 _CAT_DIG        = 23  # dig choice (Once Upon a Time: pick creature/land from top N)
-
-# All mana-producing categories
-_MANA_CATS = {_CAT_MANA_W, _CAT_MANA_U, _CAT_MANA_B, _CAT_MANA_R, _CAT_MANA_G, _CAT_MANA_C}
-
-# Map from mana pool color index (W=0,U=1,B=2,R=3,G=4,C=5) to action category
-_COLOR_TO_MANA_CAT = [_CAT_MANA_W, _CAT_MANA_U, _CAT_MANA_B, _CAT_MANA_R, _CAT_MANA_G, _CAT_MANA_C]
 
 # Colored mana requirements per card vocab index (card_vocab.h).
 # Keys are color pool indices: W=0, U=1, B=2, R=3, G=4, C=5.
@@ -580,36 +568,8 @@ def scripted_action(obs: np.ndarray, num_choices: int) -> int:
                     continue  # no opponent nonbasic land to target — skip
                 return i
 
-    # 9. Tap mana during main phases only, choosing the color the hand needs most
-    if in_main_phase and any(c in _MANA_CATS for c in cats):
-        # Determine what colored mana is still needed for cards in hand
-        # Perspective-normalized: self's mana pool is always at [3-8]
-        pool_start = 3
-        pool = [int(round(obs[pool_start + i] * 10)) for i in range(6)]
-        needed = [0] * 6
-        for slot in range(10):
-            base = _HAND_START + slot * N_CARD_TYPES
-            slot_vec = obs[base:base + N_CARD_TYPES]
-            card_idx = int(np.argmax(slot_vec))
-            if slot_vec[card_idx] < 0.5:
-                continue  # empty slot
-            for color_idx, count in _CARD_COLORED_COSTS.get(card_idx, {}).items():
-                needed[color_idx] = max(needed[color_idx], count)
-        short = [max(0, needed[i] - pool[i]) for i in range(6)]
-
-        # Prefer the color we're shortest on
-        for color_idx in sorted(range(6), key=lambda ci: -short[ci]):
-            if short[color_idx] <= 0:
-                break
-            target_cat = _COLOR_TO_MANA_CAT[color_idx]
-            for i, c in enumerate(cats):
-                if c == target_cat:
-                    return i
-
-        # Fallback: tap any available mana source
-        for i, c in enumerate(cats):
-            if c in _MANA_CATS:
-                return i
+    # 9. (Removed - mana abilities no longer offered during normal priority in machine mode;
+    #     mana is tapped automatically during cost payment via PAYING_COSTS.)
 
     # 10. Dig choice (Once Upon a Time): pick action 1 (first matching card) if available.
     if any(c == _CAT_DIG for c in cats):
@@ -851,7 +811,8 @@ class SelfPlayEnv(gym.Env):
     checkpoints exist yet the opponent acts randomly (bootstrapping phase).
     """
 
-    RELOAD_EVERY = 10  # episodes between opponent checkpoint reloads
+    RELOAD_EVERY = 100  # episodes between opponent checkpoint reloads
+    _model_cache = {}  # class-level: {path: (mtime, model)}
 
     def __init__(self, checkpoint_dir: str, binary_path: str = BINARY, render_mode=None,
                  model_deck: str | None = None, opp_deck: str | None = None):
@@ -967,10 +928,17 @@ class SelfPlayEnv(gym.Env):
         path = str(np.random.choice(files))
         self._opp_checkpoint_path = path
         try:
+            mtime = os.path.getmtime(path)
+            cached = SelfPlayEnv._model_cache.get(path)
+            if cached is not None and cached[0] == mtime:
+                self._opponent = cached[1]
+                return
             try:
                 from sb3_contrib import MaskablePPO as _PPO
             except ImportError:
                 from stable_baselines3 import PPO as _PPO
-            self._opponent = _PPO.load(path, device="cpu")
+            model = _PPO.load(path, device="cpu")
+            SelfPlayEnv._model_cache[path] = (mtime, model)
+            self._opponent = model
         except Exception:
             self._opponent = None  # fall back to random if load fails

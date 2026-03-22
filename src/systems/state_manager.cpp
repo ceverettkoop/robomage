@@ -23,6 +23,7 @@
 #include "../ecs/events.h"
 #include "../cli_output.h"
 #include "../game_queries.h"
+#include "../input_logger.h"
 #include "../mana_system.h"
 #include "../systems/stack_manager.h"
 #include "orderer.h"
@@ -1304,8 +1305,10 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         actions.push_back(ma);
     }
     */
-    for (auto &ma : legal_mana_abilities) {
-        actions.push_back(ma);
+    if (!InputLogger::instance().is_machine_mode()) {
+        for (auto &ma : legal_mana_abilities) {
+            actions.push_back(ma);
+        }
     }
     return actions;
 }
