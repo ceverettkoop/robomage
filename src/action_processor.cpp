@@ -395,6 +395,8 @@ static std::vector<Entity> build_valid_targets(
                         if (t.kind == SUPERTYPE && t.name == "Legendary") { is_legendary = true; break; }
                     if (!is_legendary) continue;
                 }
+                if (has_protection_from(global_coordinator.GetComponent<Creature>(entity), ability.source))
+                    continue;
                 valid_targets.push_back(entity);
                 continue;
             }
@@ -644,6 +646,7 @@ static std::vector<Entity> determine_blockable_attackers(Entity blocker, const s
             }
 
         if (atk_flying && !blocker_can_fly) continue;
+        if (has_protection_from(acr, blocker)) continue;
         result.push_back(atk);
     }
     return result;

@@ -2,9 +2,11 @@
 #define CREATURE_H
 
 #include <cstdint>
+#include <set>
 #include <string>
 #include <vector>
 #include "../ecs/entity.h"
+#include "../classes/colors.h"
 
 struct Creature {
     uint32_t power = 0;
@@ -18,5 +20,8 @@ struct Creature {
     int plus_one_counters = 0;       // +1/+1 counters; power/toughness adjusted when added/removed
     int prowess_bonus = 0;           // temporary +1/+1 from prowess; cleared at cleanup step
 };
+
+std::set<Colors> get_protection_colors(const Creature &cr);
+bool has_protection_from(const Creature &cr, Entity source);
 
 #endif /* CREATURE_H */

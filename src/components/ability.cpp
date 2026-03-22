@@ -9,6 +9,7 @@
 #include "../classes/game.h"
 #include "../cli_output.h"
 #include "../components/carddata.h"
+#include "../components/creature.h"
 #include "../components/token.h"
 #include "../components/types.h"
 #include "../ecs/coordinator.h"
@@ -466,6 +467,8 @@ bool Ability::is_target_valid() const {
                 if (t.kind == SUPERTYPE && t.name == "Legendary") { is_legendary = true; break; }
             if (!is_legendary) return false;
         }
+        if (has_protection_from(global_coordinator.GetComponent<Creature>(target), source))
+            return false;
         return true;
     }
 
