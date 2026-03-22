@@ -96,18 +96,17 @@ _OPP_PERM_START  = 34 + 48 * 138  # 6658
 _PERM_SLOTS      = 48
 _PERM_SLOT_SIZE  = 138
 
+_SELF_PERM_POWER_IDX = np.arange(_PERM_SLOTS) * _PERM_SLOT_SIZE + _SELF_PERM_START
+_SELF_PERM_CREATURE_IDX = _SELF_PERM_POWER_IDX + 8
+_OPP_PERM_POWER_IDX = np.arange(_PERM_SLOTS) * _PERM_SLOT_SIZE + _OPP_PERM_START
+_OPP_PERM_CREATURE_IDX = _OPP_PERM_POWER_IDX + 8
+
 def _board_power_advantage(obs):
     """Return self_power - opp_power from the observation vector."""
-    self_power = 0.0
-    for i in range(_PERM_SLOTS):
-        base = _SELF_PERM_START + i * _PERM_SLOT_SIZE
-        if obs[base + 8] > 0.5:  # is_creature
-            self_power += obs[base] * 10.0  # power/10 → power
-    opp_power = 0.0
-    for i in range(_PERM_SLOTS):
-        base = _OPP_PERM_START + i * _PERM_SLOT_SIZE
-        if obs[base + 8] > 0.5:
-            opp_power += obs[base] * 10.0
+    self_mask = obs[_SELF_PERM_CREATURE_IDX] > 0.5
+    self_power = np.sum(obs[_SELF_PERM_POWER_IDX[self_mask]]) * 10.0
+    opp_mask = obs[_OPP_PERM_CREATURE_IDX] > 0.5
+    opp_power = np.sum(obs[_OPP_PERM_POWER_IDX[opp_mask]]) * 10.0
     return self_power - opp_power
 
 _REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -283,20 +282,16 @@ class RoboMageEnv(gym.Env):
                 cat_arr = (cats_int / ACTION_CATEGORY_MAX).astype(np.float32)
 
                 # The -1 confirm convention applies to mandatory attacker/blocker queries.
-                _MANDATORY = {2, 3, 4, 5}
                 self._pending_confirm = any(
-                    cats_int[i] in _MANDATORY for i in range(self._num_choices))
+                    cats_int[i] in _MANDATORY_CATS for i in range(self._num_choices))
 
                 # Hand cast costs: matrix-multiply one-hots against cost matrix
                 hand_onehots = state_arr[_HAND_START:_HAND_START + MAX_HAND_SLOTS * N_CARD_TYPES]
                 hand_costs = hand_onehots.reshape(MAX_HAND_SLOTS, N_CARD_TYPES) @ _CARD_COST_MATRIX
 
                 # Battlefield activated ability costs (48 self permanent slots)
-                bf_ability_costs = np.zeros((48, _N_COST_FEATS), dtype=np.float32)
-                bf_card_bases = _BF_START + np.arange(48) * _BF_SLOT_SIZE + _BF_CARD_OFF
-                for slot in range(48):
-                    b = bf_card_bases[slot]
-                    bf_ability_costs[slot] = state_arr[b:b + N_CARD_TYPES] @ _CARD_ABILITY_COST_MATRIX
+                bf_onehots = state_arr[_BF_ONEHOT_IDX].reshape(48, N_CARD_TYPES)
+                bf_ability_costs = bf_onehots @ _CARD_ABILITY_COST_MATRIX
 
                 self._obs = np.concatenate([state_arr, cat_arr, id_arr, ctrl_arr,
                                             hand_costs.flatten(),
@@ -313,7 +308,8 @@ class RoboMageEnv(gym.Env):
             # Return a zero obs on terminal step — will be replaced by reset()
             return np.zeros(OBS_SIZE, dtype=np.float32), info
 
-        return self._obs.copy(), info
+        # np.concatenate already produced a fresh array; no copy needed
+        return self._obs, info
 
     def _print_narrative_line(self, line: str):
         print(line, file=sys.stderr)
@@ -350,6 +346,7 @@ class NarrativeEnv(RoboMageEnv):
 _CAT_PASS       = 0
 _CAT_MANA       = 1   # legacy, no longer emitted by the game
 _CAT_SEL_ATK    = 2
+_MANDATORY_CATS = frozenset({2, 3, 4, 5})  # attacker/blocker confirm categories
 _CAT_CONF_ATK   = 3
 _CAT_SEL_BLK    = 4
 _CAT_CONF_BLK   = 5
@@ -388,6 +385,10 @@ _BF_SLOT_SIZE     = 138  # 10 status floats + 128 card one-hot
 _PERM_A_SLOTS     = 48   # self occupies perm slots 0-47, opponent slots 48-95
 _BF_A_SLOTS       = 24   # ability cost slots per player (unchanged)
 _BF_CARD_OFF      = 10   # offset of card one-hot within each permanent slot
+# Precomputed indices for gathering 48 card one-hot vectors from state array
+_BF_ONEHOT_IDX    = np.concatenate([
+    np.arange(N_CARD_TYPES) + _BF_START + s * 138 + 10 for s in range(48)
+])
 _CTRL_OFF         = 7    # offset of controller_is_self within a permanent slot
 _STACK_SLOT_SIZE  = 130  # controller_is_self(1) + card one-hot(128) + is_spell(1)
 _GY_SLOT_SIZE     = N_CARD_TYPES  # 128 — graveyard slots are just card one-hots
