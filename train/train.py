@@ -412,6 +412,31 @@ class ReplayLogCallback(BaseCallback):
 
 CHECKPOINT_DIR = "checkpoints"
 LOG_DIR = "logs"
+_CHECKPOINT_ABS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "checkpoints")
+
+
+def _resolve_model(path: str) -> str:
+    """Resolve a model shorthand to a full checkpoint path.
+
+    Accepts:
+      - Full path (returned as-is if it exists)
+      - Bare matchup name like 'delver_boomer-mav' → checkpoints/delver_boomer-mav_final.zip
+    """
+    if path is None:
+        return None
+    # Already a real path
+    if os.path.exists(path):
+        return path
+    # Try as matchup shorthand → checkpoints/{name}_final.zip
+    candidate = os.path.join(_CHECKPOINT_ABS, f"{path}_final.zip")
+    if os.path.exists(candidate):
+        return candidate
+    # Try with .zip appended (e.g. 'delver_boomer-mav_100000_steps')
+    candidate2 = os.path.join(_CHECKPOINT_ABS, f"{path}.zip")
+    if os.path.exists(candidate2):
+        return candidate2
+    # Return original — let downstream code report the error
+    return path
 TOTAL_TIMESTEPS = 2_000_000
 N_ENVS = 32           # parallel game processes
 N_ENVS_SELF_PLAY = 12 # self-play (each loads an opponent model)
@@ -1042,6 +1067,12 @@ if __name__ == "__main__":
     parser.add_argument("--train-deck", type=str, default=None,
                         help="Train all matchups that include the given deck (ignores --deck/--opponent)")
     args = parser.parse_args()
+
+    # Resolve model shorthands (e.g. 'delver_boomer-mav' → checkpoints/delver_boomer-mav_final.zip)
+    args.load = _resolve_model(args.load)
+    args.baseline = _resolve_model(args.baseline)
+    args.observe = _resolve_model(args.observe)
+    args.eval = _resolve_model(args.eval)
 
     if args.alternate is not None:
         if not args.opponent:
