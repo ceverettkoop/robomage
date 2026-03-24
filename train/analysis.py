@@ -11,6 +11,7 @@ Usage:
     python analysis.py wl-split <file.rmrec>
     python analysis.py cast-timing <file.rmrec>
     python analysis.py choice-rates <file.rmrec>
+    python analysis.py targeting <file.rmrec>
     python analysis.py shap <model.zip> --opponent scripted [--n-games 50 --n-samples 200 --n-background 50]
     python analysis.py value-swings <model.zip> --opponent scripted [--n-games 50 --top 10]
     python analysis.py regret <model.zip> --opponent scripted [--n-games 50 --top 20]
@@ -787,6 +788,207 @@ def cmd_choice_rates(args):
         print(f"  {cat_name:<14} win {win_rate:5.1f}%  loss {loss_rate:5.1f}%  delta {delta:+5.1f}%{marker}")
 
 
+def _resolve_card_name(cid):
+    """Resolve a card vocab index to a display name, handling special cases."""
+    if cid < 0 or cid == 255:
+        return "Player"
+    if cid == 127:  # TOKEN_SENTINEL
+        return "Token"
+    if cid < len(_VOCAB_NAMES) and _VOCAB_NAMES[cid]:
+        return _VOCAB_NAMES[cid]
+    return f"?{cid}"
+
+
+def cmd_targeting(args):
+    """Analyze targeting decisions: self vs opponent, hold vs cast, by card and outcome."""
+    sd = SessionData.load(args.file)
+    results = _game_results(sd)
+    if not results:
+        print("No completed games.")
+        return
+
+    # Group decisions by game for sequential analysis
+    by_game = {}
+    for d in sd.decisions:
+        by_game.setdefault(d.game_id, []).append(d)
+    for gid in by_game:
+        by_game[gid].sort(key=lambda d: d.decision_idx)
+
+    # ── 1. Targeting breakdown (SELECT_TARGET decisions) ─────────────────────
+    # Per card that was cast: how often does the subsequent target hit self vs opp
+    # We link CAST (cat 7) -> next TARGET (cat 8) in the same game sequence
+    #
+    # Structure: card_name -> list of (target_card, target_is_self, game_result,
+    #                                  step_idx, life_diff, creature_diff)
+    cast_targets = {}
+
+    for gid, decs in by_game.items():
+        r = results.get(gid)
+        if r is None:
+            continue
+        i = 0
+        while i < len(decs):
+            d = decs[i]
+            cat = d.categories[d.action_chosen] if d.action_chosen < len(d.categories) else 255
+            if cat == 7:  # CAST
+                cid = d.card_ids[d.action_chosen] if d.action_chosen < len(d.card_ids) else 255
+                if cid < len(_VOCAB_NAMES) and cid != 255:
+                    cast_name = _VOCAB_NAMES[cid]
+                    # Look ahead for the next TARGET decision in this game
+                    j = i + 1
+                    while j < len(decs):
+                        d2 = decs[j]
+                        cat2 = d2.categories[d2.action_chosen] if d2.action_chosen < len(d2.categories) else 255
+                        if cat2 == 8:  # TARGET
+                            tgt_cid = d2.card_ids[d2.action_chosen] if d2.action_chosen < len(d2.card_ids) else 255
+                            tgt_ctrl = d2.ctrl_flags[d2.action_chosen] if d2.action_chosen < len(d2.ctrl_flags) else 255
+                            tgt_name = _resolve_card_name(tgt_cid)
+                            tgt_is_self = (tgt_ctrl == 1)
+
+                            # Also record what other targets were available
+                            alt_self = 0
+                            alt_opp = 0
+                            for k in range(d2.num_choices):
+                                if k < len(d2.categories) and d2.categories[k] == 8:
+                                    cf = d2.ctrl_flags[k] if k < len(d2.ctrl_flags) else 255
+                                    if cf == 1:
+                                        alt_self += 1
+                                    elif cf == 0:
+                                        alt_opp += 1
+
+                            cast_targets.setdefault(cast_name, []).append((
+                                tgt_name, tgt_is_self, r,
+                                d.step_idx, d.self_life - d.opp_life,
+                                d.self_creatures - d.opp_creatures,
+                                alt_self, alt_opp,
+                            ))
+                            break
+                        elif cat2 != 0:  # non-PASS non-TARGET means no target for this cast
+                            break
+                        j += 1
+            i += 1
+
+    # ── 2. Hold analysis: when CAST was available but PASS was chosen ────────
+    # Per card: how often the model passes when it could cast, by board state
+    # hold_stats: card_name -> list of (game_result, step_idx, life_diff, creature_diff)
+    hold_stats = {}
+    cast_stats = {}
+
+    for d in sd.decisions:
+        r = results.get(d.game_id)
+        if r is None:
+            continue
+        chosen_cat = d.categories[d.action_chosen] if d.action_chosen < len(d.categories) else 255
+        # Find all castable cards in this decision
+        castable = set()
+        for k in range(d.num_choices):
+            if k < len(d.categories) and d.categories[k] == 7:  # CAST
+                cid = d.card_ids[k] if k < len(d.card_ids) else 255
+                if cid < len(_VOCAB_NAMES) and cid != 255:
+                    castable.add(_VOCAB_NAMES[cid])
+        if not castable:
+            continue
+
+        entry = (r, d.step_idx, d.self_life - d.opp_life,
+                 d.self_creatures - d.opp_creatures)
+        if chosen_cat == 0:  # PASS when could have cast
+            for name in castable:
+                hold_stats.setdefault(name, []).append(entry)
+        elif chosen_cat == 7:  # actually cast
+            cid = d.card_ids[d.action_chosen] if d.action_chosen < len(d.card_ids) else 255
+            if cid < len(_VOCAB_NAMES) and cid != 255:
+                cast_stats.setdefault(_VOCAB_NAMES[cid], []).append(entry)
+
+    # ── Print results ────────────────────────────────────────────────────────
+
+    print(f"Targeting analysis — {os.path.basename(args.file)}")
+
+    # Section 1: Per-card targeting self vs opponent
+    if cast_targets:
+        print(f"\n{'=' * 60}")
+        print("TARGETING: self vs opponent (linked CAST -> TARGET)")
+        print(f"{'=' * 60}\n")
+
+        for name in sorted(cast_targets, key=lambda n: -len(cast_targets[n])):
+            entries = cast_targets[name]
+            if len(entries) < 3:
+                continue
+            self_tgt = [e for e in entries if e[1]]
+            opp_tgt = [e for e in entries if not e[1]]
+            total = len(entries)
+            self_pct = len(self_tgt) / total * 100
+            opp_pct = len(opp_tgt) / total * 100
+
+            print(f"  {name} ({total} targeting decisions)")
+            print(f"    targets self: {len(self_tgt):4d} ({self_pct:5.1f}%)")
+            print(f"    targets opp:  {len(opp_tgt):4d} ({opp_pct:5.1f}%)")
+
+            # Break down by target card
+            tgt_counts = {}
+            for e in entries:
+                key = (e[0], e[1])  # (tgt_name, is_self)
+                label = f"{'own' if e[1] else 'opp'} {e[0]}"
+                tgt_counts[label] = tgt_counts.get(label, 0) + 1
+            if tgt_counts:
+                print("    target breakdown:")
+                for label, count in sorted(tgt_counts.items(), key=lambda x: -x[1])[:10]:
+                    print(f"      {count:4d}  {label}")
+
+            # Win rate when targeting self vs opponent
+            for label, subset in [("self", self_tgt), ("opp", opp_tgt)]:
+                if len(subset) < 2:
+                    continue
+                wins = sum(1 for e in subset if e[2] > 0)
+                losses = sum(1 for e in subset if e[2] < 0)
+                wr = wins / len(subset) * 100 if subset else 0
+                life_diffs = np.array([e[4] for e in subset])
+                creature_diffs = np.array([e[5] for e in subset])
+                # How many alternatives were available
+                alt_self_avg = np.mean([e[6] for e in subset])
+                alt_opp_avg = np.mean([e[7] for e in subset])
+                print(f"    when targeting {label}: {wins}W/{losses}L ({wr:.0f}% WR)"
+                      f"  avg life_diff={life_diffs.mean():+.1f}"
+                      f"  creature_diff={creature_diffs.mean():+.1f}"
+                      f"  avg avail: {alt_self_avg:.1f} self / {alt_opp_avg:.1f} opp targets")
+            print()
+
+    # Section 2: Hold vs cast
+    all_cards = sorted(set(list(hold_stats.keys()) + list(cast_stats.keys())))
+    has_hold_data = any(len(hold_stats.get(n, [])) >= 5 for n in all_cards)
+    if has_hold_data:
+        print(f"{'=' * 60}")
+        print("HOLD vs CAST: how often each card is held when castable")
+        print(f"{'=' * 60}\n")
+
+        for name in all_cards:
+            holds = hold_stats.get(name, [])
+            casts = cast_stats.get(name, [])
+            total = len(holds) + len(casts)
+            if total < 5:
+                continue
+            hold_pct = len(holds) / total * 100
+
+            print(f"  {name}: held {len(holds)}/{total} ({hold_pct:.0f}%) when castable")
+
+            # Win rate when holding vs casting
+            for label, subset in [("hold", holds), ("cast", casts)]:
+                if len(subset) < 2:
+                    continue
+                wins = sum(1 for e in subset if e[0] > 0)
+                losses = sum(1 for e in subset if e[0] < 0)
+                wr = wins / len(subset) * 100 if subset else 0
+                life_diffs = np.array([e[2] for e in subset])
+                creature_diffs = np.array([e[3] for e in subset])
+                steps = np.array([e[1] for e in subset])
+                step_counts = np.bincount(steps, minlength=len(_STEP_NAMES))
+                top_step = _STEP_NAMES[np.argmax(step_counts)]
+                print(f"    {label}: {wins}W/{losses}L ({wr:.0f}% WR)"
+                      f"  life_diff={life_diffs.mean():+.1f}"
+                      f"  creature_diff={creature_diffs.mean():+.1f}"
+                      f"  common step: {top_step}")
+            print()
+
+
 # ── SHAP / value-function analysis ────────────────────────────────────────────
 
 # Human-readable feature names extracted from the raw observation vector.
@@ -1490,6 +1692,178 @@ def _decode_board_state(obs, value=None):
     print()
 
 
+def _obs_action_cat(obs, i):
+    """Extract action category integer for slot i from obs array."""
+    return int(round(obs[STATE_SIZE + i] * ACTION_CATEGORY_MAX))
+
+
+def _obs_card_id(obs, i):
+    """Extract card vocab index for slot i from obs array. Returns -1 for null."""
+    raw = obs[STATE_SIZE + MAX_ACTIONS + i]
+    if raw < 0:
+        return -1
+    return int(round(raw * N_CARD_TYPES))
+
+
+def _obs_ctrl_flag(obs, i):
+    """Extract controller flag for slot i. 1=self, 0=opp, -1=null."""
+    raw = obs[STATE_SIZE + 2 * MAX_ACTIONS + i]
+    if raw > 0.5:
+        return 1
+    elif raw > -0.01:
+        return 0
+    return -1
+
+
+def _sim_targeting(games):
+    """Targeting analysis over interactive-mode game traces."""
+    if not games:
+        print("  No games in memory.")
+        return
+
+    # cast_targets: card_name -> [(tgt_name, tgt_is_self, result,
+    #                              step_idx_placeholder, alt_self, alt_opp)]
+    cast_targets = {}
+    # hold_stats / cast_stats: card_name -> [(result,)]
+    hold_stats = {}
+    cast_stats = {}
+
+    for g in games:
+        result = g["result"]
+        observations = g["observations"]
+        actions = g["actions"]
+        num_choices_list = g["num_choices"]
+        n_steps = len(observations)
+
+        for si in range(n_steps):
+            obs = observations[si]
+            action = actions[si]
+            nc = num_choices_list[si]
+            chosen_cat = _obs_action_cat(obs, action)
+
+            # Link CAST -> TARGET
+            if chosen_cat == 7:  # CAST
+                cid = _obs_card_id(obs, action)
+                if 0 <= cid < len(_VOCAB_NAMES):
+                    cast_name = _VOCAB_NAMES[cid]
+                    # Look ahead for TARGET
+                    for sj in range(si + 1, n_steps):
+                        obs2 = observations[sj]
+                        act2 = actions[sj]
+                        cat2 = _obs_action_cat(obs2, act2)
+                        if cat2 == 8:  # TARGET
+                            tgt_cid = _obs_card_id(obs2, act2)
+                            tgt_ctrl = _obs_ctrl_flag(obs2, act2)
+                            tgt_name = _resolve_card_name(tgt_cid)
+                            tgt_is_self = (tgt_ctrl == 1)
+                            # Count available targets by owner
+                            nc2 = num_choices_list[sj]
+                            alt_self = 0
+                            alt_opp = 0
+                            for k in range(nc2):
+                                if _obs_action_cat(obs2, k) == 8:
+                                    cf = _obs_ctrl_flag(obs2, k)
+                                    if cf == 1:
+                                        alt_self += 1
+                                    elif cf == 0:
+                                        alt_opp += 1
+                            cast_targets.setdefault(cast_name, []).append((
+                                tgt_name, tgt_is_self, result,
+                                alt_self, alt_opp,
+                            ))
+                            break
+                        elif cat2 != 0:  # non-PASS means no target for this cast
+                            break
+
+            # Hold analysis: PASS when CAST was available
+            castable = set()
+            for k in range(nc):
+                if _obs_action_cat(obs, k) == 7:
+                    kid = _obs_card_id(obs, k)
+                    if 0 <= kid < len(_VOCAB_NAMES):
+                        castable.add(_VOCAB_NAMES[kid])
+            if not castable:
+                continue
+            if chosen_cat == 0:  # PASS
+                for name in castable:
+                    hold_stats.setdefault(name, []).append((result,))
+            elif chosen_cat == 7:
+                cid = _obs_card_id(obs, action)
+                if 0 <= cid < len(_VOCAB_NAMES):
+                    cast_stats.setdefault(_VOCAB_NAMES[cid], []).append((result,))
+
+    # ── Print ────────────────────────────────────────────────────────────────
+    print(f"\nTargeting analysis — {len(games)} games\n")
+
+    if cast_targets:
+        print(f"{'=' * 60}")
+        print("TARGETING: self vs opponent (linked CAST -> TARGET)")
+        print(f"{'=' * 60}\n")
+
+        for name in sorted(cast_targets, key=lambda n: -len(cast_targets[n])):
+            entries = cast_targets[name]
+            if len(entries) < 2:
+                continue
+            self_tgt = [e for e in entries if e[1]]
+            opp_tgt = [e for e in entries if not e[1]]
+            total = len(entries)
+            self_pct = len(self_tgt) / total * 100
+            opp_pct = len(opp_tgt) / total * 100
+
+            print(f"  {name} ({total} targeting decisions)")
+            print(f"    targets self: {len(self_tgt):4d} ({self_pct:5.1f}%)")
+            print(f"    targets opp:  {len(opp_tgt):4d} ({opp_pct:5.1f}%)")
+
+            # Breakdown by target card
+            tgt_counts = {}
+            for e in entries:
+                label = f"{'own' if e[1] else 'opp'} {e[0]}"
+                tgt_counts[label] = tgt_counts.get(label, 0) + 1
+            if tgt_counts:
+                print("    target breakdown:")
+                for label, count in sorted(tgt_counts.items(), key=lambda x: -x[1])[:10]:
+                    print(f"      {count:4d}  {label}")
+
+            # Win rate when targeting self vs opponent
+            for label, subset in [("self", self_tgt), ("opp", opp_tgt)]:
+                if len(subset) < 2:
+                    continue
+                wins = sum(1 for e in subset if e[2] > 0)
+                losses = sum(1 for e in subset if e[2] < 0)
+                wr = wins / len(subset) * 100
+                alt_self_avg = np.mean([e[3] for e in subset])
+                alt_opp_avg = np.mean([e[4] for e in subset])
+                print(f"    when targeting {label}: {wins}W/{losses}L ({wr:.0f}% WR)"
+                      f"  avg avail: {alt_self_avg:.1f} self / {alt_opp_avg:.1f} opp targets")
+            print()
+
+    # Hold vs cast
+    all_cards = sorted(set(list(hold_stats.keys()) + list(cast_stats.keys())))
+    has_hold_data = any(len(hold_stats.get(n, [])) >= 3 for n in all_cards)
+    if has_hold_data:
+        print(f"{'=' * 60}")
+        print("HOLD vs CAST: how often each card is held when castable")
+        print(f"{'=' * 60}\n")
+
+        for name in all_cards:
+            holds = hold_stats.get(name, [])
+            casts = cast_stats.get(name, [])
+            total = len(holds) + len(casts)
+            if total < 3:
+                continue
+            hold_pct = len(holds) / total * 100
+
+            print(f"  {name}: held {len(holds)}/{total} ({hold_pct:.0f}%) when castable")
+            for label, subset in [("hold", holds), ("cast", casts)]:
+                if len(subset) < 2:
+                    continue
+                wins = sum(1 for e in subset if e[0] > 0)
+                losses = sum(1 for e in subset if e[0] < 0)
+                wr = wins / len(subset) * 100
+                print(f"    {label}: {wins}W/{losses}L ({wr:.0f}% WR)")
+            print()
+
+
 def _interactive_session(ctx):
     """Interactive REPL for inspecting simulation results.
 
@@ -1510,6 +1884,7 @@ def _interactive_session(ctx):
         print("\n" + "=" * 60)
         print(f"Interactive session — {len(games)} games in memory.")
         cmds = ["list", "replay <N>", "boardstate <N> <step>", "summary",
+                "targeting",
                 "swings [N]", "shap", "regret [N]", "entropy", "consistency [N]",
                 "calibration", "turning", "clusters",
                 "chart <N>", "chart swings [N]", "chart shap",
@@ -1549,6 +1924,7 @@ def _interactive_session(ctx):
             print("  regret [N]                — policy regret analysis (top N high-regret decisions)")
             print("  entropy                   — policy entropy by phase and board state")
             print("  consistency [N]           — find similar states with different actions (top N pairs)")
+            print("  targeting                 — self vs opp targeting, hold vs cast analysis")
             print("  calibration               — V(s) at game start vs actual win rate (is model biased?)")
             print("  turning                   — find the 'point of no return' in each game")
             print("  clusters                  — classify games by V(s) curve shape (archetypes)")
@@ -1991,6 +2367,9 @@ def _interactive_session(ctx):
 
         elif cmd == "clusters":
             ctx["cluster_data"] = _analyze_clusters(games)
+
+        elif cmd == "targeting":
+            _sim_targeting(games)
 
         elif cmd == "run":
             if ctx.get("env") is None or ctx.get("model") is None:
@@ -3065,6 +3444,9 @@ def main():
     p = sub.add_parser("choice-rates", help="P(chose X | X legal) by board state")
     p.add_argument("file")
 
+    p = sub.add_parser("targeting", help="Targeting self vs opp, hold vs cast analysis")
+    p.add_argument("file")
+
     p = sub.add_parser("shap", help="SHAP analysis of value function over simulated games")
     _add_sim_args(p)
     p.add_argument("--n-games", type=int, default=50, help="Number of games to simulate (default: 50)")
@@ -3113,6 +3495,7 @@ def main():
         "wl-split": cmd_wl_split,
         "cast-timing": cmd_cast_timing,
         "choice-rates": cmd_choice_rates,
+        "targeting": cmd_targeting,
         "shap": cmd_shap,
         "value-swings": cmd_value_swings,
         "regret": cmd_regret,

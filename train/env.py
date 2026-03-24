@@ -943,3 +943,85 @@ class SelfPlayEnv(gym.Env):
             self._opponent = model
         except Exception:
             self._opponent = None  # fall back to random if load fails
+
+
+class FixedModelEnv(gym.Env):
+    """Train against a fixed opponent model that never changes.
+
+    Like SelfPlayEnv but the opponent is loaded once from a specific path
+    and is never reloaded or sampled from checkpoints.
+    """
+
+    def __init__(self, opp_model_path: str, binary_path: str = BINARY,
+                 render_mode=None, model_deck: str | None = None,
+                 opp_deck: str | None = None):
+        super().__init__()
+        self._model_deck = model_deck
+        self._opp_deck = opp_deck
+        self._env = RoboMageEnv(binary_path=binary_path, render_mode=render_mode)
+        self.observation_space = self._env.observation_space
+        self.action_space = self._env.action_space
+        self.render_mode = render_mode
+        self._training_is_a = True
+        self._decision_idx = 0
+
+        # Load fixed opponent once
+        try:
+            from sb3_contrib import MaskablePPO as _PPO
+        except ImportError:
+            from stable_baselines3 import PPO as _PPO
+        self._opponent = _PPO.load(opp_model_path, device="cpu")
+        self._opp_model_path = opp_model_path
+
+    def reset(self, *, seed=None, options=None):
+        self._training_is_a = bool(np.random.random() < 0.5)
+        if self._model_deck is not None:
+            self._env._deck_a = self._model_deck if self._training_is_a else self._opp_deck
+            self._env._deck_b = self._opp_deck if self._training_is_a else self._model_deck
+        self._decision_idx = 0
+        self._game_meta = {
+            "model_is_a": self._training_is_a,
+            "opp_deck": self._opp_deck or "unknown",
+            "opp_type": self._opp_model_path,
+        }
+        obs, info = self._env.reset(seed=seed, options=options)
+
+        obs, reward, terminated, truncated, info = self._handle_opponent_turns(
+            obs, 0.0, False, False, info
+        )
+        if terminated or truncated:
+            return np.zeros(OBS_SIZE, dtype=np.float32), info
+        return obs, info
+
+    def step(self, action: int):
+        self._decision_idx += 1
+        obs, reward, terminated, truncated, info = self._env.step(action)
+        if not (terminated or truncated):
+            obs, reward, terminated, truncated, info = self._handle_opponent_turns(
+                obs, reward, terminated, truncated, info
+            )
+        if not self._training_is_a:
+            reward = -reward
+        info["game_meta"] = self._game_meta
+        info["decision_idx"] = self._decision_idx
+        return obs, reward, terminated, truncated, info
+
+    def action_masks(self) -> np.ndarray:
+        return self._env.action_masks()
+
+    def close(self):
+        self._env.close()
+
+    def _training_has_priority(self, obs: np.ndarray) -> bool:
+        a_has_priority = obs[32] > 0.5
+        return a_has_priority if self._training_is_a else not a_has_priority
+
+    def _handle_opponent_turns(self, obs, reward, terminated, truncated, info):
+        while not (terminated or truncated) and not self._training_has_priority(obs):
+            num_choices = self._env._num_choices
+            masks = np.zeros(MAX_ACTIONS, dtype=bool)
+            masks[:num_choices] = True
+            action, _ = self._opponent.predict(obs, action_masks=masks, deterministic=False)
+            action = int(action)
+            obs, reward, terminated, truncated, info = self._env.step(action)
+        return obs, reward, terminated, truncated, info

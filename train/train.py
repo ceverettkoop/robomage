@@ -24,7 +24,8 @@ import os
 import struct
 import time
 
-from env import (RoboMageEnv, ModelVsScriptedEnv, SelfPlayEnv, NarrativeEnv, scripted_action,
+from env import (RoboMageEnv, ModelVsScriptedEnv, SelfPlayEnv, FixedModelEnv, NarrativeEnv,
+                 scripted_action,
                  OBS_SIZE, STATE_SIZE, MAX_ACTIONS, ACTION_CATEGORY_MAX, BINARY,
                  _HAND_START)
 from extractor import CardGameExtractor
@@ -429,6 +430,18 @@ def make_env(binary_path: str, rank: int, model_deck: str = "delver", opp_deck: 
     return _init
 
 
+def make_fixed_model_env(binary_path: str, opp_model_path: str, rank: int,
+                         model_deck: str = "delver", opp_deck: str = "delver"):
+    def _init():
+        env = FixedModelEnv(opp_model_path=opp_model_path, binary_path=binary_path,
+                            model_deck=model_deck, opp_deck=opp_deck)
+        if USE_MASKABLE:
+            env = ActionMasker(env, lambda e: e.action_masks())
+        env = Monitor(env)
+        return env
+    return _init
+
+
 def make_self_play_env(binary_path: str, checkpoint_dir: str, rank: int,
                        model_deck: str = "delver", opp_deck: str = "delver"):
     def _init():
@@ -529,6 +542,121 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
     print(f"Saved final model as {model_prefix}_final.")
 
     vec_env.close()
+
+
+def train_fixed_model(binary_path: str, model_deck: str, opp_deck: str,
+                      load_path: str | None = None,
+                      total_timesteps: int = TOTAL_TIMESTEPS,
+                      tally: bool = False, record: bool = False):
+    """Train model_deck against a fixed opponent model for opp_deck.
+
+    Loads ``{model_deck}_{opp_deck}_final.zip`` as the training model (or
+    ``load_path`` if given) and ``{opp_deck}_{model_deck}_final.zip`` as the
+    fixed opponent for every game.
+    """
+    checkpoint_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), CHECKPOINT_DIR)
+    os.makedirs(checkpoint_dir, exist_ok=True)
+    os.makedirs(LOG_DIR, exist_ok=True)
+
+    model_prefix = f"{model_deck}_{opp_deck}"
+    opp_prefix = f"{opp_deck}_{model_deck}"
+
+    if not load_path:
+        candidate = os.path.join(checkpoint_dir, f"{model_prefix}_final.zip")
+        if os.path.exists(candidate):
+            load_path = candidate
+    if not load_path:
+        raise FileNotFoundError(f"No training model found: {model_prefix}_final.zip")
+
+    opp_model_path = os.path.join(checkpoint_dir, f"{opp_prefix}_final.zip")
+    if not os.path.exists(opp_model_path):
+        raise FileNotFoundError(f"No opponent model found: {opp_model_path}")
+
+    print(f"Training {model_prefix} against fixed opponent {opp_prefix}")
+    print(f"  training model: {load_path}")
+    print(f"  opponent model: {opp_model_path}")
+
+    n_envs = N_ENVS_SELF_PLAY
+    vec_env = SubprocVecEnv([
+        make_fixed_model_env(binary_path, opp_model_path, i, model_deck, opp_deck)
+        for i in range(n_envs)
+    ])
+
+    policy_kwargs = dict(
+        features_extractor_class=CardGameExtractor,
+        net_arch=[256, 256],
+    )
+
+    print(f"Resuming from {load_path}")
+    model = MaskablePPO.load(load_path, env=vec_env)
+
+    callbacks = [
+        CheckpointCallback(
+            save_freq=100_000 // n_envs,
+            save_path=checkpoint_dir,
+            name_prefix=model_prefix,
+        ),
+        ShapingScaleCallback(vec_env),
+    ]
+    if tally:
+        callbacks.append(WinTallyCallback())
+    callbacks.append(ReplayLogCallback(binary_path=binary_path,
+                                       model_deck=model_deck, opp_deck=opp_deck))
+    if record:
+        rec_path = os.path.join(RECORD_DIR, f"{model_prefix}_fixed_{int(time.time())}.rmrec")
+        callbacks.append(RecordCallback(
+            path=rec_path, n_envs=n_envs, model_path=load_path,
+            model_deck=model_deck, self_play=False,
+        ))
+
+    print(f"Training for {total_timesteps:,} timesteps across {n_envs} envs...")
+    model.learn(total_timesteps=total_timesteps, callback=callbacks, reset_num_timesteps=False)
+    model.save(os.path.join(checkpoint_dir, f"{model_prefix}_final"))
+    print(f"Saved final model as {model_prefix}_final.")
+    vec_env.close()
+
+
+def train_alternate(binary_path: str, deck_a: str, deck_b: str,
+                    alternate_steps: int, total_timesteps: int = TOTAL_TIMESTEPS,
+                    tally: bool = False, record: bool = False):
+    """Alternate training between two decks every ``alternate_steps`` timesteps.
+
+    Each round trains one side against the other's latest final checkpoint,
+    then saves and swaps roles.
+    """
+    checkpoint_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), CHECKPOINT_DIR)
+    os.makedirs(checkpoint_dir, exist_ok=True)
+
+    # Verify both models exist
+    for d, o in [(deck_a, deck_b), (deck_b, deck_a)]:
+        path = os.path.join(checkpoint_dir, f"{d}_{o}_final.zip")
+        if not os.path.exists(path):
+            raise FileNotFoundError(f"Missing model: {path}")
+
+    steps_done = 0
+    round_num = 0
+    # Start by training deck_a
+    training_deck, opp_deck = deck_a, deck_b
+
+    while steps_done < total_timesteps:
+        round_num += 1
+        remaining = total_timesteps - steps_done
+        round_steps = min(alternate_steps, remaining)
+
+        print(f"\n{'='*60}")
+        print(f"[alternate round {round_num}] Training {training_deck} vs fixed {opp_deck}"
+              f"  ({round_steps:,} steps, {steps_done:,}/{total_timesteps:,} done)")
+        print(f"{'='*60}")
+
+        train_fixed_model(binary_path, training_deck, opp_deck,
+                          total_timesteps=round_steps, tally=tally, record=record)
+
+        steps_done += round_steps
+
+        # Swap roles
+        training_deck, opp_deck = opp_deck, training_deck
+
+    print(f"\nAlternate training complete: {total_timesteps:,} total timesteps over {round_num} rounds.")
 
 
 def diag(binary_path: str, n_games: int = 10):
@@ -901,11 +1029,57 @@ if __name__ == "__main__":
                              "E.g. 0.3 gives ~2 scripted + 5 self-play with N_ENVS=7.")
     parser.add_argument("--record", action="store_true",
                         help="Record all game decisions to a .rmrec binary file in recordings/")
+    parser.add_argument("--fixed-model", action="store_true",
+                        help="Train --deck vs a fixed opponent model for --opponent. "
+                             "Loads {deck}_{opponent}_final.zip and trains against "
+                             "{opponent}_{deck}_final.zip (never reloaded).")
+    parser.add_argument("--alternate", type=int, default=None, metavar="N",
+                        help="Swap which side is trained every N timesteps. "
+                             "Requires --deck and --opponent. Each round saves its "
+                             "final checkpoint then trains the other side against it.")
     parser.add_argument("--train-all", action="store_true",
                         help="Train every deck×deck matchup sequentially (ignores --deck/--opponent)")
+    parser.add_argument("--train-deck", type=str, default=None,
+                        help="Train all matchups that include the given deck (ignores --deck/--opponent)")
     args = parser.parse_args()
 
-    if args.train_all:
+    if args.alternate is not None:
+        if not args.opponent:
+            parser.error("--alternate requires --opponent")
+        train_alternate(args.binary, args.deck, args.opponent,
+                        alternate_steps=args.alternate,
+                        total_timesteps=args.total_timesteps,
+                        tally=args.tally, record=args.record)
+    elif args.fixed_model:
+        if not args.opponent:
+            parser.error("--fixed-model requires --opponent")
+        train_fixed_model(args.binary, args.deck, args.opponent,
+                          load_path=args.load,
+                          total_timesteps=args.total_timesteps,
+                          tally=args.tally, record=args.record)
+    elif args.train_deck:
+        all_decks = sorted(os.path.splitext(p)[0]
+                           for p in os.listdir(_DECKS_DIR) if p.endswith(".dk"))
+        target = args.train_deck
+        if target not in all_decks:
+            parser.error(f"Deck '{target}' not found in {_DECKS_DIR}. Available: {', '.join(all_decks)}")
+        matchups = [(d, o) for d in all_decks for o in all_decks if d == target or o == target]
+        print(f"Training {len(matchups)} matchups featuring '{target}' for {args.total_timesteps:,} timesteps each:")
+        for d, o in matchups:
+            print(f"  {d} vs {o}")
+        checkpoint_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), CHECKPOINT_DIR)
+        for i, (d, o) in enumerate(matchups):
+            print(f"\n{'='*60}")
+            print(f"[{i+1}/{len(matchups)}] {d} vs {o}")
+            print(f"{'='*60}")
+            candidate = os.path.join(checkpoint_dir, f"{d}_{o}_final.zip")
+            resume_path = candidate if os.path.exists(candidate) else None
+            train(args.binary, load_path=resume_path, total_timesteps=args.total_timesteps,
+                  tally=args.tally, self_play=args.self_play,
+                  scripted_fraction=args.scripted_fraction,
+                  model_deck=d, opp_deck=o, record=args.record)
+        print(f"\nAll {len(matchups)} matchups for '{target}' complete.")
+    elif args.train_all:
         all_decks = sorted(os.path.splitext(p)[0]
                            for p in os.listdir(_DECKS_DIR) if p.endswith(".dk"))
         matchups = [(d, o) for d in all_decks for o in all_decks]
