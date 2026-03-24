@@ -28,9 +28,15 @@ Interactive session commands (available after shap, value-swings, or via 'intera
     regret [N]            policy regret analysis (top N high-regret decisions)
     entropy               policy entropy by game phase and board state
     consistency [N]       decision consistency for similar states (top N pairs)
+    calibration           V(s) at game start vs actual win rate
+    turning               find the permanent zero-crossing ('point of no return')
+    clusters              classify games by V(s) curve shape (archetypes)
     chart <N>             value curve plot for game N
     chart swings [N]      value curve plots for top N swing games
     chart shap            SHAP summary plot
+    chart calibration     calibration curve plot
+    chart turning         turning point distribution plot
+    chart clusters        overlay V(s) curves by archetype
     run <N>               simulate N more games (interactive command only)
     quit                  exit
 """
@@ -1505,7 +1511,9 @@ def _interactive_session(ctx):
         print(f"Interactive session — {len(games)} games in memory.")
         cmds = ["list", "replay <N>", "boardstate <N> <step>", "summary",
                 "swings [N]", "shap", "regret [N]", "entropy", "consistency [N]",
-                "chart <N>", "chart swings [N]", "chart shap"]
+                "calibration", "turning", "clusters",
+                "chart <N>", "chart swings [N]", "chart shap",
+                "chart calibration", "chart turning", "chart clusters"]
         if can_run:
             cmds.append("run <N>")
         cmds += ["help", "quit"]
@@ -1541,9 +1549,15 @@ def _interactive_session(ctx):
             print("  regret [N]                — policy regret analysis (top N high-regret decisions)")
             print("  entropy                   — policy entropy by phase and board state")
             print("  consistency [N]           — find similar states with different actions (top N pairs)")
+            print("  calibration               — V(s) at game start vs actual win rate (is model biased?)")
+            print("  turning                   — find the 'point of no return' in each game")
+            print("  clusters                  — classify games by V(s) curve shape (archetypes)")
             print("  chart <N>                 — value curve plot for game N")
             print("  chart swings [N]          — value curve plots for top N swing games")
             print("  chart shap                — SHAP summary plot (requires shap run first)")
+            print("  chart calibration         — calibration curve plot")
+            print("  chart turning             — turning point distribution plot")
+            print("  chart clusters            — overlay V(s) curves by archetype")
             if can_run:
                 print("  run <N>                   — simulate N more games and add to pool")
             print("  quit / exit               — leave interactive session")
@@ -1769,12 +1783,163 @@ def _interactive_session(ctx):
                 plt.tight_layout()
                 plt.show()
 
+            elif sub == "calibration":
+                cal = ctx.get("calibration_data")
+                if cal is None:
+                    print("  Computing calibration...")
+                    cal = _analyze_calibration(games, verbose=False)
+                    ctx["calibration_data"] = cal
+                if not cal:
+                    print("  No calibration data.")
+                    continue
+                fig, ax = plt.subplots(figsize=(8, 6))
+                mean_vs = [b["mean_v"] for b in cal]
+                win_rates = [b["win_rate"] for b in cal]
+                counts = [b["n"] for b in cal]
+                labels = [b["label"] for b in cal]
+                # Scatter with size proportional to count
+                sizes = [max(40, min(300, c * 5)) for c in counts]
+                ax.scatter(mean_vs, win_rates, s=sizes, c="steelblue",
+                           alpha=0.7, edgecolors="navy", zorder=3)
+                for i, lab in enumerate(labels):
+                    ax.annotate(f"{lab}\n(n={counts[i]})",
+                                (mean_vs[i], win_rates[i]),
+                                textcoords="offset points", xytext=(8, 8),
+                                fontsize=7)
+                # Perfect calibration line: V(s) maps to win rate as (V+1)/2
+                xs = np.linspace(-1, 1, 50)
+                ax.plot(xs, (xs + 1) / 2, color="gray", linestyle="--",
+                        linewidth=1, label="Perfect calibration", alpha=0.6)
+                ax.set_xlabel("Mean V(s) at game start")
+                ax.set_ylabel("Actual win rate")
+                ax.set_title("Value Function Calibration")
+                ax.legend(loc="upper left", fontsize=8)
+                ax.grid(True, alpha=0.3)
+                ax.set_xlim(-1.1, 1.1)
+                ax.set_ylim(-0.05, 1.05)
+                plt.tight_layout()
+                plt.show()
+
+            elif sub == "turning":
+                tp_data = ctx.get("turning_data")
+                if tp_data is None:
+                    print("  Computing turning points...")
+                    tp_data = _analyze_turning_points(games, verbose=False)
+                    ctx["turning_data"] = tp_data
+                if not tp_data:
+                    print("  No turning points found.")
+                    continue
+                fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+
+                # Histogram of turning point timing
+                ax = axes[0]
+                win_fracs = [t["frac"] for t in tp_data if t["result"] > 0]
+                loss_fracs = [t["frac"] for t in tp_data if t["result"] < 0]
+                bins_hist = np.linspace(0, 1, 15)
+                if win_fracs:
+                    ax.hist(win_fracs, bins=bins_hist, alpha=0.6,
+                            color="green", label=f"Wins ({len(win_fracs)})")
+                if loss_fracs:
+                    ax.hist(loss_fracs, bins=bins_hist, alpha=0.6,
+                            color="red", label=f"Losses ({len(loss_fracs)})")
+                ax.set_xlabel("Fraction of game elapsed")
+                ax.set_ylabel("Count")
+                ax.set_title("When Turning Points Occur")
+                ax.legend(fontsize=8)
+                ax.grid(True, alpha=0.3)
+
+                # V(s) curves for a few games with turning points marked
+                ax = axes[1]
+                n_show = min(8, len(tp_data))
+                colors_win = plt.cm.Greens(np.linspace(0.4, 0.9, n_show))
+                colors_loss = plt.cm.Reds(np.linspace(0.4, 0.9, n_show))
+                ci_w = 0
+                ci_l = 0
+                for t in tp_data[:n_show]:
+                    g = games[t["game_idx"]]
+                    vals = g["values"]
+                    won = t["result"] > 0
+                    if won:
+                        c = colors_win[ci_w % len(colors_win)]
+                        ci_w += 1
+                    else:
+                        c = colors_loss[ci_l % len(colors_loss)]
+                        ci_l += 1
+                    xs = np.linspace(0, 1, len(vals))
+                    ax.plot(xs, vals, color=c, alpha=0.5, linewidth=1)
+                    ax.axvline(t["frac"], color=c, linestyle=":",
+                               linewidth=0.8, alpha=0.6)
+                ax.axhline(0, color="gray", linewidth=0.5, linestyle="--")
+                ax.set_xlabel("Fraction of game elapsed")
+                ax.set_ylabel("V(s)")
+                ax.set_title(f"V(s) Curves with Turning Points ({n_show} games)")
+                ax.grid(True, alpha=0.3)
+
+                plt.tight_layout()
+                plt.show()
+
+            elif sub == "clusters":
+                clust = ctx.get("cluster_data")
+                if clust is None:
+                    print("  Computing clusters...")
+                    clust = _analyze_clusters(games, verbose=False)
+                    ctx["cluster_data"] = clust
+                archetype_colors = {
+                    "early_lead_held": "green",
+                    "slow_grind": "steelblue",
+                    "comeback": "orange",
+                    "lead_blown": "red",
+                    "volatile": "purple",
+                }
+                nonempty = {k: v for k, v in clust.items() if v}
+                if not nonempty:
+                    print("  No cluster data.")
+                    continue
+                n_types = len(nonempty)
+                fig, axes = plt.subplots(1, n_types, figsize=(5 * n_types, 4),
+                                         squeeze=False)
+                for col, (label, indices) in enumerate(nonempty.items()):
+                    ax = axes[0, col]
+                    n_plot = min(15, len(indices))
+                    for i in indices[:n_plot]:
+                        g = games[i]
+                        vals = g["values"]
+                        xs = np.linspace(0, 1, len(vals))
+                        won = g["result"] > 0
+                        ax.plot(xs, vals, color=archetype_colors.get(label, "gray"),
+                                alpha=0.3, linewidth=1)
+                    # Plot mean curve
+                    if indices:
+                        max_len = max(len(games[i]["values"]) for i in indices)
+                        interp_vals = []
+                        for i in indices:
+                            v = games[i]["values"]
+                            xs_orig = np.linspace(0, 1, len(v))
+                            xs_new = np.linspace(0, 1, max_len)
+                            interp_vals.append(np.interp(xs_new, xs_orig, v))
+                        mean_curve = np.mean(interp_vals, axis=0)
+                        xs_mean = np.linspace(0, 1, max_len)
+                        ax.plot(xs_mean, mean_curve,
+                                color=archetype_colors.get(label, "gray"),
+                                linewidth=2.5, label="mean")
+                    ax.axhline(0, color="gray", linewidth=0.5, linestyle="--")
+                    w = sum(1 for i in indices if games[i]["result"] > 0)
+                    ax.set_title(f"{label}\n({len(indices)} games, "
+                                 f"{w}/{len(indices)} wins)")
+                    ax.set_xlabel("Game progress")
+                    ax.set_ylabel("V(s)")
+                    ax.grid(True, alpha=0.3)
+                    ax.set_ylim(-1.1, 1.1)
+                plt.tight_layout()
+                plt.show()
+
             else:
                 # chart <N> — value curve for a single game
                 try:
                     gn = int(sub)
                 except ValueError:
-                    print("  Usage: chart <game_index> | chart swings [N] | chart shap")
+                    print("  Usage: chart <game_index> | chart swings [N] | chart shap "
+                          "| chart calibration | chart turning | chart clusters")
                     continue
                 if gn < 0 or gn >= len(games):
                     print(f"  Game index out of range. Valid range: 0–{len(games) - 1}")
@@ -1818,6 +1983,15 @@ def _interactive_session(ctx):
                 except ValueError: pass
             _analyze_consistency(games, top_n=top_n)
 
+        elif cmd == "calibration":
+            ctx["calibration_data"] = _analyze_calibration(games)
+
+        elif cmd == "turning":
+            ctx["turning_data"] = _analyze_turning_points(games)
+
+        elif cmd == "clusters":
+            ctx["cluster_data"] = _analyze_clusters(games)
+
         elif cmd == "run":
             if ctx.get("env") is None or ctx.get("model") is None:
                 print("  No live env available. Use the 'interactive' command to enable 'run'.")
@@ -1831,7 +2005,10 @@ def _interactive_session(ctx):
             new_games = _collect_game_traces(ctx["model"], ctx["env"],
                                              ctx.get("opp_model"), n)
             games.extend(new_games)
-            ctx["swing_data"] = None  # invalidate cached swings
+            ctx["swing_data"] = None  # invalidate cached data
+            ctx["calibration_data"] = None
+            ctx["turning_data"] = None
+            ctx["cluster_data"] = None
             print(f"  Pool now has {len(games)} games.")
 
         else:
@@ -1949,6 +2126,7 @@ def cmd_value_swings(args):
     _interactive_session({
         "games": games, "swing_data": swing_data,
         "shap_values": None, "shap_samples": None,
+        "calibration_data": None, "turning_data": None, "cluster_data": None,
         "model": None, "env": None, "opp_model": None, "args": args,
     })
 
@@ -2389,6 +2567,330 @@ def _analyze_consistency(games, top_n=20, verbose=True):
     return pairs
 
 
+def _analyze_calibration(games, verbose=True):
+    """Check whether V(s) at game start predicts actual win rate.
+
+    Bins games by their initial value estimate and compares against the
+    actual win rate within each bin.  A well-calibrated value function has
+    win-rate track V(s); systematic deviation indicates bias.
+
+    Returns list of dicts: {lo, hi, mean_v, win_rate, n, wins, losses, draws}.
+    """
+    points = []
+    for g in games:
+        if not g["values"]:
+            continue
+        points.append((g["values"][0], g["result"]))
+
+    if not points:
+        if verbose:
+            print("  No games with value data.")
+        return []
+
+    vs = np.array([p[0] for p in points])
+    results = np.array([p[1] for p in points])
+
+    edges = [-np.inf, -0.5, -0.25, 0.0, 0.25, 0.5, np.inf]
+    labels = ["< -0.50", "-0.50…-0.25", "-0.25…0.00",
+              "0.00…0.25", "0.25…0.50", "> 0.50"]
+    bins = []
+    for i in range(len(edges) - 1):
+        mask = (vs > edges[i]) & (vs <= edges[i + 1])
+        n = int(mask.sum())
+        if n == 0:
+            continue
+        w = int((results[mask] > 0).sum())
+        l = int((results[mask] < 0).sum())
+        d = int((results[mask] == 0).sum())
+        mean_v = float(vs[mask].mean())
+        wr = w / n
+        bins.append({
+            "lo": edges[i], "hi": edges[i + 1],
+            "label": labels[i], "mean_v": mean_v,
+            "win_rate": wr, "n": n, "wins": w, "losses": l, "draws": d,
+        })
+
+    if not verbose:
+        return bins
+
+    print(f"\nValue function calibration — {len(points)} games")
+    print(f"  Initial V(s) ranges vs actual win rate:\n")
+    print(f"    {'Bin':<16} {'Mean V':>8} {'Win Rate':>10} {'N':>5}  {'W/L/D'}")
+    print(f"    {'-'*16} {'-'*8} {'-'*10} {'-'*5}  {'-'*10}")
+    for b in bins:
+        print(f"    {b['label']:<16} {b['mean_v']:>+8.3f} {b['win_rate']:>9.1%} "
+              f"{b['n']:>5}  {b['wins']}/{b['losses']}/{b['draws']}")
+
+    # Bias summary
+    # Expected: V(s) ≈ (win_rate - 0.5) * 2 roughly, since V in [-1, 1]
+    # Compare mean_v to (win_rate * 2 - 1)
+    if len(bins) >= 2:
+        total_bias = 0.0
+        total_n = 0
+        for b in bins:
+            implied_v = b["win_rate"] * 2.0 - 1.0
+            total_bias += (b["mean_v"] - implied_v) * b["n"]
+            total_n += b["n"]
+        avg_bias = total_bias / total_n if total_n > 0 else 0.0
+        if avg_bias < -0.1:
+            print(f"\n    Model is systematically PESSIMISTIC (avg bias {avg_bias:+.3f})")
+            print(f"    May be playing too defensively.")
+        elif avg_bias > 0.1:
+            print(f"\n    Model is systematically OPTIMISTIC (avg bias {avg_bias:+.3f})")
+            print(f"    May be overcommitting / underestimating risk.")
+        else:
+            print(f"\n    Model calibration looks reasonable (avg bias {avg_bias:+.3f}).")
+
+    return bins
+
+
+def _analyze_turning_points(games, verbose=True):
+    """Find the 'point of no return' in each game.
+
+    For each game, find the last decision step where V(s) permanently crossed
+    from negative to positive (for wins) or positive to negative (for losses).
+    This is the turning point — more meaningful than the max swing because
+    swings can recover.
+
+    Returns list of dicts with turning point info, one per game that has one.
+    """
+    turning_points = []
+    for g_idx, game in enumerate(games):
+        vals = game["values"]
+        result = game["result"]
+        if len(vals) < 3 or result == 0:
+            continue
+
+        # For wins, find last crossing from negative to positive that held
+        # For losses, find last crossing from positive to negative that held
+        won = result > 0
+        target_sign = 1 if won else -1
+
+        # Find the last step where value crossed to the target sign and stayed
+        crossing_step = None
+        for i in range(len(vals) - 1):
+            before_sign = 1 if vals[i] >= 0 else -1
+            after_sign = 1 if vals[i + 1] >= 0 else -1
+            if before_sign != target_sign and after_sign == target_sign:
+                # Check if it stays on the target side for the rest of the game
+                stayed = all(
+                    (v >= 0) == (target_sign == 1)
+                    for v in vals[i + 1:]
+                )
+                if stayed:
+                    crossing_step = i
+
+        if crossing_step is None:
+            continue
+
+        feat = game["interp_features"][crossing_step] if crossing_step < len(game["interp_features"]) else None
+        turning_points.append({
+            "game_idx": g_idx,
+            "step": crossing_step,
+            "total_steps": len(vals),
+            "frac": crossing_step / len(vals),
+            "v_before": vals[crossing_step],
+            "v_after": vals[crossing_step + 1],
+            "result": result,
+            "model_is_a": game["model_is_a"],
+            "feat": feat,
+        })
+
+    if not verbose:
+        return turning_points
+
+    if not turning_points:
+        print("\n  No turning points found (games may start and stay on one side).")
+        return turning_points
+
+    win_tps = [t for t in turning_points if t["result"] > 0]
+    loss_tps = [t for t in turning_points if t["result"] < 0]
+    all_fracs = [t["frac"] for t in turning_points]
+
+    print(f"\nTurning point analysis — {len(games)} games, "
+          f"{len(turning_points)} with identifiable turning points")
+    print(f"  (A turning point is the last permanent zero-crossing of V(s))\n")
+
+    print(f"  Games with turning point: {len(turning_points)}/{len(games)} "
+          f"({100 * len(turning_points) / len(games):.0f}%)")
+    print(f"    Wins:   {len(win_tps)}")
+    print(f"    Losses: {len(loss_tps)}")
+
+    print(f"\n  Timing (fraction of game elapsed at turning point):")
+    print(f"    Overall: mean={np.mean(all_fracs):.2f}  "
+          f"median={np.median(all_fracs):.2f}  "
+          f"std={np.std(all_fracs):.2f}")
+    if win_tps:
+        wf = [t["frac"] for t in win_tps]
+        print(f"    Wins:    mean={np.mean(wf):.2f}  median={np.median(wf):.2f}")
+    if loss_tps:
+        lf = [t["frac"] for t in loss_tps]
+        print(f"    Losses:  mean={np.mean(lf):.2f}  median={np.median(lf):.2f}")
+
+    # Board state at turning points
+    if any(t["feat"] is not None for t in turning_points):
+        print(f"\n  Board state at turning points:")
+        phase_counts = {}
+        board_counts = {}
+        for t in turning_points:
+            if t["feat"] is None:
+                continue
+            phase = _step_name_from_feat(t["feat"])
+            phase_counts[phase] = phase_counts.get(phase, 0) + 1
+            life, board, timing = _board_bucket_from_feat(t["feat"])
+            key = f"{timing}/{life}/{board}"
+            board_counts[key] = board_counts.get(key, 0) + 1
+
+        print(f"    By phase:")
+        for phase in _INTERP_STEP_NAMES:
+            if phase in phase_counts:
+                pct = 100 * phase_counts[phase] / len(turning_points)
+                print(f"      {phase:<14} {phase_counts[phase]:>4} ({pct:5.1f}%)")
+
+        print(f"    By board state (timing/life/creatures):")
+        for key in sorted(board_counts, key=lambda k: -board_counts[k]):
+            pct = 100 * board_counts[key] / len(turning_points)
+            print(f"      {key:<24} {board_counts[key]:>4} ({pct:5.1f}%)")
+
+    # Show a few example turning points
+    print(f"\n  Example turning points (first {min(8, len(turning_points))}):")
+    print(f"    {'Game':<6} {'Step':<6} {'Of':<6} {'Frac':>6} "
+          f"{'V before':>9} {'V after':>9} {'Result':<6}")
+    print(f"    {'-'*6} {'-'*6} {'-'*6} {'-'*6} {'-'*9} {'-'*9} {'-'*6}")
+    for t in turning_points[:8]:
+        r = "WIN" if t["result"] > 0 else "LOSS"
+        print(f"    {t['game_idx']:<6} {t['step']:<6} {t['total_steps']:<6} "
+              f"{t['frac']:>5.0%} {t['v_before']:>+9.3f} {t['v_after']:>+9.3f} {r:<6}")
+
+    return turning_points
+
+
+def _analyze_clusters(games, verbose=True):
+    """Cluster games by V(s) curve shape using simple shape descriptors.
+
+    Classifies games into archetypes:
+      - "early_lead_held":  V(s) starts positive and stays mostly positive
+      - "slow_grind":       V(s) starts near zero, gradually moves toward outcome
+      - "comeback":         V(s) spends significant time negative then finishes positive
+      - "lead_blown":       V(s) spends significant time positive then finishes negative
+      - "volatile":         V(s) crosses zero 3+ times
+
+    Returns dict: {archetype_name: [game_indices]}.
+    """
+    archetypes = {
+        "early_lead_held": [],
+        "slow_grind": [],
+        "comeback": [],
+        "lead_blown": [],
+        "volatile": [],
+    }
+    game_labels = []  # (game_idx, label) for all classified games
+
+    for g_idx, game in enumerate(games):
+        vals = game["values"]
+        result = game["result"]
+        if len(vals) < 3:
+            game_labels.append((g_idx, "too_short"))
+            continue
+
+        arr = np.array(vals)
+        won = result > 0
+        lost = result < 0
+
+        # Count zero crossings
+        signs = np.sign(arr)
+        signs[signs == 0] = 1  # treat zero as positive
+        crossings = int(np.sum(np.abs(np.diff(signs)) > 0))
+
+        # Fraction of game spent positive/negative
+        frac_positive = np.mean(arr > 0)
+        frac_negative = np.mean(arr < 0)
+
+        # Early game tendency (first quarter)
+        q1 = max(1, len(arr) // 4)
+        early_mean = arr[:q1].mean()
+
+        if crossings >= 3:
+            label = "volatile"
+        elif won and early_mean < -0.05 and frac_negative > 0.3:
+            label = "comeback"
+        elif lost and early_mean > 0.05 and frac_positive > 0.3:
+            label = "lead_blown"
+        elif won and early_mean > 0.05 and frac_positive > 0.6:
+            label = "early_lead_held"
+        elif lost and early_mean < -0.05 and frac_negative > 0.6:
+            label = "early_lead_held"  # opponent held lead from start
+        elif abs(early_mean) <= 0.15:
+            label = "slow_grind"
+        else:
+            label = "slow_grind"  # fallback
+
+        archetypes[label].append(g_idx)
+        game_labels.append((g_idx, label))
+
+    if not verbose:
+        return archetypes
+
+    print(f"\nValue trajectory clustering — {len(games)} games\n")
+    print(f"  {'Archetype':<20} {'Count':>6} {'Wins':>6} {'Losses':>6} "
+          f"{'Win%':>6} {'Avg Length':>10}")
+    print(f"  {'-'*20} {'-'*6} {'-'*6} {'-'*6} {'-'*6} {'-'*10}")
+
+    for label in ["early_lead_held", "slow_grind", "comeback", "lead_blown", "volatile"]:
+        indices = archetypes[label]
+        if not indices:
+            continue
+        n = len(indices)
+        w = sum(1 for i in indices if games[i]["result"] > 0)
+        l = sum(1 for i in indices if games[i]["result"] < 0)
+        avg_len = np.mean([len(games[i]["values"]) for i in indices])
+        wr = w / n * 100 if n > 0 else 0
+        print(f"  {label:<20} {n:>6} {w:>6} {l:>6} {wr:>5.1f}% {avg_len:>10.1f}")
+
+    # Per-archetype description and notable features
+    descs = {
+        "early_lead_held": "Model had an early advantage and maintained it",
+        "slow_grind": "Close game that gradually resolved toward the outcome",
+        "comeback": "Model was behind but recovered to win",
+        "lead_blown": "Model had an early lead but lost it",
+        "volatile": "Highly uncertain game with 3+ momentum shifts",
+    }
+    print()
+    for label, desc in descs.items():
+        indices = archetypes[label]
+        if not indices:
+            continue
+        print(f"  {label}: {desc}")
+
+        # Value stats
+        all_vals = [np.array(games[i]["values"]) for i in indices]
+        mean_start = np.mean([v[0] for v in all_vals])
+        mean_end = np.mean([v[-1] for v in all_vals])
+        mean_crossings = np.mean([
+            int(np.sum(np.abs(np.diff(np.sign(np.where(v == 0, 1, v)))) > 0))
+            for v in all_vals
+        ])
+        print(f"    Avg start V: {mean_start:+.3f}  Avg end V: {mean_end:+.3f}  "
+              f"Avg zero-crossings: {mean_crossings:.1f}")
+
+        # Board state at midpoint
+        mid_feats = []
+        for i in indices:
+            g = games[i]
+            mid = len(g["interp_features"]) // 2
+            if mid < len(g["interp_features"]):
+                mid_feats.append(g["interp_features"][mid])
+        if mid_feats:
+            mf = np.mean(mid_feats, axis=0)
+            print(f"    Avg midgame: Life {mf[0]:.0f}/{mf[1]:.0f}  "
+                  f"Creatures {mf[18]:.1f}v{mf[21]:.1f}  "
+                  f"Lands {mf[19]:.1f}v{mf[22]:.1f}  "
+                  f"Hand {mf[17]:.1f}")
+        print()
+
+    return archetypes
+
+
 def cmd_regret(args):
     """Action regret / counterfactual analysis using policy distribution."""
     model, env, opp_model = _load_model_and_env(args)
@@ -2513,6 +3015,9 @@ def cmd_interactive(args):
         "swing_data": None,
         "shap_values": None,
         "shap_samples": None,
+        "calibration_data": None,
+        "turning_data": None,
+        "cluster_data": None,
         "model": model,
         "env": env,
         "opp_model": opp_model,
