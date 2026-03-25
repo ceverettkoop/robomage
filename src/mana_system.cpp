@@ -22,7 +22,6 @@ extern Coordinator global_coordinator;
 extern Game cur_game;
 
 static const char *mana_symbol_str(Colors color);
-static bool is_simple_mana_source(const Ability &ab);
 static bool permanent_cant_activate(Entity entity, std::shared_ptr<Orderer> orderer);
 static size_t eval_mana_amount(const Ability &ab, Zone::Ownership controller,
                                std::shared_ptr<Orderer> orderer);
@@ -151,18 +150,6 @@ static const char *mana_symbol_str(Colors color) {
     }
 }
 
-// A mana ability is "simple" if it only requires tapping (no life, sac, return, or mana cost)
-static bool is_simple_mana_source(const Ability &ab) {
-    return ab.category == "AddMana" &&
-           ab.ability_type == Ability::ACTIVATED &&
-           ab.tap_cost &&
-           ab.life_cost == 0 &&
-           !ab.sac_self &&
-           ab.sac_cost_spec.empty() &&
-           ab.return_cost_type.empty() &&
-           ab.activation_mana_cost.empty();
-}
-
 // Check if a permanent's abilities are suppressed by a CantBeActivated static
 static bool permanent_cant_activate(Entity entity, std::shared_ptr<Orderer> orderer) {
     auto &permanent = global_coordinator.GetComponent<Permanent>(entity);
@@ -201,7 +188,10 @@ static size_t eval_mana_amount(const Ability &ab, Zone::Ownership controller,
     return ab.amount;
 }
 
-// Collect all mana abilities a player could activate (untapped, simple tap-only sources)
+// Collect all mana abilities a player could activate.
+// Checks physical activation requirements (untapped, controller, phased out, CantBeActivated,
+// summoning sickness, activation limits) but NOT activation_mana_cost — callers handle that
+// to avoid circularity with can_afford_with_sources.
 static std::vector<std::pair<Entity, Ability>> collect_available_mana_sources(
     Zone::Ownership player, std::shared_ptr<Orderer> orderer) {
     std::vector<std::pair<Entity, Ability>> sources;
@@ -211,24 +201,24 @@ static std::vector<std::pair<Entity, Ability>> collect_available_mana_sources(
         if (zone.location != Zone::BATTLEFIELD) continue;
         auto &permanent = global_coordinator.GetComponent<Permanent>(entity);
         if (permanent.controller != player) continue;
-        if (permanent.is_tapped) continue;
         if (permanent.is_phased_out) continue;
         if (permanent_cant_activate(entity, orderer)) continue;
-        // Summoning sickness check for creatures with tap cost
-        if (permanent.has_summoning_sickness &&
-            global_coordinator.entity_has_component<Creature>(entity)) {
-            auto &cr = global_coordinator.GetComponent<Creature>(entity);
-            bool has_haste = false;
-            for (const auto &kw : cr.keywords)
-                if (kw == "Haste") { has_haste = true; break; }
-            if (!has_haste) continue;
-        }
 
         for (const auto &ab : permanent.abilities) {
-            if (!is_simple_mana_source(ab)) continue;
+            if (ab.category != "AddMana") continue;
+            if (ab.ability_type != Ability::ACTIVATED) continue;
+            if (ab.tap_cost && permanent.is_tapped) continue;
             if (ab.activation_limit > 0 && ab.activations_this_turn >= ab.activation_limit) continue;
+            // Summoning sickness check for creatures with tap cost
+            if (ab.tap_cost && permanent.has_summoning_sickness &&
+                global_coordinator.entity_has_component<Creature>(entity)) {
+                auto &cr = global_coordinator.GetComponent<Creature>(entity);
+                bool has_haste = false;
+                for (const auto &kw : cr.keywords)
+                    if (kw == "Haste") { has_haste = true; break; }
+                if (!has_haste) continue;
+            }
             if (!ab.mana_choices.empty()) {
-                // Multi-color source: add one entry per color choice
                 for (Colors choice_color : ab.mana_choices) {
                     Ability choice_ab = ab;
                     choice_ab.color = choice_color;
@@ -242,6 +232,38 @@ static std::vector<std::pair<Entity, Ability>> collect_available_mana_sources(
     return sources;
 }
 
+ActionCategory mana_action_category(Colors color) {
+    switch (color) {
+        case WHITE: return ActionCategory::MANA_W;
+        case BLUE:  return ActionCategory::MANA_U;
+        case BLACK: return ActionCategory::MANA_B;
+        case RED:   return ActionCategory::MANA_R;
+        case GREEN: return ActionCategory::MANA_G;
+        default:    return ActionCategory::MANA_C;
+    }
+}
+
+std::vector<LegalAction> collect_mana_legal_actions(
+    Zone::Ownership player, std::shared_ptr<Orderer> orderer) {
+    std::vector<LegalAction> actions;
+    auto sources = collect_available_mana_sources(player, orderer);
+    for (auto &[entity, ab] : sources) {
+        // Sources with activation mana cost: check affordability
+        if (!ab.activation_mana_cost.empty()) {
+            Entity exclude = ab.tap_cost ? entity : 0;
+            if (!can_afford_with_sources(player, ab.activation_mana_cost, orderer, exclude))
+                continue;
+        }
+        auto &perm = global_coordinator.GetComponent<Permanent>(entity);
+        std::string desc = "Tap " + perm.name + " for {" +
+                           mana_symbol_str(ab.color) + "}";
+        LegalAction la(ACTIVATE_ABILITY, entity, ab, desc);
+        la.category = mana_action_category(ab.color);
+        actions.push_back(la);
+    }
+    return actions;
+}
+
 bool can_afford_with_sources(Zone::Ownership player_owner, const std::multiset<Colors> &cost,
                              std::shared_ptr<Orderer> orderer, Entity exclude_entity) {
     Entity player_entity = get_player_entity(player_owner);
@@ -251,26 +273,76 @@ bool can_afford_with_sources(Zone::Ownership player_owner, const std::multiset<C
     // Fast path: pool alone is enough
     if (can_afford_pool(player.mana, cost)) return true;
 
-    // Build a hypothetical pool: current mana + all available tap-only sources
+    // Build a hypothetical pool: current mana + all available sources
     auto hypothetical = player.mana;
-    // Track which entities we've already counted (each source taps once)
     std::set<Entity> counted_entities;
-    // Separate flexible (multi-color) mana count
     size_t flexible_count = 0;
 
     auto sources = collect_available_mana_sources(player_owner, orderer);
+
+    // First pass: add free sources (no activation mana cost)
+    // Multi-color sources appear as multiple entries for the same entity
+    // (one per color choice); count those as flexible mana.
     for (auto &[entity, ab] : sources) {
         if (entity == exclude_entity) continue;
         if (counted_entities.count(entity)) continue;
+        if (!ab.activation_mana_cost.empty()) continue;
         size_t amount = eval_mana_amount(ab, player_owner, orderer);
-        if (!ab.mana_choices.empty()) {
-            // Multi-color: count as flexible mana (can be any color)
+        // Check if this entity has more entries (multi-color source)
+        bool is_multi_color = false;
+        for (auto &[e2, ab2] : sources) {
+            if (e2 == entity && ab2.color != ab.color) {
+                is_multi_color = true;
+                break;
+            }
+        }
+        if (is_multi_color) {
             flexible_count += amount;
-            counted_entities.insert(entity);
         } else {
             for (size_t i = 0; i < amount; i++) hypothetical.insert(ab.color);
-            counted_entities.insert(entity);
         }
+        counted_entities.insert(entity);
+    }
+
+    // Second pass: sources with activation mana cost — count them only if
+    // the hypothetical pool (from free sources) can cover the activation cost
+    for (auto &[entity, ab] : sources) {
+        if (entity == exclude_entity) continue;
+        if (counted_entities.count(entity)) continue;
+        if (ab.activation_mana_cost.empty()) continue;
+        // Build pool snapshot to check activation affordability
+        auto check_pool = hypothetical;
+        for (size_t i = 0; i < flexible_count; i++) check_pool.insert(GENERIC);
+        if (!can_afford_pool(check_pool, ab.activation_mana_cost)) continue;
+        size_t amount = eval_mana_amount(ab, player_owner, orderer);
+        bool is_multi_color = false;
+        for (auto &[e2, ab2] : sources) {
+            if (e2 == entity && ab2.color != ab.color) {
+                is_multi_color = true;
+                break;
+            }
+        }
+        if (is_multi_color) {
+            flexible_count += amount;
+        } else {
+            for (size_t i = 0; i < amount; i++) hypothetical.insert(ab.color);
+        }
+        // Subtract the activation cost from the hypothetical pool
+        for (auto c : ab.activation_mana_cost) {
+            if (c == GENERIC) continue;
+            auto it = hypothetical.find(c);
+            if (it != hypothetical.end()) hypothetical.erase(it);
+            else if (flexible_count > 0) flexible_count--;
+        }
+        size_t generic_activation = ab.activation_mana_cost.count(GENERIC);
+        for (size_t i = 0; i < generic_activation; i++) {
+            if (!hypothetical.empty()) {
+                hypothetical.erase(hypothetical.begin());
+            } else if (flexible_count > 0) {
+                flexible_count--;
+            }
+        }
+        counted_entities.insert(entity);
     }
 
     // Try to pay colored costs from the hypothetical pool
@@ -395,47 +467,10 @@ bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,
         std::vector<LegalAction> pay_actions;
 
         // Mana abilities
-        for (auto entity : orderer->mEntities) {
-            if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
-            auto &zone = global_coordinator.GetComponent<Zone>(entity);
-            if (zone.location != Zone::BATTLEFIELD) continue;
-            auto &permanent = global_coordinator.GetComponent<Permanent>(entity);
-            if (permanent.controller != controller) continue;
-            if (permanent.is_tapped) continue;
-            if (permanent.is_phased_out) continue;
-            if (permanent_cant_activate(entity, orderer)) continue;
-            if (permanent.has_summoning_sickness &&
-                global_coordinator.entity_has_component<Creature>(entity)) {
-                auto &cr = global_coordinator.GetComponent<Creature>(entity);
-                bool has_haste = false;
-                for (const auto &kw : cr.keywords)
-                    if (kw == "Haste") { has_haste = true; break; }
-                if (!has_haste) continue;
-            }
-
-            for (const auto &ab : permanent.abilities) {
-                if (!is_simple_mana_source(ab)) continue;
-                if (ab.activation_limit > 0 && ab.activations_this_turn >= ab.activation_limit) continue;
-
-                std::string src_name = permanent.name;
-                if (!ab.mana_choices.empty()) {
-                    for (Colors choice_color : ab.mana_choices) {
-                        Ability choice_ab = ab;
-                        choice_ab.color = choice_color;
-                        std::string desc = "Tap " + src_name + " for {" +
-                                           mana_symbol_str(choice_color) + "}";
-                        LegalAction la(ACTIVATE_ABILITY, entity, choice_ab, desc);
-                        la.category = ActionCategory::PAYING_COSTS;
-                        pay_actions.push_back(la);
-                    }
-                } else {
-                    std::string desc = "Tap " + src_name + " for {" +
-                                       mana_symbol_str(ab.color) + "}";
-                    LegalAction la(ACTIVATE_ABILITY, entity, ab, desc);
-                    la.category = ActionCategory::PAYING_COSTS;
-                    pay_actions.push_back(la);
-                }
-            }
+        auto mana_actions = collect_mana_legal_actions(controller, orderer);
+        for (auto &la : mana_actions) {
+            la.category = ActionCategory::PAYING_COSTS;
+            pay_actions.push_back(la);
         }
 
         // Delve: exile instants/sorceries from graveyard to pay generic costs
@@ -507,12 +542,24 @@ bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,
             const Ability &chosen_ab = chosen.ability;
 
             auto &perm = global_coordinator.GetComponent<Permanent>(source_entity);
-            perm.is_tapped = true;
+            if (chosen_ab.tap_cost) perm.is_tapped = true;
+
+            // Pay activation mana cost if any
+            if (!chosen_ab.activation_mana_cost.empty()) {
+                spend_mana(controller, chosen_ab.activation_mana_cost, source_entity);
+            }
+
+            // Pay life cost if any
+            if (chosen_ab.life_cost > 0) {
+                auto &p = global_coordinator.GetComponent<Player>(player_entity);
+                p.life_total -= chosen_ab.life_cost;
+                game_log("%s pays %d life\n", player_name(controller).c_str(), chosen_ab.life_cost);
+            }
 
             size_t mana_amount = eval_mana_amount(chosen_ab, controller, orderer);
             add_mana(controller, chosen_ab.color, mana_amount);
 
-            game_log("%s tapped %s for %zu{%s}\n", player_name(controller).c_str(),
+            game_log("%s activated %s for %zu{%s}\n", player_name(controller).c_str(),
                      perm.name.c_str(), mana_amount, mana_symbol_str(chosen_ab.color));
 
             // Increment activation counter if limited

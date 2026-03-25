@@ -22,7 +22,6 @@
 #include "components/token.h"
 #include "components/zone.h"
 #include "ecs/coordinator.h"
-#include "ecs/events.h"
 #include "input_logger.h"
 #include "machine_io.h"
 #include "systems/orderer.h"

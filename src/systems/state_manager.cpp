@@ -1070,13 +1070,13 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 }
             }
         }
+        if (is_land) continue;
         // Flash keyword grants instant-speed casting
         if (!is_instant) {
             for (const auto &kw : card_data.keywords) {
                 if (kw == "Flash") { is_instant = true; break; }
             }
         }
-        if (is_land) continue;
         // Timing restrictions
         bool can_cast_now = false;
         if (is_instant) {
@@ -1139,7 +1139,8 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
     }
     // checking permanents for activated abilities
     // mana abilities parsed last, after pending_actions complete
-    std::vector<LegalAction> legal_mana_abilities;
+    // Simple tap-only mana sources collected via shared function
+    std::vector<LegalAction> legal_mana_abilities = collect_mana_legal_actions(priority_player, orderer);
     for (auto entity : orderer->mEntities) {
         if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
         auto &zone = global_coordinator.GetComponent<Zone>(entity);
@@ -1228,43 +1229,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 if (!found_ret) continue;
             }
             if (ab.category == "AddMana") {
-                if (!ab.activation_mana_cost.empty()) {
-                    Entity exclude = ab.tap_cost ? entity : 0;
-                    if (!can_afford_with_sources(priority_player, ab.activation_mana_cost, orderer, exclude)) continue;
-                    auto it = cur_game.payment_fail_counts.find(ab.source);
-                    if (it != cur_game.payment_fail_counts.end() && it->second >= 2) continue;
-                }
-                std::string src_name = entity_name(ab.source);
-                if (!ab.mana_choices.empty()) {
-                    // Combo or Any mana: emit one action per color choice
-                    for (Colors choice_color : ab.mana_choices) {
-                        std::string desc = "Tap " + src_name + " for {" + mana_symbol(choice_color) + "}";
-                        Ability choice_ab = ab;
-                        choice_ab.color = choice_color;
-                        LegalAction la(ACTIVATE_ABILITY, ab.source, choice_ab, desc);
-                        switch (choice_color) {
-                            case WHITE:    la.category = ActionCategory::MANA_W; break;
-                            case BLUE:     la.category = ActionCategory::MANA_U; break;
-                            case BLACK:    la.category = ActionCategory::MANA_B; break;
-                            case RED:      la.category = ActionCategory::MANA_R; break;
-                            case GREEN:    la.category = ActionCategory::MANA_G; break;
-                            default:       la.category = ActionCategory::MANA_C; break;
-                        }
-                        legal_mana_abilities.push_back(la);
-                    }
-                } else {
-                    std::string desc = "Tap " + src_name + " for {" + mana_symbol(ab.color) + "}";
-                    LegalAction la(ACTIVATE_ABILITY, ab.source, ab, desc);
-                    switch (ab.color) {
-                        case WHITE:    la.category = ActionCategory::MANA_W; break;
-                        case BLUE:     la.category = ActionCategory::MANA_U; break;
-                        case BLACK:    la.category = ActionCategory::MANA_B; break;
-                        case RED:      la.category = ActionCategory::MANA_R; break;
-                        case GREEN:    la.category = ActionCategory::MANA_G; break;
-                        default:       la.category = ActionCategory::MANA_C; break;
-                    }
-                    legal_mana_abilities.push_back(la);
-                }
+                // All mana abilities collected via collect_mana_legal_actions above
                 continue;
             } else {
                 // Non-mana activated ability (e.g. ChangeZone for fetch lands, Destroy for Wasteland)

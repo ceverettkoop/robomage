@@ -355,29 +355,7 @@ static bool run_unless_loop(size_t cost, Zone::Ownership controller,
     cur_game.player_a_has_priority = (controller == Zone::PLAYER_A);
 
     while (true) {
-        std::vector<LegalAction> unless_actions;
-
-        for (auto e : orderer->mEntities) {
-            if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
-            auto& perm = global_coordinator.GetComponent<Permanent>(e);
-            if (perm.controller != controller || perm.is_tapped) continue;
-            for (auto& ab : perm.abilities) {
-                if (ab.category != "AddMana") continue;
-                ActionCategory mcat = ActionCategory::MANA_C;
-                switch (ab.color) {
-                    case WHITE: mcat = ActionCategory::MANA_W; break;
-                    case BLUE:  mcat = ActionCategory::MANA_U; break;
-                    case BLACK: mcat = ActionCategory::MANA_B; break;
-                    case RED:   mcat = ActionCategory::MANA_R; break;
-                    case GREEN: mcat = ActionCategory::MANA_G; break;
-                    default: break;
-                }
-                LegalAction la(PASS_PRIORITY, e, std::string("Tap ") + perm.name + " for {" + mana_symbol(ab.color) + "}");
-                la.category = mcat;
-                unless_actions.push_back(la);
-                break;
-            }
-        }
+        std::vector<LegalAction> unless_actions = collect_mana_legal_actions(controller, orderer);
 
         bool can_pay = can_afford(controller, cond_cost);
         size_t pay_idx = unless_actions.size();
@@ -409,16 +387,13 @@ static bool run_unless_loop(size_t cost, Zone::Ownership controller,
         }
 
         if (choice >= 0 && choice < static_cast<int>(pay_idx)) {
-            Entity land = unless_actions[static_cast<size_t>(choice)].source_entity;
+            auto &chosen = unless_actions[static_cast<size_t>(choice)];
+            Entity land = chosen.source_entity;
             auto& perm = global_coordinator.GetComponent<Permanent>(land);
-            for (auto& ab : perm.abilities) {
-                if (ab.category != "AddMana") continue;
-                perm.is_tapped = true;
-                add_mana(controller, ab.color, ab.amount);
-                game_log("%s tapped %s for {%s}\n", player_name(controller).c_str(),
-                       perm.name.c_str(), mana_symbol(ab.color).c_str());
-                break;
-            }
+            perm.is_tapped = true;
+            add_mana(controller, chosen.ability.color, chosen.ability.amount);
+            game_log("%s tapped %s for {%s}\n", player_name(controller).c_str(),
+                   perm.name.c_str(), mana_symbol(chosen.ability.color).c_str());
         }
     }
 }

@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "classes/action.h"
 #include "classes/colors.h"
 #include "components/zone.h"
 #include "ecs/entity.h"
@@ -22,7 +23,7 @@ bool can_afford_pool(const std::multiset<Colors>& pool, const std::multiset<Colo
 // Check if player can afford a mana cost
 bool can_afford(Zone::Ownership player, const std::multiset<Colors>& cost);
 
-// Check if player can afford a cost considering current pool plus untapped tap-only mana sources
+// Check if player can afford a cost considering current pool plus all activatable mana sources
 // exclude_entity: if nonzero, skip this entity when counting available sources (used when
 // the ability being checked will tap the source as part of its own cost)
 bool can_afford_with_sources(Zone::Ownership player, const std::multiset<Colors>& cost,
@@ -57,6 +58,15 @@ struct ManaPaymentSnapshot {
 ManaPaymentSnapshot snapshot_mana_state(Zone::Ownership player, std::shared_ptr<Orderer> orderer);
 void restore_mana_state(Zone::Ownership player, const ManaPaymentSnapshot& snap,
                         std::shared_ptr<Orderer> orderer);
+
+// Map a mana color to its ActionCategory (MANA_W, MANA_U, etc.)
+ActionCategory mana_action_category(Colors color);
+
+// Collect legal actions for all activatable mana sources a player controls.
+// Each action has a color-specific ActionCategory (MANA_W, MANA_U, etc.).
+// Sources with activation_mana_cost are included only if the cost is affordable.
+std::vector<LegalAction> collect_mana_legal_actions(
+    Zone::Ownership player, std::shared_ptr<Orderer> orderer);
 
 // Prompt the player to activate mana abilities to pay a cost. Returns true if cost was fully paid.
 // On false, caller must restore from snapshot.
