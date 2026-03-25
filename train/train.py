@@ -509,64 +509,65 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
     else:
         vec_env = SubprocVecEnv([make_env(binary_path, i, model_deck, opp_deck) for i in range(N_ENVS)])
 
-    policy_kwargs = dict(
-        features_extractor_class=CardGameExtractor,
-        net_arch=[256, 256],
-    )
-
-    model_prefix = f"{model_deck}_{opp_deck}"
-    if not load_path and self_play:
-        candidate = os.path.join(checkpoint_dir, f"{model_prefix}_final.zip")
-        if os.path.exists(candidate):
-            load_path = candidate
-            print(f"Auto-loading self-play checkpoint: {candidate}")
-
-    if load_path:
-        print(f"Resuming from {load_path}")
-        model = MaskablePPO.load(load_path, env=vec_env)
-    else:
-        model = MaskablePPO(
-            "MlpPolicy",
-            vec_env,
-            policy_kwargs=policy_kwargs,
-            learning_rate=3e-4,
-            n_steps=4096,           # steps per env per update
-            batch_size=1024,
-            n_epochs=4,
-            gamma=0.99,
-            gae_lambda=0.95,
-            clip_range=0.25,
-            ent_coef=0.08,         
-            verbose=1,
-            tensorboard_log=LOG_DIR,
+    try:
+        policy_kwargs = dict(
+            features_extractor_class=CardGameExtractor,
+            net_arch=[256, 256],
         )
 
-    actual_n_envs = n_envs if self_play else N_ENVS
-    callbacks = [
-        CheckpointCallback(
-            save_freq=100_000 // actual_n_envs,
-            save_path=checkpoint_dir,
-            name_prefix=model_prefix,
-        ),
-        ShapingScaleCallback(vec_env),
-    ]
-    if tally:
-        callbacks.append(WinTallyCallback())
-    callbacks.append(ReplayLogCallback(binary_path=binary_path,
-                                       model_deck=model_deck, opp_deck=opp_deck))
-    if record:
-        rec_path = os.path.join(RECORD_DIR, f"{model_prefix}_{int(time.time())}.rmrec")
-        callbacks.append(RecordCallback(
-            path=rec_path, n_envs=actual_n_envs, model_path=load_path,
-            model_deck=model_deck, self_play=self_play,
-        ))
+        model_prefix = f"{model_deck}_{opp_deck}"
+        if not load_path and self_play:
+            candidate = os.path.join(checkpoint_dir, f"{model_prefix}_final.zip")
+            if os.path.exists(candidate):
+                load_path = candidate
+                print(f"Auto-loading self-play checkpoint: {candidate}")
 
-    print(f"Training for {total_timesteps:,} timesteps across {actual_n_envs} envs...")
-    model.learn(total_timesteps=total_timesteps, callback=callbacks, reset_num_timesteps=load_path is None)
-    model.save(os.path.join(checkpoint_dir, f"{model_prefix}_final"))
-    print(f"Saved final model as {model_prefix}_final.")
+        if load_path:
+            print(f"Resuming from {load_path}")
+            model = MaskablePPO.load(load_path, env=vec_env)
+        else:
+            model = MaskablePPO(
+                "MlpPolicy",
+                vec_env,
+                policy_kwargs=policy_kwargs,
+                learning_rate=3e-4,
+                n_steps=4096,           # steps per env per update
+                batch_size=1024,
+                n_epochs=4,
+                gamma=0.99,
+                gae_lambda=0.95,
+                clip_range=0.25,
+                ent_coef=0.08,
+                verbose=1,
+                tensorboard_log=LOG_DIR,
+            )
 
-    vec_env.close()
+        actual_n_envs = n_envs if self_play else N_ENVS
+        callbacks = [
+            CheckpointCallback(
+                save_freq=100_000 // actual_n_envs,
+                save_path=checkpoint_dir,
+                name_prefix=model_prefix,
+            ),
+            ShapingScaleCallback(vec_env),
+        ]
+        if tally:
+            callbacks.append(WinTallyCallback())
+        callbacks.append(ReplayLogCallback(binary_path=binary_path,
+                                           model_deck=model_deck, opp_deck=opp_deck))
+        if record:
+            rec_path = os.path.join(RECORD_DIR, f"{model_prefix}_{int(time.time())}.rmrec")
+            callbacks.append(RecordCallback(
+                path=rec_path, n_envs=actual_n_envs, model_path=load_path,
+                model_deck=model_deck, self_play=self_play,
+            ))
+
+        print(f"Training for {total_timesteps:,} timesteps across {actual_n_envs} envs...")
+        model.learn(total_timesteps=total_timesteps, callback=callbacks, reset_num_timesteps=load_path is None)
+        model.save(os.path.join(checkpoint_dir, f"{model_prefix}_final"))
+        print(f"Saved final model as {model_prefix}_final.")
+    finally:
+        vec_env.close()
 
 
 def train_fixed_model(binary_path: str, model_deck: str, opp_deck: str,
@@ -607,38 +608,40 @@ def train_fixed_model(binary_path: str, model_deck: str, opp_deck: str,
         for i in range(n_envs)
     ])
 
-    policy_kwargs = dict(
-        features_extractor_class=CardGameExtractor,
-        net_arch=[256, 256],
-    )
+    try:
+        policy_kwargs = dict(
+            features_extractor_class=CardGameExtractor,
+            net_arch=[256, 256],
+        )
 
-    print(f"Resuming from {load_path}")
-    model = MaskablePPO.load(load_path, env=vec_env)
+        print(f"Resuming from {load_path}")
+        model = MaskablePPO.load(load_path, env=vec_env)
 
-    callbacks = [
-        CheckpointCallback(
-            save_freq=100_000 // n_envs,
-            save_path=checkpoint_dir,
-            name_prefix=model_prefix,
-        ),
-        ShapingScaleCallback(vec_env),
-    ]
-    if tally:
-        callbacks.append(WinTallyCallback())
-    callbacks.append(ReplayLogCallback(binary_path=binary_path,
-                                       model_deck=model_deck, opp_deck=opp_deck))
-    if record:
-        rec_path = os.path.join(RECORD_DIR, f"{model_prefix}_fixed_{int(time.time())}.rmrec")
-        callbacks.append(RecordCallback(
-            path=rec_path, n_envs=n_envs, model_path=load_path,
-            model_deck=model_deck, self_play=False,
-        ))
+        callbacks = [
+            CheckpointCallback(
+                save_freq=100_000 // n_envs,
+                save_path=checkpoint_dir,
+                name_prefix=model_prefix,
+            ),
+            ShapingScaleCallback(vec_env),
+        ]
+        if tally:
+            callbacks.append(WinTallyCallback())
+        callbacks.append(ReplayLogCallback(binary_path=binary_path,
+                                           model_deck=model_deck, opp_deck=opp_deck))
+        if record:
+            rec_path = os.path.join(RECORD_DIR, f"{model_prefix}_fixed_{int(time.time())}.rmrec")
+            callbacks.append(RecordCallback(
+                path=rec_path, n_envs=n_envs, model_path=load_path,
+                model_deck=model_deck, self_play=False,
+            ))
 
-    print(f"Training for {total_timesteps:,} timesteps across {n_envs} envs...")
-    model.learn(total_timesteps=total_timesteps, callback=callbacks, reset_num_timesteps=False)
-    model.save(os.path.join(checkpoint_dir, f"{model_prefix}_final"))
-    print(f"Saved final model as {model_prefix}_final.")
-    vec_env.close()
+        print(f"Training for {total_timesteps:,} timesteps across {n_envs} envs...")
+        model.learn(total_timesteps=total_timesteps, callback=callbacks, reset_num_timesteps=False)
+        model.save(os.path.join(checkpoint_dir, f"{model_prefix}_final"))
+        print(f"Saved final model as {model_prefix}_final.")
+    finally:
+        vec_env.close()
 
 
 def train_alternate(binary_path: str, deck_a: str, deck_b: str,
