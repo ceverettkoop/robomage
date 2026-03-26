@@ -31,6 +31,9 @@ extern Game cur_game;
 
 static size_t evaluate_dynamic_amount(const std::string &expr, Zone::Ownership ctrl,
                                       std::shared_ptr<Orderer> orderer, Entity target);
+static Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner,
+                                const std::vector<Zone::ZoneValue> &zones, const std::string &change_type,
+                                bool mandatory, Zone::ZoneValue destination);
 
 //edge case of two identical abilities being applied from two sources not handled
 bool Ability::identical_activated_ability(const Ability &other) {
@@ -132,8 +135,14 @@ Entity search_zone(
         zone_contents = orderer->get_library_contents(owner);
     } else if (zone == Zone::HAND) {
         zone_contents = orderer->get_hand(owner);
+    } else if (zone == Zone::GRAVEYARD) {
+        for (auto e : orderer->mEntities) {
+            if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+            auto &z = global_coordinator.GetComponent<Zone>(e);
+            if (z.location == Zone::GRAVEYARD && z.owner == owner)
+                zone_contents.push_back(e);
+        }
     }
-    // TODO OTHER ZONES
 
     // Filter to matching cards; empty change_type means all cards match
     std::vector<Entity> choices;
@@ -221,6 +230,118 @@ Entity search_zone(
 }
 
 
+// Searches multiple zones combined for cards matching change_type.
+// Used by Doomsday (Origin$ Graveyard,Library).
+static Entity search_multi_zone(
+    std::shared_ptr<Orderer> orderer, Zone::Ownership owner,
+    const std::vector<Zone::ZoneValue> &zones, const std::string &change_type,
+    bool mandatory, Zone::ZoneValue destination) {
+
+    // Collect contents from all zones
+    std::vector<Entity> zone_contents;
+    for (auto zone : zones) {
+        if (zone == Zone::LIBRARY) {
+            auto lib = orderer->get_library_contents(owner);
+            zone_contents.insert(zone_contents.end(), lib.begin(), lib.end());
+        } else if (zone == Zone::HAND) {
+            auto hand = orderer->get_hand(owner);
+            zone_contents.insert(zone_contents.end(), hand.begin(), hand.end());
+        } else if (zone == Zone::GRAVEYARD) {
+            for (auto e : orderer->mEntities) {
+                if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+                auto &z = global_coordinator.GetComponent<Zone>(e);
+                if (z.location == Zone::GRAVEYARD && z.owner == owner)
+                    zone_contents.push_back(e);
+            }
+        }
+    }
+
+    // Exclude already-remembered entities (e.g. Doomsday picking 5 cards one at a time)
+    if (!cur_game.remembered_entities.empty()) {
+        std::vector<Entity> filtered;
+        for (auto e : zone_contents) {
+            bool already = false;
+            for (auto re : cur_game.remembered_entities) {
+                if (re == e) { already = true; break; }
+            }
+            if (!already) filtered.push_back(e);
+        }
+        zone_contents = filtered;
+    }
+
+    // Filter by change_type — "Card" matches everything
+    std::vector<Entity> choices;
+    if (change_type.empty() || change_type == "Card") {
+        choices = zone_contents;
+    } else {
+        // Parse comma-separated subtypes
+        std::vector<std::string> subtypes;
+        size_t p = 0;
+        while (true) {
+            size_t comma = change_type.find(',', p);
+            if (comma == std::string::npos) { subtypes.push_back(change_type.substr(p)); break; }
+            subtypes.push_back(change_type.substr(p, comma - p));
+            p = comma + 1;
+        }
+        bool has_extended = false;
+        for (auto &st : subtypes) {
+            if (st.find('.') != std::string::npos || st.find('+') != std::string::npos)
+                { has_extended = true; break; }
+        }
+        for (auto entity : zone_contents) {
+            bool matches = false;
+            if (has_extended) {
+                for (auto &st : subtypes) {
+                    if (matches_filter_spec(entity, st)) { matches = true; break; }
+                }
+            } else {
+                auto &cd = global_coordinator.GetComponent<CardData>(entity);
+                for (auto &t : cd.types) {
+                    for (auto &st : subtypes) {
+                        if (t.name == st) { matches = true; break; }
+                    }
+                    if (matches) break;
+                }
+            }
+            if (matches) choices.push_back(entity);
+        }
+    }
+
+    bool show_fail_to_find = !mandatory || choices.empty();
+    if (mandatory && choices.empty()) return 0;
+
+    game_log("Searching %s's library and graveyard:\n", player_name(owner).c_str());
+
+    ActionCategory cat = (destination == Zone::LIBRARY) ? ActionCategory::TOP_LIBRARY
+                                                        : ActionCategory::SEARCH_LIBRARY;
+
+    std::vector<LegalAction> search_actions;
+    if (show_fail_to_find) {
+        LegalAction ftf(PASS_PRIORITY, Entity(0), std::string("Fail to find"));
+        ftf.category = cat;
+        search_actions.push_back(ftf);
+    }
+    for (auto entity : choices) {
+        auto &cd = global_coordinator.GetComponent<CardData>(entity);
+        auto &z = global_coordinator.GetComponent<Zone>(entity);
+        const char *zone_label = (z.location == Zone::GRAVEYARD) ? " (graveyard)" : " (library)";
+        LegalAction la(PASS_PRIORITY, entity, cd.name + zone_label);
+        la.category = cat;
+        search_actions.push_back(la);
+    }
+
+    int choice = InputLogger::instance().get_input(search_actions);
+    if (show_fail_to_find) {
+        if (choice >= 1 && choice <= static_cast<int>(choices.size()))
+            return choices[static_cast<size_t>(choice - 1)];
+        return 0;
+    } else {
+        if (choice >= 0 && choice < static_cast<int>(choices.size()))
+            return choices[static_cast<size_t>(choice)];
+        return 0;
+    }
+}
+
 void Ability::resolve_change_zone(std::shared_ptr<Orderer> orderer) {
     Zone::Ownership owner = global_coordinator.GetComponent<Zone>(source).owner;
 
@@ -261,15 +382,26 @@ void Ability::resolve_change_zone(std::shared_ptr<Orderer> orderer) {
 
     // Search-based ChangeZone (e.g. fetch lands, Green Sun's Zenith)
     size_t num_to_move = (amount > 0) ? amount : 1;
+    bool multi_zone = origins.size() > 1;
 
     for (size_t i = 0; i < num_to_move; i++) {
-        Entity chosen = search_zone(orderer, owner, origin, change_type, mandatory, destination);
+        Entity chosen = 0;
+        if (multi_zone) {
+            // Multi-zone search (e.g. Doomsday: Graveyard,Library)
+            // Combine contents from all origin zones and present as one search
+            chosen = search_multi_zone(orderer, owner, origins, change_type, mandatory, destination);
+        } else {
+            chosen = search_zone(orderer, owner, origin, change_type, mandatory, destination);
+        }
         if (chosen != 0) {
             auto &chosen_cd = global_coordinator.GetComponent<CardData>(chosen);
             auto &chosen_zone = global_coordinator.GetComponent<Zone>(chosen);
             orderer->add_to_zone(false, chosen, destination);
             if (destination == Zone::BATTLEFIELD) {
                 chosen_zone.controller = owner;
+            }
+            if (remember_changed) {
+                cur_game.remembered_entities.push_back(chosen);
             }
             bool dest_public = (destination == Zone::BATTLEFIELD ||
                                 destination == Zone::GRAVEYARD   ||
@@ -286,10 +418,63 @@ void Ability::resolve_change_zone(std::shared_ptr<Orderer> orderer) {
         }
     }
 
-    if (origin == Zone::LIBRARY) {
+    // Don't shuffle when searching multiple zones (Doomsday puts cards on top of library)
+    if (!multi_zone && origin == Zone::LIBRARY) {
         orderer->shuffle_library(owner);
         game_log("%s shuffles their library\n", player_name(owner).c_str());
     }
+}
+
+void Ability::resolve_change_zone_all(std::shared_ptr<Orderer> orderer) {
+    Zone::Ownership owner = controller;
+
+    // Determine which zones to search
+    std::vector<Zone::ZoneValue> search_zones;
+    if (origins.size() > 1) {
+        search_zones = origins;
+    } else {
+        search_zones.push_back(origin);
+    }
+
+    // Collect all cards from the specified zones
+    std::vector<Entity> zone_contents;
+    for (auto zone : search_zones) {
+        if (zone == Zone::LIBRARY) {
+            auto lib = orderer->get_library_contents(owner);
+            zone_contents.insert(zone_contents.end(), lib.begin(), lib.end());
+        } else if (zone == Zone::HAND) {
+            auto hand = orderer->get_hand(owner);
+            zone_contents.insert(zone_contents.end(), hand.begin(), hand.end());
+        } else if (zone == Zone::GRAVEYARD) {
+            for (auto e : orderer->mEntities) {
+                if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+                auto &z = global_coordinator.GetComponent<Zone>(e);
+                if (z.location == Zone::GRAVEYARD && z.owner == owner)
+                    zone_contents.push_back(e);
+            }
+        }
+    }
+
+    // Filter by change_type (supports IsNotRemembered filter)
+    bool filter_not_remembered = (change_type.find("IsNotRemembered") != std::string::npos);
+
+    size_t moved = 0;
+    for (auto entity : zone_contents) {
+        if (filter_not_remembered) {
+            bool is_remembered = false;
+            for (auto re : cur_game.remembered_entities) {
+                if (re == entity) { is_remembered = true; break; }
+            }
+            if (is_remembered) continue;
+        }
+        if (global_coordinator.entity_has_component<CardData>(entity)) {
+            auto &cd = global_coordinator.GetComponent<CardData>(entity);
+            game_log("%s exiles %s\n", player_name(owner).c_str(), cd.name.c_str());
+        }
+        orderer->add_to_zone(false, entity, destination);
+        moved++;
+    }
+    game_log("%s exiles %zu card(s) from library and graveyard\n", player_name(owner).c_str(), moved);
 }
 
 void Ability::resolve_rearrange_top_of_library(std::shared_ptr<Orderer> orderer) {
@@ -558,7 +743,30 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
         return;
     }
 
-    if (category == "GainLife") {
+    if (category == "AddMana") {
+        // Non-mana-ability that adds mana on resolution (Dark Ritual, Lion's Eye Diamond)
+        Zone::Ownership mana_controller = controller;
+        size_t mana_amount = (amount > 0) ? amount : 1;
+        Colors mana_color = color;
+        if (!mana_choices.empty()) {
+            // Prompt player to choose a color (e.g. LED: "Any" → 3 mana of one chosen color)
+            bool prev_priority = cur_game.player_a_has_priority;
+            cur_game.player_a_has_priority = (mana_controller == Zone::PLAYER_A);
+            std::vector<LegalAction> color_actions;
+            for (auto c : mana_choices) {
+                std::string desc = "Add " + std::to_string(mana_amount) + "{" + mana_symbol(c) + "}";
+                LegalAction la(PASS_PRIORITY, std::string(desc));
+                la.category = ActionCategory::OTHER_CHOICE;
+                color_actions.push_back(la);
+            }
+            int choice = InputLogger::instance().get_input(color_actions);
+            mana_color = mana_choices[static_cast<size_t>(choice)];
+            cur_game.player_a_has_priority = prev_priority;
+        }
+        add_mana(mana_controller, mana_color, mana_amount);
+        game_log("%s adds %zu{%s}\n", player_name(mana_controller).c_str(),
+                 mana_amount, mana_symbol(mana_color).c_str());
+    } else if (category == "GainLife") {
         Zone::Ownership gain_controller;
         if (defined_targeted_controller && global_coordinator.entity_has_component<Zone>(target)) {
             // Swords to Plowshares: gain life goes to the exiled creature's controller
@@ -661,6 +869,8 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
         orderer->draw(owner, amount);
     } else if (category == "ChangeZone") {
         resolve_change_zone(orderer);
+    } else if (category == "ChangeZoneAll") {
+        resolve_change_zone_all(orderer);
     } else if (category == "RearrangeTopOfLibrary") {
         resolve_rearrange_top_of_library(orderer);
     } else if (category == "DealDamage") {
@@ -721,7 +931,8 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
     } else if (category == "Attach") {
         // Equip the source equipment to the remembered entity
         Entity equip_entity = source;
-        Entity target_creature = defined_remembered ? cur_game.remembered_entity : target;
+        Entity target_creature = (defined_remembered && !cur_game.remembered_entities.empty())
+            ? cur_game.remembered_entities[0] : target;
 
         if (optional) {
             // Ask the controller whether to attach
@@ -807,7 +1018,7 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
             }
         }
     } else if (category == "Cleanup") {
-        if (clear_remembered) cur_game.remembered_entity = 0;
+        if (clear_remembered) cur_game.remembered_entities.clear();
     } else if (category == "DelayedTrigger") {
         resolve_delayed_trigger();
     } else if (category == "Untap") {
@@ -1212,7 +1423,8 @@ void Ability::resolve_token(std::shared_ptr<Orderer> orderer) {
     damage.damage_counters = 0;
     global_coordinator.AddComponent(tok_entity, damage);
 
-    cur_game.remembered_entity = tok_entity;
+    cur_game.remembered_entities.clear();
+    cur_game.remembered_entities.push_back(tok_entity);
     game_log("Token created: %u/%u %s\n", tok.power, tok.toughness, tok.name.c_str());
 }
 

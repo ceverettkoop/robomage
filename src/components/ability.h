@@ -39,6 +39,8 @@ struct Ability{
     std::string sac_cost_spec = "";     // Sac<1/Type;Type/> — type-based sac cost; empty = none
     std::string return_cost_type = "";  // Return<N/Type> — bounce a land of this subtype as cost
     int return_cost_count = 0;          // number of lands to return
+    bool discard_hand_cost = false;     // Discard<0/Hand> — discard entire hand as activation cost (Lion's Eye Diamond)
+    bool instant_speed = false;         // InstantSpeed$ True — activated ability that is NOT a mana ability; goes on stack
     int activation_limit = 0;           // ActivationLimit$ N — max activations per turn (0 = unlimited)
     int activation_zone = -1;           // ActivationZone$ Hand → Zone::HAND; -1 = default (battlefield)
     int activations_this_turn = 0;      // runtime counter, reset at UNTAP
@@ -88,10 +90,16 @@ struct Ability{
 
     // Attach / Equip sub-ability
     bool optional = false;           // Optional$ True — player may decline
-    bool defined_remembered = false; // Defined$ Remembered — target is cur_game.remembered_entity
+    bool defined_remembered = false; // Defined$ Remembered — target is cur_game.remembered_entities[0]
 
     // Cleanup sub-ability
     bool clear_remembered = false;   // ClearRemembered$ True
+
+    // RememberChanged$ — remember entities moved by this ChangeZone (for Doomsday)
+    bool remember_changed = false;
+
+    // Multi-zone origin support (e.g. Origin$ Graveyard,Library)
+    std::vector<Zone::ZoneValue> origins;  // populated when Origin$ has commas; origin holds first value
 
     // Dig ability (Once Upon a Time)
     size_t dig_num = 0;              // DigNum$ N — how many cards to look at from top of library
@@ -114,6 +122,7 @@ struct Ability{
     bool identical_activated_ability(const Ability& other);
 private:
     void resolve_change_zone(std::shared_ptr<Orderer> orderer);
+    void resolve_change_zone_all(std::shared_ptr<Orderer> orderer);
     void resolve_destroy(std::shared_ptr<Orderer> orderer);
     void resolve_rearrange_top_of_library(std::shared_ptr<Orderer> orderer);
     void resolve_surveil(std::shared_ptr<Orderer> orderer);

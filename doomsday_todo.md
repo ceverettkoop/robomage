@@ -10,23 +10,21 @@ All need entries in `src/card_vocab.h` (indices 53+) and a `train/card_costs.py`
 
 | # | Card | Script exists? |
 |---|------|---------------|
-| 1 | Doomsday | Yes |
-| 2 | Thoughtseize | Yes |
+
+| 2 | Thoughtseize | Yes | DONE untested
+| 17 | Duress | Yes | DONE untested
+| 1 | Doomsday | Yes | done untested
 | 3 | Dark Ritual | Yes |
 | 4 | Lotus Petal | Yes |
 | 5 | Lion's Eye Diamond | Yes |
+
 | 6 | Thassa's Oracle | Yes |
+
 | 7 | Personal Tutor | Yes |
 | 8 | Street Wraith | Yes |
 | 9 | Edge of Autumn | Yes |
-| 10 | Swamp | Yes |
-| 11 | Undercity Sewers | Yes |
-| 12 | Underground Sea | Yes |
-| 13 | Bloodstained Mire | Yes |
-| 14 | Verdant Catacombs | Yes |
 | 15 | Cavern of Souls | Yes |
 | 16 | Consider | Yes |
-| 17 | Duress | Yes |
 | 18 | Deep Analysis | Yes |
 
 ## Cards That Work Today (no new engine features needed)

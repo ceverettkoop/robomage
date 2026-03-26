@@ -567,12 +567,30 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         ability.valid_tgts = value;
     } else if (key == "ChangeType") {
         ability.change_type = value;
+    } else if (key == "RememberChanged") {
+        ability.remember_changed = (value == "True");
     } else if (key == "Origin") {
-        if (value == "Library")        ability.origin = Zone::LIBRARY;
-        else if (value == "Hand")      ability.origin = Zone::HAND;
-        else if (value == "Graveyard") ability.origin = Zone::GRAVEYARD;
-        else if (value == "Exile")     ability.origin = Zone::EXILE;
-        else if (value == "Stack")     ability.origin = Zone::STACK;
+        // Handle comma-separated origins (e.g. "Graveyard,Library")
+        auto parse_zone = [](const std::string &s) -> Zone::ZoneValue {
+            if (s == "Library")        return Zone::LIBRARY;
+            if (s == "Hand")           return Zone::HAND;
+            if (s == "Graveyard")      return Zone::GRAVEYARD;
+            if (s == "Exile")          return Zone::EXILE;
+            if (s == "Stack")          return Zone::STACK;
+            return Zone::LIBRARY;
+        };
+        ability.origins.clear();
+        size_t zp = 0;
+        while (true) {
+            size_t comma = value.find(',', zp);
+            if (comma == std::string::npos) {
+                ability.origins.push_back(parse_zone(value.substr(zp)));
+                break;
+            }
+            ability.origins.push_back(parse_zone(value.substr(zp, comma - zp)));
+            zp = comma + 1;
+        }
+        ability.origin = ability.origins[0];  // backward compat
     } else if (key == "Destination") {
         if (value == "Battlefield")    ability.destination = Zone::BATTLEFIELD;
         else if (value == "Library")   ability.destination = Zone::LIBRARY;
@@ -636,6 +654,8 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         ability.discard_valid = value;
     } else if (key == "Mode") {
         ability.mode = value;
+    } else if (key == "InstantSpeed") {
+        ability.instant_speed = (value == "True");
     } else if (key == "Cost") {
         size_t tok_pos = 0;
         while (tok_pos < value.size()) {
@@ -669,6 +689,11 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
                     } else {
                         ability.sac_cost_spec = spec;
                     }
+                }
+            } else if (tok.rfind("Discard<", 0) == 0) {
+                // Discard<0/Hand> — discard entire hand as activation cost (Lion's Eye Diamond)
+                if (tok.find("0/Hand") != std::string::npos) {
+                    ability.discard_hand_cost = true;
                 }
             } else if (tok.rfind("Return<", 0) == 0) {
                 // Return<1/Forest> — bounce a land of given subtype

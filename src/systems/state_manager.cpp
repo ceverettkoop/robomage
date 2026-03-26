@@ -1228,8 +1228,9 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 }
                 if (!found_ret) continue;
             }
-            if (ab.category == "AddMana") {
-                // All mana abilities collected via collect_mana_legal_actions above
+            if (ab.category == "AddMana" && !ab.instant_speed) {
+                // Normal mana abilities collected via collect_mana_legal_actions above
+                // InstantSpeed$ abilities (e.g. LED) are not mana abilities and go on the stack
                 continue;
             } else {
                 // Non-mana activated ability (e.g. ChangeZone for fetch lands, Destroy for Wasteland)

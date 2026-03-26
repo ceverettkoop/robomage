@@ -207,6 +207,7 @@ static std::vector<std::pair<Entity, Ability>> collect_available_mana_sources(
         for (const auto &ab : permanent.abilities) {
             if (ab.category != "AddMana") continue;
             if (ab.ability_type != Ability::ACTIVATED) continue;
+            if (ab.instant_speed) continue;  // InstantSpeed$ abilities (e.g. LED) are not mana abilities
             if (ab.tap_cost && permanent.is_tapped) continue;
             if (ab.activation_limit > 0 && ab.activations_this_turn >= ab.activation_limit) continue;
             // Summoning sickness check for creatures with tap cost

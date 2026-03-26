@@ -123,7 +123,7 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
     auto &permanent = global_coordinator.GetComponent<Permanent>(permanent_entity);
     Zone::Ownership controller = permanent.controller;
 
-    bool is_mana_ability = (ability.category == "AddMana");
+    bool is_mana_ability = (ability.category == "AddMana" && !ability.instant_speed);
     Ability stack_ab = ability;  // not used for mana ability
 
     // EQUIP: special activated ability — attach equipment to a creature
@@ -264,6 +264,16 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
             std::string ret_name = global_coordinator.GetComponent<Permanent>(to_ret).name;
             orderer->add_to_zone(false, to_ret, Zone::HAND);
             game_log("%s returns %s to hand\n", player_name(controller).c_str(), ret_name.c_str());
+        }
+    }
+    // Discard hand cost (Lion's Eye Diamond)
+    if (ability.discard_hand_cost) {
+        std::vector<Entity> hand = orderer->get_hand(controller);
+        for (auto card : hand) {
+            std::string cname = global_coordinator.entity_has_component<CardData>(card)
+                ? global_coordinator.GetComponent<CardData>(card).name : "card";
+            orderer->add_to_zone(false, card, Zone::GRAVEYARD);
+            game_log("%s discards %s\n", player_name(controller).c_str(), cname.c_str());
         }
     }
     // MANA ABILITY
