@@ -687,7 +687,7 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         }
     } else {
         static const std::set<std::string> ignored_keys = {
-            "SpellDescription", "AILogic", "AINoRecursiveCheck"
+            "SpellDescription", "AILogic", "AINoRecursiveCheck", "TgtPrompt", "StackDescription"
         };
         if (ignored_keys.find(key) == ignored_keys.end()) {
             std::string msg = "Unrecognized ability param: " + key + "$ " + value;
