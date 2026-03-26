@@ -2,7 +2,6 @@
 #include "parse.h"
 #include "error.h"
 
-//this should be a system? oh well
 std::unordered_map<std::string, Entity> card_db;
 
 Entity load_card(std::string card_name) {

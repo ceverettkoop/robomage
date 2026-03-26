@@ -607,7 +607,6 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
     } else if (key == "CounterNum") {
         ability.counter_count = std::stoi(value);
     } else if (key == "Optional") {
-        ability.optional = (value == "True");
         ability.optional_choice = (value == "True");
     } else if (key == "Defined") {
         if (value == "Remembered") ability.defined_remembered = true;

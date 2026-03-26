@@ -39,6 +39,7 @@ bool Ability::identical_activated_ability(const Ability &other) {
     if (other.change_type != this->change_type) return false;
     if (other.origin != this->origin) return false;
     if (other.destination != this->destination) return false;
+    if (other.source != this->source) return false;
     return true;
 };
 
@@ -1110,7 +1111,7 @@ void Ability::resolve_delayed_trigger() {
     dt.ability       = draw_ab;
     dt.fire_on       = Events::UPKEEP_BEGAN;
     dt.owner_entity  = owner_entity;
-    dt.fire_on_turn  = cur_game.turn + 1;
+    dt.fire_on_turn  = delayed_trigger_next_turn ? cur_game.turn + 1 : cur_game.turn;
     cur_game.delayed_triggers.push_back(dt);
     game_log("Delayed trigger registered: draw 1 at next upkeep.\n");
 }
