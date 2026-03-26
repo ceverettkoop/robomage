@@ -29,6 +29,7 @@
 extern Coordinator global_coordinator;
 extern Game cur_game;
 
+//edge case of two identical abilities being applied from two sources not handled
 bool Ability::identical_activated_ability(const Ability &other) {
     if (other.category != this->category) return false;
     if (other.valid_tgts != this->valid_tgts) return false;
@@ -39,7 +40,6 @@ bool Ability::identical_activated_ability(const Ability &other) {
     if (other.change_type != this->change_type) return false;
     if (other.origin != this->origin) return false;
     if (other.destination != this->destination) return false;
-    if (other.source != this->source) return false;
     return true;
 };
 

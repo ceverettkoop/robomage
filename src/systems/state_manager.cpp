@@ -137,7 +137,7 @@ void StateManager::apply_permanent_components(Game &game) {
                 perm.timestamp_entered_battlefield = game.timestamp++;
                 global_coordinator.AddComponent(entity, perm);
             }
-            // copy activated abilities from card_data to permanent; incl mana abilities altough mana abilities innate to basic land types
+            // copy activated abilities from card_data to permanent; incl mana abilities although mana abilities innate to basic land types
             // added elsewhere
             for (auto ab : card_data.abilities) {
                 if (ab.ability_type != Ability::ACTIVATED) continue;
