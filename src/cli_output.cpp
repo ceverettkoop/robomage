@@ -361,6 +361,10 @@ void print_query(const Query* q, bool player_a_has_priority) {
 
 // ── Errors ────────────────────────────────────────────────────────────────────
 
+void cli_warning(const std::string& msg) {
+    fprintf(stderr, "WARNING: %s\n", msg.c_str());
+}
+
 void cli_error(const std::string& msg) {
     fprintf(stderr, "ERROR: %s\n", msg.c_str());
 }

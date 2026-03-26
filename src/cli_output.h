@@ -22,6 +22,7 @@ void print_game_state(const GameState* gs);
 void print_query(const Query* q, bool player_a_has_priority);
 
 // Errors (replaces error.cpp printfs)
+void cli_warning(const std::string& msg);
 void cli_error(const std::string& msg);
 [[noreturn]] void cli_fatal_error(const std::string& msg);
 

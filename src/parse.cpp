@@ -19,6 +19,7 @@
 #include "ecs/coordinator.h"
 #include "ecs/events.h"
 #include "error.h"
+#include "error.h"
 #include "type_constants.h"
 
 extern std::string RESOURCE_DIR;
@@ -31,18 +32,22 @@ static std::multiset<Colors> parse_mana_cost(std::string value);
 static std::set<Type> parse_types(std::string value);
 static std::map<std::string, std::string> parse_svars(const std::string& script);
 static std::string normalize_category(std::string category);
-static void apply_param_to_ability(Ability& ability, const std::string& key, const std::string& value);
+static void apply_param_to_ability(Ability& ability, const std::string& key, const std::string& value,
+                                   const std::string& card_name = "");
 static std::vector<Ability> parse_abilities(std::vector<std::string> lines, const std::set<Type>& types,
-                                            const std::map<std::string, std::string>& svars);
+                                            const std::map<std::string, std::string>& svars,
+                                            const std::string& card_name = "");
 static std::vector<Ability> parse_triggered_abilities(const std::string& script,
-                                                      const std::map<std::string, std::string>& svars);
+                                                      const std::map<std::string, std::string>& svars,
+                                                      const std::string& card_name = "");
 static std::vector<StaticAbility> parse_static_abilities(const std::string& script, const std::map<std::string, std::string>& svars);
 static std::vector<Effect::Replacement> parse_replacement_effects(const std::string& script,
                                                                    const std::map<std::string, std::string>& svars);
 static uint32_t parse_power(std::string value);
 static uint32_t parse_toughness(std::string value);
 static std::vector<std::string> find_trigger_lines(const std::string &script);
-static Ability parse_one_trigger(const std::string &line, const std::map<std::string, std::string> &svars);
+static Ability parse_one_trigger(const std::string &line, const std::map<std::string, std::string> &svars,
+                                 const std::string& card_name = "");
 
 // all to lowercase, spaces to underscores, other characters removed
 std::string name_to_uid(std::string name) {
@@ -132,7 +137,7 @@ Entity parse_card_script(std::string path) {
     card.toughness = parse_toughness(value_from_script(front_script, "PT"));
     // parse ability templates; entities are only created when abilities go on the stack
     auto svars = parse_svars(front_script);
-    card.abilities = parse_abilities(multi_values_from_script(front_script, "A"), card.types, svars);
+    card.abilities = parse_abilities(multi_values_from_script(front_script, "A"), card.types, svars, card.name);
     // Detect "shuffle into library" pattern: SVar with DB$ ChangeZone from Stack to Library + Defined$ Parent
     // (e.g. Green Sun's Zenith) — sets a flag so stack manager moves to library instead of graveyard.
     // Strip the sub-ability since the stack manager handles it via the flag.
@@ -157,7 +162,7 @@ Entity parse_card_script(std::string path) {
         }
     }
     // parse triggered abilities from T: lines
-    for (auto &trig : parse_triggered_abilities(front_script, svars))
+    for (auto &trig : parse_triggered_abilities(front_script, svars, card.name))
         card.abilities.push_back(trig);
 
     // Parse S: lines for alternate costs
@@ -366,7 +371,7 @@ Token parse_token_script(const std::string &script_name) {
     // Parse T: triggered abilities
     auto svars = parse_svars(script_data);
     for (const auto &line : find_trigger_lines(script_data)) {
-        Ability ab = parse_one_trigger(line, svars);
+        Ability ab = parse_one_trigger(line, svars, tok.name);
         if (ab.trigger_on != 0)
             tok.abilities.push_back(ab);
     }
@@ -513,7 +518,8 @@ static std::map<std::string, std::string> parse_svars(const std::string& script)
 }
 
 // Applies a single key/value parameter to an ability struct.
-static void apply_param_to_ability(Ability& ability, const std::string& key, const std::string& value) {
+static void apply_param_to_ability(Ability& ability, const std::string& key, const std::string& value,
+                                   const std::string& card_name) {
     if (key == "NumCards" || key == "ChangeNum" || key == "Amount") {
         if (!value.empty() && std::isdigit(static_cast<unsigned char>(value[0]))) {
             ability.amount = static_cast<size_t>(std::stoi(value));
@@ -679,6 +685,15 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
             }
             tok_pos = (tok_end < value.size()) ? tok_end + 1 : tok_end;
         }
+    } else {
+        static const std::set<std::string> ignored_keys = {
+            "SpellDescription", "AILogic", "AINoRecursiveCheck"
+        };
+        if (ignored_keys.find(key) == ignored_keys.end()) {
+            std::string msg = "Unrecognized ability param: " + key + "$ " + value;
+            if (!card_name.empty()) msg += " (card: " + card_name + ")";
+            warning(msg);
+        }
     }
 }
 
@@ -690,11 +705,13 @@ static std::string normalize_category(std::string category) {
 
 // Forward declaration so parse_svar_ability can recurse via SubAbility$.
 static Ability parse_svar_ability(const std::string& content, Ability::AbilityType ability_type,
-                                  const std::map<std::string, std::string>& svars);
+                                  const std::map<std::string, std::string>& svars,
+                                  const std::string& card_name = "");
 
 // Parses a SVar's DB$ content string into an Ability. Resolves SubAbility$ chains.
 static Ability parse_svar_ability(const std::string& content, Ability::AbilityType ability_type,
-                                  const std::map<std::string, std::string>& svars) {
+                                  const std::map<std::string, std::string>& svars,
+                                  const std::string& card_name) {
     Ability sub;
     sub.ability_type = ability_type;
     size_t db_pos = content.find("DB$");
@@ -726,7 +743,7 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
             if (key == "SubAbility") {
                 auto it = svars.find(value);
                 if (it != svars.end())
-                    sub.subabilities.push_back(parse_svar_ability(it->second, ability_type, svars));
+                    sub.subabilities.push_back(parse_svar_ability(it->second, ability_type, svars, card_name));
             } else if (key == "ConditionCheckSVar") {
                 // Resolve SVar reference to its expression (e.g. "X" → "Count$ResolvedThisTurn")
                 auto it = svars.find(value);
@@ -734,7 +751,7 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
             } else if (key == "ConditionSVarCompare") {
                 sub.condition_svar_compare = value;
             } else {
-                apply_param_to_ability(sub, key, value);
+                apply_param_to_ability(sub, key, value, card_name);
             }
         }
         param_pos = param_end;
@@ -770,7 +787,8 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
 
 // fed each ability line
 static std::vector<Ability> parse_abilities(std::vector<std::string> lines, const std::set<Type>& types,
-                                            const std::map<std::string, std::string>& svars) {
+                                            const std::map<std::string, std::string>& svars,
+                                            const std::string& card_name) {
     size_t pos = 0;
     std::vector<Ability> ret_val;
     for (auto &&line : lines) {
@@ -831,9 +849,9 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
                 if (key == "SubAbility") {
                     auto it = svars.find(value);
                     if (it != svars.end())
-                        ability.subabilities.push_back(parse_svar_ability(it->second, ability.ability_type, svars));
+                        ability.subabilities.push_back(parse_svar_ability(it->second, ability.ability_type, svars, card_name));
                 } else {
-                    apply_param_to_ability(ability, key, value);
+                    apply_param_to_ability(ability, key, value, card_name);
                 }
             }
 
@@ -905,7 +923,8 @@ static std::vector<std::string> find_trigger_lines(const std::string &script) {
 
 // Parses a single T: trigger line and its Execute$ SVar into a triggered Ability.
 // Returns a default Ability with trigger_on == 0 if the trigger is unrecognised.
-static Ability parse_one_trigger(const std::string &line, const std::map<std::string, std::string> &svars) {
+static Ability parse_one_trigger(const std::string &line, const std::map<std::string, std::string> &svars,
+                                 const std::string& card_name) {
     Ability ability;
     ability.ability_type = Ability::TRIGGERED;
 
@@ -1044,7 +1063,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
                 it->second.find("DrawnThisTurn") != std::string::npos) {
                 ability.category = "SylvanLibrary";
             } else {
-                Ability effect = parse_svar_ability(it->second, Ability::TRIGGERED, svars);
+                Ability effect = parse_svar_ability(it->second, Ability::TRIGGERED, svars, card_name);
                 ability.category = effect.category;
                 ability.amount = effect.amount;
                 ability.counter_type = effect.counter_type;
@@ -1059,10 +1078,11 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
 }
 
 static std::vector<Ability> parse_triggered_abilities(const std::string &script,
-                                                      const std::map<std::string, std::string> &svars) {
+                                                      const std::map<std::string, std::string> &svars,
+                                                      const std::string& card_name) {
     std::vector<Ability> result;
     for (const auto &line : find_trigger_lines(script)) {
-        Ability ab = parse_one_trigger(line, svars);
+        Ability ab = parse_one_trigger(line, svars, card_name);
         if (ab.trigger_on != 0)  // only keep recognised triggers
             result.push_back(ab);
     }
