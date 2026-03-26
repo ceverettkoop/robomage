@@ -29,6 +29,9 @@
 extern Coordinator global_coordinator;
 extern Game cur_game;
 
+static size_t evaluate_dynamic_amount(const std::string &expr, Zone::Ownership ctrl,
+                                      std::shared_ptr<Orderer> orderer, Entity target);
+
 //edge case of two identical abilities being applied from two sources not handled
 bool Ability::identical_activated_ability(const Ability &other) {
     if (other.category != this->category) return false;
@@ -292,6 +295,10 @@ void Ability::resolve_change_zone(std::shared_ptr<Orderer> orderer) {
 void Ability::resolve_rearrange_top_of_library(std::shared_ptr<Orderer> orderer) {
     Zone::Ownership owner = global_coordinator.GetComponent<Zone>(source).owner;
 
+    size_t num_cards = amount;
+    if (!dynamic_amount_expr.empty())
+        num_cards = evaluate_dynamic_amount(dynamic_amount_expr, owner, orderer, target);
+
     std::vector<Entity> lib = orderer->get_library_contents(owner);
     // Sort by distance_from_top ascending so lib[0] is the actual top card
     std::sort(lib.begin(), lib.end(), [](Entity a, Entity b) {
@@ -299,7 +306,7 @@ void Ability::resolve_rearrange_top_of_library(std::shared_ptr<Orderer> orderer)
              < global_coordinator.GetComponent<Zone>(b).distance_from_top;
     });
     //looking at top n only
-    if (lib.size() > amount) lib.resize(amount);
+    if (lib.size() > num_cards) lib.resize(num_cards);
     size_t actual = lib.size();
     std::vector<Entity> remaining = lib;
 
@@ -422,7 +429,8 @@ bool Ability::is_target_valid() const {
     }
 
     bool any           = (vt == "Any");
-    bool inc_players   = any || vt.find("Player")   != std::string::npos;
+    bool opp_only      = (vt == "Opponent");
+    bool inc_players   = any || opp_only || vt.find("Player") != std::string::npos;
     bool inc_creatures = any || vt.find("Creature") != std::string::npos;
     bool inc_lands     = vt.find("Land")     != std::string::npos;
     bool nonbasic_only = vt.find("nonBasic")        != std::string::npos;
@@ -484,6 +492,46 @@ static bool compare_svar(int val, const std::string &spec) {
     return true;
 }
 
+// Evaluates a dynamic_amount_expr at runtime for the given controller.
+// Supports: Count$InYourLibrary, Count$YourLifeTotal, Count$YourLifeTotal/HalfUp,
+//           Count$Valid Creature.YouCtrl, Targeted$CardPower.
+static size_t evaluate_dynamic_amount(const std::string &expr, Zone::Ownership ctrl,
+                                      std::shared_ptr<Orderer> orderer, Entity target) {
+    if (expr.find("Count$InYourLibrary") != std::string::npos) {
+        return orderer->get_library_contents(ctrl).size();
+    }
+    if (expr.find("Count$YourLifeTotal") != std::string::npos) {
+        Entity ctrl_entity = (ctrl == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
+        auto &player = global_coordinator.GetComponent<Player>(ctrl_entity);
+        int life = player.life_total;
+        if (life < 0) life = 0;
+        if (expr.find("/HalfUp") != std::string::npos) {
+            return static_cast<size_t>((life + 1) / 2);
+        }
+        return static_cast<size_t>(life);
+    }
+    if (expr.find("Count$Valid Creature.YouCtrl") != std::string::npos) {
+        size_t count = 0;
+        for (auto e : orderer->mEntities) {
+            if (!global_coordinator.entity_has_component<Creature>(e)) continue;
+            if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+            auto &z = global_coordinator.GetComponent<Zone>(e);
+            if (z.location != Zone::BATTLEFIELD) continue;
+            if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
+            if (global_coordinator.GetComponent<Permanent>(e).controller != ctrl) continue;
+            count++;
+        }
+        return count;
+    }
+    if (expr.find("Targeted$CardPower") != std::string::npos) {
+        if (global_coordinator.entity_has_component<CardData>(target))
+            return static_cast<size_t>(global_coordinator.GetComponent<CardData>(target).power);
+        if (global_coordinator.entity_has_component<Creature>(target))
+            return static_cast<size_t>(global_coordinator.GetComponent<Creature>(target).power);
+    }
+    return 0;
+}
+
 void Ability::resolve(std::shared_ptr<Orderer> orderer) {
     // Pre-resolve target validity check — skipped for categories that select their own target internally
     if (valid_tgts != "N_A" && category != "Pump") {
@@ -535,6 +583,79 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
         auto &player = global_coordinator.GetComponent<Player>(ctrl_entity);
         player.life_total += static_cast<int32_t>(gain_amount);
         game_log("%s gains %zu life (now at %d)\n", player_name(gain_controller).c_str(), gain_amount, player.life_total);
+    } else if (category == "LoseLife") {
+        Zone::Ownership lose_controller = controller;
+        size_t lose_amount = amount;
+        if (!dynamic_amount_expr.empty())
+            lose_amount = evaluate_dynamic_amount(dynamic_amount_expr, lose_controller, orderer, target);
+        Entity ctrl_entity = (lose_controller == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
+        auto &player = global_coordinator.GetComponent<Player>(ctrl_entity);
+        player.life_total -= static_cast<int32_t>(lose_amount);
+        game_log("%s loses %zu life (now at %d)\n", player_name(lose_controller).c_str(), lose_amount, player.life_total);
+    } else if (category == "Discard") {
+        // RevealYouChoose: target player reveals hand, caster picks a card matching filter
+        Zone::Ownership tgt_owner = Zone::PLAYER_A;
+        if (global_coordinator.entity_has_component<Player>(target)) {
+            tgt_owner = (target == cur_game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
+        }
+        std::vector<Entity> hand = orderer->get_hand(tgt_owner);
+        game_log("%s reveals their hand:\n", player_name(tgt_owner).c_str());
+        for (auto e : hand) {
+            auto &cd = global_coordinator.GetComponent<CardData>(e);
+            game_log("  %s\n", cd.name.c_str());
+        }
+
+        // Filter by DiscardValid$
+        // Format: "Card.nonLand", "Card.nonCreature+nonLand"
+        std::vector<Entity> valid;
+        for (auto e : hand) {
+            auto &cd = global_coordinator.GetComponent<CardData>(e);
+            bool passes = true;
+            if (!discard_valid.empty()) {
+                // Parse the filter: strip "Card." prefix, split on '+' for constraints
+                std::string filter = discard_valid;
+                if (filter.rfind("Card.", 0) == 0) filter = filter.substr(5);
+                // Split on '+'
+                size_t fp = 0;
+                while (fp < filter.size()) {
+                    size_t plus = filter.find('+', fp);
+                    if (plus == std::string::npos) plus = filter.size();
+                    std::string constraint = filter.substr(fp, plus - fp);
+                    // "nonLand" means card must NOT be a Land
+                    if (constraint.rfind("non", 0) == 0) {
+                        std::string excluded_type = constraint.substr(3);
+                        for (auto &t : cd.types) {
+                            if (t.name == excluded_type) { passes = false; break; }
+                        }
+                    }
+                    if (!passes) break;
+                    fp = plus + 1;
+                }
+            }
+            if (passes) valid.push_back(e);
+        }
+
+        if (valid.empty()) {
+            game_log("No valid cards to discard.\n");
+        } else {
+            // Caster chooses which card to discard
+            bool prev_priority = cur_game.player_a_has_priority;
+            cur_game.player_a_has_priority = (controller == Zone::PLAYER_A);
+            game_log("%s chooses a card to discard:\n", player_name(controller).c_str());
+            std::vector<LegalAction> discard_actions;
+            for (auto e : valid) {
+                auto &cd = global_coordinator.GetComponent<CardData>(e);
+                LegalAction la(PASS_PRIORITY, e, cd.name);
+                la.category = ActionCategory::OTHER_CHOICE;
+                discard_actions.push_back(la);
+            }
+            int choice = InputLogger::instance().get_input(discard_actions);
+            Entity chosen = valid[static_cast<size_t>(choice)];
+            auto &cd = global_coordinator.GetComponent<CardData>(chosen);
+            game_log("%s discards %s\n", player_name(tgt_owner).c_str(), cd.name.c_str());
+            orderer->add_to_zone(false, chosen, Zone::GRAVEYARD);
+            cur_game.player_a_has_priority = prev_priority;
+        }
     } else if (category == "Draw") {
         Zone::Ownership owner = global_coordinator.GetComponent<Zone>(source).owner;
         orderer->draw(owner, amount);

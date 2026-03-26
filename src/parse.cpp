@@ -626,6 +626,10 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         ability.change_valid = value;
     } else if (key == "RestRandomOrder") {
         ability.rest_random_order = (value == "True");
+    } else if (key == "DiscardValid") {
+        ability.discard_valid = value;
+    } else if (key == "Mode") {
+        ability.mode = value;
     } else if (key == "Cost") {
         size_t tok_pos = 0;
         while (tok_pos < value.size()) {
@@ -753,7 +757,9 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
                     }
                 }
             } else if (sv.find("Count$Valid") != std::string::npos ||
-                       sv.find("Targeted$") != std::string::npos) {
+                       sv.find("Targeted$") != std::string::npos ||
+                       sv.find("Count$InYourLibrary") != std::string::npos ||
+                       sv.find("Count$YourLifeTotal") != std::string::npos) {
                 sub.dynamic_amount_expr = sv;
             }
         }
@@ -856,7 +862,9 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
                         }
                     }
                 } else if (sv.find("Count$Valid") != std::string::npos ||
-                           sv.find("Targeted$") != std::string::npos) {
+                           sv.find("Targeted$") != std::string::npos ||
+                           sv.find("Count$InYourLibrary") != std::string::npos ||
+                           sv.find("Count$YourLifeTotal") != std::string::npos) {
                     // Runtime expression — preserve for evaluation at activation/resolve time
                     ability.dynamic_amount_expr = sv;
                 }

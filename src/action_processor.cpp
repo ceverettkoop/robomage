@@ -361,6 +361,7 @@ static std::vector<Entity> build_valid_targets(
 
     bool any = (vt == "Any");
     bool inc_players = any || vt.find("Player") != std::string::npos;
+    bool opp_only = (vt == "Opponent");
     bool inc_creatures = any || vt.find("Creature") != std::string::npos;
     bool inc_lands = vt.find("Land") != std::string::npos;
     bool nonbasic_only = vt.find("nonBasic") != std::string::npos;
@@ -370,9 +371,10 @@ static std::vector<Entity> build_valid_targets(
     Zone::Ownership opp = (priority_player == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
 
     // Players: opponent first, self second
-    if (inc_players) {
+    if (inc_players || opp_only) {
         valid_targets.push_back(get_player_entity(opp));
-        valid_targets.push_back(get_player_entity(priority_player));
+        if (inc_players && !opp_only)
+            valid_targets.push_back(get_player_entity(priority_player));
     }
 
     // Permanents: two passes — opponent's first, then own (entity-ID order within each group)

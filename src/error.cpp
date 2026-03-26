@@ -195,6 +195,10 @@ static void print_backtrace() {
 }
 #endif
 
+void warning(std::string err) {
+    cli_error("WARNING:" + err);
+}
+
 void non_fatal_error(std::string err) {
     cli_error(err);
 #ifndef NDEBUG

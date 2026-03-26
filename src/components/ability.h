@@ -99,6 +99,10 @@ struct Ability{
     bool rest_random_order = false;  // RestRandomOrder$ True
     bool optional_choice = false;    // Optional$ True in Dig context — can choose nothing
 
+    // Discard ability (Thoughtseize, Duress)
+    std::string discard_valid = "";    // DiscardValid$ — filter for cards to discard (e.g. "Card.nonLand")
+    std::string mode = "";             // Mode$ — e.g. "RevealYouChoose"
+
     // Conditional subability execution (Scythecat Cub)
     std::string condition_check_svar = "";   // ConditionCheckSVar$ — resolved expression e.g. "Count$ResolvedThisTurn"
     std::string condition_svar_compare = ""; // ConditionSVarCompare$ — e.g. "EQ2", "NE2", "GE1"

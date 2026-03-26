@@ -24,7 +24,12 @@ inline int card_name_to_index(const std::string &name) {
         {"Ignoble Hierarch", 38}, {"Karakas", 39}, {"Keen-Eyed Curator", 40}, {"Knight of the Reliquary", 41},
         {"Noble Hierarch", 42}, {"Once Upon a Time", 43}, {"Plains", 44}, {"Savannah", 45},
         {"Scryb Ranger", 46}, {"Scythecat Cub", 47}, {"Swords to Plowshares", 48}, {"Sylvan Library", 49},
-        {"Talon Gates of Madara", 50}, {"Thalia, Guardian of Thraben", 51}, {"Windswept Heath", 52}};
+        {"Talon Gates of Madara", 50}, {"Thalia, Guardian of Thraben", 51}, {"Windswept Heath", 52},
+        {"Doomsday", 53}, {"Thoughtseize", 54}, {"Dark Ritual", 55}, {"Lotus Petal", 56},
+        {"Lion's Eye Diamond", 57}, {"Thassa's Oracle", 58}, {"Personal Tutor", 59}, {"Street Wraith", 60},
+        {"Edge of Autumn", 61}, {"Swamp", 62}, {"Undercity Sewers", 63}, {"Underground Sea", 64},
+        {"Bloodstained Mire", 65}, {"Verdant Catacombs", 66}, {"Cavern of Souls", 67},
+        {"Consider", 68}, {"Duress", 69}, {"Deep Analysis", 70}};
     auto it = vocab.find(name);
     return it != vocab.end() ? it->second : -1;
 }
@@ -47,11 +52,15 @@ inline const char* card_index_to_name(int idx) {
         "Noble Hierarch", "Once Upon a Time", "Plains", "Savannah",                  // 42-45
         "Scryb Ranger", "Scythecat Cub", "Swords to Plowshares", "Sylvan Library",  // 46-49
         "Talon Gates of Madara", "Thalia, Guardian of Thraben", "Windswept Heath",   // 50-52
-        // 53-126: reserved for future cards
-        "","","","","","","","","","","","","","","","","","","","","", // 53-73
-        "","","","","","","","","","","","","","","","","","","","","", // 74-94
-        "","","","","","","","","","","","","","","","","","","","","", // 95-115
-        "","","","","","","","","","","",                               // 116-126
+        "Doomsday", "Thoughtseize", "Dark Ritual", "Lotus Petal",                   // 53-56
+        "Lion's Eye Diamond", "Thassa's Oracle", "Personal Tutor", "Street Wraith", // 57-60
+        "Edge of Autumn", "Swamp", "Undercity Sewers", "Underground Sea",           // 61-64
+        "Bloodstained Mire", "Verdant Catacombs", "Cavern of Souls",                // 65-67
+        "Consider", "Duress", "Deep Analysis",                                       // 68-70
+        // 71-126: reserved for future cards
+        "","","","","","","","","","","","","","","","","","","","","", // 71-91
+        "","","","","","","","","","","","","","","","","","","","","", // 92-112
+        "","","","","","","","","","","","","","",                      // 113-126
         "Token",                                                        // 127
     };
     if (idx < 0 || idx >= 128) return "???";

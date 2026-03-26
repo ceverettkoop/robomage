@@ -4,6 +4,7 @@
 #include <string>
 #include "ecs/entity.h"
 
+void warning(std::string err);
 void non_fatal_error(std::string err);
 void fatal_error(std::string err);
 
