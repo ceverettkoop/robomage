@@ -655,19 +655,35 @@ bool Ability::is_target_valid() const {
 }
 
 // Evaluates a condition SVar expression against cur_game state.
-static int evaluate_condition_svar(const std::string &expr, Entity src) {
+static int evaluate_condition_svar(const std::string &expr, Entity src,
+                                   Zone::Ownership ctrl = Zone::PLAYER_A,
+                                   std::shared_ptr<Orderer> orderer = nullptr) {
     if (expr == "Count$ResolvedThisTurn") {
         auto it = cur_game.ability_resolution_counts.find(src);
         return (it != cur_game.ability_resolution_counts.end()) ? it->second : 0;
+    }
+    // Delegate to evaluate_dynamic_amount for Count$ expressions
+    if (orderer && expr.find("Count$") != std::string::npos) {
+        return static_cast<int>(evaluate_dynamic_amount(expr, ctrl, orderer, 0));
     }
     return 0;
 }
 
 // Returns true if val passes the compare spec (e.g. "EQ2", "NE2", "GE1", "LE3").
-static bool compare_svar(int val, const std::string &spec) {
-    if (spec.size() < 3) return true;  // unknown spec: always pass
+// When svar_rhs is non-empty, it is evaluated as the RHS instead of parsing an int from spec.
+static bool compare_svar(int val, const std::string &spec,
+                          const std::string &svar_rhs = "",
+                          Entity src = 0, Zone::Ownership ctrl = Zone::PLAYER_A,
+                          std::shared_ptr<Orderer> orderer = nullptr) {
+    if (spec.size() < 2) return true;
     std::string op = spec.substr(0, 2);
-    int rhs = std::stoi(spec.substr(2));
+    int rhs;
+    if (!svar_rhs.empty() && orderer) {
+        rhs = evaluate_condition_svar(svar_rhs, src, ctrl, orderer);
+    } else {
+        if (spec.size() < 3) return true;
+        rhs = std::stoi(spec.substr(2));
+    }
     if (op == "EQ") return val == rhs;
     if (op == "NE") return val != rhs;
     if (op == "GE") return val >= rhs;
@@ -682,6 +698,28 @@ static bool compare_svar(int val, const std::string &spec) {
 //           Count$Valid Creature.YouCtrl, Targeted$CardPower.
 static size_t evaluate_dynamic_amount(const std::string &expr, Zone::Ownership ctrl,
                                       std::shared_ptr<Orderer> orderer, Entity target) {
+    if (expr.find("Count$Devotion.") != std::string::npos) {
+        // Count mana symbols of a given color in mana costs of permanents you control
+        Colors devotion_color = NO_COLOR;
+        if (expr.find("Devotion.Blue") != std::string::npos) devotion_color = BLUE;
+        else if (expr.find("Devotion.Black") != std::string::npos) devotion_color = BLACK;
+        else if (expr.find("Devotion.Red") != std::string::npos) devotion_color = RED;
+        else if (expr.find("Devotion.Green") != std::string::npos) devotion_color = GREEN;
+        else if (expr.find("Devotion.White") != std::string::npos) devotion_color = WHITE;
+        size_t count = 0;
+        for (auto e : orderer->mEntities) {
+            if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
+            if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+            auto &z = global_coordinator.GetComponent<Zone>(e);
+            if (z.location != Zone::BATTLEFIELD) continue;
+            auto &perm = global_coordinator.GetComponent<Permanent>(e);
+            if (perm.controller != ctrl) continue;
+            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+            auto &cd = global_coordinator.GetComponent<CardData>(e);
+            count += cd.mana_cost.count(devotion_color);
+        }
+        return count;
+    }
     if (expr.find("Count$InYourLibrary") != std::string::npos) {
         return orderer->get_library_contents(ctrl).size();
     }
@@ -730,8 +768,9 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
     // Conditional execution: if condition fails, skip this ability's body but still chain subabilities
     bool condition_passed = true;
     if (!condition_check_svar.empty()) {
-        int val = evaluate_condition_svar(condition_check_svar, source);
-        condition_passed = compare_svar(val, condition_svar_compare);
+        int val = evaluate_condition_svar(condition_check_svar, source, controller, orderer);
+        condition_passed = compare_svar(val, condition_svar_compare, condition_compare_svar_expr,
+                                        source, controller, orderer);
     }
     if (!condition_passed) {
         for (auto sub_ab : this->subabilities) {
@@ -1163,12 +1202,17 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
     } else if (category == "Dig") {
         // Look at top N cards, player picks one matching filter, rest go to bottom
         Zone::Ownership dig_owner = controller;
+        // Resolve dynamic dig count (e.g. Count$Devotion.Blue)
+        size_t effective_dig_num = dig_num;
+        if (!dig_num_expr.empty()) {
+            effective_dig_num = evaluate_dynamic_amount(dig_num_expr, dig_owner, orderer, 0);
+        }
         std::vector<Entity> lib = orderer->get_library_contents(dig_owner);
         std::sort(lib.begin(), lib.end(), [](Entity a, Entity b) {
             return global_coordinator.GetComponent<Zone>(a).distance_from_top
                  < global_coordinator.GetComponent<Zone>(b).distance_from_top;
         });
-        if (lib.size() > dig_num) lib.resize(dig_num);
+        if (lib.size() > effective_dig_num) lib.resize(effective_dig_num);
 
         // Parse change_valid filters (comma-separated "Card.Creature,Card.Land" etc.)
         std::vector<std::string> filters;
@@ -1230,10 +1274,23 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
         }
 
         if (chosen != 0) {
-            orderer->add_to_zone(false, chosen, Zone::HAND);
+            // Determine destination: default is HAND, but DestinationZone$ can override
+            Zone::ZoneValue chosen_dest = Zone::HAND;
+            bool on_bottom = false;
+            if (dig_destination >= 0) {
+                chosen_dest = static_cast<Zone::ZoneValue>(dig_destination);
+                // LibraryPosition$ 0 = top of library
+                on_bottom = (dig_library_position != 0);
+            }
+            orderer->add_to_zone(on_bottom, chosen, chosen_dest);
             auto &cd = global_coordinator.GetComponent<CardData>(chosen);
-            game_log_private(dig_owner, "%s puts %s into hand.\n",
-                     player_name(dig_owner).c_str(), cd.name.c_str());
+            if (chosen_dest == Zone::LIBRARY) {
+                game_log_private(dig_owner, "%s puts %s on top of their library.\n",
+                         player_name(dig_owner).c_str(), cd.name.c_str());
+            } else {
+                game_log_private(dig_owner, "%s puts %s into hand.\n",
+                         player_name(dig_owner).c_str(), cd.name.c_str());
+            }
         }
 
         // Remaining cards go to bottom of library
@@ -1314,6 +1371,18 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
                 game_log("%s puts %s on top of library\n", player_name(ctrl).c_str(), cd.name.c_str());
             }
         }
+    } else if (category == "WinsGame") {
+        // Alternative win condition (Thassa's Oracle)
+        // condition_passed is already checked above; if we reach here, the player wins
+        Zone::Ownership winner = controller;
+        if (winner == Zone::PLAYER_A) {
+            printf("\nPlayer A wins the game! (Thassa's Oracle)\n");
+        } else {
+            printf("\nPlayer B wins the game! (Thassa's Oracle)\n");
+        }
+        game_log("%s wins the game!\n", player_name(winner).c_str());
+        cur_game.ended = true;
+        return;
     }
 
     //if there are subabilities, resolve them in sequence

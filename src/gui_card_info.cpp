@@ -114,14 +114,27 @@ int gui_card_color_identity(int vocab_idx) {
     if (!global_coordinator.entity_has_component<CardData>(it->second)) return 0;
     const CardData& cd = global_coordinator.GetComponent<CardData>(it->second);
     int mask = 0;
-    for (Colors c : cd.mana_cost) {
-        switch (c) {
-            case WHITE: mask |= 1; break;
-            case BLUE:  mask |= 2; break;
-            case BLACK: mask |= 4; break;
-            case RED:   mask |= 8; break;
-            case GREEN: mask |= 16; break;
-            default: break;
+    if (!cd.explicit_colors.empty()) {
+        for (Colors c : cd.explicit_colors) {
+            switch (c) {
+                case WHITE: mask |= 1; break;
+                case BLUE:  mask |= 2; break;
+                case BLACK: mask |= 4; break;
+                case RED:   mask |= 8; break;
+                case GREEN: mask |= 16; break;
+                default: break;
+            }
+        }
+    } else {
+        for (Colors c : cd.mana_cost) {
+            switch (c) {
+                case WHITE: mask |= 1; break;
+                case BLUE:  mask |= 2; break;
+                case BLACK: mask |= 4; break;
+                case RED:   mask |= 8; break;
+                case GREEN: mask |= 16; break;
+                default: break;
+            }
         }
     }
     return mask;

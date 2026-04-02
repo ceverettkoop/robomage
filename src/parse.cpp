@@ -645,7 +645,21 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
     } else if (key == "ActivationLimit") {
         ability.activation_limit = std::stoi(value);
     } else if (key == "DigNum") {
-        ability.dig_num = static_cast<size_t>(std::stoi(value));
+        // Value may be a literal int or an SVar reference (e.g. "X")
+        if (!value.empty() && (std::isdigit(value[0]) || value[0] == '-')) {
+            ability.dig_num = static_cast<size_t>(std::stoi(value));
+        } else {
+            ability.dig_num = 0;
+            ability.dig_num_expr = value;
+        }
+    } else if (key == "DestinationZone") {
+        if (value == "Library") ability.dig_destination = Zone::LIBRARY;
+        else if (value == "Hand") ability.dig_destination = Zone::HAND;
+        else if (value == "Graveyard") ability.dig_destination = Zone::GRAVEYARD;
+    } else if (key == "LibraryPosition") {
+        ability.dig_library_position = std::stoi(value);
+    } else if (key == "ChangeNum") {
+        ability.amount = static_cast<size_t>(std::stoi(value));
     } else if (key == "ChangeValid") {
         ability.change_valid = value;
     } else if (key == "RestRandomOrder") {
@@ -806,6 +820,25 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
             }
         }
         sub.amount_svar = "";
+    }
+    // Resolve dig_num_expr SVar reference (e.g. "X" → "Count$Devotion.Blue")
+    if (!sub.dig_num_expr.empty()) {
+        auto it = svars.find(sub.dig_num_expr);
+        if (it != svars.end()) {
+            sub.dig_num_expr = it->second;
+        }
+    }
+    // Resolve ConditionSVarCompare$ when RHS is an SVar reference (e.g. "LEX" where X = "Count$Devotion.Blue")
+    if (sub.condition_svar_compare.size() >= 3) {
+        std::string rhs_str = sub.condition_svar_compare.substr(2);
+        // If RHS is not a pure integer, it might be an SVar reference
+        if (!rhs_str.empty() && !std::isdigit(rhs_str[0]) && rhs_str[0] != '-') {
+            auto it = svars.find(rhs_str);
+            if (it != svars.end()) {
+                sub.condition_compare_svar_expr = it->second;
+                sub.condition_svar_compare = sub.condition_svar_compare.substr(0, 2);  // keep just "LE"
+            }
+        }
     }
     return sub;
 }

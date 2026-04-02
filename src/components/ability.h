@@ -101,19 +101,23 @@ struct Ability{
     // Multi-zone origin support (e.g. Origin$ Graveyard,Library)
     std::vector<Zone::ZoneValue> origins;  // populated when Origin$ has commas; origin holds first value
 
-    // Dig ability (Once Upon a Time)
+    // Dig ability (Once Upon a Time, Thassa's Oracle)
     size_t dig_num = 0;              // DigNum$ N — how many cards to look at from top of library
+    std::string dig_num_expr = "";   // DigNum$ SVar — dynamic dig count (e.g. "Count$Devotion.Blue")
     std::string change_valid = "";   // ChangeValid$ — comma-separated filter like "Card.Creature,Card.Land"
     bool rest_random_order = false;  // RestRandomOrder$ True
     bool optional_choice = false;    // Optional$ True in Dig context — can choose nothing
+    int dig_destination = -1;        // DestinationZone$ — where chosen card goes (-1 = HAND, Zone::LIBRARY etc.)
+    int dig_library_position = -1;   // LibraryPosition$ — 0 = top, -1 = unset
 
     // Discard ability (Thoughtseize, Duress)
     std::string discard_valid = "";    // DiscardValid$ — filter for cards to discard (e.g. "Card.nonLand")
     std::string mode = "";             // Mode$ — e.g. "RevealYouChoose"
 
-    // Conditional subability execution (Scythecat Cub)
+    // Conditional subability execution (Scythecat Cub, Thassa's Oracle)
     std::string condition_check_svar = "";   // ConditionCheckSVar$ — resolved expression e.g. "Count$ResolvedThisTurn"
-    std::string condition_svar_compare = ""; // ConditionSVarCompare$ — e.g. "EQ2", "NE2", "GE1"
+    std::string condition_svar_compare = ""; // ConditionSVarCompare$ — e.g. "EQ2", "NE2", "GE1", or "LEX" with SVar RHS
+    std::string condition_compare_svar_expr = "";  // when compare RHS is an SVar (e.g. LEX → "Count$Devotion.Blue")
 
     //for each AB on a card script there may be multiple SubAbility$, would get parsed into vector below
     std::vector<Ability> subabilities; // additional abilities resolved at same time this resolves, stored in order
