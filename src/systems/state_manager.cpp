@@ -1256,6 +1256,31 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             if (!ab.activation_mana_cost.empty() && !can_afford_with_sources(priority_player, ab.activation_mana_cost, orderer)) continue;
             // Check target legality
             if (ab.valid_tgts != "N_A" && ab.target_min > 0 && !has_legal_targets(ab, orderer)) continue;
+            // sac_cost_spec: require controller has a permanent matching type
+            if (!ab.sac_cost_spec.empty()) {
+                bool found_sac = false;
+                for (auto e2 : orderer->mEntities) {
+                    if (!global_coordinator.entity_has_component<Permanent>(e2)) continue;
+                    auto &sz = global_coordinator.GetComponent<Zone>(e2);
+                    if (sz.location != Zone::BATTLEFIELD) continue;
+                    auto &sp = global_coordinator.GetComponent<Permanent>(e2);
+                    if (sp.controller != priority_player) continue;
+                    const std::string &spec = ab.sac_cost_spec;
+                    size_t pp = 0;
+                    while (pp <= spec.size()) {
+                        size_t sc = spec.find(';', pp);
+                        if (sc == std::string::npos) sc = spec.size();
+                        std::string sub = spec.substr(pp, sc - pp);
+                        for (auto &t2 : sp.types) {
+                            if (t2.name == sub) { found_sac = true; break; }
+                        }
+                        if (found_sac) break;
+                        pp = sc + 1;
+                    }
+                    if (found_sac) break;
+                }
+                if (!found_sac) continue;
+            }
             { auto it = cur_game.payment_fail_counts.find(card_entity);
               if (it != cur_game.payment_fail_counts.end() && it->second >= 2) continue; }
             std::string desc = "Activate " + card_data.name + " from hand (" + ab.category + ")";

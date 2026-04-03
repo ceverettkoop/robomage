@@ -55,6 +55,8 @@ const std::set<std::string> all_subtypes = {"Abian", "Adventure", "Advisor", "Ae
     "The Dalek Asylum", "The Library", "Theros", "Thopter", "Thrull", "Tibalt", "Tiefling", "Time", "Time Lord",
     "Tower", "Townsfolk", "Trap", "Treasure", "Treefolk", "Trenzalore", "Trilobite", "Troll", "Turtle", "Tyranid",
     "Tyvar", "Ugin", "Ulgrotha", "Unicorn", "Unknown Planet", "Urza", "Urza's", "Valla", "Vampire", "Vampyre",
-    "Varmint", "Vedalken", "Vehicle", "Venser", "Viashino", "Villain", "Vivien", "Volver", "Vraska", "Wizard"};
+    "Varmint", "Vedalken", "Vehicle", "Venser", "Viashino", "Villain", "Vivien", "Volver", "Vraska", "Wall",
+    "Warlock", "Warrior", "Weird", "Werewolf", "Whale", "Wizard", "Wolf", "Wolverine", "Wombat", "Worm", "Wraith",
+    "Wurm"};
 
 const std::set<std::string> all_supertypes = {"Basic", "Host", "Legendary", "Ongoing", "Snow", "World"};

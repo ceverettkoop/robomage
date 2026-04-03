@@ -287,6 +287,50 @@ Entity parse_card_script(std::string path) {
             card.keywords.push_back("Prowess");
             continue;
         }
+        // K:Cycling:<cost> — activated ability from hand: pay cost, discard this card, draw a card
+        if (kw_line.rfind("Cycling:", 0) == 0) {
+            std::string cost_str = kw_line.substr(strlen("Cycling:"));
+            Ability ab;
+            ab.ability_type = Ability::ACTIVATED;
+            ab.category = "Draw";
+            ab.amount = 1;
+            ab.activation_zone = Zone::HAND;
+            // Parse cost tokens (reuse Cost$ token format: PayLife<N>, Sac<1/Type>, or mana)
+            size_t tok_pos = 0;
+            while (tok_pos < cost_str.size()) {
+                size_t tok_end = cost_str.find(' ', tok_pos);
+                if (tok_end == std::string::npos) tok_end = cost_str.size();
+                std::string tok = cost_str.substr(tok_pos, tok_end - tok_pos);
+                if (tok.rfind("PayLife<", 0) == 0) {
+                    size_t angle = tok.find('<');
+                    size_t close = tok.find('>');
+                    if (angle != std::string::npos && close != std::string::npos && close > angle + 1)
+                        ab.life_cost = std::stoi(tok.substr(angle + 1, close - angle - 1));
+                } else if (tok.rfind("Sac<", 0) == 0) {
+                    while (tok.find('>') == std::string::npos && tok_pos < cost_str.size()) {
+                        tok_end = cost_str.find(' ', tok_pos);
+                        if (tok_end == std::string::npos) tok_end = cost_str.size();
+                        tok += " " + cost_str.substr(tok_pos, tok_end - tok_pos);
+                        tok_pos = (tok_end < cost_str.size()) ? tok_end + 1 : tok_end;
+                    }
+                    size_t slash = tok.find('/');
+                    size_t close = tok.find('>');
+                    if (slash != std::string::npos && close != std::string::npos && close > slash + 1) {
+                        std::string spec = tok.substr(slash + 1, close - slash - 1);
+                        size_t spec_slash = spec.find('/');
+                        if (spec_slash != std::string::npos) spec = spec.substr(0, spec_slash);
+                        ab.sac_cost_spec = spec;
+                    }
+                } else {
+                    auto mana = parse_mana_cost(tok);
+                    ab.activation_mana_cost.insert(mana.begin(), mana.end());
+                }
+                tok_pos = (tok_end < cost_str.size()) ? tok_end + 1 : tok_end;
+            }
+            card.abilities.push_back(ab);
+            card.keywords.push_back("Cycling");
+            continue;
+        }
         size_t pos = 0;
         while (pos < kw_line.size()) {
             size_t comma = kw_line.find(',', pos);

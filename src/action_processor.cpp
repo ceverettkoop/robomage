@@ -90,6 +90,45 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
                 return;
             }
         }
+        // Pay life cost
+        if (ability.life_cost > 0) {
+            auto &activating_player = global_coordinator.GetComponent<Player>(get_player_entity(ctrl));
+            activating_player.life_total -= ability.life_cost;
+            game_log("%s pays %d life\n", player_name(ctrl).c_str(), ability.life_cost);
+        }
+        // Pay type-based sacrifice cost (e.g. Cycling — Sacrifice a land)
+        if (!ability.sac_cost_spec.empty()) {
+            std::vector<LegalAction> sac_choices;
+            const std::string &spec = ability.sac_cost_spec;
+            for (auto e : orderer->mEntities) {
+                if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
+                auto &sz = global_coordinator.GetComponent<Zone>(e);
+                if (sz.location != Zone::BATTLEFIELD) continue;
+                auto &sp = global_coordinator.GetComponent<Permanent>(e);
+                if (sp.controller != ctrl) continue;
+                size_t pp = 0;
+                bool matches = false;
+                while (pp <= spec.size() && !matches) {
+                    size_t sc = spec.find(';', pp);
+                    if (sc == std::string::npos) sc = spec.size();
+                    std::string sub = spec.substr(pp, sc - pp);
+                    for (auto &t2 : sp.types) if (t2.name == sub) matches = true;
+                    pp = sc + 1;
+                }
+                if (matches) {
+                    LegalAction la(PASS_PRIORITY, e, "Sacrifice " + sp.name);
+                    la.category = ActionCategory::OTHER_CHOICE;
+                    sac_choices.push_back(la);
+                }
+            }
+            if (!sac_choices.empty()) {
+                int sac_choice = InputLogger::instance().get_input(sac_choices);
+                Entity to_sac = sac_choices[static_cast<size_t>(sac_choice)].source_entity;
+                std::string sac_name = global_coordinator.GetComponent<Permanent>(to_sac).name;
+                orderer->add_to_zone(false, to_sac, Zone::GRAVEYARD);
+                game_log("%s sacrifices %s\n", player_name(ctrl).c_str(), sac_name.c_str());
+            }
+        }
         // Move card from hand to graveyard unless the ability moves itself (Defined$ Self)
         if (!ability.defined_self) {
             orderer->add_to_zone(false, permanent_entity, Zone::GRAVEYARD);

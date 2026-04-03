@@ -20,12 +20,15 @@ All need entries in `src/card_vocab.h` (indices 53+) and a `train/card_costs.py`
 | 6 | Thassa's Oracle | Yes | untested
 
 | 7 | Personal Tutor | Yes |
-
 | 8 | Street Wraith | Yes |
 | 9 | Edge of Autumn | Yes |
+
 | 15 | Cavern of Souls | Yes |
-| 16 | Consider | Yes |
 | 18 | Deep Analysis | Yes |
+
+| 16 | Consider | Yes | may work?
+
+
 
 ## Cards That Work Today (no new engine features needed)
 
