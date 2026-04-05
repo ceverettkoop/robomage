@@ -26,6 +26,7 @@ extern Game cur_game;
 
 static std::string entity_name(Entity e);
 static const char *mana_symbol_str(Colors color);
+static void select_single_target(Ability &ability, const std::vector<Entity> &valid_targets, bool allow_done);
 static void process_activate_ability(const LegalAction &action, Game &game, std::shared_ptr<Orderer> orderer);
 static std::vector<Entity> build_valid_targets(
     const Ability &ability, std::shared_ptr<Orderer> orderer, Zone::Ownership priority_player);
@@ -307,6 +308,13 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
             game_log("%s returns %s to hand\n", player_name(controller).c_str(), ret_name.c_str());
         }
     }
+    // Discard self from hand cost (Faerie Macabre)
+    if (ability.discard_self_cost) {
+        std::string cname = global_coordinator.entity_has_component<CardData>(permanent_entity)
+            ? global_coordinator.GetComponent<CardData>(permanent_entity).name : "card";
+        orderer->add_to_zone(false, permanent_entity, Zone::GRAVEYARD);
+        game_log("%s discards %s\n", player_name(controller).c_str(), cname.c_str());
+    }
     // Discard hand cost (Lion's Eye Diamond)
     if (ability.discard_hand_cost) {
         std::vector<Entity> hand = orderer->get_hand(controller);
@@ -404,8 +412,39 @@ static std::vector<Entity> build_valid_targets(
     const std::string &vt = ability.valid_tgts;
 
     if (ability.target_type == "Spell") {
+        bool non_creature_only = vt.find("nonCreature") != std::string::npos;
+        bool instant_sorcery_only = (vt.find("Instant") != std::string::npos || vt.find("Sorcery") != std::string::npos)
+                                    && vt.find("Creature") == std::string::npos;
         for (auto e : orderer->get_stack()) {
-            if (global_coordinator.entity_has_component<Spell>(e)) valid_targets.push_back(e);
+            if (!global_coordinator.entity_has_component<Spell>(e)) continue;
+            if ((non_creature_only || instant_sorcery_only) && global_coordinator.entity_has_component<CardData>(e)) {
+                auto &cd = global_coordinator.GetComponent<CardData>(e);
+                bool is_creature = false, is_instant = false, is_sorcery = false;
+                for (auto &t : cd.types) {
+                    if (t.name == "Creature") is_creature = true;
+                    if (t.name == "Instant") is_instant = true;
+                    if (t.name == "Sorcery") is_sorcery = true;
+                }
+                if (non_creature_only && is_creature) continue;
+                if (instant_sorcery_only && !is_instant && !is_sorcery) continue;
+            }
+            valid_targets.push_back(e);
+        }
+        return valid_targets;
+    }
+
+    // Target cards in a non-battlefield zone (e.g. Faerie Macabre targeting graveyard cards)
+    if (vt == "Card" && ability.category == "ChangeZone" && ability.origin == Zone::GRAVEYARD) {
+        Zone::Ownership opp = (priority_player == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+        // Show opponent's graveyard first, then own
+        for (int pass = 0; pass < 2; pass++) {
+            Zone::Ownership slot_owner = (pass == 0) ? opp : priority_player;
+            for (auto e : orderer->mEntities) {
+                if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+                auto &ez = global_coordinator.GetComponent<Zone>(e);
+                if (ez.location != Zone::GRAVEYARD || ez.owner != slot_owner) continue;
+                valid_targets.push_back(e);
+            }
         }
         return valid_targets;
     }
@@ -417,6 +456,9 @@ static std::vector<Entity> build_valid_targets(
     bool inc_lands = vt.find("Land") != std::string::npos;
     bool nonbasic_only = vt.find("nonBasic") != std::string::npos;
     bool legendary_only = vt.find("Legendary") != std::string::npos;
+    bool inc_artifacts = any || vt.find("Artifact") != std::string::npos;
+    bool inc_enchantments = any || vt.find("Enchantment") != std::string::npos;
+    bool inc_permanents = vt.find("Permanent") != std::string::npos;
     // TODO: inc_planeswalker, inc_battle when those components exist
 
     Zone::Ownership opp = (priority_player == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
@@ -454,10 +496,9 @@ static std::vector<Entity> build_valid_targets(
                 continue;
             }
             if (inc_lands) {
-                auto &tperm = global_coordinator.GetComponent<Permanent>(entity);
                 bool is_land = false;
                 bool is_basic = false;
-                for (auto &t : tperm.types) {
+                for (auto &t : tgt_perm.types) {
                     if (t.kind == TYPE && t.name == "Land") is_land = true;
                     if (t.kind == SUPERTYPE && t.name == "Basic") is_basic = true;
                 }
@@ -465,6 +506,20 @@ static std::vector<Entity> build_valid_targets(
                     valid_targets.push_back(entity);
                     continue;
                 }
+            }
+            if (inc_permanents) {
+                valid_targets.push_back(entity);
+                continue;
+            }
+            if (inc_artifacts || inc_enchantments) {
+                for (auto &t : tgt_perm.types) {
+                    if (t.kind == TYPE && ((inc_artifacts && t.name == "Artifact") ||
+                                           (inc_enchantments && t.name == "Enchantment"))) {
+                        valid_targets.push_back(entity);
+                        break;
+                    }
+                }
+                continue;
             }
             // TODO: Planeswalker and Battle components
         }
@@ -490,13 +545,14 @@ static void pay_alternate_cost(const LegalAction &action, Game &game, std::share
         player.life_total -= card_data.alt_cost.life_cost;
         game_log("%s pays %d life\n", player_name(caster).c_str(), card_data.alt_cost.life_cost);
     }
-    // pitch cards, currently just looks for blue, TODO make generalizable
-    for (int i = 0; i < card_data.alt_cost.exile_blue_from_hand; i++) {
+    // pitch cards — exile a card of the required color from hand
+    Colors pitch_color = card_data.alt_cost.exile_from_hand_color;
+    for (int i = 0; i < card_data.alt_cost.exile_from_hand_count; i++) {
         std::vector<LegalAction> exile_actions;
         for (auto e : orderer->get_hand(caster)) {
             if (e == spell_entity) continue;
             if (!global_coordinator.entity_has_component<ColorIdentity>(e)) continue;
-            if (!global_coordinator.GetComponent<ColorIdentity>(e).colors.count(BLUE)) continue;
+            if (pitch_color != NO_COLOR && !global_coordinator.GetComponent<ColorIdentity>(e).colors.count(pitch_color)) continue;
             LegalAction la(PASS_PRIORITY, e, "Exile " + global_coordinator.GetComponent<CardData>(e).name);
             la.category = ActionCategory::PAYING_COSTS;
             exile_actions.push_back(la);
@@ -863,13 +919,13 @@ bool has_legal_targets(const Ability &ability, std::shared_ptr<Orderer> orderer)
     return !build_valid_targets(ability, orderer, Zone::PLAYER_A).empty();
 }
 
-void select_target(Ability &ability, std::shared_ptr<Orderer> orderer, Zone::Ownership priority_player) {
-    std::vector<Entity> valid_targets = build_valid_targets(ability, orderer, priority_player);
+static void select_single_target(Ability &ability, const std::vector<Entity> &valid_targets,
+                                  bool allow_done) {
     game_log("Choose target:\n");
     std::vector<LegalAction> tgt_actions;
-    // If target_min == 0, add a "No target" option
-    if (ability.target_min == 0) {
-        LegalAction la(PASS_PRIORITY, "No target");
+    if (ability.target_min == 0 || allow_done) {
+        std::string label = allow_done ? "Done selecting targets" : "No target";
+        LegalAction la(PASS_PRIORITY, label);
         la.category = ActionCategory::SELECT_TARGET;
         tgt_actions.push_back(la);
     }
@@ -889,6 +945,31 @@ void select_target(Ability &ability, std::shared_ptr<Orderer> orderer, Zone::Own
     int choice = InputLogger::instance().get_input(tgt_actions);
     ability.target = tgt_actions[static_cast<size_t>(choice)].source_entity;
     game_log("Targeting choice %d\n", choice);
+}
+
+void select_target(Ability &ability, std::shared_ptr<Orderer> orderer, Zone::Ownership priority_player) {
+    std::vector<Entity> valid_targets = build_valid_targets(ability, orderer, priority_player);
+
+    if (ability.target_max <= 1) {
+        select_single_target(ability, valid_targets, false);
+        return;
+    }
+
+    // Multi-target selection loop
+    ability.targets.clear();
+    for (int i = 0; i < ability.target_max; i++) {
+        if (valid_targets.empty()) break;
+        bool can_stop = (i >= ability.target_min);
+        select_single_target(ability, valid_targets, can_stop);
+        if (ability.target == 0) break;  // chose "Done" or "No target"
+        ability.targets.push_back(ability.target);
+        // Remove chosen target from pool
+        valid_targets.erase(
+            std::remove(valid_targets.begin(), valid_targets.end(), ability.target),
+            valid_targets.end());
+    }
+    // Set primary target to first chosen (for backward compat)
+    if (!ability.targets.empty()) ability.target = ability.targets[0];
 }
 
 void process_action(const LegalAction &action, Game &game, std::shared_ptr<Orderer> orderer) {

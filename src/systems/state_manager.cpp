@@ -1000,16 +1000,23 @@ static bool can_afford_alt(const AltCost& alt_cost, Zone::Ownership priority_pla
             return false;
     }
 
-    if (alt_cost.exile_blue_from_hand > 0) {
-        bool has_blue = false;
+    // Condition: not your turn (Force of Negation, Force of Vigor)
+    if (alt_cost.condition_not_your_turn) {
+        bool is_my_turn = (priority_player == Zone::PLAYER_A) ? cur_game.player_a_turn : !cur_game.player_a_turn;
+        if (is_my_turn) return false;
+    }
+
+    if (alt_cost.exile_from_hand_count > 0) {
+        Colors required_color = alt_cost.exile_from_hand_color;
+        bool has_match = false;
         for (auto e : orderer->get_hand(priority_player)) {
             if (e == card_entity) continue;
-            if (global_coordinator.entity_has_component<ColorIdentity>(e) &&
-                global_coordinator.GetComponent<ColorIdentity>(e).colors.count(BLUE)) {
-                has_blue = true; break;
+            if (required_color != NO_COLOR && global_coordinator.entity_has_component<ColorIdentity>(e) &&
+                global_coordinator.GetComponent<ColorIdentity>(e).colors.count(required_color)) {
+                has_match = true; break;
             }
         }
-        if (!has_blue) return false;
+        if (!has_match) return false;
     }
 
     return true;

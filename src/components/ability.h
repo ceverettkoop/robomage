@@ -20,11 +20,12 @@ struct Ability{
 
     AbilityType ability_type = SPELL;
     std::string category = "";
-    // TODO: support multiple targets (e.g. "deal 1 damage to each of up to two targets")
     std::string valid_tgts = "N_A";  // Value of ValidTgts$ param; "N_A" if no targeting required
     int target_min = 1;              // TargetMin$ 0 = optional targeting (can choose no target)
+    int target_max = 1;             // TargetMax$ N — max number of targets (1 = single target)
     Entity source = 0;
     Entity target = 0;
+    std::vector<Entity> targets;    // used when target_max > 1
     Zone::Ownership controller = Zone::PLAYER_A;  // set when pushed onto stack; stable even if source loses Permanent
     // TODO: support multiple effects per ability (e.g. "deal 3 damage and gain 3 life")
     size_t amount = 0;
@@ -42,6 +43,7 @@ struct Ability{
     std::string return_cost_type = "";  // Return<N/Type> — bounce a land of this subtype as cost
     int return_cost_count = 0;          // number of lands to return
     bool discard_hand_cost = false;     // Discard<0/Hand> — discard entire hand as activation cost (Lion's Eye Diamond)
+    bool discard_self_cost = false;     // Discard<1/CARDNAME> — discard this card from hand as activation cost
     bool instant_speed = false;         // InstantSpeed$ True — activated ability that is NOT a mana ability; goes on stack
     int activation_limit = 0;           // ActivationLimit$ N — max activations per turn (0 = unlimited)
     int activation_zone = -1;           // ActivationZone$ Hand → Zone::HAND; -1 = default (battlefield)
@@ -135,6 +137,11 @@ struct Ability{
 
     //for each AB on a card script there may be multiple SubAbility$, would get parsed into vector below
     std::vector<Ability> subabilities; // additional abilities resolved at same time this resolves, stored in order
+
+    // Charm/modal spell choices — each entry is a fully-parsed sub-ability
+    std::vector<Ability> charm_choices;
+    std::vector<std::string> charm_choice_descriptions;  // SpellDescription$ for each choice
+    int charm_num = 1;  // CharmNum$ — how many modes to pick (default 1)
 
     void resolve(std::shared_ptr<Orderer> orderer);
     bool identical_activated_ability(const Ability& other);

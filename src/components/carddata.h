@@ -16,12 +16,14 @@
 struct AltCost {
     bool has_alt_cost = false;
     int life_cost = 0;
-    int exile_blue_from_hand = 0;
+    int exile_from_hand_count = 0;
+    Colors exile_from_hand_color = NO_COLOR;  // color of card to exile (BLUE, GREEN, etc.)
     int return_to_hand_count = 0;
     std::string return_to_hand_type = "";
     std::string condition_svar = "";    // e.g. "Count$YouCastThisGame" — condition checked before allowing alt cost
     std::string condition_compare = ""; // e.g. "EQ0" — comparison for condition_svar
     bool is_free = false;               // Cost$ 0 — no mana required
+    bool condition_not_your_turn = false;  // Condition$ NotPlayerTurn
 };
 
 //this is the underlying card, not a permanent or spell

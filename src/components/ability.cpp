@@ -368,20 +368,28 @@ void Ability::resolve_change_zone(std::shared_ptr<Orderer> orderer) {
                            : destination == Zone::HAND      ? "hand"
                                                             : "exile";
 
-    // Targeted ChangeZone (e.g. Swords to Plowshares): move the target directly
-    if (valid_tgts != "N_A" && target != 0) {
-        if (!global_coordinator.entity_has_component<Zone>(target)) return;
-        std::string tname = global_coordinator.entity_has_component<CardData>(target)
-                                ? global_coordinator.GetComponent<CardData>(target).name
-                                : (global_coordinator.entity_has_component<Permanent>(target)
-                                          ? global_coordinator.GetComponent<Permanent>(target).name
-                                          : "<unknown>");
-        orderer->add_to_zone(false, target, destination);
-        // Track exiled_with on the source permanent (for Keen-Eyed Curator)
-        if (destination == Zone::EXILE && source != 0 && global_coordinator.entity_has_component<Permanent>(source)) {
-            global_coordinator.GetComponent<Permanent>(source).exiled_with.push_back(target);
+    // Targeted ChangeZone (e.g. Swords to Plowshares, Faerie Macabre): move target(s) directly
+    if (valid_tgts != "N_A" && (target != 0 || !targets.empty())) {
+        // Build list of entities to move: use multi-target vector if populated, else single target
+        std::vector<Entity> to_move;
+        if (!targets.empty()) {
+            to_move = targets;
+        } else {
+            to_move.push_back(target);
         }
-        game_log("%s is moved to %s\n", tname.c_str(), dest_str);
+        for (auto tgt : to_move) {
+            if (!global_coordinator.entity_has_component<Zone>(tgt)) continue;
+            std::string tname = global_coordinator.entity_has_component<CardData>(tgt)
+                                    ? global_coordinator.GetComponent<CardData>(tgt).name
+                                    : (global_coordinator.entity_has_component<Permanent>(tgt)
+                                              ? global_coordinator.GetComponent<Permanent>(tgt).name
+                                              : "<unknown>");
+            orderer->add_to_zone(false, tgt, destination);
+            if (destination == Zone::EXILE && source != 0 && global_coordinator.entity_has_component<Permanent>(source)) {
+                global_coordinator.GetComponent<Permanent>(source).exiled_with.push_back(tgt);
+            }
+            game_log("%s is moved to %s\n", tname.c_str(), dest_str);
+        }
         return;
     }
 
@@ -811,6 +819,33 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
         return;
     }
 
+    if (category == "Charm") {
+        // Modal spell: present choices to the player, then resolve the chosen sub-ability
+        game_log("Choose mode:\n");
+        std::vector<LegalAction> mode_actions;
+        for (size_t i = 0; i < charm_choices.size(); i++) {
+            std::string desc = (i < charm_choice_descriptions.size() && !charm_choice_descriptions[i].empty())
+                ? charm_choice_descriptions[i]
+                : ("Mode " + std::to_string(i + 1));
+            LegalAction la(PASS_PRIORITY, desc);
+            la.category = ActionCategory::OTHER_CHOICE;
+            mode_actions.push_back(la);
+        }
+        int choice = InputLogger::instance().get_input(mode_actions);
+        if (choice >= 0 && choice < static_cast<int>(charm_choices.size())) {
+            Ability &chosen = charm_choices[static_cast<size_t>(choice)];
+            chosen.source = this->source;
+            chosen.controller = this->controller;
+            // Target selection for the chosen mode
+            if (chosen.valid_tgts != "N_A") {
+                select_target(chosen, orderer, this->controller);
+            }
+            chosen.resolve(orderer);
+        }
+        // Skip subabilities — charm handles its own resolution
+        return;
+    }
+
     if (category == "AddMana") {
         // Non-mana-ability that adds mana on resolution (Dark Ritual, Lion's Eye Diamond)
         Zone::Ownership mana_controller = controller;
@@ -1140,7 +1175,8 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
                         global_coordinator.RemoveComponent<Ability>(target);
                     if (global_coordinator.entity_has_component<Spell>(target))
                         global_coordinator.RemoveComponent<Spell>(target);
-                    orderer->add_to_zone(false, target, Zone::GRAVEYARD);
+                    Zone::ZoneValue counter_dest = (destination == Zone::EXILE) ? Zone::EXILE : Zone::GRAVEYARD;
+                    orderer->add_to_zone(false, target, counter_dest);
                     game_log("%s is countered\n", name.c_str());
                 }
             } else {
@@ -1595,20 +1631,27 @@ void Ability::resolve_delayed_trigger() {
         delayed_phase.empty() ? "upkeep" : delayed_phase.c_str());
 }
 
-void Ability::resolve_destroy(std::shared_ptr<Orderer> orderer) {
-    if (!global_coordinator.entity_has_component<Zone>(target)) {
+static void destroy_single(Entity tgt, std::shared_ptr<Orderer> orderer) {
+    if (!global_coordinator.entity_has_component<Zone>(tgt)) {
         game_log("Destroy: target is no longer in play\n");
         return;
     }
-    auto &tz = global_coordinator.GetComponent<Zone>(target);
+    auto &tz = global_coordinator.GetComponent<Zone>(tgt);
     if (tz.location != Zone::BATTLEFIELD) {
         game_log("Destroy: target is no longer on the battlefield\n");
         return;
     }
-    // TODO OTHER REASONS TARGET IS NOW ILLEGAL
-    std::string name = global_coordinator.entity_has_component<Permanent>(target)
-                           ? global_coordinator.GetComponent<Permanent>(target).name
+    std::string name = global_coordinator.entity_has_component<Permanent>(tgt)
+                           ? global_coordinator.GetComponent<Permanent>(tgt).name
                            : "<unknown>";
-    orderer->add_to_zone(false, target, Zone::GRAVEYARD);
+    orderer->add_to_zone(false, tgt, Zone::GRAVEYARD);
     game_log("%s is destroyed\n", name.c_str());
+}
+
+void Ability::resolve_destroy(std::shared_ptr<Orderer> orderer) {
+    if (!targets.empty()) {
+        for (auto tgt : targets) destroy_single(tgt, orderer);
+    } else {
+        destroy_single(target, orderer);
+    }
 }

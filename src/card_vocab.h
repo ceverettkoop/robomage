@@ -29,7 +29,8 @@ inline int card_name_to_index(const std::string &name) {
         {"Lion's Eye Diamond", 57}, {"Thassa's Oracle", 58}, {"Personal Tutor", 59}, {"Street Wraith", 60},
         {"Edge of Autumn", 61}, {"Swamp", 62}, {"Undercity Sewers", 63}, {"Underground Sea", 64},
         {"Bloodstained Mire", 65}, {"Verdant Catacombs", 66}, {"Cavern of Souls", 67},
-        {"Consider", 68}, {"Duress", 69}, {"Deep Analysis", 70}};
+        {"Consider", 68}, {"Duress", 69}, {"Deep Analysis", 70},
+        {"Null Rod", 71}, {"Force of Negation", 72}, {"Force of Vigor", 73}, {"Faerie Macabre", 74}};
     auto it = vocab.find(name);
     return it != vocab.end() ? it->second : -1;
 }
@@ -57,8 +58,9 @@ inline const char* card_index_to_name(int idx) {
         "Edge of Autumn", "Swamp", "Undercity Sewers", "Underground Sea",           // 61-64
         "Bloodstained Mire", "Verdant Catacombs", "Cavern of Souls",                // 65-67
         "Consider", "Duress", "Deep Analysis",                                       // 68-70
-        // 71-126: reserved for future cards
-        "","","","","","","","","","","","","","","","","","","","","", // 71-91
+        "Null Rod", "Force of Negation", "Force of Vigor", "Faerie Macabre",       // 71-74
+        // 75-126: reserved for future cards
+        "","","","","","","","","","","","","","","","","", // 75-91
         "","","","","","","","","","","","","","","","","","","","","", // 92-112
         "","","","","","","","","","","","","","",                      // 113-126
         "Token",                                                        // 127

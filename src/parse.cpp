@@ -190,7 +190,16 @@ Entity parse_card_script(std::string path) {
         size_t ef = cost_str.find("ExileFromHand<");
         if (ef != std::string::npos) {
             size_t slash = cost_str.find('/', ef);
-            ac.exile_blue_from_hand = std::stoi(cost_str.substr(ef + 14, slash - ef - 14));
+            ac.exile_from_hand_count = std::stoi(cost_str.substr(ef + 14, slash - ef - 14));
+            // Extract color from filter e.g. "Card.Blue+Other" → BLUE
+            std::string filter = cost_str.substr(slash + 1);
+            size_t close = filter.find('>');
+            if (close != std::string::npos) filter = filter.substr(0, close);
+            if (filter.find("Blue") != std::string::npos) ac.exile_from_hand_color = BLUE;
+            else if (filter.find("Green") != std::string::npos) ac.exile_from_hand_color = GREEN;
+            else if (filter.find("Red") != std::string::npos) ac.exile_from_hand_color = RED;
+            else if (filter.find("White") != std::string::npos) ac.exile_from_hand_color = WHITE;
+            else if (filter.find("Black") != std::string::npos) ac.exile_from_hand_color = BLACK;
         }
         size_t rf = cost_str.find("Return<");
         if (rf != std::string::npos) {
@@ -222,6 +231,8 @@ Entity parse_card_script(std::string path) {
                     ac.condition_svar = (it != svars.end()) ? it->second : value;
                 } else if (key == "SVarCompare") {
                     ac.condition_compare = value;
+                } else if (key == "Condition" && value == "NotPlayerTurn") {
+                    ac.condition_not_your_turn = true;
                 }
             }
             pp = pe;
@@ -719,6 +730,8 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         ability.clear_remembered = (value == "True");
     } else if (key == "TargetMin") {
         ability.target_min = std::stoi(value);
+    } else if (key == "TargetMax") {
+        ability.target_max = std::stoi(value);
     } else if (key == "ActivationZone") {
         if (value == "Hand") ability.activation_zone = Zone::HAND;
     } else if (key == "ActivationLimit") {
@@ -794,6 +807,8 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
                 // Discard<0/Hand> — discard entire hand as activation cost (Lion's Eye Diamond)
                 if (tok.find("0/Hand") != std::string::npos) {
                     ability.discard_hand_cost = true;
+                } else if (tok.find("CARDNAME") != std::string::npos) {
+                    ability.discard_self_cost = true;
                 }
             } else if (tok.rfind("Return<", 0) == 0) {
                 // Return<1/Forest> — bounce a land of given subtype
@@ -882,6 +897,33 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
                 auto it = svars.find(value);
                 if (it != svars.end())
                     sub.subabilities.push_back(parse_svar_ability(it->second, ability_type, svars, card_name));
+            } else if (key == "Choices") {
+                // Charm modal in DB$ context (e.g. Knight of Autumn ETB)
+                size_t cpos = 0;
+                while (cpos < value.size()) {
+                    size_t comma = value.find(',', cpos);
+                    if (comma == std::string::npos) comma = value.size();
+                    std::string svar_name = value.substr(cpos, comma - cpos);
+                    auto cit = svars.find(svar_name);
+                    if (cit != svars.end()) {
+                        Ability choice = parse_svar_ability(cit->second, ability_type, svars, card_name);
+                        std::string desc;
+                        size_t sd = cit->second.find("SpellDescription$");
+                        if (sd != std::string::npos) {
+                            sd += 17;
+                            while (sd < cit->second.size() && cit->second[sd] == ' ') sd++;
+                            size_t de = cit->second.find('|', sd);
+                            if (de == std::string::npos) de = cit->second.size();
+                            desc = cit->second.substr(sd, de - sd);
+                            while (!desc.empty() && desc.back() == ' ') desc.pop_back();
+                        }
+                        sub.charm_choices.push_back(choice);
+                        sub.charm_choice_descriptions.push_back(desc);
+                    }
+                    cpos = comma + 1;
+                }
+            } else if (key == "CharmNum") {
+                sub.charm_num = std::stoi(value);
             } else if (key == "Execute") {
                 // Execute$ references an SVar containing the ability to fire (delayed triggers)
                 sub.delayed_execute_svar = value;
@@ -1013,6 +1055,34 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
                     auto it = svars.find(value);
                     if (it != svars.end())
                         ability.subabilities.push_back(parse_svar_ability(it->second, ability.ability_type, svars, card_name));
+                } else if (key == "Choices") {
+                    // Charm modal: resolve comma-separated SVar names into sub-abilities
+                    size_t cpos = 0;
+                    while (cpos < value.size()) {
+                        size_t comma = value.find(',', cpos);
+                        if (comma == std::string::npos) comma = value.size();
+                        std::string svar_name = value.substr(cpos, comma - cpos);
+                        auto it = svars.find(svar_name);
+                        if (it != svars.end()) {
+                            Ability choice = parse_svar_ability(it->second, ability.ability_type, svars, card_name);
+                            // Extract SpellDescription from the choice for display
+                            std::string desc;
+                            size_t sd = it->second.find("SpellDescription$");
+                            if (sd != std::string::npos) {
+                                sd += 17; // skip "SpellDescription$"
+                                while (sd < it->second.size() && it->second[sd] == ' ') sd++;
+                                size_t de = it->second.find('|', sd);
+                                if (de == std::string::npos) de = it->second.size();
+                                desc = it->second.substr(sd, de - sd);
+                                while (!desc.empty() && desc.back() == ' ') desc.pop_back();
+                            }
+                            ability.charm_choices.push_back(choice);
+                            ability.charm_choice_descriptions.push_back(desc);
+                        }
+                        cpos = comma + 1;
+                    }
+                } else if (key == "CharmNum") {
+                    ability.charm_num = std::stoi(value);
                 } else {
                     apply_param_to_ability(ability, key, value, card_name);
                 }
