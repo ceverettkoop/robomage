@@ -399,6 +399,10 @@ void Ability::resolve_change_zone(std::shared_ptr<Orderer> orderer) {
             orderer->add_to_zone(false, chosen, destination);
             if (destination == Zone::BATTLEFIELD) {
                 chosen_zone.controller = owner;
+                if (enters_tapped && global_coordinator.entity_has_component<Permanent>(chosen)) {
+                    global_coordinator.GetComponent<Permanent>(chosen).is_tapped = true;
+                    game_log("%s enters tapped.\n", chosen_cd.name.c_str());
+                }
             }
             if (remember_changed) {
                 cur_game.remembered_entities.push_back(chosen);
@@ -1506,25 +1510,43 @@ void Ability::resolve_token(std::shared_ptr<Orderer> orderer) {
     game_log("Token created: %u/%u %s\n", tok.power, tok.toughness, tok.name.c_str());
 }
 
+static uint32_t phase_string_to_event(const std::string &phase) {
+    if (phase == "Upkeep")  return Events::UPKEEP_BEGAN;
+    if (phase == "Draw")    return Events::DRAW_STEP_BEGAN;
+    if (phase == "EndStep") return Events::END_STEP_BEGAN;
+    return Events::UPKEEP_BEGAN;  // default
+}
+
 void Ability::resolve_delayed_trigger() {
     Zone::Ownership owner = global_coordinator.entity_has_component<Permanent>(source)
         ? global_coordinator.GetComponent<Permanent>(source).controller
         : global_coordinator.GetComponent<Zone>(source).owner;
     Entity owner_entity = get_player_entity(owner);
 
-    Ability draw_ab;
-    draw_ab.ability_type = Ability::TRIGGERED;
-    draw_ab.category     = "Draw";
-    draw_ab.amount       = 1;
-    draw_ab.source       = source;
+    // Build the ability to fire: use Execute$ sub-ability if parsed, else fall back to Draw 1
+    Ability fire_ab;
+    if (!subabilities.empty() && !delayed_execute_svar.empty()) {
+        fire_ab = subabilities.back();
+        fire_ab.source = source;
+    } else {
+        fire_ab.ability_type = Ability::TRIGGERED;
+        fire_ab.category     = "Draw";
+        fire_ab.amount       = 1;
+        fire_ab.source       = source;
+    }
+
+    uint32_t event_id = delayed_phase.empty()
+        ? Events::UPKEEP_BEGAN
+        : phase_string_to_event(delayed_phase);
 
     DelayedTrigger dt;
-    dt.ability       = draw_ab;
-    dt.fire_on       = Events::UPKEEP_BEGAN;
+    dt.ability       = fire_ab;
+    dt.fire_on       = event_id;
     dt.owner_entity  = owner_entity;
     dt.fire_on_turn  = delayed_trigger_next_turn ? cur_game.turn + 1 : cur_game.turn;
     cur_game.delayed_triggers.push_back(dt);
-    game_log("Delayed trigger registered: draw 1 at next upkeep.\n");
+    game_log("Delayed trigger registered: %s at next %s.\n",
+             fire_ab.category.c_str(), delayed_phase.empty() ? "upkeep" : delayed_phase.c_str());
 }
 
 void Ability::resolve_destroy(std::shared_ptr<Orderer> orderer) {

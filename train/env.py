@@ -411,6 +411,48 @@ _COUNTER_SPELL_VOCAB_IDS = frozenset({12, 13, 22})  # Force of Will(12), Daze(13
 _COUNTERSPELL_VOCAB_IDX  = 22
 _BLUE_POOL_IDX           = 4   # obs[3 + 1]; mana pool is at obs[3:9], W/U/B/R/G/C, /10
 
+# Doomsday deck card vocab indices (mirror src/card_vocab.h)
+_DOOMSDAY_VOCAB_IDX      = 53
+_THOUGHTSEIZE_VOCAB_IDX  = 54
+_DARK_RITUAL_VOCAB_IDX   = 55
+_LOTUS_PETAL_VOCAB_IDX   = 56
+_LED_VOCAB_IDX           = 57
+_THASSAS_ORACLE_VOCAB_IDX = 58
+_PERSONAL_TUTOR_VOCAB_IDX = 59
+_STREET_WRAITH_VOCAB_IDX = 60
+_EDGE_OF_AUTUMN_VOCAB_IDX = 61
+_CONSIDER_VOCAB_IDX      = 68
+_DEEP_ANALYSIS_VOCAB_IDX = 70
+_CAVERN_OF_SOULS_VOCAB_IDX = 67
+_DOOMSDAY_DECK_IDS       = frozenset({53, 54, 55, 56, 57, 58, 59, 60, 61, 67, 68, 70})
+
+_CAT_TOP_LIBRARY = 20  # choose card to put on top of library (Doomsday pile ordering)
+
+
+def _hand_has_card(obs: np.ndarray, vocab_idx: int) -> bool:
+    """Check if the priority player's hand contains a card with the given vocab index."""
+    for slot in range(MAX_HAND_SLOTS):
+        base = _HAND_START + slot * N_CARD_TYPES
+        if obs[base + vocab_idx] > 0.5:
+            return True
+    return False
+
+
+def _action_card_id(card_ids: np.ndarray, i: int) -> int:
+    """Decode the card vocab index from the action's card_id float."""
+    return int(round(float(card_ids[i]) * N_CARD_TYPES))
+
+
+def _is_doomsday_deck(obs: np.ndarray) -> bool:
+    """Heuristic: check if any hand card is a doomsday-deck-only card."""
+    for slot in range(MAX_HAND_SLOTS):
+        base = _HAND_START + slot * N_CARD_TYPES
+        card_vec = obs[base:base + N_CARD_TYPES]
+        idx = int(np.argmax(card_vec))
+        if card_vec[idx] > 0.5 and idx in _DOOMSDAY_DECK_IDS:
+            return True
+    return False
+
 
 def _all_eligible_creatures_attacking(obs: np.ndarray) -> bool:
     """Return True if every untapped, non-sick creature in self's slots (0-47) is attacking."""
@@ -521,10 +563,19 @@ def scripted_action(obs: np.ndarray, num_choices: int) -> int:
         if c == _CAT_TARGET:
             return i
 
-    # 5. Search library — action 0 = fail to find; pick action 1 (first actual card).
-    #    Used when fetch lands (Scalding Tarn, Misty Rainforest, Polluted Delta,
-    #    Wooded Foothills) resolve their ChangeZone ability.
+    # 5. Search library — action 0 = fail to find; action 1+ = actual cards.
+    #    For Doomsday pile building: prefer Thassa's Oracle, then draw spells.
+    #    For Personal Tutor: prefer Doomsday.
+    #    For fetch lands: pick action 1 (first land found).
     if any(c == _CAT_SEARCH for c in cats):
+        # Prefer Thassa's Oracle when searching (Doomsday pile building)
+        for i, c in enumerate(cats):
+            if c == _CAT_SEARCH and _action_card_id(card_ids, i) == _THASSAS_ORACLE_VOCAB_IDX:
+                return i
+        # Prefer Doomsday when searching (Personal Tutor)
+        for i, c in enumerate(cats):
+            if c == _CAT_SEARCH and _action_card_id(card_ids, i) == _DOOMSDAY_VOCAB_IDX:
+                return i
         return 1 if num_choices > 1 else 0
 
     # 5b. Paying costs (tapping lands for mana during spell/ability payment, delve exile).
@@ -532,7 +583,7 @@ def scripted_action(obs: np.ndarray, num_choices: int) -> int:
     if any(c == _CAT_PAYING for c in cats):
         return 0
 
-    # 6. Cast any spell immediately if affordable (game only offers CAST when legal).
+    # 6. Cast spells.
     #    Counter spells (Counterspell, Daze, Force of Will) require an opponent's spell
     #    on the stack; skip them when the stack holds only own spells or is empty.
     opponent_spell_on_stack = _opponent_has_spell_on_stack(obs)
@@ -540,14 +591,32 @@ def scripted_action(obs: np.ndarray, num_choices: int) -> int:
     # Priority: if opponent has a spell on stack and we have UU, cast Counterspell first.
     if opponent_spell_on_stack and int(round(obs[_BLUE_POOL_IDX] * 10)) >= 2:
         for i, c in enumerate(cats):
-            if c == _CAT_CAST and round(float(card_ids[i]) * N_CARD_TYPES) == _COUNTERSPELL_VOCAB_IDX:
+            if c == _CAT_CAST and _action_card_id(card_ids, i) == _COUNTERSPELL_VOCAB_IDX:
                 return i
+
+    # --- Doomsday deck rules ---
+    has_doomsday_in_hand = _hand_has_card(obs, _DOOMSDAY_VOCAB_IDX)
+
+    # Always cast Doomsday when offered
+    for i, c in enumerate(cats):
+        if c == _CAT_CAST and _action_card_id(card_ids, i) == _DOOMSDAY_VOCAB_IDX:
+            return i
+
+    # Only cast Dark Ritual if Doomsday is also in hand
+    # (don't waste ritual mana without the combo piece)
+    for i, c in enumerate(cats):
+        if c == _CAT_CAST and _action_card_id(card_ids, i) == _DARK_RITUAL_VOCAB_IDX:
+            if has_doomsday_in_hand:
+                return i
+            # else skip it
 
     for i, c in enumerate(cats):
         if c == _CAT_CAST:
-            cid = round(float(card_ids[i]) * N_CARD_TYPES)
+            cid = _action_card_id(card_ids, i)
             if cid in _COUNTER_SPELL_VOCAB_IDS and not opponent_spell_on_stack:
                 continue
+            if cid == _DARK_RITUAL_VOCAB_IDX:
+                continue  # handled above
             return i
 
     # 7. Play land (may unlock mana for a spell next query)
@@ -555,16 +624,26 @@ def scripted_action(obs: np.ndarray, num_choices: int) -> int:
         if c == _CAT_LAND:
             return i
 
-    # 8. Activate non-mana abilities during main phase:
-    #    - Fetch lands (Scalding Tarn, Misty Rainforest, Polluted Delta, Wooded Foothills):
-    #      tap + pay 1 life + sacrifice → search for land (resolved by step 5 above)
-    #    - Wasteland: tap + sacrifice → destroy target nonbasic land (target chosen in step 4).
-    #      Guard: only activate if the opponent actually has a nonbasic land to target,
-    #      otherwise action 0 for SELECT_TARGET would be our own land.
+    # 8. Activate non-mana abilities:
+    #    - Cycling (Street Wraith, Edge of Autumn): always cycle immediately (any time)
+    #    - Fetch lands: tap + pay 1 life + sacrifice → search for land
+    #    - Wasteland: tap + sacrifice → destroy target nonbasic land
+    #    - LED: activate when Doomsday is on the stack (discard hand for 3 mana)
+
+    # Always cycle Street Wraith (pay 2 life, draw a card)
+    for i, c in enumerate(cats):
+        if c == _CAT_ACTIVATE and _action_card_id(card_ids, i) == _STREET_WRAITH_VOCAB_IDX:
+            return i
+
+    # Always cycle Edge of Autumn (sac a land, draw a card) — only offered when legal
+    for i, c in enumerate(cats):
+        if c == _CAT_ACTIVATE and _action_card_id(card_ids, i) == _EDGE_OF_AUTUMN_VOCAB_IDX:
+            return i
+
     if in_main_phase:
         for i, c in enumerate(cats):
             if c == _CAT_ACTIVATE:
-                cid = round(float(card_ids[i]) * N_CARD_TYPES)
+                cid = _action_card_id(card_ids, i)
                 if cid == _WASTELAND_VOCAB_IDX and not _opponent_has_nonbasic_land(obs):
                     continue  # no opponent nonbasic land to target — skip
                 return i
@@ -572,7 +651,16 @@ def scripted_action(obs: np.ndarray, num_choices: int) -> int:
     # 9. (Removed - mana abilities no longer offered during normal priority in machine mode;
     #     mana is tapped automatically during cost payment via PAYING_COSTS.)
 
-    # 10. Dig choice (Once Upon a Time): pick action 1 (first matching card) if available.
+    # 10. Doomsday pile ordering (TOP_LIBRARY): put Thassa's Oracle on bottom of pile
+    #     (first pick = deepest position). For all other cards, pick action 0.
+    if any(c == _CAT_TOP_LIBRARY for c in cats):
+        # Prefer Thassa's Oracle first (goes to bottom of pile = wins with empty library)
+        for i, c in enumerate(cats):
+            if c == _CAT_TOP_LIBRARY and _action_card_id(card_ids, i) == _THASSAS_ORACLE_VOCAB_IDX:
+                return i
+        return 0  # pick first available for remaining cards
+
+    # 10b. Dig choice (Once Upon a Time): pick action 1 (first matching card) if available.
     if any(c == _CAT_DIG for c in cats):
         return 1 if num_choices > 1 else 0
 

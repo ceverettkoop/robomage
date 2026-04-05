@@ -25,6 +25,8 @@ static const char *mana_symbol_str(Colors color);
 static bool permanent_cant_activate(Entity entity, std::shared_ptr<Orderer> orderer);
 static size_t eval_mana_amount(const Ability &ab, Zone::Ownership controller,
                                std::shared_ptr<Orderer> orderer);
+static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
+                          Entity paid_for, std::shared_ptr<Orderer> orderer, bool has_delve);
 
 Entity get_player_entity(Zone::Ownership player) {
     return (player == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
@@ -454,6 +456,188 @@ void restore_mana_state(Zone::Ownership player, const ManaPaymentSnapshot &snap,
     cur_game.pending_cant_be_countered = false;
 }
 
+// Machine-mode auto-pay: greedily tap sources to cover the remaining cost.
+// Strategy: for each colored pip in the remaining cost, find a source that
+// produces exactly that color, preferring single-color sources over multi-color
+// to preserve flexibility.  Then pay generic costs with whatever is left.
+// Delve: exile graveyard instants/sorceries to reduce generic costs first.
+static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
+                          Entity paid_for, std::shared_ptr<Orderer> orderer, bool has_delve) {
+    Entity player_entity = get_player_entity(controller);
+    auto &player = global_coordinator.GetComponent<Player>(player_entity);
+
+    // Delve: exile graveyard instants/sorceries to reduce generic portion
+    if (has_delve) {
+        for (auto e : orderer->mEntities) {
+            if (remaining.count(GENERIC) == 0) break;
+            if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+            auto &ez = global_coordinator.GetComponent<Zone>(e);
+            if (ez.location != Zone::GRAVEYARD || ez.owner != controller) continue;
+            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+            auto &ecd = global_coordinator.GetComponent<CardData>(e);
+            bool is_inst_sorc = false;
+            for (auto &t : ecd.types)
+                if (t.kind == TYPE && (t.name == "Instant" || t.name == "Sorcery")) {
+                    is_inst_sorc = true; break;
+                }
+            if (!is_inst_sorc) continue;
+            orderer->add_to_zone(false, e, Zone::EXILE);
+            cur_game.delve_exiled.push_back(e);
+            auto git = remaining.find(GENERIC);
+            if (git != remaining.end()) remaining.erase(git);
+            game_log("%s exiles %s via Delve.\n",
+                     player_name(controller).c_str(), ecd.name.c_str());
+        }
+    }
+
+    // Check if pool covers remaining after delve
+    if (can_afford_pool(player.mana, remaining)) {
+        spend_mana(controller, remaining, paid_for);
+        return true;
+    }
+
+    // Collect available sources with their color info
+    auto sources = collect_available_mana_sources(controller, orderer);
+
+    // Build per-entity info: which colors it can produce, how many entries
+    struct SourceInfo {
+        Entity entity;
+        Ability ability;        // one representative ability (for tap/life/activation costs)
+        Colors color;
+        bool is_multi_color;
+    };
+    // Filter to actions valid for this payment (same as collect_mana_legal_actions)
+    std::vector<SourceInfo> valid_sources;
+    for (auto &[entity, ab] : sources) {
+        // Restricted mana check (Cavern of Souls)
+        if (ab.restrict_to_chosen_type_creature && paid_for != 0) {
+            auto &source_perm = global_coordinator.GetComponent<Permanent>(entity);
+            if (source_perm.chosen_type.empty()) continue;
+            if (!global_coordinator.entity_has_component<CardData>(paid_for)) continue;
+            auto &paid_cd = global_coordinator.GetComponent<CardData>(paid_for);
+            bool is_creature = false, has_chosen_subtype = false;
+            for (auto &t : paid_cd.types) {
+                if (t.kind == TYPE && t.name == "Creature") is_creature = true;
+                if (t.kind == SUBTYPE && t.name == source_perm.chosen_type) has_chosen_subtype = true;
+            }
+            if (!is_creature || !has_chosen_subtype) continue;
+        }
+        if (!ab.activation_mana_cost.empty()) {
+            if (!can_afford_with_sources(controller, ab.activation_mana_cost, orderer, ab.tap_cost ? entity : 0))
+                continue;
+        }
+        bool is_multi = false;
+        for (auto &[e2, ab2] : sources)
+            if (e2 == entity && ab2.color != ab.color) { is_multi = true; break; }
+        valid_sources.push_back({entity, ab, ab.color, is_multi});
+    }
+
+    // Helper: activate a source (tap, pay costs, add mana)
+    auto activate_source = [&](const SourceInfo &si) {
+        auto &perm = global_coordinator.GetComponent<Permanent>(si.entity);
+        if (si.ability.tap_cost) perm.is_tapped = true;
+        if (!si.ability.activation_mana_cost.empty())
+            spend_mana(controller, si.ability.activation_mana_cost, si.entity);
+        if (si.ability.life_cost > 0) {
+            player.life_total -= si.ability.life_cost;
+            game_log("%s pays %d life\n", player_name(controller).c_str(), si.ability.life_cost);
+        }
+        size_t amount = eval_mana_amount(si.ability, controller, orderer);
+        add_mana(controller, si.color, amount);
+        if (si.ability.adds_no_counter) cur_game.pending_cant_be_countered = true;
+        game_log("%s activated %s for %zu{%s}\n", player_name(controller).c_str(),
+                 perm.name.c_str(), amount, mana_symbol_str(si.color));
+        if (si.ability.activation_limit > 0) {
+            for (auto &perm_ab : perm.abilities) {
+                if (perm_ab.category == si.ability.category &&
+                    perm_ab.tap_cost == si.ability.tap_cost &&
+                    perm_ab.color == si.ability.color) {
+                    perm_ab.activations_this_turn++;
+                    break;
+                }
+            }
+        }
+    };
+
+    std::set<Entity> tapped_entities;
+
+    // Pay colored costs first — prefer single-color sources to preserve flexibility
+    for (auto it = remaining.begin(); it != remaining.end(); ) {
+        if (*it == GENERIC) { ++it; continue; }
+        Colors needed = *it;
+
+        // Check pool first
+        if (player.mana.count(needed) > 0) {
+            auto pit = player.mana.find(needed);
+            player.mana.erase(pit);
+            it = remaining.erase(it);
+            continue;
+        }
+
+        // Find a single-color source for this color
+        bool found = false;
+        for (auto &si : valid_sources) {
+            if (tapped_entities.count(si.entity)) continue;
+            if (si.color != needed) continue;
+            if (!si.is_multi_color) {
+                activate_source(si);
+                tapped_entities.insert(si.entity);
+                // Mana should now be in pool — spend it
+                if (player.mana.count(needed) > 0) {
+                    auto pit = player.mana.find(needed);
+                    player.mana.erase(pit);
+                }
+                it = remaining.erase(it);
+                found = true;
+                break;
+            }
+        }
+        if (found) continue;
+
+        // Fall back to multi-color source
+        for (auto &si : valid_sources) {
+            if (tapped_entities.count(si.entity)) continue;
+            if (si.color != needed) continue;
+            activate_source(si);
+            tapped_entities.insert(si.entity);
+            if (player.mana.count(needed) > 0) {
+                auto pit = player.mana.find(needed);
+                player.mana.erase(pit);
+            }
+            it = remaining.erase(it);
+            found = true;
+            break;
+        }
+        if (!found) return false;
+    }
+
+    // Pay generic costs with remaining sources
+    while (remaining.count(GENERIC) > 0) {
+        if (player.mana.size() > 0) {
+            player.mana.erase(player.mana.begin());
+            auto git = remaining.find(GENERIC);
+            remaining.erase(git);
+            continue;
+        }
+        bool found = false;
+        for (auto &si : valid_sources) {
+            if (tapped_entities.count(si.entity)) continue;
+            activate_source(si);
+            tapped_entities.insert(si.entity);
+            if (player.mana.size() > 0) {
+                player.mana.erase(player.mana.begin());
+                auto git = remaining.find(GENERIC);
+                remaining.erase(git);
+            }
+            found = true;
+            break;
+        }
+        if (!found) return false;
+    }
+
+    return true;
+}
+
 bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,
                          Entity paid_for, std::shared_ptr<Orderer> orderer,
                          bool has_delve) {
@@ -470,6 +654,11 @@ bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,
 
     // Drain existing pool toward the cost first
     ManaValue remaining = pay_partial(controller, cost);
+
+    // Machine mode: auto-select mana sources (no interactive prompts)
+    if (is_machine) {
+        return auto_pay_mana(controller, remaining, paid_for, orderer, has_delve);
+    }
 
     // Payment loop: prompt player to tap sources or delve until cost is paid
     while (!remaining.empty()) {

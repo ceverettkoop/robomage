@@ -30,6 +30,7 @@
 #include "orderer.h"
 
 static bool compare_svar(int value, const std::string &compare);
+static bool check_condition_present(const Ability &ab, Zone::Ownership caster, std::shared_ptr<Orderer> orderer);
 
 static std::string entity_name(Entity e) {
     if (global_coordinator.entity_has_component<Permanent>(e)) {
@@ -201,6 +202,7 @@ void StateManager::apply_permanent_components(Game &game) {
             // ETBReplacement: choose creature type (Cavern of Souls)
             if (card_data.has_etb_choose_creature_type) {
                 auto &perm_ref = global_coordinator.GetComponent<Permanent>(entity);
+                if (perm_ref.chosen_type.empty()) {
                 Entity player_entity = (perm_ref.controller == Zone::PLAYER_A)
                     ? cur_game.player_a_entity : cur_game.player_b_entity;
                 auto &player = global_coordinator.GetComponent<Player>(player_entity);
@@ -255,6 +257,7 @@ void StateManager::apply_permanent_components(Game &game) {
                     perm_ref.chosen_type = subtype_names[order[static_cast<size_t>(choice)]];
                     game_log("%s chose creature type: %s\n",
                              player_name(perm_ref.controller).c_str(), perm_ref.chosen_type.c_str());
+                }
                 }
             }
 
@@ -1010,6 +1013,55 @@ static bool can_afford_alt(const AltCost& alt_cost, Zone::Ownership priority_pla
     return true;
 }
 
+// Check ConditionPresent$ / ConditionCompare$ castability condition.
+// Counts battlefield permanents matching the filter and compares against the threshold.
+// Filter format: "Type.YouCtrl" or "Type.OppCtrl" (e.g. "Land.YouCtrl").
+static bool check_condition_present(const Ability &ab, Zone::Ownership caster, std::shared_ptr<Orderer> orderer) {
+    if (ab.condition_present.empty()) return true;
+
+    // Parse filter: "Land.YouCtrl" → type_filter="Land", controller check
+    std::string filter = ab.condition_present;
+    std::string type_filter;
+    bool you_ctrl = false;
+    bool opp_ctrl = false;
+    size_t dot = filter.find('.');
+    if (dot != std::string::npos) {
+        type_filter = filter.substr(0, dot);
+        std::string qualifier = filter.substr(dot + 1);
+        if (qualifier == "YouCtrl") you_ctrl = true;
+        else if (qualifier == "OppCtrl") opp_ctrl = true;
+    } else {
+        type_filter = filter;
+    }
+
+    Zone::Ownership required_ctrl = you_ctrl ? caster :
+        opp_ctrl ? (caster == Zone::PLAYER_A ? Zone::PLAYER_B : Zone::PLAYER_A) :
+        Zone::UNKNOWN;
+
+    size_t count = 0;
+    for (auto e : orderer->mEntities) {
+        if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
+        if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+        auto &z = global_coordinator.GetComponent<Zone>(e);
+        if (z.location != Zone::BATTLEFIELD) continue;
+        if (required_ctrl != Zone::UNKNOWN) {
+            auto &perm = global_coordinator.GetComponent<Permanent>(e);
+            if (perm.controller != required_ctrl) continue;
+        }
+        if (!type_filter.empty() && global_coordinator.entity_has_component<CardData>(e)) {
+            auto &cd = global_coordinator.GetComponent<CardData>(e);
+            bool match = false;
+            for (const auto &t : cd.types) {
+                if (t.name == type_filter) { match = true; break; }
+            }
+            if (!match) continue;
+        }
+        count++;
+    }
+
+    return compare_svar(static_cast<int>(count), ab.condition_compare);
+}
+
 // Count instants/sorceries in the player's graveyard that can be exiled for Delve
 static size_t count_delve_fuel(Zone::Ownership player, std::shared_ptr<Orderer> orderer) {
     size_t count = 0;
@@ -1148,15 +1200,19 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                            (game.player_a_turn == game.player_a_has_priority) && stack_empty;
         }
         // Check that at least one legal target exists for any targeting requirement
+        // and that any ConditionPresent$ castability condition is met
         bool tgt_ok = true;
+        bool condition_ok = true;
         for (const auto &ab : card_data.abilities) {
             if (ab.ability_type != Ability::SPELL) continue;
             tgt_ok = has_legal_targets(ab, orderer);
+            if (!ab.condition_present.empty())
+                condition_ok = check_condition_present(ab, priority_player, orderer);
             break;
         }
         auto pf_it = cur_game.payment_fail_counts.find(card_entity);
         bool payment_blocked = pf_it != cur_game.payment_fail_counts.end() && pf_it->second >= 2;
-        if (can_cast_now && tgt_ok && !payment_blocked) {
+        if (can_cast_now && tgt_ok && condition_ok && !payment_blocked) {
             std::string desc = "Cast " + card_data.name;
             LegalAction la(CAST_SPELL, card_entity, desc);
             la.category = ActionCategory::CAST_SPELL;

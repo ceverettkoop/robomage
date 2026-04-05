@@ -687,7 +687,8 @@ def train_alternate(binary_path: str, deck_a: str, deck_b: str,
     print(f"\nAlternate training complete: {total_timesteps:,} total timesteps over {round_num} rounds.")
 
 
-def diag(binary_path: str, n_games: int = 10):
+def diag(binary_path: str, n_games: int = 10,
+         deck_a: str | None = None, deck_b: str | None = None):
     """Quick diagnostic: spin up a fresh random model and run n_games vs scripted.
 
     Logs every decision (like watch_scripted).  On a draw the full log is saved
@@ -698,7 +699,7 @@ def diag(binary_path: str, n_games: int = 10):
     policy_kwargs = dict(features_extractor_class=CardGameExtractor, net_arch=[256, 256])
 
     # Create a throw-away env just to give MaskablePPO the spaces it needs.
-    _tmp_env = NarrativeEnv(binary_path=binary_path)
+    _tmp_env = NarrativeEnv(binary_path=binary_path, deck_a=deck_a, deck_b=deck_b)
     if USE_MASKABLE:
         _tmp_env = ActionMasker(_tmp_env, lambda e: e.action_masks())
     model = MaskablePPO("MlpPolicy", _tmp_env, policy_kwargs=policy_kwargs, verbose=0)
@@ -707,7 +708,7 @@ def diag(binary_path: str, n_games: int = 10):
     wins = losses = draws = 0
     print(f"Running {n_games} games (random model vs scripted)...")
     for i in range(n_games):
-        env = NarrativeEnv(binary_path=binary_path)
+        env = NarrativeEnv(binary_path=binary_path, deck_a=deck_a, deck_b=deck_b)
         if USE_MASKABLE:
             env = ActionMasker(env, lambda e: e.action_masks())
 
@@ -933,11 +934,11 @@ def _describe_action(cats, card_ids, action, num_choices):
     return cat_name
 
 
-def watch_scripted(binary_path: str):
+def watch_scripted(binary_path: str, deck_a: str | None = None, deck_b: str | None = None):
     """Run one game with both players driven by the scripted agent and print every decision."""
     import numpy as np
 
-    env = NarrativeEnv(binary_path=binary_path)
+    env = NarrativeEnv(binary_path=binary_path, deck_a=deck_a, deck_b=deck_b)
     obs, _ = env.reset()
     done = False
     decision = 0
@@ -945,7 +946,9 @@ def watch_scripted(binary_path: str):
     prev_active_is_a = None       # None until first non-mulligan query
     known_hand = {"A": [], "B": []}
 
-    print("=== Scripted (A) vs Scripted (B) ===\n", flush=True)
+    label_a = deck_a or "default"
+    label_b = deck_b or "default"
+    print(f"=== Scripted (A: {label_a}) vs Scripted (B: {label_b}) ===\n", flush=True)
 
     while not done:
         # Print narrative from the previous step; skip blank lines (e.g. leading \n
@@ -1133,9 +1136,9 @@ if __name__ == "__main__":
                   model_deck=d, opp_deck=o, record=args.record)
         print(f"\nAll {len(matchups)} matchups complete.")
     elif args.diag:
-        diag(args.binary, args.diag_games)
+        diag(args.binary, args.diag_games, deck_a=args.deck, deck_b=args.opponent)
     elif args.watch_scripted:
-        watch_scripted(args.binary)
+        watch_scripted(args.binary, deck_a=args.deck, deck_b=args.opponent)
     elif args.observe:
         observe(args.binary, args.observe)
     elif args.baseline:

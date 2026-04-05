@@ -100,6 +100,9 @@ struct Ability{
     // RememberChanged$ — remember entities moved by this ChangeZone (for Doomsday)
     bool remember_changed = false;
 
+    // Tapped$ True — searched card enters the battlefield tapped (Edge of Autumn)
+    bool enters_tapped = false;
+
     // Multi-zone origin support (e.g. Origin$ Graveyard,Library)
     std::vector<Zone::ZoneValue> origins;  // populated when Origin$ has commas; origin holds first value
 
@@ -120,6 +123,15 @@ struct Ability{
     std::string condition_check_svar = "";   // ConditionCheckSVar$ — resolved expression e.g. "Count$ResolvedThisTurn"
     std::string condition_svar_compare = ""; // ConditionSVarCompare$ — e.g. "EQ2", "NE2", "GE1", or "LEX" with SVar RHS
     std::string condition_compare_svar_expr = "";  // when compare RHS is an SVar (e.g. LEX → "Count$Devotion.Blue")
+
+    // Castability condition (Edge of Autumn): count permanents matching filter, compare to threshold
+    std::string condition_present = "";   // ConditionPresent$ — e.g. "Land.YouCtrl"
+    std::string condition_compare = "";   // ConditionCompare$ — e.g. "LE4", "GE3"
+
+    // Delayed trigger params (Mishra's Bauble)
+    std::string delayed_phase = "";         // Phase$ — phase name (e.g. "Upkeep", "Draw", "EndStep")
+    std::string delayed_execute_svar = "";  // Execute$ — SVar name of ability to run when trigger fires
+    std::string delayed_valid_player = "";  // ValidPlayer$ — "Player", "You", "Opponent"
 
     //for each AB on a card script there may be multiple SubAbility$, would get parsed into vector below
     std::vector<Ability> subabilities; // additional abilities resolved at same time this resolves, stored in order

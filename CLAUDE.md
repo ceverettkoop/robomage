@@ -14,7 +14,8 @@ The compiled binary is output to `bin/robomage`.
 ## Testing guidelines
 -Non fatal errors are not acceptable
 -Draws are not acceptable
--train.py --diag and train.py --watch-scripted are helpful for checking new builds
+-train.py --diag and train.py --watch-scripted are helpful for checking new builds; 
+--when testing with diag and --watch-scripted, supply --deck and --opponent arguments to test cards/decks relevant to recently implemented features
 
 ## Code Style
 

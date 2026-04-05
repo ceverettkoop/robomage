@@ -804,9 +804,22 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
             }
             tok_pos = (tok_end < value.size()) ? tok_end + 1 : tok_end;
         }
+    } else if (key == "Tapped") {
+        ability.enters_tapped = (value == "True");
+    } else if (key == "ConditionPresent") {
+        ability.condition_present = value;
+    } else if (key == "ConditionCompare") {
+        ability.condition_compare = value;
+    } else if (key == "Phase") {
+        ability.delayed_phase = value;
+    } else if (key == "Execute") {
+        ability.delayed_execute_svar = value;
+    } else if (key == "ValidPlayer") {
+        ability.delayed_valid_player = value;
     } else {
         static const std::set<std::string> ignored_keys = {
-            "SpellDescription", "AILogic", "AINoRecursiveCheck", "TgtPrompt", "StackDescription"
+            "SpellDescription", "AILogic", "AINoRecursiveCheck", "TgtPrompt", "StackDescription",
+            "ConditionDescription"
         };
         if (ignored_keys.find(key) == ignored_keys.end()) {
             std::string msg = "Unrecognized ability param: " + key + "$ " + value;
@@ -860,6 +873,12 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
             if (vs != std::string::npos) value = value.substr(vs, ve - vs + 1);
 
             if (key == "SubAbility") {
+                auto it = svars.find(value);
+                if (it != svars.end())
+                    sub.subabilities.push_back(parse_svar_ability(it->second, ability_type, svars, card_name));
+            } else if (key == "Execute") {
+                // Execute$ references an SVar containing the ability to fire (delayed triggers)
+                sub.delayed_execute_svar = value;
                 auto it = svars.find(value);
                 if (it != svars.end())
                     sub.subabilities.push_back(parse_svar_ability(it->second, ability_type, svars, card_name));
