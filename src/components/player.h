@@ -17,6 +17,8 @@ struct Player {
     size_t spells_cast_this_turn = 0;
     size_t spells_cast_this_game = 0;
     std::vector<Entity> cards_drawn_this_turn;
+    // creature subtypes in this player's deck: pair<list_index, all_subtypes_index>
+    std::vector<std::pair<int, int>> creature_subtypes;
 };
 
 #endif /* PLAYER_H */

@@ -244,6 +244,12 @@ Entity parse_card_script(std::string path) {
             card.keywords.push_back("Delve");
             continue;
         }
+        // K:ETBReplacement:Other:ChooseCT — choose creature type on ETB (Cavern of Souls)
+        if (kw_line.find("ETBReplacement") != std::string::npos &&
+            kw_line.find("ChooseCT") != std::string::npos) {
+            card.has_etb_choose_creature_type = true;
+            continue;
+        }
         // K:etbCounter:P1P1:X:... — "this card enters with counters"
         // Parsed as a static ability; counters applied in apply_permanent_components on ETB.
         if (kw_line.rfind("etbCounter", 0) == 0) {
@@ -735,6 +741,13 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         ability.discard_valid = value;
     } else if (key == "Mode") {
         ability.mode = value;
+    } else if (key == "RestrictValid") {
+        if (value.find("Creature") != std::string::npos &&
+            value.find("ChosenType") != std::string::npos) {
+            ability.restrict_to_chosen_type_creature = true;
+        }
+    } else if (key == "AddsNoCounter") {
+        ability.adds_no_counter = (value == "True");
     } else if (key == "InstantSpeed") {
         ability.instant_speed = (value == "True");
     } else if (key == "Cost") {

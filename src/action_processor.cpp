@@ -1013,6 +1013,10 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             Spell spell;
             spell.caster = caster;
             spell.cast_with_flashback = action.use_flashback;
+            if (cur_game.pending_cant_be_countered) {
+                spell.cant_be_countered = true;
+                cur_game.pending_cant_be_countered = false;
+            }
             global_coordinator.AddComponent(spell_entity, spell);
 
             // Fire NONCREATURE_SPELL_CAST event for non-creature spells

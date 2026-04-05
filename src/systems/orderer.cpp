@@ -16,6 +16,8 @@
 #include "../ecs/events.h"
 #include "../input_logger.h"
 #include "../machine_io.h"
+#include "../type_constants.h"
+#include "../components/types.h"
 
 // orderer cares about anything that has a zone
 void Orderer::init() {
@@ -159,6 +161,37 @@ void Orderer::generate_libraries(const Deck &deck_a, const Deck &deck_b) {
 
     shuffle_library(Zone::PLAYER_A);
     shuffle_library(Zone::PLAYER_B);
+
+    // Build creature subtype lists for ChooseType (Cavern of Souls)
+    for (size_t pi = 0; pi < 2; pi++) {
+        Zone::Ownership player_owner = (pi == 0) ? Zone::PLAYER_A : Zone::PLAYER_B;
+        Entity player_entity = (pi == 0) ? cur_game.player_a_entity : cur_game.player_b_entity;
+        auto &player = coordinator.GetComponent<Player>(player_entity);
+
+        std::set<int> seen_subtype_indices;
+        for (auto e : mEntities) {
+            auto &z = coordinator.GetComponent<Zone>(e);
+            if (z.owner != player_owner) continue;
+            if (!coordinator.entity_has_component<CardData>(e)) continue;
+            auto &cd = coordinator.GetComponent<CardData>(e);
+            bool is_creature = false;
+            for (auto &t : cd.types)
+                if (t.kind == TYPE && t.name == "Creature") { is_creature = true; break; }
+            if (!is_creature) continue;
+            for (auto &t : cd.types) {
+                if (t.kind != SUBTYPE) continue;
+                auto it = all_subtypes.find(t.name);
+                if (it == all_subtypes.end()) continue;
+                int idx = static_cast<int>(std::distance(all_subtypes.begin(), it));
+                seen_subtype_indices.insert(idx);
+            }
+        }
+        int list_idx = 0;
+        for (int subtype_idx : seen_subtype_indices) {
+            player.creature_subtypes.push_back({list_idx, subtype_idx});
+            list_idx++;
+        }
+    }
 }
 
 void Orderer::draw_hands() {

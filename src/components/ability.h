@@ -30,6 +30,8 @@ struct Ability{
     size_t amount = 0;
     Colors color = NO_COLOR; //for mana ability
     std::vector<Colors> mana_choices;   // Produced$ Combo or Any — ordered list of selectable mana colors
+    bool restrict_to_chosen_type_creature = false;  // RestrictValid$ Spell.Creature+ChosenType
+    bool adds_no_counter = false;                    // AddsNoCounter$ True — spell can't be countered
 
     // Activated ability costs
     bool tap_cost = false;              // {T} is part of the activation cost

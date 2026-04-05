@@ -18,6 +18,7 @@
 #include "../components/player.h"
 #include "../components/token.h"
 #include "../components/types.h"
+#include "../type_constants.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../ecs/events.h"
@@ -196,6 +197,66 @@ void StateManager::apply_permanent_components(Game &game) {
                 apply_land_abilities(entity);
             }
             apply_keyword_abilities(entity);
+
+            // ETBReplacement: choose creature type (Cavern of Souls)
+            if (card_data.has_etb_choose_creature_type) {
+                auto &perm_ref = global_coordinator.GetComponent<Permanent>(entity);
+                Entity player_entity = (perm_ref.controller == Zone::PLAYER_A)
+                    ? cur_game.player_a_entity : cur_game.player_b_entity;
+                auto &player = global_coordinator.GetComponent<Player>(player_entity);
+
+                if (!player.creature_subtypes.empty()) {
+                    // Build subtype name list from all_subtypes index
+                    std::vector<std::string> subtype_names;
+                    for (auto &pair : player.creature_subtypes) {
+                        auto it = all_subtypes.begin();
+                        std::advance(it, pair.second);
+                        subtype_names.push_back(*it);
+                    }
+
+                    // Count frequency of each subtype among owned creatures for sorting
+                    std::vector<int> freq(subtype_names.size(), 0);
+                    for (auto e2 : mEntities) {
+                        if (!global_coordinator.entity_has_component<CardData>(e2)) continue;
+                        auto &z2 = global_coordinator.GetComponent<Zone>(e2);
+                        if (z2.owner != perm_ref.controller) continue;
+                        auto &cd2 = global_coordinator.GetComponent<CardData>(e2);
+                        bool is_cr = false;
+                        for (auto &t : cd2.types)
+                            if (t.kind == TYPE && t.name == "Creature") { is_cr = true; break; }
+                        if (!is_cr) continue;
+                        for (auto &t : cd2.types) {
+                            if (t.kind != SUBTYPE) continue;
+                            for (size_t i = 0; i < subtype_names.size(); i++) {
+                                if (t.name == subtype_names[i]) freq[i]++;
+                            }
+                        }
+                    }
+
+                    // Sort by frequency descending (most prominent first)
+                    std::vector<size_t> order(subtype_names.size());
+                    for (size_t i = 0; i < order.size(); i++) order[i] = i;
+                    std::sort(order.begin(), order.end(), [&](size_t a, size_t b) {
+                        return freq[a] > freq[b];
+                    });
+
+                    std::vector<LegalAction> type_choices;
+                    for (size_t idx : order) {
+                        LegalAction la(PASS_PRIORITY, entity, "Choose creature type: " + subtype_names[idx]);
+                        la.category = ActionCategory::OTHER_CHOICE;
+                        type_choices.push_back(la);
+                    }
+
+                    bool prev_priority = cur_game.player_a_has_priority;
+                    cur_game.player_a_has_priority = (perm_ref.controller == Zone::PLAYER_A);
+                    game_log("Choose a creature type for %s:\n", perm_ref.name.c_str());
+                    int choice = InputLogger::instance().get_input(type_choices);
+                    cur_game.player_a_has_priority = prev_priority;
+                    perm_ref.chosen_type = subtype_names[order[static_cast<size_t>(choice)]];
+                    game_log("%s chose creature type: %s\n",
+                             player_name(perm_ref.controller).c_str(), perm_ref.chosen_type.c_str());
+                }
+            }
 
         } else {  // off battlefield, check to remove
             if (global_coordinator.entity_has_component<Permanent>(entity)) {

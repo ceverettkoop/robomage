@@ -1086,6 +1086,15 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
                     do_counter = run_unless_loop(unless_generic_cost, target_controller, orderer, target);
                 }
 
+                // Can't be countered check (Cavern of Souls)
+                if (do_counter && global_coordinator.entity_has_component<Spell>(target) &&
+                    global_coordinator.GetComponent<Spell>(target).cant_be_countered) {
+                    std::string name = global_coordinator.entity_has_component<CardData>(target)
+                        ? global_coordinator.GetComponent<CardData>(target).name : "<unknown>";
+                    game_log("%s can't be countered\n", name.c_str());
+                    do_counter = false;
+                }
+
                 if (do_counter) {
                     std::string name = global_coordinator.entity_has_component<CardData>(target)
                         ? global_coordinator.GetComponent<CardData>(target).name : "<unknown>";

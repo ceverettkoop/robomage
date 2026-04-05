@@ -8,6 +8,7 @@
 struct Spell {
     Zone::Ownership caster = Zone::UNKNOWN;
     bool cast_with_flashback = false;
+    bool cant_be_countered = false;
 };
 
 #endif /* SPELL_H */

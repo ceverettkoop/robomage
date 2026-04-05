@@ -245,10 +245,24 @@ ActionCategory mana_action_category(Colors color) {
 }
 
 std::vector<LegalAction> collect_mana_legal_actions(
-    Zone::Ownership player, std::shared_ptr<Orderer> orderer) {
+    Zone::Ownership player, std::shared_ptr<Orderer> orderer, Entity paid_for) {
     std::vector<LegalAction> actions;
     auto sources = collect_available_mana_sources(player, orderer);
     for (auto &[entity, ab] : sources) {
+        // Filter restricted mana (Cavern of Souls): hide from payment when spell doesn't match
+        if (ab.restrict_to_chosen_type_creature && paid_for != 0) {
+            auto &source_perm = global_coordinator.GetComponent<Permanent>(entity);
+            if (source_perm.chosen_type.empty()) continue;
+            if (!global_coordinator.entity_has_component<CardData>(paid_for)) continue;
+            auto &paid_cd = global_coordinator.GetComponent<CardData>(paid_for);
+            bool is_creature = false;
+            bool has_chosen_subtype = false;
+            for (auto &t : paid_cd.types) {
+                if (t.kind == TYPE && t.name == "Creature") is_creature = true;
+                if (t.kind == SUBTYPE && t.name == source_perm.chosen_type) has_chosen_subtype = true;
+            }
+            if (!is_creature || !has_chosen_subtype) continue;
+        }
         // Sources with activation mana cost: check affordability
         if (!ab.activation_mana_cost.empty()) {
             Entity exclude = ab.tap_cost ? entity : 0;
@@ -437,6 +451,7 @@ void restore_mana_state(Zone::Ownership player, const ManaPaymentSnapshot &snap,
         orderer->add_to_zone(false, exiled, Zone::GRAVEYARD);
     }
     cur_game.delve_exiled = snap.delve_exiled;
+    cur_game.pending_cant_be_countered = false;
 }
 
 bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,
@@ -468,7 +483,7 @@ bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,
         std::vector<LegalAction> pay_actions;
 
         // Mana abilities
-        auto mana_actions = collect_mana_legal_actions(controller, orderer);
+        auto mana_actions = collect_mana_legal_actions(controller, orderer, paid_for);
         for (auto &la : mana_actions) {
             la.category = ActionCategory::PAYING_COSTS;
             pay_actions.push_back(la);
@@ -559,6 +574,11 @@ bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,
 
             size_t mana_amount = eval_mana_amount(chosen_ab, controller, orderer);
             add_mana(controller, chosen_ab.color, mana_amount);
+
+            // Cavern of Souls: mark spell as uncounterable when restricted mana is used
+            if (chosen_ab.adds_no_counter) {
+                cur_game.pending_cant_be_countered = true;
+            }
 
             game_log("%s activated %s for %zu{%s}\n", player_name(controller).c_str(),
                      perm.name.c_str(), mana_amount, mana_symbol_str(chosen_ab.color));

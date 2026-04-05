@@ -66,7 +66,7 @@ ActionCategory mana_action_category(Colors color);
 // Each action has a color-specific ActionCategory (MANA_W, MANA_U, etc.).
 // Sources with activation_mana_cost are included only if the cost is affordable.
 std::vector<LegalAction> collect_mana_legal_actions(
-    Zone::Ownership player, std::shared_ptr<Orderer> orderer);
+    Zone::Ownership player, std::shared_ptr<Orderer> orderer, Entity paid_for = 0);
 
 // Prompt the player to activate mana abilities to pay a cost. Returns true if cost was fully paid.
 // On false, caller must restore from snapshot.
