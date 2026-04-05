@@ -104,6 +104,12 @@ typedef struct GameState_tag {
     //   category / ACTION_CATEGORY_MAX, card_vocab_idx / N_CARD_TYPES, is_self
     float action_history[ACTION_HISTORY_SIZE * 3];
     int   action_history_len;  // valid entries (0 to ACTION_HISTORY_SIZE)
+
+    // bo3 match state
+    int  match_game_number;  // -1 = single game, 0-2 = bo3 game index
+    int  match_wins_self;
+    int  match_wins_opp;
+    bool is_sideboard_phase;
 } GameState;
 
 #ifdef __cplusplus

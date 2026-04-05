@@ -341,8 +341,11 @@ class ReplayLogCallback(BaseCallback):
             masked = env
 
         try:
-            obs, _ = masked.reset()
             model_is_a = bool(np.random.random() < 0.5)
+            if self._model_deck is not None:
+                env._deck_a = self._model_deck if model_is_a else self._opp_deck
+                env._deck_b = self._opp_deck if model_is_a else self._model_deck
+            obs, _ = masked.reset()
             done = False
             total_reward = 0.0
             turn = 0
@@ -444,10 +447,11 @@ _DECKS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file
                           "bin", "resources", "decks")
 
 
-def make_env(binary_path: str, rank: int, model_deck: str = "delver", opp_deck: str = "delver"):
+def make_env(binary_path: str, rank: int, model_deck: str = "delver", opp_deck: str = "delver",
+             bo3: bool = False):
     def _init():
         env = ModelVsScriptedEnv(binary_path=binary_path,
-                                 model_deck=model_deck, opp_deck=opp_deck)
+                                 model_deck=model_deck, opp_deck=opp_deck, bo3=bo3)
         if USE_MASKABLE:
             env = ActionMasker(env, lambda e: e.action_masks())
         env = Monitor(env)
@@ -456,10 +460,11 @@ def make_env(binary_path: str, rank: int, model_deck: str = "delver", opp_deck: 
 
 
 def make_fixed_model_env(binary_path: str, opp_model_path: str, rank: int,
-                         model_deck: str = "delver", opp_deck: str = "delver"):
+                         model_deck: str = "delver", opp_deck: str = "delver",
+                         bo3: bool = False):
     def _init():
         env = FixedModelEnv(opp_model_path=opp_model_path, binary_path=binary_path,
-                            model_deck=model_deck, opp_deck=opp_deck)
+                            model_deck=model_deck, opp_deck=opp_deck, bo3=bo3)
         if USE_MASKABLE:
             env = ActionMasker(env, lambda e: e.action_masks())
         env = Monitor(env)
@@ -468,10 +473,11 @@ def make_fixed_model_env(binary_path: str, opp_model_path: str, rank: int,
 
 
 def make_self_play_env(binary_path: str, checkpoint_dir: str, rank: int,
-                       model_deck: str = "delver", opp_deck: str = "delver"):
+                       model_deck: str = "delver", opp_deck: str = "delver",
+                       bo3: bool = False):
     def _init():
         env = SelfPlayEnv(checkpoint_dir=checkpoint_dir, binary_path=binary_path,
-                          model_deck=model_deck, opp_deck=opp_deck)
+                          model_deck=model_deck, opp_deck=opp_deck, bo3=bo3)
         if USE_MASKABLE:
             env = ActionMasker(env, lambda e: e.action_masks())
         env = Monitor(env)
@@ -481,7 +487,8 @@ def make_self_play_env(binary_path: str, checkpoint_dir: str, rank: int,
 
 def train(binary_path: str, load_path: str | None = None, total_timesteps: int = TOTAL_TIMESTEPS,
           tally: bool = False, self_play: bool = False, scripted_fraction: float = 0.0,
-          model_deck: str = "delver", opp_deck: str = "delver", record: bool = False):
+          model_deck: str = "delver", opp_deck: str = "delver", record: bool = False,
+          bo3: bool = False):
     """Train the model.
 
     ``scripted_fraction`` controls how many of the N_ENVS parallel environments
@@ -500,14 +507,14 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
         n_scripted = round(n_envs * scripted_fraction)
         n_self_play = n_envs - n_scripted
         env_fns = (
-            [make_self_play_env(binary_path, checkpoint_dir, i, model_deck, opp_deck) for i in range(n_self_play)]
-            + [make_env(binary_path, n_envs - n_scripted + i, model_deck, opp_deck) for i in range(n_scripted)]
+            [make_self_play_env(binary_path, checkpoint_dir, i, model_deck, opp_deck, bo3=bo3) for i in range(n_self_play)]
+            + [make_env(binary_path, n_envs - n_scripted + i, model_deck, opp_deck, bo3=bo3) for i in range(n_scripted)]
         )
         if n_scripted:
             print(f"Env mix: {n_self_play} self-play + {n_scripted} scripted")
         vec_env = SubprocVecEnv(env_fns)
     else:
-        vec_env = SubprocVecEnv([make_env(binary_path, i, model_deck, opp_deck) for i in range(N_ENVS)])
+        vec_env = SubprocVecEnv([make_env(binary_path, i, model_deck, opp_deck, bo3=bo3) for i in range(N_ENVS)])
 
     try:
         policy_kwargs = dict(
@@ -537,7 +544,7 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
                 gamma=0.99,
                 gae_lambda=0.95,
                 clip_range=0.25,
-                ent_coef=0.14,
+                ent_coef=0.12,
                 verbose=1,
                 tensorboard_log=LOG_DIR,
             )
@@ -688,7 +695,8 @@ def train_alternate(binary_path: str, deck_a: str, deck_b: str,
 
 
 def diag(binary_path: str, n_games: int = 10,
-         deck_a: str | None = None, deck_b: str | None = None):
+         deck_a: str | None = None, deck_b: str | None = None,
+         bo3: bool = False):
     """Quick diagnostic: spin up a fresh random model and run n_games vs scripted.
 
     Logs every decision (like watch_scripted).  On a draw the full log is saved
@@ -699,16 +707,17 @@ def diag(binary_path: str, n_games: int = 10,
     policy_kwargs = dict(features_extractor_class=CardGameExtractor, net_arch=[256, 256])
 
     # Create a throw-away env just to give MaskablePPO the spaces it needs.
-    _tmp_env = NarrativeEnv(binary_path=binary_path, deck_a=deck_a, deck_b=deck_b)
+    _tmp_env = NarrativeEnv(binary_path=binary_path, deck_a=deck_a, deck_b=deck_b, bo3=bo3)
     if USE_MASKABLE:
         _tmp_env = ActionMasker(_tmp_env, lambda e: e.action_masks())
     model = MaskablePPO("MlpPolicy", _tmp_env, policy_kwargs=policy_kwargs, verbose=0)
     _tmp_env.close()
 
     wins = losses = draws = 0
-    print(f"Running {n_games} games (random model vs scripted)...")
+    label = "matches" if bo3 else "games"
+    print(f"Running {n_games} {label} (random model vs scripted)...")
     for i in range(n_games):
-        env = NarrativeEnv(binary_path=binary_path, deck_a=deck_a, deck_b=deck_b)
+        env = NarrativeEnv(binary_path=binary_path, deck_a=deck_a, deck_b=deck_b, bo3=bo3)
         if USE_MASKABLE:
             env = ActionMasker(env, lambda e: e.action_masks())
 
@@ -893,7 +902,10 @@ def observe(binary_path: str, model_path: str):
 _CAT_NAMES = {
     0: "PASS", 1: "MANA", 2: "SEL_ATK", 3: "CONF_ATK",
     4: "SEL_BLK", 5: "CONF_BLK", 6: "ACTIVATE", 7: "CAST",
-    8: "TARGET", 9: "LAND", 10: "OTHER", 11: "MULLIGAN", 12: "BOTTOM_CARD"
+    8: "TARGET", 9: "LAND", 10: "OTHER", 11: "MULLIGAN", 12: "BOTTOM_CARD",
+    13: "MANA_W", 14: "MANA_U", 15: "MANA_B", 16: "MANA_R", 17: "MANA_G",
+    18: "MANA_C", 19: "SEARCH", 20: "TOP_LIB", 21: "SHUFFLE", 22: "PAYING",
+    23: "DIG", 24: "SB_IN", 25: "SB_OUT", 26: "SB_DONE",
 }
 
 _STEP_NAMES = [
@@ -934,11 +946,12 @@ def _describe_action(cats, card_ids, action, num_choices):
     return cat_name
 
 
-def watch_scripted(binary_path: str, deck_a: str | None = None, deck_b: str | None = None):
+def watch_scripted(binary_path: str, deck_a: str | None = None, deck_b: str | None = None,
+                   bo3: bool = False):
     """Run one game with both players driven by the scripted agent and print every decision."""
     import numpy as np
 
-    env = NarrativeEnv(binary_path=binary_path, deck_a=deck_a, deck_b=deck_b)
+    env = NarrativeEnv(binary_path=binary_path, deck_a=deck_a, deck_b=deck_b, bo3=bo3)
     obs, _ = env.reset()
     done = False
     decision = 0
@@ -1072,6 +1085,8 @@ if __name__ == "__main__":
                         help="Train every deck×deck matchup sequentially (ignores --deck/--opponent)")
     parser.add_argument("--train-deck", type=str, default=None,
                         help="Train all matchups that include the given deck (ignores --deck/--opponent)")
+    parser.add_argument("--bo3", action="store_true",
+                        help="Best-of-three match mode (deck swap + sideboarding between games)")
     args = parser.parse_args()
 
     # Resolve model shorthands (e.g. 'delver_boomer-mav' → checkpoints/delver_boomer-mav_final.zip)
@@ -1114,7 +1129,7 @@ if __name__ == "__main__":
             train(args.binary, load_path=resume_path, total_timesteps=args.total_timesteps,
                   tally=args.tally, self_play=args.self_play,
                   scripted_fraction=args.scripted_fraction,
-                  model_deck=d, opp_deck=o, record=args.record)
+                  model_deck=d, opp_deck=o, record=args.record, bo3=args.bo3)
         print(f"\nAll {len(matchups)} matchups for '{target}' complete.")
     elif args.train_all:
         all_decks = sorted(os.path.splitext(p)[0]
@@ -1133,12 +1148,12 @@ if __name__ == "__main__":
             train(args.binary, load_path=resume_path, total_timesteps=args.total_timesteps,
                   tally=args.tally, self_play=args.self_play,
                   scripted_fraction=args.scripted_fraction,
-                  model_deck=d, opp_deck=o, record=args.record)
+                  model_deck=d, opp_deck=o, record=args.record, bo3=args.bo3)
         print(f"\nAll {len(matchups)} matchups complete.")
     elif args.diag:
-        diag(args.binary, args.diag_games, deck_a=args.deck, deck_b=args.opponent)
+        diag(args.binary, args.diag_games, deck_a=args.deck, deck_b=args.opponent, bo3=args.bo3)
     elif args.watch_scripted:
-        watch_scripted(args.binary, deck_a=args.deck, deck_b=args.opponent)
+        watch_scripted(args.binary, deck_a=args.deck, deck_b=args.opponent, bo3=args.bo3)
     elif args.observe:
         observe(args.binary, args.observe)
     elif args.baseline:
@@ -1150,4 +1165,5 @@ if __name__ == "__main__":
             parser.error("--opponent is required for training")
         train(args.binary, args.load, args.total_timesteps, tally=args.tally,
               self_play=args.self_play, scripted_fraction=args.scripted_fraction,
-              model_deck=args.deck, opp_deck=args.opponent, record=args.record)
+              model_deck=args.deck, opp_deck=args.opponent, record=args.record,
+              bo3=args.bo3)

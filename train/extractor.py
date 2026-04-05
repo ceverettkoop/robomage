@@ -21,7 +21,7 @@ Index layout must stay in sync with src/machine_io.h:
   obs[14842:31226]    128 graveyard slots × 128 floats (128 card one-hot)
                          slots 0-63: self; slots 64-127: opponent
   obs[31226:32506]     10 hand slots    × 128 floats  (128 card one-hot)
-  obs[32506:32551]     15 action history entries × 3 floats (newest first)
+  obs[32506:32551]     15 action history entries × 3 floats (newest first; 32551-32554 = match context)
                          per entry: category_norm, card_id_norm, is_self
   obs[32551:]          action metadata + cost features (appended by env.py)
 """
@@ -59,7 +59,8 @@ _HAND_START  = _GY_END                                         # 31226
 _HAND_END    = _HAND_START + _HAND_SLOTS * _HAND_SLOT_SIZE     # 32506
 _HIST_START  = _HAND_END                                       # 32506
 _HIST_END    = _HIST_START + _HIST_ENTRIES * _HIST_ENTRY_SIZE  # 32551
-# obs[32551:] = action metadata + cost features appended by env.py
+# obs[32551:32555] = match context (4 floats: game_number, self_wins, opp_wins, sideboard_phase)
+# obs[32555:] = action metadata + cost features appended by env.py
 
 
 class CardGameExtractor(BaseFeaturesExtractor):

@@ -245,8 +245,10 @@ void Orderer::draw(Zone::Ownership player, size_t ct) {
     if (cards_to_draw.size() < ct) {
         if (player == Zone::PLAYER_A) {
             printf("\nPlayer A decked - Player B wins!\n");
+            cur_game.winner = Zone::PLAYER_B;
         } else {
             printf("\nPlayer B decked - Player A wins!\n");
+            cur_game.winner = Zone::PLAYER_A;
         }
         cur_game.ended = true;
     }

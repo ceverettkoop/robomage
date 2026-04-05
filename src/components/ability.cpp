@@ -1439,6 +1439,7 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
         }
         game_log("%s wins the game!\n", player_name(winner).c_str());
         cur_game.ended = true;
+        cur_game.winner = static_cast<int>(winner);
         return;
     }
 

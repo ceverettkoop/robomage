@@ -217,6 +217,7 @@ void cli_print_help(const char* program, const char* version) {
     printf("  --replay <logfile>  Replay a previously logged game\n");
     printf("  --machine           Machine mode: emit QUERY lines for AI input\n");
     printf("  --gui               Launch with GUI\n");
+    printf("  --bo3               Best-of-three match mode\n");
     printf("  --help, -h          Show this help message\n");
     printf("\nDeck names are filenames without .dk, relative to resources/decks/.\n");
 }

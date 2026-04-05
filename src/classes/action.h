@@ -39,9 +39,12 @@ enum class ActionCategory {
     SHUFFLE           = 21,  // shuffle a library
     PAYING_COSTS      = 22,  // delve exile or pitch card from hand to pay costs
     DIG_CHOICE        = 23,  // choose a card from a dig (look at top N) ability
+    SIDEBOARD_IN      = 24,  // choose a card from sideboard to add to main deck
+    SIDEBOARD_OUT     = 25,  // choose a card from main deck to move to sideboard
+    SIDEBOARD_DONE    = 26,  // finish sideboarding
 };
 
-static constexpr int ACTION_CATEGORY_MAX = 23;  // highest ActionCategory value
+static constexpr int ACTION_CATEGORY_MAX = 26;  // highest ActionCategory value
 
 struct LegalAction {
     ActionType type;

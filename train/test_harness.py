@@ -61,28 +61,24 @@ import tempfile
 import numpy as np
 from pathlib import Path
 
+from env import (STATE_SIZE, MAX_ACTIONS, ACTION_CATEGORY_MAX,
+                 _MANDATORY_CATS,
+                 _SELF_PERM_START, _OPP_PERM_START, _STACK_START,
+                 _GY_START, _HAND_START, _PERM_SLOT_SIZE as PERM_SLOT_SIZE,
+                 _PERM_SLOTS)
+from card_costs import N_CARD_TYPES, _VOCAB_NAMES as _CARD_NAMES
+from train import _CAT_NAMES, _STEP_NAMES
+
 # ── Path setup ────────────────────────────────────────────────────────────────
 _REPO_ROOT = Path(__file__).resolve().parent.parent
 _BIN_DIR = _REPO_ROOT / "bin"
 _BINARY = _BIN_DIR / "robomage"
 _DECKS_DIR = _BIN_DIR / "resources" / "decks"
 
-# ── Engine constants (mirror src/machine_io.h) ───────────────────────────────
-STATE_SIZE = 32551
-N_CARD_TYPES = 128
-MAX_ACTIONS = 64
-ACTION_CATEGORY_MAX = 23
-PERM_SLOT_SIZE = 138
+# ── Engine constants derived from imports ─────────────────────────────────────
 STACK_SLOT_SIZE = 130
 GY_SLOT_SIZE = 128
-
-# State layout offsets
-_SELF_PERM_START = 34
-_OPP_PERM_START = 34 + 48 * PERM_SLOT_SIZE       # 6658
-_STACK_START = _OPP_PERM_START + 48 * PERM_SLOT_SIZE  # 13282
-_GY_START = _STACK_START + 12 * STACK_SLOT_SIZE    # 14842
 _OPP_GY_START = _GY_START + 64 * GY_SLOT_SIZE     # 23034
-_HAND_START = _OPP_GY_START + 64 * GY_SLOT_SIZE   # 31226
 
 # Permanent slot field offsets
 _OFF_POWER = 0
@@ -97,53 +93,12 @@ _OFF_IS_CREATURE = 8
 _OFF_IS_LAND = 9
 _OFF_CARD_ONEHOT = 10
 
-# Step one-hot starts at obs[18], 13 steps
-_STEP_NAMES = [
-    "Untap", "Upkeep", "Draw", "First Main", "Begin Combat",
-    "Declare Attackers", "Declare Blockers", "First Strike Damage",
-    "Combat Damage", "End of Combat", "Second Main", "End Step", "Cleanup",
-]
-
-# ── Card vocab (mirror src/card_vocab.h) ─────────────────────────────────────
-_CARD_NAMES = [
-    "Mountain", "Forest", "Lightning Bolt", "Grizzly Bears", "Volcanic Island",
-    "Scalding Tarn", "Flooded Strand", "Polluted Delta", "Wooded Foothills", "Misty Rainforest",
-    "Wasteland", "Ponder", "Force of Will", "Daze", "Soul Warden", "Tundra",
-    "Delver of Secrets", "Insectile Aberration", "Flying Men", "Island",
-    "Dragon's Rage Channeler", "Air Elemental", "Counterspell", "Lightning Strike",
-    "Brainstorm", "Thundering Falls",
-    "Murktide Regent", "Mishra's Bauble", "Cori-Steel Cutter", "Unholy Heat",
-    "Birds of Paradise", "Collector Ouphe", "Dryad Arbor", "Endurance",
-    "Gaea's Cradle", "Green Sun's Zenith", "Horizon Canopy", "Icetill Explorer",
-    "Ignoble Hierarch", "Karakas", "Keen-Eyed Curator", "Knight of the Reliquary",
-    "Noble Hierarch", "Once Upon a Time", "Plains", "Savannah",
-    "Scryb Ranger", "Scythecat Cub", "Swords to Plowshares", "Sylvan Library",
-    "Talon Gates of Madara", "Thalia, Guardian of Thraben", "Windswept Heath",
-    "Doomsday", "Thoughtseize", "Dark Ritual", "Lotus Petal",
-    "Lion's Eye Diamond", "Thassa's Oracle", "Personal Tutor", "Street Wraith",
-    "Edge of Autumn", "Swamp", "Undercity Sewers", "Underground Sea",
-    "Bloodstained Mire", "Verdant Catacombs", "Cavern of Souls",
-    "Consider", "Duress", "Deep Analysis",
-]
-
 def card_index_to_name(idx):
     if idx == 127:
         return "Token"
     if 0 <= idx < len(_CARD_NAMES):
         return _CARD_NAMES[idx]
     return f"?({idx})"
-
-# ── Action category names ────────────────────────────────────────────────────
-_CAT_NAMES = {
-    0: "PASS", 1: "MANA_ABILITY", 2: "SELECT_ATTACKER", 3: "CONFIRM_ATTACKERS",
-    4: "SELECT_BLOCKER", 5: "CONFIRM_BLOCKERS", 6: "ACTIVATE", 7: "CAST",
-    8: "TARGET", 9: "PLAY_LAND", 10: "CHOICE", 11: "MULLIGAN",
-    12: "BOTTOM_CARD", 13: "MANA_W", 14: "MANA_U", 15: "MANA_B",
-    16: "MANA_R", 17: "MANA_G", 18: "MANA_C", 19: "SEARCH",
-    20: "TOP_LIBRARY", 21: "SHUFFLE", 22: "PAY_COST", 23: "DIG",
-}
-
-_MANDATORY_CATS = frozenset({2, 3, 4, 5})
 
 # Binary payload sizes
 _STATE_BYTES = STATE_SIZE * 4

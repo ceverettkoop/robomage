@@ -10,7 +10,7 @@
 //   where N = num_choices.
 //
 // The state vector (STATE_SIZE floats) is followed by:
-//   - N ActionCategory integers (values 0-22, see ActionCategory enum).
+//   - N ActionCategory integers (values 0-26, see ActionCategory enum).
 //   - N card vocab index floats: card_vocab_index / N_CARD_TYPES for card
 //     entities, or -1.0 / N_CARD_TYPES (-0.03125) as a null sentinel for
 //     non-card entities (players, confirm slots, fail-to-find, empty).
@@ -30,7 +30,7 @@
 // NOTE: Exile zones are populated in GameState but NOT serialized.
 // Add them back once cards that use exile are implemented.
 //
-// Fixed-size state vector layout (STATE_SIZE = 32551 floats):
+// Fixed-size state vector layout (STATE_SIZE = 32555 floats):
 //
 //  [0-8]      Self player block (9 floats):
 //               life/20, hand_ct/10, poison/10, mana[W,U,B,R,G,C]/10
@@ -59,13 +59,17 @@
 //  [31226-32505] Self hand: 10 slots x 128 floats = 1280
 //                Per slot: card_id one-hot (all zeros = empty)
 //
-//  [32506-32550] Action history: 15 entries x 3 floats = 45 (newest first)
+//  [32506-32550] Action history: 15 entries x 3 floats = 45 (newest first; ends at 32550)
 //                Per entry: category / ACTION_CATEGORY_MAX,
 //                           card_vocab_idx / N_CARD_TYPES (or -1/N_CARD_TYPES sentinel),
 //                           is_self (1.0 = viewer's action, 0.0 = opponent's)
 //                Empty entries (beyond action_history_len) are all zeros.
+//
+//  [32551-32554] Match context (4 floats, all 0.0 in single-game mode):
+//                game_number / 3.0, self_match_wins / 2.0,
+//                opp_match_wins / 2.0, is_sideboard_phase (0.0 or 1.0)
 
-static constexpr int STATE_SIZE      = 32551;
+static constexpr int STATE_SIZE      = 32555;
 static constexpr int N_CARD_TYPES    = 128;
 static constexpr int PERM_SLOT_SIZE  = 138;  // 8 stat/combat + 2 type flags + N_CARD_TYPES
 static constexpr int STACK_SLOT_SIZE = 130;  // controller_is_self(1) + card one-hot(128) + is_spell(1)

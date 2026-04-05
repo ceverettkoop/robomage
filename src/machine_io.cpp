@@ -110,6 +110,21 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
     gs->viewer_has_priority = (viewer == priority_owner);
     gs->self_is_player_a    = (viewer == Zone::PLAYER_A);
 
+    // Match context (extern globals from main.cpp)
+    extern int match_game_number;
+    extern int match_wins_a;
+    extern int match_wins_b;
+    extern bool sideboard_phase;
+    gs->match_game_number = match_game_number;
+    if (viewer == Zone::PLAYER_A) {
+        gs->match_wins_self = match_wins_a;
+        gs->match_wins_opp  = match_wins_b;
+    } else {
+        gs->match_wins_self = match_wins_b;
+        gs->match_wins_opp  = match_wins_a;
+    }
+    gs->is_sideboard_phase = sideboard_phase;
+
     // Fill player stat fields (hand_ct filled in the entity pass below)
     auto fill_player_stats = [&](PlayerState& ps, Entity ent) {
         auto& p = global_coordinator.GetComponent<Player>(ent);
@@ -434,6 +449,12 @@ std::vector<float> serialize_state(const GameState* gs) {
     // Action history (15 x 3 = 45, newest first)
     for (int i = 0; i < ACTION_HISTORY_SIZE * 3; i++)
         state.push_back(gs->action_history[i]);
+
+    // Match context (4 floats, all 0.0 in single-game mode)
+    state.push_back(gs->match_game_number >= 0 ? static_cast<float>(gs->match_game_number) / 3.0f : 0.0f);
+    state.push_back(static_cast<float>(gs->match_wins_self) / 2.0f);
+    state.push_back(static_cast<float>(gs->match_wins_opp) / 2.0f);
+    state.push_back(gs->is_sideboard_phase ? 1.0f : 0.0f);
 
     assert(static_cast<int>(state.size()) == STATE_SIZE);
     return state;

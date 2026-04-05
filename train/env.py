@@ -24,10 +24,10 @@ Observation space
 -----------------
 State is always emitted from the PRIORITY PLAYER'S perspective ("self").
 
-32550-float state vector (32506 game state + 45 action history)
+32555-float state vector (32506 game state + 45 action history + 4 match context)
 + 64 action-category floats + 64 action card-ID floats
 + 64 action controller_is_self floats + 70 hand cost floats
-+ 336 battlefield ability cost floats = 33149 total.
++ 336 battlefield ability cost floats = 33153 total.
 NOTE: ActionChoice.description is NOT part of the observation — it is for
 human-readable display only (GUI/CLI) and is never sent to the ML model.
 NOTE: Exile zones are tracked in GameState but not serialized to the observation.
@@ -59,7 +59,7 @@ try:
 except ImportError:
     from train.card_costs import _CARD_COST_MATRIX, _CARD_ABILITY_COST_MATRIX, N_CARD_TYPES, _N_COST_FEATS
 
-STATE_SIZE = 32551
+STATE_SIZE = 32555
 # NOTE: Exile zones are tracked in GameState but not serialized to the observation.
 # NOTE: ActionChoice.description is never emitted in the QUERY line — it is for
 #       human-readable display only and is not part of the ML observation.
@@ -69,7 +69,7 @@ _BQUERY_STATE_BYTES = STATE_SIZE * 4
 _BQUERY_CATS_BYTES  = MAX_ACTIONS * 4  # int32
 _BQUERY_IDS_BYTES   = MAX_ACTIONS * 4  # float32
 _BQUERY_CTRL_BYTES  = MAX_ACTIONS * 4  # float32
-ACTION_CATEGORY_MAX = 23 # highest ActionCategory enum value (DIG_CHOICE)
+ACTION_CATEGORY_MAX = 26 # highest ActionCategory enum value (SIDEBOARD_DONE)
 
 # ── Shaping reward magnitudes ─────────────────────────────────────────────────
 SHAPING_MANA_WASTED      = -0.00  # per drain event with mana remaining in pool; commented out because we aren't letting it float anymore
@@ -78,18 +78,24 @@ SHAPING_OPPONENT_BELOW10 =  0.00  # one-time bonus when opponent life first drop
 SHAPING_HAND_ADV_PER_CARD = 0.01  # potential weight per card of hand advantage (potential-based)
 SHAPING_POWER_ADV_PER_PT  = 0.005 # potential weight per point of power advantage on board
 SHAPING_EPISODE_CAP       = 0.3   # max absolute shaping bonus per episode
-SHAPING_EPISODE_CAP_DOOMSDAY = 0.4  # higher cap for doomsday deck
+SHAPING_EPISODE_CAP_DOOMSDAY = 0.6  # higher cap for doomsday deck
 
 # ── Doomsday deck shaping ────────────────────────────────────────────────────
-SHAPING_DD_CAST_DOOMSDAY    = 0.10  # reward for casting Doomsday
-SHAPING_DD_RITUAL_SETUP     = 0.03  # reward for casting Dark Ritual when Doomsday in hand + main phase
-SHAPING_DD_PICK_ORACLE      = 0.05  # reward for picking Thassa's Oracle during Doomsday pile
+SHAPING_DD_CAST_DOOMSDAY    = 0.25  # reward for casting Doomsday
+SHAPING_DD_RITUAL_SETUP     = 0.15  # reward for casting Dark Ritual when Doomsday in hand + main phase
+SHAPING_DD_PICK_ORACLE      = 0.2  # reward for picking Thassa's Oracle during Doomsday pile
+
+# ── Bo3 match rewards ────────────────────────────────────────────────────────
+BO3_GAME_WIN_REWARD   =  0.3   # intermediate reward for winning a game in bo3
+BO3_GAME_LOSS_REWARD  = -0.3   # intermediate penalty for losing a game in bo3
+BO3_MATCH_WIN_REWARD  =  1.0   # terminal reward for winning the match
+BO3_MATCH_LOSS_REWARD = -1.0   # terminal penalty for losing the match
 _ACTION_CARD_ID_NULL = -1.0 / N_CARD_TYPES  # null sentinel for non-card slots
 _ACTION_CTRL_NULL    = -1.0 / N_CARD_TYPES  # null sentinel for non-entity actions
 MAX_HAND_SLOTS = 10
 _HAND_COST_FEATS  = MAX_HAND_SLOTS * _N_COST_FEATS  # 10 * 7 = 70
 _BF_ABILITY_FEATS = 48 * _N_COST_FEATS              # 48 * 7 = 336
-OBS_SIZE = STATE_SIZE + 3 * MAX_ACTIONS + _HAND_COST_FEATS + _BF_ABILITY_FEATS  # 33149
+OBS_SIZE = STATE_SIZE + 3 * MAX_ACTIONS + _HAND_COST_FEATS + _BF_ABILITY_FEATS  # 33153
 
 # ── State layout offsets (mirror src/machine_io.h) ───────────────────────────
 # Creatures, lands, and other permanents share one unified section (no separate land slots).
@@ -97,6 +103,7 @@ _STACK_START  = 34 + 96 * 138    # 13282: stack slots (12 × 130)
 _GY_START     = 13282 + 12 * 130 # 14842: graveyard   (128 × 128)
 _HAND_START   = 14842 + 128 * 128 # 31226: hand        (10 × 128)
 _HIST_START   = 31226 + 10 * 128  # 32506: action history (15 × 3)
+# 32551-32554: match context (4 floats: game_number/3, self_wins/2, opp_wins/2, sideboard_phase)
 _SELF_PERM_START = 34
 _OPP_PERM_START  = 34 + 48 * 138  # 6658
 _PERM_SLOTS      = 48
@@ -126,14 +133,17 @@ class RoboMageEnv(gym.Env):
     # Maximum decision steps per episode before truncation.  Prevents infinite
     # loops (e.g. a model that toggles attackers forever) from hanging training.
     MAX_STEPS = 1000
+    MAX_STEPS_BO3 = 3000  # higher limit for best-of-three matches
 
     def __init__(self, binary_path: str = BINARY, render_mode=None,
-                 deck_a: str | None = None, deck_b: str | None = None):
+                 deck_a: str | None = None, deck_b: str | None = None,
+                 bo3: bool = False):
         super().__init__()
         self.binary_path = os.path.realpath(binary_path)
         self.render_mode = render_mode
         self._deck_a = deck_a
         self._deck_b = deck_b
+        self._bo3 = bo3
 
         self.observation_space = spaces.Box(
             low=-10.0, high=10.0, shape=(OBS_SIZE,), dtype=np.float32
@@ -160,6 +170,8 @@ class RoboMageEnv(gym.Env):
         # produce repeated games when many resets happen within the same second.
         rng_seed = self.np_random.integers(0, 2**31 - 1)
         cmd = [self.binary_path, "--machine", "--seed", str(rng_seed)]
+        if self._bo3:
+            cmd += ["--bo3"]
         if self._deck_a:
             cmd += ["--deck-a", self._deck_a]
         if self._deck_b:
@@ -179,7 +191,8 @@ class RoboMageEnv(gym.Env):
         assert self._proc is not None, "Call reset() first"
 
         self._step_count += 1
-        if self._step_count >= self.MAX_STEPS:
+        max_steps = self.MAX_STEPS_BO3 if self._bo3 else self.MAX_STEPS
+        if self._step_count >= max_steps:
             self._kill_proc()
             return np.zeros(OBS_SIZE, dtype=np.float32), 0.0, False, True, {}
 
@@ -247,12 +260,26 @@ class RoboMageEnv(gym.Env):
             line = line.rstrip(b"\n")
 
             # Detect win/loss
-            if b"Player A wins" in line:
-                reward = 1.0
-                done = True
-            elif b"Player B wins" in line:
-                reward = -1.0
-                done = True
+            if self._bo3:
+                # In bo3 mode, individual game results are intermediate rewards
+                if line.startswith(b"GAME_RESULT:"):
+                    if b"Player A wins" in line:
+                        reward += BO3_GAME_WIN_REWARD
+                    elif b"Player B wins" in line:
+                        reward += BO3_GAME_LOSS_REWARD
+                elif line.startswith(b"MATCH_RESULT:"):
+                    if b"Player A wins" in line:
+                        reward += BO3_MATCH_WIN_REWARD
+                    elif b"Player B wins" in line:
+                        reward += BO3_MATCH_LOSS_REWARD
+                    done = True
+            else:
+                if b"Player A wins" in line:
+                    reward = 1.0
+                    done = True
+                elif b"Player B wins" in line:
+                    reward = -1.0
+                    done = True
 
             # Shaping signal: mana wasted at end of phase (pool non-empty on drain)
             if line.startswith(b"MANA_WASTED: "):
@@ -365,6 +392,9 @@ _CAT_SEARCH     = 19  # search library (action 0 = fail to find, 1+ = actual car
 _CAT_OTHER      = 10  # generic choice (Sylvan Library pay/return, unless costs, etc.)
 _CAT_PAYING     = 22  # paying costs (tap lands for mana, delve exile, pitch cards)
 _CAT_DIG        = 23  # dig choice (Once Upon a Time: pick creature/land from top N)
+_CAT_SB_IN      = 24  # sideboard: choose card from sideboard to add
+_CAT_SB_OUT     = 25  # sideboard: choose card from main deck to remove
+_CAT_SB_DONE    = 26  # sideboard: finish sideboarding
 
 # Colored mana requirements per card vocab index (card_vocab.h).
 # Keys are color pool indices: W=0, U=1, B=2, R=3, G=4, C=5.
@@ -543,6 +573,10 @@ def scripted_action(obs: np.ndarray, num_choices: int) -> int:
     _STEP_SECOND_MAIN = 28   # obs[18 + 10] (shifted +1 by FIRST_STRIKE_DAMAGE step)
     in_main_phase = obs[_STEP_FIRST_MAIN] > 0.5 or obs[_STEP_SECOND_MAIN] > 0.5
 
+    # 0a. Sideboarding: scripted agent never sideboards — always pick done (index 0)
+    if any(c == _CAT_SB_DONE for c in cats):
+        return 0
+
     # 0. Mulligan: always keep — return the first non-mulligan action (the keep action)
     if any(c == _CAT_MULLIGAN for c in cats):
         for i, c in enumerate(cats):
@@ -715,14 +749,16 @@ class ModelVsScriptedEnv(gym.Env):
 
     def __init__(self, binary_path: str = BINARY, render_mode=None,
                  deck_a: str | None = None, deck_b: str | None = None,
-                 model_deck: str | None = None, opp_deck: str | None = None):
+                 model_deck: str | None = None, opp_deck: str | None = None,
+                 bo3: bool = False):
         super().__init__()
         # model_deck/opp_deck override deck_a/deck_b: decks are swapped each episode
         # to match which side the model is assigned to.
         self._model_deck = model_deck
         self._opp_deck = opp_deck
+        self._bo3 = bo3
         self._env = RoboMageEnv(binary_path=binary_path, render_mode=render_mode,
-                                deck_a=deck_a, deck_b=deck_b)
+                                deck_a=deck_a, deck_b=deck_b, bo3=bo3)
         self.observation_space = self._env.observation_space
         self.action_space = self._env.action_space
         self.render_mode = render_mode
@@ -818,8 +854,10 @@ class ModelVsScriptedEnv(gym.Env):
             shaping += SHAPING_POWER_ADV_PER_PT * (power_curr - power_prev)
 
         shaping *= self.shaping_scale
-        # Clamp to remaining episode budget (doomsday gets a higher cap)
+        # Clamp to remaining episode budget (doomsday gets a higher cap, bo3 gets 3x)
         ep_cap = SHAPING_EPISODE_CAP_DOOMSDAY if self._is_doomsday else SHAPING_EPISODE_CAP
+        if self._bo3:
+            ep_cap *= 3.0
         remaining = ep_cap - self._episode_shaping
         floor = -(ep_cap + self._episode_shaping)
         shaping = max(floor, min(remaining, shaping))
@@ -949,11 +987,12 @@ class SelfPlayEnv(gym.Env):
     _model_cache = {}  # class-level: {path: (mtime, model)}
 
     def __init__(self, checkpoint_dir: str, binary_path: str = BINARY, render_mode=None,
-                 model_deck: str | None = None, opp_deck: str | None = None):
+                 model_deck: str | None = None, opp_deck: str | None = None,
+                 bo3: bool = False):
         super().__init__()
         self._model_deck = model_deck
         self._opp_deck = opp_deck
-        self._env = RoboMageEnv(binary_path=binary_path, render_mode=render_mode)
+        self._env = RoboMageEnv(binary_path=binary_path, render_mode=render_mode, bo3=bo3)
         self.observation_space = self._env.observation_space
         self.action_space = self._env.action_space
         self.render_mode = render_mode
@@ -1087,11 +1126,11 @@ class FixedModelEnv(gym.Env):
 
     def __init__(self, opp_model_path: str, binary_path: str = BINARY,
                  render_mode=None, model_deck: str | None = None,
-                 opp_deck: str | None = None):
+                 opp_deck: str | None = None, bo3: bool = False):
         super().__init__()
         self._model_deck = model_deck
         self._opp_deck = opp_deck
-        self._env = RoboMageEnv(binary_path=binary_path, render_mode=render_mode)
+        self._env = RoboMageEnv(binary_path=binary_path, render_mode=render_mode, bo3=bo3)
         self.observation_space = self._env.observation_space
         self.action_space = self._env.action_space
         self.render_mode = render_mode
