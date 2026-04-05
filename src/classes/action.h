@@ -51,6 +51,7 @@ struct LegalAction {
     std::string description;
     ActionCategory category = ActionCategory::OTHER_CHOICE;
     bool use_alt_cost = false;
+    bool use_flashback = false;
 
     LegalAction(ActionType t, const std::string& desc)
         : type(t), source_entity(0), target_entity(0), description(desc) {}

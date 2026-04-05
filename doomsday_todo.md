@@ -18,15 +18,13 @@ All need entries in `src/card_vocab.h` (indices 53+) and a `train/card_costs.py`
 | 4 | Lotus Petal | Yes | untested
 | 5 | Lion's Eye Diamond | Yes | untested
 | 6 | Thassa's Oracle | Yes | untested
-
 | 7 | Personal Tutor | Yes |
 | 8 | Street Wraith | Yes |
 | 9 | Edge of Autumn | Yes |
-
-| 15 | Cavern of Souls | Yes |
-| 18 | Deep Analysis | Yes |
-
 | 16 | Consider | Yes | may work?
+| 18 | Deep Analysis | Yes |
+| 15 | Cavern of Souls | Yes |
+
 
 
 

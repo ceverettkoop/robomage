@@ -331,6 +331,29 @@ Entity parse_card_script(std::string path) {
             card.keywords.push_back("Cycling");
             continue;
         }
+        // K:Flashback:<cost> — cast from graveyard for flashback cost, then exile
+        if (kw_line.rfind("Flashback:", 0) == 0) {
+            std::string cost_str = kw_line.substr(strlen("Flashback:"));
+            card.has_flashback = true;
+            size_t tok_pos = 0;
+            while (tok_pos < cost_str.size()) {
+                size_t tok_end = cost_str.find(' ', tok_pos);
+                if (tok_end == std::string::npos) tok_end = cost_str.size();
+                std::string tok = cost_str.substr(tok_pos, tok_end - tok_pos);
+                if (tok.rfind("PayLife<", 0) == 0) {
+                    size_t angle = tok.find('<');
+                    size_t close = tok.find('>');
+                    if (angle != std::string::npos && close != std::string::npos && close > angle + 1)
+                        card.flashback_alt_cost.life_cost = std::stoi(tok.substr(angle + 1, close - angle - 1));
+                } else {
+                    auto mana = parse_mana_cost(tok);
+                    card.flashback_mana_cost.insert(mana.begin(), mana.end());
+                }
+                tok_pos = (tok_end < cost_str.size()) ? tok_end + 1 : tok_end;
+            }
+            card.keywords.push_back("Flashback");
+            continue;
+        }
         size_t pos = 0;
         while (pos < kw_line.size()) {
             size_t comma = kw_line.find(',', pos);

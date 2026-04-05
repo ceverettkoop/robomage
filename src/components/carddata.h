@@ -43,6 +43,9 @@ struct CardData{
     bool has_delve = false;              // K:Delve — exile from graveyard to reduce generic cost
     bool has_x_cost = false;             // ManaCost contains X — variable generic cost chosen at cast time
     bool shuffle_into_library = false;   // card shuffles into library instead of going to graveyard on resolution
+    bool has_flashback = false;          // K:Flashback — can cast from graveyard for flashback cost, then exile
+    ManaValue flashback_mana_cost;       // mana portion of flashback cost
+    AltCost flashback_alt_cost;          // non-mana costs (e.g. PayLife<3> for Deep Analysis)
     bool is_equipment = false;           // has K:Equip line
     ManaValue equip_cost;                // parsed from K:Equip:cost
     std::set<Colors> explicit_colors;    // Colors: field override (e.g. Dryad Arbor)

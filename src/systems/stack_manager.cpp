@@ -75,6 +75,8 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
             game_log("%s enters the battlefield\n", card_data.name.c_str());
         } else {
             // Instant/Sorcery - resolve the Ability component added at cast time, then go to graveyard
+            bool was_flashback = global_coordinator.entity_has_component<Spell>(top_entity) &&
+                                 global_coordinator.GetComponent<Spell>(top_entity).cast_with_flashback;
             if (global_coordinator.entity_has_component<Ability>(top_entity)) {
                 global_coordinator.GetComponent<Ability>(top_entity).resolve(orderer);
                 global_coordinator.RemoveComponent<Ability>(top_entity);
@@ -85,8 +87,10 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
                 orderer->add_to_zone(false, top_entity, Zone::LIBRARY);
                 orderer->shuffle_library(global_coordinator.GetComponent<Zone>(top_entity).owner);
                 game_log("%s is shuffled into its owner's library\n", card_data.name.c_str());
+            } else if (was_flashback) {
+                orderer->add_to_zone(false, top_entity, Zone::EXILE);
+                game_log("%s is exiled (flashback)\n", card_data.name.c_str());
             } else {
-                // TODO handle flashback etc
                 orderer->add_to_zone(false, top_entity, Zone::GRAVEYARD);
             }
         }

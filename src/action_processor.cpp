@@ -902,8 +902,28 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             // Snapshot mana state for rewind on payment failure
             auto mana_snap = snapshot_mana_state(caster, orderer);
 
+            // FLASHBACK COST
+            if (action.use_flashback) {
+                // Pay flashback mana cost
+                if (!card_data.flashback_mana_cost.empty()) {
+                    if (!prompt_mana_payment(caster, card_data.flashback_mana_cost, spell_entity, orderer, false)) {
+                        restore_mana_state(caster, mana_snap, orderer);
+                        cur_game.payment_fail_counts[spell_entity]++;
+                        game_log("Payment cancelled.\n");
+                        break;
+                    }
+                }
+                // Pay flashback life cost
+                if (card_data.flashback_alt_cost.life_cost > 0) {
+                    Entity caster_entity = (caster == Zone::PLAYER_A)
+                        ? cur_game.player_a_entity : cur_game.player_b_entity;
+                    auto &player = global_coordinator.GetComponent<Player>(caster_entity);
+                    player.life_total -= card_data.flashback_alt_cost.life_cost;
+                    game_log("%s pays %d life\n", player_name(caster).c_str(), card_data.flashback_alt_cost.life_cost);
+                }
+
             // ALTERNATE COST
-            if (action.use_alt_cost) {
+            } else if (action.use_alt_cost) {
                 pay_alternate_cost(action, game, orderer, card_data, spell_entity, zone);
 
             } else {  // REGULAR COST + DELVE
@@ -992,6 +1012,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             // Add Spell component — present only while the entity is on the stack
             Spell spell;
             spell.caster = caster;
+            spell.cast_with_flashback = action.use_flashback;
             global_coordinator.AddComponent(spell_entity, spell);
 
             // Fire NONCREATURE_SPELL_CAST event for non-creature spells

@@ -1137,6 +1137,51 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             if (!can_regular && !can_alt) pending_actions.push_back(la);
         }
     }
+    // checking graveyard for flashback spells
+    for (auto gy_entity : orderer->mEntities) {
+        if (!global_coordinator.entity_has_component<Zone>(gy_entity)) continue;
+        auto &gz = global_coordinator.GetComponent<Zone>(gy_entity);
+        if (gz.location != Zone::GRAVEYARD || gz.owner != priority_player) continue;
+        if (!global_coordinator.entity_has_component<CardData>(gy_entity)) continue;
+        auto &gcd = global_coordinator.GetComponent<CardData>(gy_entity);
+        if (!gcd.has_flashback) continue;
+
+        bool is_instant = false;
+        for (auto &type : gcd.types) {
+            if (type.kind == TYPE && type.name == "Instant") { is_instant = true; break; }
+        }
+        bool can_cast_now = false;
+        if (is_instant) {
+            can_cast_now = true;
+        } else {
+            can_cast_now = (game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
+                           (game.player_a_turn == game.player_a_has_priority) && stack_empty;
+        }
+        if (!can_cast_now) continue;
+
+        bool tgt_ok = true;
+        for (const auto &ab : gcd.abilities) {
+            if (ab.ability_type != Ability::SPELL) continue;
+            tgt_ok = has_legal_targets(ab, orderer);
+            break;
+        }
+        if (!tgt_ok) continue;
+
+        // Check affordability: flashback mana cost + life cost
+        bool can_afford_fb = can_afford_with_sources(priority_player, gcd.flashback_mana_cost, orderer);
+        if (can_afford_fb && gcd.flashback_alt_cost.life_cost > 0) {
+            Entity pp_entity = (priority_player == Zone::PLAYER_A)
+                ? cur_game.player_a_entity : cur_game.player_b_entity;
+            if (global_coordinator.GetComponent<Player>(pp_entity).life_total < gcd.flashback_alt_cost.life_cost)
+                can_afford_fb = false;
+        }
+        if (!can_afford_fb) continue;
+
+        LegalAction fb_la(CAST_SPELL, gy_entity, "Cast " + gcd.name + " (flashback)");
+        fb_la.category = ActionCategory::CAST_SPELL;
+        fb_la.use_flashback = true;
+        actions.push_back(fb_la);
+    }
     // checking permanents for activated abilities
     // mana abilities parsed last, after pending_actions complete
     // Simple tap-only mana sources collected via shared function
