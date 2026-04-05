@@ -58,11 +58,11 @@ REC_GAME_END   = 0x03
 # struct formats (all little-endian)
 _SESSION_HDR_FMT = "<4sHqH"   # magic(4) + version(u16) + timestamp(i64) + n_envs(u16)
 _GAME_START_FMT  = "<BHIb"    # type(u8) + env_id(u16) + game_id(u32) + model_is_a(i8)
-_DECISION_FMT    = "<BHIHbbbBBBB6s32s32s32sBBBB"
+_DECISION_FMT    = "<BHIHbbbBBBB6s64s64s64sBBBB"
 # type(u8) + env_id(u16) + game_id(u32) + decision_idx(u16) + step_idx(i8)
 # + priority_is_a(i8) + active_is_a(i8) + num_choices(u8) + action_chosen(u8)
 # + self_life(u8) + opp_life(u8) + self_mana(6B)
-# + categories(32B) + card_ids(32B) + ctrl_flags(32B)
+# + categories(64B) + card_ids(64B) + ctrl_flags(64B)
 # + self_creatures(u8) + self_lands(u8) + opp_creatures(u8) + opp_lands(u8)
 _GAME_END_FMT    = "<BHIbHfI"
 # type(u8) + env_id(u16) + game_id(u32) + result(i8) + n_decisions(u16)

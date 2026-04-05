@@ -14,12 +14,12 @@
 #include "../components/types.h"
 #include "../ecs/coordinator.h"
 #include "../ecs/events.h"
+#include "../error.h"
 #include "../game_queries.h"
 #include "../input_logger.h"
 #include "../mana_system.h"
-#include "../systems/orderer.h"
-#include "../error.h"
 #include "../parse.h"
+#include "../systems/orderer.h"
 #include "creature.h"
 #include "damage.h"
 #include "permanent.h"
@@ -29,13 +29,13 @@
 extern Coordinator global_coordinator;
 extern Game cur_game;
 
-static size_t evaluate_dynamic_amount(const std::string &expr, Zone::Ownership ctrl,
-                                      std::shared_ptr<Orderer> orderer, Entity target);
+static size_t evaluate_dynamic_amount(
+    const std::string &expr, Zone::Ownership ctrl, std::shared_ptr<Orderer> orderer, Entity target);
 static Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner,
-                                const std::vector<Zone::ZoneValue> &zones, const std::string &change_type,
-                                bool mandatory, Zone::ZoneValue destination);
+    const std::vector<Zone::ZoneValue> &zones, const std::string &change_type, bool mandatory,
+    Zone::ZoneValue destination);
 
-//edge case of two identical abilities being applied from two sources not handled
+// edge case of two identical abilities being applied from two sources not handled
 bool Ability::identical_activated_ability(const Ability &other) {
     if (other.category != this->category) return false;
     if (other.valid_tgts != this->valid_tgts) return false;
@@ -77,18 +77,26 @@ static bool matches_filter_spec(Entity entity, const std::string &spec) {
     // Check type match
     bool type_matches = false;
     for (auto &t : cd.types) {
-        if (t.name == type_name) { type_matches = true; break; }
+        if (t.name == type_name) {
+            type_matches = true;
+            break;
+        }
     }
     if (!type_matches) return false;
 
     // Check color qualifier
     if (!color_qualifier.empty()) {
         Colors required_color = NO_COLOR;
-        if      (color_qualifier == "Green") required_color = GREEN;
-        else if (color_qualifier == "White") required_color = WHITE;
-        else if (color_qualifier == "Blue")  required_color = BLUE;
-        else if (color_qualifier == "Black") required_color = BLACK;
-        else if (color_qualifier == "Red")   required_color = RED;
+        if (color_qualifier == "Green")
+            required_color = GREEN;
+        else if (color_qualifier == "White")
+            required_color = WHITE;
+        else if (color_qualifier == "Blue")
+            required_color = BLUE;
+        else if (color_qualifier == "Black")
+            required_color = BLACK;
+        else if (color_qualifier == "Red")
+            required_color = RED;
 
         // Check explicit_colors first, then mana cost colors
         bool has_color = false;
@@ -113,9 +121,8 @@ static bool matches_filter_spec(Entity entity, const std::string &spec) {
 // change_type string. Presents all matches plus a "fail to find" option (index 0).
 // Returns the chosen Entity, or 0 for fail to find.
 // 0 is a valid entity but will always be player a  so is never correct
-Entity search_zone(
-    std::shared_ptr<Orderer> orderer, Zone::Ownership owner, Zone::ZoneValue zone, const std::string &change_type,
-    bool mandatory, Zone::ZoneValue destination) {
+Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner, Zone::ZoneValue zone,
+    const std::string &change_type, bool mandatory, Zone::ZoneValue destination) {
     //  comma-separated subtypes
     std::vector<std::string> subtypes;
     size_t p = 0;
@@ -139,8 +146,7 @@ Entity search_zone(
         for (auto e : orderer->mEntities) {
             if (!global_coordinator.entity_has_component<Zone>(e)) continue;
             auto &z = global_coordinator.GetComponent<Zone>(e);
-            if (z.location == Zone::GRAVEYARD && z.owner == owner)
-                zone_contents.push_back(e);
+            if (z.location == Zone::GRAVEYARD && z.owner == owner) zone_contents.push_back(e);
         }
     }
 
@@ -162,13 +168,19 @@ Entity search_zone(
             bool matches = false;
             if (has_extended) {
                 for (auto &st : subtypes) {
-                    if (matches_filter_spec(entity, st)) { matches = true; break; }
+                    if (matches_filter_spec(entity, st)) {
+                        matches = true;
+                        break;
+                    }
                 }
             } else {
                 auto &cd = global_coordinator.GetComponent<CardData>(entity);
                 for (auto &t : cd.types) {
                     for (auto &st : subtypes) {
-                        if (t.name == st) { matches = true; break; }
+                        if (t.name == st) {
+                            matches = true;
+                            break;
+                        }
                     }
                     if (matches) break;
                 }
@@ -185,7 +197,7 @@ Entity search_zone(
     // Determine category: library searches going to top of library use TOP_LIBRARY,
     // other library searches use SEARCH_LIBRARY, hand picks use OTHER_CHOICE
     ActionCategory cat = (zone == Zone::LIBRARY && destination == Zone::LIBRARY) ? ActionCategory::TOP_LIBRARY
-                       : (zone == Zone::LIBRARY)                                 ? ActionCategory::SEARCH_LIBRARY
+                         : (zone == Zone::LIBRARY)                               ? ActionCategory::SEARCH_LIBRARY
                                                                                  : ActionCategory::OTHER_CHOICE;
 
     // Fail-to-find is shown when: not mandatory, OR zone is empty (nothing else to choose)
@@ -219,24 +231,19 @@ Entity search_zone(
     // Map choice back: if fail-to-find is shown, index 0 = fail-to-find, 1..N = choices
     // If fail-to-find suppressed, index 0..N-1 = choices directly
     if (show_fail_to_find) {
-        if (choice >= 1 && choice <= static_cast<int>(choices.size()))
-            return choices[static_cast<size_t>(choice - 1)];
+        if (choice >= 1 && choice <= static_cast<int>(choices.size())) return choices[static_cast<size_t>(choice - 1)];
         return 0;
     } else {
-        if (choice >= 0 && choice < static_cast<int>(choices.size()))
-            return choices[static_cast<size_t>(choice)];
+        if (choice >= 0 && choice < static_cast<int>(choices.size())) return choices[static_cast<size_t>(choice)];
         return 0;
     }
 }
 
-
 // Searches multiple zones combined for cards matching change_type.
 // Used by Doomsday (Origin$ Graveyard,Library).
-static Entity search_multi_zone(
-    std::shared_ptr<Orderer> orderer, Zone::Ownership owner,
-    const std::vector<Zone::ZoneValue> &zones, const std::string &change_type,
-    bool mandatory, Zone::ZoneValue destination) {
-
+static Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner,
+    const std::vector<Zone::ZoneValue> &zones, const std::string &change_type, bool mandatory,
+    Zone::ZoneValue destination) {
     // Collect contents from all zones
     std::vector<Entity> zone_contents;
     for (auto zone : zones) {
@@ -250,8 +257,7 @@ static Entity search_multi_zone(
             for (auto e : orderer->mEntities) {
                 if (!global_coordinator.entity_has_component<Zone>(e)) continue;
                 auto &z = global_coordinator.GetComponent<Zone>(e);
-                if (z.location == Zone::GRAVEYARD && z.owner == owner)
-                    zone_contents.push_back(e);
+                if (z.location == Zone::GRAVEYARD && z.owner == owner) zone_contents.push_back(e);
             }
         }
     }
@@ -262,7 +268,10 @@ static Entity search_multi_zone(
         for (auto e : zone_contents) {
             bool already = false;
             for (auto re : cur_game.remembered_entities) {
-                if (re == e) { already = true; break; }
+                if (re == e) {
+                    already = true;
+                    break;
+                }
             }
             if (!already) filtered.push_back(e);
         }
@@ -279,26 +288,37 @@ static Entity search_multi_zone(
         size_t p = 0;
         while (true) {
             size_t comma = change_type.find(',', p);
-            if (comma == std::string::npos) { subtypes.push_back(change_type.substr(p)); break; }
+            if (comma == std::string::npos) {
+                subtypes.push_back(change_type.substr(p));
+                break;
+            }
             subtypes.push_back(change_type.substr(p, comma - p));
             p = comma + 1;
         }
         bool has_extended = false;
         for (auto &st : subtypes) {
-            if (st.find('.') != std::string::npos || st.find('+') != std::string::npos)
-                { has_extended = true; break; }
+            if (st.find('.') != std::string::npos || st.find('+') != std::string::npos) {
+                has_extended = true;
+                break;
+            }
         }
         for (auto entity : zone_contents) {
             bool matches = false;
             if (has_extended) {
                 for (auto &st : subtypes) {
-                    if (matches_filter_spec(entity, st)) { matches = true; break; }
+                    if (matches_filter_spec(entity, st)) {
+                        matches = true;
+                        break;
+                    }
                 }
             } else {
                 auto &cd = global_coordinator.GetComponent<CardData>(entity);
                 for (auto &t : cd.types) {
                     for (auto &st : subtypes) {
-                        if (t.name == st) { matches = true; break; }
+                        if (t.name == st) {
+                            matches = true;
+                            break;
+                        }
                     }
                     if (matches) break;
                 }
@@ -312,8 +332,7 @@ static Entity search_multi_zone(
 
     game_log("Searching %s's library and graveyard:\n", player_name(owner).c_str());
 
-    ActionCategory cat = (destination == Zone::LIBRARY) ? ActionCategory::TOP_LIBRARY
-                                                        : ActionCategory::SEARCH_LIBRARY;
+    ActionCategory cat = (destination == Zone::LIBRARY) ? ActionCategory::TOP_LIBRARY : ActionCategory::SEARCH_LIBRARY;
 
     std::vector<LegalAction> search_actions;
     if (show_fail_to_find) {
@@ -332,12 +351,10 @@ static Entity search_multi_zone(
 
     int choice = InputLogger::instance().get_input(search_actions);
     if (show_fail_to_find) {
-        if (choice >= 1 && choice <= static_cast<int>(choices.size()))
-            return choices[static_cast<size_t>(choice - 1)];
+        if (choice >= 1 && choice <= static_cast<int>(choices.size())) return choices[static_cast<size_t>(choice - 1)];
         return 0;
     } else {
-        if (choice >= 0 && choice < static_cast<int>(choices.size()))
-            return choices[static_cast<size_t>(choice)];
+        if (choice >= 0 && choice < static_cast<int>(choices.size())) return choices[static_cast<size_t>(choice)];
         return 0;
     }
 }
@@ -345,22 +362,23 @@ static Entity search_multi_zone(
 void Ability::resolve_change_zone(std::shared_ptr<Orderer> orderer) {
     Zone::Ownership owner = global_coordinator.GetComponent<Zone>(source).owner;
 
-    const char* dest_str = destination == Zone::BATTLEFIELD ? "the battlefield" :
-                           destination == Zone::LIBRARY     ? "top of library" :
-                           destination == Zone::GRAVEYARD   ? "graveyard"      :
-                           destination == Zone::HAND        ? "hand"           : "exile";
+    const char *dest_str = destination == Zone::BATTLEFIELD ? "the battlefield"
+                           : destination == Zone::LIBRARY   ? "top of library"
+                           : destination == Zone::GRAVEYARD ? "graveyard"
+                           : destination == Zone::HAND      ? "hand"
+                                                            : "exile";
 
     // Targeted ChangeZone (e.g. Swords to Plowshares): move the target directly
     if (valid_tgts != "N_A" && target != 0) {
         if (!global_coordinator.entity_has_component<Zone>(target)) return;
         std::string tname = global_coordinator.entity_has_component<CardData>(target)
-            ? global_coordinator.GetComponent<CardData>(target).name
-            : (global_coordinator.entity_has_component<Permanent>(target)
-                ? global_coordinator.GetComponent<Permanent>(target).name : "<unknown>");
+                                ? global_coordinator.GetComponent<CardData>(target).name
+                                : (global_coordinator.entity_has_component<Permanent>(target)
+                                          ? global_coordinator.GetComponent<Permanent>(target).name
+                                          : "<unknown>");
         orderer->add_to_zone(false, target, destination);
         // Track exiled_with on the source permanent (for Keen-Eyed Curator)
-        if (destination == Zone::EXILE && source != 0 &&
-            global_coordinator.entity_has_component<Permanent>(source)) {
+        if (destination == Zone::EXILE && source != 0 && global_coordinator.entity_has_component<Permanent>(source)) {
             global_coordinator.GetComponent<Permanent>(source).exiled_with.push_back(target);
         }
         game_log("%s is moved to %s\n", tname.c_str(), dest_str);
@@ -370,7 +388,8 @@ void Ability::resolve_change_zone(std::shared_ptr<Orderer> orderer) {
     // Defined$ Self — move the source card directly (e.g. Talon Gates putting itself onto battlefield from hand)
     if (defined_self && source != 0) {
         std::string sname = global_coordinator.entity_has_component<CardData>(source)
-            ? global_coordinator.GetComponent<CardData>(source).name : "<unknown>";
+                                ? global_coordinator.GetComponent<CardData>(source).name
+                                : "<unknown>";
         orderer->add_to_zone(false, source, destination);
         if (destination == Zone::BATTLEFIELD) {
             auto &src_zone = global_coordinator.GetComponent<Zone>(source);
@@ -393,6 +412,15 @@ void Ability::resolve_change_zone(std::shared_ptr<Orderer> orderer) {
         } else {
             chosen = search_zone(orderer, owner, origin, change_type, mandatory, destination);
         }
+
+        // after we have chosen but before we place it where it goes, if we messed with library shuffle it
+        if (origin == Zone::LIBRARY) {
+            orderer->shuffle_library(owner);
+            game_log("%s shuffles their library\n", player_name(owner).c_str());
+        }
+        //library has been shuffled but the card coming out of it to top to hand etc still comes out...
+        //this is a little different from paper but functionally the same
+        
         if (chosen != 0) {
             auto &chosen_cd = global_coordinator.GetComponent<CardData>(chosen);
             auto &chosen_zone = global_coordinator.GetComponent<Zone>(chosen);
@@ -407,25 +435,19 @@ void Ability::resolve_change_zone(std::shared_ptr<Orderer> orderer) {
             if (remember_changed) {
                 cur_game.remembered_entities.push_back(chosen);
             }
-            bool dest_public = (destination == Zone::BATTLEFIELD ||
-                                destination == Zone::GRAVEYARD   ||
-                                destination == Zone::EXILE);
+            bool dest_public =
+                (destination == Zone::BATTLEFIELD || destination == Zone::GRAVEYARD || destination == Zone::EXILE);
             if (dest_public) {
                 game_log("%s puts %s to %s\n", player_name(owner).c_str(), chosen_cd.name.c_str(), dest_str);
             } else {
-                game_log_private(owner, "%s puts %s to %s\n", player_name(owner).c_str(), chosen_cd.name.c_str(), dest_str);
+                game_log_private(
+                    owner, "%s puts %s to %s\n", player_name(owner).c_str(), chosen_cd.name.c_str(), dest_str);
                 game_log("%s puts a card to %s\n", player_name(owner).c_str(), dest_str);
             }
         } else {
             game_log("%s fails to find\n", player_name(owner).c_str());
             break;
         }
-    }
-
-    // Don't shuffle when searching multiple zones (Doomsday puts cards on top of library)
-    if (!multi_zone && origin == Zone::LIBRARY) {
-        orderer->shuffle_library(owner);
-        game_log("%s shuffles their library\n", player_name(owner).c_str());
     }
 }
 
@@ -453,8 +475,7 @@ void Ability::resolve_change_zone_all(std::shared_ptr<Orderer> orderer) {
             for (auto e : orderer->mEntities) {
                 if (!global_coordinator.entity_has_component<Zone>(e)) continue;
                 auto &z = global_coordinator.GetComponent<Zone>(e);
-                if (z.location == Zone::GRAVEYARD && z.owner == owner)
-                    zone_contents.push_back(e);
+                if (z.location == Zone::GRAVEYARD && z.owner == owner) zone_contents.push_back(e);
             }
         }
     }
@@ -467,7 +488,10 @@ void Ability::resolve_change_zone_all(std::shared_ptr<Orderer> orderer) {
         if (filter_not_remembered) {
             bool is_remembered = false;
             for (auto re : cur_game.remembered_entities) {
-                if (re == entity) { is_remembered = true; break; }
+                if (re == entity) {
+                    is_remembered = true;
+                    break;
+                }
             }
             if (is_remembered) continue;
         }
@@ -485,16 +509,15 @@ void Ability::resolve_rearrange_top_of_library(std::shared_ptr<Orderer> orderer)
     Zone::Ownership owner = global_coordinator.GetComponent<Zone>(source).owner;
 
     size_t num_cards = amount;
-    if (!dynamic_amount_expr.empty())
-        num_cards = evaluate_dynamic_amount(dynamic_amount_expr, owner, orderer, target);
+    if (!dynamic_amount_expr.empty()) num_cards = evaluate_dynamic_amount(dynamic_amount_expr, owner, orderer, target);
 
     std::vector<Entity> lib = orderer->get_library_contents(owner);
     // Sort by distance_from_top ascending so lib[0] is the actual top card
     std::sort(lib.begin(), lib.end(), [](Entity a, Entity b) {
-        return global_coordinator.GetComponent<Zone>(a).distance_from_top
-             < global_coordinator.GetComponent<Zone>(b).distance_from_top;
+        return global_coordinator.GetComponent<Zone>(a).distance_from_top <
+               global_coordinator.GetComponent<Zone>(b).distance_from_top;
     });
-    //looking at top n only
+    // looking at top n only
     if (lib.size() > num_cards) lib.resize(num_cards);
     size_t actual = lib.size();
     std::vector<Entity> remaining = lib;
@@ -542,8 +565,8 @@ void Ability::resolve_rearrange_top_of_library(std::shared_ptr<Orderer> orderer)
 }
 
 // Returns true if the spell should be countered (controller declined or couldn't pay).
-static bool run_unless_loop(size_t cost, Zone::Ownership controller,
-                            std::shared_ptr<Orderer> orderer, Entity paid_for) {
+static bool run_unless_loop(
+    size_t cost, Zone::Ownership controller, std::shared_ptr<Orderer> orderer, Entity paid_for) {
     std::multiset<Colors> cond_cost;
     for (size_t i = 0; i < cost; i++) cond_cost.insert(GENERIC);
 
@@ -577,8 +600,7 @@ static bool run_unless_loop(size_t cost, Zone::Ownership controller,
 
         if (can_pay && choice == static_cast<int>(pay_idx)) {
             spend_mana(controller, cond_cost, paid_for);
-            game_log("%s pays {%zu} — spell is not countered\n",
-                   player_name(controller).c_str(), cost);
+            game_log("%s pays {%zu} — spell is not countered\n", player_name(controller).c_str(), cost);
             cur_game.player_a_has_priority = prev_priority;
             return false;
         }
@@ -586,25 +608,24 @@ static bool run_unless_loop(size_t cost, Zone::Ownership controller,
         if (choice >= 0 && choice < static_cast<int>(pay_idx)) {
             auto &chosen = unless_actions[static_cast<size_t>(choice)];
             Entity land = chosen.source_entity;
-            auto& perm = global_coordinator.GetComponent<Permanent>(land);
+            auto &perm = global_coordinator.GetComponent<Permanent>(land);
             perm.is_tapped = true;
             add_mana(controller, chosen.ability.color, chosen.ability.amount);
-            game_log("%s tapped %s for {%s}\n", player_name(controller).c_str(),
-                   perm.name.c_str(), mana_symbol(chosen.ability.color).c_str());
+            game_log("%s tapped %s for {%s}\n", player_name(controller).c_str(), perm.name.c_str(),
+                mana_symbol(chosen.ability.color).c_str());
         }
     }
 }
 
-void Ability::fizzle(std::shared_ptr<Orderer> orderer){
-    //stack manager present behavior moves everything to graveyard or destroys it
-    //so for now this is a stub
+void Ability::fizzle(std::shared_ptr<Orderer> orderer) {
+    // stack manager present behavior moves everything to graveyard or destroys it
+    // so for now this is a stub
     game_log("%s fizzles\n", this->category.c_str());
     return;
-
 }
 
-//TODO fix
-//redundant with call in action processor and not generalizable!
+// TODO fix
+// redundant with call in action processor and not generalizable!
 bool Ability::is_target_valid() const {
     // Optional targeting: no target chosen is valid
     if (target == 0 && target_min == 0) return true;
@@ -612,18 +633,18 @@ bool Ability::is_target_valid() const {
     const std::string &vt = valid_tgts;
 
     if (target_type == "Spell") {
-        return global_coordinator.entity_has_component<Zone>(target)
-            && global_coordinator.GetComponent<Zone>(target).location == Zone::STACK
-            && global_coordinator.entity_has_component<Spell>(target);
+        return global_coordinator.entity_has_component<Zone>(target) &&
+               global_coordinator.GetComponent<Zone>(target).location == Zone::STACK &&
+               global_coordinator.entity_has_component<Spell>(target);
     }
 
-    bool any           = (vt == "Any");
-    bool opp_only      = (vt == "Opponent");
-    bool inc_players   = any || opp_only || vt.find("Player") != std::string::npos;
+    bool any = (vt == "Any");
+    bool opp_only = (vt == "Opponent");
+    bool inc_players = any || opp_only || vt.find("Player") != std::string::npos;
     bool inc_creatures = any || vt.find("Creature") != std::string::npos;
-    bool inc_lands     = vt.find("Land")     != std::string::npos;
-    bool nonbasic_only = vt.find("nonBasic")        != std::string::npos;
-    bool legendary_only = vt.find("Legendary")      != std::string::npos;
+    bool inc_lands = vt.find("Land") != std::string::npos;
+    bool nonbasic_only = vt.find("nonBasic") != std::string::npos;
+    bool legendary_only = vt.find("Legendary") != std::string::npos;
 
     if (inc_players && global_coordinator.entity_has_component<Player>(target)) return true;
 
@@ -637,11 +658,13 @@ bool Ability::is_target_valid() const {
             auto &cperm = global_coordinator.GetComponent<Permanent>(target);
             bool is_legendary = false;
             for (auto &t : cperm.types)
-                if (t.kind == SUPERTYPE && t.name == "Legendary") { is_legendary = true; break; }
+                if (t.kind == SUPERTYPE && t.name == "Legendary") {
+                    is_legendary = true;
+                    break;
+                }
             if (!is_legendary) return false;
         }
-        if (has_protection_from(global_coordinator.GetComponent<Creature>(target), source))
-            return false;
+        if (has_protection_from(global_coordinator.GetComponent<Creature>(target), source)) return false;
         return true;
     }
 
@@ -659,9 +682,8 @@ bool Ability::is_target_valid() const {
 }
 
 // Evaluates a condition SVar expression against cur_game state.
-static int evaluate_condition_svar(const std::string &expr, Entity src,
-                                   Zone::Ownership ctrl = Zone::PLAYER_A,
-                                   std::shared_ptr<Orderer> orderer = nullptr) {
+static int evaluate_condition_svar(const std::string &expr, Entity src, Zone::Ownership ctrl = Zone::PLAYER_A,
+    std::shared_ptr<Orderer> orderer = nullptr) {
     if (expr == "Count$ResolvedThisTurn") {
         auto it = cur_game.ability_resolution_counts.find(src);
         return (it != cur_game.ability_resolution_counts.end()) ? it->second : 0;
@@ -675,10 +697,8 @@ static int evaluate_condition_svar(const std::string &expr, Entity src,
 
 // Returns true if val passes the compare spec (e.g. "EQ2", "NE2", "GE1", "LE3").
 // When svar_rhs is non-empty, it is evaluated as the RHS instead of parsing an int from spec.
-static bool compare_svar(int val, const std::string &spec,
-                          const std::string &svar_rhs = "",
-                          Entity src = 0, Zone::Ownership ctrl = Zone::PLAYER_A,
-                          std::shared_ptr<Orderer> orderer = nullptr) {
+static bool compare_svar(int val, const std::string &spec, const std::string &svar_rhs = "", Entity src = 0,
+    Zone::Ownership ctrl = Zone::PLAYER_A, std::shared_ptr<Orderer> orderer = nullptr) {
     if (spec.size() < 2) return true;
     std::string op = spec.substr(0, 2);
     int rhs;
@@ -692,24 +712,29 @@ static bool compare_svar(int val, const std::string &spec,
     if (op == "NE") return val != rhs;
     if (op == "GE") return val >= rhs;
     if (op == "LE") return val <= rhs;
-    if (op == "GT") return val >  rhs;
-    if (op == "LT") return val <  rhs;
+    if (op == "GT") return val > rhs;
+    if (op == "LT") return val < rhs;
     return true;
 }
 
 // Evaluates a dynamic_amount_expr at runtime for the given controller.
 // Supports: Count$InYourLibrary, Count$YourLifeTotal, Count$YourLifeTotal/HalfUp,
 //           Count$Valid Creature.YouCtrl, Targeted$CardPower.
-static size_t evaluate_dynamic_amount(const std::string &expr, Zone::Ownership ctrl,
-                                      std::shared_ptr<Orderer> orderer, Entity target) {
+static size_t evaluate_dynamic_amount(
+    const std::string &expr, Zone::Ownership ctrl, std::shared_ptr<Orderer> orderer, Entity target) {
     if (expr.find("Count$Devotion.") != std::string::npos) {
         // Count mana symbols of a given color in mana costs of permanents you control
         Colors devotion_color = NO_COLOR;
-        if (expr.find("Devotion.Blue") != std::string::npos) devotion_color = BLUE;
-        else if (expr.find("Devotion.Black") != std::string::npos) devotion_color = BLACK;
-        else if (expr.find("Devotion.Red") != std::string::npos) devotion_color = RED;
-        else if (expr.find("Devotion.Green") != std::string::npos) devotion_color = GREEN;
-        else if (expr.find("Devotion.White") != std::string::npos) devotion_color = WHITE;
+        if (expr.find("Devotion.Blue") != std::string::npos)
+            devotion_color = BLUE;
+        else if (expr.find("Devotion.Black") != std::string::npos)
+            devotion_color = BLACK;
+        else if (expr.find("Devotion.Red") != std::string::npos)
+            devotion_color = RED;
+        else if (expr.find("Devotion.Green") != std::string::npos)
+            devotion_color = GREEN;
+        else if (expr.find("Devotion.White") != std::string::npos)
+            devotion_color = WHITE;
         size_t count = 0;
         for (auto e : orderer->mEntities) {
             if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
@@ -764,7 +789,7 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
     if (valid_tgts != "N_A" && category != "Pump") {
         if (!is_target_valid()) {
             fizzle(orderer);
-            return; //subabilities do not fire; TODO revisit this in light of cards e.g. k-command
+            return;  // subabilities do not fire; TODO revisit this in light of cards e.g. k-command
         }
     }
     game_log("Resolving ability (category: %s, amount: %zu)\n", category.c_str(), amount);
@@ -773,8 +798,8 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
     bool condition_passed = true;
     if (!condition_check_svar.empty()) {
         int val = evaluate_condition_svar(condition_check_svar, source, controller, orderer);
-        condition_passed = compare_svar(val, condition_svar_compare, condition_compare_svar_expr,
-                                        source, controller, orderer);
+        condition_passed =
+            compare_svar(val, condition_svar_compare, condition_compare_svar_expr, source, controller, orderer);
     }
     if (!condition_passed) {
         for (auto sub_ab : this->subabilities) {
@@ -807,8 +832,8 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
             cur_game.player_a_has_priority = prev_priority;
         }
         add_mana(mana_controller, mana_color, mana_amount);
-        game_log("%s adds %zu{%s}\n", player_name(mana_controller).c_str(),
-                 mana_amount, mana_symbol(mana_color).c_str());
+        game_log(
+            "%s adds %zu{%s}\n", player_name(mana_controller).c_str(), mana_amount, mana_symbol(mana_color).c_str());
     } else if (category == "GainLife") {
         Zone::Ownership gain_controller;
         if (defined_targeted_controller && global_coordinator.entity_has_component<Zone>(target)) {
@@ -833,7 +858,8 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
         Entity ctrl_entity = get_player_entity(gain_controller);
         auto &player = global_coordinator.GetComponent<Player>(ctrl_entity);
         player.life_total += static_cast<int32_t>(gain_amount);
-        game_log("%s gains %zu life (now at %d)\n", player_name(gain_controller).c_str(), gain_amount, player.life_total);
+        game_log(
+            "%s gains %zu life (now at %d)\n", player_name(gain_controller).c_str(), gain_amount, player.life_total);
     } else if (category == "LoseLife") {
         Zone::Ownership lose_controller = controller;
         size_t lose_amount = amount;
@@ -842,7 +868,8 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
         Entity ctrl_entity = (lose_controller == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
         auto &player = global_coordinator.GetComponent<Player>(ctrl_entity);
         player.life_total -= static_cast<int32_t>(lose_amount);
-        game_log("%s loses %zu life (now at %d)\n", player_name(lose_controller).c_str(), lose_amount, player.life_total);
+        game_log(
+            "%s loses %zu life (now at %d)\n", player_name(lose_controller).c_str(), lose_amount, player.life_total);
     } else if (category == "Discard") {
         // RevealYouChoose: target player reveals hand, caster picks a card matching filter
         Zone::Ownership tgt_owner = Zone::PLAYER_A;
@@ -876,7 +903,10 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
                     if (constraint.rfind("non", 0) == 0) {
                         std::string excluded_type = constraint.substr(3);
                         for (auto &t : cd.types) {
-                            if (t.name == excluded_type) { passes = false; break; }
+                            if (t.name == excluded_type) {
+                                passes = false;
+                                break;
+                            }
                         }
                     }
                     if (!passes) break;
@@ -921,8 +951,8 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
         size_t dmg = amount;
         if (amount_is_delirium_scale) {
             Zone::Ownership caster = global_coordinator.entity_has_component<Permanent>(source)
-                ? global_coordinator.GetComponent<Permanent>(source).controller
-                : global_coordinator.GetComponent<Zone>(source).owner;
+                                         ? global_coordinator.GetComponent<Permanent>(source).controller
+                                         : global_coordinator.GetComponent<Zone>(source).owner;
             if (check_delirium(caster, orderer->mEntities)) dmg = amount_delirium;
         }
         if (global_coordinator.entity_has_component<Player>(target)) {
@@ -933,12 +963,12 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
             if (deal_damage(source, target, dmg)) {
                 game_log("Dealt %zu damage to creature\n", dmg);
             } else {
-                #ifndef NDEBUG
-                fprintf(stderr,"SOURCE:");
+#ifndef NDEBUG
+                fprintf(stderr, "SOURCE:");
                 dump_entity(source);
-                fprintf(stderr,"TARGET:");
+                fprintf(stderr, "TARGET:");
                 dump_entity(target);
-                #endif
+#endif
                 non_fatal_error("Damage should have fizzled prior to this");
             }
         }
@@ -948,7 +978,7 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
         if (global_coordinator.entity_has_component<Creature>(source)) {
             auto &cr = global_coordinator.GetComponent<Creature>(source);
             cr.prowess_bonus += static_cast<int>(amount);
-            cr.power     += static_cast<uint32_t>(amount);
+            cr.power += static_cast<uint32_t>(amount);
             cr.toughness += static_cast<uint32_t>(amount);
             game_log("Prowess: creature gets +%zu/+%zu until end of turn.\n", amount, amount);
         }
@@ -956,26 +986,28 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
         if (target != 0 && global_coordinator.entity_has_component<Creature>(target)) {
             auto &cr = global_coordinator.GetComponent<Creature>(target);
             cr.prowess_bonus += static_cast<int>(amount);
-            cr.power     += static_cast<uint32_t>(amount);
+            cr.power += static_cast<uint32_t>(amount);
             cr.toughness += static_cast<uint32_t>(amount);
             std::string tgt_name = global_coordinator.entity_has_component<CardData>(target)
-                ? global_coordinator.GetComponent<CardData>(target).name
-                : (global_coordinator.entity_has_component<Permanent>(target)
-                    ? global_coordinator.GetComponent<Permanent>(target).name : "creature");
+                                       ? global_coordinator.GetComponent<CardData>(target).name
+                                       : (global_coordinator.entity_has_component<Permanent>(target)
+                                                 ? global_coordinator.GetComponent<Permanent>(target).name
+                                                 : "creature");
             std::string src_name = global_coordinator.entity_has_component<CardData>(source)
-                ? global_coordinator.GetComponent<CardData>(source).name
-                : (global_coordinator.entity_has_component<Permanent>(source)
-                    ? global_coordinator.GetComponent<Permanent>(source).name : "permanent");
-            game_log("Exalted (%s): %s gets +%zu/+%zu until end of turn.\n",
-                     src_name.c_str(), tgt_name.c_str(), amount, amount);
+                                       ? global_coordinator.GetComponent<CardData>(source).name
+                                       : (global_coordinator.entity_has_component<Permanent>(source)
+                                                 ? global_coordinator.GetComponent<Permanent>(source).name
+                                                 : "permanent");
+            game_log("Exalted (%s): %s gets +%zu/+%zu until end of turn.\n", src_name.c_str(), tgt_name.c_str(), amount,
+                amount);
         }
     } else if (category == "Token") {
         resolve_token(orderer);
     } else if (category == "Attach") {
         // Equip the source equipment to the remembered entity
         Entity equip_entity = source;
-        Entity target_creature = (defined_remembered && !cur_game.remembered_entities.empty())
-            ? cur_game.remembered_entities[0] : target;
+        Entity target_creature =
+            (defined_remembered && !cur_game.remembered_entities.empty()) ? cur_game.remembered_entities[0] : target;
 
         if (optional) {
             // Ask the controller whether to attach
@@ -989,32 +1021,31 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
             int choice = InputLogger::instance().get_input(attach_actions);
             if (choice == 0) goto attach_done;
         }
-        if (target_creature != 0 &&
-            global_coordinator.entity_has_component<Permanent>(equip_entity) &&
+        if (target_creature != 0 && global_coordinator.entity_has_component<Permanent>(equip_entity) &&
             global_coordinator.entity_has_component<Permanent>(target_creature)) {
             auto &eq_perm = global_coordinator.GetComponent<Permanent>(equip_entity);
             // Detach from previous creature
-            if (eq_perm.equipped_to != 0 &&
-                global_coordinator.entity_has_component<Permanent>(eq_perm.equipped_to)) {
+            if (eq_perm.equipped_to != 0 && global_coordinator.entity_has_component<Permanent>(eq_perm.equipped_to)) {
                 global_coordinator.GetComponent<Permanent>(eq_perm.equipped_to).equipped_by = 0;
             }
             eq_perm.equipped_to = target_creature;
             global_coordinator.GetComponent<Permanent>(target_creature).equipped_by = equip_entity;
             game_log("Equipment attached.\n");
         }
-        attach_done:;
+    attach_done:;
     } else if (category == "Mill") {
         // Move top N cards from target player's library to graveyard
         Zone::Ownership mill_owner = controller;
         size_t mill_count = (amount > 0) ? amount : 1;
         std::vector<Entity> lib = orderer->get_library_contents(mill_owner);
         std::sort(lib.begin(), lib.end(), [](Entity a, Entity b) {
-            return global_coordinator.GetComponent<Zone>(a).distance_from_top
-                 < global_coordinator.GetComponent<Zone>(b).distance_from_top;
+            return global_coordinator.GetComponent<Zone>(a).distance_from_top <
+                   global_coordinator.GetComponent<Zone>(b).distance_from_top;
         });
         for (size_t i = 0; i < mill_count && i < lib.size(); i++) {
             std::string cname = global_coordinator.entity_has_component<CardData>(lib[i])
-                ? global_coordinator.GetComponent<CardData>(lib[i]).name : "card";
+                                    ? global_coordinator.GetComponent<CardData>(lib[i]).name
+                                    : "card";
             orderer->add_to_zone(false, lib[i], Zone::GRAVEYARD);
             game_log("%s mills %s.\n", player_name(mill_owner).c_str(), cname.c_str());
         }
@@ -1040,7 +1071,8 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
             for (auto te : pump_targets) {
                 std::string ename = global_coordinator.GetComponent<Permanent>(te).name;
                 auto &tcr = global_coordinator.GetComponent<Creature>(te);
-                LegalAction la(PASS_PRIORITY, te, ename + " [" + std::to_string(tcr.power) + "/" + std::to_string(tcr.toughness) + "]");
+                LegalAction la(PASS_PRIORITY, te,
+                    ename + " [" + std::to_string(tcr.power) + "/" + std::to_string(tcr.toughness) + "]");
                 la.category = ActionCategory::SELECT_TARGET;
                 tgt_actions.push_back(la);
             }
@@ -1055,7 +1087,7 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
             auto &cr = global_coordinator.GetComponent<Creature>(tgt);
             if (cr.plus_one_counters > 0) {
                 cr.plus_one_counters *= 2;
-                cr.power     += static_cast<uint32_t>(cr.plus_one_counters / 2);
+                cr.power += static_cast<uint32_t>(cr.plus_one_counters / 2);
                 cr.toughness += static_cast<uint32_t>(cr.plus_one_counters / 2);
                 game_log("MultiplyCounter: doubled +1/+1 counters on creature (now %u/%u).\n", cr.power, cr.toughness);
             }
@@ -1075,18 +1107,18 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
         resolve_destroy(orderer);
     } else if (category == "Counter") {
         if (global_coordinator.entity_has_component<Zone>(target)) {
-            auto& tz = global_coordinator.GetComponent<Zone>(target);
+            auto &tz = global_coordinator.GetComponent<Zone>(target);
             if (tz.location == Zone::STACK) {
                 Zone::Ownership target_controller = global_coordinator.entity_has_component<Spell>(target)
-                    ? global_coordinator.GetComponent<Spell>(target).caster
-                    : tz.owner;
+                                                        ? global_coordinator.GetComponent<Spell>(target).caster
+                                                        : tz.owner;
 
                 bool do_counter = true;
                 if (unless_generic_cost > 0) {
                     std::string tname = global_coordinator.entity_has_component<CardData>(target)
-                        ? global_coordinator.GetComponent<CardData>(target).name : "<unknown>";
-                    game_log("%s's controller may pay {%zu} to save it:\n",
-                           tname.c_str(), unless_generic_cost);
+                                            ? global_coordinator.GetComponent<CardData>(target).name
+                                            : "<unknown>";
+                    game_log("%s's controller may pay {%zu} to save it:\n", tname.c_str(), unless_generic_cost);
                     do_counter = run_unless_loop(unless_generic_cost, target_controller, orderer, target);
                 }
 
@@ -1094,14 +1126,16 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
                 if (do_counter && global_coordinator.entity_has_component<Spell>(target) &&
                     global_coordinator.GetComponent<Spell>(target).cant_be_countered) {
                     std::string name = global_coordinator.entity_has_component<CardData>(target)
-                        ? global_coordinator.GetComponent<CardData>(target).name : "<unknown>";
+                                           ? global_coordinator.GetComponent<CardData>(target).name
+                                           : "<unknown>";
                     game_log("%s can't be countered\n", name.c_str());
                     do_counter = false;
                 }
 
                 if (do_counter) {
                     std::string name = global_coordinator.entity_has_component<CardData>(target)
-                        ? global_coordinator.GetComponent<CardData>(target).name : "<unknown>";
+                                           ? global_coordinator.GetComponent<CardData>(target).name
+                                           : "<unknown>";
                     if (global_coordinator.entity_has_component<Ability>(target))
                         global_coordinator.RemoveComponent<Ability>(target);
                     if (global_coordinator.entity_has_component<Spell>(target))
@@ -1117,20 +1151,20 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
         }
     } else if (category == "Surveil") {
         resolve_surveil(orderer);
-        //DONT SKIP SUBABILITIES
+        // DONT SKIP SUBABILITIES
 
-    //THIS BLOCK IS ALL SPECIFIC TO DELVER (and Mishra's Bauble peek variant)
-    //TODO MAKE THIS GENERALIZABLE AND MOVE TO ITS OWN FUNCTION
+        // THIS BLOCK IS ALL SPECIFIC TO DELVER (and Mishra's Bauble peek variant)
+        // TODO MAKE THIS GENERALIZABLE AND MOVE TO ITS OWN FUNCTION
     } else if (category == "PeekAndReveal") {
         if (is_peek_no_reveal) {
             // Mishra's Bauble: look at target player's top card privately, no reveal choice
             Zone::Ownership peek_owner = global_coordinator.entity_has_component<Player>(target)
-                ? (target == cur_game.player_a_entity ? Zone::PLAYER_A : Zone::PLAYER_B)
-                : controller;
+                                             ? (target == cur_game.player_a_entity ? Zone::PLAYER_A : Zone::PLAYER_B)
+                                             : controller;
             Entity top_card = 0;
             for (auto e : orderer->mEntities) {
                 if (!global_coordinator.entity_has_component<Zone>(e)) continue;
-                auto& z = global_coordinator.GetComponent<Zone>(e);
+                auto &z = global_coordinator.GetComponent<Zone>(e);
                 if (z.location == Zone::LIBRARY && z.owner == peek_owner && z.distance_from_top == 0) {
                     top_card = e;
                     break;
@@ -1139,9 +1173,9 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
             if (top_card == 0) {
                 game_log("%s's library is empty — nothing to peek.\n", player_name(peek_owner).c_str());
             } else if (global_coordinator.entity_has_component<CardData>(top_card)) {
-                auto& top_cd = global_coordinator.GetComponent<CardData>(top_card);
-                game_log_private(controller, "%s looks at top of %s's library: %s\n",
-                    player_name(controller).c_str(), player_name(peek_owner).c_str(), top_cd.name.c_str());
+                auto &top_cd = global_coordinator.GetComponent<CardData>(top_card);
+                game_log_private(controller, "%s looks at top of %s's library: %s\n", player_name(controller).c_str(),
+                    player_name(peek_owner).c_str(), top_cd.name.c_str());
             }
             // fall through to subabilities (DelayedTrigger sub-ability fires next upkeep)
         } else {
@@ -1150,11 +1184,11 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
                 fizzle(orderer);
                 return;
             }
-            auto& src_perm = global_coordinator.GetComponent<Permanent>(source);
+            auto &src_perm = global_coordinator.GetComponent<Permanent>(source);
             Entity top_card = 0;
             for (auto e : orderer->mEntities) {
                 if (!global_coordinator.entity_has_component<Zone>(e)) continue;
-                auto& z = global_coordinator.GetComponent<Zone>(e);
+                auto &z = global_coordinator.GetComponent<Zone>(e);
                 if (z.location == Zone::LIBRARY && z.owner == controller && z.distance_from_top == 0) {
                     top_card = e;
                     break;
@@ -1165,7 +1199,7 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
                 game_log("Library is empty — nothing to peek.\n");
                 return;
             }
-            auto& top_cd = global_coordinator.GetComponent<CardData>(top_card);
+            auto &top_cd = global_coordinator.GetComponent<CardData>(top_card);
             game_log_private(controller, "Top card of library: %s\n", top_cd.name.c_str());
             std::vector<LegalAction> reveal_actions = {
                 LegalAction(PASS_PRIORITY, top_card, std::string("Don't reveal")),
@@ -1176,14 +1210,14 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
             if (reveal_choice == 1) {
                 game_log("Revealed: %s\n", top_cd.name.c_str());
                 bool is_instant_or_sorcery = false;
-                for (auto& t : top_cd.types) {
+                for (auto &t : top_cd.types) {
                     if (t.kind == TYPE && (t.name == "Instant" || t.name == "Sorcery")) {
                         is_instant_or_sorcery = true;
                         break;
                     }
                 }
                 if (is_instant_or_sorcery && global_coordinator.entity_has_component<CardData>(source)) {
-                    auto& src_cd = global_coordinator.GetComponent<CardData>(source);
+                    auto &src_cd = global_coordinator.GetComponent<CardData>(source);
                     if (src_cd.backside && !src_perm.transformed) {
                         src_perm.transformed = true;
                         if (global_coordinator.entity_has_component<Creature>(source))
@@ -1191,15 +1225,14 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
                         if (global_coordinator.entity_has_component<Damage>(source))
                             global_coordinator.RemoveComponent<Damage>(source);
                         Creature back_creature;
-                        back_creature.power      = src_cd.backside->power;
-                        back_creature.toughness  = src_cd.backside->toughness;
-                        back_creature.keywords   = src_cd.backside->keywords;
+                        back_creature.power = src_cd.backside->power;
+                        back_creature.toughness = src_cd.backside->toughness;
+                        back_creature.keywords = src_cd.backside->keywords;
                         global_coordinator.AddComponent(source, back_creature);
                         Damage dmg;
                         dmg.damage_counters = 0;
                         global_coordinator.AddComponent(source, dmg);
-                        game_log("%s transforms into %s!\n",
-                               src_perm.name.c_str(), src_cd.backside->name.c_str());
+                        game_log("%s transforms into %s!\n", src_perm.name.c_str(), src_cd.backside->name.c_str());
                     }
                 }
             }
@@ -1222,8 +1255,8 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
         }
         std::vector<Entity> lib = orderer->get_library_contents(dig_owner);
         std::sort(lib.begin(), lib.end(), [](Entity a, Entity b) {
-            return global_coordinator.GetComponent<Zone>(a).distance_from_top
-                 < global_coordinator.GetComponent<Zone>(b).distance_from_top;
+            return global_coordinator.GetComponent<Zone>(a).distance_from_top <
+                   global_coordinator.GetComponent<Zone>(b).distance_from_top;
         });
         if (lib.size() > effective_dig_num) lib.resize(effective_dig_num);
 
@@ -1245,7 +1278,10 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
         // Filter matching cards
         std::vector<Entity> matching;
         for (auto e : lib) {
-            if (filters.empty()) { matching.push_back(e); continue; }
+            if (filters.empty()) {
+                matching.push_back(e);
+                continue;
+            }
             bool card_matches = false;
             auto &cd = global_coordinator.GetComponent<CardData>(e);
             for (auto &f : filters) {
@@ -1253,18 +1289,22 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
                 // "Card.Land" → check for Land type
                 std::string type_name;
                 size_t dot = f.find('.');
-                if (dot != std::string::npos) type_name = f.substr(dot + 1);
-                else type_name = f;
+                if (dot != std::string::npos)
+                    type_name = f.substr(dot + 1);
+                else
+                    type_name = f;
                 for (auto &t : cd.types) {
-                    if (t.name == type_name) { card_matches = true; break; }
+                    if (t.name == type_name) {
+                        card_matches = true;
+                        break;
+                    }
                 }
                 if (card_matches) break;
             }
             if (card_matches) matching.push_back(e);
         }
 
-        game_log("%s looks at the top %zu card(s) of their library.\n",
-                 player_name(dig_owner).c_str(), lib.size());
+        game_log("%s looks at the top %zu card(s) of their library.\n", player_name(dig_owner).c_str(), lib.size());
 
         // Present choices
         std::vector<LegalAction> dig_actions;
@@ -1298,11 +1338,10 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
             orderer->add_to_zone(on_bottom, chosen, chosen_dest);
             auto &cd = global_coordinator.GetComponent<CardData>(chosen);
             if (chosen_dest == Zone::LIBRARY) {
-                game_log_private(dig_owner, "%s puts %s on top of their library.\n",
-                         player_name(dig_owner).c_str(), cd.name.c_str());
+                game_log_private(dig_owner, "%s puts %s on top of their library.\n", player_name(dig_owner).c_str(),
+                    cd.name.c_str());
             } else {
-                game_log_private(dig_owner, "%s puts %s into hand.\n",
-                         player_name(dig_owner).c_str(), cd.name.c_str());
+                game_log_private(dig_owner, "%s puts %s into hand.\n", player_name(dig_owner).c_str(), cd.name.c_str());
             }
         }
 
@@ -1322,8 +1361,8 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
         for (auto e : remaining) {
             orderer->add_to_zone(true, e, Zone::LIBRARY);
         }
-        game_log("%s puts %zu card(s) on the bottom of their library.\n",
-                 player_name(dig_owner).c_str(), remaining.size());
+        game_log(
+            "%s puts %zu card(s) on the bottom of their library.\n", player_name(dig_owner).c_str(), remaining.size());
     } else if (category == "SylvanLibrary") {
         // Draw 2, then for each card drawn this turn still in hand, choose: pay 4 life or put on top
         Zone::Ownership ctrl = controller;
@@ -1353,7 +1392,12 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
             for (auto e : drawn_in_hand) {
                 // Skip already chosen
                 bool already = false;
-                for (auto c : chosen_cards) { if (c == e) { already = true; break; } }
+                for (auto c : chosen_cards) {
+                    if (c == e) {
+                        already = true;
+                        break;
+                    }
+                }
                 if (already) continue;
                 auto &cd = global_coordinator.GetComponent<CardData>(e);
                 LegalAction la(PASS_PRIORITY, e, cd.name);
@@ -1398,7 +1442,7 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
         return;
     }
 
-    //if there are subabilities, resolve them in sequence
+    // if there are subabilities, resolve them in sequence
     for (auto sub_ab : this->subabilities) {
         sub_ab.source = this->source;
         sub_ab.target = this->target;  // propagate target so GainLife etc. can reference it
@@ -1427,11 +1471,15 @@ void Ability::resolve_surveil(std::shared_ptr<Orderer> orderer) {
         size_t min_dist = global_coordinator.GetComponent<Zone>(lib[0]).distance_from_top;
         for (auto e : lib) {
             size_t d = global_coordinator.GetComponent<Zone>(e).distance_from_top;
-            if (d < min_dist) { min_dist = d; top_card = e; }
+            if (d < min_dist) {
+                min_dist = d;
+                top_card = e;
+            }
         }
 
         auto &top_cd = global_coordinator.GetComponent<CardData>(top_card);
-        game_log_private(controller, "Top card of %s's library: %s\n", player_name(controller).c_str(), top_cd.name.c_str());
+        game_log_private(
+            controller, "Top card of %s's library: %s\n", player_name(controller).c_str(), top_cd.name.c_str());
         std::vector<LegalAction> surveil_actions = {
             LegalAction(PASS_PRIORITY, top_card, std::string("Keep on top")),
             LegalAction(PASS_PRIORITY, top_card, std::string("Put in graveyard")),
@@ -1447,8 +1495,7 @@ void Ability::resolve_surveil(std::shared_ptr<Orderer> orderer) {
 
 void Ability::resolve_put_counter() {
     // Use target if set (e.g. from a Pump parent), otherwise put counters on source
-    Entity counter_tgt = (target != 0 && global_coordinator.entity_has_component<Creature>(target))
-                         ? target : source;
+    Entity counter_tgt = (target != 0 && global_coordinator.entity_has_component<Creature>(target)) ? target : source;
     if (!global_coordinator.entity_has_component<Creature>(counter_tgt)) return;
     auto &cr = global_coordinator.GetComponent<Creature>(counter_tgt);
     if (counter_type == "P1P1") {
@@ -1459,7 +1506,7 @@ void Ability::resolve_put_counter() {
         }
         if (n <= 0) return;
         cr.plus_one_counters += n;
-        cr.power     += static_cast<uint32_t>(n);
+        cr.power += static_cast<uint32_t>(n);
         cr.toughness += static_cast<uint32_t>(n);
         game_log("Put %d +1/+1 counter(s) on creature (now %u/%u).\n", n, cr.power, cr.toughness);
     }
@@ -1475,8 +1522,8 @@ void Ability::resolve_token(std::shared_ptr<Orderer> orderer) {
     }
 
     Zone::Ownership ctrl = global_coordinator.entity_has_component<Permanent>(source)
-        ? global_coordinator.GetComponent<Permanent>(source).controller
-        : global_coordinator.GetComponent<Zone>(source).owner;
+                               ? global_coordinator.GetComponent<Permanent>(source).controller
+                               : global_coordinator.GetComponent<Zone>(source).owner;
 
     Entity tok_entity = global_coordinator.CreateEntity();
     global_coordinator.AddComponent(tok_entity, Zone(Zone::HAND, ctrl, ctrl));
@@ -1511,16 +1558,16 @@ void Ability::resolve_token(std::shared_ptr<Orderer> orderer) {
 }
 
 static uint32_t phase_string_to_event(const std::string &phase) {
-    if (phase == "Upkeep")  return Events::UPKEEP_BEGAN;
-    if (phase == "Draw")    return Events::DRAW_STEP_BEGAN;
+    if (phase == "Upkeep") return Events::UPKEEP_BEGAN;
+    if (phase == "Draw") return Events::DRAW_STEP_BEGAN;
     if (phase == "EndStep") return Events::END_STEP_BEGAN;
     return Events::UPKEEP_BEGAN;  // default
 }
 
 void Ability::resolve_delayed_trigger() {
     Zone::Ownership owner = global_coordinator.entity_has_component<Permanent>(source)
-        ? global_coordinator.GetComponent<Permanent>(source).controller
-        : global_coordinator.GetComponent<Zone>(source).owner;
+                                ? global_coordinator.GetComponent<Permanent>(source).controller
+                                : global_coordinator.GetComponent<Zone>(source).owner;
     Entity owner_entity = get_player_entity(owner);
 
     // Build the ability to fire: use Execute$ sub-ability if parsed, else fall back to Draw 1
@@ -1530,23 +1577,21 @@ void Ability::resolve_delayed_trigger() {
         fire_ab.source = source;
     } else {
         fire_ab.ability_type = Ability::TRIGGERED;
-        fire_ab.category     = "Draw";
-        fire_ab.amount       = 1;
-        fire_ab.source       = source;
+        fire_ab.category = "Draw";
+        fire_ab.amount = 1;
+        fire_ab.source = source;
     }
 
-    uint32_t event_id = delayed_phase.empty()
-        ? Events::UPKEEP_BEGAN
-        : phase_string_to_event(delayed_phase);
+    uint32_t event_id = delayed_phase.empty() ? Events::UPKEEP_BEGAN : phase_string_to_event(delayed_phase);
 
     DelayedTrigger dt;
-    dt.ability       = fire_ab;
-    dt.fire_on       = event_id;
-    dt.owner_entity  = owner_entity;
-    dt.fire_on_turn  = delayed_trigger_next_turn ? cur_game.turn + 1 : cur_game.turn;
+    dt.ability = fire_ab;
+    dt.fire_on = event_id;
+    dt.owner_entity = owner_entity;
+    dt.fire_on_turn = delayed_trigger_next_turn ? cur_game.turn + 1 : cur_game.turn;
     cur_game.delayed_triggers.push_back(dt);
-    game_log("Delayed trigger registered: %s at next %s.\n",
-             fire_ab.category.c_str(), delayed_phase.empty() ? "upkeep" : delayed_phase.c_str());
+    game_log("Delayed trigger registered: %s at next %s.\n", fire_ab.category.c_str(),
+        delayed_phase.empty() ? "upkeep" : delayed_phase.c_str());
 }
 
 void Ability::resolve_destroy(std::shared_ptr<Orderer> orderer) {
@@ -1559,10 +1604,10 @@ void Ability::resolve_destroy(std::shared_ptr<Orderer> orderer) {
         game_log("Destroy: target is no longer on the battlefield\n");
         return;
     }
-    //TODO OTHER REASONS TARGET IS NOW ILLEGAL
+    // TODO OTHER REASONS TARGET IS NOW ILLEGAL
     std::string name = global_coordinator.entity_has_component<Permanent>(target)
-        ? global_coordinator.GetComponent<Permanent>(target).name
-        : "<unknown>";
+                           ? global_coordinator.GetComponent<Permanent>(target).name
+                           : "<unknown>";
     orderer->add_to_zone(false, target, Zone::GRAVEYARD);
     game_log("%s is destroyed\n", name.c_str());
 }

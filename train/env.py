@@ -25,9 +25,9 @@ Observation space
 State is always emitted from the PRIORITY PLAYER'S perspective ("self").
 
 32550-float state vector (32506 game state + 45 action history)
-+ 32 action-category floats + 32 action card-ID floats
-+ 32 action controller_is_self floats + 70 hand cost floats
-+ 336 battlefield ability cost floats = 33053 total.
++ 64 action-category floats + 64 action card-ID floats
++ 64 action controller_is_self floats + 70 hand cost floats
++ 336 battlefield ability cost floats = 33149 total.
 NOTE: ActionChoice.description is NOT part of the observation — it is for
 human-readable display only (GUI/CLI) and is never sent to the ML model.
 NOTE: Exile zones are tracked in GameState but not serialized to the observation.
@@ -63,7 +63,7 @@ STATE_SIZE = 32551
 # NOTE: Exile zones are tracked in GameState but not serialized to the observation.
 # NOTE: ActionChoice.description is never emitted in the QUERY line — it is for
 #       human-readable display only and is not part of the ML observation.
-MAX_ACTIONS = 32         # practical upper bound on num_choices per step
+MAX_ACTIONS = 64         # practical upper bound on num_choices per step
 # Binary BQUERY payload sizes (bytes): state float32s + MAX_ACTIONS each of cats(int32)/ids/ctrl(float32)
 _BQUERY_STATE_BYTES = STATE_SIZE * 4
 _BQUERY_CATS_BYTES  = MAX_ACTIONS * 4  # int32
@@ -83,7 +83,7 @@ _ACTION_CTRL_NULL    = -1.0 / N_CARD_TYPES  # null sentinel for non-entity actio
 MAX_HAND_SLOTS = 10
 _HAND_COST_FEATS  = MAX_HAND_SLOTS * _N_COST_FEATS  # 10 * 7 = 70
 _BF_ABILITY_FEATS = 48 * _N_COST_FEATS              # 48 * 7 = 336
-OBS_SIZE = STATE_SIZE + 3 * MAX_ACTIONS + _HAND_COST_FEATS + _BF_ABILITY_FEATS  # 33053
+OBS_SIZE = STATE_SIZE + 3 * MAX_ACTIONS + _HAND_COST_FEATS + _BF_ABILITY_FEATS  # 33149
 
 # ── State layout offsets (mirror src/machine_io.h) ───────────────────────────
 # Creatures, lands, and other permanents share one unified section (no separate land slots).

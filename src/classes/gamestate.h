@@ -14,7 +14,7 @@ extern "C" {
 #define MAX_STACK_DISPLAY 12
 #define MAX_GY_SLOTS 64  // per player
 #define MAX_HAND_SLOTS 10
-#define MAX_ACTIONS 32
+#define MAX_ACTIONS 64
 #define MAX_CHOICE_DESC 128
 
 typedef struct PlayerState_tag {
