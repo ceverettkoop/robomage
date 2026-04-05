@@ -59,6 +59,8 @@ std::string deck_a_name = "delver";
 std::string deck_b_name = "delver";
 bool seed_override = false;
 unsigned int seed_value = 0;
+bool no_shuffle = false;
+bool narrative_mode = false;
 
 
 //runs in thread seperate from gui
@@ -125,7 +127,7 @@ static void *game_loop(void *args) {
     while (cur_game.ended != true) {
         if (gui_killed) return NULL;
         // if new turn provide update
-        if (!InputLogger::instance().is_machine_mode() && cur_game.turn != prev_turn) {
+        if ((!InputLogger::instance().is_machine_mode() || narrative_mode) && cur_game.turn != prev_turn) {
             cli_print_turn_header(cur_game.turn, cur_game.player_a_turn);
             prev_turn = cur_game.turn;
         }
@@ -206,6 +208,10 @@ int main(int argc, char const *argv[]) {
             seed_override = true;
             seed_value = static_cast<unsigned int>(std::stoul(argv[i + 1]));
             i++;
+        } else if (std::string(argv[i]) == "--no-shuffle") {
+            no_shuffle = true;
+        } else if (std::string(argv[i]) == "--narrative") {
+            narrative_mode = true;
         } else if (std::string(argv[i]) == "--help" || std::string(argv[i]) == "-h") {
             cli_print_help(argv[0], VERSION_NUMBER);
             return 0;

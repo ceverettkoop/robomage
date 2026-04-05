@@ -124,6 +124,8 @@ void Orderer::shuffle_library(Zone::Ownership owner) {
     }
 }
 
+extern bool no_shuffle;
+
 void Orderer::generate_libraries(const Deck &deck_a, const Deck &deck_b) {
     Zone::Ownership owner = Zone::PLAYER_A;
     auto target_deck = deck_a;
@@ -135,6 +137,7 @@ void Orderer::generate_libraries(const Deck &deck_a, const Deck &deck_b) {
             owner = Zone::PLAYER_B;
             target_deck = deck_b;
         }
+        size_t deck_position = 0;
         // loop through each card and create an entity in appropriate library per qty
         for (auto &&card_name : target_deck.main_deck) {
             for (size_t i = 0; i < card_name.first; i++) {  // qty
@@ -144,6 +147,10 @@ void Orderer::generate_libraries(const Deck &deck_a, const Deck &deck_b) {
                 auto card_data_id = load_card(card_name.second);
                 coordinator.AddComponent(card_id, coordinator.GetComponent<CardData>(card_data_id));
                 coordinator.AddComponent(card_id, Zone(Zone::LIBRARY, owner, owner));
+                if (no_shuffle) {
+                    auto &z = coordinator.GetComponent<Zone>(card_id);
+                    z.distance_from_top = deck_position++;
+                }
                 ColorIdentity ci;
                 auto &cd = coordinator.GetComponent<CardData>(card_id);
                 if (!cd.explicit_colors.empty()) {
@@ -159,8 +166,10 @@ void Orderer::generate_libraries(const Deck &deck_a, const Deck &deck_b) {
         }
     }
 
-    shuffle_library(Zone::PLAYER_A);
-    shuffle_library(Zone::PLAYER_B);
+    if (!no_shuffle) {
+        shuffle_library(Zone::PLAYER_A);
+        shuffle_library(Zone::PLAYER_B);
+    }
 
     // Build creature subtype lists for ChooseType (Cavern of Souls)
     for (size_t pi = 0; pi < 2; pi++) {

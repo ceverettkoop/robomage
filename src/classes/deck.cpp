@@ -27,9 +27,9 @@ Deck::Deck(std::string path) {
         std::string card_name = line.substr(space_pos + 1);
         
         if(in_sideboard) {
-            sideboard.insert({count, card_name});
+            sideboard.push_back({count, card_name});
         } else {
-            main_deck.insert({count, card_name});
+            main_deck.push_back({count, card_name});
         }
     }
 }

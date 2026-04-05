@@ -93,8 +93,10 @@ static void game_log_va(const char* fmt, va_list ap) {
     }
 }
 
+extern bool narrative_mode;
+
 void game_log(const char* fmt, ...) {
-    if (InputLogger::instance().is_machine_mode() && !gui_mode) return;
+    if (InputLogger::instance().is_machine_mode() && !gui_mode && !narrative_mode) return;
     va_list ap;
     va_start(ap, fmt);
     game_log_va(fmt, ap);
@@ -102,7 +104,7 @@ void game_log(const char* fmt, ...) {
 }
 
 void game_log_private(Zone::Ownership private_to, const char* fmt, ...) {
-    if (InputLogger::instance().is_machine_mode() && !gui_mode) return;
+    if (InputLogger::instance().is_machine_mode() && !gui_mode && !narrative_mode) return;
     extern bool has_human_player;
     extern bool human_player_is_a;
     if (has_human_player) {
