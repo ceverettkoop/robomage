@@ -32,6 +32,8 @@ static std::vector<Entity> build_valid_targets(
 static void pay_alternate_cost(const LegalAction &action, Game &game, std::shared_ptr<Orderer> orderer,
     const CardData &card_data, Entity spell_entity, Zone zone);
 static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer);
+static bool player_controls_land_subtype(Zone::Ownership player, const std::string &subtype);
+static std::string landwalk_subtype(const std::string &kw);
 static std::vector<Entity> determine_blockable_attackers(Entity blocker, const std::vector<Entity> &attackers);
 static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer);
 
@@ -677,6 +679,29 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
     game.pending_choice = NONE;
 }
 
+static bool player_controls_land_subtype(Zone::Ownership player, const std::string &subtype) {
+    Entity max_e = global_coordinator.GetMaxIssuedEntity();
+    for (Entity e = 0; e < max_e; e++) {
+        if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
+        auto &perm = global_coordinator.GetComponent<Permanent>(e);
+        if (perm.controller != player) continue;
+        for (auto &t : perm.types) {
+            if (t.kind == SUBTYPE && t.name == subtype) return true;
+        }
+    }
+    return false;
+}
+
+static std::string landwalk_subtype(const std::string &kw) {
+    // "Swampwalk" -> "Swamp", "Forestwalk" -> "Forest", etc.
+    if (kw == "Swampwalk") return "Swamp";
+    if (kw == "Forestwalk") return "Forest";
+    if (kw == "Islandwalk") return "Island";
+    if (kw == "Mountainwalk") return "Mountain";
+    if (kw == "Plainswalk") return "Plains";
+    return "";
+}
+
 static std::vector<Entity> determine_blockable_attackers(Entity blocker, const std::vector<Entity> &attackers) {
     auto &bcr = global_coordinator.GetComponent<Creature>(blocker);
     bool blocker_can_fly = false;
@@ -686,17 +711,24 @@ static std::vector<Entity> determine_blockable_attackers(Entity blocker, const s
             break;
         }
 
+    // Determine defending player from blocker's controller
+    auto &blocker_perm = global_coordinator.GetComponent<Permanent>(blocker);
+    Zone::Ownership defending_player = blocker_perm.controller;
+
     std::vector<Entity> result;
     for (auto atk : attackers) {
         auto &acr = global_coordinator.GetComponent<Creature>(atk);
         bool atk_flying = false;
-        for (auto &kw : acr.keywords)
-            if (kw == "Flying") {
-                atk_flying = true;
-                break;
-            }
+        bool has_landwalk_evasion = false;
+        for (auto &kw : acr.keywords) {
+            if (kw == "Flying") atk_flying = true;
+            std::string subtype = landwalk_subtype(kw);
+            if (!subtype.empty() && player_controls_land_subtype(defending_player, subtype))
+                has_landwalk_evasion = true;
+        }
 
         if (atk_flying && !blocker_can_fly) continue;
+        if (has_landwalk_evasion) continue;
         if (has_protection_from(acr, blocker)) continue;
         result.push_back(atk);
     }

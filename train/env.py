@@ -78,6 +78,12 @@ SHAPING_OPPONENT_BELOW10 =  0.00  # one-time bonus when opponent life first drop
 SHAPING_HAND_ADV_PER_CARD = 0.01  # potential weight per card of hand advantage (potential-based)
 SHAPING_POWER_ADV_PER_PT  = 0.005 # potential weight per point of power advantage on board
 SHAPING_EPISODE_CAP       = 0.3   # max absolute shaping bonus per episode
+SHAPING_EPISODE_CAP_DOOMSDAY = 0.4  # higher cap for doomsday deck
+
+# ── Doomsday deck shaping ────────────────────────────────────────────────────
+SHAPING_DD_CAST_DOOMSDAY    = 0.10  # reward for casting Doomsday
+SHAPING_DD_RITUAL_SETUP     = 0.03  # reward for casting Dark Ritual when Doomsday in hand + main phase
+SHAPING_DD_PICK_ORACLE      = 0.05  # reward for picking Thassa's Oracle during Doomsday pile
 _ACTION_CARD_ID_NULL = -1.0 / N_CARD_TYPES  # null sentinel for non-card slots
 _ACTION_CTRL_NULL    = -1.0 / N_CARD_TYPES  # null sentinel for non-entity actions
 MAX_HAND_SLOTS = 10
@@ -443,6 +449,22 @@ def _action_card_id(card_ids: np.ndarray, i: int) -> int:
     return int(round(float(card_ids[i]) * N_CARD_TYPES))
 
 
+def _obs_action_category(obs: np.ndarray, action: int) -> int:
+    """Extract the raw action category int for the given action index from a full obs vector."""
+    return int(round(obs[STATE_SIZE + action] * ACTION_CATEGORY_MAX))
+
+
+def _obs_action_card_id(obs: np.ndarray, action: int) -> int:
+    """Extract the card vocab index for the given action index from a full obs vector."""
+    return int(round(obs[STATE_SIZE + MAX_ACTIONS + action] * N_CARD_TYPES))
+
+
+def _obs_is_main_phase(obs: np.ndarray) -> bool:
+    """Check if the current step is a main phase (FIRST_MAIN or SECOND_MAIN)."""
+    # Step one-hot at obs[18:31], FIRST_MAIN=index 3 (obs[21]), SECOND_MAIN=index 10 (obs[28])
+    return obs[21] > 0.5 or obs[28] > 0.5
+
+
 def _is_doomsday_deck(obs: np.ndarray) -> bool:
     """Heuristic: check if any hand card is a doomsday-deck-only card."""
     for slot in range(MAX_HAND_SLOTS):
@@ -720,6 +742,7 @@ class ModelVsScriptedEnv(gym.Env):
         self._last_obs = None
         self._decision_idx = 0
         self._episode_shaping = 0.0
+        self._is_doomsday = self._model_deck is not None and "doomsday" in self._model_deck
         self._game_meta = {
             "model_is_a": self._training_is_a,
             "opp_deck": self._opp_deck or "unknown",
@@ -735,11 +758,35 @@ class ModelVsScriptedEnv(gym.Env):
 
     def step(self, action: int):
         self._decision_idx += 1
+
+        # Doomsday deck shaping: inspect the action the model just chose
+        # using the pre-step observation (self._last_obs has the action metadata)
+        if self._is_doomsday and self._last_obs is not None:
+            cat = _obs_action_category(self._last_obs, action)
+            card = _obs_action_card_id(self._last_obs, action)
+            self._dd_pending_shaping = 0.0
+            # Reward casting Doomsday
+            if cat == _CAT_CAST and card == _DOOMSDAY_VOCAB_IDX:
+                self._dd_pending_shaping += SHAPING_DD_CAST_DOOMSDAY
+            # Reward casting Dark Ritual when Doomsday is in hand and it's a main phase
+            if (cat == _CAT_CAST and card == _DARK_RITUAL_VOCAB_IDX
+                    and _hand_has_card(self._last_obs, _DOOMSDAY_VOCAB_IDX)
+                    and _obs_is_main_phase(self._last_obs)):
+                self._dd_pending_shaping += SHAPING_DD_RITUAL_SETUP
+            # Reward picking Thassa's Oracle during Doomsday pile building
+            if cat == _CAT_TOP_LIBRARY and card == _THASSAS_ORACLE_VOCAB_IDX:
+                self._dd_pending_shaping += SHAPING_DD_PICK_ORACLE
+        else:
+            self._dd_pending_shaping = 0.0
+
         obs, reward, terminated, truncated, info = self._env.step(action)
 
         # Shaping: mana waste and mulligan penalties for the model player
         shaping_key = "shaping_a" if self._training_is_a else "shaping_b"
         shaping = info.get(shaping_key, 0.0)
+
+        # Doomsday deck shaping (computed above from pre-step obs)
+        shaping += self._dd_pending_shaping
 
         # Shaping: +0.2 the first time the opponent's life drops below 10.
         # obs is always from the priority player's perspective:
@@ -759,11 +806,8 @@ class ModelVsScriptedEnv(gym.Env):
             )
             shaping += opp_shaping
 
-        # Potential-based hand advantage: F = Φ(s') - Φ(s), Φ(s) = k·max(0, self_hand - opp_hand).
-        # After _skip_opponent_turns the model has priority: obs[1]=model hand/10, obs[10]=opp hand/10.
-        # Episodic with γ=1, so the sum over an episode equals k·(final_adv - initial_adv): bounded,
-        # Markovian, and guaranteed not to change the optimal policy.
-        if not (terminated or truncated) and self._last_obs is not None:
+        # Potential-based hand/power advantage (skip for doomsday — not relevant to combo gameplan)
+        if not self._is_doomsday and not (terminated or truncated) and self._last_obs is not None:
             phi_prev = max(0.0, self._last_obs[1] - self._last_obs[10]) * 10.0
             phi_curr = max(0.0, obs[1] - obs[10]) * 10.0
             shaping += SHAPING_HAND_ADV_PER_CARD * (phi_curr - phi_prev)
@@ -774,9 +818,10 @@ class ModelVsScriptedEnv(gym.Env):
             shaping += SHAPING_POWER_ADV_PER_PT * (power_curr - power_prev)
 
         shaping *= self.shaping_scale
-        # Clamp to remaining episode budget
-        remaining = SHAPING_EPISODE_CAP - self._episode_shaping
-        floor = -(SHAPING_EPISODE_CAP + self._episode_shaping)
+        # Clamp to remaining episode budget (doomsday gets a higher cap)
+        ep_cap = SHAPING_EPISODE_CAP_DOOMSDAY if self._is_doomsday else SHAPING_EPISODE_CAP
+        remaining = ep_cap - self._episode_shaping
+        floor = -(ep_cap + self._episode_shaping)
         shaping = max(floor, min(remaining, shaping))
         self._episode_shaping += shaping
         self._last_obs = obs.copy() if not (terminated or truncated) else None

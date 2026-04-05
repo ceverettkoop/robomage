@@ -293,6 +293,12 @@ Entity parse_card_script(std::string path) {
             card.keywords.push_back("Prowess");
             continue;
         }
+        // K:Landwalk:Swamp / Forest / Island / Mountain / Plains
+        if (kw_line.rfind("Landwalk:", 0) == 0) {
+            std::string land_type = kw_line.substr(strlen("Landwalk:"));
+            card.keywords.push_back(land_type + "walk");
+            continue;
+        }
         // K:Cycling:<cost> — activated ability from hand: pay cost, discard this card, draw a card
         if (kw_line.rfind("Cycling:", 0) == 0) {
             std::string cost_str = kw_line.substr(strlen("Cycling:"));
