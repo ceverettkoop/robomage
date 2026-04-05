@@ -17,6 +17,64 @@ The compiled binary is output to `bin/robomage`.
 -train.py --diag and train.py --watch-scripted are helpful for checking new builds; 
 --when testing with diag and --watch-scripted, supply --deck and --opponent arguments to test cards/decks relevant to recently implemented features
 
+### Test harness for card behavior verification
+
+`train/test_harness.py` runs the engine with `--machine --narrative --no-shuffle` so that deck file order = draw order (first 7 cards become the starting hand), and game narrative is visible alongside decoded binary state.
+
+**Engine flags used by the harness:**
+- `--no-shuffle` — skip initial library shuffle; cards are drawn in deck file order
+- `--narrative` — enable game_log output in machine mode (perfect information)
+
+**Quick start — specify hands inline:**
+```bash
+train/.venv/bin/python train/test_harness.py \
+  --hand-a "Mountain,Lightning Bolt" \
+  --library-a "Island,Island,Mountain,Mountain,Mountain,Mountain,Mountain,Mountain" \
+  --hand-b "Forest,Grizzly Bears" \
+  --library-b "Forest,Forest,Forest,Forest,Forest,Forest,Forest,Forest" \
+  --scripted --max-decisions 30
+```
+
+**Using pre-made deck files** (for precise library sizes without auto-padding):
+Write `.dk` files to `bin/resources/decks/temp/` with `1 CardName` per line (hand cards first), then pass the deck name relative to `decks/`:
+```bash
+train/.venv/bin/python train/test_harness.py \
+  --deck-a temp/my_test_a --deck-b temp/my_test_b --scripted
+```
+
+**Play modes:**
+- `--scripted` — rule-based agent (from env.py) plays both sides automatically
+- `--actions "9,0,7,0,8"` — pre-scripted action index sequence
+- `--interactive` — prompt for each decision (useful for step-by-step debugging)
+- Default (no flag) — auto-passes every decision
+
+**JSON scenario files:**
+```bash
+train/.venv/bin/python train/test_harness.py --scenario scenario.json
+```
+```json
+{
+  "name": "bolt_kills_bear",
+  "hand_a": ["Mountain", "Lightning Bolt"],
+  "library_a": ["Island", "Island", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain"],
+  "hand_b": ["Forest", "Grizzly Bears"],
+  "library_b": ["Forest", "Forest", "Forest", "Forest", "Forest", "Forest", "Forest", "Forest"],
+  "actions": [9, 0, 7, 0, 8],
+  "seed": 1
+}
+```
+
+**Output format** — at each decision point the harness prints:
+- Narrative lines from the engine (casts, damage, zone changes, combat)
+- Decoded game state (life, mana, hand contents, battlefield permanents with P/T/status, stack, graveyards)
+- Available actions with human-readable descriptions (e.g. "Cast Lightning Bolt", "Target Grizzly Bears (opp)")
+
+**Notes:**
+- `--hand-a`/`--hand-b` auto-pads the library to a minimum 15-card deck. For precise small libraries (e.g. testing Thassa's Oracle with near-empty deck), write deck files manually to `decks/temp/` and use `--deck-a`/`--deck-b` instead.
+- Card names in deck files omit apostrophes: `Thassas Oracle`, `Lions Eye Diamond`
+- The scripted agent always keeps (no mulligan), casts spells when affordable, plays lands, and attacks with all creatures
+- Temp deck files in `decks/temp/` are cleaned up automatically when using `--hand-a`/`--hand-b`; manually created files in `decks/temp/` are not
+
 ## Code Style
 
 - Don't put new functions in main.cpp
@@ -226,7 +284,7 @@ BQUERY: <N>\n
 - `N` = number of legal choices
 - State vector: 32551 floats (see `src/machine_io.h` for layout)
 - Action categories: ActionCategory enum integers (0–23)
-- Card IDs: `card_vocab_index / N_CARD_TYPES`, or `-1.0 / N_CARD_TYPES` (-0.03125) as null sentinel
+- Card IDs: `card_vocab_index / N_CARD_TYPES`, or `-1.0 / N_CARD_TYPES` (-0.0078125) as null sentinel
 - Controller flags: `1.0` = self-controlled, `0.0` = opponent, null sentinel for non-entity actions
 
 **ActionCategory values** (emitted per legal action):
@@ -256,16 +314,16 @@ BQUERY: <N>\n
 
 ### Observation space
 
-Total: **33053 floats**
+Total: **33149 floats** (OBS_SIZE in `train/env.py`)
 
 | Range | Size | Content |
 |---|---|---|
 | `[0:32551]` | 32551 | State vector (see `src/machine_io.h`) |
-| `[32551:32583]` | 32 | Action categories, padded to MAX_ACTIONS, normalised by 23 |
-| `[32583:32615]` | 32 | Action card IDs, padded to MAX_ACTIONS |
-| `[32615:32647]` | 32 | Action controller_is_self flags, padded to MAX_ACTIONS |
-| `[32647:32717]` | 70 | Hand cast costs (10 slots × 7 cost features) |
-| `[32717:33053]` | 336 | Battlefield ability costs (48 slots × 7 cost features) |
+| `[32551:32615]` | 64 | Action categories, padded to MAX_ACTIONS (64), normalised by 23 |
+| `[32615:32679]` | 64 | Action card IDs, padded to MAX_ACTIONS |
+| `[32679:32743]` | 64 | Action controller_is_self flags, padded to MAX_ACTIONS |
+| `[32743:32813]` | 70 | Hand cast costs (10 slots × 7 cost features) |
+| `[32813:33149]` | 336 | Battlefield ability costs (48 slots × 7 cost features) |
 
 State vector layout is documented in `src/machine_io.h`. Key indices: `obs[31]` = priority player is the active player (perspective-relative), `obs[32]` = priority player is Player A (absolute). To get `active_is_a`: `(obs[31] > 0.5) == (obs[32] > 0.5)`.
 
@@ -277,6 +335,7 @@ State vector layout is documented in `src/machine_io.h`. Key indices: `obs[31]` 
 - `train/analysis.py` — post-game analysis tool (win rates, action frequencies, SHAP, replay from `.rmrec` recordings)
 - `train/play.py` — interactive human-vs-model play
 - `train/gen_card_costs.py` — regenerates `train/card_costs.py` from `src/card_vocab.h`
+- `train/test_harness.py` — LLM test harness for card behavior verification (see Testing guidelines)
 - `train/card_costs.py` — auto-generated cast-cost and ability-cost matrices (do not edit manually)
 - `src/machine_io.h` — state vector layout documentation and constants
 - `src/input_logger.cpp` — machine mode BQUERY emission, replay, and CLI input handling
