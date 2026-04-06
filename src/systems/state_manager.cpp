@@ -29,6 +29,8 @@
 #include "../systems/stack_manager.h"
 #include "orderer.h"
 
+std::vector<ActiveStatic> g_active_statics;
+
 static bool compare_svar(int value, const std::string &compare);
 static bool check_condition_present(const Ability &ab, Zone::Ownership caster, std::shared_ptr<Orderer> orderer);
 
@@ -134,6 +136,8 @@ void StateManager::apply_permanent_components(Game &game) {
                             perm.is_tapped = true;
                             game_log("%s enters tapped.\n", perm.name.c_str());
                             break;
+                        case Effect::Replacement::CANT_BE_COUNTERED:
+                            break;  // handled at cast time, not ETB
                     }
                 }
                 perm.timestamp_entered_battlefield = game.timestamp++;
@@ -394,13 +398,9 @@ static int evaluate_sa_svar(const std::string &expr, Zone::Ownership controller)
 }
 
 void StateManager::apply_static_ability_effects() {
-    // Phase 1: gather active static abilities from all battlefield permanents.
-    struct ActiveSA {
-        Entity           entity;
-        StaticAbility   *sa;
-        Zone::Ownership  controller;
-    };
-    std::vector<ActiveSA> active;
+    // Phase 1: gather active static abilities from all battlefield permanents into the
+    // global g_active_statics cache. Other systems read this instead of scanning permanents.
+    g_active_statics.clear();
 
     for (auto entity : mEntities) {
         if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
@@ -409,16 +409,17 @@ void StateManager::apply_static_ability_effects() {
         if (zone.location != Zone::BATTLEFIELD) continue;
 
         auto &perm = global_coordinator.GetComponent<Permanent>(entity);
-        // Phased-out permanents don't contribute static abilities
         if (perm.is_phased_out) continue;
-        // Front-face static abilities don't apply while transformed; clear and skip.
         if (perm.transformed) {
             for (auto &sa : perm.static_abilities) sa.applied = false;
             continue;
         }
         for (auto &sa : perm.static_abilities)
-            active.push_back({entity, &sa, perm.controller});
+            g_active_statics.push_back({entity, &sa, perm.controller});
     }
+
+    // Alias for local readability
+    auto &active = g_active_statics;
 
     if (active.empty()) return;
 
@@ -883,6 +884,26 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                                          ? game.player_a_entity : game.player_b_entity;
                     if (event_player != ctrl_entity) continue;
                 }
+                // DisableTriggers check (Doorkeeper Thrull): suppress ETB triggers caused by matching card types
+                if (ev.GetType() == Events::CARD_CHANGED_ZONE &&
+                    ev.GetParam<Zone::ZoneValue>(Params::DESTINATION) == Zone::BATTLEFIELD) {
+                    bool suppressed = false;
+                    Entity entering = ev.HasParam(Params::ENTITY) ? ev.GetParam<Entity>(Params::ENTITY) : 0;
+                    for (const auto &as : g_active_statics) {
+                        if (as.sa->category != "DisableTriggers") continue;
+                        if (entering != 0 && global_coordinator.entity_has_component<CardData>(entering)) {
+                            auto &ecd = global_coordinator.GetComponent<CardData>(entering);
+                            for (auto &t : ecd.types) {
+                                if (as.sa->disable_triggers_cause.find(t.name) != std::string::npos) {
+                                    suppressed = true; break;
+                                }
+                            }
+                        }
+                        if (suppressed) break;
+                    }
+                    if (suppressed) continue;
+                }
+
                 // CARD_CHANGED_ZONE filters: origin, destination, card type
                 if (ev.GetType() == Events::CARD_CHANGED_ZONE) {
                     Zone::ZoneValue ev_origin = ev.GetParam<Zone::ZoneValue>(Params::ORIGIN);
@@ -1122,16 +1143,10 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         // Compute effective land play limit (base 1 + AdjustLandPlays statics)
         int land_play_limit = 1;
         bool may_play_from_graveyard = false;
-        for (auto e2 : orderer->mEntities) {
-            if (!global_coordinator.entity_has_component<Permanent>(e2)) continue;
-            auto &z2 = global_coordinator.GetComponent<Zone>(e2);
-            if (z2.location != Zone::BATTLEFIELD) continue;
-            auto &p2 = global_coordinator.GetComponent<Permanent>(e2);
-            if (p2.controller != priority_player) continue;
-            for (auto &sa : p2.static_abilities) {
-                if (sa.adjust_land_plays > 0) land_play_limit += sa.adjust_land_plays;
-                if (sa.may_play_from_graveyard) may_play_from_graveyard = true;
-            }
+        for (const auto &as : g_active_statics) {
+            if (as.controller != priority_player) continue;
+            if (as.sa->adjust_land_plays > 0) land_play_limit += as.sa->adjust_land_plays;
+            if (as.sa->may_play_from_graveyard) may_play_from_graveyard = true;
         }
 
         if (player.lands_played_this_turn < land_play_limit) {
@@ -1219,6 +1234,40 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 condition_ok = check_condition_present(ab, priority_player, orderer);
             break;
         }
+        // Machine mode: don't offer spells with conditional destroy if no target would pass
+        // (e.g. Fatal Push: only show if a creature with CMC <= revolt threshold exists)
+        if (InputLogger::instance().is_machine_mode() && tgt_ok && condition_ok) {
+            for (const auto &ab : card_data.abilities) {
+                if (ab.ability_type != Ability::SPELL) continue;
+                if (ab.condition_present.find("cmcLEX") != std::string::npos &&
+                    !ab.dynamic_amount_expr.empty()) {
+                    // Evaluate Revolt threshold inline
+                    int threshold = 2;
+                    if (ab.dynamic_amount_expr.find("Count$Revolt.") != std::string::npos) {
+                        size_t dot1 = ab.dynamic_amount_expr.find("Revolt.") + 7;
+                        size_t dot2 = ab.dynamic_amount_expr.find('.', dot1);
+                        int high_val = std::stoi(ab.dynamic_amount_expr.substr(dot1, dot2 - dot1));
+                        int low_val = std::stoi(ab.dynamic_amount_expr.substr(dot2 + 1));
+                        bool revolt = (priority_player == Zone::PLAYER_A)
+                            ? cur_game.revolt_player_a : cur_game.revolt_player_b;
+                        threshold = revolt ? high_val : low_val;
+                    }
+                    bool any_valid = false;
+                    for (auto ce : mEntities) {
+                        if (!global_coordinator.entity_has_component<Creature>(ce)) continue;
+                        if (!global_coordinator.entity_has_component<Zone>(ce)) continue;
+                        auto &cz = global_coordinator.GetComponent<Zone>(ce);
+                        if (cz.location != Zone::BATTLEFIELD) continue;
+                        if (!global_coordinator.entity_has_component<CardData>(ce)) continue;
+                        int cmc = static_cast<int>(global_coordinator.GetComponent<CardData>(ce).mana_cost.size());
+                        if (cmc <= threshold) { any_valid = true; break; }
+                    }
+                    if (!any_valid) tgt_ok = false;
+                }
+                break;
+            }
+        }
+
         auto pf_it = cur_game.payment_fail_counts.find(card_entity);
         bool payment_blocked = pf_it != cur_game.payment_fail_counts.end() && pf_it->second >= 2;
         if (can_cast_now && tgt_ok && condition_ok && !payment_blocked) {
@@ -1226,22 +1275,31 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             LegalAction la(CAST_SPELL, card_entity, desc);
             la.category = ActionCategory::CAST_SPELL;
 
-            // Check RaiseCost statics (e.g. Thalia): add extra generic mana to cost
+            // Check RaiseCost and CantBeCast statics from cached active_statics
             bool card_is_creature = false;
             for (auto &t : card_data.types)
                 if (t.kind == TYPE && t.name == "Creature") { card_is_creature = true; break; }
             int raise_total = 0;
-            for (auto e2 : mEntities) {
-                if (!global_coordinator.entity_has_component<Permanent>(e2)) continue;
-                auto &rzone = global_coordinator.GetComponent<Zone>(e2);
-                if (rzone.location != Zone::BATTLEFIELD) continue;
-                auto &rperm = global_coordinator.GetComponent<Permanent>(e2);
-                for (const auto &rsa : rperm.static_abilities) {
-                    if (rsa.category != "RaiseCost") continue;
-                    if (rsa.raise_cost_filter == "nonCreature" && card_is_creature) continue;
-                    raise_total += rsa.raise_cost;
+            bool cast_blocked = false;
+            for (const auto &as : g_active_statics) {
+                if (as.sa->category == "RaiseCost") {
+                    if (as.sa->raise_cost_filter == "nonCreature" && card_is_creature) continue;
+                    raise_total += as.sa->raise_cost;
+                } else if (as.sa->category == "CantBeCast") {
+                    // Skip if the spell doesn't match the filter (creatures are unaffected by nonCreature restriction)
+                    if (as.sa->cant_cast_filter.find("nonCreature") != std::string::npos && card_is_creature)
+                        continue;
+                    Entity pp_entity = (priority_player == Zone::PLAYER_A)
+                        ? cur_game.player_a_entity : cur_game.player_b_entity;
+                    auto &pp = global_coordinator.GetComponent<Player>(pp_entity);
+                    if (as.sa->cant_cast_limit_per_turn > 0 &&
+                        static_cast<int>(pp.noncreature_spells_cast_this_turn) >= as.sa->cant_cast_limit_per_turn) {
+                        cast_blocked = true;
+                    }
                 }
             }
+            if (cast_blocked) continue;
+
             ManaValue effective_cost = card_data.mana_cost;
             for (int ri = 0; ri < raise_total; ri++) effective_cost.insert(GENERIC);
 
@@ -1322,20 +1380,11 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
 
         // Check if any CantBeActivated static suppresses this permanent's abilities
         bool cant_activate = false;
-        for (auto e2 : orderer->mEntities) {
-            if (!global_coordinator.entity_has_component<Permanent>(e2)) continue;
-            auto &z2 = global_coordinator.GetComponent<Zone>(e2);
-            if (z2.location != Zone::BATTLEFIELD) continue;
-            auto &p2 = global_coordinator.GetComponent<Permanent>(e2);
-            if (p2.is_phased_out) continue;
-            for (auto &sa : p2.static_abilities) {
-                if (sa.category != "CantBeActivated" || sa.cant_activate_card_filter.empty()) continue;
-                // Check if this permanent matches the filter
-                if (sa.cant_activate_card_filter == "Artifact") {
-                    for (auto &t : permanent.types)
-                        if (t.kind == TYPE && t.name == "Artifact") { cant_activate = true; break; }
-                }
-                if (cant_activate) break;
+        for (const auto &as : g_active_statics) {
+            if (as.sa->category != "CantBeActivated" || as.sa->cant_activate_card_filter.empty()) continue;
+            if (as.sa->cant_activate_card_filter == "Artifact") {
+                for (auto &t : permanent.types)
+                    if (t.kind == TYPE && t.name == "Artifact") { cant_activate = true; break; }
             }
             if (cant_activate) break;
         }

@@ -30,7 +30,10 @@ inline int card_name_to_index(const std::string &name) {
         {"Edge of Autumn", 61}, {"Swamp", 62}, {"Undercity Sewers", 63}, {"Underground Sea", 64},
         {"Bloodstained Mire", 65}, {"Verdant Catacombs", 66}, {"Cavern of Souls", 67},
         {"Consider", 68}, {"Duress", 69}, {"Deep Analysis", 70},
-        {"Null Rod", 71}, {"Force of Negation", 72}, {"Force of Vigor", 73}, {"Faerie Macabre", 74}};
+        {"Null Rod", 71}, {"Force of Negation", 72}, {"Force of Vigor", 73}, {"Faerie Macabre", 74},
+        {"Abrade", 75}, {"Hydroblast", 76}, {"Pyroblast", 77}, {"Knight of Autumn", 78},
+        {"Dismember", 79}, {"Meltdown", 80}, {"Deafening Silence", 81}, {"Choke", 82},
+        {"Long Goodbye", 83}, {"Fatal Push", 84}, {"Doorkeeper Thrull", 85}};
     auto it = vocab.find(name);
     return it != vocab.end() ? it->second : -1;
 }
@@ -59,8 +62,11 @@ inline const char* card_index_to_name(int idx) {
         "Bloodstained Mire", "Verdant Catacombs", "Cavern of Souls",                // 65-67
         "Consider", "Duress", "Deep Analysis",                                       // 68-70
         "Null Rod", "Force of Negation", "Force of Vigor", "Faerie Macabre",       // 71-74
-        // 75-126: reserved for future cards
-        "","","","","","","","","","","","","","","","","", // 75-91
+        "Abrade", "Hydroblast", "Pyroblast", "Knight of Autumn",                  // 75-78
+        "Dismember", "Meltdown", "Deafening Silence", "Choke",                     // 79-82
+        "Long Goodbye", "Fatal Push", "Doorkeeper Thrull",                         // 83-85
+        // 86-126: reserved for future cards
+        "","","","","","", // 86-91
         "","","","","","","","","","","","","","","","","","","","","", // 92-112
         "","","","","","","","","","","","","","",                      // 113-126
         "Token",                                                        // 127

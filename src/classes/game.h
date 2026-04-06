@@ -99,6 +99,8 @@ struct Game {
         std::map<Entity, int> ability_resolution_counts;  // Count$ResolvedThisTurn: incremented per triggered-ability resolve
         std::map<Entity, int> payment_fail_counts;  // machine mode: block casting after 2 failed payments
         bool pending_cant_be_countered = false;  // set during mana payment when Cavern restricted mana used
+        bool revolt_player_a = false;  // a permanent Player A controlled left the battlefield this turn
+        bool revolt_player_b = false;  // a permanent Player B controlled left the battlefield this turn
 
         // Recent action history ring buffer for ML observation
         ActionHistoryEntry action_history[ACTION_HISTORY_SIZE] = {};

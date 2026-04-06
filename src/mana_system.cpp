@@ -17,12 +17,13 @@
 #include "error.h"
 #include "input_logger.h"
 #include "systems/orderer.h"
+#include "systems/state_manager.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;
 
 static const char *mana_symbol_str(Colors color);
-static bool permanent_cant_activate(Entity entity, std::shared_ptr<Orderer> orderer);
+static bool permanent_cant_activate(Entity entity);
 static size_t eval_mana_amount(const Ability &ab, Zone::Ownership controller,
                                std::shared_ptr<Orderer> orderer);
 static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
@@ -153,20 +154,13 @@ static const char *mana_symbol_str(Colors color) {
 }
 
 // Check if a permanent's abilities are suppressed by a CantBeActivated static
-static bool permanent_cant_activate(Entity entity, std::shared_ptr<Orderer> orderer) {
+static bool permanent_cant_activate(Entity entity) {
     auto &permanent = global_coordinator.GetComponent<Permanent>(entity);
-    for (auto e2 : orderer->mEntities) {
-        if (!global_coordinator.entity_has_component<Permanent>(e2)) continue;
-        auto &z2 = global_coordinator.GetComponent<Zone>(e2);
-        if (z2.location != Zone::BATTLEFIELD) continue;
-        auto &p2 = global_coordinator.GetComponent<Permanent>(e2);
-        if (p2.is_phased_out) continue;
-        for (auto &sa : p2.static_abilities) {
-            if (sa.category != "CantBeActivated" || sa.cant_activate_card_filter.empty()) continue;
-            if (sa.cant_activate_card_filter == "Artifact") {
-                for (auto &t : permanent.types)
-                    if (t.kind == TYPE && t.name == "Artifact") return true;
-            }
+    for (const auto &as : g_active_statics) {
+        if (as.sa->category != "CantBeActivated" || as.sa->cant_activate_card_filter.empty()) continue;
+        if (as.sa->cant_activate_card_filter == "Artifact") {
+            for (auto &t : permanent.types)
+                if (t.kind == TYPE && t.name == "Artifact") return true;
         }
     }
     return false;
@@ -204,7 +198,7 @@ static std::vector<std::pair<Entity, Ability>> collect_available_mana_sources(
         auto &permanent = global_coordinator.GetComponent<Permanent>(entity);
         if (permanent.controller != player) continue;
         if (permanent.is_phased_out) continue;
-        if (permanent_cant_activate(entity, orderer)) continue;
+        if (permanent_cant_activate(entity)) continue;
 
         for (const auto &ab : permanent.abilities) {
             if (ab.category != "AddMana") continue;

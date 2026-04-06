@@ -33,6 +33,7 @@ struct CardData{
     std::string oracle_text;
     std::set<Type> types;
     std::multiset<Colors> mana_cost;
+    std::vector<Colors> phyrexian_mana;  // Phyrexian mana symbols: each can be paid with color OR 2 life
     uint32_t power = 0;
     uint32_t toughness = 0;
     //starting loyalty etc described as a static ability

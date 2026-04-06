@@ -30,6 +30,18 @@ struct StaticAbility {
     std::string check_svar_expr = "";   // resolved CheckSVar$ expression (e.g. "Count$ValidExile Card.ExiledWithSource$CardTypes")
     std::string svar_compare = "";      // SVarCompare$ value (e.g. "GE4")
 
+    // CantBeCast fields (category = "CantBeCast"):
+    std::string cant_cast_filter = "";      // "Card.nonCreature" — card type filter
+    int cant_cast_limit_per_turn = 0;       // NumLimitEachTurn$ N — limit per player per turn
+
+    // Untap prevention fields (category = "Continuous" with AddHiddenKeyword):
+    std::string hidden_keyword = "";        // "CARDNAME doesn't untap during your untap step."
+    std::string affected_subtype = "";      // Affected$ Island — land subtype affected
+
+    // DisableTriggers fields (category = "DisableTriggers"):
+    std::string disable_triggers_cause = "";  // ValidCause$ Creature,Artifact
+    std::string disable_triggers_mode = "";   // ValidMode$ ChangesZone
+
     // State tracking — lives in the Permanent's copy, not in CardData template:
     bool applied = false;             // true when the condition was met on the last SBE pass
     uint32_t last_applied_entity = 0; // for EquippedBy: entity that last received the buff

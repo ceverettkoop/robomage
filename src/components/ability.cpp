@@ -9,6 +9,7 @@
 #include "../classes/game.h"
 #include "../cli_output.h"
 #include "../components/carddata.h"
+#include "../components/color_identity.h"
 #include "../components/creature.h"
 #include "../components/token.h"
 #include "../components/types.h"
@@ -17,6 +18,7 @@
 #include "../error.h"
 #include "../game_queries.h"
 #include "../input_logger.h"
+#include "../action_processor.h"
 #include "../mana_system.h"
 #include "../parse.h"
 #include "../systems/orderer.h"
@@ -638,6 +640,20 @@ bool Ability::is_target_valid() const {
     // Optional targeting: no target chosen is valid
     if (target == 0 && target_min == 0) return true;
 
+    // ConditionPresent color check (Hydroblast/Pyroblast: fizzle if target isn't the required color)
+    if (!condition_present.empty()) {
+        Colors required = NO_COLOR;
+        if (condition_present.find(".Red") != std::string::npos) required = RED;
+        else if (condition_present.find(".Blue") != std::string::npos) required = BLUE;
+        else if (condition_present.find(".Green") != std::string::npos) required = GREEN;
+        else if (condition_present.find(".White") != std::string::npos) required = WHITE;
+        else if (condition_present.find(".Black") != std::string::npos) required = BLACK;
+        if (required != NO_COLOR) {
+            if (!global_coordinator.entity_has_component<ColorIdentity>(target)) return false;
+            if (!global_coordinator.GetComponent<ColorIdentity>(target).colors.count(required)) return false;
+        }
+    }
+
     const std::string &vt = valid_tgts;
 
     if (target_type == "Spell") {
@@ -783,6 +799,15 @@ static size_t evaluate_dynamic_amount(
         }
         return count;
     }
+    // Count$Revolt.high.low — returns high if revolt active for controller, low otherwise
+    if (expr.find("Count$Revolt.") != std::string::npos) {
+        size_t dot1 = expr.find("Revolt.") + 7;
+        size_t dot2 = expr.find('.', dot1);
+        int high_val = std::stoi(expr.substr(dot1, dot2 - dot1));
+        int low_val = std::stoi(expr.substr(dot2 + 1));
+        bool revolt = (ctrl == Zone::PLAYER_A) ? cur_game.revolt_player_a : cur_game.revolt_player_b;
+        return static_cast<size_t>(revolt ? high_val : low_val);
+    }
     if (expr.find("Targeted$CardPower") != std::string::npos) {
         if (global_coordinator.entity_has_component<CardData>(target))
             return static_cast<size_t>(global_coordinator.GetComponent<CardData>(target).power);
@@ -823,25 +848,36 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
         // Modal spell: present choices to the player, then resolve the chosen sub-ability
         game_log("Choose mode:\n");
         std::vector<LegalAction> mode_actions;
+        std::vector<size_t> mode_indices;  // map action index to charm_choices index
         for (size_t i = 0; i < charm_choices.size(); i++) {
+            // Skip modes that require targets but have none
+            Ability &candidate = charm_choices[i];
+            candidate.source = this->source;
+            candidate.controller = this->controller;
+            if (candidate.valid_tgts != "N_A" && candidate.target_min > 0 &&
+                !has_legal_targets(candidate, orderer)) {
+                continue;
+            }
             std::string desc = (i < charm_choice_descriptions.size() && !charm_choice_descriptions[i].empty())
                 ? charm_choice_descriptions[i]
                 : ("Mode " + std::to_string(i + 1));
             LegalAction la(PASS_PRIORITY, desc);
             la.category = ActionCategory::OTHER_CHOICE;
             mode_actions.push_back(la);
+            mode_indices.push_back(i);
+        }
+        if (mode_actions.empty()) {
+            game_log("No valid modes — charm fizzles\n");
+            return;
         }
         int choice = InputLogger::instance().get_input(mode_actions);
-        if (choice >= 0 && choice < static_cast<int>(charm_choices.size())) {
-            Ability &chosen = charm_choices[static_cast<size_t>(choice)];
-            chosen.source = this->source;
-            chosen.controller = this->controller;
-            // Target selection for the chosen mode
-            if (chosen.valid_tgts != "N_A") {
-                select_target(chosen, orderer, this->controller);
-            }
-            chosen.resolve(orderer);
+        size_t chosen_idx = mode_indices[static_cast<size_t>(choice)];
+        Ability &chosen = charm_choices[chosen_idx];
+        // Target selection for the chosen mode
+        if (chosen.valid_tgts != "N_A") {
+            select_target(chosen, orderer, this->controller);
         }
+        chosen.resolve(orderer);
         // Skip subabilities — charm handles its own resolution
         return;
     }
@@ -1115,6 +1151,16 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
             if (choice >= 0 && choice < static_cast<int>(pump_targets.size()))
                 this->target = pump_targets[static_cast<size_t>(choice)];
         }
+        // Apply P/T modification if NumAtt$/NumDef$ were set
+        if ((pump_att != 0 || pump_def != 0) && target != 0 &&
+            global_coordinator.entity_has_component<Creature>(target)) {
+            auto &cr = global_coordinator.GetComponent<Creature>(target);
+            cr.power = static_cast<uint32_t>(std::max(0, static_cast<int>(cr.power) + pump_att));
+            cr.toughness = static_cast<uint32_t>(std::max(0, static_cast<int>(cr.toughness) + pump_def));
+            std::string tname = global_coordinator.entity_has_component<Permanent>(target)
+                ? global_coordinator.GetComponent<Permanent>(target).name : "<unknown>";
+            game_log("%s gets %+d/%+d (now %u/%u)\n", tname.c_str(), pump_att, pump_def, cr.power, cr.toughness);
+        }
     } else if (category == "MultiplyCounter") {
         // Double all P1P1 counters on target creature
         Entity tgt = (target != 0) ? target : source;
@@ -1140,6 +1186,44 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
         }
     } else if (category == "Destroy") {
         resolve_destroy(orderer);
+    } else if (category == "DestroyAll") {
+        // Destroy all permanents matching the filter (e.g. Meltdown: "Artifact.cmcLEX")
+        std::string filter = destroy_all_filter;
+        bool filter_artifact = filter.find("Artifact") != std::string::npos;
+        bool filter_creature = filter.find("Creature") != std::string::npos;
+        bool filter_enchantment = filter.find("Enchantment") != std::string::npos;
+        // Parse CMC filter: cmcLEX means CMC <= X paid
+        int cmc_le = -1;
+        if (filter.find("cmcLEX") != std::string::npos) {
+            cmc_le = static_cast<int>(cur_game.x_paid);
+        }
+        std::vector<Entity> to_destroy;
+        for (auto e : orderer->mEntities) {
+            if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
+            auto &ez = global_coordinator.GetComponent<Zone>(e);
+            if (ez.location != Zone::BATTLEFIELD) continue;
+            auto &perm = global_coordinator.GetComponent<Permanent>(e);
+            // Type filter
+            bool type_match = (!filter_artifact && !filter_creature && !filter_enchantment);
+            for (auto &t : perm.types) {
+                if (filter_artifact && t.kind == TYPE && t.name == "Artifact") type_match = true;
+                if (filter_creature && t.kind == TYPE && t.name == "Creature") type_match = true;
+                if (filter_enchantment && t.kind == TYPE && t.name == "Enchantment") type_match = true;
+            }
+            if (!type_match) continue;
+            // CMC filter
+            if (cmc_le >= 0 && global_coordinator.entity_has_component<CardData>(e)) {
+                int cmc = static_cast<int>(global_coordinator.GetComponent<CardData>(e).mana_cost.size());
+                if (cmc > cmc_le) continue;
+            }
+            to_destroy.push_back(e);
+        }
+        for (auto e : to_destroy) {
+            std::string ename = global_coordinator.entity_has_component<Permanent>(e)
+                ? global_coordinator.GetComponent<Permanent>(e).name : "<unknown>";
+            orderer->add_to_zone(false, e, Zone::GRAVEYARD);
+            game_log("%s is destroyed\n", ename.c_str());
+        }
     } else if (category == "Counter") {
         if (global_coordinator.entity_has_component<Zone>(target)) {
             auto &tz = global_coordinator.GetComponent<Zone>(target);
@@ -1649,6 +1733,26 @@ static void destroy_single(Entity tgt, std::shared_ptr<Orderer> orderer) {
 }
 
 void Ability::resolve_destroy(std::shared_ptr<Orderer> orderer) {
+    // Conditional destroy (Fatal Push): check target CMC against threshold
+    // TODO: this CMC-on-resolution check could be generalized for other ConditionPresent patterns
+    if (!condition_present.empty() && condition_present.find("cmcLEX") != std::string::npos) {
+        // Evaluate X from dynamic_amount_expr (resolved at parse time to e.g. "Count$Revolt.4.2")
+        int threshold = 2;  // default fallback
+        if (!dynamic_amount_expr.empty()) {
+            threshold = static_cast<int>(evaluate_dynamic_amount(dynamic_amount_expr, controller, orderer, target));
+        }
+        Entity tgt = target;
+        if (global_coordinator.entity_has_component<CardData>(tgt)) {
+            int tgt_cmc = static_cast<int>(global_coordinator.GetComponent<CardData>(tgt).mana_cost.size());
+            if (tgt_cmc > threshold) {
+                std::string tname = global_coordinator.entity_has_component<Permanent>(tgt)
+                    ? global_coordinator.GetComponent<Permanent>(tgt).name : "<unknown>";
+                game_log("%s has mana value %d (threshold %d) — not destroyed\n", tname.c_str(), tgt_cmc, threshold);
+                return;
+            }
+        }
+    }
+
     if (!targets.empty()) {
         for (auto tgt : targets) destroy_single(tgt, orderer);
     } else {

@@ -4,8 +4,10 @@
 #include "../ecs/system.h"
 #include "../ecs/entity.h"
 #include "../components/zone.h"
+#include "../components/static_ability.h"
 #include "../classes/action.h"
 #include <vector>
+#include <string>
 #include <memory>
 
 struct Deck;
@@ -13,6 +15,19 @@ struct Game;
 
 class Orderer;
 class StackManager;
+
+// Cached snapshot of an active static ability on the battlefield.
+// Rebuilt each SBE pass by apply_static_ability_effects(); queried by
+// determine_legal_actions, check_triggered_abilities, mana_system, game.cpp untap, etc.
+struct ActiveStatic {
+    Entity            entity = 0;
+    StaticAbility    *sa = nullptr;
+    Zone::Ownership   controller = Zone::PLAYER_A;
+};
+
+// Global cached list of active static abilities on battlefield permanents.
+// Rebuilt every SBE pass. Consumers read this instead of scanning all permanents.
+extern std::vector<ActiveStatic> g_active_statics;
 
 class StateManager : public System {
 

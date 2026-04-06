@@ -12,6 +12,7 @@
 #include "../mana_system.h"
 #include "../systems/stack_manager.h"
 #include "../systems/orderer.h"
+#include "../systems/state_manager.h"
 #include "../ecs/events.h"
 #include "deck.h"
 
@@ -77,7 +78,7 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
             Zone::Ownership active_player = player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B;
 
             switch (cur_step) {
-                case UNTAP:
+                case UNTAP: {
                     // Phase in phased-out permanents controlled by active player
                     for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
                         if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
@@ -87,6 +88,16 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                             game_log("%s phases in\n", perm_phase.name.c_str());
                         }
                     }
+                    // Gather untap-prevention subtypes from cached g_active_statics (Choke)
+                    std::vector<std::string> untap_prevented_subtypes;
+                    for (const auto &as : g_active_statics) {
+                        if (!as.sa->hidden_keyword.empty() &&
+                            as.sa->hidden_keyword.find("doesn't untap") != std::string::npos &&
+                            !as.sa->affected_subtype.empty()) {
+                            untap_prevented_subtypes.push_back(as.sa->affected_subtype);
+                        }
+                    }
+
                     // Untap all permanents controlled by active player; reset per-turn counters
                     for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
                         if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
@@ -94,7 +105,15 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                         auto &permanent = global_coordinator.GetComponent<Permanent>(entity);
                         if (permanent.controller == active_player) {
                             if (permanent.is_phased_out) continue;  // don't untap phased-out permanents
-                            permanent.is_tapped = false;
+                            // Check untap prevention (Choke)
+                            bool untap_prevented = false;
+                            for (const auto &subtype : untap_prevented_subtypes) {
+                                for (const auto &t : permanent.types) {
+                                    if (t.name == subtype) { untap_prevented = true; break; }
+                                }
+                                if (untap_prevented) break;
+                            }
+                            if (!untap_prevented) permanent.is_tapped = false;
                             permanent.has_summoning_sickness = false;  // Clear summoning sickness
                             for (auto &ab : permanent.abilities)
                                 ab.activations_this_turn = 0;
@@ -108,6 +127,7 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                         global_coordinator.SendEvent(upkeep_event);
                     }
                     break;
+                }
                 case UPKEEP:
                     cur_step = DRAW;
                     // Fire DRAW_STEP_BEGAN before drawing
@@ -209,10 +229,13 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                         }
                     }
 
-                    // Reset lands played counter and spells cast counter
+                    // Reset per-turn state
+                    revolt_player_a = false;
+                    revolt_player_b = false;
                     auto &player = global_coordinator.GetComponent<Player>(active_player_entity);
                     player.lands_played_this_turn = 0;
                     player.spells_cast_this_turn = 0;
+                    player.noncreature_spells_cast_this_turn = 0;
                     player.cards_drawn_this_turn.clear();
                     // Also clear opponent's drawn-this-turn tracking
                     {

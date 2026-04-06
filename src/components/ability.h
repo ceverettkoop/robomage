@@ -68,6 +68,13 @@ struct Ability{
     bool defined_targeted_controller = false;  // Defined$ TargetedController — GainLife goes to target's controller
     bool defined_self = false;                  // Defined$ Self — ability moves its own source
 
+    // DestroyAll filter (e.g. "Artifact.cmcLEX")
+    std::string destroy_all_filter = "";
+
+    // Pump ability (NumAtt$/NumDef$ for creature P/T modification)
+    int pump_att = 0;   // NumAtt$ — power modifier (can be negative)
+    int pump_def = 0;   // NumDef$ — toughness modifier (can be negative)
+
     // Counter abilities (PutCounter category)
     std::string counter_type = "";          // "P1P1" for +1/+1 counters
     int counter_count = 0;                  // static number of counters; 0 when dynamic

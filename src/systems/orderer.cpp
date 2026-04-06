@@ -10,6 +10,7 @@
 #include "../cli_output.h"
 #include "../components/carddata.h"
 #include "../components/color_identity.h"
+#include "../components/permanent.h"
 #include "../components/player.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
@@ -40,6 +41,14 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
         ev.SetParam(Params::ORIGIN,      target_zone.location);
         ev.SetParam(Params::DESTINATION, destination);
         global_coordinator.SendEvent(ev);
+    }
+
+    // Track revolt: a permanent leaving the battlefield sets revolt for its controller
+    if (target_zone.location == Zone::BATTLEFIELD &&
+        global_coordinator.entity_has_component<Permanent>(target)) {
+        Zone::Ownership ctrl = global_coordinator.GetComponent<Permanent>(target).controller;
+        if (ctrl == Zone::PLAYER_A) cur_game.revolt_player_a = true;
+        else                        cur_game.revolt_player_b = true;
     }
 
     // If the entity is leaving an ordered zone, close the gap it leaves behind.

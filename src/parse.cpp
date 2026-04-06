@@ -28,7 +28,7 @@ const size_t SCRIPT_MAX_LEN = 10000;
 
 static std::string value_from_script(std::string script, std::string key);
 static std::vector<std::string> multi_values_from_script(std::string script, std::string key);
-static std::multiset<Colors> parse_mana_cost(std::string value);
+static std::multiset<Colors> parse_mana_cost(std::string value, std::vector<Colors> *phyrexian_out = nullptr);
 static std::set<Type> parse_types(std::string value);
 static std::map<std::string, std::string> parse_svars(const std::string& script);
 static std::string normalize_category(std::string category);
@@ -105,7 +105,7 @@ Entity parse_card_script(std::string path) {
     card.name = value_from_script(front_script, "Name");
     card.uid = name_to_uid(card.name);
     std::string mana_cost_str = value_from_script(front_script, "ManaCost");
-    card.mana_cost = parse_mana_cost(mana_cost_str);
+    card.mana_cost = parse_mana_cost(mana_cost_str, &card.phyrexian_mana);
     card.has_x_cost = (mana_cost_str.find('X') != std::string::npos);
     card.types = parse_types(value_from_script(front_script, "Types"));
     // Parse explicit Colors: override (e.g. Dryad Arbor which is a land/creature with green identity)
@@ -496,11 +496,30 @@ static std::vector<std::string> multi_values_from_script(std::string script, std
     return ret_val;
 }
 
-static std::multiset<Colors> parse_mana_cost(std::string value) {
+static std::multiset<Colors> parse_mana_cost(std::string value, std::vector<Colors> *phyrexian_out) {
     auto len = value.length();
     std::multiset<Colors> ret_val;
     if (value == "no cost") return ret_val;
     for (size_t i = 0; i < len; i++) {
+        // Check for Phyrexian mana: XP where X is a color letter
+        bool is_phyrexian = false;
+        if (i + 1 < len && value[i + 1] == 'P') {
+            Colors phyrexian_color = NO_COLOR;
+            switch (value[i]) {
+                case 'W': phyrexian_color = WHITE; break;
+                case 'U': phyrexian_color = BLUE; break;
+                case 'B': phyrexian_color = BLACK; break;
+                case 'R': phyrexian_color = RED; break;
+                case 'G': phyrexian_color = GREEN; break;
+                default: break;
+            }
+            if (phyrexian_color != NO_COLOR) {
+                if (phyrexian_out) phyrexian_out->push_back(phyrexian_color);
+                i++;  // skip the 'P'
+                is_phyrexian = true;
+            }
+        }
+        if (is_phyrexian) continue;
         switch (value[i]) {
             case 'W':
                 ret_val.emplace(WHITE);
@@ -710,6 +729,12 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
             ability.amount_svar = value;
         }
         return;  // handled here so we don't fall into the old NumDmg below
+    } else if (key == "ValidCards") {
+        ability.destroy_all_filter = value;
+    } else if (key == "NumAtt") {
+        ability.pump_att = std::stoi(value);
+    } else if (key == "NumDef") {
+        ability.pump_def = std::stoi(value);
     } else if (key == "NoReveal") {
         ability.is_peek_no_reveal = (value == "True");
     } else if (key == "NextTurn") {
@@ -1115,7 +1140,8 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
                 } else if (sv.find("Count$Valid") != std::string::npos ||
                            sv.find("Targeted$") != std::string::npos ||
                            sv.find("Count$InYourLibrary") != std::string::npos ||
-                           sv.find("Count$YourLifeTotal") != std::string::npos) {
+                           sv.find("Count$YourLifeTotal") != std::string::npos ||
+                           sv.find("Count$Revolt") != std::string::npos) {
                     // Runtime expression — preserve for evaluation at activation/resolve time
                     ability.dynamic_amount_expr = sv;
                 }
@@ -1373,8 +1399,11 @@ static std::vector<StaticAbility> parse_static_abilities(const std::string &scri
                 } else if (key == "AddKeyword") {
                     sa.add_keyword = value;
                 } else if (key == "Affected") {
-                    if (value.find("EquippedBy") != std::string::npos)
-                        sa.affected = "EquippedBy";
+                    sa.affected = value;
+                    // Also store as affected_subtype for untap prevention (Choke: Affected$ Island)
+                    if (sa.category == "Continuous" && value.find("EquippedBy") == std::string::npos) {
+                        sa.affected_subtype = value;
+                    }
                 } else if (key == "Amount") {
                     // Used by RaiseCost
                     if (!value.empty() && std::isdigit(static_cast<unsigned char>(value[0])))
@@ -1386,7 +1415,17 @@ static std::vector<StaticAbility> parse_static_abilities(const std::string &scri
                     } else if (sa.category == "CantBeActivated") {
                         if (value.find("Artifact") != std::string::npos)
                             sa.cant_activate_card_filter = "Artifact";
+                    } else if (sa.category == "CantBeCast") {
+                        sa.cant_cast_filter = value;
                     }
+                } else if (key == "NumLimitEachTurn") {
+                    sa.cant_cast_limit_per_turn = std::stoi(value);
+                } else if (key == "AddHiddenKeyword") {
+                    sa.hidden_keyword = value;
+                } else if (key == "ValidCause") {
+                    sa.disable_triggers_cause = value;
+                } else if (key == "ValidMode") {
+                    sa.disable_triggers_mode = value;
                 } else if (key == "AdjustLandPlays") {
                     if (!value.empty() && std::isdigit(static_cast<unsigned char>(value[0])))
                         sa.adjust_land_plays = std::stoi(value);
@@ -1440,9 +1479,11 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
 
     for (const auto& line : lines) {
         bool event_is_moved       = false;
+        bool event_is_counter     = false;
         bool valid_card_self      = false;
         bool dest_is_battlefield  = false;
         bool replace_with_etb_tapped = false;
+        bool layer_cant_happen    = false;
 
         size_t param_pos = 0;
         while (param_pos <= line.size()) {
@@ -1464,9 +1505,11 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
                 if (ks2 != std::string::npos) key = key.substr(ks2, ke2 - ks2 + 1);
 
                 if      (key == "Event"       && value == "Moved")       event_is_moved          = true;
+                else if (key == "Event"       && value == "Counter")    event_is_counter        = true;
                 else if (key == "ValidCard"   && value == "Card.Self")   valid_card_self         = true;
                 else if (key == "Destination" && value == "Battlefield") dest_is_battlefield     = true;
                 else if (key == "ReplaceWith" && value == "ETBTapped")   replace_with_etb_tapped = true;
+                else if (key == "Layer"       && value == "CantHappen") layer_cant_happen        = true;
             }
 
             if (param_end >= line.size()) break;
@@ -1476,6 +1519,12 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
         if (event_is_moved && valid_card_self && dest_is_battlefield && replace_with_etb_tapped) {
             Effect::Replacement r;
             r.kind = Effect::Replacement::ENTERS_TAPPED;
+            r.applies_to_self_only = true;
+            result.push_back(r);
+        }
+        if (event_is_counter && valid_card_self && layer_cant_happen) {
+            Effect::Replacement r;
+            r.kind = Effect::Replacement::CANT_BE_COUNTERED;
             r.applies_to_self_only = true;
             result.push_back(r);
         }

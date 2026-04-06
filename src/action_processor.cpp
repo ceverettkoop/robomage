@@ -20,6 +20,7 @@
 #include "input_logger.h"
 #include "mana_system.h"
 #include "systems/orderer.h"
+#include "systems/state_manager.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;
@@ -459,6 +460,14 @@ static std::vector<Entity> build_valid_targets(
     bool inc_artifacts = any || vt.find("Artifact") != std::string::npos;
     bool inc_enchantments = any || vt.find("Enchantment") != std::string::npos;
     bool inc_permanents = vt.find("Permanent") != std::string::npos;
+    // CMC filter: cmcLE3 means mana value <= 3
+    int cmc_le = -1;
+    {
+        size_t cmc_pos = vt.find("cmcLE");
+        if (cmc_pos != std::string::npos) {
+            cmc_le = std::stoi(vt.substr(cmc_pos + 5));
+        }
+    }
     // TODO: inc_planeswalker, inc_battle when those components exist
 
     Zone::Ownership opp = (priority_player == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
@@ -481,6 +490,11 @@ static std::vector<Entity> build_valid_targets(
             auto &tgt_perm = global_coordinator.GetComponent<Permanent>(entity);
             if (tgt_perm.controller != slot_owner) continue;
             if (tgt_perm.is_phased_out) continue;
+            // CMC filter
+            if (cmc_le >= 0 && global_coordinator.entity_has_component<CardData>(entity)) {
+                int cmc = static_cast<int>(global_coordinator.GetComponent<CardData>(entity).mana_cost.size());
+                if (cmc > cmc_le) continue;
+            }
 
             if (inc_creatures && global_coordinator.entity_has_component<Creature>(entity)) {
                 if (legendary_only) {
@@ -1042,21 +1056,15 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             } else {  // REGULAR COST + DELVE
                 ManaValue cost_to_pay = card_data.mana_cost;
 
-                // Check RaiseCost statics (same calculation as determine_legal_actions)
+                // Check RaiseCost statics from cached g_active_statics
                 bool card_is_creature = false;
                 for (auto &t : card_data.types)
                     if (t.kind == TYPE && t.name == "Creature") { card_is_creature = true; break; }
                 int raise_total = 0;
-                for (auto e2 : orderer->mEntities) {
-                    if (!global_coordinator.entity_has_component<Permanent>(e2)) continue;
-                    auto &rzone = global_coordinator.GetComponent<Zone>(e2);
-                    if (rzone.location != Zone::BATTLEFIELD) continue;
-                    auto &rperm = global_coordinator.GetComponent<Permanent>(e2);
-                    for (const auto &rsa : rperm.static_abilities) {
-                        if (rsa.category != "RaiseCost") continue;
-                        if (rsa.raise_cost_filter == "nonCreature" && card_is_creature) continue;
-                        raise_total += rsa.raise_cost;
-                    }
+                for (const auto &as : g_active_statics) {
+                    if (as.sa->category != "RaiseCost") continue;
+                    if (as.sa->raise_cost_filter == "nonCreature" && card_is_creature) continue;
+                    raise_total += as.sa->raise_cost;
                 }
                 for (int ri = 0; ri < raise_total; ri++) cost_to_pay.insert(GENERIC);
 
@@ -1076,6 +1084,31 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                     cur_game.x_paid = x_val;
                     for (size_t i = 0; i < x_val; i++) cost_to_pay.insert(GENERIC);
                     game_log("%s chooses X = %zu\n", player_name(caster).c_str(), x_val);
+                }
+
+                // Phyrexian mana: for each symbol, choose to pay colored mana or 2 life
+                if (!card_data.phyrexian_mana.empty()) {
+                    Entity caster_entity = (caster == Zone::PLAYER_A)
+                        ? cur_game.player_a_entity : cur_game.player_b_entity;
+                    auto &phyrex_player = global_coordinator.GetComponent<Player>(caster_entity);
+                    for (Colors phyrex_color : card_data.phyrexian_mana) {
+                        std::string color_name = (phyrex_color == WHITE) ? "W" : (phyrex_color == BLUE) ? "U"
+                            : (phyrex_color == BLACK) ? "B" : (phyrex_color == RED) ? "R" : "G";
+                        std::vector<LegalAction> phyrex_actions;
+                        LegalAction pay_life(PASS_PRIORITY, "Pay 2 life (instead of {" + color_name + "})");
+                        pay_life.category = ActionCategory::PAYING_COSTS;
+                        phyrex_actions.push_back(pay_life);
+                        LegalAction pay_mana(PASS_PRIORITY, "Pay {" + color_name + "}");
+                        pay_mana.category = ActionCategory::PAYING_COSTS;
+                        phyrex_actions.push_back(pay_mana);
+                        int phyrex_choice = InputLogger::instance().get_input(phyrex_actions);
+                        if (phyrex_choice == 0) {
+                            phyrex_player.life_total -= 2;
+                            game_log("%s pays 2 life\n", player_name(caster).c_str());
+                        } else {
+                            cost_to_pay.insert(phyrex_color);
+                        }
+                    }
                 }
 
                 if (card_data.has_delve) cur_game.delve_exiled.clear();
@@ -1130,6 +1163,13 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                 spell.cant_be_countered = true;
                 cur_game.pending_cant_be_countered = false;
             }
+            // Check card's own replacement effects for "can't be countered" (Long Goodbye)
+            for (const auto &r : card_data.replacement_effects) {
+                if (r.kind == Effect::Replacement::CANT_BE_COUNTERED) {
+                    spell.cant_be_countered = true;
+                    break;
+                }
+            }
             global_coordinator.AddComponent(spell_entity, spell);
 
             // Fire NONCREATURE_SPELL_CAST event for non-creature spells
@@ -1159,6 +1199,11 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                 auto &caster_player = global_coordinator.GetComponent<Player>(caster_entity);
                 caster_player.spells_cast_this_turn++;
                 caster_player.spells_cast_this_game++;
+                // Track noncreature spells for Deafening Silence
+                bool spell_is_creature = false;
+                for (auto &t : card_data.types)
+                    if (t.kind == TYPE && t.name == "Creature") { spell_is_creature = true; break; }
+                if (!spell_is_creature) caster_player.noncreature_spells_cast_this_turn++;
                 Event spell_event(Events::SPELL_CAST);
                 spell_event.SetParam(Params::PLAYER, caster_entity);
                 global_coordinator.SendEvent(spell_event);
