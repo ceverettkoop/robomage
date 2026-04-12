@@ -34,6 +34,10 @@ struct StaticAbility {
     std::string cant_cast_filter = "";      // "Card.nonCreature" — card type filter
     int cant_cast_limit_per_turn = 0;       // NumLimitEachTurn$ N — limit per player per turn
 
+    // Type-changing fields (category = "Continuous", layer 4):
+    std::string add_type = "";              // AddType$ Mountain — land subtype to set
+    bool remove_land_types = false;         // RemoveLandTypes$ True — strip existing land subtypes first
+
     // Untap prevention fields (category = "Continuous" with AddHiddenKeyword):
     std::string hidden_keyword = "";        // "CARDNAME doesn't untap during your untap step."
     std::string affected_subtype = "";      // Affected$ Island — land subtype affected

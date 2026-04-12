@@ -9,7 +9,7 @@
             "type": "lldb",
             "request": "launch",
             "program": "${workspaceFolder}/bin/robomage",
-            "args": ["--gui", "--deck", "doomsday"],
+            "args": ["--gui", "--deck", "doomsday", "--bo3"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/bin/",
             "environment": [],
@@ -33,7 +33,7 @@
             "type": "lldb",
             "request": "launch",
             "program": "${workspaceFolder}/bin/robomage",
-            "args": ["--gui", "--deck", "doomsday"],
+            "args": ["--gui", "--deck", "doomsday", "--bo3"],
             "cwd": "${workspaceFolder}/bin",
             "terminal": "integrated"
         },

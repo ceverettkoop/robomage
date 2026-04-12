@@ -286,9 +286,8 @@ void StateManager::apply_permanent_components(Game &game) {
 
 }
 
-// Applies abilities to lands based on the land subtypes
-// TODO recheck in case blood moon or similar nuked one; rn blood moon on a tundra would just add an ability, even if
-// types are successfully replaced
+// Applies mana abilities to lands based on the land subtypes in perm.types.
+// Type-changing effects (Blood Moon, etc.) modify perm.types before this runs.
 void StateManager::apply_land_abilities(Entity entity) {
     // assumes called with entity that has permanent component and is on battlefield and is land
     auto &perm = global_coordinator.GetComponent<Permanent>(entity);
@@ -322,6 +321,7 @@ void StateManager::apply_land_abilities(Entity entity) {
         mana_ability.color = required_color;
         mana_ability.amount = 1;
         mana_ability.tap_cost = true;
+        mana_ability.subtype_derived = true;
 
         mana_ability.source = entity;
         perm_abilities.push_back(mana_ability);
@@ -397,6 +397,94 @@ static int evaluate_sa_svar(const std::string &expr, Zone::Ownership controller)
     return 0;
 }
 
+// Rule 613.1d — Layer 4: type-changing continuous effects.
+// Resets land types to CardData originals, then applies type-changing effects
+// sorted by timestamp (rule 613.7: later timestamp wins within the same layer).
+// Regenerates subtype-derived mana abilities after types are finalized.
+void StateManager::apply_type_changing_effects() {
+    // Collect type-changing statics from the already-populated g_active_statics.
+    struct TypeChanger {
+        ActiveStatic *as;
+        size_t timestamp;  // source permanent's ETB timestamp
+    };
+    std::vector<TypeChanger> changers;
+    for (auto &a : g_active_statics) {
+        if (a.sa->add_type.empty()) continue;
+        if (!global_coordinator.entity_has_component<Permanent>(a.entity)) continue;
+        auto &src_perm = global_coordinator.GetComponent<Permanent>(a.entity);
+        changers.push_back({&a, src_perm.timestamp_entered_battlefield});
+    }
+
+    if (changers.empty()) return;
+
+    // Sort by timestamp ascending — later entries override earlier ones on the same permanent.
+    std::sort(changers.begin(), changers.end(),
+              [](const TypeChanger &a, const TypeChanger &b) { return a.timestamp < b.timestamp; });
+
+    for (auto entity : mEntities) {
+        if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
+        if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
+        auto &zone = global_coordinator.GetComponent<Zone>(entity);
+        if (zone.location != Zone::BATTLEFIELD) continue;
+        auto &perm = global_coordinator.GetComponent<Permanent>(entity);
+        if (perm.is_phased_out) continue;
+
+        bool is_land = false;
+        bool is_basic = false;
+        for (auto &t : perm.types) {
+            if (t.kind == TYPE && t.name == "Land") is_land = true;
+            if (t.kind == SUPERTYPE && t.name == "Basic") is_basic = true;
+        }
+        if (!is_land || is_basic) continue;
+
+        // Find the winning (latest-timestamp) type-changing effect that affects this land.
+        // Because changers is sorted ascending, the last match wins.
+        const TypeChanger *winner = nullptr;
+        for (auto &tc : changers) {
+            if (tc.as->sa->affected == "Land.nonBasic") {
+                winner = &tc;  // later entry overwrites
+            }
+        }
+        if (!winner) continue;
+
+        // Reset land subtypes to CardData originals
+        if (global_coordinator.entity_has_component<CardData>(entity)) {
+            auto &card_data = global_coordinator.GetComponent<CardData>(entity);
+            // Restore subtypes from CardData
+            std::set<Type> new_types;
+            for (auto &t : card_data.types) {
+                if (t.kind != SUBTYPE) new_types.insert(t);
+            }
+            // Non-subtype types come from CardData; subtypes are replaced below
+            perm.types = new_types;
+        } else {
+            // Token land — strip existing land subtypes
+            std::set<Type> new_types;
+            for (auto &t : perm.types) {
+                if (t.kind == SUBTYPE &&
+                    (t.name == "Mountain" || t.name == "Forest" || t.name == "Plains" ||
+                     t.name == "Island" || t.name == "Swamp" || t.name == "Wastes"))
+                    continue;
+                new_types.insert(t);
+            }
+            perm.types = new_types;
+        }
+
+        // Apply the winning type
+        if (winner->as->sa->remove_land_types) {
+            // Already stripped above; add the new subtype
+            perm.types.insert({SUBTYPE, winner->as->sa->add_type});
+        }
+
+        // Strip subtype-derived mana abilities and regenerate from new types
+        auto &abilities = perm.abilities;
+        abilities.erase(std::remove_if(abilities.begin(), abilities.end(),
+                                       [](const Ability &ab) { return ab.subtype_derived; }),
+                        abilities.end());
+        apply_land_abilities(entity);
+    }
+}
+
 void StateManager::apply_static_ability_effects() {
     // Phase 1: gather active static abilities from all battlefield permanents into the
     // global g_active_statics cache. Other systems read this instead of scanning permanents.
@@ -417,6 +505,11 @@ void StateManager::apply_static_ability_effects() {
         for (auto &sa : perm.static_abilities)
             g_active_statics.push_back({entity, &sa, perm.controller});
     }
+
+    // Layer 4 (rule 613.1d): type-changing continuous effects applied before mana
+    // abilities are regenerated. Must run even if no other statics are active, but
+    // only the type-changing subset matters here — the rest is handled below.
+    apply_type_changing_effects();
 
     // Alias for local readability
     auto &active = g_active_statics;
