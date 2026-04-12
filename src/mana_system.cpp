@@ -29,6 +29,7 @@ static size_t eval_mana_amount(const Ability &ab, Zone::Ownership controller,
                                std::shared_ptr<Orderer> orderer);
 static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
                           Entity paid_for, std::shared_ptr<Orderer> orderer, bool has_delve);
+static bool restricted_mana_matches(Entity source_entity, Entity paid_for);
 
 Entity get_player_entity(Zone::Ownership player) {
     return (player == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
@@ -185,6 +186,22 @@ static size_t eval_mana_amount(const Ability &ab, Zone::Ownership controller,
     return ab.amount;
 }
 
+// Check if a restricted mana source (Cavern of Souls) can be used to pay for a spell.
+// Returns true if the spell is a creature with the source permanent's chosen subtype.
+static bool restricted_mana_matches(Entity source_entity, Entity paid_for) {
+    if (paid_for == 0) return false;
+    auto &source_perm = global_coordinator.GetComponent<Permanent>(source_entity);
+    if (source_perm.chosen_type.empty()) return false;
+    if (!global_coordinator.entity_has_component<CardData>(paid_for)) return false;
+    auto &paid_cd = global_coordinator.GetComponent<CardData>(paid_for);
+    bool is_creature = false, has_chosen_subtype = false;
+    for (auto &t : paid_cd.types) {
+        if (t.kind == TYPE && t.name == "Creature") is_creature = true;
+        if (t.kind == SUBTYPE && t.name == source_perm.chosen_type) has_chosen_subtype = true;
+    }
+    return is_creature && has_chosen_subtype;
+}
+
 // Collect all mana abilities a player could activate.
 // Checks physical activation requirements (untapped, controller, phased out, CantBeActivated,
 // summoning sickness, activation limits) but NOT activation_mana_cost — callers handle that
@@ -247,19 +264,8 @@ std::vector<LegalAction> collect_mana_legal_actions(
     auto sources = collect_available_mana_sources(player, orderer);
     for (auto &[entity, ab] : sources) {
         // Filter restricted mana (Cavern of Souls): hide from payment when spell doesn't match
-        if (ab.restrict_to_chosen_type_creature && paid_for != 0) {
-            auto &source_perm = global_coordinator.GetComponent<Permanent>(entity);
-            if (source_perm.chosen_type.empty()) continue;
-            if (!global_coordinator.entity_has_component<CardData>(paid_for)) continue;
-            auto &paid_cd = global_coordinator.GetComponent<CardData>(paid_for);
-            bool is_creature = false;
-            bool has_chosen_subtype = false;
-            for (auto &t : paid_cd.types) {
-                if (t.kind == TYPE && t.name == "Creature") is_creature = true;
-                if (t.kind == SUBTYPE && t.name == source_perm.chosen_type) has_chosen_subtype = true;
-            }
-            if (!is_creature || !has_chosen_subtype) continue;
-        }
+        if (ab.restrict_to_chosen_type_creature && !restricted_mana_matches(entity, paid_for))
+            continue;
         // Sources with activation mana cost: check affordability
         if (!ab.activation_mana_cost.empty()) {
             Entity exclude = ab.tap_cost ? entity : 0;
@@ -293,30 +299,12 @@ bool can_afford_with_sources(Zone::Ownership player_owner, const std::multiset<C
 
     auto sources = collect_available_mana_sources(player_owner, orderer);
 
-    // Filter restricted mana sources (Cavern of Souls): only include if paid_for
-    // is a creature of the chosen type
-    if (paid_for != 0) {
-        sources.erase(std::remove_if(sources.begin(), sources.end(),
-            [&](const std::pair<Entity, Ability> &s) {
-                if (!s.second.restrict_to_chosen_type_creature) return false;
-                auto &source_perm = global_coordinator.GetComponent<Permanent>(s.first);
-                if (source_perm.chosen_type.empty()) return true;
-                if (!global_coordinator.entity_has_component<CardData>(paid_for)) return true;
-                auto &paid_cd = global_coordinator.GetComponent<CardData>(paid_for);
-                bool is_creature = false, has_chosen_subtype = false;
-                for (auto &t : paid_cd.types) {
-                    if (t.kind == TYPE && t.name == "Creature") is_creature = true;
-                    if (t.kind == SUBTYPE && t.name == source_perm.chosen_type) has_chosen_subtype = true;
-                }
-                return !is_creature || !has_chosen_subtype;
-            }), sources.end());
-    } else {
-        // No paid_for context — exclude all restricted sources to be conservative
-        sources.erase(std::remove_if(sources.begin(), sources.end(),
-            [](const std::pair<Entity, Ability> &s) {
-                return s.second.restrict_to_chosen_type_creature;
-            }), sources.end());
-    }
+    // Filter restricted mana sources (Cavern of Souls): exclude unless spell matches
+    sources.erase(std::remove_if(sources.begin(), sources.end(),
+        [&](const std::pair<Entity, Ability> &s) {
+            return s.second.restrict_to_chosen_type_creature &&
+                   !restricted_mana_matches(s.first, paid_for);
+        }), sources.end());
 
     // First pass: add free sources (no activation mana cost)
     // Multi-color sources appear as multiple entries for the same entity
@@ -531,18 +519,8 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
     std::vector<SourceInfo> valid_sources;
     for (auto &[entity, ab] : sources) {
         // Restricted mana check (Cavern of Souls)
-        if (ab.restrict_to_chosen_type_creature && paid_for != 0) {
-            auto &source_perm = global_coordinator.GetComponent<Permanent>(entity);
-            if (source_perm.chosen_type.empty()) continue;
-            if (!global_coordinator.entity_has_component<CardData>(paid_for)) continue;
-            auto &paid_cd = global_coordinator.GetComponent<CardData>(paid_for);
-            bool is_creature = false, has_chosen_subtype = false;
-            for (auto &t : paid_cd.types) {
-                if (t.kind == TYPE && t.name == "Creature") is_creature = true;
-                if (t.kind == SUBTYPE && t.name == source_perm.chosen_type) has_chosen_subtype = true;
-            }
-            if (!is_creature || !has_chosen_subtype) continue;
-        }
+        if (ab.restrict_to_chosen_type_creature && !restricted_mana_matches(entity, paid_for))
+            continue;
         if (!ab.activation_mana_cost.empty()) {
             if (!can_afford_with_sources(controller, ab.activation_mana_cost, orderer, ab.tap_cost ? entity : 0))
                 continue;
@@ -553,10 +531,14 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
         valid_sources.push_back({entity, ab, ab.color, is_multi});
     }
 
-    // Helper: activate a source (tap, pay costs, add mana)
+    // Helper: activate a source (tap, sacrifice, pay costs, add mana)
     auto activate_source = [&](const SourceInfo &si) {
         auto &perm = global_coordinator.GetComponent<Permanent>(si.entity);
         if (si.ability.tap_cost) perm.is_tapped = true;
+        if (si.ability.sac_self) {
+            game_log("%s sacrifices %s\n", player_name(controller).c_str(), perm.name.c_str());
+            orderer->add_to_zone(false, si.entity, Zone::GRAVEYARD);
+        }
         if (!si.ability.activation_mana_cost.empty())
             spend_mana(controller, si.ability.activation_mana_cost, si.entity);
         if (si.ability.life_cost > 0) {
@@ -595,12 +577,12 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
             continue;
         }
 
-        // Prefer adds_no_counter sources (Cavern of Souls) for uncounterable
-        bool found = false;
-        for (auto &si : valid_sources) {
-            if (tapped_entities.count(si.entity)) continue;
-            if (si.color != needed) continue;
-            if (si.ability.adds_no_counter) {
+        // Try sources in priority order: adds_no_counter > single-color > multi-color
+        auto try_source = [&](auto predicate) -> bool {
+            for (auto &si : valid_sources) {
+                if (tapped_entities.count(si.entity)) continue;
+                if (si.color != needed) continue;
+                if (!predicate(si)) continue;
                 activate_source(si);
                 tapped_entities.insert(si.entity);
                 if (player.mana.count(needed) > 0) {
@@ -608,45 +590,15 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
                     player.mana.erase(pit);
                 }
                 it = remaining.erase(it);
-                found = true;
-                break;
+                return true;
             }
-        }
-        if (found) continue;
-
-        // Find a single-color source for this color
-        for (auto &si : valid_sources) {
-            if (tapped_entities.count(si.entity)) continue;
-            if (si.color != needed) continue;
-            if (!si.is_multi_color) {
-                activate_source(si);
-                tapped_entities.insert(si.entity);
-                if (player.mana.count(needed) > 0) {
-                    auto pit = player.mana.find(needed);
-                    player.mana.erase(pit);
-                }
-                it = remaining.erase(it);
-                found = true;
-                break;
-            }
-        }
-        if (found) continue;
-
-        // Fall back to multi-color source
-        for (auto &si : valid_sources) {
-            if (tapped_entities.count(si.entity)) continue;
-            if (si.color != needed) continue;
-            activate_source(si);
-            tapped_entities.insert(si.entity);
-            if (player.mana.count(needed) > 0) {
-                auto pit = player.mana.find(needed);
-                player.mana.erase(pit);
-            }
-            it = remaining.erase(it);
-            found = true;
-            break;
-        }
-        if (!found) return false;
+            return false;
+        };
+        if (try_source([](const SourceInfo &s) { return s.ability.adds_no_counter && !s.ability.sac_self; })) continue;
+        if (try_source([](const SourceInfo &s) { return !s.is_multi_color && !s.ability.sac_self; })) continue;
+        if (try_source([](const SourceInfo &s) { return !s.ability.sac_self; })) continue;
+        if (try_source([](const SourceInfo &) { return true; })) continue;  // sac_self last resort
+        return false;
     }
 
     // Pay generic costs with remaining sources — prefer adds_no_counter (Cavern)
@@ -657,36 +609,25 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
             remaining.erase(git);
             continue;
         }
-        bool found = false;
-        // Try adds_no_counter sources first
-        for (auto &si : valid_sources) {
-            if (tapped_entities.count(si.entity)) continue;
-            if (!si.ability.adds_no_counter) continue;
-            activate_source(si);
-            tapped_entities.insert(si.entity);
-            if (player.mana.size() > 0) {
-                player.mana.erase(player.mana.begin());
-                auto git = remaining.find(GENERIC);
-                remaining.erase(git);
+        auto try_generic = [&](auto predicate) -> bool {
+            for (auto &si : valid_sources) {
+                if (tapped_entities.count(si.entity)) continue;
+                if (!predicate(si)) continue;
+                activate_source(si);
+                tapped_entities.insert(si.entity);
+                if (player.mana.size() > 0) {
+                    player.mana.erase(player.mana.begin());
+                    auto git = remaining.find(GENERIC);
+                    remaining.erase(git);
+                }
+                return true;
             }
-            found = true;
-            break;
-        }
-        if (found) continue;
-        // Fall back to any source
-        for (auto &si : valid_sources) {
-            if (tapped_entities.count(si.entity)) continue;
-            activate_source(si);
-            tapped_entities.insert(si.entity);
-            if (player.mana.size() > 0) {
-                player.mana.erase(player.mana.begin());
-                auto git = remaining.find(GENERIC);
-                remaining.erase(git);
-            }
-            found = true;
-            break;
-        }
-        if (!found) return false;
+            return false;
+        };
+        if (try_generic([](const SourceInfo &s) { return s.ability.adds_no_counter && !s.ability.sac_self; })) continue;
+        if (try_generic([](const SourceInfo &s) { return !s.ability.sac_self; })) continue;
+        if (try_generic([](const SourceInfo &) { return true; })) continue;  // sac_self last resort
+        return false;
     }
 
     return true;
@@ -802,6 +743,10 @@ bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,
 
             auto &perm = global_coordinator.GetComponent<Permanent>(source_entity);
             if (chosen_ab.tap_cost) perm.is_tapped = true;
+            if (chosen_ab.sac_self) {
+                game_log("%s sacrifices %s\n", player_name(controller).c_str(), perm.name.c_str());
+                orderer->add_to_zone(false, source_entity, Zone::GRAVEYARD);
+            }
 
             // Pay activation mana cost if any
             if (!chosen_ab.activation_mana_cost.empty()) {
