@@ -57,6 +57,18 @@ train/.venv/bin/python train/test_harness.py \
   --scripted --max-decisions 30
 ```
 
+**Pre-set battlefield** — start with permanents already in play (no summoning sickness):
+```bash
+train/.venv/bin/python train/test_harness.py \
+  --hand-a "Lightning Bolt" \
+  --library-a "Mountain,Mountain,Mountain,Mountain,Mountain,Mountain,Mountain,Mountain" \
+  --hand-b "Giant Growth" \
+  --library-b "Forest,Forest,Forest,Forest,Forest,Forest,Forest,Forest" \
+  --battlefield-a "Mountain,Mountain" \
+  --battlefield-b "Grizzly Bears,Forest" \
+  --scripted --max-decisions 30
+```
+
 **Using pre-made deck files** (for precise library sizes without auto-padding):
 Write `.dk` files to `bin/resources/decks/temp/` with `1 CardName` per line (hand cards first), then pass the deck name relative to `decks/`:
 ```bash
@@ -81,6 +93,8 @@ train/.venv/bin/python train/test_harness.py --scenario scenario.json
   "library_a": ["Island", "Island", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain", "Mountain"],
   "hand_b": ["Forest", "Grizzly Bears"],
   "library_b": ["Forest", "Forest", "Forest", "Forest", "Forest", "Forest", "Forest", "Forest"],
+  "battlefield_a": [],
+  "battlefield_b": ["Grizzly Bears"],
   "actions": [9, 0, 7, 0, 8],
   "seed": 1
 }

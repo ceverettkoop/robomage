@@ -469,7 +469,8 @@ class TestHarness:
         self.decision_count = 0
         self.winner = None
 
-    def start(self, deck_a_path, deck_b_path, seed=1):
+    def start(self, deck_a_path, deck_b_path, seed=1,
+              battlefield_a=None, battlefield_b=None):
         """Launch the engine process."""
         cmd = [
             self.binary, "--machine", "--narrative", "--no-shuffle",
@@ -477,6 +478,10 @@ class TestHarness:
             "--deck-a", deck_a_path,
             "--deck-b", deck_b_path,
         ]
+        if battlefield_a:
+            cmd += ["--battlefield-a", ",".join(_card_to_deck_name(c) for c in battlefield_a)]
+        if battlefield_b:
+            cmd += ["--battlefield-b", ",".join(_card_to_deck_name(c) for c in battlefield_b)]
         self._proc = subprocess.Popen(
             cmd,
             stdin=subprocess.PIPE,
@@ -559,7 +564,8 @@ class TestHarness:
 
     def run_game(self, deck_a_path, deck_b_path, seed=1,
                  actions=None, interactive=False, scripted=False,
-                 max_decisions=500, max_turns=50):
+                 max_decisions=500, max_turns=50,
+                 battlefield_a=None, battlefield_b=None):
         """Run a full game and print decoded output.
 
         Args:
@@ -571,8 +577,11 @@ class TestHarness:
             scripted: If True, use the scripted agent for decisions
             max_decisions: Safety limit on decision points
             max_turns: Not enforced here (engine handles turns)
+            battlefield_a: List of card names to start on Player A's battlefield
+            battlefield_b: List of card names to start on Player B's battlefield
         """
-        self.start(deck_a_path, deck_b_path, seed)
+        self.start(deck_a_path, deck_b_path, seed,
+                   battlefield_a=battlefield_a, battlefield_b=battlefield_b)
         action_idx = 0
         pending_confirm = False
 
@@ -700,6 +709,8 @@ def main():
     parser.add_argument("--library-b", help="Player B library after hand (comma-separated)")
     parser.add_argument("--deck-a", help="Use existing deck file for Player A (name, not path)")
     parser.add_argument("--deck-b", help="Use existing deck file for Player B (name, not path)")
+    parser.add_argument("--battlefield-a", help="Cards starting on Player A's battlefield (comma-separated)")
+    parser.add_argument("--battlefield-b", help="Cards starting on Player B's battlefield (comma-separated)")
     parser.add_argument("--actions", help="Comma-separated action indices to play")
     parser.add_argument("--interactive", action="store_true", help="Prompt for each action")
     parser.add_argument("--scripted", action="store_true", help="Use scripted agent")
@@ -719,6 +730,8 @@ def main():
     library_a = _parse_card_list(args.library_a) or scenario.get("library_a", [])
     hand_b = _parse_card_list(args.hand_b) or scenario.get("hand_b", [])
     library_b = _parse_card_list(args.library_b) or scenario.get("library_b", [])
+    battlefield_a = _parse_card_list(args.battlefield_a) or scenario.get("battlefield_a", [])
+    battlefield_b = _parse_card_list(args.battlefield_b) or scenario.get("battlefield_b", [])
     seed = args.seed if args.seed != 1 else scenario.get("seed", 1)
     actions_str = args.actions or scenario.get("actions")
     max_decisions = args.max_decisions or scenario.get("max_decisions", 500)
@@ -765,6 +778,10 @@ def main():
             print(f"Player B library: {', '.join(library_b)}")
         else:
             print(f"Player B deck: {deck_b_name}")
+        if battlefield_a:
+            print(f"Player A battlefield: {', '.join(battlefield_a)}")
+        if battlefield_b:
+            print(f"Player B battlefield: {', '.join(battlefield_b)}")
         print(f"Seed: {seed}")
         if actions:
             print(f"Actions: {actions}")
@@ -778,6 +795,8 @@ def main():
             interactive=args.interactive,
             scripted=args.scripted,
             max_decisions=max_decisions,
+            battlefield_a=battlefield_a or None,
+            battlefield_b=battlefield_b or None,
         )
     finally:
         for p in cleanup_paths:

@@ -62,6 +62,8 @@ unsigned int seed_value = 0;
 bool no_shuffle = false;
 bool narrative_mode = false;
 bool bo3_mode = false;
+std::vector<std::string> battlefield_a_cards;
+std::vector<std::string> battlefield_b_cards;
 
 // match state (accessible for state serialization)
 int match_game_number = -1;  // -1 = single game, 0-2 = bo3 game index
@@ -79,6 +81,7 @@ static EcsSystems init_ecs();
 static int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &deck_b,
                             bool player_a_goes_first, unsigned int seed);
 static void run_sideboard_phase(Deck &deck, Zone::Ownership player);
+static std::vector<std::string> split_card_list(const std::string &csv);
 
 static EcsSystems init_ecs() {
     card_db.clear();
@@ -114,6 +117,26 @@ static int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &dec
 
     sys.orderer->draw_hands();
     sys.orderer->do_london_mulligan();
+
+    // place pre-set battlefield permanents
+    std::vector<Entity> preplaced;
+    if (!battlefield_a_cards.empty()) {
+        auto placed = sys.orderer->place_on_battlefield(battlefield_a_cards, Zone::PLAYER_A);
+        preplaced.insert(preplaced.end(), placed.begin(), placed.end());
+    }
+    if (!battlefield_b_cards.empty()) {
+        auto placed = sys.orderer->place_on_battlefield(battlefield_b_cards, Zone::PLAYER_B);
+        preplaced.insert(preplaced.end(), placed.begin(), placed.end());
+    }
+    // run SBE once to attach Permanent/Creature components, then clear summoning sickness
+    if (!preplaced.empty()) {
+        sys.state_manager->state_based_effects(cur_game, sys.orderer);
+        for (auto e : preplaced) {
+            if (global_coordinator.entity_has_component<Permanent>(e)) {
+                global_coordinator.GetComponent<Permanent>(e).has_summoning_sickness = false;
+            }
+        }
+    }
 
     cur_game.player_a_turn = player_a_goes_first;
     cur_game.player_a_has_priority = player_a_goes_first;
@@ -255,6 +278,23 @@ static void run_sideboard_phase(Deck &deck, Zone::Ownership player) {
     sideboard_phase = false;
 }
 
+static std::vector<std::string> split_card_list(const std::string &csv) {
+    std::vector<std::string> result;
+    size_t start = 0;
+    while (start < csv.size()) {
+        size_t end = csv.find(',', start);
+        if (end == std::string::npos) end = csv.size();
+        // trim whitespace
+        size_t s = start;
+        while (s < end && csv[s] == ' ') s++;
+        size_t e = end;
+        while (e > s && csv[e - 1] == ' ') e--;
+        if (e > s) result.push_back(csv.substr(s, e - s));
+        start = end + 1;
+    }
+    return result;
+}
+
 //runs in thread seperate from gui
 static void *game_loop(void *args) {
 
@@ -369,6 +409,12 @@ int main(int argc, char const *argv[]) {
             i++;
         } else if (std::string(argv[i]) == "--no-shuffle") {
             no_shuffle = true;
+        } else if (std::string(argv[i]) == "--battlefield-a" && i + 1 < argc) {
+            battlefield_a_cards = split_card_list(argv[i + 1]);
+            i++;
+        } else if (std::string(argv[i]) == "--battlefield-b" && i + 1 < argc) {
+            battlefield_b_cards = split_card_list(argv[i + 1]);
+            i++;
         } else if (std::string(argv[i]) == "--narrative") {
             narrative_mode = true;
         } else if (std::string(argv[i]) == "--bo3") {

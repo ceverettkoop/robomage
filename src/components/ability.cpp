@@ -1192,6 +1192,74 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
                 game_log("MultiplyCounter: doubled +1/+1 counters on creature (now %u/%u).\n", cr.power, cr.toughness);
             }
         }
+    } else if (category == "ChooseCard") {
+        // Dauthi Voidwalker: choose an exiled card owned by opponent with a void counter,
+        // then play it without paying its mana cost.
+        Zone::Ownership ctrl = controller;
+        Zone::Ownership opp = (ctrl == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+
+        std::vector<Entity> choices;
+        for (Entity e = 0; e < MAX_ENTITIES; ++e) {
+            if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+            auto &z = global_coordinator.GetComponent<Zone>(e);
+            if (z.location != Zone::EXILE) continue;
+            if (z.owner != opp) continue;
+            if (cur_game.void_countered.find(e) == cur_game.void_countered.end()) continue;
+            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+            choices.push_back(e);
+        }
+
+        if (!choices.empty()) {
+            std::vector<LegalAction> pick_actions;
+            for (auto e : choices) {
+                auto &cd = global_coordinator.GetComponent<CardData>(e);
+                LegalAction la(PASS_PRIORITY, e, "Play " + cd.name + " (exiled, free)");
+                la.category = ActionCategory::OTHER_CHOICE;
+                pick_actions.push_back(la);
+            }
+
+            game_log("Choose an exiled card with a void counter:\n");
+            int choice = InputLogger::instance().get_input(pick_actions);
+            Entity chosen = choices[static_cast<size_t>(choice)];
+            auto &cd = global_coordinator.GetComponent<CardData>(chosen);
+            cur_game.void_countered.erase(chosen);
+
+            // Determine if permanent or instant/sorcery
+            bool is_permanent = false;
+            for (auto &t : cd.types) {
+                if (t.kind == TYPE && (t.name == "Creature" || t.name == "Artifact" ||
+                    t.name == "Enchantment" || t.name == "Planeswalker" || t.name == "Land")) {
+                    is_permanent = true;
+                    break;
+                }
+            }
+
+            if (is_permanent) {
+                orderer->add_to_zone(false, chosen, Zone::BATTLEFIELD);
+                auto &cz = global_coordinator.GetComponent<Zone>(chosen);
+                cz.controller = ctrl;
+                game_log("%s plays %s from exile (Dauthi Voidwalker).\n",
+                         player_name(ctrl).c_str(), cd.name.c_str());
+            } else {
+                // Instant/Sorcery: put on stack as a spell, let normal resolution handle it
+                Spell sp;
+                sp.caster = ctrl;
+                global_coordinator.AddComponent(chosen, sp);
+                for (auto &ab : cd.abilities) {
+                    if (ab.ability_type != Ability::SPELL) continue;
+                    Ability cast_ab = ab;
+                    cast_ab.source = chosen;
+                    cast_ab.controller = ctrl;
+                    global_coordinator.AddComponent(chosen, cast_ab);
+                    break;
+                }
+                orderer->add_to_zone(false, chosen, Zone::STACK);
+                game_log("%s casts %s from exile (Dauthi Voidwalker).\n",
+                         player_name(ctrl).c_str(), cd.name.c_str());
+            }
+        } else {
+            game_log("No exiled cards with void counters to choose.\n");
+        }
     } else if (category == "Cleanup") {
         if (clear_remembered) cur_game.remembered_entities.clear();
     } else if (category == "DelayedTrigger") {

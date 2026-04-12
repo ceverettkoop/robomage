@@ -22,6 +22,8 @@ public:
     void draw(Zone::Ownership player, size_t ct);
     std::vector<Entity> get_stack();
     void do_london_mulligan();
+    std::vector<Entity> place_on_battlefield(const std::vector<std::string> &card_names,
+                                             Zone::Ownership owner);
 
 };
 

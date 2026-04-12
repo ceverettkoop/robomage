@@ -444,3 +444,32 @@ void Orderer::do_london_mulligan() {
         }
     }
 }
+
+std::vector<Entity> Orderer::place_on_battlefield(const std::vector<std::string> &card_names,
+                                                   Zone::Ownership owner) {
+    Coordinator &coordinator = Coordinator::global();
+    std::vector<Entity> placed;
+
+    for (const auto &name : card_names) {
+        Entity card_id = coordinator.CreateEntity();
+        auto card_data_id = load_card(name);
+        coordinator.AddComponent(card_id, coordinator.GetComponent<CardData>(card_data_id));
+        coordinator.AddComponent(card_id, Zone(Zone::BATTLEFIELD, owner, owner));
+        auto &z = coordinator.GetComponent<Zone>(card_id);
+        z.controller = owner;
+
+        ColorIdentity ci;
+        auto &cd = coordinator.GetComponent<CardData>(card_id);
+        if (!cd.explicit_colors.empty()) {
+            ci.colors = cd.explicit_colors;
+        } else {
+            for (auto c : cd.mana_cost) {
+                if (c != GENERIC && c != COLORLESS && c != NO_COLOR) ci.colors.insert(c);
+            }
+        }
+        coordinator.AddComponent(card_id, ci);
+        placed.push_back(card_id);
+    }
+
+    return placed;
+}

@@ -488,7 +488,7 @@ def make_self_play_env(binary_path: str, checkpoint_dir: str, rank: int,
 def train(binary_path: str, load_path: str | None = None, total_timesteps: int = TOTAL_TIMESTEPS,
           tally: bool = False, self_play: bool = False, scripted_fraction: float = 0.0,
           model_deck: str = "delver", opp_deck: str = "delver", record: bool = False,
-          bo3: bool = False):
+          bo3: bool = False, n_envs_override: int | None = None):
     """Train the model.
 
     ``scripted_fraction`` controls how many of the N_ENVS parallel environments
@@ -503,7 +503,7 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
 
     # Parallel environments for faster data collection
     if self_play:
-        n_envs = N_ENVS_SELF_PLAY
+        n_envs = n_envs_override if n_envs_override is not None else N_ENVS_SELF_PLAY
         n_scripted = round(n_envs * scripted_fraction)
         n_self_play = n_envs - n_scripted
         env_fns = (
@@ -514,7 +514,8 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
             print(f"Env mix: {n_self_play} self-play + {n_scripted} scripted")
         vec_env = SubprocVecEnv(env_fns)
     else:
-        vec_env = SubprocVecEnv([make_env(binary_path, i, model_deck, opp_deck, bo3=bo3) for i in range(N_ENVS)])
+        n_envs = n_envs_override if n_envs_override is not None else N_ENVS
+        vec_env = SubprocVecEnv([make_env(binary_path, i, model_deck, opp_deck, bo3=bo3) for i in range(n_envs)])
 
     try:
         policy_kwargs = dict(
@@ -549,7 +550,7 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
                 tensorboard_log=LOG_DIR,
             )
 
-        actual_n_envs = n_envs if self_play else N_ENVS
+        actual_n_envs = n_envs
         callbacks = [
             CheckpointCallback(
                 save_freq=100_000 // actual_n_envs,
@@ -580,7 +581,8 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
 def train_fixed_model(binary_path: str, model_deck: str, opp_deck: str,
                       load_path: str | None = None,
                       total_timesteps: int = TOTAL_TIMESTEPS,
-                      tally: bool = False, record: bool = False):
+                      tally: bool = False, record: bool = False,
+                      n_envs_override: int | None = None):
     """Train model_deck against a fixed opponent model for opp_deck.
 
     Loads ``{model_deck}_{opp_deck}_final.zip`` as the training model (or
@@ -609,7 +611,7 @@ def train_fixed_model(binary_path: str, model_deck: str, opp_deck: str,
     print(f"  training model: {load_path}")
     print(f"  opponent model: {opp_model_path}")
 
-    n_envs = N_ENVS_SELF_PLAY
+    n_envs = n_envs_override if n_envs_override is not None else N_ENVS_SELF_PLAY
     vec_env = SubprocVecEnv([
         make_fixed_model_env(binary_path, opp_model_path, i, model_deck, opp_deck)
         for i in range(n_envs)
@@ -653,7 +655,8 @@ def train_fixed_model(binary_path: str, model_deck: str, opp_deck: str,
 
 def train_alternate(binary_path: str, deck_a: str, deck_b: str,
                     alternate_steps: int, total_timesteps: int = TOTAL_TIMESTEPS,
-                    tally: bool = False, record: bool = False):
+                    tally: bool = False, record: bool = False,
+                    n_envs_override: int | None = None):
     """Alternate training between two decks every ``alternate_steps`` timesteps.
 
     Each round trains one side against the other's latest final checkpoint,
@@ -684,7 +687,8 @@ def train_alternate(binary_path: str, deck_a: str, deck_b: str,
         print(f"{'='*60}")
 
         train_fixed_model(binary_path, training_deck, opp_deck,
-                          total_timesteps=round_steps, tally=tally, record=record)
+                          total_timesteps=round_steps, tally=tally, record=record,
+                          n_envs_override=n_envs_override)
 
         steps_done += round_steps
 
@@ -1087,6 +1091,9 @@ if __name__ == "__main__":
                         help="Train all matchups that include the given deck (ignores --deck/--opponent)")
     parser.add_argument("--bo3", action="store_true",
                         help="Best-of-three match mode (deck swap + sideboarding between games)")
+    parser.add_argument("--n-envs", type=int, default=None,
+                        help="Number of parallel environments (default: %d, self-play: %d)"
+                             % (N_ENVS, N_ENVS_SELF_PLAY))
     args = parser.parse_args()
 
     # Resolve model shorthands (e.g. 'delver_boomer-mav' → checkpoints/delver_boomer-mav_final.zip)
@@ -1101,14 +1108,16 @@ if __name__ == "__main__":
         train_alternate(args.binary, args.deck, args.opponent,
                         alternate_steps=args.alternate,
                         total_timesteps=args.total_timesteps,
-                        tally=args.tally, record=args.record)
+                        tally=args.tally, record=args.record,
+                        n_envs_override=args.n_envs)
     elif args.fixed_model:
         if not args.opponent:
             parser.error("--fixed-model requires --opponent")
         train_fixed_model(args.binary, args.deck, args.opponent,
                           load_path=args.load,
                           total_timesteps=args.total_timesteps,
-                          tally=args.tally, record=args.record)
+                          tally=args.tally, record=args.record,
+                          n_envs_override=args.n_envs)
     elif args.train_deck:
         all_decks = sorted(os.path.splitext(p)[0]
                            for p in os.listdir(_DECKS_DIR) if p.endswith(".dk"))
@@ -1129,7 +1138,8 @@ if __name__ == "__main__":
             train(args.binary, load_path=resume_path, total_timesteps=args.total_timesteps,
                   tally=args.tally, self_play=args.self_play,
                   scripted_fraction=args.scripted_fraction,
-                  model_deck=d, opp_deck=o, record=args.record, bo3=args.bo3)
+                  model_deck=d, opp_deck=o, record=args.record, bo3=args.bo3,
+                  n_envs_override=args.n_envs)
         print(f"\nAll {len(matchups)} matchups for '{target}' complete.")
     elif args.train_all:
         all_decks = sorted(os.path.splitext(p)[0]
@@ -1148,7 +1158,8 @@ if __name__ == "__main__":
             train(args.binary, load_path=resume_path, total_timesteps=args.total_timesteps,
                   tally=args.tally, self_play=args.self_play,
                   scripted_fraction=args.scripted_fraction,
-                  model_deck=d, opp_deck=o, record=args.record, bo3=args.bo3)
+                  model_deck=d, opp_deck=o, record=args.record, bo3=args.bo3,
+                  n_envs_override=args.n_envs)
         print(f"\nAll {len(matchups)} matchups complete.")
     elif args.diag:
         diag(args.binary, args.diag_games, deck_a=args.deck, deck_b=args.opponent, bo3=args.bo3)
@@ -1166,4 +1177,4 @@ if __name__ == "__main__":
         train(args.binary, args.load, args.total_timesteps, tally=args.tally,
               self_play=args.self_play, scripted_fraction=args.scripted_fraction,
               model_deck=args.deck, opp_deck=args.opponent, record=args.record,
-              bo3=args.bo3)
+              bo3=args.bo3, n_envs_override=args.n_envs)
