@@ -442,7 +442,7 @@ def _resolve_model(path: str) -> str:
     return path
 TOTAL_TIMESTEPS = 2_000_000
 N_ENVS = 32           # parallel game processes
-N_ENVS_SELF_PLAY = 12 # self-play (each loads an opponent model)
+N_ENVS_SELF_PLAY = 10 # self-play (each loads an opponent model)
 _DECKS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                           "bin", "resources", "decks")
 

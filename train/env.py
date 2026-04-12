@@ -312,12 +312,9 @@ class RoboMageEnv(gym.Env):
                 ctrl_arr = np.frombuffer(
                     self._read_exactly(_BQUERY_CTRL_BYTES), dtype=np.float32).copy()
 
-                # Normalise categories
-                cat_arr = (cats_int / ACTION_CATEGORY_MAX).astype(np.float32)
-
                 # The -1 confirm convention applies to mandatory attacker/blocker queries.
                 self._pending_confirm = any(
-                    cats_int[i] in _MANDATORY_CATS for i in range(self._num_choices))
+                    c in _MANDATORY_CATS for c in cats_int[:self._num_choices])
 
                 # Hand cast costs: matrix-multiply one-hots against cost matrix
                 hand_onehots = state_arr[_HAND_START:_HAND_START + MAX_HAND_SLOTS * N_CARD_TYPES]
@@ -327,14 +324,22 @@ class RoboMageEnv(gym.Env):
                 bf_onehots = state_arr[_BF_ONEHOT_IDX].reshape(48, N_CARD_TYPES)
                 bf_ability_costs = bf_onehots @ _CARD_ABILITY_COST_MATRIX
 
-                self._obs = np.concatenate([state_arr, cat_arr, id_arr, ctrl_arr,
-                                            hand_costs.flatten(),
-                                            bf_ability_costs.flatten()])
+                # Write sections into preallocated obs buffer (avoids concatenate allocation)
+                o = self._obs
+                o[:STATE_SIZE] = state_arr
+                _act_end = STATE_SIZE + MAX_ACTIONS
+                o[STATE_SIZE:_act_end] = cats_int / ACTION_CATEGORY_MAX
+                o[_act_end:_act_end + MAX_ACTIONS] = id_arr
+                o[_act_end + MAX_ACTIONS:_act_end + 2 * MAX_ACTIONS] = ctrl_arr
+                _hc_start = _act_end + 2 * MAX_ACTIONS
+                o[_hc_start:_hc_start + _HAND_COST_FEATS] = hand_costs.ravel()
+                _bf_start = _hc_start + _HAND_COST_FEATS
+                o[_bf_start:_bf_start + _BF_ABILITY_FEATS] = bf_ability_costs.ravel()
 
                 # Auto-sideboard: if enabled, automatically pick "done" (action 0)
                 # for all sideboard queries so the model never sees them.
                 if self._auto_sideboard and any(
-                    cats_int[i] == _CAT_SB_DONE for i in range(self._num_choices)
+                    c == _CAT_SB_DONE for c in cats_int[:self._num_choices]
                 ):
                     self._send(0)
                     continue
@@ -1008,6 +1013,7 @@ class SelfPlayEnv(gym.Env):
         self._episode_count = 0
         self._training_is_a = True
         self._opponent_loaded = False  # defer loading to first reset()
+        self._opp_mask = np.zeros(MAX_ACTIONS, dtype=bool)  # reusable mask buffer
 
     # ------------------------------------------------------------------
     # gymnasium API
@@ -1085,9 +1091,9 @@ class SelfPlayEnv(gym.Env):
             # Opponent receives the state as emitted (already from its perspective)
             opp_obs = obs
             if self._opponent is not None:
-                masks = np.zeros(MAX_ACTIONS, dtype=bool)
-                masks[:num_choices] = True
-                action, _ = self._opponent.predict(opp_obs, action_masks=masks, deterministic=False)
+                self._opp_mask[:] = False
+                self._opp_mask[:num_choices] = True
+                action, _ = self._opponent.predict(opp_obs, action_masks=self._opp_mask, deterministic=False)
                 action = int(action)
             else:
                 action = np.random.randint(0, num_choices)
@@ -1151,6 +1157,7 @@ class FixedModelEnv(gym.Env):
             from stable_baselines3 import PPO as _PPO
         self._opponent = _PPO.load(opp_model_path, device="cpu")
         self._opp_model_path = opp_model_path
+        self._opp_mask = np.zeros(MAX_ACTIONS, dtype=bool)  # reusable mask buffer
 
     def reset(self, *, seed=None, options=None):
         self._training_is_a = bool(np.random.random() < 0.5)
@@ -1198,9 +1205,9 @@ class FixedModelEnv(gym.Env):
     def _handle_opponent_turns(self, obs, reward, terminated, truncated, info):
         while not (terminated or truncated) and not self._training_has_priority(obs):
             num_choices = self._env._num_choices
-            masks = np.zeros(MAX_ACTIONS, dtype=bool)
-            masks[:num_choices] = True
-            action, _ = self._opponent.predict(obs, action_masks=masks, deterministic=False)
+            self._opp_mask[:] = False
+            self._opp_mask[:num_choices] = True
+            action, _ = self._opponent.predict(obs, action_masks=self._opp_mask, deterministic=False)
             action = int(action)
             obs, reward, terminated, truncated, info = self._env.step(action)
         return obs, reward, terminated, truncated, info

@@ -62,7 +62,7 @@ static void push_player_block(std::vector<float>& out, const PlayerState& ps) {
 // Pushes PERM_SLOT_SIZE floats. Empty slot (card_vocab_idx == -1) = all zeros.
 static void push_perm_slot(std::vector<float>& out, const PermanentState& p) {
     if (p.card_vocab_idx == -1) {
-        for (int i = 0; i < PERM_SLOT_SIZE; i++) out.push_back(0.0f);
+        out.insert(out.end(), PERM_SLOT_SIZE, 0.0f);
         return;
     }
     out.push_back(static_cast<float>(p.power) / 10.0f);
@@ -75,8 +75,10 @@ static void push_perm_slot(std::vector<float>& out, const PermanentState& p) {
     out.push_back(p.controller_is_self ? 1.0f : 0.0f);
     out.push_back(p.is_creature ? 1.0f : 0.0f);
     out.push_back(p.is_land ? 1.0f : 0.0f);
-    for (int i = 0; i < N_CARD_TYPES; i++)
-        out.push_back(i == p.card_vocab_idx ? 1.0f : 0.0f);
+    // One-hot card identity: bulk-fill zeros, then set the active index
+    size_t onehot_start = out.size();
+    out.insert(out.end(), N_CARD_TYPES, 0.0f);
+    out[onehot_start + p.card_vocab_idx] = 1.0f;
 }
 
 // ── populate_gamestate ────────────────────────────────────────────────────────
@@ -408,42 +410,46 @@ std::vector<float> serialize_state(const GameState* gs) {
     for (int i = 0; i < MAX_BATTLEFIELD_SLOTS; i++)
         push_perm_slot(state, gs->opp_permanents[i]);
 
-    // Stack (12 x 34 = 408): controller_is_self(1) + card_id one-hot(32) + is_spell(1)
+    // Stack (12 x 130 = 1560): controller_is_self(1) + card_id one-hot(128) + is_spell(1)
     int stored_stack = std::min(gs->stack_size, MAX_STACK_DISPLAY);
     for (int i = 0; i < MAX_STACK_DISPLAY; i++) {
         if (i < stored_stack) {
             state.push_back(gs->stack[i].controller_is_self ? 1.0f : 0.0f);
             int idx = gs->stack[i].card_vocab_idx;
-            for (int j = 0; j < N_CARD_TYPES; j++)
-                state.push_back(j == idx ? 1.0f : 0.0f);
+            size_t onehot_start = state.size();
+            state.insert(state.end(), N_CARD_TYPES, 0.0f);
+            if (idx >= 0 && idx < N_CARD_TYPES) state[onehot_start + idx] = 1.0f;
             state.push_back(gs->stack[i].is_spell ? 1.0f : 0.0f);
         } else {
-            for (int j = 0; j < STACK_SLOT_SIZE; j++) state.push_back(0.0f);
+            state.insert(state.end(), STACK_SLOT_SIZE, 0.0f);
         }
     }
 
-    // Self graveyard (64 x 32 = 2048)
+    // Self graveyard (64 x 128 = 8192)
     for (int i = 0; i < MAX_GY_SLOTS; i++) {
         int idx = gs->self_graveyard[i];
-        for (int j = 0; j < GY_SLOT_SIZE; j++)
-            state.push_back(j == idx ? 1.0f : 0.0f);
+        size_t onehot_start = state.size();
+        state.insert(state.end(), GY_SLOT_SIZE, 0.0f);
+        if (idx >= 0 && idx < GY_SLOT_SIZE) state[onehot_start + idx] = 1.0f;
     }
 
-    // Opp graveyard (64 x 32 = 2048)
+    // Opp graveyard (64 x 128 = 8192)
     for (int i = 0; i < MAX_GY_SLOTS; i++) {
         int idx = gs->opp_graveyard[i];
-        for (int j = 0; j < GY_SLOT_SIZE; j++)
-            state.push_back(j == idx ? 1.0f : 0.0f);
+        size_t onehot_start = state.size();
+        state.insert(state.end(), GY_SLOT_SIZE, 0.0f);
+        if (idx >= 0 && idx < GY_SLOT_SIZE) state[onehot_start + idx] = 1.0f;
     }
 
     // NOTE: exile zones are populated in GameState but not serialized here.
     // Add them back once cards that use exile are implemented.
 
-    // Self hand (10 x 32 = 320)
+    // Self hand (10 x 128 = 1280)
     for (int i = 0; i < MAX_HAND_SLOTS; i++) {
         int idx = gs->self_hand[i];
-        for (int j = 0; j < N_CARD_TYPES; j++)
-            state.push_back(j == idx ? 1.0f : 0.0f);
+        size_t onehot_start = state.size();
+        state.insert(state.end(), N_CARD_TYPES, 0.0f);
+        if (idx >= 0 && idx < N_CARD_TYPES) state[onehot_start + idx] = 1.0f;
     }
 
     // Action history (15 x 3 = 45, newest first)

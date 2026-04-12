@@ -390,7 +390,8 @@ static int evaluate_sa_svar(const std::string &expr, Zone::Ownership controller)
     if (expr.rfind("Count$TypeInYourYard.", 0) == 0) {
         std::string type_name = expr.substr(21);  // after "Count$TypeInYourYard."
         int count = 0;
-        for (Entity e = 0; e < MAX_ENTITIES; ++e) {
+        Entity max_e = global_coordinator.GetMaxIssuedEntity();
+        for (Entity e = 0; e < max_e; ++e) {
             if (!global_coordinator.entity_has_component<Zone>(e)) continue;
             auto &z = global_coordinator.GetComponent<Zone>(e);
             if (z.location != Zone::GRAVEYARD || z.owner != controller) continue;
@@ -408,7 +409,8 @@ static int evaluate_sa_svar(const std::string &expr, Zone::Ownership controller)
     if (expr == "Count$CardTypesInAllGraveyards" ||
         expr == "Count$ValidGraveyard Card$CardTypes") {
         std::set<std::string> type_names;
-        for (Entity e = 0; e < MAX_ENTITIES; ++e) {
+        Entity max_e = global_coordinator.GetMaxIssuedEntity();
+        for (Entity e = 0; e < max_e; ++e) {
             if (!global_coordinator.entity_has_component<Zone>(e)) continue;
             auto &z = global_coordinator.GetComponent<Zone>(e);
             if (z.location != Zone::GRAVEYARD) continue;
@@ -1324,7 +1326,8 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             }
             // Check graveyard for lands if MayPlay from graveyard is active
             if (may_play_from_graveyard) {
-                for (Entity gy_e = 0; gy_e < MAX_ENTITIES; ++gy_e) {
+                Entity max_e = global_coordinator.GetMaxIssuedEntity();
+                for (Entity gy_e = 0; gy_e < max_e; ++gy_e) {
                     if (!global_coordinator.entity_has_component<Zone>(gy_e)) continue;
                     auto &gz = global_coordinator.GetComponent<Zone>(gy_e);
                     if (gz.location != Zone::GRAVEYARD || gz.owner != priority_player) continue;
