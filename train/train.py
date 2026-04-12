@@ -388,11 +388,11 @@ class ReplayLogCallback(BaseCallback):
                         action, _ = self.model.predict(obs, action_masks=masks, deterministic=True)
                         action = int(action)
                         desc = _describe_action(cats, card_ids, action, num_choices)
-                        f.write(f"[Model/{cur_side}] {desc}  ({action} of {num_choices})\n")
+                        f.write(f"[Model/{cur_side}] {desc}  ({action + 1} of {num_choices})\n")
                     else:
                         action = scripted_action(obs, num_choices)
                         desc = _describe_action(cats, card_ids, action, num_choices)
-                        f.write(f"[Scripted/{cur_side}] {desc}  ({action} of {num_choices})\n")
+                        f.write(f"[Scripted/{cur_side}] {desc}  ({action + 1} of {num_choices})\n")
 
                     obs, reward, terminated, truncated, _ = masked.step(action)
                     total_reward += reward
@@ -893,10 +893,10 @@ def observe(binary_path: str, model_path: str):
             masks = env.action_masks() if USE_MASKABLE else None
             action, _ = model.predict(obs, action_masks=masks, deterministic=True)
             action = int(action)
-            print(f"  [Model/{cur_side}]    action {action} of {num_choices}")
+            print(f"  [Model/{cur_side}]    action {action + 1} of {num_choices}")
         else:
             action = scripted_action(obs, num_choices)
-            print(f"  [Scripted/{cur_side}] action {action} of {num_choices}")
+            print(f"  [Scripted/{cur_side}] action {action + 1} of {num_choices}")
 
         obs, reward, terminated, truncated, _ = env.step(action)
         total_reward += reward
