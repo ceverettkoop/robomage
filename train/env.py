@@ -137,13 +137,14 @@ class RoboMageEnv(gym.Env):
 
     def __init__(self, binary_path: str = BINARY, render_mode=None,
                  deck_a: str | None = None, deck_b: str | None = None,
-                 bo3: bool = False):
+                 bo3: bool = False, auto_sideboard: bool = False):
         super().__init__()
         self.binary_path = os.path.realpath(binary_path)
         self.render_mode = render_mode
         self._deck_a = deck_a
         self._deck_b = deck_b
         self._bo3 = bo3
+        self._auto_sideboard = auto_sideboard
 
         self.observation_space = spaces.Box(
             low=-10.0, high=10.0, shape=(OBS_SIZE,), dtype=np.float32
@@ -329,6 +330,15 @@ class RoboMageEnv(gym.Env):
                 self._obs = np.concatenate([state_arr, cat_arr, id_arr, ctrl_arr,
                                             hand_costs.flatten(),
                                             bf_ability_costs.flatten()])
+
+                # Auto-sideboard: if enabled, automatically pick "done" (action 0)
+                # for all sideboard queries so the model never sees them.
+                if self._auto_sideboard and any(
+                    cats_int[i] == _CAT_SB_DONE for i in range(self._num_choices)
+                ):
+                    self._send(0)
+                    continue
+
                 break
 
             # Non-QUERY output: optionally print for human render mode
@@ -747,21 +757,18 @@ class ModelVsScriptedEnv(gym.Env):
     it is always from the model's perspective (+1 win, -1 loss).
     """
 
-    def __init__(self, binary_path: str = BINARY, render_mode=None,
-                 deck_a: str | None = None, deck_b: str | None = None,
-                 model_deck: str | None = None, opp_deck: str | None = None,
-                 bo3: bool = False):
+    def __init__(self, model_deck: str | None = None, opp_deck: str | None = None,
+                 **env_kwargs):
         super().__init__()
         # model_deck/opp_deck override deck_a/deck_b: decks are swapped each episode
         # to match which side the model is assigned to.
         self._model_deck = model_deck
         self._opp_deck = opp_deck
-        self._bo3 = bo3
-        self._env = RoboMageEnv(binary_path=binary_path, render_mode=render_mode,
-                                deck_a=deck_a, deck_b=deck_b, bo3=bo3)
+        self._bo3 = env_kwargs.get("bo3", False)
+        self._env = RoboMageEnv(**env_kwargs)
         self.observation_space = self._env.observation_space
         self.action_space = self._env.action_space
-        self.render_mode = render_mode
+        self.render_mode = self._env.render_mode
         self._training_is_a = True
         self._opponent_below_10 = False
         self._last_obs = None
@@ -986,16 +993,16 @@ class SelfPlayEnv(gym.Env):
     RELOAD_EVERY = 100  # episodes between opponent checkpoint reloads
     _model_cache = {}  # class-level: {path: (mtime, model)}
 
-    def __init__(self, checkpoint_dir: str, binary_path: str = BINARY, render_mode=None,
+    def __init__(self, checkpoint_dir: str,
                  model_deck: str | None = None, opp_deck: str | None = None,
-                 bo3: bool = False):
+                 **env_kwargs):
         super().__init__()
         self._model_deck = model_deck
         self._opp_deck = opp_deck
-        self._env = RoboMageEnv(binary_path=binary_path, render_mode=render_mode, bo3=bo3)
+        self._env = RoboMageEnv(**env_kwargs)
         self.observation_space = self._env.observation_space
         self.action_space = self._env.action_space
-        self.render_mode = render_mode
+        self.render_mode = self._env.render_mode
         self._checkpoint_dir = checkpoint_dir
         self._opponent = None    # loaded model, or None → random
         self._episode_count = 0
@@ -1124,16 +1131,16 @@ class FixedModelEnv(gym.Env):
     and is never reloaded or sampled from checkpoints.
     """
 
-    def __init__(self, opp_model_path: str, binary_path: str = BINARY,
-                 render_mode=None, model_deck: str | None = None,
-                 opp_deck: str | None = None, bo3: bool = False):
+    def __init__(self, opp_model_path: str,
+                 model_deck: str | None = None, opp_deck: str | None = None,
+                 **env_kwargs):
         super().__init__()
         self._model_deck = model_deck
         self._opp_deck = opp_deck
-        self._env = RoboMageEnv(binary_path=binary_path, render_mode=render_mode, bo3=bo3)
+        self._env = RoboMageEnv(**env_kwargs)
         self.observation_space = self._env.observation_space
         self.action_space = self._env.action_space
-        self.render_mode = render_mode
+        self.render_mode = self._env.render_mode
         self._training_is_a = True
         self._decision_idx = 0
 

@@ -29,6 +29,7 @@ Interactive session commands (available after shap, value-swings, or via 'intera
     regret [N]            policy regret analysis (top N high-regret decisions)
     entropy               policy entropy by game phase and board state
     consistency [N]       decision consistency for similar states (top N pairs)
+    sideboard             sideboard decisions by each agent (bo3)
     calibration           V(s) at game start vs actual win rate
     turning               find the permanent zero-crossing ('point of no return')
     clusters              classify games by V(s) curve shape (archetypes)
@@ -1864,6 +1865,113 @@ def _sim_targeting(games):
             print()
 
 
+def _sim_sideboard_report(games):
+    """Report sideboard decisions made by model and scripted agent across games."""
+    _CAT_SB_IN   = 24
+    _CAT_SB_OUT  = 25
+    _CAT_SB_DONE = 26
+
+    # Per-game sideboard phases: list of (game_idx, agent, cards_in, cards_out)
+    phases = []
+
+    for gi, g in enumerate(games):
+        observations = g["observations"]
+        actions = g["actions"]
+        n_steps = len(observations)
+        model_is_a = g["model_is_a"]
+
+        # Track current sideboard phase
+        cards_in = []
+        cards_out = []
+
+        for si in range(n_steps):
+            obs = observations[si]
+            action = actions[si]
+
+            cat_raw = obs[STATE_SIZE + action]
+            cat = int(round(cat_raw * ACTION_CATEGORY_MAX))
+
+            if cat == _CAT_SB_IN:
+                card_raw = obs[STATE_SIZE + MAX_ACTIONS + action]
+                if card_raw >= 0:
+                    cid = int(round(card_raw * N_CARD_TYPES))
+                    name = _VOCAB_NAMES[cid] if 0 <= cid < len(_VOCAB_NAMES) else f"card#{cid}"
+                else:
+                    name = "?"
+                cards_in.append(name)
+            elif cat == _CAT_SB_OUT:
+                card_raw = obs[STATE_SIZE + MAX_ACTIONS + action]
+                if card_raw >= 0:
+                    cid = int(round(card_raw * N_CARD_TYPES))
+                    name = _VOCAB_NAMES[cid] if 0 <= cid < len(_VOCAB_NAMES) else f"card#{cid}"
+                else:
+                    name = "?"
+                cards_out.append(name)
+            elif cat == _CAT_SB_DONE:
+                if cards_in or cards_out:
+                    phases.append((gi, "model", list(cards_in), list(cards_out)))
+                else:
+                    phases.append((gi, "model", [], []))
+                cards_in.clear()
+                cards_out.clear()
+
+        # Flush any in-progress phase (shouldn't happen but safety)
+        if cards_in or cards_out:
+            phases.append((gi, "model", list(cards_in), list(cards_out)))
+
+    if not phases:
+        print("  No sideboard phases found. (Are these bo3 games?)")
+        return
+
+    # Scripted agent never sideboards (always picks DONE immediately)
+    # so we only report model decisions
+
+    # Aggregate: how often each card was boarded in/out
+    in_counts = {}
+    out_counts = {}
+    n_phases_with_changes = 0
+    n_phases_no_changes = 0
+
+    for gi, agent, c_in, c_out in phases:
+        if c_in or c_out:
+            n_phases_with_changes += 1
+        else:
+            n_phases_no_changes += 1
+        for c in c_in:
+            in_counts[c] = in_counts.get(c, 0) + 1
+        for c in c_out:
+            out_counts[c] = out_counts.get(c, 0) + 1
+
+    total_phases = len(phases)
+    print(f"\n  Sideboard Report — {total_phases} sideboard phases across {len(games)} games")
+    print(f"  Phases with changes: {n_phases_with_changes}  |  No changes: {n_phases_no_changes}")
+    print(f"  (Scripted agent: never sideboards)")
+
+    if in_counts or out_counts:
+        # Cards boarded IN (from sideboard to main)
+        print(f"\n  {'Cards boarded IN':<30} {'Count':>6}")
+        print(f"  {'-'*30} {'-'*6}")
+        for name, cnt in sorted(in_counts.items(), key=lambda x: -x[1]):
+            print(f"  {name:<30} {cnt:>6}")
+
+        # Cards boarded OUT (from main to sideboard)
+        print(f"\n  {'Cards boarded OUT':<30} {'Count':>6}")
+        print(f"  {'-'*30} {'-'*6}")
+        for name, cnt in sorted(out_counts.items(), key=lambda x: -x[1]):
+            print(f"  {name:<30} {cnt:>6}")
+
+    # Per-game detail
+    print(f"\n  Per-game sideboard detail:")
+    print(f"  {'Game':<6} {'Result':<8} {'In':<40} {'Out'}")
+    print(f"  {'-'*6} {'-'*8} {'-'*40} {'-'*30}")
+    for gi, agent, c_in, c_out in phases:
+        r = games[gi]["result"]
+        result = "WIN" if r > 0 else ("LOSS" if r < 0 else "DRAW")
+        in_str = ", ".join(c_in) if c_in else "(none)"
+        out_str = ", ".join(c_out) if c_out else "(none)"
+        print(f"  {gi:<6} {result:<8} {in_str:<40} {out_str}")
+
+
 def _interactive_session(ctx):
     """Interactive REPL for inspecting simulation results.
 
@@ -1884,7 +1992,7 @@ def _interactive_session(ctx):
         print("\n" + "=" * 60)
         print(f"Interactive session — {len(games)} games in memory.")
         cmds = ["list", "replay <N>", "boardstate <N> <step>", "summary",
-                "targeting",
+                "targeting", "sideboard",
                 "swings [N]", "shap", "regret [N]", "entropy", "consistency [N]",
                 "calibration", "turning", "clusters",
                 "chart <N>", "chart swings [N]", "chart shap",
@@ -1925,6 +2033,7 @@ def _interactive_session(ctx):
             print("  entropy                   — policy entropy by phase and board state")
             print("  consistency [N]           — find similar states with different actions (top N pairs)")
             print("  targeting                 — self vs opp targeting, hold vs cast analysis")
+            print("  sideboard                 — sideboard decisions by each agent (bo3)")
             print("  calibration               — V(s) at game start vs actual win rate (is model biased?)")
             print("  turning                   — find the 'point of no return' in each game")
             print("  clusters                  — classify games by V(s) curve shape (archetypes)")
@@ -2370,6 +2479,9 @@ def _interactive_session(ctx):
 
         elif cmd == "targeting":
             _sim_targeting(games)
+
+        elif cmd == "sideboard":
+            _sim_sideboard_report(games)
 
         elif cmd == "run":
             if ctx.get("env") is None or ctx.get("model") is None:
