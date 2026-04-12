@@ -1,5 +1,6 @@
 #include "mana_system.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdio>
 #include <tuple>
@@ -276,7 +277,8 @@ std::vector<LegalAction> collect_mana_legal_actions(
 }
 
 bool can_afford_with_sources(Zone::Ownership player_owner, const std::multiset<Colors> &cost,
-                             std::shared_ptr<Orderer> orderer, Entity exclude_entity) {
+                             std::shared_ptr<Orderer> orderer, Entity exclude_entity,
+                             Entity paid_for) {
     Entity player_entity = get_player_entity(player_owner);
     if (!global_coordinator.entity_has_component<Player>(player_entity)) return false;
     auto &player = global_coordinator.GetComponent<Player>(player_entity);
@@ -290,6 +292,31 @@ bool can_afford_with_sources(Zone::Ownership player_owner, const std::multiset<C
     size_t flexible_count = 0;
 
     auto sources = collect_available_mana_sources(player_owner, orderer);
+
+    // Filter restricted mana sources (Cavern of Souls): only include if paid_for
+    // is a creature of the chosen type
+    if (paid_for != 0) {
+        sources.erase(std::remove_if(sources.begin(), sources.end(),
+            [&](const std::pair<Entity, Ability> &s) {
+                if (!s.second.restrict_to_chosen_type_creature) return false;
+                auto &source_perm = global_coordinator.GetComponent<Permanent>(s.first);
+                if (source_perm.chosen_type.empty()) return true;
+                if (!global_coordinator.entity_has_component<CardData>(paid_for)) return true;
+                auto &paid_cd = global_coordinator.GetComponent<CardData>(paid_for);
+                bool is_creature = false, has_chosen_subtype = false;
+                for (auto &t : paid_cd.types) {
+                    if (t.kind == TYPE && t.name == "Creature") is_creature = true;
+                    if (t.kind == SUBTYPE && t.name == source_perm.chosen_type) has_chosen_subtype = true;
+                }
+                return !is_creature || !has_chosen_subtype;
+            }), sources.end());
+    } else {
+        // No paid_for context — exclude all restricted sources to be conservative
+        sources.erase(std::remove_if(sources.begin(), sources.end(),
+            [](const std::pair<Entity, Ability> &s) {
+                return s.second.restrict_to_chosen_type_creature;
+            }), sources.end());
+    }
 
     // First pass: add free sources (no activation mana cost)
     // Multi-color sources appear as multiple entries for the same entity
@@ -568,15 +595,32 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
             continue;
         }
 
-        // Find a single-color source for this color
+        // Prefer adds_no_counter sources (Cavern of Souls) for uncounterable
         bool found = false;
+        for (auto &si : valid_sources) {
+            if (tapped_entities.count(si.entity)) continue;
+            if (si.color != needed) continue;
+            if (si.ability.adds_no_counter) {
+                activate_source(si);
+                tapped_entities.insert(si.entity);
+                if (player.mana.count(needed) > 0) {
+                    auto pit = player.mana.find(needed);
+                    player.mana.erase(pit);
+                }
+                it = remaining.erase(it);
+                found = true;
+                break;
+            }
+        }
+        if (found) continue;
+
+        // Find a single-color source for this color
         for (auto &si : valid_sources) {
             if (tapped_entities.count(si.entity)) continue;
             if (si.color != needed) continue;
             if (!si.is_multi_color) {
                 activate_source(si);
                 tapped_entities.insert(si.entity);
-                // Mana should now be in pool — spend it
                 if (player.mana.count(needed) > 0) {
                     auto pit = player.mana.find(needed);
                     player.mana.erase(pit);
@@ -605,7 +649,7 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
         if (!found) return false;
     }
 
-    // Pay generic costs with remaining sources
+    // Pay generic costs with remaining sources — prefer adds_no_counter (Cavern)
     while (remaining.count(GENERIC) > 0) {
         if (player.mana.size() > 0) {
             player.mana.erase(player.mana.begin());
@@ -614,6 +658,22 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
             continue;
         }
         bool found = false;
+        // Try adds_no_counter sources first
+        for (auto &si : valid_sources) {
+            if (tapped_entities.count(si.entity)) continue;
+            if (!si.ability.adds_no_counter) continue;
+            activate_source(si);
+            tapped_entities.insert(si.entity);
+            if (player.mana.size() > 0) {
+                player.mana.erase(player.mana.begin());
+                auto git = remaining.find(GENERIC);
+                remaining.erase(git);
+            }
+            found = true;
+            break;
+        }
+        if (found) continue;
+        // Fall back to any source
         for (auto &si : valid_sources) {
             if (tapped_entities.count(si.entity)) continue;
             activate_source(si);

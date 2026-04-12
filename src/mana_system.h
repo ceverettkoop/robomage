@@ -26,8 +26,11 @@ bool can_afford(Zone::Ownership player, const std::multiset<Colors>& cost);
 // Check if player can afford a cost considering current pool plus all activatable mana sources
 // exclude_entity: if nonzero, skip this entity when counting available sources (used when
 // the ability being checked will tap the source as part of its own cost)
+// paid_for: if nonzero, only count restricted mana sources (Cavern of Souls) when the
+// spell matches the restriction (creature of chosen type)
 bool can_afford_with_sources(Zone::Ownership player, const std::multiset<Colors>& cost,
-                             std::shared_ptr<Orderer> orderer, Entity exclude_entity = 0);
+                             std::shared_ptr<Orderer> orderer, Entity exclude_entity = 0,
+                             Entity paid_for = 0);
 
 // Return the maximum total mana producible (pool + untapped sources) minus colored base cost
 // obligations; used for computing max X value

@@ -1264,15 +1264,15 @@ static size_t count_delve_fuel(Zone::Ownership player, std::shared_ptr<Orderer> 
 
 // Check if player can afford cost using mana pool + Delve (exiling graveyard instants/sorceries)
 static bool can_afford_with_delve(Zone::Ownership player, const ManaValue &cost,
-                                  std::shared_ptr<Orderer> orderer) {
+                                  std::shared_ptr<Orderer> orderer, Entity paid_for = 0) {
     size_t generic_in_cost = cost.count(GENERIC);
-    if (generic_in_cost == 0) return can_afford_with_sources(player, cost, orderer);
+    if (generic_in_cost == 0) return can_afford_with_sources(player, cost, orderer, 0, paid_for);
     // Reduce generic by however many cards can be exiled
     size_t fuel = count_delve_fuel(player, orderer);
     size_t to_exile = std::min(generic_in_cost, fuel);
     ManaValue reduced_cost = cost;
     for (size_t i = 0; i < to_exile; i++) reduced_cost.erase(reduced_cost.find(GENERIC));
-    return can_afford_with_sources(player, reduced_cost, orderer);
+    return can_afford_with_sources(player, reduced_cost, orderer, 0, paid_for);
 }
 
 std::vector<LegalAction> StateManager::determine_legal_actions(
@@ -1463,8 +1463,8 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             // X-cost spells: base cost (without X) is enough to be castable;
             // X value is chosen at cast time in action_processor
             bool can_regular = card_data.has_delve
-                ? can_afford_with_delve(priority_player, effective_cost, orderer)
-                : can_afford_with_sources(priority_player, effective_cost, orderer);
+                ? can_afford_with_delve(priority_player, effective_cost, orderer, card_entity)
+                : can_afford_with_sources(priority_player, effective_cost, orderer, 0, card_entity);
 
             bool can_alt = can_afford_alt(card_data.alt_cost, priority_player, card_entity, orderer);
 
@@ -1509,7 +1509,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         if (!tgt_ok) continue;
 
         // Check affordability: flashback mana cost + life cost
-        bool can_afford_fb = can_afford_with_sources(priority_player, gcd.flashback_mana_cost, orderer);
+        bool can_afford_fb = can_afford_with_sources(priority_player, gcd.flashback_mana_cost, orderer, 0, gy_entity);
         if (can_afford_fb && gcd.flashback_alt_cost.life_cost > 0) {
             Entity pp_entity = (priority_player == Zone::PLAYER_A)
                 ? cur_game.player_a_entity : cur_game.player_b_entity;
