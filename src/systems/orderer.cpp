@@ -12,6 +12,8 @@
 #include "../components/color_identity.h"
 #include "../components/permanent.h"
 #include "../components/player.h"
+#include "../components/effect.h"
+#include "../components/token.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../ecs/events.h"
@@ -27,9 +29,14 @@ void Orderer::init() {
     global_coordinator.SetSystemSignature<Orderer>(signature);
 }
 
+static void check_exile_replacement(Entity target, Zone::ZoneValue &destination);
+
 void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destination) {
     size_t back = 0;
     auto &target_zone = global_coordinator.GetComponent<Zone>(target);
+
+    // Replacement effects (rule 614): redirect graveyard → exile when Dauthi Voidwalker etc. apply.
+    check_exile_replacement(target, destination);
 
     // Fire CARD_CHANGED_ZONE on every zone transition so any parsed ChangesZone trigger can match.
     {
@@ -91,6 +98,38 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
 
     if (on_bottom) target_zone.distance_from_top = back + 1;
     target_zone.location = destination;
+}
+
+// Dauthi Voidwalker replacement effect (rule 614): when a non-token card owned by
+// an opponent would go to graveyard, exile it with a void counter instead.
+// Scans battlefield permanents for the EXILE_INSTEAD_OF_GRAVEYARD replacement effect.
+static void check_exile_replacement(Entity target, Zone::ZoneValue &destination) {
+    if (destination != Zone::GRAVEYARD) return;
+    if (global_coordinator.entity_has_component<Token>(target)) return;
+    if (!global_coordinator.entity_has_component<CardData>(target)) return;
+    auto &tz = global_coordinator.GetComponent<Zone>(target);
+
+    Entity max_e = global_coordinator.GetMaxIssuedEntity();
+    for (Entity e = 0; e < max_e; e++) {
+        if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
+        if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+        auto &ez = global_coordinator.GetComponent<Zone>(e);
+        if (ez.location != Zone::BATTLEFIELD) continue;
+        auto &perm = global_coordinator.GetComponent<Permanent>(e);
+        if (perm.is_phased_out) continue;
+        // The replacement source must be controlled by the opponent of the card's owner
+        if (perm.controller == tz.owner) continue;
+        if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+        auto &cd = global_coordinator.GetComponent<CardData>(e);
+        for (const auto &r : cd.replacement_effects) {
+            if (r.kind != Effect::Replacement::EXILE_INSTEAD_OF_GRAVEYARD) continue;
+            destination = Zone::EXILE;
+            cur_game.void_countered.insert(target);
+            std::string name = global_coordinator.GetComponent<CardData>(target).name;
+            game_log("%s is exiled with a void counter.\n", name.c_str());
+            return;
+        }
+    }
 }
 
 // TODO MERGE THESE INTO A GENERIC GETTER

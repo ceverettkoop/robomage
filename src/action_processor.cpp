@@ -434,6 +434,21 @@ static std::vector<Entity> build_valid_targets(
         return valid_targets;
     }
 
+    // Stifle: target activated or triggered abilities on the stack (not spells)
+    if (ability.target_type.find("Activated") != std::string::npos ||
+        ability.target_type.find("Triggered") != std::string::npos) {
+        bool want_activated = ability.target_type.find("Activated") != std::string::npos;
+        bool want_triggered = ability.target_type.find("Triggered") != std::string::npos;
+        for (auto e : orderer->get_stack()) {
+            if (global_coordinator.entity_has_component<Spell>(e)) continue;  // spells are not abilities
+            if (!global_coordinator.entity_has_component<Ability>(e)) continue;
+            auto &ab = global_coordinator.GetComponent<Ability>(e);
+            if (want_activated && ab.ability_type == Ability::ACTIVATED) { valid_targets.push_back(e); continue; }
+            if (want_triggered && ab.ability_type == Ability::TRIGGERED) { valid_targets.push_back(e); continue; }
+        }
+        return valid_targets;
+    }
+
     // Target cards in a non-battlefield zone (e.g. Faerie Macabre targeting graveyard cards)
     if (vt == "Card" && ability.category == "ChangeZone" && ability.origin == Zone::GRAVEYARD) {
         Zone::Ownership opp = (priority_player == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
@@ -772,14 +787,19 @@ static std::string landwalk_subtype(const std::string &kw) {
     return "";
 }
 
+static bool creature_has_kw(const Creature &cr, const char *kw) {
+    for (const auto &k : cr.keywords) if (k == kw) return true;
+    return false;
+}
+
 static std::vector<Entity> determine_blockable_attackers(Entity blocker, const std::vector<Entity> &attackers) {
     auto &bcr = global_coordinator.GetComponent<Creature>(blocker);
     bool blocker_can_fly = false;
-    for (auto &kw : bcr.keywords)
-        if (kw == "Flying" || kw == "Reach") {
-            blocker_can_fly = true;
-            break;
-        }
+    bool blocker_has_shadow = false;
+    for (auto &kw : bcr.keywords) {
+        if (kw == "Flying" || kw == "Reach") blocker_can_fly = true;
+        if (kw == "Shadow") blocker_has_shadow = true;
+    }
 
     // Determine defending player from blocker's controller
     auto &blocker_perm = global_coordinator.GetComponent<Permanent>(blocker);
@@ -789,13 +809,19 @@ static std::vector<Entity> determine_blockable_attackers(Entity blocker, const s
     for (auto atk : attackers) {
         auto &acr = global_coordinator.GetComponent<Creature>(atk);
         bool atk_flying = false;
+        bool atk_has_shadow = false;
         bool has_landwalk_evasion = false;
         for (auto &kw : acr.keywords) {
             if (kw == "Flying") atk_flying = true;
+            if (kw == "Shadow") atk_has_shadow = true;
             std::string subtype = landwalk_subtype(kw);
             if (!subtype.empty() && player_controls_land_subtype(defending_player, subtype))
                 has_landwalk_evasion = true;
         }
+
+        // Shadow: creatures with shadow can only be blocked by shadow creatures,
+        // and creatures without shadow cannot be blocked by shadow creatures (rule 702.28)
+        if (atk_has_shadow != blocker_has_shadow) continue;
 
         if (atk_flying && !blocker_can_fly) continue;
         if (has_landwalk_evasion) continue;

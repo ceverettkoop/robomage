@@ -36,6 +36,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Dismember", 79}, {"Meltdown", 80}, {"Deafening Silence", 81}, {"Choke", 82},
     {"Long Goodbye", 83}, {"Fatal Push", 84}, {"Doorkeeper Thrull", 85},
     {"Magus of the Moon", 86},
+    {"Barrowgoyf", 87}, {"Dauthi Voidwalker", 88}, {"Stifle", 89},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);

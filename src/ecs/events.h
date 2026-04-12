@@ -14,6 +14,7 @@ namespace Events {
     constexpr EventId DRAW_STEP_BEGAN        = 7;  // "at the beginning of [your] draw step" / Phase$ Draw
     constexpr EventId SPELL_CAST             = 9;  // every spell cast; Params: PLAYER=caster
     constexpr EventId CREATURE_ATTACKED_ALONE = 10; // exactly one creature declared as attacker; Params: ENTITY=sole attacker, PLAYER=controller
+    constexpr EventId COMBAT_DAMAGE_TO_PLAYER = 11; // creature dealt combat damage to a player; Params: ENTITY=source creature, PLAYER=damaged player entity, AMOUNT=damage
 }
 
 // Param IDs used across events
@@ -22,6 +23,7 @@ namespace Params {
     constexpr ParamId PLAYER      = 2;  // The player entity involved in an event
     constexpr ParamId ORIGIN      = 3;  // Zone::ZoneValue before the move (CARD_CHANGED_ZONE)
     constexpr ParamId DESTINATION = 4;  // Zone::ZoneValue after the move (CARD_CHANGED_ZONE)
+    constexpr ParamId AMOUNT      = 5;  // Numeric amount (e.g. damage dealt)
 }
 
 #endif /* EVENTS_H */

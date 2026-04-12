@@ -12,8 +12,9 @@
 struct Effect {
     struct Replacement {
         enum Kind {
-            ENTERS_TAPPED,      // permanent enters the battlefield tapped
-            CANT_BE_COUNTERED,  // this spell can't be countered
+            ENTERS_TAPPED,              // permanent enters the battlefield tapped
+            CANT_BE_COUNTERED,          // this spell can't be countered
+            EXILE_INSTEAD_OF_GRAVEYARD, // opponent's cards exiled with void counter instead of going to graveyard
         };
         Kind kind = ENTERS_TAPPED;
         bool applies_to_self_only = false;  // only fires when the affected entity is the source itself

@@ -88,26 +88,35 @@ static bool matches_filter_spec(Entity entity, const std::string &spec) {
 
     // Check color qualifier
     if (!color_qualifier.empty()) {
-        Colors required_color = NO_COLOR;
-        if (color_qualifier == "Green")
-            required_color = GREEN;
-        else if (color_qualifier == "White")
-            required_color = WHITE;
-        else if (color_qualifier == "Blue")
-            required_color = BLUE;
-        else if (color_qualifier == "Black")
-            required_color = BLACK;
-        else if (color_qualifier == "Red")
-            required_color = RED;
-
-        // Check explicit_colors first, then mana cost colors
-        bool has_color = false;
-        if (!cd.explicit_colors.empty()) {
-            has_color = cd.explicit_colors.count(required_color) > 0;
+        // IsRemembered: entity must be in cur_game.remembered_entities
+        if (color_qualifier == "IsRemembered") {
+            bool found = false;
+            for (auto re : cur_game.remembered_entities) {
+                if (re == entity) { found = true; break; }
+            }
+            if (!found) return false;
         } else {
-            has_color = cd.mana_cost.count(required_color) > 0;
+            Colors required_color = NO_COLOR;
+            if (color_qualifier == "Green")
+                required_color = GREEN;
+            else if (color_qualifier == "White")
+                required_color = WHITE;
+            else if (color_qualifier == "Blue")
+                required_color = BLUE;
+            else if (color_qualifier == "Black")
+                required_color = BLACK;
+            else if (color_qualifier == "Red")
+                required_color = RED;
+
+            // Check explicit_colors first, then mana cost colors
+            bool has_color = false;
+            if (!cd.explicit_colors.empty()) {
+                has_color = cd.explicit_colors.count(required_color) > 0;
+            } else {
+                has_color = cd.mana_cost.count(required_color) > 0;
+            }
+            if (!has_color) return false;
         }
-        if (!has_color) return false;
     }
 
     // Check CMC <= X constraint
@@ -662,6 +671,14 @@ bool Ability::is_target_valid() const {
                global_coordinator.entity_has_component<Spell>(target);
     }
 
+    // Stifle: target is a standalone ability on the stack
+    if (target_type.find("Activated") != std::string::npos ||
+        target_type.find("Triggered") != std::string::npos) {
+        return global_coordinator.entity_has_component<Zone>(target) &&
+               global_coordinator.GetComponent<Zone>(target).location == Zone::STACK &&
+               global_coordinator.entity_has_component<Ability>(target);
+    }
+
     bool any = (vt == "Any");
     bool opp_only = (vt == "Opponent");
     bool inc_players = any || opp_only || vt.find("Player") != std::string::npos;
@@ -1107,18 +1124,20 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
     } else if (category == "Mill") {
         // Move top N cards from target player's library to graveyard
         Zone::Ownership mill_owner = controller;
-        size_t mill_count = (amount > 0) ? amount : 1;
+        size_t mill_count = amount_from_damage ? trigger_damage_amount : ((amount > 0) ? amount : 1);
         std::vector<Entity> lib = orderer->get_library_contents(mill_owner);
         std::sort(lib.begin(), lib.end(), [](Entity a, Entity b) {
             return global_coordinator.GetComponent<Zone>(a).distance_from_top <
                    global_coordinator.GetComponent<Zone>(b).distance_from_top;
         });
+        if (remember_milled) cur_game.remembered_entities.clear();
         for (size_t i = 0; i < mill_count && i < lib.size(); i++) {
             std::string cname = global_coordinator.entity_has_component<CardData>(lib[i])
                                     ? global_coordinator.GetComponent<CardData>(lib[i]).name
                                     : "card";
             orderer->add_to_zone(false, lib[i], Zone::GRAVEYARD);
             game_log("%s mills %s.\n", player_name(mill_owner).c_str(), cname.c_str());
+            if (remember_milled) cur_game.remembered_entities.push_back(lib[i]);
         }
     } else if (category == "Pump") {
         // Present target selection, then chain subabilities with that target
@@ -1255,12 +1274,21 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
                     std::string name = global_coordinator.entity_has_component<CardData>(target)
                                            ? global_coordinator.GetComponent<CardData>(target).name
                                            : "<unknown>";
+                    bool is_standalone_ability = !global_coordinator.entity_has_component<Spell>(target) &&
+                                                global_coordinator.entity_has_component<Ability>(target);
                     if (global_coordinator.entity_has_component<Ability>(target))
                         global_coordinator.RemoveComponent<Ability>(target);
                     if (global_coordinator.entity_has_component<Spell>(target))
                         global_coordinator.RemoveComponent<Spell>(target);
-                    Zone::ZoneValue counter_dest = (destination == Zone::EXILE) ? Zone::EXILE : Zone::GRAVEYARD;
-                    orderer->add_to_zone(false, target, counter_dest);
+                    if (is_standalone_ability) {
+                        // Standalone ability entities (activated/triggered) have no card to send
+                        // to a zone — remove from stack and destroy (rule 701.5a)
+                        orderer->add_to_zone(false, target, Zone::EXILE);
+                        global_coordinator.DestroyEntity(target);
+                    } else {
+                        Zone::ZoneValue counter_dest = (destination == Zone::EXILE) ? Zone::EXILE : Zone::GRAVEYARD;
+                        orderer->add_to_zone(false, target, counter_dest);
+                    }
                     game_log("%s is countered\n", name.c_str());
                 }
             } else {

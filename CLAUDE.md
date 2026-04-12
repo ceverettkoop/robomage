@@ -2,6 +2,28 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Code Style
+
+- Don't put new functions in main.cpp
+- Don't edit my comments for spelling or punctuation. Only change them if something substantive changed.
+- Avoid inline logic for anything that will be repeated; write new functions that are reusable
+- Declare local functions as private in the class, if the header contains a single class/struct, if header does not contain a class, write them as static functions in global namespace C-style.
+- Iterate through mEntities when possible (working within a system class), rather than iterating through all entities
+- Try to consolidate iterations through entities within a function, rather than iterating through many times
+- Static (local) functions should be forward declared at top of source file for clarity
+- C++17 with exceptions disabled (`-fno-exceptions`)
+- GUI is written in C99 with raylib
+- Uses clang-format configuration in `.clang-format`
+- DO NOT MODIFY CARD SCRIPTS
+
+## Project Overview
+
+Robomage is a C++ implementation of a Magic: The Gathering game engine using an Entity Component System (ECS) architecture.
+
+Every game decision logged as an integer. Games can be replayed deterministically when provided with the correct seed.
+
+The python side of the project enables machine learning of the game and analysis.
+
 ## Build Commands
 
 - **Build the project**: `make clean && make`
@@ -74,27 +96,6 @@ train/.venv/bin/python train/test_harness.py --scenario scenario.json
 - Card names in deck files omit apostrophes: `Thassas Oracle`, `Lions Eye Diamond`
 - The scripted agent always keeps (no mulligan), casts spells when affordable, plays lands, and attacks with all creatures
 - Temp deck files in `decks/temp/` are cleaned up automatically when using `--hand-a`/`--hand-b`; manually created files in `decks/temp/` are not
-
-## Code Style
-
-- Don't put new functions in main.cpp
-- Don't edit my comments for spelling or punctuation. Only change them if something substantive changed.
-- Avoid inline logic for anything that will be repeated; write new functions that are reusable
-- Declare local functions as private in the class, if the header contains a single class/struct, if header does not contain a class, write them as static functions in global namespace C-style.
-- Iterate through mEntities when possible (working within a system class), rather than iterating through all entities
-- Try to consolidate iterations through entities within a function, rather than iterating through many times
-- Static (local) functions should be forward declared at top of source file for clarity
-- C++17 with exceptions disabled (`-fno-exceptions`)
-- GUI is written in C99 with raylib
-- Uses clang-format configuration in `.clang-format`
-
-## Project Overview
-
-Robomage is a C++ implementation of a Magic: The Gathering game engine using an Entity Component System (ECS) architecture.
-
-Every game decision logged as an integer. Games can be replayed deterministically when provided with the correct seed.
-
-The python side of the project enables machine learning of the game and analysis.
 
 ## Architecture
 

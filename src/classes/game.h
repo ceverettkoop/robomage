@@ -35,6 +35,7 @@ typedef enum Step {
 #include <map>
 #include <memory>
 #include <random>
+#include <set>
 #include <vector>
 
 #include "../ecs/entity.h"
@@ -101,6 +102,7 @@ struct Game {
         bool pending_cant_be_countered = false;  // set during mana payment when Cavern restricted mana used
         bool revolt_player_a = false;  // a permanent Player A controlled left the battlefield this turn
         bool revolt_player_b = false;  // a permanent Player B controlled left the battlefield this turn
+        std::set<Entity> void_countered;  // entities exiled with void counters (Dauthi Voidwalker)
 
         // Recent action history ring buffer for ML observation
         ActionHistoryEntry action_history[ACTION_HISTORY_SIZE] = {};

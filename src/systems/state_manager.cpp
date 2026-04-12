@@ -378,6 +378,14 @@ static Ability keyword_triggered_ability(const std::string &keyword) {
 // Evaluate a StaticAbility SVar expression such as "Count$TypeInYourYard.Land".
 // Returns the computed integer value.
 static int evaluate_sa_svar(const std::string &expr, Zone::Ownership controller) {
+    // Handle /Plus.N suffix: strip it, evaluate the base, then add N
+    size_t plus_pos = expr.find("/Plus.");
+    if (plus_pos != std::string::npos) {
+        std::string base = expr.substr(0, plus_pos);
+        int offset = std::stoi(expr.substr(plus_pos + 6));
+        return evaluate_sa_svar(base, controller) + offset;
+    }
+
     // Count$TypeInYourYard.<TypeName> — count cards of that type in controller's graveyard
     if (expr.rfind("Count$TypeInYourYard.", 0) == 0) {
         std::string type_name = expr.substr(21);  // after "Count$TypeInYourYard."
@@ -394,6 +402,25 @@ static int evaluate_sa_svar(const std::string &expr, Zone::Ownership controller)
         }
         return count;
     }
+
+    // Count$ValidGraveyard Card$CardTypes — count distinct card types (Creature, Instant, etc.)
+    // across both players' graveyards (Barrowgoyf)
+    if (expr == "Count$CardTypesInAllGraveyards" ||
+        expr == "Count$ValidGraveyard Card$CardTypes") {
+        std::set<std::string> type_names;
+        for (Entity e = 0; e < MAX_ENTITIES; ++e) {
+            if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+            auto &z = global_coordinator.GetComponent<Zone>(e);
+            if (z.location != Zone::GRAVEYARD) continue;
+            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+            auto &cd = global_coordinator.GetComponent<CardData>(e);
+            for (auto &t : cd.types) {
+                if (t.kind == TYPE) type_names.insert(t.name);
+            }
+        }
+        return static_cast<int>(type_names.size());
+    }
+
     return 0;
 }
 
@@ -560,6 +587,25 @@ void StateManager::apply_static_ability_effects() {
         }
 
         if (a.sa->category == "Continuous") {
+            // Characteristic-defining ability (rule 604.3): sets base P/T each SBE pass.
+            // Handled separately because it replaces rather than modifies P/T.
+            if (a.sa->characteristic_defining &&
+                (!a.sa->set_power_svar.empty() || !a.sa->set_toughness_svar.empty())) {
+                if (!global_coordinator.entity_has_component<Creature>(a.entity)) continue;
+                auto &cr = global_coordinator.GetComponent<Creature>(a.entity);
+                int base_p = !a.sa->set_power_svar.empty()
+                    ? evaluate_sa_svar(a.sa->set_power_svar, a.controller) : 0;
+                int base_t = !a.sa->set_toughness_svar.empty()
+                    ? evaluate_sa_svar(a.sa->set_toughness_svar, a.controller) : 0;
+                // Preserve counters and temporary bonuses on top of the new base
+                int counters = cr.plus_one_counters;
+                int prowess = cr.prowess_bonus;
+                cr.power = static_cast<uint32_t>(std::max(0, base_p + counters + prowess));
+                cr.toughness = static_cast<uint32_t>(std::max(0, base_t + counters));
+                a.sa->applied = true;
+                continue;
+            }
+
             // Determine which entity receives the buff (source or equipped creature)
             Entity target_entity = a.entity;
             if (a.sa->affected == "EquippedBy") {
@@ -746,6 +792,12 @@ void StateManager::deal_combat_damage(Game &game, bool first_strike_only) {
                     target_player.life_total -= static_cast<int>(dmg);
                     const char *tname = (cr.attack_target == game.player_a_entity) ? "Player A" : "Player B";
                     game_log("  %s deals %u damage to %s\n", attacker_name.c_str(), dmg, tname);
+
+                    Event ev(Events::COMBAT_DAMAGE_TO_PLAYER);
+                    ev.SetParam(Params::ENTITY, entity);
+                    ev.SetParam(Params::PLAYER, cr.attack_target);
+                    ev.SetParam(Params::AMOUNT, dmg);
+                    global_coordinator.SendEvent(ev);
                 }
             }
         } else {
@@ -778,6 +830,12 @@ void StateManager::deal_combat_damage(Game &game, bool first_strike_only) {
                     target_player.life_total -= static_cast<int>(remaining);
                     const char *tname = (cr.attack_target == game.player_a_entity) ? "Player A" : "Player B";
                     game_log("  %s tramples %u damage to %s\n", attacker_name.c_str(), remaining, tname);
+
+                    Event ev(Events::COMBAT_DAMAGE_TO_PLAYER);
+                    ev.SetParam(Params::ENTITY, entity);
+                    ev.SetParam(Params::PLAYER, cr.attack_target);
+                    ev.SetParam(Params::AMOUNT, remaining);
+                    global_coordinator.SendEvent(ev);
                 }
             }
         }
@@ -1055,6 +1113,9 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                 // For exalted, target the sole attacker from the event
                 if (trigger_ab.category == "ExaltedBonus" && ev.HasParam(Params::ENTITY))
                     trigger_ab.target = ev.GetParam<Entity>(Params::ENTITY);
+                // For combat damage triggers, capture the damage amount
+                if (ev.GetType() == Events::COMBAT_DAMAGE_TO_PLAYER && ev.HasParam(Params::AMOUNT))
+                    trigger_ab.trigger_damage_amount = ev.GetParam<uint32_t>(Params::AMOUNT);
                 global_coordinator.AddComponent(trigger_entity, trigger_ab);
 
                 game_log("%s triggered\n", ent_name.c_str());

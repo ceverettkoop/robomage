@@ -46,6 +46,11 @@ struct StaticAbility {
     std::string disable_triggers_cause = "";  // ValidCause$ Creature,Artifact
     std::string disable_triggers_mode = "";   // ValidMode$ ChangesZone
 
+    // Characteristic-defining ability (Barrowgoyf): sets base P/T rather than additive
+    bool characteristic_defining = false;
+    std::string set_power_svar = "";      // SetPower$ X — SVar expression for base power
+    std::string set_toughness_svar = "";  // SetToughness$ Y — SVar expression for base toughness
+
     // State tracking — lives in the Permanent's copy, not in CardData template:
     bool applied = false;             // true when the condition was met on the last SBE pass
     uint32_t last_applied_entity = 0; // for EquippedBy: entity that last received the buff

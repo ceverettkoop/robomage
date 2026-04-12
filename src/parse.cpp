@@ -594,6 +594,7 @@ static uint32_t parse_power(std::string value) {
     if (value == "") return 0;
     auto slash_pos = value.find("/");
     std::string pow_string = value.substr(0, slash_pos);
+    if (pow_string.find('*') != std::string::npos) return 0;  // characteristic-defining; base 0
     return std::stoi(pow_string);
 }
 
@@ -601,6 +602,16 @@ static uint32_t parse_toughness(std::string value) {
     if (value == "") return 0;
     auto slash_pos = value.find("/");
     std::string tough_string = value.substr(slash_pos + 1);
+    // "1+*" → base is the numeric prefix (1); * is characteristic-defining
+    size_t star_pos = tough_string.find('*');
+    if (star_pos != std::string::npos) {
+        if (star_pos == 0) return 0;
+        std::string prefix = tough_string.substr(0, star_pos);
+        // Strip trailing '+' from "1+"
+        while (!prefix.empty() && (prefix.back() == '+' || prefix.back() == '-'))
+            prefix.pop_back();
+        return prefix.empty() ? 0 : static_cast<uint32_t>(std::stoi(prefix));
+    }
     return std::stoi(tough_string);
 }
 
@@ -630,7 +641,9 @@ static std::map<std::string, std::string> parse_svars(const std::string& script)
 static void apply_param_to_ability(Ability& ability, const std::string& key, const std::string& value,
                                    const std::string& card_name) {
     if (key == "NumCards" || key == "ChangeNum" || key == "Amount") {
-        if (!value.empty() && std::isdigit(static_cast<unsigned char>(value[0]))) {
+        if (value == "DamageAmount" || value == "TriggerCount$DamageAmount") {
+            ability.amount_from_damage = true;
+        } else if (!value.empty() && std::isdigit(static_cast<unsigned char>(value[0]))) {
             ability.amount = static_cast<size_t>(std::stoi(value));
         } else if (!value.empty()) {
             // Non-numeric value is a SVar key — store for runtime resolution
@@ -718,8 +731,10 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         } else if (!value.empty()) {
             ability.amount_svar = value;
         }
+    } else if (key == "RememberMilled") {
+        ability.remember_milled = (value == "True");
     } else if (key == "TargetType") {
-        if (value == "Spell") ability.target_type = "Spell";
+        ability.target_type = value;  // "Spell", "Activated,Triggered", etc.
     } else if (key == "NumDmg") {
         // Check if value is numeric; if not, store as SVar key for resolution later
         if (!value.empty() && (std::isdigit(static_cast<unsigned char>(value[0])) ||
@@ -972,6 +987,12 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
         auto it = svars.find(sub.amount_svar);
         if (it != svars.end()) {
             const std::string &sv = it->second;
+            // TriggerCount$DamageAmount → use combat damage trigger's damage amount at runtime
+            if (sv == "TriggerCount$DamageAmount") {
+                sub.amount_from_damage = true;
+                sub.amount_svar = "";
+                return sub;
+            }
             size_t ge_pos = sv.find("GE");
             if (ge_pos != std::string::npos) {
                 std::string rest = sv.substr(ge_pos + 2);
@@ -1201,6 +1222,8 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
     bool phase_is_draw = false;
     bool valid_player_is_you = false;
     bool mode_is_spell_cast = false;
+    bool mode_is_damage_done = false;
+    bool damage_combat_only = false;
     bool valid_card_non_creature = false;
     bool valid_card_instant = false;
     bool valid_card_sorcery = false;
@@ -1235,6 +1258,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
                 if (value == "ChangesZone") mode_changes_zone = true;
                 else if (value == "Phase") mode_is_phase = true;
                 else if (value == "SpellCast") mode_is_spell_cast = true;
+                else if (value == "DamageDone") mode_is_damage_done = true;
             } else if (key == "Phase") {
                 if (value == "Upkeep")   phase_is_upkeep   = true;
                 if (value == "EndStep")  phase_is_end_step = true;
@@ -1257,6 +1281,8 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
                 if (value.find(".YouOwn")     != std::string::npos) valid_card_owner_you    = true;
                 if (value.find("Land")        != std::string::npos) valid_card_land         = true;
                 if (value.find(".YouCtrl")    != std::string::npos) valid_player_is_you     = true;
+            } else if (key == "CombatDamage") {
+                if (value == "True") damage_combat_only = true;
             } else if (key == "ActivatorThisTurnCast") {
                 if (value.rfind("EQ", 0) == 0) {
                     activator_this_turn_cast_eq = static_cast<size_t>(std::stoi(value.substr(2)));
@@ -1311,6 +1337,12 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
         ability.trigger_on = Events::SPELL_CAST;
         ability.trigger_valid_player_is_controller = valid_player_is_you;
         ability.trigger_spell_count_eq = activator_this_turn_cast_eq;
+    }
+
+    // "Whenever CARDNAME deals combat damage to a player" — Barrowgoyf
+    if (mode_is_damage_done && damage_combat_only) {
+        ability.trigger_on = Events::COMBAT_DAMAGE_TO_PLAYER;
+        ability.trigger_only_self = true;  // ValidSource$ Card.Self
     }
 
     // Resolve effect from Execute$ SVar
@@ -1426,6 +1458,27 @@ static std::vector<StaticAbility> parse_static_abilities(const std::string &scri
                     sa.disable_triggers_cause = value;
                 } else if (key == "ValidMode") {
                     sa.disable_triggers_mode = value;
+                } else if (key == "CharacteristicDefining") {
+                    sa.characteristic_defining = (value == "True");
+                } else if (key == "SetPower") {
+                    auto it = svars.find(value);
+                    sa.set_power_svar = (it != svars.end()) ? it->second : value;
+                } else if (key == "SetToughness") {
+                    auto it = svars.find(value);
+                    std::string resolved = (it != svars.end()) ? it->second : value;
+                    // Resolve SVar$<name>/Plus.<N> pattern at parse time
+                    // e.g. "SVar$X/Plus.1" → resolve X from svars, append "/Plus.1"
+                    if (resolved.rfind("SVar$", 0) == 0) {
+                        size_t slash = resolved.find('/');
+                        std::string ref_name = (slash != std::string::npos)
+                            ? resolved.substr(5, slash - 5) : resolved.substr(5);
+                        std::string suffix = (slash != std::string::npos)
+                            ? resolved.substr(slash) : "";
+                        auto ref_it = svars.find(ref_name);
+                        if (ref_it != svars.end())
+                            resolved = ref_it->second + suffix;
+                    }
+                    sa.set_toughness_svar = resolved;
                 } else if (key == "AddType") {
                     sa.add_type = value;
                 } else if (key == "RemoveLandTypes") {
@@ -1486,8 +1539,12 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
         bool event_is_counter     = false;
         bool valid_card_self      = false;
         bool dest_is_battlefield  = false;
+        bool dest_is_graveyard_r  = false;
         bool replace_with_etb_tapped = false;
+        bool replace_with_exile   = false;
         bool layer_cant_happen    = false;
+        bool active_zones_battlefield = false;
+        bool valid_card_opp_non_token = false;
 
         size_t param_pos = 0;
         while (param_pos <= line.size()) {
@@ -1511,9 +1568,14 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
                 if      (key == "Event"       && value == "Moved")       event_is_moved          = true;
                 else if (key == "Event"       && value == "Counter")    event_is_counter        = true;
                 else if (key == "ValidCard"   && value == "Card.Self")   valid_card_self         = true;
+                else if (key == "ValidCard"   && value.find("OppOwn") != std::string::npos &&
+                         value.find("nonToken") != std::string::npos) valid_card_opp_non_token = true;
                 else if (key == "Destination" && value == "Battlefield") dest_is_battlefield     = true;
+                else if (key == "Destination" && value == "Graveyard")   dest_is_graveyard_r     = true;
                 else if (key == "ReplaceWith" && value == "ETBTapped")   replace_with_etb_tapped = true;
+                else if (key == "ReplaceWith" && value == "Exile")       replace_with_exile      = true;
                 else if (key == "Layer"       && value == "CantHappen") layer_cant_happen        = true;
+                else if (key == "ActiveZones" && value == "Battlefield") active_zones_battlefield = true;
             }
 
             if (param_end >= line.size()) break;
@@ -1530,6 +1592,14 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
             Effect::Replacement r;
             r.kind = Effect::Replacement::CANT_BE_COUNTERED;
             r.applies_to_self_only = true;
+            result.push_back(r);
+        }
+        // Dauthi Voidwalker: opponent's non-token cards go to exile instead of graveyard
+        if (event_is_moved && dest_is_graveyard_r && replace_with_exile &&
+            valid_card_opp_non_token && active_zones_battlefield) {
+            Effect::Replacement r;
+            r.kind = Effect::Replacement::EXILE_INSTEAD_OF_GRAVEYARD;
+            r.applies_to_self_only = false;
             result.push_back(r);
         }
     }

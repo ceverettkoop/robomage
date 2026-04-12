@@ -97,6 +97,9 @@ struct Ability{
     bool trigger_valid_card_is_instant_or_sorcery = false;  // ValidCard$ Instant/Sorcery
     bool trigger_valid_card_is_land = false;            // ValidCard$ Land.*
 
+    // Combat damage trigger (Barrowgoyf): damage amount stored at trigger fire time
+    size_t trigger_damage_amount = 0;
+
     // Spell count trigger (Cori-Steel Cutter)
     size_t trigger_spell_count_eq = 0;  // ActivatorThisTurnCast$ EQN — fires on Nth spell
 
@@ -106,6 +109,10 @@ struct Ability{
     // Attach / Equip sub-ability
     bool optional = false;           // Optional$ True — player may decline
     bool defined_remembered = false; // Defined$ Remembered — target is cur_game.remembered_entities[0]
+
+    // Mill: remember milled cards in cur_game.remembered_entities
+    bool remember_milled = false;    // RememberMilled$ True
+    bool amount_from_damage = false; // NumCards$ DamageAmount — use trigger_damage_amount
 
     // Cleanup sub-ability
     bool clear_remembered = false;   // ClearRemembered$ True
