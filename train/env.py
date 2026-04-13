@@ -78,12 +78,16 @@ SHAPING_OPPONENT_BELOW10 =  0.00  # one-time bonus when opponent life first drop
 SHAPING_HAND_ADV_PER_CARD = 0.01  # potential weight per card of hand advantage (potential-based)
 SHAPING_POWER_ADV_PER_PT  = 0.005 # potential weight per point of power advantage on board
 SHAPING_EPISODE_CAP       = 0.3   # max absolute shaping bonus per episode
-SHAPING_EPISODE_CAP_DOOMSDAY = 0.6  # higher cap for doomsday deck
+SHAPING_EPISODE_CAP_DOOMSDAY = 0.75  # higher cap for doomsday deck
 
 # ── Doomsday deck shaping ────────────────────────────────────────────────────
-SHAPING_DD_CAST_DOOMSDAY    = 0.25  # reward for casting Doomsday
-SHAPING_DD_RITUAL_SETUP     = 0.15  # reward for casting Dark Ritual when Doomsday in hand + main phase
+SHAPING_DD_CAST_DOOMSDAY    = 0.2  # reward for casting Doomsday
+SHAPING_DD_RITUAL_SETUP     = 0.1  # reward for casting Dark Ritual when Doomsday in hand + main phase
 SHAPING_DD_PICK_ORACLE      = 0.2  # reward for picking Thassa's Oracle during Doomsday pile
+SHAPING_DD_CAST_DISCARD     = 0.1  # reward for casting Thoughtseize/Duress targeting opponent
+SHAPING_DD_STRIP_COUNTER    = 0.15 # reward for selecting Force of Will or Daze with discard spell
+SHAPING_DD_TUTOR_DOOMSDAY   = 0.15 # reward for selecting Doomsday with Personal Tutor
+SHAPING_DD_KEEP_DOOMSDAY    = 0.1  # reward for not shuffling after placing Doomsday on top (Ponder)
 
 # ── Bo3 match rewards ────────────────────────────────────────────────────────
 BO3_GAME_WIN_REWARD   =  0.3   # intermediate reward for winning a game in bo3
@@ -475,9 +479,16 @@ _EDGE_OF_AUTUMN_VOCAB_IDX = 61
 _CONSIDER_VOCAB_IDX      = 68
 _DEEP_ANALYSIS_VOCAB_IDX = 70
 _CAVERN_OF_SOULS_VOCAB_IDX = 67
-_DOOMSDAY_DECK_IDS       = frozenset({53, 54, 55, 56, 57, 58, 59, 60, 61, 67, 68, 70})
+_DURESS_VOCAB_IDX        = 69
+_PONDER_VOCAB_IDX        = 11
+_FORCE_OF_WILL_VOCAB_IDX = 12
+_DAZE_VOCAB_IDX          = 13
+_DISCARD_SPELL_IDS       = frozenset({_THOUGHTSEIZE_VOCAB_IDX, _DURESS_VOCAB_IDX})
+_COUNTER_STRIP_IDS       = frozenset({_FORCE_OF_WILL_VOCAB_IDX, _DAZE_VOCAB_IDX})
+_DOOMSDAY_DECK_IDS       = frozenset({53, 54, 55, 56, 57, 58, 59, 60, 61, 67, 68, 69, 70})
 
 _CAT_TOP_LIBRARY = 20  # choose card to put on top of library (Doomsday pile ordering)
+_CAT_SHUFFLE     = 21  # shuffle choice (0 = don't shuffle, 1 = shuffle)
 
 
 def _hand_has_card(obs: np.ndarray, vocab_idx: int) -> bool:
@@ -791,6 +802,7 @@ class ModelVsScriptedEnv(gym.Env):
         self._decision_idx = 0
         self._episode_shaping = 0.0
         self._is_doomsday = self._model_deck is not None and "doomsday" in self._model_deck
+        self._dd_placed_doomsday = False  # set when agent picks Doomsday in a TOP_LIBRARY choice
         self._game_meta = {
             "model_is_a": self._training_is_a,
             "opp_deck": self._opp_deck or "unknown",
@@ -822,8 +834,28 @@ class ModelVsScriptedEnv(gym.Env):
                     and _obs_is_main_phase(self._last_obs)):
                 self._dd_pending_shaping += SHAPING_DD_RITUAL_SETUP
             # Reward picking Thassa's Oracle during Doomsday pile building
+            # NOTE: can fire twice — once during the initial 5-card search (ChangeZone
+            # with Destination$Library uses TOP_LIBRARY) and again during pile ordering
+            # (RearrangeTopOfLibrary also uses TOP_LIBRARY), unless Oracle is the last
+            # card placed automatically
             if cat == _CAT_TOP_LIBRARY and card == _THASSAS_ORACLE_VOCAB_IDX:
                 self._dd_pending_shaping += SHAPING_DD_PICK_ORACLE
+            # Reward selecting Doomsday with Personal Tutor (or any TOP_LIBRARY search)
+            if cat == _CAT_TOP_LIBRARY and card == _DOOMSDAY_VOCAB_IDX:
+                self._dd_pending_shaping += SHAPING_DD_TUTOR_DOOMSDAY
+                self._dd_placed_doomsday = True
+            # Reward not shuffling after placing Doomsday on top (Ponder)
+            if cat == _CAT_SHUFFLE and action == 0 and self._dd_placed_doomsday:
+                self._dd_pending_shaping += SHAPING_DD_KEEP_DOOMSDAY
+                self._dd_placed_doomsday = False
+            elif cat == _CAT_SHUFFLE:
+                self._dd_placed_doomsday = False
+            # Reward casting Thoughtseize/Duress (discard spells that strip countermagic)
+            if cat == _CAT_CAST and card in _DISCARD_SPELL_IDS:
+                self._dd_pending_shaping += SHAPING_DD_CAST_DISCARD
+            # Reward selecting Force of Will or Daze with the discard choice
+            if cat == _CAT_OTHER and card in _COUNTER_STRIP_IDS:
+                self._dd_pending_shaping += SHAPING_DD_STRIP_COUNTER
         else:
             self._dd_pending_shaping = 0.0
 
@@ -866,10 +898,12 @@ class ModelVsScriptedEnv(gym.Env):
             shaping += SHAPING_POWER_ADV_PER_PT * (power_curr - power_prev)
 
         shaping *= self.shaping_scale
-        # Clamp to remaining episode budget (doomsday gets a higher cap, bo3 gets 3x)
-        ep_cap = SHAPING_EPISODE_CAP_DOOMSDAY if self._is_doomsday else SHAPING_EPISODE_CAP
+        # In bo3, scale per-game shaping to 1/3 so total across 3 games
+        # stays proportional to the match reward (1.0)
         if self._bo3:
-            ep_cap *= 3.0
+            shaping /= 3.0
+        # Clamp to remaining episode budget
+        ep_cap = SHAPING_EPISODE_CAP_DOOMSDAY if self._is_doomsday else SHAPING_EPISODE_CAP
         remaining = ep_cap - self._episode_shaping
         floor = -(ep_cap + self._episode_shaping)
         shaping = max(floor, min(remaining, shaping))
