@@ -794,7 +794,8 @@ static size_t evaluate_dynamic_amount(
         }
         return count;
     }
-    if (expr.find("Count$InYourLibrary") != std::string::npos) {
+    if (expr.find("Count$InYourLibrary") != std::string::npos ||
+        expr.find("Count$ValidLibrary Card.YouOwn") != std::string::npos) {
         return orderer->get_library_contents(ctrl).size();
     }
     if (expr.find("Count$YourLifeTotal") != std::string::npos) {

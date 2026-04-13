@@ -1361,6 +1361,16 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
                 ability.counter_count = effect.counter_count;
                 ability.token_script = effect.token_script;
                 ability.subabilities = effect.subabilities;
+                ability.dig_num = effect.dig_num;
+                ability.dig_num_expr = effect.dig_num_expr;
+                ability.dig_destination = effect.dig_destination;
+                ability.dig_library_position = effect.dig_library_position;
+                ability.rest_random_order = effect.rest_random_order;
+                ability.optional_choice = effect.optional_choice;
+                ability.dynamic_amount_expr = effect.dynamic_amount_expr;
+                ability.condition_check_svar = effect.condition_check_svar;
+                ability.condition_svar_compare = effect.condition_svar_compare;
+                ability.condition_compare_svar_expr = effect.condition_compare_svar_expr;
             }
         }
     }
