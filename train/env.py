@@ -78,16 +78,16 @@ SHAPING_OPPONENT_BELOW10 =  0.00  # one-time bonus when opponent life first drop
 SHAPING_HAND_ADV_PER_CARD = 0.01  # potential weight per card of hand advantage (potential-based)
 SHAPING_POWER_ADV_PER_PT  = 0.005 # potential weight per point of power advantage on board
 SHAPING_EPISODE_CAP       = 0.3   # max absolute shaping bonus per episode
-SHAPING_EPISODE_CAP_DOOMSDAY = 0.75  # higher cap for doomsday deck
+SHAPING_EPISODE_CAP_DOOMSDAY = 0.6  # higher cap for doomsday deck
 
 # ── Doomsday deck shaping ────────────────────────────────────────────────────
 SHAPING_DD_CAST_DOOMSDAY    = 0.2  # reward for casting Doomsday
 SHAPING_DD_RITUAL_SETUP     = 0.1  # reward for casting Dark Ritual when Doomsday in hand + main phase
-SHAPING_DD_PICK_ORACLE      = 0.2  # reward for picking Thassa's Oracle during Doomsday pile
-SHAPING_DD_CAST_DISCARD     = 0.1  # reward for casting Thoughtseize/Duress targeting opponent
-SHAPING_DD_STRIP_COUNTER    = 0.15 # reward for selecting Force of Will or Daze with discard spell
-SHAPING_DD_TUTOR_DOOMSDAY   = 0.15 # reward for selecting Doomsday with Personal Tutor
-SHAPING_DD_KEEP_DOOMSDAY    = 0.1  # reward for not shuffling after placing Doomsday on top (Ponder)
+SHAPING_DD_PICK_ORACLE      = 0.2  # reward for picking Thassa's Oracle during Doomsday pile; potentially fires twice
+SHAPING_DD_CAST_DISCARD     = 0.03  # reward for casting Thoughtseize/Duress targeting opponent
+SHAPING_DD_STRIP_COUNTER    = 0.03 # reward for selecting Force of Will or Daze with discard spell
+SHAPING_DD_TUTOR_DOOMSDAY   = 0.05 # reward for selecting Doomsday with Personal Tutor
+SHAPING_DD_KEEP_DOOMSDAY    = 0.00  # reward for not shuffling after placing Doomsday on top (Ponder)
 
 # ── Bo3 match rewards ────────────────────────────────────────────────────────
 BO3_GAME_WIN_REWARD   =  0.3   # intermediate reward for winning a game in bo3
@@ -251,6 +251,7 @@ class RoboMageEnv(gym.Env):
         """
         reward = 0.0
         done = False
+        game_result = False
         shaping_a = 0.0
         shaping_b = 0.0
 
@@ -268,6 +269,7 @@ class RoboMageEnv(gym.Env):
             if self._bo3:
                 # In bo3 mode, individual game results are intermediate rewards
                 if line.startswith(b"GAME_RESULT:"):
+                    game_result = True
                     if b"Player A wins" in line:
                         reward += BO3_GAME_WIN_REWARD
                     elif b"Player B wins" in line:
@@ -354,7 +356,8 @@ class RoboMageEnv(gym.Env):
             if self.render_mode == "human":
                 self._print_narrative_line(line.decode("ascii", errors="replace"))
 
-        info = {"reward": reward, "done": done, "shaping_a": shaping_a, "shaping_b": shaping_b}
+        info = {"reward": reward, "done": done, "shaping_a": shaping_a, "shaping_b": shaping_b,
+                "game_result": game_result}
         if done:
             self._kill_proc()
             # Return a zero obs on terminal step — will be replaced by reset()
@@ -803,6 +806,7 @@ class ModelVsScriptedEnv(gym.Env):
         self._episode_shaping = 0.0
         self._is_doomsday = self._model_deck is not None and "doomsday" in self._model_deck
         self._dd_placed_doomsday = False  # set when agent picks Doomsday in a TOP_LIBRARY choice
+        self._dd_fired = set()  # tracks which DD shaping rewards have fired this game
         self._game_meta = {
             "model_is_a": self._training_is_a,
             "opp_deck": self._opp_deck or "unknown",
@@ -825,37 +829,46 @@ class ModelVsScriptedEnv(gym.Env):
             cat = _obs_action_category(self._last_obs, action)
             card = _obs_action_card_id(self._last_obs, action)
             self._dd_pending_shaping = 0.0
-            # Reward casting Doomsday
-            if cat == _CAT_CAST and card == _DOOMSDAY_VOCAB_IDX:
+            # Reward casting Doomsday (once per game)
+            if cat == _CAT_CAST and card == _DOOMSDAY_VOCAB_IDX and "cast_dd" not in self._dd_fired:
                 self._dd_pending_shaping += SHAPING_DD_CAST_DOOMSDAY
-            # Reward casting Dark Ritual when Doomsday is in hand and it's a main phase
+                self._dd_fired.add("cast_dd")
+            # Reward casting Dark Ritual when Doomsday is in hand and it's a main phase (once per game)
             if (cat == _CAT_CAST and card == _DARK_RITUAL_VOCAB_IDX
                     and _hand_has_card(self._last_obs, _DOOMSDAY_VOCAB_IDX)
-                    and _obs_is_main_phase(self._last_obs)):
+                    and _obs_is_main_phase(self._last_obs)
+                    and "ritual" not in self._dd_fired):
                 self._dd_pending_shaping += SHAPING_DD_RITUAL_SETUP
-            # Reward picking Thassa's Oracle during Doomsday pile building
-            # NOTE: can fire twice — once during the initial 5-card search (ChangeZone
-            # with Destination$Library uses TOP_LIBRARY) and again during pile ordering
-            # (RearrangeTopOfLibrary also uses TOP_LIBRARY), unless Oracle is the last
-            # card placed automatically
-            if cat == _CAT_TOP_LIBRARY and card == _THASSAS_ORACLE_VOCAB_IDX:
+                self._dd_fired.add("ritual")
+            # Reward picking Thassa's Oracle during Doomsday pile building (once per game)
+            if (cat == _CAT_TOP_LIBRARY and card == _THASSAS_ORACLE_VOCAB_IDX
+                    and "pick_oracle" not in self._dd_fired):
                 self._dd_pending_shaping += SHAPING_DD_PICK_ORACLE
-            # Reward selecting Doomsday with Personal Tutor (or any TOP_LIBRARY search)
+                self._dd_fired.add("pick_oracle")
+            # Reward selecting Doomsday with Personal Tutor (once per game)
             if cat == _CAT_TOP_LIBRARY and card == _DOOMSDAY_VOCAB_IDX:
-                self._dd_pending_shaping += SHAPING_DD_TUTOR_DOOMSDAY
+                if "tutor_dd" not in self._dd_fired:
+                    self._dd_pending_shaping += SHAPING_DD_TUTOR_DOOMSDAY
+                    self._dd_fired.add("tutor_dd")
                 self._dd_placed_doomsday = True
-            # Reward not shuffling after placing Doomsday on top (Ponder)
+            # Reward not shuffling after placing Doomsday on top (once per game)
             if cat == _CAT_SHUFFLE and action == 0 and self._dd_placed_doomsday:
-                self._dd_pending_shaping += SHAPING_DD_KEEP_DOOMSDAY
+                if "keep_dd" not in self._dd_fired:
+                    self._dd_pending_shaping += SHAPING_DD_KEEP_DOOMSDAY
+                    self._dd_fired.add("keep_dd")
                 self._dd_placed_doomsday = False
             elif cat == _CAT_SHUFFLE:
                 self._dd_placed_doomsday = False
-            # Reward casting Thoughtseize/Duress (discard spells that strip countermagic)
-            if cat == _CAT_CAST and card in _DISCARD_SPELL_IDS:
+            # Reward casting Thoughtseize/Duress (once per game)
+            if (cat == _CAT_CAST and card in _DISCARD_SPELL_IDS
+                    and "cast_discard" not in self._dd_fired):
                 self._dd_pending_shaping += SHAPING_DD_CAST_DISCARD
-            # Reward selecting Force of Will or Daze with the discard choice
-            if cat == _CAT_OTHER and card in _COUNTER_STRIP_IDS:
+                self._dd_fired.add("cast_discard")
+            # Reward selecting Force of Will or Daze with the discard choice (once per game)
+            if (cat == _CAT_OTHER and card in _COUNTER_STRIP_IDS
+                    and "strip_counter" not in self._dd_fired):
                 self._dd_pending_shaping += SHAPING_DD_STRIP_COUNTER
+                self._dd_fired.add("strip_counter")
         else:
             self._dd_pending_shaping = 0.0
 
@@ -908,6 +921,11 @@ class ModelVsScriptedEnv(gym.Env):
         floor = -(ep_cap + self._episode_shaping)
         shaping = max(floor, min(remaining, shaping))
         self._episode_shaping += shaping
+        # Reset shaping budget and DD flags per game in bo3
+        if self._bo3 and info.get("game_result", False):
+            self._episode_shaping = 0.0
+            self._dd_fired.clear()
+            self._dd_placed_doomsday = False
         self._last_obs = obs.copy() if not (terminated or truncated) else None
 
         if not self._training_is_a:
