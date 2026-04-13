@@ -85,9 +85,11 @@ SHAPING_DD_CAST_DOOMSDAY    = 0.2  # reward for casting Doomsday
 SHAPING_DD_RITUAL_SETUP     = 0.1  # reward for casting Dark Ritual when Doomsday in hand + main phase
 SHAPING_DD_PICK_ORACLE      = 0.2  # reward for picking Thassa's Oracle during Doomsday pile
 SHAPING_DD_CAST_DISCARD     = 0.03  # reward for casting Thoughtseize/Duress targeting opponent
-SHAPING_DD_STRIP_COUNTER    = 0.03 # reward for selecting Force of Will or Daze with discard spell
+SHAPING_DD_STRIP_COUNTER    = 0.00 # reward for selecting Force of Will or Daze with discard spell
 SHAPING_DD_TUTOR_DOOMSDAY   = 0.05 # reward for selecting Doomsday with Personal Tutor
-SHAPING_DD_KEEP_DOOMSDAY    = 0.00  # reward for not shuffling after placing Doomsday on top (Ponder)
+SHAPING_DD_KEEP_DOOMSDAY    = 0.00  # reward for not shuffling after placed Doomsday on top (Ponder)
+SHAPING_DD_LED_WITH_DRAW    = 0.1 # reward for cracking LED with a cycling/draw ability on the stack
+SHAPING_DD_LED_EMPTY_STACK  = -0.05 # penalty for cracking LED with nothing on the stack
 
 # ── Bo3 match rewards ────────────────────────────────────────────────────────
 BO3_GAME_WIN_REWARD   =  0.3   # intermediate reward for winning a game in bo3
@@ -489,6 +491,9 @@ _FORCE_OF_WILL_VOCAB_IDX = 12
 _DAZE_VOCAB_IDX          = 13
 _DISCARD_SPELL_IDS       = frozenset({_THOUGHTSEIZE_VOCAB_IDX, _DURESS_VOCAB_IDX})
 _COUNTER_STRIP_IDS       = frozenset({_FORCE_OF_WILL_VOCAB_IDX, _DAZE_VOCAB_IDX})
+_LED_DRAW_STACK_IDS      = frozenset({_STREET_WRAITH_VOCAB_IDX, _EDGE_OF_AUTUMN_VOCAB_IDX,
+                                      _CONSIDER_VOCAB_IDX, _DEEP_ANALYSIS_VOCAB_IDX,
+                                      _PONDER_VOCAB_IDX})
 _DOOMSDAY_DECK_IDS       = frozenset({53, 54, 55, 56, 57, 58, 59, 60, 61, 67, 68, 69, 70})
 
 _CAT_TOP_LIBRARY = 20  # choose card to put on top of library (Doomsday pile ordering)
@@ -573,6 +578,28 @@ def _opponent_has_spell_on_stack(obs: np.ndarray) -> bool:
         if np.max(card_vec) > 0.5 and ctrl_is_self < 0.5:
             return True
     return False
+
+
+def _self_has_draw_on_stack(obs: np.ndarray) -> bool:
+    """Return True if self controls a cycling or draw ability/spell on the stack."""
+    for i in range(12):
+        base = _STACK_START + i * _STACK_SLOT_SIZE
+        ctrl_is_self = obs[base]
+        card_vec = obs[base + 1 : base + 1 + N_CARD_TYPES]
+        idx = int(np.argmax(card_vec))
+        if card_vec[idx] > 0.5 and ctrl_is_self > 0.5 and idx in _LED_DRAW_STACK_IDS:
+            return True
+    return False
+
+
+def _stack_is_empty(obs: np.ndarray) -> bool:
+    """Return True if there are no items on the stack."""
+    for i in range(12):
+        base = _STACK_START + i * _STACK_SLOT_SIZE
+        card_vec = obs[base + 1 : base + 1 + N_CARD_TYPES]
+        if np.max(card_vec) > 0.5:
+            return False
+    return True
 
 
 def scripted_action(obs: np.ndarray, num_choices: int) -> int:
@@ -870,6 +897,14 @@ class ModelVsScriptedEnv(gym.Env):
                     and "strip_counter" not in self._dd_fired):
                 self._dd_pending_shaping += SHAPING_DD_STRIP_COUNTER
                 self._dd_fired.add("strip_counter")
+            # Reward cracking LED with a draw/cycling ability on the stack (once per game)
+            if cat == _CAT_ACTIVATE and card == _LED_VOCAB_IDX:
+                if _self_has_draw_on_stack(self._last_obs) and "led_draw" not in self._dd_fired:
+                    self._dd_pending_shaping += SHAPING_DD_LED_WITH_DRAW
+                    self._dd_fired.add("led_draw")
+                elif _stack_is_empty(self._last_obs) and "led_empty" not in self._dd_fired:
+                    self._dd_pending_shaping += SHAPING_DD_LED_EMPTY_STACK
+                    self._dd_fired.add("led_empty")
         else:
             self._dd_pending_shaping = 0.0
 
