@@ -60,7 +60,8 @@ _HAND_END    = _HAND_START + _HAND_SLOTS * _HAND_SLOT_SIZE     # 32506
 _HIST_START  = _HAND_END                                       # 32506
 _HIST_END    = _HIST_START + _HIST_ENTRIES * _HIST_ENTRY_SIZE  # 32551
 # obs[32551:32555] = match context (4 floats: game_number, self_wins, opp_wins, sideboard_phase)
-# obs[32555:] = action metadata + cost features appended by env.py
+# obs[32555:32558] = library counts & post-board (self_lib/60, opp_lib/60, is_post_board)
+# obs[32558:] = action metadata + cost features appended by env.py
 
 
 class CardGameExtractor(BaseFeaturesExtractor):

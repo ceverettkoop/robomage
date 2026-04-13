@@ -462,6 +462,11 @@ std::vector<float> serialize_state(const GameState* gs) {
     state.push_back(static_cast<float>(gs->match_wins_opp) / 2.0f);
     state.push_back(gs->is_sideboard_phase ? 1.0f : 0.0f);
 
+    // Library counts & post-board flag (3 floats)
+    state.push_back(static_cast<float>(gs->self_library_ct) / 60.0f);
+    state.push_back(static_cast<float>(gs->opp_library_ct) / 60.0f);
+    state.push_back(gs->match_game_number > 0 ? 1.0f : 0.0f);
+
     assert(static_cast<int>(state.size()) == STATE_SIZE);
     return state;
 }

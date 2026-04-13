@@ -299,8 +299,11 @@ train/.venv/bin/python train/train.py --watch-scripted --bo3                    
 - Individual game win/loss: +0.3 / -0.3 (intermediate)
 - Match win/loss: +1.0 / -1.0 (terminal)
 
-**State vector match context** (last 4 floats, indices 32551-32554, all 0.0 in single-game mode):
+**State vector match context** (indices 32551-32554, all 0.0 in single-game mode):
 - `game_number / 3.0`, `self_match_wins / 2.0`, `opp_match_wins / 2.0`, `is_sideboard_phase`
+
+**State vector library & post-board context** (indices 32555-32557):
+- `self_library_ct / 60.0`, `opp_library_ct / 60.0`, `is_post_board` (1.0 if game 2+ of bo3)
 
 ### Machine mode protocol
 
@@ -318,7 +321,7 @@ BQUERY: <N>\n
 [float32 × MAX_ACTIONS — action controller_is_self flags (padded)]
 ```
 - `N` = number of legal choices
-- State vector: 32555 floats (see `src/machine_io.h` for layout)
+- State vector: 32558 floats (see `src/machine_io.h` for layout)
 - Action categories: ActionCategory enum integers (0–26)
 - Card IDs: `card_vocab_index / N_CARD_TYPES`, or `-1.0 / N_CARD_TYPES` (-0.0078125) as null sentinel
 - Controller flags: `1.0` = self-controlled, `0.0` = opponent, null sentinel for non-entity actions
@@ -353,16 +356,16 @@ BQUERY: <N>\n
 
 ### Observation space
 
-Total: **33153 floats** (OBS_SIZE in `train/env.py`)
+Total: **33156 floats** (OBS_SIZE in `train/env.py`)
 
 | Range | Size | Content |
 |---|---|---|
-| `[0:32555]` | 32555 | State vector (see `src/machine_io.h`) |
-| `[32555:32619]` | 64 | Action categories, padded to MAX_ACTIONS (64), normalised by 26 |
-| `[32619:32683]` | 64 | Action card IDs, padded to MAX_ACTIONS |
-| `[32683:32747]` | 64 | Action controller_is_self flags, padded to MAX_ACTIONS |
-| `[32747:32817]` | 70 | Hand cast costs (10 slots × 7 cost features) |
-| `[32817:33153]` | 336 | Battlefield ability costs (48 slots × 7 cost features) |
+| `[0:32558]` | 32558 | State vector (see `src/machine_io.h`) |
+| `[32558:32622]` | 64 | Action categories, padded to MAX_ACTIONS (64), normalised by 26 |
+| `[32622:32686]` | 64 | Action card IDs, padded to MAX_ACTIONS |
+| `[32686:32750]` | 64 | Action controller_is_self flags, padded to MAX_ACTIONS |
+| `[32750:32820]` | 70 | Hand cast costs (10 slots × 7 cost features) |
+| `[32820:33156]` | 336 | Battlefield ability costs (48 slots × 7 cost features) |
 
 State vector layout is documented in `src/machine_io.h`. Key indices: `obs[31]` = priority player is the active player (perspective-relative), `obs[32]` = priority player is Player A (absolute). To get `active_is_a`: `(obs[31] > 0.5) == (obs[32] > 0.5)`.
 

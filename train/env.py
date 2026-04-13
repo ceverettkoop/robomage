@@ -24,10 +24,10 @@ Observation space
 -----------------
 State is always emitted from the PRIORITY PLAYER'S perspective ("self").
 
-32555-float state vector (32506 game state + 45 action history + 4 match context)
+32558-float state vector (32506 game state + 45 action history + 4 match context + 3 library/post-board)
 + 64 action-category floats + 64 action card-ID floats
 + 64 action controller_is_self floats + 70 hand cost floats
-+ 336 battlefield ability cost floats = 33153 total.
++ 336 battlefield ability cost floats = 33156 total.
 NOTE: ActionChoice.description is NOT part of the observation — it is for
 human-readable display only (GUI/CLI) and is never sent to the ML model.
 NOTE: Exile zones are tracked in GameState but not serialized to the observation.
@@ -59,7 +59,7 @@ try:
 except ImportError:
     from train.card_costs import _CARD_COST_MATRIX, _CARD_ABILITY_COST_MATRIX, N_CARD_TYPES, _N_COST_FEATS
 
-STATE_SIZE = 32555
+STATE_SIZE = 32558
 # NOTE: Exile zones are tracked in GameState but not serialized to the observation.
 # NOTE: ActionChoice.description is never emitted in the QUERY line — it is for
 #       human-readable display only and is not part of the ML observation.
@@ -83,7 +83,7 @@ SHAPING_EPISODE_CAP_DOOMSDAY = 0.6  # higher cap for doomsday deck
 # ── Doomsday deck shaping ────────────────────────────────────────────────────
 SHAPING_DD_CAST_DOOMSDAY    = 0.2  # reward for casting Doomsday
 SHAPING_DD_RITUAL_SETUP     = 0.1  # reward for casting Dark Ritual when Doomsday in hand + main phase
-SHAPING_DD_PICK_ORACLE      = 0.2  # reward for picking Thassa's Oracle during Doomsday pile; potentially fires twice
+SHAPING_DD_PICK_ORACLE      = 0.2  # reward for picking Thassa's Oracle during Doomsday pile
 SHAPING_DD_CAST_DISCARD     = 0.03  # reward for casting Thoughtseize/Duress targeting opponent
 SHAPING_DD_STRIP_COUNTER    = 0.03 # reward for selecting Force of Will or Daze with discard spell
 SHAPING_DD_TUTOR_DOOMSDAY   = 0.05 # reward for selecting Doomsday with Personal Tutor
@@ -99,7 +99,7 @@ _ACTION_CTRL_NULL    = -1.0 / N_CARD_TYPES  # null sentinel for non-entity actio
 MAX_HAND_SLOTS = 10
 _HAND_COST_FEATS  = MAX_HAND_SLOTS * _N_COST_FEATS  # 10 * 7 = 70
 _BF_ABILITY_FEATS = 48 * _N_COST_FEATS              # 48 * 7 = 336
-OBS_SIZE = STATE_SIZE + 3 * MAX_ACTIONS + _HAND_COST_FEATS + _BF_ABILITY_FEATS  # 33153
+OBS_SIZE = STATE_SIZE + 3 * MAX_ACTIONS + _HAND_COST_FEATS + _BF_ABILITY_FEATS  # 33156
 
 # ── State layout offsets (mirror src/machine_io.h) ───────────────────────────
 # Creatures, lands, and other permanents share one unified section (no separate land slots).
@@ -108,6 +108,7 @@ _GY_START     = 13282 + 12 * 130 # 14842: graveyard   (128 × 128)
 _HAND_START   = 14842 + 128 * 128 # 31226: hand        (10 × 128)
 _HIST_START   = 31226 + 10 * 128  # 32506: action history (15 × 3)
 # 32551-32554: match context (4 floats: game_number/3, self_wins/2, opp_wins/2, sideboard_phase)
+# 32555-32557: library counts & post-board (self_lib/60, opp_lib/60, is_post_board)
 _SELF_PERM_START = 34
 _OPP_PERM_START  = 34 + 48 * 138  # 6658
 _PERM_SLOTS      = 48

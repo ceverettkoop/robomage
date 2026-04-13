@@ -30,7 +30,7 @@
 // NOTE: Exile zones are populated in GameState but NOT serialized.
 // Add them back once cards that use exile are implemented.
 //
-// Fixed-size state vector layout (STATE_SIZE = 32555 floats):
+// Fixed-size state vector layout (STATE_SIZE = 32558 floats):
 //
 //  [0-8]      Self player block (9 floats):
 //               life/20, hand_ct/10, poison/10, mana[W,U,B,R,G,C]/10
@@ -68,8 +68,12 @@
 //  [32551-32554] Match context (4 floats, all 0.0 in single-game mode):
 //                game_number / 3.0, self_match_wins / 2.0,
 //                opp_match_wins / 2.0, is_sideboard_phase (0.0 or 1.0)
+//
+//  [32555-32557] Library & post-board context (3 floats):
+//                self_library_ct / 60.0, opp_library_ct / 60.0,
+//                is_post_board (1.0 if game 2+ of bo3, else 0.0)
 
-static constexpr int STATE_SIZE      = 32555;
+static constexpr int STATE_SIZE      = 32558;
 static constexpr int N_CARD_TYPES    = 128;
 static constexpr int PERM_SLOT_SIZE  = 138;  // 8 stat/combat + 2 type flags + N_CARD_TYPES
 static constexpr int STACK_SLOT_SIZE = 130;  // controller_is_self(1) + card one-hot(128) + is_spell(1)
