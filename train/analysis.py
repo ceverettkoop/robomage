@@ -1000,7 +1000,7 @@ _INTERP_FEATURE_NAMES = [
     "self_mana_R", "self_mana_G", "self_mana_C", "self_total_mana",
     "opp_mana_W", "opp_mana_U", "opp_mana_B",
     "opp_mana_R", "opp_mana_G", "opp_mana_C", "opp_total_mana",
-    "self_hand_size",
+    "self_hand_size", "opp_hand_size",
     "self_creatures", "self_lands", "self_other_perms",
     "opp_creatures", "opp_lands", "opp_other_perms",
     "creature_diff", "land_diff",
@@ -1011,6 +1011,8 @@ _INTERP_FEATURE_NAMES = [
     "self_total_toughness", "opp_total_toughness",
     "self_gy_size", "opp_gy_size",
     "stack_size",
+    "self_stack_count", "opp_stack_count",
+    "stack_spell_count", "stack_ability_count",
     "is_active_player",
     "step_untap", "step_upkeep", "step_draw",
     "step_first_main", "step_begin_combat",
@@ -1018,6 +1020,7 @@ _INTERP_FEATURE_NAMES = [
     "step_first_strike", "step_combat_dmg",
     "step_end_combat", "step_second_main",
     "step_end", "step_cleanup",
+    "self_library_size", "opp_library_size", "is_post_board",
 ]
 
 # Permanent slot layout (from extractor.py / machine_io.h)
@@ -1067,13 +1070,14 @@ def _extract_interpretable(obs):
         f[i] = obs[11 + j] * 10.0; i += 1
     f[i] = sum(obs[11 + j] * 10.0 for j in range(6)); i += 1  # total mana
 
-    # Hand size (count non-empty hand slots)
+    # Hand size (count non-empty hand slots for self; opp comes from player block)
     hand_count = 0
     for slot in range(10):
         base = _HAND_START + slot * N_CARD_TYPES
         if np.max(obs[base:base + N_CARD_TYPES]) > 0.5:
             hand_count += 1
-    f[i] = hand_count; i += 1
+    f[i] = hand_count;        i += 1  # self_hand_size
+    f[i] = obs[10] * 10.0;    i += 1  # opp_hand_size
 
     # Permanent counts and stats
     self_creatures = self_lands = self_other = 0
@@ -1160,12 +1164,38 @@ def _extract_interpretable(obs):
     # Stack size
     f[i] = obs[33] * 10.0; i += 1
 
+    # Stack contents (12 slots: controller_is_self, card one-hot[128], is_spell)
+    self_stack = opp_stack = 0
+    stack_spells = stack_abilities = 0
+    for slot in range(_STACK_SLOTS):
+        base = _STACK_START + slot * _STACK_SLOT_SZ
+        # Slot occupied iff card one-hot is set (offset 1, length N_CARD_TYPES)
+        if np.max(obs[base + 1 : base + 1 + N_CARD_TYPES]) < 0.5:
+            continue
+        if obs[base] > 0.5:
+            self_stack += 1
+        else:
+            opp_stack += 1
+        if obs[base + _STACK_SLOT_SZ - 1] > 0.5:
+            stack_spells += 1
+        else:
+            stack_abilities += 1
+    f[i] = self_stack;      i += 1
+    f[i] = opp_stack;       i += 1
+    f[i] = stack_spells;    i += 1
+    f[i] = stack_abilities; i += 1
+
     # Is active player
     f[i] = 1.0 if obs[31] > 0.5 else 0.0; i += 1
 
     # Step one-hot (obs[18:31])
     for j in range(13):
         f[i] = obs[18 + j]; i += 1
+
+    # Library counts and post-board flag (obs[32555-32557])
+    f[i] = obs[32555] * 60.0; i += 1  # self_library_size
+    f[i] = obs[32556] * 60.0; i += 1  # opp_library_size
+    f[i] = 1.0 if obs[32557] > 0.5 else 0.0; i += 1  # is_post_board
 
     return f
 
@@ -1585,6 +1615,15 @@ def _decode_board_state(obs, value=None):
     opp_mana     = [obs[11 + j] * 10.0 for j in range(6)]
     stack_size   = int(round(obs[33] * 10.0))
 
+    # Match context (32551-32554) and library/post-board (32555-32557)
+    game_number      = int(round(obs[32551] * 3.0))
+    self_match_wins  = int(round(obs[32552] * 2.0))
+    opp_match_wins   = int(round(obs[32553] * 2.0))
+    is_sideboard     = obs[32554] > 0.5
+    self_library_ct  = int(round(obs[32555] * 60.0))
+    opp_library_ct   = int(round(obs[32556] * 60.0))
+    is_post_board    = obs[32557] > 0.5
+
     step_idx  = int(np.argmax(obs[18:31]))
     step_name = _INTERP_STEP_NAMES[step_idx] if step_idx < len(_INTERP_STEP_NAMES) else f"?{step_idx}"
     val_str   = f"  V={value:+.3f}" if value is not None else ""
@@ -1630,6 +1669,9 @@ def _decode_board_state(obs, value=None):
         return lines
 
     print(f"Step: {step_name}  ({'active' if priority_is_active else 'non-active'} player has priority){val_str}")
+    if game_number > 0 or self_match_wins > 0 or opp_match_wins > 0 or is_sideboard or is_post_board:
+        sb_str = "  [sideboarding]" if is_sideboard else ("  [post-board]" if is_post_board else "")
+        print(f"Match: game {game_number}  wins {self_label}={self_match_wins} {opp_label}={opp_match_wins}{sb_str}")
     print(f"Stack: {stack_size} item(s)")
 
     if stack_size > 0:
@@ -1647,7 +1689,7 @@ def _decode_board_state(obs, value=None):
 
     print()
     print(f"  [{self_label}] Priority player  "
-          f"Life={self_life:.0f}  Hand={self_hand_ct:.0f}  Mana=[{mana_str(self_mana)}]")
+          f"Life={self_life:.0f}  Hand={self_hand_ct:.0f}  Lib={self_library_ct}  Mana=[{mana_str(self_mana)}]")
 
     sp = perm_lines(range(_SELF_PERM_SLOTS))
     if sp:
@@ -1674,7 +1716,7 @@ def _decode_board_state(obs, value=None):
 
     print()
     print(f"  [{opp_label}] Opponent          "
-          f"Life={opp_life:.0f}  Hand={opp_hand_ct:.0f}  Mana=[{mana_str(opp_mana)}]")
+          f"Life={opp_life:.0f}  Hand={opp_hand_ct:.0f}  Lib={opp_library_ct}  Mana=[{mana_str(opp_mana)}]")
 
     op = perm_lines(range(_SELF_PERM_SLOTS, _PERM_SLOTS))
     if op:
