@@ -211,9 +211,10 @@ Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner, Zone
                                                         : "zone";
     // Determine category: library searches going to top of library use TOP_LIBRARY,
     // other library searches use SEARCH_LIBRARY, hand picks use OTHER_CHOICE
-    ActionCategory cat = (zone == Zone::LIBRARY && destination == Zone::LIBRARY) ? ActionCategory::TOP_LIBRARY
-                         : (zone == Zone::LIBRARY)                               ? ActionCategory::SEARCH_LIBRARY
-                                                                                 : ActionCategory::OTHER_CHOICE;
+    ActionCategory cat = (destination == Zone::LIBRARY && (zone == Zone::LIBRARY || zone == Zone::HAND))
+                             ? ActionCategory::TOP_LIBRARY
+                         : (zone == Zone::LIBRARY) ? ActionCategory::SEARCH_LIBRARY
+                                                   : ActionCategory::OTHER_CHOICE;
 
     // Fail-to-find is shown when: not mandatory, OR zone is empty (nothing else to choose)
     bool show_fail_to_find = !mandatory || choices.empty();

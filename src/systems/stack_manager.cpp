@@ -78,7 +78,11 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
             bool was_flashback = global_coordinator.entity_has_component<Spell>(top_entity) &&
                                  global_coordinator.GetComponent<Spell>(top_entity).cast_with_flashback;
             if (global_coordinator.entity_has_component<Ability>(top_entity)) {
-                global_coordinator.GetComponent<Ability>(top_entity).resolve(orderer);
+                auto &ab = global_coordinator.GetComponent<Ability>(top_entity);
+                bool prev_priority = cur_game.player_a_has_priority;
+                cur_game.player_a_has_priority = (ab.controller == Zone::PLAYER_A);
+                ab.resolve(orderer);
+                cur_game.player_a_has_priority = prev_priority;
                 global_coordinator.RemoveComponent<Ability>(top_entity);
             }
             global_coordinator.RemoveComponent<Spell>(top_entity);
@@ -101,7 +105,10 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
         // Track resolution count for Count$ResolvedThisTurn (Scythecat Cub)
         if (ability.ability_type == Ability::TRIGGERED)
             cur_game.ability_resolution_counts[ability.source]++;
+        bool prev_priority = cur_game.player_a_has_priority;
+        cur_game.player_a_has_priority = (ability.controller == Zone::PLAYER_A);
         ability.resolve(orderer);
+        cur_game.player_a_has_priority = prev_priority;
 
         // Destroy the standalone ability entity — it has no card zone to return to
         global_coordinator.DestroyEntity(top_entity);

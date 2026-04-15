@@ -89,8 +89,8 @@ SHAPING_DD_CAST_DISCARD     = 0.03  # reward for casting Thoughtseize/Duress tar
 SHAPING_DD_STRIP_COUNTER    = 0.00 # reward for selecting Force of Will or Daze with discard spell
 SHAPING_DD_TUTOR_DOOMSDAY   = 0.05 # reward for selecting Doomsday with Personal Tutor
 SHAPING_DD_KEEP_DOOMSDAY    = 0.00  # reward for not shuffling after placed Doomsday on top (Ponder)
-SHAPING_DD_LED_WITH_DRAW    = 0.1 # reward for cracking LED with a cycling/draw ability on the stack
-SHAPING_DD_LED_EMPTY_STACK  = -0.05 # penalty for cracking LED with nothing on the stack
+SHAPING_DD_LED_WITH_DRAW    = 0.03 # reward for cracking LED with a cycling/draw ability on the stack
+SHAPING_DD_LED_EMPTY_STACK  = -0.02 # penalty for cracking LED with nothing on the stack
 
 # ── Bo3 match rewards ────────────────────────────────────────────────────────
 BO3_GAME_WIN_REWARD   =  0.3   # intermediate reward for winning a game in bo3

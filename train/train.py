@@ -544,7 +544,7 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
                 learning_rate=3e-4,
                 n_steps=4096,           # steps per env per update
                 batch_size=1024,
-                n_epochs=4,
+                n_epochs=8,
                 gamma=0.99,
                 gae_lambda=0.95,
                 clip_range=0.25,

@@ -1290,9 +1290,9 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
     la.category = ActionCategory::PASS_PRIORITY;
     actions.push_back(la);
 
-    // LAND FROM HAND
+    // LAND FROM HAND — requires empty stack (sorcery-speed)
     if ((game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
-        game.player_a_turn == game.player_a_has_priority &&
+        game.player_a_turn == game.player_a_has_priority && stack_manager->is_empty() &&
         global_coordinator.entity_has_component<Player>(priority_player_entity)) {
         auto &player = global_coordinator.GetComponent<Player>(priority_player_entity);
 
