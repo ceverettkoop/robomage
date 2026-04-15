@@ -63,7 +63,8 @@ from train import (
 from card_costs import _VOCAB_NAMES, N_CARD_TYPES
 from env import (ACTION_CATEGORY_MAX, RoboMageEnv, scripted_action,
                  OBS_SIZE, STATE_SIZE, MAX_ACTIONS, BINARY,
-                 _HAND_START)
+                 _HAND_START, _MATCH_CTX_START, _LIBRARY_CTX_START,
+                 _CUR_TURN_IDX, _KNOWN_TOP_LIB_START)
 
 
 # ── Data classes for parsed records ──────────────────────────────────────────
@@ -1192,10 +1193,10 @@ def _extract_interpretable(obs):
     for j in range(13):
         f[i] = obs[18 + j]; i += 1
 
-    # Library counts and post-board flag (obs[32555-32557])
-    f[i] = obs[32555] * 60.0; i += 1  # self_library_size
-    f[i] = obs[32556] * 60.0; i += 1  # opp_library_size
-    f[i] = 1.0 if obs[32557] > 0.5 else 0.0; i += 1  # is_post_board
+    # Library counts and post-board flag (mirror env.py _LIBRARY_CTX_START)
+    f[i] = obs[_LIBRARY_CTX_START]     * 60.0; i += 1  # self_library_size
+    f[i] = obs[_LIBRARY_CTX_START + 1] * 60.0; i += 1  # opp_library_size
+    f[i] = 1.0 if obs[_LIBRARY_CTX_START + 2] > 0.5 else 0.0; i += 1  # is_post_board
 
     return f
 
@@ -1615,14 +1616,14 @@ def _decode_board_state(obs, value=None):
     opp_mana     = [obs[11 + j] * 10.0 for j in range(6)]
     stack_size   = int(round(obs[33] * 10.0))
 
-    # Match context (32551-32554) and library/post-board (32555-32557)
-    game_number      = int(round(obs[32551] * 3.0))
-    self_match_wins  = int(round(obs[32552] * 2.0))
-    opp_match_wins   = int(round(obs[32553] * 2.0))
-    is_sideboard     = obs[32554] > 0.5
-    self_library_ct  = int(round(obs[32555] * 60.0))
-    opp_library_ct   = int(round(obs[32556] * 60.0))
-    is_post_board    = obs[32557] > 0.5
+    # Match context (_MATCH_CTX_START .. +4) and library/post-board (_LIBRARY_CTX_START .. +3)
+    game_number      = int(round(obs[_MATCH_CTX_START]     * 3.0))
+    self_match_wins  = int(round(obs[_MATCH_CTX_START + 1] * 2.0))
+    opp_match_wins   = int(round(obs[_MATCH_CTX_START + 2] * 2.0))
+    is_sideboard     = obs[_MATCH_CTX_START + 3] > 0.5
+    self_library_ct  = int(round(obs[_LIBRARY_CTX_START]     * 60.0))
+    opp_library_ct   = int(round(obs[_LIBRARY_CTX_START + 1] * 60.0))
+    is_post_board    = obs[_LIBRARY_CTX_START + 2] > 0.5
 
     step_idx  = int(np.argmax(obs[18:31]))
     step_name = _INTERP_STEP_NAMES[step_idx] if step_idx < len(_INTERP_STEP_NAMES) else f"?{step_idx}"

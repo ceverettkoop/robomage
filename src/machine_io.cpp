@@ -98,6 +98,7 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
         gs->self_exile[i]     = -1;
         gs->opp_exile[i]      = -1;
     }
+    for (int i = 0; i < KNOWN_TOP_LIBRARY_SIZE; i++) gs->known_top_library_self[i] = -1;
 
     Zone::Ownership priority_owner = cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
     if (viewer == Zone::UNKNOWN) viewer = priority_owner;
@@ -126,6 +127,12 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
         gs->match_wins_opp  = match_wins_a;
     }
     gs->is_sideboard_phase = sideboard_phase;
+
+    // Viewer's known top-of-library cache
+    const int* viewer_known = (viewer == Zone::PLAYER_A)
+        ? cur_game.known_top_library_a : cur_game.known_top_library_b;
+    for (int i = 0; i < KNOWN_TOP_LIBRARY_SIZE; i++)
+        gs->known_top_library_self[i] = viewer_known[i];
 
     // Fill player stat fields (hand_ct filled in the entity pass below)
     auto fill_player_stats = [&](PlayerState& ps, Entity ent) {
@@ -286,7 +293,7 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
     float card_types = static_cast<float>(N_CARD_TYPES);
     float id_null = -1.0f / card_types;
     for (int i = 0; i < ACTION_HISTORY_SIZE; i++) {
-        int base = i * 3;
+        int base = i * 4;
         if (i < gs->action_history_len) {
             // Read newest first: walk backwards from write position
             int ring_idx = (cur_game.action_history_write - 1 - i + ACTION_HISTORY_SIZE) % ACTION_HISTORY_SIZE;
@@ -296,10 +303,12 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
                 ? static_cast<float>(entry.card_vocab_idx) / card_types
                 : id_null;
             gs->action_history[base + 2] = (entry.player_a == viewer_is_a) ? 1.0f : 0.0f;
+            gs->action_history[base + 3] = static_cast<float>(entry.turn) / TURN_NORMALIZER;
         } else {
             gs->action_history[base + 0] = 0.0f;
             gs->action_history[base + 1] = 0.0f;
             gs->action_history[base + 2] = 0.0f;
+            gs->action_history[base + 3] = 0.0f;
         }
     }
 }
@@ -452,8 +461,8 @@ std::vector<float> serialize_state(const GameState* gs) {
         if (idx >= 0 && idx < N_CARD_TYPES) state[onehot_start + idx] = 1.0f;
     }
 
-    // Action history (15 x 3 = 45, newest first)
-    for (int i = 0; i < ACTION_HISTORY_SIZE * 3; i++)
+    // Action history (128 x 4 = 512, newest first)
+    for (int i = 0; i < ACTION_HISTORY_SIZE * 4; i++)
         state.push_back(gs->action_history[i]);
 
     // Match context (4 floats, all 0.0 in single-game mode)
@@ -466,6 +475,18 @@ std::vector<float> serialize_state(const GameState* gs) {
     state.push_back(static_cast<float>(gs->self_library_ct) / 60.0f);
     state.push_back(static_cast<float>(gs->opp_library_ct) / 60.0f);
     state.push_back(gs->match_game_number > 0 ? 1.0f : 0.0f);
+
+    // Current turn (1 float)
+    state.push_back(static_cast<float>(gs->turn) / TURN_NORMALIZER);
+
+    // Known top-of-library cards for the viewer (5 slots x 128 floats = 640)
+    // All zeros = unknown.
+    for (int i = 0; i < KNOWN_TOP_LIBRARY_SIZE; i++) {
+        int idx = gs->known_top_library_self[i];
+        size_t onehot_start = state.size();
+        state.insert(state.end(), N_CARD_TYPES, 0.0f);
+        if (idx >= 0 && idx < N_CARD_TYPES) state[onehot_start + idx] = 1.0f;
+    }
 
     assert(static_cast<int>(state.size()) == STATE_SIZE);
     return state;

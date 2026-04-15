@@ -4,6 +4,7 @@
 #include <numeric>
 
 #include "../card_db.h"
+#include "../card_vocab.h"
 #include "../classes/deck.h"
 #include "../classes/game.h"
 #include "../classes/action.h"
@@ -74,10 +75,26 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
                 cmp_zone.distance_from_top--;
             }
         }
+
+        // If a card left the library within the tracked top window, drop it
+        // from the known-top cache and shift the rest up.
+        if (origin == Zone::LIBRARY && departing_pos < static_cast<size_t>(KNOWN_TOP_LIBRARY_SIZE)) {
+            cur_game.known_top_library_remove_pos(owner == Zone::PLAYER_A, static_cast<int>(departing_pos));
+        }
     }
 
     if (!on_bottom) {
         target_zone.distance_from_top = 0;
+    }
+
+    // If a card is being placed on top of a library, it becomes the new known top.
+    if (!on_bottom && destination == Zone::LIBRARY) {
+        int vocab_idx = -1;
+        if (global_coordinator.entity_has_component<CardData>(target)) {
+            vocab_idx = card_name_to_index(
+                global_coordinator.GetComponent<CardData>(target).name);
+        }
+        cur_game.known_top_library_push(target_zone.owner == Zone::PLAYER_A, vocab_idx);
     }
 
     for (auto &&card : mEntities) {
@@ -170,6 +187,9 @@ void Orderer::shuffle_library(Zone::Ownership owner) {
         card_zone.distance_from_top = placements[i];
         i++;
     }
+
+    // Shuffling destroys any knowledge of which cards are on top of the library
+    cur_game.clear_known_top_library(owner == Zone::PLAYER_A);
 }
 
 extern bool no_shuffle;

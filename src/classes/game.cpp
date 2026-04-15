@@ -41,10 +41,28 @@ Entity Game::gen_player(const Deck &deck) {
 }
 
 void Game::record_action(int category, int card_vocab_idx, bool player_a) {
-    action_history[action_history_write] = {category, card_vocab_idx, player_a};
+    action_history[action_history_write] = {category, card_vocab_idx, player_a, static_cast<int>(turn)};
     action_history_write = (action_history_write + 1) % ACTION_HISTORY_SIZE;
     if (action_history_count < ACTION_HISTORY_SIZE)
         action_history_count++;
+}
+
+void Game::clear_known_top_library(bool player_a_owner) {
+    int* arr = player_a_owner ? known_top_library_a : known_top_library_b;
+    for (int i = 0; i < KNOWN_TOP_LIBRARY_SIZE; i++) arr[i] = -1;
+}
+
+void Game::known_top_library_push(bool player_a_owner, int card_vocab_idx) {
+    int* arr = player_a_owner ? known_top_library_a : known_top_library_b;
+    for (int i = KNOWN_TOP_LIBRARY_SIZE - 1; i > 0; i--) arr[i] = arr[i - 1];
+    arr[0] = card_vocab_idx;
+}
+
+void Game::known_top_library_remove_pos(bool player_a_owner, int pos) {
+    if (pos < 0 || pos >= KNOWN_TOP_LIBRARY_SIZE) return;
+    int* arr = player_a_owner ? known_top_library_a : known_top_library_b;
+    for (int i = pos; i < KNOWN_TOP_LIBRARY_SIZE - 1; i++) arr[i] = arr[i + 1];
+    arr[KNOWN_TOP_LIBRARY_SIZE - 1] = -1;
 }
 
 void Game::pass_priority() {

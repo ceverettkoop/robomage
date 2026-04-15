@@ -2,7 +2,8 @@
 #define GAME_H
 
 //passing Step enum to C for GUI
-#define ACTION_HISTORY_SIZE 15
+#define ACTION_HISTORY_SIZE 128
+#define KNOWN_TOP_LIBRARY_SIZE 5
 
 #ifdef __cplusplus
 extern "C" {
@@ -66,6 +67,7 @@ struct ActionHistoryEntry {
     int category;        // ActionCategory value
     int card_vocab_idx;  // -1 for non-card entities
     bool player_a;       // true if Player A took this action
+    int turn;            // cur_game.turn when the action was taken
 };
 
 struct Game {
@@ -109,7 +111,16 @@ struct Game {
         int action_history_write = 0;  // next write position (circular)
         int action_history_count = 0;  // total entries written (capped at ACTION_HISTORY_SIZE)
 
+        // Known top-of-library cards (one array per player). Index 0 is the top of the
+        // library. -1 = unknown (default). Updated when a card is placed on top of a
+        // library or when a card is removed from the top; cleared to all -1 on shuffle.
+        int known_top_library_a[KNOWN_TOP_LIBRARY_SIZE] = {-1, -1, -1, -1, -1};
+        int known_top_library_b[KNOWN_TOP_LIBRARY_SIZE] = {-1, -1, -1, -1, -1};
+
         void record_action(int category, int card_vocab_idx, bool player_a);
+        void clear_known_top_library(bool player_a_owner);
+        void known_top_library_push(bool player_a_owner, int card_vocab_idx);
+        void known_top_library_remove_pos(bool player_a_owner, int pos);
 
         bool ready_to_resolve();
         bool is_mandatory_choice_pending() const;

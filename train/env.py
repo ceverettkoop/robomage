@@ -24,10 +24,11 @@ Observation space
 -----------------
 State is always emitted from the PRIORITY PLAYER'S perspective ("self").
 
-32558-float state vector (32506 game state + 45 action history + 4 match context + 3 library/post-board)
+33666-float state vector (32506 game state + 512 action history + 4 match context
++ 3 library/post-board + 1 current turn + 640 known top-5 library)
 + 64 action-category floats + 64 action card-ID floats
 + 64 action controller_is_self floats + 70 hand cost floats
-+ 336 battlefield ability cost floats = 33156 total.
++ 336 battlefield ability cost floats = 34264 total.
 NOTE: ActionChoice.description is NOT part of the observation — it is for
 human-readable display only (GUI/CLI) and is never sent to the ML model.
 NOTE: Exile zones are tracked in GameState but not serialized to the observation.
@@ -59,7 +60,7 @@ try:
 except ImportError:
     from train.card_costs import _CARD_COST_MATRIX, _CARD_ABILITY_COST_MATRIX, N_CARD_TYPES, _N_COST_FEATS
 
-STATE_SIZE = 32558
+STATE_SIZE = 33666
 # NOTE: Exile zones are tracked in GameState but not serialized to the observation.
 # NOTE: ActionChoice.description is never emitted in the QUERY line — it is for
 #       human-readable display only and is not part of the ML observation.
@@ -101,20 +102,39 @@ _ACTION_CTRL_NULL    = -1.0 / N_CARD_TYPES  # null sentinel for non-entity actio
 MAX_HAND_SLOTS = 10
 _HAND_COST_FEATS  = MAX_HAND_SLOTS * _N_COST_FEATS  # 10 * 7 = 70
 _BF_ABILITY_FEATS = 48 * _N_COST_FEATS              # 48 * 7 = 336
-OBS_SIZE = STATE_SIZE + 3 * MAX_ACTIONS + _HAND_COST_FEATS + _BF_ABILITY_FEATS  # 33156
+OBS_SIZE = STATE_SIZE + 3 * MAX_ACTIONS + _HAND_COST_FEATS + _BF_ABILITY_FEATS  # 34264
 
 # ── State layout offsets (mirror src/machine_io.h) ───────────────────────────
 # Creatures, lands, and other permanents share one unified section (no separate land slots).
-_STACK_START  = 34 + 96 * 138    # 13282: stack slots (12 × 130)
-_GY_START     = 13282 + 12 * 130 # 14842: graveyard   (128 × 128)
-_HAND_START   = 14842 + 128 * 128 # 31226: hand        (10 × 128)
-_HIST_START   = 31226 + 10 * 128  # 32506: action history (15 × 3)
-# 32551-32554: match context (4 floats: game_number/3, self_wins/2, opp_wins/2, sideboard_phase)
-# 32555-32557: library counts & post-board (self_lib/60, opp_lib/60, is_post_board)
-_SELF_PERM_START = 34
-_OPP_PERM_START  = 34 + 48 * 138  # 6658
-_PERM_SLOTS      = 48
-_PERM_SLOT_SIZE  = 138
+_GLOBAL_SIZE            = 34                   # header: player blocks, step one-hot, flags, stack size
+_PERM_SLOTS             = 48                   # per-player; 96 total (self + opp)
+_PERM_SLOT_SIZE         = 138                  # 10 status + 128 card one-hot
+_STACK_SLOTS            = 12
+_STACK_SLOT_SIZE        = 130
+_GY_SLOTS_TOTAL         = 128                  # 64 self + 64 opponent
+_GY_SLOT_SIZE           = 128                  # card one-hot only
+_HAND_SLOTS_TOTAL       = 10
+_HAND_SLOT_SIZE         = 128
+_ACTION_HISTORY_SIZE    = 128                  # entries in the action history ring
+_ACTION_HISTORY_ENTRY   = 4                    # cat_norm, card_id, is_self, turn/50
+_MATCH_CTX_SIZE         = 4                    # game_number, self_wins, opp_wins, sideboard_phase
+_LIBRARY_CTX_SIZE       = 3                    # self_lib/60, opp_lib/60, is_post_board
+_CUR_TURN_SIZE          = 1                    # current turn / 50
+_KNOWN_TOP_LIB_SLOTS    = 5                    # serialized known top-of-library cards
+_KNOWN_TOP_LIB_SLOT_SIZE = 128                 # card one-hot per slot
+
+_SELF_PERM_START     = _GLOBAL_SIZE                                                  # 34
+_OPP_PERM_START      = _SELF_PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE              # 6658
+_STACK_START         = _OPP_PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE               # 13282
+_GY_START            = _STACK_START + _STACK_SLOTS * _STACK_SLOT_SIZE                # 14842
+_HAND_START          = _GY_START + _GY_SLOTS_TOTAL * _GY_SLOT_SIZE                   # 31226
+_HIST_START          = _HAND_START + _HAND_SLOTS_TOTAL * _HAND_SLOT_SIZE             # 32506
+_HIST_END            = _HIST_START + _ACTION_HISTORY_SIZE * _ACTION_HISTORY_ENTRY    # 33018
+_MATCH_CTX_START     = _HIST_END                                                     # 33018
+_LIBRARY_CTX_START   = _MATCH_CTX_START + _MATCH_CTX_SIZE                            # 33022
+_CUR_TURN_IDX        = _LIBRARY_CTX_START + _LIBRARY_CTX_SIZE                        # 33025
+_KNOWN_TOP_LIB_START = _CUR_TURN_IDX + _CUR_TURN_SIZE                                # 33026
+_KNOWN_TOP_LIB_END   = _KNOWN_TOP_LIB_START + _KNOWN_TOP_LIB_SLOTS * _KNOWN_TOP_LIB_SLOT_SIZE  # 33666
 
 _SELF_PERM_POWER_IDX = np.arange(_PERM_SLOTS) * _PERM_SLOT_SIZE + _SELF_PERM_START
 _SELF_PERM_CREATURE_IDX = _SELF_PERM_POWER_IDX + 8
@@ -440,22 +460,21 @@ _CARD_COLORED_COSTS = {
     29: {3: 1},   # Unholy Heat             (R)   — 1 red
 }
 
-# ── Battlefield layout (mirror machine_io.h) ────────────────────────────────
-_BF_START         = 34
-_BF_SLOT_SIZE     = 138  # 10 status floats + 128 card one-hot
-_PERM_A_SLOTS     = 48   # self occupies perm slots 0-47, opponent slots 48-95
-_BF_A_SLOTS       = 24   # ability cost slots per player (unchanged)
-_BF_CARD_OFF      = 10   # offset of card one-hot within each permanent slot
+# ── Battlefield layout (aliases of the unified state offsets above) ─────────
+_BF_START         = _SELF_PERM_START           # 34
+_BF_SLOT_SIZE     = _PERM_SLOT_SIZE            # 138
+_PERM_A_SLOTS     = _PERM_SLOTS                # 48: self occupies perm slots 0-47, opponent slots 48-95
+_BF_A_SLOTS       = 24                         # ability cost slots per player (unchanged)
+_BF_CARD_OFF      = 10                         # offset of card one-hot within each permanent slot
 # Precomputed indices for gathering 48 card one-hot vectors from state array
 _BF_ONEHOT_IDX    = np.concatenate([
-    np.arange(N_CARD_TYPES) + _BF_START + s * 138 + 10 for s in range(48)
+    np.arange(N_CARD_TYPES) + _BF_START + s * _BF_SLOT_SIZE + _BF_CARD_OFF
+    for s in range(_PERM_A_SLOTS)
 ])
-_CTRL_OFF         = 7    # offset of controller_is_self within a permanent slot
-_STACK_SLOT_SIZE  = 130  # controller_is_self(1) + card one-hot(128) + is_spell(1)
-_GY_SLOT_SIZE     = N_CARD_TYPES  # 128 — graveyard slots are just card one-hots
-_GY_A_SLOTS       = 64   # self occupies GY slots 0-63
+_CTRL_OFF         = 7                          # offset of controller_is_self within a permanent slot
+_GY_A_SLOTS       = _GY_SLOTS_TOTAL // 2       # self occupies GY slots 0-63
 # Start of bf_ability_costs block in the full obs vector
-_BF_COST_START    = STATE_SIZE + 3 * MAX_ACTIONS + _HAND_COST_FEATS  # 32717
+_BF_COST_START    = STATE_SIZE + 3 * MAX_ACTIONS + _HAND_COST_FEATS  # 33928
 # Status offsets within a permanent slot
 _OFF_POWER        = 0
 _OFF_TOUGHNESS    = 1

@@ -30,7 +30,7 @@
 // NOTE: Exile zones are populated in GameState but NOT serialized.
 // Add them back once cards that use exile are implemented.
 //
-// Fixed-size state vector layout (STATE_SIZE = 32558 floats):
+// Fixed-size state vector layout (STATE_SIZE = 33666 floats):
 //
 //  [0-8]      Self player block (9 floats):
 //               life/20, hand_ct/10, poison/10, mana[W,U,B,R,G,C]/10
@@ -59,25 +59,35 @@
 //  [31226-32505] Self hand: 10 slots x 128 floats = 1280
 //                Per slot: card_id one-hot (all zeros = empty)
 //
-//  [32506-32550] Action history: 15 entries x 3 floats = 45 (newest first; ends at 32550)
+//  [32506-33017] Action history: 128 entries x 4 floats = 512 (newest first)
 //                Per entry: category / ACTION_CATEGORY_MAX,
 //                           card_vocab_idx / N_CARD_TYPES (or -1/N_CARD_TYPES sentinel),
-//                           is_self (1.0 = viewer's action, 0.0 = opponent's)
+//                           is_self (1.0 = viewer's action, 0.0 = opponent's),
+//                           turn / 50.0 (the game turn when the action was taken)
 //                Empty entries (beyond action_history_len) are all zeros.
 //
-//  [32551-32554] Match context (4 floats, all 0.0 in single-game mode):
+//  [33018-33021] Match context (4 floats, all 0.0 in single-game mode):
 //                game_number / 3.0, self_match_wins / 2.0,
 //                opp_match_wins / 2.0, is_sideboard_phase (0.0 or 1.0)
 //
-//  [32555-32557] Library & post-board context (3 floats):
+//  [33022-33024] Library & post-board context (3 floats):
 //                self_library_ct / 60.0, opp_library_ct / 60.0,
 //                is_post_board (1.0 if game 2+ of bo3, else 0.0)
+//
+//  [33025]       Current game turn / 50.0
+//
+//  [33026-33665] Known top-5 library cards for the viewer: 5 slots x 128 floats = 640
+//                Per slot: card_id one-hot (all zeros = unknown). Index 0 is the
+//                top of the library. Entries are set when a card is placed on top
+//                (e.g. Ponder, Brainstorm, Rearrange) and cleared when the library
+//                is shuffled.
 
-static constexpr int STATE_SIZE      = 32558;
-static constexpr int N_CARD_TYPES    = 128;
-static constexpr int PERM_SLOT_SIZE  = 138;  // 8 stat/combat + 2 type flags + N_CARD_TYPES
-static constexpr int STACK_SLOT_SIZE = 130;  // controller_is_self(1) + card one-hot(128) + is_spell(1)
-static constexpr int GY_SLOT_SIZE    = 128;  // card one-hot only
+static constexpr int STATE_SIZE             = 33666;
+static constexpr int N_CARD_TYPES      = 128;
+static constexpr int PERM_SLOT_SIZE    = 138;  // 8 stat/combat + 2 type flags + N_CARD_TYPES
+static constexpr int STACK_SLOT_SIZE   = 130;  // controller_is_self(1) + card one-hot(128) + is_spell(1)
+static constexpr int GY_SLOT_SIZE      = 128;  // card one-hot only
+static constexpr float TURN_NORMALIZER = 50.0f; // divisor for turn fields
 
 // viewer: which player's perspective to fill from. Zone::UNKNOWN defaults to the priority player.
 void populate_gamestate(GameState* gs, Zone::Ownership viewer = Zone::UNKNOWN);
