@@ -487,7 +487,7 @@ def make_self_play_env(checkpoint_dir: str, rank: int,
 def train(binary_path: str, load_path: str | None = None, total_timesteps: int = TOTAL_TIMESTEPS,
           tally: bool = False, self_play: bool = False, scripted_fraction: float = 0.0,
           model_deck: str = "delver", opp_deck: str = "delver", record: bool = False,
-          n_envs_override: int | None = None, **env_kwargs):
+          n_envs_override: int | None = None, no_shaping: bool = False, **env_kwargs):
     """Train the model.
 
     ``scripted_fraction`` controls how many of the N_ENVS parallel environments
@@ -554,14 +554,18 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
             )
 
         actual_n_envs = n_envs
+        if no_shaping:
+            vec_env.set_attr("shaping_scale", 0.0)
+            print("[shaping] disabled for this session (--no-shaping)")
         callbacks = [
             CheckpointCallback(
                 save_freq=100_000 // actual_n_envs,
                 save_path=checkpoint_dir,
                 name_prefix=model_prefix,
             ),
-            ShapingScaleCallback(vec_env),
         ]
+        if not no_shaping:
+            callbacks.append(ShapingScaleCallback(vec_env))
         if tally:
             callbacks.append(WinTallyCallback())
         callbacks.append(ReplayLogCallback(binary_path=binary_path,
@@ -585,7 +589,8 @@ def train_fixed_model(binary_path: str, model_deck: str, opp_deck: str,
                       load_path: str | None = None,
                       total_timesteps: int = TOTAL_TIMESTEPS,
                       tally: bool = False, record: bool = False,
-                      n_envs_override: int | None = None, **env_kwargs):
+                      n_envs_override: int | None = None,
+                      no_shaping: bool = False, **env_kwargs):
     """Train model_deck against a fixed opponent model for opp_deck.
 
     Loads ``{model_deck}_{opp_deck}_final.zip`` as the training model (or
@@ -633,14 +638,18 @@ def train_fixed_model(binary_path: str, model_deck: str, opp_deck: str,
         print(f"Resuming from {load_path}")
         model = MaskablePPO.load(load_path, env=vec_env)
 
+        if no_shaping:
+            vec_env.set_attr("shaping_scale", 0.0)
+            print("[shaping] disabled for this session (--no-shaping)")
         callbacks = [
             CheckpointCallback(
                 save_freq=100_000 // n_envs,
                 save_path=checkpoint_dir,
                 name_prefix=model_prefix,
             ),
-            ShapingScaleCallback(vec_env),
         ]
+        if not no_shaping:
+            callbacks.append(ShapingScaleCallback(vec_env))
         if tally:
             callbacks.append(WinTallyCallback())
         callbacks.append(ReplayLogCallback(binary_path=binary_path,
@@ -663,7 +672,8 @@ def train_fixed_model(binary_path: str, model_deck: str, opp_deck: str,
 def train_alternate(binary_path: str, deck_a: str, deck_b: str,
                     alternate_steps: int, total_timesteps: int = TOTAL_TIMESTEPS,
                     tally: bool = False, record: bool = False,
-                    n_envs_override: int | None = None, **env_kwargs):
+                    n_envs_override: int | None = None,
+                    no_shaping: bool = False, **env_kwargs):
     """Alternate training between two decks every ``alternate_steps`` timesteps.
 
     Each round trains one side against the other's latest final checkpoint,
@@ -698,7 +708,8 @@ def train_alternate(binary_path: str, deck_a: str, deck_b: str,
 
         train_fixed_model(binary_path, training_deck, opp_deck,
                           total_timesteps=round_steps, tally=tally, record=record,
-                          n_envs_override=n_envs_override, **env_kwargs)
+                          n_envs_override=n_envs_override,
+                          no_shaping=no_shaping, **env_kwargs)
 
         steps_done += round_steps
 
@@ -1106,6 +1117,9 @@ if __name__ == "__main__":
     parser.add_argument("--n-envs", type=int, default=None,
                         help="Number of parallel environments (default: %d, self-play: %d)"
                              % (N_ENVS, N_ENVS_SELF_PLAY))
+    parser.add_argument("--no-shaping", action="store_true",
+                        help="Disable all shaping rewards for this session "
+                             "(forces shaping_scale=0 and skips the annealing callback)")
     args = parser.parse_args()
 
     # Resolve model shorthands (e.g. 'delver_boomer-mav' → checkpoints/delver_boomer-mav_final.zip)
@@ -1124,7 +1138,8 @@ if __name__ == "__main__":
                         alternate_steps=args.alternate,
                         total_timesteps=args.total_timesteps,
                         tally=args.tally, record=args.record,
-                        n_envs_override=args.n_envs, **env_kwargs)
+                        n_envs_override=args.n_envs,
+                        no_shaping=args.no_shaping, **env_kwargs)
     elif args.fixed_model:
         if not args.opponent:
             parser.error("--fixed-model requires --opponent")
@@ -1132,7 +1147,8 @@ if __name__ == "__main__":
                           load_path=args.load,
                           total_timesteps=args.total_timesteps,
                           tally=args.tally, record=args.record,
-                          n_envs_override=args.n_envs, **env_kwargs)
+                          n_envs_override=args.n_envs,
+                          no_shaping=args.no_shaping, **env_kwargs)
     elif args.train_deck:
         all_decks = sorted(os.path.splitext(p)[0]
                            for p in os.listdir(_DECKS_DIR) if p.endswith(".dk"))
@@ -1154,7 +1170,8 @@ if __name__ == "__main__":
                   tally=args.tally, self_play=args.self_play,
                   scripted_fraction=args.scripted_fraction,
                   model_deck=d, opp_deck=o, record=args.record,
-                  n_envs_override=args.n_envs, **env_kwargs)
+                  n_envs_override=args.n_envs,
+                  no_shaping=args.no_shaping, **env_kwargs)
         print(f"\nAll {len(matchups)} matchups for '{target}' complete.")
     elif args.train_all:
         all_decks = sorted(os.path.splitext(p)[0]
@@ -1174,7 +1191,8 @@ if __name__ == "__main__":
                   tally=args.tally, self_play=args.self_play,
                   scripted_fraction=args.scripted_fraction,
                   model_deck=d, opp_deck=o, record=args.record,
-                  n_envs_override=args.n_envs, **env_kwargs)
+                  n_envs_override=args.n_envs,
+                  no_shaping=args.no_shaping, **env_kwargs)
         print(f"\nAll {len(matchups)} matchups complete.")
     elif args.diag:
         diag(args.binary, args.diag_games, deck_a=args.deck, deck_b=args.opponent, bo3=args.bo3)
@@ -1192,4 +1210,5 @@ if __name__ == "__main__":
         train(args.binary, args.load, args.total_timesteps, tally=args.tally,
               self_play=args.self_play, scripted_fraction=args.scripted_fraction,
               model_deck=args.deck, opp_deck=args.opponent, record=args.record,
-              n_envs_override=args.n_envs, **env_kwargs)
+              n_envs_override=args.n_envs,
+              no_shaping=args.no_shaping, **env_kwargs)

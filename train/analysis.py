@@ -1264,7 +1264,8 @@ def _load_model_and_env(args):
     if args.opponent != "scripted":
         opp_model = MaskablePPO.load(_resolve_model_path(args.opponent))
 
-    env = RoboMageEnv(binary_path=binary, deck_a=deck_a, deck_b=deck_b)
+    env = RoboMageEnv(binary_path=binary, deck_a=deck_a, deck_b=deck_b,
+                      bo3=getattr(args, "bo3", False))
     return model, env, opp_model
 
 
@@ -1409,6 +1410,8 @@ def _add_sim_args(parser):
                         help="Opponent's deck (.dk stem). Inferred from opponent filename if omitted; "
                              "defaults to --deck-a for scripted opponent.")
     parser.add_argument("--binary", default=BINARY, help="Path to robomage binary")
+    parser.add_argument("--bo3", action="store_true",
+                        help="Run best-of-three matches (decks must include SIDEBOARD entries)")
 
 
 def cmd_shap(args):
