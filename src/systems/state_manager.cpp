@@ -762,9 +762,33 @@ static bool should_deal_damage(const Creature &cr, bool first_strike_only) {
     return true;
 }
 
+// Accumulate combat damage and lifelink gain in a single pass so that rule 119.3
+// (simultaneous damage/life-gain) applies: a controller only dies if the NET
+// life change leaves them at 0 or less after both effects resolve together.
+static void apply_lifelink_if_any(Entity source, size_t amount,
+                                  int &life_delta_a, int &life_delta_b,
+                                  Game &game) {
+    if (amount == 0) return;
+    if (!global_coordinator.entity_has_component<Creature>(source)) return;
+    auto &cr = global_coordinator.GetComponent<Creature>(source);
+    bool has_lifelink = false;
+    for (const auto &k : cr.keywords)
+        if (k == "Lifelink") { has_lifelink = true; break; }
+    if (!has_lifelink) return;
+    if (!global_coordinator.entity_has_component<Permanent>(source)) return;
+    Zone::Ownership ctrl = global_coordinator.GetComponent<Permanent>(source).controller;
+    if (ctrl == Zone::PLAYER_A)      life_delta_a += static_cast<int>(amount);
+    else if (ctrl == Zone::PLAYER_B) life_delta_b += static_cast<int>(amount);
+    (void)game;
+}
+
 // Combat damage is a turn-based action (rule 510.2), not a state-based action
 void StateManager::deal_combat_damage(Game &game, bool first_strike_only) {
     game_log("\n--- %sCombat Damage ---\n", first_strike_only ? "First Strike " : "");
+
+    // Accumulate lifelink life gains; apply at end so they are simultaneous with damage.
+    int life_delta_a = 0;
+    int life_delta_b = 0;
 
     for (auto entity : mEntities) {
         if (!global_coordinator.entity_has_component<Creature>(entity)) continue;
@@ -801,6 +825,7 @@ void StateManager::deal_combat_damage(Game &game, bool first_strike_only) {
                     ev.SetParam(Params::AMOUNT, dmg);
                     global_coordinator.SendEvent(ev);
                 }
+                apply_lifelink_if_any(entity, dmg, life_delta_a, life_delta_b, game);
             }
         } else {
             // Blocked — assign damage to blockers in order, blockers deal damage back
@@ -813,14 +838,20 @@ void StateManager::deal_combat_damage(Game &game, bool first_strike_only) {
                 if (bcr.power > 0 && should_deal_damage(bcr, first_strike_only)) {
                     deal_damage(blocker, entity, bcr.power);
                     game_log("  %s deals %u damage to %s\n", blocker_name.c_str(), bcr.power, attacker_name.c_str());
+                    apply_lifelink_if_any(blocker, bcr.power, life_delta_a, life_delta_b, game);
                 }
 
-                // Attacker deals damage to blocker (lethal to each in order, overflow to next)
+                // Attacker deals damage to blocker. Deathtouch on the attacker means
+                // 1 damage is considered lethal (702.2c), so we don't have to stack
+                // toughness worth onto the first blocker.
                 if (remaining > 0) {
-                    uint32_t assigned = (remaining >= bcr.toughness) ? bcr.toughness : remaining;
+                    bool attacker_dt = creature_has_keyword(cr, "Deathtouch");
+                    uint32_t needed = attacker_dt ? 1u : bcr.toughness;
+                    uint32_t assigned = (remaining >= needed) ? needed : remaining;
                     deal_damage(entity, blocker, assigned);
                     game_log("  %s deals %u damage to %s\n", attacker_name.c_str(), assigned, blocker_name.c_str());
                     remaining -= assigned;
+                    apply_lifelink_if_any(entity, assigned, life_delta_a, life_delta_b, game);
                 }
             }
             // Trample: excess damage goes to attack target
@@ -838,9 +869,22 @@ void StateManager::deal_combat_damage(Game &game, bool first_strike_only) {
                     ev.SetParam(Params::PLAYER, cr.attack_target);
                     ev.SetParam(Params::AMOUNT, remaining);
                     global_coordinator.SendEvent(ev);
+                    apply_lifelink_if_any(entity, remaining, life_delta_a, life_delta_b, game);
                 }
             }
         }
+    }
+
+    // Apply lifelink life gains simultaneously with damage taken (rule 119.3).
+    if (life_delta_a != 0) {
+        auto &pa = global_coordinator.GetComponent<Player>(game.player_a_entity);
+        pa.life_total += life_delta_a;
+        game_log("  Player A gains %d life (lifelink)\n", life_delta_a);
+    }
+    if (life_delta_b != 0) {
+        auto &pb = global_coordinator.GetComponent<Player>(game.player_b_entity);
+        pb.life_total += life_delta_b;
+        game_log("  Player B gains %d life (lifelink)\n", life_delta_b);
     }
 
     game.combat_damage_dealt = true;
@@ -930,7 +974,9 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
                 creatures_to_destroy.push_back(entity);
             } else if (global_coordinator.entity_has_component<Damage>(entity)) {
                 auto &damage = global_coordinator.GetComponent<Damage>(entity);
-                if (damage.damage_counters >= creature.toughness) {
+                // 702.2b: any nonzero damage from a deathtouch source is lethal.
+                bool deathtouched = damage.has_deathtouch_damage && damage.damage_counters > 0;
+                if (deathtouched || damage.damage_counters >= creature.toughness) {
                     creatures_to_destroy.push_back(entity);
                 }
             }

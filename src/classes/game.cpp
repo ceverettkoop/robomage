@@ -236,6 +236,7 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                         if (global_coordinator.entity_has_component<Damage>(entity)) {
                             auto &damage = global_coordinator.GetComponent<Damage>(entity);
                             damage.damage_counters = 0;
+                            damage.has_deathtouch_damage = false;
                         }
                         if (global_coordinator.entity_has_component<Creature>(entity)) {
                             auto &cr = global_coordinator.GetComponent<Creature>(entity);
