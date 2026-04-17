@@ -1519,7 +1519,7 @@ _INTERP_STEP_NAMES = [
     "END_COMBAT", "SECOND_MAIN", "END", "CLEANUP",
     "SIDEBOARD",
 ]
-_INTERP_STEP_OFFSET = 41  # index of step_untap in _INTERP_FEATURE_NAMES
+_INTERP_STEP_OFFSET = _INTERP_FEATURE_NAMES.index("step_untap")
 
 
 _INTERP_SIDEBOARD_IDX = _INTERP_FEATURE_NAMES.index("is_sideboard")
@@ -2015,16 +2015,27 @@ def _sim_sideboard_report(games):
         for name, cnt in sorted(out_counts.items(), key=lambda x: -x[1]):
             print(f"  {name:<30} {cnt:>6}")
 
-    # Per-game detail
+    # Per-game detail — block layout with deduplicated counts (long swap lists
+    # wrap badly in a table, so each phase gets its own indented block).
+    def _count_str(cards):
+        if not cards:
+            return "(none)"
+        counts = {}
+        for c in cards:
+            counts[c] = counts.get(c, 0) + 1
+        parts = [f"{n}x {name}" if n > 1 else name
+                 for name, n in sorted(counts.items(), key=lambda x: (-x[1], x[0]))]
+        return ", ".join(parts)
+
     print(f"\n  Per-game sideboard detail:")
-    print(f"  {'Game':<6} {'Result':<8} {'In':<40} {'Out'}")
-    print(f"  {'-'*6} {'-'*8} {'-'*40} {'-'*30}")
     for gi, agent, c_in, c_out in phases:
         r = games[gi]["result"]
         result = "WIN" if r > 0 else ("LOSS" if r < 0 else "DRAW")
-        in_str = ", ".join(c_in) if c_in else "(none)"
-        out_str = ", ".join(c_out) if c_out else "(none)"
-        print(f"  {gi:<6} {result:<8} {in_str:<40} {out_str}")
+        n_in, n_out = len(c_in), len(c_out)
+        print(f"    Game {gi} ({result})  +{n_in} / -{n_out}")
+        if c_in or c_out:
+            print(f"      IN : {_count_str(c_in)}")
+            print(f"      OUT: {_count_str(c_out)}")
 
 
 def _interactive_session(ctx):
