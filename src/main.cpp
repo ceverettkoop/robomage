@@ -70,6 +70,7 @@ int match_game_number = -1;  // -1 = single game, 0-2 = bo3 game index
 int match_wins_a = 0;
 int match_wins_b = 0;
 bool sideboard_phase = false;
+Zone::Ownership sideboard_phase_player = Zone::UNKNOWN;
 
 struct EcsSystems {
     std::shared_ptr<Orderer> orderer;
@@ -185,6 +186,7 @@ static int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &dec
 // present sideboard choices to a player via the standard query mechanism
 static void run_sideboard_phase(Deck &deck, Zone::Ownership player) {
     sideboard_phase = true;
+    sideboard_phase_player = player;
     const char *player_name = (player == Zone::PLAYER_A) ? "Player A" : "Player B";
     int sb_swaps = 0;
 
@@ -284,6 +286,7 @@ static void run_sideboard_phase(Deck &deck, Zone::Ownership player) {
     }
 
     sideboard_phase = false;
+    sideboard_phase_player = Zone::UNKNOWN;
 }
 
 static std::vector<std::string> split_card_list(const std::string &csv) {
