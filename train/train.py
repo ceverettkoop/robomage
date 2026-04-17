@@ -565,7 +565,7 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
             print("[shaping] disabled for this session (--no-shaping)")
         callbacks = [
             CheckpointCallback(
-                save_freq=100_000 // actual_n_envs,
+                save_freq=250_000 // actual_n_envs,
                 save_path=checkpoint_dir,
                 name_prefix=model_prefix,
             ),
@@ -650,7 +650,7 @@ def train_fixed_model(binary_path: str, model_deck: str, opp_deck: str,
             print("[shaping] disabled for this session (--no-shaping)")
         callbacks = [
             CheckpointCallback(
-                save_freq=100_000 // n_envs,
+                save_freq=250_000 // n_envs,
                 save_path=checkpoint_dir,
                 name_prefix=model_prefix,
             ),
