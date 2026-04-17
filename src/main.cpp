@@ -186,6 +186,7 @@ static int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &dec
 static void run_sideboard_phase(Deck &deck, Zone::Ownership player) {
     sideboard_phase = true;
     const char *player_name = (player == Zone::PLAYER_A) ? "Player A" : "Player B";
+    int sb_swaps = 0;
 
     while (true) {
         if (gui_killed) break;
@@ -205,6 +206,12 @@ static void run_sideboard_phase(Deck &deck, Zone::Ownership player) {
         }
 
         if (actions.size() <= 1) break;  // no sideboard cards available
+
+        // in machine mode, cap sideboarding at 15 swaps to prevent infinite loops
+        if (machine_mode && sb_swaps >= 15) {
+            game_log("%s hit sideboard swap limit (15), auto-finishing.\n", player_name);
+            break;
+        }
 
         game_log("\n%s sideboarding (%zu cards in sideboard):\n", player_name, deck.sideboard.size());
 
@@ -273,6 +280,7 @@ static void run_sideboard_phase(Deck &deck, Zone::Ownership player) {
         }
 
         game_log("Swapped out %s for %s\n", card_out.c_str(), card_in.c_str());
+        sb_swaps++;
     }
 
     sideboard_phase = false;
