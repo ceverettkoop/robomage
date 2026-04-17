@@ -1022,6 +1022,7 @@ _INTERP_FEATURE_NAMES = [
     "step_end_combat", "step_second_main",
     "step_end", "step_cleanup",
     "self_library_size", "opp_library_size", "is_post_board",
+    "is_sideboard",
 ]
 
 # Permanent slot layout (from extractor.py / machine_io.h)
@@ -1197,6 +1198,7 @@ def _extract_interpretable(obs):
     f[i] = obs[_LIBRARY_CTX_START]     * 60.0; i += 1  # self_library_size
     f[i] = obs[_LIBRARY_CTX_START + 1] * 60.0; i += 1  # opp_library_size
     f[i] = 1.0 if obs[_LIBRARY_CTX_START + 2] > 0.5 else 0.0; i += 1  # is_post_board
+    f[i] = 1.0 if obs[_MATCH_CTX_START + 3] > 0.5 else 0.0; i += 1  # is_sideboard
 
     return f
 
@@ -1515,15 +1517,22 @@ _INTERP_STEP_NAMES = [
     "UNTAP", "UPKEEP", "DRAW", "FIRST_MAIN", "BEGIN_COMBAT",
     "DECLARE_ATK", "DECLARE_BLK", "FIRST_STRIKE", "COMBAT_DMG",
     "END_COMBAT", "SECOND_MAIN", "END", "CLEANUP",
+    "SIDEBOARD",
 ]
 _INTERP_STEP_OFFSET = 41  # index of step_untap in _INTERP_FEATURE_NAMES
 
 
+_INTERP_SIDEBOARD_IDX = _INTERP_FEATURE_NAMES.index("is_sideboard")
+
+
 def _step_name_from_feat(feat):
     """Decode step one-hot from interp feature vector."""
+    if feat[_INTERP_SIDEBOARD_IDX] > 0.5:
+        return "SIDEBOARD"
     best = -1
     best_val = -1.0
-    for i, name in enumerate(_INTERP_STEP_NAMES):
+    # only iterate the 13 game-step one-hots, not SIDEBOARD
+    for i in range(13):
         v = feat[_INTERP_STEP_OFFSET + i]
         if v > best_val:
             best_val = v
