@@ -1926,7 +1926,9 @@ def _sim_sideboard_report(games):
     _CAT_SB_OUT  = 25
     _CAT_SB_DONE = 26
 
-    # Per-game sideboard phases: list of (game_idx, agent, cards_in, cards_out)
+    # Per-phase records: list of (match_idx, after_game_num, cards_in, cards_out).
+    # after_game_num is 1-based: the game that just ended (so a 2-game match has
+    # one phase with after_game_num=1; a 3-game match has after_game_num=1 and 2).
     phases = []
 
     for gi, g in enumerate(games):
@@ -1938,6 +1940,7 @@ def _sim_sideboard_report(games):
         # Track current sideboard phase
         cards_in = []
         cards_out = []
+        current_after_game = None  # match_game_number at the phase (0-based)
 
         for si in range(n_steps):
             obs = observations[si]
@@ -1945,6 +1948,9 @@ def _sim_sideboard_report(games):
 
             cat_raw = obs[STATE_SIZE + action]
             cat = int(round(cat_raw * ACTION_CATEGORY_MAX))
+
+            if cat in (_CAT_SB_IN, _CAT_SB_OUT, _CAT_SB_DONE) and current_after_game is None:
+                current_after_game = int(round(obs[_MATCH_CTX_START] * 3.0))
 
             if cat == _CAT_SB_IN:
                 card_raw = obs[STATE_SIZE + MAX_ACTIONS + action]
@@ -1963,16 +1969,17 @@ def _sim_sideboard_report(games):
                     name = "?"
                 cards_out.append(name)
             elif cat == _CAT_SB_DONE:
-                if cards_in or cards_out:
-                    phases.append((gi, "model", list(cards_in), list(cards_out)))
-                else:
-                    phases.append((gi, "model", [], []))
+                # match_game_number is 0-based; add 1 so "after game 1" is human-readable.
+                after_game = (current_after_game + 1) if current_after_game is not None else 0
+                phases.append((gi, after_game, list(cards_in), list(cards_out)))
                 cards_in.clear()
                 cards_out.clear()
+                current_after_game = None
 
         # Flush any in-progress phase (shouldn't happen but safety)
         if cards_in or cards_out:
-            phases.append((gi, "model", list(cards_in), list(cards_out)))
+            after_game = (current_after_game + 1) if current_after_game is not None else 0
+            phases.append((gi, after_game, list(cards_in), list(cards_out)))
 
     if not phases:
         print("  No sideboard phases found. (Are these bo3 games?)")
@@ -1987,7 +1994,7 @@ def _sim_sideboard_report(games):
     n_phases_with_changes = 0
     n_phases_no_changes = 0
 
-    for gi, agent, c_in, c_out in phases:
+    for gi, _ag, c_in, c_out in phases:
         if c_in or c_out:
             n_phases_with_changes += 1
         else:
@@ -1998,7 +2005,7 @@ def _sim_sideboard_report(games):
             out_counts[c] = out_counts.get(c, 0) + 1
 
     total_phases = len(phases)
-    print(f"\n  Sideboard Report — {total_phases} sideboard phases across {len(games)} games")
+    print(f"\n  Sideboard Report — {total_phases} sideboard phases across {len(games)} matches")
     print(f"  Phases with changes: {n_phases_with_changes}  |  No changes: {n_phases_no_changes}")
     print(f"  (Scripted agent: never sideboards)")
 
@@ -2027,15 +2034,20 @@ def _sim_sideboard_report(games):
                  for name, n in sorted(counts.items(), key=lambda x: (-x[1], x[0]))]
         return ", ".join(parts)
 
-    print(f"\n  Per-game sideboard detail:")
-    for gi, agent, c_in, c_out in phases:
-        r = games[gi]["result"]
-        result = "WIN" if r > 0 else ("LOSS" if r < 0 else "DRAW")
+    print(f"\n  Per-match sideboard detail:")
+    last_match = None
+    for gi, after_game, c_in, c_out in phases:
+        if gi != last_match:
+            r = games[gi]["result"]
+            result = "WIN" if r > 0 else ("LOSS" if r < 0 else "DRAW")
+            print(f"    Match {gi} ({result})")
+            last_match = gi
         n_in, n_out = len(c_in), len(c_out)
-        print(f"    Game {gi} ({result})  +{n_in} / -{n_out}")
+        label = f"after game {after_game}" if after_game else "(unknown game)"
+        print(f"      {label}:  +{n_in} / -{n_out}")
         if c_in or c_out:
-            print(f"      IN : {_count_str(c_in)}")
-            print(f"      OUT: {_count_str(c_out)}")
+            print(f"        IN : {_count_str(c_in)}")
+            print(f"        OUT: {_count_str(c_out)}")
 
 
 def _interactive_session(ctx):
