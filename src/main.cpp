@@ -365,9 +365,6 @@ static void *game_loop(void *args) {
             // loser goes first next game
             a_goes_first = (winner != Zone::PLAYER_A);
 
-            // swap decks between players
-            std::swap(deck_a, deck_b);
-
             // sideboarding phase - ECS from the just-ended game is still valid
             // (player entities exist for populate_gamestate, card_db works for load_card)
             run_sideboard_phase(deck_a, Zone::PLAYER_A);

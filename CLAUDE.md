@@ -287,7 +287,7 @@ train/.venv/bin/python train/train.py --watch-scripted --bo3                    
 
 `--bo3` flag (C++ and Python) runs a best-of-three match in a single process:
 - Player A goes first in game 1; loser goes first in subsequent games
-- Decks swap between players after each game (Player A pilots B's deck and vice versa)
+- Each player keeps their own deck and seat across all games of the match
 - Between games both players can sideboard (swap cards between main deck and sideboard)
 - Match ends when either player reaches 2 wins
 
