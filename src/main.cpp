@@ -3,6 +3,7 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <unordered_set>
 
 #include "action_processor.h"
 #include "card_db.h"
@@ -189,6 +190,14 @@ static void run_sideboard_phase(Deck &deck, Zone::Ownership player) {
     sideboard_phase_player = player;
     const char *player_name = (player == Zone::PLAYER_A) ? "Player A" : "Player B";
     int sb_swaps = 0;
+    // Each card is a one-shot decision per phase: once moved, it cannot be
+    // moved back. Prevents oscillation and makes the 15-swap cap easier to
+    // avoid. Both sets reset between phases (i.e. for game 3 sideboarding).
+    std::unordered_set<std::string> sided_out_names;
+    std::unordered_set<std::string> sided_in_names;
+    // Index lookups from filtered action list slots back to deck indices.
+    std::vector<size_t> in_action_to_sb_idx;
+    std::vector<size_t> out_action_to_md_idx;
 
     while (true) {
         if (gui_killed) break;
@@ -198,13 +207,16 @@ static void run_sideboard_phase(Deck &deck, Zone::Ownership player) {
         actions.emplace_back(ActionType::SPECIAL_ACTION, "Done sideboarding");
         actions.back().category = ActionCategory::SIDEBOARD_DONE;
 
+        in_action_to_sb_idx.clear();
         for (size_t i = 0; i < deck.sideboard.size(); i++) {
+            if (sided_out_names.count(deck.sideboard[i].second)) continue;
             std::string desc = "Sideboard in: " + std::to_string(deck.sideboard[i].first) + "x " + deck.sideboard[i].second;
             actions.emplace_back(ActionType::SPECIAL_ACTION, desc);
             actions.back().category = ActionCategory::SIDEBOARD_IN;
             // load the card so we can get its vocab index for ML
             Entity card_eid = load_card(deck.sideboard[i].second);
             actions.back().source_entity = card_eid;
+            in_action_to_sb_idx.push_back(i);
         }
 
         if (actions.size() <= 1) break;  // no sideboard cards available
@@ -224,24 +236,33 @@ static void run_sideboard_phase(Deck &deck, Zone::Ownership player) {
         if (choice == 0) break;  // done
 
         // player chose to bring in a sideboard card
-        size_t sb_idx = static_cast<size_t>(choice - 1);
+        size_t sb_idx = in_action_to_sb_idx[static_cast<size_t>(choice - 1)];
         std::string card_in = deck.sideboard[sb_idx].second;
 
         // now ask which main deck card to swap out
         std::vector<LegalAction> out_actions;
+        out_action_to_md_idx.clear();
         for (size_t i = 0; i < deck.main_deck.size(); i++) {
+            if (sided_in_names.count(deck.main_deck[i].second)) continue;
             std::string desc = "Sideboard out: " + std::to_string(deck.main_deck[i].first) + "x " + deck.main_deck[i].second;
             out_actions.emplace_back(ActionType::SPECIAL_ACTION, desc);
             out_actions.back().category = ActionCategory::SIDEBOARD_OUT;
             Entity card_eid = load_card(deck.main_deck[i].second);
             out_actions.back().source_entity = card_eid;
+            out_action_to_md_idx.push_back(i);
+        }
+
+        // No eligible main-deck cards to swap out: undo the selected IN and end phase.
+        if (out_actions.empty()) {
+            game_log("No eligible cards to swap out — ending sideboard phase.\n");
+            break;
         }
 
         game_log("Choose card to remove from main deck (replacing with %s):\n", card_in.c_str());
         populate_gamestate(&gs, player);
         int out_choice = InputLogger::instance().get_input(out_actions);
 
-        size_t md_idx = static_cast<size_t>(out_choice);
+        size_t md_idx = out_action_to_md_idx[static_cast<size_t>(out_choice)];
         std::string card_out = deck.main_deck[md_idx].second;
 
         // perform the swap (one copy at a time)
@@ -280,6 +301,9 @@ static void run_sideboard_phase(Deck &deck, Zone::Ownership player) {
         } else {
             deck.main_deck.erase(deck.main_deck.begin() + static_cast<long>(md_idx));
         }
+
+        sided_out_names.insert(card_out);
+        sided_in_names.insert(card_in);
 
         game_log("Swapped out %s for %s\n", card_out.c_str(), card_in.c_str());
         sb_swaps++;

@@ -1949,7 +1949,19 @@ def _sim_sideboard_report(games):
             cat_raw = obs[STATE_SIZE + action]
             cat = int(round(cat_raw * ACTION_CATEGORY_MAX))
 
-            if cat in (_CAT_SB_IN, _CAT_SB_OUT, _CAT_SB_DONE) and current_after_game is None:
+            is_sb_action = cat in (_CAT_SB_IN, _CAT_SB_OUT, _CAT_SB_DONE)
+
+            # If an in-progress phase has no DONE (engine hit its 15-swap cap
+            # and moved on silently), close it out when gameplay resumes so
+            # after-game-1 and after-game-2 stay separate.
+            if not is_sb_action and current_after_game is not None:
+                after_game = current_after_game + 1
+                phases.append((gi, after_game, list(cards_in), list(cards_out)))
+                cards_in.clear()
+                cards_out.clear()
+                current_after_game = None
+
+            if is_sb_action and current_after_game is None:
                 current_after_game = int(round(obs[_MATCH_CTX_START] * 3.0))
 
             if cat == _CAT_SB_IN:
