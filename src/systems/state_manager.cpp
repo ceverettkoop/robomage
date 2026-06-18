@@ -33,6 +33,34 @@ std::vector<ActiveStatic> g_active_statics;
 
 static bool compare_svar(int value, const std::string &compare);
 static bool check_condition_present(const Ability &ab, Zone::Ownership caster, std::shared_ptr<Orderer> orderer);
+static void add_keywords_from_spec(Creature &cr, const std::string &spec);
+static void remove_keywords_from_spec(Creature &cr, const std::string &spec);
+
+// Apply/remove a " & "-delimited keyword spec (e.g. "Flying & Trample") to a creature.
+static void add_keywords_from_spec(Creature &cr, const std::string &spec) {
+    size_t p = 0;
+    while (p < spec.size()) {
+        size_t sep = spec.find(" & ", p);
+        if (sep == std::string::npos) sep = spec.size();
+        std::string kw = spec.substr(p, sep - p);
+        if (!kw.empty()) cr.keywords.push_back(kw);
+        p = (sep < spec.size()) ? sep + 3 : sep;
+    }
+}
+
+static void remove_keywords_from_spec(Creature &cr, const std::string &spec) {
+    size_t p = 0;
+    while (p < spec.size()) {
+        size_t sep = spec.find(" & ", p);
+        if (sep == std::string::npos) sep = spec.size();
+        std::string kw = spec.substr(p, sep - p);
+        if (!kw.empty()) {
+            auto it = std::find(cr.keywords.begin(), cr.keywords.end(), kw);
+            if (it != cr.keywords.end()) cr.keywords.erase(it);
+        }
+        p = (sep < spec.size()) ? sep + 3 : sep;
+    }
+}
 
 static std::string entity_name(Entity e) {
     if (global_coordinator.entity_has_component<Permanent>(e)) {
@@ -84,9 +112,10 @@ void StateManager::apply_permanent_components(Game &game) {
                 }
                 if (!global_coordinator.entity_has_component<Creature>(entity)) {
                     Creature creature;
-                    creature.power = token.power;
-                    creature.toughness = token.toughness;
+                    creature.base_power = static_cast<int>(token.power);
+                    creature.base_toughness = static_cast<int>(token.toughness);
                     creature.keywords = token.keywords;
+                    recompute_pt(creature);
                     global_coordinator.AddComponent(entity, creature);
                     Damage damage;
                     damage.damage_counters = 0;
@@ -171,9 +200,10 @@ void StateManager::apply_permanent_components(Game &game) {
             // providing creature related components if applicable
             if (is_creature && !global_coordinator.entity_has_component<Creature>(entity)) {
                 Creature creature;
-                creature.power = card_data.power;
-                creature.toughness = card_data.toughness;
+                creature.base_power = static_cast<int>(card_data.power);
+                creature.base_toughness = static_cast<int>(card_data.toughness);
                 creature.keywords = card_data.keywords;
+                recompute_pt(creature);
                 global_coordinator.AddComponent(entity, creature);
                 // damage component
                 Damage damage;
@@ -192,8 +222,7 @@ void StateManager::apply_permanent_components(Game &game) {
                     if (n <= 0) continue;
                     auto &cr = global_coordinator.GetComponent<Creature>(entity);
                     cr.plus_one_counters += n;
-                    cr.power     += static_cast<uint32_t>(n);
-                    cr.toughness += static_cast<uint32_t>(n);
+                    recompute_pt(cr);
                     game_log("%s enters with %d +1/+1 counter(s) (%u/%u).\n",
                         card_data.name.c_str(), n, cr.power, cr.toughness);
                 }
@@ -526,6 +555,13 @@ void StateManager::apply_static_ability_effects() {
         if (zone.location != Zone::BATTLEFIELD) continue;
 
         auto &perm = global_coordinator.GetComponent<Permanent>(entity);
+        // Reset accumulated static P/T bonus on every battlefield creature; it is
+        // rebuilt from scratch below so continuous buffs need no per-ability revert.
+        if (global_coordinator.entity_has_component<Creature>(entity)) {
+            auto &cr = global_coordinator.GetComponent<Creature>(entity);
+            cr.static_power_bonus = 0;
+            cr.static_toughness_bonus = 0;
+        }
         if (perm.is_phased_out) continue;
         if (perm.transformed) {
             for (auto &sa : perm.static_abilities) sa.applied = false;
@@ -543,7 +579,12 @@ void StateManager::apply_static_ability_effects() {
     // Alias for local readability
     auto &active = g_active_statics;
 
-    if (active.empty()) return;
+    if (active.empty()) {
+        // No buffs to apply, but the reset above may have dropped a stale static bonus
+        // (e.g. an anthem just left the battlefield) — flush the recompute and return.
+        recompute_battlefield_pt();
+        return;
+    }
 
     // Phase 2: evaluate only the conditions actually referenced by gathered abilities.
     // Each condition is computed at most once per player rather than once per permanent.
@@ -595,15 +636,14 @@ void StateManager::apply_static_ability_effects() {
                 (!a.sa->set_power_svar.empty() || !a.sa->set_toughness_svar.empty())) {
                 if (!global_coordinator.entity_has_component<Creature>(a.entity)) continue;
                 auto &cr = global_coordinator.GetComponent<Creature>(a.entity);
-                int base_p = !a.sa->set_power_svar.empty()
+                // Set the characteristic-defining base; counters, prowess/exalted, and
+                // static bonuses are layered on top by the final recompute_pt pass. This
+                // also fixes the old bug where Exalted's toughness boost was dropped here
+                // (prowess was re-added to power only).
+                cr.base_power = !a.sa->set_power_svar.empty()
                     ? evaluate_sa_svar(a.sa->set_power_svar, a.controller) : 0;
-                int base_t = !a.sa->set_toughness_svar.empty()
+                cr.base_toughness = !a.sa->set_toughness_svar.empty()
                     ? evaluate_sa_svar(a.sa->set_toughness_svar, a.controller) : 0;
-                // Preserve counters and temporary bonuses on top of the new base
-                int counters = cr.plus_one_counters;
-                int prowess = cr.prowess_bonus;
-                cr.power = static_cast<uint32_t>(std::max(0, base_p + counters + prowess));
-                cr.toughness = static_cast<uint32_t>(std::max(0, base_t + counters));
                 a.sa->applied = true;
                 continue;
             }
@@ -615,91 +655,46 @@ void StateManager::apply_static_ability_effects() {
                 target_entity = global_coordinator.GetComponent<Permanent>(a.entity).equipped_to;
             }
 
-            // If applied to a different entity than before, revert from the previous one
+            // If the buff moved to a different creature (e.g. equipment re-attached),
+            // strip granted keywords from the previous one. P/T needs no manual revert:
+            // every creature's static bonus was reset to 0 at the top of this pass and is
+            // rebuilt below, so a stale bonus simply isn't re-added.
             if (a.sa->applied && a.sa->last_applied_entity != target_entity) {
                 Entity prev = static_cast<Entity>(a.sa->last_applied_entity);
-                if (prev != 0 && global_coordinator.entity_has_component<Creature>(prev)) {
-                    auto &pcr = global_coordinator.GetComponent<Creature>(prev);
-                    int rev_p = !a.sa->add_power_svar.empty()     ? a.sa->last_applied_power     : a.sa->add_power;
-                    int rev_t = !a.sa->add_toughness_svar.empty() ? a.sa->last_applied_toughness : a.sa->add_toughness;
-                    if (rev_p != 0) pcr.power     = static_cast<uint32_t>(static_cast<int>(pcr.power)     - rev_p);
-                    if (rev_t != 0) pcr.toughness = static_cast<uint32_t>(static_cast<int>(pcr.toughness) - rev_t);
-                    if (!a.sa->add_keyword.empty()) {
-                        const std::string &kws = a.sa->add_keyword;
-                        size_t p = 0;
-                        while (p < kws.size()) {
-                            size_t sep = kws.find(" & ", p);
-                            if (sep == std::string::npos) sep = kws.size();
-                            std::string kw = kws.substr(p, sep - p);
-                            if (!kw.empty()) {
-                                auto it = std::find(pcr.keywords.begin(), pcr.keywords.end(), kw);
-                                if (it != pcr.keywords.end()) pcr.keywords.erase(it);
-                            }
-                            p = (sep < kws.size()) ? sep + 3 : sep;
-                        }
-                    }
+                if (prev != 0 && global_coordinator.entity_has_component<Creature>(prev) &&
+                    !a.sa->add_keyword.empty()) {
+                    remove_keywords_from_spec(global_coordinator.GetComponent<Creature>(prev),
+                                              a.sa->add_keyword);
                 }
-                a.sa->last_applied_power = 0;
-                a.sa->last_applied_toughness = 0;
                 a.sa->applied = false;
             }
 
             if (target_entity == 0 || !global_coordinator.entity_has_component<Creature>(target_entity)) {
-                // No valid target; revert if currently applied
-                if (a.sa->applied) {
-                    a.sa->applied = false;
-                }
+                // No valid target; mark unapplied so keywords re-grant when one appears.
+                if (a.sa->applied) a.sa->applied = false;
                 continue;
             }
 
             auto &cr = global_coordinator.GetComponent<Creature>(target_entity);
             const std::string name_for_log = entity_name(target_entity);
 
-            // Dynamic svar P/T: re-evaluate every SBE pass and apply the delta.
-            bool has_dynamic_pt = !a.sa->add_power_svar.empty() || !a.sa->add_toughness_svar.empty();
-            if (has_dynamic_pt) {
-                if (condition_met) {
-                    int new_p = a.sa->add_power_svar.empty()
-                                    ? a.sa->add_power
-                                    : evaluate_sa_svar(a.sa->add_power_svar, a.controller);
-                    int new_t = a.sa->add_toughness_svar.empty()
-                                    ? a.sa->add_toughness
-                                    : evaluate_sa_svar(a.sa->add_toughness_svar, a.controller);
-                    int dp = new_p - a.sa->last_applied_power;
-                    int dt = new_t - a.sa->last_applied_toughness;
-                    if (dp != 0) cr.power     = static_cast<uint32_t>(static_cast<int>(cr.power)     + dp);
-                    if (dt != 0) cr.toughness = static_cast<uint32_t>(static_cast<int>(cr.toughness) + dt);
-                    a.sa->last_applied_power     = new_p;
-                    a.sa->last_applied_toughness = new_t;
-                    a.sa->applied = true;
-                    a.sa->last_applied_entity = static_cast<uint32_t>(target_entity);
-                } else if (a.sa->applied) {
-                    if (a.sa->last_applied_power != 0)
-                        cr.power     = static_cast<uint32_t>(static_cast<int>(cr.power)     - a.sa->last_applied_power);
-                    if (a.sa->last_applied_toughness != 0)
-                        cr.toughness = static_cast<uint32_t>(static_cast<int>(cr.toughness) - a.sa->last_applied_toughness);
-                    a.sa->last_applied_power = 0;
-                    a.sa->last_applied_toughness = 0;
-                    a.sa->applied = false;
-                }
-                continue;
+            // P/T contribution: accumulate fresh into static_*_bonus each pass (no delta
+            // tracking, no revert). Static (add_power) and dynamic-svar (add_power_svar)
+            // buffs share one path. recompute_pt() turns the bonus into effective P/T.
+            if (condition_met) {
+                int add_p = a.sa->add_power_svar.empty()
+                                ? a.sa->add_power
+                                : evaluate_sa_svar(a.sa->add_power_svar, a.controller);
+                int add_t = a.sa->add_toughness_svar.empty()
+                                ? a.sa->add_toughness
+                                : evaluate_sa_svar(a.sa->add_toughness_svar, a.controller);
+                cr.static_power_bonus     += add_p;
+                cr.static_toughness_bonus += add_t;
             }
 
+            // Keywords: granted/removed only on condition transitions, tracked by `applied`.
             if (condition_met && !a.sa->applied) {
-                if (a.sa->add_power     != 0) cr.power     += static_cast<uint32_t>(a.sa->add_power);
-                if (a.sa->add_toughness != 0) cr.toughness += static_cast<uint32_t>(a.sa->add_toughness);
-                if (!a.sa->add_keyword.empty()) {
-                    // Split multi-keywords on " & " and add each separately
-                    const std::string &kws = a.sa->add_keyword;
-                    size_t p = 0;
-                    while (p < kws.size()) {
-                        size_t sep = kws.find(" & ", p);
-                        if (sep == std::string::npos) sep = kws.size();
-                        std::string kw = kws.substr(p, sep - p);
-                        if (!kw.empty()) cr.keywords.push_back(kw);
-                        p = (sep < kws.size()) ? sep + 3 : sep;
-                    }
-                }
+                if (!a.sa->add_keyword.empty()) add_keywords_from_spec(cr, a.sa->add_keyword);
                 a.sa->applied = true;
                 a.sa->last_applied_entity = static_cast<uint32_t>(target_entity);
                 game_log("%s gains %s%s(%s)\n", name_for_log.c_str(),
@@ -708,22 +703,7 @@ void StateManager::apply_static_ability_effects() {
                          !a.sa->add_keyword.empty() ? (a.sa->add_keyword + " ").c_str() : "",
                          a.sa->condition.empty() ? "always" : a.sa->condition.c_str());
             } else if (!condition_met && a.sa->applied) {
-                if (a.sa->add_power     != 0) cr.power     -= static_cast<uint32_t>(a.sa->add_power);
-                if (a.sa->add_toughness != 0) cr.toughness -= static_cast<uint32_t>(a.sa->add_toughness);
-                if (!a.sa->add_keyword.empty()) {
-                    const std::string &kws = a.sa->add_keyword;
-                    size_t p = 0;
-                    while (p < kws.size()) {
-                        size_t sep = kws.find(" & ", p);
-                        if (sep == std::string::npos) sep = kws.size();
-                        std::string kw = kws.substr(p, sep - p);
-                        if (!kw.empty()) {
-                            auto it = std::find(cr.keywords.begin(), cr.keywords.end(), kw);
-                            if (it != cr.keywords.end()) cr.keywords.erase(it);
-                        }
-                        p = (sep < kws.size()) ? sep + 3 : sep;
-                    }
-                }
+                if (!a.sa->add_keyword.empty()) remove_keywords_from_spec(cr, a.sa->add_keyword);
                 a.sa->applied = false;
                 game_log("%s loses %s bonus\n", name_for_log.c_str(),
                          a.sa->condition.empty() ? "static" : a.sa->condition.c_str());
@@ -736,6 +716,19 @@ void StateManager::apply_static_ability_effects() {
             cr.must_attack = condition_met;
             a.sa->applied = condition_met;
         }
+    }
+
+    // Flush the freshly-accumulated static bonuses into effective P/T.
+    recompute_battlefield_pt();
+}
+
+// Recompute cached effective P/T from contributions for every battlefield creature.
+void StateManager::recompute_battlefield_pt() {
+    for (auto entity : mEntities) {
+        if (!global_coordinator.entity_has_component<Creature>(entity)) continue;
+        if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
+        if (global_coordinator.GetComponent<Zone>(entity).location != Zone::BATTLEFIELD) continue;
+        recompute_pt(global_coordinator.GetComponent<Creature>(entity));
     }
 }
 

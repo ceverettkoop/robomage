@@ -1147,16 +1147,14 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
         if (global_coordinator.entity_has_component<Creature>(source)) {
             auto &cr = global_coordinator.GetComponent<Creature>(source);
             cr.prowess_bonus += static_cast<int>(amount);
-            cr.power += static_cast<uint32_t>(amount);
-            cr.toughness += static_cast<uint32_t>(amount);
+            recompute_pt(cr);
             game_log("Prowess: creature gets +%zu/+%zu until end of turn.\n", amount, amount);
         }
     } else if (category == "ExaltedBonus") {
         if (target != 0 && global_coordinator.entity_has_component<Creature>(target)) {
             auto &cr = global_coordinator.GetComponent<Creature>(target);
             cr.prowess_bonus += static_cast<int>(amount);
-            cr.power += static_cast<uint32_t>(amount);
-            cr.toughness += static_cast<uint32_t>(amount);
+            recompute_pt(cr);
             std::string tgt_name = global_coordinator.entity_has_component<CardData>(target)
                                        ? global_coordinator.GetComponent<CardData>(target).name
                                        : (global_coordinator.entity_has_component<Permanent>(target)
@@ -1255,8 +1253,12 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
         if ((pump_att != 0 || pump_def != 0) && target != 0 &&
             global_coordinator.entity_has_component<Creature>(target)) {
             auto &cr = global_coordinator.GetComponent<Creature>(target);
-            cr.power = static_cast<uint32_t>(std::max(0, static_cast<int>(cr.power) + pump_att));
-            cr.toughness = static_cast<uint32_t>(std::max(0, static_cast<int>(cr.toughness) + pump_def));
+            // Pump modifies the base characteristic (this engine does not auto-revert
+            // pumps at end of turn). Signed + floored at 0 by recompute_pt so a -X/-X
+            // pump can never underflow the uint32_t effective field.
+            cr.base_power += pump_att;
+            cr.base_toughness += pump_def;
+            recompute_pt(cr);
             std::string tname = global_coordinator.entity_has_component<Permanent>(target)
                 ? global_coordinator.GetComponent<Permanent>(target).name : "<unknown>";
             game_log("%s gets %+d/%+d (now %u/%u)\n", tname.c_str(), pump_att, pump_def, cr.power, cr.toughness);
@@ -1268,8 +1270,7 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
             auto &cr = global_coordinator.GetComponent<Creature>(tgt);
             if (cr.plus_one_counters > 0) {
                 cr.plus_one_counters *= 2;
-                cr.power += static_cast<uint32_t>(cr.plus_one_counters / 2);
-                cr.toughness += static_cast<uint32_t>(cr.plus_one_counters / 2);
+                recompute_pt(cr);
                 game_log("MultiplyCounter: doubled +1/+1 counters on creature (now %u/%u).\n", cr.power, cr.toughness);
             }
         }
@@ -1522,9 +1523,10 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
                         if (global_coordinator.entity_has_component<Damage>(source))
                             global_coordinator.RemoveComponent<Damage>(source);
                         Creature back_creature;
-                        back_creature.power = src_cd.backside->power;
-                        back_creature.toughness = src_cd.backside->toughness;
+                        back_creature.base_power = static_cast<int>(src_cd.backside->power);
+                        back_creature.base_toughness = static_cast<int>(src_cd.backside->toughness);
                         back_creature.keywords = src_cd.backside->keywords;
+                        recompute_pt(back_creature);
                         global_coordinator.AddComponent(source, back_creature);
                         Damage dmg;
                         dmg.damage_counters = 0;
@@ -1804,8 +1806,7 @@ void Ability::resolve_put_counter() {
         }
         if (n <= 0) return;
         cr.plus_one_counters += n;
-        cr.power += static_cast<uint32_t>(n);
-        cr.toughness += static_cast<uint32_t>(n);
+        recompute_pt(cr);
         game_log("Put %d +1/+1 counter(s) on creature (now %u/%u).\n", n, cr.power, cr.toughness);
     }
 }
@@ -1841,9 +1842,10 @@ void Ability::resolve_token(std::shared_ptr<Orderer> orderer) {
     global_coordinator.AddComponent(tok_entity, perm);
 
     Creature creature;
-    creature.power = tok.power;
-    creature.toughness = tok.toughness;
+    creature.base_power = static_cast<int>(tok.power);
+    creature.base_toughness = static_cast<int>(tok.toughness);
     creature.keywords = tok.keywords;
+    recompute_pt(creature);
     global_coordinator.AddComponent(tok_entity, creature);
 
     Damage damage;
