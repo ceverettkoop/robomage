@@ -1,6 +1,5 @@
 #include "game.h"
 
-#include "../card_vocab.h"
 #include "../cli_output.h"
 #include "../components/creature.h"
 #include "../components/damage.h"
@@ -9,11 +8,11 @@
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../ecs/entity.h"
-#include "../mana_system.h"
-#include "../systems/stack_manager.h"
-#include "../systems/orderer.h"
-#include "../systems/state_manager.h"
 #include "../ecs/events.h"
+#include "../mana_system.h"
+#include "../systems/orderer.h"
+#include "../systems/stack_manager.h"
+#include "../systems/state_manager.h"
 #include "deck.h"
 
 extern Coordinator global_coordinator;
@@ -25,7 +24,6 @@ bool Game::ready_to_resolve() {
 void Game::generate_players(const Deck &deck_a, const Deck &deck_b) {
     player_a_entity = gen_player(deck_a);
     player_b_entity = gen_player(deck_b);
-
 }
 
 Entity Game::gen_player(const Deck &deck) {
@@ -43,24 +41,23 @@ Entity Game::gen_player(const Deck &deck) {
 void Game::record_action(int category, int card_vocab_idx, bool player_a) {
     action_history[action_history_write] = {category, card_vocab_idx, player_a, static_cast<int>(turn)};
     action_history_write = (action_history_write + 1) % ACTION_HISTORY_SIZE;
-    if (action_history_count < ACTION_HISTORY_SIZE)
-        action_history_count++;
+    if (action_history_count < ACTION_HISTORY_SIZE) action_history_count++;
 }
 
 void Game::clear_known_top_library(bool player_a_owner) {
-    int* arr = player_a_owner ? known_top_library_a : known_top_library_b;
+    int *arr = player_a_owner ? known_top_library_a : known_top_library_b;
     for (int i = 0; i < KNOWN_TOP_LIBRARY_SIZE; i++) arr[i] = -1;
 }
 
 void Game::known_top_library_push(bool player_a_owner, int card_vocab_idx) {
-    int* arr = player_a_owner ? known_top_library_a : known_top_library_b;
+    int *arr = player_a_owner ? known_top_library_a : known_top_library_b;
     for (int i = KNOWN_TOP_LIBRARY_SIZE - 1; i > 0; i--) arr[i] = arr[i - 1];
     arr[0] = card_vocab_idx;
 }
 
 void Game::known_top_library_remove_pos(bool player_a_owner, int pos) {
     if (pos < 0 || pos >= KNOWN_TOP_LIBRARY_SIZE) return;
-    int* arr = player_a_owner ? known_top_library_a : known_top_library_b;
+    int *arr = player_a_owner ? known_top_library_a : known_top_library_b;
     for (int i = pos; i < KNOWN_TOP_LIBRARY_SIZE - 1; i++) arr[i] = arr[i + 1];
     arr[KNOWN_TOP_LIBRARY_SIZE - 1] = -1;
 }
@@ -79,8 +76,8 @@ void Game::take_action() {
 }
 
 bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared_ptr<Orderer> orderer) {
-    //will advance step and return true if step advanced
-    //otherwise will resove stack or pass priority as needed
+    // will advance step and return true if step advanced
+    // otherwise will resove stack or pass priority as needed
     if (ready_to_resolve()) {
         if (!stack_manager->is_empty()) {
             stack_manager->resolve_top(orderer);
@@ -90,8 +87,8 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
             // remaining in current step
             return false;
         } else {
-            //stack is empty and both players have passed
-            // step is changing
+            // stack is empty and both players have passed
+            //  step is changing
             Entity active_player_entity = player_a_turn ? player_a_entity : player_b_entity;
             Zone::Ownership active_player = player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B;
 
@@ -127,14 +124,16 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                             bool untap_prevented = false;
                             for (const auto &subtype : untap_prevented_subtypes) {
                                 for (const auto &t : permanent.types) {
-                                    if (t.name == subtype) { untap_prevented = true; break; }
+                                    if (t.name == subtype) {
+                                        untap_prevented = true;
+                                        break;
+                                    }
                                 }
                                 if (untap_prevented) break;
                             }
                             if (!untap_prevented) permanent.is_tapped = false;
                             permanent.has_summoning_sickness = false;  // Clear summoning sickness
-                            for (auto &ab : permanent.abilities)
-                                ab.activations_this_turn = 0;
+                            for (auto &ab : permanent.abilities) ab.activations_this_turn = 0;
                         }
                     }
 
@@ -154,8 +153,8 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                         draw_step_event.SetParam(Params::PLAYER, active_player_entity);
                         global_coordinator.SendEvent(draw_step_event);
                     }
-                    //first turn first player skips draw!
-                    if(turn == 0 && player_a_turn == true) break;
+                    // first turn first player skips draw!
+                    if (turn == 0 && player_a_turn == true) break;
                     orderer->draw(active_player, 1);
                     {
                         Event draw_event(Events::PLAYER_DREW_CARD);
@@ -241,7 +240,7 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                         if (global_coordinator.entity_has_component<Creature>(entity)) {
                             auto &cr = global_coordinator.GetComponent<Creature>(entity);
                             if (cr.prowess_bonus > 0) {
-                                cr.power     -= static_cast<uint32_t>(cr.prowess_bonus);
+                                cr.power -= static_cast<uint32_t>(cr.prowess_bonus);
                                 cr.toughness -= static_cast<uint32_t>(cr.prowess_bonus);
                                 cr.prowess_bonus = 0;
                             }
@@ -282,19 +281,19 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                 a_has_passed = true;
                 b_has_passed = true;
             } else {
-                //otherwise we now get active player priority
+                // otherwise we now get active player priority
                 player_a_has_priority = player_a_turn;
                 // Reset pass tracking
                 a_has_passed = false;
                 b_has_passed = false;
             }
-            //any case where we are returning true, mana pool is now emptied
+            // any case where we are returning true, mana pool is now emptied
             empty_mana_pool(Zone::PLAYER_A);
             empty_mana_pool(Zone::PLAYER_B);
             return true;
         }
-    }else{
-        //return false if not ready to resolve, meaning someone has priority
+    } else {
+        // return false if not ready to resolve, meaning someone has priority
         return false;
     }
 }

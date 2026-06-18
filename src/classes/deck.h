@@ -9,7 +9,7 @@
 struct Deck;
 
 struct Deck {
-        Deck(){};
+        Deck() {};
         Deck(std::string path);
         std::vector<std::pair<size_t, std::string>> main_deck;
         std::vector<std::pair<size_t, std::string>> sideboard;

@@ -4,7 +4,7 @@
 #include <set>
 #include <string>
 
-enum Colors{
+enum Colors {
     WHITE,
     BLUE,
     BLACK,

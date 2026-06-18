@@ -648,13 +648,16 @@ void Ability::fizzle(std::shared_ptr<Orderer> orderer) {
     return;
 }
 
-// TODO fix
-// redundant with call in action processor and not generalizable!
-bool Ability::is_target_valid() const {
-    // Optional targeting: no target chosen is valid
-    if (target == 0 && target_min == 0) return true;
+// Single source of truth for target legality (see header). build_valid_targets
+// enumerates candidates and filters them through this; is_target_valid re-runs the
+// chosen target(s) through it at resolution. Keeping both on one predicate is what
+// prevents the enumeration and re-verification rules from drifting apart.
+bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
+    if (cand == 0) return false;
 
-    // ConditionPresent color check (Hydroblast/Pyroblast: fizzle if target isn't the required color)
+    // ConditionPresent color check (Hydroblast/Pyroblast: target must be the required
+    // color). Only color-suffixed ConditionPresent specs apply here; castability
+    // conditions like "Land.YouCtrl" leave `required` NO_COLOR and are ignored.
     if (!condition_present.empty()) {
         Colors required = NO_COLOR;
         if (condition_present.find(".Red") != std::string::npos) required = RED;
@@ -663,25 +666,56 @@ bool Ability::is_target_valid() const {
         else if (condition_present.find(".White") != std::string::npos) required = WHITE;
         else if (condition_present.find(".Black") != std::string::npos) required = BLACK;
         if (required != NO_COLOR) {
-            if (!global_coordinator.entity_has_component<ColorIdentity>(target)) return false;
-            if (!global_coordinator.GetComponent<ColorIdentity>(target).colors.count(required)) return false;
+            if (!global_coordinator.entity_has_component<ColorIdentity>(cand)) return false;
+            if (!global_coordinator.GetComponent<ColorIdentity>(cand).colors.count(required)) return false;
         }
     }
 
     const std::string &vt = valid_tgts;
 
+    // Spell on the stack (counterspells etc.)
     if (target_type == "Spell") {
-        return global_coordinator.entity_has_component<Zone>(target) &&
-               global_coordinator.GetComponent<Zone>(target).location == Zone::STACK &&
-               global_coordinator.entity_has_component<Spell>(target);
+        if (!global_coordinator.entity_has_component<Zone>(cand)) return false;
+        if (global_coordinator.GetComponent<Zone>(cand).location != Zone::STACK) return false;
+        if (!global_coordinator.entity_has_component<Spell>(cand)) return false;
+        bool non_creature_only = vt.find("nonCreature") != std::string::npos;
+        bool instant_sorcery_only =
+            (vt.find("Instant") != std::string::npos || vt.find("Sorcery") != std::string::npos) &&
+            vt.find("Creature") == std::string::npos;
+        if ((non_creature_only || instant_sorcery_only) &&
+            global_coordinator.entity_has_component<CardData>(cand)) {
+            auto &cd = global_coordinator.GetComponent<CardData>(cand);
+            bool is_creature = false, is_instant = false, is_sorcery = false;
+            for (auto &t : cd.types) {
+                if (t.name == "Creature") is_creature = true;
+                if (t.name == "Instant") is_instant = true;
+                if (t.name == "Sorcery") is_sorcery = true;
+            }
+            if (non_creature_only && is_creature) return false;
+            if (instant_sorcery_only && !is_instant && !is_sorcery) return false;
+        }
+        return true;
     }
 
-    // Stifle: target is a standalone ability on the stack
+    // Stifle: standalone activated/triggered ability on the stack
     if (target_type.find("Activated") != std::string::npos ||
         target_type.find("Triggered") != std::string::npos) {
-        return global_coordinator.entity_has_component<Zone>(target) &&
-               global_coordinator.GetComponent<Zone>(target).location == Zone::STACK &&
-               global_coordinator.entity_has_component<Ability>(target);
+        if (!global_coordinator.entity_has_component<Zone>(cand)) return false;
+        if (global_coordinator.GetComponent<Zone>(cand).location != Zone::STACK) return false;
+        if (global_coordinator.entity_has_component<Spell>(cand)) return false;  // spells aren't abilities
+        if (!global_coordinator.entity_has_component<Ability>(cand)) return false;
+        auto &ab = global_coordinator.GetComponent<Ability>(cand);
+        bool want_activated = target_type.find("Activated") != std::string::npos;
+        bool want_triggered = target_type.find("Triggered") != std::string::npos;
+        if (want_activated && ab.ability_type == Ability::ACTIVATED) return true;
+        if (want_triggered && ab.ability_type == Ability::TRIGGERED) return true;
+        return false;
+    }
+
+    // Card in a non-battlefield zone (e.g. Faerie Macabre targeting graveyard cards)
+    if (vt == "Card" && category == "ChangeZone" && origin == Zone::GRAVEYARD) {
+        return global_coordinator.entity_has_component<Zone>(cand) &&
+               global_coordinator.GetComponent<Zone>(cand).location == Zone::GRAVEYARD;
     }
 
     bool any = (vt == "Any");
@@ -691,31 +725,50 @@ bool Ability::is_target_valid() const {
     bool inc_lands = vt.find("Land") != std::string::npos;
     bool nonbasic_only = vt.find("nonBasic") != std::string::npos;
     bool legendary_only = vt.find("Legendary") != std::string::npos;
+    // "Any" is "any target" (creature/player/planeswalker), NOT non-creature
+    // artifacts/enchantments — those require the type named explicitly.
+    bool inc_artifacts = vt.find("Artifact") != std::string::npos;
+    bool inc_enchantments = vt.find("Enchantment") != std::string::npos;
+    bool inc_permanents = vt.find("Permanent") != std::string::npos;
+    int cmc_le = -1;
+    {
+        size_t cmc_pos = vt.find("cmcLE");
+        if (cmc_pos != std::string::npos) cmc_le = std::stoi(vt.substr(cmc_pos + 5));
+    }
 
-    if (inc_players && global_coordinator.entity_has_component<Player>(target)) return true;
-
-    if (!global_coordinator.entity_has_component<Zone>(target)) return false;
-    auto &tz = global_coordinator.GetComponent<Zone>(target);
-    if (tz.location != Zone::BATTLEFIELD) return false;
-    if (!global_coordinator.entity_has_component<Permanent>(target)) return false;
-
-    if (inc_creatures && global_coordinator.entity_has_component<Creature>(target)) {
-        if (legendary_only) {
-            auto &cperm = global_coordinator.GetComponent<Permanent>(target);
-            bool is_legendary = false;
-            for (auto &t : cperm.types)
-                if (t.kind == SUPERTYPE && t.name == "Legendary") {
-                    is_legendary = true;
-                    break;
-                }
-            if (!is_legendary) return false;
+    // Player target
+    if (global_coordinator.entity_has_component<Player>(cand)) {
+        if (!inc_players) return false;
+        if (opp_only) {
+            Zone::Ownership opp = (caster == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+            return cand == get_player_entity(opp);
         }
-        if (has_protection_from(global_coordinator.GetComponent<Creature>(target), source)) return false;
         return true;
     }
 
+    // Battlefield permanent target
+    if (!global_coordinator.entity_has_component<Zone>(cand)) return false;
+    if (global_coordinator.GetComponent<Zone>(cand).location != Zone::BATTLEFIELD) return false;
+    if (!global_coordinator.entity_has_component<Permanent>(cand)) return false;
+    auto &tperm = global_coordinator.GetComponent<Permanent>(cand);
+    if (tperm.is_phased_out) return false;
+
+    if (cmc_le >= 0 && global_coordinator.entity_has_component<CardData>(cand)) {
+        int cmc = static_cast<int>(global_coordinator.GetComponent<CardData>(cand).mana_cost.size());
+        if (cmc > cmc_le) return false;
+    }
+
+    if (inc_creatures && global_coordinator.entity_has_component<Creature>(cand)) {
+        if (legendary_only) {
+            bool is_legendary = false;
+            for (auto &t : tperm.types)
+                if (t.kind == SUPERTYPE && t.name == "Legendary") { is_legendary = true; break; }
+            if (!is_legendary) return false;
+        }
+        if (has_protection_from(global_coordinator.GetComponent<Creature>(cand), source)) return false;
+        return true;
+    }
     if (inc_lands) {
-        auto &tperm = global_coordinator.GetComponent<Permanent>(target);
         bool is_land = false, is_basic = false;
         for (auto &t : tperm.types) {
             if (t.kind == TYPE && t.name == "Land") is_land = true;
@@ -723,8 +776,30 @@ bool Ability::is_target_valid() const {
         }
         if (is_land && (!nonbasic_only || !is_basic)) return true;
     }
+    if (inc_permanents) return true;
+    if (inc_artifacts || inc_enchantments) {
+        for (auto &t : tperm.types) {
+            if (t.kind == TYPE && ((inc_artifacts && t.name == "Artifact") ||
+                                   (inc_enchantments && t.name == "Enchantment")))
+                return true;
+        }
+    }
 
     return false;
+}
+
+bool Ability::is_target_valid() const {
+    // Optional targeting: no target chosen is valid
+    if (target == 0 && targets.empty() && target_min == 0) return true;
+
+    // Multi-target abilities (target_max > 1) populate `targets`; verify every one.
+    if (!targets.empty()) {
+        for (Entity t : targets)
+            if (!is_legal_target(t, controller)) return false;
+        return true;
+    }
+
+    return is_legal_target(target, controller);
 }
 
 // Evaluates a condition SVar expression against cur_game state.

@@ -399,98 +399,55 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
     }
 }
 
-// TODO fix
-// redundant with call in action processor and not generalizable!
 //  Build the list of legal targets for an ability.
 //  Targets are sorted from the caster's perspective: opponent entities first (opponent
 //  player, then opponent's permanents in entity-ID order), followed by own entities
 //  (own player, then own permanents in entity-ID order).  This keeps action index 0
 //  pointing at the opponent player for burn spells regardless of which player is casting,
 //  which makes the action space symmetric and simplifies self-play training.
+//
+//  Legality of each candidate is decided by Ability::is_legal_target (the single source
+//  of truth shared with resolution-time re-verification); this function only chooses the
+//  candidate set and the order they are presented in.
 static std::vector<Entity> build_valid_targets(
     const Ability &ability, std::shared_ptr<Orderer> orderer, Zone::Ownership priority_player) {
     std::vector<Entity> valid_targets;
     const std::string &vt = ability.valid_tgts;
 
-    if (ability.target_type == "Spell") {
-        bool non_creature_only = vt.find("nonCreature") != std::string::npos;
-        bool instant_sorcery_only = (vt.find("Instant") != std::string::npos || vt.find("Sorcery") != std::string::npos)
-                                    && vt.find("Creature") == std::string::npos;
-        for (auto e : orderer->get_stack()) {
-            if (!global_coordinator.entity_has_component<Spell>(e)) continue;
-            if ((non_creature_only || instant_sorcery_only) && global_coordinator.entity_has_component<CardData>(e)) {
-                auto &cd = global_coordinator.GetComponent<CardData>(e);
-                bool is_creature = false, is_instant = false, is_sorcery = false;
-                for (auto &t : cd.types) {
-                    if (t.name == "Creature") is_creature = true;
-                    if (t.name == "Instant") is_instant = true;
-                    if (t.name == "Sorcery") is_sorcery = true;
-                }
-                if (non_creature_only && is_creature) continue;
-                if (instant_sorcery_only && !is_instant && !is_sorcery) continue;
-            }
-            valid_targets.push_back(e);
-        }
-        return valid_targets;
-    }
-
-    // Stifle: target activated or triggered abilities on the stack (not spells)
-    if (ability.target_type.find("Activated") != std::string::npos ||
+    // Stack targets: spells (counterspells) or standalone abilities (Stifle)
+    if (ability.target_type == "Spell" ||
+        ability.target_type.find("Activated") != std::string::npos ||
         ability.target_type.find("Triggered") != std::string::npos) {
-        bool want_activated = ability.target_type.find("Activated") != std::string::npos;
-        bool want_triggered = ability.target_type.find("Triggered") != std::string::npos;
-        for (auto e : orderer->get_stack()) {
-            if (global_coordinator.entity_has_component<Spell>(e)) continue;  // spells are not abilities
-            if (!global_coordinator.entity_has_component<Ability>(e)) continue;
-            auto &ab = global_coordinator.GetComponent<Ability>(e);
-            if (want_activated && ab.ability_type == Ability::ACTIVATED) { valid_targets.push_back(e); continue; }
-            if (want_triggered && ab.ability_type == Ability::TRIGGERED) { valid_targets.push_back(e); continue; }
-        }
+        for (auto e : orderer->get_stack())
+            if (ability.is_legal_target(e, priority_player)) valid_targets.push_back(e);
         return valid_targets;
     }
 
-    // Target cards in a non-battlefield zone (e.g. Faerie Macabre targeting graveyard cards)
+    Zone::Ownership opp = (priority_player == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+
+    // Target cards in a non-battlefield zone (e.g. Faerie Macabre targeting graveyard cards):
+    // opponent's graveyard first, then own.
     if (vt == "Card" && ability.category == "ChangeZone" && ability.origin == Zone::GRAVEYARD) {
-        Zone::Ownership opp = (priority_player == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
-        // Show opponent's graveyard first, then own
         for (int pass = 0; pass < 2; pass++) {
             Zone::Ownership slot_owner = (pass == 0) ? opp : priority_player;
             for (auto e : orderer->mEntities) {
                 if (!global_coordinator.entity_has_component<Zone>(e)) continue;
-                auto &ez = global_coordinator.GetComponent<Zone>(e);
-                if (ez.location != Zone::GRAVEYARD || ez.owner != slot_owner) continue;
-                valid_targets.push_back(e);
+                if (global_coordinator.GetComponent<Zone>(e).owner != slot_owner) continue;
+                if (ability.is_legal_target(e, priority_player)) valid_targets.push_back(e);
             }
         }
         return valid_targets;
     }
 
     bool any = (vt == "Any");
-    bool inc_players = any || vt.find("Player") != std::string::npos;
     bool opp_only = (vt == "Opponent");
-    bool inc_creatures = any || vt.find("Creature") != std::string::npos;
-    bool inc_lands = vt.find("Land") != std::string::npos;
-    bool nonbasic_only = vt.find("nonBasic") != std::string::npos;
-    bool legendary_only = vt.find("Legendary") != std::string::npos;
-    bool inc_artifacts = any || vt.find("Artifact") != std::string::npos;
-    bool inc_enchantments = any || vt.find("Enchantment") != std::string::npos;
-    bool inc_permanents = vt.find("Permanent") != std::string::npos;
-    // CMC filter: cmcLE3 means mana value <= 3
-    int cmc_le = -1;
-    {
-        size_t cmc_pos = vt.find("cmcLE");
-        if (cmc_pos != std::string::npos) {
-            cmc_le = std::stoi(vt.substr(cmc_pos + 5));
-        }
-    }
-    // TODO: inc_planeswalker, inc_battle when those components exist
-
-    Zone::Ownership opp = (priority_player == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+    bool inc_players = any || opp_only || vt.find("Player") != std::string::npos;
 
     // Players: opponent first, self second
-    if (inc_players || opp_only) {
-        valid_targets.push_back(get_player_entity(opp));
-        if (inc_players && !opp_only)
+    if (inc_players) {
+        if (ability.is_legal_target(get_player_entity(opp), priority_player))
+            valid_targets.push_back(get_player_entity(opp));
+        if (!opp_only && ability.is_legal_target(get_player_entity(priority_player), priority_player))
             valid_targets.push_back(get_player_entity(priority_player));
     }
 
@@ -498,59 +455,9 @@ static std::vector<Entity> build_valid_targets(
     for (int pass = 0; pass < 2; pass++) {
         Zone::Ownership slot_owner = (pass == 0) ? opp : priority_player;
         for (auto entity : orderer->mEntities) {
-            if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
-            auto &tz = global_coordinator.GetComponent<Zone>(entity);
-            if (tz.location != Zone::BATTLEFIELD) continue;
             if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
-            auto &tgt_perm = global_coordinator.GetComponent<Permanent>(entity);
-            if (tgt_perm.controller != slot_owner) continue;
-            if (tgt_perm.is_phased_out) continue;
-            // CMC filter
-            if (cmc_le >= 0 && global_coordinator.entity_has_component<CardData>(entity)) {
-                int cmc = static_cast<int>(global_coordinator.GetComponent<CardData>(entity).mana_cost.size());
-                if (cmc > cmc_le) continue;
-            }
-
-            if (inc_creatures && global_coordinator.entity_has_component<Creature>(entity)) {
-                if (legendary_only) {
-                    auto &cperm = global_coordinator.GetComponent<Permanent>(entity);
-                    bool is_legendary = false;
-                    for (auto &t : cperm.types)
-                        if (t.kind == SUPERTYPE && t.name == "Legendary") { is_legendary = true; break; }
-                    if (!is_legendary) continue;
-                }
-                if (has_protection_from(global_coordinator.GetComponent<Creature>(entity), ability.source))
-                    continue;
-                valid_targets.push_back(entity);
-                continue;
-            }
-            if (inc_lands) {
-                bool is_land = false;
-                bool is_basic = false;
-                for (auto &t : tgt_perm.types) {
-                    if (t.kind == TYPE && t.name == "Land") is_land = true;
-                    if (t.kind == SUPERTYPE && t.name == "Basic") is_basic = true;
-                }
-                if (is_land && (!nonbasic_only || !is_basic)) {
-                    valid_targets.push_back(entity);
-                    continue;
-                }
-            }
-            if (inc_permanents) {
-                valid_targets.push_back(entity);
-                continue;
-            }
-            if (inc_artifacts || inc_enchantments) {
-                for (auto &t : tgt_perm.types) {
-                    if (t.kind == TYPE && ((inc_artifacts && t.name == "Artifact") ||
-                                           (inc_enchantments && t.name == "Enchantment"))) {
-                        valid_targets.push_back(entity);
-                        break;
-                    }
-                }
-                continue;
-            }
-            // TODO: Planeswalker and Battle components
+            if (global_coordinator.GetComponent<Permanent>(entity).controller != slot_owner) continue;
+            if (ability.is_legal_target(entity, priority_player)) valid_targets.push_back(entity);
         }
     }
     return valid_targets;

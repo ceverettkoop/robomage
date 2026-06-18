@@ -1,6 +1,4 @@
 TODO:
-lengthen history ring buffer
-track what is on top of library
 parse and display ability descriptions and targeting prompts
 
 Known rules problems:

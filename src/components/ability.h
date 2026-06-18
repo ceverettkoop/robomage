@@ -163,6 +163,11 @@ struct Ability{
 
     void resolve(std::shared_ptr<Orderer> orderer);
     bool identical_activated_ability(const Ability& other);
+    // Single source of truth for target legality. Returns true if `cand` is a legal
+    // target for this ability when controlled by `caster`. Used both to enumerate
+    // legal targets (build_valid_targets) and to re-verify chosen targets at
+    // resolution (is_target_valid).
+    bool is_legal_target(Entity cand, Zone::Ownership caster) const;
 private:
     void resolve_change_zone(std::shared_ptr<Orderer> orderer);
     void resolve_change_zone_all(std::shared_ptr<Orderer> orderer);

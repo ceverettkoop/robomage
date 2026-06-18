@@ -1,6 +1,6 @@
 #include "colors.h"
 
-std::string mana_symbol(Colors color){
+std::string mana_symbol(Colors color) {
     switch (color) {
         case WHITE:
             return "W";
