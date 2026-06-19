@@ -136,10 +136,25 @@ now handles it). Verified: diag (10 games, no draws/crashes) and a deterministic
 
 ## MEDIUM — duplicated logic, currently consistent but drift-prone
 
-### ☐ 7. Token ETB component bootstrap built twice ✓✓✓
+### ☑ 7. Token ETB component bootstrap built twice ✓✓✓
 Permanent/Creature/Damage + timestamp + summoning-sick constructed in both
 `ability.cpp:1758-1776` and `state_manager.cpp:74-94`; `resolve_token` skips
 `apply_keyword_abilities`.
+
+**Resolved.** Added one `bootstrap_token_components(entity, token, controller,
+&timestamp)` (`token.h`/new `token.cpp`) that attaches Permanent + Creature +
+Damage from a Token, consuming the timestamp counter (by reference) only when it
+actually creates the Permanent. Both `Ability::resolve_token` (immediate, so the
+`Attach` subability sees the components) and `StateManager::apply_permanent_components`
+(the SBE pass) now call it. The SBE pass still calls `apply_keyword_abilities`
+afterward — and because it runs every pass on a battlefield token, `resolve_token`
+not calling it directly is harmless (keywords land on the next tick). Fixed a
+latent regression avoided in passing: the SBE site previously consumed
+`timestamp++` only when adding the Permanent; the unified helper preserves that
+(post-increments through the reference only on creation) so repeated passes over
+an existing token don't advance the timestamp. Verified: diag (10 games, no
+draws/crashes) and Cori-Steel Cutter (cast 2nd spell → token created → equipment
+attached to it → token persists across SBE passes, attacks, deals damage).
 
 ### ☐ 8. `enters_tapped` sourced from two unrelated fields in two functions
 `CardData.replacement_effects` (`state_manager.cpp:133-142`) vs

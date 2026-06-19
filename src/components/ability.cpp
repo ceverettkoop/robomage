@@ -1831,26 +1831,7 @@ void Ability::resolve_token(std::shared_ptr<Orderer> orderer) {
 
     // Add Permanent + Creature + Damage immediately so subabilities (e.g. Attach) can see them
     // before the next apply_permanent_components pass.
-    Permanent perm;
-    perm.name = tok.name;
-    perm.types = tok.types;
-    perm.is_token = true;
-    perm.controller = ctrl;
-    perm.has_summoning_sickness = true;
-    perm.is_tapped = false;
-    perm.timestamp_entered_battlefield = cur_game.timestamp++;
-    global_coordinator.AddComponent(tok_entity, perm);
-
-    Creature creature;
-    creature.base_power = static_cast<int>(tok.power);
-    creature.base_toughness = static_cast<int>(tok.toughness);
-    creature.keywords = tok.keywords;
-    recompute_pt(creature);
-    global_coordinator.AddComponent(tok_entity, creature);
-
-    Damage damage;
-    damage.damage_counters = 0;
-    global_coordinator.AddComponent(tok_entity, damage);
+    bootstrap_token_components(tok_entity, tok, ctrl, cur_game.timestamp);
 
     cur_game.remembered_entities.clear();
     cur_game.remembered_entities.push_back(tok_entity);

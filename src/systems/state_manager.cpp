@@ -99,28 +99,7 @@ void StateManager::apply_permanent_components(Game &game) {
             auto &zone = global_coordinator.GetComponent<Zone>(entity);
             auto &token = global_coordinator.GetComponent<Token>(entity);
             if (zone.location == Zone::BATTLEFIELD) {
-                if (!global_coordinator.entity_has_component<Permanent>(entity)) {
-                    Permanent perm;
-                    perm.name = token.name;
-                    perm.types = token.types;
-                    perm.is_token = true;
-                    perm.controller = zone.controller;
-                    perm.has_summoning_sickness = true;
-                    perm.is_tapped = false;
-                    perm.timestamp_entered_battlefield = game.timestamp++;
-                    global_coordinator.AddComponent(entity, perm);
-                }
-                if (!global_coordinator.entity_has_component<Creature>(entity)) {
-                    Creature creature;
-                    creature.base_power = static_cast<int>(token.power);
-                    creature.base_toughness = static_cast<int>(token.toughness);
-                    creature.keywords = token.keywords;
-                    recompute_pt(creature);
-                    global_coordinator.AddComponent(entity, creature);
-                    Damage damage;
-                    damage.damage_counters = 0;
-                    global_coordinator.AddComponent(entity, damage);
-                }
+                bootstrap_token_components(entity, token, zone.controller, game.timestamp);
                 apply_keyword_abilities(entity);
             } else {
                 // Token has left the battlefield — schedule for destruction

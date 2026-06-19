@@ -7,6 +7,8 @@
 #include <vector>
 #include "ability.h"
 #include "types.h"
+#include "zone.h"
+#include "../ecs/entity.h"
 
 // Token entities have Zone + Permanent + Creature + Damage + Token on the battlefield.
 // They have no CardData. When a token leaves the battlefield it is destroyed entirely.
@@ -18,5 +20,14 @@ struct Token {
     uint32_t power = 0;
     uint32_t toughness = 0;
 };
+
+// Attach the Permanent + Creature + Damage components a token needs on the battlefield,
+// deriving P/T/keywords/controller from the Token. The single source of this bootstrap,
+// called both immediately by Ability::resolve_token (so subabilities see the components)
+// and by the StateManager SBE pass for any token entity still missing them. The timestamp
+// counter is consumed (post-incremented) only when the Permanent is actually created, so
+// repeated SBE passes over an already-bootstrapped token do not advance it.
+void bootstrap_token_components(Entity tok_entity, const Token &tok,
+                                Zone::Ownership controller, size_t &timestamp);
 
 #endif /* TOKEN_H */
