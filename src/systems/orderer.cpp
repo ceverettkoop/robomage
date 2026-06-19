@@ -9,6 +9,7 @@
 #include "../classes/game.h"
 #include "../classes/action.h"
 #include "../cli_output.h"
+#include "../components/ability.h"
 #include "../components/carddata.h"
 #include "../components/color_identity.h"
 #include "../components/permanent.h"
@@ -31,6 +32,17 @@ void Orderer::init() {
 }
 
 static void check_exile_replacement(Entity target, Zone::ZoneValue &destination);
+
+Entity Orderer::push_ability_onto_stack(const Ability &ability, Zone::Ownership controller) {
+    // Initialize the entity's Zone as HAND so add_to_zone's origin-zone removal is a
+    // harmless no-op, then move it onto the stack and attach the (already-populated) ability.
+    Entity ability_entity = global_coordinator.CreateEntity();
+    Zone ab_zone(Zone::HAND, controller, controller);
+    global_coordinator.AddComponent(ability_entity, ab_zone);
+    add_to_zone(false, ability_entity, Zone::STACK);
+    global_coordinator.AddComponent(ability_entity, ability);
+    return ability_entity;
+}
 
 void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destination) {
     size_t back = 0;

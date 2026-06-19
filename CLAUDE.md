@@ -33,6 +33,14 @@ The python side of the project enables machine learning of the game and analysis
 
 The compiled binary is output to `bin/robomage`.
 
+**Run build/test commands plainly so they don't trigger a permission prompt.** A single
+command, or a single pipeline whose programs are all allowlisted (`make`, the `train/...`
+python entry points, `grep`/`head`/`tail`/`echo`), auto-approves. Avoid the shell plumbing
+that forces a prompt: chaining statements with `;`/`&&`, and `${PIPESTATUS[0]}` / `$(...)`
+expansions. Prefer bare `make` and `... | grep -i error` over
+`make 2>&1 | grep ... ; echo "EXIT:${PIPESTATUS[0]}"`; read the printed output for status
+instead of `$PIPESTATUS`.
+
 ## Testing guidelines
 -Non fatal errors are not acceptable
 -Draws are not acceptable

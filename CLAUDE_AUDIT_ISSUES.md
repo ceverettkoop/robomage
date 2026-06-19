@@ -104,10 +104,20 @@ spend rule lives in exactly one place. The flexible/hypothetical-mana variant in
 genuinely different and intentionally left distinct. Verified: diag (no
 draws/crashes) and Murktide delve cast unchanged.
 
-### ☐ 5. No canonical "push ability onto the stack" — 4 hand-rolled copies ✓
+### ☑ 5. No canonical "push ability onto the stack" — 4 hand-rolled copies ✓
 `action_processor.cpp:142-148` (activate from hand), `:365-373` (from
 battlefield), `state_manager.cpp:1153-1167` (triggered), `:1029-1035` (delayed).
 Each repeats the "init Zone as HAND so add_to_zone origin-removal is a no-op" hack.
+
+**Resolved.** Added `Orderer::push_ability_onto_stack(const Ability&, controller)`
+(`orderer.cpp`) which owns the create-entity + HAND-zone + move-to-STACK + attach
+sequence. All four sites now build the populated Ability and call it. Verified: Soul Warden
+ETB trigger (a real stack trigger) — casting a creature fires "Soul Warden
+triggered", the GainLife ability resolves off the stack, and it triggers on both
+players' creatures entering; plus diag (10 games, no draws/crashes) and the
+Murktide delve cast (spell-cast + delve path unaffected). (Murktide's enters-with
+counters are an etbCounter *replacement* effect, not a stack trigger, so that
+cast does not itself exercise these sites.)
 
 ### ☐ 6. `draw()` bypasses the canonical zone mover ✓
 `Orderer::draw` (`orderer.cpp:280-312`) sets `location = HAND` and adjusts

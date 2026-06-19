@@ -8,12 +8,16 @@
 #include <memory>
 
 struct Deck;
+struct Ability;
 
 class Orderer : public System, public std::enable_shared_from_this<Orderer>{
 
 public:
     static void init();
     void add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destination);
+    // Create a standalone ability entity and place it on the stack. `ability` must
+    // already have source/controller/target populated. Returns the new entity.
+    Entity push_ability_onto_stack(const Ability &ability, Zone::Ownership controller);
     std::vector<Entity> get_library_contents(Zone::Ownership owner);
     std::vector<Entity> get_hand(Zone::Ownership owner);
     void shuffle_library(Zone::Ownership owner);

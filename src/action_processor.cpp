@@ -139,13 +139,9 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
         }
 
         // Create standalone ability entity on the stack
-        Entity ability_entity = global_coordinator.CreateEntity();
-        Zone ab_zone(Zone::HAND, ctrl, ctrl);
-        global_coordinator.AddComponent(ability_entity, ab_zone);
-        orderer->add_to_zone(false, ability_entity, Zone::STACK);
         stack_ab.source = permanent_entity;
         stack_ab.controller = ctrl;
-        global_coordinator.AddComponent(ability_entity, stack_ab);
+        orderer->push_ability_onto_stack(stack_ab, ctrl);
 
         auto &cd = global_coordinator.GetComponent<CardData>(permanent_entity);
         if (stack_ab.target != 0) {
@@ -360,17 +356,10 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
             }
         }
     } else {  // ACTIVATED ABILITY THAT IS NOT A MANA ABILITY - GOES ON STACK
-        //  Initialize zone with HAND so add_to_zone removal of the origin zone is a no-op
-        // lol that's hacky but OK
-        Entity ability_entity = global_coordinator.CreateEntity();
-        Zone ab_zone(Zone::HAND, controller, controller);
-        global_coordinator.AddComponent(ability_entity, ab_zone);
         // puts on stack; we have targets from earlier
-        orderer->add_to_zone(false, ability_entity, Zone::STACK);
-
         stack_ab.source = permanent_entity;
         stack_ab.controller = controller;
-        global_coordinator.AddComponent(ability_entity, stack_ab);
+        orderer->push_ability_onto_stack(stack_ab, controller);
 
         if (stack_ab.target != 0) {
             std::string tgt_name;

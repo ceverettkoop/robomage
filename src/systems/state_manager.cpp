@@ -1019,13 +1019,9 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                 // Determine controller from owner_entity
                 Zone::Ownership ctrl = (dt.owner_entity == game.player_a_entity)
                                        ? Zone::PLAYER_A : Zone::PLAYER_B;
-                Entity trigger_entity = global_coordinator.CreateEntity();
-                Zone ab_zone(Zone::HAND, ctrl, ctrl);
-                global_coordinator.AddComponent(trigger_entity, ab_zone);
-                orderer->add_to_zone(false, trigger_entity, Zone::STACK);
                 Ability trigger_ab = dt.ability;
                 trigger_ab.controller = ctrl;
-                global_coordinator.AddComponent(trigger_entity, trigger_ab);
+                orderer->push_ability_onto_stack(trigger_ab, ctrl);
                 game_log("Delayed trigger fires.\n");
                 to_remove.push_back(i);
             }
@@ -1143,11 +1139,6 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                 }
 
                 // Push the triggered ability onto the stack as a standalone entity
-                Entity trigger_entity = global_coordinator.CreateEntity();
-                Zone ab_zone(Zone::HAND, perm.controller, perm.controller);
-                global_coordinator.AddComponent(trigger_entity, ab_zone);
-                orderer->add_to_zone(false, trigger_entity, Zone::STACK);
-
                 Ability trigger_ab = ab;
                 trigger_ab.source = entity;
                 trigger_ab.controller = perm.controller;
@@ -1157,7 +1148,7 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                 // For combat damage triggers, capture the damage amount
                 if (ev.GetType() == Events::COMBAT_DAMAGE_TO_PLAYER && ev.HasParam(Params::AMOUNT))
                     trigger_ab.trigger_damage_amount = ev.GetParam<uint32_t>(Params::AMOUNT);
-                global_coordinator.AddComponent(trigger_entity, trigger_ab);
+                orderer->push_ability_onto_stack(trigger_ab, perm.controller);
 
                 game_log("%s triggered\n", ent_name.c_str());
             }
