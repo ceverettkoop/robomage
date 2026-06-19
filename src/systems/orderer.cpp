@@ -290,36 +290,31 @@ void Orderer::draw_hands() {
 
 // actual effect here, not considering triggers or replacement
 void Orderer::draw(Zone::Ownership player, size_t ct) {
+    // Collect the top `ct` cards of the player's library, in draw order (ascending
+    // distance from top). add_to_zone closes the library gap on each move, so drawing
+    // them top-first keeps the remaining cards' distances correct.
     std::vector<Entity> cards_to_draw;
     for (auto &&card : mEntities) {
         auto &card_zone = global_coordinator.GetComponent<Zone>(card);
-        if (card_zone.location == Zone::LIBRARY && card_zone.owner == player) {
-            if (card_zone.distance_from_top < ct) {
-                cards_to_draw.push_back(card);
-            } else {
-                card_zone.distance_from_top -= ct;
-            }
+        if (card_zone.location == Zone::LIBRARY && card_zone.owner == player &&
+            card_zone.distance_from_top < ct) {
+            cards_to_draw.push_back(card);
         }
     }
+    std::sort(cards_to_draw.begin(), cards_to_draw.end(), [](Entity a, Entity b) {
+        return global_coordinator.GetComponent<Zone>(a).distance_from_top <
+               global_coordinator.GetComponent<Zone>(b).distance_from_top;
+    });
     // TODO: first card drawn here is subject to replacement effects (e.g. Miracle, Leyline of Anticipation)
-    // Inline print_draw: sort by distance_from_top then log each draw
-    {
-        std::vector<Entity> sorted = cards_to_draw;
-        std::sort(sorted.begin(), sorted.end(), [](Entity a, Entity b) {
-            return global_coordinator.GetComponent<Zone>(a).distance_from_top <
-                   global_coordinator.GetComponent<Zone>(b).distance_from_top;
-        });
-        for (auto card : sorted) {
-            game_log_private(player, "%s draws %s\n", player_name(player).c_str(),
-                     global_coordinator.GetComponent<CardData>(card).name.c_str());
-        }
-    }
     // Track drawn cards on the player's cards_drawn_this_turn list (for Sylvan Library)
     Entity player_entity = (player == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
     auto &pl = global_coordinator.GetComponent<Player>(player_entity);
     for (auto &&card : cards_to_draw) {
-        auto &card_zone = global_coordinator.GetComponent<Zone>(card);
-        card_zone.location = Zone::HAND;
+        game_log_private(player, "%s draws %s\n", player_name(player).c_str(),
+                 global_coordinator.GetComponent<CardData>(card).name.c_str());
+        // Route through the canonical zone mover so a draw fires CARD_CHANGED_ZONE,
+        // closes the library gap, and updates the known-top-of-library cache.
+        add_to_zone(false, card, Zone::HAND);
         pl.cards_drawn_this_turn.push_back(card);
     }
     if (cards_to_draw.size() < ct) {

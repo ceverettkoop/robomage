@@ -119,11 +119,18 @@ Murktide delve cast (spell-cast + delve path unaffected). (Murktide's enters-wit
 counters are an etbCounter *replacement* effect, not a stack trigger, so that
 cast does not itself exercise these sites.)
 
-### ☐ 6. `draw()` bypasses the canonical zone mover ✓
+### ☑ 6. `draw()` bypasses the canonical zone mover ✓
 `Orderer::draw` (`orderer.cpp:280-312`) sets `location = HAND` and adjusts
 `distance_from_top` by hand instead of calling `add_to_zone`
 (`orderer.cpp:35-118`) → a normal draw never fires `CARD_CHANGED_ZONE` and never
 updates the known-top-of-library ML feature.
+
+**Resolved.** `draw` now collects the top `ct` cards (ascending distance) and
+moves each via `add_to_zone(false, card, HAND)`, so a draw fires
+`CARD_CHANGED_ZONE`, closes the library gap, and updates the known-top cache like
+any other zone change. Dropped the manual `distance_from_top -= ct` (gap-closing
+now handles it). Verified: diag (10 games, no draws/crashes) and a deterministic
+`--no-shuffle` test drawing 8 cards in exact library order.
 
 ---
 
