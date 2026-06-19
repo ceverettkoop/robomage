@@ -27,7 +27,7 @@ static const char *mana_symbol_str(Colors color);
 static bool permanent_cant_activate(Entity entity);
 static size_t eval_mana_amount(const Ability &ab, Zone::Ownership controller,
                                std::shared_ptr<Orderer> orderer);
-static void spend_from_pool(ManaValue &pool, const ManaValue &cost);
+static ManaValue pay_from_pool(ManaValue &pool, const ManaValue &cost);
 static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
                           Entity paid_for, std::shared_ptr<Orderer> orderer, bool has_delve,
                           bool commit = true);
@@ -37,22 +37,12 @@ Entity get_player_entity(Zone::Ownership player) {
     return (player == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
 }
 
+// Non-mutating affordability check: the read-only counterpart of pay_from_pool.
+// Dry-runs the payment on a throwaway copy (this function already copied the pool)
+// so the spend rule is never duplicated.
 bool can_afford_pool(const std::multiset<Colors> &pool, const std::multiset<Colors> &cost) {
-    auto remaining = pool;
-
-    // Pay specific colors first
-    for (auto color : cost) {
-        if (color == GENERIC) continue;
-        auto it = remaining.find(color);
-        if (it != remaining.end()) {
-            remaining.erase(it);
-        } else {
-            return false;
-        }
-    }
-
-    size_t generic_needed = cost.count(GENERIC);
-    return remaining.size() >= generic_needed;
+    auto copy = pool;
+    return pay_from_pool(copy, cost).empty();
 }
 
 bool can_afford(Zone::Ownership player_owner, const std::multiset<Colors> &cost) {
@@ -74,24 +64,7 @@ void spend_mana(Zone::Ownership player_owner, const std::multiset<Colors> &cost,
         dump_entity(paid_for);
         #endif
     }
-
-    // Pay specific colors first
-    for (auto color : cost) {
-        if (color == GENERIC) continue;
-        auto it = player.mana.find(color);
-        if (it != player.mana.end()) {
-            player.mana.erase(it);
-        }
-    }
-
-    // Pay generic with any remaining mana
-    size_t generic_needed = cost.count(GENERIC);
-    for (size_t i = 0; i < generic_needed; i++) {
-        if (!player.mana.empty()) {
-            auto it = player.mana.begin();
-            player.mana.erase(it);
-        }
-    }
+    pay_from_pool(player.mana, cost);
 }
 
 void add_mana(Zone::Ownership player_owner, Colors mana_color, size_t amount) {
@@ -105,31 +78,7 @@ void add_mana(Zone::Ownership player_owner, Colors mana_color, size_t amount) {
 ManaValue pay_partial(Zone::Ownership player_owner, const ManaValue &cost) {
     Entity player_entity = get_player_entity(player_owner);
     auto &player = global_coordinator.GetComponent<Player>(player_entity);
-    ManaValue remaining;
-
-    // Pay specific colors first
-    for (auto color : cost) {
-        if (color == GENERIC) continue;
-        auto it = player.mana.find(color);
-        if (it != player.mana.end()) {
-            player.mana.erase(it);
-        } else {
-            remaining.insert(color);
-        }
-    }
-
-    // Pay generic with any remaining mana
-    size_t generic_needed = cost.count(GENERIC);
-    for (size_t i = 0; i < generic_needed; i++) {
-        if (!player.mana.empty()) {
-            auto it = player.mana.begin();
-            player.mana.erase(it);
-        } else {
-            remaining.insert(GENERIC);
-        }
-    }
-
-    return remaining;
+    return pay_from_pool(player.mana, cost);
 }
 
 void empty_mana_pool(Zone::Ownership player_owner) {
@@ -467,16 +416,24 @@ void restore_mana_state(Zone::Ownership player, const ManaPaymentSnapshot &snap,
     cur_game.pending_cant_be_countered = false;
 }
 
-static void spend_from_pool(ManaValue &pool, const ManaValue &cost) {
-    // Mirror of spend_mana's order (specific colors first, then generic from any),
-    // but operating on an arbitrary pool so it works on a simulated copy.
+// The single "pay colored pips first, then generic from any remaining mana" primitive.
+// Pays `cost` out of `pool` (mutating it) and returns the portion that could NOT be
+// paid. can_afford_pool/spend_mana/pay_partial and the auto-payer all route through this,
+// so the spend rule (including generic color preference) lives in exactly one place.
+static ManaValue pay_from_pool(ManaValue &pool, const ManaValue &cost) {
+    ManaValue remaining;
     for (auto color : cost) {
         if (color == GENERIC) continue;
         auto it = pool.find(color);
         if (it != pool.end()) pool.erase(it);
+        else remaining.insert(color);
     }
     size_t generic_needed = cost.count(GENERIC);
-    for (size_t i = 0; i < generic_needed && !pool.empty(); i++) pool.erase(pool.begin());
+    for (size_t i = 0; i < generic_needed; i++) {
+        if (!pool.empty()) pool.erase(pool.begin());
+        else remaining.insert(GENERIC);
+    }
+    return remaining;
 }
 
 // Greedily tap sources to cover the remaining cost. This is the single mana-payment
@@ -532,7 +489,7 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
 
     // Check if pool covers remaining after delve
     if (can_afford_pool(pool, remaining)) {
-        spend_from_pool(pool, remaining);
+        pay_from_pool(pool, remaining);
         return true;
     }
 
@@ -573,7 +530,7 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
             orderer->add_to_zone(false, si.entity, Zone::GRAVEYARD);
         }
         if (!si.ability.activation_mana_cost.empty())
-            spend_from_pool(pool, si.ability.activation_mana_cost);
+            pay_from_pool(pool, si.ability.activation_mana_cost);
         if (commit && si.ability.life_cost > 0) {
             player.life_total -= si.ability.life_cost;
             game_log("%s pays %d life\n", player_name(controller).c_str(), si.ability.life_cost);

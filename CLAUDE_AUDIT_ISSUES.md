@@ -89,11 +89,20 @@ The `payment_fail_counts` band-aid is left in place as a dormant backstop.
 Verified: diag (10 games, 0 draws/crashes); Murktide Regent cast via Delve
 (exiles 2 instants to pay the {5}, enters 5/5 from the 2 counters).
 
-### ☐ 4. Five copies of the "pay colored pips then generic" mana algorithm ✓
+### ☑ 4. Five copies of the "pay colored pips then generic" mana algorithm ✓
 `can_afford_pool` (`mana_system.cpp:38-54`), `spend_mana` (`76-92`),
 `pay_partial` (`108-130`), `can_afford_with_sources` (`374-391`), and a fifth
 variant in `auto_pay_mana` (`568-631`). They already diverge on generic-payment
 color preference.
+
+**Resolved.** Added one primitive `pay_from_pool(pool, cost) -> remainder`
+(specific colors first, then generic from any remaining; returns the unpayable
+portion). `spend_mana`, `pay_partial`, `can_afford_pool` (dry-run on a copy it
+already made), and the auto-payer's pool spends all route through it, so the
+spend rule lives in exactly one place. The flexible/hypothetical-mana variant in
+`can_afford_with_sources` (models multi-color sources as wildcard mana) is
+genuinely different and intentionally left distinct. Verified: diag (no
+draws/crashes) and Murktide delve cast unchanged.
 
 ### ☐ 5. No canonical "push ability onto the stack" — 4 hand-rolled copies ✓
 `action_processor.cpp:142-148` (activate from hand), `:365-373` (from
