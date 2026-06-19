@@ -27,8 +27,10 @@ static const char *mana_symbol_str(Colors color);
 static bool permanent_cant_activate(Entity entity);
 static size_t eval_mana_amount(const Ability &ab, Zone::Ownership controller,
                                std::shared_ptr<Orderer> orderer);
+static void spend_from_pool(ManaValue &pool, const ManaValue &cost);
 static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
-                          Entity paid_for, std::shared_ptr<Orderer> orderer, bool has_delve);
+                          Entity paid_for, std::shared_ptr<Orderer> orderer, bool has_delve,
+                          bool commit = true);
 static bool restricted_mana_matches(Entity source_entity, Entity paid_for);
 
 Entity get_player_entity(Zone::Ownership player) {
@@ -465,15 +467,42 @@ void restore_mana_state(Zone::Ownership player, const ManaPaymentSnapshot &snap,
     cur_game.pending_cant_be_countered = false;
 }
 
-// Machine-mode auto-pay: greedily tap sources to cover the remaining cost.
-// Strategy: for each colored pip in the remaining cost, find a source that
-// produces exactly that color, preferring single-color sources over multi-color
-// to preserve flexibility.  Then pay generic costs with whatever is left.
-// Delve: exile graveyard instants/sorceries to reduce generic costs first.
+static void spend_from_pool(ManaValue &pool, const ManaValue &cost) {
+    // Mirror of spend_mana's order (specific colors first, then generic from any),
+    // but operating on an arbitrary pool so it works on a simulated copy.
+    for (auto color : cost) {
+        if (color == GENERIC) continue;
+        auto it = pool.find(color);
+        if (it != pool.end()) pool.erase(it);
+    }
+    size_t generic_needed = cost.count(GENERIC);
+    for (size_t i = 0; i < generic_needed && !pool.empty(); i++) pool.erase(pool.begin());
+}
+
+// Greedily tap sources to cover the remaining cost. This is the single mana-payment
+// algorithm used by BOTH the machine-mode payer (commit=true, mutates real ECS state)
+// and the legality check via can_pay_mana (commit=false, operates on a copied pool with
+// no side effects) — so "is this castable" and "pay for it" can never disagree.
+//
+// Strategy: for each colored pip in the remaining cost, find a source that produces
+// exactly that color, preferring single-color sources over multi-color to preserve
+// flexibility. Then pay generic costs with whatever is left. Delve: exile graveyard
+// instants/sorceries to reduce generic costs first.
+//
+// When commit==false the write-only side effects (tap, sacrifice, life payment, delve
+// zone moves, activation counters, uncounterable flag) are skipped. None of these are
+// re-read to drive the payment decision — reuse is gated by the local `tapped_entities`
+// set — so the decision sequence is identical to a real payment.
 static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
-                          Entity paid_for, std::shared_ptr<Orderer> orderer, bool has_delve) {
+                          Entity paid_for, std::shared_ptr<Orderer> orderer, bool has_delve,
+                          bool commit) {
     Entity player_entity = get_player_entity(controller);
     auto &player = global_coordinator.GetComponent<Player>(player_entity);
+
+    // In commit mode the working pool IS the real mana pool; in simulate mode it is a
+    // throwaway copy so the algorithm can drain/refill it without touching real state.
+    ManaValue pool_copy = player.mana;
+    ManaValue &pool = commit ? player.mana : pool_copy;
 
     // Delve: exile graveyard instants/sorceries to reduce generic portion
     if (has_delve) {
@@ -490,18 +519,20 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
                     is_inst_sorc = true; break;
                 }
             if (!is_inst_sorc) continue;
-            orderer->add_to_zone(false, e, Zone::EXILE);
-            cur_game.delve_exiled.push_back(e);
+            if (commit) {
+                orderer->add_to_zone(false, e, Zone::EXILE);
+                cur_game.delve_exiled.push_back(e);
+                game_log("%s exiles %s via Delve.\n",
+                         player_name(controller).c_str(), ecd.name.c_str());
+            }
             auto git = remaining.find(GENERIC);
             if (git != remaining.end()) remaining.erase(git);
-            game_log("%s exiles %s via Delve.\n",
-                     player_name(controller).c_str(), ecd.name.c_str());
         }
     }
 
     // Check if pool covers remaining after delve
-    if (can_afford_pool(player.mana, remaining)) {
-        spend_mana(controller, remaining, paid_for);
+    if (can_afford_pool(pool, remaining)) {
+        spend_from_pool(pool, remaining);
         return true;
     }
 
@@ -531,26 +562,29 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
         valid_sources.push_back({entity, ab, ab.color, is_multi});
     }
 
-    // Helper: activate a source (tap, sacrifice, pay costs, add mana)
+    // Helper: activate a source (tap, sacrifice, pay costs, add mana).
+    // Pool changes (activation cost paid, mana produced) always apply to the working
+    // pool; the remaining write-only ECS side effects are skipped when !commit.
     auto activate_source = [&](const SourceInfo &si) {
         auto &perm = global_coordinator.GetComponent<Permanent>(si.entity);
-        if (si.ability.tap_cost) perm.is_tapped = true;
-        if (si.ability.sac_self) {
+        if (commit && si.ability.tap_cost) perm.is_tapped = true;
+        if (commit && si.ability.sac_self) {
             game_log("%s sacrifices %s\n", player_name(controller).c_str(), perm.name.c_str());
             orderer->add_to_zone(false, si.entity, Zone::GRAVEYARD);
         }
         if (!si.ability.activation_mana_cost.empty())
-            spend_mana(controller, si.ability.activation_mana_cost, si.entity);
-        if (si.ability.life_cost > 0) {
+            spend_from_pool(pool, si.ability.activation_mana_cost);
+        if (commit && si.ability.life_cost > 0) {
             player.life_total -= si.ability.life_cost;
             game_log("%s pays %d life\n", player_name(controller).c_str(), si.ability.life_cost);
         }
         size_t amount = eval_mana_amount(si.ability, controller, orderer);
-        add_mana(controller, si.color, amount);
-        if (si.ability.adds_no_counter) cur_game.pending_cant_be_countered = true;
-        game_log("%s activated %s for %zu{%s}\n", player_name(controller).c_str(),
-                 perm.name.c_str(), amount, mana_symbol_str(si.color));
-        if (si.ability.activation_limit > 0) {
+        for (size_t i = 0; i < amount; i++) pool.insert(si.color);
+        if (commit && si.ability.adds_no_counter) cur_game.pending_cant_be_countered = true;
+        if (commit)
+            game_log("%s activated %s for %zu{%s}\n", player_name(controller).c_str(),
+                     perm.name.c_str(), amount, mana_symbol_str(si.color));
+        if (commit && si.ability.activation_limit > 0) {
             for (auto &perm_ab : perm.abilities) {
                 if (perm_ab.category == si.ability.category &&
                     perm_ab.tap_cost == si.ability.tap_cost &&
@@ -570,9 +604,9 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
         Colors needed = *it;
 
         // Check pool first
-        if (player.mana.count(needed) > 0) {
-            auto pit = player.mana.find(needed);
-            player.mana.erase(pit);
+        if (pool.count(needed) > 0) {
+            auto pit = pool.find(needed);
+            pool.erase(pit);
             it = remaining.erase(it);
             continue;
         }
@@ -585,9 +619,9 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
                 if (!predicate(si)) continue;
                 activate_source(si);
                 tapped_entities.insert(si.entity);
-                if (player.mana.count(needed) > 0) {
-                    auto pit = player.mana.find(needed);
-                    player.mana.erase(pit);
+                if (pool.count(needed) > 0) {
+                    auto pit = pool.find(needed);
+                    pool.erase(pit);
                 }
                 it = remaining.erase(it);
                 return true;
@@ -603,8 +637,8 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
 
     // Pay generic costs with remaining sources — prefer adds_no_counter (Cavern)
     while (remaining.count(GENERIC) > 0) {
-        if (player.mana.size() > 0) {
-            player.mana.erase(player.mana.begin());
+        if (pool.size() > 0) {
+            pool.erase(pool.begin());
             auto git = remaining.find(GENERIC);
             remaining.erase(git);
             continue;
@@ -615,8 +649,8 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
                 if (!predicate(si)) continue;
                 activate_source(si);
                 tapped_entities.insert(si.entity);
-                if (player.mana.size() > 0) {
-                    player.mana.erase(player.mana.begin());
+                if (pool.size() > 0) {
+                    pool.erase(pool.begin());
                     auto git = remaining.find(GENERIC);
                     remaining.erase(git);
                 }
@@ -631,6 +665,17 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
     }
 
     return true;
+}
+
+bool can_pay_mana(Zone::Ownership controller, const ManaValue &cost,
+                  Entity paid_for, std::shared_ptr<Orderer> orderer, bool has_delve) {
+    Entity player_entity = get_player_entity(controller);
+    if (!global_coordinator.entity_has_component<Player>(player_entity)) return false;
+    // Run the exact machine-mode payment algorithm in simulate mode (no side effects).
+    // This is the single predicate behind both "is this castable" and "pay for it",
+    // so a spell can never be offered as legal and then fail to pay (and vice versa).
+    ManaValue remaining = cost;
+    return auto_pay_mana(controller, remaining, paid_for, orderer, has_delve, /*commit=*/false);
 }
 
 bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,

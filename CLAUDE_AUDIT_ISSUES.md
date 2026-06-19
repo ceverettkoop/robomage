@@ -44,7 +44,13 @@ permanent with no `Damage` component. Verified: 30 crash-free scripted games,
 Lightning Bolt to creature/player, and Abrade destroying an artifact (the
 previously-always-fizzling path).
 
-### ☐ 2. No "effective P/T" model — six paths mutate `Creature.power/toughness` in place ✓✓
+### ◐ 2. No "effective P/T" model — six paths mutate `Creature.power/toughness` in place ✓✓
+> **Done — UNTESTED. Needs manual testing by user.** Implementation landed
+> (uncommitted: `creature.h/.cpp`, `ability.cpp`, `state_manager.cpp`) composing
+> P/T from separate signed contributions through one recompute path. Not yet
+> verified in-engine; user to manually test (Pump up/down, counters, Exalted on a
+> CDA creature, lethal-damage interaction) before this is marked ☑.
+
 There is no `effective_power()`/`effective_toughness()`. Every effect bakes its
 delta into one `uint32_t` field and must manually un-bake it: base set
 (`state_manager.cpp:174`), ETB counters (`:194-196`), PutCounter
@@ -64,12 +70,24 @@ Concrete bugs:
 static bonus) through one recompute path; use signed arithmetic so a transient
 negative can't underflow.
 
-### ☐ 3. Affordability decided in `determine_legal_actions`, paid by a different algorithm ✓
+### ☑ 3. Affordability decided in `determine_legal_actions`, paid by a different algorithm ✓
 Legality uses `can_afford_with_sources`/`can_afford_with_delve`
 (`state_manager.cpp:1511-1513`); payment uses the independent greedy
 `auto_pay_mana` (`mana_system.cpp:473-634`). When they disagree the action shows
 legal but payment fails — masked by a band-aid that suppresses the action after
 2 payment failures (`action_processor.cpp:1143` + `state_manager.cpp:1474-1475`).
+
+**Resolved.** `auto_pay_mana` now takes a `commit` flag: with `commit=false` it
+runs the identical greedy algorithm over a *copied* mana pool, skipping every
+write-only side effect (tap/sac/life/counters/delve zone moves/uncounterable
+flag) — none of which feed the payment decision. New `can_pay_mana()` wraps that
+simulate mode and is the single predicate now consumed by `determine_legal_actions`
+for spell casts (incl. delve, replacing `can_afford_with_delve`), flashback, and
+activated-ability mana costs. Legality and payment are the same code, so they
+cannot disagree. Removed the now-dead `can_afford_with_delve`/`count_delve_fuel`.
+The `payment_fail_counts` band-aid is left in place as a dormant backstop.
+Verified: diag (10 games, 0 draws/crashes); Murktide Regent cast via Delve
+(exiles 2 instants to pay the {5}, enters 5/5 from the 2 counters).
 
 ### ☐ 4. Five copies of the "pay colored pips then generic" mana algorithm ✓
 `can_afford_pool` (`mana_system.cpp:38-54`), `spend_mana` (`76-92`),

@@ -1287,32 +1287,6 @@ static bool check_condition_present(const Ability &ab, Zone::Ownership caster, s
     return compare_svar(static_cast<int>(count), ab.condition_compare);
 }
 
-// Count instants/sorceries in the player's graveyard that can be exiled for Delve
-static size_t count_delve_fuel(Zone::Ownership player, std::shared_ptr<Orderer> orderer) {
-    size_t count = 0;
-    for (auto e : orderer->mEntities) {
-        if (!global_coordinator.entity_has_component<Zone>(e)) continue;
-        auto &ez = global_coordinator.GetComponent<Zone>(e);
-        if (ez.location != Zone::GRAVEYARD || ez.owner != player) continue;
-        if (!global_coordinator.entity_has_component<CardData>(e)) continue;
-        for (auto &t : global_coordinator.GetComponent<CardData>(e).types)
-            if (t.kind == TYPE && (t.name == "Instant" || t.name == "Sorcery")) { count++; break; }
-    }
-    return count;
-}
-
-// Check if player can afford cost using mana pool + Delve (exiling graveyard instants/sorceries)
-static bool can_afford_with_delve(Zone::Ownership player, const ManaValue &cost,
-                                  std::shared_ptr<Orderer> orderer, Entity paid_for = 0) {
-    size_t generic_in_cost = cost.count(GENERIC);
-    if (generic_in_cost == 0) return can_afford_with_sources(player, cost, orderer, 0, paid_for);
-    // Reduce generic by however many cards can be exiled
-    size_t fuel = count_delve_fuel(player, orderer);
-    size_t to_exile = std::min(generic_in_cost, fuel);
-    ManaValue reduced_cost = cost;
-    for (size_t i = 0; i < to_exile; i++) reduced_cost.erase(reduced_cost.find(GENERIC));
-    return can_afford_with_sources(player, reduced_cost, orderer, 0, paid_for);
-}
 
 std::vector<LegalAction> StateManager::determine_legal_actions(
     const Game &game, std::shared_ptr<Orderer> orderer, std::shared_ptr<StackManager> stack_manager) {
@@ -1501,9 +1475,8 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
 
             // X-cost spells: base cost (without X) is enough to be castable;
             // X value is chosen at cast time in action_processor
-            bool can_regular = card_data.has_delve
-                ? can_afford_with_delve(priority_player, effective_cost, orderer, card_entity)
-                : can_afford_with_sources(priority_player, effective_cost, orderer, 0, card_entity);
+            bool can_regular = can_pay_mana(priority_player, effective_cost, card_entity,
+                                            orderer, card_data.has_delve);
 
             bool can_alt = can_afford_alt(card_data.alt_cost, priority_player, card_entity, orderer);
 
@@ -1548,7 +1521,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         if (!tgt_ok) continue;
 
         // Check affordability: flashback mana cost + life cost
-        bool can_afford_fb = can_afford_with_sources(priority_player, gcd.flashback_mana_cost, orderer, 0, gy_entity);
+        bool can_afford_fb = can_pay_mana(priority_player, gcd.flashback_mana_cost, gy_entity, orderer);
         if (can_afford_fb && gcd.flashback_alt_cost.life_cost > 0) {
             Entity pp_entity = (priority_player == Zone::PLAYER_A)
                 ? cur_game.player_a_entity : cur_game.player_b_entity;
@@ -1650,7 +1623,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 continue;
             } else {
                 // Non-mana activated ability (e.g. ChangeZone for fetch lands, Destroy for Wasteland)
-                if (!ab.activation_mana_cost.empty() && !can_afford_with_sources(priority_player, ab.activation_mana_cost, orderer)) continue;
+                if (!ab.activation_mana_cost.empty() && !can_pay_mana(priority_player, ab.activation_mana_cost, ab.source, orderer)) continue;
                 if (ab.valid_tgts != "N_A" && !has_legal_targets(ab, orderer)) continue;
                 { auto it = cur_game.payment_fail_counts.find(ab.source);
                   if (it != cur_game.payment_fail_counts.end() && it->second >= 2) continue; }
@@ -1669,7 +1642,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             if (ab.ability_type != Ability::ACTIVATED) continue;
             if (ab.activation_zone != Zone::HAND) continue;
             // Check mana affordability
-            if (!ab.activation_mana_cost.empty() && !can_afford_with_sources(priority_player, ab.activation_mana_cost, orderer)) continue;
+            if (!ab.activation_mana_cost.empty() && !can_pay_mana(priority_player, ab.activation_mana_cost, card_entity, orderer)) continue;
             // Check target legality
             if (ab.valid_tgts != "N_A" && ab.target_min > 0 && !has_legal_targets(ab, orderer)) continue;
             // sac_cost_spec: require controller has a permanent matching type

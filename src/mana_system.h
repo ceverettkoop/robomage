@@ -71,6 +71,13 @@ ActionCategory mana_action_category(Colors color);
 std::vector<LegalAction> collect_mana_legal_actions(
     Zone::Ownership player, std::shared_ptr<Orderer> orderer, Entity paid_for = 0);
 
+// Can the controller pay `cost`? Runs the real machine-mode payment algorithm in a
+// side-effect-free simulate mode, so legality and actual payment can never disagree.
+// has_delve folds in graveyard instant/sorcery exiling; paid_for gates restricted mana
+// (Cavern of Souls) the same way the payer does.
+bool can_pay_mana(Zone::Ownership controller, const std::multiset<Colors>& cost,
+                  Entity paid_for, std::shared_ptr<Orderer> orderer, bool has_delve = false);
+
 // Prompt the player to activate mana abilities to pay a cost. Returns true if cost was fully paid.
 // On false, caller must restore from snapshot.
 // If has_delve is true, delve exile options are included alongside mana abilities for generic costs.
