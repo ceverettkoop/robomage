@@ -1,0 +1,22 @@
+=== Game 4: Random Model (A) vs Scripted (B) ===
+
+robomage 0.001
+[   0] PA  Untap           choices=2  available=['MULLIGAN', 'MULLIGAN']  -> 1 (MULLIGAN)  [Model/A]
+[   1] PB  Untap           choices=2  available=['MULLIGAN', 'MULLIGAN']  -> 0 (MULLIGAN)  [Scripted/B]
+[   2] PA  Untap           choices=2  available=['MULLIGAN', 'MULLIGAN']  -> 1 (MULLIGAN)  [Model/A]
+[   3] PA  Untap           choices=2  available=['MULLIGAN', 'MULLIGAN']  -> 1 (MULLIGAN)  [Model/A]
+[   4] PA  Untap           choices=2  available=['MULLIGAN', 'MULLIGAN']  -> 0 (MULLIGAN)  [Model/A]
+--- Turn 1 (Player A) ---
+  PA: Brainstorm, Daze, Daze, Island, Flooded Strand, Scalding Tarn, Thundering Falls
+  PB: Delver of Secrets, Cori-Steel Cutter, Cori-Steel Cutter, Force of Will, Lightning Bolt, Daze, Thundering Falls
+[   5] PA  Untap           choices=7  available=['BOTTOM_CARD', 'BOTTOM_CARD', 'BOTTOM_CARD', 'BOTTOM_CARD', 'BOTTOM_CARD', 'BOTTOM_CARD', 'BOTTOM_CARD']  -> 5 (BOTTOM_CARD)  [Model/A]
+[   6] PA  Untap           choices=6  available=['BOTTOM_CARD', 'BOTTOM_CARD', 'BOTTOM_CARD', 'BOTTOM_CARD', 'BOTTOM_CARD', 'BOTTOM_CARD']  -> 3 (BOTTOM_CARD)  [Model/A]
+[   7] PA  Untap           choices=5  available=['BOTTOM_CARD', 'BOTTOM_CARD', 'BOTTOM_CARD', 'BOTTOM_CARD', 'BOTTOM_CARD']  -> 0 (BOTTOM_CARD)  [Model/A]
+[   8] PA  First Main      choices=3  available=['PASS', 'LAND', 'LAND']  -> 0 (PASS)  [Model/A]
+[   9] PA  Second Main     choices=3  available=['PASS', 'LAND', 'LAND']  -> 0 (PASS)  [Model/A]
+--- Turn 2 (Player B) ---
+  PA: Daze, Daze, Flooded Strand, Thundering Falls
+  PB: Delver of Secrets, Cori-Steel Cutter, Cori-Steel Cutter, Force of Will, Lightning Bolt, Lightning Bolt, Daze, Thundering Falls
+[  10] PB  First Main      choices=2  available=['PASS', 'LAND']  -> 1 (LAND)  [Scripted/B]
+
+=== DRAW (should not occur) ===

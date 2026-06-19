@@ -156,9 +156,34 @@ an existing token don't advance the timestamp. Verified: diag (10 games, no
 draws/crashes) and Cori-Steel Cutter (cast 2nd spell → token created → equipment
 attached to it → token persists across SBE passes, attacks, deals damage).
 
-### ☐ 8. `enters_tapped` sourced from two unrelated fields in two functions
+### ☑ 8. `enters_tapped` sourced from two unrelated fields in two functions
 `CardData.replacement_effects` (`state_manager.cpp:133-142`) vs
 `Ability.enters_tapped` (`ability.cpp:454-457`) → fetched taplands inconsistent.
+
+**Resolved.** The `Ability.enters_tapped` branch in `resolve_change_zone` was in
+fact dead: it poked `Permanent.is_tapped` immediately after `add_to_zone`, but the
+Permanent isn't created until the next SBE pass (`add_to_zone` doesn't make one),
+so a fetch "onto the battlefield tapped" of a non-tapland (e.g. Edge of Autumn
+fetching a basic) never tapped. Now the ChangeZone path records a one-shot
+`cur_game.pending_enters_tapped` intent for the entity, and the single tapping
+decision in `apply_permanent_components` ORs that in (and consumes it) alongside
+the card's own `ENTERS_TAPPED` replacement effect — one source, one place. The
+"enters tapped" log now fires once from that unified point.
+
+Surfaced + fixed in passing (the only vocab card exercising this path is Edge of
+Autumn, which was independently blocked): `matches_filter_spec` treated the
+`Basic` in a `Land.Basic` search filter as a *color* qualifier, so the search
+matched nothing and the fetch always failed to find. Added explicit
+`Basic`/`nonBasic` supertype handling (checks for the `Basic` SUPERTYPE on the
+card). Verified: Edge of Autumn now finds basics and the fetched Forest reports
+"Forest enters tapped" (tapped on the battlefield); Thundering Falls (own
+replacement) still enters tapped via the normal play path; diag 0 draws/crashes.
+
+> **Build note:** this change adds a data member to `struct Game` (`game.h`). The
+> Makefile has no header-dependency tracking, so an incremental `make` only
+> rebuilds directly-edited `.cpp` files, leaving other TUs linked against the old
+> `Game` layout → `cur_game` corruption (manifested as all-draws / early exit).
+> A `make clean && make` is required after any struct-layout change.
 
 ### ☐ 9. Sac-spec (`;`-delimited) + return-cost matcher validated then re-executed ✓✓
 `state_manager.cpp:1613-1706` vs `action_processor.cpp:104-135` & `254-285`

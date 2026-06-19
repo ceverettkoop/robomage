@@ -1,0 +1,21 @@
+=== Game 3: Random Model (A) vs Scripted (B) ===
+
+robomage 0.001
+[   0] PA  Untap           choices=2  available=['MULLIGAN', 'MULLIGAN']  -> 1 (MULLIGAN)  [Model/A]
+[   1] PB  Untap           choices=2  available=['MULLIGAN', 'MULLIGAN']  -> 0 (MULLIGAN)  [Scripted/B]
+[   2] PA  Untap           choices=2  available=['MULLIGAN', 'MULLIGAN']  -> 1 (MULLIGAN)  [Model/A]
+[   3] PA  Untap           choices=2  available=['MULLIGAN', 'MULLIGAN']  -> 1 (MULLIGAN)  [Model/A]
+[   4] PA  Untap           choices=2  available=['MULLIGAN', 'MULLIGAN']  -> 1 (MULLIGAN)  [Model/A]
+[   5] PA  Untap           choices=2  available=['MULLIGAN', 'MULLIGAN']  -> 1 (MULLIGAN)  [Model/A]
+[   6] PA  Untap           choices=2  available=['MULLIGAN', 'MULLIGAN']  -> 0 (MULLIGAN)  [Model/A]
+--- Turn 1 (Player A) ---
+  PA: Mishra's Bauble, Daze, Ponder, Volcanic Island, Misty Rainforest, Wasteland, Thundering Falls
+  PB: Dragon's Rage Channeler, Cori-Steel Cutter, Brainstorm, Lightning Bolt, Ponder, Scalding Tarn, Thundering Falls
+[   7] PA  Untap           choices=7  available=['BOTTOM_CARD', 'BOTTOM_CARD', 'BOTTOM_CARD', 'BOTTOM_CARD', 'BOTTOM_CARD', 'BOTTOM_CARD', 'BOTTOM_CARD']  -> 6 (BOTTOM_CARD)  [Model/A]
+[   8] PA  Untap           choices=6  available=['BOTTOM_CARD', 'BOTTOM_CARD', 'BOTTOM_CARD', 'BOTTOM_CARD', 'BOTTOM_CARD', 'BOTTOM_CARD']  -> 2 (BOTTOM_CARD)  [Model/A]
+[   9] PA  Untap           choices=5  available=['BOTTOM_CARD', 'BOTTOM_CARD', 'BOTTOM_CARD', 'BOTTOM_CARD', 'BOTTOM_CARD']  -> 0 (BOTTOM_CARD)  [Model/A]
+[  10] PA  Untap           choices=4  available=['BOTTOM_CARD', 'BOTTOM_CARD', 'BOTTOM_CARD', 'BOTTOM_CARD']  -> 0 (BOTTOM_CARD)  [Model/A]
+[  11] PA  Untap           choices=3  available=['BOTTOM_CARD', 'BOTTOM_CARD', 'BOTTOM_CARD']  -> 2 (BOTTOM_CARD)  [Model/A]
+[  12] PA  First Main      choices=3  available=['PASS', 'LAND', 'LAND']  -> 1 (LAND)  [Model/A]
+
+=== DRAW (should not occur) ===

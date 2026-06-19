@@ -1,0 +1,11 @@
+=== Game 5: Random Model (A) vs Scripted (B) ===
+
+robomage 0.001
+[   0] PA  Untap           choices=2  available=['MULLIGAN', 'MULLIGAN']  -> 0 (MULLIGAN)  [Model/A]
+[   1] PB  Untap           choices=2  available=['MULLIGAN', 'MULLIGAN']  -> 0 (MULLIGAN)  [Scripted/B]
+--- Turn 1 (Player A) ---
+  PA: Delver of Secrets, Delver of Secrets, Mishra's Bauble, Lightning Bolt, Ponder, Scalding Tarn, Scalding Tarn
+  PB: Mishra's Bauble, Lightning Bolt, Daze, Ponder, Ponder, Island, Scalding Tarn
+[   2] PA  First Main      choices=4  available=['PASS', 'LAND', 'LAND', 'CAST']  -> 3 (CAST)  [Model/A]
+
+=== DRAW (should not occur) ===

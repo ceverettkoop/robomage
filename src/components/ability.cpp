@@ -99,6 +99,14 @@ static bool matches_filter_spec(Entity entity, const std::string &spec) {
                 if (re == entity) { found = true; break; }
             }
             if (!found) return false;
+        } else if (color_qualifier == "Basic" || color_qualifier == "nonBasic") {
+            // Basic/nonBasic supertype qualifier (e.g. "Land.Basic" for fetch ramp).
+            bool is_basic = false;
+            for (auto &t : cd.types) {
+                if (t.name == "Basic") { is_basic = true; break; }
+            }
+            if (color_qualifier == "Basic" && !is_basic) return false;
+            if (color_qualifier == "nonBasic" && is_basic) return false;
         } else {
             Colors required_color = NO_COLOR;
             if (color_qualifier == "Green")
@@ -451,10 +459,10 @@ void Ability::resolve_change_zone(std::shared_ptr<Orderer> orderer) {
             orderer->add_to_zone(false, chosen, destination);
             if (destination == Zone::BATTLEFIELD) {
                 chosen_zone.controller = owner;
-                if (enters_tapped && global_coordinator.entity_has_component<Permanent>(chosen)) {
-                    global_coordinator.GetComponent<Permanent>(chosen).is_tapped = true;
-                    game_log("%s enters tapped.\n", chosen_cd.name.c_str());
-                }
+                // The Permanent doesn't exist yet (it's created by the SBE pass that reads
+                // replacement_effects). Record a one-shot enters-tapped intent so that the
+                // single tapping decision in apply_permanent_components honors it too.
+                if (enters_tapped) cur_game.pending_enters_tapped.insert(chosen);
             }
             if (remember_changed) {
                 cur_game.remembered_entities.push_back(chosen);

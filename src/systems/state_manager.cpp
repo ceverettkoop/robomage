@@ -142,12 +142,19 @@ void StateManager::apply_permanent_components(Game &game) {
                     switch (r.kind) {
                         case Effect::Replacement::ENTERS_TAPPED:
                             perm.is_tapped = true;
-                            game_log("%s enters tapped.\n", perm.name.c_str());
                             break;
                         case Effect::Replacement::CANT_BE_COUNTERED:
                             break;  // handled at cast time, not ETB
                     }
                 }
+                // A ChangeZone effect (e.g. fetch "onto the battlefield tapped") may also
+                // require this permanent to enter tapped — same single decision point.
+                auto pet = game.pending_enters_tapped.find(entity);
+                if (pet != game.pending_enters_tapped.end()) {
+                    perm.is_tapped = true;
+                    game.pending_enters_tapped.erase(pet);
+                }
+                if (perm.is_tapped) game_log("%s enters tapped.\n", perm.name.c_str());
                 perm.timestamp_entered_battlefield = game.timestamp++;
                 global_coordinator.AddComponent(entity, perm);
             }

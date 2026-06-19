@@ -105,6 +105,7 @@ struct Game {
         bool revolt_player_a = false;  // a permanent Player A controlled left the battlefield this turn
         bool revolt_player_b = false;  // a permanent Player B controlled left the battlefield this turn
         std::set<Entity> void_countered;  // entities exiled with void counters (Dauthi Voidwalker)
+        std::set<Entity> pending_enters_tapped;  // one-shot: a ChangeZone effect put this card onto the battlefield tapped; consumed when its Permanent is created
 
         // Recent action history ring buffer for ML observation
         ActionHistoryEntry action_history[ACTION_HISTORY_SIZE] = {};

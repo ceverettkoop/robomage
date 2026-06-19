@@ -1,0 +1,11 @@
+=== Game 8: Random Model (A) vs Scripted (B) ===
+
+robomage 0.001
+[   0] PA  Untap           choices=2  available=['MULLIGAN', 'MULLIGAN']  -> 0 (MULLIGAN)  [Model/A]
+[   1] PB  Untap           choices=2  available=['MULLIGAN', 'MULLIGAN']  -> 0 (MULLIGAN)  [Scripted/B]
+--- Turn 1 (Player A) ---
+  PA: Delver of Secrets, Dragon's Rage Channeler, Flooded Strand, Polluted Delta, Volcanic Island, Scalding Tarn, Wasteland
+  PB: Cori-Steel Cutter, Force of Will, Lightning Bolt, Daze, Unholy Heat, Mountain, Volcanic Island
+[   2] PA  First Main      choices=6  available=['PASS', 'LAND', 'LAND', 'LAND', 'LAND', 'LAND']  -> 4 (LAND)  [Model/A]
+
+=== DRAW (should not occur) ===

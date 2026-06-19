@@ -1,0 +1,11 @@
+=== Game 9: Random Model (A) vs Scripted (B) ===
+
+robomage 0.001
+[   0] PA  Untap           choices=2  available=['MULLIGAN', 'MULLIGAN']  -> 0 (MULLIGAN)  [Model/A]
+[   1] PB  Untap           choices=2  available=['MULLIGAN', 'MULLIGAN']  -> 0 (MULLIGAN)  [Scripted/B]
+--- Turn 1 (Player B) ---
+  PA: Delver of Secrets, Murktide Regent, Dragon's Rage Channeler, Dragon's Rage Channeler, Brainstorm, Lightning Bolt, Ponder
+  PB: Delver of Secrets, Mishra's Bauble, Brainstorm, Brainstorm, Lightning Bolt, Daze, Ponder, Polluted Delta
+[   2] PB  First Main      choices=3  available=['PASS', 'LAND', 'CAST']  -> 2 (CAST)  [Scripted/B]
+
+=== DRAW (should not occur) ===
