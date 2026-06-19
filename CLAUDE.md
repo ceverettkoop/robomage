@@ -36,6 +36,7 @@ The compiled binary is output to `bin/robomage`.
 ## Testing guidelines
 -Non fatal errors are not acceptable
 -Draws are not acceptable
+-Do not attempt to test cards that are not already in `src/card_vocab.h`. Cards absent from the card vocab are considered unimplemented.
 -train.py --diag and train.py --watch-scripted are helpful for checking new builds; 
 --when testing with diag and --watch-scripted, supply --deck and --opponent arguments to test cards/decks relevant to recently implemented features
 
