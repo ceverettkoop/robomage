@@ -42,6 +42,7 @@ expansions. Prefer bare `make` and `... | grep -i error` over
 instead of `$PIPESTATUS`.
 
 ## Testing guidelines
+-Don't use sed or cat - if possible don't pipe a bunch of commands together in a way that will require asking my permission, run build and test tasks as simply as possible
 -Non fatal errors are not acceptable
 -Draws are not acceptable
 -Do not attempt to test cards that are not already in `src/card_vocab.h`. Cards absent from the card vocab are considered unimplemented.

@@ -93,12 +93,12 @@ const char* gui_card_mana_cost(int vocab_idx) {
             case COLORLESS: sym = "C"; break;
             default: break;
         }
-        pos += snprintf(buf + pos, sizeof(buf) - (size_t)pos, "{%s}", sym);
+        pos += snprintf(buf + pos, sizeof(buf) - (size_t)pos, "(%s)", sym);
     }
     if (generic > 0) {
         // prepend generic cost
         char tmp[128];
-        snprintf(tmp, sizeof(tmp), "{%d}", generic);
+        snprintf(tmp, sizeof(tmp), "(%d)", generic);
         strncat(tmp, buf, sizeof(tmp) - strlen(tmp) - 1);
         strncpy(buf, tmp, sizeof(buf) - 1);
         buf[sizeof(buf) - 1] = '\0';

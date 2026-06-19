@@ -56,13 +56,13 @@ std::string player_name(Zone::Ownership owner) {
 
 static const char* mana_symbol(int idx) {
     switch (idx) {
-        case 0: return "{W}";
-        case 1: return "{U}";
-        case 2: return "{B}";
-        case 3: return "{R}";
-        case 4: return "{G}";
-        case 5: return "{C}";
-        default: return "{?}";
+        case 0: return "(W)";
+        case 1: return "(U)";
+        case 2: return "(B)";
+        case 3: return "(R)";
+        case 4: return "(G)";
+        case 5: return "(C)";
+        default: return "(?)";
     }
 }
 
@@ -228,7 +228,7 @@ void cli_print_seed(unsigned int seed) {
 
 void cli_print_turn_header(size_t turn, bool player_a_turn) {
     const char* name = player_a_turn ? "Player A" : "Player B";
-    game_log("\n======== TURN %zu (%s) ========\n", turn, name);
+    game_log("\n-------- TURN %zu (%s) --------\n", turn, name);
 }
 
 void cli_print_invalid_action() {
@@ -248,7 +248,7 @@ void print_game_state(const GameState* gs) {
     const char* opp_name    = gs->self_is_player_a ? "Player B" : "Player A";
     const char* active_name = gs->is_active_player  ? self_name : opp_name;
 
-    game_log("\n=== Turn %d - %s's %s ===\n", gs->turn, active_name, step_to_string(gs->cur_step));
+    game_log("\n--- Turn %d - %s's %s ---\n", gs->turn, active_name, step_to_string(gs->cur_step));
     game_log("Life: Player A=%d, Player B=%d\n",
              gs->self_is_player_a ? gs->self.life : gs->opponent.life,
              gs->self_is_player_a ? gs->opponent.life : gs->self.life);

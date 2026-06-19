@@ -340,7 +340,7 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
         }
         Colors mana_color = ability.color;
         add_mana(controller, mana_color, mana_amount);
-        game_log("%s tapped %s for %zu{%s}\n", player_name(controller).c_str(), permanent.name.c_str(),
+        game_log("%s tapped %s for %zu(%s)\n", player_name(controller).c_str(), permanent.name.c_str(),
             mana_amount, mana_symbol_str(mana_color));
         // priority does not pass
 

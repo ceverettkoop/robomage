@@ -367,7 +367,7 @@ static void *game_loop(void *args) {
 
         for (int game_num = 0; game_num < 3; game_num++) {
             match_game_number = game_num;
-            game_log("\n===== MATCH GAME %d of 3 =====\n", game_num + 1);
+            game_log("\n----- MATCH GAME %d of 3 -----\n", game_num + 1);
 
             auto sys = init_ecs();
             int winner = play_single_game(sys, deck_a, deck_b, a_goes_first, seed + static_cast<unsigned int>(game_num));

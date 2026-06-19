@@ -224,8 +224,8 @@ std::vector<LegalAction> collect_mana_legal_actions(
                 continue;
         }
         auto &perm = global_coordinator.GetComponent<Permanent>(entity);
-        std::string desc = "Tap " + perm.name + " for {" +
-                           mana_symbol_str(ab.color) + "}";
+        std::string desc = "Tap " + perm.name + " for (" +
+                           mana_symbol_str(ab.color) + ")";
         LegalAction la(ACTIVATE_ABILITY, entity, ab, desc);
         la.category = mana_action_category(ab.color);
         actions.push_back(la);
@@ -539,7 +539,7 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
         for (size_t i = 0; i < amount; i++) pool.insert(si.color);
         if (commit && si.ability.adds_no_counter) cur_game.pending_cant_be_countered = true;
         if (commit)
-            game_log("%s activated %s for %zu{%s}\n", player_name(controller).c_str(),
+            game_log("%s activated %s for %zu(%s)\n", player_name(controller).c_str(),
                      perm.name.c_str(), amount, mana_symbol_str(si.color));
         if (commit && si.ability.activation_limit > 0) {
             for (auto &perm_ab : perm.abilities) {
@@ -713,7 +713,7 @@ bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,
         bool first = true;
         for (auto it = remaining.begin(); it != remaining.end(); ++it) {
             if (!first) game_log(",");
-            game_log("{%s}", mana_symbol_str(*it));
+            game_log("(%s)", mana_symbol_str(*it));
             first = false;
         }
         game_log(" remaining):\n");
@@ -770,7 +770,7 @@ bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,
                 cur_game.pending_cant_be_countered = true;
             }
 
-            game_log("%s activated %s for %zu{%s}\n", player_name(controller).c_str(),
+            game_log("%s activated %s for %zu(%s)\n", player_name(controller).c_str(),
                      perm.name.c_str(), mana_amount, mana_symbol_str(chosen_ab.color));
 
             // Increment activation counter if limited
