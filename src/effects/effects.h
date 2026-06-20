@@ -47,6 +47,9 @@ bool surveil(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool put_counter(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool rearrange_top_of_library(Ability &ab, std::shared_ptr<Orderer> orderer);
+bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer);
+bool change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer);
+bool counter(Ability &ab, std::shared_ptr<Orderer> orderer);
 
 }  // namespace effects
 
@@ -56,5 +59,9 @@ bool rearrange_top_of_library(Ability &ab, std::shared_ptr<Orderer> orderer);
 // (search_zone is declared in ability.h.)
 size_t evaluate_dynamic_amount(
     const std::string &expr, Zone::Ownership ctrl, std::shared_ptr<Orderer> orderer, Entity target);
+Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner,
+    const std::vector<Zone::ZoneValue> &zones, const std::string &change_type, bool mandatory,
+    Zone::ZoneValue destination);
+bool run_unless_loop(size_t cost, Zone::Ownership controller, std::shared_ptr<Orderer> orderer, Entity paid_for);
 
 #endif /* EFFECTS_H */

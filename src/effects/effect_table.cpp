@@ -30,6 +30,9 @@ EffectHandler handler_for(EffectKind kind) {
         case EffectKind::DelayedTrigger:  return &delayed_trigger;
         case EffectKind::PutCounter:      return &put_counter;
         case EffectKind::RearrangeTopOfLibrary: return &rearrange_top_of_library;
+        case EffectKind::ChangeZone:      return &change_zone;
+        case EffectKind::ChangeZoneAll:   return &change_zone_all;
+        case EffectKind::Counter:         return &counter;
         default:                          return nullptr;
     }
 }

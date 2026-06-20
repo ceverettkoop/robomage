@@ -32,11 +32,9 @@
 extern Coordinator global_coordinator;
 extern Game cur_game;
 
-// evaluate_dynamic_amount is declared in effects.h (de-static'd so effect
-// handlers in src/effects/ can share it); its definition remains below.
-static Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner,
-    const std::vector<Zone::ZoneValue> &zones, const std::string &change_type, bool mandatory,
-    Zone::ZoneValue destination);
+// evaluate_dynamic_amount, search_multi_zone, and run_unless_loop are declared in
+// effects.h (de-static'd so effect handlers in src/effects/ can share them);
+// their definitions remain below.
 
 // edge case of two identical abilities being applied from two sources not handled
 bool Ability::identical_activated_ability(const Ability &other) {
@@ -266,7 +264,7 @@ Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner, Zone
 
 // Searches multiple zones combined for cards matching change_type.
 // Used by Doomsday (Origin$ Graveyard,Library).
-static Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner,
+Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner,
     const std::vector<Zone::ZoneValue> &zones, const std::string &change_type, bool mandatory,
     Zone::ZoneValue destination) {
     // Collect contents from all zones
@@ -625,7 +623,7 @@ void Ability::resolve_rearrange_top_of_library(std::shared_ptr<Orderer> orderer)
 }
 
 // Returns true if the spell should be countered (controller declined or couldn't pay).
-static bool run_unless_loop(
+bool run_unless_loop(
     size_t cost, Zone::Ownership controller, std::shared_ptr<Orderer> orderer, Entity paid_for) {
     std::multiset<Colors> cond_cost;
     for (size_t i = 0; i < cost; i++) cond_cost.insert(GENERIC);
