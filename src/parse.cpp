@@ -662,12 +662,8 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         } else if (!value.empty()) {
             ability.amount_svar = value;
         }
-    } else if (key == "RememberMilled") {
-        ability.remember_milled = (value == "True");
     } else if (key == "TargetType") {
         ability.target_type = value;  // "Spell", "Activated,Triggered", etc.
-    } else if (key == "NoReveal") {
-        ability.is_peek_no_reveal = (value == "True");
     } else if (key == "Optional") {
         ability.optional_choice = (value == "True");
     } else if (key == "Defined") {
@@ -686,10 +682,6 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         ability.activation_limit = std::stoi(value);
     } else if (key == "ChangeNum") {
         ability.amount = static_cast<size_t>(std::stoi(value));
-    } else if (key == "DiscardValid") {
-        ability.discard_valid = value;
-    } else if (key == "Mode") {
-        ability.mode = value;
     } else if (key == "RestrictValid") {
         if (value.find("Creature") != std::string::npos &&
             value.find("ChosenType") != std::string::npos) {

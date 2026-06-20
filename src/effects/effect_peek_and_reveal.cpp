@@ -109,4 +109,10 @@ bool peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer) {
     return false;  // transform logic handled inline; skip subabilities loop
 }
 
+bool parse_peek_and_reveal(Ability &ab, const std::string &key, const std::string &value) {
+    if (key != "NoReveal") return false;
+    ab.is_peek_no_reveal = (value == "True");
+    return true;
+}
+
 }  // namespace effects

@@ -83,4 +83,10 @@ bool discard(Ability &ab, std::shared_ptr<Orderer> orderer) {
     return true;
 }
 
+bool parse_discard(Ability &ab, const std::string &key, const std::string &value) {
+    if (key == "DiscardValid") { ab.discard_valid = value; return true; }
+    if (key == "Mode")         { ab.mode = value; return true; }
+    return false;
+}
+
 }  // namespace effects

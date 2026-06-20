@@ -37,4 +37,10 @@ bool mill(Ability &ab, std::shared_ptr<Orderer> orderer) {
     return true;
 }
 
+bool parse_mill(Ability &ab, const std::string &key, const std::string &value) {
+    if (key != "RememberMilled") return false;
+    ab.remember_milled = (value == "True");
+    return true;
+}
+
 }  // namespace effects

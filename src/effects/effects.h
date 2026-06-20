@@ -78,6 +78,9 @@ bool parse_change_zone(Ability &ab, const std::string &key, const std::string &v
 bool parse_put_counter(Ability &ab, const std::string &key, const std::string &value);
 bool parse_dig(Ability &ab, const std::string &key, const std::string &value);
 bool parse_delayed_trigger(Ability &ab, const std::string &key, const std::string &value);
+bool parse_discard(Ability &ab, const std::string &key, const std::string &value);
+bool parse_mill(Ability &ab, const std::string &key, const std::string &value);
+bool parse_peek_and_reveal(Ability &ab, const std::string &key, const std::string &value);
 
 }  // namespace effects
 

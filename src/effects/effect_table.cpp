@@ -56,7 +56,10 @@ bool apply_parse_hook(Ability &ab, const std::string &key, const std::string &va
         || parse_change_zone(ab, key, value)
         || parse_put_counter(ab, key, value)
         || parse_dig(ab, key, value)
-        || parse_delayed_trigger(ab, key, value);
+        || parse_delayed_trigger(ab, key, value)
+        || parse_discard(ab, key, value)
+        || parse_mill(ab, key, value)
+        || parse_peek_and_reveal(ab, key, value);
 }
 
 }  // namespace effects
