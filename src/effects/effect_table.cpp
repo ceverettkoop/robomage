@@ -33,6 +33,13 @@ EffectHandler handler_for(EffectKind kind) {
         case EffectKind::ChangeZone:      return &change_zone;
         case EffectKind::ChangeZoneAll:   return &change_zone_all;
         case EffectKind::Counter:         return &counter;
+        case EffectKind::Charm:           return &charm;
+        case EffectKind::AddMana:         return &add_mana;
+        case EffectKind::Discard:         return &discard;
+        case EffectKind::Pump:            return &pump;
+        case EffectKind::PeekAndReveal:   return &peek_and_reveal;
+        case EffectKind::Dig:             return &dig;
+        case EffectKind::SylvanLibrary:   return &sylvan_library;
         default:                          return nullptr;
     }
 }

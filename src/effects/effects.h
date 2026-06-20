@@ -50,6 +50,13 @@ bool rearrange_top_of_library(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool counter(Ability &ab, std::shared_ptr<Orderer> orderer);
+bool charm(Ability &ab, std::shared_ptr<Orderer> orderer);
+bool add_mana(Ability &ab, std::shared_ptr<Orderer> orderer);
+bool discard(Ability &ab, std::shared_ptr<Orderer> orderer);
+bool pump(Ability &ab, std::shared_ptr<Orderer> orderer);
+bool peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer);
+bool dig(Ability &ab, std::shared_ptr<Orderer> orderer);
+bool sylvan_library(Ability &ab, std::shared_ptr<Orderer> orderer);
 
 }  // namespace effects
 
