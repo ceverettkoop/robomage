@@ -3,9 +3,11 @@
 
 #include "../classes/colors.h"
 #include "../ecs/entity.h"
+#include "ability_params.h"
 #include "zone.h"
 #include <memory>
 #include <string>
+#include <variant>
 #include <vector>
 
 class Orderer;
@@ -75,9 +77,11 @@ struct Ability{
     // DestroyAll filter (e.g. "Artifact.cmcLEX")
     std::string destroy_all_filter = "";
 
-    // Pump ability (NumAtt$/NumDef$ for creature P/T modification)
-    int pump_att = 0;   // NumAtt$ — power modifier (can be negative)
-    int pump_def = 0;   // NumDef$ — toughness modifier (can be negative)
+    // Effect-specific parameter blocks. As effects migrate off the flat
+    // god-struct fields (Phase 3), their exclusive data moves into one of these
+    // variant alternatives; shared fields stay as direct members. std::monostate
+    // covers effects with no exclusive fields. See ability_params.h.
+    std::variant<std::monostate, PumpParams> params;
 
     // Counter abilities (PutCounter category)
     std::string counter_type = "";          // "P1P1" for +1/+1 counters
@@ -176,6 +180,17 @@ private:
     void fizzle(std::shared_ptr<Orderer> orderer);
 
 };
+
+// Returns the effect-param block of type P held in `ab.params`, default-
+// constructing (and switching the variant to P) if it isn't already active.
+// Use from parse hooks before writing effect-exclusive params. Resolution-time
+// readers should use std::get_if<P>(&ab.params) and treat nullptr as "defaults",
+// which is exception-free under -fno-exceptions.
+template <typename P>
+P& effect_params(Ability& ab) {
+    if (!std::holds_alternative<P>(ab.params)) ab.params = P{};
+    return std::get<P>(ab.params);
+}
 
 // Search a zone for cards matching the comma-separated type list in change_type
 // (empty change_type matches all cards in the zone).

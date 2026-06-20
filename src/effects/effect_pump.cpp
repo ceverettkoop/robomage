@@ -49,25 +49,28 @@ bool pump(Ability &ab, std::shared_ptr<Orderer> orderer) {
             ab.target = pump_targets[static_cast<size_t>(choice)];
     }
     // Apply P/T modification if NumAtt$/NumDef$ were set
-    if ((ab.pump_att != 0 || ab.pump_def != 0) && ab.target != 0 &&
+    const PumpParams *pp = std::get_if<PumpParams>(&ab.params);
+    int pump_att = pp ? pp->att : 0;
+    int pump_def = pp ? pp->def : 0;
+    if ((pump_att != 0 || pump_def != 0) && ab.target != 0 &&
         global_coordinator.entity_has_component<Creature>(ab.target)) {
         auto &cr = global_coordinator.GetComponent<Creature>(ab.target);
         // Pump modifies the base characteristic (this engine does not auto-revert
         // pumps at end of turn). Signed + floored at 0 by recompute_pt so a -X/-X
         // pump can never underflow the uint32_t effective field.
-        cr.base_power += ab.pump_att;
-        cr.base_toughness += ab.pump_def;
+        cr.base_power += pump_att;
+        cr.base_toughness += pump_def;
         recompute_pt(cr);
         std::string tname = global_coordinator.entity_has_component<Permanent>(ab.target)
             ? global_coordinator.GetComponent<Permanent>(ab.target).name : "<unknown>";
-        game_log("%s gets %+d/%+d (now %u/%u)\n", tname.c_str(), ab.pump_att, ab.pump_def, cr.power, cr.toughness);
+        game_log("%s gets %+d/%+d (now %u/%u)\n", tname.c_str(), pump_att, pump_def, cr.power, cr.toughness);
     }
     return true;
 }
 
 bool parse_pump(Ability &ab, const std::string &key, const std::string &value) {
-    if (key == "NumAtt") { ab.pump_att = std::stoi(value); return true; }
-    if (key == "NumDef") { ab.pump_def = std::stoi(value); return true; }
+    if (key == "NumAtt") { effect_params<PumpParams>(ab).att = std::stoi(value); return true; }
+    if (key == "NumDef") { effect_params<PumpParams>(ab).def = std::stoi(value); return true; }
     return false;
 }
 
