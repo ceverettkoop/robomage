@@ -1,7 +1,9 @@
 #include "effects.h"
 
+#include <cctype>
 #include <cstdint>
 #include <cstdio>
+#include <string>
 
 #include "../cli_output.h"
 #include "../components/damage.h"
@@ -42,6 +44,19 @@ bool deal_damage(Ability &ab, std::shared_ptr<Orderer> orderer) {
 #endif
             non_fatal_error("Damage should have fizzled prior to this");
         }
+    }
+    return true;
+}
+
+bool parse_deal_damage(Ability &ab, const std::string &key, const std::string &value) {
+    if (key != "NumDmg") return false;
+    // Check if value is numeric; if not, store as SVar key for resolution later
+    if (!value.empty() && (std::isdigit(static_cast<unsigned char>(value[0])) ||
+                           (value[0] == '-' && value.size() > 1 &&
+                            std::isdigit(static_cast<unsigned char>(value[1]))))) {
+        ab.amount = static_cast<size_t>(std::stoi(value));
+    } else {
+        ab.amount_svar = value;
     }
     return true;
 }

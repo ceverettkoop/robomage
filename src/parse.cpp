@@ -16,6 +16,7 @@
 #include "components/effect.h"
 #include "components/token.h"
 #include "components/static_ability.h"
+#include "effects/effects.h"
 #include "ecs/coordinator.h"
 #include "ecs/events.h"
 #include "error.h"
@@ -649,42 +650,6 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
             // Non-numeric value is a SVar key — store for runtime resolution
             ability.amount_svar = value;
         }
-    } else if (key == "Produced") {
-        if (value == "Any") {
-            // Birds of Paradise: produce any color
-            ability.mana_choices = {WHITE, BLUE, BLACK, RED, GREEN};
-            ability.amount = 1;
-        } else if (value.find("Combo") != std::string::npos) {
-            // Noble Hierarch: "Combo W U G" — space-separated colors after "Combo"
-            size_t combo_pos = value.find("Combo");
-            size_t start = combo_pos + 5;  // skip "Combo"
-            while (start < value.size() && value[start] == ' ') start++;
-            for (size_t ci = start; ci <= value.size(); ci++) {
-                if (ci == value.size() || value[ci] == ' ') {
-                    if (ci > start) {
-                        char tok = value[start];
-                        if      (tok == 'W') ability.mana_choices.push_back(WHITE);
-                        else if (tok == 'U') ability.mana_choices.push_back(BLUE);
-                        else if (tok == 'B') ability.mana_choices.push_back(BLACK);
-                        else if (tok == 'R') ability.mana_choices.push_back(RED);
-                        else if (tok == 'G') ability.mana_choices.push_back(GREEN);
-                        else if (tok == 'C') ability.mana_choices.push_back(COLORLESS);
-                    }
-                    start = ci + 1;
-                }
-            }
-            ability.amount = 1;
-        } else {
-            for (char c : value) {
-                if      (c == 'W') { ability.color = WHITE;     break; }
-                else if (c == 'U') { ability.color = BLUE;      break; }
-                else if (c == 'B') { ability.color = BLACK;     break; }
-                else if (c == 'R') { ability.color = RED;       break; }
-                else if (c == 'G') { ability.color = GREEN;     break; }
-                else if (c == 'C') { ability.color = COLORLESS; break; }
-            }
-            ability.amount = 1;
-        }
     } else if (key == "ValidTgts") {
         ability.valid_tgts = value;
     } else if (key == "ChangeType") {
@@ -735,27 +700,10 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         ability.remember_milled = (value == "True");
     } else if (key == "TargetType") {
         ability.target_type = value;  // "Spell", "Activated,Triggered", etc.
-    } else if (key == "NumDmg") {
-        // Check if value is numeric; if not, store as SVar key for resolution later
-        if (!value.empty() && (std::isdigit(static_cast<unsigned char>(value[0])) ||
-                               (value[0] == '-' && value.size() > 1 && std::isdigit(static_cast<unsigned char>(value[1]))))) {
-            ability.amount = static_cast<size_t>(std::stoi(value));
-        } else {
-            ability.amount_svar = value;
-        }
-        return;  // handled here so we don't fall into the old NumDmg below
-    } else if (key == "ValidCards") {
-        ability.destroy_all_filter = value;
-    } else if (key == "NumAtt") {
-        ability.pump_att = std::stoi(value);
-    } else if (key == "NumDef") {
-        ability.pump_def = std::stoi(value);
     } else if (key == "NoReveal") {
         ability.is_peek_no_reveal = (value == "True");
     } else if (key == "NextTurn") {
         ability.delayed_trigger_next_turn = (value == "True");
-    } else if (key == "TokenScript") {
-        ability.token_script = value;
     } else if (key == "CounterType") {
         ability.counter_type = value;
     } else if (key == "CounterNum") {
@@ -877,6 +825,8 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         ability.delayed_execute_svar = value;
     } else if (key == "ValidPlayer") {
         ability.delayed_valid_player = value;
+    } else if (effects::apply_parse_hook(ability, key, value)) {
+        // Consumed by an effect-specific parse hook co-located with its handler.
     } else {
         static const std::set<std::string> ignored_keys = {
             "SpellDescription", "AILogic", "AINoRecursiveCheck", "TgtPrompt", "StackDescription",

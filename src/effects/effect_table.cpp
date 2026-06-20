@@ -44,4 +44,15 @@ EffectHandler handler_for(EffectKind kind) {
     }
 }
 
+// Tries each effect's parse hook in turn. Keys are partitioned so at most one
+// hook claims any given (key, value); order is therefore irrelevant. Returns
+// true if some hook consumed the key.
+bool apply_parse_hook(Ability &ab, const std::string &key, const std::string &value) {
+    return parse_deal_damage(ab, key, value)
+        || parse_pump(ab, key, value)
+        || parse_token(ab, key, value)
+        || parse_add_mana(ab, key, value)
+        || parse_destroy_all(ab, key, value);
+}
+
 }  // namespace effects

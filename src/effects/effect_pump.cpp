@@ -65,4 +65,10 @@ bool pump(Ability &ab, std::shared_ptr<Orderer> orderer) {
     return true;
 }
 
+bool parse_pump(Ability &ab, const std::string &key, const std::string &value) {
+    if (key == "NumAtt") { ab.pump_att = std::stoi(value); return true; }
+    if (key == "NumDef") { ab.pump_def = std::stoi(value); return true; }
+    return false;
+}
+
 }  // namespace effects

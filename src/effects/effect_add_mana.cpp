@@ -39,4 +39,44 @@ bool add_mana(Ability &ab, std::shared_ptr<Orderer> orderer) {
     return true;
 }
 
+bool parse_add_mana(Ability &ab, const std::string &key, const std::string &value) {
+    if (key != "Produced") return false;
+    if (value == "Any") {
+        // Birds of Paradise: produce any color
+        ab.mana_choices = {WHITE, BLUE, BLACK, RED, GREEN};
+        ab.amount = 1;
+    } else if (value.find("Combo") != std::string::npos) {
+        // Noble Hierarch: "Combo W U G" — space-separated colors after "Combo"
+        size_t combo_pos = value.find("Combo");
+        size_t start = combo_pos + 5;  // skip "Combo"
+        while (start < value.size() && value[start] == ' ') start++;
+        for (size_t ci = start; ci <= value.size(); ci++) {
+            if (ci == value.size() || value[ci] == ' ') {
+                if (ci > start) {
+                    char tok = value[start];
+                    if      (tok == 'W') ab.mana_choices.push_back(WHITE);
+                    else if (tok == 'U') ab.mana_choices.push_back(BLUE);
+                    else if (tok == 'B') ab.mana_choices.push_back(BLACK);
+                    else if (tok == 'R') ab.mana_choices.push_back(RED);
+                    else if (tok == 'G') ab.mana_choices.push_back(GREEN);
+                    else if (tok == 'C') ab.mana_choices.push_back(COLORLESS);
+                }
+                start = ci + 1;
+            }
+        }
+        ab.amount = 1;
+    } else {
+        for (char c : value) {
+            if      (c == 'W') { ab.color = WHITE;     break; }
+            else if (c == 'U') { ab.color = BLUE;      break; }
+            else if (c == 'B') { ab.color = BLACK;     break; }
+            else if (c == 'R') { ab.color = RED;       break; }
+            else if (c == 'G') { ab.color = GREEN;     break; }
+            else if (c == 'C') { ab.color = COLORLESS; break; }
+        }
+        ab.amount = 1;
+    }
+    return true;
+}
+
 }  // namespace effects

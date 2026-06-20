@@ -42,4 +42,10 @@ bool token(Ability &ab, std::shared_ptr<Orderer> orderer) {
     return true;
 }
 
+bool parse_token(Ability &ab, const std::string &key, const std::string &value) {
+    if (key != "TokenScript") return false;
+    ab.token_script = value;
+    return true;
+}
+
 }  // namespace effects

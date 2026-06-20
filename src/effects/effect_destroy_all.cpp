@@ -58,4 +58,10 @@ bool destroy_all(Ability &ab, std::shared_ptr<Orderer> orderer) {
     return true;
 }
 
+bool parse_destroy_all(Ability &ab, const std::string &key, const std::string &value) {
+    if (key != "ValidCards") return false;
+    ab.destroy_all_filter = value;
+    return true;
+}
+
 }  // namespace effects

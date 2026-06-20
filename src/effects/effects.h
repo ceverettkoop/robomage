@@ -2,6 +2,7 @@
 #define EFFECTS_H
 
 #include <memory>
+#include <string>
 
 #include "../components/ability.h"
 #include "effect_kind.h"
@@ -57,6 +58,22 @@ bool pump(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool dig(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool sylvan_library(Ability &ab, std::shared_ptr<Orderer> orderer);
+
+// ── Effect-specific parse hooks ─────────────────────────────────────────────
+//
+// Co-located with each effect's resolve handler: each hook owns the card-script
+// param keys that are exclusive to that effect, returning true if it consumed
+// the (key, value). The parser's generic apply_param_to_ability handles the
+// shared keys and delegates anything left over to apply_parse_hook(), which
+// tries each hook in turn. Keys are partitioned so at most one hook claims any
+// given key — relocation is therefore byte-identical to the old flat parser.
+bool apply_parse_hook(Ability &ab, const std::string &key, const std::string &value);
+
+bool parse_deal_damage(Ability &ab, const std::string &key, const std::string &value);
+bool parse_pump(Ability &ab, const std::string &key, const std::string &value);
+bool parse_token(Ability &ab, const std::string &key, const std::string &value);
+bool parse_add_mana(Ability &ab, const std::string &key, const std::string &value);
+bool parse_destroy_all(Ability &ab, const std::string &key, const std::string &value);
 
 }  // namespace effects
 
