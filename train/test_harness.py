@@ -2,10 +2,14 @@
 """
 LLM-driven test harness for RoboMage card testing.
 
-Runs the game engine with --machine --narrative --no-shuffle so that:
-  - Deck order = draw order (first 7 cards in deck file become the hand)
+Runs the game engine with --machine --narrative so that:
   - Game narrative (casts, damage, zone changes) prints alongside binary queries
   - Binary state is decoded into human-readable text for LLM observation
+
+Shuffling: by default libraries are shuffled with the seeded RNG (deterministic
+per --seed). Pass --no-shuffle for a STACKED DECK — deck-file order = draw order,
+so the first 7 cards become the opening hand. --no-shuffle is implied
+automatically when --hand-a/--hand-b are given (those build a stacked temp deck).
 
 Designed for automated testing: an LLM writes a scenario (hands + action script),
 runs this harness, and reads the output to verify card behavior.
@@ -470,14 +474,20 @@ class TestHarness:
         self.winner = None
 
     def start(self, deck_a_path, deck_b_path, seed=1,
-              battlefield_a=None, battlefield_b=None):
-        """Launch the engine process."""
+              battlefield_a=None, battlefield_b=None, no_shuffle=True):
+        """Launch the engine process.
+
+        no_shuffle defaults True so deck-file order == draw order for the
+        hand-sculpting workflow. Pass no_shuffle=False to let the engine shuffle
+        each library with the seeded RNG (deterministic given the seed)."""
         cmd = [
-            self.binary, "--machine", "--narrative", "--no-shuffle",
+            self.binary, "--machine", "--narrative",
             "--seed", str(seed),
             "--deck-a", deck_a_path,
             "--deck-b", deck_b_path,
         ]
+        if no_shuffle:
+            cmd.append("--no-shuffle")
         if battlefield_a:
             cmd += ["--battlefield-a", ",".join(_card_to_deck_name(c) for c in battlefield_a)]
         if battlefield_b:
@@ -565,7 +575,7 @@ class TestHarness:
     def run_game(self, deck_a_path, deck_b_path, seed=1,
                  actions=None, interactive=False, scripted=False,
                  max_decisions=500, max_turns=50,
-                 battlefield_a=None, battlefield_b=None):
+                 battlefield_a=None, battlefield_b=None, no_shuffle=True):
         """Run a full game and print decoded output.
 
         Args:
@@ -581,7 +591,8 @@ class TestHarness:
             battlefield_b: List of card names to start on Player B's battlefield
         """
         self.start(deck_a_path, deck_b_path, seed,
-                   battlefield_a=battlefield_a, battlefield_b=battlefield_b)
+                   battlefield_a=battlefield_a, battlefield_b=battlefield_b,
+                   no_shuffle=no_shuffle)
         action_idx = 0
         pending_confirm = False
 
@@ -714,6 +725,12 @@ def main():
     parser.add_argument("--actions", help="Comma-separated action indices to play")
     parser.add_argument("--interactive", action="store_true", help="Prompt for each action")
     parser.add_argument("--scripted", action="store_true", help="Use scripted agent")
+    parser.add_argument("--no-shuffle", action="store_true",
+                        help="Don't shuffle libraries — deck-file order = draw order "
+                             "(first 7 cards = opening hand). Use when feeding a stacked "
+                             "deck via --deck-a/--deck-b. Implied automatically when "
+                             "--hand-a/--hand-b are given. Without it, libraries are "
+                             "shuffled with the seeded RNG (deterministic per --seed).")
     parser.add_argument("--seed", type=int, default=1, help="RNG seed (default: 1)")
     parser.add_argument("--max-decisions", type=int, default=500)
     parser.add_argument("--max-turns", type=int, default=50)
@@ -733,6 +750,11 @@ def main():
     battlefield_a = _parse_card_list(args.battlefield_a) or scenario.get("battlefield_a", [])
     battlefield_b = _parse_card_list(args.battlefield_b) or scenario.get("battlefield_b", [])
     seed = args.seed if args.seed != 1 else scenario.get("seed", 1)
+    # Stacked-deck mode: deck-file order == draw order. Implied by hand sculpting
+    # (--hand-a/--hand-b build a stacked temp deck whose first 7 cards must be the
+    # opening hand) or requested explicitly via --no-shuffle (e.g. a hand-ordered
+    # deck file passed through --deck-a). Otherwise libraries are shuffled.
+    no_shuffle = args.no_shuffle or bool(hand_a) or bool(hand_b)
     actions_str = args.actions or scenario.get("actions")
     max_decisions = args.max_decisions or scenario.get("max_decisions", 500)
 
@@ -797,6 +819,7 @@ def main():
             max_decisions=max_decisions,
             battlefield_a=battlefield_a or None,
             battlefield_b=battlefield_b or None,
+            no_shuffle=no_shuffle,
         )
     finally:
         for p in cleanup_paths:

@@ -21,6 +21,7 @@
 #include "../action_processor.h"
 #include "../mana_system.h"
 #include "../parse.h"
+#include "../effects/effects.h"
 #include "../systems/orderer.h"
 #include "creature.h"
 #include "damage.h"
@@ -31,8 +32,8 @@
 extern Coordinator global_coordinator;
 extern Game cur_game;
 
-static size_t evaluate_dynamic_amount(
-    const std::string &expr, Zone::Ownership ctrl, std::shared_ptr<Orderer> orderer, Entity target);
+// evaluate_dynamic_amount is declared in effects.h (de-static'd so effect
+// handlers in src/effects/ can share it); its definition remains below.
 static Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner,
     const std::vector<Zone::ZoneValue> &zones, const std::string &change_type, bool mandatory,
     Zone::ZoneValue destination);
@@ -485,6 +486,12 @@ void Ability::resolve_change_zone(std::shared_ptr<Orderer> orderer) {
 
 void Ability::resolve_change_zone_all(std::shared_ptr<Orderer> orderer) {
     Zone::Ownership owner = controller;
+    // If this targets a player (e.g. Endurance: "target player puts the cards
+    // from their graveyard on the bottom of their library"), operate on the
+    // targeted player's zones rather than the controller's.
+    if (target != 0 && global_coordinator.entity_has_component<Player>(target)) {
+        owner = (target == cur_game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
+    }
 
     // Determine which zones to search
     std::vector<Zone::ZoneValue> search_zones;
@@ -514,27 +521,48 @@ void Ability::resolve_change_zone_all(std::shared_ptr<Orderer> orderer) {
 
     // Filter by change_type (supports IsNotRemembered filter)
     bool filter_not_remembered = (change_type.find("IsNotRemembered") != std::string::npos);
-
-    size_t moved = 0;
+    std::vector<Entity> to_move;
     for (auto entity : zone_contents) {
         if (filter_not_remembered) {
             bool is_remembered = false;
             for (auto re : cur_game.remembered_entities) {
-                if (re == entity) {
-                    is_remembered = true;
-                    break;
-                }
+                if (re == entity) { is_remembered = true; break; }
             }
             if (is_remembered) continue;
         }
+        to_move.push_back(entity);
+    }
+
+    // RandomOrder$ — randomize the moved cards with the seeded RNG (deterministic
+    // per game seed). Used for "in a random order" library placement (Endurance).
+    if (rest_random_order) {
+        for (size_t i = to_move.size(); i > 1; --i) {
+            std::uniform_int_distribution<size_t> dist(0, i - 1);
+            size_t j = dist(cur_game.gen);
+            std::swap(to_move[i - 1], to_move[j]);
+        }
+    }
+
+    // Library destinations honor LibraryPosition$ (-1 / unset = bottom).
+    bool on_bottom = (destination == Zone::LIBRARY && dig_library_position != 0);
+    const char *dest_str = destination == Zone::EXILE       ? "exile"
+                           : destination == Zone::GRAVEYARD ? "graveyard"
+                           : destination == Zone::HAND      ? "hand"
+                           : destination == Zone::BATTLEFIELD ? "the battlefield"
+                           : destination == Zone::LIBRARY   ? (on_bottom ? "the bottom of their library"
+                                                                         : "the top of their library")
+                                                            : "zone";
+
+    size_t moved = 0;
+    for (auto entity : to_move) {
         if (global_coordinator.entity_has_component<CardData>(entity)) {
             auto &cd = global_coordinator.GetComponent<CardData>(entity);
-            game_log("%s exiles %s\n", player_name(owner).c_str(), cd.name.c_str());
+            game_log("%s moves %s to %s\n", player_name(owner).c_str(), cd.name.c_str(), dest_str);
         }
-        orderer->add_to_zone(false, entity, destination);
+        orderer->add_to_zone(on_bottom, entity, destination);
         moved++;
     }
-    game_log("%s exiles %zu card(s) from library and graveyard\n", player_name(owner).c_str(), moved);
+    game_log("%s moves %zu card(s) to %s\n", player_name(owner).c_str(), moved, dest_str);
 }
 
 void Ability::resolve_rearrange_top_of_library(std::shared_ptr<Orderer> orderer) {
@@ -849,7 +877,7 @@ static bool compare_svar(int val, const std::string &spec, const std::string &sv
 // Evaluates a dynamic_amount_expr at runtime for the given controller.
 // Supports: Count$InYourLibrary, Count$YourLifeTotal, Count$YourLifeTotal/HalfUp,
 //           Count$Valid Creature.YouCtrl, Targeted$CardPower.
-static size_t evaluate_dynamic_amount(
+size_t evaluate_dynamic_amount(
     const std::string &expr, Zone::Ownership ctrl, std::shared_ptr<Orderer> orderer, Entity target) {
     if (expr.find("Count$Devotion.") != std::string::npos) {
         // Count mana symbols of a given color in mana costs of permanents you control
@@ -946,6 +974,23 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
             sub_ab.target = this->target;
             sub_ab.controller = this->controller;
             sub_ab.resolve(orderer);
+        }
+        return;
+    }
+
+    // Table-driven dispatch: migrated effects resolve through their handler in
+    // src/effects/. Categories without a handler fall through to the legacy
+    // if/else chain below. (Transitional — the chain shrinks each batch until
+    // this dispatch is the sole path.)
+    if (effects::EffectHandler handler = effects::handler_for(effect_kind_from_string(category))) {
+        bool run_subs = handler(*this, orderer);
+        if (run_subs) {
+            for (auto sub_ab : this->subabilities) {
+                sub_ab.source = this->source;
+                sub_ab.target = this->target;  // propagate target so GainLife etc. can reference it
+                sub_ab.controller = this->controller;
+                sub_ab.resolve(orderer);
+            }
         }
         return;
     }

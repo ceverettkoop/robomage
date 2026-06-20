@@ -1,0 +1,795 @@
+robomage 0.001
+Using seed: 1641108517
+Player A draws Island
+Player A draws Dragon's Rage Channeler
+Player A draws Scalding Tarn
+Player A draws Force of Will
+Player A draws Mishra's Bauble
+Player A draws Force of Will
+Player A draws Wasteland
+Player B draws Delver of Secrets
+Player B draws Murktide Regent
+Player B draws Ponder
+Player B draws Volcanic Island
+Player B draws Brainstorm
+Player B draws Wasteland
+Player B draws Volcanic Island
+Player A hand:
+Dragon's Rage Channeler
+Mishra's Bauble
+Force of Will
+Force of Will
+Island
+Scalding Tarn
+Wasteland
+<<DECISION 1: action=0>>
+Player B hand:
+Delver of Secrets
+Murktide Regent
+Brainstorm
+Ponder
+Volcanic Island
+Volcanic Island
+Wasteland
+<<DECISION 2: action=0>>
+-------- TURN 0 (Player A) --------
+<<DECISION 3: action=4>>
+Player A casts Mishra's Bauble
+<<DECISION 4: action=0>>
+Mishra's Bauble enters the battlefield
+<<DECISION 5: action=1>>
+Player A played Island
+<<DECISION 6: action=1>>
+Choose target:
+<<DECISION 7: action=0>>
+Targeting choice 0
+Player A sacrifices Mishra's Bauble
+Player A's Mishra's Bauble ability targeting Player B is on the stack
+Resolving ability (category: PeekAndReveal, amount: 0)
+Player A looks at top of Player B's library: Lightning Bolt
+Resolving ability (category: DelayedTrigger, amount: 0)
+Delayed trigger registered: Draw at next Upkeep.
+Resolving ability (category: Draw, amount: 1)
+Player A draws Murktide Regent
+No creatures eligible to attack.
+No attackers ��� skipping declare blockers.
+--- Combat Damage ---
+--- End Combat Damage ---
+-------- TURN 1 (Player B) --------
+Player B draws Lightning Bolt
+<<DECISION 8: action=1>>
+Player B played Volcanic Island
+<<DECISION 9: action=1>>
+Player B activated Volcanic Island for 1(U)
+Player B casts Delver of Secrets
+<<DECISION 10: action=1>>
+Player A pays 1 life
+<<DECISION 11: action=0>>
+Player A exiles Murktide Regent
+Choose target:
+<<DECISION 12: action=0>>
+Targeting choice 0
+Player A casts Force of Will targeting Delver of Secrets
+Resolving ability (category: Counter, amount: 0)
+Delver of Secrets is countered
+No creatures eligible to attack.
+No attackers ��� skipping declare blockers.
+--- Combat Damage ---
+--- End Combat Damage ---
+-------- TURN 2 (Player A) --------
+Delayed trigger fires.
+Resolving ability (category: Draw, amount: 1)
+Player A draws Brainstorm
+<<DECISION 13: action=1>>
+Player A activated Island for 1(U)
+Player A casts Brainstorm
+Resolving ability (category: Draw, amount: 3)
+Player A draws Lightning Bolt
+Player A draws Dragon's Rage Channeler
+Player A draws Force of Will
+Resolving ability (category: ChangeZone, amount: 2)
+Player A chooses a card from Player A hand:
+<<DECISION 14: action=0>>
+Player A puts Dragon's Rage Channeler to top of library
+Player A puts a card to top of library
+Player A chooses a card from Player A hand:
+<<DECISION 15: action=0>>
+Player A puts Dragon's Rage Channeler to top of library
+Player A puts a card to top of library
+Player A draws Dragon's Rage Channeler
+<<DECISION 16: action=1>>
+Player A played Scalding Tarn
+<<DECISION 17: action=1>>
+Player A pays 1 life
+Player A sacrifices Scalding Tarn
+Player A's Scalding Tarn ability is on the stack
+Resolving ability (category: ChangeZone, amount: 1)
+Searching Player A's library:
+<<DECISION 18: action=1>>
+Player A shuffles their library
+Player A puts Mountain to the battlefield
+<<DECISION 19: action=1>>
+Player A activated Mountain for 1(R)
+Player A casts Dragon's Rage Channeler
+<<DECISION 20: action=0>>
+Dragon's Rage Channeler enters the battlefield
+No creatures eligible to attack.
+No attackers ��� skipping declare blockers.
+--- Combat Damage ---
+--- End Combat Damage ---
+-------- TURN 3 (Player B) --------
+<<DECISION 21: action=1>>
+Player B activated Volcanic Island for 1(U)
+Player B casts Brainstorm
+<<DECISION 22: action=1>>
+Player A pays 1 life
+<<DECISION 23: action=0>>
+Player A exiles Force of Will
+Choose target:
+<<DECISION 24: action=0>>
+Targeting choice 0
+Player A casts Force of Will targeting Brainstorm
+Dragon's Rage Channeler triggered
+Resolving ability (category: Surveil, amount: 1)
+Top card of Player A's library: Daze
+<<DECISION 25: action=0>>
+Resolving ability (category: Counter, amount: 0)
+Brainstorm is countered
+Player B draws Force of Will
+<<DECISION 26: action=1>>
+Player B played Volcanic Island
+<<DECISION 27: action=1>>
+Player B activated Volcanic Island for 1(R)
+Choose target:
+<<DECISION 28: action=1>>
+Targeting choice 1
+Player B casts Lightning Bolt targeting Dragon's Rage Channeler
+<<DECISION 29: action=0>>
+Resolving ability (category: DealDamage, amount: 3)
+Dealt 3 damage to creature
+Dragon's Rage Channeler is destroyed (lethal damage)
+No creatures eligible to attack.
+No attackers ��� skipping declare blockers.
+--- Combat Damage ---
+--- End Combat Damage ---
+-------- TURN 4 (Player A) --------
+<<DECISION 30: action=1>>
+Player A activated Mountain for 1(R)
+Choose target:
+<<DECISION 31: action=0>>
+Targeting choice 0
+Player A casts Lightning Bolt targeting Player B
+<<DECISION 32: action=1>>
+Player B pays 1 life
+<<DECISION 33: action=0>>
+Player B exiles Murktide Regent
+Choose target:
+<<DECISION 34: action=0>>
+Targeting choice 0
+Player B casts Force of Will targeting Lightning Bolt
+Resolving ability (category: Counter, amount: 0)
+Lightning Bolt is countered
+Player A draws Daze
+<<DECISION 35: action=1>>
+Player A played Wasteland
+<<DECISION 36: action=1>>
+Choose target:
+<<DECISION 37: action=0>>
+Targeting choice 0
+Player A sacrifices Wasteland
+Player A's Wasteland ability targeting Volcanic Island is on the stack
+Resolving ability (category: Destroy, amount: 0)
+Volcanic Island is destroyed
+No creatures eligible to attack.
+No attackers ��� skipping declare blockers.
+--- Combat Damage ---
+--- End Combat Damage ---
+-------- TURN 5 (Player B) --------
+Player B draws Dragon's Rage Channeler
+<<DECISION 38: action=2>>
+Player B activated Volcanic Island for 1(R)
+Player B casts Dragon's Rage Channeler
+<<DECISION 39: action=1>>
+<<DECISION 40: action=0>>
+Player A returns Island to hand
+Choose target:
+<<DECISION 41: action=0>>
+Targeting choice 0
+Player A casts Daze targeting Dragon's Rage Channeler
+Resolving ability (category: Counter, amount: 0)
+Dragon's Rage Channeler's controller may pay {1} to save it:
+<<DECISION 42: action=0>>
+Dragon's Rage Channeler is countered
+<<DECISION 43: action=1>>
+Player B played Wasteland
+<<DECISION 44: action=0>>
+<<DECISION 45: action=0>>
+No creatures eligible to attack.
+<<DECISION 46: action=0>>
+No attackers ��� skipping declare blockers.
+<<DECISION 47: action=0>>
+--- Combat Damage ---
+--- End Combat Damage ---
+<<DECISION 48: action=0>>
+<<DECISION 49: action=0>>
+<<DECISION 50: action=0>>
+<<DECISION 51: action=0>>
+-------- TURN 6 (Player A) --------
+<<DECISION 52: action=0>>
+Player A draws Wasteland
+<<DECISION 53: action=0>>
+<<DECISION 54: action=1>>
+Player A played Island
+<<DECISION 55: action=0>>
+<<DECISION 56: action=0>>
+No creatures eligible to attack.
+<<DECISION 57: action=0>>
+No attackers ��� skipping declare blockers.
+<<DECISION 58: action=0>>
+--- Combat Damage ---
+--- End Combat Damage ---
+<<DECISION 59: action=0>>
+<<DECISION 60: action=0>>
+<<DECISION 61: action=0>>
+<<DECISION 62: action=0>>
+-------- TURN 7 (Player B) --------
+<<DECISION 63: action=0>>
+Player B draws Lightning Bolt
+<<DECISION 64: action=1>>
+Player B activated Volcanic Island for 1(R)
+Choose target:
+<<DECISION 65: action=0>>
+Targeting choice 0
+Player B casts Lightning Bolt targeting Player B
+<<DECISION 66: action=0>>
+Resolving ability (category: DealDamage, amount: 3)
+Dealt 3 damage to player (now at 16 life)
+<<DECISION 67: action=0>>
+<<DECISION 68: action=0>>
+<<DECISION 69: action=0>>
+No creatures eligible to attack.
+<<DECISION 70: action=0>>
+No attackers ��� skipping declare blockers.
+<<DECISION 71: action=0>>
+--- Combat Damage ---
+--- End Combat Damage ---
+<<DECISION 72: action=0>>
+<<DECISION 73: action=0>>
+<<DECISION 74: action=0>>
+<<DECISION 75: action=0>>
+-------- TURN 8 (Player A) --------
+<<DECISION 76: action=0>>
+Player A draws Ponder
+<<DECISION 77: action=0>>
+<<DECISION 78: action=2>>
+Player A activated Island for 1(U)
+Player A casts Ponder
+<<DECISION 79: action=0>>
+Resolving ability (category: RearrangeTopOfLibrary, amount: 3)
+Player A looks at the top 3 card(s) of their library.
+Choose which card goes 3 from top:
+<<DECISION 80: action=0>>
+Choose which card goes 2 from top:
+<<DECISION 81: action=0>>
+<<DECISION 82: action=0>>
+Resolving ability (category: Draw, amount: 1)
+Player A draws Force of Will
+<<DECISION 83: action=1>>
+Player A played Wasteland
+<<DECISION 84: action=1>>
+Choose target:
+<<DECISION 85: action=0>>
+Targeting choice 0
+Player A sacrifices Wasteland
+Player A's Wasteland ability targeting Volcanic Island is on the stack
+<<DECISION 86: action=0>>
+Resolving ability (category: Destroy, amount: 0)
+Volcanic Island is destroyed
+<<DECISION 87: action=0>>
+<<DECISION 88: action=0>>
+No creatures eligible to attack.
+<<DECISION 89: action=0>>
+No attackers ��� skipping declare blockers.
+<<DECISION 90: action=0>>
+--- Combat Damage ---
+--- End Combat Damage ---
+<<DECISION 91: action=0>>
+<<DECISION 92: action=0>>
+<<DECISION 93: action=0>>
+<<DECISION 94: action=0>>
+-------- TURN 9 (Player B) --------
+<<DECISION 95: action=0>>
+Player B draws Mishra's Bauble
+<<DECISION 96: action=0>>
+<<DECISION 97: action=1>>
+Player B casts Mishra's Bauble
+<<DECISION 98: action=0>>
+Mishra's Bauble enters the battlefield
+<<DECISION 99: action=1>>
+Choose target:
+<<DECISION 100: action=0>>
+Targeting choice 0
+Player B sacrifices Mishra's Bauble
+Player B's Mishra's Bauble ability targeting Player B is on the stack
+<<DECISION 101: action=0>>
+Resolving ability (category: PeekAndReveal, amount: 0)
+Player B looks at top of Player B's library: Unholy Heat
+Resolving ability (category: DelayedTrigger, amount: 0)
+Delayed trigger registered: Draw at next Upkeep.
+Resolving ability (category: Draw, amount: 1)
+Player B draws Unholy Heat
+<<DECISION 102: action=0>>
+<<DECISION 103: action=0>>
+No creatures eligible to attack.
+<<DECISION 104: action=0>>
+No attackers ��� skipping declare blockers.
+<<DECISION 105: action=0>>
+--- Combat Damage ---
+--- End Combat Damage ---
+<<DECISION 106: action=0>>
+<<DECISION 107: action=0>>
+<<DECISION 108: action=0>>
+<<DECISION 109: action=0>>
+-------- TURN 10 (Player A) --------
+<<DECISION 110: action=0>>
+Player A draws Mishra's Bauble
+<<DECISION 111: action=0>>
+<<DECISION 112: action=1>>
+Player A casts Mishra's Bauble
+<<DECISION 113: action=0>>
+Mishra's Bauble enters the battlefield
+<<DECISION 114: action=1>>
+Choose target:
+<<DECISION 115: action=0>>
+Targeting choice 0
+Player A sacrifices Mishra's Bauble
+Player A's Mishra's Bauble ability targeting Player B is on the stack
+<<DECISION 116: action=0>>
+Resolving ability (category: PeekAndReveal, amount: 0)
+Player A looks at top of Player B's library: Misty Rainforest
+Resolving ability (category: DelayedTrigger, amount: 0)
+Delayed trigger registered: Draw at next Upkeep.
+Resolving ability (category: Draw, amount: 1)
+Player A draws Mishra's Bauble
+<<DECISION 117: action=1>>
+Player A casts Mishra's Bauble
+<<DECISION 118: action=0>>
+Mishra's Bauble enters the battlefield
+<<DECISION 119: action=1>>
+Choose target:
+<<DECISION 120: action=0>>
+Targeting choice 0
+Player A sacrifices Mishra's Bauble
+Player A's Mishra's Bauble ability targeting Player B is on the stack
+<<DECISION 121: action=0>>
+Resolving ability (category: PeekAndReveal, amount: 0)
+Player A looks at top of Player B's library: Misty Rainforest
+Resolving ability (category: DelayedTrigger, amount: 0)
+Delayed trigger registered: Draw at next Upkeep.
+Resolving ability (category: Draw, amount: 1)
+Player A draws Lightning Bolt
+<<DECISION 122: action=1>>
+Player A activated Mountain for 1(R)
+Choose target:
+<<DECISION 123: action=0>>
+Targeting choice 0
+Player A casts Lightning Bolt targeting Player B
+<<DECISION 124: action=0>>
+Resolving ability (category: DealDamage, amount: 3)
+Dealt 3 damage to player (now at 13 life)
+<<DECISION 125: action=0>>
+<<DECISION 126: action=0>>
+No creatures eligible to attack.
+<<DECISION 127: action=0>>
+No attackers ��� skipping declare blockers.
+<<DECISION 128: action=0>>
+--- Combat Damage ---
+--- End Combat Damage ---
+<<DECISION 129: action=0>>
+<<DECISION 130: action=0>>
+<<DECISION 131: action=0>>
+<<DECISION 132: action=0>>
+-------- TURN 11 (Player B) --------
+Delayed trigger fires.
+<<DECISION 133: action=0>>
+Resolving ability (category: Draw, amount: 1)
+Player B draws Misty Rainforest
+<<DECISION 134: action=0>>
+Player B draws Brainstorm
+<<DECISION 135: action=0>>
+<<DECISION 136: action=1>>
+Player B played Misty Rainforest
+<<DECISION 137: action=1>>
+Player B pays 1 life
+Player B sacrifices Misty Rainforest
+Player B's Misty Rainforest ability is on the stack
+<<DECISION 138: action=0>>
+Resolving ability (category: ChangeZone, amount: 1)
+Searching Player B's library:
+<<DECISION 139: action=1>>
+Player B shuffles their library
+Player B puts Island to the battlefield
+<<DECISION 140: action=1>>
+Player B activated Island for 1(U)
+Player B casts Brainstorm
+<<DECISION 141: action=0>>
+Resolving ability (category: Draw, amount: 3)
+Player B draws Brainstorm
+Player B draws Lightning Bolt
+Player B draws Force of Will
+Resolving ability (category: ChangeZone, amount: 2)
+Player B chooses a card from Player B hand:
+<<DECISION 142: action=0>>
+Player B puts Force of Will to top of library
+Player B puts a card to top of library
+Player B chooses a card from Player B hand:
+<<DECISION 143: action=0>>
+Player B puts Brainstorm to top of library
+Player B puts a card to top of library
+<<DECISION 144: action=0>>
+<<DECISION 145: action=0>>
+No creatures eligible to attack.
+<<DECISION 146: action=0>>
+No attackers ��� skipping declare blockers.
+<<DECISION 147: action=0>>
+--- Combat Damage ---
+--- End Combat Damage ---
+<<DECISION 148: action=0>>
+<<DECISION 149: action=0>>
+<<DECISION 150: action=0>>
+<<DECISION 151: action=0>>
+-------- TURN 12 (Player A) --------
+Delayed trigger fires.
+Delayed trigger fires.
+<<DECISION 152: action=0>>
+Resolving ability (category: Draw, amount: 1)
+Player A draws Dragon's Rage Channeler
+<<DECISION 153: action=0>>
+Resolving ability (category: Draw, amount: 1)
+Player A draws Misty Rainforest
+<<DECISION 154: action=0>>
+Player A draws Cori-Steel Cutter
+<<DECISION 155: action=0>>
+<<DECISION 156: action=2>>
+Player A activated Mountain for 1(R)
+Player A casts Dragon's Rage Channeler
+<<DECISION 157: action=0>>
+Dragon's Rage Channeler enters the battlefield
+Dragon's Rage Channeler gains 2/2 Flying (Delirium)
+<<DECISION 158: action=1>>
+Player A played Misty Rainforest
+<<DECISION 159: action=1>>
+Player A pays 1 life
+Player A sacrifices Misty Rainforest
+Player A's Misty Rainforest ability is on the stack
+<<DECISION 160: action=0>>
+Resolving ability (category: ChangeZone, amount: 1)
+Searching Player A's library:
+<<DECISION 161: action=1>>
+Player A shuffles their library
+Player A puts Volcanic Island to the battlefield
+<<DECISION 162: action=1>>
+Player A activated Volcanic Island for 1(R)
+Player A activated Island for 1(U)
+Player A casts Cori-Steel Cutter
+Dragon's Rage Channeler triggered
+<<DECISION 163: action=1>>
+Choose target:
+<<DECISION 164: action=0>>
+Targeting choice 0
+Player B sacrifices Wasteland
+Player B's Wasteland ability targeting Volcanic Island is on the stack
+Resolving ability (category: Destroy, amount: 0)
+Volcanic Island is destroyed
+Resolving ability (category: Surveil, amount: 1)
+Top card of Player A's library: Scalding Tarn
+<<DECISION 165: action=1>>
+Player A puts Scalding Tarn into the graveyard.
+Cori-Steel Cutter enters the battlefield
+No creatures eligible to attack.
+No attackers ��� skipping declare blockers.
+--- Combat Damage ---
+--- End Combat Damage ---
+-------- TURN 13 (Player B) --------
+Player B draws Brainstorm
+<<DECISION 166: action=1>>
+Player B activated Island for 1(U)
+Player B casts Brainstorm
+Resolving ability (category: Draw, amount: 3)
+Player B draws Force of Will
+Player B draws Wasteland
+Player B draws Brainstorm
+Resolving ability (category: ChangeZone, amount: 2)
+Player B chooses a card from Player B hand:
+<<DECISION 167: action=0>>
+Player B puts Force of Will to top of library
+Player B puts a card to top of library
+Player B chooses a card from Player B hand:
+<<DECISION 168: action=0>>
+Player B puts Brainstorm to top of library
+Player B puts a card to top of library
+<<DECISION 169: action=1>>
+Player B played Wasteland
+<<DECISION 170: action=0>>
+<<DECISION 171: action=0>>
+No creatures eligible to attack.
+<<DECISION 172: action=0>>
+No attackers ��� skipping declare blockers.
+<<DECISION 173: action=0>>
+--- Combat Damage ---
+--- End Combat Damage ---
+<<DECISION 174: action=0>>
+<<DECISION 175: action=0>>
+<<DECISION 176: action=0>>
+<<DECISION 177: action=0>>
+-------- TURN 14 (Player A) --------
+<<DECISION 178: action=0>>
+Player A draws Wasteland
+<<DECISION 179: action=0>>
+<<DECISION 180: action=1>>
+Player A played Wasteland
+<<DECISION 181: action=1>>
+Choose target:
+<<DECISION 182: action=0>>
+Targeting choice 0
+Player A sacrifices Wasteland
+Player A's Wasteland ability targeting Wasteland is on the stack
+<<DECISION 183: action=0>>
+Resolving ability (category: Destroy, amount: 0)
+Wasteland is destroyed
+Dragon's Rage Channeler must attack and is declared as an attacker.
+--- Declare Attackers (Player A) ---
+  [attacking] Dragon's Rage Channeler [3/3] -> Player B
+<<DECISION 184: action=-1>>
+Attackers declared:
+  Dragon's Rage Channeler -> Player B
+No creatures eligible to block.
+--- Combat Damage ---
+  Dragon's Rage Channeler deals 3 damage to Player B
+--- End Combat Damage ---
+-------- TURN 15 (Player B) --------
+Player B draws Brainstorm
+<<DECISION 185: action=1>>
+Player B activated Island for 1(U)
+Player B casts Brainstorm
+Resolving ability (category: Draw, amount: 3)
+Player B draws Force of Will
+Player B draws Flooded Strand
+Player B draws Wasteland
+Resolving ability (category: ChangeZone, amount: 2)
+Player B chooses a card from Player B hand:
+<<DECISION 186: action=0>>
+Player B puts Force of Will to top of library
+Player B puts a card to top of library
+Player B chooses a card from Player B hand:
+<<DECISION 187: action=0>>
+Player B puts Lightning Bolt to top of library
+Player B puts a card to top of library
+<<DECISION 188: action=1>>
+Player B played Flooded Strand
+<<DECISION 189: action=1>>
+Player B pays 1 life
+Player B sacrifices Flooded Strand
+Player B's Flooded Strand ability is on the stack
+Resolving ability (category: ChangeZone, amount: 1)
+Searching Player B's library:
+<<DECISION 190: action=1>>
+Player B shuffles their library
+Player B puts Volcanic Island to the battlefield
+<<DECISION 191: action=1>>
+Player B activated Volcanic Island for 1(R)
+Choose target:
+<<DECISION 192: action=0>>
+Targeting choice 0
+Player B casts Unholy Heat targeting Dragon's Rage Channeler
+Resolving ability (category: DealDamage, amount: 2)
+Dealt 6 damage to creature
+Dragon's Rage Channeler is destroyed (lethal damage)
+No creatures eligible to attack.
+No attackers ��� skipping declare blockers.
+--- Combat Damage ---
+--- End Combat Damage ---
+-------- TURN 16 (Player A) --------
+Player A draws Dragon's Rage Channeler
+<<DECISION 193: action=1>>
+Player A activated Mountain for 1(R)
+Player A casts Dragon's Rage Channeler
+Dragon's Rage Channeler enters the battlefield
+Dragon's Rage Channeler gains 2/2 Flying (Delirium)
+No creatures eligible to attack.
+No attackers ��� skipping declare blockers.
+--- Combat Damage ---
+--- End Combat Damage ---
+-------- TURN 17 (Player B) --------
+Player B draws Thundering Falls
+<<DECISION 194: action=3>>
+Player B activated Island for 1(U)
+Player B casts Ponder
+Resolving ability (category: RearrangeTopOfLibrary, amount: 3)
+Player B looks at the top 3 card(s) of their library.
+Choose which card goes 3 from top:
+<<DECISION 195: action=0>>
+Choose which card goes 2 from top:
+<<DECISION 196: action=0>>
+<<DECISION 197: action=0>>
+Resolving ability (category: Draw, amount: 1)
+Player B draws Delver of Secrets
+<<DECISION 198: action=3>>
+Player B activated Volcanic Island for 1(U)
+Player B casts Delver of Secrets
+Delver of Secrets enters the battlefield
+<<DECISION 199: action=1>>
+Player B played Wasteland
+<<DECISION 200: action=0>>
+<<DECISION 201: action=0>>
+No creatures eligible to attack.
+<<DECISION 202: action=0>>
+No attackers ��� skipping declare blockers.
+<<DECISION 203: action=0>>
+--- Combat Damage ---
+--- End Combat Damage ---
+<<DECISION 204: action=0>>
+<<DECISION 205: action=0>>
+<<DECISION 206: action=0>>
+<<DECISION 207: action=0>>
+-------- TURN 18 (Player A) --------
+<<DECISION 208: action=0>>
+Player A draws Thundering Falls
+<<DECISION 209: action=0>>
+<<DECISION 210: action=1>>
+Player A played Thundering Falls
+Thundering Falls enters tapped.
+Thundering Falls triggered
+<<DECISION 211: action=1>>
+Choose target:
+<<DECISION 212: action=0>>
+Targeting choice 0
+Player B sacrifices Wasteland
+Player B's Wasteland ability targeting Thundering Falls is on the stack
+Resolving ability (category: Destroy, amount: 0)
+Thundering Falls is destroyed
+Resolving ability (category: Surveil, amount: 1)
+Top card of Player A's library: Lightning Bolt
+<<DECISION 213: action=1>>
+Player A puts Lightning Bolt into the graveyard.
+Dragon's Rage Channeler must attack and is declared as an attacker.
+--- Declare Attackers (Player A) ---
+  [attacking] Dragon's Rage Channeler [3/3] -> Player B
+<<DECISION 214: action=-1>>
+Attackers declared:
+  Dragon's Rage Channeler -> Player B
+No creatures eligible to block.
+--- Combat Damage ---
+  Dragon's Rage Channeler deals 3 damage to Player B
+--- End Combat Damage ---
+-------- TURN 19 (Player B) --------
+Delver of Secrets triggered
+Resolving ability (category: PeekAndReveal, amount: 0)
+Top card of library: Force of Will
+<<DECISION 215: action=0>>
+Player B draws Force of Will
+<<DECISION 216: action=1>>
+Player B played Thundering Falls
+Thundering Falls enters tapped.
+Thundering Falls triggered
+Resolving ability (category: Surveil, amount: 1)
+Top card of Player B's library: Force of Will
+<<DECISION 217: action=1>>
+Player B puts Force of Will into the graveyard.
+--- Declare Attackers (Player B) ---
+<<DECISION 218: action=0>>
+Select target for Delver of Secrets:
+<<DECISION 219: action=0>>
+Delver of Secrets attacking Player A.
+--- Declare Attackers (Player B) ---
+  [attacking] Delver of Secrets [1/1] -> Player A
+<<DECISION 220: action=-1>>
+Attackers declared:
+  Delver of Secrets -> Player A
+No creatures eligible to block.
+--- Combat Damage ---
+  Delver of Secrets deals 1 damage to Player A
+--- End Combat Damage ---
+-------- TURN 20 (Player A) --------
+Player A draws Wooded Foothills
+<<DECISION 221: action=1>>
+Player A played Wooded Foothills
+<<DECISION 222: action=1>>
+Player A pays 1 life
+Player A sacrifices Wooded Foothills
+Player A's Wooded Foothills ability is on the stack
+Resolving ability (category: ChangeZone, amount: 1)
+Searching Player A's library:
+<<DECISION 223: action=1>>
+Player A shuffles their library
+Player A puts Volcanic Island to the battlefield
+Dragon's Rage Channeler must attack and is declared as an attacker.
+--- Declare Attackers (Player A) ---
+  [attacking] Dragon's Rage Channeler [3/3] -> Player B
+<<DECISION 224: action=-1>>
+Attackers declared:
+  Dragon's Rage Channeler -> Player B
+No creatures eligible to block.
+--- Combat Damage ---
+  Dragon's Rage Channeler deals 3 damage to Player B
+--- End Combat Damage ---
+-------- TURN 21 (Player B) --------
+Delver of Secrets triggered
+Resolving ability (category: PeekAndReveal, amount: 0)
+Top card of library: Ponder
+<<DECISION 225: action=1>>
+Revealed: Ponder
+Delver of Secrets transforms into Insectile Aberration!
+Player B draws Ponder
+<<DECISION 226: action=1>>
+Player B activated Island for 1(U)
+Player B casts Ponder
+Resolving ability (category: RearrangeTopOfLibrary, amount: 3)
+Player B looks at the top 3 card(s) of their library.
+Choose which card goes 3 from top:
+<<DECISION 227: action=0>>
+Choose which card goes 2 from top:
+<<DECISION 228: action=0>>
+<<DECISION 229: action=0>>
+Resolving ability (category: Draw, amount: 1)
+Player B draws Mishra's Bauble
+<<DECISION 230: action=1>>
+Player B casts Mishra's Bauble
+Mishra's Bauble enters the battlefield
+<<DECISION 231: action=1>>
+Choose target:
+<<DECISION 232: action=0>>
+Targeting choice 0
+Player B sacrifices Mishra's Bauble
+Player B's Mishra's Bauble ability targeting Player B is on the stack
+Resolving ability (category: PeekAndReveal, amount: 0)
+Player B looks at top of Player B's library: Daze
+Resolving ability (category: DelayedTrigger, amount: 0)
+Delayed trigger registered: Draw at next Upkeep.
+Resolving ability (category: Draw, amount: 1)
+Player B draws Daze
+--- Declare Attackers (Player B) ---
+<<DECISION 233: action=0>>
+Select target for Delver of Secrets:
+<<DECISION 234: action=0>>
+Delver of Secrets attacking Player A.
+--- Declare Attackers (Player B) ---
+  [attacking] Delver of Secrets [3/2] -> Player A
+<<DECISION 235: action=-1>>
+Attackers declared:
+  Delver of Secrets -> Player A
+No creatures eligible to block.
+--- Combat Damage ---
+  Delver of Secrets deals 3 damage to Player A
+--- End Combat Damage ---
+-------- TURN 22 (Player A) --------
+Player A draws Mishra's Bauble
+<<DECISION 236: action=1>>
+Player A casts Mishra's Bauble
+Dragon's Rage Channeler triggered
+<<DECISION 237: action=1>>
+Player B pays 1 life
+<<DECISION 238: action=0>>
+Player B exiles Daze
+Choose target:
+<<DECISION 239: action=0>>
+Targeting choice 0
+Player B casts Force of Will targeting Mishra's Bauble
+Resolving ability (category: Counter, amount: 0)
+Mishra's Bauble is countered
+Resolving ability (category: Surveil, amount: 1)
+Top card of Player A's library: Lightning Bolt
+<<DECISION 240: action=1>>
+Player A puts Lightning Bolt into the graveyard.
+Dragon's Rage Channeler must attack and is declared as an attacker.
+--- Declare Attackers (Player A) ---
+  [attacking] Dragon's Rage Channeler [3/3] -> Player B
+<<DECISION 241: action=-1>>
+Attackers declared:
+  Dragon's Rage Channeler -> Player B
+No creatures eligible to block.
+--- Combat Damage ---
+  Dragon's Rage Channeler deals 3 damage to Player B
+--- End Combat Damage ---
+Player B has -2 life - Player A wins!
+=== GAME OVER: winner=Player A ===

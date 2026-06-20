@@ -1,0 +1,395 @@
+robomage 0.001
+Using seed: 1641108517
+Player A draws Island
+Player A draws Dragon's Rage Channeler
+Player A draws Scalding Tarn
+Player A draws Force of Will
+Player A draws Mishra's Bauble
+Player A draws Force of Will
+Player A draws Wasteland
+Player B draws Doomsday
+Player B draws Force of Will
+Player B draws Ponder
+Player B draws Polluted Delta
+Player B draws Personal Tutor
+Player B draws Consider
+Player B draws Underground Sea
+Player A hand:
+Dragon's Rage Channeler
+Mishra's Bauble
+Force of Will
+Force of Will
+Island
+Scalding Tarn
+Wasteland
+<<DECISION 1: action=0>>
+Player B hand:
+Doomsday
+Force of Will
+Personal Tutor
+Ponder
+Polluted Delta
+Underground Sea
+Consider
+<<DECISION 2: action=0>>
+-------- TURN 0 (Player A) --------
+<<DECISION 3: action=4>>
+Player A casts Mishra's Bauble
+<<DECISION 4: action=0>>
+<<DECISION 5: action=1>>
+Player B pays 1 life
+<<DECISION 6: action=0>>
+Player B exiles Personal Tutor
+Choose target:
+<<DECISION 7: action=0>>
+Targeting choice 0
+Player B casts Force of Will targeting Mishra's Bauble
+<<DECISION 8: action=1>>
+Player A pays 1 life
+<<DECISION 9: action=0>>
+Player A exiles Force of Will
+Choose target:
+<<DECISION 10: action=1>>
+Targeting choice 1
+Player A casts Force of Will targeting Force of Will
+Resolving ability (category: Counter, amount: 0)
+Force of Will is countered
+Mishra's Bauble enters the battlefield
+<<DECISION 11: action=1>>
+Player A played Island
+<<DECISION 12: action=1>>
+Choose target:
+<<DECISION 13: action=0>>
+Targeting choice 0
+Player A sacrifices Mishra's Bauble
+Player A's Mishra's Bauble ability targeting Player B is on the stack
+Resolving ability (category: PeekAndReveal, amount: 0)
+Player A looks at top of Player B's library: Street Wraith
+Resolving ability (category: DelayedTrigger, amount: 0)
+Delayed trigger registered: Draw at next Upkeep.
+Resolving ability (category: Draw, amount: 1)
+Player A draws Murktide Regent
+No creatures eligible to attack.
+No attackers ��� skipping declare blockers.
+--- Combat Damage ---
+--- End Combat Damage ---
+-------- TURN 1 (Player B) --------
+Player B draws Street Wraith
+<<DECISION 14: action=1>>
+Player B pays 2 life
+Player B activates Street Wraith from hand
+Resolving ability (category: Draw, amount: 1)
+Player B draws Lotus Petal
+<<DECISION 15: action=3>>
+Player B casts Lotus Petal
+Lotus Petal enters the battlefield
+<<DECISION 16: action=3>>
+Player B sacrifices Lotus Petal
+Player B activated Lotus Petal for 1(U)
+Player B casts Ponder
+Resolving ability (category: RearrangeTopOfLibrary, amount: 3)
+Player B looks at the top 3 card(s) of their library.
+Choose which card goes 3 from top:
+<<DECISION 17: action=0>>
+Choose which card goes 2 from top:
+<<DECISION 18: action=0>>
+<<DECISION 19: action=0>>
+Resolving ability (category: Draw, amount: 1)
+Player B draws Daze
+<<DECISION 20: action=1>>
+Player B played Polluted Delta
+<<DECISION 21: action=1>>
+Player B pays 1 life
+Player B sacrifices Polluted Delta
+Player B's Polluted Delta ability is on the stack
+Resolving ability (category: ChangeZone, amount: 1)
+Searching Player B's library:
+<<DECISION 22: action=1>>
+Player B shuffles their library
+Player B puts Swamp to the battlefield
+No creatures eligible to attack.
+No attackers ��� skipping declare blockers.
+--- Combat Damage ---
+--- End Combat Damage ---
+-------- TURN 2 (Player A) --------
+Delayed trigger fires.
+Resolving ability (category: Draw, amount: 1)
+Player A draws Brainstorm
+<<DECISION 23: action=1>>
+Player A activated Island for 1(U)
+Player A casts Brainstorm
+Resolving ability (category: Draw, amount: 3)
+Player A draws Lightning Bolt
+Player A draws Dragon's Rage Channeler
+Player A draws Force of Will
+Resolving ability (category: ChangeZone, amount: 2)
+Player A chooses a card from Player A hand:
+<<DECISION 24: action=0>>
+Player A puts Murktide Regent to top of library
+Player A puts a card to top of library
+Player A chooses a card from Player A hand:
+<<DECISION 25: action=0>>
+Player A puts Dragon's Rage Channeler to top of library
+Player A puts a card to top of library
+Player A draws Dragon's Rage Channeler
+<<DECISION 26: action=1>>
+Player A played Scalding Tarn
+<<DECISION 27: action=1>>
+Player A pays 1 life
+Player A sacrifices Scalding Tarn
+Player A's Scalding Tarn ability is on the stack
+Resolving ability (category: ChangeZone, amount: 1)
+Searching Player A's library:
+<<DECISION 28: action=1>>
+Player A shuffles their library
+Player A puts Mountain to the battlefield
+<<DECISION 29: action=1>>
+Player A activated Mountain for 1(R)
+Player A casts Dragon's Rage Channeler
+Dragon's Rage Channeler enters the battlefield
+No creatures eligible to attack.
+No attackers ��� skipping declare blockers.
+--- Combat Damage ---
+--- End Combat Damage ---
+-------- TURN 3 (Player B) --------
+Player B draws Polluted Delta
+<<DECISION 30: action=1>>
+Player B played Polluted Delta
+<<DECISION 31: action=1>>
+Player B pays 1 life
+Player B sacrifices Polluted Delta
+Player B's Polluted Delta ability is on the stack
+Resolving ability (category: ChangeZone, amount: 1)
+Searching Player B's library:
+<<DECISION 32: action=1>>
+Player B shuffles their library
+Player B puts Undercity Sewers to the battlefield
+Undercity Sewers enters tapped.
+Undercity Sewers triggered
+Resolving ability (category: Surveil, amount: 1)
+Top card of Player B's library: Force of Will
+<<DECISION 33: action=0>>
+No creatures eligible to attack.
+No attackers ��� skipping declare blockers.
+--- Combat Damage ---
+--- End Combat Damage ---
+-------- TURN 4 (Player A) --------
+<<DECISION 34: action=1>>
+Player A activated Mountain for 1(R)
+Choose target:
+<<DECISION 35: action=0>>
+Targeting choice 0
+Player A casts Lightning Bolt targeting Player B
+Dragon's Rage Channeler triggered
+<<DECISION 36: action=1>>
+<<DECISION 37: action=0>>
+Player B returns Undercity Sewers to hand
+Choose target:
+<<DECISION 38: action=0>>
+Targeting choice 0
+Player B casts Daze targeting Lightning Bolt
+Resolving ability (category: Counter, amount: 0)
+Lightning Bolt's controller may pay {1} to save it:
+<<DECISION 39: action=1>>
+Lightning Bolt is countered
+Resolving ability (category: Surveil, amount: 1)
+Top card of Player A's library: Polluted Delta
+<<DECISION 40: action=0>>
+Player A draws Polluted Delta
+<<DECISION 41: action=1>>
+Player A played Polluted Delta
+<<DECISION 42: action=1>>
+Player A pays 1 life
+Player A sacrifices Polluted Delta
+Player A's Polluted Delta ability is on the stack
+Resolving ability (category: ChangeZone, amount: 1)
+Searching Player A's library:
+<<DECISION 43: action=1>>
+Player A shuffles their library
+Player A puts Volcanic Island to the battlefield
+<<DECISION 44: action=1>>
+Player A activated Volcanic Island for 1(R)
+Player A casts Dragon's Rage Channeler
+Dragon's Rage Channeler enters the battlefield
+--- Declare Attackers (Player A) ---
+<<DECISION 45: action=0>>
+Select target for Dragon's Rage Channeler:
+<<DECISION 46: action=0>>
+Dragon's Rage Channeler attacking Player B.
+--- Declare Attackers (Player A) ---
+  [attacking] Dragon's Rage Channeler [1/1] -> Player B
+<<DECISION 47: action=-1>>
+Attackers declared:
+  Dragon's Rage Channeler -> Player B
+No creatures eligible to block.
+--- Combat Damage ---
+  Dragon's Rage Channeler deals 1 damage to Player B
+--- End Combat Damage ---
+-------- TURN 5 (Player B) --------
+Player B draws Force of Will
+<<DECISION 48: action=1>>
+Player B played Undercity Sewers
+Undercity Sewers enters tapped.
+Undercity Sewers triggered
+Resolving ability (category: Surveil, amount: 1)
+Top card of Player B's library: Brainstorm
+<<DECISION 49: action=0>>
+No creatures eligible to attack.
+No attackers ��� skipping declare blockers.
+--- Combat Damage ---
+--- End Combat Damage ---
+-------- TURN 6 (Player A) --------
+Player A draws Lightning Bolt
+<<DECISION 50: action=1>>
+Player A activated Mountain for 1(R)
+Choose target:
+<<DECISION 51: action=0>>
+Targeting choice 0
+Player A casts Lightning Bolt targeting Player B
+Dragon's Rage Channeler triggered
+Dragon's Rage Channeler triggered
+<<DECISION 52: action=1>>
+Player B pays 1 life
+<<DECISION 53: action=0>>
+Player B exiles Consider
+Choose target:
+<<DECISION 54: action=0>>
+Targeting choice 0
+Player B casts Force of Will targeting Lightning Bolt
+Resolving ability (category: Counter, amount: 0)
+Lightning Bolt is countered
+Resolving ability (category: Surveil, amount: 1)
+Top card of Player A's library: Brainstorm
+<<DECISION 55: action=1>>
+Player A puts Brainstorm into the graveyard.
+Resolving ability (category: Surveil, amount: 1)
+Top card of Player A's library: Cori-Steel Cutter
+<<DECISION 56: action=0>>
+<<DECISION 57: action=1>>
+Player A played Wasteland
+<<DECISION 58: action=1>>
+Choose target:
+<<DECISION 59: action=0>>
+Targeting choice 0
+Player A sacrifices Wasteland
+Player A's Wasteland ability targeting Undercity Sewers is on the stack
+Resolving ability (category: Destroy, amount: 0)
+Undercity Sewers is destroyed
+--- Declare Attackers (Player A) ---
+<<DECISION 60: action=0>>
+Select target for Dragon's Rage Channeler:
+<<DECISION 61: action=0>>
+Dragon's Rage Channeler attacking Player B.
+--- Declare Attackers (Player A) ---
+  [attacking] Dragon's Rage Channeler [1/1] -> Player B
+<<DECISION 62: action=0>>
+Select target for Dragon's Rage Channeler:
+<<DECISION 63: action=0>>
+Dragon's Rage Channeler attacking Player B.
+--- Declare Attackers (Player A) ---
+  [attacking] Dragon's Rage Channeler [1/1] -> Player B
+  [attacking] Dragon's Rage Channeler [1/1] -> Player B
+<<DECISION 64: action=-1>>
+Attackers declared:
+  Dragon's Rage Channeler -> Player B
+  Dragon's Rage Channeler -> Player B
+No creatures eligible to block.
+--- Combat Damage ---
+  Dragon's Rage Channeler deals 1 damage to Player B
+  Dragon's Rage Channeler deals 1 damage to Player B
+--- End Combat Damage ---
+-------- TURN 7 (Player B) --------
+Player B draws Brainstorm
+<<DECISION 65: action=1>>
+Player B played Underground Sea
+<<DECISION 66: action=1>>
+Player B activated Underground Sea for 1(U)
+Player B casts Brainstorm
+Resolving ability (category: Draw, amount: 3)
+Player B draws Cavern of Souls
+Player B draws Lotus Petal
+Player B draws Lotus Petal
+Resolving ability (category: ChangeZone, amount: 2)
+Player B chooses a card from Player B hand:
+<<DECISION 67: action=0>>
+Player B puts Doomsday to top of library
+Player B puts a card to top of library
+Player B chooses a card from Player B hand:
+<<DECISION 68: action=0>>
+Player B puts Lotus Petal to top of library
+Player B puts a card to top of library
+<<DECISION 69: action=1>>
+Player B casts Lotus Petal
+Lotus Petal enters the battlefield
+No creatures eligible to attack.
+No attackers ��� skipping declare blockers.
+--- Combat Damage ---
+--- End Combat Damage ---
+-------- TURN 8 (Player A) --------
+Player A draws Cori-Steel Cutter
+<<DECISION 70: action=1>>
+Player A activated Mountain for 1(R)
+Player A activated Island for 1(U)
+Player A casts Cori-Steel Cutter
+Dragon's Rage Channeler triggered
+Dragon's Rage Channeler triggered
+Resolving ability (category: Surveil, amount: 1)
+Top card of Player A's library: Ponder
+<<DECISION 71: action=1>>
+Player A puts Ponder into the graveyard.
+Dragon's Rage Channeler gains 2/2 Flying (Delirium)
+Dragon's Rage Channeler gains 2/2 Flying (Delirium)
+Resolving ability (category: Surveil, amount: 1)
+Top card of Player A's library: Delver of Secrets
+<<DECISION 72: action=0>>
+Cori-Steel Cutter enters the battlefield
+Dragon's Rage Channeler must attack and is declared as an attacker.
+Dragon's Rage Channeler must attack and is declared as an attacker.
+--- Declare Attackers (Player A) ---
+  [attacking] Dragon's Rage Channeler [3/3] -> Player B
+  [attacking] Dragon's Rage Channeler [3/3] -> Player B
+<<DECISION 73: action=-1>>
+Attackers declared:
+  Dragon's Rage Channeler -> Player B
+  Dragon's Rage Channeler -> Player B
+No creatures eligible to block.
+--- Combat Damage ---
+  Dragon's Rage Channeler deals 3 damage to Player B
+  Dragon's Rage Channeler deals 3 damage to Player B
+--- End Combat Damage ---
+-------- TURN 9 (Player B) --------
+Player B draws Lotus Petal
+<<DECISION 74: action=2>>
+Player B casts Lotus Petal
+Lotus Petal enters the battlefield
+<<DECISION 75: action=1>>
+Player B played Cavern of Souls
+Choose a creature type for Cavern of Souls:
+<<DECISION 76: action=1>>
+Player B chose creature type: Merfolk
+No creatures eligible to attack.
+No attackers ��� skipping declare blockers.
+--- Combat Damage ---
+--- End Combat Damage ---
+-------- TURN 10 (Player A) --------
+Player A draws Delver of Secrets
+<<DECISION 77: action=1>>
+Player A activated Island for 1(U)
+Player A casts Delver of Secrets
+Delver of Secrets enters the battlefield
+Dragon's Rage Channeler must attack and is declared as an attacker.
+Dragon's Rage Channeler must attack and is declared as an attacker.
+--- Declare Attackers (Player A) ---
+  [attacking] Dragon's Rage Channeler [3/3] -> Player B
+  [attacking] Dragon's Rage Channeler [3/3] -> Player B
+<<DECISION 78: action=-1>>
+Attackers declared:
+  Dragon's Rage Channeler -> Player B
+  Dragon's Rage Channeler -> Player B
+No creatures eligible to block.
+--- Combat Damage ---
+  Dragon's Rage Channeler deals 3 damage to Player B
+  Dragon's Rage Channeler deals 3 damage to Player B
+--- End Combat Damage ---
+Player B has -1 life - Player A wins!
+=== GAME OVER: winner=Player A ===

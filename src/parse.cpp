@@ -794,7 +794,7 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         ability.amount = static_cast<size_t>(std::stoi(value));
     } else if (key == "ChangeValid") {
         ability.change_valid = value;
-    } else if (key == "RestRandomOrder") {
+    } else if (key == "RestRandomOrder" || key == "RandomOrder") {
         ability.rest_random_order = (value == "True");
     } else if (key == "DiscardValid") {
         ability.discard_valid = value;
@@ -1355,22 +1355,25 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
                 ability.category = "SylvanLibrary";
             } else {
                 Ability effect = parse_svar_ability(it->second, Ability::TRIGGERED, svars, card_name);
-                ability.category = effect.category;
-                ability.amount = effect.amount;
-                ability.counter_type = effect.counter_type;
-                ability.counter_count = effect.counter_count;
-                ability.token_script = effect.token_script;
-                ability.subabilities = effect.subabilities;
-                ability.dig_num = effect.dig_num;
-                ability.dig_num_expr = effect.dig_num_expr;
-                ability.dig_destination = effect.dig_destination;
-                ability.dig_library_position = effect.dig_library_position;
-                ability.rest_random_order = effect.rest_random_order;
-                ability.optional_choice = effect.optional_choice;
-                ability.dynamic_amount_expr = effect.dynamic_amount_expr;
-                ability.condition_check_svar = effect.condition_check_svar;
-                ability.condition_svar_compare = effect.condition_svar_compare;
-                ability.condition_compare_svar_expr = effect.condition_compare_svar_expr;
+                // Take the effect's full configuration, then restore the trigger
+                // metadata computed above from the T: line. Previously this copied
+                // only a hand-picked subset of effect fields, which silently dropped
+                // Origin$/Destination$/ValidTgts$/TargetMin$/TargetMax$ etc. — e.g.
+                // Endurance's "bottom target player's graveyard into their library"
+                // became a "dump the whole library onto the battlefield", spawning a
+                // landfall trigger storm.
+                effect.ability_type                             = ability.ability_type;
+                effect.trigger_on                               = ability.trigger_on;
+                effect.trigger_zone_origin                      = ability.trigger_zone_origin;
+                effect.trigger_zone_destination                 = ability.trigger_zone_destination;
+                effect.trigger_valid_card_is_creature           = ability.trigger_valid_card_is_creature;
+                effect.trigger_valid_card_is_instant_or_sorcery = ability.trigger_valid_card_is_instant_or_sorcery;
+                effect.trigger_valid_card_is_land               = ability.trigger_valid_card_is_land;
+                effect.trigger_valid_player_is_controller       = ability.trigger_valid_player_is_controller;
+                effect.trigger_only_self                        = ability.trigger_only_self;
+                effect.trigger_self_excluded                    = ability.trigger_self_excluded;
+                effect.trigger_spell_count_eq                   = ability.trigger_spell_count_eq;
+                ability = effect;
             }
         }
     }
