@@ -9,12 +9,22 @@ namespace effects {
 
 EffectHandler handler_for(EffectKind kind) {
     switch (kind) {
-        case EffectKind::DealDamage: return &deal_damage;
-        case EffectKind::Draw:       return &draw;
-        case EffectKind::GainLife:   return &gain_life;
-        case EffectKind::LoseLife:   return &lose_life;
-        case EffectKind::Mill:       return &mill;
-        default:                     return nullptr;
+        case EffectKind::DealDamage:      return &deal_damage;
+        case EffectKind::Draw:            return &draw;
+        case EffectKind::GainLife:        return &gain_life;
+        case EffectKind::LoseLife:        return &lose_life;
+        case EffectKind::Mill:            return &mill;
+        case EffectKind::Untap:           return &untap;
+        case EffectKind::Cleanup:         return &cleanup;
+        case EffectKind::MultiplyCounter: return &multiply_counter;
+        case EffectKind::Phases:          return &phases;
+        case EffectKind::WinsGame:        return &wins_game;
+        case EffectKind::ProwessBonus:    return &prowess_bonus;
+        case EffectKind::ExaltedBonus:    return &exalted_bonus;
+        case EffectKind::Attach:          return &attach;
+        case EffectKind::ChooseCard:      return &choose_card;
+        case EffectKind::DestroyAll:      return &destroy_all;
+        default:                          return nullptr;
     }
 }
 

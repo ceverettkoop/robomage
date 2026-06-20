@@ -31,6 +31,16 @@ bool draw(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool gain_life(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool lose_life(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool mill(Ability &ab, std::shared_ptr<Orderer> orderer);
+bool untap(Ability &ab, std::shared_ptr<Orderer> orderer);
+bool cleanup(Ability &ab, std::shared_ptr<Orderer> orderer);
+bool multiply_counter(Ability &ab, std::shared_ptr<Orderer> orderer);
+bool phases(Ability &ab, std::shared_ptr<Orderer> orderer);
+bool wins_game(Ability &ab, std::shared_ptr<Orderer> orderer);
+bool prowess_bonus(Ability &ab, std::shared_ptr<Orderer> orderer);
+bool exalted_bonus(Ability &ab, std::shared_ptr<Orderer> orderer);
+bool attach(Ability &ab, std::shared_ptr<Orderer> orderer);
+bool choose_card(Ability &ab, std::shared_ptr<Orderer> orderer);
+bool destroy_all(Ability &ab, std::shared_ptr<Orderer> orderer);
 
 }  // namespace effects
 
