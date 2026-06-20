@@ -79,12 +79,11 @@ struct Ability{
     // variant alternatives; shared fields stay as direct members. std::monostate
     // covers effects with no exclusive fields. See ability_params.h.
     std::variant<std::monostate, PumpParams, DamageParams, DestroyAllParams, TokenParams,
-                 DelayedTriggerParams, CounterParams> params;
+                 DelayedTriggerParams, CounterParams, DiscardParams, PeekParams> params;
 
     // Counter abilities (PutCounter category) now live in CounterParams (params variant).
 
-    // Peek variant (Mishra's Bauble): look at target player's top card, skip reveal choice
-    bool is_peek_no_reveal = false;
+    // Peek variant (Mishra's Bauble) now lives in PeekParams (params variant).
 
     // Delayed trigger params (Mishra's Bauble) now live in DelayedTriggerParams (params variant).
 
@@ -132,9 +131,7 @@ struct Ability{
     int dig_destination = -1;        // DestinationZone$ — where chosen card goes (-1 = HAND, Zone::LIBRARY etc.)
     int dig_library_position = -1;   // LibraryPosition$ — 0 = top, -1 = unset
 
-    // Discard ability (Thoughtseize, Duress)
-    std::string discard_valid = "";    // DiscardValid$ — filter for cards to discard (e.g. "Card.nonLand")
-    std::string mode = "";             // Mode$ — e.g. "RevealYouChoose"
+    // Discard ability (Thoughtseize, Duress) now lives in DiscardParams (params variant).
 
     // Conditional subability execution (Scythecat Cub, Thassa's Oracle)
     std::string condition_check_svar = "";   // ConditionCheckSVar$ — resolved expression e.g. "Count$ResolvedThisTurn"

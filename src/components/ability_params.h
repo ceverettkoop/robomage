@@ -50,6 +50,18 @@ struct CounterParams {
     bool count_from_delve = false;  // count = delve_exiled.size() at resolve (unused on Ability today)
 };
 
+// Discard (e.g. Thoughtseize/Duress). mode is currently parsed but unread.
+struct DiscardParams {
+    std::string valid = "";  // DiscardValid$ — filter (e.g. "Card.nonLand")
+    std::string mode = "";   // Mode$ — e.g. "RevealYouChoose" (parsed, not yet read)
+};
+
+// Peek-no-reveal variant (Mishra's Bauble): look at top card privately, no
+// reveal choice. Distinguishes the peek path inside the PeekAndReveal handler.
+struct PeekParams {
+    bool no_reveal = false;  // NoReveal$ True
+};
+
 // Delayed trigger registration (e.g. Mishra's Bauble: "draw a card at the
 // beginning of your next upkeep").
 struct DelayedTriggerParams {

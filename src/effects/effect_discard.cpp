@@ -32,12 +32,14 @@ bool discard(Ability &ab, std::shared_ptr<Orderer> orderer) {
     }
 
     // Filter by DiscardValid$ — "Card.nonLand", "Card.nonCreature+nonLand"
+    const DiscardParams *dp = std::get_if<DiscardParams>(&ab.params);
+    std::string discard_valid = dp ? dp->valid : std::string();
     std::vector<Entity> valid;
     for (auto e : hand) {
         auto &cd = global_coordinator.GetComponent<CardData>(e);
         bool passes = true;
-        if (!ab.discard_valid.empty()) {
-            std::string filter = ab.discard_valid;
+        if (!discard_valid.empty()) {
+            std::string filter = discard_valid;
             if (filter.rfind("Card.", 0) == 0) filter = filter.substr(5);
             size_t fp = 0;
             while (fp < filter.size()) {
@@ -84,8 +86,8 @@ bool discard(Ability &ab, std::shared_ptr<Orderer> orderer) {
 }
 
 bool parse_discard(Ability &ab, const std::string &key, const std::string &value) {
-    if (key == "DiscardValid") { ab.discard_valid = value; return true; }
-    if (key == "Mode")         { ab.mode = value; return true; }
+    if (key == "DiscardValid") { effect_params<DiscardParams>(ab).valid = value; return true; }
+    if (key == "Mode")         { effect_params<DiscardParams>(ab).mode = value; return true; }
     return false;
 }
 

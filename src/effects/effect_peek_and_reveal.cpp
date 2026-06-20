@@ -23,7 +23,8 @@ extern Game cur_game;
 namespace effects {
 
 bool peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer) {
-    if (ab.is_peek_no_reveal) {
+    const PeekParams *pp = std::get_if<PeekParams>(&ab.params);
+    if (pp && pp->no_reveal) {
         // Mishra's Bauble: look at target player's top card privately, no reveal choice
         Zone::Ownership peek_owner = global_coordinator.entity_has_component<Player>(ab.target)
                                          ? (ab.target == cur_game.player_a_entity ? Zone::PLAYER_A : Zone::PLAYER_B)
@@ -111,7 +112,7 @@ bool peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer) {
 
 bool parse_peek_and_reveal(Ability &ab, const std::string &key, const std::string &value) {
     if (key != "NoReveal") return false;
-    ab.is_peek_no_reveal = (value == "True");
+    effect_params<PeekParams>(ab).no_reveal = (value == "True");
     return true;
 }
 
