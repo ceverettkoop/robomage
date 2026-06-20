@@ -634,9 +634,10 @@ void StateManager::apply_static_ability_effects() {
                 continue;
             }
 
-            // Determine which entity receives the buff (source or equipped creature)
+            // Determine which entity receives the buff (source or equipped creature).
+            // Affected$ is stored verbatim (e.g. "Creature.EquippedBy"), so match by substring.
             Entity target_entity = a.entity;
-            if (a.sa->affected == "EquippedBy") {
+            if (a.sa->affected.find("EquippedBy") != std::string::npos) {
                 if (!global_coordinator.entity_has_component<Permanent>(a.entity)) continue;
                 target_entity = global_coordinator.GetComponent<Permanent>(a.entity).equipped_to;
             }
@@ -1548,6 +1549,38 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             if (cant_activate) break;
         }
         if (cant_activate) continue;
+
+        // EQUIP: equipment's equip ability is sorcery-speed (main phase, your turn, empty stack).
+        // The Equip keyword is parsed into is_equipment/equip_cost but produces no stored Ability,
+        // so synthesise the action here when there is a creature to equip and the cost is payable.
+        if (global_coordinator.entity_has_component<CardData>(entity)) {
+            auto &cd = global_coordinator.GetComponent<CardData>(entity);
+            bool main_phase = (game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
+                              (game.player_a_turn == game.player_a_has_priority) &&
+                              stack_manager->is_empty();
+            if (cd.is_equipment && main_phase) {
+                bool has_creature = false;
+                for (auto e2 : orderer->mEntities) {
+                    if (!global_coordinator.entity_has_component<Permanent>(e2)) continue;
+                    if (!global_coordinator.entity_has_component<Creature>(e2)) continue;
+                    if (global_coordinator.GetComponent<Zone>(e2).location != Zone::BATTLEFIELD) continue;
+                    if (global_coordinator.GetComponent<Permanent>(e2).controller != priority_player) continue;
+                    has_creature = true;
+                    break;
+                }
+                if (has_creature && can_pay_mana(priority_player, cd.equip_cost, entity, orderer)) {
+                    Ability equip_ab;
+                    equip_ab.ability_type = Ability::ACTIVATED;
+                    equip_ab.category = "Equip";
+                    equip_ab.source = entity;
+                    equip_ab.activation_mana_cost = cd.equip_cost;
+                    std::string desc = "Equip " + entity_name(entity);
+                    LegalAction equip_la(ACTIVATE_ABILITY, entity, equip_ab, desc);
+                    equip_la.category = ActionCategory::ACTIVATE_ABILITY;
+                    actions.push_back(equip_la);
+                }
+            }
+        }
 
         for (auto ab : permanent.abilities) {
             if (ab.ability_type != Ability::ACTIVATED) continue;

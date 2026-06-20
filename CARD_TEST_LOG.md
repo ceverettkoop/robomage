@@ -416,3 +416,55 @@ Instant {2}{G}{G} — destroy up to 2 target artifacts/enchantments; alt cost (n
 
 ## 21. Air Elemental ✅ (vanilla flyer)
 {3}{U}{U} 4/4 flying. Cast off 5 Islands → `Air Elemental [4/4]` enters. (≈ Flying Men, bigger body.) ✅
+
+---
+## Remaining 8 (session 2)
+
+## 70. Deep Analysis ✅ (cast + flashback both work)
+Sorcery {3}{U} — target player draws two cards; Flashback {1}{U}, Pay 3 life.
+- Cast from hand (`--battlefield-a "Island×4"`, target self): `Player A casts Deep Analysis targeting Player A / Resolving ability (category: Draw, amount: 2) / draws Forest / draws Forest` (hand +2). ✅
+- Flashback from graveyard (turn 2, lands untapped): `Cast Deep Analysis` offered from GY → `activated Island for 1(U)` ×2 + `Player A pays 3 life` (20→17), target self, `draws Forest ×2`, then `Deep Analysis is exiled (flashback)` — leaves GY to exile (GY no longer lists it), not recast-able again. ✅
+
+## 78. Knight of Autumn ✅ (all three Charm modes)
+{1}{G}{W} 2/1; ETB choose one — (a) two +1/+1 counters, (b) destroy artifact/enchantment, (c) gain 4 life.
+- Cast → `Knight of Autumn triggered / Resolving ability (category: Charm, amount: 0) / Choose mode:`. With no artifact/enchantment in play only **2** modes are offered (destroy correctly suppressed as it has no legal target); with an opp Null Rod in play **3** modes appear. Mode order = script order: 0=counters, 1=destroy, 2=gain life.
+- (a) counters → `Resolving ability (category: PutCounter) / Put 2 +1/+1 counter(s) on creature (now 4/3)`. ✅
+- (b) destroy → `Choose target:` → `Resolving ability (category: Destroy) / Null Rod is destroyed`. ✅
+- (c) gain life → `Resolving ability (category: GainLife, amount: 4) / Player A gains 4 life (now at 24)`. ✅
+
+## 74. Faerie Macabre ✅
+{1}{B}{B} 2/2 flying; Discard from hand: exile up to two target cards from graveyards.
+- Setup: cast 2 Lightning Bolts → both in Player A GY. `Activate Faerie Macabre (own)` is offered from hand (always available — TargetMin 0).
+- Activate → up to 2 targets chosen one at a time (`Target ` index 0 = the null/stop option, then each `Target Lightning Bolt`). Selected both Bolts → `Player A activates Faerie Macabre from hand targeting Lightning Bolt / Resolving ability (category: ChangeZone)`; both Bolts leave the GY (exiled). Faerie Macabre itself goes to the GY as the discard cost. ✅ (Flying keyword present, not separately combat-tested.)
+
+## 40. Keen-Eyed Curator ✅ (activated exile) / ⚠️ +4/+4 static — USER VERIFY
+{G}{G} 3/3; {1}: exile target card from a graveyard. Static: +4/+4 & trample while ≥4 card types exiled with it.
+- Activated exile VERIFIED by me: with a Lightning Bolt in GY, `Activate Keen-Eyed Curator (own)` → pays {1} (`activated Mountain for 1(R)`) → ability on stack → `Resolving ability (category: ChangeZone) / Lightning Bolt is moved to exile` (GY emptied). The ability is correctly suppressed when no graveyard has a target. ✅
+- +4/+4 trample static: the engine IMPLEMENTS it — `Permanent.exiled_with` records each card this source exiles (`effect_change_zone.cpp:46`), and `state_manager.cpp:597-613` counts distinct `TYPE` names among them and applies the buff when `GE4`. Code path is correct, but I did not drive a full 4-distinct-types-exiled scenario end-to-end (needs creature+instant+sorcery+artifact staged into a GY then all 4 exiled). **USER TO VERIFY** the 3/3 → 7/7 trample flip after the 4th distinct type is exiled.
+
+## 46. Scryb Ranger ✅ (Return-Forest cost + once/turn limit both correct)
+{1}{G} 1/1 flash/flying/pro-blue; Return a Forest you control: untap target creature. Activate only once each turn.
+- Activate → `Choose target:` (any creature) → cost `Choice: Forest` (which Forest to return) → `Player A returns Forest to hand` (Forest leaves battlefield, hand +1) → ability on stack → `Resolving ability (category: Untap) / Scryb Ranger untaps`. Return-a-Forest cost works. ✅ (Untapped its own target as a no-op visibility-wise; Untap category itself is exercised by other cards.)
+- `ActivationLimit$ 1` (once each turn) VERIFIED enforced: after one First-Main activation the ability is no longer offered for the rest of that turn (not in the same First Main, nor in the following Second Main); it returns next turn (reset at the untap step, `game.cpp:136`). ⚠️ Note for future testers: the pre-set-battlefield harness grants an *abnormal* priority window during the Untap step; activating there and again at Upkeep looks like a double-activation, but that priority window doesn't exist in real games — same-step and same-turn enforcement are both correct. ✅
+
+## 33. Endurance ✅ ETB graveyard-hate / ❌ Evoke UNIMPLEMENTED
+{1}{G}{G} 3/4 flash/reach; ETB up to one target player puts all their graveyard cards on the bottom of their library; Evoke—exile a green card from hand.
+- ETB (hardcast) VERIFIED: with a Lightning Bolt resolved into Player A's GY, cast Endurance and target self → `Endurance triggered / Resolving ability (category: ChangeZoneAll) / Player A moves Lightning Bolt to the bottom of their library / moves 1 card(s)`. GY emptied; "up to one target" offers a null/no-target option (TargetMin 0); targeting the empty opp GY correctly moves `0 card(s)`. ✅ (IMPORTANT timing: the ETB resolves above anything still on the stack — cast Endurance only AFTER the GY-filling spell has resolved, or the GY is still empty when ETB resolves.)
+- Evoke: ❌ NOT IMPLEMENTED. With only non-green mana available, `Cast Endurance` is not offered at all — the `K:Evoke:ExileFromHand<1/Card.Green+Other/...>` keyword produces no alternate cast. The alt-cost machinery (`AltCost`/`ExileFromHand`, `parse.cpp:170-243`) only fires for `S:...AlternativeCost` lines (Force of Negation-style pitch), not for the `K:Evoke:` keyword; the post-ETB evoke sacrifice is likewise absent. Logged in todo.md.
+
+## 28. Cori-Steel Cutter ✅ (FIXED — Equip listing + EquippedBy static both were broken)
+{1}{R} Equipment; equipped creature +1/+1, trample, haste; Flurry — on your 2nd spell each turn make a 1/1 Monk (prowess) token and may attach; Equip {1}{R}.
+- Flurry trigger VERIFIED: casting a 2nd spell in a turn → `Cori-Steel Cutter triggered / Token created: 1/1 Monk Token / Equipment attached.` The "may attach" (Optional) is taken and the equipment auto-moves to the new token. ✅ (Benign warnings: `TokenOwner$`/`RememberTokens$` params unrecognized; token still created/owned correctly.)
+- TWO BUGS FOUND AND FIXED:
+  1. **Manual Equip ability was never offered.** `K:Equip` is parsed into `is_equipment`/`equip_cost` but produces no stored `Ability`, and nothing listed it (the activation handler in `action_processor.cpp:168` existed but was unreachable). Fix: synthesise the Equip action in `determine_legal_actions` (`state_manager.cpp`), gated to sorcery speed — main phase, your turn, empty stack — when a controlled creature exists and the cost is payable. Per user: equip is only offered during the main phase. Verified: `Activate Cori-Steel Cutter` now appears in First Main, `Choose creature to equip:` → `Cori-Steel Cutter equipped to Grizzly Bears.`; NOT offered on the opponent's turn.
+  2. **EquippedBy static never applied.** Handler compared `a.sa->affected == "EquippedBy"` but `Affected$` is stored verbatim as `"Creature.EquippedBy"`, so the buff was entirely skipped (the auto-attached Monk stayed 1/1 and dealt 1 combat damage). Fix: match by substring `affected.find("EquippedBy") != npos` (`state_manager.cpp:639`).
+- After the fixes: equipping Grizzly Bears → `Grizzly Bears gains 1/1 Trample & Haste (always)` → `[3/3]`; the Flurry Monk token is now `[2/2]` with trample & haste (haste lets it attack the turn it's made). ✅ `train.py --diag` 0 draws / no crashes.
+
+## 53. Doomsday ✅ (full multi-step pile build works)
+{B}{B}{B} Sorcery — search your library and graveyard for five cards and exile the rest; put the chosen five on top in any order; lose half your life, rounded up.
+- Cast off 3 Swamps (library = 8 cards after opening draw, GY empty). Resolution executed every phase in order:
+  1. `Resolving ability (category: ChangeZone, amount: 5)` → `Searching Player A's library and graveyard:` then five sequential `Put on top: X` picks (chose Brainstorm, Ponder, Swamp, Swamp, Swamp).
+  2. `Resolving ability (category: ChangeZoneAll)` → `Player A moves Swamp to exile` ×3 / `moves 3 card(s) to exile` (the rest exiled; library now exactly the 5-card pile).
+  3. `Resolving ability (category: RearrangeTopOfLibrary)` → `looks at the top 5 card(s)` → ordered the pile via `Choose which card goes 5/4/3/2 from top` (last card auto-tops).
+  4. `Resolving ability (category: LoseLife)` → `Player A loses 10 life (now at 10)` (half of 20, rounded up).
+  5. Cleanup; Doomsday → graveyard. ✅ All chained sub-abilities (ChangeZone → ChangeZoneAll → RearrangeTopOfLibrary → LoseLife → Cleanup) fire correctly.
