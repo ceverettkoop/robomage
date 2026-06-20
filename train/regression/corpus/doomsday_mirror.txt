@@ -106,8 +106,8 @@ Player B reveals their hand:
   Underground Sea
   Consider
 Player A chooses a card to discard:
-<<DECISION 24: action=1>>
-Player B discards Ponder
+<<DECISION 24: action=2>>
+Player B discards Consider
 Resolving ability (category: LoseLife, amount: 2)
 Player A loses 2 life (now at 16)
 No creatures eligible to attack.
@@ -127,22 +127,25 @@ Lotus Petal enters the battlefield
 <<DECISION 27: action=3>>
 Player B sacrifices Lotus Petal
 Player B activated Lotus Petal for 1(U)
-Player B casts Consider
-Resolving ability (category: Surveil, amount: 1)
-Top card of Player B's library: Thoughtseize
-<<DECISION 28: action=1>>
-Player B puts Thoughtseize into the graveyard.
+Player B casts Ponder
+Resolving ability (category: RearrangeTopOfLibrary, amount: 3)
+Player B looks at the top 3 card(s) of their library.
+Choose which card goes 3 from top:
+<<DECISION 28: action=0>>
+Choose which card goes 2 from top:
+<<DECISION 29: action=0>>
+<<DECISION 30: action=0>>
 Resolving ability (category: Draw, amount: 1)
-Player B draws Personal Tutor
-<<DECISION 29: action=1>>
+Player B draws Daze
+<<DECISION 31: action=1>>
 Player B played Polluted Delta
-<<DECISION 30: action=1>>
+<<DECISION 32: action=1>>
 Player B pays 1 life
 Player B sacrifices Polluted Delta
 Player B's Polluted Delta ability is on the stack
 Resolving ability (category: ChangeZone, amount: 1)
 Searching Player B's library:
-<<DECISION 31: action=1>>
+<<DECISION 33: action=1>>
 Player B shuffles their library
 Player B puts Swamp to the battlefield
 No creatures eligible to attack.
@@ -151,7 +154,7 @@ No attackers ��� skipping declare blockers.
 --- End Combat Damage ---
 -------- TURN 2 (Player A) --------
 Player A draws Street Wraith
-<<DECISION 32: action=1>>
+<<DECISION 34: action=1>>
 Player A pays 2 life
 Player A activates Street Wraith from hand
 Resolving ability (category: Draw, amount: 1)
@@ -161,457 +164,692 @@ No attackers ��� skipping declare blockers.
 --- Combat Damage ---
 --- End Combat Damage ---
 -------- TURN 3 (Player B) --------
-Player B draws Undercity Sewers
-<<DECISION 33: action=1>>
-Player B played Undercity Sewers
-Undercity Sewers enters tapped.
-Undercity Sewers triggered
-Resolving ability (category: Surveil, amount: 1)
-Top card of Player B's library: Brainstorm
-<<DECISION 34: action=0>>
+Player B draws Brainstorm
+<<DECISION 35: action=1>>
+Player B played Underground Sea
+<<DECISION 36: action=1>>
+Player B activated Underground Sea for 1(U)
+Player B casts Brainstorm
+<<DECISION 37: action=0>>
+<<DECISION 38: action=1>>
+Player A pays 1 life
+<<DECISION 39: action=0>>
+Player A exiles Deep Analysis
+Choose target:
+<<DECISION 40: action=0>>
+Targeting choice 0
+Player A casts Force of Will targeting Brainstorm
+<<DECISION 41: action=1>>
+<<DECISION 42: action=0>>
+Player B returns Underground Sea to hand
+Choose target:
+<<DECISION 43: action=0>>
+Targeting choice 0
+Player B casts Daze targeting Force of Will
+Resolving ability (category: Counter, amount: 0)
+Force of Will's controller may pay {1} to save it:
+<<DECISION 44: action=1>>
+Force of Will is countered
+Resolving ability (category: Draw, amount: 3)
+Player B draws Ponder
+Player B draws Brainstorm
+Player B draws Brainstorm
+Resolving ability (category: ChangeZone, amount: 2)
+Player B chooses a card from Player B hand:
+<<DECISION 45: action=0>>
+Player B puts Doomsday to top of library
+Player B puts a card to top of library
+Player B chooses a card from Player B hand:
+<<DECISION 46: action=0>>
+Player B puts Brainstorm to top of library
+Player B puts a card to top of library
 No creatures eligible to attack.
 No attackers ��� skipping declare blockers.
 --- Combat Damage ---
 --- End Combat Damage ---
 -------- TURN 4 (Player A) --------
 Player A draws Dark Ritual
-<<DECISION 35: action=0>>
-<<DECISION 36: action=0>>
-<<DECISION 37: action=0>>
-No creatures eligible to attack.
-<<DECISION 38: action=0>>
-No attackers ��� skipping declare blockers.
-<<DECISION 39: action=0>>
---- Combat Damage ---
---- End Combat Damage ---
-<<DECISION 40: action=0>>
-<<DECISION 41: action=0>>
-<<DECISION 42: action=0>>
-<<DECISION 43: action=0>>
--------- TURN 5 (Player B) --------
-<<DECISION 44: action=0>>
-Player B draws Brainstorm
-<<DECISION 45: action=1>>
-Player B activated Undercity Sewers for 1(U)
-Player B casts Brainstorm
-<<DECISION 46: action=1>>
-Player A pays 1 life
 <<DECISION 47: action=0>>
-Player A exiles Deep Analysis
-Choose target:
 <<DECISION 48: action=0>>
-Targeting choice 0
-Player A casts Force of Will targeting Brainstorm
 <<DECISION 49: action=0>>
-Resolving ability (category: Counter, amount: 0)
-Brainstorm is countered
-<<DECISION 50: action=0>>
-<<DECISION 51: action=1>>
-Player B played Underground Sea
-<<DECISION 52: action=1>>
-Player B activated Underground Sea for 1(U)
-Player B casts Personal Tutor
-<<DECISION 53: action=0>>
-Resolving ability (category: ChangeZone, amount: 1)
-Searching Player B's library:
-<<DECISION 54: action=0>>
-Player B shuffles their library
-Player B fails to find
-<<DECISION 55: action=0>>
-<<DECISION 56: action=0>>
 No creatures eligible to attack.
-<<DECISION 57: action=0>>
+<<DECISION 50: action=0>>
 No attackers ��� skipping declare blockers.
-<<DECISION 58: action=0>>
+<<DECISION 51: action=0>>
 --- Combat Damage ---
 --- End Combat Damage ---
-<<DECISION 59: action=0>>
+<<DECISION 52: action=0>>
+<<DECISION 53: action=0>>
+<<DECISION 54: action=0>>
+<<DECISION 55: action=0>>
+-------- TURN 5 (Player B) --------
+<<DECISION 56: action=0>>
+Player B draws Brainstorm
+<<DECISION 57: action=0>>
+<<DECISION 58: action=1>>
+Player B played Underground Sea
+<<DECISION 59: action=1>>
+Player B activated Underground Sea for 1(U)
+Player B casts Brainstorm
 <<DECISION 60: action=0>>
+Resolving ability (category: Draw, amount: 3)
+Player B draws Doomsday
+Player B draws Thoughtseize
+Player B draws Deep Analysis
+Resolving ability (category: ChangeZone, amount: 2)
+Player B chooses a card from Player B hand:
 <<DECISION 61: action=0>>
+Player B puts Doomsday to top of library
+Player B puts a card to top of library
+Player B chooses a card from Player B hand:
 <<DECISION 62: action=0>>
--------- TURN 6 (Player A) --------
+Player B puts Thoughtseize to top of library
+Player B puts a card to top of library
 <<DECISION 63: action=0>>
-Player A draws Flooded Strand
 <<DECISION 64: action=0>>
-<<DECISION 65: action=1>>
+No creatures eligible to attack.
+<<DECISION 65: action=0>>
+No attackers ��� skipping declare blockers.
+<<DECISION 66: action=0>>
+--- Combat Damage ---
+--- End Combat Damage ---
+<<DECISION 67: action=0>>
+<<DECISION 68: action=0>>
+<<DECISION 69: action=0>>
+<<DECISION 70: action=0>>
+-------- TURN 6 (Player A) --------
+<<DECISION 71: action=0>>
+Player A draws Flooded Strand
+<<DECISION 72: action=0>>
+<<DECISION 73: action=1>>
 Player A played Flooded Strand
-<<DECISION 66: action=2>>
+<<DECISION 74: action=2>>
 Player A pays 1 life
 Player A sacrifices Flooded Strand
 Player A's Flooded Strand ability is on the stack
-<<DECISION 67: action=0>>
+<<DECISION 75: action=0>>
 Resolving ability (category: ChangeZone, amount: 1)
 Searching Player A's library:
-<<DECISION 68: action=1>>
+<<DECISION 76: action=1>>
 Player A shuffles their library
 Player A puts Undercity Sewers to the battlefield
 Undercity Sewers enters tapped.
 Undercity Sewers triggered
-<<DECISION 69: action=0>>
+<<DECISION 77: action=0>>
 Resolving ability (category: Surveil, amount: 1)
-Top card of Player A's library: Cavern of Souls
-<<DECISION 70: action=0>>
-<<DECISION 71: action=0>>
-<<DECISION 72: action=0>>
+Top card of Player A's library: Force of Will
+<<DECISION 78: action=0>>
+<<DECISION 79: action=0>>
+<<DECISION 80: action=0>>
 No creatures eligible to attack.
-<<DECISION 73: action=0>>
+<<DECISION 81: action=0>>
 No attackers ��� skipping declare blockers.
-<<DECISION 74: action=0>>
+<<DECISION 82: action=0>>
 --- Combat Damage ---
 --- End Combat Damage ---
-<<DECISION 75: action=0>>
-<<DECISION 76: action=0>>
-<<DECISION 77: action=0>>
-<<DECISION 78: action=0>>
--------- TURN 7 (Player B) --------
-<<DECISION 79: action=0>>
-Player B draws Force of Will
-<<DECISION 80: action=0>>
-<<DECISION 81: action=1>>
-Player B activated Swamp for 1(B)
-Player B activated Undercity Sewers for 1(B)
-Player B activated Underground Sea for 1(B)
-Player B casts Doomsday
-<<DECISION 82: action=0>>
-Resolving ability (category: ChangeZone, amount: 5)
-Searching Player B's library and graveyard:
-<<DECISION 83: action=27>>
-Player B puts Thassa's Oracle to top of library
-Player B puts a card to top of library
-Searching Player B's library and graveyard:
+<<DECISION 83: action=0>>
 <<DECISION 84: action=0>>
-Player B puts Force of Will to top of library
-Player B puts a card to top of library
-Searching Player B's library and graveyard:
 <<DECISION 85: action=0>>
+<<DECISION 86: action=0>>
+-------- TURN 7 (Player B) --------
+<<DECISION 87: action=1>>
+Player B activated Underground Sea for 1(U)
+Player B casts Brainstorm
+<<DECISION 88: action=0>>
+Resolving ability (category: Draw, amount: 3)
+Player B draws Thoughtseize
+Player B draws Doomsday
+Player B draws Dark Ritual
+Resolving ability (category: ChangeZone, amount: 2)
+Player B chooses a card from Player B hand:
+<<DECISION 89: action=0>>
+Player B puts Doomsday to top of library
+Player B puts a card to top of library
+Player B chooses a card from Player B hand:
+<<DECISION 90: action=0>>
 Player B puts Thoughtseize to top of library
 Player B puts a card to top of library
-Searching Player B's library and graveyard:
-<<DECISION 86: action=0>>
-Player B puts Lotus Petal to top of library
-Player B puts a card to top of library
-Searching Player B's library and graveyard:
-<<DECISION 87: action=0>>
-Player B puts Personal Tutor to top of library
-Player B puts a card to top of library
-Resolving ability (category: ChangeZoneAll, amount: 0)
-Player B moves Street Wraith to exile
-Player B moves Brainstorm to exile
-Player B moves Ponder to exile
-Player B moves Polluted Delta to exile
-Player B moves Consider to exile
-Player B moves Doomsday to exile
-Player B moves Doomsday to exile
-Player B moves Doomsday to exile
-Player B moves Force of Will to exile
-Player B moves Force of Will to exile
-Player B moves Thoughtseize to exile
-Player B moves Thoughtseize to exile
-Player B moves Daze to exile
-Player B moves Daze to exile
-Player B moves Daze to exile
-Player B moves Dark Ritual to exile
-Player B moves Dark Ritual to exile
-Player B moves Dark Ritual to exile
-Player B moves Dark Ritual to exile
-Player B moves Lotus Petal to exile
-Player B moves Lotus Petal to exile
-Player B moves Lotus Petal to exile
-Player B moves Lion's Eye Diamond to exile
-Player B moves Personal Tutor to exile
-Player B moves Personal Tutor to exile
-Player B moves Street Wraith to exile
-Player B moves Street Wraith to exile
-Player B moves Street Wraith to exile
-Player B moves Edge of Autumn to exile
-Player B moves Edge of Autumn to exile
-Player B moves Brainstorm to exile
-Player B moves Brainstorm to exile
-Player B moves Brainstorm to exile
-Player B moves Ponder to exile
-Player B moves Ponder to exile
-Player B moves Ponder to exile
-Player B moves Polluted Delta to exile
-Player B moves Polluted Delta to exile
-Player B moves Polluted Delta to exile
-Player B moves Underground Sea to exile
-Player B moves Underground Sea to exile
-Player B moves Bloodstained Mire to exile
-Player B moves Verdant Catacombs to exile
-Player B moves Island to exile
-Player B moves Flooded Strand to exile
-Player B moves Misty Rainforest to exile
-Player B moves Cavern of Souls to exile
-Player B moves Duress to exile
-Player B moves Deep Analysis to exile
-Player B moves 49 card(s) to exile
-Resolving ability (category: RearrangeTopOfLibrary, amount: 0)
-Player B looks at the top 5 card(s) of their library.
-Choose which card goes 5 from top:
-<<DECISION 88: action=4>>
-Choose which card goes 4 from top:
-<<DECISION 89: action=0>>
-Choose which card goes 3 from top:
-<<DECISION 90: action=0>>
-Choose which card goes 2 from top:
 <<DECISION 91: action=0>>
-Resolving ability (category: LoseLife, amount: 0)
-Player B loses 8 life (now at 8)
-Resolving ability (category: Cleanup, amount: 0)
 <<DECISION 92: action=0>>
-<<DECISION 93: action=0>>
-No creatures eligible to attack.
-<<DECISION 94: action=0>>
-No attackers ��� skipping declare blockers.
-<<DECISION 95: action=0>>
---- Combat Damage ---
---- End Combat Damage ---
-<<DECISION 96: action=0>>
-<<DECISION 97: action=0>>
-<<DECISION 98: action=0>>
-<<DECISION 99: action=0>>
--------- TURN 8 (Player A) --------
-<<DECISION 100: action=0>>
-Player A draws Cavern of Souls
-<<DECISION 101: action=0>>
-<<DECISION 102: action=1>>
-Player A played Cavern of Souls
-Choose a creature type for Cavern of Souls:
-<<DECISION 103: action=1>>
-Player A chose creature type: Merfolk
-<<DECISION 104: action=0>>
-<<DECISION 105: action=0>>
-No creatures eligible to attack.
-<<DECISION 106: action=0>>
-No attackers ��� skipping declare blockers.
-<<DECISION 107: action=0>>
---- Combat Damage ---
---- End Combat Damage ---
-<<DECISION 108: action=0>>
-<<DECISION 109: action=0>>
-<<DECISION 110: action=0>>
-<<DECISION 111: action=0>>
--------- TURN 9 (Player B) --------
-<<DECISION 112: action=0>>
-Player B draws Force of Will
-<<DECISION 113: action=0>>
-<<DECISION 114: action=0>>
-<<DECISION 115: action=0>>
-No creatures eligible to attack.
-<<DECISION 116: action=0>>
-No attackers ��� skipping declare blockers.
-<<DECISION 117: action=0>>
---- Combat Damage ---
---- End Combat Damage ---
-<<DECISION 118: action=0>>
-<<DECISION 119: action=0>>
-<<DECISION 120: action=0>>
-<<DECISION 121: action=0>>
--------- TURN 10 (Player A) --------
-<<DECISION 122: action=0>>
-Player A draws Brainstorm
-<<DECISION 123: action=2>>
-Player A activated Undercity Sewers for 1(U)
-Player A casts Brainstorm
-<<DECISION 124: action=0>>
-<<DECISION 125: action=1>>
-Player B pays 1 life
-<<DECISION 126: action=0>>
-Player B exiles Force of Will
-Choose target:
-<<DECISION 127: action=0>>
-Targeting choice 0
-Player B casts Force of Will targeting Brainstorm
-<<DECISION 128: action=0>>
-Resolving ability (category: Counter, amount: 0)
-Brainstorm is countered
-<<DECISION 129: action=0>>
-<<DECISION 130: action=0>>
-<<DECISION 131: action=0>>
-No creatures eligible to attack.
-<<DECISION 132: action=0>>
-No attackers ��� skipping declare blockers.
-<<DECISION 133: action=0>>
---- Combat Damage ---
---- End Combat Damage ---
-<<DECISION 134: action=0>>
-<<DECISION 135: action=0>>
-<<DECISION 136: action=0>>
-<<DECISION 137: action=0>>
--------- TURN 11 (Player B) --------
-<<DECISION 138: action=0>>
 Player B draws Thoughtseize
-<<DECISION 139: action=0>>
-<<DECISION 140: action=1>>
+<<DECISION 93: action=0>>
+<<DECISION 94: action=0>>
+<<DECISION 95: action=1>>
 Player B activated Swamp for 1(B)
 Choose target:
-<<DECISION 141: action=0>>
+<<DECISION 96: action=0>>
 Targeting choice 0
-Player B casts Thoughtseize targeting Player B
-<<DECISION 142: action=0>>
+Player B casts Thoughtseize targeting Player A
+<<DECISION 97: action=0>>
 Resolving ability (category: Discard, amount: 1)
-Player B reveals their hand:
-No valid cards to discard.
+Player A reveals their hand:
+  Dark Ritual
+Player B chooses a card to discard:
+<<DECISION 98: action=0>>
+Player A discards Dark Ritual
 Resolving ability (category: LoseLife, amount: 2)
-Player B loses 2 life (now at 5)
-<<DECISION 143: action=0>>
-<<DECISION 144: action=0>>
+Player B loses 2 life (now at 14)
 No creatures eligible to attack.
-<<DECISION 145: action=0>>
 No attackers ��� skipping declare blockers.
-<<DECISION 146: action=0>>
 --- Combat Damage ---
 --- End Combat Damage ---
-<<DECISION 147: action=0>>
-<<DECISION 148: action=0>>
-<<DECISION 149: action=0>>
-<<DECISION 150: action=0>>
--------- TURN 12 (Player A) --------
-<<DECISION 151: action=0>>
-Player A draws Thassa's Oracle
-<<DECISION 152: action=0>>
-<<DECISION 153: action=2>>
-Player A activated Cavern of Souls for 1(U)
-Player A activated Undercity Sewers for 1(U)
-Player A casts Thassa's Oracle
-<<DECISION 154: action=0>>
-Thassa's Oracle enters the battlefield
-Thassa's Oracle triggered
-<<DECISION 155: action=0>>
-Resolving ability (category: Dig, amount: 1)
-Player A looks at the top 2 card(s) of their library.
-<<DECISION 156: action=1>>
-Player A puts Doomsday on top of their library.
-Player A puts 1 card(s) on the bottom of their library.
-Resolving ability (category: WinsGame, amount: 0)
-<<DECISION 157: action=0>>
-<<DECISION 158: action=0>>
+-------- TURN 8 (Player A) --------
+Player A draws Force of Will
 No creatures eligible to attack.
-<<DECISION 159: action=0>>
 No attackers ��� skipping declare blockers.
-<<DECISION 160: action=0>>
 --- Combat Damage ---
 --- End Combat Damage ---
-<<DECISION 161: action=0>>
-<<DECISION 162: action=0>>
-<<DECISION 163: action=0>>
-<<DECISION 164: action=0>>
--------- TURN 13 (Player B) --------
-<<DECISION 165: action=0>>
-Player B draws Lotus Petal
-<<DECISION 166: action=0>>
-<<DECISION 167: action=1>>
-Player B casts Lotus Petal
-<<DECISION 168: action=0>>
-Lotus Petal enters the battlefield
-<<DECISION 169: action=0>>
-<<DECISION 170: action=0>>
-No creatures eligible to attack.
-<<DECISION 171: action=0>>
-No attackers ��� skipping declare blockers.
-<<DECISION 172: action=0>>
---- Combat Damage ---
---- End Combat Damage ---
-<<DECISION 173: action=0>>
-<<DECISION 174: action=0>>
-<<DECISION 175: action=0>>
-<<DECISION 176: action=0>>
--------- TURN 14 (Player A) --------
-<<DECISION 177: action=0>>
-Player A draws Doomsday
-<<DECISION 178: action=1>>
-Player A activated Swamp for 1(B)
-Player A casts Dark Ritual
+-------- TURN 9 (Player B) --------
+<<DECISION 99: action=0>>
+Player B draws Doomsday
+<<DECISION 100: action=1>>
+Player B activated Swamp for 1(B)
+Player B casts Dark Ritual
 Resolving ability (category: AddMana, amount: 3)
-Player A adds 3{B}
-MANA_WASTED: A
---- Declare Attackers (Player A) ---
-<<DECISION 179: action=0>>
-Select target for Thassa's Oracle:
-<<DECISION 180: action=0>>
-Thassa's Oracle attacking Player B.
---- Declare Attackers (Player A) ---
-  [attacking] Thassa's Oracle [1/3] -> Player B
-<<DECISION 181: action=-1>>
-Attackers declared:
-  Thassa's Oracle -> Player B
-No creatures eligible to block.
+Player B adds 3{B}
+MANA_WASTED: B
+<<DECISION 101: action=1>>
+Player B activated Underground Sea for 1(U)
+Player B casts Ponder
+Resolving ability (category: RearrangeTopOfLibrary, amount: 3)
+Player B looks at the top 3 card(s) of their library.
+Choose which card goes 3 from top:
+<<DECISION 102: action=0>>
+Choose which card goes 2 from top:
+<<DECISION 103: action=0>>
+<<DECISION 104: action=0>>
+Resolving ability (category: Draw, amount: 1)
+Player B draws Duress
+No creatures eligible to attack.
+No attackers ��� skipping declare blockers.
 --- Combat Damage ---
-  Thassa's Oracle deals 1 damage to Player B
+--- End Combat Damage ---
+-------- TURN 10 (Player A) --------
+Player A draws Misty Rainforest
+<<DECISION 105: action=1>>
+Player A played Misty Rainforest
+<<DECISION 106: action=1>>
+Player A pays 1 life
+Player A sacrifices Misty Rainforest
+Player A's Misty Rainforest ability is on the stack
+Resolving ability (category: ChangeZone, amount: 1)
+Searching Player A's library:
+<<DECISION 107: action=1>>
+Player A shuffles their library
+Player A puts Underground Sea to the battlefield
+No creatures eligible to attack.
+No attackers ��� skipping declare blockers.
+--- Combat Damage ---
+--- End Combat Damage ---
+-------- TURN 11 (Player B) --------
+Player B draws Daze
+<<DECISION 108: action=1>>
+Player B activated Swamp for 1(B)
+Choose target:
+<<DECISION 109: action=0>>
+Targeting choice 0
+Player B casts Duress targeting Player A
+<<DECISION 110: action=0>>
+Resolving ability (category: Discard, amount: 1)
+Player A reveals their hand:
+  Force of Will
+Player B chooses a card to discard:
+<<DECISION 111: action=0>>
+Player A discards Force of Will
+No creatures eligible to attack.
+No attackers ��� skipping declare blockers.
+--- Combat Damage ---
+--- End Combat Damage ---
+-------- TURN 12 (Player A) --------
+Player A draws Personal Tutor
+<<DECISION 112: action=1>>
+Player A activated Undercity Sewers for 1(U)
+Player A casts Personal Tutor
+<<DECISION 113: action=1>>
+<<DECISION 114: action=0>>
+Player B returns Underground Sea to hand
+Choose target:
+<<DECISION 115: action=0>>
+Targeting choice 0
+Player B casts Daze targeting Personal Tutor
+Resolving ability (category: Counter, amount: 0)
+Personal Tutor's controller may pay {1} to save it:
+<<DECISION 116: action=3>>
+Personal Tutor is countered
+No creatures eligible to attack.
+No attackers ��� skipping declare blockers.
+--- Combat Damage ---
+--- End Combat Damage ---
+-------- TURN 13 (Player B) --------
+Player B draws Undercity Sewers
+<<DECISION 117: action=1>>
+Player B played Undercity Sewers
+Undercity Sewers enters tapped.
+Undercity Sewers triggered
+Resolving ability (category: Surveil, amount: 1)
+Top card of Player B's library: Personal Tutor
+<<DECISION 118: action=1>>
+Player B puts Personal Tutor into the graveyard.
+No creatures eligible to attack.
+No attackers ��� skipping declare blockers.
+--- Combat Damage ---
+--- End Combat Damage ---
+-------- TURN 14 (Player A) --------
+Player A draws Underground Sea
+<<DECISION 119: action=1>>
+Player A played Underground Sea
+No creatures eligible to attack.
+No attackers ��� skipping declare blockers.
+--- Combat Damage ---
 --- End Combat Damage ---
 -------- TURN 15 (Player B) --------
-Player B draws Personal Tutor
-<<DECISION 182: action=1>>
-Player B activated Undercity Sewers for 1(U)
-Player B casts Personal Tutor
-Resolving ability (category: ChangeZone, amount: 1)
-Searching Player B's library:
-<<DECISION 183: action=0>>
-Player B shuffles their library
-Player B fails to find
+Player B draws Edge of Autumn
+<<DECISION 120: action=1>>
+<<DECISION 121: action=0>>
+Player B sacrifices Swamp
+Player B activates Edge of Autumn from hand
+Resolving ability (category: Draw, amount: 1)
+Player B draws Flooded Strand
+<<DECISION 122: action=1>>
+Player B played Underground Sea
 No creatures eligible to attack.
 No attackers ��� skipping declare blockers.
 --- Combat Damage ---
 --- End Combat Damage ---
 -------- TURN 16 (Player A) --------
-Player A draws Brainstorm
-<<DECISION 184: action=1>>
+Player A draws Thassa's Oracle
+<<DECISION 123: action=1>>
 Player A activated Undercity Sewers for 1(U)
-Player A casts Brainstorm
-Resolving ability (category: Draw, amount: 3)
-Player A draws Street Wraith
-Player A draws Force of Will
-Player A draws Duress
-Resolving ability (category: ChangeZone, amount: 2)
-Player A chooses a card from Player A hand:
-<<DECISION 185: action=0>>
-Player A puts Doomsday to top of library
-Player A puts a card to top of library
-Player A chooses a card from Player A hand:
-<<DECISION 186: action=0>>
+Player A activated Underground Sea for 1(U)
+Player A casts Thassa's Oracle
+Thassa's Oracle enters the battlefield
+Thassa's Oracle triggered
+Resolving ability (category: Dig, amount: 1)
+Player A looks at the top 2 card(s) of their library.
+<<DECISION 124: action=1>>
+Player A puts Doomsday on top of their library.
+Player A puts 1 card(s) on the bottom of their library.
+Resolving ability (category: WinsGame, amount: 0)
+No creatures eligible to attack.
+No attackers ��� skipping declare blockers.
+--- Combat Damage ---
+--- End Combat Damage ---
+-------- TURN 17 (Player B) --------
+Player B draws Edge of Autumn
+<<DECISION 125: action=1>>
+<<DECISION 126: action=1>>
+Player B sacrifices Underground Sea
+Player B activates Edge of Autumn from hand
+Resolving ability (category: Draw, amount: 1)
+Player B draws Dark Ritual
+<<DECISION 127: action=1>>
+Player B activated Undercity Sewers for 1(B)
+Player B casts Dark Ritual
+Resolving ability (category: AddMana, amount: 3)
+Player B adds 3{B}
+MANA_WASTED: B
+<<DECISION 128: action=1>>
+Player B played Flooded Strand
+<<DECISION 129: action=1>>
+Player B pays 1 life
+Player B sacrifices Flooded Strand
+Player B's Flooded Strand ability is on the stack
+Resolving ability (category: ChangeZone, amount: 1)
+Searching Player B's library:
+<<DECISION 130: action=1>>
+Player B shuffles their library
+Player B puts Underground Sea to the battlefield
+No creatures eligible to attack.
+No attackers ��� skipping declare blockers.
+--- Combat Damage ---
+--- End Combat Damage ---
+-------- TURN 18 (Player A) --------
+Player A draws Doomsday
+<<DECISION 131: action=1>>
+Player A activated Swamp for 1(B)
+Player A activated Undercity Sewers for 1(B)
+Player A activated Underground Sea for 1(B)
+Player A casts Doomsday
+Resolving ability (category: ChangeZone, amount: 5)
+Searching Player A's library and graveyard:
+<<DECISION 132: action=0>>
 Player A puts Force of Will to top of library
 Player A puts a card to top of library
-<<DECISION 187: action=1>>
-Player A pays 2 life
-Player A activates Street Wraith from hand
-Resolving ability (category: Draw, amount: 1)
-Player A draws Force of Will
-<<DECISION 188: action=1>>
-Player A activated Swamp for 1(B)
-Choose target:
-<<DECISION 189: action=0>>
-Targeting choice 0
-Player A casts Duress targeting Player B
-Resolving ability (category: Discard, amount: 1)
-Player B reveals their hand:
-No valid cards to discard.
+Searching Player A's library and graveyard:
+<<DECISION 133: action=0>>
+Player A puts Force of Will to top of library
+Player A puts a card to top of library
+Searching Player A's library and graveyard:
+<<DECISION 134: action=0>>
+Player A puts Force of Will to top of library
+Player A puts a card to top of library
+Searching Player A's library and graveyard:
+<<DECISION 135: action=0>>
+Player A puts Thoughtseize to top of library
+Player A puts a card to top of library
+Searching Player A's library and graveyard:
+<<DECISION 136: action=0>>
+Player A puts Dark Ritual to top of library
+Player A puts a card to top of library
+Resolving ability (category: ChangeZoneAll, amount: 0)
+Player A moves Lotus Petal to exile
+Player A moves Lotus Petal to exile
+Player A moves Personal Tutor to exile
+Player A moves Street Wraith to exile
+Player A moves Ponder to exile
+Player A moves Verdant Catacombs to exile
+Player A moves Flooded Strand to exile
+Player A moves Misty Rainforest to exile
+Player A moves Consider to exile
+Player A moves Doomsday to exile
+Player A moves Doomsday to exile
+Player A moves Doomsday to exile
+Player A moves Force of Will to exile
+Player A moves Thoughtseize to exile
+Player A moves Thoughtseize to exile
+Player A moves Daze to exile
+Player A moves Daze to exile
+Player A moves Dark Ritual to exile
+Player A moves Dark Ritual to exile
+Player A moves Dark Ritual to exile
+Player A moves Lotus Petal to exile
+Player A moves Lotus Petal to exile
+Player A moves Lion's Eye Diamond to exile
+Player A moves Personal Tutor to exile
+Player A moves Personal Tutor to exile
+Player A moves Personal Tutor to exile
+Player A moves Street Wraith to exile
+Player A moves Street Wraith to exile
+Player A moves Street Wraith to exile
+Player A moves Edge of Autumn to exile
+Player A moves Edge of Autumn to exile
+Player A moves Brainstorm to exile
+Player A moves Brainstorm to exile
+Player A moves Brainstorm to exile
+Player A moves Brainstorm to exile
+Player A moves Ponder to exile
+Player A moves Ponder to exile
+Player A moves Ponder to exile
+Player A moves Polluted Delta to exile
+Player A moves Polluted Delta to exile
+Player A moves Polluted Delta to exile
+Player A moves Polluted Delta to exile
+Player A moves Underground Sea to exile
+Player A moves Bloodstained Mire to exile
+Player A moves Island to exile
+Player A moves Cavern of Souls to exile
+Player A moves Duress to exile
+Player A moves 47 card(s) to exile
+Resolving ability (category: RearrangeTopOfLibrary, amount: 0)
+Player A looks at the top 5 card(s) of their library.
+Choose which card goes 5 from top:
+<<DECISION 137: action=0>>
+Choose which card goes 4 from top:
+<<DECISION 138: action=0>>
+Choose which card goes 3 from top:
+<<DECISION 139: action=0>>
+Choose which card goes 2 from top:
+<<DECISION 140: action=0>>
+Resolving ability (category: LoseLife, amount: 0)
+Player A loses 6 life (now at 5)
+Resolving ability (category: Cleanup, amount: 0)
 --- Declare Attackers (Player A) ---
-<<DECISION 190: action=0>>
+<<DECISION 141: action=0>>
 Select target for Thassa's Oracle:
-<<DECISION 191: action=0>>
+<<DECISION 142: action=0>>
 Thassa's Oracle attacking Player B.
 --- Declare Attackers (Player A) ---
   [attacking] Thassa's Oracle [1/3] -> Player B
-<<DECISION 192: action=-1>>
+<<DECISION 143: action=-1>>
 Attackers declared:
   Thassa's Oracle -> Player B
 No creatures eligible to block.
 --- Combat Damage ---
   Thassa's Oracle deals 1 damage to Player B
 --- End Combat Damage ---
--------- TURN 17 (Player B) --------
-Player B draws Thassa's Oracle
-<<DECISION 193: action=1>>
+-------- TURN 19 (Player B) --------
+Player B draws Brainstorm
+<<DECISION 144: action=1>>
+Player B activated Undercity Sewers for 1(U)
+Player B casts Brainstorm
+Resolving ability (category: Draw, amount: 3)
+Player B draws Dark Ritual
+Player B draws Lotus Petal
+Player B draws Bloodstained Mire
+Resolving ability (category: ChangeZone, amount: 2)
+Player B chooses a card from Player B hand:
+<<DECISION 145: action=0>>
+Player B puts Doomsday to top of library
+Player B puts a card to top of library
+Player B chooses a card from Player B hand:
+<<DECISION 146: action=0>>
+Player B puts Dark Ritual to top of library
+Player B puts a card to top of library
+<<DECISION 147: action=2>>
+Player B casts Lotus Petal
+Lotus Petal enters the battlefield
+<<DECISION 148: action=1>>
+Player B played Bloodstained Mire
+<<DECISION 149: action=1>>
+Player B pays 1 life
+Player B sacrifices Bloodstained Mire
+Player B's Bloodstained Mire ability is on the stack
+Resolving ability (category: ChangeZone, amount: 1)
+Searching Player B's library:
+<<DECISION 150: action=1>>
+Player B shuffles their library
+Player B puts Underground Sea to the battlefield
+No creatures eligible to attack.
+No attackers ��� skipping declare blockers.
+--- Combat Damage ---
+--- End Combat Damage ---
+-------- TURN 20 (Player A) --------
+Player A draws Force of Will
+--- Declare Attackers (Player A) ---
+<<DECISION 151: action=0>>
+Select target for Thassa's Oracle:
+<<DECISION 152: action=0>>
+Thassa's Oracle attacking Player B.
+--- Declare Attackers (Player A) ---
+  [attacking] Thassa's Oracle [1/3] -> Player B
+<<DECISION 153: action=-1>>
+Attackers declared:
+  Thassa's Oracle -> Player B
+No creatures eligible to block.
+--- Combat Damage ---
+  Thassa's Oracle deals 1 damage to Player B
+--- End Combat Damage ---
+-------- TURN 21 (Player B) --------
+Player B draws Dark Ritual
+<<DECISION 154: action=0>>
+<<DECISION 155: action=2>>
 Player B activated Undercity Sewers for 1(U)
 Player B activated Underground Sea for 1(U)
-Player B casts Thassa's Oracle
-Thassa's Oracle enters the battlefield
-Thassa's Oracle triggered
-Resolving ability (category: Dig, amount: 1)
-Player B looks at the top 0 card(s) of their library.
+Player B activated Underground Sea for 1(U)
+Player B sacrifices Lotus Petal
+Player B activated Lotus Petal for 1(W)
+Choose target:
+<<DECISION 156: action=0>>
+Targeting choice 0
+Player B casts Deep Analysis targeting Player A
+Resolving ability (category: Draw, amount: 2)
+Player B draws Street Wraith
+Player B draws Force of Will
+<<DECISION 157: action=1>>
+Player B pays 2 life
+Player B activates Street Wraith from hand
+Resolving ability (category: Draw, amount: 1)
+Player B draws Ponder
+No creatures eligible to attack.
+No attackers ��� skipping declare blockers.
+--- Combat Damage ---
+--- End Combat Damage ---
+-------- TURN 22 (Player A) --------
+Player A draws Force of Will
+--- Declare Attackers (Player A) ---
+<<DECISION 158: action=0>>
+Select target for Thassa's Oracle:
+<<DECISION 159: action=0>>
+Thassa's Oracle attacking Player B.
+--- Declare Attackers (Player A) ---
+  [attacking] Thassa's Oracle [1/3] -> Player B
+<<DECISION 160: action=-1>>
+Attackers declared:
+  Thassa's Oracle -> Player B
+No creatures eligible to block.
+--- Combat Damage ---
+  Thassa's Oracle deals 1 damage to Player B
+--- End Combat Damage ---
+-------- TURN 23 (Player B) --------
+<<DECISION 161: action=0>>
+Player B draws Personal Tutor
+<<DECISION 162: action=0>>
+<<DECISION 163: action=2>>
+Player B activated Undercity Sewers for 1(U)
+Player B casts Personal Tutor
+<<DECISION 164: action=0>>
+<<DECISION 165: action=1>>
+Player A pays 1 life
+<<DECISION 166: action=0>>
+Player A exiles Force of Will
+Choose target:
+<<DECISION 167: action=0>>
+Targeting choice 0
+Player A casts Force of Will targeting Personal Tutor
+<<DECISION 168: action=1>>
+Player B pays 1 life
+<<DECISION 169: action=0>>
+Player B exiles Ponder
+Choose target:
+<<DECISION 170: action=0>>
+Targeting choice 0
+Player B casts Force of Will targeting Force of Will
+<<DECISION 171: action=0>>
+Resolving ability (category: Counter, amount: 0)
+Force of Will is countered
+<<DECISION 172: action=0>>
+Resolving ability (category: ChangeZone, amount: 1)
+Searching Player B's library:
+<<DECISION 173: action=0>>
+Player B shuffles their library
+Player B fails to find
+<<DECISION 174: action=2>>
+Player B activated Underground Sea for 1(U)
+Player B activated Underground Sea for 1(U)
+Player B pays 3 life
+Choose target:
+<<DECISION 175: action=0>>
+Targeting choice 0
+Player B casts Deep Analysis targeting Player A
+Resolving ability (category: Draw, amount: 2)
+Player B draws Lotus Petal
+Player B draws Force of Will
+Deep Analysis is exiled (flashback)
+<<DECISION 176: action=1>>
+Player B casts Lotus Petal
+Lotus Petal enters the battlefield
+<<DECISION 177: action=0>>
+<<DECISION 178: action=0>>
+No creatures eligible to attack.
+<<DECISION 179: action=0>>
+No attackers ��� skipping declare blockers.
+<<DECISION 180: action=0>>
+--- Combat Damage ---
+--- End Combat Damage ---
+<<DECISION 181: action=0>>
+<<DECISION 182: action=0>>
+<<DECISION 183: action=0>>
+<<DECISION 184: action=0>>
+-------- TURN 24 (Player A) --------
+<<DECISION 185: action=0>>
+Player A draws Force of Will
+<<DECISION 186: action=0>>
+<<DECISION 187: action=0>>
+<<DECISION 188: action=0>>
+--- Declare Attackers (Player A) ---
+<<DECISION 189: action=0>>
+Select target for Thassa's Oracle:
+<<DECISION 190: action=0>>
+Thassa's Oracle attacking Player B.
+--- Declare Attackers (Player A) ---
+  [attacking] Thassa's Oracle [1/3] -> Player B
+<<DECISION 191: action=-1>>
+Attackers declared:
+  Thassa's Oracle -> Player B
+<<DECISION 192: action=0>>
+No creatures eligible to block.
+<<DECISION 193: action=0>>
+--- Combat Damage ---
+  Thassa's Oracle deals 1 damage to Player B
+--- End Combat Damage ---
 <<DECISION 194: action=0>>
-Player B puts 0 card(s) on the bottom of their library.
-Resolving ability (category: WinsGame, amount: 0)
-Player B wins the game! (Thassa's Oracle)
-Player B wins the game!
-=== GAME OVER: winner=Player B ===
+<<DECISION 195: action=0>>
+<<DECISION 196: action=0>>
+<<DECISION 197: action=0>>
+-------- TURN 25 (Player B) --------
+<<DECISION 198: action=0>>
+Player B draws Polluted Delta
+<<DECISION 199: action=0>>
+<<DECISION 200: action=1>>
+Player B played Polluted Delta
+<<DECISION 201: action=2>>
+Player B pays 1 life
+Player B sacrifices Polluted Delta
+Player B's Polluted Delta ability is on the stack
+<<DECISION 202: action=0>>
+Resolving ability (category: ChangeZone, amount: 1)
+Searching Player B's library:
+<<DECISION 203: action=1>>
+Player B shuffles their library
+Player B puts Island to the battlefield
+<<DECISION 204: action=0>>
+<<DECISION 205: action=0>>
+No creatures eligible to attack.
+<<DECISION 206: action=0>>
+No attackers ��� skipping declare blockers.
+<<DECISION 207: action=0>>
+--- Combat Damage ---
+--- End Combat Damage ---
+<<DECISION 208: action=0>>
+<<DECISION 209: action=0>>
+<<DECISION 210: action=0>>
+<<DECISION 211: action=0>>
+-------- TURN 26 (Player A) --------
+<<DECISION 212: action=0>>
+Player A draws Thoughtseize
+<<DECISION 213: action=0>>
+<<DECISION 214: action=1>>
+Player A activated Swamp for 1(B)
+Choose target:
+<<DECISION 215: action=0>>
+Targeting choice 0
+Player A casts Thoughtseize targeting Player B
+<<DECISION 216: action=1>>
+Player B activated Island for 1(U)
+Player B activated Undercity Sewers for 1(U)
+Player B activated Underground Sea for 1(U)
+Player B activated Underground Sea for 1(U)
+Player B sacrifices Lotus Petal
+Player B activated Lotus Petal for 1(W)
+Choose target:
+<<DECISION 217: action=0>>
+Targeting choice 0
+Player B casts Force of Will targeting Thoughtseize
+Resolving ability (category: Counter, amount: 0)
+Thoughtseize is countered
+--- Declare Attackers (Player A) ---
+<<DECISION 218: action=0>>
+Select target for Thassa's Oracle:
+<<DECISION 219: action=0>>
+Thassa's Oracle attacking Player B.
+--- Declare Attackers (Player A) ---
+  [attacking] Thassa's Oracle [1/3] -> Player B
+<<DECISION 220: action=-1>>
+Attackers declared:
+  Thassa's Oracle -> Player B
+No creatures eligible to block.
+--- Combat Damage ---
+  Thassa's Oracle deals 1 damage to Player B
+--- End Combat Damage ---
+Player B has 0 life - Player A wins!
+=== GAME OVER: winner=Player A ===

@@ -111,9 +111,10 @@ No attackers ��� skipping declare blockers.
 Player A draws Savannah
 <<DECISION 17: action=3>>
 Choose X value (0-1):
-<<DECISION 18: action=0>>
-Player A chooses X = 0
+<<DECISION 18: action=1>>
+Player A chooses X = 1
 Player A activated Dryad Arbor for 1(G)
+Player A activated Karakas for 1(W)
 Player A casts Green Sun's Zenith
 <<DECISION 19: action=1>>
 Player B pays 1 life
@@ -126,23 +127,23 @@ Player B casts Force of Will targeting Green Sun's Zenith
 Dragon's Rage Channeler triggered
 Resolving ability (category: Surveil, amount: 1)
 Top card of Player B's library: Murktide Regent
-<<DECISION 22: action=0>>
+<<DECISION 22: action=1>>
+Player B puts Murktide Regent into the graveyard.
 Resolving ability (category: Counter, amount: 0)
 Green Sun's Zenith is countered
 <<DECISION 23: action=1>>
 Player A played Savannah
 <<DECISION 24: action=1>>
-Choose X value (0-1):
-<<DECISION 25: action=1>>
-Player A chooses X = 1
+Choose X value (0-0):
+<<DECISION 25: action=0>>
+Player A chooses X = 0
 Player A activated Savannah for 1(G)
-Player A activated Karakas for 1(W)
 Player A casts Green Sun's Zenith
 Resolving ability (category: ChangeZone, amount: 1)
 Searching Player A's library:
-<<DECISION 26: action=1>>
+<<DECISION 26: action=0>>
 Player A shuffles their library
-Player A puts Birds of Paradise to the battlefield
+Player A fails to find
 Green Sun's Zenith is shuffled into its owner's library
 No creatures eligible to attack.
 No attackers ��� skipping declare blockers.
@@ -152,35 +153,35 @@ No attackers ��� skipping declare blockers.
 <<DECISION 27: action=1>>
 Player B activated Volcanic Island for 1(R)
 Choose target:
-<<DECISION 28: action=1>>
-Targeting choice 1
-Player B casts Lightning Bolt targeting Birds of Paradise
+<<DECISION 28: action=0>>
+Targeting choice 0
+Player B casts Lightning Bolt targeting Player A
 Dragon's Rage Channeler triggered
 <<DECISION 29: action=1>>
 Player B activated Volcanic Island for 1(R)
 Choose target:
-<<DECISION 30: action=1>>
-Targeting choice 1
-Player B casts Lightning Bolt targeting Birds of Paradise
+<<DECISION 30: action=0>>
+Targeting choice 0
+Player B casts Lightning Bolt targeting Player A
 Dragon's Rage Channeler triggered
 Resolving ability (category: Surveil, amount: 1)
-Top card of Player B's library: Murktide Regent
+Top card of Player B's library: Mishra's Bauble
 <<DECISION 31: action=0>>
 Resolving ability (category: DealDamage, amount: 3)
-Dealt 3 damage to creature
-Birds of Paradise is destroyed (lethal damage)
+Dealt 3 damage to player (now at 16 life)
 Resolving ability (category: Surveil, amount: 1)
-Top card of Player B's library: Murktide Regent
-<<DECISION 32: action=1>>
-Player B puts Murktide Regent into the graveyard.
-DealDamage fizzles
+Top card of Player B's library: Mishra's Bauble
+<<DECISION 32: action=0>>
+Resolving ability (category: DealDamage, amount: 3)
+Dealt 3 damage to player (now at 13 life)
 Player B draws Mishra's Bauble
 <<DECISION 33: action=2>>
 Player B casts Mishra's Bauble
 Dragon's Rage Channeler triggered
 Resolving ability (category: Surveil, amount: 1)
 Top card of Player B's library: Unholy Heat
-<<DECISION 34: action=0>>
+<<DECISION 34: action=1>>
+Player B puts Unholy Heat into the graveyard.
 Mishra's Bauble enters the battlefield
 <<DECISION 35: action=1>>
 Player B played Wasteland
@@ -189,7 +190,7 @@ Choose target:
 <<DECISION 37: action=0>>
 Targeting choice 0
 Player B sacrifices Mishra's Bauble
-Player B's Mishra's Bauble ability targeting Player B is on the stack
+Player B's Mishra's Bauble ability targeting Player A is on the stack
 <<DECISION 38: action=1>>
 Choose target:
 <<DECISION 39: action=0>>
@@ -200,11 +201,11 @@ Dragon's Rage Channeler gains 2/2 Flying (Delirium)
 Resolving ability (category: Destroy, amount: 0)
 Dryad Arbor is destroyed
 Resolving ability (category: PeekAndReveal, amount: 0)
-Player B looks at top of Player B's library: Unholy Heat
+Player B looks at top of Player A's library: Green Sun's Zenith
 Resolving ability (category: DelayedTrigger, amount: 0)
 Delayed trigger registered: Draw at next Upkeep.
 Resolving ability (category: Draw, amount: 1)
-Player B draws Unholy Heat
+Player B draws Misty Rainforest
 Dragon's Rage Channeler must attack and is declared as an attacker.
 --- Declare Attackers (Player B) ---
   [attacking] Dragon's Rage Channeler [3/3] -> Player A
@@ -219,16 +220,15 @@ No creatures eligible to block.
 Player A draws Green Sun's Zenith
 <<DECISION 41: action=2>>
 Choose X value (0-1):
-<<DECISION 42: action=1>>
-Player A chooses X = 1
+<<DECISION 42: action=0>>
+Player A chooses X = 0
 Player A activated Savannah for 1(G)
-Player A activated Karakas for 1(W)
 Player A casts Green Sun's Zenith
 Resolving ability (category: ChangeZone, amount: 1)
 Searching Player A's library:
-<<DECISION 43: action=1>>
+<<DECISION 43: action=0>>
 Player A shuffles their library
-Player A puts Ignoble Hierarch to the battlefield
+Player A fails to find
 Green Sun's Zenith is shuffled into its owner's library
 <<DECISION 44: action=1>>
 Player A played Wooded Foothills
@@ -247,29 +247,15 @@ No attackers ��� skipping declare blockers.
 --- End Combat Damage ---
 -------- TURN 7 (Player B) --------
 Delayed trigger fires.
-<<DECISION 47: action=1>>
-Player B activated Volcanic Island for 1(R)
-Choose target:
-<<DECISION 48: action=0>>
-Targeting choice 0
-Player B casts Unholy Heat targeting Ignoble Hierarch
-Dragon's Rage Channeler triggered
-Resolving ability (category: Surveil, amount: 1)
-Top card of Player B's library: Misty Rainforest
-<<DECISION 49: action=1>>
-Player B puts Misty Rainforest into the graveyard.
-Resolving ability (category: DealDamage, amount: 2)
-Dealt 6 damage to creature
-Ignoble Hierarch is destroyed (lethal damage)
 Resolving ability (category: Draw, amount: 1)
 Player B draws Brainstorm
-<<DECISION 50: action=1>>
+<<DECISION 47: action=1>>
 Player B activated Volcanic Island for 1(U)
 Player B casts Brainstorm
 Dragon's Rage Channeler triggered
 Resolving ability (category: Surveil, amount: 1)
 Top card of Player B's library: Cori-Steel Cutter
-<<DECISION 51: action=1>>
+<<DECISION 48: action=1>>
 Player B puts Cori-Steel Cutter into the graveyard.
 Resolving ability (category: Draw, amount: 3)
 Player B draws Polluted Delta
@@ -277,14 +263,27 @@ Player B draws Unholy Heat
 Player B draws Mishra's Bauble
 Resolving ability (category: ChangeZone, amount: 2)
 Player B chooses a card from Player B hand:
-<<DECISION 52: action=0>>
+<<DECISION 49: action=0>>
 Player B puts Mishra's Bauble to top of library
 Player B puts a card to top of library
 Player B chooses a card from Player B hand:
-<<DECISION 53: action=0>>
+<<DECISION 50: action=0>>
 Player B puts Unholy Heat to top of library
 Player B puts a card to top of library
 Player B draws Unholy Heat
+<<DECISION 51: action=1>>
+Player B activated Volcanic Island for 1(R)
+Choose target:
+<<DECISION 52: action=0>>
+Targeting choice 0
+Player B casts Unholy Heat targeting Dragon's Rage Channeler
+Dragon's Rage Channeler triggered
+Resolving ability (category: Surveil, amount: 1)
+Top card of Player B's library: Mishra's Bauble
+<<DECISION 53: action=0>>
+Resolving ability (category: DealDamage, amount: 2)
+Dealt 6 damage to creature
+Dragon's Rage Channeler is destroyed (lethal damage)
 <<DECISION 54: action=1>>
 Player B played Polluted Delta
 <<DECISION 55: action=1>>
@@ -296,56 +295,32 @@ Searching Player B's library:
 <<DECISION 56: action=1>>
 Player B shuffles their library
 Player B puts Island to the battlefield
-Dragon's Rage Channeler must attack and is declared as an attacker.
---- Declare Attackers (Player B) ---
-  [attacking] Dragon's Rage Channeler [3/3] -> Player A
-<<DECISION 57: action=-1>>
-Attackers declared:
-  Dragon's Rage Channeler -> Player A
-No creatures eligible to block.
+No creatures eligible to attack.
+No attackers ��� skipping declare blockers.
 --- Combat Damage ---
-  Dragon's Rage Channeler deals 3 damage to Player A
 --- End Combat Damage ---
 -------- TURN 8 (Player A) --------
-Player A draws Windswept Heath
-<<DECISION 58: action=2>>
-Player A activated Karakas for 1(W)
+Player A draws Keen-Eyed Curator
+<<DECISION 57: action=1>>
 Player A activated Forest for 1(G)
 Player A activated Savannah for 1(G)
-Player A casts Knight of the Reliquary
-Knight of the Reliquary enters the battlefield
-Knight of the Reliquary gains (always)
-<<DECISION 59: action=1>>
-Player A played Windswept Heath
-<<DECISION 60: action=1>>
-Player A pays 1 life
-Player A sacrifices Windswept Heath
-Player A's Windswept Heath ability is on the stack
-Resolving ability (category: ChangeZone, amount: 1)
-Searching Player A's library:
-<<DECISION 61: action=1>>
-Player A shuffles their library
-Player A puts Plains to the battlefield
+Player A casts Keen-Eyed Curator
+Keen-Eyed Curator enters the battlefield
+<<DECISION 58: action=1>>
+Choose target:
+<<DECISION 59: action=0>>
+Targeting choice 0
+Player A activated Karakas for 1(W)
+Player A's Keen-Eyed Curator ability targeting Murktide Regent is on the stack
+Resolving ability (category: ChangeZone, amount: 0)
+Murktide Regent is moved to exile
 No creatures eligible to attack.
 No attackers ��� skipping declare blockers.
 --- Combat Damage ---
 --- End Combat Damage ---
 -------- TURN 9 (Player B) --------
-<<DECISION 62: action=1>>
-Player B activated Volcanic Island for 1(R)
-Choose target:
-<<DECISION 63: action=0>>
-Targeting choice 0
-Player B casts Unholy Heat targeting Knight of the Reliquary
-Dragon's Rage Channeler triggered
-Resolving ability (category: Surveil, amount: 1)
-Top card of Player B's library: Murktide Regent
-<<DECISION 64: action=0>>
-Resolving ability (category: DealDamage, amount: 2)
-Dealt 6 damage to creature
-Knight of the Reliquary is destroyed (lethal damage)
 Player B draws Murktide Regent
-<<DECISION 65: action=1>>
+<<DECISION 60: action=2>>
 Player B exiles Force of Will via Delve.
 Player B exiles Brainstorm via Delve.
 Player B exiles Brainstorm via Delve.
@@ -356,63 +331,171 @@ Player B activated Volcanic Island for 1(U)
 Player B casts Murktide Regent
 Murktide Regent enters the battlefield
 Murktide Regent enters with 5 +1/+1 counter(s) (8/8).
-Dragon's Rage Channeler must attack and is declared as an attacker.
---- Declare Attackers (Player B) ---
-  [attacking] Dragon's Rage Channeler [3/3] -> Player A
-<<DECISION 66: action=-1>>
-Attackers declared:
-  Dragon's Rage Channeler -> Player A
-No creatures eligible to block.
---- Combat Damage ---
-  Dragon's Rage Channeler deals 3 damage to Player A
---- End Combat Damage ---
--------- TURN 10 (Player A) --------
-Player A draws Noble Hierarch
-<<DECISION 67: action=1>>
-Player A activated Karakas for 1(W)
-Player A activated Forest for 1(G)
-Player A activated Plains for 1(W)
-Player A casts Knight of the Reliquary
-Knight of the Reliquary enters the battlefield
-Knight of the Reliquary gains (always)
-<<DECISION 68: action=1>>
-Player A activated Savannah for 1(G)
-Player A casts Noble Hierarch
-Noble Hierarch enters the battlefield
+<<DECISION 61: action=1>>
+Player B played Misty Rainforest
+<<DECISION 62: action=1>>
+Player B pays 1 life
+Player B sacrifices Misty Rainforest
+Player B's Misty Rainforest ability is on the stack
+Resolving ability (category: ChangeZone, amount: 1)
+Searching Player B's library:
+<<DECISION 63: action=1>>
+Player B shuffles their library
+Player B puts Volcanic Island to the battlefield
 No creatures eligible to attack.
 No attackers ��� skipping declare blockers.
 --- Combat Damage ---
 --- End Combat Damage ---
--------- TURN 11 (Player B) --------
-Player B draws Wasteland
-<<DECISION 69: action=1>>
-Player B played Wasteland
-<<DECISION 70: action=1>>
+-------- TURN 10 (Player A) --------
+<<DECISION 64: action=0>>
+Player A draws Savannah
+<<DECISION 65: action=0>>
+<<DECISION 66: action=2>>
+Player A activated Karakas for 1(W)
+Player A activated Forest for 1(G)
+Player A activated Savannah for 1(G)
+Player A casts Knight of the Reliquary
+Knight of the Reliquary enters the battlefield
+Knight of the Reliquary gains (always)
+<<DECISION 67: action=1>>
+Player A played Savannah
+<<DECISION 68: action=1>>
 Choose target:
-<<DECISION 71: action=0>>
+<<DECISION 69: action=0>>
 Targeting choice 0
-Player B sacrifices Wasteland
-Player B's Wasteland ability targeting Karakas is on the stack
-Resolving ability (category: Destroy, amount: 0)
-Karakas is destroyed
-Dragon's Rage Channeler must attack and is declared as an attacker.
+Player A activated Savannah for 1(G)
+Player A's Keen-Eyed Curator ability targeting Dragon's Rage Channeler is on the stack
+Resolving ability (category: ChangeZone, amount: 0)
+Dragon's Rage Channeler is moved to exile
+--- Declare Attackers (Player A) ---
+<<DECISION 70: action=0>>
+Select target for Keen-Eyed Curator:
+<<DECISION 71: action=0>>
+Keen-Eyed Curator attacking Player B.
+--- Declare Attackers (Player A) ---
+  [attacking] Keen-Eyed Curator [3/3] -> Player B
+<<DECISION 72: action=-1>>
+Attackers declared:
+  Keen-Eyed Curator -> Player B
+--- Declare Blockers (Player B) ---
+Attackers:
+  0: Keen-Eyed Curator [3/3]
+Your creatures:
+<<DECISION 73: action=-1>>
+Blockers declared:
+  (none)
+--- Combat Damage ---
+  Keen-Eyed Curator deals 3 damage to Player B
+--- End Combat Damage ---
+-------- TURN 11 (Player B) --------
+Player B draws Cori-Steel Cutter
+<<DECISION 74: action=1>>
+Player B activated Volcanic Island for 1(R)
+Player B activated Island for 1(U)
+Player B casts Cori-Steel Cutter
+Cori-Steel Cutter enters the battlefield
 --- Declare Attackers (Player B) ---
-  [attacking] Dragon's Rage Channeler [3/3] -> Player A
-<<DECISION 72: action=0>>
+<<DECISION 75: action=0>>
 Select target for Murktide Regent:
-<<DECISION 73: action=0>>
+<<DECISION 76: action=0>>
 Murktide Regent attacking Player A.
 --- Declare Attackers (Player B) ---
   [attacking] Murktide Regent [8/8] -> Player A
-  [attacking] Dragon's Rage Channeler [3/3] -> Player A
-<<DECISION 74: action=-1>>
+<<DECISION 77: action=-1>>
 Attackers declared:
   Murktide Regent -> Player A
-  Dragon's Rage Channeler -> Player A
 No creatures eligible to block.
 --- Combat Damage ---
   Murktide Regent deals 8 damage to Player A
-  Dragon's Rage Channeler deals 3 damage to Player A
 --- End Combat Damage ---
-Player A has -3 life - Player B wins!
+-------- TURN 12 (Player A) --------
+<<DECISION 78: action=0>>
+Player A draws Ignoble Hierarch
+<<DECISION 79: action=0>>
+<<DECISION 80: action=1>>
+Player A activated Forest for 1(G)
+Player A casts Ignoble Hierarch
+<<DECISION 81: action=1>>
+Choose target:
+<<DECISION 82: action=0>>
+Targeting choice 0
+Player A activated Karakas for 1(W)
+Player A's Keen-Eyed Curator ability targeting Mishra's Bauble is on the stack
+<<DECISION 83: action=1>>
+Choose target:
+<<DECISION 84: action=0>>
+Targeting choice 0
+Player A activated Savannah for 1(G)
+Player A's Keen-Eyed Curator ability targeting Mishra's Bauble is on the stack
+<<DECISION 85: action=1>>
+Choose target:
+<<DECISION 86: action=0>>
+Targeting choice 0
+Player A activated Savannah for 1(G)
+Player A's Keen-Eyed Curator ability targeting Mishra's Bauble is on the stack
+<<DECISION 87: action=1>>
+<<DECISION 88: action=2>>
+Player A sacrifices Savannah
+Player A's Knight of the Reliquary ability is on the stack
+Resolving ability (category: ChangeZone, amount: 1)
+Searching Player A's library:
+<<DECISION 89: action=1>>
+Player A shuffles their library
+Player A puts Gaea's Cradle to the battlefield
+<<DECISION 90: action=1>>
+Choose target:
+<<DECISION 91: action=0>>
+Targeting choice 0
+Player A activated Gaea's Cradle for 2(G)
+Player A's Keen-Eyed Curator ability targeting Mishra's Bauble is on the stack
+<<DECISION 92: action=1>>
+Choose target:
+<<DECISION 93: action=0>>
+Targeting choice 0
+Player A's Keen-Eyed Curator ability targeting Mishra's Bauble is on the stack
+Resolving ability (category: ChangeZone, amount: 0)
+Mishra's Bauble is moved to exile
+ChangeZone fizzles
+ChangeZone fizzles
+ChangeZone fizzles
+ChangeZone fizzles
+Ignoble Hierarch enters the battlefield
+--- Declare Attackers (Player A) ---
+<<DECISION 94: action=0>>
+Select target for Keen-Eyed Curator:
+<<DECISION 95: action=0>>
+Keen-Eyed Curator attacking Player B.
+--- Declare Attackers (Player A) ---
+  [attacking] Keen-Eyed Curator [3/3] -> Player B
+<<DECISION 96: action=-1>>
+Attackers declared:
+  Keen-Eyed Curator -> Player B
+Ignoble Hierarch triggered
+Resolving ability (category: ExaltedBonus, amount: 1)
+Exalted (Ignoble Hierarch): Keen-Eyed Curator gets +1/+1 until end of turn.
+No creatures eligible to block.
+--- Combat Damage ---
+  Keen-Eyed Curator deals 4 damage to Player B
+--- End Combat Damage ---
+-------- TURN 13 (Player B) --------
+Player B draws Delver of Secrets
+<<DECISION 97: action=1>>
+Player B activated Island for 1(U)
+Player B casts Delver of Secrets
+Delver of Secrets enters the battlefield
+--- Declare Attackers (Player B) ---
+<<DECISION 98: action=0>>
+Select target for Murktide Regent:
+<<DECISION 99: action=0>>
+Murktide Regent attacking Player A.
+--- Declare Attackers (Player B) ---
+  [attacking] Murktide Regent [8/8] -> Player A
+<<DECISION 100: action=-1>>
+Attackers declared:
+  Murktide Regent -> Player A
+No creatures eligible to block.
+--- Combat Damage ---
+  Murktide Regent deals 8 damage to Player A
+--- End Combat Damage ---
+Player A has -7 life - Player B wins!
 === GAME OVER: winner=Player B ===
