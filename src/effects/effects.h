@@ -41,6 +41,12 @@ bool exalted_bonus(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool attach(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool choose_card(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool destroy_all(Ability &ab, std::shared_ptr<Orderer> orderer);
+bool destroy(Ability &ab, std::shared_ptr<Orderer> orderer);
+bool token(Ability &ab, std::shared_ptr<Orderer> orderer);
+bool surveil(Ability &ab, std::shared_ptr<Orderer> orderer);
+bool delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer);
+bool put_counter(Ability &ab, std::shared_ptr<Orderer> orderer);
+bool rearrange_top_of_library(Ability &ab, std::shared_ptr<Orderer> orderer);
 
 }  // namespace effects
 

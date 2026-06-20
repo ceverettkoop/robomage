@@ -24,6 +24,12 @@ EffectHandler handler_for(EffectKind kind) {
         case EffectKind::Attach:          return &attach;
         case EffectKind::ChooseCard:      return &choose_card;
         case EffectKind::DestroyAll:      return &destroy_all;
+        case EffectKind::Destroy:         return &destroy;
+        case EffectKind::Token:           return &token;
+        case EffectKind::Surveil:         return &surveil;
+        case EffectKind::DelayedTrigger:  return &delayed_trigger;
+        case EffectKind::PutCounter:      return &put_counter;
+        case EffectKind::RearrangeTopOfLibrary: return &rearrange_top_of_library;
         default:                          return nullptr;
     }
 }
