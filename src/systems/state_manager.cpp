@@ -1134,6 +1134,13 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                 // For combat damage triggers, capture the damage amount
                 if (ev.GetType() == Events::COMBAT_DAMAGE_TO_PLAYER && ev.HasParam(Params::AMOUNT))
                     trigger_ab.trigger_damage_amount = ev.GetParam<uint32_t>(Params::AMOUNT);
+                // Triggered abilities that require a target (e.g. Talon Gates of Madara's
+                // "up to one target creature phases out") choose their target as the ability
+                // goes on the stack, picked by the controller. Skip if a target was already
+                // assigned above (e.g. ExaltedBonus) or none is required.
+                if (trigger_ab.valid_tgts != "N_A" && trigger_ab.target == 0 &&
+                    has_legal_targets(trigger_ab, orderer))
+                    select_target(trigger_ab, orderer, perm.controller);
                 orderer->push_ability_onto_stack(trigger_ab, perm.controller);
 
                 game_log("%s triggered\n", ent_name.c_str());
@@ -1377,12 +1384,18 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         for (const auto &ab : card_data.abilities) {
             if (ab.ability_type != Ability::SPELL) continue;
             tgt_ok = has_legal_targets(ab, orderer);
-            if (!ab.condition_present.empty())
+            // Target-conditional abilities (ConditionDefined$ Targeted, e.g. Fatal Push)
+            // may target anything legal; the condition is checked on the target at
+            // resolution, so it must not gate cast-time legality.
+            if (!ab.condition_present.empty() && !ab.condition_on_target)
                 condition_ok = check_condition_present(ab, priority_player, orderer);
             break;
         }
-        // Machine mode: don't offer spells with conditional destroy if no target would pass
-        // (e.g. Fatal Push: only show if a creature with CMC <= revolt threshold exists)
+        // Machine mode only: action-masking optimization — don't offer a conditional-destroy
+        // spell to the RL agent when no target on the board would currently pass the
+        // condition (e.g. Fatal Push: only show if a creature with mana value <= the current
+        // revolt-aware threshold exists). This is a masking heuristic, NOT a rules gate —
+        // the spell can still legally target any creature in CLI/interactive play.
         if (InputLogger::instance().is_machine_mode() && tgt_ok && condition_ok) {
             for (const auto &ab : card_data.abilities) {
                 if (ab.ability_type != Ability::SPELL) continue;

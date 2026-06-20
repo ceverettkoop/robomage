@@ -452,21 +452,11 @@ void Ability::fizzle(std::shared_ptr<Orderer> orderer) {
 bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
     if (cand == 0) return false;
 
-    // ConditionPresent color check (Hydroblast/Pyroblast: target must be the required
-    // color). Only color-suffixed ConditionPresent specs apply here; castability
-    // conditions like "Land.YouCtrl" leave `required` NO_COLOR and are ignored.
-    if (!condition_present.empty()) {
-        Colors required = NO_COLOR;
-        if (condition_present.find(".Red") != std::string::npos) required = RED;
-        else if (condition_present.find(".Blue") != std::string::npos) required = BLUE;
-        else if (condition_present.find(".Green") != std::string::npos) required = GREEN;
-        else if (condition_present.find(".White") != std::string::npos) required = WHITE;
-        else if (condition_present.find(".Black") != std::string::npos) required = BLACK;
-        if (required != NO_COLOR) {
-            if (!global_coordinator.entity_has_component<ColorIdentity>(cand)) return false;
-            if (!global_coordinator.GetComponent<ColorIdentity>(cand).colors.count(required)) return false;
-        }
-    }
+    // NOTE: Pyroblast/Hydroblast (ConditionPresent$ <type>.<Color>) intentionally do
+    // NOT restrict target legality by color — they may target any spell/permanent and
+    // their counter/destroy effect is conditional on the target's color (enforced in
+    // effects::counter / effects::destroy via target_color_condition_met). So no color
+    // filter is applied here.
 
     const std::string &vt = valid_tgts;
 

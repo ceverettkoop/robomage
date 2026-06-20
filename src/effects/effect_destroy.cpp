@@ -31,6 +31,16 @@ static void destroy_single(Entity tgt, std::shared_ptr<Orderer> orderer) {
 }
 
 bool destroy(Ability &ab, std::shared_ptr<Orderer> orderer) {
+    // Pyroblast/Hydroblast destroy mode: only destroy if the target is the required
+    // color. The spell still resolves (doing nothing) against a wrong-color permanent.
+    if (!target_color_condition_met(ab, ab.target)) {
+        std::string tname = global_coordinator.entity_has_component<Permanent>(ab.target)
+                                ? global_coordinator.GetComponent<Permanent>(ab.target).name
+                                : "<unknown>";
+        game_log("%s is not the required color — not destroyed\n", tname.c_str());
+        return true;
+    }
+
     // Conditional destroy (Fatal Push): check target CMC against threshold
     if (!ab.condition_present.empty() && ab.condition_present.find("cmcLEX") != std::string::npos) {
         // Evaluate X from dynamic_amount_expr (resolved at parse time to e.g. "Count$Revolt.4.2")

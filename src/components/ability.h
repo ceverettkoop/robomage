@@ -141,6 +141,11 @@ struct Ability{
     // Castability condition (Edge of Autumn): count permanents matching filter, compare to threshold
     std::string condition_present = "";   // ConditionPresent$ — e.g. "Land.YouCtrl"
     std::string condition_compare = "";   // ConditionCompare$ — e.g. "LE4", "GE3"
+    // ConditionDefined$ Targeted — the condition applies to the chosen target at
+    // resolution (e.g. Fatal Push "destroy if its mana value <= X"), NOT to board state
+    // at cast time. Such abilities can target anything legal; the conditional effect is
+    // enforced when they resolve, so cast-time legality must NOT gate on the condition.
+    bool condition_on_target = false;
 
     // (delayed-trigger Phase$/Execute$/ValidPlayer$ moved to DelayedTriggerParams)
 

@@ -407,8 +407,12 @@ static std::vector<Entity> build_valid_targets(
     if (ability.target_type == "Spell" ||
         ability.target_type.find("Activated") != std::string::npos ||
         ability.target_type.find("Triggered") != std::string::npos) {
-        for (auto e : orderer->get_stack())
+        for (auto e : orderer->get_stack()) {
+            // A spell/ability can't target itself — e.g. a modal spell (Pyroblast/
+            // Hydroblast) that picks its target at resolution is still on the stack.
+            if (e == ability.source) continue;
             if (ability.is_legal_target(e, priority_player)) valid_targets.push_back(e);
+        }
         return valid_targets;
     }
 

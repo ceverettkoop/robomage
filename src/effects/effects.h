@@ -52,6 +52,10 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool counter(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool charm(Ability &ab, std::shared_ptr<Orderer> orderer);
+// Pyroblast/Hydroblast: ConditionPresent$ <type>.<Color> gates the EFFECT (not the
+// target's legality). Returns true if there is no color requirement, or the target
+// has the required color. Non-color ConditionPresent specs (e.g. cmcLEX) return true.
+bool target_color_condition_met(const Ability &ab, Entity target);
 bool add_mana(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool discard(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool pump(Ability &ab, std::shared_ptr<Orderer> orderer);

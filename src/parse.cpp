@@ -749,6 +749,10 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         }
     } else if (key == "ConditionPresent") {
         ability.condition_present = value;
+    } else if (key == "ConditionDefined") {
+        // "Targeted" → the condition is evaluated against the chosen target at
+        // resolution, so it must not gate cast-time legality.
+        ability.condition_on_target = (value == "Targeted");
     } else if (key == "ConditionCompare") {
         ability.condition_compare = value;
     } else if (effects::apply_parse_hook(ability, key, value)) {
@@ -1012,6 +1016,24 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
             }
 
             param_pos = param_end;
+        }
+        // Fatal Push pattern: ConditionPresent "Creature.cmcLE<SVar>" references an SVar
+        // (X = Count$Revolt.4.2) for the cmc threshold but sets no Amount/NumDmg, so
+        // amount_svar would be empty and the revolt-scaled threshold never resolves.
+        // Wire the referenced SVar into amount_svar so the block below resolves it into
+        // dynamic_amount_expr (evaluated at resolution by effects::destroy).
+        if (ability.amount_svar.empty()) {
+            size_t lex = ability.condition_present.find("cmcLE");
+            if (lex != std::string::npos) {
+                std::string svar_ref = ability.condition_present.substr(lex + 5);
+                size_t end = 0;
+                while (end < svar_ref.size() &&
+                       (std::isalpha(static_cast<unsigned char>(svar_ref[end])) || svar_ref[end] == '_'))
+                    end++;
+                svar_ref = svar_ref.substr(0, end);
+                if (!svar_ref.empty() && svars.find(svar_ref) != svars.end())
+                    ability.amount_svar = svar_ref;
+            }
         }
         // Resolve amount_svar for delirium-conditional damage (Unholy Heat pattern).
         // SVar:X:Count$Compare Y GE4.6.2 where Y resolves to a graveyard card-type count.
