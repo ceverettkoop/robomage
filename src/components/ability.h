@@ -79,12 +79,9 @@ struct Ability{
     // variant alternatives; shared fields stay as direct members. std::monostate
     // covers effects with no exclusive fields. See ability_params.h.
     std::variant<std::monostate, PumpParams, DamageParams, DestroyAllParams, TokenParams,
-                 DelayedTriggerParams> params;
+                 DelayedTriggerParams, CounterParams> params;
 
-    // Counter abilities (PutCounter category)
-    std::string counter_type = "";          // "P1P1" for +1/+1 counters
-    int counter_count = 0;                  // static number of counters; 0 when dynamic
-    bool counter_count_from_delve = false;  // if true, counter_count = cur_game.delve_exiled.size() at resolve
+    // Counter abilities (PutCounter category) now live in CounterParams (params variant).
 
     // Peek variant (Mishra's Bauble): look at target player's top card, skip reveal choice
     bool is_peek_no_reveal = false;

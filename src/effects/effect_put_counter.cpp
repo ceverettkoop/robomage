@@ -17,9 +17,10 @@ bool put_counter(Ability &ab, std::shared_ptr<Orderer> orderer) {
         (ab.target != 0 && global_coordinator.entity_has_component<Creature>(ab.target)) ? ab.target : ab.source;
     if (!global_coordinator.entity_has_component<Creature>(counter_tgt)) return true;
     auto &cr = global_coordinator.GetComponent<Creature>(counter_tgt);
-    if (ab.counter_type == "P1P1") {
-        int n = ab.counter_count;
-        if (ab.counter_count_from_delve) {
+    const CounterParams *cp = std::get_if<CounterParams>(&ab.params);
+    if (cp && cp->type == "P1P1") {
+        int n = cp->count;
+        if (cp->count_from_delve) {
             n = static_cast<int>(cur_game.delve_exiled.size());
             cur_game.delve_exiled.clear();
         }
@@ -32,8 +33,8 @@ bool put_counter(Ability &ab, std::shared_ptr<Orderer> orderer) {
 }
 
 bool parse_put_counter(Ability &ab, const std::string &key, const std::string &value) {
-    if (key == "CounterType") { ab.counter_type = value; return true; }
-    if (key == "CounterNum")  { ab.counter_count = std::stoi(value); return true; }
+    if (key == "CounterType") { effect_params<CounterParams>(ab).type = value; return true; }
+    if (key == "CounterNum")  { effect_params<CounterParams>(ab).count = std::stoi(value); return true; }
     return false;
 }
 

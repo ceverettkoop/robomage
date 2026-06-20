@@ -41,6 +41,15 @@ struct TokenParams {
     std::string script = "";  // TokenScript$ e.g. "w_1_1_monk_prowess"
 };
 
+// PutCounter (e.g. Scythecat Cub landfall +1/+1). NOTE: this is the Ability
+// variant only — the identically-named fields on StaticAbility (etbCounter) are
+// a separate struct and out of scope.
+struct CounterParams {
+    std::string type = "";          // CounterType$ — "P1P1" for +1/+1 counters
+    int count = 0;                  // CounterNum$ — static count; 0 when dynamic
+    bool count_from_delve = false;  // count = delve_exiled.size() at resolve (unused on Ability today)
+};
+
 // Delayed trigger registration (e.g. Mishra's Bauble: "draw a card at the
 // beginning of your next upkeep").
 struct DelayedTriggerParams {
