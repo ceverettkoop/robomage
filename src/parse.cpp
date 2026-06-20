@@ -877,8 +877,9 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
                     size_t d2 = rest.find('.', d1 + 1);
                     if (d2 != std::string::npos) {
                         sub.amount = static_cast<size_t>(std::stoi(rest.substr(d1 + 1, d2 - d1 - 1)));
-                        sub.amount_delirium = static_cast<size_t>(std::stoi(rest.substr(d2 + 1)));
-                        sub.amount_is_delirium_scale = true;
+                        DamageParams &dp = effect_params<DamageParams>(sub);
+                        dp.delirium_amount = static_cast<size_t>(std::stoi(rest.substr(d2 + 1)));
+                        dp.is_delirium_scale = true;
                     }
                 }
             } else if (sv.find("Count$Valid") != std::string::npos ||
@@ -1030,8 +1031,9 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
                             size_t delirium_amt = static_cast<size_t>(std::stoi(rest.substr(d1 + 1, d2 - d1 - 1)));
                             size_t default_amt  = static_cast<size_t>(std::stoi(rest.substr(d2 + 1)));
                             ability.amount = default_amt;
-                            ability.amount_delirium = delirium_amt;
-                            ability.amount_is_delirium_scale = true;
+                            DamageParams &dp = effect_params<DamageParams>(ability);
+                            dp.delirium_amount = delirium_amt;
+                            dp.is_delirium_scale = true;
                         }
                     }
                 } else if (sv.find("Count$Valid") != std::string::npos ||

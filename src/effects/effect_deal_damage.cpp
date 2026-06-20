@@ -22,11 +22,12 @@ namespace effects {
 bool deal_damage(Ability &ab, std::shared_ptr<Orderer> orderer) {
     // Delirium-conditional damage (Unholy Heat)
     size_t dmg = ab.amount;
-    if (ab.amount_is_delirium_scale) {
+    const DamageParams *dp = std::get_if<DamageParams>(&ab.params);
+    if (dp && dp->is_delirium_scale) {
         Zone::Ownership caster = global_coordinator.entity_has_component<Permanent>(ab.source)
                                      ? global_coordinator.GetComponent<Permanent>(ab.source).controller
                                      : global_coordinator.GetComponent<Zone>(ab.source).owner;
-        if (check_delirium(caster, orderer->mEntities)) dmg = ab.amount_delirium;
+        if (check_delirium(caster, orderer->mEntities)) dmg = dp->delirium_amount;
     }
     if (global_coordinator.entity_has_component<Player>(ab.target)) {
         auto &player = global_coordinator.GetComponent<Player>(ab.target);

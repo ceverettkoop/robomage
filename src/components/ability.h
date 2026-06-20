@@ -66,9 +66,7 @@ struct Ability{
     size_t unless_generic_cost = 0;      // UnlessCost$ N — target controller pays {N} to prevent counter
     std::string target_type = "";        // TargetType$ Spell — restricts targeting to stack spells
 
-    // Delirium-conditional damage (Unholy Heat)
-    bool amount_is_delirium_scale = false;  // if true, use amount_delirium when delirium active
-    size_t amount_delirium = 0;             // damage when delirium is active
+    // Delirium-conditional damage (Unholy Heat) now lives in DamageParams (params variant).
     std::string amount_svar = "";           // raw SVar key for non-numeric NumDmg$ (resolved at parse time)
     std::string dynamic_amount_expr = "";   // runtime SVar expression (e.g. "Count$Valid Creature.YouCtrl" or "Targeted$CardPower")
     bool defined_targeted_controller = false;  // Defined$ TargetedController — GainLife goes to target's controller
@@ -81,7 +79,7 @@ struct Ability{
     // god-struct fields (Phase 3), their exclusive data moves into one of these
     // variant alternatives; shared fields stay as direct members. std::monostate
     // covers effects with no exclusive fields. See ability_params.h.
-    std::variant<std::monostate, PumpParams> params;
+    std::variant<std::monostate, PumpParams, DamageParams> params;
 
     // Counter abilities (PutCounter category)
     std::string counter_type = "";          // "P1P1" for +1/+1 counters
