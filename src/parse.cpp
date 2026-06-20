@@ -668,8 +668,6 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         ability.target_type = value;  // "Spell", "Activated,Triggered", etc.
     } else if (key == "NoReveal") {
         ability.is_peek_no_reveal = (value == "True");
-    } else if (key == "NextTurn") {
-        ability.delayed_trigger_next_turn = (value == "True");
     } else if (key == "Optional") {
         ability.optional_choice = (value == "True");
     } else if (key == "Defined") {
@@ -686,26 +684,8 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         if (value == "Hand") ability.activation_zone = Zone::HAND;
     } else if (key == "ActivationLimit") {
         ability.activation_limit = std::stoi(value);
-    } else if (key == "DigNum") {
-        // Value may be a literal int or an SVar reference (e.g. "X")
-        if (!value.empty() && (std::isdigit(value[0]) || value[0] == '-')) {
-            ability.dig_num = static_cast<size_t>(std::stoi(value));
-        } else {
-            ability.dig_num = 0;
-            ability.dig_num_expr = value;
-        }
-    } else if (key == "DestinationZone") {
-        if (value == "Library") ability.dig_destination = Zone::LIBRARY;
-        else if (value == "Hand") ability.dig_destination = Zone::HAND;
-        else if (value == "Graveyard") ability.dig_destination = Zone::GRAVEYARD;
-    } else if (key == "LibraryPosition") {
-        ability.dig_library_position = std::stoi(value);
     } else if (key == "ChangeNum") {
         ability.amount = static_cast<size_t>(std::stoi(value));
-    } else if (key == "ChangeValid") {
-        ability.change_valid = value;
-    } else if (key == "RestRandomOrder" || key == "RandomOrder") {
-        ability.rest_random_order = (value == "True");
     } else if (key == "DiscardValid") {
         ability.discard_valid = value;
     } else if (key == "Mode") {
@@ -779,12 +759,6 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         ability.condition_present = value;
     } else if (key == "ConditionCompare") {
         ability.condition_compare = value;
-    } else if (key == "Phase") {
-        ability.delayed_phase = value;
-    } else if (key == "Execute") {
-        ability.delayed_execute_svar = value;
-    } else if (key == "ValidPlayer") {
-        ability.delayed_valid_player = value;
     } else if (effects::apply_parse_hook(ability, key, value)) {
         // Consumed by an effect-specific parse hook co-located with its handler.
     } else {

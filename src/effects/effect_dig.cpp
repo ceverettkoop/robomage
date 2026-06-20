@@ -1,6 +1,7 @@
 #include "effects.h"
 
 #include <algorithm>
+#include <cctype>
 #include <random>
 #include <string>
 #include <vector>
@@ -136,6 +137,34 @@ bool dig(Ability &ab, std::shared_ptr<Orderer> orderer) {
     game_log(
         "%s puts %zu card(s) on the bottom of their library.\n", player_name(dig_owner).c_str(), remaining.size());
     return true;
+}
+
+bool parse_dig(Ability &ab, const std::string &key, const std::string &value) {
+    if (key == "DigNum") {
+        // Value may be a literal int or an SVar reference (e.g. "X")
+        if (!value.empty() && (std::isdigit(value[0]) || value[0] == '-')) {
+            ab.dig_num = static_cast<size_t>(std::stoi(value));
+        } else {
+            ab.dig_num = 0;
+            ab.dig_num_expr = value;
+        }
+        return true;
+    } else if (key == "DestinationZone") {
+        if (value == "Library") ab.dig_destination = Zone::LIBRARY;
+        else if (value == "Hand") ab.dig_destination = Zone::HAND;
+        else if (value == "Graveyard") ab.dig_destination = Zone::GRAVEYARD;
+        return true;
+    } else if (key == "LibraryPosition") {
+        ab.dig_library_position = std::stoi(value);
+        return true;
+    } else if (key == "ChangeValid") {
+        ab.change_valid = value;
+        return true;
+    } else if (key == "RestRandomOrder" || key == "RandomOrder") {
+        ab.rest_random_order = (value == "True");
+        return true;
+    }
+    return false;
 }
 
 }  // namespace effects

@@ -55,4 +55,12 @@ bool delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer) {
     return true;
 }
 
+bool parse_delayed_trigger(Ability &ab, const std::string &key, const std::string &value) {
+    if (key == "NextTurn") { ab.delayed_trigger_next_turn = (value == "True"); return true; }
+    if (key == "Phase")    { ab.delayed_phase = value; return true; }
+    if (key == "Execute")  { ab.delayed_execute_svar = value; return true; }
+    if (key == "ValidPlayer") { ab.delayed_valid_player = value; return true; }
+    return false;
+}
+
 }  // namespace effects

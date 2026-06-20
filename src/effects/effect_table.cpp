@@ -54,7 +54,9 @@ bool apply_parse_hook(Ability &ab, const std::string &key, const std::string &va
         || parse_add_mana(ab, key, value)
         || parse_destroy_all(ab, key, value)
         || parse_change_zone(ab, key, value)
-        || parse_put_counter(ab, key, value);
+        || parse_put_counter(ab, key, value)
+        || parse_dig(ab, key, value)
+        || parse_delayed_trigger(ab, key, value);
 }
 
 }  // namespace effects

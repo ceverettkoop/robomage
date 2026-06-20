@@ -76,6 +76,8 @@ bool parse_add_mana(Ability &ab, const std::string &key, const std::string &valu
 bool parse_destroy_all(Ability &ab, const std::string &key, const std::string &value);
 bool parse_change_zone(Ability &ab, const std::string &key, const std::string &value);
 bool parse_put_counter(Ability &ab, const std::string &key, const std::string &value);
+bool parse_dig(Ability &ab, const std::string &key, const std::string &value);
+bool parse_delayed_trigger(Ability &ab, const std::string &key, const std::string &value);
 
 }  // namespace effects
 
