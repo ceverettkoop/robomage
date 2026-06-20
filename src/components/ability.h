@@ -169,14 +169,9 @@ struct Ability{
     // resolution (is_target_valid).
     bool is_legal_target(Entity cand, Zone::Ownership caster) const;
 private:
-    void resolve_change_zone(std::shared_ptr<Orderer> orderer);
-    void resolve_change_zone_all(std::shared_ptr<Orderer> orderer);
-    void resolve_destroy(std::shared_ptr<Orderer> orderer);
-    void resolve_rearrange_top_of_library(std::shared_ptr<Orderer> orderer);
-    void resolve_surveil(std::shared_ptr<Orderer> orderer);
-    void resolve_put_counter();
-    void resolve_token(std::shared_ptr<Orderer> orderer);
-    void resolve_delayed_trigger();
+    // Per-effect resolution now lives in src/effects/effect_*.cpp, dispatched by
+    // effects::handler_for(). resolve() keeps only target validity + condition
+    // gating + subability chaining.
     bool is_target_valid() const;
     void fizzle(std::shared_ptr<Orderer> orderer);
 
