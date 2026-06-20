@@ -78,7 +78,8 @@ struct Ability{
     // god-struct fields (Phase 3), their exclusive data moves into one of these
     // variant alternatives; shared fields stay as direct members. std::monostate
     // covers effects with no exclusive fields. See ability_params.h.
-    std::variant<std::monostate, PumpParams, DamageParams, DestroyAllParams, TokenParams> params;
+    std::variant<std::monostate, PumpParams, DamageParams, DestroyAllParams, TokenParams,
+                 DelayedTriggerParams> params;
 
     // Counter abilities (PutCounter category)
     std::string counter_type = "";          // "P1P1" for +1/+1 counters
@@ -88,8 +89,7 @@ struct Ability{
     // Peek variant (Mishra's Bauble): look at target player's top card, skip reveal choice
     bool is_peek_no_reveal = false;
 
-    // Delayed trigger (Mishra's Bauble)
-    bool delayed_trigger_next_turn = false;  // NextTurn$ True
+    // Delayed trigger params (Mishra's Bauble) now live in DelayedTriggerParams (params variant).
 
     // Zone-change trigger filters for CARD_CHANGED_ZONE (set by Mode$ ChangesZone triggers)
     int trigger_zone_origin = -1;       // Zone::ZoneValue origin filter; -1 = any
@@ -148,10 +148,7 @@ struct Ability{
     std::string condition_present = "";   // ConditionPresent$ — e.g. "Land.YouCtrl"
     std::string condition_compare = "";   // ConditionCompare$ — e.g. "LE4", "GE3"
 
-    // Delayed trigger params (Mishra's Bauble)
-    std::string delayed_phase = "";         // Phase$ — phase name (e.g. "Upkeep", "Draw", "EndStep")
-    std::string delayed_execute_svar = "";  // Execute$ — SVar name of ability to run when trigger fires
-    std::string delayed_valid_player = "";  // ValidPlayer$ — "Player", "You", "Opponent"
+    // (delayed-trigger Phase$/Execute$/ValidPlayer$ moved to DelayedTriggerParams)
 
     //for each AB on a card script there may be multiple SubAbility$, would get parsed into vector below
     std::vector<Ability> subabilities; // additional abilities resolved at same time this resolves, stored in order

@@ -842,7 +842,7 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
                 sub.charm_num = std::stoi(value);
             } else if (key == "Execute") {
                 // Execute$ references an SVar containing the ability to fire (delayed triggers)
-                sub.delayed_execute_svar = value;
+                effect_params<DelayedTriggerParams>(sub).execute_svar = value;
                 auto it = svars.find(value);
                 if (it != svars.end())
                     sub.subabilities.push_back(parse_svar_ability(it->second, ability_type, svars, card_name));

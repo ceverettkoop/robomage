@@ -41,4 +41,13 @@ struct TokenParams {
     std::string script = "";  // TokenScript$ e.g. "w_1_1_monk_prowess"
 };
 
+// Delayed trigger registration (e.g. Mishra's Bauble: "draw a card at the
+// beginning of your next upkeep").
+struct DelayedTriggerParams {
+    bool next_turn = false;       // NextTurn$ True — fire next turn vs this turn
+    std::string phase = "";       // Phase$ — "Upkeep"/"Draw"/"EndStep" (empty = upkeep)
+    std::string execute_svar = "";  // Execute$ — SVar name of the ability to fire
+    std::string valid_player = "";  // ValidPlayer$ — "Player"/"You"/"Opponent"
+};
+
 #endif /* ABILITY_PARAMS_H */
