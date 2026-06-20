@@ -72,14 +72,13 @@ struct Ability{
     bool defined_targeted_controller = false;  // Defined$ TargetedController — GainLife goes to target's controller
     bool defined_self = false;                  // Defined$ Self — ability moves its own source
 
-    // DestroyAll filter (e.g. "Artifact.cmcLEX")
-    std::string destroy_all_filter = "";
+    // DestroyAll filter now lives in DestroyAllParams (params variant).
 
     // Effect-specific parameter blocks. As effects migrate off the flat
     // god-struct fields (Phase 3), their exclusive data moves into one of these
     // variant alternatives; shared fields stay as direct members. std::monostate
     // covers effects with no exclusive fields. See ability_params.h.
-    std::variant<std::monostate, PumpParams, DamageParams> params;
+    std::variant<std::monostate, PumpParams, DamageParams, DestroyAllParams, TokenParams> params;
 
     // Counter abilities (PutCounter category)
     std::string counter_type = "";          // "P1P1" for +1/+1 counters
@@ -105,8 +104,7 @@ struct Ability{
     // Spell count trigger (Cori-Steel Cutter)
     size_t trigger_spell_count_eq = 0;  // ActivatorThisTurnCast$ EQN — fires on Nth spell
 
-    // Token creation (Cori-Steel Cutter)
-    std::string token_script = "";  // TokenScript$ w_1_1_monk_prowess
+    // Token creation (Cori-Steel Cutter) now lives in TokenParams (params variant).
 
     // Attach / Equip sub-ability
     bool optional = false;           // Optional$ True — player may decline

@@ -2,6 +2,7 @@
 #define ABILITY_PARAMS_H
 
 #include <cstddef>
+#include <string>
 
 // Per-effect parameter blocks held by Ability's `params` variant (see ability.h).
 //
@@ -28,6 +29,16 @@ struct PumpParams {
 struct DamageParams {
     bool is_delirium_scale = false;  // use delirium_amount when delirium is active
     size_t delirium_amount = 0;      // damage dealt when the caster has delirium
+};
+
+// DestroyAll (e.g. Meltdown). Filter spec like "Artifact.cmcLEX".
+struct DestroyAllParams {
+    std::string filter = "";  // ValidCards$ — type/CMC filter for what to destroy
+};
+
+// Token creation (e.g. Cori-Steel Cutter). TokenScript$ string parsed at resolve.
+struct TokenParams {
+    std::string script = "";  // TokenScript$ e.g. "w_1_1_monk_prowess"
 };
 
 #endif /* ABILITY_PARAMS_H */

@@ -17,9 +17,11 @@ namespace effects {
 // Parses a token script string of the form "<color>_<power>_<toughness>_<name>[_<kw1>...]"
 // e.g. "w_1_1_monk_prowess"
 bool token(Ability &ab, std::shared_ptr<Orderer> orderer) {
-    Token tok = parse_token_script(ab.token_script);
+    const TokenParams *tp = std::get_if<TokenParams>(&ab.params);
+    std::string script = tp ? tp->script : "";
+    Token tok = parse_token_script(script);
     if (tok.name.empty()) {
-        game_log("resolve_token: failed to parse token script '%s'\n", ab.token_script.c_str());
+        game_log("resolve_token: failed to parse token script '%s'\n", script.c_str());
         return true;
     }
 
@@ -44,7 +46,7 @@ bool token(Ability &ab, std::shared_ptr<Orderer> orderer) {
 
 bool parse_token(Ability &ab, const std::string &key, const std::string &value) {
     if (key != "TokenScript") return false;
-    ab.token_script = value;
+    effect_params<TokenParams>(ab).script = value;
     return true;
 }
 
