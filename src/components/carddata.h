@@ -48,6 +48,7 @@ struct CardData{
     bool shuffle_into_library = false;   // card shuffles into library instead of going to graveyard on resolution
     bool has_flashback = false;          // K:Flashback — can cast from graveyard for flashback cost, then exile
     bool has_etb_choose_creature_type = false;  // K:ETBReplacement:Other:ChooseCT — choose creature type on ETB
+    int dredge = 0;                      // K:Dredge:N — replace a draw by milling N and returning this from graveyard to hand
     ManaValue flashback_mana_cost;       // mana portion of flashback cost
     AltCost flashback_alt_cost;          // non-mana costs (e.g. PayLife<3> for Deep Analysis)
     bool is_equipment = false;           // has K:Equip line

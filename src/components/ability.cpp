@@ -523,6 +523,33 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
         if (cmc_pos != std::string::npos) cmc_le = std::stoi(vt.substr(cmc_pos + 5));
     }
 
+    // Card in a graveyard targeted by a ChangeZone with a type filter (e.g. Life from
+    // the Loam: ValidTgts$ Land.YouCtrl, Origin$ Graveyard). Filter by zone, owner
+    // (YouCtrl/OppCtrl), and card type.
+    if (category == "ChangeZone" && origin == Zone::GRAVEYARD && destination != Zone::BATTLEFIELD) {
+        if (!global_coordinator.entity_has_component<Zone>(cand)) return false;
+        auto &cz = global_coordinator.GetComponent<Zone>(cand);
+        if (cz.location != Zone::GRAVEYARD) return false;
+        bool you_ctrl = vt.find("YouCtrl") != std::string::npos;
+        bool opp_ctrl = vt.find("OppCtrl") != std::string::npos;
+        if (you_ctrl && cz.owner != caster) return false;
+        if (opp_ctrl && cz.owner == caster) return false;
+        if (!global_coordinator.entity_has_component<CardData>(cand)) return false;
+        auto &cd = global_coordinator.GetComponent<CardData>(cand);
+        bool type_ok = !(inc_creatures || inc_lands || inc_artifacts || inc_enchantments);
+        bool is_basic = false;
+        for (auto &t : cd.types) {
+            if (t.kind == SUPERTYPE && t.name == "Basic") is_basic = true;
+            if (t.kind != TYPE) continue;
+            if (inc_creatures    && t.name == "Creature")    type_ok = true;
+            if (inc_lands        && t.name == "Land")        type_ok = true;
+            if (inc_artifacts    && t.name == "Artifact")    type_ok = true;
+            if (inc_enchantments && t.name == "Enchantment") type_ok = true;
+        }
+        if (nonbasic_only && is_basic) return false;
+        return type_ok;
+    }
+
     // Player target
     if (global_coordinator.entity_has_component<Player>(cand)) {
         if (!inc_players) return false;

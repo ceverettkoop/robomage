@@ -25,12 +25,14 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
                            : ab.destination == Zone::HAND      ? "hand"
                                                                : "exile";
 
-    // Targeted ChangeZone (e.g. Swords to Plowshares, Faerie Macabre): move target(s) directly
-    if (ab.valid_tgts != "N_A" && (ab.target != 0 || !ab.targets.empty())) {
+    // Targeted ChangeZone (e.g. Swords to Plowshares, Faerie Macabre, Life from the
+    // Loam): move target(s) directly. A targeted ability with no chosen targets (e.g.
+    // "up to three" with zero picked) does nothing rather than searching.
+    if (ab.valid_tgts != "N_A") {
         std::vector<Entity> to_move;
         if (!ab.targets.empty()) {
             to_move = ab.targets;
-        } else {
+        } else if (ab.target != 0) {
             to_move.push_back(ab.target);
         }
         for (auto tgt : to_move) {

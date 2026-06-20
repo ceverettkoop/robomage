@@ -24,10 +24,23 @@ public:
     void generate_libraries(const Deck &deck_a, const Deck &deck_b);
     void draw_hands();
     void draw(Zone::Ownership player, size_t ct);
+    // Move the top `ct` cards of a player's library to their graveyard. Returns the
+    // milled entities in mill order (top first).
+    std::vector<Entity> mill(Zone::Ownership player, size_t ct);
+    std::vector<Entity> get_graveyard(Zone::Ownership owner);
     std::vector<Entity> get_stack();
     void do_london_mulligan();
     std::vector<Entity> place_on_battlefield(const std::vector<std::string> &card_names,
                                              Zone::Ownership owner);
+
+private:
+    // Draw a single card for `player`, first offering any available dredge
+    // replacement. Sets the decked-out loss if the library is empty.
+    void draw_one(Zone::Ownership player);
+    // If `player` has one or more dredge cards in their graveyard (with enough
+    // library cards to pay the mill), prompt them to replace this draw with a
+    // dredge. Returns true if a dredge was chosen and performed.
+    bool offer_dredge(Zone::Ownership player);
 
 };
 

@@ -288,36 +288,37 @@ void Orderer::draw_hands() {
     draw(Zone::PLAYER_B, 7);
 }
 
-// actual effect here, not considering triggers or replacement
+// Draw `ct` cards one at a time. Each individual draw is a separate "would draw a
+// card" event, so the dredge replacement effect is offered before each one.
 void Orderer::draw(Zone::Ownership player, size_t ct) {
-    // Collect the top `ct` cards of the player's library, in draw order (ascending
-    // distance from top). add_to_zone closes the library gap on each move, so drawing
-    // them top-first keeps the remaining cards' distances correct.
-    std::vector<Entity> cards_to_draw;
+    for (size_t i = 0; i < ct; i++) {
+        if (cur_game.ended) return;
+        draw_one(player);
+    }
+}
+
+// actual effect here; replacement (dredge) handled here, triggers handled by callers
+void Orderer::draw_one(Zone::Ownership player) {
+    // Dredge replacement (rule 702.52): the player may replace this draw with a
+    // dredge from their graveyard. If they do, no card is drawn.
+    if (offer_dredge(player)) return;
+
+    // Find the single top card of the player's library.
+    Entity top = 0;
+    size_t best = 0;
+    bool found = false;
     for (auto &&card : mEntities) {
         auto &card_zone = global_coordinator.GetComponent<Zone>(card);
-        if (card_zone.location == Zone::LIBRARY && card_zone.owner == player &&
-            card_zone.distance_from_top < ct) {
-            cards_to_draw.push_back(card);
+        if (card_zone.location != Zone::LIBRARY || card_zone.owner != player) continue;
+        if (!found || card_zone.distance_from_top < best) {
+            best = card_zone.distance_from_top;
+            top = card;
+            found = true;
         }
     }
-    std::sort(cards_to_draw.begin(), cards_to_draw.end(), [](Entity a, Entity b) {
-        return global_coordinator.GetComponent<Zone>(a).distance_from_top <
-               global_coordinator.GetComponent<Zone>(b).distance_from_top;
-    });
-    // TODO: first card drawn here is subject to replacement effects (e.g. Miracle, Leyline of Anticipation)
-    // Track drawn cards on the player's cards_drawn_this_turn list (for Sylvan Library)
-    Entity player_entity = (player == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
-    auto &pl = global_coordinator.GetComponent<Player>(player_entity);
-    for (auto &&card : cards_to_draw) {
-        game_log_private(player, "%s draws %s\n", player_name(player).c_str(),
-                 global_coordinator.GetComponent<CardData>(card).name.c_str());
-        // Route through the canonical zone mover so a draw fires CARD_CHANGED_ZONE,
-        // closes the library gap, and updates the known-top-of-library cache.
-        add_to_zone(false, card, Zone::HAND);
-        pl.cards_drawn_this_turn.push_back(card);
-    }
-    if (cards_to_draw.size() < ct) {
+
+    if (!found) {
+        // Drew from an empty library: the drawing player loses.
         if (player == Zone::PLAYER_A) {
             printf("\nPlayer A decked - Player B wins!\n");
             cur_game.winner = Zone::PLAYER_B;
@@ -326,7 +327,89 @@ void Orderer::draw(Zone::Ownership player, size_t ct) {
             cur_game.winner = Zone::PLAYER_A;
         }
         cur_game.ended = true;
+        return;
     }
+
+    // Track drawn cards on the player's cards_drawn_this_turn list (for Sylvan Library)
+    Entity player_entity = (player == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
+    auto &pl = global_coordinator.GetComponent<Player>(player_entity);
+    game_log_private(player, "%s draws %s\n", player_name(player).c_str(),
+             global_coordinator.GetComponent<CardData>(top).name.c_str());
+    // Route through the canonical zone mover so a draw fires CARD_CHANGED_ZONE,
+    // closes the library gap, and updates the known-top-of-library cache.
+    add_to_zone(false, top, Zone::HAND);
+    pl.cards_drawn_this_turn.push_back(top);
+}
+
+bool Orderer::offer_dredge(Zone::Ownership player) {
+    // A dredge card is only a legal replacement if its owner has at least that
+    // many cards left in their library to mill.
+    size_t lib_size = get_library_contents(player).size();
+    std::vector<Entity> dredge_cards;
+    for (auto &&card : get_graveyard(player)) {
+        if (!global_coordinator.entity_has_component<CardData>(card)) continue;
+        auto &cd = global_coordinator.GetComponent<CardData>(card);
+        if (cd.dredge > 0 && static_cast<size_t>(cd.dredge) <= lib_size) {
+            dredge_cards.push_back(card);
+        }
+    }
+    if (dredge_cards.empty()) return false;
+
+    // Option 0 is always "draw normally" so the default (auto-pass / index 0) keeps
+    // the draw. Remaining options dredge a specific card.
+    std::vector<LegalAction> actions;
+    LegalAction draw_act(PASS_PRIORITY, std::string("Draw a card"));
+    draw_act.category = ActionCategory::OTHER_CHOICE;
+    actions.push_back(draw_act);
+    for (auto card : dredge_cards) {
+        auto &cd = global_coordinator.GetComponent<CardData>(card);
+        LegalAction la(PASS_PRIORITY, card,
+                       "Dredge " + cd.name + " (mill " + std::to_string(cd.dredge) + ")");
+        la.category = ActionCategory::OTHER_CHOICE;
+        actions.push_back(la);
+    }
+    int choice = InputLogger::instance().get_input(actions);
+    if (choice == 0) return false;  // chose to draw normally
+
+    Entity dredged = actions[static_cast<size_t>(choice)].source_entity;
+    int n = global_coordinator.GetComponent<CardData>(dredged).dredge;
+    std::string dname = global_coordinator.GetComponent<CardData>(dredged).name;
+    // Mill N, then return the dredge card from graveyard to hand. The dredge card is
+    // in the graveyard (not the library), so milling never touches it.
+    mill(player, static_cast<size_t>(n));
+    add_to_zone(false, dredged, Zone::HAND);
+    game_log("%s dredges %s (milled %d)\n", player_name(player).c_str(), dname.c_str(), n);
+    return true;
+}
+
+std::vector<Entity> Orderer::mill(Zone::Ownership player, size_t ct) {
+    std::vector<Entity> lib = get_library_contents(player);
+    std::sort(lib.begin(), lib.end(), [](Entity a, Entity b) {
+        return global_coordinator.GetComponent<Zone>(a).distance_from_top <
+               global_coordinator.GetComponent<Zone>(b).distance_from_top;
+    });
+    std::vector<Entity> milled;
+    for (size_t i = 0; i < ct && i < lib.size(); i++) {
+        std::string cname = global_coordinator.entity_has_component<CardData>(lib[i])
+                                ? global_coordinator.GetComponent<CardData>(lib[i]).name
+                                : "card";
+        // add_to_zone keeps distance_from_top and the known-top-of-library cache correct.
+        add_to_zone(false, lib[i], Zone::GRAVEYARD);
+        game_log("%s mills %s.\n", player_name(player).c_str(), cname.c_str());
+        milled.push_back(lib[i]);
+    }
+    return milled;
+}
+
+std::vector<Entity> Orderer::get_graveyard(Zone::Ownership owner) {
+    std::vector<Entity> contents;
+    for (auto &&card : mEntities) {
+        auto &card_zone = global_coordinator.GetComponent<Zone>(card);
+        if (card_zone.location == Zone::GRAVEYARD && card_zone.owner == owner) {
+            contents.push_back(card);
+        }
+    }
+    return contents;
 }
 
 // ordered stack, top first

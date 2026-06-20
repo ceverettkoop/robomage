@@ -305,6 +305,14 @@ Entity parse_card_script(std::string path) {
             card.keywords.push_back("Prowess");
             continue;
         }
+        // K:Dredge:N — replacement effect: while in graveyard, may replace a draw by
+        // milling N cards and returning this card to hand. Value stored on CardData;
+        // the replacement is offered in Orderer::draw.
+        if (kw_line.rfind("Dredge:", 0) == 0) {
+            card.dredge = std::stoi(kw_line.substr(strlen("Dredge:")));
+            card.keywords.push_back("Dredge");
+            continue;
+        }
         // K:Landwalk:Swamp / Forest / Island / Mountain / Plains
         if (kw_line.rfind("Landwalk:", 0) == 0) {
             std::string land_type = kw_line.substr(strlen("Landwalk:"));
