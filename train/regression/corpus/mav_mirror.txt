@@ -317,6 +317,9 @@ Player B activated Forest for 1(G)
 Player B activated Noble Hierarch for 1(W)
 Player B casts Endurance
 Endurance enters the battlefield
+Choose target:
+<<DECISION 66: action=0>>
+Targeting choice 0
 Endurance triggered
 Resolving ability (category: ChangeZoneAll, amount: 0)
 Player B moves Wooded Foothills to the bottom of their library
@@ -328,13 +331,13 @@ Player B moves Once Upon a Time to the bottom of their library
 Player B moves 6 card(s) to the bottom of their library
 Player B draws Knight of the Reliquary
 --- Declare Attackers (Player B) ---
-<<DECISION 66: action=0>>
-Select target for Thalia, Guardian of Thraben:
 <<DECISION 67: action=0>>
+Select target for Thalia, Guardian of Thraben:
+<<DECISION 68: action=0>>
 Thalia, Guardian of Thraben attacking Player A.
 --- Declare Attackers (Player B) ---
   [attacking] Thalia, Guardian of Thraben [2/1] -> Player A
-<<DECISION 68: action=-1>>
+<<DECISION 69: action=-1>>
 Attackers declared:
   Thalia, Guardian of Thraben -> Player A
 Noble Hierarch triggered
@@ -344,7 +347,7 @@ Exalted (Noble Hierarch): Thalia, Guardian of Thraben gets +1/+1 until end of tu
 Attackers:
   0: Thalia, Guardian of Thraben [3/2]
 Your creatures:
-<<DECISION 69: action=-1>>
+<<DECISION 70: action=-1>>
 Blockers declared:
   (none)
 --- First Strike Combat Damage ---
@@ -353,47 +356,47 @@ Blockers declared:
 --- Combat Damage ---
 --- End Combat Damage ---
 -------- TURN 12 (Player A) --------
-<<DECISION 70: action=1>>
+<<DECISION 71: action=1>>
 Player A activated Plains for 1(W)
 Player A activated Forest for 1(G)
 Choose target:
-<<DECISION 71: action=0>>
+<<DECISION 72: action=0>>
 Targeting choice 0
 Player A casts Swords to Plowshares targeting Dryad Arbor
-<<DECISION 72: action=0>>
+<<DECISION 73: action=0>>
 Resolving ability (category: ChangeZone, amount: 0)
 Dryad Arbor is moved to exile
 Resolving ability (category: GainLife, amount: 0)
 Player B gains 1 life (now at 19)
-<<DECISION 73: action=0>>
-Player A draws Wasteland
 <<DECISION 74: action=0>>
-<<DECISION 75: action=1>>
-Player A played Savannah
+Player A draws Wasteland
+<<DECISION 75: action=0>>
 <<DECISION 76: action=1>>
+Player A played Savannah
+<<DECISION 77: action=1>>
 Choose target:
-<<DECISION 77: action=0>>
+<<DECISION 78: action=0>>
 Targeting choice 0
-<<DECISION 78: action=1>>
-Player A returns Savannah to hand
+<<DECISION 79: action=0>>
+Player A returns Forest to hand
 Player A's Scryb Ranger ability targeting Endurance is on the stack
 Resolving ability (category: Untap, amount: 0)
 Endurance untaps
 --- Declare Attackers (Player A) ---
-<<DECISION 79: action=0>>
-Select target for Scryb Ranger:
 <<DECISION 80: action=0>>
+Select target for Scryb Ranger:
+<<DECISION 81: action=0>>
 Scryb Ranger attacking Player B.
 --- Declare Attackers (Player A) ---
   [attacking] Scryb Ranger [1/1] -> Player B
-<<DECISION 81: action=-1>>
+<<DECISION 82: action=-1>>
 Attackers declared:
   Scryb Ranger -> Player B
 --- Declare Blockers (Player B) ---
 Attackers:
   0: Scryb Ranger [1/1]
 Your creatures:
-<<DECISION 82: action=-1>>
+<<DECISION 83: action=-1>>
 Blockers declared:
   (none)
 --- Combat Damage ---
@@ -401,31 +404,31 @@ Blockers declared:
 --- End Combat Damage ---
 -------- TURN 13 (Player B) --------
 Player B draws Windswept Heath
-<<DECISION 83: action=2>>
+<<DECISION 84: action=2>>
 Player B activated Forest for 1(G)
 Player B activated Noble Hierarch for 1(G)
 Player B casts Keen-Eyed Curator
 Keen-Eyed Curator enters the battlefield
-<<DECISION 84: action=1>>
-Player B played Windswept Heath
 <<DECISION 85: action=1>>
+Player B played Windswept Heath
+<<DECISION 86: action=1>>
 Choose target:
-<<DECISION 86: action=0>>
+<<DECISION 87: action=0>>
 Targeting choice 0
 Player B activated Plains for 1(W)
 Player B's Keen-Eyed Curator ability targeting Karakas is on the stack
-<<DECISION 87: action=1>>
+<<DECISION 88: action=1>>
 Player B pays 1 life
 Player B sacrifices Windswept Heath
 Player B's Windswept Heath ability is on the stack
 Resolving ability (category: ChangeZone, amount: 1)
 Searching Player B's library:
-<<DECISION 88: action=1>>
+<<DECISION 89: action=1>>
 Player B shuffles their library
 Player B puts Savannah to the battlefield
-<<DECISION 89: action=1>>
+<<DECISION 90: action=1>>
 Choose target:
-<<DECISION 90: action=0>>
+<<DECISION 91: action=0>>
 Targeting choice 0
 Player B activated Savannah for 1(G)
 Player B's Keen-Eyed Curator ability targeting Karakas is on the stack
@@ -433,20 +436,20 @@ Resolving ability (category: ChangeZone, amount: 0)
 Karakas is moved to exile
 ChangeZone fizzles
 --- Declare Attackers (Player B) ---
-<<DECISION 91: action=0>>
-Select target for Endurance:
 <<DECISION 92: action=0>>
+Select target for Endurance:
+<<DECISION 93: action=0>>
 Endurance attacking Player A.
 --- Declare Attackers (Player B) ---
   [attacking] Endurance [3/4] -> Player A
-<<DECISION 93: action=0>>
-Select target for Thalia, Guardian of Thraben:
 <<DECISION 94: action=0>>
+Select target for Thalia, Guardian of Thraben:
+<<DECISION 95: action=0>>
 Thalia, Guardian of Thraben attacking Player A.
 --- Declare Attackers (Player B) ---
   [attacking] Endurance [3/4] -> Player A
   [attacking] Thalia, Guardian of Thraben [2/1] -> Player A
-<<DECISION 95: action=-1>>
+<<DECISION 96: action=-1>>
 Attackers declared:
   Endurance -> Player A
   Thalia, Guardian of Thraben -> Player A
@@ -458,21 +461,21 @@ No creatures eligible to block.
   Endurance deals 3 damage to Player A
 --- End Combat Damage ---
 -------- TURN 14 (Player A) --------
-<<DECISION 96: action=0>>
-Player A draws Windswept Heath
 <<DECISION 97: action=0>>
-<<DECISION 98: action=1>>
-Player A played Savannah
+Player A draws Windswept Heath
+<<DECISION 98: action=0>>
 <<DECISION 99: action=1>>
+Player A played Forest
+<<DECISION 100: action=1>>
 Player A activated Plains for 1(W)
 Player A activated Forest for 1(G)
 Player A activated Savannah for 1(G)
 Player A casts Knight of the Reliquary
-<<DECISION 100: action=1>>
+<<DECISION 101: action=1>>
 Choose target:
-<<DECISION 101: action=0>>
-Targeting choice 0
 <<DECISION 102: action=0>>
+Targeting choice 0
+<<DECISION 103: action=0>>
 Player A returns Forest to hand
 Player A's Scryb Ranger ability targeting Endurance is on the stack
 Resolving ability (category: Untap, amount: 0)
@@ -480,71 +483,71 @@ Endurance untaps
 Knight of the Reliquary enters the battlefield
 Knight of the Reliquary gains (always)
 --- Declare Attackers (Player A) ---
-<<DECISION 103: action=0>>
-Select target for Scryb Ranger:
 <<DECISION 104: action=0>>
+Select target for Scryb Ranger:
+<<DECISION 105: action=0>>
 Scryb Ranger attacking Player B.
 --- Declare Attackers (Player A) ---
   [attacking] Scryb Ranger [1/1] -> Player B
-<<DECISION 105: action=-1>>
+<<DECISION 106: action=-1>>
 Attackers declared:
   Scryb Ranger -> Player B
 --- Declare Blockers (Player B) ---
 Attackers:
   0: Scryb Ranger [1/1]
 Your creatures:
-<<DECISION 106: action=-1>>
+<<DECISION 107: action=-1>>
 Blockers declared:
   (none)
 --- Combat Damage ---
   Scryb Ranger deals 1 damage to Player B
 --- End Combat Damage ---
 -------- TURN 15 (Player B) --------
-<<DECISION 107: action=0>>
+<<DECISION 108: action=0>>
 Player B draws Once Upon a Time
-<<DECISION 108: action=1>>
+<<DECISION 109: action=1>>
 Player B activated Forest for 1(G)
 Player B activated Noble Hierarch for 1(W)
 Player B activated Plains for 1(W)
 Player B casts Once Upon a Time
-<<DECISION 109: action=0>>
+<<DECISION 110: action=0>>
 Resolving ability (category: Dig, amount: 1)
 Player B looks at the top 5 card(s) of their library.
-<<DECISION 110: action=1>>
+<<DECISION 111: action=1>>
 Player B puts Knight of the Reliquary into hand.
 Player B puts 4 card(s) on the bottom of their library.
-<<DECISION 111: action=0>>
-<<DECISION 112: action=1>>
+<<DECISION 112: action=0>>
+<<DECISION 113: action=1>>
 Choose target:
-<<DECISION 113: action=0>>
+<<DECISION 114: action=0>>
 Targeting choice 0
 Player B activated Savannah for 1(G)
 Player B's Keen-Eyed Curator ability targeting Swords to Plowshares is on the stack
 Resolving ability (category: ChangeZone, amount: 0)
 Swords to Plowshares is moved to exile
 --- Declare Attackers (Player B) ---
-<<DECISION 114: action=0>>
-Select target for Endurance:
 <<DECISION 115: action=0>>
+Select target for Endurance:
+<<DECISION 116: action=0>>
 Endurance attacking Player A.
 --- Declare Attackers (Player B) ---
   [attacking] Endurance [3/4] -> Player A
-<<DECISION 116: action=0>>
-Select target for Keen-Eyed Curator:
 <<DECISION 117: action=0>>
+Select target for Keen-Eyed Curator:
+<<DECISION 118: action=0>>
 Keen-Eyed Curator attacking Player A.
 --- Declare Attackers (Player B) ---
   [attacking] Endurance [3/4] -> Player A
   [attacking] Keen-Eyed Curator [3/3] -> Player A
-<<DECISION 118: action=0>>
-Select target for Thalia, Guardian of Thraben:
 <<DECISION 119: action=0>>
+Select target for Thalia, Guardian of Thraben:
+<<DECISION 120: action=0>>
 Thalia, Guardian of Thraben attacking Player A.
 --- Declare Attackers (Player B) ---
   [attacking] Endurance [3/4] -> Player A
   [attacking] Keen-Eyed Curator [3/3] -> Player A
   [attacking] Thalia, Guardian of Thraben [2/1] -> Player A
-<<DECISION 120: action=-1>>
+<<DECISION 121: action=-1>>
 Attackers declared:
   Endurance -> Player A
   Keen-Eyed Curator -> Player A
@@ -555,7 +558,7 @@ Attackers:
   1: Keen-Eyed Curator [3/3]
   2: Thalia, Guardian of Thraben [2/1]
 Your creatures:
-<<DECISION 121: action=-1>>
+<<DECISION 122: action=-1>>
 Blockers declared:
   (none)
 --- First Strike Combat Damage ---

@@ -202,13 +202,13 @@ Player B casts Lightning Bolt targeting Player A
 Dragon's Rage Channeler triggered
 Resolving ability (category: Surveil, amount: 1)
 Top card of Player B's library: Murktide Regent
-<<DECISION 45: action=0>>
+<<DECISION 45: action=1>>
+Player B puts Murktide Regent into the graveyard.
 Resolving ability (category: DealDamage, amount: 3)
 Dealt 3 damage to player (now at 14 life)
 Resolving ability (category: Surveil, amount: 1)
-Top card of Player B's library: Murktide Regent
-<<DECISION 46: action=1>>
-Player B puts Murktide Regent into the graveyard.
+Top card of Player B's library: Mishra's Bauble
+<<DECISION 46: action=0>>
 Resolving ability (category: DealDamage, amount: 3)
 Dealt 3 damage to player (now at 11 life)
 Player B draws Mishra's Bauble
@@ -217,8 +217,7 @@ Player B casts Mishra's Bauble
 Dragon's Rage Channeler triggered
 Resolving ability (category: Surveil, amount: 1)
 Top card of Player B's library: Unholy Heat
-<<DECISION 48: action=1>>
-Player B puts Unholy Heat into the graveyard.
+<<DECISION 48: action=0>>
 Mishra's Bauble enters the battlefield
 <<DECISION 49: action=1>>
 Player B played Wasteland
@@ -242,7 +241,7 @@ Player B looks at top of Player A's library: Brainstorm
 Resolving ability (category: DelayedTrigger, amount: 0)
 Delayed trigger registered: Draw at next Upkeep.
 Resolving ability (category: Draw, amount: 1)
-Player B draws Misty Rainforest
+Player B draws Unholy Heat
 Dragon's Rage Channeler must attack and is declared as an attacker.
 --- Declare Attackers (Player B) ---
   [attacking] Dragon's Rage Channeler [3/3] -> Player A
@@ -277,52 +276,48 @@ No attackers ��� skipping declare blockers.
 --- End Combat Damage ---
 -------- TURN 7 (Player B) --------
 Delayed trigger fires.
-Resolving ability (category: Draw, amount: 1)
-Player B draws Brainstorm
 <<DECISION 58: action=1>>
-Player B activated Volcanic Island for 1(U)
-Player B casts Brainstorm
+Player B activated Volcanic Island for 1(R)
+Choose target:
+<<DECISION 59: action=0>>
+Targeting choice 0
+Player B casts Unholy Heat targeting Dragon's Rage Channeler
 Dragon's Rage Channeler triggered
 Resolving ability (category: Surveil, amount: 1)
-Top card of Player B's library: Cori-Steel Cutter
-<<DECISION 59: action=0>>
+Top card of Player B's library: Misty Rainforest
+<<DECISION 60: action=1>>
+Player B puts Misty Rainforest into the graveyard.
+Resolving ability (category: DealDamage, amount: 2)
+Dealt 6 damage to creature
+Dragon's Rage Channeler is destroyed (lethal damage)
+Resolving ability (category: Draw, amount: 1)
+Player B draws Brainstorm
+<<DECISION 61: action=1>>
+Player B activated Volcanic Island for 1(U)
+Player B casts Brainstorm
 Resolving ability (category: Draw, amount: 3)
 Player B draws Cori-Steel Cutter
 Player B draws Polluted Delta
 Player B draws Unholy Heat
 Resolving ability (category: ChangeZone, amount: 2)
 Player B chooses a card from Player B hand:
-<<DECISION 60: action=0>>
+<<DECISION 62: action=0>>
 Player B puts Cori-Steel Cutter to top of library
 Player B puts a card to top of library
 Player B chooses a card from Player B hand:
-<<DECISION 61: action=0>>
+<<DECISION 63: action=0>>
 Player B puts Unholy Heat to top of library
 Player B puts a card to top of library
 Player B draws Unholy Heat
-<<DECISION 62: action=1>>
-Player B activated Volcanic Island for 1(R)
-Choose target:
-<<DECISION 63: action=0>>
-Targeting choice 0
-Player B casts Unholy Heat targeting Dragon's Rage Channeler
-Dragon's Rage Channeler triggered
-Resolving ability (category: Surveil, amount: 1)
-Top card of Player B's library: Cori-Steel Cutter
 <<DECISION 64: action=1>>
-Player B puts Cori-Steel Cutter into the graveyard.
-Resolving ability (category: DealDamage, amount: 2)
-Dealt 6 damage to creature
-Dragon's Rage Channeler is destroyed (lethal damage)
-<<DECISION 65: action=1>>
 Player B played Polluted Delta
-<<DECISION 66: action=1>>
+<<DECISION 65: action=1>>
 Player B pays 1 life
 Player B sacrifices Polluted Delta
 Player B's Polluted Delta ability is on the stack
 Resolving ability (category: ChangeZone, amount: 1)
 Searching Player B's library:
-<<DECISION 67: action=1>>
+<<DECISION 66: action=1>>
 Player B shuffles their library
 Player B puts Island to the battlefield
 No creatures eligible to attack.
@@ -331,12 +326,12 @@ No attackers ��� skipping declare blockers.
 --- End Combat Damage ---
 -------- TURN 8 (Player A) --------
 Player A draws Personal Tutor
-<<DECISION 68: action=1>>
+<<DECISION 67: action=1>>
 Player A activated Underground Sea for 1(U)
 Player A casts Personal Tutor
 Resolving ability (category: ChangeZone, amount: 1)
 Searching Player A's library:
-<<DECISION 69: action=0>>
+<<DECISION 68: action=0>>
 Player A shuffles their library
 Player A fails to find
 No creatures eligible to attack.
@@ -344,183 +339,79 @@ No attackers ��� skipping declare blockers.
 --- Combat Damage ---
 --- End Combat Damage ---
 -------- TURN 9 (Player B) --------
-Player B draws Thundering Falls
+Player B draws Scalding Tarn
+<<DECISION 69: action=1>>
+Player B played Scalding Tarn
 <<DECISION 70: action=1>>
-Player B played Misty Rainforest
-<<DECISION 71: action=1>>
 Player B pays 1 life
-Player B sacrifices Misty Rainforest
-Player B's Misty Rainforest ability is on the stack
+Player B sacrifices Scalding Tarn
+Player B's Scalding Tarn ability is on the stack
 Resolving ability (category: ChangeZone, amount: 1)
 Searching Player B's library:
-<<DECISION 72: action=1>>
+<<DECISION 71: action=1>>
 Player B shuffles their library
-Player B puts Volcanic Island to the battlefield
+Player B puts Mountain to the battlefield
 No creatures eligible to attack.
 No attackers ��� skipping declare blockers.
 --- Combat Damage ---
 --- End Combat Damage ---
 -------- TURN 10 (Player A) --------
-Player A draws Underground Sea
+Player A draws Dark Ritual
+<<DECISION 72: action=0>>
 <<DECISION 73: action=2>>
 Player A activated Underground Sea for 1(U)
 Player A casts Ponder
+<<DECISION 74: action=0>>
 Resolving ability (category: RearrangeTopOfLibrary, amount: 3)
 Player A looks at the top 3 card(s) of their library.
 Choose which card goes 3 from top:
-<<DECISION 74: action=0>>
-Choose which card goes 2 from top:
 <<DECISION 75: action=0>>
+Choose which card goes 2 from top:
 <<DECISION 76: action=0>>
+<<DECISION 77: action=0>>
 Resolving ability (category: Draw, amount: 1)
-Player A draws Doomsday
-<<DECISION 77: action=1>>
-Player A played Underground Sea
+Player A draws Thoughtseize
+<<DECISION 78: action=1>>
+Player A activated Swamp for 1(B)
+Choose target:
+<<DECISION 79: action=0>>
+Targeting choice 0
+Player A casts Thoughtseize targeting Player B
+Resolving ability (category: Discard, amount: 1)
+Player B reveals their hand:
+  Unholy Heat
+Player A chooses a card to discard:
+<<DECISION 80: action=0>>
+Player B discards Unholy Heat
+Resolving ability (category: LoseLife, amount: 2)
+Player A loses 2 life (now at 6)
 No creatures eligible to attack.
 No attackers ��� skipping declare blockers.
 --- Combat Damage ---
 --- End Combat Damage ---
 -------- TURN 11 (Player B) --------
-Player B draws Ponder
-<<DECISION 78: action=2>>
-Player B activated Island for 1(U)
-Player B casts Ponder
-Resolving ability (category: RearrangeTopOfLibrary, amount: 3)
-Player B looks at the top 3 card(s) of their library.
-Choose which card goes 3 from top:
-<<DECISION 79: action=0>>
-Choose which card goes 2 from top:
-<<DECISION 80: action=0>>
-<<DECISION 81: action=0>>
-Resolving ability (category: Draw, amount: 1)
-Player B draws Unholy Heat
-<<DECISION 82: action=1>>
-Player B played Thundering Falls
-Thundering Falls enters tapped.
-Thundering Falls triggered
-Resolving ability (category: Surveil, amount: 1)
-Top card of Player B's library: Delver of Secrets
-<<DECISION 83: action=1>>
-Player B puts Delver of Secrets into the graveyard.
+Player B draws Force of Will
 No creatures eligible to attack.
 No attackers ��� skipping declare blockers.
 --- Combat Damage ---
 --- End Combat Damage ---
 -------- TURN 12 (Player A) --------
-Player A draws Ponder
-<<DECISION 84: action=1>>
+<<DECISION 81: action=0>>
+Player A draws Doomsday
+<<DECISION 82: action=1>>
 Player A activated Swamp for 1(B)
-Player A activated Underground Sea for 1(B)
-Player A activated Underground Sea for 1(B)
-Player A casts Doomsday
-Resolving ability (category: ChangeZone, amount: 5)
-Searching Player A's library and graveyard:
-<<DECISION 85: action=6>>
-Player A puts Thassa's Oracle to top of library
-Player A puts a card to top of library
-Searching Player A's library and graveyard:
-<<DECISION 86: action=0>>
-Player A puts Force of Will to top of library
-Player A puts a card to top of library
-Searching Player A's library and graveyard:
-<<DECISION 87: action=0>>
-Player A puts Force of Will to top of library
-Player A puts a card to top of library
-Searching Player A's library and graveyard:
-<<DECISION 88: action=0>>
-Player A puts Lotus Petal to top of library
-Player A puts a card to top of library
-Searching Player A's library and graveyard:
-<<DECISION 89: action=0>>
-Player A puts Lotus Petal to top of library
-Player A puts a card to top of library
-Resolving ability (category: ChangeZoneAll, amount: 0)
-Player A moves Lotus Petal to exile
-Player A moves Lion's Eye Diamond to exile
-Player A moves Personal Tutor to exile
-Player A moves Brainstorm to exile
-Player A moves Ponder to exile
-Player A moves Ponder to exile
-Player A moves Undercity Sewers to exile
-Player A moves Polluted Delta to exile
-Player A moves Verdant Catacombs to exile
-Player A moves Consider to exile
-Player A moves Doomsday to exile
-Player A moves Doomsday to exile
-Player A moves Doomsday to exile
-Player A moves Force of Will to exile
-Player A moves Force of Will to exile
-Player A moves Thoughtseize to exile
-Player A moves Thoughtseize to exile
-Player A moves Thoughtseize to exile
-Player A moves Daze to exile
-Player A moves Daze to exile
-Player A moves Dark Ritual to exile
-Player A moves Dark Ritual to exile
-Player A moves Dark Ritual to exile
-Player A moves Dark Ritual to exile
-Player A moves Lotus Petal to exile
-Player A moves Personal Tutor to exile
-Player A moves Personal Tutor to exile
-Player A moves Personal Tutor to exile
-Player A moves Street Wraith to exile
-Player A moves Street Wraith to exile
-Player A moves Street Wraith to exile
-Player A moves Street Wraith to exile
-Player A moves Edge of Autumn to exile
-Player A moves Edge of Autumn to exile
-Player A moves Brainstorm to exile
-Player A moves Brainstorm to exile
-Player A moves Brainstorm to exile
-Player A moves Ponder to exile
-Player A moves Polluted Delta to exile
-Player A moves Polluted Delta to exile
-Player A moves Polluted Delta to exile
-Player A moves Underground Sea to exile
-Player A moves Bloodstained Mire to exile
-Player A moves Island to exile
-Player A moves Flooded Strand to exile
-Player A moves Misty Rainforest to exile
-Player A moves Cavern of Souls to exile
-Player A moves Duress to exile
-Player A moves Deep Analysis to exile
-Player A moves 49 card(s) to exile
-Resolving ability (category: RearrangeTopOfLibrary, amount: 0)
-Player A looks at the top 5 card(s) of their library.
-Choose which card goes 5 from top:
-<<DECISION 90: action=4>>
-Choose which card goes 4 from top:
-<<DECISION 91: action=0>>
-Choose which card goes 3 from top:
-<<DECISION 92: action=0>>
-Choose which card goes 2 from top:
-<<DECISION 93: action=0>>
-Resolving ability (category: LoseLife, amount: 0)
-Player A loses 4 life (now at 4)
-Resolving ability (category: Cleanup, amount: 0)
+Player A casts Dark Ritual
+Resolving ability (category: AddMana, amount: 3)
+Player A adds 3{B}
+MANA_WASTED: A
 No creatures eligible to attack.
 No attackers ��� skipping declare blockers.
 --- Combat Damage ---
 --- End Combat Damage ---
 -------- TURN 13 (Player B) --------
-Player B draws Mishra's Bauble
-<<DECISION 94: action=1>>
-Player B casts Mishra's Bauble
-Mishra's Bauble enters the battlefield
-<<DECISION 95: action=1>>
-Choose target:
-<<DECISION 96: action=0>>
-Targeting choice 0
-Player B sacrifices Mishra's Bauble
-Player B's Mishra's Bauble ability targeting Player A is on the stack
-Resolving ability (category: PeekAndReveal, amount: 0)
-Player B looks at top of Player A's library: Force of Will
-Resolving ability (category: DelayedTrigger, amount: 0)
-Delayed trigger registered: Draw at next Upkeep.
-Resolving ability (category: Draw, amount: 1)
 Player B draws Cori-Steel Cutter
-<<DECISION 97: action=1>>
-Player B activated Volcanic Island for 1(R)
+<<DECISION 83: action=1>>
+Player B activated Mountain for 1(R)
 Player B activated Island for 1(U)
 Player B casts Cori-Steel Cutter
 Cori-Steel Cutter enters the battlefield
@@ -529,168 +420,123 @@ No attackers ��� skipping declare blockers.
 --- Combat Damage ---
 --- End Combat Damage ---
 -------- TURN 14 (Player A) --------
-Player A draws Force of Will
-<<DECISION 98: action=1>>
-Player A activated Underground Sea for 1(U)
-Player A casts Ponder
-Resolving ability (category: RearrangeTopOfLibrary, amount: 3)
-Player A looks at the top 3 card(s) of their library.
-Choose which card goes 3 from top:
-<<DECISION 99: action=0>>
-Choose which card goes 2 from top:
-<<DECISION 100: action=0>>
-<<DECISION 101: action=0>>
+Player A draws Street Wraith
+<<DECISION 84: action=1>>
+Player A pays 2 life
+Player A activates Street Wraith from hand
 Resolving ability (category: Draw, amount: 1)
-Player A draws Lotus Petal
-<<DECISION 102: action=1>>
-Player A casts Lotus Petal
-Lotus Petal enters the battlefield
+Player A draws Brainstorm
+<<DECISION 85: action=1>>
+Player A activated Underground Sea for 1(U)
+Player A casts Brainstorm
+Resolving ability (category: Draw, amount: 3)
+Player A draws Brainstorm
+Player A draws Duress
+Player A draws Thoughtseize
+Resolving ability (category: ChangeZone, amount: 2)
+Player A chooses a card from Player A hand:
+<<DECISION 86: action=0>>
+Player A puts Doomsday to top of library
+Player A puts a card to top of library
+Player A chooses a card from Player A hand:
+<<DECISION 87: action=0>>
+Player A puts Thoughtseize to top of library
+Player A puts a card to top of library
+<<DECISION 88: action=1>>
+Player A activated Swamp for 1(B)
+Choose target:
+<<DECISION 89: action=0>>
+Targeting choice 0
+Player A casts Duress targeting Player B
+Resolving ability (category: Discard, amount: 1)
+Player B reveals their hand:
+  Force of Will
+Player A chooses a card to discard:
+<<DECISION 90: action=0>>
+Player B discards Force of Will
 No creatures eligible to attack.
 No attackers ��� skipping declare blockers.
 --- Combat Damage ---
 --- End Combat Damage ---
 -------- TURN 15 (Player B) --------
-Delayed trigger fires.
-Resolving ability (category: Draw, amount: 1)
-Player B draws Scalding Tarn
-Player B draws Daze
-<<DECISION 103: action=1>>
-Player B played Scalding Tarn
-<<DECISION 104: action=1>>
-Player B pays 1 life
-Player B sacrifices Scalding Tarn
-Player B's Scalding Tarn ability is on the stack
-Resolving ability (category: ChangeZone, amount: 1)
-Searching Player B's library:
-<<DECISION 105: action=1>>
-Player B shuffles their library
-Player B puts Mountain to the battlefield
-No creatures eligible to attack.
-No attackers ��� skipping declare blockers.
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 16 (Player A) --------
-Player A draws Lotus Petal
-<<DECISION 106: action=1>>
-Player A casts Lotus Petal
-<<DECISION 107: action=1>>
-Player B activated Island for 1(U)
-Player B activated Mountain for 1(R)
-Choose target:
-<<DECISION 108: action=0>>
-Targeting choice 0
-Player B casts Daze targeting Lotus Petal
-Resolving ability (category: Counter, amount: 0)
-Lotus Petal's controller may pay {1} to save it:
-<<DECISION 109: action=10>>
-Lotus Petal is countered
-No creatures eligible to attack.
-No attackers ��� skipping declare blockers.
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 17 (Player B) --------
 Player B draws Mishra's Bauble
-<<DECISION 110: action=1>>
+<<DECISION 91: action=1>>
 Player B casts Mishra's Bauble
+Mishra's Bauble enters the battlefield
+<<DECISION 92: action=1>>
+Choose target:
+<<DECISION 93: action=0>>
+Targeting choice 0
+Player B sacrifices Mishra's Bauble
+Player B's Mishra's Bauble ability targeting Player A is on the stack
+Resolving ability (category: PeekAndReveal, amount: 0)
+Player B looks at top of Player A's library: Thoughtseize
+Resolving ability (category: DelayedTrigger, amount: 0)
+Delayed trigger registered: Draw at next Upkeep.
+Resolving ability (category: Draw, amount: 1)
+Player B draws Delver of Secrets
+<<DECISION 94: action=1>>
+Player B activated Island for 1(U)
+Player B casts Delver of Secrets
 Cori-Steel Cutter triggered
 Resolving ability (category: Token, amount: 0)
 Token created: 1/1 Monk Token
 Resolving ability (category: Attach, amount: 0)
 Equipment attached.
 Resolving ability (category: Cleanup, amount: 0)
-<<DECISION 111: action=1>>
+Monk Token token gains 1/1 Trample & Haste (always)
+Delver of Secrets enters the battlefield
+<<DECISION 95: action=1>>
 Player B activated Mountain for 1(R)
-Choose target:
-<<DECISION 112: action=0>>
-Targeting choice 0
-Player B casts Unholy Heat targeting Monk Token token
-Monk Token token triggered
-Resolving ability (category: ProwessBonus, amount: 1)
-Prowess: creature gets +1/+1 until end of turn.
-Resolving ability (category: DealDamage, amount: 2)
-Dealt 6 damage to creature
-Monk Token token is destroyed (lethal damage)
-Token is destroyed.
-Mishra's Bauble enters the battlefield
-<<DECISION 113: action=1>>
-Choose target:
-<<DECISION 114: action=0>>
-Targeting choice 0
-Player B sacrifices Mishra's Bauble
-Player B's Mishra's Bauble ability targeting Player A is on the stack
-Resolving ability (category: PeekAndReveal, amount: 0)
-Player B looks at top of Player A's library: Force of Will
-Resolving ability (category: DelayedTrigger, amount: 0)
-Delayed trigger registered: Draw at next Upkeep.
-Resolving ability (category: Draw, amount: 1)
-Player B draws Wasteland
-<<DECISION 115: action=1>>
-Player B played Wasteland
-<<DECISION 116: action=1>>
-Choose target:
-<<DECISION 117: action=0>>
-Targeting choice 0
-Player B sacrifices Wasteland
-Player B's Wasteland ability targeting Underground Sea is on the stack
-Resolving ability (category: Destroy, amount: 0)
-Underground Sea is destroyed
-No creatures eligible to attack.
-No attackers ��� skipping declare blockers.
+Player B activated Volcanic Island for 1(U)
+Choose creature to equip:
+<<DECISION 96: action=0>>
+Cori-Steel Cutter equipped to Delver of Secrets.
+Delver of Secrets gains 1/1 Trample & Haste (always)
+--- Declare Attackers (Player B) ---
+<<DECISION 97: action=0>>
+Select target for Delver of Secrets:
+<<DECISION 98: action=0>>
+Delver of Secrets attacking Player A.
+--- Declare Attackers (Player B) ---
+  [attacking] Delver of Secrets [2/2] -> Player A
+<<DECISION 99: action=-1>>
+Attackers declared:
+  Delver of Secrets -> Player A
+No creatures eligible to block.
 --- Combat Damage ---
+  Delver of Secrets deals 2 damage to Player A
 --- End Combat Damage ---
--------- TURN 18 (Player A) --------
-Player A draws Force of Will
-No creatures eligible to attack.
-No attackers ��� skipping declare blockers.
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 19 (Player B) --------
-Delayed trigger fires.
-Resolving ability (category: Draw, amount: 1)
-Player B draws Brainstorm
-<<DECISION 118: action=1>>
-Player B activated Island for 1(U)
-Player B casts Brainstorm
-<<DECISION 119: action=1>>
-Player A pays 1 life
-<<DECISION 120: action=0>>
-Player A exiles Force of Will
-Choose target:
-<<DECISION 121: action=0>>
-Targeting choice 0
-Player A casts Force of Will targeting Brainstorm
-Resolving ability (category: Counter, amount: 0)
-Brainstorm is countered
-Player B draws Wooded Foothills
-<<DECISION 122: action=1>>
-Player B played Wooded Foothills
-<<DECISION 123: action=1>>
-Player B pays 1 life
-Player B sacrifices Wooded Foothills
-Player B's Wooded Foothills ability is on the stack
-Resolving ability (category: ChangeZone, amount: 1)
-Searching Player B's library:
-<<DECISION 124: action=1>>
-Player B shuffles their library
-Player B puts Volcanic Island to the battlefield
-No creatures eligible to attack.
-No attackers ��� skipping declare blockers.
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 20 (Player A) --------
-Player A draws Thassa's Oracle
-<<DECISION 125: action=1>>
+-------- TURN 16 (Player A) --------
+<<DECISION 100: action=1>>
 Player A activated Underground Sea for 1(U)
-Player A sacrifices Lotus Petal
-Player A activated Lotus Petal for 1(U)
-Player A casts Thassa's Oracle
-Thassa's Oracle enters the battlefield
-Thassa's Oracle triggered
-Resolving ability (category: Dig, amount: 1)
-Player A looks at the top 0 card(s) of their library.
-<<DECISION 126: action=0>>
-Player A puts 0 card(s) on the bottom of their library.
-Resolving ability (category: WinsGame, amount: 0)
-Player A wins the game! (Thassa's Oracle)
-Player A wins the game!
-=== GAME OVER: winner=Player A ===
+Player A casts Brainstorm
+Resolving ability (category: Draw, amount: 3)
+Player A draws Thoughtseize
+Player A draws Doomsday
+Player A draws Dark Ritual
+Resolving ability (category: ChangeZone, amount: 2)
+Player A chooses a card from Player A hand:
+<<DECISION 101: action=0>>
+Player A puts Doomsday to top of library
+Player A puts a card to top of library
+Player A chooses a card from Player A hand:
+<<DECISION 102: action=0>>
+Player A puts Thoughtseize to top of library
+Player A puts a card to top of library
+<<DECISION 103: action=0>>
+Player A draws Thoughtseize
+<<DECISION 104: action=0>>
+<<DECISION 105: action=1>>
+Player A activated Swamp for 1(B)
+Choose target:
+<<DECISION 106: action=0>>
+Targeting choice 0
+Player A casts Thoughtseize targeting Player B
+Resolving ability (category: Discard, amount: 1)
+Player B reveals their hand:
+No valid cards to discard.
+Resolving ability (category: LoseLife, amount: 2)
+Player A loses 2 life (now at 0)
+Player A has 0 life - Player B wins!
+=== GAME OVER: winner=Player B ===

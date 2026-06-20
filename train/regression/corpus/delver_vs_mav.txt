@@ -329,8 +329,7 @@ Dragon's Rage Channeler triggered
 <<DECISION 85: action=0>>
 Resolving ability (category: Surveil, amount: 1)
 Top card of Player A's library: Force of Will
-<<DECISION 86: action=1>>
-Player A puts Force of Will into the graveyard.
+<<DECISION 86: action=0>>
 <<DECISION 87: action=0>>
 Resolving ability (category: Counter, amount: 0)
 Green Sun's Zenith is countered
@@ -370,14 +369,14 @@ Player A casts Lightning Bolt targeting Player B
 Dragon's Rage Channeler triggered
 <<DECISION 102: action=0>>
 Resolving ability (category: Surveil, amount: 1)
-Top card of Player A's library: Mishra's Bauble
+Top card of Player A's library: Force of Will
 <<DECISION 103: action=1>>
-Player A puts Mishra's Bauble into the graveyard.
+Player A puts Force of Will into the graveyard.
 <<DECISION 104: action=0>>
 Resolving ability (category: DealDamage, amount: 3)
 Dealt 3 damage to player (now at 9 life)
 <<DECISION 105: action=0>>
-Player A draws Murktide Regent
+Player A draws Mishra's Bauble
 <<DECISION 106: action=0>>
 <<DECISION 107: action=0>>
 <<DECISION 108: action=0>>
@@ -432,29 +431,28 @@ No creatures eligible to block.
 --- Combat Damage ---
 --- End Combat Damage ---
 -------- TURN 12 (Player A) --------
-Player A draws Misty Rainforest
+Player A draws Murktide Regent
 <<DECISION 124: action=1>>
-Player A played Misty Rainforest
-<<DECISION 125: action=1>>
-Player A pays 1 life
-Player A sacrifices Misty Rainforest
-Player A's Misty Rainforest ability is on the stack
-Resolving ability (category: ChangeZone, amount: 1)
-Searching Player A's library:
-<<DECISION 126: action=1>>
-Player A shuffles their library
-Player A puts Volcanic Island to the battlefield
-<<DECISION 127: action=1>>
-Player A exiles Force of Will via Delve.
-Player A exiles Force of Will via Delve.
-Player A exiles Force of Will via Delve.
-Player A exiles Brainstorm via Delve.
-Player A exiles Lightning Bolt via Delve.
 Player A activated Island for 1(U)
-Player A activated Volcanic Island for 1(U)
-Player A casts Murktide Regent
-Murktide Regent enters the battlefield
-Murktide Regent enters with 5 +1/+1 counter(s) (8/8).
+Player A casts Mishra's Bauble
+Dragon's Rage Channeler triggered
+Resolving ability (category: Surveil, amount: 1)
+Top card of Player A's library: Misty Rainforest
+<<DECISION 125: action=1>>
+Player A puts Misty Rainforest into the graveyard.
+Mishra's Bauble enters the battlefield
+<<DECISION 126: action=1>>
+Choose target:
+<<DECISION 127: action=0>>
+Targeting choice 0
+Player A sacrifices Mishra's Bauble
+Player A's Mishra's Bauble ability targeting Player B is on the stack
+Resolving ability (category: PeekAndReveal, amount: 0)
+Player A looks at top of Player B's library: Wasteland
+Resolving ability (category: DelayedTrigger, amount: 0)
+Delayed trigger registered: Draw at next Upkeep.
+Resolving ability (category: Draw, amount: 1)
+Player A draws Cori-Steel Cutter
 Dragon's Rage Channeler must attack and is declared as an attacker.
 --- Declare Attackers (Player A) ---
   [attacking] Dragon's Rage Channeler [3/3] -> Player B
@@ -479,86 +477,77 @@ Player B activated Plains for 1(W)
 Player B casts Endurance
 <<DECISION 131: action=0>>
 Endurance enters the battlefield
-Endurance triggered
+Choose target:
 <<DECISION 132: action=0>>
+Targeting choice 0
+Endurance triggered
+<<DECISION 133: action=0>>
 Resolving ability (category: ChangeZoneAll, amount: 0)
+Player B moves Wooded Foothills to the bottom of their library
 Player B moves Swords to Plowshares to the bottom of their library
 Player B moves Dryad Arbor to the bottom of their library
-Player B moves Wooded Foothills to the bottom of their library
+Player B moves Windswept Heath to the bottom of their library
 Player B moves Green Sun's Zenith to the bottom of their library
 Player B moves Wasteland to the bottom of their library
-Player B moves Windswept Heath to the bottom of their library
 Player B moves Once Upon a Time to the bottom of their library
 Player B moves 7 card(s) to the bottom of their library
-<<DECISION 133: action=0>>
-Player B draws Wasteland
 <<DECISION 134: action=0>>
-<<DECISION 135: action=1>>
-Player B played Wasteland
+Player B draws Wasteland
+<<DECISION 135: action=0>>
 <<DECISION 136: action=1>>
-Choose target:
+Player B played Wasteland
 <<DECISION 137: action=0>>
-Targeting choice 0
-Player B sacrifices Wasteland
-Player B's Wasteland ability targeting Volcanic Island is on the stack
-<<DECISION 138: action=1>>
-Choose target:
-<<DECISION 139: action=0>>
-Targeting choice 0
-Player B sacrifices Wasteland
-Player B's Wasteland ability targeting Volcanic Island is on the stack
-Resolving ability (category: Destroy, amount: 0)
-Volcanic Island is destroyed
-Destroy fizzles
+<<DECISION 138: action=0>>
 --- Declare Attackers (Player B) ---
-<<DECISION 140: action=0>>
+<<DECISION 139: action=0>>
 Select target for Thalia, Guardian of Thraben:
-<<DECISION 141: action=0>>
+<<DECISION 140: action=0>>
 Thalia, Guardian of Thraben attacking Player A.
 --- Declare Attackers (Player B) ---
   [attacking] Thalia, Guardian of Thraben [2/1] -> Player A
-<<DECISION 142: action=-1>>
+<<DECISION 141: action=-1>>
 Attackers declared:
   Thalia, Guardian of Thraben -> Player A
---- Declare Blockers (Player A) ---
-Attackers:
-  0: Thalia, Guardian of Thraben [2/1]
-Your creatures:
-<<DECISION 143: action=-1>>
-Blockers declared:
-  (none)
+<<DECISION 142: action=0>>
+No creatures eligible to block.
+<<DECISION 143: action=0>>
 --- First Strike Combat Damage ---
   Thalia, Guardian of Thraben deals 2 damage to Player A
 --- End First Strike Combat Damage ---
+<<DECISION 144: action=0>>
 --- Combat Damage ---
 --- End Combat Damage ---
+<<DECISION 145: action=0>>
+<<DECISION 146: action=0>>
+<<DECISION 147: action=0>>
+<<DECISION 148: action=0>>
 -------- TURN 14 (Player A) --------
+Delayed trigger fires.
+<<DECISION 149: action=0>>
+Resolving ability (category: Draw, amount: 1)
 Player A draws Cori-Steel Cutter
+<<DECISION 150: action=0>>
+Player A draws Cori-Steel Cutter
+<<DECISION 151: action=0>>
+<<DECISION 152: action=0>>
+<<DECISION 153: action=0>>
 Dragon's Rage Channeler must attack and is declared as an attacker.
 --- Declare Attackers (Player A) ---
   [attacking] Dragon's Rage Channeler [3/3] -> Player B
-<<DECISION 144: action=0>>
-Select target for Murktide Regent:
-<<DECISION 145: action=0>>
-Murktide Regent attacking Player B.
---- Declare Attackers (Player A) ---
-  [attacking] Murktide Regent [8/8] -> Player B
-  [attacking] Dragon's Rage Channeler [3/3] -> Player B
-<<DECISION 146: action=-1>>
+<<DECISION 154: action=-1>>
 Attackers declared:
-  Murktide Regent -> Player B
   Dragon's Rage Channeler -> Player B
+<<DECISION 155: action=0>>
 --- Declare Blockers (Player B) ---
 Attackers:
-  0: Murktide Regent [8/8]
-  1: Dragon's Rage Channeler [3/3]
+  0: Dragon's Rage Channeler [3/3]
 Your creatures:
-<<DECISION 147: action=-1>>
+<<DECISION 156: action=-1>>
 Blockers declared:
   (none)
+<<DECISION 157: action=0>>
 --- Combat Damage ---
-  Murktide Regent deals 8 damage to Player B
   Dragon's Rage Channeler deals 3 damage to Player B
 --- End Combat Damage ---
-Player B has -8 life - Player A wins!
+Player B has 0 life - Player A wins!
 === GAME OVER: winner=Player A ===
