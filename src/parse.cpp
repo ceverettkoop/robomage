@@ -652,42 +652,8 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         }
     } else if (key == "ValidTgts") {
         ability.valid_tgts = value;
-    } else if (key == "ChangeType") {
-        ability.change_type = value;
-    } else if (key == "RememberChanged") {
-        ability.remember_changed = (value == "True");
-    } else if (key == "Origin") {
-        // Handle comma-separated origins (e.g. "Graveyard,Library")
-        auto parse_zone = [](const std::string &s) -> Zone::ZoneValue {
-            if (s == "Library")        return Zone::LIBRARY;
-            if (s == "Hand")           return Zone::HAND;
-            if (s == "Graveyard")      return Zone::GRAVEYARD;
-            if (s == "Exile")          return Zone::EXILE;
-            if (s == "Stack")          return Zone::STACK;
-            return Zone::LIBRARY;
-        };
-        ability.origins.clear();
-        size_t zp = 0;
-        while (true) {
-            size_t comma = value.find(',', zp);
-            if (comma == std::string::npos) {
-                ability.origins.push_back(parse_zone(value.substr(zp)));
-                break;
-            }
-            ability.origins.push_back(parse_zone(value.substr(zp, comma - zp)));
-            zp = comma + 1;
-        }
-        ability.origin = ability.origins[0];  // backward compat
-    } else if (key == "Destination") {
-        if (value == "Battlefield")    ability.destination = Zone::BATTLEFIELD;
-        else if (value == "Library")   ability.destination = Zone::LIBRARY;
-        else if (value == "Hand")      ability.destination = Zone::HAND;
-        else if (value == "Graveyard") ability.destination = Zone::GRAVEYARD;
-        else if (value == "Exile")     ability.destination = Zone::EXILE;
     } else if (key == "Mandatory") {
         ability.mandatory = (value == "True");
-    } else if (key == "MayShuffle") {
-        ability.may_shuffle = (value == "True");
     } else if (key == "UnlessCost") {
         ability.unless_generic_cost = static_cast<size_t>(std::stoi(value));
     } else if (key == "LifeAmount") {
@@ -704,10 +670,6 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         ability.is_peek_no_reveal = (value == "True");
     } else if (key == "NextTurn") {
         ability.delayed_trigger_next_turn = (value == "True");
-    } else if (key == "CounterType") {
-        ability.counter_type = value;
-    } else if (key == "CounterNum") {
-        ability.counter_count = std::stoi(value);
     } else if (key == "Optional") {
         ability.optional_choice = (value == "True");
     } else if (key == "Defined") {
@@ -813,8 +775,6 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
             }
             tok_pos = (tok_end < value.size()) ? tok_end + 1 : tok_end;
         }
-    } else if (key == "Tapped") {
-        ability.enters_tapped = (value == "True");
     } else if (key == "ConditionPresent") {
         ability.condition_present = value;
     } else if (key == "ConditionCompare") {

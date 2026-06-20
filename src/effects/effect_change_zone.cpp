@@ -110,4 +110,53 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
     return true;
 }
 
+// Owns the zone-movement param keys shared by the ChangeZone family (ChangeZone
+// and ChangeZoneAll both consume origin/destination/etc. at resolve).
+bool parse_change_zone(Ability &ab, const std::string &key, const std::string &value) {
+    if (key == "ChangeType") {
+        ab.change_type = value;
+        return true;
+    } else if (key == "RememberChanged") {
+        ab.remember_changed = (value == "True");
+        return true;
+    } else if (key == "Origin") {
+        // Handle comma-separated origins (e.g. "Graveyard,Library")
+        auto parse_zone = [](const std::string &s) -> Zone::ZoneValue {
+            if (s == "Library")        return Zone::LIBRARY;
+            if (s == "Hand")           return Zone::HAND;
+            if (s == "Graveyard")      return Zone::GRAVEYARD;
+            if (s == "Exile")          return Zone::EXILE;
+            if (s == "Stack")          return Zone::STACK;
+            return Zone::LIBRARY;
+        };
+        ab.origins.clear();
+        size_t zp = 0;
+        while (true) {
+            size_t comma = value.find(',', zp);
+            if (comma == std::string::npos) {
+                ab.origins.push_back(parse_zone(value.substr(zp)));
+                break;
+            }
+            ab.origins.push_back(parse_zone(value.substr(zp, comma - zp)));
+            zp = comma + 1;
+        }
+        ab.origin = ab.origins[0];  // backward compat
+        return true;
+    } else if (key == "Destination") {
+        if (value == "Battlefield")    ab.destination = Zone::BATTLEFIELD;
+        else if (value == "Library")   ab.destination = Zone::LIBRARY;
+        else if (value == "Hand")      ab.destination = Zone::HAND;
+        else if (value == "Graveyard") ab.destination = Zone::GRAVEYARD;
+        else if (value == "Exile")     ab.destination = Zone::EXILE;
+        return true;
+    } else if (key == "MayShuffle") {
+        ab.may_shuffle = (value == "True");
+        return true;
+    } else if (key == "Tapped") {
+        ab.enters_tapped = (value == "True");
+        return true;
+    }
+    return false;
+}
+
 }  // namespace effects

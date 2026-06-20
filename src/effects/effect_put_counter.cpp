@@ -31,4 +31,10 @@ bool put_counter(Ability &ab, std::shared_ptr<Orderer> orderer) {
     return true;
 }
 
+bool parse_put_counter(Ability &ab, const std::string &key, const std::string &value) {
+    if (key == "CounterType") { ab.counter_type = value; return true; }
+    if (key == "CounterNum")  { ab.counter_count = std::stoi(value); return true; }
+    return false;
+}
+
 }  // namespace effects
