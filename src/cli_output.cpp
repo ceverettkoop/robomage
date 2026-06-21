@@ -215,7 +215,7 @@ void cli_print_help(const char* program, const char* version) {
     printf("  --deck-b <name>     Load named deck for player B\n");
     printf("  --player <A|B>      Designate a human player (A or B)\n");
     printf("  --replay <logfile>  Replay a previously logged game\n");
-    printf("  --machine           Machine mode: emit QUERY lines for AI input\n");
+    printf("  --machine           Machine mode: emit BQUERY lines for AI input\n");
     printf("  --gui               Launch with GUI\n");
     printf("  --bo3               Best-of-three match mode\n");
     printf("  --help, -h          Show this help message\n");

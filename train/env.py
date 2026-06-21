@@ -2,7 +2,7 @@
 RoboMage gymnasium environment.
 
 The game runs as a subprocess with --machine mode. On each decision point it
-emits a QUERY line to stdout:
+emits a BQUERY line to stdout:
 
     BQUERY: <num_choices>\n<float32[STATE_SIZE] binary><int32[MAX_ACTIONS] cats><float32[MAX_ACTIONS] ids><float32[MAX_ACTIONS] ctrl>
 
@@ -62,7 +62,7 @@ except ImportError:
 
 STATE_SIZE = 33666
 # NOTE: Exile zones are tracked in GameState but not serialized to the observation.
-# NOTE: ActionChoice.description is never emitted in the QUERY line — it is for
+# NOTE: ActionChoice.description is never emitted in the BQUERY payload — it is for
 #       human-readable display only and is not part of the ML observation.
 MAX_ACTIONS = 64         # practical upper bound on num_choices per step
 # Binary BQUERY payload sizes (bytes): state float32s + MAX_ACTIONS each of cats(int32)/ids/ctrl(float32)
@@ -375,7 +375,7 @@ class RoboMageEnv(gym.Env):
 
                 break
 
-            # Non-QUERY output: optionally print for human render mode
+            # Non-BQUERY output: optionally print for human render mode
             if self.render_mode == "human":
                 self._print_narrative_line(line.decode("ascii", errors="replace"))
 
@@ -405,7 +405,7 @@ class RoboMageEnv(gym.Env):
 
 
 class NarrativeEnv(RoboMageEnv):
-    """RoboMageEnv that collects non-QUERY game lines into a list instead of printing them."""
+    """RoboMageEnv that collects non-BQUERY game lines into a list instead of printing them."""
 
     def __init__(self, **kwargs):
         kwargs.setdefault("render_mode", "human")

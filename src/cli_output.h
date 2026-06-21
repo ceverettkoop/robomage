@@ -35,7 +35,7 @@ void game_log(const char* fmt, ...);
 // Like game_log, but suppressed when a human player is designated and private_to is their opponent
 void game_log_private(Zone::Ownership private_to, const char* fmt, ...);
 
-// Machine query emitter: raw printf of QUERY line (called only in machine mode)
+// Machine query emitter: BQUERY header line + binary payload (called only in machine mode)
 void cli_emit_machine_query(const Query* q, const GameState* gs);
 
 // C-API buffer accessors (callable from C, including gui.c)

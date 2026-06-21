@@ -21,7 +21,7 @@
 //     player, 0.0 if controlled by the opponent, -0.0078125 null sentinel for
 //     non-entity actions (pass priority, confirm slots, etc.).
 //
-// NOTE: ActionChoice.description is NOT emitted in the QUERY line.
+// NOTE: ActionChoice.description is NOT emitted in the BQUERY payload.
 // It is stored in Query for human-readable display (GUI/CLI) only.
 //
 // The Python env pads all three arrays to MAX_ACTIONS slots so the full
