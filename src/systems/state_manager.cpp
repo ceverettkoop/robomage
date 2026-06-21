@@ -145,6 +145,8 @@ void StateManager::apply_permanent_components(Game &game) {
                             break;
                         case Effect::Replacement::CANT_BE_COUNTERED:
                             break;  // handled at cast time, not ETB
+                        case Effect::Replacement::EXILE_INSTEAD_OF_GRAVEYARD:
+                            break;  // handled in Orderer::add_to_zone, not ETB
                     }
                 }
                 // A ChangeZone effect (e.g. fetch "onto the battlefield tapped") may also
@@ -155,6 +157,9 @@ void StateManager::apply_permanent_components(Game &game) {
                     game.pending_enters_tapped.erase(pet);
                 }
                 if (perm.is_tapped) game_log("%s enters tapped.\n", perm.name.c_str());
+                // Spell was cast for its evoke cost — mark the permanent so its evoke
+                // self-sacrifice ETB trigger fires (consumed one-shot here).
+                if (game.pending_evoked.erase(entity)) perm.evoked = true;
                 perm.timestamp_entered_battlefield = game.timestamp++;
                 global_coordinator.AddComponent(entity, perm);
             }
@@ -634,9 +639,10 @@ void StateManager::apply_static_ability_effects() {
                 continue;
             }
 
-            // Determine which entity receives the buff (source or equipped creature)
+            // Determine which entity receives the buff (source or equipped creature).
+            // Affected$ is stored verbatim (e.g. "Creature.EquippedBy"), so match by substring.
             Entity target_entity = a.entity;
-            if (a.sa->affected == "EquippedBy") {
+            if (a.sa->affected.find("EquippedBy") != std::string::npos) {
                 if (!global_coordinator.entity_has_component<Permanent>(a.entity)) continue;
                 target_entity = global_coordinator.GetComponent<Permanent>(a.entity).equipped_to;
             }
@@ -1049,6 +1055,8 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                 // Card.Self: only fire when the event entity is the triggering permanent itself
                 if (ab.trigger_only_self && ev.HasParam(Params::ENTITY) &&
                     ev.GetParam<Entity>(Params::ENTITY) != entity) continue;
+                // Evoke self-sacrifice only fires when this permanent was cast via evoke
+                if (ab.is_evoke_sacrifice && !perm.evoked) continue;
                 // Don't fire front-face triggers on a transformed permanent
                 if (perm.transformed) continue;
                 // ValidPlayer$ You: only fire when the event's player matches the permanent's controller
@@ -1134,6 +1142,13 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                 // For combat damage triggers, capture the damage amount
                 if (ev.GetType() == Events::COMBAT_DAMAGE_TO_PLAYER && ev.HasParam(Params::AMOUNT))
                     trigger_ab.trigger_damage_amount = ev.GetParam<uint32_t>(Params::AMOUNT);
+                // Triggered abilities that require a target (e.g. Talon Gates of Madara's
+                // "up to one target creature phases out") choose their target as the ability
+                // goes on the stack, picked by the controller. Skip if a target was already
+                // assigned above (e.g. ExaltedBonus) or none is required.
+                if (trigger_ab.valid_tgts != "N_A" && trigger_ab.target == 0 &&
+                    has_legal_targets(trigger_ab, orderer))
+                    select_target(trigger_ab, orderer, perm.controller);
                 orderer->push_ability_onto_stack(trigger_ab, perm.controller);
 
                 game_log("%s triggered\n", ent_name.c_str());
@@ -1210,6 +1225,11 @@ static bool can_afford_alt(const AltCost& alt_cost, Zone::Ownership priority_pla
             }
         }
         if (!has_match) return false;
+    }
+
+    // Mana portion of the alt cost (e.g. Evoke:R)
+    if (!alt_cost.mana_cost.empty()) {
+        if (!can_pay_mana(priority_player, alt_cost.mana_cost, card_entity, orderer)) return false;
     }
 
     return true;
@@ -1377,12 +1397,18 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         for (const auto &ab : card_data.abilities) {
             if (ab.ability_type != Ability::SPELL) continue;
             tgt_ok = has_legal_targets(ab, orderer);
-            if (!ab.condition_present.empty())
+            // Target-conditional abilities (ConditionDefined$ Targeted, e.g. Fatal Push)
+            // may target anything legal; the condition is checked on the target at
+            // resolution, so it must not gate cast-time legality.
+            if (!ab.condition_present.empty() && !ab.condition_on_target)
                 condition_ok = check_condition_present(ab, priority_player, orderer);
             break;
         }
-        // Machine mode: don't offer spells with conditional destroy if no target would pass
-        // (e.g. Fatal Push: only show if a creature with CMC <= revolt threshold exists)
+        // Machine mode only: action-masking optimization — don't offer a conditional-destroy
+        // spell to the RL agent when no target on the board would currently pass the
+        // condition (e.g. Fatal Push: only show if a creature with mana value <= the current
+        // revolt-aware threshold exists). This is a masking heuristic, NOT a rules gate —
+        // the spell can still legally target any creature in CLI/interactive play.
         if (InputLogger::instance().is_machine_mode() && tgt_ok && condition_ok) {
             for (const auto &ab : card_data.abilities) {
                 if (ab.ability_type != Ability::SPELL) continue;
@@ -1535,6 +1561,38 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             if (cant_activate) break;
         }
         if (cant_activate) continue;
+
+        // EQUIP: equipment's equip ability is sorcery-speed (main phase, your turn, empty stack).
+        // The Equip keyword is parsed into is_equipment/equip_cost but produces no stored Ability,
+        // so synthesise the action here when there is a creature to equip and the cost is payable.
+        if (global_coordinator.entity_has_component<CardData>(entity)) {
+            auto &cd = global_coordinator.GetComponent<CardData>(entity);
+            bool main_phase = (game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
+                              (game.player_a_turn == game.player_a_has_priority) &&
+                              stack_manager->is_empty();
+            if (cd.is_equipment && main_phase) {
+                bool has_creature = false;
+                for (auto e2 : orderer->mEntities) {
+                    if (!global_coordinator.entity_has_component<Permanent>(e2)) continue;
+                    if (!global_coordinator.entity_has_component<Creature>(e2)) continue;
+                    if (global_coordinator.GetComponent<Zone>(e2).location != Zone::BATTLEFIELD) continue;
+                    if (global_coordinator.GetComponent<Permanent>(e2).controller != priority_player) continue;
+                    has_creature = true;
+                    break;
+                }
+                if (has_creature && can_pay_mana(priority_player, cd.equip_cost, entity, orderer)) {
+                    Ability equip_ab;
+                    equip_ab.ability_type = Ability::ACTIVATED;
+                    equip_ab.category = "Equip";
+                    equip_ab.source = entity;
+                    equip_ab.activation_mana_cost = cd.equip_cost;
+                    std::string desc = "Equip " + entity_name(entity);
+                    LegalAction equip_la(ACTIVATE_ABILITY, entity, equip_ab, desc);
+                    equip_la.category = ActionCategory::ACTIVATE_ABILITY;
+                    actions.push_back(equip_la);
+                }
+            }
+        }
 
         for (auto ab : permanent.abilities) {
             if (ab.ability_type != Ability::ACTIVATED) continue;

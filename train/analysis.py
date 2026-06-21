@@ -1062,15 +1062,15 @@ def _extract_interpretable(obs):
     f[i] = opp_life;      i += 1  # opp_life
     f[i] = self_life - opp_life; i += 1  # life_diff
 
-    # Self mana (obs[2:8])
+    # Self mana (obs[3:9]) — player block is life(0), hand_ct(1), poison(2), mana[W,U,B,R,G,C](3-8)
     for j in range(6):
-        f[i] = obs[2 + j] * 10.0; i += 1
-    f[i] = sum(obs[2 + j] * 10.0 for j in range(6)); i += 1  # total mana
+        f[i] = obs[3 + j] * 10.0; i += 1
+    f[i] = sum(obs[3 + j] * 10.0 for j in range(6)); i += 1  # total mana
 
-    # Opp mana (obs[11:17])
+    # Opp mana (obs[12:18]) — opp block starts at 9: life(9), hand_ct(10), poison(11), mana(12-17)
     for j in range(6):
-        f[i] = obs[11 + j] * 10.0; i += 1
-    f[i] = sum(obs[11 + j] * 10.0 for j in range(6)); i += 1  # total mana
+        f[i] = obs[12 + j] * 10.0; i += 1
+    f[i] = sum(obs[12 + j] * 10.0 for j in range(6)); i += 1  # total mana
 
     # Hand size (count non-empty hand slots for self; opp comes from player block)
     hand_count = 0

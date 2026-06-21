@@ -1,0 +1,553 @@
+robomage 0.001
+Using seed: 1641108517
+Player A draws Island
+Player A draws Dragon's Rage Channeler
+Player A draws Scalding Tarn
+Player A draws Force of Will
+Player A draws Mishra's Bauble
+Player A draws Force of Will
+Player A draws Wasteland
+Player B draws Endurance
+Player B draws Green Sun's Zenith
+Player B draws Swords to Plowshares
+Player B draws Thalia, Guardian of Thraben
+Player B draws Once Upon a Time
+Player B draws Wooded Foothills
+Player B draws Wasteland
+Player A hand:
+Dragon's Rage Channeler
+Mishra's Bauble
+Force of Will
+Force of Will
+Island
+Scalding Tarn
+Wasteland
+<<DECISION 1: action=0>>
+Player B hand:
+Endurance
+Green Sun's Zenith
+Once Upon a Time
+Swords to Plowshares
+Thalia, Guardian of Thraben
+Wasteland
+Wooded Foothills
+<<DECISION 2: action=0>>
+-------- TURN 0 (Player A) --------
+<<DECISION 3: action=1>>
+Player B casts for free (alternate cost)
+Player B casts Once Upon a Time
+<<DECISION 4: action=1>>
+Player A pays 1 life
+<<DECISION 5: action=0>>
+Player A exiles Force of Will
+Choose target:
+<<DECISION 6: action=0>>
+Targeting choice 0
+Player A casts Force of Will targeting Once Upon a Time
+Resolving ability (category: Counter, amount: 0)
+Once Upon a Time is countered
+<<DECISION 7: action=4>>
+Player A casts Mishra's Bauble
+Mishra's Bauble enters the battlefield
+<<DECISION 8: action=1>>
+Player A played Island
+<<DECISION 9: action=1>>
+Choose target:
+<<DECISION 10: action=0>>
+Targeting choice 0
+Player A sacrifices Mishra's Bauble
+Player A's Mishra's Bauble ability targeting Player B is on the stack
+Resolving ability (category: PeekAndReveal, amount: 0)
+Player A looks at top of Player B's library: Plains
+Resolving ability (category: DelayedTrigger, amount: 0)
+Delayed trigger registered: Draw at next Upkeep.
+Resolving ability (category: Draw, amount: 1)
+Player A draws Murktide Regent
+No creatures eligible to attack.
+No attackers ��� skipping declare blockers.
+--- Combat Damage ---
+--- End Combat Damage ---
+-------- TURN 1 (Player B) --------
+Player B draws Plains
+<<DECISION 11: action=1>>
+Player B played Plains
+No creatures eligible to attack.
+No attackers ��� skipping declare blockers.
+--- Combat Damage ---
+--- End Combat Damage ---
+-------- TURN 2 (Player A) --------
+Delayed trigger fires.
+Resolving ability (category: Draw, amount: 1)
+Player A draws Brainstorm
+<<DECISION 12: action=1>>
+Player A activated Island for 1(U)
+Player A casts Brainstorm
+Resolving ability (category: Draw, amount: 3)
+Player A draws Lightning Bolt
+Player A draws Dragon's Rage Channeler
+Player A draws Force of Will
+Resolving ability (category: ChangeZone, amount: 2)
+Player A chooses a card from Player A hand:
+<<DECISION 13: action=0>>
+Player A puts Murktide Regent to top of library
+Player A puts a card to top of library
+Player A chooses a card from Player A hand:
+<<DECISION 14: action=0>>
+Player A puts Dragon's Rage Channeler to top of library
+Player A puts a card to top of library
+Player A draws Dragon's Rage Channeler
+<<DECISION 15: action=1>>
+Player A played Scalding Tarn
+<<DECISION 16: action=1>>
+Player A pays 1 life
+Player A sacrifices Scalding Tarn
+Player A's Scalding Tarn ability is on the stack
+Resolving ability (category: ChangeZone, amount: 1)
+Searching Player A's library:
+<<DECISION 17: action=1>>
+Player A shuffles their library
+Player A puts Mountain to the battlefield
+<<DECISION 18: action=1>>
+Player A activated Mountain for 1(R)
+Player A casts Dragon's Rage Channeler
+Dragon's Rage Channeler enters the battlefield
+<<DECISION 19: action=1>>
+Player B activated Plains for 1(W)
+Choose target:
+<<DECISION 20: action=0>>
+Targeting choice 0
+Player B casts Swords to Plowshares targeting Dragon's Rage Channeler
+Resolving ability (category: ChangeZone, amount: 0)
+Dragon's Rage Channeler is moved to exile
+Resolving ability (category: GainLife, amount: 0)
+Player A gains 1 life (now at 19)
+No creatures eligible to attack.
+No attackers ��� skipping declare blockers.
+--- Combat Damage ---
+--- End Combat Damage ---
+-------- TURN 3 (Player B) --------
+Player B draws Knight of the Reliquary
+<<DECISION 21: action=1>>
+Player B played Wasteland
+<<DECISION 22: action=1>>
+Player B activated Plains for 1(W)
+Player B activated Wasteland for 1(C)
+Player B casts Thalia, Guardian of Thraben
+Thalia, Guardian of Thraben enters the battlefield
+No creatures eligible to attack.
+No attackers ��� skipping declare blockers.
+--- Combat Damage ---
+--- End Combat Damage ---
+-------- TURN 4 (Player A) --------
+<<DECISION 23: action=1>>
+Player A activated Mountain for 1(R)
+Player A activated Island for 1(U)
+Choose target:
+<<DECISION 24: action=0>>
+Targeting choice 0
+Player A casts Lightning Bolt targeting Player B
+Resolving ability (category: DealDamage, amount: 3)
+Dealt 3 damage to player (now at 17 life)
+Player A draws Daze
+<<DECISION 25: action=1>>
+Player A played Wasteland
+<<DECISION 26: action=1>>
+Choose target:
+<<DECISION 27: action=0>>
+Targeting choice 0
+Player A sacrifices Wasteland
+Player A's Wasteland ability targeting Wasteland is on the stack
+Resolving ability (category: Destroy, amount: 0)
+Wasteland is destroyed
+No creatures eligible to attack.
+No attackers ��� skipping declare blockers.
+--- Combat Damage ---
+--- End Combat Damage ---
+-------- TURN 5 (Player B) --------
+Player B draws Green Sun's Zenith
+<<DECISION 28: action=1>>
+Player B played Wooded Foothills
+<<DECISION 29: action=1>>
+Player B pays 1 life
+Player B sacrifices Wooded Foothills
+Player B's Wooded Foothills ability is on the stack
+Resolving ability (category: ChangeZone, amount: 1)
+Searching Player B's library:
+<<DECISION 30: action=1>>
+Player B shuffles their library
+Player B puts Dryad Arbor to the battlefield
+--- Declare Attackers (Player B) ---
+<<DECISION 31: action=0>>
+Select target for Thalia, Guardian of Thraben:
+<<DECISION 32: action=0>>
+Thalia, Guardian of Thraben attacking Player A.
+--- Declare Attackers (Player B) ---
+  [attacking] Thalia, Guardian of Thraben [2/1] -> Player A
+<<DECISION 33: action=-1>>
+Attackers declared:
+  Thalia, Guardian of Thraben -> Player A
+No creatures eligible to block.
+--- First Strike Combat Damage ---
+  Thalia, Guardian of Thraben deals 2 damage to Player A
+--- End First Strike Combat Damage ---
+--- Combat Damage ---
+--- End Combat Damage ---
+-------- TURN 6 (Player A) --------
+Player A draws Wasteland
+<<DECISION 34: action=2>>
+Player A activated Mountain for 1(R)
+Player A casts Dragon's Rage Channeler
+<<DECISION 35: action=0>>
+Dragon's Rage Channeler enters the battlefield
+<<DECISION 36: action=1>>
+Player A played Wasteland
+<<DECISION 37: action=1>>
+Choose target:
+<<DECISION 38: action=0>>
+Targeting choice 0
+Player A sacrifices Wasteland
+Player A's Wasteland ability targeting Dryad Arbor is on the stack
+Resolving ability (category: Destroy, amount: 0)
+Dryad Arbor is destroyed
+No creatures eligible to attack.
+No attackers ��� skipping declare blockers.
+--- Combat Damage ---
+--- End Combat Damage ---
+-------- TURN 7 (Player B) --------
+Player B draws Wasteland
+<<DECISION 39: action=1>>
+Player B played Wasteland
+<<DECISION 40: action=0>>
+<<DECISION 41: action=0>>
+--- Declare Attackers (Player B) ---
+<<DECISION 42: action=0>>
+Select target for Thalia, Guardian of Thraben:
+<<DECISION 43: action=0>>
+Thalia, Guardian of Thraben attacking Player A.
+--- Declare Attackers (Player B) ---
+  [attacking] Thalia, Guardian of Thraben [2/1] -> Player A
+<<DECISION 44: action=-1>>
+Attackers declared:
+  Thalia, Guardian of Thraben -> Player A
+<<DECISION 45: action=0>>
+--- Declare Blockers (Player A) ---
+Attackers:
+  0: Thalia, Guardian of Thraben [2/1]
+Your creatures:
+<<DECISION 46: action=-1>>
+Blockers declared:
+  (none)
+<<DECISION 47: action=0>>
+--- First Strike Combat Damage ---
+  Thalia, Guardian of Thraben deals 2 damage to Player A
+--- End First Strike Combat Damage ---
+<<DECISION 48: action=0>>
+--- Combat Damage ---
+--- End Combat Damage ---
+<<DECISION 49: action=0>>
+<<DECISION 50: action=0>>
+<<DECISION 51: action=0>>
+<<DECISION 52: action=0>>
+-------- TURN 8 (Player A) --------
+<<DECISION 53: action=0>>
+Player A draws Ponder
+<<DECISION 54: action=0>>
+<<DECISION 55: action=1>>
+Player A activated Island for 1(U)
+Player A activated Mountain for 1(R)
+Player A casts Ponder
+Dragon's Rage Channeler triggered
+<<DECISION 56: action=0>>
+<<DECISION 57: action=0>>
+Resolving ability (category: Surveil, amount: 1)
+Top card of Player A's library: Mishra's Bauble
+<<DECISION 58: action=1>>
+Player A puts Mishra's Bauble into the graveyard.
+<<DECISION 59: action=0>>
+<<DECISION 60: action=0>>
+Resolving ability (category: RearrangeTopOfLibrary, amount: 3)
+Player A looks at the top 3 card(s) of their library.
+Choose which card goes 3 from top:
+<<DECISION 61: action=0>>
+Choose which card goes 2 from top:
+<<DECISION 62: action=0>>
+<<DECISION 63: action=0>>
+Resolving ability (category: Draw, amount: 1)
+Player A draws Lightning Bolt
+Dragon's Rage Channeler gains 2/2 Flying (Delirium)
+<<DECISION 64: action=0>>
+<<DECISION 65: action=0>>
+Dragon's Rage Channeler must attack and is declared as an attacker.
+--- Declare Attackers (Player A) ---
+  [attacking] Dragon's Rage Channeler [3/3] -> Player B
+<<DECISION 66: action=-1>>
+Attackers declared:
+  Dragon's Rage Channeler -> Player B
+<<DECISION 67: action=0>>
+No creatures eligible to block.
+<<DECISION 68: action=0>>
+--- Combat Damage ---
+  Dragon's Rage Channeler deals 3 damage to Player B
+--- End Combat Damage ---
+<<DECISION 69: action=0>>
+<<DECISION 70: action=0>>
+<<DECISION 71: action=0>>
+<<DECISION 72: action=0>>
+-------- TURN 9 (Player B) --------
+<<DECISION 73: action=0>>
+Player B draws Windswept Heath
+<<DECISION 74: action=0>>
+<<DECISION 75: action=1>>
+Player B played Windswept Heath
+<<DECISION 76: action=2>>
+Player B pays 1 life
+Player B sacrifices Windswept Heath
+Player B's Windswept Heath ability is on the stack
+<<DECISION 77: action=0>>
+Resolving ability (category: ChangeZone, amount: 1)
+Searching Player B's library:
+<<DECISION 78: action=1>>
+Player B shuffles their library
+Player B puts Forest to the battlefield
+<<DECISION 79: action=1>>
+Choose X value (0-1):
+<<DECISION 80: action=0>>
+Player B chooses X = 0
+Player B activated Forest for 1(G)
+Player B activated Plains for 1(W)
+Player B casts Green Sun's Zenith
+<<DECISION 81: action=0>>
+<<DECISION 82: action=1>>
+Player A pays 1 life
+<<DECISION 83: action=0>>
+Player A exiles Daze
+Choose target:
+<<DECISION 84: action=0>>
+Targeting choice 0
+Player A casts Force of Will targeting Green Sun's Zenith
+Dragon's Rage Channeler triggered
+<<DECISION 85: action=0>>
+Resolving ability (category: Surveil, amount: 1)
+Top card of Player A's library: Force of Will
+<<DECISION 86: action=0>>
+<<DECISION 87: action=0>>
+Resolving ability (category: Counter, amount: 0)
+Green Sun's Zenith is countered
+<<DECISION 88: action=0>>
+<<DECISION 89: action=0>>
+--- Declare Attackers (Player B) ---
+<<DECISION 90: action=0>>
+Select target for Thalia, Guardian of Thraben:
+<<DECISION 91: action=0>>
+Thalia, Guardian of Thraben attacking Player A.
+--- Declare Attackers (Player B) ---
+  [attacking] Thalia, Guardian of Thraben [2/1] -> Player A
+<<DECISION 92: action=-1>>
+Attackers declared:
+  Thalia, Guardian of Thraben -> Player A
+<<DECISION 93: action=0>>
+No creatures eligible to block.
+<<DECISION 94: action=0>>
+--- First Strike Combat Damage ---
+  Thalia, Guardian of Thraben deals 2 damage to Player A
+--- End First Strike Combat Damage ---
+<<DECISION 95: action=0>>
+--- Combat Damage ---
+--- End Combat Damage ---
+<<DECISION 96: action=0>>
+<<DECISION 97: action=0>>
+<<DECISION 98: action=0>>
+<<DECISION 99: action=0>>
+-------- TURN 10 (Player A) --------
+<<DECISION 100: action=1>>
+Player A activated Mountain for 1(R)
+Player A activated Island for 1(U)
+Choose target:
+<<DECISION 101: action=0>>
+Targeting choice 0
+Player A casts Lightning Bolt targeting Player B
+Dragon's Rage Channeler triggered
+<<DECISION 102: action=0>>
+Resolving ability (category: Surveil, amount: 1)
+Top card of Player A's library: Force of Will
+<<DECISION 103: action=1>>
+Player A puts Force of Will into the graveyard.
+<<DECISION 104: action=0>>
+Resolving ability (category: DealDamage, amount: 3)
+Dealt 3 damage to player (now at 9 life)
+<<DECISION 105: action=0>>
+Player A draws Mishra's Bauble
+<<DECISION 106: action=0>>
+<<DECISION 107: action=0>>
+<<DECISION 108: action=0>>
+Dragon's Rage Channeler must attack and is declared as an attacker.
+--- Declare Attackers (Player A) ---
+  [attacking] Dragon's Rage Channeler [3/3] -> Player B
+<<DECISION 109: action=-1>>
+Attackers declared:
+  Dragon's Rage Channeler -> Player B
+<<DECISION 110: action=0>>
+No creatures eligible to block.
+<<DECISION 111: action=0>>
+--- Combat Damage ---
+  Dragon's Rage Channeler deals 3 damage to Player B
+--- End Combat Damage ---
+<<DECISION 112: action=0>>
+<<DECISION 113: action=0>>
+<<DECISION 114: action=0>>
+<<DECISION 115: action=0>>
+-------- TURN 11 (Player B) --------
+<<DECISION 116: action=0>>
+Player B draws Scythecat Cub
+<<DECISION 117: action=0>>
+<<DECISION 118: action=1>>
+Choose X value (0-1):
+<<DECISION 119: action=1>>
+Player B chooses X = 1
+Player B activated Forest for 1(G)
+Player B activated Plains for 1(W)
+Player B activated Wasteland for 1(C)
+Player B casts Green Sun's Zenith
+Resolving ability (category: ChangeZone, amount: 1)
+Searching Player B's library:
+<<DECISION 120: action=1>>
+Player B shuffles their library
+Player B puts Birds of Paradise to the battlefield
+Green Sun's Zenith is shuffled into its owner's library
+--- Declare Attackers (Player B) ---
+<<DECISION 121: action=0>>
+Select target for Thalia, Guardian of Thraben:
+<<DECISION 122: action=0>>
+Thalia, Guardian of Thraben attacking Player A.
+--- Declare Attackers (Player B) ---
+  [attacking] Thalia, Guardian of Thraben [2/1] -> Player A
+<<DECISION 123: action=-1>>
+Attackers declared:
+  Thalia, Guardian of Thraben -> Player A
+No creatures eligible to block.
+--- First Strike Combat Damage ---
+  Thalia, Guardian of Thraben deals 2 damage to Player A
+--- End First Strike Combat Damage ---
+--- Combat Damage ---
+--- End Combat Damage ---
+-------- TURN 12 (Player A) --------
+Player A draws Murktide Regent
+<<DECISION 124: action=1>>
+Player A activated Island for 1(U)
+Player A casts Mishra's Bauble
+Dragon's Rage Channeler triggered
+Resolving ability (category: Surveil, amount: 1)
+Top card of Player A's library: Misty Rainforest
+<<DECISION 125: action=1>>
+Player A puts Misty Rainforest into the graveyard.
+Mishra's Bauble enters the battlefield
+<<DECISION 126: action=1>>
+Choose target:
+<<DECISION 127: action=0>>
+Targeting choice 0
+Player A sacrifices Mishra's Bauble
+Player A's Mishra's Bauble ability targeting Player B is on the stack
+Resolving ability (category: PeekAndReveal, amount: 0)
+Player A looks at top of Player B's library: Wasteland
+Resolving ability (category: DelayedTrigger, amount: 0)
+Delayed trigger registered: Draw at next Upkeep.
+Resolving ability (category: Draw, amount: 1)
+Player A draws Cori-Steel Cutter
+Dragon's Rage Channeler must attack and is declared as an attacker.
+--- Declare Attackers (Player A) ---
+  [attacking] Dragon's Rage Channeler [3/3] -> Player B
+<<DECISION 128: action=-1>>
+Attackers declared:
+  Dragon's Rage Channeler -> Player B
+--- Declare Blockers (Player B) ---
+Attackers:
+  0: Dragon's Rage Channeler [3/3]
+Your creatures:
+<<DECISION 129: action=-1>>
+Blockers declared:
+  (none)
+--- Combat Damage ---
+  Dragon's Rage Channeler deals 3 damage to Player B
+--- End Combat Damage ---
+-------- TURN 13 (Player B) --------
+<<DECISION 130: action=1>>
+Player B activated Forest for 1(G)
+Player B activated Birds of Paradise for 1(G)
+Player B activated Plains for 1(W)
+Player B casts Endurance
+<<DECISION 131: action=0>>
+Endurance enters the battlefield
+Choose target:
+<<DECISION 132: action=0>>
+Targeting choice 0
+Endurance triggered
+<<DECISION 133: action=0>>
+Resolving ability (category: ChangeZoneAll, amount: 0)
+Player B moves Wooded Foothills to the bottom of their library
+Player B moves Swords to Plowshares to the bottom of their library
+Player B moves Dryad Arbor to the bottom of their library
+Player B moves Windswept Heath to the bottom of their library
+Player B moves Green Sun's Zenith to the bottom of their library
+Player B moves Wasteland to the bottom of their library
+Player B moves Once Upon a Time to the bottom of their library
+Player B moves 7 card(s) to the bottom of their library
+<<DECISION 134: action=0>>
+Player B draws Wasteland
+<<DECISION 135: action=0>>
+<<DECISION 136: action=1>>
+Player B played Wasteland
+<<DECISION 137: action=0>>
+<<DECISION 138: action=0>>
+--- Declare Attackers (Player B) ---
+<<DECISION 139: action=0>>
+Select target for Thalia, Guardian of Thraben:
+<<DECISION 140: action=0>>
+Thalia, Guardian of Thraben attacking Player A.
+--- Declare Attackers (Player B) ---
+  [attacking] Thalia, Guardian of Thraben [2/1] -> Player A
+<<DECISION 141: action=-1>>
+Attackers declared:
+  Thalia, Guardian of Thraben -> Player A
+<<DECISION 142: action=0>>
+No creatures eligible to block.
+<<DECISION 143: action=0>>
+--- First Strike Combat Damage ---
+  Thalia, Guardian of Thraben deals 2 damage to Player A
+--- End First Strike Combat Damage ---
+<<DECISION 144: action=0>>
+--- Combat Damage ---
+--- End Combat Damage ---
+<<DECISION 145: action=0>>
+<<DECISION 146: action=0>>
+<<DECISION 147: action=0>>
+<<DECISION 148: action=0>>
+-------- TURN 14 (Player A) --------
+Delayed trigger fires.
+<<DECISION 149: action=0>>
+Resolving ability (category: Draw, amount: 1)
+Player A draws Cori-Steel Cutter
+<<DECISION 150: action=0>>
+Player A draws Cori-Steel Cutter
+<<DECISION 151: action=0>>
+<<DECISION 152: action=0>>
+<<DECISION 153: action=0>>
+Dragon's Rage Channeler must attack and is declared as an attacker.
+--- Declare Attackers (Player A) ---
+  [attacking] Dragon's Rage Channeler [3/3] -> Player B
+<<DECISION 154: action=-1>>
+Attackers declared:
+  Dragon's Rage Channeler -> Player B
+<<DECISION 155: action=0>>
+--- Declare Blockers (Player B) ---
+Attackers:
+  0: Dragon's Rage Channeler [3/3]
+Your creatures:
+<<DECISION 156: action=-1>>
+Blockers declared:
+  (none)
+<<DECISION 157: action=0>>
+--- Combat Damage ---
+  Dragon's Rage Channeler deals 3 damage to Player B
+--- End Combat Damage ---
+Player B has 0 life - Player A wins!
+=== GAME OVER: winner=Player A ===

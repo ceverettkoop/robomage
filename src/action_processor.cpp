@@ -407,16 +407,23 @@ static std::vector<Entity> build_valid_targets(
     if (ability.target_type == "Spell" ||
         ability.target_type.find("Activated") != std::string::npos ||
         ability.target_type.find("Triggered") != std::string::npos) {
-        for (auto e : orderer->get_stack())
+        for (auto e : orderer->get_stack()) {
+            // A spell/ability can't target itself — e.g. a modal spell (Pyroblast/
+            // Hydroblast) that picks its target at resolution is still on the stack.
+            if (e == ability.source) continue;
             if (ability.is_legal_target(e, priority_player)) valid_targets.push_back(e);
+        }
         return valid_targets;
     }
 
     Zone::Ownership opp = (priority_player == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
 
-    // Target cards in a non-battlefield zone (e.g. Faerie Macabre targeting graveyard cards):
-    // opponent's graveyard first, then own.
-    if (vt == "Card" && ability.category == "ChangeZone" && ability.origin == Zone::GRAVEYARD) {
+    // Target cards in a graveyard (e.g. Faerie Macabre targeting any graveyard card,
+    // or Life from the Loam targeting Land.YouCtrl): opponent's graveyard first, then
+    // own. is_legal_target applies the type/owner filter, so YouCtrl effects only keep
+    // the caster's own cards.
+    if (ability.category == "ChangeZone" && ability.origin == Zone::GRAVEYARD &&
+        ability.destination != Zone::BATTLEFIELD) {
         for (int pass = 0; pass < 2; pass++) {
             Zone::Ownership slot_owner = (pass == 0) ? opp : priority_player;
             for (auto e : orderer->mEntities) {
@@ -463,6 +470,12 @@ static void pay_alternate_cost(const LegalAction &action, Game &game, std::share
     if (card_data.alt_cost.is_free) {
         game_log("%s casts for free (alternate cost)\n", player_name(caster).c_str());
         return;
+    }
+
+    // mana portion of the alt cost (e.g. Evoke:R). Affordability is pre-verified by
+    // can_afford_alt, so in machine mode this always succeeds.
+    if (!card_data.alt_cost.mana_cost.empty()) {
+        prompt_mana_payment(caster, card_data.alt_cost.mana_cost, spell_entity, orderer);
     }
 
     // life
@@ -1081,6 +1094,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             Spell spell;
             spell.caster = caster;
             spell.cast_with_flashback = action.use_flashback;
+            spell.cast_with_evoke = action.use_alt_cost && card_data.alt_cost.is_evoke;
             if (cur_game.pending_cant_be_countered) {
                 spell.cant_be_countered = true;
                 cur_game.pending_cant_be_countered = false;

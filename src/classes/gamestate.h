@@ -96,7 +96,6 @@ typedef struct GameState_tag {
     int  opp_exile[MAX_GY_SLOTS];//NOT SERIALIZED TO ML FOR NOW -too expensive -TODO Revisit when exile matters
 
     int  self_hand[MAX_HAND_SLOTS];      // card_vocab_idx, -1 = empty
-    int  opp_hand_ct;                    // == opponent.hand_ct (backwards compat)
     int  self_library_ct;
     int  opp_library_ct;
 

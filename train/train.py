@@ -22,6 +22,7 @@ Usage:
 import argparse
 import os
 import struct
+import sys
 import time
 
 from env import (RoboMageEnv, ModelVsScriptedEnv, SelfPlayEnv, FixedModelEnv, NarrativeEnv,
@@ -158,16 +159,12 @@ class RecordCallback(BaseCallback):
                 ids_raw = o[STATE_SIZE + MAX_ACTIONS:STATE_SIZE + 2 * MAX_ACTIONS]
                 ctrl_raw = o[STATE_SIZE + 2 * MAX_ACTIONS:STATE_SIZE + 3 * MAX_ACTIONS]
 
-                num_c = int(info.get("decision_idx", 0))  # approximate
-                # Determine num_choices from the action mask pattern
-                num_choices = int(np.sum(cats_raw[:MAX_ACTIONS] >= 0))  # heuristic
-                # Better: count non-padded
-                for nc in range(MAX_ACTIONS):
-                    if nc > 0 and cats_raw[nc] == 0 and ids_raw[nc] < -0.5:
-                        num_choices = nc
-                        break
-                else:
-                    num_choices = MAX_ACTIONS
+                # Authoritative choice count from the env (BQUERY header N).
+                # The padded action slots are content-indistinguishable from a
+                # real PASS (cat 0, id null sentinel), so they cannot be inferred
+                # from the obs alone — rely on the env-supplied count, defaulting
+                # to MAX_ACTIONS only if it is somehow absent.
+                num_choices = min(int(info.get("num_choices", MAX_ACTIONS)), MAX_ACTIONS)
 
                 cats_bytes = bytes([max(0, min(127, int(c))) if j < num_choices else 255
                                     for j, c in enumerate(cats_raw[:MAX_ACTIONS])])
@@ -1052,171 +1049,178 @@ def watch_scripted(binary_path: str, deck_a: str | None = None, deck_b: str | No
     env.close()
 
 
-def evaluate(binary_path: str, model_path: str, n_games: int = 100):
-    """Play n_games with a trained model and report win rate."""
-    env = RoboMageEnv(binary_path=binary_path)
-    if USE_MASKABLE:
-        env = ActionMasker(env, lambda e: e.action_masks())
+def _add_common(p):
+    """Args shared by every subcommand."""
+    p.add_argument("--binary", default=BINARY, help="Path to robomage binary")
+    p.add_argument("--bo3", action="store_true",
+                   help="Best-of-three match mode (deck swap + sideboarding between games)")
 
-    model = MaskablePPO.load(model_path)
 
-    wins = losses = 0
-    for _ in range(n_games):
-        obs, _ = env.reset()
-        done = False
-        total_reward = 0.0
-        while not done:
-            masks = env.action_masks() if USE_MASKABLE else None
-            action, _ = model.predict(obs, action_masks=masks, deterministic=True)
-            obs, reward, terminated, truncated, _ = env.step(int(action))
-            total_reward += reward
-            done = terminated or truncated
-        if total_reward > 0:
-            wins += 1
-        else:
-            losses += 1
+def _add_train_opts(p):
+    """Args shared by every training subcommand (train/sweep/fixed-model/alternate)."""
+    p.add_argument("--total-timesteps", type=int, default=TOTAL_TIMESTEPS)
+    p.add_argument("--tally", action="store_true",
+                   help="Print A/B win tally after each rollout")
+    p.add_argument("--record", action="store_true",
+                   help="Record all game decisions to a .rmrec binary file in recordings/")
+    p.add_argument("--n-envs", type=int, default=None,
+                   help="Number of parallel environments (default: %d, self-play: %d)"
+                        % (N_ENVS, N_ENVS_SELF_PLAY))
+    p.add_argument("--no-shaping", action="store_true",
+                   help="Disable all shaping rewards (forces shaping_scale=0, skips annealing)")
+    p.add_argument("--auto-sideboard", action="store_true",
+                   help="Auto-skip sideboard phase in bo3 (model never sees sideboard decisions)")
 
-    env.close()
-    print(f"Results over {n_games} games: {wins} wins / {losses} losses "
-          f"({100*wins/n_games:.1f}% win rate from Player A perspective)")
+
+def _run_sweep(args, parser, decks_filter):
+    """Train every deck×deck matchup, optionally filtered to one deck."""
+    all_decks = sorted(os.path.splitext(p)[0]
+                       for p in os.listdir(_DECKS_DIR) if p.endswith(".dk"))
+    if decks_filter:
+        if decks_filter not in all_decks:
+            parser.error(f"Deck '{decks_filter}' not found in {_DECKS_DIR}. "
+                         f"Available: {', '.join(all_decks)}")
+        matchups = [(d, o) for d in all_decks for o in all_decks
+                    if d == decks_filter or o == decks_filter]
+        label = f"featuring '{decks_filter}'"
+    else:
+        matchups = [(d, o) for d in all_decks for o in all_decks]
+        label = "all"
+    env_kwargs = dict(bo3=args.bo3, auto_sideboard=args.auto_sideboard)
+    print(f"Training {len(matchups)} matchups ({label}) for {args.total_timesteps:,} timesteps each:")
+    for d, o in matchups:
+        print(f"  {d} vs {o}")
+    checkpoint_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), CHECKPOINT_DIR)
+    for i, (d, o) in enumerate(matchups):
+        print(f"\n{'='*60}")
+        print(f"[{i+1}/{len(matchups)}] {d} vs {o}")
+        print(f"{'='*60}")
+        candidate = os.path.join(checkpoint_dir, f"{d}_{o}_final.zip")
+        resume_path = candidate if os.path.exists(candidate) else None
+        train(args.binary, load_path=resume_path, total_timesteps=args.total_timesteps,
+              tally=args.tally, self_play=args.self_play,
+              scripted_fraction=args.scripted_fraction,
+              model_deck=d, opp_deck=o, record=args.record,
+              n_envs_override=args.n_envs, no_shaping=args.no_shaping, **env_kwargs)
+    print(f"\nAll {len(matchups)} matchups complete.")
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--binary", default=BINARY)
-    parser.add_argument("--deck", default="delver",
-                        help="Deck the model plays (stem of .dk file, default: delver)")
-    parser.add_argument("--opponent", required=False, default=None,
-                        help="Opponent deck (stem of .dk file). Required for training.")
-    parser.add_argument("--load", default=None, help="Resume from checkpoint .zip")
-    parser.add_argument("--total-timesteps", type=int, default=TOTAL_TIMESTEPS)
-    parser.add_argument("--eval", default=None, help="Self-play evaluation (note: always ~50%%)")
-    parser.add_argument("--eval-games", type=int, default=100)
-    parser.add_argument("--baseline", default=None, help="Evaluate model .zip vs scripted agent")
-    parser.add_argument("--baseline-games", type=int, default=100)
-    parser.add_argument("--observe", default=None, help="Watch model .zip play one game vs scripted agent")
-    parser.add_argument("--diag", action="store_true", help="Run 10 quick games (random model vs scripted) to verify the env")
-    parser.add_argument("--diag-games", type=int, default=10)
-    parser.add_argument("--watch-scripted", action="store_true", help="Watch one game: scripted A vs scripted B")
-    parser.add_argument("--tally", action="store_true", help="Print A/B win tally after each rollout")
-    parser.add_argument("--self-play", action="store_true",
-                        help="Train via self-play against frozen previous checkpoints")
-    parser.add_argument("--scripted-fraction", type=float, default=0.0,
-                        help="Fraction of envs that use the scripted opponent during self-play (default 0.0). "
-                             "E.g. 0.3 gives ~2 scripted + 5 self-play with N_ENVS=7.")
-    parser.add_argument("--record", action="store_true",
-                        help="Record all game decisions to a .rmrec binary file in recordings/")
-    parser.add_argument("--fixed-model", action="store_true",
-                        help="Train --deck vs a fixed opponent model for --opponent. "
-                             "Loads {deck}_{opponent}_final.zip and trains against "
-                             "{opponent}_{deck}_final.zip (never reloaded).")
-    parser.add_argument("--alternate", type=int, default=None, metavar="N",
-                        help="Swap which side is trained every N timesteps. "
-                             "Requires --deck and --opponent. Each round saves its "
-                             "final checkpoint then trains the other side against it.")
-    parser.add_argument("--train-all", action="store_true",
-                        help="Train every deck×deck matchup sequentially (ignores --deck/--opponent)")
-    parser.add_argument("--train-deck", type=str, default=None,
-                        help="Train all matchups that include the given deck (ignores --deck/--opponent)")
-    parser.add_argument("--bo3", action="store_true",
-                        help="Best-of-three match mode (deck swap + sideboarding between games)")
-    parser.add_argument("--auto-sideboard", action="store_true",
-                        help="Auto-skip sideboard phase in bo3 (model never sees sideboard decisions)")
-    parser.add_argument("--n-envs", type=int, default=None,
-                        help="Number of parallel environments (default: %d, self-play: %d)"
-                             % (N_ENVS, N_ENVS_SELF_PLAY))
-    parser.add_argument("--no-shaping", action="store_true",
-                        help="Disable all shaping rewards for this session "
-                             "(forces shaping_scale=0 and skips the annealing callback)")
-    args = parser.parse_args()
+    parser = argparse.ArgumentParser(
+        description="RoboMage RL training and evaluation.",
+        epilog="Run a subcommand with -h for its options (e.g. 'train.py train -h'). "
+               "If no subcommand is given, 'train' is assumed, so legacy one-liners "
+               "like 'train.py --opponent boomer' still work.")
+    sub = parser.add_subparsers(dest="command")
 
-    # Resolve model shorthands (e.g. 'delver_boomer-mav' → checkpoints/delver_boomer-mav_final.zip)
-    args.load = _resolve_model(args.load)
-    args.baseline = _resolve_model(args.baseline)
-    args.observe = _resolve_model(args.observe)
-    args.eval = _resolve_model(args.eval)
+    # ── train (default) ──────────────────────────────────────────────────────
+    pt = sub.add_parser("train", help="Train a model (default command)")
+    pt.add_argument("--deck", default="delver",
+                    help="Deck the model plays (.dk stem, default: delver)")
+    pt.add_argument("--opponent", required=True, help="Opponent deck (.dk stem)")
+    pt.add_argument("--load", default=None, help="Resume from checkpoint .zip (or shorthand)")
+    pt.add_argument("--self-play", action="store_true",
+                    help="Train via self-play against frozen previous checkpoints")
+    pt.add_argument("--scripted-fraction", type=float, default=0.0,
+                    help="Fraction of self-play envs that use the scripted opponent (default 0.0). "
+                         "E.g. 0.3 gives ~2 scripted + 5 self-play with N_ENVS=7.")
+    _add_train_opts(pt)
+    _add_common(pt)
 
-    # RoboMageEnv keyword arguments forwarded through all training functions
-    env_kwargs = dict(bo3=args.bo3, auto_sideboard=args.auto_sideboard)
+    # ── sweep (was --train-all / --train-deck) ───────────────────────────────
+    ps = sub.add_parser("sweep", help="Train many deck×deck matchups sequentially")
+    ps.add_argument("--deck", default=None,
+                    help="Only matchups featuring this deck. Omit to train ALL matchups.")
+    ps.add_argument("--self-play", action="store_true",
+                    help="Train via self-play against frozen previous checkpoints")
+    ps.add_argument("--scripted-fraction", type=float, default=0.0,
+                    help="Fraction of self-play envs that use the scripted opponent (default 0.0)")
+    _add_train_opts(ps)
+    _add_common(ps)
 
-    if args.alternate is not None:
-        if not args.opponent:
-            parser.error("--alternate requires --opponent")
-        train_alternate(args.binary, args.deck, args.opponent,
-                        alternate_steps=args.alternate,
-                        total_timesteps=args.total_timesteps,
-                        tally=args.tally, record=args.record,
-                        n_envs_override=args.n_envs,
-                        no_shaping=args.no_shaping, **env_kwargs)
-    elif args.fixed_model:
-        if not args.opponent:
-            parser.error("--fixed-model requires --opponent")
+    # ── fixed-model ──────────────────────────────────────────────────────────
+    pf = sub.add_parser("fixed-model",
+                        help="Train --deck vs a fixed (never-reloaded) opponent model")
+    pf.add_argument("--deck", default="delver", help="Deck the model plays (.dk stem)")
+    pf.add_argument("--opponent", required=True, help="Opponent deck (.dk stem)")
+    pf.add_argument("--load", default=None, help="Resume from checkpoint .zip (or shorthand)")
+    _add_train_opts(pf)
+    _add_common(pf)
+
+    # ── alternate ────────────────────────────────────────────────────────────
+    pa = sub.add_parser("alternate",
+                        help="Swap which side is trained every N timesteps")
+    pa.add_argument("--deck", default="delver", help="First deck (.dk stem)")
+    pa.add_argument("--opponent", required=True, help="Second deck (.dk stem)")
+    pa.add_argument("--every", type=int, required=True, metavar="N",
+                    help="Swap the trained side every N timesteps")
+    _add_train_opts(pa)
+    _add_common(pa)
+
+    # ── diag ─────────────────────────────────────────────────────────────────
+    pd = sub.add_parser("diag",
+                        help="Run quick games (random model vs scripted) to verify the env")
+    pd.add_argument("--deck", default="delver", help="Player A deck (.dk stem)")
+    pd.add_argument("--opponent", default=None, help="Player B deck (.dk stem)")
+    pd.add_argument("--games", type=int, default=10, help="Number of games (default: 10)")
+    _add_common(pd)
+
+    # ── watch (was --watch-scripted) ─────────────────────────────────────────
+    pw = sub.add_parser("watch", help="Watch one game: scripted A vs scripted B")
+    pw.add_argument("--deck", default="delver", help="Player A deck (.dk stem)")
+    pw.add_argument("--opponent", default=None, help="Player B deck (.dk stem)")
+    _add_common(pw)
+
+    # ── observe ──────────────────────────────────────────────────────────────
+    po = sub.add_parser("observe", help="Watch a model play one game vs the scripted agent")
+    po.add_argument("model", help="Model .zip path or shorthand")
+    po.add_argument("--binary", default=BINARY, help="Path to robomage binary")
+
+    # ── baseline ─────────────────────────────────────────────────────────────
+    pb = sub.add_parser("baseline", help="Evaluate a model's win rate vs the scripted agent")
+    pb.add_argument("model", help="Model .zip path or shorthand")
+    pb.add_argument("--games", type=int, default=100, help="Number of games (default: 100)")
+    pb.add_argument("--binary", default=BINARY, help="Path to robomage binary")
+
+    # Default to the 'train' subcommand when none is given, so legacy one-liners
+    # such as 'train.py --opponent boomer' continue to work.
+    COMMANDS = {"train", "sweep", "fixed-model", "alternate",
+                "diag", "watch", "observe", "baseline"}
+    argv = sys.argv[1:]
+    if not argv or (argv[0] not in COMMANDS and argv[0] not in ("-h", "--help")):
+        argv = ["train"] + argv
+    args = parser.parse_args(argv)
+
+    if args.command in ("train", "sweep", "fixed-model", "alternate"):
+        env_kwargs = dict(bo3=args.bo3, auto_sideboard=args.auto_sideboard)
+
+    if args.command == "train":
+        train(args.binary, _resolve_model(args.load), args.total_timesteps,
+              tally=args.tally, self_play=args.self_play,
+              scripted_fraction=args.scripted_fraction,
+              model_deck=args.deck, opp_deck=args.opponent, record=args.record,
+              n_envs_override=args.n_envs, no_shaping=args.no_shaping, **env_kwargs)
+    elif args.command == "sweep":
+        _run_sweep(args, parser, args.deck)
+    elif args.command == "fixed-model":
         train_fixed_model(args.binary, args.deck, args.opponent,
-                          load_path=args.load,
+                          load_path=_resolve_model(args.load),
                           total_timesteps=args.total_timesteps,
                           tally=args.tally, record=args.record,
                           n_envs_override=args.n_envs,
                           no_shaping=args.no_shaping, **env_kwargs)
-    elif args.train_deck:
-        all_decks = sorted(os.path.splitext(p)[0]
-                           for p in os.listdir(_DECKS_DIR) if p.endswith(".dk"))
-        target = args.train_deck
-        if target not in all_decks:
-            parser.error(f"Deck '{target}' not found in {_DECKS_DIR}. Available: {', '.join(all_decks)}")
-        matchups = [(d, o) for d in all_decks for o in all_decks if d == target or o == target]
-        print(f"Training {len(matchups)} matchups featuring '{target}' for {args.total_timesteps:,} timesteps each:")
-        for d, o in matchups:
-            print(f"  {d} vs {o}")
-        checkpoint_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), CHECKPOINT_DIR)
-        for i, (d, o) in enumerate(matchups):
-            print(f"\n{'='*60}")
-            print(f"[{i+1}/{len(matchups)}] {d} vs {o}")
-            print(f"{'='*60}")
-            candidate = os.path.join(checkpoint_dir, f"{d}_{o}_final.zip")
-            resume_path = candidate if os.path.exists(candidate) else None
-            train(args.binary, load_path=resume_path, total_timesteps=args.total_timesteps,
-                  tally=args.tally, self_play=args.self_play,
-                  scripted_fraction=args.scripted_fraction,
-                  model_deck=d, opp_deck=o, record=args.record,
-                  n_envs_override=args.n_envs,
-                  no_shaping=args.no_shaping, **env_kwargs)
-        print(f"\nAll {len(matchups)} matchups for '{target}' complete.")
-    elif args.train_all:
-        all_decks = sorted(os.path.splitext(p)[0]
-                           for p in os.listdir(_DECKS_DIR) if p.endswith(".dk"))
-        matchups = [(d, o) for d in all_decks for o in all_decks]
-        print(f"Training all {len(matchups)} matchups for {args.total_timesteps:,} timesteps each:")
-        for d, o in matchups:
-            print(f"  {d} vs {o}")
-        checkpoint_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), CHECKPOINT_DIR)
-        for i, (d, o) in enumerate(matchups):
-            print(f"\n{'='*60}")
-            print(f"[{i+1}/{len(matchups)}] {d} vs {o}")
-            print(f"{'='*60}")
-            candidate = os.path.join(checkpoint_dir, f"{d}_{o}_final.zip")
-            resume_path = candidate if os.path.exists(candidate) else None
-            train(args.binary, load_path=resume_path, total_timesteps=args.total_timesteps,
-                  tally=args.tally, self_play=args.self_play,
-                  scripted_fraction=args.scripted_fraction,
-                  model_deck=d, opp_deck=o, record=args.record,
-                  n_envs_override=args.n_envs,
-                  no_shaping=args.no_shaping, **env_kwargs)
-        print(f"\nAll {len(matchups)} matchups complete.")
-    elif args.diag:
-        diag(args.binary, args.diag_games, deck_a=args.deck, deck_b=args.opponent, bo3=args.bo3)
-    elif args.watch_scripted:
+    elif args.command == "alternate":
+        train_alternate(args.binary, args.deck, args.opponent,
+                        alternate_steps=args.every,
+                        total_timesteps=args.total_timesteps,
+                        tally=args.tally, record=args.record,
+                        n_envs_override=args.n_envs,
+                        no_shaping=args.no_shaping, **env_kwargs)
+    elif args.command == "diag":
+        diag(args.binary, args.games, deck_a=args.deck, deck_b=args.opponent, bo3=args.bo3)
+    elif args.command == "watch":
         watch_scripted(args.binary, deck_a=args.deck, deck_b=args.opponent, bo3=args.bo3)
-    elif args.observe:
-        observe(args.binary, args.observe)
-    elif args.baseline:
-        baseline(args.binary, args.baseline, args.baseline_games)
-    elif args.eval:
-        evaluate(args.binary, args.eval, args.eval_games)
-    else:
-        if args.opponent is None:
-            parser.error("--opponent is required for training")
-        train(args.binary, args.load, args.total_timesteps, tally=args.tally,
-              self_play=args.self_play, scripted_fraction=args.scripted_fraction,
-              model_deck=args.deck, opp_deck=args.opponent, record=args.record,
-              n_envs_override=args.n_envs,
-              no_shaping=args.no_shaping, **env_kwargs)
+    elif args.command == "observe":
+        observe(args.binary, _resolve_model(args.model))
+    elif args.command == "baseline":
+        baseline(args.binary, _resolve_model(args.model), args.games)

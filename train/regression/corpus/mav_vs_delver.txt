@@ -1,0 +1,385 @@
+robomage 0.001
+Using seed: 1641108517
+Player A draws Swords to Plowshares
+Player A draws Green Sun's Zenith
+Player A draws Windswept Heath
+Player A draws Knight of the Reliquary
+Player A draws Karakas
+Player A draws Knight of the Reliquary
+Player A draws Wooded Foothills
+Player B draws Delver of Secrets
+Player B draws Murktide Regent
+Player B draws Ponder
+Player B draws Volcanic Island
+Player B draws Brainstorm
+Player B draws Wasteland
+Player B draws Volcanic Island
+Player A hand:
+Green Sun's Zenith
+Karakas
+Knight of the Reliquary
+Knight of the Reliquary
+Swords to Plowshares
+Windswept Heath
+Wooded Foothills
+<<DECISION 1: action=0>>
+Player B hand:
+Delver of Secrets
+Murktide Regent
+Brainstorm
+Ponder
+Volcanic Island
+Volcanic Island
+Wasteland
+<<DECISION 2: action=0>>
+-------- TURN 0 (Player A) --------
+<<DECISION 3: action=1>>
+Player A played Karakas
+No creatures eligible to attack.
+No attackers ��� skipping declare blockers.
+--- Combat Damage ---
+--- End Combat Damage ---
+-------- TURN 1 (Player B) --------
+Player B draws Lightning Bolt
+<<DECISION 4: action=1>>
+Player B played Volcanic Island
+<<DECISION 5: action=1>>
+Player B activated Volcanic Island for 1(U)
+Player B casts Delver of Secrets
+Delver of Secrets enters the battlefield
+<<DECISION 6: action=1>>
+Player A activated Karakas for 1(W)
+Choose target:
+<<DECISION 7: action=0>>
+Targeting choice 0
+Player A casts Swords to Plowshares targeting Delver of Secrets
+Resolving ability (category: ChangeZone, amount: 0)
+Delver of Secrets is moved to exile
+Resolving ability (category: GainLife, amount: 0)
+Player B gains 1 life (now at 21)
+No creatures eligible to attack.
+No attackers ��� skipping declare blockers.
+--- Combat Damage ---
+--- End Combat Damage ---
+-------- TURN 2 (Player A) --------
+Player A draws Green Sun's Zenith
+<<DECISION 8: action=1>>
+Player A played Windswept Heath
+<<DECISION 9: action=1>>
+Player A pays 1 life
+Player A sacrifices Windswept Heath
+Player A's Windswept Heath ability is on the stack
+Resolving ability (category: ChangeZone, amount: 1)
+Searching Player A's library:
+<<DECISION 10: action=1>>
+Player A shuffles their library
+Player A puts Dryad Arbor to the battlefield
+No creatures eligible to attack.
+No attackers ��� skipping declare blockers.
+--- Combat Damage ---
+--- End Combat Damage ---
+-------- TURN 3 (Player B) --------
+<<DECISION 11: action=1>>
+Player B activated Volcanic Island for 1(U)
+Player B casts Brainstorm
+Resolving ability (category: Draw, amount: 3)
+Player B draws Force of Will
+Player B draws Dragon's Rage Channeler
+Player B draws Lightning Bolt
+Resolving ability (category: ChangeZone, amount: 2)
+Player B chooses a card from Player B hand:
+<<DECISION 12: action=0>>
+Player B puts Murktide Regent to top of library
+Player B puts a card to top of library
+Player B chooses a card from Player B hand:
+<<DECISION 13: action=0>>
+Player B puts Dragon's Rage Channeler to top of library
+Player B puts a card to top of library
+Player B draws Dragon's Rage Channeler
+<<DECISION 14: action=1>>
+Player B played Volcanic Island
+<<DECISION 15: action=1>>
+Player B activated Volcanic Island for 1(R)
+Player B casts Dragon's Rage Channeler
+<<DECISION 16: action=0>>
+Dragon's Rage Channeler enters the battlefield
+No creatures eligible to attack.
+No attackers ��� skipping declare blockers.
+--- Combat Damage ---
+--- End Combat Damage ---
+-------- TURN 4 (Player A) --------
+Player A draws Savannah
+<<DECISION 17: action=3>>
+Choose X value (0-1):
+<<DECISION 18: action=0>>
+Player A chooses X = 0
+Player A activated Dryad Arbor for 1(G)
+Player A casts Green Sun's Zenith
+<<DECISION 19: action=1>>
+Player B pays 1 life
+<<DECISION 20: action=0>>
+Player B exiles Ponder
+Choose target:
+<<DECISION 21: action=0>>
+Targeting choice 0
+Player B casts Force of Will targeting Green Sun's Zenith
+Dragon's Rage Channeler triggered
+Resolving ability (category: Surveil, amount: 1)
+Top card of Player B's library: Murktide Regent
+<<DECISION 22: action=0>>
+Resolving ability (category: Counter, amount: 0)
+Green Sun's Zenith is countered
+<<DECISION 23: action=1>>
+Player A played Savannah
+<<DECISION 24: action=1>>
+Choose X value (0-1):
+<<DECISION 25: action=1>>
+Player A chooses X = 1
+Player A activated Savannah for 1(G)
+Player A activated Karakas for 1(W)
+Player A casts Green Sun's Zenith
+Resolving ability (category: ChangeZone, amount: 1)
+Searching Player A's library:
+<<DECISION 26: action=1>>
+Player A shuffles their library
+Player A puts Birds of Paradise to the battlefield
+Green Sun's Zenith is shuffled into its owner's library
+No creatures eligible to attack.
+No attackers ��� skipping declare blockers.
+--- Combat Damage ---
+--- End Combat Damage ---
+-------- TURN 5 (Player B) --------
+<<DECISION 27: action=1>>
+Player B activated Volcanic Island for 1(R)
+Choose target:
+<<DECISION 28: action=0>>
+Targeting choice 0
+Player B casts Lightning Bolt targeting Player A
+Dragon's Rage Channeler triggered
+<<DECISION 29: action=1>>
+Player B activated Volcanic Island for 1(R)
+Choose target:
+<<DECISION 30: action=0>>
+Targeting choice 0
+Player B casts Lightning Bolt targeting Player A
+Dragon's Rage Channeler triggered
+Resolving ability (category: Surveil, amount: 1)
+Top card of Player B's library: Murktide Regent
+<<DECISION 31: action=1>>
+Player B puts Murktide Regent into the graveyard.
+Resolving ability (category: DealDamage, amount: 3)
+Dealt 3 damage to player (now at 16 life)
+Resolving ability (category: Surveil, amount: 1)
+Top card of Player B's library: Mishra's Bauble
+<<DECISION 32: action=1>>
+Player B puts Mishra's Bauble into the graveyard.
+Resolving ability (category: DealDamage, amount: 3)
+Dealt 3 damage to player (now at 13 life)
+Player B draws Unholy Heat
+<<DECISION 33: action=1>>
+Player B played Wasteland
+<<DECISION 34: action=1>>
+Choose target:
+<<DECISION 35: action=0>>
+Targeting choice 0
+Player B sacrifices Wasteland
+Player B's Wasteland ability targeting Dryad Arbor is on the stack
+Dragon's Rage Channeler gains 2/2 Flying (Delirium)
+Resolving ability (category: Destroy, amount: 0)
+Dryad Arbor is destroyed
+Dragon's Rage Channeler must attack and is declared as an attacker.
+--- Declare Attackers (Player B) ---
+  [attacking] Dragon's Rage Channeler [3/3] -> Player A
+<<DECISION 36: action=-1>>
+Attackers declared:
+  Dragon's Rage Channeler -> Player A
+--- Declare Blockers (Player A) ---
+Attackers:
+  0: Dragon's Rage Channeler [3/3]
+Your creatures:
+<<DECISION 37: action=-1>>
+Blockers declared:
+  (none)
+--- Combat Damage ---
+  Dragon's Rage Channeler deals 3 damage to Player A
+--- End Combat Damage ---
+-------- TURN 6 (Player A) --------
+Player A draws Green Sun's Zenith
+<<DECISION 38: action=2>>
+Choose X value (0-2):
+<<DECISION 39: action=1>>
+Player A chooses X = 1
+Player A activated Birds of Paradise for 1(G)
+Player A activated Karakas for 1(W)
+Player A casts Green Sun's Zenith
+Resolving ability (category: ChangeZone, amount: 1)
+Searching Player A's library:
+<<DECISION 40: action=1>>
+Player A shuffles their library
+Player A puts Ignoble Hierarch to the battlefield
+Green Sun's Zenith is shuffled into its owner's library
+<<DECISION 41: action=1>>
+Player A played Wooded Foothills
+<<DECISION 42: action=1>>
+Player A pays 1 life
+Player A sacrifices Wooded Foothills
+Player A's Wooded Foothills ability is on the stack
+Resolving ability (category: ChangeZone, amount: 1)
+Searching Player A's library:
+<<DECISION 43: action=1>>
+Player A shuffles their library
+Player A puts Forest to the battlefield
+No creatures eligible to attack.
+No attackers ��� skipping declare blockers.
+--- Combat Damage ---
+--- End Combat Damage ---
+-------- TURN 7 (Player B) --------
+<<DECISION 44: action=1>>
+Player B activated Volcanic Island for 1(R)
+Choose target:
+<<DECISION 45: action=0>>
+Targeting choice 0
+Player B casts Unholy Heat targeting Birds of Paradise
+Dragon's Rage Channeler triggered
+Resolving ability (category: Surveil, amount: 1)
+Top card of Player B's library: Misty Rainforest
+<<DECISION 46: action=1>>
+Player B puts Misty Rainforest into the graveyard.
+Resolving ability (category: DealDamage, amount: 2)
+Dealt 6 damage to creature
+Birds of Paradise is destroyed (lethal damage)
+Player B draws Brainstorm
+<<DECISION 47: action=1>>
+Player B activated Volcanic Island for 1(U)
+Player B casts Brainstorm
+Dragon's Rage Channeler triggered
+Resolving ability (category: Surveil, amount: 1)
+Top card of Player B's library: Cori-Steel Cutter
+<<DECISION 48: action=0>>
+Resolving ability (category: Draw, amount: 3)
+Player B draws Cori-Steel Cutter
+Player B draws Polluted Delta
+Player B draws Unholy Heat
+Resolving ability (category: ChangeZone, amount: 2)
+Player B chooses a card from Player B hand:
+<<DECISION 49: action=0>>
+Player B puts Cori-Steel Cutter to top of library
+Player B puts a card to top of library
+Player B chooses a card from Player B hand:
+<<DECISION 50: action=0>>
+Player B puts Unholy Heat to top of library
+Player B puts a card to top of library
+<<DECISION 51: action=1>>
+Player B played Polluted Delta
+<<DECISION 52: action=1>>
+Player B pays 1 life
+Player B sacrifices Polluted Delta
+Player B's Polluted Delta ability is on the stack
+Resolving ability (category: ChangeZone, amount: 1)
+Searching Player B's library:
+<<DECISION 53: action=1>>
+Player B shuffles their library
+Player B puts Island to the battlefield
+Dragon's Rage Channeler must attack and is declared as an attacker.
+--- Declare Attackers (Player B) ---
+  [attacking] Dragon's Rage Channeler [3/3] -> Player A
+<<DECISION 54: action=-1>>
+Attackers declared:
+  Dragon's Rage Channeler -> Player A
+No creatures eligible to block.
+--- Combat Damage ---
+  Dragon's Rage Channeler deals 3 damage to Player A
+--- End Combat Damage ---
+-------- TURN 8 (Player A) --------
+Player A draws Windswept Heath
+<<DECISION 55: action=2>>
+Player A activated Karakas for 1(W)
+Player A activated Forest for 1(G)
+Player A activated Ignoble Hierarch for 1(B)
+Player A casts Knight of the Reliquary
+Knight of the Reliquary enters the battlefield
+Knight of the Reliquary gains (always)
+<<DECISION 56: action=1>>
+Player A played Windswept Heath
+<<DECISION 57: action=1>>
+Player A pays 1 life
+Player A sacrifices Windswept Heath
+Player A's Windswept Heath ability is on the stack
+Resolving ability (category: ChangeZone, amount: 1)
+Searching Player A's library:
+<<DECISION 58: action=1>>
+Player A shuffles their library
+Player A puts Plains to the battlefield
+No creatures eligible to attack.
+No attackers ��� skipping declare blockers.
+--- Combat Damage ---
+--- End Combat Damage ---
+-------- TURN 9 (Player B) --------
+Player B draws Murktide Regent
+<<DECISION 59: action=1>>
+Player B exiles Force of Will via Delve.
+Player B exiles Brainstorm via Delve.
+Player B exiles Brainstorm via Delve.
+Player B exiles Lightning Bolt via Delve.
+Player B exiles Lightning Bolt via Delve.
+Player B activated Island for 1(U)
+Player B activated Volcanic Island for 1(U)
+Player B casts Murktide Regent
+Murktide Regent enters the battlefield
+Murktide Regent enters with 5 +1/+1 counter(s) (8/8).
+Dragon's Rage Channeler must attack and is declared as an attacker.
+--- Declare Attackers (Player B) ---
+  [attacking] Dragon's Rage Channeler [3/3] -> Player A
+<<DECISION 60: action=-1>>
+Attackers declared:
+  Dragon's Rage Channeler -> Player A
+No creatures eligible to block.
+--- Combat Damage ---
+  Dragon's Rage Channeler deals 3 damage to Player A
+--- End Combat Damage ---
+-------- TURN 10 (Player A) --------
+<<DECISION 61: action=0>>
+Player A draws Noble Hierarch
+<<DECISION 62: action=0>>
+<<DECISION 63: action=1>>
+Player A activated Karakas for 1(W)
+Player A activated Forest for 1(G)
+Player A activated Ignoble Hierarch for 1(B)
+Player A casts Knight of the Reliquary
+<<DECISION 64: action=1>>
+<<DECISION 65: action=0>>
+Player A sacrifices Forest
+Player A's Knight of the Reliquary ability is on the stack
+Resolving ability (category: ChangeZone, amount: 1)
+Searching Player A's library:
+<<DECISION 66: action=1>>
+Player A shuffles their library
+Player A puts Gaea's Cradle to the battlefield
+Knight of the Reliquary enters the battlefield
+Knight of the Reliquary gains (always)
+<<DECISION 67: action=1>>
+Player A activated Gaea's Cradle for 3(G)
+Player A casts Noble Hierarch
+Noble Hierarch enters the battlefield
+MANA_WASTED: A
+No creatures eligible to attack.
+No attackers ��� skipping declare blockers.
+--- Combat Damage ---
+--- End Combat Damage ---
+-------- TURN 11 (Player B) --------
+Player B draws Lightning Bolt
+<<DECISION 68: action=1>>
+Player B activated Volcanic Island for 1(R)
+Choose target:
+<<DECISION 69: action=0>>
+Targeting choice 0
+Player B casts Lightning Bolt targeting Player A
+Dragon's Rage Channeler triggered
+Resolving ability (category: Surveil, amount: 1)
+Top card of Player B's library: Wooded Foothills
+<<DECISION 70: action=1>>
+Player B puts Wooded Foothills into the graveyard.
+Resolving ability (category: DealDamage, amount: 3)
+Dealt 3 damage to player (now at -1 life)
+Player A has -1 life - Player B wins!
+=== GAME OVER: winner=Player B ===

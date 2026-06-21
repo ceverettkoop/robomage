@@ -3,9 +3,11 @@
 
 #include "../classes/colors.h"
 #include "../ecs/entity.h"
+#include "ability_params.h"
 #include "zone.h"
 #include <memory>
 #include <string>
+#include <variant>
 #include <vector>
 
 class Orderer;
@@ -58,37 +60,33 @@ struct Ability{
     uint32_t trigger_on = 0;             // EventId that fires this ability; 0 = not event-triggered
     bool trigger_self_excluded = false;  // true when ValidCard$ has .Other — won't trigger for the source itself
     bool trigger_only_self = false;      // true when ValidCard$ Card.Self — only fires when the entering entity is the source itself
+    bool is_evoke_sacrifice = false;     // synthetic ETB self-trigger from K:Evoke — only fires when the permanent was evoked
     bool trigger_valid_player_is_controller = false;  // true when ValidPlayer$ You
     bool mandatory = false;              // Mandatory$ True — player must choose; suppresses fail-to-find when zone non-empty
     bool may_shuffle = false;            // MayShuffle$ True — player may optionally shuffle after
     size_t unless_generic_cost = 0;      // UnlessCost$ N — target controller pays {N} to prevent counter
     std::string target_type = "";        // TargetType$ Spell — restricts targeting to stack spells
 
-    // Delirium-conditional damage (Unholy Heat)
-    bool amount_is_delirium_scale = false;  // if true, use amount_delirium when delirium active
-    size_t amount_delirium = 0;             // damage when delirium is active
+    // Delirium-conditional damage (Unholy Heat) now lives in DamageParams (params variant).
     std::string amount_svar = "";           // raw SVar key for non-numeric NumDmg$ (resolved at parse time)
     std::string dynamic_amount_expr = "";   // runtime SVar expression (e.g. "Count$Valid Creature.YouCtrl" or "Targeted$CardPower")
     bool defined_targeted_controller = false;  // Defined$ TargetedController — GainLife goes to target's controller
     bool defined_self = false;                  // Defined$ Self — ability moves its own source
 
-    // DestroyAll filter (e.g. "Artifact.cmcLEX")
-    std::string destroy_all_filter = "";
+    // DestroyAll filter now lives in DestroyAllParams (params variant).
 
-    // Pump ability (NumAtt$/NumDef$ for creature P/T modification)
-    int pump_att = 0;   // NumAtt$ — power modifier (can be negative)
-    int pump_def = 0;   // NumDef$ — toughness modifier (can be negative)
+    // Effect-specific parameter blocks. As effects migrate off the flat
+    // god-struct fields (Phase 3), their exclusive data moves into one of these
+    // variant alternatives; shared fields stay as direct members. std::monostate
+    // covers effects with no exclusive fields. See ability_params.h.
+    std::variant<std::monostate, PumpParams, DamageParams, DestroyAllParams, TokenParams,
+                 DelayedTriggerParams, CounterParams, DiscardParams, PeekParams> params;
 
-    // Counter abilities (PutCounter category)
-    std::string counter_type = "";          // "P1P1" for +1/+1 counters
-    int counter_count = 0;                  // static number of counters; 0 when dynamic
-    bool counter_count_from_delve = false;  // if true, counter_count = cur_game.delve_exiled.size() at resolve
+    // Counter abilities (PutCounter category) now live in CounterParams (params variant).
 
-    // Peek variant (Mishra's Bauble): look at target player's top card, skip reveal choice
-    bool is_peek_no_reveal = false;
+    // Peek variant (Mishra's Bauble) now lives in PeekParams (params variant).
 
-    // Delayed trigger (Mishra's Bauble)
-    bool delayed_trigger_next_turn = false;  // NextTurn$ True
+    // Delayed trigger params (Mishra's Bauble) now live in DelayedTriggerParams (params variant).
 
     // Zone-change trigger filters for CARD_CHANGED_ZONE (set by Mode$ ChangesZone triggers)
     int trigger_zone_origin = -1;       // Zone::ZoneValue origin filter; -1 = any
@@ -103,8 +101,7 @@ struct Ability{
     // Spell count trigger (Cori-Steel Cutter)
     size_t trigger_spell_count_eq = 0;  // ActivatorThisTurnCast$ EQN — fires on Nth spell
 
-    // Token creation (Cori-Steel Cutter)
-    std::string token_script = "";  // TokenScript$ w_1_1_monk_prowess
+    // Token creation (Cori-Steel Cutter) now lives in TokenParams (params variant).
 
     // Attach / Equip sub-ability
     bool optional = false;           // Optional$ True — player may decline
@@ -135,9 +132,7 @@ struct Ability{
     int dig_destination = -1;        // DestinationZone$ — where chosen card goes (-1 = HAND, Zone::LIBRARY etc.)
     int dig_library_position = -1;   // LibraryPosition$ — 0 = top, -1 = unset
 
-    // Discard ability (Thoughtseize, Duress)
-    std::string discard_valid = "";    // DiscardValid$ — filter for cards to discard (e.g. "Card.nonLand")
-    std::string mode = "";             // Mode$ — e.g. "RevealYouChoose"
+    // Discard ability (Thoughtseize, Duress) now lives in DiscardParams (params variant).
 
     // Conditional subability execution (Scythecat Cub, Thassa's Oracle)
     std::string condition_check_svar = "";   // ConditionCheckSVar$ — resolved expression e.g. "Count$ResolvedThisTurn"
@@ -147,11 +142,13 @@ struct Ability{
     // Castability condition (Edge of Autumn): count permanents matching filter, compare to threshold
     std::string condition_present = "";   // ConditionPresent$ — e.g. "Land.YouCtrl"
     std::string condition_compare = "";   // ConditionCompare$ — e.g. "LE4", "GE3"
+    // ConditionDefined$ Targeted — the condition applies to the chosen target at
+    // resolution (e.g. Fatal Push "destroy if its mana value <= X"), NOT to board state
+    // at cast time. Such abilities can target anything legal; the conditional effect is
+    // enforced when they resolve, so cast-time legality must NOT gate on the condition.
+    bool condition_on_target = false;
 
-    // Delayed trigger params (Mishra's Bauble)
-    std::string delayed_phase = "";         // Phase$ — phase name (e.g. "Upkeep", "Draw", "EndStep")
-    std::string delayed_execute_svar = "";  // Execute$ — SVar name of ability to run when trigger fires
-    std::string delayed_valid_player = "";  // ValidPlayer$ — "Player", "You", "Opponent"
+    // (delayed-trigger Phase$/Execute$/ValidPlayer$ moved to DelayedTriggerParams)
 
     //for each AB on a card script there may be multiple SubAbility$, would get parsed into vector below
     std::vector<Ability> subabilities; // additional abilities resolved at same time this resolves, stored in order
@@ -169,18 +166,24 @@ struct Ability{
     // resolution (is_target_valid).
     bool is_legal_target(Entity cand, Zone::Ownership caster) const;
 private:
-    void resolve_change_zone(std::shared_ptr<Orderer> orderer);
-    void resolve_change_zone_all(std::shared_ptr<Orderer> orderer);
-    void resolve_destroy(std::shared_ptr<Orderer> orderer);
-    void resolve_rearrange_top_of_library(std::shared_ptr<Orderer> orderer);
-    void resolve_surveil(std::shared_ptr<Orderer> orderer);
-    void resolve_put_counter();
-    void resolve_token(std::shared_ptr<Orderer> orderer);
-    void resolve_delayed_trigger();
+    // Per-effect resolution now lives in src/effects/effect_*.cpp, dispatched by
+    // effects::handler_for(). resolve() keeps only target validity + condition
+    // gating + subability chaining.
     bool is_target_valid() const;
     void fizzle(std::shared_ptr<Orderer> orderer);
 
 };
+
+// Returns the effect-param block of type P held in `ab.params`, default-
+// constructing (and switching the variant to P) if it isn't already active.
+// Use from parse hooks before writing effect-exclusive params. Resolution-time
+// readers should use std::get_if<P>(&ab.params) and treat nullptr as "defaults",
+// which is exception-free under -fno-exceptions.
+template <typename P>
+P& effect_params(Ability& ab) {
+    if (!std::holds_alternative<P>(ab.params)) ab.params = P{};
+    return std::get<P>(ab.params);
+}
 
 // Search a zone for cards matching the comma-separated type list in change_type
 // (empty change_type matches all cards in the zone).

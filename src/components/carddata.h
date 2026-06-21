@@ -20,10 +20,12 @@ struct AltCost {
     Colors exile_from_hand_color = NO_COLOR;  // color of card to exile (BLUE, GREEN, etc.)
     int return_to_hand_count = 0;
     std::string return_to_hand_type = "";
+    ManaValue mana_cost;                // mana portion of the alt cost (e.g. Evoke:R)
     std::string condition_svar = "";    // e.g. "Count$YouCastThisGame" — condition checked before allowing alt cost
     std::string condition_compare = ""; // e.g. "EQ0" — comparison for condition_svar
     bool is_free = false;               // Cost$ 0 — no mana required
     bool condition_not_your_turn = false;  // Condition$ NotPlayerTurn
+    bool is_evoke = false;              // K:Evoke — when paid, the permanent sacrifices itself on ETB
 };
 
 //this is the underlying card, not a permanent or spell
@@ -48,6 +50,7 @@ struct CardData{
     bool shuffle_into_library = false;   // card shuffles into library instead of going to graveyard on resolution
     bool has_flashback = false;          // K:Flashback — can cast from graveyard for flashback cost, then exile
     bool has_etb_choose_creature_type = false;  // K:ETBReplacement:Other:ChooseCT — choose creature type on ETB
+    int dredge = 0;                      // K:Dredge:N — replace a draw by milling N and returning this from graveyard to hand
     ManaValue flashback_mana_cost;       // mana portion of flashback cost
     AltCost flashback_alt_cost;          // non-mana costs (e.g. PayLife<3> for Deep Analysis)
     bool is_equipment = false;           // has K:Equip line

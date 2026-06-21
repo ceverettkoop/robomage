@@ -46,15 +46,17 @@ instead of `$PIPESTATUS`.
 -Non fatal errors are not acceptable
 -Draws are not acceptable
 -Do not attempt to test cards that are not already in `src/card_vocab.h`. Cards absent from the card vocab are considered unimplemented.
--train.py --diag and train.py --watch-scripted are helpful for checking new builds; 
---when testing with diag and --watch-scripted, supply --deck and --opponent arguments to test cards/decks relevant to recently implemented features
+-train.py diag and train.py watch are helpful for checking new builds; 
+--when testing with diag and watch, supply --deck and --opponent arguments to test cards/decks relevant to recently implemented features
 
 ### Test harness for card behavior verification
 
-`train/test_harness.py` runs the engine with `--machine --narrative --no-shuffle` so that deck file order = draw order (first 7 cards become the starting hand), and game narrative is visible alongside decoded binary state.
+`train/test_harness.py` runs the engine with `--machine --narrative`, with game narrative visible alongside decoded binary state.
+
+**Shuffling:** by default the harness shuffles each library with the seeded RNG (deterministic per `--seed`). Pass `--no-shuffle` when feeding a **stacked deck** so deck-file order = draw order (first 7 cards become the starting hand). `--no-shuffle` is implied automatically when `--hand-a`/`--hand-b` are used (they build a stacked temp deck). So inline-hand and scenario examples below remain deck-ordered without needing the flag; a plain `--deck-a X --deck-b Y` run shuffles unless you add `--no-shuffle`.
 
 **Engine flags used by the harness:**
-- `--no-shuffle` — skip initial library shuffle; cards are drawn in deck file order
+- `--no-shuffle` — skip initial library shuffle; cards are drawn in deck file order (opt-in; see Shuffling above)
 - `--narrative` — enable game_log output in machine mode (perfect information)
 
 **Quick start — specify hands inline:**
@@ -159,7 +161,7 @@ The `Game` struct (`src/classes/game.h`) tracks:
 - Timestamp for ordering simultaneous events
 - RNG seed and generator for reproducibility
 - Delayed triggers (fire on specific future game events)
-- Action history ring buffer (last 15 actions, used in ML observation)
+- Action history ring buffer (last 128 actions, used in ML observation)
 
 Game loop in `src/main.cpp`:
 1. State-based effects check (lethal damage, player death, permanent lifecycle, mandatory choices)
@@ -281,16 +283,27 @@ Dependencies: `gymnasium`, `stable-baselines3`, `sb3-contrib` (for `MaskablePPO`
 
 ### Training commands (run from repo root)
 
+`train.py` uses subcommands (`train -h` for any subcommand's options). The
+`train` subcommand is assumed when none is given, so one-liner training still
+works without typing `train`.
+
 ```bash
-train/.venv/bin/python train/train.py                                             # train from scratch
-train/.venv/bin/python train/train.py --load checkpoints/robomage_final.zip      # resume
-train/.venv/bin/python train/train.py --baseline checkpoints/robomage_final.zip  # win rate vs scripted
-train/.venv/bin/python train/train.py --observe checkpoints/robomage_final.zip   # watch one game
-train/.venv/bin/python train/train.py --self-play                                 # self-play training
-train/.venv/bin/python train/train.py --diag                                      # verify env (10 quick games)
-train/.venv/bin/python train/train.py --watch-scripted                            # watch scripted vs scripted
-train/.venv/bin/python train/train.py --diag --bo3                                # verify bo3 env
-train/.venv/bin/python train/train.py --watch-scripted --bo3                      # watch bo3 match
+# Training (the 'train' subcommand is implied when omitted)
+train/.venv/bin/python train/train.py --deck delver --opponent boomer                 # train from scratch
+train/.venv/bin/python train/train.py train --opponent boomer --load checkpoints/robomage_final.zip  # resume
+train/.venv/bin/python train/train.py --self-play --deck delver --opponent boomer     # self-play training
+
+# Evaluation / inspection
+train/.venv/bin/python train/train.py baseline checkpoints/robomage_final.zip         # win rate vs scripted
+train/.venv/bin/python train/train.py observe checkpoints/robomage_final.zip          # watch one game
+train/.venv/bin/python train/train.py diag                                            # verify env (10 quick games)
+train/.venv/bin/python train/train.py watch                                           # watch scripted vs scripted
+train/.venv/bin/python train/train.py diag --bo3                                      # verify bo3 env
+train/.venv/bin/python train/train.py watch --bo3                                     # watch bo3 match
+
+# Bulk training (was --train-all / --train-deck)
+train/.venv/bin/python train/train.py sweep                                           # all deck×deck matchups
+train/.venv/bin/python train/train.py sweep --deck delver                             # matchups featuring delver
 ```
 
 ### Best-of-three mode

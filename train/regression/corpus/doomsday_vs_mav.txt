@@ -1,0 +1,791 @@
+robomage 0.001
+Using seed: 1641108517
+Player A draws Ponder
+Player A draws Force of Will
+Player A draws Verdant Catacombs
+Player A draws Lotus Petal
+Player A draws Daze
+Player A draws Lotus Petal
+Player A draws Consider
+Player B draws Endurance
+Player B draws Green Sun's Zenith
+Player B draws Swords to Plowshares
+Player B draws Thalia, Guardian of Thraben
+Player B draws Once Upon a Time
+Player B draws Wooded Foothills
+Player B draws Wasteland
+Player A hand:
+Force of Will
+Daze
+Lotus Petal
+Lotus Petal
+Ponder
+Verdant Catacombs
+Consider
+<<DECISION 1: action=0>>
+Player B hand:
+Endurance
+Green Sun's Zenith
+Once Upon a Time
+Swords to Plowshares
+Thalia, Guardian of Thraben
+Wasteland
+Wooded Foothills
+<<DECISION 2: action=0>>
+-------- TURN 0 (Player A) --------
+<<DECISION 3: action=1>>
+Player B casts for free (alternate cost)
+Player B casts Once Upon a Time
+<<DECISION 4: action=1>>
+Player A pays 1 life
+<<DECISION 5: action=0>>
+Player A exiles Daze
+Choose target:
+<<DECISION 6: action=0>>
+Targeting choice 0
+Player A casts Force of Will targeting Once Upon a Time
+Resolving ability (category: Counter, amount: 0)
+Once Upon a Time is countered
+<<DECISION 7: action=2>>
+Player A casts Lotus Petal
+Lotus Petal enters the battlefield
+<<DECISION 8: action=2>>
+Player A casts Lotus Petal
+<<DECISION 9: action=1>>
+Player A sacrifices Lotus Petal
+Player A activated Lotus Petal for 1(U)
+Player A casts Consider
+Resolving ability (category: Surveil, amount: 1)
+Top card of Player A's library: Force of Will
+<<DECISION 10: action=0>>
+Resolving ability (category: Draw, amount: 1)
+Player A draws Force of Will
+<<DECISION 11: action=0>>
+Lotus Petal enters the battlefield
+<<DECISION 12: action=2>>
+Player A sacrifices Lotus Petal
+Player A activated Lotus Petal for 1(U)
+Player A casts Ponder
+Resolving ability (category: RearrangeTopOfLibrary, amount: 3)
+Player A looks at the top 3 card(s) of their library.
+Choose which card goes 3 from top:
+<<DECISION 13: action=0>>
+Choose which card goes 2 from top:
+<<DECISION 14: action=0>>
+<<DECISION 15: action=0>>
+Resolving ability (category: Draw, amount: 1)
+Player A draws Thoughtseize
+<<DECISION 16: action=1>>
+Player A played Verdant Catacombs
+<<DECISION 17: action=1>>
+Player A pays 1 life
+Player A sacrifices Verdant Catacombs
+Player A's Verdant Catacombs ability is on the stack
+Resolving ability (category: ChangeZone, amount: 1)
+Searching Player A's library:
+<<DECISION 18: action=1>>
+Player A shuffles their library
+Player A puts Swamp to the battlefield
+<<DECISION 19: action=1>>
+Player A activated Swamp for 1(B)
+Choose target:
+<<DECISION 20: action=0>>
+Targeting choice 0
+Player A casts Thoughtseize targeting Player B
+Resolving ability (category: Discard, amount: 1)
+Player B reveals their hand:
+  Endurance
+  Green Sun's Zenith
+  Swords to Plowshares
+  Thalia, Guardian of Thraben
+  Wasteland
+  Wooded Foothills
+Player A chooses a card to discard:
+<<DECISION 21: action=2>>
+Player B discards Swords to Plowshares
+Resolving ability (category: LoseLife, amount: 2)
+Player A loses 2 life (now at 16)
+No creatures eligible to attack.
+No attackers ��� skipping declare blockers.
+--- Combat Damage ---
+--- End Combat Damage ---
+-------- TURN 1 (Player B) --------
+Player B draws Plains
+<<DECISION 22: action=1>>
+Player B played Plains
+No creatures eligible to attack.
+No attackers ��� skipping declare blockers.
+--- Combat Damage ---
+--- End Combat Damage ---
+-------- TURN 2 (Player A) --------
+Player A draws Street Wraith
+<<DECISION 23: action=1>>
+Player A pays 2 life
+Player A activates Street Wraith from hand
+Resolving ability (category: Draw, amount: 1)
+Player A draws Deep Analysis
+No creatures eligible to attack.
+No attackers ��� skipping declare blockers.
+--- Combat Damage ---
+--- End Combat Damage ---
+-------- TURN 3 (Player B) --------
+Player B draws Knight of the Reliquary
+<<DECISION 24: action=1>>
+Player B played Wasteland
+<<DECISION 25: action=1>>
+Player B activated Plains for 1(W)
+Player B activated Wasteland for 1(C)
+Player B casts Thalia, Guardian of Thraben
+<<DECISION 26: action=1>>
+Player A pays 1 life
+<<DECISION 27: action=0>>
+Player A exiles Deep Analysis
+Choose target:
+<<DECISION 28: action=0>>
+Targeting choice 0
+Player A casts Force of Will targeting Thalia, Guardian of Thraben
+Resolving ability (category: Counter, amount: 0)
+Thalia, Guardian of Thraben is countered
+No creatures eligible to attack.
+No attackers ��� skipping declare blockers.
+--- Combat Damage ---
+--- End Combat Damage ---
+-------- TURN 4 (Player A) --------
+Player A draws Dark Ritual
+<<DECISION 29: action=0>>
+<<DECISION 30: action=0>>
+<<DECISION 31: action=0>>
+No creatures eligible to attack.
+<<DECISION 32: action=0>>
+No attackers ��� skipping declare blockers.
+<<DECISION 33: action=0>>
+--- Combat Damage ---
+--- End Combat Damage ---
+<<DECISION 34: action=0>>
+<<DECISION 35: action=0>>
+<<DECISION 36: action=0>>
+<<DECISION 37: action=0>>
+-------- TURN 5 (Player B) --------
+<<DECISION 38: action=0>>
+<<DECISION 39: action=0>>
+Player B draws Green Sun's Zenith
+<<DECISION 40: action=0>>
+<<DECISION 41: action=0>>
+<<DECISION 42: action=1>>
+Player B played Wooded Foothills
+<<DECISION 43: action=1>>
+Choose target:
+<<DECISION 44: action=0>>
+Targeting choice 0
+Player B sacrifices Wasteland
+Player B's Wasteland ability targeting Wasteland is on the stack
+<<DECISION 45: action=1>>
+Player B pays 1 life
+Player B sacrifices Wooded Foothills
+Player B's Wooded Foothills ability is on the stack
+<<DECISION 46: action=0>>
+Resolving ability (category: ChangeZone, amount: 1)
+Searching Player B's library:
+<<DECISION 47: action=1>>
+Player B shuffles their library
+Player B puts Dryad Arbor to the battlefield
+<<DECISION 48: action=0>>
+Destroy fizzles
+<<DECISION 49: action=0>>
+<<DECISION 50: action=0>>
+No creatures eligible to attack.
+<<DECISION 51: action=0>>
+No attackers ��� skipping declare blockers.
+<<DECISION 52: action=0>>
+--- Combat Damage ---
+--- End Combat Damage ---
+<<DECISION 53: action=0>>
+<<DECISION 54: action=0>>
+<<DECISION 55: action=0>>
+<<DECISION 56: action=0>>
+-------- TURN 6 (Player A) --------
+<<DECISION 57: action=0>>
+Player A draws Flooded Strand
+<<DECISION 58: action=0>>
+<<DECISION 59: action=1>>
+Player A played Flooded Strand
+<<DECISION 60: action=2>>
+Player A pays 1 life
+Player A sacrifices Flooded Strand
+Player A's Flooded Strand ability is on the stack
+<<DECISION 61: action=0>>
+Resolving ability (category: ChangeZone, amount: 1)
+Searching Player A's library:
+<<DECISION 62: action=1>>
+Player A shuffles their library
+Player A puts Undercity Sewers to the battlefield
+Undercity Sewers enters tapped.
+Undercity Sewers triggered
+<<DECISION 63: action=0>>
+Resolving ability (category: Surveil, amount: 1)
+Top card of Player A's library: Force of Will
+<<DECISION 64: action=0>>
+<<DECISION 65: action=0>>
+<<DECISION 66: action=0>>
+No creatures eligible to attack.
+<<DECISION 67: action=0>>
+No attackers ��� skipping declare blockers.
+<<DECISION 68: action=0>>
+--- Combat Damage ---
+--- End Combat Damage ---
+<<DECISION 69: action=0>>
+<<DECISION 70: action=0>>
+<<DECISION 71: action=0>>
+<<DECISION 72: action=0>>
+-------- TURN 7 (Player B) --------
+<<DECISION 73: action=0>>
+Player B draws Sylvan Library
+<<DECISION 74: action=0>>
+<<DECISION 75: action=1>>
+Choose X value (0-1):
+<<DECISION 76: action=0>>
+Player B chooses X = 0
+Player B activated Dryad Arbor for 1(G)
+Player B casts Green Sun's Zenith
+<<DECISION 77: action=0>>
+Resolving ability (category: ChangeZone, amount: 1)
+Searching Player B's library:
+<<DECISION 78: action=0>>
+Player B shuffles their library
+Player B fails to find
+Green Sun's Zenith is shuffled into its owner's library
+<<DECISION 79: action=0>>
+<<DECISION 80: action=0>>
+No creatures eligible to attack.
+<<DECISION 81: action=0>>
+No attackers ��� skipping declare blockers.
+<<DECISION 82: action=0>>
+--- Combat Damage ---
+--- End Combat Damage ---
+<<DECISION 83: action=0>>
+<<DECISION 84: action=0>>
+<<DECISION 85: action=0>>
+<<DECISION 86: action=0>>
+-------- TURN 8 (Player A) --------
+<<DECISION 87: action=0>>
+Player A draws Force of Will
+<<DECISION 88: action=0>>
+<<DECISION 89: action=0>>
+<<DECISION 90: action=0>>
+No creatures eligible to attack.
+<<DECISION 91: action=0>>
+No attackers ��� skipping declare blockers.
+<<DECISION 92: action=0>>
+--- Combat Damage ---
+--- End Combat Damage ---
+<<DECISION 93: action=0>>
+<<DECISION 94: action=0>>
+<<DECISION 95: action=0>>
+<<DECISION 96: action=0>>
+-------- TURN 9 (Player B) --------
+<<DECISION 97: action=0>>
+Player B draws Windswept Heath
+<<DECISION 98: action=0>>
+<<DECISION 99: action=2>>
+Choose X value (0-1):
+<<DECISION 100: action=1>>
+Player B chooses X = 1
+Player B activated Dryad Arbor for 1(G)
+Player B activated Plains for 1(W)
+Player B casts Green Sun's Zenith
+<<DECISION 101: action=0>>
+Resolving ability (category: ChangeZone, amount: 1)
+Searching Player B's library:
+<<DECISION 102: action=1>>
+Player B shuffles their library
+Player B puts Birds of Paradise to the battlefield
+Green Sun's Zenith is shuffled into its owner's library
+<<DECISION 103: action=1>>
+Player B played Windswept Heath
+<<DECISION 104: action=1>>
+Player B pays 1 life
+Player B sacrifices Windswept Heath
+Player B's Windswept Heath ability is on the stack
+<<DECISION 105: action=0>>
+Resolving ability (category: ChangeZone, amount: 1)
+Searching Player B's library:
+<<DECISION 106: action=1>>
+Player B shuffles their library
+Player B puts Forest to the battlefield
+<<DECISION 107: action=0>>
+<<DECISION 108: action=0>>
+No creatures eligible to attack.
+<<DECISION 109: action=0>>
+No attackers ��� skipping declare blockers.
+<<DECISION 110: action=0>>
+--- Combat Damage ---
+--- End Combat Damage ---
+<<DECISION 111: action=0>>
+<<DECISION 112: action=0>>
+<<DECISION 113: action=0>>
+<<DECISION 114: action=0>>
+-------- TURN 10 (Player A) --------
+<<DECISION 115: action=0>>
+Player A draws Misty Rainforest
+<<DECISION 116: action=0>>
+<<DECISION 117: action=1>>
+Player A played Misty Rainforest
+<<DECISION 118: action=2>>
+Player A pays 1 life
+Player A sacrifices Misty Rainforest
+Player A's Misty Rainforest ability is on the stack
+<<DECISION 119: action=0>>
+Resolving ability (category: ChangeZone, amount: 1)
+Searching Player A's library:
+<<DECISION 120: action=1>>
+Player A shuffles their library
+Player A puts Underground Sea to the battlefield
+<<DECISION 121: action=0>>
+<<DECISION 122: action=0>>
+No creatures eligible to attack.
+<<DECISION 123: action=0>>
+No attackers ��� skipping declare blockers.
+<<DECISION 124: action=0>>
+--- Combat Damage ---
+--- End Combat Damage ---
+<<DECISION 125: action=0>>
+<<DECISION 126: action=0>>
+<<DECISION 127: action=0>>
+<<DECISION 128: action=0>>
+-------- TURN 11 (Player B) --------
+<<DECISION 129: action=1>>
+Player B activated Dryad Arbor for 1(G)
+Player B activated Forest for 1(G)
+Player B activated Birds of Paradise for 1(W)
+Player B casts Endurance
+<<DECISION 130: action=0>>
+Endurance enters the battlefield
+Choose target:
+<<DECISION 131: action=0>>
+Targeting choice 0
+Endurance triggered
+<<DECISION 132: action=0>>
+Resolving ability (category: ChangeZoneAll, amount: 0)
+Player B moves Swords to Plowshares to the bottom of their library
+Player B moves Thalia, Guardian of Thraben to the bottom of their library
+Player B moves Wasteland to the bottom of their library
+Player B moves Once Upon a Time to the bottom of their library
+Player B moves Windswept Heath to the bottom of their library
+Player B moves Wooded Foothills to the bottom of their library
+Player B moves 6 card(s) to the bottom of their library
+<<DECISION 133: action=0>>
+Player B draws Savannah
+<<DECISION 134: action=0>>
+<<DECISION 135: action=1>>
+Player B played Savannah
+<<DECISION 136: action=1>>
+Player B activated Savannah for 1(G)
+Player B activated Plains for 1(W)
+Player B casts Sylvan Library
+<<DECISION 137: action=0>>
+Sylvan Library enters the battlefield
+<<DECISION 138: action=0>>
+<<DECISION 139: action=0>>
+No creatures eligible to attack.
+<<DECISION 140: action=0>>
+No attackers ��� skipping declare blockers.
+<<DECISION 141: action=0>>
+--- Combat Damage ---
+--- End Combat Damage ---
+<<DECISION 142: action=0>>
+<<DECISION 143: action=0>>
+<<DECISION 144: action=0>>
+<<DECISION 145: action=0>>
+-------- TURN 12 (Player A) --------
+<<DECISION 146: action=0>>
+Player A draws Dark Ritual
+<<DECISION 147: action=0>>
+<<DECISION 148: action=0>>
+<<DECISION 149: action=0>>
+No creatures eligible to attack.
+<<DECISION 150: action=0>>
+No attackers ��� skipping declare blockers.
+<<DECISION 151: action=0>>
+--- Combat Damage ---
+--- End Combat Damage ---
+<<DECISION 152: action=0>>
+<<DECISION 153: action=0>>
+<<DECISION 154: action=0>>
+<<DECISION 155: action=0>>
+-------- TURN 13 (Player B) --------
+<<DECISION 156: action=0>>
+Player B draws Wasteland
+Sylvan Library triggered
+<<DECISION 157: action=0>>
+Resolving ability (category: SylvanLibrary, amount: 0)
+Player B draws Windswept Heath
+Player B draws Wooded Foothills
+Player B draws 2 cards (Sylvan Library)
+Choose a card drawn this turn (2 remaining):
+<<DECISION 158: action=1>>
+Choose a card drawn this turn (1 remaining):
+<<DECISION 159: action=1>>
+For Windswept Heath: pay 4 life or put on top of library?
+<<DECISION 160: action=0>>
+Player B pays 4 life (now at 14)
+For Wooded Foothills: pay 4 life or put on top of library?
+<<DECISION 161: action=1>>
+Player B puts Wooded Foothills on top of library
+<<DECISION 162: action=0>>
+<<DECISION 163: action=3>>
+Player B activated Plains for 1(W)
+Player B activated Dryad Arbor for 1(G)
+Player B activated Birds of Paradise for 1(W)
+Player B casts Knight of the Reliquary
+<<DECISION 164: action=0>>
+Knight of the Reliquary enters the battlefield
+Knight of the Reliquary gains (always)
+<<DECISION 165: action=1>>
+Player B played Wasteland
+<<DECISION 166: action=1>>
+Choose target:
+<<DECISION 167: action=0>>
+Targeting choice 0
+Player B sacrifices Wasteland
+Player B's Wasteland ability targeting Undercity Sewers is on the stack
+<<DECISION 168: action=0>>
+Resolving ability (category: Destroy, amount: 0)
+Undercity Sewers is destroyed
+<<DECISION 169: action=0>>
+<<DECISION 170: action=0>>
+--- Declare Attackers (Player B) ---
+<<DECISION 171: action=0>>
+Select target for Endurance:
+<<DECISION 172: action=0>>
+Endurance attacking Player A.
+--- Declare Attackers (Player B) ---
+  [attacking] Endurance [3/4] -> Player A
+<<DECISION 173: action=-1>>
+Attackers declared:
+  Endurance -> Player A
+<<DECISION 174: action=0>>
+No creatures eligible to block.
+<<DECISION 175: action=0>>
+--- Combat Damage ---
+  Endurance deals 3 damage to Player A
+--- End Combat Damage ---
+<<DECISION 176: action=0>>
+<<DECISION 177: action=0>>
+<<DECISION 178: action=0>>
+<<DECISION 179: action=0>>
+-------- TURN 14 (Player A) --------
+<<DECISION 180: action=0>>
+Player A draws Street Wraith
+<<DECISION 181: action=3>>
+Player A pays 2 life
+Player A activates Street Wraith from hand
+<<DECISION 182: action=0>>
+Resolving ability (category: Draw, amount: 1)
+Player A draws Doomsday
+<<DECISION 183: action=1>>
+Player A activated Swamp for 1(B)
+Player A casts Dark Ritual
+<<DECISION 184: action=1>>
+Player A activated Underground Sea for 1(B)
+Player A casts Dark Ritual
+Resolving ability (category: AddMana, amount: 3)
+Player A adds 3{B}
+Resolving ability (category: AddMana, amount: 3)
+Player A adds 3{B}
+MANA_WASTED: A
+No creatures eligible to attack.
+No attackers ��� skipping declare blockers.
+--- Combat Damage ---
+--- End Combat Damage ---
+-------- TURN 15 (Player B) --------
+<<DECISION 185: action=0>>
+Player B draws Wooded Foothills
+Sylvan Library triggered
+<<DECISION 186: action=0>>
+Resolving ability (category: SylvanLibrary, amount: 0)
+Player B draws Savannah
+Player B draws Icetill Explorer
+Player B draws 2 cards (Sylvan Library)
+Choose a card drawn this turn (2 remaining):
+<<DECISION 187: action=0>>
+Choose a card drawn this turn (1 remaining):
+<<DECISION 188: action=1>>
+For Wooded Foothills: pay 4 life or put on top of library?
+<<DECISION 189: action=1>>
+Player B puts Wooded Foothills on top of library
+For Icetill Explorer: pay 4 life or put on top of library?
+<<DECISION 190: action=0>>
+Player B pays 4 life (now at 10)
+<<DECISION 191: action=0>>
+<<DECISION 192: action=3>>
+Player B activated Dryad Arbor for 1(G)
+Player B activated Forest for 1(G)
+Player B activated Birds of Paradise for 1(W)
+Player B activated Plains for 1(W)
+Player B casts Icetill Explorer
+<<DECISION 193: action=1>>
+<<DECISION 194: action=0>>
+Player B sacrifices Dryad Arbor
+Player B's Knight of the Reliquary ability is on the stack
+Resolving ability (category: ChangeZone, amount: 1)
+Searching Player B's library:
+<<DECISION 195: action=1>>
+Player B shuffles their library
+Player B puts Gaea's Cradle to the battlefield
+Icetill Explorer enters the battlefield
+Icetill Explorer gains (always)
+Icetill Explorer gains (always)
+<<DECISION 196: action=1>>
+Player B played Savannah
+Icetill Explorer triggered
+Resolving ability (category: Mill, amount: 0)
+Player B mills Green Sun's Zenith.
+<<DECISION 197: action=1>>
+Player B played Windswept Heath
+Icetill Explorer triggered
+<<DECISION 198: action=1>>
+Player B pays 1 life
+Player B sacrifices Windswept Heath
+Player B's Windswept Heath ability is on the stack
+Resolving ability (category: ChangeZone, amount: 1)
+Searching Player B's library:
+<<DECISION 199: action=1>>
+Player B shuffles their library
+Player B puts Savannah to the battlefield
+Icetill Explorer triggered
+Resolving ability (category: Mill, amount: 0)
+Player B mills Swords to Plowshares.
+Resolving ability (category: Mill, amount: 0)
+Player B mills Swords to Plowshares.
+--- Declare Attackers (Player B) ---
+<<DECISION 200: action=0>>
+Select target for Endurance:
+<<DECISION 201: action=0>>
+Endurance attacking Player A.
+--- Declare Attackers (Player B) ---
+  [attacking] Endurance [3/4] -> Player A
+<<DECISION 202: action=-1>>
+Attackers declared:
+  Endurance -> Player A
+No creatures eligible to block.
+--- Combat Damage ---
+  Endurance deals 3 damage to Player A
+--- End Combat Damage ---
+-------- TURN 16 (Player A) --------
+Player A draws Ponder
+<<DECISION 203: action=1>>
+Player A activated Underground Sea for 1(U)
+Player A casts Ponder
+Resolving ability (category: RearrangeTopOfLibrary, amount: 3)
+Player A looks at the top 3 card(s) of their library.
+Choose which card goes 3 from top:
+<<DECISION 204: action=0>>
+Choose which card goes 2 from top:
+<<DECISION 205: action=0>>
+<<DECISION 206: action=0>>
+Resolving ability (category: Draw, amount: 1)
+Player A draws Dark Ritual
+<<DECISION 207: action=1>>
+Player A activated Swamp for 1(B)
+Player A casts Dark Ritual
+Resolving ability (category: AddMana, amount: 3)
+Player A adds 3{B}
+<<DECISION 208: action=1>>
+Player A casts Doomsday
+Resolving ability (category: ChangeZone, amount: 5)
+Searching Player A's library and graveyard:
+<<DECISION 209: action=29>>
+Player A puts Thassa's Oracle to top of library
+Player A puts a card to top of library
+Searching Player A's library and graveyard:
+<<DECISION 210: action=0>>
+Player A puts Force of Will to top of library
+Player A puts a card to top of library
+Searching Player A's library and graveyard:
+<<DECISION 211: action=0>>
+Player A puts Force of Will to top of library
+Player A puts a card to top of library
+Searching Player A's library and graveyard:
+<<DECISION 212: action=0>>
+Player A puts Thoughtseize to top of library
+Player A puts a card to top of library
+Searching Player A's library and graveyard:
+<<DECISION 213: action=0>>
+Player A puts Dark Ritual to top of library
+Player A puts a card to top of library
+Resolving ability (category: ChangeZoneAll, amount: 0)
+Player A moves Dark Ritual to exile
+Player A moves Dark Ritual to exile
+Player A moves Lotus Petal to exile
+Player A moves Lotus Petal to exile
+Player A moves Street Wraith to exile
+Player A moves Street Wraith to exile
+Player A moves Ponder to exile
+Player A moves Ponder to exile
+Player A moves Undercity Sewers to exile
+Player A moves Verdant Catacombs to exile
+Player A moves Flooded Strand to exile
+Player A moves Misty Rainforest to exile
+Player A moves Consider to exile
+Player A moves Doomsday to exile
+Player A moves Doomsday to exile
+Player A moves Doomsday to exile
+Player A moves Force of Will to exile
+Player A moves Thoughtseize to exile
+Player A moves Thoughtseize to exile
+Player A moves Daze to exile
+Player A moves Daze to exile
+Player A moves Dark Ritual to exile
+Player A moves Lotus Petal to exile
+Player A moves Lotus Petal to exile
+Player A moves Lion's Eye Diamond to exile
+Player A moves Personal Tutor to exile
+Player A moves Personal Tutor to exile
+Player A moves Personal Tutor to exile
+Player A moves Personal Tutor to exile
+Player A moves Street Wraith to exile
+Player A moves Street Wraith to exile
+Player A moves Edge of Autumn to exile
+Player A moves Edge of Autumn to exile
+Player A moves Brainstorm to exile
+Player A moves Brainstorm to exile
+Player A moves Brainstorm to exile
+Player A moves Brainstorm to exile
+Player A moves Ponder to exile
+Player A moves Ponder to exile
+Player A moves Polluted Delta to exile
+Player A moves Polluted Delta to exile
+Player A moves Polluted Delta to exile
+Player A moves Polluted Delta to exile
+Player A moves Underground Sea to exile
+Player A moves Underground Sea to exile
+Player A moves Bloodstained Mire to exile
+Player A moves Island to exile
+Player A moves Cavern of Souls to exile
+Player A moves Duress to exile
+Player A moves 49 card(s) to exile
+Resolving ability (category: RearrangeTopOfLibrary, amount: 0)
+Player A looks at the top 5 card(s) of their library.
+Choose which card goes 5 from top:
+<<DECISION 214: action=4>>
+Choose which card goes 4 from top:
+<<DECISION 215: action=0>>
+Choose which card goes 3 from top:
+<<DECISION 216: action=0>>
+Choose which card goes 2 from top:
+<<DECISION 217: action=0>>
+Resolving ability (category: LoseLife, amount: 0)
+Player A loses 2 life (now at 1)
+Resolving ability (category: Cleanup, amount: 0)
+No creatures eligible to attack.
+No attackers ��� skipping declare blockers.
+--- Combat Damage ---
+--- End Combat Damage ---
+-------- TURN 17 (Player B) --------
+<<DECISION 218: action=0>>
+Player B draws Collector Ouphe
+Sylvan Library triggered
+<<DECISION 219: action=0>>
+Resolving ability (category: SylvanLibrary, amount: 0)
+Player B draws Ignoble Hierarch
+Player B draws Keen-Eyed Curator
+Player B draws 2 cards (Sylvan Library)
+Choose a card drawn this turn (2 remaining):
+<<DECISION 220: action=1>>
+Choose a card drawn this turn (1 remaining):
+<<DECISION 221: action=1>>
+For Ignoble Hierarch: pay 4 life or put on top of library?
+<<DECISION 222: action=1>>
+Player B puts Ignoble Hierarch on top of library
+For Keen-Eyed Curator: pay 4 life or put on top of library?
+<<DECISION 223: action=0>>
+Player B pays 4 life (now at 5)
+<<DECISION 224: action=0>>
+<<DECISION 225: action=4>>
+Player B activated Forest for 1(G)
+Player B activated Birds of Paradise for 1(W)
+Player B casts Collector Ouphe
+<<DECISION 226: action=1>>
+<<DECISION 227: action=3>>
+Player B sacrifices Savannah
+Player B's Knight of the Reliquary ability is on the stack
+Resolving ability (category: ChangeZone, amount: 1)
+Searching Player B's library:
+<<DECISION 228: action=1>>
+Player B shuffles their library
+Player B puts Horizon Canopy to the battlefield
+Icetill Explorer triggered
+<<DECISION 229: action=1>>
+Player B activated Gaea's Cradle for 4(G)
+Player B sacrifices Horizon Canopy
+Player B's Horizon Canopy ability is on the stack
+Resolving ability (category: Draw, amount: 1)
+Player B draws Green Sun's Zenith
+Resolving ability (category: Mill, amount: 0)
+Player B mills Thalia, Guardian of Thraben.
+Collector Ouphe enters the battlefield
+<<DECISION 230: action=6>>
+Choose X value (0-5):
+<<DECISION 231: action=3>>
+Player B chooses X = 3
+Player B activated Plains for 1(W)
+Player B casts Green Sun's Zenith
+Resolving ability (category: ChangeZone, amount: 1)
+Searching Player B's library:
+<<DECISION 232: action=1>>
+Player B shuffles their library
+Player B puts Ignoble Hierarch to the battlefield
+Green Sun's Zenith is shuffled into its owner's library
+<<DECISION 233: action=6>>
+Player B activated Savannah for 1(G)
+Player B activated Savannah for 1(G)
+Player B casts Keen-Eyed Curator
+Keen-Eyed Curator enters the battlefield
+<<DECISION 234: action=1>>
+Player B played Dryad Arbor
+Icetill Explorer triggered
+Resolving ability (category: Mill, amount: 0)
+Player B mills Swords to Plowshares.
+<<DECISION 235: action=1>>
+Player B played Horizon Canopy
+Icetill Explorer triggered
+<<DECISION 236: action=1>>
+Payment cancelled.
+<<DECISION 237: action=1>>
+Payment cancelled.
+<<DECISION 238: action=1>>
+Choose target:
+<<DECISION 239: action=0>>
+Targeting choice 0
+Player B pays 1 life
+Player B activated Horizon Canopy for 1(G)
+Player B's Keen-Eyed Curator ability targeting Doomsday is on the stack
+Resolving ability (category: ChangeZone, amount: 0)
+Doomsday is moved to exile
+Resolving ability (category: Mill, amount: 0)
+Player B mills Once Upon a Time.
+--- Declare Attackers (Player B) ---
+<<DECISION 240: action=0>>
+Select target for Endurance:
+<<DECISION 241: action=0>>
+Endurance attacking Player A.
+--- Declare Attackers (Player B) ---
+  [attacking] Endurance [3/4] -> Player A
+<<DECISION 242: action=0>>
+Select target for Icetill Explorer:
+<<DECISION 243: action=0>>
+Icetill Explorer attacking Player A.
+--- Declare Attackers (Player B) ---
+  [attacking] Endurance [3/4] -> Player A
+  [attacking] Icetill Explorer [2/4] -> Player A
+<<DECISION 244: action=-1>>
+Attackers declared:
+  Endurance -> Player A
+  Icetill Explorer -> Player A
+No creatures eligible to block.
+--- Combat Damage ---
+  Endurance deals 3 damage to Player A
+  Icetill Explorer deals 2 damage to Player A
+--- End Combat Damage ---
+Player A has -4 life - Player B wins!
+=== GAME OVER: winner=Player B ===

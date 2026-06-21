@@ -1,0 +1,101 @@
+#include "effects.h"
+
+#include <random>
+#include <vector>
+
+#include "../classes/game.h"
+#include "../cli_output.h"
+#include "../components/carddata.h"
+#include "../components/player.h"
+#include "../components/zone.h"
+#include "../ecs/coordinator.h"
+#include "../systems/orderer.h"
+
+extern Coordinator global_coordinator;
+extern Game cur_game;
+
+namespace effects {
+
+bool change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer) {
+    Zone::Ownership owner = ab.controller;
+    // If this targets a player (e.g. Endurance: "target player puts the cards
+    // from their graveyard on the bottom of their library"), operate on the
+    // targeted player's zones rather than the controller's.
+    if (ab.target != 0 && global_coordinator.entity_has_component<Player>(ab.target)) {
+        owner = (ab.target == cur_game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
+    }
+
+    // Determine which zones to search
+    std::vector<Zone::ZoneValue> search_zones;
+    if (ab.origins.size() > 1) {
+        search_zones = ab.origins;
+    } else {
+        search_zones.push_back(ab.origin);
+    }
+
+    // Collect all cards from the specified zones
+    std::vector<Entity> zone_contents;
+    for (auto zone : search_zones) {
+        if (zone == Zone::LIBRARY) {
+            auto lib = orderer->get_library_contents(owner);
+            zone_contents.insert(zone_contents.end(), lib.begin(), lib.end());
+        } else if (zone == Zone::HAND) {
+            auto hand = orderer->get_hand(owner);
+            zone_contents.insert(zone_contents.end(), hand.begin(), hand.end());
+        } else if (zone == Zone::GRAVEYARD) {
+            for (auto e : orderer->mEntities) {
+                if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+                auto &z = global_coordinator.GetComponent<Zone>(e);
+                if (z.location == Zone::GRAVEYARD && z.owner == owner) zone_contents.push_back(e);
+            }
+        }
+    }
+
+    // Filter by change_type (supports IsNotRemembered filter)
+    bool filter_not_remembered = (ab.change_type.find("IsNotRemembered") != std::string::npos);
+    std::vector<Entity> to_move;
+    for (auto entity : zone_contents) {
+        if (filter_not_remembered) {
+            bool is_remembered = false;
+            for (auto re : cur_game.remembered_entities) {
+                if (re == entity) { is_remembered = true; break; }
+            }
+            if (is_remembered) continue;
+        }
+        to_move.push_back(entity);
+    }
+
+    // RandomOrder$ — randomize the moved cards with the seeded RNG (deterministic
+    // per game seed). Used for "in a random order" library placement (Endurance).
+    if (ab.rest_random_order) {
+        for (size_t i = to_move.size(); i > 1; --i) {
+            std::uniform_int_distribution<size_t> dist(0, i - 1);
+            size_t j = dist(cur_game.gen);
+            std::swap(to_move[i - 1], to_move[j]);
+        }
+    }
+
+    // Library destinations honor LibraryPosition$ (-1 / unset = bottom).
+    bool on_bottom = (ab.destination == Zone::LIBRARY && ab.dig_library_position != 0);
+    const char *dest_str = ab.destination == Zone::EXILE       ? "exile"
+                           : ab.destination == Zone::GRAVEYARD ? "graveyard"
+                           : ab.destination == Zone::HAND      ? "hand"
+                           : ab.destination == Zone::BATTLEFIELD ? "the battlefield"
+                           : ab.destination == Zone::LIBRARY   ? (on_bottom ? "the bottom of their library"
+                                                                            : "the top of their library")
+                                                               : "zone";
+
+    size_t moved = 0;
+    for (auto entity : to_move) {
+        if (global_coordinator.entity_has_component<CardData>(entity)) {
+            auto &cd = global_coordinator.GetComponent<CardData>(entity);
+            game_log("%s moves %s to %s\n", player_name(owner).c_str(), cd.name.c_str(), dest_str);
+        }
+        orderer->add_to_zone(on_bottom, entity, ab.destination);
+        moved++;
+    }
+    game_log("%s moves %zu card(s) to %s\n", player_name(owner).c_str(), moved, dest_str);
+    return true;
+}
+
+}  // namespace effects

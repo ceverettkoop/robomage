@@ -35,11 +35,39 @@ import torch.nn as nn
 import gymnasium as gym
 from stable_baselines3.common.torch_layers import BaseFeaturesExtractor
 
+
+def _masked_mean_max(emb: torch.Tensor, present: torch.Tensor) -> torch.Tensor:
+    """Aggregate per-slot embeddings, ignoring empty slots.
+
+    Empty card slots are all-zero one-hots, but the encoder maps them to a
+    nonzero bias vector; pooling over them with a plain mean dilutes the real
+    signal and a plain max can be pinned by that bias. This pools only the
+    occupied slots:
+      - masked mean: sum over present slots / count  (count-robust composition)
+      - masked max:  per-feature max over present slots (single-card presence)
+    Rows with no occupied slots aggregate to zeros for both halves.
+
+    emb     : (B, S, D) per-slot embeddings
+    present : (B, S) bool/float, 1.0 where the slot holds a real card
+    returns : (B, 2*D) = [masked_mean, masked_max]
+    """
+    m = present.unsqueeze(-1).to(emb.dtype)          # (B, S, 1)
+    counts = m.sum(1).clamp(min=1.0)                 # (B, 1); empty zone -> 1 (mean stays 0)
+    masked_mean = (emb * m).sum(1) / counts          # (B, D)
+
+    neg_inf = torch.finfo(emb.dtype).min
+    masked_max = emb.masked_fill(m == 0, neg_inf).max(1).values  # (B, D)
+    has_any = present.any(1, keepdim=True)           # (B, 1)
+    masked_max = torch.where(has_any, masked_max, torch.zeros_like(masked_max))
+
+    return torch.cat([masked_mean, masked_max], dim=-1)
+
 # ── Layout constants (mirror src/machine_io.h) ──────────────────────────────
 _GLOBAL_SIZE     = 34
 
 _PERM_SLOTS      = 96   # 48 self + 48 opponent (unified: creatures, lands, other)
 _PERM_SLOT_SIZE  = 138  # 10 status floats + 128 card one-hot
+_PERM_CARD_OFF   = 10   # card one-hot begins after the 10 status floats
 
 _STACK_SLOTS     = 12
 _STACK_SLOT_SIZE = 130  # controller_is_self(1) + card one-hot(128) + is_spell(1)
@@ -80,18 +108,21 @@ _STATE_END            = _KNOWN_TOP_LIB_END                     # 33666
 
 class CardGameExtractor(BaseFeaturesExtractor):
     """
-    Shared-weight per-entity encoder with mean+max aggregation.
+    Shared-weight per-entity encoder with masked mean+max aggregation.
 
-    Four independent encoders cover the four slot formats:
+    Three independent encoders cover the slot formats:
       perm_encoder   (138 → embed_dim): permanents (10 status + 128 card one-hot)
       stack_encoder  (130 → embed_dim//2): stack items
       entity_encoder (128 → embed_dim): graveyard, hand, and known top-library
 
+    Empty slots (all-zero card one-hot) are masked out of the perm / graveyard /
+    hand pooling so they neither dilute the mean nor pin the max.
+
     Output fed into the policy MLP head:
       global(34) + hist(512) + meta_ctx(8) + known_top_lib_agg(embed) +
       action_extras(match+lib+turn skipped; action metadata + cost feats) +
-      perm_agg(embed*2) + stack_agg(embed//2 * 2) +
-      graveyard_agg(embed) + hand_agg(embed)
+      perm_agg(embed*2: masked mean+max) + stack_agg(embed//2 * 2) +
+      graveyard_agg(embed*2: masked mean+max) + hand_agg(embed*2: masked mean+max)
     """
 
     def __init__(
@@ -108,14 +139,14 @@ class CardGameExtractor(BaseFeaturesExtractor):
             + _meta_ctx_size                             # 8 match + lib + turn
             + embed_dim                                  # known-top library mean
             + (observation_space.shape[0] - _STATE_END)  # action extras
-            + embed_dim * 2                              # perm mean+max (creatures, lands, other)
+            + embed_dim * 2                              # perm masked mean+max (creatures, lands, other)
             + half * 2                                   # stack mean+max
-            + embed_dim                                  # graveyard mean
-            + embed_dim                                  # hand mean
+            + embed_dim * 2                              # graveyard masked-mean + max
+            + embed_dim * 2                              # hand masked-mean + max
         )
         super().__init__(observation_space, features_dim=features_dim)
 
-        # Shared encoder for 42-float unified permanent slots
+        # Shared encoder for 138-float unified permanent slots
         self.perm_encoder = nn.Sequential(
             nn.Linear(_PERM_SLOT_SIZE, embed_dim),
             nn.ReLU(),
@@ -123,7 +154,7 @@ class CardGameExtractor(BaseFeaturesExtractor):
             nn.ReLU(),
         )
 
-        # Encoder for 33-float stack slots
+        # Encoder for 130-float stack slots
         self.stack_encoder = nn.Sequential(
             nn.Linear(_STACK_SLOT_SIZE, embed_dim),
             nn.ReLU(),
@@ -131,7 +162,7 @@ class CardGameExtractor(BaseFeaturesExtractor):
             nn.ReLU(),
         )
 
-        # Shared encoder for 32-float card-identity slots (graveyard AND hand)
+        # Shared encoder for 128-float card-identity slots (graveyard AND hand)
         self.entity_encoder = nn.Sequential(
             nn.Linear(_HAND_SLOT_SIZE, embed_dim),
             nn.ReLU(),
@@ -159,11 +190,19 @@ class CardGameExtractor(BaseFeaturesExtractor):
         hand_emb    = self.entity_encoder(hand)       # (B, 10, embed)  — shared weights
         top_lib_emb = self.entity_encoder(top_lib)    # (B, 5, embed)  — shared weights
 
-        # Aggregate: mean+max for perms and stack; mean for graveyard, hand, top-library
-        perm_agg    = torch.cat([perm_emb.mean(1), perm_emb.max(1).values], dim=-1)
+        # Occupancy masks: a card slot is empty iff its card one-hot is all zeros.
+        # Permanents carry 10 leading status floats, so check the one-hot portion
+        # only (a real permanent always sets exactly one card bit).
+        perm_present = perms[:, :, _PERM_CARD_OFF:].sum(-1) > 0  # (B, 96)
+        gy_present   = graveyard.sum(-1) > 0                     # (B, 128)
+        hand_present = hand.sum(-1) > 0                          # (B, 10)
+
+        # Aggregate: masked mean+max for perms, graveyard, and hand (skip empty
+        # slots); mean+max for stack; mean for top-library.
+        perm_agg    = _masked_mean_max(perm_emb, perm_present)
         stk_agg     = torch.cat([stk_emb.mean(1),  stk_emb.max(1).values],  dim=-1)
-        gy_agg      = gy_emb.mean(1)
-        hand_agg    = hand_emb.mean(1)
+        gy_agg      = _masked_mean_max(gy_emb,   gy_present)
+        hand_agg    = _masked_mean_max(hand_emb, hand_present)
         top_lib_agg = top_lib_emb.mean(1)
 
         return torch.cat([global_ctx, hist_ctx, meta_ctx, top_lib_agg, action_extras,

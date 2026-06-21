@@ -16,6 +16,7 @@
 #include "components/effect.h"
 #include "components/token.h"
 #include "components/static_ability.h"
+#include "effects/effects.h"
 #include "ecs/coordinator.h"
 #include "ecs/events.h"
 #include "error.h"
@@ -29,6 +30,7 @@ const size_t SCRIPT_MAX_LEN = 10000;
 static std::string value_from_script(std::string script, std::string key);
 static std::vector<std::string> multi_values_from_script(std::string script, std::string key);
 static std::multiset<Colors> parse_mana_cost(std::string value, std::vector<Colors> *phyrexian_out = nullptr);
+static void parse_alt_cost_tokens(const std::string& cost_str, AltCost& ac);
 static std::set<Type> parse_types(std::string value);
 static std::map<std::string, std::string> parse_svars(const std::string& script);
 static std::string normalize_category(std::string category);
@@ -69,6 +71,53 @@ std::string name_to_uid(std::string name) {
     }
 
     return name;
+}
+
+// Parses the cost portion of an alternate cost string (the value after Cost$ / after
+// "Evoke:") into an AltCost. Recognises "0" (free), PayLife<N>, ExileFromHand<n/filter>
+// (pitch), Return<n/Type>; anything else is treated as a mana cost (e.g. Evoke:R).
+// Condition fields (CheckSVar etc.) are parsed separately by the caller.
+static void parse_alt_cost_tokens(const std::string& cost_str, AltCost& ac) {
+    ac.has_alt_cost = true;
+    bool matched_special = false;
+    // Cost$ 0 means free
+    if (cost_str == "0") {
+        ac.is_free = true;
+        return;
+    }
+    size_t pl = cost_str.find("PayLife<");
+    if (pl != std::string::npos) {
+        size_t close = cost_str.find('>', pl);
+        ac.life_cost = std::stoi(cost_str.substr(pl + 8, close - pl - 8));
+        matched_special = true;
+    }
+    size_t ef = cost_str.find("ExileFromHand<");
+    if (ef != std::string::npos) {
+        size_t slash = cost_str.find('/', ef);
+        ac.exile_from_hand_count = std::stoi(cost_str.substr(ef + 14, slash - ef - 14));
+        // Extract color from filter e.g. "Card.Blue+Other" → BLUE
+        std::string filter = cost_str.substr(slash + 1);
+        size_t close = filter.find('>');
+        if (close != std::string::npos) filter = filter.substr(0, close);
+        if (filter.find("Blue") != std::string::npos) ac.exile_from_hand_color = BLUE;
+        else if (filter.find("Green") != std::string::npos) ac.exile_from_hand_color = GREEN;
+        else if (filter.find("Red") != std::string::npos) ac.exile_from_hand_color = RED;
+        else if (filter.find("White") != std::string::npos) ac.exile_from_hand_color = WHITE;
+        else if (filter.find("Black") != std::string::npos) ac.exile_from_hand_color = BLACK;
+        matched_special = true;
+    }
+    size_t rf = cost_str.find("Return<");
+    if (rf != std::string::npos) {
+        size_t slash = cost_str.find('/', rf);
+        size_t close = cost_str.find('>', rf);
+        ac.return_to_hand_count = std::stoi(cost_str.substr(rf + 7, slash - rf - 7));
+        ac.return_to_hand_type = cost_str.substr(slash + 1, close - slash - 1);
+        matched_special = true;
+    }
+    // No special cost token: the whole string is a mana cost (e.g. Evoke:R, Evoke:2 R)
+    if (!matched_special && !cost_str.empty()) {
+        ac.mana_cost = parse_mana_cost(cost_str);
+    }
 }
 
 Entity parse_card_script(std::string path) {
@@ -177,37 +226,7 @@ Entity parse_card_script(std::string path) {
         std::string cost_str = line.substr(cost_pos, cost_end - cost_pos);
         while (!cost_str.empty() && cost_str.back() == ' ') cost_str.pop_back();
         AltCost ac;
-        ac.has_alt_cost = true;
-        // Cost$ 0 means free
-        if (cost_str == "0") {
-            ac.is_free = true;
-        }
-        size_t pl = cost_str.find("PayLife<");
-        if (pl != std::string::npos) {
-            size_t close = cost_str.find('>', pl);
-            ac.life_cost = std::stoi(cost_str.substr(pl + 8, close - pl - 8));
-        }
-        size_t ef = cost_str.find("ExileFromHand<");
-        if (ef != std::string::npos) {
-            size_t slash = cost_str.find('/', ef);
-            ac.exile_from_hand_count = std::stoi(cost_str.substr(ef + 14, slash - ef - 14));
-            // Extract color from filter e.g. "Card.Blue+Other" → BLUE
-            std::string filter = cost_str.substr(slash + 1);
-            size_t close = filter.find('>');
-            if (close != std::string::npos) filter = filter.substr(0, close);
-            if (filter.find("Blue") != std::string::npos) ac.exile_from_hand_color = BLUE;
-            else if (filter.find("Green") != std::string::npos) ac.exile_from_hand_color = GREEN;
-            else if (filter.find("Red") != std::string::npos) ac.exile_from_hand_color = RED;
-            else if (filter.find("White") != std::string::npos) ac.exile_from_hand_color = WHITE;
-            else if (filter.find("Black") != std::string::npos) ac.exile_from_hand_color = BLACK;
-        }
-        size_t rf = cost_str.find("Return<");
-        if (rf != std::string::npos) {
-            size_t slash = cost_str.find('/', rf);
-            size_t close = cost_str.find('>', rf);
-            ac.return_to_hand_count = std::stoi(cost_str.substr(rf + 7, slash - rf - 7));
-            ac.return_to_hand_type = cost_str.substr(slash + 1, close - slash - 1);
-        }
+        parse_alt_cost_tokens(cost_str, ac);
         // Parse CheckSVar$ and SVarCompare$ conditions
         // Walk remaining pipe-separated params for condition fields
         size_t pp = cost_end;
@@ -304,6 +323,14 @@ Entity parse_card_script(std::string path) {
             card.keywords.push_back("Prowess");
             continue;
         }
+        // K:Dredge:N — replacement effect: while in graveyard, may replace a draw by
+        // milling N cards and returning this card to hand. Value stored on CardData;
+        // the replacement is offered in Orderer::draw.
+        if (kw_line.rfind("Dredge:", 0) == 0) {
+            card.dredge = std::stoi(kw_line.substr(strlen("Dredge:")));
+            card.keywords.push_back("Dredge");
+            continue;
+        }
         // K:Landwalk:Swamp / Forest / Island / Mountain / Plains
         if (kw_line.rfind("Landwalk:", 0) == 0) {
             std::string land_type = kw_line.substr(strlen("Landwalk:"));
@@ -375,6 +402,34 @@ Entity parse_card_script(std::string path) {
                 tok_pos = (tok_end < cost_str.size()) ? tok_end + 1 : tok_end;
             }
             card.keywords.push_back("Flashback");
+            continue;
+        }
+        // K:Evoke:<cost> — alternate cost; when paid, the creature sacrifices itself as it
+        // enters. The cost may be a pitch (ExileFromHand), mana (e.g. R), or life. The
+        // self-sacrifice is a synthetic ETB self-trigger gated on Permanent::evoked, which
+        // is set only when the spell was cast for its evoke cost.
+        if (kw_line.rfind("Evoke", 0) == 0) {
+            size_t colon = kw_line.find(':');
+            std::string cost_str = (colon != std::string::npos) ? kw_line.substr(colon + 1) : "";
+            AltCost ac;
+            parse_alt_cost_tokens(cost_str, ac);
+            ac.is_evoke = true;
+            card.alt_cost = ac;
+            card.keywords.push_back("Evoke");
+
+            Ability sac;
+            sac.ability_type = Ability::TRIGGERED;
+            sac.category = "ChangeZone";
+            sac.trigger_on = Events::CARD_CHANGED_ZONE;
+            sac.trigger_zone_destination = Zone::BATTLEFIELD;
+            sac.trigger_only_self = true;
+            sac.is_evoke_sacrifice = true;
+            sac.defined_self = true;          // moves its own source (no targeting)
+            sac.valid_tgts = "N_A";
+            sac.origin = Zone::BATTLEFIELD;
+            sac.destination = Zone::GRAVEYARD;
+            sac.mandatory = true;
+            card.abilities.push_back(sac);
             continue;
         }
         size_t pos = 0;
@@ -649,80 +704,10 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
             // Non-numeric value is a SVar key — store for runtime resolution
             ability.amount_svar = value;
         }
-    } else if (key == "Produced") {
-        if (value == "Any") {
-            // Birds of Paradise: produce any color
-            ability.mana_choices = {WHITE, BLUE, BLACK, RED, GREEN};
-            ability.amount = 1;
-        } else if (value.find("Combo") != std::string::npos) {
-            // Noble Hierarch: "Combo W U G" — space-separated colors after "Combo"
-            size_t combo_pos = value.find("Combo");
-            size_t start = combo_pos + 5;  // skip "Combo"
-            while (start < value.size() && value[start] == ' ') start++;
-            for (size_t ci = start; ci <= value.size(); ci++) {
-                if (ci == value.size() || value[ci] == ' ') {
-                    if (ci > start) {
-                        char tok = value[start];
-                        if      (tok == 'W') ability.mana_choices.push_back(WHITE);
-                        else if (tok == 'U') ability.mana_choices.push_back(BLUE);
-                        else if (tok == 'B') ability.mana_choices.push_back(BLACK);
-                        else if (tok == 'R') ability.mana_choices.push_back(RED);
-                        else if (tok == 'G') ability.mana_choices.push_back(GREEN);
-                        else if (tok == 'C') ability.mana_choices.push_back(COLORLESS);
-                    }
-                    start = ci + 1;
-                }
-            }
-            ability.amount = 1;
-        } else {
-            for (char c : value) {
-                if      (c == 'W') { ability.color = WHITE;     break; }
-                else if (c == 'U') { ability.color = BLUE;      break; }
-                else if (c == 'B') { ability.color = BLACK;     break; }
-                else if (c == 'R') { ability.color = RED;       break; }
-                else if (c == 'G') { ability.color = GREEN;     break; }
-                else if (c == 'C') { ability.color = COLORLESS; break; }
-            }
-            ability.amount = 1;
-        }
     } else if (key == "ValidTgts") {
         ability.valid_tgts = value;
-    } else if (key == "ChangeType") {
-        ability.change_type = value;
-    } else if (key == "RememberChanged") {
-        ability.remember_changed = (value == "True");
-    } else if (key == "Origin") {
-        // Handle comma-separated origins (e.g. "Graveyard,Library")
-        auto parse_zone = [](const std::string &s) -> Zone::ZoneValue {
-            if (s == "Library")        return Zone::LIBRARY;
-            if (s == "Hand")           return Zone::HAND;
-            if (s == "Graveyard")      return Zone::GRAVEYARD;
-            if (s == "Exile")          return Zone::EXILE;
-            if (s == "Stack")          return Zone::STACK;
-            return Zone::LIBRARY;
-        };
-        ability.origins.clear();
-        size_t zp = 0;
-        while (true) {
-            size_t comma = value.find(',', zp);
-            if (comma == std::string::npos) {
-                ability.origins.push_back(parse_zone(value.substr(zp)));
-                break;
-            }
-            ability.origins.push_back(parse_zone(value.substr(zp, comma - zp)));
-            zp = comma + 1;
-        }
-        ability.origin = ability.origins[0];  // backward compat
-    } else if (key == "Destination") {
-        if (value == "Battlefield")    ability.destination = Zone::BATTLEFIELD;
-        else if (value == "Library")   ability.destination = Zone::LIBRARY;
-        else if (value == "Hand")      ability.destination = Zone::HAND;
-        else if (value == "Graveyard") ability.destination = Zone::GRAVEYARD;
-        else if (value == "Exile")     ability.destination = Zone::EXILE;
     } else if (key == "Mandatory") {
         ability.mandatory = (value == "True");
-    } else if (key == "MayShuffle") {
-        ability.may_shuffle = (value == "True");
     } else if (key == "UnlessCost") {
         ability.unless_generic_cost = static_cast<size_t>(std::stoi(value));
     } else if (key == "LifeAmount") {
@@ -731,35 +716,8 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         } else if (!value.empty()) {
             ability.amount_svar = value;
         }
-    } else if (key == "RememberMilled") {
-        ability.remember_milled = (value == "True");
     } else if (key == "TargetType") {
         ability.target_type = value;  // "Spell", "Activated,Triggered", etc.
-    } else if (key == "NumDmg") {
-        // Check if value is numeric; if not, store as SVar key for resolution later
-        if (!value.empty() && (std::isdigit(static_cast<unsigned char>(value[0])) ||
-                               (value[0] == '-' && value.size() > 1 && std::isdigit(static_cast<unsigned char>(value[1]))))) {
-            ability.amount = static_cast<size_t>(std::stoi(value));
-        } else {
-            ability.amount_svar = value;
-        }
-        return;  // handled here so we don't fall into the old NumDmg below
-    } else if (key == "ValidCards") {
-        ability.destroy_all_filter = value;
-    } else if (key == "NumAtt") {
-        ability.pump_att = std::stoi(value);
-    } else if (key == "NumDef") {
-        ability.pump_def = std::stoi(value);
-    } else if (key == "NoReveal") {
-        ability.is_peek_no_reveal = (value == "True");
-    } else if (key == "NextTurn") {
-        ability.delayed_trigger_next_turn = (value == "True");
-    } else if (key == "TokenScript") {
-        ability.token_script = value;
-    } else if (key == "CounterType") {
-        ability.counter_type = value;
-    } else if (key == "CounterNum") {
-        ability.counter_count = std::stoi(value);
     } else if (key == "Optional") {
         ability.optional_choice = (value == "True");
     } else if (key == "Defined") {
@@ -776,30 +734,8 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         if (value == "Hand") ability.activation_zone = Zone::HAND;
     } else if (key == "ActivationLimit") {
         ability.activation_limit = std::stoi(value);
-    } else if (key == "DigNum") {
-        // Value may be a literal int or an SVar reference (e.g. "X")
-        if (!value.empty() && (std::isdigit(value[0]) || value[0] == '-')) {
-            ability.dig_num = static_cast<size_t>(std::stoi(value));
-        } else {
-            ability.dig_num = 0;
-            ability.dig_num_expr = value;
-        }
-    } else if (key == "DestinationZone") {
-        if (value == "Library") ability.dig_destination = Zone::LIBRARY;
-        else if (value == "Hand") ability.dig_destination = Zone::HAND;
-        else if (value == "Graveyard") ability.dig_destination = Zone::GRAVEYARD;
-    } else if (key == "LibraryPosition") {
-        ability.dig_library_position = std::stoi(value);
     } else if (key == "ChangeNum") {
         ability.amount = static_cast<size_t>(std::stoi(value));
-    } else if (key == "ChangeValid") {
-        ability.change_valid = value;
-    } else if (key == "RestRandomOrder") {
-        ability.rest_random_order = (value == "True");
-    } else if (key == "DiscardValid") {
-        ability.discard_valid = value;
-    } else if (key == "Mode") {
-        ability.mode = value;
     } else if (key == "RestrictValid") {
         if (value.find("Creature") != std::string::npos &&
             value.find("ChosenType") != std::string::npos) {
@@ -865,18 +801,16 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
             }
             tok_pos = (tok_end < value.size()) ? tok_end + 1 : tok_end;
         }
-    } else if (key == "Tapped") {
-        ability.enters_tapped = (value == "True");
     } else if (key == "ConditionPresent") {
         ability.condition_present = value;
+    } else if (key == "ConditionDefined") {
+        // "Targeted" → the condition is evaluated against the chosen target at
+        // resolution, so it must not gate cast-time legality.
+        ability.condition_on_target = (value == "Targeted");
     } else if (key == "ConditionCompare") {
         ability.condition_compare = value;
-    } else if (key == "Phase") {
-        ability.delayed_phase = value;
-    } else if (key == "Execute") {
-        ability.delayed_execute_svar = value;
-    } else if (key == "ValidPlayer") {
-        ability.delayed_valid_player = value;
+    } else if (effects::apply_parse_hook(ability, key, value)) {
+        // Consumed by an effect-specific parse hook co-located with its handler.
     } else {
         static const std::set<std::string> ignored_keys = {
             "SpellDescription", "AILogic", "AINoRecursiveCheck", "TgtPrompt", "StackDescription",
@@ -966,7 +900,7 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
                 sub.charm_num = std::stoi(value);
             } else if (key == "Execute") {
                 // Execute$ references an SVar containing the ability to fire (delayed triggers)
-                sub.delayed_execute_svar = value;
+                effect_params<DelayedTriggerParams>(sub).execute_svar = value;
                 auto it = svars.find(value);
                 if (it != svars.end())
                     sub.subabilities.push_back(parse_svar_ability(it->second, ability_type, svars, card_name));
@@ -1001,8 +935,9 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
                     size_t d2 = rest.find('.', d1 + 1);
                     if (d2 != std::string::npos) {
                         sub.amount = static_cast<size_t>(std::stoi(rest.substr(d1 + 1, d2 - d1 - 1)));
-                        sub.amount_delirium = static_cast<size_t>(std::stoi(rest.substr(d2 + 1)));
-                        sub.amount_is_delirium_scale = true;
+                        DamageParams &dp = effect_params<DamageParams>(sub);
+                        dp.delirium_amount = static_cast<size_t>(std::stoi(rest.substr(d2 + 1)));
+                        dp.is_delirium_scale = true;
                     }
                 }
             } else if (sv.find("Count$Valid") != std::string::npos ||
@@ -1136,6 +1071,24 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
 
             param_pos = param_end;
         }
+        // Fatal Push pattern: ConditionPresent "Creature.cmcLE<SVar>" references an SVar
+        // (X = Count$Revolt.4.2) for the cmc threshold but sets no Amount/NumDmg, so
+        // amount_svar would be empty and the revolt-scaled threshold never resolves.
+        // Wire the referenced SVar into amount_svar so the block below resolves it into
+        // dynamic_amount_expr (evaluated at resolution by effects::destroy).
+        if (ability.amount_svar.empty()) {
+            size_t lex = ability.condition_present.find("cmcLE");
+            if (lex != std::string::npos) {
+                std::string svar_ref = ability.condition_present.substr(lex + 5);
+                size_t end = 0;
+                while (end < svar_ref.size() &&
+                       (std::isalpha(static_cast<unsigned char>(svar_ref[end])) || svar_ref[end] == '_'))
+                    end++;
+                svar_ref = svar_ref.substr(0, end);
+                if (!svar_ref.empty() && svars.find(svar_ref) != svars.end())
+                    ability.amount_svar = svar_ref;
+            }
+        }
         // Resolve amount_svar for delirium-conditional damage (Unholy Heat pattern).
         // SVar:X:Count$Compare Y GE4.6.2 where Y resolves to a graveyard card-type count.
         // Also handles runtime SVar expressions: Count$Valid ..., Targeted$CardPower
@@ -1154,8 +1107,9 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
                             size_t delirium_amt = static_cast<size_t>(std::stoi(rest.substr(d1 + 1, d2 - d1 - 1)));
                             size_t default_amt  = static_cast<size_t>(std::stoi(rest.substr(d2 + 1)));
                             ability.amount = default_amt;
-                            ability.amount_delirium = delirium_amt;
-                            ability.amount_is_delirium_scale = true;
+                            DamageParams &dp = effect_params<DamageParams>(ability);
+                            dp.delirium_amount = delirium_amt;
+                            dp.is_delirium_scale = true;
                         }
                     }
                 } else if (sv.find("Count$Valid") != std::string::npos ||
@@ -1355,22 +1309,25 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
                 ability.category = "SylvanLibrary";
             } else {
                 Ability effect = parse_svar_ability(it->second, Ability::TRIGGERED, svars, card_name);
-                ability.category = effect.category;
-                ability.amount = effect.amount;
-                ability.counter_type = effect.counter_type;
-                ability.counter_count = effect.counter_count;
-                ability.token_script = effect.token_script;
-                ability.subabilities = effect.subabilities;
-                ability.dig_num = effect.dig_num;
-                ability.dig_num_expr = effect.dig_num_expr;
-                ability.dig_destination = effect.dig_destination;
-                ability.dig_library_position = effect.dig_library_position;
-                ability.rest_random_order = effect.rest_random_order;
-                ability.optional_choice = effect.optional_choice;
-                ability.dynamic_amount_expr = effect.dynamic_amount_expr;
-                ability.condition_check_svar = effect.condition_check_svar;
-                ability.condition_svar_compare = effect.condition_svar_compare;
-                ability.condition_compare_svar_expr = effect.condition_compare_svar_expr;
+                // Take the effect's full configuration, then restore the trigger
+                // metadata computed above from the T: line. Previously this copied
+                // only a hand-picked subset of effect fields, which silently dropped
+                // Origin$/Destination$/ValidTgts$/TargetMin$/TargetMax$ etc. — e.g.
+                // Endurance's "bottom target player's graveyard into their library"
+                // became a "dump the whole library onto the battlefield", spawning a
+                // landfall trigger storm.
+                effect.ability_type                             = ability.ability_type;
+                effect.trigger_on                               = ability.trigger_on;
+                effect.trigger_zone_origin                      = ability.trigger_zone_origin;
+                effect.trigger_zone_destination                 = ability.trigger_zone_destination;
+                effect.trigger_valid_card_is_creature           = ability.trigger_valid_card_is_creature;
+                effect.trigger_valid_card_is_instant_or_sorcery = ability.trigger_valid_card_is_instant_or_sorcery;
+                effect.trigger_valid_card_is_land               = ability.trigger_valid_card_is_land;
+                effect.trigger_valid_player_is_controller       = ability.trigger_valid_player_is_controller;
+                effect.trigger_only_self                        = ability.trigger_only_self;
+                effect.trigger_self_excluded                    = ability.trigger_self_excluded;
+                effect.trigger_spell_count_eq                   = ability.trigger_spell_count_eq;
+                ability = effect;
             }
         }
     }
@@ -1579,7 +1536,8 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
                 else if (key == "Event"       && value == "Counter")    event_is_counter        = true;
                 else if (key == "ValidCard"   && value == "Card.Self")   valid_card_self         = true;
                 else if (key == "ValidCard"   && value.find("OppOwn") != std::string::npos &&
-                         value.find("nonToken") != std::string::npos) valid_card_opp_non_token = true;
+                         (value.find("!token") != std::string::npos ||
+                          value.find("nonToken") != std::string::npos)) valid_card_opp_non_token = true;
                 else if (key == "Destination" && value == "Battlefield") dest_is_battlefield     = true;
                 else if (key == "Destination" && value == "Graveyard")   dest_is_graveyard_r     = true;
                 else if (key == "ReplaceWith" && value == "ETBTapped")   replace_with_etb_tapped = true;
