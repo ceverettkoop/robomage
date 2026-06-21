@@ -181,6 +181,7 @@ void cli_emit_machine_query(const Query* q, const GameState* gs) {
     int32_t cats[MAX_ACTIONS]  = {};
     float   ids [MAX_ACTIONS];
     float   ctrl[MAX_ACTIONS];
+    float   pub [MAX_ACTIONS]  = {};  // 1.0 = card identity publicly known (revealed), else 0.0
     std::fill(ids,  ids  + MAX_ACTIONS, id_null);
     std::fill(ctrl, ctrl + MAX_ACTIONS, ctrl_null);
 
@@ -192,11 +193,13 @@ void cli_emit_machine_query(const Query* q, const GameState* gs) {
         ctrl[i] = (q->choices[i].zone_ref != REF_NONE)
             ? (q->choices[i].controller_is_self ? 1.0f : 0.0f)
             : ctrl_null;
+        pub[i]  = q->choices[i].card_is_public ? 1.0f : 0.0f;
     }
 
     fwrite(cats, sizeof(int32_t), MAX_ACTIONS, stdout);
     fwrite(ids,  sizeof(float),   MAX_ACTIONS, stdout);
     fwrite(ctrl, sizeof(float),   MAX_ACTIONS, stdout);
+    fwrite(pub,  sizeof(float),   MAX_ACTIONS, stdout);
     fflush(stdout);
 }
 

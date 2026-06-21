@@ -350,12 +350,14 @@ BQUERY: <N>\n
 [int32   × MAX_ACTIONS — action categories (padded)]
 [float32 × MAX_ACTIONS — action card IDs (padded)]
 [float32 × MAX_ACTIONS — action controller_is_self flags (padded)]
+[float32 × MAX_ACTIONS — action card_is_public flags (padded)]
 ```
 - `N` = number of legal choices
 - State vector: 33666 floats (see `src/machine_io.h` for layout)
 - Action categories: ActionCategory enum integers (0–26)
 - Card IDs: `card_vocab_index / N_CARD_TYPES`, or `-1.0 / N_CARD_TYPES` (-0.0078125) as null sentinel
 - Controller flags: `1.0` = self-controlled, `0.0` = opponent, null sentinel for non-entity actions
+- Public flags: `1.0` if the choice's card identity is public knowledge to all players (a revealed tutor, e.g. Personal Tutor), else `0.0`. Lets observers show the card name for an otherwise-private choice (search / top-of-library). Consumed as a side-channel (`env._action_public`); **not** part of the gym observation vector yet, so `OBS_SIZE` and trained checkpoints are unaffected.
 
 **ActionCategory values** (emitted per legal action):
 

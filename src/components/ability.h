@@ -189,9 +189,12 @@ P& effect_params(Ability& ab) {
 // (empty change_type matches all cards in the zone).
 // When mandatory=true, "fail to find" is suppressed unless the zone is empty.
 // Returns the chosen Entity, or 0 if the player fails to find / zone is empty.
+// reveal=true marks every offered card choice as public knowledge (revealed
+// tutors), so observers may show the chosen card's name even into a hidden zone.
 Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner,
                    Zone::ZoneValue zone, const std::string& change_type,
                    bool mandatory = false,
-                   Zone::ZoneValue destination = Zone::GRAVEYARD);
+                   Zone::ZoneValue destination = Zone::GRAVEYARD,
+                   bool reveal = false);
 
 #endif /* ABILITY_H */

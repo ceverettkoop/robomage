@@ -65,6 +65,7 @@ typedef struct ActionChoice_tag {
     int           category;                    // ActionCategory value
     int           card_vocab_idx;              // -1 = null sentinel
     bool          controller_is_self;
+    bool          card_is_public;              // card identity is public (revealed) even in a hidden zone
     ActionRefZone zone_ref;
     int           slot_idx;                    // index into zone array (-1 = N/A)
     char          description[MAX_CHOICE_DESC]; //NOT SERIALIZED TO ML

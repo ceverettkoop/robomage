@@ -56,6 +56,10 @@ struct LegalAction {
         ActionCategory category = ActionCategory::OTHER_CHOICE;
         bool use_alt_cost = false;
         bool use_flashback = false;
+        // True when this choice's card identity is public knowledge to all players
+        // (e.g. a revealed tutor like Personal Tutor). Lets observers show the card
+        // name even for an otherwise-private choice (search/top-of-library).
+        bool card_is_public = false;
 
         LegalAction(ActionType t, const std::string &desc)
             : type(t), source_entity(0), target_entity(0), description(desc) {}

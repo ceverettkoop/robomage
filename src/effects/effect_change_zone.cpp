@@ -16,6 +16,22 @@ extern Game cur_game;
 
 namespace effects {
 
+static bool search_reveals_card(const Ability &ab);
+
+// A library search reveals the chosen card when it must satisfy a restriction
+// more specific than "any card" — the searcher proves the card qualifies (e.g.
+// Personal Tutor: "search for a sorcery card, reveal it"). An unrestricted
+// "Card" search (Vampiric/Demonic Tutor, Doomsday) reveals nothing. Searches of
+// other zones are public already, so this only matters for the library.
+static bool search_reveals_card(const Ability &ab) {
+    bool from_library = (ab.origin == Zone::LIBRARY);
+    for (auto z : ab.origins) {
+        if (z == Zone::LIBRARY) from_library = true;
+    }
+    bool specific_type = !ab.change_type.empty() && ab.change_type != "Card";
+    return from_library && specific_type;
+}
+
 bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
     Zone::Ownership owner = global_coordinator.GetComponent<Zone>(ab.source).owner;
 
@@ -69,13 +85,16 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
     // Search-based ChangeZone (e.g. fetch lands, Green Sun's Zenith)
     size_t num_to_move = (ab.amount > 0) ? ab.amount : 1;
     bool multi_zone = ab.origins.size() > 1;
+    bool reveal = search_reveals_card(ab);
 
     for (size_t i = 0; i < num_to_move; i++) {
         Entity chosen = 0;
         if (multi_zone) {
-            chosen = search_multi_zone(orderer, owner, ab.origins, ab.change_type, ab.mandatory, ab.destination);
+            chosen = search_multi_zone(orderer, owner, ab.origins, ab.change_type, ab.mandatory, ab.destination,
+                reveal);
         } else {
-            chosen = search_zone(orderer, owner, ab.origin, ab.change_type, ab.mandatory, ab.destination);
+            chosen = search_zone(orderer, owner, ab.origin, ab.change_type, ab.mandatory, ab.destination,
+                reveal);
         }
 
         // after we have chosen but before we place it where it goes, if we messed with library shuffle it
@@ -99,6 +118,10 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
                 (ab.destination == Zone::BATTLEFIELD || ab.destination == Zone::GRAVEYARD || ab.destination == Zone::EXILE);
             if (dest_public) {
                 game_log("%s puts %s to %s\n", player_name(owner).c_str(), chosen_cd.name.c_str(), dest_str);
+            } else if (reveal) {
+                // Hidden destination, but the card was revealed — it's public knowledge.
+                game_log("%s reveals %s and puts it to %s\n", player_name(owner).c_str(), chosen_cd.name.c_str(),
+                    dest_str);
             } else {
                 game_log_private(
                     owner, "%s puts %s to %s\n", player_name(owner).c_str(), chosen_cd.name.c_str(), dest_str);

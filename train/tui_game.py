@@ -34,6 +34,33 @@ import decode
 _STEP_ABBR = ["UNT", "UPK", "DRW", "M1", "BGC", "ATK", "BLK",
               "FSD", "DMG", "EOC", "M2", "END", "CLN"]
 
+# Opponent choices that reveal a hidden card identity (the card never becomes
+# public knowledge). When the opponent makes one of these, the log shows a
+# generic "a card" message instead of the actual name — e.g. Ponder/Brainstorm
+# put a card on top, not "Put Lightning Bolt on top". Keyed by action category
+# (see ActionCategory in CLAUDE.md). Choices with no chosen card (card_idx < 0,
+# e.g. "Fail to find", "Take nothing") fall through to their normal description.
+_OPP_PRIVATE_DESC = {
+    12: "Put a card on the bottom of their library",  # BOTTOM_DECK_CARD
+    19: "Search their library for a card",            # SEARCH_LIBRARY
+    20: "Put a card on top of their library",          # TOP_LIBRARY
+    23: "Take a card",                                 # DIG_CHOICE
+}
+
+
+def _opp_event_text(action, opp_label):
+    """Log text for an opponent's chosen action, redacting private card identities.
+
+    A choice whose card was publicly revealed (card_is_public, e.g. Personal Tutor)
+    keeps its real description even in an otherwise-private category."""
+    cat = action["category"]
+    if (action["card_idx"] >= 0 and cat in _OPP_PRIVATE_DESC
+            and not action.get("card_is_public")):
+        desc = _OPP_PRIVATE_DESC[cat]
+    else:
+        desc = action["description"]
+    return f"[{opp_label}] {desc}"
+
 
 # ── Engine wrapper ────────────────────────────────────────────────────────────
 
@@ -191,7 +218,7 @@ class GameApp(App):
                 num = env._num_choices
                 a_has_priority = obs[32] > 0.5
                 opp_turn = (a_has_priority == self._opp_is_a)
-                actions = decode.decode_actions_from_obs(obs, num)
+                actions = decode.decode_actions_from_obs(obs, num, env._action_public)
 
                 self.post_message(StateUpdate(obs, num, [] if opp_turn else actions,
                                               human_turn=not opp_turn))
@@ -200,7 +227,7 @@ class GameApp(App):
                     action = int(self._opp_act(obs, num))
                     if 0 <= action < len(actions) and actions[action]["category"] != 0:
                         self.post_message(LogLines(
-                            [f"[{self._opp_label}] {actions[action]['description']}"]))
+                            [_opp_event_text(actions[action], self._opp_label)]))
                 else:
                     action = self._human_q.get()       # blocks until UI delivers
                     if action is None:                 # quit signalled

@@ -78,6 +78,7 @@ _STATE_BYTES = STATE_SIZE * 4
 _CATS_BYTES = MAX_ACTIONS * 4
 _IDS_BYTES = MAX_ACTIONS * 4
 _CTRL_BYTES = MAX_ACTIONS * 4
+_PUB_BYTES = MAX_ACTIONS * 4  # card_is_public per action
 
 
 # ── Deck file helpers ─────────────────────────────────────────────────────────
@@ -252,7 +253,7 @@ class TestHarness:
         """Read narrative lines until next BQUERY or game end.
 
         Returns (narrative_lines, query_data) where query_data is
-        (state, cats_int, card_ids, ctrl, num_choices) or None if game ended.
+        (state, cats_int, card_ids, ctrl, pub, num_choices) or None if game ended.
         """
         narrative = []
 
@@ -287,8 +288,10 @@ class TestHarness:
                     self._read_exactly(_IDS_BYTES), dtype=np.float32).copy()
                 ctrl = np.frombuffer(
                     self._read_exactly(_CTRL_BYTES), dtype=np.float32).copy()
+                pub = np.frombuffer(
+                    self._read_exactly(_PUB_BYTES), dtype=np.float32).copy()
 
-                return narrative, (state, cats_int, card_ids, ctrl, num_choices)
+                return narrative, (state, cats_int, card_ids, ctrl, pub, num_choices)
 
             # Regular narrative line
             text = line.decode("ascii", errors="replace")
@@ -347,13 +350,13 @@ class TestHarness:
                         print("\n=== GAME OVER (no winner detected) ===")
                     break
 
-                state, cats_int, card_ids, ctrl, num_choices = query
+                state, cats_int, card_ids, ctrl, pub, num_choices = query
                 self.decision_count += 1
 
                 # Decode and display
                 gs = decode_game_state(state)
                 decoded_actions = decode_actions(
-                    cats_int, card_ids, ctrl, num_choices)
+                    cats_int, card_ids, ctrl, num_choices, pub)
 
                 # Check for mandatory confirm categories
                 has_confirm = any(

@@ -65,11 +65,13 @@ STATE_SIZE = 33666
 # NOTE: ActionChoice.description is never emitted in the BQUERY payload — it is for
 #       human-readable display only and is not part of the ML observation.
 MAX_ACTIONS = 64         # practical upper bound on num_choices per step
-# Binary BQUERY payload sizes (bytes): state float32s + MAX_ACTIONS each of cats(int32)/ids/ctrl(float32)
+# Binary BQUERY payload sizes (bytes): state float32s + MAX_ACTIONS each of
+# cats(int32)/ids/ctrl(float32)/pub(float32)
 _BQUERY_STATE_BYTES = STATE_SIZE * 4
 _BQUERY_CATS_BYTES  = MAX_ACTIONS * 4  # int32
 _BQUERY_IDS_BYTES   = MAX_ACTIONS * 4  # float32
 _BQUERY_CTRL_BYTES  = MAX_ACTIONS * 4  # float32
+_BQUERY_PUB_BYTES   = MAX_ACTIONS * 4  # float32 — card_is_public per action
 ACTION_CATEGORY_MAX = 26 # highest ActionCategory enum value (SIDEBOARD_DONE)
 
 # ── Shaping reward magnitudes ─────────────────────────────────────────────────
@@ -182,6 +184,7 @@ class RoboMageEnv(gym.Env):
         self._proc = None
         self._num_choices = 1
         self._obs = np.zeros(OBS_SIZE, dtype=np.float32)
+        self._action_public = np.zeros(MAX_ACTIONS, dtype=np.float32)  # card_is_public per action
         self._pending_confirm = False  # True when last query used the -1 convention
         self._step_count = 0
 
@@ -339,6 +342,13 @@ class RoboMageEnv(gym.Env):
                     self._read_exactly(_BQUERY_IDS_BYTES), dtype=np.float32).copy()
                 ctrl_arr = np.frombuffer(
                     self._read_exactly(_BQUERY_CTRL_BYTES), dtype=np.float32).copy()
+                pub_arr = np.frombuffer(
+                    self._read_exactly(_BQUERY_PUB_BYTES), dtype=np.float32).copy()
+
+                # Per-action "card identity is public" flags (revealed tutors). Kept as a
+                # side-channel — observers (TUI) read it; not part of the ML observation
+                # vector yet, so OBS_SIZE and trained checkpoints are unaffected.
+                self._action_public = pub_arr
 
                 # The -1 confirm convention applies to mandatory attacker/blocker queries.
                 self._pending_confirm = any(

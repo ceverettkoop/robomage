@@ -286,11 +286,15 @@ def describe_action(cat, card_name, ctrl_str):
         return f"{cat_name}: {name}{owner}" if name else cat_name
 
 
-def decode_actions(cats_int, card_ids, ctrl, num_choices):
+def decode_actions(cats_int, card_ids, ctrl, num_choices, public_flags=None):
     """Decode the per-action arrays into a list of dicts.
 
     Each dict: index, category (int), category_name, card (name or None),
-    card_idx (vocab index or -1), controller ('own'|'opp'|None), description.
+    card_idx (vocab index or -1), controller ('own'|'opp'|None), description,
+    card_is_public (bool — card identity publicly known, e.g. a revealed tutor).
+
+    `public_flags` is the per-action card_is_public array (env._action_public);
+    None means "unknown", treated as not-public.
     """
     actions = []
     for i in range(num_choices):
@@ -298,6 +302,7 @@ def decode_actions(cats_int, card_ids, ctrl, num_choices):
         card_idx = int(round(float(card_ids[i]) * N_CARD_TYPES))
         card_name = card_index_to_name(card_idx) if card_idx >= 0 else None
         ctrl_str = _ctrl_str(float(ctrl[i]))
+        is_public = bool(public_flags[i] > 0.5) if public_flags is not None else False
         if cat == 11:
             # Mulligan query: index 0 = keep, index 1 = mulligan.
             desc = "Keep hand" if i == 0 else "Mulligan"
@@ -311,14 +316,20 @@ def decode_actions(cats_int, card_ids, ctrl, num_choices):
             "card_idx": card_idx if card_idx >= 0 else -1,
             "controller": ctrl_str,
             "description": desc,
+            "card_is_public": is_public,
         })
     return actions
 
 
-def decode_actions_from_obs(obs, num_choices):
-    """Convenience: decode actions straight from a full observation vector."""
+def decode_actions_from_obs(obs, num_choices, public_flags=None):
+    """Convenience: decode actions straight from a full observation vector.
+
+    `public_flags` (env._action_public) is a side-channel not stored in obs;
+    pass it through so revealed-card choices aren't redacted as private.
+    """
     return decode_actions(action_categories(obs, num_choices),
-                          action_card_ids(obs), action_ctrls(obs), num_choices)
+                          action_card_ids(obs), action_ctrls(obs), num_choices,
+                          public_flags)
 
 
 # ── Decision-type classification (all read the integer category array) ────────

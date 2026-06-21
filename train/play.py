@@ -18,6 +18,7 @@ from env import (RoboMageEnv, STATE_SIZE, ACTION_CATEGORY_MAX, BINARY, MAX_ACTIO
                  BIN_DIR, OBS_SIZE, _ACTION_CARD_ID_NULL, _ACTION_CTRL_NULL,
                  _HAND_START, MAX_HAND_SLOTS,
                  _BQUERY_STATE_BYTES, _BQUERY_CATS_BYTES, _BQUERY_IDS_BYTES, _BQUERY_CTRL_BYTES,
+                 _BQUERY_PUB_BYTES,
                  _BF_START as _ENV_BF_START, _BF_SLOT_SIZE as _ENV_BF_SLOT_SIZE,
                  _BF_CARD_OFF as _ENV_BF_CARD_OFF, _PERM_A_SLOTS as _ENV_PERM_A_SLOTS)
 import env as _env
@@ -311,7 +312,8 @@ def play_gui(binary_path: str, model_path: str, human_player: str = None,
     line_queue: queue.Queue = queue.Queue()
 
     _MANDATORY = {2, 3, 4, 5}
-    _PAYLOAD = _BQUERY_STATE_BYTES + _BQUERY_CATS_BYTES + _BQUERY_IDS_BYTES + _BQUERY_CTRL_BYTES
+    _PAYLOAD = (_BQUERY_STATE_BYTES + _BQUERY_CATS_BYTES + _BQUERY_IDS_BYTES
+                + _BQUERY_CTRL_BYTES + _BQUERY_PUB_BYTES)
 
     def _read_exactly(n: int) -> bytes:
         buf = bytearray()
@@ -344,11 +346,15 @@ def play_gui(binary_path: str, model_path: str, human_player: str = None,
                     offset += _BQUERY_IDS_BYTES
                     ctrl_arr = np.frombuffer(payload[offset:offset + _BQUERY_CTRL_BYTES],
                                              dtype=np.float32).copy()
+                    offset += _BQUERY_CTRL_BYTES
+                    pub_arr = np.frombuffer(payload[offset:offset + _BQUERY_PUB_BYTES],
+                                            dtype=np.float32).copy()
                     cat_arr = (cats_int / ACTION_CATEGORY_MAX).astype(np.float32)
                     pending_confirm = any(cats_int[i] in _MANDATORY for i in range(n))
                     line_queue.put({"num_choices": n, "state_arr": state_arr,
                                     "cat_arr": cat_arr, "card_id_arr": id_arr,
-                                    "ctrl_arr": ctrl_arr, "pending_confirm": pending_confirm})
+                                    "ctrl_arr": ctrl_arr, "pub_arr": pub_arr,
+                                    "pending_confirm": pending_confirm})
                 else:
                     line_queue.put(line.decode("ascii", errors="replace"))
         except Exception:

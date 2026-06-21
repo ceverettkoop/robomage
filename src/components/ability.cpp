@@ -144,7 +144,7 @@ static bool matches_filter_spec(Entity entity, const std::string &spec) {
 // Returns the chosen Entity, or 0 for fail to find.
 // 0 is a valid entity but will always be player a  so is never correct
 Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner, Zone::ZoneValue zone,
-    const std::string &change_type, bool mandatory, Zone::ZoneValue destination) {
+    const std::string &change_type, bool mandatory, Zone::ZoneValue destination, bool reveal) {
     //  comma-separated subtypes
     std::vector<std::string> subtypes;
     size_t p = 0;
@@ -247,6 +247,7 @@ Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner, Zone
         auto &cd = global_coordinator.GetComponent<CardData>(entity);
         LegalAction la(PASS_PRIORITY, entity, cd.name);
         la.category = cat;
+        la.card_is_public = reveal;
         search_actions.push_back(la);
     }
 
@@ -266,7 +267,7 @@ Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner, Zone
 // Used by Doomsday (Origin$ Graveyard,Library).
 Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner,
     const std::vector<Zone::ZoneValue> &zones, const std::string &change_type, bool mandatory,
-    Zone::ZoneValue destination) {
+    Zone::ZoneValue destination, bool reveal) {
     // Collect contents from all zones
     std::vector<Entity> zone_contents;
     for (auto zone : zones) {
@@ -369,6 +370,7 @@ Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner
         const char *zone_label = (z.location == Zone::GRAVEYARD) ? " (graveyard)" : " (library)";
         LegalAction la(PASS_PRIORITY, entity, cd.name + zone_label);
         la.category = cat;
+        la.card_is_public = reveal;
         search_actions.push_back(la);
     }
 

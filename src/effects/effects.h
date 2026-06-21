@@ -96,7 +96,7 @@ size_t evaluate_dynamic_amount(
     const std::string &expr, Zone::Ownership ctrl, std::shared_ptr<Orderer> orderer, Entity target);
 Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner,
     const std::vector<Zone::ZoneValue> &zones, const std::string &change_type, bool mandatory,
-    Zone::ZoneValue destination);
+    Zone::ZoneValue destination, bool reveal = false);
 bool run_unless_loop(size_t cost, Zone::Ownership controller, std::shared_ptr<Orderer> orderer, Entity paid_for);
 
 #endif /* EFFECTS_H */

@@ -8,7 +8,8 @@
 // BQUERY format (machine mode): a text header line "BQUERY: <num_choices>\n"
 // followed immediately by a binary payload (see cli_emit_machine_query):
 //   float32[STATE_SIZE] state, int32[MAX_ACTIONS] cats,
-//   float32[MAX_ACTIONS] ids, float32[MAX_ACTIONS] ctrl.
+//   float32[MAX_ACTIONS] ids, float32[MAX_ACTIONS] ctrl,
+//   float32[MAX_ACTIONS] pub.
 // Per-action metadata is padded to MAX_ACTIONS; only the first num_choices
 // entries are meaningful.
 //
@@ -20,6 +21,9 @@
 //   - N controller_is_self floats: 1.0 if entity is controlled by the priority
 //     player, 0.0 if controlled by the opponent, -0.0078125 null sentinel for
 //     non-entity actions (pass priority, confirm slots, etc.).
+//   - N card_is_public floats: 1.0 if the choice's card identity is public
+//     knowledge to all players (a revealed tutor, e.g. Personal Tutor), else 0.0.
+//     Lets observers show the card name for an otherwise-private choice.
 //
 // NOTE: ActionChoice.description is NOT emitted in the BQUERY payload.
 // It is stored in Query for human-readable display (GUI/CLI) only.

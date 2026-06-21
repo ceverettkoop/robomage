@@ -384,6 +384,8 @@ void populate_query(Query* q, const std::vector<LegalAction>& actions) {
             ac.zone_ref = REF_PLAYER_OPP;
         }
 
+        ac.card_is_public = la.card_is_public;
+
         snprintf(ac.description, MAX_CHOICE_DESC, "%s", la.description.c_str());
     }
 }
