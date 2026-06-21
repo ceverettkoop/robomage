@@ -289,13 +289,13 @@ works without typing `train`.
 
 ```bash
 # Training (the 'train' subcommand is implied when omitted)
-train/.venv/bin/python train/train.py --deck delver --opponent boomer                 # train from scratch
-train/.venv/bin/python train/train.py train --opponent boomer --load checkpoints/robomage_final.zip  # resume
-train/.venv/bin/python train/train.py --self-play --deck delver --opponent boomer     # self-play training
+train/.venv/bin/python train/train.py --deck delver --opponent mav                 # train from scratch
+train/.venv/bin/python train/train.py train --opponent mav --load checkpoints/robomage_final.zip  # resume
+train/.venv/bin/python train/train.py --self-play --deck delver --opponent mav     # self-play training
 
 # Evaluation / inspection
 train/.venv/bin/python train/train.py baseline checkpoints/robomage_final.zip         # win rate vs scripted
-train/.venv/bin/python train/train.py observe --player-a checkpoints/robomage_final.zip --player-b scripted --deck delver --opponent boomer  # watch one game (per-side controller + deck)
+train/.venv/bin/python train/train.py observe --player-a checkpoints/robomage_final.zip --player-b scripted --deck delver --opponent mav  # watch one game (per-side controller + deck)
 train/.venv/bin/python train/train.py diag                                            # verify env (10 quick scripted-vs-scripted games)
 train/.venv/bin/python train/train.py watch                                           # watch scripted vs scripted
 train/.venv/bin/python train/train.py diag --bo3                                      # verify bo3 env

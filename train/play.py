@@ -444,19 +444,10 @@ if __name__ == "__main__":
     import os as _os
     _CHECKPOINT_DIR = _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), "checkpoints")
 
+    # Flags come from cli_spec.PLAY_TOOL (single source shared with the TUI).
+    from cli_spec import PLAY_TOOL, apply_to_parser
     parser = argparse.ArgumentParser()
-    parser.add_argument("--binary", default=BINARY)
-    parser.add_argument("--human-deck", required=True,
-                        help="Deck the human plays (stem of .dk file)")
-    parser.add_argument("--model-deck", required=True,
-                        help="Deck the model plays (stem of .dk file). "
-                             "Automatically loads checkpoints/<model-deck>_<human-deck>_final.zip")
-    parser.add_argument("--model", default=None,
-                        help="Override: explicit path to trained model .zip "
-                             "(default: checkpoints/<model-deck>_final.zip)")
-    parser.add_argument("--gui", action="store_true", help="Launch raylib GUI window for human input")
-    parser.add_argument("--player", choices=["A", "B"], default=None,
-                        help="Which player the human controls, in both CLI and GUI modes (default: random)")
+    apply_to_parser(parser, PLAY_TOOL.subs[0])
     args = parser.parse_args()
 
     model_path = args.model
@@ -470,7 +461,11 @@ if __name__ == "__main__":
                          f"Train with --deck {args.model_deck} --opponent {args.human_deck} first, "
                          f"or use --model to specify a path.")
 
-    if args.gui:
+    if args.tui:
+        import tui_game
+        tui_game.run(args.binary, model_path, human_player=args.player,
+                     human_deck=args.human_deck, model_deck=args.model_deck)
+    elif args.gui:
         play_gui(args.binary, model_path, human_player=args.player,
                  human_deck=args.human_deck, model_deck=args.model_deck)
     else:

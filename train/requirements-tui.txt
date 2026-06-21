@@ -1,0 +1,3 @@
+# Dependencies for the TUI launcher (train/tui.py). Install with:
+#   train/.venv/bin/pip install -r train/requirements-tui.txt
+textual>=0.60

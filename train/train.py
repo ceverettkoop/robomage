@@ -31,6 +31,9 @@ from env import (RoboMageEnv, ModelVsScriptedEnv, SelfPlayEnv, FixedModelEnv, Na
                  _HAND_START)
 from extractor import CardGameExtractor
 from card_costs import _VOCAB_NAMES, N_CARD_TYPES
+# CLI definitions + training defaults live in cli_spec.py (single source shared with the TUI).
+from cli_spec import (TOTAL_TIMESTEPS, N_ENVS, N_ENVS_SELF_PLAY,
+                      TRAIN_TOOL, apply_to_parser)
 
 try:
     from sb3_contrib import MaskablePPO
@@ -426,7 +429,7 @@ def _resolve_model(path: str) -> str:
 
     Accepts:
       - Full path (returned as-is if it exists)
-      - Bare matchup name like 'delver_boomer-mav' → checkpoints/delver_boomer-mav_final.zip
+      - Bare matchup name like 'delver_mav' → checkpoints/delver_mav_final.zip
     """
     if path is None:
         return None
@@ -437,15 +440,13 @@ def _resolve_model(path: str) -> str:
     candidate = os.path.join(_CHECKPOINT_ABS, f"{path}_final.zip")
     if os.path.exists(candidate):
         return candidate
-    # Try with .zip appended (e.g. 'delver_boomer-mav_100000_steps')
+    # Try with .zip appended (e.g. 'delver_mav_100000_steps')
     candidate2 = os.path.join(_CHECKPOINT_ABS, f"{path}.zip")
     if os.path.exists(candidate2):
         return candidate2
     # Return original — let downstream code report the error
     return path
-TOTAL_TIMESTEPS = 2_000_000
-N_ENVS = 32           # parallel game processes
-N_ENVS_SELF_PLAY = 10 # self-play (each loads an opponent model)
+# TOTAL_TIMESTEPS / N_ENVS / N_ENVS_SELF_PLAY imported from cli_spec (see top of file).
 _DECKS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                           "bin", "resources", "decks")
 
@@ -1046,29 +1047,6 @@ def watch_scripted(binary_path: str, deck_a: str | None = None, deck_b: str | No
     env.close()
 
 
-def _add_common(p):
-    """Args shared by every subcommand."""
-    p.add_argument("--binary", default=BINARY, help="Path to robomage binary")
-    p.add_argument("--bo3", action="store_true",
-                   help="Best-of-three match mode (deck swap + sideboarding between games)")
-
-
-def _add_train_opts(p):
-    """Args shared by every training subcommand (train/sweep/fixed-model/alternate)."""
-    p.add_argument("--total-timesteps", type=int, default=TOTAL_TIMESTEPS)
-    p.add_argument("--tally", action="store_true",
-                   help="Print A/B win tally after each rollout")
-    p.add_argument("--record", action="store_true",
-                   help="Record all game decisions to a .rmrec binary file in recordings/")
-    p.add_argument("--n-envs", type=int, default=None,
-                   help="Number of parallel environments (default: %d, self-play: %d)"
-                        % (N_ENVS, N_ENVS_SELF_PLAY))
-    p.add_argument("--no-shaping", action="store_true",
-                   help="Disable all shaping rewards (forces shaping_scale=0, skips annealing)")
-    p.add_argument("--auto-sideboard", action="store_true",
-                   help="Auto-skip sideboard phase in bo3 (model never sees sideboard decisions)")
-
-
 def _run_sweep(args, parser, decks_filter):
     """Train every deck×deck matchup, optionally filtered to one deck."""
     all_decks = sorted(os.path.splitext(p)[0]
@@ -1106,93 +1084,18 @@ if __name__ == "__main__":
         description="RoboMage RL training and evaluation.",
         epilog="Run a subcommand with -h for its options (e.g. 'train.py train -h'). "
                "If no subcommand is given, 'train' is assumed, so legacy one-liners "
-               "like 'train.py --opponent boomer' still work.")
+               "like 'train.py --opponent mav' still work.")
     sub = parser.add_subparsers(dest="command")
 
-    # ── train (default) ──────────────────────────────────────────────────────
-    pt = sub.add_parser("train", help="Train a model (default command)")
-    pt.add_argument("--deck", default="delver",
-                    help="Deck the model plays (.dk stem, default: delver)")
-    pt.add_argument("--opponent", required=True, help="Opponent deck (.dk stem)")
-    pt.add_argument("--load", default=None, help="Resume from checkpoint .zip (or shorthand)")
-    pt_opp = pt.add_mutually_exclusive_group()
-    pt_opp.add_argument("--self-play", action="store_true",
-                        help="Train against a frozen saved checkpoint of the mirror matchup "
-                             "(falls back to the scripted agent if none exists yet)")
-    pt_opp.add_argument("--scripted", action="store_true",
-                        help="Train against the rule-based scripted agent (the default; "
-                             "mutually exclusive with --self-play)")
-    _add_train_opts(pt)
-    _add_common(pt)
-
-    # ── sweep (was --train-all / --train-deck) ───────────────────────────────
-    ps = sub.add_parser("sweep", help="Train many deck×deck matchups sequentially")
-    ps.add_argument("--deck", default=None,
-                    help="Only matchups featuring this deck. Omit to train ALL matchups.")
-    ps_opp = ps.add_mutually_exclusive_group()
-    ps_opp.add_argument("--self-play", action="store_true",
-                        help="Train against a frozen saved checkpoint of the mirror matchup "
-                             "(falls back to the scripted agent if none exists yet)")
-    ps_opp.add_argument("--scripted", action="store_true",
-                        help="Train against the rule-based scripted agent (the default; "
-                             "mutually exclusive with --self-play)")
-    _add_train_opts(ps)
-    _add_common(ps)
-
-    # ── fixed-model ──────────────────────────────────────────────────────────
-    pf = sub.add_parser("fixed-model",
-                        help="Train --deck vs a fixed (never-reloaded) opponent model")
-    pf.add_argument("--deck", default="delver", help="Deck the model plays (.dk stem)")
-    pf.add_argument("--opponent", required=True, help="Opponent deck (.dk stem)")
-    pf.add_argument("--load", default=None, help="Resume from checkpoint .zip (or shorthand)")
-    _add_train_opts(pf)
-    _add_common(pf)
-
-    # ── alternate ────────────────────────────────────────────────────────────
-    pa = sub.add_parser("alternate",
-                        help="Swap which side is trained every N timesteps")
-    pa.add_argument("--deck", default="delver", help="First deck (.dk stem)")
-    pa.add_argument("--opponent", required=True, help="Second deck (.dk stem)")
-    pa.add_argument("--every", type=int, required=True, metavar="N",
-                    help="Swap the trained side every N timesteps")
-    _add_train_opts(pa)
-    _add_common(pa)
-
-    # ── diag ─────────────────────────────────────────────────────────────────
-    pd = sub.add_parser("diag",
-                        help="Run quick games (scripted vs scripted) to verify the env")
-    pd.add_argument("--deck", default="delver", help="Player A deck (.dk stem)")
-    pd.add_argument("--opponent", default=None, help="Player B deck (.dk stem)")
-    pd.add_argument("--games", type=int, default=10, help="Number of games (default: 10)")
-    _add_common(pd)
-
-    # ── watch (was --watch-scripted) ─────────────────────────────────────────
-    pw = sub.add_parser("watch", help="Watch one game: scripted A vs scripted B")
-    pw.add_argument("--deck", default="delver", help="Player A deck (.dk stem)")
-    pw.add_argument("--opponent", default=None, help="Player B deck (.dk stem)")
-    _add_common(pw)
-
-    # ── observe ──────────────────────────────────────────────────────────────
-    po = sub.add_parser("observe",
-                        help="Watch one game with chosen controllers and decks for each side")
-    po.add_argument("--player-a", default="scripted",
-                    help="Player A controller: 'scripted' or a model .zip path/shorthand (default: scripted)")
-    po.add_argument("--player-b", default="scripted",
-                    help="Player B controller: 'scripted' or a model .zip path/shorthand (default: scripted)")
-    po.add_argument("--deck", default="delver", help="Player A deck (.dk stem, default: delver)")
-    po.add_argument("--opponent", default="delver", help="Player B deck (.dk stem, default: delver)")
-    po.add_argument("--binary", default=BINARY, help="Path to robomage binary")
-
-    # ── baseline ─────────────────────────────────────────────────────────────
-    pb = sub.add_parser("baseline", help="Evaluate a model's win rate vs the scripted agent")
-    pb.add_argument("model", help="Model .zip path or shorthand")
-    pb.add_argument("--games", type=int, default=100, help="Number of games (default: 100)")
-    pb.add_argument("--binary", default=BINARY, help="Path to robomage binary")
+    # All subcommands and their flags come from cli_spec.TRAIN_TOOL (single source
+    # shared with the TUI). Dispatch below stays hand-written.
+    for s in TRAIN_TOOL.subs:
+        sp = sub.add_parser(s.name, help=s.help)
+        apply_to_parser(sp, s)
 
     # Default to the 'train' subcommand when none is given, so legacy one-liners
-    # such as 'train.py --opponent boomer' continue to work.
-    COMMANDS = {"train", "sweep", "fixed-model", "alternate",
-                "diag", "watch", "observe", "baseline"}
+    # such as 'train.py --opponent mav' continue to work.
+    COMMANDS = {s.name for s in TRAIN_TOOL.subs}
     argv = sys.argv[1:]
     if not argv or (argv[0] not in COMMANDS and argv[0] not in ("-h", "--help")):
         argv = ["train"] + argv

@@ -149,9 +149,8 @@ def _board_power_advantage(obs):
     opp_power = np.sum(obs[_OPP_PERM_POWER_IDX[opp_mask]]) * 10.0
     return self_power - opp_power
 
-_REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-BINARY = os.path.join(_REPO_ROOT, "bin", "robomage")
-BIN_DIR = os.path.join(_REPO_ROOT, "bin")  # game must be run from here for resource lookup
+# CLI constants live in cli_spec.py (the single source shared with the TUI).
+from cli_spec import REPO_ROOT as _REPO_ROOT, BINARY, BIN_DIR  # noqa: E402
 
 
 class RoboMageEnv(gym.Env):

@@ -61,6 +61,8 @@ from train import (
     _CAT_NAMES, _STEP_NAMES,
 )
 from card_costs import _VOCAB_NAMES, N_CARD_TYPES
+# CLI definitions come from cli_spec.py (single source shared with the TUI).
+from cli_spec import ANALYSIS_TOOL, apply_to_parser
 from env import (ACTION_CATEGORY_MAX, RoboMageEnv, scripted_action,
                  OBS_SIZE, STATE_SIZE, MAX_ACTIONS, BINARY,
                  _HAND_START, _MATCH_CTX_START, _LIBRARY_CTX_START,
@@ -1399,21 +1401,6 @@ def _decode_legal_actions(obs, num_choices, chosen_action):
         marker = " <-- chosen" if i == chosen_action else ""
         lines.append(f"    [{i}] {cat_name}{card_str}{marker}")
     return lines
-
-
-def _add_sim_args(parser):
-    """Add common simulation arguments to a subparser."""
-    parser.add_argument("model", help="Path to model .zip")
-    parser.add_argument("--opponent", required=True,
-                        help="Opponent model .zip path, or 'scripted' for rule-based agent")
-    parser.add_argument("--deck-a", default=None,
-                        help="Model's deck (.dk stem). Inferred from model filename if omitted.")
-    parser.add_argument("--deck-b", default=None,
-                        help="Opponent's deck (.dk stem). Inferred from opponent filename if omitted; "
-                             "defaults to --deck-a for scripted opponent.")
-    parser.add_argument("--binary", default=BINARY, help="Path to robomage binary")
-    parser.add_argument("--bo3", action="store_true",
-                        help="Run best-of-three matches (decks must include SIDEBOARD entries)")
 
 
 def cmd_shap(args):
@@ -3617,74 +3604,11 @@ def main():
     parser = argparse.ArgumentParser(description="Analyze .rmrec recording files")
     sub = parser.add_subparsers(dest="command", required=True)
 
-    p = sub.add_parser("summary", help="Session summary and statistics")
-    p.add_argument("file")
-
-    p = sub.add_parser("winrate", help="Win rate plot over time")
-    p.add_argument("file")
-
-    p = sub.add_parser("actions", help="Action category heatmap by game step")
-    p.add_argument("file")
-
-    p = sub.add_parser("cards", help="Card usage bar chart")
-    p.add_argument("file")
-
-    p = sub.add_parser("replay", help="Replay a single game")
-    p.add_argument("file")
-    p.add_argument("--game", type=int, required=True, help="Game ID to replay")
-
-    p = sub.add_parser("compare", help="Compare win rates from two sessions")
-    p.add_argument("file")
-    p.add_argument("file2")
-
-    p = sub.add_parser("wl-split", help="Action distribution split by win/loss")
-    p.add_argument("file")
-
-    p = sub.add_parser("cast-timing", help="Per-card cast timing and state by outcome")
-    p.add_argument("file")
-
-    p = sub.add_parser("choice-rates", help="P(chose X | X legal) by board state")
-    p.add_argument("file")
-
-    p = sub.add_parser("targeting", help="Targeting self vs opp, hold vs cast analysis")
-    p.add_argument("file")
-
-    p = sub.add_parser("shap", help="SHAP analysis of value function over simulated games")
-    _add_sim_args(p)
-    p.add_argument("--n-games", type=int, default=50, help="Number of games to simulate (default: 50)")
-    p.add_argument("--n-samples", type=int, default=200, help="SHAP sample count (default: 200)")
-    p.add_argument("--n-background", type=int, default=50, help="SHAP background size (default: 50)")
-
-    p = sub.add_parser("value-swings", help="Find games with largest value function swings")
-    _add_sim_args(p)
-    p.add_argument("--n-games", type=int, default=50, help="Number of games to simulate (default: 50)")
-    p.add_argument("--top", type=int, default=10, help="Show top N swings (default: 10)")
-
-    p = sub.add_parser("regret",
-                       help="Action regret analysis using policy distribution")
-    _add_sim_args(p)
-    p.add_argument("--n-games", type=int, default=50, help="Number of games to simulate (default: 50)")
-    p.add_argument("--top", type=int, default=20, help="Show top N high-regret decisions (default: 20)")
-
-    p = sub.add_parser("entropy",
-                       help="Policy entropy by game phase and board state")
-    _add_sim_args(p)
-    p.add_argument("--n-games", type=int, default=50, help="Number of games to simulate (default: 50)")
-
-    p = sub.add_parser("consistency",
-                       help="Decision consistency for similar game states")
-    _add_sim_args(p)
-    p.add_argument("--n-games", type=int, default=50, help="Number of games to simulate (default: 50)")
-    p.add_argument("--top", type=int, default=20, help="Show top N inconsistent pairs (default: 20)")
-
-    p = sub.add_parser("interactive",
-                       help="Interactive session: simulate games then inspect replays, "
-                            "board states, value charts, SHAP, and more")
-    _add_sim_args(p)
-    p.add_argument("--n-games", type=int, default=20,
-                   help="Games to pre-simulate before entering session (default: 20; 0 = skip)")
-    p.add_argument("--n-samples", type=int, default=200, help="SHAP sample count (default: 200)")
-    p.add_argument("--n-background", type=int, default=50, help="SHAP background size (default: 50)")
+    # All subcommands and their flags come from cli_spec.ANALYSIS_TOOL (single
+    # source shared with the TUI). Dispatch below stays hand-written.
+    for s in ANALYSIS_TOOL.subs:
+        sp = sub.add_parser(s.name, help=s.help)
+        apply_to_parser(sp, s)
 
     args = parser.parse_args()
     {
