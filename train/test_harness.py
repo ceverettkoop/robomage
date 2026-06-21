@@ -64,13 +64,8 @@ import tempfile
 import numpy as np
 from pathlib import Path
 
-from env import (STATE_SIZE, MAX_ACTIONS, ACTION_CATEGORY_MAX,
-                 _MANDATORY_CATS,
-                 _SELF_PERM_START, _OPP_PERM_START, _STACK_START,
-                 _GY_START, _HAND_START, _PERM_SLOT_SIZE as PERM_SLOT_SIZE,
-                 _PERM_SLOTS)
-from card_costs import N_CARD_TYPES, _VOCAB_NAMES as _CARD_NAMES
-from train import _CAT_NAMES, _STEP_NAMES
+from env import STATE_SIZE, MAX_ACTIONS, ACTION_CATEGORY_MAX, _MANDATORY_CATS
+from decode import decode_game_state, decode_actions, fmt_mana, fmt_perm
 
 # ── Path setup ────────────────────────────────────────────────────────────────
 _REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -78,37 +73,11 @@ _BIN_DIR = _REPO_ROOT / "bin"
 _BINARY = _BIN_DIR / "robomage"
 _DECKS_DIR = _BIN_DIR / "resources" / "decks"
 
-# ── Engine constants derived from imports ─────────────────────────────────────
-STACK_SLOT_SIZE = 130
-GY_SLOT_SIZE = 128
-_OPP_GY_START = _GY_START + 64 * GY_SLOT_SIZE     # 23034
-
-# Permanent slot field offsets
-_OFF_POWER = 0
-_OFF_TOUGHNESS = 1
-_OFF_TAPPED = 2
-_OFF_ATTACKING = 3
-_OFF_BLOCKING = 4
-_OFF_SICKNESS = 5
-_OFF_DAMAGE = 6
-_OFF_CTRL = 7
-_OFF_IS_CREATURE = 8
-_OFF_IS_LAND = 9
-_OFF_CARD_ONEHOT = 10
-
-def card_index_to_name(idx):
-    if idx == 127:
-        return "Token"
-    if 0 <= idx < len(_CARD_NAMES):
-        return _CARD_NAMES[idx]
-    return f"?({idx})"
-
 # Binary payload sizes
 _STATE_BYTES = STATE_SIZE * 4
 _CATS_BYTES = MAX_ACTIONS * 4
 _IDS_BYTES = MAX_ACTIONS * 4
 _CTRL_BYTES = MAX_ACTIONS * 4
-_NULL_SENTINEL = -1.0 / N_CARD_TYPES
 
 
 # ── Deck file helpers ─────────────────────────────────────────────────────────
@@ -139,247 +108,12 @@ def _make_deck_file(hand, library, label):
     return name, path
 
 
-# ── State decoder ─────────────────────────────────────────────────────────────
-
-def _onehot_to_card(state, base):
-    """Decode a one-hot card vector starting at base. Returns card name or None."""
-    vec = state[base:base + N_CARD_TYPES]
-    idx = int(np.argmax(vec))
-    if vec[idx] < 0.5:
-        return None
-    return card_index_to_name(idx)
-
-
-def _decode_player(state, offset):
-    """Decode a 9-float player block into a dict."""
-    return {
-        "life": int(round(state[offset] * 20)),
-        "hand_count": int(round(state[offset + 1] * 10)),
-        "poison": int(round(state[offset + 2] * 10)),
-        "mana": {
-            "W": int(round(state[offset + 3] * 10)),
-            "U": int(round(state[offset + 4] * 10)),
-            "B": int(round(state[offset + 5] * 10)),
-            "R": int(round(state[offset + 6] * 10)),
-            "G": int(round(state[offset + 7] * 10)),
-            "C": int(round(state[offset + 8] * 10)),
-        },
-    }
-
-
-def _decode_step(state):
-    """Decode the current step from one-hot at obs[18:31]."""
-    step_vec = state[18:31]
-    idx = int(np.argmax(step_vec))
-    if step_vec[idx] < 0.5:
-        return "Unknown"
-    return _STEP_NAMES[idx] if idx < len(_STEP_NAMES) else f"Step({idx})"
-
-
-def _decode_permanents(state, start, count=48):
-    """Decode permanent slots into a list of dicts (non-empty only)."""
-    perms = []
-    for i in range(count):
-        base = start + i * PERM_SLOT_SIZE
-        card = _onehot_to_card(state, base + _OFF_CARD_ONEHOT)
-        if card is None:
-            continue
-        p = {"name": card}
-        if state[base + _OFF_IS_CREATURE] > 0.5:
-            p["power"] = int(round(state[base + _OFF_POWER] * 10))
-            p["toughness"] = int(round(state[base + _OFF_TOUGHNESS] * 10))
-            dmg = int(round(state[base + _OFF_DAMAGE] * 10))
-            if dmg > 0:
-                p["damage"] = dmg
-        if state[base + _OFF_TAPPED] > 0.5:
-            p["tapped"] = True
-        if state[base + _OFF_ATTACKING] > 0.5:
-            p["attacking"] = True
-        if state[base + _OFF_BLOCKING] > 0.5:
-            p["blocking"] = True
-        if state[base + _OFF_SICKNESS] > 0.5:
-            p["summoning_sick"] = True
-        if state[base + _OFF_IS_LAND] > 0.5:
-            p["is_land"] = True
-        perms.append(p)
-    return perms
-
-
-def _decode_zone(state, start, slots, slot_size):
-    """Decode a zone (hand/graveyard/stack) into a list of card names."""
-    cards = []
-    for i in range(slots):
-        base = start + i * slot_size
-        card = _onehot_to_card(state, base if slot_size == GY_SLOT_SIZE else base + 1)
-        if card is not None:
-            cards.append(card)
-    return cards
-
-
-def _decode_hand(state):
-    """Decode self hand (10 slots x 128 one-hot)."""
-    cards = []
-    for i in range(10):
-        base = _HAND_START + i * N_CARD_TYPES
-        card = _onehot_to_card(state, base)
-        if card is not None:
-            cards.append(card)
-    return cards
-
-
-def _decode_graveyard(state, start):
-    """Decode a graveyard zone (64 slots x 128 one-hot)."""
-    cards = []
-    for i in range(64):
-        base = start + i * GY_SLOT_SIZE
-        card = _onehot_to_card(state, base)
-        if card is not None:
-            cards.append(card)
-    return cards
-
-
-def _decode_stack(state):
-    """Decode the stack (12 slots x 130: ctrl(1) + card_onehot(128) + is_spell(1))."""
-    entries = []
-    for i in range(12):
-        base = _STACK_START + i * STACK_SLOT_SIZE
-        card = _onehot_to_card(state, base + 1)  # skip controller_is_self float
-        if card is None:
-            continue
-        ctrl = "self" if state[base] > 0.5 else "opponent"
-        kind = "spell" if state[base + 129] > 0.5 else "ability"
-        entries.append(f"{card} ({kind}, {ctrl})")
-    return entries
-
-
-def decode_game_state(state):
-    """Decode the full state vector into a human-readable dict."""
-    self_player = _decode_player(state, 0)
-    opp_player = _decode_player(state, 9)
-    step = _decode_step(state)
-    is_active = state[31] > 0.5
-    is_player_a = state[32] > 0.5
-    stack_size = int(round(state[33] * 10))
-
-    return {
-        "priority_player": "Player A" if is_player_a else "Player B",
-        "is_active_player": is_active,
-        "step": step,
-        "self": self_player,
-        "opponent": opp_player,
-        "self_battlefield": _decode_permanents(state, _SELF_PERM_START),
-        "opp_battlefield": _decode_permanents(state, _OPP_PERM_START),
-        "stack": _decode_stack(state),
-        "self_hand": _decode_hand(state),
-        "self_graveyard": _decode_graveyard(state, _GY_START),
-        "opp_graveyard": _decode_graveyard(state, _OPP_GY_START),
-    }
-
-
-# ── Action decoder ────────────────────────────────────────────────────────────
-
-def decode_actions(cats_int, card_ids, ctrl, num_choices):
-    """Decode action arrays into human-readable list."""
-    actions = []
-    for i in range(num_choices):
-        cat = int(cats_int[i])
-        cat_name = _CAT_NAMES.get(cat, f"?({cat})")
-
-        card_id_raw = float(card_ids[i])
-        card_idx = int(round(card_id_raw * N_CARD_TYPES))
-        card_name = card_index_to_name(card_idx) if card_idx >= 0 else None
-
-        ctrl_val = float(ctrl[i])
-        if ctrl_val > 0.5:
-            ctrl_str = "own"
-        elif ctrl_val > _NULL_SENTINEL + 0.01:
-            ctrl_str = "opp"
-        else:
-            ctrl_str = None
-
-        # Build description
-        desc = _describe_action(cat, cat_name, card_name, ctrl_str)
-        actions.append({"index": i, "category": cat_name, "card": card_name,
-                        "controller": ctrl_str, "description": desc})
-    return actions
-
-
-def _describe_action(cat, cat_name, card_name, ctrl_str):
-    """Build a concise human-readable action description."""
-    owner = f" ({ctrl_str})" if ctrl_str else ""
-    name = card_name or ""
-
-    if cat == 0:
-        return "Pass priority"
-    elif cat == 7:
-        return f"Cast {name}"
-    elif cat == 9:
-        return f"Play land: {name}"
-    elif cat == 6:
-        return f"Activate {name}{owner}"
-    elif cat == 8:
-        return f"Target {name}{owner}"
-    elif cat == 2:
-        return f"Select attacker: {name}"
-    elif cat == 3:
-        return "Confirm attackers"
-    elif cat == 4:
-        return f"Select blocker: {name}"
-    elif cat == 5:
-        return "Confirm blockers"
-    elif cat == 11:
-        return f"Mulligan ({name})" if name else "Mulligan"
-    elif cat == 12:
-        return f"Bottom: {name}"
-    elif 13 <= cat <= 18:
-        color = ["W", "U", "B", "R", "G", "C"][cat - 13]
-        return f"Tap {name} for {{{color}}}"
-    elif cat == 19:
-        return f"Search: {name}" if name else "Fail to find"
-    elif cat == 20:
-        return f"Put on top: {name}"
-    elif cat == 22:
-        return f"Pay cost: {name}{owner}"
-    elif cat == 23:
-        return f"Dig choice: {name}"
-    elif cat == 10:
-        return f"Choice: {name}{owner}" if name else "Choice"
-    else:
-        return f"{cat_name}: {name}{owner}" if name else cat_name
-
-
 # ── Formatted output ─────────────────────────────────────────────────────────
 
-def _fmt_mana(mana):
-    """Format mana pool as a compact string."""
-    parts = []
-    for color in ("W", "U", "B", "R", "G", "C"):
-        amt = mana.get(color, 0)
-        if amt > 0:
-            parts.append(f"{amt}{color}")
-    return ", ".join(parts) if parts else "empty"
-
-
-def _fmt_perm(p):
-    """Format a single permanent."""
-    s = p["name"]
-    if "power" in p:
-        s += f" [{p['power']}/{p['toughness']}"
-        if "damage" in p:
-            s += f", {p['damage']}dmg"
-        s += "]"
-    flags = []
-    if p.get("tapped"):
-        flags.append("T")
-    if p.get("attacking"):
-        flags.append("ATK")
-    if p.get("blocking"):
-        flags.append("BLK")
-    if p.get("summoning_sick"):
-        flags.append("SICK")
-    if flags:
-        s += f" ({','.join(flags)})"
-    return s
+def _fmt_stack_entry(e):
+    """Format a decoded stack-entry dict."""
+    kind = "spell" if e["is_spell"] else "ability"
+    return f"{e['name']} ({kind}, {e['controller']})"
 
 
 def print_state(gs):
@@ -387,19 +121,20 @@ def print_state(gs):
     print(f"  Priority: {gs['priority_player']}"
           f" ({'active' if gs['is_active_player'] else 'non-active'})")
     print(f"  Step: {gs['step']}")
+    hand_names = [c["name"] for c in gs["self_hand"]]
     print(f"  Self:  {gs['self']['life']} life"
-          f" | mana: {_fmt_mana(gs['self']['mana'])}"
-          f" | hand({gs['self']['hand_count']}): {', '.join(gs['self_hand']) or '(empty)'}")
+          f" | mana: {fmt_mana(gs['self']['mana'])}"
+          f" | hand({gs['self']['hand_count']}): {', '.join(hand_names) or '(empty)'}")
     print(f"  Opp:   {gs['opponent']['life']} life"
-          f" | mana: {_fmt_mana(gs['opponent']['mana'])}"
+          f" | mana: {fmt_mana(gs['opponent']['mana'])}"
           f" | hand count: {gs['opponent']['hand_count']}")
 
     if gs["self_battlefield"]:
-        print(f"  Self BF:  {' | '.join(_fmt_perm(p) for p in gs['self_battlefield'])}")
+        print(f"  Self BF:  {' | '.join(fmt_perm(p) for p in gs['self_battlefield'])}")
     if gs["opp_battlefield"]:
-        print(f"  Opp BF:   {' | '.join(_fmt_perm(p) for p in gs['opp_battlefield'])}")
+        print(f"  Opp BF:   {' | '.join(fmt_perm(p) for p in gs['opp_battlefield'])}")
     if gs["stack"]:
-        print(f"  Stack: {' -> '.join(gs['stack'])}")
+        print(f"  Stack: {' -> '.join(_fmt_stack_entry(e) for e in gs['stack'])}")
     if gs["self_graveyard"]:
         print(f"  Self GY: {', '.join(gs['self_graveyard'])}")
     if gs["opp_graveyard"]:

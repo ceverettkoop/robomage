@@ -21,13 +21,13 @@ from env import (RoboMageEnv, STATE_SIZE, ACTION_CATEGORY_MAX, BINARY, MAX_ACTIO
                  _BF_START as _ENV_BF_START, _BF_SLOT_SIZE as _ENV_BF_SLOT_SIZE,
                  _BF_CARD_OFF as _ENV_BF_CARD_OFF, _PERM_A_SLOTS as _ENV_PERM_A_SLOTS)
 import env as _env
+from decode import (card_from_id as _card_from_id, decode_step as _decode_step,
+                    _CARD_NAMES as _VOCAB_NAMES)
 
 try:
-    from card_costs import (_CARD_COST_MATRIX, _CARD_ABILITY_COST_MATRIX, N_CARD_TYPES, _N_COST_FEATS,
-                            _VOCAB_NAMES)
+    from card_costs import (_CARD_COST_MATRIX, _CARD_ABILITY_COST_MATRIX, N_CARD_TYPES, _N_COST_FEATS)
 except ImportError:
-    from train.card_costs import (_CARD_COST_MATRIX, _CARD_ABILITY_COST_MATRIX, N_CARD_TYPES, _N_COST_FEATS,
-                                  _VOCAB_NAMES)
+    from train.card_costs import (_CARD_COST_MATRIX, _CARD_ABILITY_COST_MATRIX, N_CARD_TYPES, _N_COST_FEATS)
 
 try:
     from sb3_contrib import MaskablePPO
@@ -49,12 +49,6 @@ _OFF_SICKNESS    = 5
 _OFF_IS_CREATURE = 8
 _OFF_IS_LAND     = 9
 _HAND_SLOTS      = 10
-_STEP_NAMES = [
-    "Untap", "Upkeep", "Draw", "First Main",
-    "Begin Combat", "Declare Attackers", "Declare Blockers",
-    "First Strike Damage", "Combat Damage", "End Combat",
-    "Second Main", "End", "Cleanup",
-]
 _MANA_CAT_COLOR = {13: "W", 14: "U", 15: "B", 16: "R", 17: "G", 18: "C"}
 
 
@@ -64,14 +58,6 @@ def _card_name(one_hot):
     idx = int(np.argmax(one_hot))
     if idx < len(one_hot) and one_hot[idx] > 0.5 and idx < len(_VOCAB_NAMES):
         return _VOCAB_NAMES[idx] if _VOCAB_NAMES[idx] else None
-    return None
-
-
-def _card_from_id(val: float):
-    """Decode a card name from a normalised card-ID float (None for null sentinel)."""
-    cid = round(float(val) * N_CARD_TYPES)
-    if cid >= 0 and cid < len(_VOCAB_NAMES) and _VOCAB_NAMES[cid]:
-        return _VOCAB_NAMES[cid]
     return None
 
 
@@ -92,11 +78,6 @@ def _action_label(cat: int, card_id_float: float) -> str:
         return f"tap {card or '?'} for {{{_MANA_CAT_COLOR[cat]}}}"
     if cat == 19: return "fail to find" if card is None else f"find {card}"
     return f"action {cat}"
-
-
-def _decode_step(obs) -> str:
-    idx = int(np.argmax(obs[18:31]))
-    return _STEP_NAMES[idx] if obs[18 + idx] > 0.5 else "?"
 
 
 def _perm_str(obs, base):
@@ -450,8 +431,14 @@ if __name__ == "__main__":
     apply_to_parser(parser, PLAY_TOOL.subs[0])
     args = parser.parse_args()
 
+    if args.scripted and not args.tui:
+        parser.error("--scripted is only supported with --tui")
+
     model_path = args.model
-    if model_path is None:
+    if args.scripted:
+        # Scripted opponent: no checkpoint required (sentinel passed to tui_game.run).
+        model_path = "scripted"
+    elif model_path is None:
         # Try matchup-specific checkpoint first, then model-deck-only fallback
         matchup_path = _os.path.join(_CHECKPOINT_DIR, f"{args.model_deck}_{args.human_deck}_final.zip")
         if _os.path.exists(matchup_path):
@@ -459,7 +446,7 @@ if __name__ == "__main__":
         else:
             parser.error(f"No checkpoint found at {matchup_path}. "
                          f"Train with --deck {args.model_deck} --opponent {args.human_deck} first, "
-                         f"or use --model to specify a path.")
+                         f"or use --model to specify a path, or --scripted for a rule-based opponent (TUI).")
 
     if args.tui:
         import tui_game

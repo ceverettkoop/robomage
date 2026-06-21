@@ -277,6 +277,8 @@ PLAY_TOOL = Tool("play", "train/play.py", subs=[
                  "(default: checkpoints/<model-deck>_<human-deck>_final.zip)"),
         Arg("--gui", "flag", help="Launch raylib GUI window for human input"),
         Arg("--tui", "flag", help="Launch the TUI game board (train/tui_game.py)"),
+        Arg("--scripted", "flag",
+            help="Use the rule-based scripted agent as the opponent (no checkpoint needed; TUI only)"),
         Arg("--player", "choice", choices=("A", "B"), default=None,
             help="Which player the human controls, in both CLI and GUI modes (default: random)"),
         Arg("--binary", "str", default=BINARY, help="Path to robomage binary"),
