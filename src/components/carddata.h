@@ -20,10 +20,12 @@ struct AltCost {
     Colors exile_from_hand_color = NO_COLOR;  // color of card to exile (BLUE, GREEN, etc.)
     int return_to_hand_count = 0;
     std::string return_to_hand_type = "";
+    ManaValue mana_cost;                // mana portion of the alt cost (e.g. Evoke:R)
     std::string condition_svar = "";    // e.g. "Count$YouCastThisGame" — condition checked before allowing alt cost
     std::string condition_compare = ""; // e.g. "EQ0" — comparison for condition_svar
     bool is_free = false;               // Cost$ 0 — no mana required
     bool condition_not_your_turn = false;  // Condition$ NotPlayerTurn
+    bool is_evoke = false;              // K:Evoke — when paid, the permanent sacrifices itself on ETB
 };
 
 //this is the underlying card, not a permanent or spell

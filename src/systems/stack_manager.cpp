@@ -64,6 +64,11 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
         }
         if (is_permanent) {
             // Move to battlefield; Permanent component added by apply_permanent_components on next SBA pass
+            // Capture evoke status before the Spell component (which carries it) is removed;
+            // apply_permanent_components consumes pending_evoked to set Permanent::evoked.
+            if (global_coordinator.entity_has_component<Spell>(top_entity) &&
+                global_coordinator.GetComponent<Spell>(top_entity).cast_with_evoke)
+                cur_game.pending_evoked.insert(top_entity);
             if (global_coordinator.entity_has_component<Spell>(top_entity))
                 global_coordinator.RemoveComponent<Spell>(top_entity);
             if (global_coordinator.entity_has_component<Ability>(top_entity))

@@ -30,6 +30,7 @@ const size_t SCRIPT_MAX_LEN = 10000;
 static std::string value_from_script(std::string script, std::string key);
 static std::vector<std::string> multi_values_from_script(std::string script, std::string key);
 static std::multiset<Colors> parse_mana_cost(std::string value, std::vector<Colors> *phyrexian_out = nullptr);
+static void parse_alt_cost_tokens(const std::string& cost_str, AltCost& ac);
 static std::set<Type> parse_types(std::string value);
 static std::map<std::string, std::string> parse_svars(const std::string& script);
 static std::string normalize_category(std::string category);
@@ -70,6 +71,53 @@ std::string name_to_uid(std::string name) {
     }
 
     return name;
+}
+
+// Parses the cost portion of an alternate cost string (the value after Cost$ / after
+// "Evoke:") into an AltCost. Recognises "0" (free), PayLife<N>, ExileFromHand<n/filter>
+// (pitch), Return<n/Type>; anything else is treated as a mana cost (e.g. Evoke:R).
+// Condition fields (CheckSVar etc.) are parsed separately by the caller.
+static void parse_alt_cost_tokens(const std::string& cost_str, AltCost& ac) {
+    ac.has_alt_cost = true;
+    bool matched_special = false;
+    // Cost$ 0 means free
+    if (cost_str == "0") {
+        ac.is_free = true;
+        return;
+    }
+    size_t pl = cost_str.find("PayLife<");
+    if (pl != std::string::npos) {
+        size_t close = cost_str.find('>', pl);
+        ac.life_cost = std::stoi(cost_str.substr(pl + 8, close - pl - 8));
+        matched_special = true;
+    }
+    size_t ef = cost_str.find("ExileFromHand<");
+    if (ef != std::string::npos) {
+        size_t slash = cost_str.find('/', ef);
+        ac.exile_from_hand_count = std::stoi(cost_str.substr(ef + 14, slash - ef - 14));
+        // Extract color from filter e.g. "Card.Blue+Other" → BLUE
+        std::string filter = cost_str.substr(slash + 1);
+        size_t close = filter.find('>');
+        if (close != std::string::npos) filter = filter.substr(0, close);
+        if (filter.find("Blue") != std::string::npos) ac.exile_from_hand_color = BLUE;
+        else if (filter.find("Green") != std::string::npos) ac.exile_from_hand_color = GREEN;
+        else if (filter.find("Red") != std::string::npos) ac.exile_from_hand_color = RED;
+        else if (filter.find("White") != std::string::npos) ac.exile_from_hand_color = WHITE;
+        else if (filter.find("Black") != std::string::npos) ac.exile_from_hand_color = BLACK;
+        matched_special = true;
+    }
+    size_t rf = cost_str.find("Return<");
+    if (rf != std::string::npos) {
+        size_t slash = cost_str.find('/', rf);
+        size_t close = cost_str.find('>', rf);
+        ac.return_to_hand_count = std::stoi(cost_str.substr(rf + 7, slash - rf - 7));
+        ac.return_to_hand_type = cost_str.substr(slash + 1, close - slash - 1);
+        matched_special = true;
+    }
+    // No special cost token: the whole string is a mana cost (e.g. Evoke:R, Evoke:2 R)
+    if (!matched_special && !cost_str.empty()) {
+        ac.mana_cost = parse_mana_cost(cost_str);
+    }
 }
 
 Entity parse_card_script(std::string path) {
@@ -178,37 +226,7 @@ Entity parse_card_script(std::string path) {
         std::string cost_str = line.substr(cost_pos, cost_end - cost_pos);
         while (!cost_str.empty() && cost_str.back() == ' ') cost_str.pop_back();
         AltCost ac;
-        ac.has_alt_cost = true;
-        // Cost$ 0 means free
-        if (cost_str == "0") {
-            ac.is_free = true;
-        }
-        size_t pl = cost_str.find("PayLife<");
-        if (pl != std::string::npos) {
-            size_t close = cost_str.find('>', pl);
-            ac.life_cost = std::stoi(cost_str.substr(pl + 8, close - pl - 8));
-        }
-        size_t ef = cost_str.find("ExileFromHand<");
-        if (ef != std::string::npos) {
-            size_t slash = cost_str.find('/', ef);
-            ac.exile_from_hand_count = std::stoi(cost_str.substr(ef + 14, slash - ef - 14));
-            // Extract color from filter e.g. "Card.Blue+Other" → BLUE
-            std::string filter = cost_str.substr(slash + 1);
-            size_t close = filter.find('>');
-            if (close != std::string::npos) filter = filter.substr(0, close);
-            if (filter.find("Blue") != std::string::npos) ac.exile_from_hand_color = BLUE;
-            else if (filter.find("Green") != std::string::npos) ac.exile_from_hand_color = GREEN;
-            else if (filter.find("Red") != std::string::npos) ac.exile_from_hand_color = RED;
-            else if (filter.find("White") != std::string::npos) ac.exile_from_hand_color = WHITE;
-            else if (filter.find("Black") != std::string::npos) ac.exile_from_hand_color = BLACK;
-        }
-        size_t rf = cost_str.find("Return<");
-        if (rf != std::string::npos) {
-            size_t slash = cost_str.find('/', rf);
-            size_t close = cost_str.find('>', rf);
-            ac.return_to_hand_count = std::stoi(cost_str.substr(rf + 7, slash - rf - 7));
-            ac.return_to_hand_type = cost_str.substr(slash + 1, close - slash - 1);
-        }
+        parse_alt_cost_tokens(cost_str, ac);
         // Parse CheckSVar$ and SVarCompare$ conditions
         // Walk remaining pipe-separated params for condition fields
         size_t pp = cost_end;
@@ -384,6 +402,34 @@ Entity parse_card_script(std::string path) {
                 tok_pos = (tok_end < cost_str.size()) ? tok_end + 1 : tok_end;
             }
             card.keywords.push_back("Flashback");
+            continue;
+        }
+        // K:Evoke:<cost> — alternate cost; when paid, the creature sacrifices itself as it
+        // enters. The cost may be a pitch (ExileFromHand), mana (e.g. R), or life. The
+        // self-sacrifice is a synthetic ETB self-trigger gated on Permanent::evoked, which
+        // is set only when the spell was cast for its evoke cost.
+        if (kw_line.rfind("Evoke", 0) == 0) {
+            size_t colon = kw_line.find(':');
+            std::string cost_str = (colon != std::string::npos) ? kw_line.substr(colon + 1) : "";
+            AltCost ac;
+            parse_alt_cost_tokens(cost_str, ac);
+            ac.is_evoke = true;
+            card.alt_cost = ac;
+            card.keywords.push_back("Evoke");
+
+            Ability sac;
+            sac.ability_type = Ability::TRIGGERED;
+            sac.category = "ChangeZone";
+            sac.trigger_on = Events::CARD_CHANGED_ZONE;
+            sac.trigger_zone_destination = Zone::BATTLEFIELD;
+            sac.trigger_only_self = true;
+            sac.is_evoke_sacrifice = true;
+            sac.defined_self = true;          // moves its own source (no targeting)
+            sac.valid_tgts = "N_A";
+            sac.origin = Zone::BATTLEFIELD;
+            sac.destination = Zone::GRAVEYARD;
+            sac.mandatory = true;
+            card.abilities.push_back(sac);
             continue;
         }
         size_t pos = 0;

@@ -472,6 +472,12 @@ static void pay_alternate_cost(const LegalAction &action, Game &game, std::share
         return;
     }
 
+    // mana portion of the alt cost (e.g. Evoke:R). Affordability is pre-verified by
+    // can_afford_alt, so in machine mode this always succeeds.
+    if (!card_data.alt_cost.mana_cost.empty()) {
+        prompt_mana_payment(caster, card_data.alt_cost.mana_cost, spell_entity, orderer);
+    }
+
     // life
     if (card_data.alt_cost.life_cost != 0) {
         player.life_total -= card_data.alt_cost.life_cost;
@@ -1088,6 +1094,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             Spell spell;
             spell.caster = caster;
             spell.cast_with_flashback = action.use_flashback;
+            spell.cast_with_evoke = action.use_alt_cost && card_data.alt_cost.is_evoke;
             if (cur_game.pending_cant_be_countered) {
                 spell.cant_be_countered = true;
                 cur_game.pending_cant_be_countered = false;

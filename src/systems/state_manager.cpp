@@ -155,6 +155,9 @@ void StateManager::apply_permanent_components(Game &game) {
                     game.pending_enters_tapped.erase(pet);
                 }
                 if (perm.is_tapped) game_log("%s enters tapped.\n", perm.name.c_str());
+                // Spell was cast for its evoke cost — mark the permanent so its evoke
+                // self-sacrifice ETB trigger fires (consumed one-shot here).
+                if (game.pending_evoked.erase(entity)) perm.evoked = true;
                 perm.timestamp_entered_battlefield = game.timestamp++;
                 global_coordinator.AddComponent(entity, perm);
             }
@@ -1050,6 +1053,8 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                 // Card.Self: only fire when the event entity is the triggering permanent itself
                 if (ab.trigger_only_self && ev.HasParam(Params::ENTITY) &&
                     ev.GetParam<Entity>(Params::ENTITY) != entity) continue;
+                // Evoke self-sacrifice only fires when this permanent was cast via evoke
+                if (ab.is_evoke_sacrifice && !perm.evoked) continue;
                 // Don't fire front-face triggers on a transformed permanent
                 if (perm.transformed) continue;
                 // ValidPlayer$ You: only fire when the event's player matches the permanent's controller
@@ -1218,6 +1223,11 @@ static bool can_afford_alt(const AltCost& alt_cost, Zone::Ownership priority_pla
             }
         }
         if (!has_match) return false;
+    }
+
+    // Mana portion of the alt cost (e.g. Evoke:R)
+    if (!alt_cost.mana_cost.empty()) {
+        if (!can_pay_mana(priority_player, alt_cost.mana_cost, card_entity, orderer)) return false;
     }
 
     return true;
