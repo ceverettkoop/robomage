@@ -423,7 +423,7 @@ std::vector<Entity> Orderer::get_stack() {
     }
     std::sort(on_stack.begin(), on_stack.end(), [](Entity const &a, Entity const &b) {
         return global_coordinator.GetComponent<Zone>(a).distance_from_top <
-               global_coordinator.GetComponent<Zone>(a).distance_from_top;
+               global_coordinator.GetComponent<Zone>(b).distance_from_top;
     });
 
     return on_stack;

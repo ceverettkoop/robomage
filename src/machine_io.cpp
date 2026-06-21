@@ -95,8 +95,6 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
     for (int i = 0; i < MAX_GY_SLOTS; i++) {
         gs->self_graveyard[i] = -1;
         gs->opp_graveyard[i]  = -1;
-        gs->self_exile[i]     = -1;
-        gs->opp_exile[i]      = -1;
     }
     for (int i = 0; i < KNOWN_TOP_LIBRARY_SIZE; i++) gs->known_top_library_self[i] = -1;
 
@@ -150,15 +148,15 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
     fill_player_stats(gs->self, viewer_entity);
     fill_player_stats(gs->opponent, opp_entity);
 
-    // Stack items collected during the pass, sorted descending by entity ID afterward
-    struct StackItem { Entity e; StackEntry entry; };
+    // Stack items collected during the pass, sorted by distance_from_top afterward
+    // (the engine's true stack order; 0 = top of stack).
+    struct StackItem { size_t dist; StackEntry entry; };
     StackItem stack_items[MAX_STACK_DISPLAY + 8];
     int stack_item_count = 0;
 
     // Slot fill counters
     int self_bf = 0, opp_bf = 0;
     int self_gy = 0, opp_gy = 0;
-    int self_ex = 0, opp_ex = 0;
     int self_hand_idx = 0;
 
     // Single pass over all entities (naturally ascending entity ID order).
@@ -192,12 +190,8 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
                     gs->opp_graveyard[opp_gy++] = get_card_vocab_idx(e);
                 break;
 
-            case Zone::EXILE:
-                if (is_self && self_ex < MAX_GY_SLOTS)
-                    gs->self_exile[self_ex++] = get_card_vocab_idx(e);
-                else if (!is_self && opp_ex < MAX_GY_SLOTS)
-                    gs->opp_exile[opp_ex++] = get_card_vocab_idx(e);
-                break;
+            // Exile is intentionally not collected: it is never serialized to the
+            // ML state (see gamestate.h). Revisit when exile-using cards matter.
 
             case Zone::STACK: {
                 gs->stack_size++;
@@ -221,7 +215,7 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
                             se.target_name[sizeof(se.target_name) - 1] = '\0';
                         }
                     }
-                    stack_items[stack_item_count++] = {e, se};
+                    stack_items[stack_item_count++] = {zone.distance_from_top, se};
                 }
                 break;
             }
@@ -277,14 +271,12 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
         }
     }
 
-    // Sort stack entries by descending entity ID (top of stack = highest ID)
+    // Sort stack entries by distance_from_top ascending (index 0 = top of stack)
     std::sort(stack_items, stack_items + stack_item_count,
-              [](const StackItem& a, const StackItem& b) { return a.e > b.e; });
+              [](const StackItem& a, const StackItem& b) { return a.dist < b.dist; });
     int copy_count = std::min(stack_item_count, MAX_STACK_DISPLAY);
     for (int i = 0; i < copy_count; i++)
         gs->stack[i] = stack_items[i].entry;
-
-    gs->opp_hand_ct = gs->opponent.hand_ct;
 
     // Action history: copy from ring buffer, newest first, with perspective normalization
     gs->action_history_len = cur_game.action_history_count;

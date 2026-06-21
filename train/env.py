@@ -988,6 +988,7 @@ class ModelVsScriptedEnv(gym.Env):
         reward += shaping
         info["game_meta"] = self._game_meta
         info["decision_idx"] = self._decision_idx
+        info["num_choices"] = self._env._num_choices
         if terminated or truncated:
             info["opp_deck"] = self._opp_deck or "unknown"
         return obs, reward, terminated, truncated, info
@@ -1166,6 +1167,7 @@ class SelfPlayEnv(gym.Env):
             reward = -reward
         info["game_meta"] = self._game_meta
         info["decision_idx"] = self._decision_idx
+        info["num_choices"] = self._env._num_choices
         return self._training_obs(obs), reward, terminated, truncated, info
 
     def action_masks(self) -> np.ndarray:

@@ -115,7 +115,7 @@ class CardGameExtractor(BaseFeaturesExtractor):
         )
         super().__init__(observation_space, features_dim=features_dim)
 
-        # Shared encoder for 42-float unified permanent slots
+        # Shared encoder for 138-float unified permanent slots
         self.perm_encoder = nn.Sequential(
             nn.Linear(_PERM_SLOT_SIZE, embed_dim),
             nn.ReLU(),
@@ -123,7 +123,7 @@ class CardGameExtractor(BaseFeaturesExtractor):
             nn.ReLU(),
         )
 
-        # Encoder for 33-float stack slots
+        # Encoder for 130-float stack slots
         self.stack_encoder = nn.Sequential(
             nn.Linear(_STACK_SLOT_SIZE, embed_dim),
             nn.ReLU(),
@@ -131,7 +131,7 @@ class CardGameExtractor(BaseFeaturesExtractor):
             nn.ReLU(),
         )
 
-        # Shared encoder for 32-float card-identity slots (graveyard AND hand)
+        # Shared encoder for 128-float card-identity slots (graveyard AND hand)
         self.entity_encoder = nn.Sequential(
             nn.Linear(_HAND_SLOT_SIZE, embed_dim),
             nn.ReLU(),

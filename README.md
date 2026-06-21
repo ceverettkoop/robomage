@@ -54,11 +54,24 @@ All commands are run from the repo root, these commands assume a venv with appro
 
 #### Training
 
+`train.py` uses subcommands. Run `train/.venv/bin/python train/train.py -h` to
+list them, or `train.py <subcommand> -h` for a subcommand's options. The `train`
+subcommand is assumed when none is given, so one-liner training works without
+typing `train`.
+
 ```bash
-train/.venv/bin/python train/train.py #trains against a scripted agent
-train/.venv/bin/python train/train.py --load checkpoints/robomage_final.zip  # resume
-train/.venv/bin/python train/train.py --train-all #trains all possible matchup pairs from decks in bin/resources/decks
-train/.venv/bin/python train/train.py --self-play #trains against models for the corresponding match
+# Training (the 'train' subcommand is implied when omitted)
+train/.venv/bin/python train/train.py --deck delver --opponent boomer                 # train delver vs the boomer deck
+train/.venv/bin/python train/train.py train --opponent boomer --load checkpoints/robomage_final.zip  # resume
+train/.venv/bin/python train/train.py --self-play --deck delver --opponent boomer     # self-play against frozen checkpoints
+train/.venv/bin/python train/train.py sweep                                           # train all matchup pairs from decks in bin/resources/decks
+train/.venv/bin/python train/train.py sweep --deck delver                             # only matchups featuring delver
+
+# Verify a build / inspect a model
+train/.venv/bin/python train/train.py diag                                            # 10 quick games to verify the env
+train/.venv/bin/python train/train.py watch                                           # watch one scripted-vs-scripted game
+train/.venv/bin/python train/train.py baseline checkpoints/robomage_final.zip         # win rate vs the scripted agent
+train/.venv/bin/python train/train.py observe checkpoints/robomage_final.zip          # watch the model play one game
 ```
 
 #### Play against model

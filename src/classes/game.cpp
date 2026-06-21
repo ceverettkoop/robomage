@@ -104,6 +104,7 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                         }
                     }
                     // Gather untap-prevention subtypes from cached g_active_statics (Choke)
+                    // TODO other untap prevention effects, including those not related to type, go here
                     std::vector<std::string> untap_prevented_subtypes;
                     for (const auto &as : g_active_statics) {
                         if (!as.sa->hidden_keyword.empty() &&
@@ -112,7 +113,6 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                             untap_prevented_subtypes.push_back(as.sa->affected_subtype);
                         }
                     }
-
                     // Untap all permanents controlled by active player; reset per-turn counters
                     for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
                         if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
@@ -136,7 +136,6 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                             for (auto &ab : permanent.abilities) ab.activations_this_turn = 0;
                         }
                     }
-
                     cur_step = UPKEEP;
                     {
                         Event upkeep_event(Events::UPKEEP_BEGAN);

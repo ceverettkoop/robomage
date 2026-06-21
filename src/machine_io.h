@@ -5,17 +5,20 @@
 #include "classes/action.h"
 #include <vector>
 
-// QUERY line format (machine mode):
-//   "QUERY: <num_choices> <f0>...<f8876> <cat0>...<cat_{N-1}> <id0>...<id_{N-1}> <ctrl0>...<ctrl_{N-1}>"
-//   where N = num_choices.
+// BQUERY format (machine mode): a text header line "BQUERY: <num_choices>\n"
+// followed immediately by a binary payload (see cli_emit_machine_query):
+//   float32[STATE_SIZE] state, int32[MAX_ACTIONS] cats,
+//   float32[MAX_ACTIONS] ids, float32[MAX_ACTIONS] ctrl.
+// Per-action metadata is padded to MAX_ACTIONS; only the first num_choices
+// entries are meaningful.
 //
 // The state vector (STATE_SIZE floats) is followed by:
 //   - N ActionCategory integers (values 0-26, see ActionCategory enum).
 //   - N card vocab index floats: card_vocab_index / N_CARD_TYPES for card
-//     entities, or -1.0 / N_CARD_TYPES (-0.03125) as a null sentinel for
+//     entities, or -1.0 / N_CARD_TYPES (-0.0078125) as a null sentinel for
 //     non-card entities (players, confirm slots, fail-to-find, empty).
 //   - N controller_is_self floats: 1.0 if entity is controlled by the priority
-//     player, 0.0 if controlled by the opponent, -0.03125 null sentinel for
+//     player, 0.0 if controlled by the opponent, -0.0078125 null sentinel for
 //     non-entity actions (pass priority, confirm slots, etc.).
 //
 // NOTE: ActionChoice.description is NOT emitted in the QUERY line.

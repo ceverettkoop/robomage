@@ -1,10 +1,6 @@
 TODO:
 parse and display ability descriptions and targeting prompts
 
-redo draw to allow for dredge and similar replacement effects
-implement life from the loam as the example of dredge
-confirm that draw is properly changing what card is known to be on top by the ML model
-
 review ML process and analaysis tools
 
 endurance evoke unimplemented

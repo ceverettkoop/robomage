@@ -29,7 +29,7 @@ Usage examples:
         --hand-a "Mountain,Lightning Bolt,Volcanic Island,Delver of Secrets" \\
         --library-a "Mountain,Island,Ponder,Lightning Bolt,Daze,Island,Mountain" \\
         --deck-b delver \\
-        --scripted --max-turns 4
+        --scripted --max-decisions 40
 
     # Interactive: pause at each decision and prompt for action index
     python test_harness.py \\
@@ -50,7 +50,6 @@ Scenario JSON format:
         "hand_b": ["Forest", "Grizzly Bears"],
         "library_b": ["Forest", "Forest", "Forest", ...],
         "actions": [9, 0, 7, 0, 8],
-        "max_turns": 5,
         "seed": 1
     }
 """
@@ -574,7 +573,7 @@ class TestHarness:
 
     def run_game(self, deck_a_path, deck_b_path, seed=1,
                  actions=None, interactive=False, scripted=False,
-                 max_decisions=500, max_turns=50,
+                 max_decisions=500,
                  battlefield_a=None, battlefield_b=None, no_shuffle=True):
         """Run a full game and print decoded output.
 
@@ -586,7 +585,6 @@ class TestHarness:
             interactive: If True, prompt for each action
             scripted: If True, use the scripted agent for decisions
             max_decisions: Safety limit on decision points
-            max_turns: Not enforced here (engine handles turns)
             battlefield_a: List of card names to start on Player A's battlefield
             battlefield_b: List of card names to start on Player B's battlefield
         """
@@ -731,9 +729,11 @@ def main():
                              "deck via --deck-a/--deck-b. Implied automatically when "
                              "--hand-a/--hand-b are given. Without it, libraries are "
                              "shuffled with the seeded RNG (deterministic per --seed).")
-    parser.add_argument("--seed", type=int, default=1, help="RNG seed (default: 1)")
-    parser.add_argument("--max-decisions", type=int, default=500)
-    parser.add_argument("--max-turns", type=int, default=50)
+    parser.add_argument("--seed", type=int, default=None,
+                        help="RNG seed (default: 1, or scenario's seed if given)")
+    parser.add_argument("--max-decisions", type=int, default=None,
+                        help="Stop after this many decisions (default: 500, "
+                             "or scenario's max_decisions if given)")
     parser.add_argument("--binary", default=str(_BINARY), help="Path to robomage binary")
     args = parser.parse_args()
 
@@ -749,14 +749,15 @@ def main():
     library_b = _parse_card_list(args.library_b) or scenario.get("library_b", [])
     battlefield_a = _parse_card_list(args.battlefield_a) or scenario.get("battlefield_a", [])
     battlefield_b = _parse_card_list(args.battlefield_b) or scenario.get("battlefield_b", [])
-    seed = args.seed if args.seed != 1 else scenario.get("seed", 1)
+    seed = args.seed if args.seed is not None else scenario.get("seed", 1)
     # Stacked-deck mode: deck-file order == draw order. Implied by hand sculpting
     # (--hand-a/--hand-b build a stacked temp deck whose first 7 cards must be the
     # opening hand) or requested explicitly via --no-shuffle (e.g. a hand-ordered
     # deck file passed through --deck-a). Otherwise libraries are shuffled.
     no_shuffle = args.no_shuffle or bool(hand_a) or bool(hand_b)
     actions_str = args.actions or scenario.get("actions")
-    max_decisions = args.max_decisions or scenario.get("max_decisions", 500)
+    max_decisions = (args.max_decisions if args.max_decisions is not None
+                     else scenario.get("max_decisions", 500))
 
     # Parse action list
     actions = None
