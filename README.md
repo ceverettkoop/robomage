@@ -61,9 +61,9 @@ typing `train`.
 
 ```bash
 # Training (the 'train' subcommand is implied when omitted)
-train/.venv/bin/python train/train.py --deck delver --opponent boomer                 # train delver vs the boomer deck
-train/.venv/bin/python train/train.py train --opponent boomer --load checkpoints/robomage_final.zip  # resume
-train/.venv/bin/python train/train.py --self-play --deck delver --opponent boomer     # self-play against frozen checkpoints
+train/.venv/bin/python train/train.py --deck delver --opponent mav                 # train delver vs the mav deck
+train/.venv/bin/python train/train.py train --opponent mav --load checkpoints/robomage_final.zip  # resume
+train/.venv/bin/python train/train.py --self-play --deck delver --opponent mav     # self-play against frozen checkpoints
 train/.venv/bin/python train/train.py sweep                                           # train all matchup pairs from decks in bin/resources/decks
 train/.venv/bin/python train/train.py sweep --deck delver                             # only matchups featuring delver
 
