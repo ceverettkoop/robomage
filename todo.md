@@ -6,12 +6,12 @@ parse and display ability descriptions and targeting prompts
     choose the order they go on the stack (APNAP). Currently they are pushed in a fixed
     order and the player is not prompted.
 
+-dauthi does not work exactly as written - casts immediately
+
 keen eyed curator buff from types exiled untested
 
-dauthi cast from exile/void counter unimplemented? untested
-
 Pro color untested
-rev
+
 Engine stuff:
 ML can only pay for spells after choosing them, this does not allow some rare cases of optimal behavior (e.g. floating mana) but should reduce noise
 

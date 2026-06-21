@@ -13,6 +13,7 @@
 #include "../ecs/coordinator.h"
 #include "../ecs/entity.h"
 #include "../input_logger.h"
+#include "../action_processor.h"
 #include "../systems/orderer.h"
 
 extern Coordinator global_coordinator;
@@ -78,6 +79,11 @@ bool choose_card(Ability &ab, std::shared_ptr<Orderer> orderer) {
                 Ability cast_ab = spell_ab;
                 cast_ab.source = chosen;
                 cast_ab.controller = ctrl;
+                // Select a target now (as casting normally would) so the spell
+                // doesn't fizzle for want of a target on resolution.
+                if (cast_ab.valid_tgts != "N_A" && has_legal_targets(cast_ab, orderer)) {
+                    select_target(cast_ab, orderer, ctrl);
+                }
                 global_coordinator.AddComponent(chosen, cast_ab);
                 break;
             }

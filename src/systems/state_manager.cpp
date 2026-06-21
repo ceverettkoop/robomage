@@ -145,6 +145,8 @@ void StateManager::apply_permanent_components(Game &game) {
                             break;
                         case Effect::Replacement::CANT_BE_COUNTERED:
                             break;  // handled at cast time, not ETB
+                        case Effect::Replacement::EXILE_INSTEAD_OF_GRAVEYARD:
+                            break;  // handled in Orderer::add_to_zone, not ETB
                     }
                 }
                 // A ChangeZone effect (e.g. fetch "onto the battlefield tapped") may also

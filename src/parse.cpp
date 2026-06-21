@@ -1536,7 +1536,8 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
                 else if (key == "Event"       && value == "Counter")    event_is_counter        = true;
                 else if (key == "ValidCard"   && value == "Card.Self")   valid_card_self         = true;
                 else if (key == "ValidCard"   && value.find("OppOwn") != std::string::npos &&
-                         value.find("nonToken") != std::string::npos) valid_card_opp_non_token = true;
+                         (value.find("!token") != std::string::npos ||
+                          value.find("nonToken") != std::string::npos)) valid_card_opp_non_token = true;
                 else if (key == "Destination" && value == "Battlefield") dest_is_battlefield     = true;
                 else if (key == "Destination" && value == "Graveyard")   dest_is_graveyard_r     = true;
                 else if (key == "ReplaceWith" && value == "ETBTapped")   replace_with_etb_tapped = true;
