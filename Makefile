@@ -21,6 +21,7 @@ endif
 
 ODIR=obj
 SRCDIR=src
+DEPFLAGS = -MMD -MP
 BINDIR=bin
 BINNAME=robomage
 GUI=TRUE
@@ -70,14 +71,15 @@ _C_OBJ := $(patsubst $(SRCDIR)/%.c,%.o,$(C_SRCS))
 _CXX_OBJ += $(patsubst $(SRCDIR)/%.cpp,%.o,$(CXX_SRCS))
 C_OBJ = $(patsubst %,$(ODIR)/%,$(_C_OBJ))
 CXX_OBJ = $(patsubst %,$(ODIR)/%,$(_CXX_OBJ))
+DEPS = $(C_OBJ:.o=.d) $(CXX_OBJ:.o=.d)
 
 $(ODIR)/%.o: $(SRCDIR)/%.c
 	@mkdir -p $(dir $@)
-	$(CC) -c -o $@ $< $(IFLAGS) $(CFLAGS) $(PLATFLAGS)
+	$(CC) -c -o $@ $< $(IFLAGS) $(CFLAGS) $(DEPFLAGS) $(PLATFLAGS)
 
 $(ODIR)/%.o: $(SRCDIR)/%.cpp
 	@mkdir -p $(dir $@)
-	$(CXX) -c -o $@ $< $(IFLAGS) $(CXXFLAGS) $(PLATFLAGS)
+	$(CXX) -c -o $@ $< $(IFLAGS) $(CXXFLAGS) $(DEPFLAGS) $(PLATFLAGS)
 
 program:$(C_OBJ) $(CXX_OBJ)
 	@mkdir -p $(BINDIR)
@@ -86,5 +88,7 @@ program:$(C_OBJ) $(CXX_OBJ)
 .PHONY: clean
 
 clean:
-	rm -f $(ODIR)/*/*.o
-	rm -f $(ODIR)/*.o
+	rm -f $(ODIR)/*/*.o $(ODIR)/*/*.d
+	rm -f $(ODIR)/*.o $(ODIR)/*.d
+
+-include $(DEPS)

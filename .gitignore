@@ -20,3 +20,5 @@ train/recordings/*.rmrec
 bin/resources/decks/temp/*
 .claude/settings.local.json
 diag_draw_*.txt
+obj/*/*.d
+obj/*.d
