@@ -18,6 +18,7 @@ Invoked via `play.py --tui` (and the tui.py launcher's Play entry).
 import random
 
 import numpy as np
+from rich.text import Text
 
 from textual import work
 from textual.app import App, ComposeResult
@@ -197,9 +198,9 @@ class GameApp(App):
 
                 if opp_turn:
                     action = int(self._opp_act(obs, num))
-                    if 0 <= action < len(actions):
+                    if 0 <= action < len(actions) and actions[action]["category"] != 0:
                         self.post_message(LogLines(
-                            [f"[dim][{self._opp_label}][/dim] {actions[action]['description']}"]))
+                            [f"[{self._opp_label}] {actions[action]['description']}"]))
                 else:
                     action = self._human_q.get()       # blocks until UI delivers
                     if action is None:                 # quit signalled
@@ -259,7 +260,7 @@ class GameApp(App):
     def on_log_lines(self, message: LogLines) -> None:
         for line in message.lines:
             if line.strip():
-                self._log(line)
+                self._write_event(line)
 
     def on_game_over(self, message: GameOver) -> None:
         self._awaiting = False
@@ -318,6 +319,8 @@ class GameApp(App):
     def _submit(self, idx: int) -> None:
         if not self._awaiting:
             return
+        if 0 <= idx < len(self._actions) and self._actions[idx]["category"] != 0:
+            self._write_event(f"[You] {self._actions[idx]['description']}")
         self._awaiting = False
         self.query_one("#actions", OptionList).clear_options()
         self.query_one("#prompt", Static).update("…")
@@ -327,12 +330,17 @@ class GameApp(App):
             self._human_q.put(idx)
 
     def _log(self, text: str) -> None:
+        """Write a styled (markup) line — used for app messages, not engine text."""
         log = self.query_one("#log", RichLog)
         try:
             log.write(text)
         except Exception:
             from rich.markup import escape
             log.write(escape(text))
+
+    def _write_event(self, line: str) -> None:
+        """Write a literal line (no markup parsing) — for action/narrative logs."""
+        self.query_one("#log", RichLog).write(Text(line))
 
     async def _rebuild(self, selector: str, perms, controller: str) -> None:
         box = self.query_one(selector, VerticalScroll)

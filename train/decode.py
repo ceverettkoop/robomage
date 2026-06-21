@@ -298,6 +298,11 @@ def decode_actions(cats_int, card_ids, ctrl, num_choices):
         card_idx = int(round(float(card_ids[i]) * N_CARD_TYPES))
         card_name = card_index_to_name(card_idx) if card_idx >= 0 else None
         ctrl_str = _ctrl_str(float(ctrl[i]))
+        if cat == 11:
+            # Mulligan query: index 0 = keep, index 1 = mulligan.
+            desc = "Keep hand" if i == 0 else "Mulligan"
+        else:
+            desc = describe_action(cat, card_name, ctrl_str)
         actions.append({
             "index": i,
             "category": cat,
@@ -305,7 +310,7 @@ def decode_actions(cats_int, card_ids, ctrl, num_choices):
             "card": card_name,
             "card_idx": card_idx if card_idx >= 0 else -1,
             "controller": ctrl_str,
-            "description": describe_action(cat, card_name, ctrl_str),
+            "description": desc,
         })
     return actions
 
