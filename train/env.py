@@ -1091,16 +1091,20 @@ def mirror_obs(obs: np.ndarray) -> np.ndarray:
 # ── Self-play environment ─────────────────────────────────────────────────────
 
 class SelfPlayEnv(gym.Env):
-    """Self-play: the training model plays against a frozen previous checkpoint.
+    """Self-play: the training model plays against a frozen saved checkpoint.
 
     Each episode one player role (A or B) is randomly assigned to the training
     model; the other is controlled by the frozen opponent.  The game engine emits
     observations from the priority player's perspective, so both sides always
     receive a perspective-normalised view without any mirroring.
 
-    The opponent checkpoint is sampled from ``checkpoint_dir`` and reloaded every
-    ``RELOAD_EVERY`` episodes so it gradually tracks the improving policy.  If no
-    checkpoints exist yet the opponent acts randomly (bootstrapping phase).
+    The training model always pilots ``model_deck`` and the frozen opponent always
+    pilots ``opp_deck``.  Because the opponent plays ``opp_deck``, its checkpoint is
+    sampled from the *mirror* matchup ``{opp_deck}_{model_deck}_*.zip`` — a model
+    actually trained to pilot that deck (for a mirror match this is simply this
+    run's own past selves).  The checkpoint is resampled every ``RELOAD_EVERY``
+    episodes so it tracks the improving policy.  If no compatible checkpoint
+    exists yet, the opponent falls back to the scripted agent (with a warning).
     """
 
     RELOAD_EVERY = 100  # episodes between opponent checkpoint reloads
@@ -1117,10 +1121,11 @@ class SelfPlayEnv(gym.Env):
         self.action_space = self._env.action_space
         self.render_mode = self._env.render_mode
         self._checkpoint_dir = checkpoint_dir
-        self._opponent = None    # loaded model, or None → random
+        self._opponent = None    # loaded model, or None → scripted fallback
         self._episode_count = 0
         self._training_is_a = True
         self._opponent_loaded = False  # defer loading to first reset()
+        self._scripted_fallback_warned = False  # warn once when no checkpoint found
         self._opp_mask = np.zeros(MAX_ACTIONS, dtype=bool)  # reusable mask buffer
 
     # ------------------------------------------------------------------
@@ -1138,7 +1143,7 @@ class SelfPlayEnv(gym.Env):
             self._env._deck_a = self._model_deck if self._training_is_a else self._opp_deck
             self._env._deck_b = self._opp_deck if self._training_is_a else self._model_deck
         self._decision_idx = 0
-        opp_name = "random"
+        opp_name = "scripted"
         if self._opponent is not None:
             opp_name = getattr(self, "_opp_checkpoint_path", "checkpoint")
         self._game_meta = {
@@ -1205,19 +1210,29 @@ class SelfPlayEnv(gym.Env):
                 action, _ = self._opponent.predict(opp_obs, action_masks=self._opp_mask, deterministic=False)
                 action = int(action)
             else:
-                action = np.random.randint(0, num_choices)
+                # No compatible checkpoint — pilot the opponent with the scripted agent.
+                action = scripted_action(opp_obs, num_choices)
             obs, reward, terminated, truncated, info = self._env.step(action)
         return obs, reward, terminated, truncated, info
 
     def _reload_opponent(self):
-        """Sample a random checkpoint with the same deck matchup as the new frozen opponent."""
+        """Sample a frozen checkpoint trained to pilot the opponent's deck.
+
+        The frozen opponent plays ``opp_deck``, so we look for a model saved as
+        the mirror matchup ``{opp_deck}_{model_deck}_*.zip``.  If no compatible
+        checkpoint exists, fall back to the scripted agent and warn (once)."""
         if self._model_deck and self._opp_deck:
-            files = _glob.glob(os.path.join(self._checkpoint_dir, f"{self._model_deck}_{self._opp_deck}_*.zip"))
+            pattern = f"{self._opp_deck}_{self._model_deck}_*.zip"
         elif self._model_deck:
-            files = _glob.glob(os.path.join(self._checkpoint_dir, f"{self._model_deck}_*.zip"))
+            pattern = f"{self._model_deck}_*.zip"
         else:
-            files = _glob.glob(os.path.join(self._checkpoint_dir, "*.zip"))
+            pattern = "*.zip"
+        files = _glob.glob(os.path.join(self._checkpoint_dir, pattern))
         if not files:
+            if not self._scripted_fallback_warned:
+                print(f"[self-play] WARNING: no checkpoint matching '{pattern}' in "
+                      f"{self._checkpoint_dir}; opponent falling back to the scripted agent.")
+                self._scripted_fallback_warned = True
             self._opponent = None
             return
         path = str(np.random.choice(files))
@@ -1236,7 +1251,9 @@ class SelfPlayEnv(gym.Env):
             SelfPlayEnv._model_cache[path] = (mtime, model)
             self._opponent = model
         except Exception:
-            self._opponent = None  # fall back to random if load fails
+            print(f"[self-play] WARNING: failed to load opponent checkpoint {path}; "
+                  f"falling back to the scripted agent.")
+            self._opponent = None  # fall back to scripted if load fails
 
 
 class FixedModelEnv(gym.Env):

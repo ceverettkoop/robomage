@@ -488,16 +488,17 @@ def make_self_play_env(checkpoint_dir: str, rank: int,
 
 
 def train(binary_path: str, load_path: str | None = None, total_timesteps: int = TOTAL_TIMESTEPS,
-          tally: bool = False, self_play: bool = False, scripted_fraction: float = 0.0,
+          tally: bool = False, self_play: bool = False,
           model_deck: str = "delver", opp_deck: str = "delver", record: bool = False,
           n_envs_override: int | None = None, no_shaping: bool = False, **env_kwargs):
     """Train the model.
 
-    ``scripted_fraction`` controls how many of the N_ENVS parallel environments
-    use the scripted agent instead of self-play.  E.g. 0.0 = all self-play,
-    0.3 = ~2 scripted + 5 self-play (with N_ENVS=7).  Has no effect unless
-    ``self_play`` is also True.  Mixing in scripted environments prevents the
-    policy drifting to strategies that beat itself but lose to general play.
+    Two opponent modes (mutually exclusive):
+      * default (``self_play=False``) — every env trains against the rule-based
+        scripted agent (``ModelVsScriptedEnv``).
+      * ``self_play=True`` — every env trains against a frozen saved checkpoint
+        of the mirror matchup (``SelfPlayEnv``); if no compatible checkpoint
+        exists yet, that env's opponent falls back to the scripted agent.
 
     Extra keyword arguments (``bo3``, ``auto_sideboard``, etc.) are forwarded
     to the underlying ``RoboMageEnv`` via the env factory helpers.
@@ -510,17 +511,12 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
     # Parallel environments for faster data collection
     if self_play:
         n_envs = n_envs_override if n_envs_override is not None else N_ENVS_SELF_PLAY
-        n_scripted = round(n_envs * scripted_fraction)
-        n_self_play = n_envs - n_scripted
-        env_fns = (
-            [make_self_play_env(checkpoint_dir, i, model_deck, opp_deck, **env_kwargs) for i in range(n_self_play)]
-            + [make_env(n_envs - n_scripted + i, model_deck, opp_deck, **env_kwargs) for i in range(n_scripted)]
-        )
-        if n_scripted:
-            print(f"Env mix: {n_self_play} self-play + {n_scripted} scripted")
-        vec_env = SubprocVecEnv(env_fns)
+        print(f"Opponent: self-play ({n_envs} envs vs frozen mirror checkpoints)")
+        vec_env = SubprocVecEnv(
+            [make_self_play_env(checkpoint_dir, i, model_deck, opp_deck, **env_kwargs) for i in range(n_envs)])
     else:
         n_envs = n_envs_override if n_envs_override is not None else N_ENVS
+        print(f"Opponent: scripted agent ({n_envs} envs)")
         vec_env = SubprocVecEnv([make_env(i, model_deck, opp_deck, **env_kwargs) for i in range(n_envs)])
 
     try:
@@ -727,25 +723,16 @@ def train_alternate(binary_path: str, deck_a: str, deck_b: str,
 def diag(binary_path: str, n_games: int = 10,
          deck_a: str | None = None, deck_b: str | None = None,
          bo3: bool = False):
-    """Quick diagnostic: spin up a fresh random model and run n_games vs scripted.
+    """Quick diagnostic: run n_games of scripted vs scripted to verify the env.
 
     Logs every decision (like watch_scripted).  On a draw the full log is saved
     to diag_draw_<game>.txt and printed to stdout, since draws should not occur.
     """
     import numpy as np
 
-    policy_kwargs = dict(features_extractor_class=CardGameExtractor, net_arch=[256, 256])
-
-    # Create a throw-away env just to give MaskablePPO the spaces it needs.
-    _tmp_env = NarrativeEnv(binary_path=binary_path, deck_a=deck_a, deck_b=deck_b, bo3=bo3)
-    if USE_MASKABLE:
-        _tmp_env = ActionMasker(_tmp_env, lambda e: e.action_masks())
-    model = MaskablePPO("MlpPolicy", _tmp_env, policy_kwargs=policy_kwargs, verbose=0)
-    _tmp_env.close()
-
     wins = losses = draws = 0
     label = "matches" if bo3 else "games"
-    print(f"Running {n_games} {label} (random model vs scripted)...")
+    print(f"Running {n_games} {label} (scripted vs scripted)...")
     for i in range(n_games):
         env = NarrativeEnv(binary_path=binary_path, deck_a=deck_a, deck_b=deck_b, bo3=bo3)
         if USE_MASKABLE:
@@ -758,7 +745,7 @@ def diag(binary_path: str, n_games: int = 10,
         turn = 0
         prev_active_is_a = None
         known_hand = {"A": [], "B": []}
-        log_lines = [f"=== Game {i+1}: Random Model (A) vs Scripted (B) ===\n"]
+        log_lines = [f"=== Game {i+1}: Scripted (A) vs Scripted (B) ===\n"]
 
         while not done:
             # Flush narrative lines from the game process
@@ -788,12 +775,10 @@ def diag(binary_path: str, n_games: int = 10,
                 log_lines.append(f"  PB: {b_hand}")
                 prev_active_is_a = active_is_a
 
-            # Model controls player A, scripted controls player B
+            # Scripted agent controls both players
             if priority_is_a:
-                masks = raw_env.action_masks() if USE_MASKABLE else None
-                action, _ = model.predict(obs, action_masks=masks, deterministic=False)
-                action = int(action)
-                agent_label = "Model/A"
+                action = scripted_action(obs, num_choices)
+                agent_label = "Scripted/A"
             else:
                 action = scripted_action(obs, num_choices)
                 agent_label = "Scripted/B"
@@ -881,38 +866,50 @@ def baseline(binary_path: str, model_path: str, n_games: int = 100):
           f"({100 * wins / n_games:.1f}% win rate)")
 
 
-def observe(binary_path: str, model_path: str):
-    """Watch the model play one game against the scripted agent.
+def observe(binary_path: str,
+            player_a: str = "scripted", player_b: str = "scripted",
+            deck_a: str | None = None, deck_b: str | None = None):
+    """Watch one game with user-chosen controllers and decks for each side.
 
-    The model is randomly assigned to Player A or B.  Both players' decisions
-    are printed so the full game flow is visible.
+    ``player_a``/``player_b`` are either the literal "scripted" or a path to a
+    model checkpoint (.zip path or shorthand).  ``deck_a``/``deck_b`` set each
+    side's deck.  Both players' decisions are printed so the full game flow is
+    visible.
     """
-    import numpy as np
-    model = MaskablePPO.load(model_path)
-    env = RoboMageEnv(binary_path=binary_path, render_mode="human")
+    def _load_controller(spec):
+        """Return a loaded model, or None for the scripted agent."""
+        if spec is None or spec == "scripted":
+            return None
+        return MaskablePPO.load(_resolve_model(spec))
+
+    def _label(model, side):
+        return f"Model/{side}" if model is not None else f"Scripted/{side}"
+
+    model_a = _load_controller(player_a)
+    model_b = _load_controller(player_b)
+
+    env = RoboMageEnv(binary_path=binary_path, render_mode="human",
+                      deck_a=deck_a, deck_b=deck_b)
     obs, _ = env.reset()
 
-    model_is_a = bool(np.random.random() < 0.5)
-    model_side = "A" if model_is_a else "B"
-    scripted_side = "B" if model_is_a else "A"
-    print(f"=== Model (Player {model_side}) vs Scripted (Player {scripted_side}) ===\n")
+    print(f"=== {_label(model_a, 'A')} ({deck_a or 'default'} deck) vs "
+          f"{_label(model_b, 'B')} ({deck_b or 'default'} deck) ===\n")
 
     done = False
     total_reward = 0.0
     while not done:
         a_has_priority = obs[32] > 0.5
-        model_has_priority = a_has_priority if model_is_a else not a_has_priority
         cur_side = "A" if a_has_priority else "B"
         num_choices = env._num_choices
+        model = model_a if a_has_priority else model_b
 
-        if model_has_priority:
+        if model is not None:
             masks = env.action_masks() if USE_MASKABLE else None
             action, _ = model.predict(obs, action_masks=masks, deterministic=True)
             action = int(action)
-            print(f"  [Model/{cur_side}]    action {action + 1} of {num_choices}")
         else:
             action = scripted_action(obs, num_choices)
-            print(f"  [Scripted/{cur_side}] action {action + 1} of {num_choices}")
+        print(f"  [{_label(model, cur_side)}] action {action + 1} of {num_choices}")
 
         obs, reward, terminated, truncated, _ = env.step(action)
         total_reward += reward
@@ -920,11 +917,11 @@ def observe(binary_path: str, model_path: str):
 
     env.close()
     print()
-    model_reward = total_reward if model_is_a else -total_reward
-    if model_reward > 0:
-        print(f"=== Model ({model_side}) wins ===")
-    elif model_reward < 0:
-        print(f"=== Scripted ({scripted_side}) wins ===")
+    # total_reward is from Player A's perspective.
+    if total_reward > 0:
+        print(f"=== {_label(model_a, 'A')} wins ===")
+    elif total_reward < 0:
+        print(f"=== {_label(model_b, 'B')} wins ===")
     else:
         print("=== Draw ===")
 
@@ -1099,7 +1096,6 @@ def _run_sweep(args, parser, decks_filter):
         resume_path = candidate if os.path.exists(candidate) else None
         train(args.binary, load_path=resume_path, total_timesteps=args.total_timesteps,
               tally=args.tally, self_play=args.self_play,
-              scripted_fraction=args.scripted_fraction,
               model_deck=d, opp_deck=o, record=args.record,
               n_envs_override=args.n_envs, no_shaping=args.no_shaping, **env_kwargs)
     print(f"\nAll {len(matchups)} matchups complete.")
@@ -1119,11 +1115,13 @@ if __name__ == "__main__":
                     help="Deck the model plays (.dk stem, default: delver)")
     pt.add_argument("--opponent", required=True, help="Opponent deck (.dk stem)")
     pt.add_argument("--load", default=None, help="Resume from checkpoint .zip (or shorthand)")
-    pt.add_argument("--self-play", action="store_true",
-                    help="Train via self-play against frozen previous checkpoints")
-    pt.add_argument("--scripted-fraction", type=float, default=0.0,
-                    help="Fraction of self-play envs that use the scripted opponent (default 0.0). "
-                         "E.g. 0.3 gives ~2 scripted + 5 self-play with N_ENVS=7.")
+    pt_opp = pt.add_mutually_exclusive_group()
+    pt_opp.add_argument("--self-play", action="store_true",
+                        help="Train against a frozen saved checkpoint of the mirror matchup "
+                             "(falls back to the scripted agent if none exists yet)")
+    pt_opp.add_argument("--scripted", action="store_true",
+                        help="Train against the rule-based scripted agent (the default; "
+                             "mutually exclusive with --self-play)")
     _add_train_opts(pt)
     _add_common(pt)
 
@@ -1131,10 +1129,13 @@ if __name__ == "__main__":
     ps = sub.add_parser("sweep", help="Train many deck×deck matchups sequentially")
     ps.add_argument("--deck", default=None,
                     help="Only matchups featuring this deck. Omit to train ALL matchups.")
-    ps.add_argument("--self-play", action="store_true",
-                    help="Train via self-play against frozen previous checkpoints")
-    ps.add_argument("--scripted-fraction", type=float, default=0.0,
-                    help="Fraction of self-play envs that use the scripted opponent (default 0.0)")
+    ps_opp = ps.add_mutually_exclusive_group()
+    ps_opp.add_argument("--self-play", action="store_true",
+                        help="Train against a frozen saved checkpoint of the mirror matchup "
+                             "(falls back to the scripted agent if none exists yet)")
+    ps_opp.add_argument("--scripted", action="store_true",
+                        help="Train against the rule-based scripted agent (the default; "
+                             "mutually exclusive with --self-play)")
     _add_train_opts(ps)
     _add_common(ps)
 
@@ -1159,7 +1160,7 @@ if __name__ == "__main__":
 
     # ── diag ─────────────────────────────────────────────────────────────────
     pd = sub.add_parser("diag",
-                        help="Run quick games (random model vs scripted) to verify the env")
+                        help="Run quick games (scripted vs scripted) to verify the env")
     pd.add_argument("--deck", default="delver", help="Player A deck (.dk stem)")
     pd.add_argument("--opponent", default=None, help="Player B deck (.dk stem)")
     pd.add_argument("--games", type=int, default=10, help="Number of games (default: 10)")
@@ -1172,8 +1173,14 @@ if __name__ == "__main__":
     _add_common(pw)
 
     # ── observe ──────────────────────────────────────────────────────────────
-    po = sub.add_parser("observe", help="Watch a model play one game vs the scripted agent")
-    po.add_argument("model", help="Model .zip path or shorthand")
+    po = sub.add_parser("observe",
+                        help="Watch one game with chosen controllers and decks for each side")
+    po.add_argument("--player-a", default="scripted",
+                    help="Player A controller: 'scripted' or a model .zip path/shorthand (default: scripted)")
+    po.add_argument("--player-b", default="scripted",
+                    help="Player B controller: 'scripted' or a model .zip path/shorthand (default: scripted)")
+    po.add_argument("--deck", default="delver", help="Player A deck (.dk stem, default: delver)")
+    po.add_argument("--opponent", default="delver", help="Player B deck (.dk stem, default: delver)")
     po.add_argument("--binary", default=BINARY, help="Path to robomage binary")
 
     # ── baseline ─────────────────────────────────────────────────────────────
@@ -1197,7 +1204,6 @@ if __name__ == "__main__":
     if args.command == "train":
         train(args.binary, _resolve_model(args.load), args.total_timesteps,
               tally=args.tally, self_play=args.self_play,
-              scripted_fraction=args.scripted_fraction,
               model_deck=args.deck, opp_deck=args.opponent, record=args.record,
               n_envs_override=args.n_envs, no_shaping=args.no_shaping, **env_kwargs)
     elif args.command == "sweep":
@@ -1221,6 +1227,7 @@ if __name__ == "__main__":
     elif args.command == "watch":
         watch_scripted(args.binary, deck_a=args.deck, deck_b=args.opponent, bo3=args.bo3)
     elif args.command == "observe":
-        observe(args.binary, _resolve_model(args.model))
+        observe(args.binary, player_a=args.player_a, player_b=args.player_b,
+                deck_a=args.deck, deck_b=args.opponent)
     elif args.command == "baseline":
         baseline(args.binary, _resolve_model(args.model), args.games)

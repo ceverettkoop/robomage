@@ -295,8 +295,8 @@ train/.venv/bin/python train/train.py --self-play --deck delver --opponent boome
 
 # Evaluation / inspection
 train/.venv/bin/python train/train.py baseline checkpoints/robomage_final.zip         # win rate vs scripted
-train/.venv/bin/python train/train.py observe checkpoints/robomage_final.zip          # watch one game
-train/.venv/bin/python train/train.py diag                                            # verify env (10 quick games)
+train/.venv/bin/python train/train.py observe --player-a checkpoints/robomage_final.zip --player-b scripted --deck delver --opponent boomer  # watch one game (per-side controller + deck)
+train/.venv/bin/python train/train.py diag                                            # verify env (10 quick scripted-vs-scripted games)
 train/.venv/bin/python train/train.py watch                                           # watch scripted vs scripted
 train/.venv/bin/python train/train.py diag --bo3                                      # verify bo3 env
 train/.venv/bin/python train/train.py watch --bo3                                     # watch bo3 match
