@@ -184,10 +184,14 @@ class PlayEnv(RoboMageEnv):
 
 # ── Main play loop ────────────────────────────────────────────────────────────
 
-def play(binary_path: str, model_path: str, human_deck: str = "delver", model_deck: str = "delver"):
+def play(binary_path: str, model_path: str, human_deck: str = "delver", model_deck: str = "delver",
+         human_player: str = None):
     model = MaskablePPO.load(model_path)
 
-    model_is_a = bool(np.random.random() < 0.5)
+    if human_player is None:
+        model_is_a = bool(np.random.random() < 0.5)
+    else:
+        model_is_a = human_player == "B"
     deck_a = model_deck if model_is_a else human_deck
     deck_b = human_deck if model_is_a else model_deck
     env = PlayEnv(binary_path=binary_path, render_mode="human", deck_a=deck_a, deck_b=deck_b)
@@ -446,13 +450,13 @@ if __name__ == "__main__":
                         help="Deck the human plays (stem of .dk file)")
     parser.add_argument("--model-deck", required=True,
                         help="Deck the model plays (stem of .dk file). "
-                             "Automatically loads checkpoints/<model-deck>_final.zip")
+                             "Automatically loads checkpoints/<model-deck>_<human-deck>_final.zip")
     parser.add_argument("--model", default=None,
                         help="Override: explicit path to trained model .zip "
                              "(default: checkpoints/<model-deck>_final.zip)")
     parser.add_argument("--gui", action="store_true", help="Launch raylib GUI window for human input")
     parser.add_argument("--player", choices=["A", "B"], default=None,
-                        help="Which player the human controls (default: random)")
+                        help="Which player the human controls, in both CLI and GUI modes (default: random)")
     args = parser.parse_args()
 
     model_path = args.model
@@ -470,4 +474,5 @@ if __name__ == "__main__":
         play_gui(args.binary, model_path, human_player=args.player,
                  human_deck=args.human_deck, model_deck=args.model_deck)
     else:
-        play(args.binary, model_path, human_deck=args.human_deck, model_deck=args.model_deck)
+        play(args.binary, model_path, human_deck=args.human_deck, model_deck=args.model_deck,
+             human_player=args.player)
