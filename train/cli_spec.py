@@ -20,6 +20,16 @@ BIN_DIR = os.path.join(REPO_ROOT, "bin")  # game must be run from here for resou
 TOTAL_TIMESTEPS = 2_000_000
 N_ENVS = 32            # parallel game processes
 N_ENVS_SELF_PLAY = 10  # self-play (each loads an opponent model)
+EMBED_DIM = 128        # policy feature-extractor embed dim for fresh models
+
+# League (PFSP) defaults.
+LEAGUE_SELF_PLAY_FRAC      = 0.8      # prob of facing the latest snapshot of the learner's own deck
+LEAGUE_SCRIPTED_ANCHOR_FRAC = 0.1    # min share of the historical pool reserved for the scripted anchor
+LEAGUE_PFSP_P              = 2.0      # exponent p in (1-winrate)^p
+LEAGUE_SOFTMAX_ETA         = 0.01    # softmax quality learning rate
+LEAGUE_SNAPSHOT_EVERY      = 250_000 # steps between frozen snapshots
+LEAGUE_PROMOTE_MARGIN      = 0.2     # only snapshot when recent win-rate >= 0.5 + margin (first exempt; 0 disables)
+LEAGUE_ROTATE_EVERY        = 500_000 # steps to train one learner deck before rotating
 
 
 # ── Spec dataclasses ──────────────────────────────────────────────────────────
@@ -106,6 +116,10 @@ def train_opts():
             help="Disable all shaping rewards (forces shaping_scale=0, skips annealing)"),
         Arg("--auto-sideboard", "flag",
             help="Auto-skip sideboard phase in bo3 (model never sees sideboard decisions)"),
+        Arg("--embed-dim", "int", default=EMBED_DIM,
+            help="Feature-extractor embed dim for fresh models (default: %d). "
+                 "Ignored when resuming a checkpoint (its embed_dim is restored from "
+                 "the saved policy_kwargs)." % EMBED_DIM),
     ]
 
 
@@ -168,6 +182,40 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
             help="Resume from checkpoint .zip (or shorthand)"),
         _opponent_mode(),
         *opponent_pool_opts(),
+        *train_opts(),
+        *common_args(),
+    ]),
+    Sub("league", "PFSP league: train one generalist model per deck vs the whole field", items=[
+        Arg("--decks", "str", default=None, suggest="deck",
+            help="Comma-separated deck roster to train + sample opponents from "
+                 "(default: every .dk deck)."),
+        Arg("--self-play-frac", "float", default=LEAGUE_SELF_PLAY_FRAC,
+            help="Probability of facing the latest snapshot of the learner's own "
+                 "deck (OpenAI-Five 'play the latest self' slot; default %.2f). "
+                 "Auto-ramped down while few snapshots exist." % LEAGUE_SELF_PLAY_FRAC),
+        Arg("--scripted-anchor-frac", "float", default=LEAGUE_SCRIPTED_ANCHOR_FRAC,
+            help="Minimum share of the historical-pool branch reserved for the "
+                 "scripted anchor so it never vanishes (default %.2f)." % LEAGUE_SCRIPTED_ANCHOR_FRAC),
+        Arg("--pfsp-mode", "choice", choices=("pfsp", "softmax"), default="pfsp",
+            help="Opponent quality weighting: 'pfsp' = (1-winrate)^p (AlphaStar) or "
+                 "'softmax' = exp(q) with OpenAI-Five quality updates (default pfsp)."),
+        Arg("--pfsp-p", "float", default=LEAGUE_PFSP_P,
+            help="PFSP exponent p in (1-winrate)^p (default %.1f)." % LEAGUE_PFSP_P),
+        Arg("--softmax-eta", "float", default=LEAGUE_SOFTMAX_ETA,
+            help="Softmax quality learning rate eta (default %.3f)." % LEAGUE_SOFTMAX_ETA),
+        Arg("--snapshot-every", "int", default=LEAGUE_SNAPSHOT_EVERY,
+            help="Save a frozen {deck}__v{steps}.zip snapshot every N steps "
+                 "(default %d)." % LEAGUE_SNAPSHOT_EVERY),
+        Arg("--promote-margin", "float", default=LEAGUE_PROMOTE_MARGIN,
+            help="Only keep a snapshot when the learner's recent win-rate >= "
+                 "0.5 + margin (the first snapshot of each deck is exempt so "
+                 "self-play can bootstrap; 0 disables the gate; default %.2f)." % LEAGUE_PROMOTE_MARGIN),
+        Arg("--rotate-every", "int", default=LEAGUE_ROTATE_EVERY,
+            help="Steps to train one learner deck before rotating to the next "
+                 "(default %d)." % LEAGUE_ROTATE_EVERY),
+        Arg("--opponent-ckpt-ratio", "float", default=1.0,
+            help="Cap on unique opponent checkpoints kept resident, as a ratio of "
+                 "n_envs (default 1.0 -> <=1 checkpoint per env process)."),
         *train_opts(),
         *common_args(),
     ]),

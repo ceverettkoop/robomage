@@ -40,7 +40,6 @@ Reward
 +1.0 for winning, -1.0 for losing (from Player A's perspective).
 """
 
-import glob as _glob
 import struct
 import subprocess
 import sys
@@ -612,8 +611,11 @@ class ModelVsScriptedEnv(gym.Env):
         # Opponent controller / pool. ``opponent`` may be an OpponentPool, an
         # already-built Controller, or a spec string ("scripted" by default,
         # which is byte-identical to the historical scripted agent).
-        from opponents import OpponentPool, ScriptedController, make_controller
-        if isinstance(opponent, OpponentPool):
+        from opponents import make_controller
+        # A pool exposes per-episode sampling (OpponentPool.sample /
+        # LeaguePool.sample_episode); a Controller exposes .choose; anything else
+        # is a spec string resolved into a Controller.
+        if hasattr(opponent, "sample_episode") or hasattr(opponent, "sample"):
             self._opp_pool = opponent
             self._opp_controller = None
         elif hasattr(opponent, "choose"):
@@ -626,6 +628,16 @@ class ModelVsScriptedEnv(gym.Env):
 
     def reset(self, *, seed=None, options=None):
         self._training_is_a = bool(np.random.random() < 0.5)
+        # Sample this episode's opponent (and, in league mode, its deck) BEFORE the
+        # deck assignment below so the right opp_deck reaches the game process. A
+        # plain OpponentPool keeps the fixed opp_deck and only picks a controller;
+        # a LeaguePool also chooses which deck the opponent pilots this episode.
+        if self._opp_pool is not None:
+            if hasattr(self._opp_pool, "sample_episode"):
+                self._opp_deck, self._opp_label, self._opp_controller = \
+                    self._opp_pool.sample_episode()
+            else:
+                self._opp_label, self._opp_controller = self._opp_pool.sample()
         if self._model_deck is not None:
             self._env._deck_a = self._model_deck if self._training_is_a else self._opp_deck
             self._env._deck_b = self._opp_deck if self._training_is_a else self._model_deck
@@ -636,9 +648,6 @@ class ModelVsScriptedEnv(gym.Env):
         self._is_doomsday = self._model_deck is not None and "doomsday" in self._model_deck
         self._dd_placed_doomsday = False  # set when agent picks Doomsday in a TOP_LIBRARY choice
         self._dd_fired = set()  # tracks which DD shaping rewards have fired this game
-        # Sample this episode's opponent from the pool (if any).
-        if self._opp_pool is not None:
-            self._opp_label, self._opp_controller = self._opp_pool.sample()
         self._game_meta = {
             "model_is_a": self._training_is_a,
             "opp_deck": self._opp_deck or "unknown",
@@ -805,6 +814,27 @@ class ModelVsScriptedEnv(gym.Env):
     def action_masks(self) -> np.ndarray:
         return self._env.action_masks()
 
+    def update_opponent_weights(self, weights):
+        """Push fresh PFSP/softmax weights into the league pool (if any).
+
+        Called via ``vec_env.env_method`` from the PFSPCallback. ``env_method``
+        resolves through the wrapper chain (get_wrapper_attr), so it reliably
+        reaches this inner env — unlike ``set_attr``, which only sets the outer
+        wrapper."""
+        if self._opp_pool is not None and hasattr(self._opp_pool, "set_weights"):
+            self._opp_pool.set_weights(weights)
+
+    def set_shaping_scale(self, value):
+        """Set the shaping-reward scale (read in ``step`` as ``self.shaping_scale``).
+
+        MUST be called via ``vec_env.env_method('set_shaping_scale', v)``, not
+        ``vec_env.set_attr('shaping_scale', v)``: under SubprocVecEnv/DummyVecEnv
+        ``set_attr`` does a plain ``setattr`` on the OUTER Monitor wrapper, which
+        gymnasium never forwards inward, so it would never reach this attribute.
+        ``env_method`` resolves through the wrapper chain (get_wrapper_attr) to
+        this inner env."""
+        self.shaping_scale = float(value)
+
     def close(self):
         self._env.close()
 
@@ -970,6 +1000,10 @@ class SelfPlayEnv(gym.Env):
     def close(self):
         self._env.close()
 
+    def set_shaping_scale(self, value):
+        """Accept shaping-scale broadcasts uniformly (self-play applies no shaping)."""
+        self.shaping_scale = float(value)
+
     # ------------------------------------------------------------------
     # Internal helpers
     # ------------------------------------------------------------------
@@ -1007,20 +1041,18 @@ class SelfPlayEnv(gym.Env):
     def _reload_opponent(self):
         """Sample a frozen checkpoint trained to pilot the opponent's deck.
 
-        The frozen opponent plays ``opp_deck``, so we look for a model saved as
-        the mirror matchup ``{opp_deck}_{model_deck}_*.zip``.  If no compatible
-        checkpoint exists, fall back to the scripted agent and warn (once)."""
-        if self._model_deck and self._opp_deck:
-            pattern = f"{self._opp_deck}_{self._model_deck}_*.zip"
-        elif self._model_deck:
-            pattern = f"{self._model_deck}_*.zip"
-        else:
-            pattern = "*.zip"
-        files = _glob.glob(os.path.join(self._checkpoint_dir, pattern))
+        The frozen opponent plays ``opp_deck``, so we look for a model saved to
+        pilot it: the v2 deck-pilot snapshots ``{opp_deck}__v*.zip`` /
+        ``{opp_deck}__final.zip``.  If no compatible checkpoint exists, fall back
+        to the scripted agent and warn (once)."""
+        from opponents import deck_snapshots
+        deck = self._opp_deck or self._model_deck
+        files = deck_snapshots(deck, self._checkpoint_dir)
         if not files:
             if not self._scripted_fallback_warned:
-                print(f"[self-play] WARNING: no checkpoint matching '{pattern}' in "
-                      f"{self._checkpoint_dir}; opponent falling back to the scripted agent.")
+                print(f"[self-play] WARNING: no '{deck}__v*.zip' / '{deck}__final.zip' "
+                      f"checkpoint in {self._checkpoint_dir}; opponent falling back to "
+                      f"the scripted agent.")
                 self._scripted_fallback_warned = True
             self._opponent = None
             return
@@ -1112,6 +1144,10 @@ class FixedModelEnv(gym.Env):
 
     def close(self):
         self._env.close()
+
+    def set_shaping_scale(self, value):
+        """Accept shaping-scale broadcasts uniformly (fixed-model applies no shaping)."""
+        self.shaping_scale = float(value)
 
     def _training_has_priority(self, obs: np.ndarray) -> bool:
         a_has_priority = obs[32] > 0.5

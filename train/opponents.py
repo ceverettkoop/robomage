@@ -10,8 +10,10 @@ importing this module — and the env/scripted_agent chain — never pulls torch
 only scripted opponents are used.
 """
 
+import glob as _glob
 import math
 import os
+import re
 from typing import Callable, Optional, Protocol, Sequence, Union
 
 import numpy as np
@@ -21,6 +23,46 @@ from scripted_agent import ScriptedAgent, make_agent
 
 # Bare suffixes (and the "scripted" prefix) that denote a scripted controller.
 _SCRIPTED_SUFFIXES = frozenset({"scripted", "random", "greedy", "easy", "hard", "heuristic"})
+
+# Checkpoint format version. v2 is the deck-pilot naming ('{deck}__v{steps}.zip' /
+# '{deck}__final.zip') used since the embed_dim bump; the double underscore is the
+# format marker that separates these from the legacy '{a}_{b}_*.zip' matchup files.
+# Bumping embed_dim already invalidates old nets, so this is a clean break with no
+# back-compat shim — files that don't parse as v2 are simply skipped (see
+# ``deck_snapshots``), so they never get loaded with a mismatched network.
+CHECKPOINT_FORMAT_VERSION = 2
+
+_SNAPSHOT_RE = re.compile(r"^(?P<deck>.+)__v(?P<steps>\d+)\.zip$")
+
+
+def deck_snapshots(deck: Optional[str], checkpoint_dir: Optional[str]) -> list[str]:
+    """All frozen snapshots that pilot ``deck`` (v2 naming).
+
+    Matches ``{deck}__v{steps}.zip`` plus ``{deck}__final.zip``. Returns absolute
+    paths sorted by training step (the ``__final`` snapshot, if present, last).
+    Files that don't parse as v2 deck-pilot snapshots are skipped, so legacy
+    matchup checkpoints never leak into a league pool. Empty when the deck/dir is
+    unknown or nothing matches.
+    """
+    if not (deck and checkpoint_dir):
+        return []
+    versioned: list[tuple[int, str]] = []
+    for path in _glob.glob(os.path.join(checkpoint_dir, f"{deck}__v*.zip")):
+        m = _SNAPSHOT_RE.match(os.path.basename(path))
+        if m and m.group("deck") == deck:
+            versioned.append((int(m.group("steps")), path))
+    versioned.sort()
+    out = [p for _, p in versioned]
+    final = os.path.join(checkpoint_dir, f"{deck}__final.zip")
+    if os.path.exists(final):
+        out.append(final)
+    return out
+
+
+def latest_snapshot(deck: Optional[str], checkpoint_dir: Optional[str]) -> Optional[str]:
+    """Newest snapshot piloting ``deck`` (highest version, or ``__final``); None if none."""
+    snaps = deck_snapshots(deck, checkpoint_dir)
+    return snaps[-1] if snaps else None
 
 # Pool token standing for a random checkpoint compatible with the current
 # matchup — a model trained to pilot the opponent's deck. OpponentPool expands
@@ -226,3 +268,144 @@ class OpponentPool:
     @property
     def specs(self) -> list[str]:
         return list(self._specs)
+
+
+class LeaguePool:
+    """League opponent sampler for PFSP / softmax multi-matchup training.
+
+    Per episode it makes the two coupled choices the league needs — which opponent
+    *deck* and which *controller* pilots it — from a pool spanning:
+
+      1. a scripted anchor piloting a sampled roster deck (collapse guard),
+      2. frozen snapshots of every deck's model (cross-deck + mirror self-play),
+      3. the latest snapshot of the learner's own deck (the OpenAI-Five 'play the
+         latest self' slot, chosen with probability ``self_play_frac``).
+
+    Memory is bounded exactly like :class:`OpponentPool`: historical snapshot
+    checkpoints are capped at ``max(1, floor(max_checkpoint_ratio * n_envs))`` unique
+    files and sharded across processes by ``env_index``; scripted agents are free so
+    every process keeps the full anchor set, and the latest-self snapshot is always
+    resident (one model).
+
+    Quality weighting for the historical-snapshot branch is supplied externally by
+    the PFSPCallback via :meth:`set_weights` (a global win-rate estimate broadcast to
+    every process); each process applies it to whatever sharded subset it holds — an
+    accepted approximation, documented in
+    docs/plan_pfsp_multimatchup_training.md. The weighting *mode* (pfsp vs softmax)
+    lives entirely in the callback; the pool only consumes the resulting weights and
+    falls back to uniform until the first broadcast arrives.
+    """
+
+    REFRESH_EVERY = 50  # episodes between snapshot rescans (pick up new vN files)
+
+    def __init__(self, learner_deck: str, roster: Sequence[str], checkpoint_dir: str, *,
+                 self_play_frac: float = 0.8, scripted_anchor_frac: float = 0.1,
+                 rng: Optional[np.random.Generator] = None,
+                 n_envs: int = 1, env_index: int = 0,
+                 max_checkpoint_ratio: float = 1.0,
+                 deterministic: bool = False, scripted_spec: str = "scripted"):
+        self._learner = learner_deck
+        self._roster = list(roster) or [learner_deck]
+        self._dir = checkpoint_dir
+        self._self_play_frac = float(self_play_frac)
+        self._anchor_frac = float(scripted_anchor_frac)
+        self._rng = rng if rng is not None else np.random.default_rng()
+        self._n_envs = max(1, n_envs)
+        self._env_index = env_index
+        self._ratio = max_checkpoint_ratio
+        self._deterministic = deterministic
+        self._scripted_spec = scripted_spec
+        self._cache: dict[str, Controller] = {}    # path -> ModelController
+        self._weights: dict = {}                   # (opp_deck, label) -> float
+        self._snap_entries: list[tuple[str, str]] = []  # [(path, deck)] this process holds
+        self._latest_self: Optional[str] = None    # learner's newest snapshot
+        self._total_snaps = 0                      # total snapshots across roster (auto-ramp)
+        self._episode = 0
+        self._scripted_controller: Optional[Controller] = None
+        self.refresh()
+
+    # ── snapshot discovery / sharding ────────────────────────────────────────
+    def refresh(self):
+        """Rescan the checkpoint dir for snapshots, re-shard, and re-find latest-self."""
+        all_snaps: list[tuple[str, str]] = []
+        for deck in self._roster:
+            for path in deck_snapshots(deck, self._dir):
+                all_snaps.append((path, deck))
+        self._total_snaps = len(all_snaps)
+        self._latest_self = latest_snapshot(self._learner, self._dir)
+        # Cap + shard the historical snapshot set to bound per-process memory.
+        max_unique = max(1, int(math.floor(self._ratio * self._n_envs)))
+        active = all_snaps[:max_unique]
+        self._snap_entries = active[self._env_index % self._n_envs::self._n_envs]
+
+    def _maybe_refresh(self):
+        self._episode += 1
+        if self._episode % self.REFRESH_EVERY == 0:
+            self.refresh()
+
+    # ── weights pushed from the PFSPCallback ─────────────────────────────────
+    def set_weights(self, weights):
+        """Replace the historical-snapshot weighting (keyed by (opp_deck, label))."""
+        if weights:
+            self._weights = dict(weights)
+
+    # ── controllers ──────────────────────────────────────────────────────────
+    def _scripted(self) -> Controller:
+        if self._scripted_controller is None:
+            self._scripted_controller = ScriptedController(
+                make_agent(self._scripted_spec), label=self._scripted_spec)
+        return self._scripted_controller
+
+    def _model_for(self, path: str) -> Controller:
+        ctrl = self._cache.get(path)
+        if ctrl is None:
+            ctrl = ModelController(_load_model(path), label=os.path.basename(path),
+                                   deterministic=self._deterministic)
+            self._cache[path] = ctrl
+        return ctrl
+
+    # ── auto-ramp (bootstrap / curriculum) ───────────────────────────────────
+    def _effective_self_play_frac(self) -> float:
+        """Scale the self-play fraction with how full the pool is.
+
+        No learner snapshot yet -> 0.0 (face only scripted/other-deck snapshots);
+        grows linearly toward ``self_play_frac`` and saturates once there is at
+        least one snapshot per roster deck. Makes the warm-start-vs-scripted
+        curriculum automatic rather than a manual phase switch."""
+        if self._latest_self is None:
+            return 0.0
+        target = max(1, len(self._roster))
+        return self._self_play_frac * min(1.0, self._total_snaps / float(target))
+
+    # ── per-episode sampling ─────────────────────────────────────────────────
+    def sample_episode(self) -> tuple[str, str, Controller]:
+        """Return (opp_deck, label, controller) for this episode."""
+        self._maybe_refresh()
+        # 1. latest-self slot (fast learning vs the current frontier).
+        if (self._latest_self is not None
+                and self._rng.random() < self._effective_self_play_frac()):
+            return (self._learner, os.path.basename(self._latest_self),
+                    self._model_for(self._latest_self))
+        # 2. scripted anchor — a fixed floor carved out of the historical share so
+        #    the collapse guard never vanishes (also the cold-start fallback when
+        #    this process holds no snapshots).
+        if (not self._snap_entries) or self._rng.random() < self._anchor_frac:
+            deck = self._roster[int(self._rng.integers(len(self._roster)))]
+            return deck, self._scripted_spec, self._scripted()
+        # 3. weighted historical snapshot (cross-deck league + mirror self-play).
+        weights = self._entry_weights()
+        idx = int(self._rng.choice(len(self._snap_entries), p=weights))
+        path, deck = self._snap_entries[idx]
+        return deck, os.path.basename(path), self._model_for(path)
+
+    def _entry_weights(self) -> np.ndarray:
+        """Normalised PFSP/softmax weights for this process's snapshot entries.
+
+        Unseen entries default to the current max weight so fresh snapshots get
+        tried (OpenAI-Five 'init new snapshot quality to the max' rule)."""
+        default = max(self._weights.values()) if self._weights else 1.0
+        w = np.array([
+            self._weights.get((deck, os.path.basename(path)), default)
+            for path, deck in self._snap_entries], dtype=float)
+        w = np.clip(w, 1e-8, None)
+        return w / w.sum()

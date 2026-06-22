@@ -32,7 +32,10 @@ from env import (RoboMageEnv, ModelVsScriptedEnv, SelfPlayEnv, FixedModelEnv, Na
 from extractor import CardGameExtractor
 from card_costs import _VOCAB_NAMES, N_CARD_TYPES
 # CLI definitions + training defaults live in cli_spec.py (single source shared with the TUI).
-from cli_spec import (TOTAL_TIMESTEPS, N_ENVS, N_ENVS_SELF_PLAY,
+from cli_spec import (TOTAL_TIMESTEPS, N_ENVS, N_ENVS_SELF_PLAY, EMBED_DIM,
+                      LEAGUE_SELF_PLAY_FRAC, LEAGUE_SCRIPTED_ANCHOR_FRAC,
+                      LEAGUE_PFSP_P, LEAGUE_SOFTMAX_ETA, LEAGUE_SNAPSHOT_EVERY,
+                      LEAGUE_PROMOTE_MARGIN, LEAGUE_ROTATE_EVERY,
                       TRAIN_TOOL, apply_to_parser)
 
 try:
@@ -274,6 +277,151 @@ class WinTallyCallback(BaseCallback):
         self._matchups.clear()
 
 
+def _softmax(x: np.ndarray) -> np.ndarray:
+    x = x - x.max()
+    e = np.exp(x)
+    return e / e.sum()
+
+
+class PFSPCallback(BaseCallback):
+    """Win-rate feedback loop for the PFSP league.
+
+    Generalises WinTallyCallback: attributes each finished episode to the exact
+    opponent entry it was played against ((opp_deck, controller_label) from
+    ``info['game_meta']``) and, after every rollout, broadcasts updated per-entry
+    quality weights to every env so the LeaguePool faces what the learner is
+    currently losing to.
+
+    Two weighting modes (the mode lives here, not in the pool):
+      * ``pfsp``    — weight ∝ (1 - winrate)^p   (AlphaStar).
+      * ``softmax`` — weight ∝ exp(q); on a win vs entry i, q_i -= eta/(N·p_i)
+        (OpenAI Five Appendix N); losses leave q unchanged. New entries start at
+        the current max q so fresh snapshots get tried.
+
+    Weights are pushed with ``vec_env.env_method`` (not ``set_attr``): env_method
+    resolves through the wrapper chain to the inner ModelVsScriptedEnv, whereas
+    set_attr would only touch the outer Monitor wrapper.
+    """
+
+    def __init__(self, vec_env, mode: str = "pfsp", p: float = 2.0, eta: float = 0.01):
+        super().__init__()
+        self._vec_env = vec_env
+        self._mode = mode
+        self._p = p
+        self._eta = eta
+        self._stats: dict[tuple, list[int]] = {}  # (opp_deck, label) -> [wins, losses]
+        self._q: dict[tuple, float] = {}          # (opp_deck, label) -> quality (softmax)
+
+    def _on_step(self) -> bool:
+        for info in self.locals["infos"]:
+            if "episode" not in info:
+                continue
+            r = info["episode"]["r"]
+            if r == 0:
+                continue
+            meta = info.get("game_meta") or {}
+            key = (meta.get("opp_deck", "unknown"), meta.get("opp_type", "scripted"))
+            wl = self._stats.setdefault(key, [0, 0])
+            if key not in self._q:
+                # New entry: init quality to the current max so it gets sampled.
+                self._q[key] = max(self._q.values()) if self._q else 0.0
+            if r > 0:
+                wl[0] += 1
+                if self._mode == "softmax":
+                    keys = list(self._q)
+                    probs = _softmax(np.array([self._q[k] for k in keys], dtype=float))
+                    p_i = float(probs[keys.index(key)])
+                    self._q[key] -= self._eta / (len(keys) * max(p_i, 1e-8))
+            else:
+                wl[1] += 1
+        return True
+
+    def _weight_for(self, key) -> float:
+        if self._mode == "softmax":
+            return float(np.exp(self._q.get(key, 0.0)))
+        w, l = self._stats.get(key, (0, 0))
+        total = w + l
+        winrate = w / total if total else 0.0
+        return float((1.0 - winrate) ** self._p)
+
+    def overall_winrate(self) -> float:
+        """Aggregate learner win-rate across all opponents seen so far (gate input)."""
+        w = sum(v[0] for v in self._stats.values())
+        l = sum(v[1] for v in self._stats.values())
+        return w / (w + l) if (w + l) else 0.0
+
+    def _on_rollout_end(self) -> None:
+        if not self._stats:
+            return
+        weights = {key: self._weight_for(key) for key in self._stats}
+        # Broadcast to every env's LeaguePool (no-op for non-league envs).
+        try:
+            self._vec_env.env_method("update_opponent_weights", weights)
+        except Exception as exc:
+            print(f"[pfsp] WARNING: failed to broadcast weights ({exc})")
+        # Matchup win-rate matrix for visibility (extends --tally).
+        by_deck: dict[str, list[int]] = {}
+        for (deck, label), (w, l) in sorted(self._stats.items()):
+            total = w + l
+            pct = 100.0 * w / total if total else 0.0
+            print(f"[pfsp] vs {deck:<10} [{label}]: {w}W {l}L ({pct:.1f}%)  "
+                  f"weight={self._weight_for((deck, label)):.3f}")
+            d = by_deck.setdefault(deck, [0, 0])
+            d[0] += w
+            d[1] += l
+        for deck in sorted(by_deck):
+            w, l = by_deck[deck]
+            total = w + l
+            pct = 100.0 * w / total if total else 0.0
+            print(f"[pfsp] deck total vs {deck:<10}: {w}W {l}L ({pct:.1f}%)")
+        print(f"[pfsp] overall win-rate: {100.0 * self.overall_winrate():.1f}%")
+
+
+class SnapshotCallback(BaseCallback):
+    """Saves a frozen ``{deck}__v{steps}.zip`` snapshot every ``snapshot_every`` steps.
+
+    Optional SIMPLE-style promotion gate: when ``promote_margin > 0`` a snapshot is
+    only kept if the learner's running win-rate (from ``pfsp_callback``) is at least
+    ``0.5 + promote_margin``, so the pool collects genuinely stronger snapshots
+    rather than near-duplicates. The first snapshot of each deck is exempt so
+    self-play can bootstrap. Drops are logged (no silent truncation).
+    """
+
+    def __init__(self, checkpoint_dir: str, deck: str, snapshot_every: int,
+                 promote_margin: float = 0.0, pfsp_callback: "PFSPCallback | None" = None):
+        super().__init__()
+        self._dir = checkpoint_dir
+        self._deck = deck
+        self._every = max(1, snapshot_every)
+        self._margin = promote_margin
+        self._pfsp = pfsp_callback
+        self._next_at = None  # set on training start relative to current num_timesteps
+
+    def _on_training_start(self) -> None:
+        # Align to the next multiple of `every` above the current step count so a
+        # resumed learner doesn't immediately re-snapshot.
+        n = self.num_timesteps
+        self._next_at = ((n // self._every) + 1) * self._every
+
+    def _on_step(self) -> bool:
+        if self.num_timesteps < self._next_at:
+            return True
+        self._next_at += self._every
+        from opponents import deck_snapshots
+        first = len(deck_snapshots(self._deck, self._dir)) == 0
+        if self._margin > 0 and not first and self._pfsp is not None:
+            wr = self._pfsp.overall_winrate()
+            if wr < 0.5 + self._margin:
+                print(f"[snapshot] gate: {self._deck} win-rate {wr:.2f} < "
+                      f"{0.5 + self._margin:.2f}; skipping snapshot at "
+                      f"{self.num_timesteps} steps")
+                return True
+        path = os.path.join(self._dir, f"{self._deck}__v{self.num_timesteps}")
+        self.model.save(path)
+        print(f"[snapshot] saved {self._deck}__v{self.num_timesteps}.zip")
+        return True
+
+
 class ShapingScaleCallback(BaseCallback):
     """After each rollout, sets shaping_scale on all envs to (1 - win_rate).
 
@@ -305,7 +453,9 @@ class ShapingScaleCallback(BaseCallback):
             return
         win_rate = self._wins / total
         scale = 1.0 - win_rate
-        self._vec_env.set_attr("shaping_scale", scale)
+        # env_method (not set_attr): set_attr only sets the outer Monitor wrapper
+        # and never reaches the inner env's shaping_scale. See env.set_shaping_scale.
+        self._vec_env.env_method("set_shaping_scale", scale)
         print(f"[shaping] win_rate={win_rate:.2f}  shaping_scale={scale:.2f}")
         self._wins = 0
         self._losses = 0
@@ -427,16 +577,27 @@ _CHECKPOINT_ABS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "chec
 def _resolve_model(path: str) -> str:
     """Resolve a model shorthand to a full checkpoint path.
 
-    Accepts:
+    Accepts (in priority order):
       - Full path (returned as-is if it exists)
-      - Bare matchup name like 'delver_mav' → checkpoints/delver_mav_final.zip
+      - Deck-pilot shorthand like 'delver' → checkpoints/delver__final.zip, else the
+        newest checkpoints/delver__v*.zip snapshot (v2 league naming)
+      - Legacy matchup name like 'delver_mav' → checkpoints/delver_mav_final.zip
+      - Bare basename with '.zip' appended
     """
     if path is None:
         return None
     # Already a real path
     if os.path.exists(path):
         return path
-    # Try as matchup shorthand → checkpoints/{name}_final.zip
+    # v2 deck-pilot shorthand → '{deck}__final.zip' or newest '{deck}__v*.zip'.
+    deck_final = os.path.join(_CHECKPOINT_ABS, f"{path}__final.zip")
+    if os.path.exists(deck_final):
+        return deck_final
+    from opponents import latest_snapshot
+    snap = latest_snapshot(path, _CHECKPOINT_ABS)
+    if snap:
+        return snap
+    # Legacy matchup shorthand → checkpoints/{name}_final.zip
     candidate = os.path.join(_CHECKPOINT_ABS, f"{path}_final.zip")
     if os.path.exists(candidate):
         return candidate
@@ -498,11 +659,32 @@ def make_self_play_env(checkpoint_dir: str, rank: int,
     return _init
 
 
+def make_league_env(rank: int, learner_deck: str, roster: list[str], checkpoint_dir: str,
+                    n_envs: int, opp_ckpt_ratio: float, self_play_frac: float,
+                    scripted_anchor_frac: float, **env_kwargs):
+    def _init():
+        from opponents import LeaguePool
+        pool = LeaguePool(
+            learner_deck, roster, checkpoint_dir,
+            self_play_frac=self_play_frac, scripted_anchor_frac=scripted_anchor_frac,
+            rng=np.random.default_rng(2000 + rank),
+            n_envs=n_envs, env_index=rank, max_checkpoint_ratio=opp_ckpt_ratio)
+        # opp_deck is None: the LeaguePool picks the opponent's deck per episode.
+        env = ModelVsScriptedEnv(model_deck=learner_deck, opp_deck=None,
+                                 opponent=pool, **env_kwargs)
+        if USE_MASKABLE:
+            env = ActionMasker(env, lambda e: e.action_masks())
+        env = Monitor(env)
+        return env
+    return _init
+
+
 def train(binary_path: str, load_path: str | None = None, total_timesteps: int = TOTAL_TIMESTEPS,
           tally: bool = False, self_play: bool = False,
           model_deck: str = "delver", opp_deck: str = "delver", record: bool = False,
           n_envs_override: int | None = None, no_shaping: bool = False,
-          opponent_pool: str | None = None, opp_ckpt_ratio: float = 1.0, **env_kwargs):
+          opponent_pool: str | None = None, opp_ckpt_ratio: float = 1.0,
+          embed_dim: int = EMBED_DIM, **env_kwargs):
     """Train the model.
 
     Two opponent modes (mutually exclusive):
@@ -541,6 +723,7 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
     try:
         policy_kwargs = dict(
             features_extractor_class=CardGameExtractor,
+            features_extractor_kwargs=dict(embed_dim=embed_dim),
             net_arch=[256, 256],
         )
 
@@ -573,7 +756,7 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
 
         actual_n_envs = n_envs
         if no_shaping:
-            vec_env.set_attr("shaping_scale", 0.0)
+            vec_env.env_method("set_shaping_scale", 0.0)
             print("[shaping] disabled for this session (--no-shaping)")
         callbacks = [
             CheckpointCallback(
@@ -602,6 +785,137 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
         print(f"Saved final model as {model_prefix}_final.")
     finally:
         vec_env.close()
+
+
+def _league_chunk(binary_path: str, learner_deck: str, roster: list[str],
+                  checkpoint_dir: str, chunk_steps: int, *,
+                  n_envs: int, opp_ckpt_ratio: float, self_play_frac: float,
+                  scripted_anchor_frac: float, pfsp_mode: str, pfsp_p: float,
+                  softmax_eta: float, snapshot_every: int, promote_margin: float,
+                  embed_dim: int, no_shaping: bool, record: bool, **env_kwargs):
+    """Train one learner deck for ``chunk_steps`` against the shared league pool.
+
+    Resumes the learner's own latest checkpoint (``{deck}__final`` or newest
+    ``{deck}__v*``) so its cumulative step count — and therefore snapshot version
+    numbering — keeps growing across rotations; starts from scratch only the very
+    first time a deck is trained.
+    """
+    env_kwargs.setdefault("binary_path", binary_path)
+    vec_env = SubprocVecEnv([
+        make_league_env(i, learner_deck, roster, checkpoint_dir, n_envs,
+                        opp_ckpt_ratio, self_play_frac, scripted_anchor_frac, **env_kwargs)
+        for i in range(n_envs)])
+    try:
+        policy_kwargs = dict(
+            features_extractor_class=CardGameExtractor,
+            features_extractor_kwargs=dict(embed_dim=embed_dim),
+            net_arch=[256, 256],
+        )
+        from opponents import latest_snapshot
+        resume = os.path.join(checkpoint_dir, f"{learner_deck}__final.zip")
+        if not os.path.exists(resume):
+            resume = latest_snapshot(learner_deck, checkpoint_dir)
+        resuming = bool(resume and os.path.exists(resume))
+        if resuming:
+            print(f"[league] resuming {learner_deck} from {os.path.basename(resume)}")
+            model = MaskablePPO.load(resume, env=vec_env)
+        else:
+            print(f"[league] starting {learner_deck} from scratch (embed_dim={embed_dim})")
+            model = MaskablePPO(
+                "MlpPolicy", vec_env, policy_kwargs=policy_kwargs,
+                learning_rate=3e-4, n_steps=4096, batch_size=1024, n_epochs=8,
+                gamma=0.99, gae_lambda=0.95, clip_range=0.25, ent_coef=0.12,
+                verbose=1, tensorboard_log=LOG_DIR)
+
+        if no_shaping:
+            vec_env.env_method("set_shaping_scale", 0.0)
+            print("[shaping] disabled for this session (--no-shaping)")
+
+        pfsp_cb = PFSPCallback(vec_env, mode=pfsp_mode, p=pfsp_p, eta=softmax_eta)
+        callbacks = [
+            pfsp_cb,
+            SnapshotCallback(checkpoint_dir, learner_deck, snapshot_every,
+                             promote_margin=promote_margin, pfsp_callback=pfsp_cb),
+        ]
+        if not no_shaping:
+            callbacks.append(ShapingScaleCallback(vec_env))
+        if record:
+            rec_path = os.path.join(RECORD_DIR, f"{learner_deck}__league_{int(time.time())}.rmrec")
+            callbacks.append(RecordCallback(
+                path=rec_path, n_envs=n_envs, model_path=resume,
+                model_deck=learner_deck, self_play=True))
+
+        start_steps = model.num_timesteps
+        model.learn(total_timesteps=chunk_steps, callback=callbacks,
+                    reset_num_timesteps=not resuming)
+        model.save(os.path.join(checkpoint_dir, f"{learner_deck}__final"))
+        print(f"[league] saved {learner_deck}__final")
+        # PPO collects whole rollouts, so the chunk overshoots chunk_steps; return
+        # the actual new steps so the driver's global budget stays accurate.
+        return model.num_timesteps - start_steps
+    finally:
+        vec_env.close()
+
+
+def league(binary_path: str, decks: str | None = None,
+           total_timesteps: int = TOTAL_TIMESTEPS,
+           rotate_every: int = LEAGUE_ROTATE_EVERY,
+           self_play_frac: float = LEAGUE_SELF_PLAY_FRAC,
+           scripted_anchor_frac: float = LEAGUE_SCRIPTED_ANCHOR_FRAC,
+           pfsp_mode: str = "pfsp", pfsp_p: float = LEAGUE_PFSP_P,
+           softmax_eta: float = LEAGUE_SOFTMAX_ETA,
+           snapshot_every: int = LEAGUE_SNAPSHOT_EVERY,
+           promote_margin: float = LEAGUE_PROMOTE_MARGIN,
+           embed_dim: int = EMBED_DIM, n_envs_override: int | None = None,
+           opp_ckpt_ratio: float = 1.0, no_shaping: bool = False,
+           record: bool = False, tally: bool = False, **env_kwargs):
+    """PFSP league driver: rotating single learner over a shared snapshot pool.
+
+    One learner deck at a time trains for ``rotate_every`` steps against a frozen
+    pool spanning a scripted anchor, every deck's snapshots, and the learner's own
+    latest self; then the run rotates to the next deck. Snapshots dropped into the
+    shared dir by earlier rotations become opponents for later ones, so the league
+    structure is self-managing. Continues until ``total_timesteps`` total.
+    """
+    checkpoint_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), CHECKPOINT_DIR)
+    os.makedirs(checkpoint_dir, exist_ok=True)
+    os.makedirs(LOG_DIR, exist_ok=True)
+
+    if decks:
+        roster = [d.strip() for d in decks.split(",") if d.strip()]
+    else:
+        roster = sorted(os.path.splitext(p)[0]
+                        for p in os.listdir(_DECKS_DIR) if p.endswith(".dk"))
+    if not roster:
+        raise ValueError(f"No decks found for league (looked in {_DECKS_DIR})")
+
+    n_envs = n_envs_override if n_envs_override is not None else N_ENVS
+    print(f"League roster: {', '.join(roster)}")
+    print(f"  total={total_timesteps:,}  rotate_every={rotate_every:,}  n_envs={n_envs}")
+    print(f"  self_play_frac={self_play_frac}  scripted_anchor_frac={scripted_anchor_frac}")
+    print(f"  pfsp_mode={pfsp_mode}  p={pfsp_p}  eta={softmax_eta}")
+    print(f"  snapshot_every={snapshot_every:,}  promote_margin={promote_margin}  embed_dim={embed_dim}")
+
+    steps_done = 0
+    rotation = 0
+    while steps_done < total_timesteps:
+        learner = roster[rotation % len(roster)]
+        chunk = min(rotate_every, total_timesteps - steps_done)
+        print(f"\n{'='*60}")
+        print(f"[league rotation {rotation + 1}] learner={learner}  "
+              f"({chunk:,} steps, {steps_done:,}/{total_timesteps:,} done)")
+        print(f"{'='*60}")
+        ran = _league_chunk(
+            binary_path, learner, roster, checkpoint_dir, chunk,
+            n_envs=n_envs, opp_ckpt_ratio=opp_ckpt_ratio,
+            self_play_frac=self_play_frac, scripted_anchor_frac=scripted_anchor_frac,
+            pfsp_mode=pfsp_mode, pfsp_p=pfsp_p, softmax_eta=softmax_eta,
+            snapshot_every=snapshot_every, promote_margin=promote_margin,
+            embed_dim=embed_dim, no_shaping=no_shaping, record=record, **env_kwargs)
+        steps_done += ran if ran else chunk
+        rotation += 1
+
+    print(f"\nLeague complete: {total_timesteps:,} total timesteps over {rotation} rotations.")
 
 
 def train_fixed_model(binary_path: str, model_deck: str, opp_deck: str,
@@ -658,7 +972,7 @@ def train_fixed_model(binary_path: str, model_deck: str, opp_deck: str,
         model = MaskablePPO.load(load_path, env=vec_env)
 
         if no_shaping:
-            vec_env.set_attr("shaping_scale", 0.0)
+            vec_env.env_method("set_shaping_scale", 0.0)
             print("[shaping] disabled for this session (--no-shaping)")
         callbacks = [
             CheckpointCallback(
@@ -1091,7 +1405,7 @@ def _run_sweep(args, parser, decks_filter):
               model_deck=d, opp_deck=o, record=args.record,
               n_envs_override=args.n_envs, no_shaping=args.no_shaping,
               opponent_pool=args.opponent_pool, opp_ckpt_ratio=args.opponent_ckpt_ratio,
-              **env_kwargs)
+              embed_dim=args.embed_dim, **env_kwargs)
     print(f"\nAll {len(matchups)} matchups complete.")
 
 
@@ -1117,16 +1431,25 @@ if __name__ == "__main__":
         argv = ["train"] + argv
     args = parser.parse_args(argv)
 
-    if args.command in ("train", "sweep", "fixed-model", "alternate"):
+    if args.command in ("train", "sweep", "fixed-model", "alternate", "league"):
         env_kwargs = dict(bo3=args.bo3, auto_sideboard=args.auto_sideboard)
 
-    if args.command == "train":
+    if args.command == "league":
+        league(args.binary, decks=args.decks, total_timesteps=args.total_timesteps,
+               rotate_every=args.rotate_every, self_play_frac=args.self_play_frac,
+               scripted_anchor_frac=args.scripted_anchor_frac, pfsp_mode=args.pfsp_mode,
+               pfsp_p=args.pfsp_p, softmax_eta=args.softmax_eta,
+               snapshot_every=args.snapshot_every, promote_margin=args.promote_margin,
+               embed_dim=args.embed_dim, n_envs_override=args.n_envs,
+               opp_ckpt_ratio=args.opponent_ckpt_ratio, no_shaping=args.no_shaping,
+               record=args.record, tally=args.tally, **env_kwargs)
+    elif args.command == "train":
         train(args.binary, _resolve_model(args.load), args.total_timesteps,
               tally=args.tally, self_play=args.self_play,
               model_deck=args.deck, opp_deck=args.opponent, record=args.record,
               n_envs_override=args.n_envs, no_shaping=args.no_shaping,
               opponent_pool=args.opponent_pool, opp_ckpt_ratio=args.opponent_ckpt_ratio,
-              **env_kwargs)
+              embed_dim=args.embed_dim, **env_kwargs)
     elif args.command == "sweep":
         _run_sweep(args, parser, args.deck)
     elif args.command == "fixed-model":
