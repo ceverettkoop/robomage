@@ -26,6 +26,7 @@ struct Permanent {
     bool is_phased_out = false;
     bool evoked = false;  // entered via its evoke alternate cost — fires the evoke sacrifice ETB trigger
     std::string chosen_type = "";  // creature type chosen on ETB (Cavern of Souls)
+    std::string chosen_name = "";  // card name chosen on ETB (Disruptor Flute) — keys Card.NamedCard statics
     std::vector<Entity> exiled_with;  // entities exiled by this permanent (for Keen-Eyed Curator)
 };
 

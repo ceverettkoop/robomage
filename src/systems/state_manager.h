@@ -10,6 +10,8 @@
 #include <string>
 #include <memory>
 
+struct CardData;
+
 struct Deck;
 struct Game;
 
@@ -28,6 +30,12 @@ struct ActiveStatic {
 // Global cached list of active static abilities on battlefield permanents.
 // Rebuilt every SBE pass. Consumers read this instead of scanning all permanents.
 extern std::vector<ActiveStatic> g_active_statics;
+
+// Total generic mana that active RaiseCost statics add to the cost of casting `card_data`.
+// Honours the nonCreature filter and the NamedCard filter (Disruptor Flute): a NamedCard
+// RaiseCost applies only when the spell's name equals its source's chosen_name. Shared by
+// determine_legal_actions (affordability) and action_processor (payment).
+int active_raise_cost_for(const CardData &card_data);
 
 class StateManager : public System {
 

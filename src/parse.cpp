@@ -280,6 +280,12 @@ Entity parse_card_script(std::string path) {
             card.has_etb_choose_creature_type = true;
             continue;
         }
+        // K:ETBReplacement:Other:DBNameCard — choose a card name on ETB (Disruptor Flute)
+        if (kw_line.find("ETBReplacement") != std::string::npos &&
+            kw_line.find("NameCard") != std::string::npos) {
+            card.has_etb_name_card = true;
+            continue;
+        }
         // K:etbCounter:P1P1:X:... — "this card enters with counters"
         // Parsed as a static ability; counters applied in apply_permanent_components on ETB.
         if (kw_line.rfind("etbCounter", 0) == 0) {
@@ -1408,6 +1414,10 @@ static std::vector<StaticAbility> parse_static_abilities(const std::string &scri
                     if (!value.empty() && std::isdigit(static_cast<unsigned char>(value[0])))
                         sa.raise_cost = std::stoi(value);
                 } else if (key == "ValidCard") {
+                    // Card.NamedCard restricts the static to the source's chosen card name
+                    // (RaiseCost / CantBeActivated on Disruptor Flute).
+                    if (value.find("NamedCard") != std::string::npos)
+                        sa.match_named_card = true;
                     if (sa.category == "RaiseCost") {
                         if (value.find("nonCreature") != std::string::npos)
                             sa.raise_cost_filter = "nonCreature";

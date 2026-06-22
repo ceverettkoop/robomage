@@ -991,16 +991,8 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             } else {  // REGULAR COST + DELVE
                 ManaValue cost_to_pay = card_data.mana_cost;
 
-                // Check RaiseCost statics from cached g_active_statics
-                bool card_is_creature = false;
-                for (auto &t : card_data.types)
-                    if (t.kind == TYPE && t.name == "Creature") { card_is_creature = true; break; }
-                int raise_total = 0;
-                for (const auto &as : g_active_statics) {
-                    if (as.sa->category != "RaiseCost") continue;
-                    if (as.sa->raise_cost_filter == "nonCreature" && card_is_creature) continue;
-                    raise_total += as.sa->raise_cost;
-                }
+                // Check RaiseCost statics from cached g_active_statics (NamedCard-aware)
+                int raise_total = active_raise_cost_for(card_data);
                 for (int ri = 0; ri < raise_total; ri++) cost_to_pay.insert(GENERIC);
 
                 // X-COST: prompt player to choose X value, add X generic to cost

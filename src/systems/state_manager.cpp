@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "../action_processor.h"
+#include "../card_vocab.h"
 #include "../classes/game.h"
 #include "../components/ability.h"
 #include "../components/carddata.h"
@@ -30,6 +31,24 @@
 #include "orderer.h"
 
 std::vector<ActiveStatic> g_active_statics;
+
+int active_raise_cost_for(const CardData &card_data) {
+    bool is_creature = false;
+    for (auto &t : card_data.types)
+        if (t.kind == TYPE && t.name == "Creature") { is_creature = true; break; }
+    int total = 0;
+    for (const auto &as : g_active_statics) {
+        if (as.sa->category != "RaiseCost") continue;
+        if (as.sa->raise_cost_filter == "nonCreature" && is_creature) continue;
+        if (as.sa->match_named_card) {
+            if (!global_coordinator.entity_has_component<Permanent>(as.entity)) continue;
+            auto &src = global_coordinator.GetComponent<Permanent>(as.entity);
+            if (src.chosen_name.empty() || src.chosen_name != card_data.name) continue;
+        }
+        total += as.sa->raise_cost;
+    }
+    return total;
+}
 
 static bool compare_svar(int value, const std::string &compare);
 static bool check_condition_present(const Ability &ab, Zone::Ownership caster, std::shared_ptr<Orderer> orderer);
@@ -282,6 +301,60 @@ void StateManager::apply_permanent_components(Game &game) {
                     game_log("%s chose creature type: %s\n",
                              player_name(perm_ref.controller).c_str(), perm_ref.chosen_type.c_str());
                 }
+                }
+            }
+
+            // ETBReplacement: choose a card name (Disruptor Flute). Candidates are the
+            // distinct vocab cards in the opponent's deck; the chosen name keys this
+            // permanent's Card.NamedCard RaiseCost / CantBeActivated statics.
+            if (card_data.has_etb_name_card) {
+                auto &perm_ref = global_coordinator.GetComponent<Permanent>(entity);
+                if (perm_ref.chosen_name.empty()) {
+                    Zone::Ownership opp = (perm_ref.controller == Zone::PLAYER_A)
+                        ? Zone::PLAYER_B : Zone::PLAYER_A;
+                    // Distinct opponent-owned vocab card names, each with a representative
+                    // entity (so the per-action card id encodes the candidate) and a copy
+                    // count for ordering.
+                    std::vector<std::string> names;
+                    std::vector<Entity> reps;
+                    std::vector<int> copies;
+                    for (auto e2 : mEntities) {
+                        if (!global_coordinator.entity_has_component<CardData>(e2)) continue;
+                        if (!global_coordinator.entity_has_component<Zone>(e2)) continue;
+                        if (global_coordinator.GetComponent<Zone>(e2).owner != opp) continue;
+                        auto &cd2 = global_coordinator.GetComponent<CardData>(e2);
+                        if (card_name_to_index(cd2.name) < 0) continue;  // restrict to vocab cards
+                        bool found = false;
+                        for (size_t i = 0; i < names.size(); i++)
+                            if (names[i] == cd2.name) { copies[i]++; found = true; break; }
+                        if (!found) { names.push_back(cd2.name); reps.push_back(e2); copies.push_back(1); }
+                    }
+                    if (!names.empty()) {
+                        // Order by copies desc, then name asc (deterministic for replay)
+                        std::vector<size_t> order(names.size());
+                        for (size_t i = 0; i < order.size(); i++) order[i] = i;
+                        std::sort(order.begin(), order.end(), [&](size_t a, size_t b) {
+                            if (copies[a] != copies[b]) return copies[a] > copies[b];
+                            return names[a] < names[b];
+                        });
+                        if (order.size() > static_cast<size_t>(MAX_ACTIONS))
+                            order.resize(MAX_ACTIONS);
+                        std::vector<LegalAction> name_choices;
+                        for (size_t idx : order) {
+                            LegalAction la(PASS_PRIORITY, reps[idx], "Name card: " + names[idx]);
+                            la.category = ActionCategory::OTHER_CHOICE;
+                            la.card_is_public = true;
+                            name_choices.push_back(la);
+                        }
+                        bool prev_priority = cur_game.player_a_has_priority;
+                        cur_game.player_a_has_priority = (perm_ref.controller == Zone::PLAYER_A);
+                        game_log("Choose a card name for %s:\n", perm_ref.name.c_str());
+                        int choice = InputLogger::instance().get_input(name_choices);
+                        cur_game.player_a_has_priority = prev_priority;
+                        perm_ref.chosen_name = names[order[static_cast<size_t>(choice)]];
+                        game_log("%s names card: %s\n",
+                                 player_name(perm_ref.controller).c_str(), perm_ref.chosen_name.c_str());
+                    }
                 }
             }
 
@@ -1452,23 +1525,19 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             bool card_is_creature = false;
             for (auto &t : card_data.types)
                 if (t.kind == TYPE && t.name == "Creature") { card_is_creature = true; break; }
-            int raise_total = 0;
+            int raise_total = active_raise_cost_for(card_data);
             bool cast_blocked = false;
             for (const auto &as : g_active_statics) {
-                if (as.sa->category == "RaiseCost") {
-                    if (as.sa->raise_cost_filter == "nonCreature" && card_is_creature) continue;
-                    raise_total += as.sa->raise_cost;
-                } else if (as.sa->category == "CantBeCast") {
-                    // Skip if the spell doesn't match the filter (creatures are unaffected by nonCreature restriction)
-                    if (as.sa->cant_cast_filter.find("nonCreature") != std::string::npos && card_is_creature)
-                        continue;
-                    Entity pp_entity = (priority_player == Zone::PLAYER_A)
-                        ? cur_game.player_a_entity : cur_game.player_b_entity;
-                    auto &pp = global_coordinator.GetComponent<Player>(pp_entity);
-                    if (as.sa->cant_cast_limit_per_turn > 0 &&
-                        static_cast<int>(pp.noncreature_spells_cast_this_turn) >= as.sa->cant_cast_limit_per_turn) {
-                        cast_blocked = true;
-                    }
+                if (as.sa->category != "CantBeCast") continue;
+                // Skip if the spell doesn't match the filter (creatures are unaffected by nonCreature restriction)
+                if (as.sa->cant_cast_filter.find("nonCreature") != std::string::npos && card_is_creature)
+                    continue;
+                Entity pp_entity = (priority_player == Zone::PLAYER_A)
+                    ? cur_game.player_a_entity : cur_game.player_b_entity;
+                auto &pp = global_coordinator.GetComponent<Player>(pp_entity);
+                if (as.sa->cant_cast_limit_per_turn > 0 &&
+                    static_cast<int>(pp.noncreature_spells_cast_this_turn) >= as.sa->cant_cast_limit_per_turn) {
+                    cast_blocked = true;
                 }
             }
             if (cast_blocked) continue;
@@ -1550,11 +1619,18 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         if (permanent.controller != priority_player) continue;
         if (permanent.is_phased_out) continue;
 
-        // Check if any CantBeActivated static suppresses this permanent's abilities
+        // Check if any CantBeActivated static suppresses this permanent's abilities.
+        // (Mana abilities are collected separately above, so they remain usable — this
+        // matches Disruptor Flute's ValidSA$ Activated.!ManaAbility.)
         bool cant_activate = false;
         for (const auto &as : g_active_statics) {
-            if (as.sa->category != "CantBeActivated" || as.sa->cant_activate_card_filter.empty()) continue;
-            if (as.sa->cant_activate_card_filter == "Artifact") {
+            if (as.sa->category != "CantBeActivated") continue;
+            if (as.sa->match_named_card) {
+                // NamedCard (Disruptor Flute): suppress sources whose name matches the chosen name
+                if (!global_coordinator.entity_has_component<Permanent>(as.entity)) continue;
+                auto &src = global_coordinator.GetComponent<Permanent>(as.entity);
+                if (!src.chosen_name.empty() && src.chosen_name == permanent.name) cant_activate = true;
+            } else if (as.sa->cant_activate_card_filter == "Artifact") {
                 for (auto &t : permanent.types)
                     if (t.kind == TYPE && t.name == "Artifact") { cant_activate = true; break; }
             }
