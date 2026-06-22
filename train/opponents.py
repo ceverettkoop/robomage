@@ -22,11 +22,33 @@ from scripted_agent import ScriptedAgent, make_agent
 # Bare suffixes (and the "scripted" prefix) that denote a scripted controller.
 _SCRIPTED_SUFFIXES = frozenset({"scripted", "random", "greedy", "easy", "hard", "heuristic"})
 
+# Pool token standing for a random checkpoint compatible with the current
+# matchup — a model trained to pilot the opponent's deck. OpponentPool expands
+# it into the matching '{opp_deck}_{model_deck}_*.zip' checkpoints (the same
+# mirror-matchup convention SelfPlayEnv uses).
+MATCHUP_MODEL_TOKEN = "random-model"
+
 
 def is_scripted_spec(spec: str) -> bool:
     """True if ``spec`` names a scripted agent rather than a checkpoint path."""
     s = (spec or "").strip().lower()
     return s.startswith("scripted") or s in _SCRIPTED_SUFFIXES
+
+
+def matchup_checkpoints(model_deck: Optional[str], opp_deck: Optional[str],
+                        checkpoint_dir: Optional[str]) -> list[str]:
+    """Checkpoints trained to pilot the opponent's deck in this matchup.
+
+    The opponent plays ``opp_deck``, so a compatible model is one saved for the
+    mirror matchup ``{opp_deck}_{model_deck}_*.zip`` (same convention as
+    SelfPlayEnv._reload_opponent). Returns absolute paths sorted by name; empty
+    when the decks/dir are unknown or nothing matches.
+    """
+    if not (model_deck and opp_deck and checkpoint_dir):
+        return []
+    import glob
+    pattern = os.path.join(checkpoint_dir, f"{opp_deck}_{model_deck}_*.zip")
+    return sorted(glob.glob(pattern))
 
 
 class Controller(Protocol):
@@ -129,18 +151,24 @@ class OpponentPool:
     stateless and free, so every process keeps the full scripted set.
     """
 
+    _matchup_warned = False
+
     def __init__(self, spec: Union[str, Sequence], *,
                  checkpoint_resolver: Optional[Callable[[str], str]] = None,
                  rng: Optional[np.random.Generator] = None,
                  n_envs: int = 1, env_index: int = 0,
                  max_checkpoint_ratio: float = 1.0,
-                 deterministic: bool = False):
+                 deterministic: bool = False,
+                 model_deck: Optional[str] = None,
+                 opp_deck: Optional[str] = None,
+                 checkpoint_dir: Optional[str] = None):
         self._resolver = checkpoint_resolver
         self._deterministic = deterministic
         self._rng = rng if rng is not None else np.random.default_rng()
         self._cache: dict[str, Controller] = {}
 
         entries = parse_pool_spec(spec) or [("scripted", 1.0)]
+        entries = self._expand_matchup_tokens(entries, model_deck, opp_deck, checkpoint_dir)
         scripted = [(s, w) for s, w in entries if is_scripted_spec(s)]
         ckpts = [(s, w) for s, w in entries if not is_scripted_spec(s)]
 
@@ -156,6 +184,30 @@ class OpponentPool:
         weights = np.array([w for _, w in self._entries], dtype=float)
         self._weights = weights / weights.sum()
         self._specs = [s for s, _ in self._entries]
+
+    @classmethod
+    def _expand_matchup_tokens(cls, entries, model_deck, opp_deck, checkpoint_dir):
+        """Replace each MATCHUP_MODEL_TOKEN entry with the matchup's compatible
+        checkpoints (absolute paths), splitting its weight evenly among them.
+
+        A token that matches no checkpoint is dropped (with a one-time warning);
+        all other entries pass through unchanged."""
+        out: list[tuple[str, float]] = []
+        for spec, w in entries:
+            if isinstance(spec, str) and spec.strip().lower() == MATCHUP_MODEL_TOKEN:
+                files = matchup_checkpoints(model_deck, opp_deck, checkpoint_dir)
+                if not files:
+                    if not cls._matchup_warned:
+                        print(f"[opponent-pool] WARNING: '{MATCHUP_MODEL_TOKEN}' matched no "
+                              f"checkpoint for matchup {opp_deck}_{model_deck} in "
+                              f"{checkpoint_dir}; ignoring it.")
+                        cls._matchup_warned = True
+                    continue
+                share = w / len(files)
+                out.extend((f, share) for f in files)
+            else:
+                out.append((spec, w))
+        return out
 
     def _controller_for(self, spec: str) -> Controller:
         ctrl = self._cache.get(spec)

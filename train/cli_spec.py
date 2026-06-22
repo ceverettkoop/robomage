@@ -121,6 +121,25 @@ def _opponent_mode():
     ])
 
 
+def opponent_pool_opts():
+    """Mixed opponent-pool args shared by the train and sweep subcommands."""
+    return [
+        Arg("--opponent-pool", "str", default=None,
+            help="Comma-separated mix of opponent controllers to randomize per "
+                 "episode, e.g. 'scripted:easy,scripted:hard=2,delver_mav_final'. "
+                 "The token 'random-model' expands to a random checkpoint "
+                 "compatible with the matchup (a model trained to pilot the "
+                 "opponent's deck, i.e. {opp_deck}_{deck}_*.zip). Each item may "
+                 "carry an optional '=<weight>'. Overrides the plain scripted "
+                 "opponent (ignored with --self-play). In a sweep the same pool "
+                 "is applied to every matchup, resolving 'random-model' per matchup."),
+        Arg("--opponent-ckpt-ratio", "float", default=1.0,
+            help="Cap on unique opponent checkpoints kept resident, as a ratio of "
+                 "n_envs (default 1.0 -> <=1 checkpoint per env process). Scripted "
+                 "agents don't count toward the cap."),
+    ]
+
+
 def sim_args():
     """Common simulation args for analysis.py (was analysis.py _add_sim_args)."""
     return [
@@ -148,15 +167,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--load", "str", default=None, suggest="checkpoint",
             help="Resume from checkpoint .zip (or shorthand)"),
         _opponent_mode(),
-        Arg("--opponent-pool", "str", default=None,
-            help="Comma-separated mix of opponent controllers to randomize per "
-                 "episode, e.g. 'scripted:easy,scripted:hard=2,delver_mav_final'. "
-                 "Each item may carry an optional '=<weight>'. Overrides the plain "
-                 "scripted opponent (ignored with --self-play)."),
-        Arg("--opponent-ckpt-ratio", "float", default=1.0,
-            help="Cap on unique opponent checkpoints kept resident, as a ratio of "
-                 "n_envs (default 1.0 -> <=1 checkpoint per env process). Scripted "
-                 "agents don't count toward the cap."),
+        *opponent_pool_opts(),
         *train_opts(),
         *common_args(),
     ]),
@@ -164,6 +175,7 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--deck", "str", default=None, suggest="deck",
             help="Only matchups featuring this deck. Omit to train ALL matchups."),
         _opponent_mode(),
+        *opponent_pool_opts(),
         *train_opts(),
         *common_args(),
     ]),

@@ -461,7 +461,8 @@ def make_env(rank: int, model_deck: str = "delver", opp_deck: str = "delver",
             opponent = OpponentPool(
                 opponent_pool, checkpoint_resolver=_resolve_model,
                 rng=np.random.default_rng(1000 + rank),
-                n_envs=n_envs, env_index=rank, max_checkpoint_ratio=opp_ckpt_ratio)
+                n_envs=n_envs, env_index=rank, max_checkpoint_ratio=opp_ckpt_ratio,
+                model_deck=model_deck, opp_deck=opp_deck, checkpoint_dir=_CHECKPOINT_ABS)
         env = ModelVsScriptedEnv(model_deck=model_deck, opp_deck=opp_deck,
                                  opponent=opponent, **env_kwargs)
         if USE_MASKABLE:
@@ -1088,7 +1089,9 @@ def _run_sweep(args, parser, decks_filter):
         train(args.binary, load_path=resume_path, total_timesteps=args.total_timesteps,
               tally=args.tally, self_play=args.self_play,
               model_deck=d, opp_deck=o, record=args.record,
-              n_envs_override=args.n_envs, no_shaping=args.no_shaping, **env_kwargs)
+              n_envs_override=args.n_envs, no_shaping=args.no_shaping,
+              opponent_pool=args.opponent_pool, opp_ckpt_ratio=args.opponent_ckpt_ratio,
+              **env_kwargs)
     print(f"\nAll {len(matchups)} matchups complete.")
 
 

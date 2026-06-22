@@ -157,11 +157,55 @@ class LauncherApp(App):
 
     def _options_for(self, a):
         """Dropdown options for a suggest-tagged arg (decks/checkpoints/recordings)."""
+        # --load resumes training the {deck}_{opponent} matchup, so it only
+        # offers checkpoints saved for that matchup (see _matchup_checkpoints).
+        if a.name == "--load" and a.suggest == "checkpoint":
+            return self._matchup_checkpoints()
         opts = list(_suggestions_for(a))
         # Fields that also accept the rule-based agent get a 'scripted' option.
         if a.suggest == "checkpoint" and (a.default == "scripted" or a.name == "--opponent"):
             opts = ["scripted"] + opts
         return opts
+
+    def _field_value(self, name):
+        """Current string value of a field by arg name, or None if blank/absent."""
+        f = next((f for f in self._fields
+                  if f.get("arg") is not None and f["arg"].name == name), None)
+        if f is None:
+            return None
+        v = f["widget"].value
+        return v if isinstance(v, str) and v else None
+
+    def _matchup_checkpoints(self):
+        """Checkpoints compatible with the currently selected matchup.
+
+        Training checkpoints are named '{model_deck}_{opp_deck}_final.zip' (and
+        '..._{N}_steps.zip'); resuming requires a checkpoint of the same
+        matchup, so only filenames prefixed with the chosen '{deck}_{opponent}_'
+        are offered. Empty until both deck and opponent are chosen."""
+        deck, opp = self._field_value("--deck"), self._field_value("--opponent")
+        if not deck or not opp:
+            return []
+        prefix = f"{deck}_{opp}_"
+        return [c for c in _scan_checkpoints() if c.startswith(prefix)]
+
+    def _refresh_load_options(self):
+        """Re-filter the --load dropdown after a deck/opponent change."""
+        field = next((f for f in self._fields
+                      if f.get("arg") is not None and f["arg"].name == "--load"), None)
+        if field is None:
+            return
+        sel = field["widget"]
+        opts = self._matchup_checkpoints()
+        keep = sel.value if (isinstance(sel.value, str) and sel.value in opts) else Select.BLANK
+        sel.set_options([(v, v) for v in opts])
+        sel.value = keep
+
+    def _arg_for_widget(self, widget):
+        for f in self._fields:
+            if f.get("widget") is widget:
+                return f.get("arg")
+        return None
 
     def _build_arg(self, a):
         # One row per arg; the (verbose) help shows in #fieldhelp when focused.
@@ -198,6 +242,9 @@ class LauncherApp(App):
             self.query_one("#fieldhelp", Static).update(help_text)
 
     def on_select_changed(self, event: Select.Changed):
+        arg = self._arg_for_widget(event.select)
+        if arg is not None and arg.name in ("--deck", "--opponent"):
+            self._refresh_load_options()
         self.update_preview()
 
     def on_input_changed(self, event: Input.Changed):

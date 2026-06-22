@@ -139,20 +139,22 @@ class GameApp(App):
     #self-info  { height: 1; color: green; }
     #graveyards { height: 2; color: $text-muted; }
     #stack      { height: 3; border: round $primary; }
-    #opp-bf, #self-bf { height: 7; border: round $surface; }
+    #opp-bf, #self-bf { height: 6; border: round $surface; }
     #self-hand  { height: 5; border: round green; }
     #opp-bf, #self-bf, #self-hand { layout: horizontal; }
     CardButton  { width: auto; height: 100%; margin: 0 1; padding: 0 1;
                   border: round $surface; }
     CardButton:hover { border: round $accent; }
-    #bottom     { height: 1fr; }
-    #actions    { width: 45%; border: round $primary; }
+    #bottom     { height: 1fr; min-height: 8; }
+    #actions    { width: 35%; min-width: 24; border: round $primary; }
     #log        { width: 1fr; border: round $surface; }
     """
 
     BINDINGS = [
         ("q", "quit", "Quit"),
         ("p", "pass_priority", "Pass"),
+        ("plus", "resize_log(1)", "Bigger log"),
+        ("minus", "resize_log(-1)", "Smaller log"),
         ("0", "pick('0')", "Pick"),
         ("1", "pick('1')", ""), ("2", "pick('2')", ""), ("3", "pick('3')", ""),
         ("4", "pick('4')", ""), ("5", "pick('5')", ""), ("6", "pick('6')", ""),
@@ -171,6 +173,10 @@ class GameApp(App):
         self._actions = []
         self._awaiting = False
         self._reward = 0.0
+        # Live heights of the resizable board panels (must match the CSS
+        # defaults above). Shrinking these frees rows that flow into the 1fr
+        # #bottom region, growing the log/command area; see action_resize_log.
+        self._panel_h = {"#opp-bf": 6, "#self-bf": 6, "#self-hand": 5}
 
     @staticmethod
     def _make_queue():
@@ -330,6 +336,25 @@ class GameApp(App):
             if a["category"] == 0:        # PASS
                 self._submit(a["index"])
                 return
+
+    # Min/max row heights for each resizable board panel.
+    _PANEL_LIMITS = {"#opp-bf": (4, 12), "#self-bf": (4, 12), "#self-hand": (3, 10)}
+
+    def action_resize_log(self, delta: int) -> None:
+        """Grow (delta>0) or shrink (delta<0) the bottom log/command area.
+
+        The board panels are fixed-height and #bottom is 1fr, so freeing rows
+        from the panels flows straight into the log/actions region."""
+        step = -delta                      # grow log → shrink each panel
+        changed = False
+        for sel, (lo, hi) in self._PANEL_LIMITS.items():
+            new = max(lo, min(hi, self._panel_h[sel] + step))
+            if new != self._panel_h[sel]:
+                self._panel_h[sel] = new
+                self.query_one(sel).styles.height = new
+                changed = True
+        if not changed:
+            self.bell()
 
     def action_quit(self) -> None:
         try:
