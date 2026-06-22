@@ -25,7 +25,7 @@ from textual import work
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal, Vertical, VerticalScroll
 from textual.widgets import (Checkbox, Footer, Header, Input, Label, RichLog,
-                             Select, Static, Tree)
+                             Select, SelectionList, Static, Tree)
 
 from cli_spec import (ALL_TOOLS, REPO_ROOT, MutexGroup)
 
@@ -79,6 +79,8 @@ class LauncherApp(App):
     .fieldname { width: 18; color: $text-muted; text-align: right; padding: 0 1 0 0; }
     .req { color: $warning; }
     .fieldrow Input, .fieldrow Select { width: 1fr; }
+    .fieldrow.tall { height: auto; }
+    .fieldrow.tall SelectionList { width: 1fr; height: auto; max-height: 8; border: round $accent; }
     #fieldhelp { height: 1; padding: 0 1; color: $text-muted; }
     #preview { height: auto; max-height: 5; padding: 0 1; color: $text-muted; border-top: solid $accent; }
     #log { height: 10; border-top: solid $accent; }
@@ -150,10 +152,14 @@ class LauncherApp(App):
         self.query_one("#fieldhelp", Static).update("")
         self.update_preview()
 
-    def _row(self, name, widget, required):
-        """Wrap a field as a single compact row: short name label + widget."""
+    def _row(self, name, widget, required, extra=""):
+        """Wrap a field as a single compact row: short name label + widget.
+
+        ``extra`` adds CSS classes (e.g. "tall" for multi-line widgets like the
+        deck multi-select)."""
         label = Label(f"{name}{'*' if required else ''}", classes="fieldname" + (" req" if required else ""))
-        return Horizontal(label, widget, classes="fieldrow")
+        classes = "fieldrow" + (f" {extra}" if extra else "")
+        return Horizontal(label, widget, classes=classes)
 
     def _options_for(self, a):
         """Dropdown options for a suggest-tagged arg (decks/checkpoints/recordings)."""
@@ -222,6 +228,13 @@ class LauncherApp(App):
                 kwargs["value"] = a.default
             w = Select(opts, **kwargs)
             self._fields.append({"kind": "choice", "arg": a, "widget": w})
+        elif a.suggest and getattr(a, "multi", False):
+            # multi-select roster (e.g. league --decks): pick several with space.
+            vals = self._options_for(a)
+            w = SelectionList(*[(v, v) for v in vals])
+            self._fields.append({"kind": "multipick", "arg": a, "widget": w})
+            self._help_by_widget[w] = a.help
+            return self._row(a.name, w, a.required, extra="tall")
         elif a.suggest:
             # deck / checkpoint / recording → dropdown of repo contents
             vals = self._options_for(a)
@@ -248,6 +261,9 @@ class LauncherApp(App):
         arg = self._arg_for_widget(event.select)
         if arg is not None and arg.name in ("--deck", "--opponent"):
             self._refresh_load_options()
+        self.update_preview()
+
+    def on_selection_list_selected_changed(self, event: SelectionList.SelectedChanged):
         self.update_preview()
 
     def on_input_changed(self, event: Input.Changed):
@@ -280,6 +296,13 @@ class LauncherApp(App):
                     argv += [f["arg"].name, v]
                 elif f["arg"].required:
                     missing.append(f["arg"].name)
+            elif f["kind"] == "multipick":   # multi-select roster → comma-joined
+                a = f["arg"]
+                vals = list(f["widget"].selected)
+                if vals:
+                    argv += [a.name, ",".join(vals)]
+                elif a.required:
+                    missing.append(a.name)
             elif f["kind"] == "pick":   # dropdown of decks/checkpoints/recordings
                 a = f["arg"]
                 v = f["widget"].value
