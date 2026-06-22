@@ -33,7 +33,13 @@ static bool search_reveals_card(const Ability &ab) {
     return from_library && specific_type;
 }
 
+static bool extract_same_name(Ability &ab, std::shared_ptr<Orderer> orderer);
+
 bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
+    // Surgical Extraction / Extirpate: exile the targeted graveyard card and every
+    // same-named card from its owner's graveyard, hand, and library, then shuffle.
+    if (ab.same_name_extract) return extract_same_name(ab, orderer);
+
     Zone::Ownership owner = global_coordinator.GetComponent<Zone>(ab.source).owner;
 
     const char *dest_str = ab.destination == Zone::BATTLEFIELD ? "the battlefield"
@@ -185,6 +191,53 @@ bool parse_change_zone(Ability &ab, const std::string &key, const std::string &v
         return true;
     }
     return false;
+}
+
+// Surgical Extraction / Extirpate. Exiles the targeted graveyard card plus every
+// same-named card from its owner's graveyard, hand, and library, then shuffles. The
+// real card says "any number"; we take the maximal, mandatory interpretation (exile
+// all copies). Searching the owner's hand and library reveals them, so every card in
+// those zones is recorded into the match-scoped belief state (g_revealed_by_*) — the
+// only opponent-card-identity channel in the observation (there are no per-card
+// opponent-hand slots; the opponent block carries just a hand count).
+static bool extract_same_name(Ability &ab, std::shared_ptr<Orderer> orderer) {
+    Entity tgt = !ab.targets.empty() ? ab.targets[0] : ab.target;
+    if (tgt == 0 || !global_coordinator.entity_has_component<CardData>(tgt) ||
+        !global_coordinator.entity_has_component<Zone>(tgt)) {
+        game_log("Surgical Extraction fizzles (no legal target)\n");
+        return true;
+    }
+    std::string name = global_coordinator.GetComponent<CardData>(tgt).name;
+    Zone::Ownership tgt_owner = global_coordinator.GetComponent<Zone>(tgt).owner;
+    Zone::Ownership caster = global_coordinator.GetComponent<Zone>(ab.source).owner;
+
+    // Collect all same-named cards in the owner's graveyard, hand, and library
+    // (includes the target itself, which sits in the graveyard).
+    std::vector<Entity> to_exile;
+    auto collect = [&](const std::vector<Entity> &zone) {
+        for (auto e : zone) {
+            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+            if (global_coordinator.GetComponent<CardData>(e).name == name) to_exile.push_back(e);
+        }
+    };
+    collect(orderer->get_graveyard(tgt_owner));
+    collect(orderer->get_hand(tgt_owner));
+    collect(orderer->get_library_contents(tgt_owner));
+
+    for (auto e : to_exile) {
+        orderer->add_to_zone(false, e, Zone::EXILE);
+        mark_card_revealed(e, tgt_owner);  // exiled cards are public knowledge
+    }
+    game_log("%s exiles %zu copy(ies) of %s from %s's graveyard, hand, and library\n",
+        player_name(caster).c_str(), to_exile.size(), name.c_str(), player_name(tgt_owner).c_str());
+
+    // Record the rest of the searched hand and library into the belief state.
+    for (auto e : orderer->get_hand(tgt_owner))             mark_card_revealed(e, tgt_owner);
+    for (auto e : orderer->get_library_contents(tgt_owner)) mark_card_revealed(e, tgt_owner);
+
+    orderer->shuffle_library(tgt_owner);
+    game_log("%s shuffles their library\n", player_name(tgt_owner).c_str());
+    return true;
 }
 
 }  // namespace effects

@@ -57,6 +57,11 @@ struct Ability{
     std::string change_type = "";        // ChangeType$ — comma-separated subtypes to search
     Zone::ZoneValue origin = Zone::LIBRARY;          // Origin$ — zone to search
     Zone::ZoneValue destination = Zone::BATTLEFIELD; // Destination$ — zone to move card to
+    // Surgical Extraction / Extirpate "exile all same-named cards" pattern (Forge
+    // ChangeType$ Remembered.sameName). When set, change_zone() exiles the targeted
+    // graveyard card plus every same-named card from its owner's graveyard, hand, and
+    // library, then shuffles. Set by the parser when it detects the sameName chain.
+    bool same_name_extract = false;
     uint32_t trigger_on = 0;             // EventId that fires this ability; 0 = not event-triggered
     bool trigger_self_excluded = false;  // true when ValidCard$ has .Other — won't trigger for the source itself
     bool trigger_only_self = false;      // true when ValidCard$ Card.Self — only fires when the entering entity is the source itself

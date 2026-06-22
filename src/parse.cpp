@@ -977,6 +977,15 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
     return sub;
 }
 
+// True if this ability or any (transitive) subability searches by Remembered.sameName
+// — the Forge signature of the "exile all same-named cards" effect (Surgical Extraction).
+static bool ability_chain_has_same_name(const Ability &ab) {
+    if (ab.change_type.find("sameName") != std::string::npos) return true;
+    for (const auto &sub : ab.subabilities)
+        if (ability_chain_has_same_name(sub)) return true;
+    return false;
+}
+
 // fed each ability line
 static std::vector<Ability> parse_abilities(std::vector<std::string> lines, const std::set<Type>& types,
                                             const std::map<std::string, std::string>& svars,
@@ -1128,6 +1137,21 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
                 }
             }
             ability.amount_svar = "";
+        }
+
+        // Surgical Extraction / Extirpate: a spell whose subability chain searches by
+        // ChangeType$ Remembered.sameName. Rather than implement Forge's RememberObjects /
+        // TgtZone / multi-zone DefinedPlayer plumbing, retag the spell as a graveyard-
+        // targeting ChangeZone (reuses the existing target enumeration + nonBasic filter)
+        // and let change_zone()'s same_name_extract branch do the exiling. The chained
+        // subabilities are replaced wholesale by that branch.
+        if (ability_chain_has_same_name(ability)) {
+            ability.same_name_extract = true;
+            ability.category = "ChangeZone";
+            ability.origin = Zone::GRAVEYARD;
+            ability.origins = { Zone::GRAVEYARD };
+            ability.destination = Zone::EXILE;
+            ability.subabilities.clear();
         }
 
         ret_val.push_back(ability);
