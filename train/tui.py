@@ -8,25 +8,22 @@ real CLIs — change a flag in cli_spec.py and it shows up here automatically.
 Run from the repo root:
     train/.venv/bin/python train/tui.py
 
-Non-interactive commands stream their output into the log pane (Run/Stop).
-Interactive ones (analysis REPLs, play) suspend the TUI and hand over the real
-terminal, resuming when they exit.
+Every command suspends the TUI and runs in the real terminal, with its output
+simultaneously teed to a per-run log file. The TUI resumes when the command
+exits.
 """
 
-import asyncio
 import glob
 import os
 import shlex
 import shutil
-import signal
 import subprocess
 import sys
 from datetime import datetime
 
-from textual import work
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal, Vertical, VerticalScroll
-from textual.widgets import (Checkbox, Footer, Header, Input, Label, RichLog,
+from textual.widgets import (Checkbox, Footer, Header, Input, Label,
                              Select, SelectionList, Static, Tree)
 
 from cli_spec import (ALL_TOOLS, REPO_ROOT, MutexGroup)
@@ -123,16 +120,12 @@ class LauncherApp(App):
     .fieldrow.tall SelectionList { width: 1fr; height: auto; max-height: 8; border: round $accent; }
     #fieldhelp { height: 1; padding: 0 1; color: $text-muted; }
     #preview { height: auto; max-height: 5; padding: 0 1; color: $text-muted; border-top: solid $accent; }
-    #log { height: 10; border-top: solid $accent; }
     """
 
     TITLE = "robomage"
 
     BINDINGS = [
         ("r", "run", "Run"),
-        ("s", "stop", "Stop"),
-        ("y", "copy_log", "Copy log"),
-        ("c", "clear", "Clear log"),
         ("q", "quit", "Quit"),
     ]
 
@@ -141,7 +134,6 @@ class LauncherApp(App):
         self._tool = None
         self._sub = None
         self._fields = []
-        self._proc = None
         self._help_by_widget = {}   # widget -> help text, for the focus help line
 
     # ── layout ────────────────────────────────────────────────────────────
@@ -153,7 +145,6 @@ class LauncherApp(App):
                 yield VerticalScroll(id="form")
                 yield Static("", id="fieldhelp")
                 yield Static("Select a command on the left.", id="preview")
-                yield RichLog(id="log", markup=False, highlight=False, wrap=True)
         yield Footer()
 
     def on_mount(self):
@@ -379,47 +370,27 @@ class LauncherApp(App):
         text = self._preview_text(argv)
         if missing:
             text += f"\n\nmissing required: {', '.join(missing)}"
-        mode = "interactive (runs in terminal)" if self._sub.mode == "interactive" else "capture"
-        self.query_one("#preview", Static).update(f"[{mode}]\n{text}")
+        self.query_one("#preview", Static).update(f"[runs in terminal — output logged]\n{text}")
 
     # ── actions ───────────────────────────────────────────────────────────
-    def action_clear(self):
-        self.query_one("#log", RichLog).clear()
-
-    def _log_text(self):
-        """The full log buffer as plain text."""
-        log = self.query_one("#log", RichLog)
-        return "\n".join(strip.text for strip in log.lines)
-
-    def action_copy_log(self):
-        """Copy the whole log buffer to the system clipboard (OSC 52)."""
-        text = self._log_text()
-        log = self.query_one("#log", RichLog)
-        if not text:
-            log.write("(log is empty — nothing to copy)")
-            return
-        self.copy_to_clipboard(text)
-        log.write(f"copied {len(text.splitlines())} log line(s) to clipboard")
-
     def action_run(self):
         if not self._sub:
             return
         argv, missing = self._collect()
-        log = self.query_one("#log", RichLog)
         if missing:
-            log.write(f"Missing required: {', '.join(missing)}")
+            self.notify(f"Missing required: {', '.join(missing)}", severity="error")
             return
-        if self._sub.mode == "interactive":
-            self._run_interactive(argv)
-        else:
-            self._run_capture(argv)
+        self._run_in_terminal(argv)
 
-    def _run_interactive(self, argv):
-        log = self.query_one("#log", RichLog)
+    def _run_in_terminal(self, argv):
+        """Suspend the TUI, run the command in the real terminal, and tee its
+        output to a per-run log file; resume the TUI when the command exits.
+
+        `script` (util-linux) runs the command in a pty — keeping interactive
+        commands interactive — while appending everything it shows to logpath
+        after our header, so the file mirrors the terminal live. When `script`
+        is unavailable the command still runs, but only the header is logged."""
         logf = _open_command_log(argv)
-        # Tee the interactive session's terminal output into the same log file
-        # via `script`, which runs the command in a pty (keeping it interactive)
-        # while appending everything it shows to logpath after our header.
         logpath = logf.name if logf else None
         if logf:
             logf.close()
@@ -427,6 +398,9 @@ class LauncherApp(App):
         if logpath and _SCRIPT_BIN:
             run_argv = [_SCRIPT_BIN, "-q", "-a", "-e",
                         "-c", shlex.join(argv), logpath]
+        elif logpath:
+            self.notify("`script` not found — terminal output will not be logged",
+                        severity="warning")
         with self.suspend():
             print("\n$ " + shlex.join(argv) + "\n", flush=True)
             try:
@@ -437,56 +411,8 @@ class LauncherApp(App):
                 input("\n[press Enter to return to the launcher] ")
             except EOFError:
                 pass
-        log.write("returned from interactive command")
-
-    @work(exclusive=True)
-    async def _run_capture(self, argv):
-        log = self.query_one("#log", RichLog)
-        log.write("$ " + shlex.join(argv))
-        logf = _open_command_log(argv)
-        try:
-            proc = await asyncio.create_subprocess_exec(
-                *argv, cwd=REPO_ROOT,
-                stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.STDOUT,
-                start_new_session=True)
-        except Exception as exc:
-            log.write(f"failed to start: {exc}")
-            if logf:
-                logf.write(f"failed to start: {exc}\n")
-                logf.close()
-            return
-        self._proc = proc
-        try:
-            while True:
-                line = await proc.stdout.readline()
-                if not line:
-                    break
-                text = line.decode("utf-8", "replace").rstrip("\n")
-                log.write(text)
-                if logf:
-                    logf.write(text + "\n")
-        finally:
-            rc = await proc.wait()
-            self._proc = None
-            log.write(f"[exit code {rc}]")
-            if logf:
-                logf.write(f"\n[exit code {rc}]\n")
-                logf.close()
-
-    def action_stop(self):
-        proc = self._proc
-        log = self.query_one("#log", RichLog)
-        if not proc or proc.returncode is not None:
-            log.write("nothing running")
-            return
-        try:
-            os.killpg(os.getpgid(proc.pid), signal.SIGTERM)
-        except Exception:
-            try:
-                proc.terminate()
-            except Exception:
-                pass
-        log.write("stop signal sent")
+        if logpath and _SCRIPT_BIN:
+            self.notify(f"output logged to {os.path.relpath(logpath, REPO_ROOT)}")
 
 
 if __name__ == "__main__":
