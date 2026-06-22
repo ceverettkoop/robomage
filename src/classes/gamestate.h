@@ -16,7 +16,7 @@ extern "C" {
 #define MAX_HAND_SLOTS 10
 #define MAX_ACTIONS 64
 #define MAX_CHOICE_DESC 128
-#define REVEALED_CARD_TYPES 128  // mirror N_CARD_TYPES in machine_io.h / REVEALED_SIZE in match_state.h
+#define REVEALED_CARD_TYPES 1024  // mirror N_CARD_TYPES in machine_io.h / REVEALED_SIZE in match_state.h
 
 typedef struct PlayerState_tag {
     int life;

@@ -24,6 +24,7 @@ import os
 import struct
 import sys
 import time
+from collections import deque
 
 from env import (RoboMageEnv, ModelVsScriptedEnv, SelfPlayEnv, FixedModelEnv, NarrativeEnv,
                  scripted_action,
@@ -57,19 +58,20 @@ import numpy as np
 # ── Recording format constants (.rmrec) ──────────────────────────────────────
 RECORD_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "recordings")
 REC_MAGIC = b"RMRC"
-REC_VERSION = 1
+REC_VERSION = 2  # v2: card_ids widened from u8 to u16 (vocab > 255)
 REC_GAME_START = 0x01
 REC_DECISION   = 0x02
 REC_GAME_END   = 0x03
+REC_CARD_ID_NULL = 0xFFFF  # u16 null sentinel for a per-action card id
 
 # struct formats (all little-endian)
 _SESSION_HDR_FMT = "<4sHqH"   # magic(4) + version(u16) + timestamp(i64) + n_envs(u16)
 _GAME_START_FMT  = "<BHIb"    # type(u8) + env_id(u16) + game_id(u32) + model_is_a(i8)
-_DECISION_FMT    = "<BHIHbbbBBBB6s64s64s64sBBBB"
+_DECISION_FMT    = "<BHIHbbbBBBB6s64s128s64sBBBB"
 # type(u8) + env_id(u16) + game_id(u32) + decision_idx(u16) + step_idx(i8)
 # + priority_is_a(i8) + active_is_a(i8) + num_choices(u8) + action_chosen(u8)
 # + self_life(u8) + opp_life(u8) + self_mana(6B)
-# + categories(64B) + card_ids(64B) + ctrl_flags(64B)
+# + categories(64B) + card_ids(64×u16 = 128B) + ctrl_flags(64B)
 # + self_creatures(u8) + self_lands(u8) + opp_creatures(u8) + opp_lands(u8)
 _GAME_END_FMT    = "<BHIbHfI"
 # type(u8) + env_id(u16) + game_id(u32) + result(i8) + n_decisions(u16)
@@ -174,8 +176,12 @@ class RecordCallback(BaseCallback):
 
                 cats_bytes = bytes([max(0, min(127, int(c))) if j < num_choices else 255
                                     for j, c in enumerate(cats_raw[:MAX_ACTIONS])])
-                ids_bytes = bytes([max(0, min(127, int(round(float(v) * N_CARD_TYPES)))) if v >= 0 else 255
-                                   for v in ids_raw[:MAX_ACTIONS]])
+                # Card ids are u16 (vocab can exceed 255); null/out-of-range → 0xFFFF.
+                ids_list = []
+                for v in ids_raw[:MAX_ACTIONS]:
+                    idx = int(round(float(v) * N_CARD_TYPES))
+                    ids_list.append(idx if 0 <= idx < N_CARD_TYPES else REC_CARD_ID_NULL)
+                ids_bytes = struct.pack(f"<{MAX_ACTIONS}H", *ids_list)
                 ctrl_bytes = bytes([1 if v > 0.5 else (0 if v > -0.01 else 255)
                                     for v in ctrl_raw[:MAX_ACTIONS]])
 
@@ -303,7 +309,8 @@ class PFSPCallback(BaseCallback):
     set_attr would only touch the outer Monitor wrapper.
     """
 
-    def __init__(self, vec_env, mode: str = "pfsp", p: float = 2.0, eta: float = 0.01):
+    def __init__(self, vec_env, mode: str = "pfsp", p: float = 2.0, eta: float = 0.01,
+                 recent_window: int = 200):
         super().__init__()
         self._vec_env = vec_env
         self._mode = mode
@@ -311,6 +318,10 @@ class PFSPCallback(BaseCallback):
         self._eta = eta
         self._stats: dict[tuple, list[int]] = {}  # (opp_deck, label) -> [wins, losses]
         self._q: dict[tuple, float] = {}          # (opp_deck, label) -> quality (softmax)
+        # Sliding window of the most recent decisive episode outcomes (1.0 win /
+        # 0.0 loss), used by the snapshot promotion gate so it reflects *current*
+        # strength rather than the cumulative-since-chunk-start average.
+        self._recent: deque = deque(maxlen=max(1, recent_window))
 
     def _on_step(self) -> bool:
         for info in self.locals["infos"]:
@@ -325,6 +336,7 @@ class PFSPCallback(BaseCallback):
             if key not in self._q:
                 # New entry: init quality to the current max so it gets sampled.
                 self._q[key] = max(self._q.values()) if self._q else 0.0
+            self._recent.append(1.0 if r > 0 else 0.0)
             if r > 0:
                 wl[0] += 1
                 if self._mode == "softmax":
@@ -345,10 +357,19 @@ class PFSPCallback(BaseCallback):
         return float((1.0 - winrate) ** self._p)
 
     def overall_winrate(self) -> float:
-        """Aggregate learner win-rate across all opponents seen so far (gate input)."""
+        """Aggregate learner win-rate across all opponents seen so far (lifetime)."""
         w = sum(v[0] for v in self._stats.values())
         l = sum(v[1] for v in self._stats.values())
         return w / (w + l) if (w + l) else 0.0
+
+    def recent_winrate(self) -> tuple[float, int]:
+        """Learner win-rate over the recent-episode window, plus the sample count.
+
+        This is the snapshot promotion gate's input: a sliding window so the gate
+        tracks the policy's *current* strength instead of being dragged down by
+        weak early-chunk games. Returns ``(winrate, n_samples)``."""
+        n = len(self._recent)
+        return (sum(self._recent) / n if n else 0.0), n
 
     def _on_rollout_end(self) -> None:
         if not self._stats:
@@ -374,27 +395,37 @@ class PFSPCallback(BaseCallback):
             total = w + l
             pct = 100.0 * w / total if total else 0.0
             print(f"[pfsp] deck total vs {deck:<10}: {w}W {l}L ({pct:.1f}%)")
-        print(f"[pfsp] overall win-rate: {100.0 * self.overall_winrate():.1f}%")
+        rwr, rn = self.recent_winrate()
+        print(f"[pfsp] overall win-rate: {100.0 * self.overall_winrate():.1f}%  "
+              f"recent (n={rn}): {100.0 * rwr:.1f}%")
 
 
 class SnapshotCallback(BaseCallback):
     """Saves a frozen ``{deck}__v{steps}.zip`` snapshot every ``snapshot_every`` steps.
 
-    Optional SIMPLE-style promotion gate: when ``promote_margin > 0`` a snapshot is
-    only kept if the learner's running win-rate (from ``pfsp_callback``) is at least
-    ``0.5 + promote_margin``, so the pool collects genuinely stronger snapshots
-    rather than near-duplicates. The first snapshot of each deck is exempt so
+    Optional SIMPLE-style promotion gate: when ``promote_margin != 0`` a snapshot is
+    only kept if the learner's *recent-window* win-rate (from ``pfsp_callback``) is
+    at least ``0.5 + promote_margin``, so the pool collects genuinely stronger
+    snapshots rather than near-duplicates. The window (not the cumulative average)
+    is used so a deck that started weak can still promote once it is *currently*
+    strong; the gate is also skipped until the window holds at least
+    ``min_gate_samples`` decisive games (bias toward feeding the pool over
+    starving it). A negative margin gates below 50% (e.g. -0.1 keeps snapshots
+    once win-rate clears 40%), useful for decks that are slow to break even; ``0``
+    disables the gate entirely. The first snapshot of each deck is exempt so
     self-play can bootstrap. Drops are logged (no silent truncation).
     """
 
     def __init__(self, checkpoint_dir: str, deck: str, snapshot_every: int,
-                 promote_margin: float = 0.0, pfsp_callback: "PFSPCallback | None" = None):
+                 promote_margin: float = 0.0, pfsp_callback: "PFSPCallback | None" = None,
+                 min_gate_samples: int = 30):
         super().__init__()
         self._dir = checkpoint_dir
         self._deck = deck
         self._every = max(1, snapshot_every)
         self._margin = promote_margin
         self._pfsp = pfsp_callback
+        self._min_gate_samples = min_gate_samples
         self._next_at = None  # set on training start relative to current num_timesteps
 
     def _on_training_start(self) -> None:
@@ -409,11 +440,13 @@ class SnapshotCallback(BaseCallback):
         self._next_at += self._every
         from opponents import deck_snapshots
         first = len(deck_snapshots(self._deck, self._dir)) == 0
-        if self._margin > 0 and not first and self._pfsp is not None:
-            wr = self._pfsp.overall_winrate()
-            if wr < 0.5 + self._margin:
-                print(f"[snapshot] gate: {self._deck} win-rate {wr:.2f} < "
-                      f"{0.5 + self._margin:.2f}; skipping snapshot at "
+        if self._margin != 0 and not first and self._pfsp is not None:
+            wr, n = self._pfsp.recent_winrate()
+            # Too few decisive games in the window to judge current strength: don't
+            # block (bias toward keeping the pool fed rather than starving it).
+            if n >= self._min_gate_samples and wr < 0.5 + self._margin:
+                print(f"[snapshot] gate: {self._deck} recent win-rate {wr:.2f} "
+                      f"(n={n}) < {0.5 + self._margin:.2f}; skipping snapshot at "
                       f"{self.num_timesteps} steps")
                 return True
         path = os.path.join(self._dir, f"{self._deck}__v{self.num_timesteps}")
@@ -1273,13 +1306,10 @@ _STEP_NAMES = [
 
 def _decode_hand(obs):
     """Return list of card names for the priority player's hand."""
-    import numpy as np
     cards = []
     for slot in range(10):            # MAX_HAND_SLOTS = 10
-        base = _HAND_START + slot * N_CARD_TYPES
-        vec = obs[base : base + N_CARD_TYPES]
-        idx = int(np.argmax(vec))
-        if vec[idx] > 0.5:
+        idx = int(round(float(obs[_HAND_START + slot]) * N_CARD_TYPES))
+        if idx >= 0:
             cards.append(_VOCAB_NAMES[idx] if idx < len(_VOCAB_NAMES) else f"?{idx}")
     return cards
 

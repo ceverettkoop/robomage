@@ -20,7 +20,8 @@ from env import (RoboMageEnv, STATE_SIZE, ACTION_CATEGORY_MAX, BINARY, MAX_ACTIO
                  _BQUERY_STATE_BYTES, _BQUERY_CATS_BYTES, _BQUERY_IDS_BYTES, _BQUERY_CTRL_BYTES,
                  _BQUERY_PUB_BYTES,
                  _BF_START as _ENV_BF_START, _BF_SLOT_SIZE as _ENV_BF_SLOT_SIZE,
-                 _BF_CARD_OFF as _ENV_BF_CARD_OFF, _PERM_A_SLOTS as _ENV_PERM_A_SLOTS)
+                 _BF_CARD_OFF as _ENV_BF_CARD_OFF, _PERM_A_SLOTS as _ENV_PERM_A_SLOTS,
+                 _HAND_SLOT_SIZE, _BF_ID_IDX, _gather_costs, _slot_card_idx)
 import env as _env
 from decode import (card_from_id as _card_from_id, decode_step as _decode_step,
                     _CARD_NAMES as _VOCAB_NAMES)
@@ -55,9 +56,10 @@ _MANA_CAT_COLOR = {13: "W", 14: "U", 15: "B", 16: "R", 17: "G", 18: "C"}
 
 # ── Decode helpers ────────────────────────────────────────────────────────────
 
-def _card_name(one_hot):
-    idx = int(np.argmax(one_hot))
-    if idx < len(one_hot) and one_hot[idx] > 0.5 and idx < len(_VOCAB_NAMES):
+def _card_name(id_float):
+    """Decode a card name from a single normalized card-id float (None if empty)."""
+    idx = int(round(float(id_float) * N_CARD_TYPES))
+    if 0 <= idx < len(_VOCAB_NAMES):
         return _VOCAB_NAMES[idx] if _VOCAB_NAMES[idx] else None
     return None
 
@@ -83,7 +85,7 @@ def _action_label(cat: int, card_id_float: float) -> str:
 
 def _perm_str(obs, base):
     """Return a display string for a permanent slot, or None if empty."""
-    card = _card_name(obs[base + _BF_CARD_OFF : base + _BF_CARD_OFF + N_CARD_TYPES])
+    card = _card_name(obs[base + _BF_CARD_OFF])
     if card is None:
         return None
     if obs[base + _OFF_IS_CREATURE] > 0.5:
@@ -104,7 +106,7 @@ def _split_bf(obs, slot_offset):
     creatures, lands = [], []
     for i in range(_BF_PERM_SLOTS):
         base = _BF_START + (slot_offset + i) * _BF_SLOT_SIZE
-        card = _card_name(obs[base + _BF_CARD_OFF : base + _BF_CARD_OFF + N_CARD_TYPES])
+        card = _card_name(obs[base + _BF_CARD_OFF])
         if card is None:
             continue
         if obs[base + _OFF_IS_CREATURE] > 0.5:
@@ -128,8 +130,7 @@ def _format_state(obs) -> str:
     my_creatures,  my_lands  = _split_bf(obs, 0)
     opp_creatures, opp_lands = _split_bf(obs, _BF_PERM_SLOTS)
     hand = [s for i in range(_HAND_SLOTS)
-            if (s := _card_name(obs[_HAND_START + i * N_CARD_TYPES :
-                                    _HAND_START + (i + 1) * N_CARD_TYPES]))]
+            if (s := _card_name(obs[_HAND_START + i * _HAND_SLOT_SIZE]))]
 
     return (
         "--- Battlefield ---\n"
@@ -385,12 +386,12 @@ def play_gui(binary_path: str, model_path: str, human_player: str = None,
             ctrl_arr     = item["ctrl_arr"]
             pending_confirm = item["pending_confirm"]
 
-            hand_onehots = state_arr[_HAND_START : _HAND_START + MAX_HAND_SLOTS * N_CARD_TYPES]
-            hand_costs = hand_onehots.reshape(MAX_HAND_SLOTS, N_CARD_TYPES) @ _CARD_COST_MATRIX
-            bf_ability_costs = np.zeros((48, _N_COST_FEATS), dtype=np.float32)
-            for slot in range(48):
-                base = _env._BF_START + slot * _env._BF_SLOT_SIZE + _env._BF_CARD_OFF
-                bf_ability_costs[slot] = state_arr[base : base + N_CARD_TYPES] @ _CARD_ABILITY_COST_MATRIX
+            hand_ids = np.rint(
+                state_arr[_HAND_START : _HAND_START + MAX_HAND_SLOTS * _HAND_SLOT_SIZE]
+                * N_CARD_TYPES).astype(np.intp)
+            hand_costs = _gather_costs(_CARD_COST_MATRIX, hand_ids)
+            bf_ids = np.rint(state_arr[_BF_ID_IDX] * N_CARD_TYPES).astype(np.intp)
+            bf_ability_costs = _gather_costs(_CARD_ABILITY_COST_MATRIX, bf_ids)
 
             obs = np.concatenate([
                 state_arr, cat_arr, card_id_arr, ctrl_arr,

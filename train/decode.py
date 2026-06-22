@@ -20,18 +20,20 @@ import numpy as np
 from env import (STATE_SIZE, MAX_ACTIONS, ACTION_CATEGORY_MAX,
                  _SELF_PERM_START, _OPP_PERM_START, _STACK_START,
                  _GY_START, _HAND_START, _PERM_SLOT_SIZE as PERM_SLOT_SIZE,
-                 _ACTION_CARD_ID_NULL)
+                 _STACK_SLOT_SIZE, _GY_SLOT_SIZE, _HAND_SLOT_SIZE,
+                 _LIBRARY_CTX_START, _CUR_TURN_IDX,
+                 _slot_card_idx, _ACTION_CARD_ID_NULL)
 from card_costs import N_CARD_TYPES, _VOCAB_NAMES as _CARD_NAMES
 
-# ── Engine constants ──────────────────────────────────────────────────────────
-STACK_SLOT_SIZE = 130                              # ctrl(1) + card_onehot(128) + is_spell(1)
-GY_SLOT_SIZE = 128                                 # card one-hot only
-_OPP_GY_START = _GY_START + 64 * GY_SLOT_SIZE      # 23034
+# ── Engine constants (card identity is a single normalized id float per slot) ──
+STACK_SLOT_SIZE = _STACK_SLOT_SIZE                 # ctrl(1) + card-id(1) + is_spell(1)
+GY_SLOT_SIZE = _GY_SLOT_SIZE                       # card-id only
+_OPP_GY_START = _GY_START + 64 * GY_SLOT_SIZE      # opp graveyard begins after 64 self slots
 
-# State-vector context indices (see src/machine_io.h / CLAUDE.md)
-_IDX_SELF_LIB = 33022                              # self_library_ct / 60
-_IDX_OPP_LIB = 33023                               # opp_library_ct  / 60
-_IDX_TURN = 33025                                  # turn / 50
+# State-vector context indices (derived from env layout)
+_IDX_SELF_LIB = _LIBRARY_CTX_START                 # self_library_ct / 60
+_IDX_OPP_LIB = _LIBRARY_CTX_START + 1              # opp_library_ct  / 60
+_IDX_TURN = _CUR_TURN_IDX                          # turn / 50
 
 # Permanent slot field offsets
 _OFF_POWER = 0
@@ -44,10 +46,10 @@ _OFF_DAMAGE = 6
 _OFF_CTRL = 7
 _OFF_IS_CREATURE = 8
 _OFF_IS_LAND = 9
-_OFF_CARD_ONEHOT = 10
+_OFF_CARD_ID = 10                                  # offset of the card-id float within a permanent slot
 
 _NULL_SENTINEL = _ACTION_CARD_ID_NULL              # -1.0 / N_CARD_TYPES
-_TOKEN_IDX = 127
+_TOKEN_IDX = N_CARD_TYPES - 1
 
 # Action-metadata categories that constitute a mandatory attacker/blocker loop.
 MANDATORY_CATS = frozenset({2, 3, 4, 5})
@@ -81,19 +83,15 @@ def card_index_to_name(idx):
 
 
 def onehot_to_card(state, base):
-    """Decode a one-hot card vector starting at `base`. Returns name or None."""
-    vec = state[base:base + N_CARD_TYPES]
-    idx = int(np.argmax(vec))
-    if vec[idx] < 0.5:
-        return None
-    return card_index_to_name(idx)
+    """Decode the card-id float at `base` to a card name, or None if empty."""
+    idx = _slot_card_idx(state, base)
+    return card_index_to_name(idx) if idx >= 0 else None
 
 
 def onehot_to_index(state, base):
-    """Decode a one-hot card vector to its vocab index, or -1 if empty."""
-    vec = state[base:base + N_CARD_TYPES]
-    idx = int(np.argmax(vec))
-    return idx if vec[idx] >= 0.5 else -1
+    """Decode the card-id float at `base` to its vocab index, or -1 if empty."""
+    idx = _slot_card_idx(state, base)
+    return idx if idx >= 0 else -1
 
 
 def card_from_id(val):
@@ -131,7 +129,7 @@ def _decode_permanents(state, start, count=48):
     perms = []
     for i in range(count):
         base = start + i * PERM_SLOT_SIZE
-        idx = onehot_to_index(state, base + _OFF_CARD_ONEHOT)
+        idx = onehot_to_index(state, base + _OFF_CARD_ID)
         if idx < 0:
             continue
         p = {"name": card_index_to_name(idx), "card_idx": idx}
@@ -159,7 +157,7 @@ def _decode_hand(state):
     """Decode self hand (10 slots x 128 one-hot) into a list of dicts."""
     cards = []
     for i in range(10):
-        idx = onehot_to_index(state, _HAND_START + i * N_CARD_TYPES)
+        idx = onehot_to_index(state, _HAND_START + i * _HAND_SLOT_SIZE)
         if idx >= 0:
             cards.append({"name": card_index_to_name(idx), "card_idx": idx})
     return cards
@@ -187,7 +185,7 @@ def _decode_stack(state):
             "name": card_index_to_name(idx),
             "card_idx": idx,
             "controller": "self" if state[base] > 0.5 else "opponent",
-            "is_spell": state[base + 129] > 0.5,
+            "is_spell": state[base + 2] > 0.5,
         })
     return entries
 

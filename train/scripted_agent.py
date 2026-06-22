@@ -34,9 +34,11 @@ from env import (
     _CAT_OTHER, _CAT_PAYING, _CAT_DIG, _CAT_TOP_LIBRARY, _CAT_SB_DONE,
     # battlefield / stack layout
     _BF_START, _BF_SLOT_SIZE, _PERM_A_SLOTS, _BF_CARD_OFF, _STACK_START,
-    _STACK_SLOT_SIZE, _HAND_START,
+    _STACK_SLOT_SIZE, _HAND_START, _HAND_SLOT_SIZE,
     _OFF_IS_TAPPED, _OFF_IS_ATTACKING, _OFF_HAS_SICKNESS, _OFF_IS_CREATURE,
     _OFF_IS_LAND,
+    # per-slot card-id decoder
+    _slot_card_idx,
     # vocab / targeting constants
     _ACTION_CARD_ID_NULL, _ACTION_CTRL_NULL, _BLUE_POOL_IDX, _WASTELAND_VOCAB_IDX,
     _BASIC_LAND_IDS, _COUNTER_SPELL_VOCAB_IDS, _COUNTERSPELL_VOCAB_IDX,
@@ -102,10 +104,8 @@ def _action_card_id(card_ids: np.ndarray, i: int) -> int:
 def _is_doomsday_deck(obs: np.ndarray) -> bool:
     """Heuristic: check if any hand card is a doomsday-deck-only card."""
     for slot in range(MAX_HAND_SLOTS):
-        base = _HAND_START + slot * N_CARD_TYPES
-        card_vec = obs[base:base + N_CARD_TYPES]
-        idx = int(np.argmax(card_vec))
-        if card_vec[idx] > 0.5 and idx in _DOOMSDAY_DECK_IDS:
+        idx = _slot_card_idx(obs, _HAND_START + slot * _HAND_SLOT_SIZE)
+        if idx in _DOOMSDAY_DECK_IDS:
             return True
     return False
 
@@ -131,9 +131,8 @@ def _opponent_has_nonbasic_land(obs: np.ndarray) -> bool:
         base = _BF_START + (slot + _PERM_A_SLOTS) * _BF_SLOT_SIZE
         if obs[base + _OFF_IS_LAND] < 0.5:
             continue  # not a land
-        card_vec = obs[base + _BF_CARD_OFF : base + _BF_CARD_OFF + N_CARD_TYPES]
-        idx = int(np.argmax(card_vec))
-        if card_vec[idx] > 0.5 and idx not in _BASIC_LAND_IDS:
+        idx = _slot_card_idx(obs, base + _BF_CARD_OFF)
+        if idx >= 0 and idx not in _BASIC_LAND_IDS:
             return True
     return False
 
@@ -143,8 +142,7 @@ def _opponent_has_spell_on_stack(obs: np.ndarray) -> bool:
     for i in range(12):
         base = _STACK_START + i * _STACK_SLOT_SIZE
         ctrl_is_self = obs[base]
-        card_vec = obs[base + 1 : base + 1 + N_CARD_TYPES]
-        if np.max(card_vec) > 0.5 and ctrl_is_self < 0.5:
+        if _slot_card_idx(obs, base + 1) >= 0 and ctrl_is_self < 0.5:
             return True
     return False
 
@@ -194,9 +192,8 @@ def _count_blue_sources(obs: np.ndarray) -> int:
         base = _BF_START + slot * _BF_SLOT_SIZE
         if obs[base + _OFF_IS_TAPPED] > 0.5:
             continue
-        card_vec = obs[base + _BF_CARD_OFF : base + _BF_CARD_OFF + N_CARD_TYPES]
-        idx = int(np.argmax(card_vec))
-        if card_vec[idx] > 0.5 and idx in _BLUE_SOURCE_IDS:
+        idx = _slot_card_idx(obs, base + _BF_CARD_OFF)
+        if idx >= 0 and idx in _BLUE_SOURCE_IDS:
             count += 1
     return count
 

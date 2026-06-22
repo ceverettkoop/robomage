@@ -9,7 +9,7 @@
 // X this match"). Lives outside the per-game ECS so it survives init_ecs()
 // across the games of a bo3 — entity IDs reset each game, so a binary set is the
 // only unambiguous representation across the game boundary.
-constexpr int REVEALED_SIZE = 128;  // mirror N_CARD_TYPES in machine_io.h
+constexpr int REVEALED_SIZE = 1024;  // mirror N_CARD_TYPES in machine_io.h
 
 extern unsigned char g_revealed_by_a[REVEALED_SIZE];
 extern unsigned char g_revealed_by_b[REVEALED_SIZE];

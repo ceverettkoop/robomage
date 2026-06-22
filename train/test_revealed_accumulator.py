@@ -23,15 +23,15 @@ from pathlib import Path
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from env import STATE_SIZE, MAX_ACTIONS, _MANDATORY_CATS  # noqa: E402
+from env import (STATE_SIZE, MAX_ACTIONS, _MANDATORY_CATS,  # noqa: E402
+                 _REVEALED_START, _REVEALED_SIZE, _MATCH_CTX_START)
+from card_costs import N_CARD_TYPES  # noqa: E402
 from decode import decode_game_state  # noqa: E402
 from test_harness import get_scripted_action, _make_deck_file, _BINARY, _BIN_DIR  # noqa: E402
 
-# ── Layout constants (mirror src/machine_io.h) ───────────────────────────────
-_REVEALED_START   = 33666           # opponent revealed-cards multi-hot start
-_REVEALED_SIZE    = 128
+# ── Layout constants (derived from env layout) ───────────────────────────────
 _SELF_IS_A_IDX    = 32              # state[32] == 1.0 when viewer is Player A
-_GAME_NUMBER_IDX  = 33018          # state[33018] = match game_number / 3.0
+_GAME_NUMBER_IDX  = _MATCH_CTX_START  # match game_number / 3.0
 
 VOCAB = {
     "Mountain": 0, "Forest": 1, "Lightning Bolt": 2, "Grizzly Bears": 3,
@@ -237,7 +237,7 @@ def test_tutor_reveal():
         if any(int(cats[i]) in _SEARCH_CATS for i in range(num)):
             for i in range(num):
                 if int(cats[i]) in _SEARCH_CATS:
-                    card_idx = int(round(ids[i] * _REVEALED_SIZE))
+                    card_idx = int(round(ids[i] * N_CARD_TYPES))
                     if card_idx == VOCAB["Ponder"]:
                         return i
         return None  # defer to the scripted agent

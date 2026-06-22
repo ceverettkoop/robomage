@@ -8,12 +8,21 @@ import re, os
 
 REPO_ROOT   = os.path.dirname(os.path.abspath(__file__)) + "/.."
 VOCAB_H     = os.path.join(REPO_ROOT, "src/card_vocab.h")
+MACHINE_IO_H = os.path.join(REPO_ROOT, "src/machine_io.h")
 CARDS_DIR   = os.path.join(REPO_ROOT, "bin/resources/cardsfolder")
 OUT_FILE    = os.path.join(REPO_ROOT, "train/card_costs.py")
-N_TYPES     = 128
 N_FEATS     = 7   # W U B R G C generic
 
 COLOR_MAP = {'W': 0, 'U': 1, 'B': 2, 'R': 3, 'G': 4, 'C': 5}
+
+def parse_n_card_types(path):
+    """Read N_CARD_TYPES (embedding vocab size) from machine_io.h."""
+    m = re.search(r'N_CARD_TYPES\s*=\s*(\d+)', open(path).read())
+    if not m:
+        raise RuntimeError(f"could not find N_CARD_TYPES in {path}")
+    return int(m.group(1))
+
+N_TYPES = parse_n_card_types(MACHINE_IO_H)
 
 def parse_vocab(path):
     """Return {card_name: index} from card_vocab.h."""
@@ -108,7 +117,7 @@ def main():
         "# Re-run after updating src/card_vocab.h or card script files.",
         "import numpy as np",
         "",
-        "N_CARD_TYPES = 128",
+        f"N_CARD_TYPES = {N_TYPES}",
         "_N_COST_FEATS = 7  # W, U, B, R, G, C, generic (pip counts / 10.0)",
         "",
         "_CARD_COST_MATRIX = np.array([",
