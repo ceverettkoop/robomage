@@ -50,6 +50,9 @@ bool put_counter(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool rearrange_top_of_library(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer);
+// ChangeType$ Remembered.sameName / Targeted.sameName mover, shared by change_zone
+// (force_all=false) and change_zone_all (force_all=true).
+bool change_zone_same_name(Ability &ab, std::shared_ptr<Orderer> orderer, bool force_all);
 bool counter(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool charm(Ability &ab, std::shared_ptr<Orderer> orderer);
 // Pyroblast/Hydroblast: ConditionPresent$ <type>.<Color> gates the EFFECT (not the

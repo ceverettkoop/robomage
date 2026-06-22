@@ -256,6 +256,19 @@ When implementing a new card, **both** of the following steps are required:
    ```
    This writes the cast-cost feature matrix used by the RL environment and extractor.
 
+**Parse script tags as intended — do not retag them.** When a card needs a mechanic the
+engine lacks, implement the mechanic so the parser honors the script's actual tags
+(`SP$`/`AB$`/`DB$` category, `Origin$`/`Destination$`/`ChangeType$`/`DefinedPlayer$`, etc.).
+Do NOT rewrite one category into another or force a different Origin/Destination to shortcut
+a single card's behavior — a retag that happens to satisfy one card silently corrupts every
+other card that shares the tag. Add a real, general handler keyed on the tag's intended
+meaning.
+
+Follow-up: in limited cases it is acceptable to *ignore* an irrelevant tag when the card's
+full functionality can already be inferred from the other tags (e.g. a cosmetic
+`StackDescription$`/`TgtPrompt$`, or a `ChangeNum$` count-SVar when the effect already moves
+all matching cards). Ignoring a tag is fine; repurposing a tag to mean something else is not.
+
 ### Deck Format
 
 Deck files (`.dk`) in `bin/resources/decks/`:

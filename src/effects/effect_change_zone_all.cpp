@@ -17,6 +17,10 @@ extern Game cur_game;
 namespace effects {
 
 bool change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer) {
+    // Same-name move-all (e.g. Extirpate's ExileYard): ChangeType$ Remembered.sameName.
+    if (ab.change_type.find("sameName") != std::string::npos)
+        return change_zone_same_name(ab, orderer, /*force_all=*/true);
+
     Zone::Ownership owner = ab.controller;
     // If this targets a player (e.g. Endurance: "target player puts the cards
     // from their graveyard on the bottom of their library"), operate on the

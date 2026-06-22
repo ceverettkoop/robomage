@@ -726,10 +726,18 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         ability.target_type = value;  // "Spell", "Activated,Triggered", etc.
     } else if (key == "Optional") {
         ability.optional_choice = (value == "True");
-    } else if (key == "Defined") {
+    } else if (key == "Defined" || key == "DefinedPlayer") {
         if (value == "Remembered") ability.defined_remembered = true;
         else if (value == "TargetedController") ability.defined_targeted_controller = true;
         else if (value == "Self") ability.defined_self = true;
+    } else if (key == "RememberTargets") {
+        ability.remember_targeted = (value == "True");
+    } else if (key == "RememberObjects") {
+        // RememberObjects$ Targeted — remember the spell's target(s) for later
+        // Remembered.sameName subabilities (Surgical Extraction).
+        if (value.find("Targeted") != std::string::npos) ability.remember_targeted = true;
+    } else if (key == "TgtZone") {
+        if (value == "Graveyard") ability.target_in_graveyard = true;
     } else if (key == "ClearRemembered") {
         ability.clear_remembered = (value == "True");
     } else if (key == "TargetMin") {
@@ -820,7 +828,13 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
     } else {
         static const std::set<std::string> ignored_keys = {
             "SpellDescription", "AILogic", "AINoRecursiveCheck", "TgtPrompt", "StackDescription",
-            "ConditionDescription"
+            "ConditionDescription",
+            // sameName search/move (Surgical Extraction, Extirpate, ...): these refine who
+            // chooses or how the search is hidden, but the change_zone_same_name handler
+            // already derives the full behavior from ChangeType/Origin/Destination/Defined.
+            // Shuffle$ is inferred from a Library origin; Chooser/Hidden/ForgetOtherTargets
+            // are cosmetic given the "move the maximum" simplification.
+            "Chooser", "Hidden", "Shuffle", "ForgetOtherTargets", "RememberRevealed"
         };
         if (ignored_keys.find(key) == ignored_keys.end()) {
             std::string msg = "Unrecognized ability param: " + key + "$ " + value;
@@ -977,15 +991,6 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
     return sub;
 }
 
-// True if this ability or any (transitive) subability searches by Remembered.sameName
-// — the Forge signature of the "exile all same-named cards" effect (Surgical Extraction).
-static bool ability_chain_has_same_name(const Ability &ab) {
-    if (ab.change_type.find("sameName") != std::string::npos) return true;
-    for (const auto &sub : ab.subabilities)
-        if (ability_chain_has_same_name(sub)) return true;
-    return false;
-}
-
 // fed each ability line
 static std::vector<Ability> parse_abilities(std::vector<std::string> lines, const std::set<Type>& types,
                                             const std::map<std::string, std::string>& svars,
@@ -1137,21 +1142,6 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
                 }
             }
             ability.amount_svar = "";
-        }
-
-        // Surgical Extraction / Extirpate: a spell whose subability chain searches by
-        // ChangeType$ Remembered.sameName. Rather than implement Forge's RememberObjects /
-        // TgtZone / multi-zone DefinedPlayer plumbing, retag the spell as a graveyard-
-        // targeting ChangeZone (reuses the existing target enumeration + nonBasic filter)
-        // and let change_zone()'s same_name_extract branch do the exiling. The chained
-        // subabilities are replaced wholesale by that branch.
-        if (ability_chain_has_same_name(ability)) {
-            ability.same_name_extract = true;
-            ability.category = "ChangeZone";
-            ability.origin = Zone::GRAVEYARD;
-            ability.origins = { Zone::GRAVEYARD };
-            ability.destination = Zone::EXILE;
-            ability.subabilities.clear();
         }
 
         ret_val.push_back(ability);

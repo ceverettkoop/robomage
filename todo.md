@@ -20,3 +20,12 @@ ML can only pay for spells after choosing them, this does not allow some rare ca
 Known ML problems:
 Does not know what's in exile
 
+Observation space:
+- Add opponent's hand to the observation space when it becomes revealed (e.g. by
+  Surgical Extraction / Thoughtseize / Duress). There are currently no per-card
+  opponent-hand identity slots — only a hand count + the match-scoped revealed
+  multi-hot (mark_card_revealed). Add per-card slots for known opponent-hand cards,
+  and have those slots update (move/clear) when a known card leaves the hand for
+  another public zone, so the belief tracks the specific card rather than just
+  "was revealed once this match".
+

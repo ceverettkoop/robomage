@@ -422,8 +422,11 @@ static std::vector<Entity> build_valid_targets(
     // or Life from the Loam targeting Land.YouCtrl): opponent's graveyard first, then
     // own. is_legal_target applies the type/owner filter, so YouCtrl effects only keep
     // the caster's own cards.
-    if (ability.category == "ChangeZone" && ability.origin == Zone::GRAVEYARD &&
-        ability.destination != Zone::BATTLEFIELD) {
+    // target_in_graveyard covers spells that target a graveyard card via a non-ChangeZone
+    // vehicle (Surgical Extraction's SP$ Pump with TgtZone$ Graveyard).
+    if (ability.target_in_graveyard ||
+        (ability.category == "ChangeZone" && ability.origin == Zone::GRAVEYARD &&
+         ability.destination != Zone::BATTLEFIELD)) {
         for (int pass = 0; pass < 2; pass++) {
             Zone::Ownership slot_owner = (pass == 0) ? opp : priority_player;
             for (auto e : orderer->mEntities) {

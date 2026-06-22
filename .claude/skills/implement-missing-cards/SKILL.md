@@ -55,6 +55,17 @@ card's expected behavior or the test scope, STOP and ask the user** rather than 
       `WARNING: Unrecognized ability param` lines the engine prints are acceptable for
       cosmetic sub-params but NOT when they change what the card does — when unsure, ask.
 
+      **When you do implement a mechanic, parse the script tags as intended — never retag
+      them.** Honor the script's actual `SP$`/`AB$`/`DB$` category and its
+      `Origin$`/`Destination$`/`ChangeType$`/`DefinedPlayer$`/etc. by adding a real, general
+      handler keyed on the tag's meaning. Do NOT rewrite one category into another or force a
+      different Origin/Destination to shortcut a single card — a retag that satisfies one card
+      silently corrupts every other (often unimplemented) card sharing that tag. Follow-up: it
+      is acceptable to *ignore* an irrelevant tag when the card's full behavior is already
+      inferable from the others (a cosmetic `StackDescription$`, or a `ChangeNum$` count-SVar
+      when the effect already moves all matching cards). Ignoring a tag is fine; repurposing
+      one to mean something else is not.
+
    c. **Register the card.** Append `{"<Name>", N}` to `src/card_vocab.h` using the next free
       index. Indices must stay `< 1023` (the token sentinel). If a card name has an apostrophe,
       keep it (e.g. `Mishra's Bauble`) — the engine normalizes it away when resolving the

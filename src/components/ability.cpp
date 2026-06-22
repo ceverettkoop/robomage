@@ -528,7 +528,8 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
     // Card in a graveyard targeted by a ChangeZone with a type filter (e.g. Life from
     // the Loam: ValidTgts$ Land.YouCtrl, Origin$ Graveyard). Filter by zone, owner
     // (YouCtrl/OppCtrl), and card type.
-    if (category == "ChangeZone" && origin == Zone::GRAVEYARD && destination != Zone::BATTLEFIELD) {
+    if (target_in_graveyard ||
+        (category == "ChangeZone" && origin == Zone::GRAVEYARD && destination != Zone::BATTLEFIELD)) {
         if (!global_coordinator.entity_has_component<Zone>(cand)) return false;
         auto &cz = global_coordinator.GetComponent<Zone>(cand);
         if (cz.location != Zone::GRAVEYARD) return false;
@@ -738,6 +739,15 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
             fizzle(orderer);
             return;  // subabilities do not fire; TODO revisit this in light of cards e.g. k-command
         }
+    }
+    // RememberTargets/RememberObjects: stash the target(s) so chained
+    // ChangeType$ Remembered.sameName subabilities can match by name (Surgical Extraction).
+    if (remember_targeted) {
+        cur_game.remembered_entities.clear();
+        if (!targets.empty())
+            for (auto t : targets) cur_game.remembered_entities.push_back(t);
+        else if (target != 0)
+            cur_game.remembered_entities.push_back(target);
     }
     game_log("Resolving ability (category: %s, amount: %zu)\n", category.c_str(), amount);
 
