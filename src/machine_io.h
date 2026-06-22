@@ -37,7 +37,7 @@
 // NOTE: Exile zones are populated in GameState but NOT serialized.
 // Add them back once cards that use exile are implemented.
 //
-// Fixed-size state vector layout (STATE_SIZE = 33666 floats):
+// Fixed-size state vector layout (STATE_SIZE = 33794 floats):
 //
 //  [0-8]      Self player block (9 floats):
 //               life/20, hand_ct/10, poison/10, mana[W,U,B,R,G,C]/10
@@ -88,8 +88,15 @@
 //                top of the library. Entries are set when a card is placed on top
 //                (e.g. Ponder, Brainstorm, Rearrange) and cleared when the library
 //                is shuffled.
+//
+//  [33666-33793] Opponent revealed-cards multi-hot (128 floats, zeros = none seen
+//                yet). Binary "has the opponent-of-viewer ever revealed card X
+//                this match"; accumulated across the games of a bo3 and persists
+//                over the per-game ECS reset. Set whenever an opponent card enters
+//                a public zone (battlefield/stack/graveyard/exile) or is revealed
+//                by a tutor.
 
-static constexpr int STATE_SIZE             = 33666;
+static constexpr int STATE_SIZE             = 33794;
 static constexpr int N_CARD_TYPES      = 128;
 static constexpr int PERM_SLOT_SIZE    = 138;  // 8 stat/combat + 2 type flags + N_CARD_TYPES
 static constexpr int STACK_SLOT_SIZE   = 130;  // controller_is_self(1) + card one-hot(128) + is_spell(1)

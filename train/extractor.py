@@ -27,7 +27,8 @@ Index layout must stay in sync with src/machine_io.h:
   obs[33022:33025]     library counts & post-board (self_lib/60, opp_lib/60, is_post_board)
   obs[33025]           current game turn / 50
   obs[33026:33666]     5 known top-of-library slots × 128 floats (card one-hot, all zeros = unknown)
-  obs[33666:]          action metadata + cost features (appended by env.py)
+  obs[33666:33794]     opponent revealed-cards multi-hot (128 floats, accumulated across the match)
+  obs[33794:]          action metadata + cost features (appended by env.py)
 """
 
 import torch
@@ -83,6 +84,7 @@ _HIST_ENTRY_SIZE = 4    # category_norm, card_id_norm, is_self, turn/50
 
 _KNOWN_TOP_LIB_SLOTS     = 5   # known top-of-library cards
 _KNOWN_TOP_LIB_SLOT_SIZE = 128 # card one-hot per slot
+_REVEALED_SIZE           = 128 # opponent revealed-cards multi-hot (dense, not one-hot-per-slot)
 
 _PERM_START  = _GLOBAL_SIZE                                    # 34
 _PERM_END    = _PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE     # 13282
@@ -102,8 +104,10 @@ _LIBRARY_CTX_END      = _MATCH_CTX_END + 3                     # 33025 (current 
 _CUR_TURN_IDX         = _LIBRARY_CTX_END                       # 33025
 _KNOWN_TOP_LIB_START  = _CUR_TURN_IDX + 1                      # 33026
 _KNOWN_TOP_LIB_END    = _KNOWN_TOP_LIB_START + _KNOWN_TOP_LIB_SLOTS * _KNOWN_TOP_LIB_SLOT_SIZE  # 33666
-_STATE_END            = _KNOWN_TOP_LIB_END                     # 33666
-# obs[33666:] = action metadata + cost features appended by env.py
+_REVEALED_START       = _KNOWN_TOP_LIB_END                    # 33666
+_REVEALED_END         = _REVEALED_START + _REVEALED_SIZE      # 33794
+_STATE_END            = _REVEALED_END                         # 33794
+# obs[33794:] = action metadata + cost features appended by env.py
 
 
 class CardGameExtractor(BaseFeaturesExtractor):
@@ -120,6 +124,7 @@ class CardGameExtractor(BaseFeaturesExtractor):
 
     Output fed into the policy MLP head:
       global(34) + hist(512) + meta_ctx(8) + known_top_lib_agg(embed) +
+      revealed_agg(embed) +
       action_extras(match+lib+turn skipped; action metadata + cost feats) +
       perm_agg(embed*2: masked mean+max) + stack_agg(embed//2 * 2) +
       graveyard_agg(embed*2: masked mean+max) + hand_agg(embed*2: masked mean+max)
@@ -138,6 +143,7 @@ class CardGameExtractor(BaseFeaturesExtractor):
             + _hist_size                                 # 512 action history
             + _meta_ctx_size                             # 8 match + lib + turn
             + embed_dim                                  # known-top library mean
+            + embed_dim                                  # opponent revealed-cards multi-hot
             + (observation_space.shape[0] - _STATE_END)  # action extras
             + embed_dim * 2                              # perm masked mean+max (creatures, lands, other)
             + half * 2                                   # stack mean+max
@@ -170,10 +176,19 @@ class CardGameExtractor(BaseFeaturesExtractor):
             nn.ReLU(),
         )
 
+        # Encoder for the dense 128-float opponent revealed-cards multi-hot.
+        # Distinct from entity_encoder: this block is a multi-hot (many bits set),
+        # not a one-hot-per-slot, so it gets its own weights.
+        self.revealed_encoder = nn.Sequential(
+            nn.Linear(_REVEALED_SIZE, embed_dim),
+            nn.ReLU(),
+        )
+
     def forward(self, obs: torch.Tensor) -> torch.Tensor:
         global_ctx    = obs[:, :_GLOBAL_SIZE]
         hist_ctx      = obs[:, _HIST_START:_HIST_END]           # action history (128 × 4)
         meta_ctx      = obs[:, _HIST_END:_KNOWN_TOP_LIB_START]  # match ctx + library ctx + current turn (8)
+        revealed      = obs[:, _REVEALED_START:_REVEALED_END]   # opponent revealed-cards multi-hot (128)
         action_extras = obs[:, _STATE_END:]                     # action cats + card IDs + cost features
 
         perms     = obs[:, _PERM_START:_PERM_END].reshape(-1, _PERM_SLOTS, _PERM_SLOT_SIZE)
@@ -204,6 +219,7 @@ class CardGameExtractor(BaseFeaturesExtractor):
         gy_agg      = _masked_mean_max(gy_emb,   gy_present)
         hand_agg    = _masked_mean_max(hand_emb, hand_present)
         top_lib_agg = top_lib_emb.mean(1)
+        revealed_agg = self.revealed_encoder(revealed)  # (B, embed) dense multi-hot encoding
 
-        return torch.cat([global_ctx, hist_ctx, meta_ctx, top_lib_agg, action_extras,
+        return torch.cat([global_ctx, hist_ctx, meta_ctx, top_lib_agg, revealed_agg, action_extras,
                           perm_agg, stk_agg, gy_agg, hand_agg], dim=-1)

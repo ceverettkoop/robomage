@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "../classes/game.h"
+#include "../classes/match_state.h"
 #include "../cli_output.h"
 #include "../components/carddata.h"
 #include "../components/permanent.h"
@@ -120,6 +121,8 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
                 game_log("%s puts %s to %s\n", player_name(owner).c_str(), chosen_cd.name.c_str(), dest_str);
             } else if (reveal) {
                 // Hidden destination, but the card was revealed — it's public knowledge.
+                // The orderer reveal hook only fires for public zones, so mark it here.
+                mark_card_revealed(chosen, owner);
                 game_log("%s reveals %s and puts it to %s\n", player_name(owner).c_str(), chosen_cd.name.c_str(),
                     dest_str);
             } else {

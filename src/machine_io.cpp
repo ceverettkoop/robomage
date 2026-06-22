@@ -7,6 +7,7 @@
 
 #include "card_vocab.h"
 #include "classes/game.h"
+#include "classes/match_state.h"
 #include "components/ability.h"
 #include "components/carddata.h"
 #include "components/token.h"
@@ -131,6 +132,12 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
         ? cur_game.known_top_library_a : cur_game.known_top_library_b;
     for (int i = 0; i < KNOWN_TOP_LIBRARY_SIZE; i++)
         gs->known_top_library_self[i] = viewer_known[i];
+
+    // Opponent-of-viewer's match-scoped revealed-cards multi-hot.
+    const unsigned char* opp_revealed = (viewer == Zone::PLAYER_A)
+        ? g_revealed_by_b : g_revealed_by_a;
+    for (int i = 0; i < REVEALED_CARD_TYPES; i++)
+        gs->opp_revealed[i] = opp_revealed[i];
 
     // Fill player stat fields (hand_ct filled in the entity pass below)
     auto fill_player_stats = [&](PlayerState& ps, Entity ent) {
@@ -481,6 +488,11 @@ std::vector<float> serialize_state(const GameState* gs) {
         state.insert(state.end(), N_CARD_TYPES, 0.0f);
         if (idx >= 0 && idx < N_CARD_TYPES) state[onehot_start + idx] = 1.0f;
     }
+
+    // Opponent revealed-cards multi-hot (128 floats; all zeros = none seen yet).
+    // Accumulated across the match, perspective-relative to the viewer.
+    for (int i = 0; i < REVEALED_CARD_TYPES; i++)
+        state.push_back(gs->opp_revealed[i] ? 1.0f : 0.0f);
 
     assert(static_cast<int>(state.size()) == STATE_SIZE);
     return state;

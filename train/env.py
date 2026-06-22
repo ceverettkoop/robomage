@@ -24,11 +24,12 @@ Observation space
 -----------------
 State is always emitted from the PRIORITY PLAYER'S perspective ("self").
 
-33666-float state vector (32506 game state + 512 action history + 4 match context
-+ 3 library/post-board + 1 current turn + 640 known top-5 library)
+33794-float state vector (32506 game state + 512 action history + 4 match context
++ 3 library/post-board + 1 current turn + 640 known top-5 library
++ 128 opponent revealed-cards multi-hot)
 + 64 action-category floats + 64 action card-ID floats
 + 64 action controller_is_self floats + 70 hand cost floats
-+ 336 battlefield ability cost floats = 34264 total.
++ 336 battlefield ability cost floats = 34392 total.
 NOTE: ActionChoice.description is NOT part of the observation — it is for
 human-readable display only (GUI/CLI) and is never sent to the ML model.
 NOTE: Exile zones are tracked in GameState but not serialized to the observation.
@@ -59,7 +60,7 @@ try:
 except ImportError:
     from train.card_costs import _CARD_COST_MATRIX, _CARD_ABILITY_COST_MATRIX, N_CARD_TYPES, _N_COST_FEATS
 
-STATE_SIZE = 33666
+STATE_SIZE = 33794
 # NOTE: Exile zones are tracked in GameState but not serialized to the observation.
 # NOTE: ActionChoice.description is never emitted in the BQUERY payload — it is for
 #       human-readable display only and is not part of the ML observation.
@@ -103,7 +104,7 @@ _ACTION_CTRL_NULL    = -1.0 / N_CARD_TYPES  # null sentinel for non-entity actio
 MAX_HAND_SLOTS = 10
 _HAND_COST_FEATS  = MAX_HAND_SLOTS * _N_COST_FEATS  # 10 * 7 = 70
 _BF_ABILITY_FEATS = 48 * _N_COST_FEATS              # 48 * 7 = 336
-OBS_SIZE = STATE_SIZE + 3 * MAX_ACTIONS + _HAND_COST_FEATS + _BF_ABILITY_FEATS  # 34264
+OBS_SIZE = STATE_SIZE + 3 * MAX_ACTIONS + _HAND_COST_FEATS + _BF_ABILITY_FEATS  # 34392
 
 # ── State layout offsets (mirror src/machine_io.h) ───────────────────────────
 # Creatures, lands, and other permanents share one unified section (no separate land slots).
@@ -123,6 +124,7 @@ _LIBRARY_CTX_SIZE       = 3                    # self_lib/60, opp_lib/60, is_pos
 _CUR_TURN_SIZE          = 1                    # current turn / 50
 _KNOWN_TOP_LIB_SLOTS    = 5                    # serialized known top-of-library cards
 _KNOWN_TOP_LIB_SLOT_SIZE = 128                 # card one-hot per slot
+_REVEALED_SIZE          = 128                  # opponent revealed-cards multi-hot
 
 _SELF_PERM_START     = _GLOBAL_SIZE                                                  # 34
 _OPP_PERM_START      = _SELF_PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE              # 6658
@@ -136,6 +138,8 @@ _LIBRARY_CTX_START   = _MATCH_CTX_START + _MATCH_CTX_SIZE                       
 _CUR_TURN_IDX        = _LIBRARY_CTX_START + _LIBRARY_CTX_SIZE                        # 33025
 _KNOWN_TOP_LIB_START = _CUR_TURN_IDX + _CUR_TURN_SIZE                                # 33026
 _KNOWN_TOP_LIB_END   = _KNOWN_TOP_LIB_START + _KNOWN_TOP_LIB_SLOTS * _KNOWN_TOP_LIB_SLOT_SIZE  # 33666
+_REVEALED_START      = _KNOWN_TOP_LIB_END                                            # 33666
+_REVEALED_END        = _REVEALED_START + _REVEALED_SIZE                              # 33794
 
 _SELF_PERM_POWER_IDX = np.arange(_PERM_SLOTS) * _PERM_SLOT_SIZE + _SELF_PERM_START
 _SELF_PERM_CREATURE_IDX = _SELF_PERM_POWER_IDX + 8
@@ -482,7 +486,7 @@ _BF_ONEHOT_IDX    = np.concatenate([
 _CTRL_OFF         = 7                          # offset of controller_is_self within a permanent slot
 _GY_A_SLOTS       = _GY_SLOTS_TOTAL // 2       # self occupies GY slots 0-63
 # Start of bf_ability_costs block in the full obs vector
-_BF_COST_START    = STATE_SIZE + 3 * MAX_ACTIONS + _HAND_COST_FEATS  # 33928
+_BF_COST_START    = STATE_SIZE + 3 * MAX_ACTIONS + _HAND_COST_FEATS  # 34056
 # Status offsets within a permanent slot
 _OFF_POWER        = 0
 _OFF_TOUGHNESS    = 1

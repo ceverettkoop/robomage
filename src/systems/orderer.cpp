@@ -8,6 +8,7 @@
 #include "../classes/deck.h"
 #include "../classes/game.h"
 #include "../classes/action.h"
+#include "../classes/match_state.h"
 #include "../cli_output.h"
 #include "../components/ability.h"
 #include "../components/carddata.h"
@@ -127,6 +128,16 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
 
     if (on_bottom) target_zone.distance_from_top = back + 1;
     target_zone.location = destination;
+
+    // Match-scoped reveal tracking: any card entering a PUBLIC zone becomes known
+    // to both players, so accumulate it in the owner's revealed multi-hot. This
+    // single chokepoint covers casts (→STACK), ETB (→BATTLEFIELD), and
+    // deaths/discards (→GRAVEYARD/EXILE). Moves to HAND or within LIBRARY are
+    // hidden and intentionally skipped (tutor reveals are marked at their site).
+    if (destination == Zone::BATTLEFIELD || destination == Zone::STACK ||
+        destination == Zone::GRAVEYARD || destination == Zone::EXILE) {
+        mark_card_revealed(target, target_zone.owner);
+    }
 }
 
 // Dauthi Voidwalker replacement effect (rule 614): when a non-token card owned by

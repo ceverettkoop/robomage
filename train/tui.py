@@ -197,9 +197,12 @@ class LauncherApp(App):
             return
         sel = field["widget"]
         opts = self._matchup_checkpoints()
-        keep = sel.value if (isinstance(sel.value, str) and sel.value in opts) else Select.BLANK
+        keep = sel.value if (isinstance(sel.value, str) and sel.value in opts) else None
         sel.set_options([(v, v) for v in opts])
-        sel.value = keep
+        if keep is not None:
+            sel.value = keep
+        else:
+            sel.clear()
 
     def _arg_for_widget(self, widget):
         for f in self._fields:

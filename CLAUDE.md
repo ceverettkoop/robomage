@@ -336,6 +336,15 @@ cards are placed on top (Ponder/Brainstorm/Rearrange/Sylvan) and cleared to
 unknown whenever the library is shuffled. Also slides up when a card is drawn
 from within the tracked top-5 window.
 
+**Opponent revealed-cards multi-hot** (indices 33666-33793): 128-float binary
+multi-hot of every card the opponent-of-viewer has revealed so far this match.
+Bit `i` = 1 once the opponent has shown card vocab index `i`. Set when an
+opponent card enters a public zone (battlefield/stack/graveyard/exile) or is
+revealed by a tutor; accumulated across the games of a bo3 and persisting over
+the per-game ECS reset (the engine's deterministic "belief state", since a
+feedforward policy cannot remember reveals across `reset()`). Empty (all zeros)
+at game-1 turn-1. Tracked in `src/classes/match_state.{h,cpp}`.
+
 ### Machine mode protocol
 
 `--machine` flag makes the game communicate over stdio for RL training:
@@ -353,7 +362,7 @@ BQUERY: <N>\n
 [float32 × MAX_ACTIONS — action card_is_public flags (padded)]
 ```
 - `N` = number of legal choices
-- State vector: 33666 floats (see `src/machine_io.h` for layout)
+- State vector: 33794 floats (see `src/machine_io.h` for layout)
 - Action categories: ActionCategory enum integers (0–26)
 - Card IDs: `card_vocab_index / N_CARD_TYPES`, or `-1.0 / N_CARD_TYPES` (-0.0078125) as null sentinel
 - Controller flags: `1.0` = self-controlled, `0.0` = opponent, null sentinel for non-entity actions
@@ -389,16 +398,16 @@ BQUERY: <N>\n
 
 ### Observation space
 
-Total: **34264 floats** (OBS_SIZE in `train/env.py`)
+Total: **34392 floats** (OBS_SIZE in `train/env.py`)
 
 | Range | Size | Content |
 |---|---|---|
-| `[0:33666]` | 33666 | State vector (see `src/machine_io.h`) |
-| `[33666:33730]` | 64 | Action categories, padded to MAX_ACTIONS (64), normalised by 26 |
-| `[33730:33794]` | 64 | Action card IDs, padded to MAX_ACTIONS |
-| `[33794:33858]` | 64 | Action controller_is_self flags, padded to MAX_ACTIONS |
-| `[33858:33928]` | 70 | Hand cast costs (10 slots × 7 cost features) |
-| `[33928:34264]` | 336 | Battlefield ability costs (48 slots × 7 cost features) |
+| `[0:33794]` | 33794 | State vector (see `src/machine_io.h`) |
+| `[33794:33858]` | 64 | Action categories, padded to MAX_ACTIONS (64), normalised by 26 |
+| `[33858:33922]` | 64 | Action card IDs, padded to MAX_ACTIONS |
+| `[33922:33986]` | 64 | Action controller_is_self flags, padded to MAX_ACTIONS |
+| `[33986:34056]` | 70 | Hand cast costs (10 slots × 7 cost features) |
+| `[34056:34392]` | 336 | Battlefield ability costs (48 slots × 7 cost features) |
 
 State vector layout is documented in `src/machine_io.h`. Key indices: `obs[31]` = priority player is the active player (perspective-relative), `obs[32]` = priority player is Player A (absolute). To get `active_is_a`: `(obs[31] > 0.5) == (obs[32] > 0.5)`.
 
