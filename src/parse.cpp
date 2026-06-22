@@ -947,9 +947,14 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
                 sub.amount_svar = "";
                 return sub;
             }
+            // Delirium-conditional value: Count$Delirium.<yes>.<no> or Count$...GE4.<yes>.<no>.
+            size_t delirium_pos = sv.find("Count$Delirium");
             size_t ge_pos = sv.find("GE");
-            if (ge_pos != std::string::npos) {
-                std::string rest = sv.substr(ge_pos + 2);
+            size_t scale_pos = delirium_pos != std::string::npos
+                                   ? delirium_pos + std::string("Count$Delirium").size()
+                                   : (ge_pos != std::string::npos ? ge_pos + 2 : std::string::npos);
+            if (scale_pos != std::string::npos) {
+                std::string rest = sv.substr(scale_pos);
                 size_t d1 = rest.find('.');
                 if (d1 != std::string::npos) {
                     size_t d2 = rest.find('.', d1 + 1);
@@ -1116,10 +1121,17 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
             auto it = svars.find(ability.amount_svar);
             if (it != svars.end()) {
                 const std::string &sv = it->second;
-                // Pattern: "Count$Compare Y GE4.<delirium_amount>.<default_amount>"
+                // Delirium-conditional value. Two equivalent Forge spellings, both
+                // meaning "<yes> if the caster has delirium, else <no>":
+                //   Count$Delirium.<yes>.<no>           (compact form, e.g. Unholy Heat)
+                //   Count$Compare Y GE4.<yes>.<no>      (explicit GE form)
+                size_t delirium_pos = sv.find("Count$Delirium");
                 size_t ge_pos = sv.find("GE");
-                if (ge_pos != std::string::npos) {
-                    std::string rest = sv.substr(ge_pos + 2);
+                size_t scale_pos = delirium_pos != std::string::npos
+                                       ? delirium_pos + std::string("Count$Delirium").size()
+                                       : (ge_pos != std::string::npos ? ge_pos + 2 : std::string::npos);
+                if (scale_pos != std::string::npos) {
+                    std::string rest = sv.substr(scale_pos);
                     size_t d1 = rest.find('.');
                     if (d1 != std::string::npos) {
                         size_t d2 = rest.find('.', d1 + 1);
