@@ -148,6 +148,15 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--load", "str", default=None, suggest="checkpoint",
             help="Resume from checkpoint .zip (or shorthand)"),
         _opponent_mode(),
+        Arg("--opponent-pool", "str", default=None,
+            help="Comma-separated mix of opponent controllers to randomize per "
+                 "episode, e.g. 'scripted:easy,scripted:hard=2,delver_mav_final'. "
+                 "Each item may carry an optional '=<weight>'. Overrides the plain "
+                 "scripted opponent (ignored with --self-play)."),
+        Arg("--opponent-ckpt-ratio", "float", default=1.0,
+            help="Cap on unique opponent checkpoints kept resident, as a ratio of "
+                 "n_envs (default 1.0 -> <=1 checkpoint per env process). Scripted "
+                 "agents don't count toward the cap."),
         *train_opts(),
         *common_args(),
     ]),
@@ -299,6 +308,8 @@ def _add_one(target, a: Arg):
         kwargs["metavar"] = a.metavar
     if a.kind == "int":
         kwargs["type"] = int
+    elif a.kind == "float":
+        kwargs["type"] = float
     elif a.kind == "choice":
         kwargs["choices"] = list(a.choices)
     if a.is_positional:

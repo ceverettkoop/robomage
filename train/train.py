@@ -452,9 +452,18 @@ _DECKS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file
 
 
 def make_env(rank: int, model_deck: str = "delver", opp_deck: str = "delver",
-             **env_kwargs):
+             opponent_pool: str | None = None, opp_ckpt_ratio: float = 1.0,
+             n_envs: int = 1, **env_kwargs):
     def _init():
-        env = ModelVsScriptedEnv(model_deck=model_deck, opp_deck=opp_deck, **env_kwargs)
+        opponent = "scripted"
+        if opponent_pool:
+            from opponents import OpponentPool
+            opponent = OpponentPool(
+                opponent_pool, checkpoint_resolver=_resolve_model,
+                rng=np.random.default_rng(1000 + rank),
+                n_envs=n_envs, env_index=rank, max_checkpoint_ratio=opp_ckpt_ratio)
+        env = ModelVsScriptedEnv(model_deck=model_deck, opp_deck=opp_deck,
+                                 opponent=opponent, **env_kwargs)
         if USE_MASKABLE:
             env = ActionMasker(env, lambda e: e.action_masks())
         env = Monitor(env)
@@ -491,7 +500,8 @@ def make_self_play_env(checkpoint_dir: str, rank: int,
 def train(binary_path: str, load_path: str | None = None, total_timesteps: int = TOTAL_TIMESTEPS,
           tally: bool = False, self_play: bool = False,
           model_deck: str = "delver", opp_deck: str = "delver", record: bool = False,
-          n_envs_override: int | None = None, no_shaping: bool = False, **env_kwargs):
+          n_envs_override: int | None = None, no_shaping: bool = False,
+          opponent_pool: str | None = None, opp_ckpt_ratio: float = 1.0, **env_kwargs):
     """Train the model.
 
     Two opponent modes (mutually exclusive):
@@ -517,8 +527,15 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
             [make_self_play_env(checkpoint_dir, i, model_deck, opp_deck, **env_kwargs) for i in range(n_envs)])
     else:
         n_envs = n_envs_override if n_envs_override is not None else N_ENVS
-        print(f"Opponent: scripted agent ({n_envs} envs)")
-        vec_env = SubprocVecEnv([make_env(i, model_deck, opp_deck, **env_kwargs) for i in range(n_envs)])
+        if opponent_pool:
+            print(f"Opponent: pool [{opponent_pool}] ({n_envs} envs, "
+                  f"ckpt_ratio={opp_ckpt_ratio})")
+        else:
+            print(f"Opponent: scripted agent ({n_envs} envs)")
+        vec_env = SubprocVecEnv([
+            make_env(i, model_deck, opp_deck, opponent_pool=opponent_pool,
+                     opp_ckpt_ratio=opp_ckpt_ratio, n_envs=n_envs, **env_kwargs)
+            for i in range(n_envs)])
 
     try:
         policy_kwargs = dict(
@@ -877,24 +894,24 @@ def observe(binary_path: str,
     side's deck.  Both players' decisions are printed so the full game flow is
     visible.
     """
-    def _load_controller(spec):
-        """Return a loaded model, or None for the scripted agent."""
-        if spec is None or spec == "scripted":
-            return None
-        return MaskablePPO.load(_resolve_model(spec))
+    from opponents import make_controller, is_scripted_spec
 
-    def _label(model, side):
-        return f"Model/{side}" if model is not None else f"Scripted/{side}"
+    def _label(spec, side):
+        kind = "Scripted" if is_scripted_spec(spec or "scripted") else "Model"
+        return f"{kind}/{side}"
 
-    model_a = _load_controller(player_a)
-    model_b = _load_controller(player_b)
+    # observe watches a fixed game, so use deterministic model predictions.
+    ctrl_a = make_controller(player_a or "scripted",
+                             checkpoint_resolver=_resolve_model, deterministic=True)
+    ctrl_b = make_controller(player_b or "scripted",
+                             checkpoint_resolver=_resolve_model, deterministic=True)
 
     env = RoboMageEnv(binary_path=binary_path, render_mode="human",
                       deck_a=deck_a, deck_b=deck_b)
     obs, _ = env.reset()
 
-    print(f"=== {_label(model_a, 'A')} ({deck_a or 'default'} deck) vs "
-          f"{_label(model_b, 'B')} ({deck_b or 'default'} deck) ===\n")
+    print(f"=== {_label(player_a, 'A')} ({deck_a or 'default'} deck) vs "
+          f"{_label(player_b, 'B')} ({deck_b or 'default'} deck) ===\n")
 
     done = False
     total_reward = 0.0
@@ -902,15 +919,11 @@ def observe(binary_path: str,
         a_has_priority = obs[32] > 0.5
         cur_side = "A" if a_has_priority else "B"
         num_choices = env._num_choices
-        model = model_a if a_has_priority else model_b
-
-        if model is not None:
-            masks = env.action_masks() if USE_MASKABLE else None
-            action, _ = model.predict(obs, action_masks=masks, deterministic=True)
-            action = int(action)
-        else:
-            action = scripted_action(obs, num_choices)
-        print(f"  [{_label(model, cur_side)}] action {action + 1} of {num_choices}")
+        controller = ctrl_a if a_has_priority else ctrl_b
+        masks = env.action_masks() if USE_MASKABLE else None
+        action = controller.choose(obs, num_choices, action_masks=masks)
+        spec = player_a if a_has_priority else player_b
+        print(f"  [{_label(spec, cur_side)}] action {action + 1} of {num_choices}")
 
         obs, reward, terminated, truncated, _ = env.step(action)
         total_reward += reward
@@ -920,9 +933,9 @@ def observe(binary_path: str,
     print()
     # total_reward is from Player A's perspective.
     if total_reward > 0:
-        print(f"=== {_label(model_a, 'A')} wins ===")
+        print(f"=== {_label(player_a, 'A')} wins ===")
     elif total_reward < 0:
-        print(f"=== {_label(model_b, 'B')} wins ===")
+        print(f"=== {_label(player_b, 'B')} wins ===")
     else:
         print("=== Draw ===")
 
@@ -1108,7 +1121,9 @@ if __name__ == "__main__":
         train(args.binary, _resolve_model(args.load), args.total_timesteps,
               tally=args.tally, self_play=args.self_play,
               model_deck=args.deck, opp_deck=args.opponent, record=args.record,
-              n_envs_override=args.n_envs, no_shaping=args.no_shaping, **env_kwargs)
+              n_envs_override=args.n_envs, no_shaping=args.no_shaping,
+              opponent_pool=args.opponent_pool, opp_ckpt_ratio=args.opponent_ckpt_ratio,
+              **env_kwargs)
     elif args.command == "sweep":
         _run_sweep(args, parser, args.deck)
     elif args.command == "fixed-model":

@@ -270,3 +270,6 @@ _VOCAB_NAMES = [
     "",  # 126
     "",  # 127
 ]
+
+# Vocab indices that are Land cards (Types line includes 'Land').
+_LAND_VOCAB_IDS = frozenset({0, 1, 4, 5, 6, 7, 8, 9, 10, 15, 19, 25, 32, 34, 36, 39, 44, 45, 50, 52, 62, 63, 64, 65, 66, 67})

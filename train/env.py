@@ -45,7 +45,6 @@ import subprocess
 import sys
 import os
 import re
-import random
 import numpy as np
 
 try:
@@ -537,11 +536,6 @@ def _hand_has_card(obs: np.ndarray, vocab_idx: int) -> bool:
     return False
 
 
-def _action_card_id(card_ids: np.ndarray, i: int) -> int:
-    """Decode the card vocab index from the action's card_id float."""
-    return int(round(float(card_ids[i]) * N_CARD_TYPES))
-
-
 def _obs_action_category(obs: np.ndarray, action: int) -> int:
     """Extract the raw action category int for the given action index from a full obs vector."""
     return int(round(obs[STATE_SIZE + action] * ACTION_CATEGORY_MAX))
@@ -556,56 +550,6 @@ def _obs_is_main_phase(obs: np.ndarray) -> bool:
     """Check if the current step is a main phase (FIRST_MAIN or SECOND_MAIN)."""
     # Step one-hot at obs[18:31], FIRST_MAIN=index 3 (obs[21]), SECOND_MAIN=index 10 (obs[28])
     return obs[21] > 0.5 or obs[28] > 0.5
-
-
-def _is_doomsday_deck(obs: np.ndarray) -> bool:
-    """Heuristic: check if any hand card is a doomsday-deck-only card."""
-    for slot in range(MAX_HAND_SLOTS):
-        base = _HAND_START + slot * N_CARD_TYPES
-        card_vec = obs[base:base + N_CARD_TYPES]
-        idx = int(np.argmax(card_vec))
-        if card_vec[idx] > 0.5 and idx in _DOOMSDAY_DECK_IDS:
-            return True
-    return False
-
-
-def _all_eligible_creatures_attacking(obs: np.ndarray) -> bool:
-    """Return True if every untapped, non-sick creature in self's slots (0-47) is attacking."""
-    any_eligible = False
-    for slot in range(_PERM_A_SLOTS):
-        base = _BF_START + slot * _BF_SLOT_SIZE
-        if obs[base + _OFF_IS_CREATURE] < 0.5:
-            continue  # not a creature (empty slot, land, or other permanent)
-        if obs[base + _OFF_IS_TAPPED] > 0.5 or obs[base + _OFF_HAS_SICKNESS] > 0.5:
-            continue  # can't attack
-        any_eligible = True
-        if obs[base + _OFF_IS_ATTACKING] <= 0.5:
-            return False  # eligible but not yet attacking
-    return any_eligible
-
-
-def _opponent_has_nonbasic_land(obs: np.ndarray) -> bool:
-    """Return True if opponent has at least one nonbasic land (opp perm slots 48-95)."""
-    for slot in range(_PERM_A_SLOTS):
-        base = _BF_START + (slot + _PERM_A_SLOTS) * _BF_SLOT_SIZE
-        if obs[base + _OFF_IS_LAND] < 0.5:
-            continue  # not a land
-        card_vec = obs[base + _BF_CARD_OFF : base + _BF_CARD_OFF + N_CARD_TYPES]
-        idx = int(np.argmax(card_vec))
-        if card_vec[idx] > 0.5 and idx not in _BASIC_LAND_IDS:
-            return True
-    return False
-
-
-def _opponent_has_spell_on_stack(obs: np.ndarray) -> bool:
-    """Return True if at least one spell/ability on the stack is not controlled by self."""
-    for i in range(12):
-        base = _STACK_START + i * _STACK_SLOT_SIZE
-        ctrl_is_self = obs[base]
-        card_vec = obs[base + 1 : base + 1 + N_CARD_TYPES]
-        if np.max(card_vec) > 0.5 and ctrl_is_self < 0.5:
-            return True
-    return False
 
 
 def _self_has_draw_on_stack(obs: np.ndarray) -> bool:
@@ -630,200 +574,6 @@ def _stack_is_empty(obs: np.ndarray) -> bool:
     return True
 
 
-def scripted_action(obs: np.ndarray, num_choices: int) -> int:
-    """
-    Rule-based agent for test_minimal.dk (blue/red fetch-land deck).
-    Works correctly for either Player A or Player B because the observation
-    is always emitted from the priority player's perspective.
-
-      - Never blocks (confirms immediately)
-      - Attacks with every eligible creature each combat
-      - Selects target 0 (opponent player or first offered spell/permanent)
-      - Searches library: always finds the first offered card (never fails to find)
-      - Casts every spell the moment it becomes affordable
-      - Plays the first available land
-      - Activates non-mana abilities (fetch lands, Wasteland destroy) during main phase
-      - Taps mana during main phases, preferring the color the hand needs most
-        (blue for Flying Men, Delver, Ponder, Daze, Counterspell, Air Elemental;
-         red for Dragon's Rage Channeler, Lightning Strike)
-      - Passes priority otherwise
-
-    Action categories are stored in obs[STATE_SIZE:] normalised by ACTION_CATEGORY_MAX.
-    """
-    cats     = np.round(obs[STATE_SIZE:STATE_SIZE + num_choices] * ACTION_CATEGORY_MAX).astype(int)
-    card_ids = obs[STATE_SIZE + MAX_ACTIONS     : STATE_SIZE + 2 * MAX_ACTIONS]
-    ctrl_arr = obs[STATE_SIZE + 2 * MAX_ACTIONS : STATE_SIZE + 3 * MAX_ACTIONS]
-
-    _STEP_FIRST_MAIN  = 21   # obs[18 + 3]
-    _STEP_SECOND_MAIN = 28   # obs[18 + 10] (shifted +1 by FIRST_STRIKE_DAMAGE step)
-    in_main_phase = obs[_STEP_FIRST_MAIN] > 0.5 or obs[_STEP_SECOND_MAIN] > 0.5
-
-    # 0a. Sideboarding: scripted agent never sideboards — always pick done (index 0)
-    if any(c == _CAT_SB_DONE for c in cats):
-        return 0
-
-    # 0. Mulligan: always keep — return the first non-mulligan action (the keep action)
-    if any(c == _CAT_MULLIGAN for c in cats):
-        for i, c in enumerate(cats):
-            if c != _CAT_MULLIGAN:
-                return i
-
-    # 1. Confirm blockers immediately — never block
-    for i, c in enumerate(cats):
-        if c == _CAT_CONF_BLK:
-            return i
-
-    # 2. Attacker selection: select until all eligible creatures are attacking, then confirm.
-    #    The game re-offers already-attacking creatures as SEL_ATK (for deselection), so we
-    #    must check the battlefield state rather than blindly picking SEL_ATK every time.
-    if any(c == _CAT_SEL_ATK for c in cats):
-        if _all_eligible_creatures_attacking(obs):
-            for i, c in enumerate(cats):
-                if c == _CAT_CONF_ATK:
-                    return i
-        else:
-            for i, c in enumerate(cats):
-                if c == _CAT_SEL_ATK:
-                    return i
-
-    # 3. Confirm attack declaration (fallback, e.g. no eligible attackers)
-    for i, c in enumerate(cats):
-        if c == _CAT_CONF_ATK:
-            return i
-
-    # 4. Select target — prefer non-self-controlled targets.
-    #    ctrl_arr[i] == 1.0 means self-controlled; 0.0 = opponent permanent/spell;
-    #    _ACTION_CTRL_NULL (-0.03125) = player target (also non-self).
-    #    The C++ game sorts targets opponent-first so action 0 is usually correct,
-    #    but guard against accidentally targeting own spells/permanents.
-    for i, c in enumerate(cats):
-        if c == _CAT_TARGET and ctrl_arr[i] < 0.5:
-            return i
-    # Fallback: all targets are self-controlled — return first (shouldn't happen in practice).
-    for i, c in enumerate(cats):
-        if c == _CAT_TARGET:
-            return i
-
-    # 5. Search library — action 0 = fail to find; action 1+ = actual cards.
-    #    For Doomsday pile building: prefer Thassa's Oracle, then draw spells.
-    #    For Personal Tutor: prefer Doomsday.
-    #    For fetch lands: pick action 1 (first land found).
-    if any(c == _CAT_SEARCH for c in cats):
-        # Prefer Thassa's Oracle when searching (Doomsday pile building)
-        for i, c in enumerate(cats):
-            if c == _CAT_SEARCH and _action_card_id(card_ids, i) == _THASSAS_ORACLE_VOCAB_IDX:
-                return i
-        # Prefer Doomsday when searching (Personal Tutor)
-        for i, c in enumerate(cats):
-            if c == _CAT_SEARCH and _action_card_id(card_ids, i) == _DOOMSDAY_VOCAB_IDX:
-                return i
-        return 1 if num_choices > 1 else 0
-
-    # 5b. Paying costs (tapping lands for mana during spell/ability payment, delve exile).
-    #     Pick the first available option — this taps a source to pay the cost.
-    if any(c == _CAT_PAYING for c in cats):
-        return 0
-
-    # 6. Cast spells.
-    #    Counter spells (Counterspell, Daze, Force of Will) require an opponent's spell
-    #    on the stack; skip them when the stack holds only own spells or is empty.
-    opponent_spell_on_stack = _opponent_has_spell_on_stack(obs)
-
-    # Priority: if opponent has a spell on stack and we have UU, cast Counterspell first.
-    if opponent_spell_on_stack and int(round(obs[_BLUE_POOL_IDX] * 10)) >= 2:
-        for i, c in enumerate(cats):
-            if c == _CAT_CAST and _action_card_id(card_ids, i) == _COUNTERSPELL_VOCAB_IDX:
-                return i
-
-    # --- Doomsday deck rules ---
-    has_doomsday_in_hand = _hand_has_card(obs, _DOOMSDAY_VOCAB_IDX)
-
-    # Always cast Doomsday when offered
-    for i, c in enumerate(cats):
-        if c == _CAT_CAST and _action_card_id(card_ids, i) == _DOOMSDAY_VOCAB_IDX:
-            return i
-
-    # Only cast Dark Ritual if Doomsday is also in hand
-    # (don't waste ritual mana without the combo piece)
-    for i, c in enumerate(cats):
-        if c == _CAT_CAST and _action_card_id(card_ids, i) == _DARK_RITUAL_VOCAB_IDX:
-            if has_doomsday_in_hand:
-                return i
-            # else skip it
-
-    for i, c in enumerate(cats):
-        if c == _CAT_CAST:
-            cid = _action_card_id(card_ids, i)
-            if cid in _COUNTER_SPELL_VOCAB_IDS and not opponent_spell_on_stack:
-                continue
-            if cid == _DARK_RITUAL_VOCAB_IDX:
-                continue  # handled above
-            return i
-
-    # 7. Play land (may unlock mana for a spell next query)
-    for i, c in enumerate(cats):
-        if c == _CAT_LAND:
-            return i
-
-    # 8. Activate non-mana abilities:
-    #    - Cycling (Street Wraith, Edge of Autumn): always cycle immediately (any time)
-    #    - Fetch lands: tap + pay 1 life + sacrifice → search for land
-    #    - Wasteland: tap + sacrifice → destroy target nonbasic land
-    #    - LED: activate when Doomsday is on the stack (discard hand for 3 mana)
-
-    # Always cycle Street Wraith (pay 2 life, draw a card)
-    for i, c in enumerate(cats):
-        if c == _CAT_ACTIVATE and _action_card_id(card_ids, i) == _STREET_WRAITH_VOCAB_IDX:
-            return i
-
-    # Always cycle Edge of Autumn (sac a land, draw a card) — only offered when legal
-    for i, c in enumerate(cats):
-        if c == _CAT_ACTIVATE and _action_card_id(card_ids, i) == _EDGE_OF_AUTUMN_VOCAB_IDX:
-            return i
-
-    if in_main_phase:
-        for i, c in enumerate(cats):
-            if c == _CAT_ACTIVATE:
-                cid = _action_card_id(card_ids, i)
-                if cid == _WASTELAND_VOCAB_IDX and not _opponent_has_nonbasic_land(obs):
-                    continue  # no opponent nonbasic land to target — skip
-                return i
-
-    # 9. (Removed - mana abilities no longer offered during normal priority in machine mode;
-    #     mana is tapped automatically during cost payment via PAYING_COSTS.)
-
-    # 10. Doomsday pile ordering (TOP_LIBRARY): put Thassa's Oracle on bottom of pile
-    #     (first pick = deepest position). For all other cards, pick action 0.
-    if any(c == _CAT_TOP_LIBRARY for c in cats):
-        # Prefer Thassa's Oracle first (goes to bottom of pile = wins with empty library)
-        for i, c in enumerate(cats):
-            if c == _CAT_TOP_LIBRARY and _action_card_id(card_ids, i) == _THASSAS_ORACLE_VOCAB_IDX:
-                return i
-        return 0  # pick first available for remaining cards
-
-    # 10b. Dig choice (Once Upon a Time): pick action 1 (first matching card) if available.
-    if any(c == _CAT_DIG for c in cats):
-        return 1 if num_choices > 1 else 0
-
-    # 11. Other choice (Sylvan Library pay/return, unless costs): pick randomly.
-    other_idxs = [i for i, c in enumerate(cats) if c == _CAT_OTHER]
-    if other_idxs:
-        return random.choice(other_idxs)
-
-    # 12. Surveil / Delver reveal: both use two PASS_PRIORITY (0) choices whose
-    #     source entity is the same library card (non-null, equal card IDs).
-    #     For surveil: action 1 = put in graveyard (good for delirium and Murktide).
-    #     For Delver's PeekAndReveal: action 1 = reveal (safe; triggers transform
-    #     only if the top card is an instant or sorcery, which is desirable).
-    if num_choices == 2 and all(c == _CAT_PASS for c in cats[:2]):
-        id0, id1 = card_ids[0], card_ids[1]
-        if id0 > _ACTION_CARD_ID_NULL + 0.01 and abs(id1 - id0) < 0.001:
-            return 1
-
-    # Default: pass priority
-    return 0
-
-
 class ModelVsScriptedEnv(gym.Env):
     """Wraps RoboMageEnv so the model plays against a scripted agent.
 
@@ -833,7 +583,7 @@ class ModelVsScriptedEnv(gym.Env):
     """
 
     def __init__(self, model_deck: str | None = None, opp_deck: str | None = None,
-                 **env_kwargs):
+                 opponent="scripted", **env_kwargs):
         super().__init__()
         # model_deck/opp_deck override deck_a/deck_b: decks are swapped each episode
         # to match which side the model is assigned to.
@@ -850,6 +600,20 @@ class ModelVsScriptedEnv(gym.Env):
         # Scale applied to all shaping signals. Set externally (e.g. via SB3 callback)
         # to anneal shaping toward 0 as training matures.
         self.shaping_scale = 1.0
+        # Opponent controller / pool. ``opponent`` may be an OpponentPool, an
+        # already-built Controller, or a spec string ("scripted" by default,
+        # which is byte-identical to the historical scripted agent).
+        from opponents import OpponentPool, ScriptedController, make_controller
+        if isinstance(opponent, OpponentPool):
+            self._opp_pool = opponent
+            self._opp_controller = None
+        elif hasattr(opponent, "choose"):
+            self._opp_pool = None
+            self._opp_controller = opponent
+        else:
+            self._opp_pool = None
+            self._opp_controller = make_controller(opponent)
+        self._opp_label = getattr(self._opp_controller, "label", "scripted")
 
     def reset(self, *, seed=None, options=None):
         self._training_is_a = bool(np.random.random() < 0.5)
@@ -863,10 +627,13 @@ class ModelVsScriptedEnv(gym.Env):
         self._is_doomsday = self._model_deck is not None and "doomsday" in self._model_deck
         self._dd_placed_doomsday = False  # set when agent picks Doomsday in a TOP_LIBRARY choice
         self._dd_fired = set()  # tracks which DD shaping rewards have fired this game
+        # Sample this episode's opponent from the pool (if any).
+        if self._opp_pool is not None:
+            self._opp_label, self._opp_controller = self._opp_pool.sample()
         self._game_meta = {
             "model_is_a": self._training_is_a,
             "opp_deck": self._opp_deck or "unknown",
-            "opp_type": "scripted",
+            "opp_type": self._opp_label,
         }
         obs, info = self._env.reset(seed=seed, options=options)
         obs, _reward, terminated, truncated, info, _shaping = self._skip_opponent_turns(
@@ -1011,7 +778,7 @@ class ModelVsScriptedEnv(gym.Env):
         shaping_key = "shaping_a" if self._training_is_a else "shaping_b"
         shaping = 0.0
         while not (terminated or truncated) and (obs[32] > 0.5) != self._training_is_a:
-            action = scripted_action(obs, self._env._num_choices)
+            action = self._opp_controller.choose(obs, self._env._num_choices)
             obs, reward, terminated, truncated, info = self._env.step(action)
 
             shaping += info.get(shaping_key, 0.0)
@@ -1136,6 +903,10 @@ class SelfPlayEnv(gym.Env):
         self._opponent_loaded = False  # defer loading to first reset()
         self._scripted_fallback_warned = False  # warn once when no checkpoint found
         self._opp_mask = np.zeros(MAX_ACTIONS, dtype=bool)  # reusable mask buffer
+        # Controller used when no compatible checkpoint exists (default GREEDY).
+        from opponents import ScriptedController
+        from scripted_agent import make_agent
+        self._fallback_controller = ScriptedController(make_agent("scripted"))
 
     # ------------------------------------------------------------------
     # gymnasium API
@@ -1220,7 +991,7 @@ class SelfPlayEnv(gym.Env):
                 action = int(action)
             else:
                 # No compatible checkpoint — pilot the opponent with the scripted agent.
-                action = scripted_action(opp_obs, num_choices)
+                action = self._fallback_controller.choose(opp_obs, num_choices)
             obs, reward, terminated, truncated, info = self._env.step(action)
         return obs, reward, terminated, truncated, info
 
@@ -1346,3 +1117,18 @@ class FixedModelEnv(gym.Env):
             action = int(action)
             obs, reward, terminated, truncated, info = self._env.step(action)
         return obs, reward, terminated, truncated, info
+
+
+# ── Back-compat re-export ───────────────────────────────────────────────────
+# The scripted agent now lives in scripted_agent.py.  Importers historically do
+# `from env import scripted_action`, so re-export it here.  This import runs at
+# the bottom of env.py (after every constant/helper scripted_agent needs is
+# defined), so when env is imported first the chain resolves cleanly.  If
+# scripted_agent is imported first, scripted_action is not yet bound when this
+# line runs, so fall back to a lazy wrapper that resolves it on first call.
+try:
+    from scripted_agent import scripted_action  # noqa: E402,F401
+except ImportError:
+    def scripted_action(obs, num_choices):  # noqa: E402
+        from scripted_agent import scripted_action as _sa
+        return _sa(obs, num_choices)

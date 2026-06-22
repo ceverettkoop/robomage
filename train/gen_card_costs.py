@@ -77,18 +77,30 @@ def get_mana_cost(card_name):
     print(f"  WARNING: no ManaCost field in '{path}', defaulting to zero cost")
     return [0] * N_FEATS
 
+def get_is_land(card_name):
+    """Return True if the card's Types line includes the Land type."""
+    path = find_card_file(card_name)
+    if path is None:
+        return False
+    for line in open(path):
+        if line.startswith("Types:"):
+            return "Land" in line[len("Types:"):].split()
+    return False
+
 def main():
     vocab = parse_vocab(VOCAB_H)
     print(f"Found {len(vocab)} cards in vocab: {list(vocab)}")
 
     cast_matrix  = [[0] * N_FEATS for _ in range(N_TYPES)]
+    is_land      = [False] * N_TYPES
     # _CARD_ABILITY_COST_MATRIX stays all-zeros until non-mana activated
     # abilities are parsed from card scripts (Cost$ field is not yet used by C++).
 
     for name, idx in vocab.items():
         cost = get_mana_cost(name)
         cast_matrix[idx] = cost
-        print(f"  [{idx}] {name}: {cost}")
+        is_land[idx] = get_is_land(name)
+        print(f"  [{idx}] {name}: {cost}{' (land)' if is_land[idx] else ''}")
 
     # Emit card_costs.py
     lines = [
@@ -118,7 +130,14 @@ def main():
     for idx in range(N_TYPES):
         name = vocab_by_idx.get(idx, "")
         lines.append(f'    "{name}",  # {idx}')
-    lines += ["]"]
+    lines += ["]", ""]
+
+    # Vocab indices whose card is a Land (used by the scripted agent's mulligan).
+    land_ids = sorted(i for i in range(N_TYPES) if is_land[i])
+    lines += [
+        "# Vocab indices that are Land cards (Types line includes 'Land').",
+        f"_LAND_VOCAB_IDS = frozenset({{{', '.join(str(i) for i in land_ids)}}})",
+    ]
     with open(OUT_FILE, "w") as f:
         f.write("\n".join(lines) + "\n")
     print(f"Wrote {OUT_FILE}")
