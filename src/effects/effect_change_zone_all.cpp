@@ -51,8 +51,12 @@ bool change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer) {
         }
     }
 
-    // Filter by change_type (supports IsNotRemembered filter)
-    bool filter_not_remembered = (ab.change_type.find("IsNotRemembered") != std::string::npos);
+    // Filter by change_type (supports the "not remembered" restriction used by
+    // Doomsday — written ChangeType$ Card.!IsRemembered in Forge syntax, also
+    // accepted as IsNotRemembered). Without this, the "exile the rest" step would
+    // exile the cards just placed on top, emptying the library.
+    bool filter_not_remembered = (ab.change_type.find("!IsRemembered") != std::string::npos
+                                  || ab.change_type.find("IsNotRemembered") != std::string::npos);
     std::vector<Entity> to_move;
     for (auto entity : zone_contents) {
         if (filter_not_remembered) {
