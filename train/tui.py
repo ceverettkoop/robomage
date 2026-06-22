@@ -17,9 +17,11 @@ import asyncio
 import glob
 import os
 import shlex
+import shutil
 import signal
 import subprocess
 import sys
+from datetime import datetime
 
 from textual import work
 from textual.app import App, ComposeResult
@@ -33,6 +35,44 @@ VENV_PY = sys.executable
 _DECKS_DIR = os.path.join(REPO_ROOT, "bin", "resources", "decks")
 _CKPT_DIR = os.path.join(REPO_ROOT, "train", "checkpoints")
 _REC_DIRS = [os.path.join(REPO_ROOT, "recordings"), REPO_ROOT]
+
+# Rolling per-command output logs: one file per run, newest 50 kept.
+_CMD_LOG_DIR = os.path.join(REPO_ROOT, "train", "logs", "tui_commands")
+_CMD_LOG_KEEP = 50
+# `script` (util-linux) tees an interactive command's pty output to a file
+# without breaking its interactivity. None if unavailable → log header only.
+_SCRIPT_BIN = shutil.which("script")
+
+
+def _open_command_log(argv):
+    """Create a fresh log file for one command run and prune old ones.
+
+    Returns an open text file handle (caller closes it) with a header already
+    written, or None if the log dir can't be created. Files are named with a
+    sortable timestamp so pruning to the newest ``_CMD_LOG_KEEP`` is a simple
+    sort-and-trim.
+    """
+    try:
+        os.makedirs(_CMD_LOG_DIR, exist_ok=True)
+        stamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+        f = open(os.path.join(_CMD_LOG_DIR, f"cmd_{stamp}.log"), "w", encoding="utf-8")
+    except OSError:
+        return None
+    f.write(f"# {datetime.now().isoformat(timespec='seconds')}\n")
+    f.write("$ " + shlex.join(argv) + "\n\n")
+    f.flush()
+    _prune_command_logs()
+    return f
+
+
+def _prune_command_logs():
+    """Keep only the newest ``_CMD_LOG_KEEP`` command log files."""
+    logs = sorted(glob.glob(os.path.join(_CMD_LOG_DIR, "cmd_*.log")))
+    for path in logs[:-_CMD_LOG_KEEP]:
+        try:
+            os.remove(path)
+        except OSError:
+            pass
 
 
 def _scan_decks():
@@ -376,10 +416,21 @@ class LauncherApp(App):
 
     def _run_interactive(self, argv):
         log = self.query_one("#log", RichLog)
+        logf = _open_command_log(argv)
+        # Tee the interactive session's terminal output into the same log file
+        # via `script`, which runs the command in a pty (keeping it interactive)
+        # while appending everything it shows to logpath after our header.
+        logpath = logf.name if logf else None
+        if logf:
+            logf.close()
+        run_argv = argv
+        if logpath and _SCRIPT_BIN:
+            run_argv = [_SCRIPT_BIN, "-q", "-a", "-e",
+                        "-c", shlex.join(argv), logpath]
         with self.suspend():
             print("\n$ " + shlex.join(argv) + "\n", flush=True)
             try:
-                subprocess.run(argv, cwd=REPO_ROOT)
+                subprocess.run(run_argv, cwd=REPO_ROOT)
             except KeyboardInterrupt:
                 pass
             try:
@@ -392,6 +443,7 @@ class LauncherApp(App):
     async def _run_capture(self, argv):
         log = self.query_one("#log", RichLog)
         log.write("$ " + shlex.join(argv))
+        logf = _open_command_log(argv)
         try:
             proc = await asyncio.create_subprocess_exec(
                 *argv, cwd=REPO_ROOT,
@@ -399,6 +451,9 @@ class LauncherApp(App):
                 start_new_session=True)
         except Exception as exc:
             log.write(f"failed to start: {exc}")
+            if logf:
+                logf.write(f"failed to start: {exc}\n")
+                logf.close()
             return
         self._proc = proc
         try:
@@ -406,11 +461,17 @@ class LauncherApp(App):
                 line = await proc.stdout.readline()
                 if not line:
                     break
-                log.write(line.decode("utf-8", "replace").rstrip("\n"))
+                text = line.decode("utf-8", "replace").rstrip("\n")
+                log.write(text)
+                if logf:
+                    logf.write(text + "\n")
         finally:
             rc = await proc.wait()
             self._proc = None
             log.write(f"[exit code {rc}]")
+            if logf:
+                logf.write(f"\n[exit code {rc}]\n")
+                logf.close()
 
     def action_stop(self):
         proc = self._proc
