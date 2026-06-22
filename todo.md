@@ -32,16 +32,10 @@ Scripted agent fixes (deferred from sanity-check 2026-06-22; minimum changes to 
   fresh card. scripted_agent.py _greedy_action ACTIVATE loop.
 
 Engine bugs found in scripted-vs-scripted sanity check (2026-06-22, decks delver/doomsday/mav):
-- Unholy Heat always deals 0 damage. Script SVar:X:Count$Delirium.6.2 is not parsed (parse.cpp
-  delirium/amount_svar resolution only matches a "GE" pattern + Count$Valid/Targeted$, never
-  Count$Delirium) -> X stays 0. Dead card. (vocab 29, delver)
-- Knight of the Reliquary doesn't grow from lands in graveyard (stays 2/2). Static
-  SVar:X:Count$ValidGraveyard Land.YouOwn is unhandled by evaluate_sa_svar in state_manager.cpp
-  (only Count$TypeInYourYard.<Type> and Count$ValidGraveyard Card$CardTypes are supported).
-  Counter-based growth (Scythecat etc.) works; the land static does not. (vocab 41, mav)
-- Deep Analysis (and Draw generally) draws for the spell's CONTROLLER, ignoring the chosen
-  target player. Script is SP$ Draw | ValidTgts$ Player ("target player draws two"). Harmless
-  here only because the agent targeted the opponent; the Draw effect ignores ab.target.
+[FIXED 2026-06-22] all three below resolved and committed:
+- Unholy Heat delirium damage (Count$Delirium.<yes>.<no> now parsed; unified via check_delirium). ad450d3
+- Knight of the Reliquary land static (Count$ValidGraveyard Land.YouOwn now evaluated). b430979
+- Deep Analysis / Draw now draws for the targeted player, not the controller. c6b0e61
 
 Observation space:
 - Add opponent's hand to the observation space when it becomes revealed (e.g. by
