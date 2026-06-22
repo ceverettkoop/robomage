@@ -516,6 +516,36 @@ static int evaluate_sa_svar(const std::string &expr, Zone::Ownership controller)
         return static_cast<int>(type_names.size());
     }
 
+    // Count$ValidGraveyard <Type>[.<Restriction>...] — count cards of the given
+    // type in graveyards, optionally restricted to the controller's own cards
+    // (YouOwn/YouCtrl). E.g. "Land.YouOwn" for Knight of the Reliquary.
+    if (expr.rfind("Count$ValidGraveyard ", 0) == 0) {
+        std::string spec = expr.substr(21);  // after "Count$ValidGraveyard "
+        std::string type_name = spec;
+        bool you_own = false;
+        size_t dot = spec.find('.');
+        if (dot != std::string::npos) {
+            type_name = spec.substr(0, dot);
+            std::string rest = spec.substr(dot + 1);
+            you_own = rest.find("YouOwn") != std::string::npos ||
+                      rest.find("YouCtrl") != std::string::npos;
+        }
+        int count = 0;
+        Entity max_e = global_coordinator.GetMaxIssuedEntity();
+        for (Entity e = 0; e < max_e; ++e) {
+            if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+            auto &z = global_coordinator.GetComponent<Zone>(e);
+            if (z.location != Zone::GRAVEYARD) continue;
+            if (you_own && z.owner != controller) continue;
+            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+            auto &cd = global_coordinator.GetComponent<CardData>(e);
+            for (auto &t : cd.types) {
+                if (t.kind == TYPE && t.name == type_name) { count++; break; }
+            }
+        }
+        return count;
+    }
+
     return 0;
 }
 
