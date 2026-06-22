@@ -42,6 +42,7 @@ from env import (
     _BASIC_LAND_IDS, _COUNTER_SPELL_VOCAB_IDS, _COUNTERSPELL_VOCAB_IDX,
     _DOOMSDAY_VOCAB_IDX, _DARK_RITUAL_VOCAB_IDX, _THASSAS_ORACLE_VOCAB_IDX,
     _STREET_WRAITH_VOCAB_IDX, _EDGE_OF_AUTUMN_VOCAB_IDX, _DOOMSDAY_DECK_IDS,
+    _KEEP_ONE_LANDER_IDS,
     # shared helper (also used by env's reward shaping, so it stays in env.py)
     _hand_has_card,
 )
@@ -508,9 +509,15 @@ class ScriptedAgent:
         return 0
 
     def _mulligan_choice(self, g: dict, cats) -> int:
-        """Keep a hand with a sane land count; otherwise mulligan."""
+        """Keep a hand with a sane land count; otherwise mulligan.
+
+        A one-land hand is keepable if it contains a cheap card-selection spell
+        (Brainstorm, Ponder, Once Upon a Time) that can dig toward more lands.
+        Hands with 5 or more lands are too land-heavy to keep.
+        """
         lands = sum(1 for c in g["self_hand"] if c["card_idx"] in _LAND_VOCAB_IDS)
-        keepable = 2 <= lands <= 5
+        has_dig = any(c["card_idx"] in _KEEP_ONE_LANDER_IDS for c in g["self_hand"])
+        keepable = 2 <= lands <= 4 or (lands == 1 and has_dig)
         # Mulligan query: index 0 = keep, any other index = mulligan.
         if keepable:
             for i, c in enumerate(cats):

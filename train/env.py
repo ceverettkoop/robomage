@@ -516,6 +516,11 @@ _DURESS_VOCAB_IDX        = 69
 _PONDER_VOCAB_IDX        = 11
 _FORCE_OF_WILL_VOCAB_IDX = 12
 _DAZE_VOCAB_IDX          = 13
+_BRAINSTORM_VOCAB_IDX    = 24
+_ONCE_UPON_A_TIME_VOCAB_IDX = 43
+# Cantrips/digging that let us keep a one-land opening hand (they find more lands)
+_KEEP_ONE_LANDER_IDS     = frozenset({_PONDER_VOCAB_IDX, _BRAINSTORM_VOCAB_IDX,
+                                      _ONCE_UPON_A_TIME_VOCAB_IDX})
 _DISCARD_SPELL_IDS       = frozenset({_THOUGHTSEIZE_VOCAB_IDX, _DURESS_VOCAB_IDX})
 _COUNTER_STRIP_IDS       = frozenset({_FORCE_OF_WILL_VOCAB_IDX, _DAZE_VOCAB_IDX})
 _LED_DRAW_STACK_IDS      = frozenset({_STREET_WRAITH_VOCAB_IDX, _EDGE_OF_AUTUMN_VOCAB_IDX,
