@@ -922,7 +922,9 @@ def league(binary_path: str, decks: str | None = None,
     if not roster:
         raise ValueError(f"No decks found for league (looked in {_DECKS_DIR})")
 
-    n_envs = n_envs_override if n_envs_override is not None else N_ENVS
+    # League opponents load checkpoint models per env (like self-play), so default
+    # to the lighter self-play env count rather than N_ENVS (sized for scripted opps).
+    n_envs = n_envs_override if n_envs_override is not None else N_ENVS_SELF_PLAY
     print(f"League roster: {', '.join(roster)}")
     print(f"  total={total_timesteps:,}  rotate_every={rotate_every:,}  n_envs={n_envs}")
     print(f"  self_play_frac={self_play_frac}  scripted_anchor_frac={scripted_anchor_frac}")

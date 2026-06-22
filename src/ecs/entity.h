@@ -5,6 +5,6 @@
 #include <cstdint>
 
 using Entity = uint32_t;
-const Entity MAX_ENTITIES = 5000;
+const Entity MAX_ENTITIES = 1000;
 
 #endif /* ENTITY_H */
