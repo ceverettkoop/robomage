@@ -334,8 +334,11 @@ class LeaguePool:
         self._total_snaps = len(all_snaps)
         self._latest_self = latest_snapshot(self._learner, self._dir)
         # Cap + shard the historical snapshot set to bound per-process memory.
+        # Take the *newest* snapshots: all_snaps is sorted oldest->newest, so the
+        # tail keeps the strongest/most-recent versions in the active pool rather
+        # than locking it to stale early checkpoints.
         max_unique = max(1, int(math.floor(self._ratio * self._n_envs)))
-        active = all_snaps[:max_unique]
+        active = all_snaps[-max_unique:]
         self._snap_entries = active[self._env_index % self._n_envs::self._n_envs]
 
     def _maybe_refresh(self):

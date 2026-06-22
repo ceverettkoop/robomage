@@ -74,6 +74,37 @@ train/.venv/bin/python train/train.py baseline checkpoints/robomage_final.zip   
 train/.venv/bin/python train/train.py observe checkpoints/robomage_final.zip          # watch the model play one game
 ```
 
+#### League (PFSP)
+
+`league` rotates a single learner across a roster of decks, training each against
+a shared pool of frozen snapshots of past versions (prioritised fictitious
+self-play). Snapshots feed the pool over time, so later rotations face stronger
+opponents.
+
+```bash
+train/.venv/bin/python train/train.py league                                          # all decks in bin/resources/decks
+train/.venv/bin/python train/train.py league --decks delver,mav --total-timesteps 5000000
+```
+
+**Snapshot promotion gate (`--promote-margin`):** a frozen `{deck}__v{steps}.zip`
+is only added to the pool when the learner's win-rate is at least `0.5 + margin`,
+so the pool collects genuinely stronger snapshots instead of near-duplicates.
+
+- The default is **`-0.1`** (gate at a 40% win-rate). A *negative* margin gates
+  below 50% — useful for decks that take extensive training to break even, so
+  they still promote instead of starving the pool. `0` disables the gate
+  entirely; the first snapshot of each deck is always exempt so self-play can
+  bootstrap.
+- The win-rate is measured over a **recent sliding window**, not the cumulative
+  average, so a deck that started weak can promote once it is *currently* strong.
+- Two related knobs are intentionally not CLI flags (edit in `train/train.py` if
+  you need to tune them): `PFSPCallback(recent_window=200)` — number of recent
+  decisive games the gate averages over — and `SnapshotCallback(min_gate_samples=30)`
+  — the window must hold at least this many games before the gate can block a
+  snapshot (otherwise it errs toward keeping the pool fed).
+- The active opponent pool is capped per env process (`--opp-ckpt-ratio`) and
+  keeps the **newest** snapshots in that cap.
+
 #### Play against model
 
 ```bash

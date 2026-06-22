@@ -28,7 +28,7 @@ LEAGUE_SCRIPTED_ANCHOR_FRAC = 0.1    # min share of the historical pool reserved
 LEAGUE_PFSP_P              = 2.0      # exponent p in (1-winrate)^p
 LEAGUE_SOFTMAX_ETA         = 0.01    # softmax quality learning rate
 LEAGUE_SNAPSHOT_EVERY      = 250_000 # steps between frozen snapshots
-LEAGUE_PROMOTE_MARGIN      = 0.2     # only snapshot when recent win-rate >= 0.5 + margin (first exempt; 0 disables)
+LEAGUE_PROMOTE_MARGIN      = -0.1    # only snapshot when win-rate >= 0.5 + margin (negative gates below 50%; first exempt; 0 disables)
 LEAGUE_ROTATE_EVERY        = 500_000 # steps to train one learner deck before rotating
 
 
@@ -208,9 +208,10 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
             help="Save a frozen {deck}__v{steps}.zip snapshot every N steps "
                  "(default %d)." % LEAGUE_SNAPSHOT_EVERY),
         Arg("--promote-margin", "float", default=LEAGUE_PROMOTE_MARGIN,
-            help="Only keep a snapshot when the learner's recent win-rate >= "
-                 "0.5 + margin (the first snapshot of each deck is exempt so "
-                 "self-play can bootstrap; 0 disables the gate; default %.2f)." % LEAGUE_PROMOTE_MARGIN),
+            help="Only keep a snapshot when the learner's recent-window win-rate "
+                 ">= 0.5 + margin (negative gates below 0.5, e.g. -0.1 -> 0.40; the "
+                 "first snapshot of each deck is exempt so self-play can bootstrap; "
+                 "0 disables the gate; default %.2f)." % LEAGUE_PROMOTE_MARGIN),
         Arg("--rotate-every", "int", default=LEAGUE_ROTATE_EVERY,
             help="Steps to train one learner deck before rotating to the next "
                  "(default %d)." % LEAGUE_ROTATE_EVERY),
