@@ -1,6 +1,8 @@
 TODO:
 parse and display ability descriptions and targeting prompts
 
+can pay life to negative life - should not be allowed
+
   - TODO: when a permanent has multiple simultaneous ETB triggers (e.g. evoked Endurance:
     its graveyard-bottom trigger + the evoke sacrifice trigger), the controller should
     choose the order they go on the stack (APNAP). Currently they are pushed in a fixed

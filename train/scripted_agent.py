@@ -43,6 +43,8 @@ from env import (
     _DOOMSDAY_VOCAB_IDX, _DARK_RITUAL_VOCAB_IDX, _THASSAS_ORACLE_VOCAB_IDX,
     _STREET_WRAITH_VOCAB_IDX, _EDGE_OF_AUTUMN_VOCAB_IDX, _DOOMSDAY_DECK_IDS,
     _KEEP_ONE_LANDER_IDS,
+    # library-count context index (obs[_LIBRARY_CTX_START] == self_library_ct / 60)
+    _LIBRARY_CTX_START,
     # shared helper (also used by env's reward shaping, so it stays in env.py)
     _hand_has_card,
 )
@@ -145,6 +147,128 @@ def _opponent_has_spell_on_stack(obs: np.ndarray) -> bool:
         if np.max(card_vec) > 0.5 and ctrl_is_self < 0.5:
             return True
     return False
+
+
+# ── Doomsday combo constants/helpers ────────────────────────────────────────
+# Doomsday keeps exactly 5 cards on top of the library (doomsday.txt ChangeNum$ 5).
+# Thassa's Oracle wins the game when devotion-to-blue (>= 2 from its own UU) is
+# >= the library size, so casting Oracle with <= 2 cards left is a guaranteed win.
+_DD_PILE_SIZE = 5
+_ORACLE_WIN_LIBRARY = 2
+
+# Street Wraith cycling costs 2 life; never pay it below this so the agent can't
+# cycle itself to death digging through the pile.
+_STREET_WRAITH_MIN_LIFE = 3
+_SELF_LIFE_IDX = 0   # obs[0] == priority player's life / 20
+
+# Permanents that can produce blue mana for Thassa's Oracle (UU). Cavern of Souls
+# counts because Oracle is a creature spell; Lotus Petal makes any colour when
+# sacrificed. We gate Doomsday on controlling at least two so the UU for Oracle
+# is actually available after the combo resolves.
+_BLUE_SOURCES_NEEDED = 2
+_BLUE_SOURCE_IDS = frozenset({
+    4,    # Volcanic Island (U/R)
+    15,   # Tundra (W/U)
+    19,   # Island (U)
+    63,   # Undercity Sewers (U/B)
+    64,   # Underground Sea (U/B)
+    67,   # Cavern of Souls (any colour for creature spells, e.g. Oracle)
+    56,   # Lotus Petal (sacrifice: one mana of any colour)
+})
+
+
+def _self_library_count(obs: np.ndarray) -> int:
+    """Cards in the priority player's library (obs stores it as count / 60)."""
+    return int(round(float(obs[_LIBRARY_CTX_START]) * 60))
+
+
+def _self_life(obs: np.ndarray) -> int:
+    """Priority player's life total (obs stores it as life / 20)."""
+    return int(round(float(obs[_SELF_LIFE_IDX]) * 20))
+
+
+def _count_blue_sources(obs: np.ndarray) -> int:
+    """Untapped blue-mana sources self controls (self battlefield slots 0..47)."""
+    count = 0
+    for slot in range(_PERM_A_SLOTS):
+        base = _BF_START + slot * _BF_SLOT_SIZE
+        if obs[base + _OFF_IS_TAPPED] > 0.5:
+            continue
+        card_vec = obs[base + _BF_CARD_OFF : base + _BF_CARD_OFF + N_CARD_TYPES]
+        idx = int(np.argmax(card_vec))
+        if card_vec[idx] > 0.5 and idx in _BLUE_SOURCE_IDS:
+            count += 1
+    return count
+
+
+def _classify_top_library(cats, card_ids):
+    """Bucket the offered TOP_LIBRARY choices into (oracle_idx, wraith_idxs, filler_idxs)."""
+    oracle_i, wraith_is, filler_is = None, [], []
+    for i, c in enumerate(cats):
+        if c != _CAT_TOP_LIBRARY:
+            continue
+        cid = _action_card_id(card_ids, i)
+        if cid == _THASSAS_ORACLE_VOCAB_IDX:
+            if oracle_i is None:
+                oracle_i = i
+        elif cid == _STREET_WRAITH_VOCAB_IDX:
+            wraith_is.append(i)
+        else:
+            filler_is.append(i)
+    return oracle_i, wraith_is, filler_is
+
+
+def _doomsday_pile_pick(cats, card_ids) -> int:
+    """Choose a card during Doomsday pile building (TOP_LIBRARY queries).
+
+    Doomsday resolves in two TOP_LIBRARY phases:
+
+      (a) SELECTION — choose WHICH 5 cards to keep, from the whole library and
+          graveyard (many options). Composition only; the order is fixed by the
+          rearrange that follows, so just keep Thassa's Oracle and the Street
+          Wraiths and let anything fill the rest.
+
+      (b) REARRANGE — order the (<= 5) kept cards. The engine fills the pile
+          bottom-first (effect_rearrange_top_of_library.cpp), so the
+          position-from-top being placed equals the number of remaining choices.
+
+    Target pile, top -> bottom: [Wraith, Wraith, Thassa's Oracle, filler, filler].
+    The kill is then: cycle a Street Wraith to draw Wraith(pos1), cycle to draw
+    Wraith(pos2), cycle to draw Oracle(pos3) -> library is now 2 -> cast Oracle
+    and win. Oracle sits 3rd from the top (== 3rd from the bottom of the pile).
+    """
+    oracle_i, wraith_is, filler_is = _classify_top_library(cats, card_ids)
+    n_choices = sum(1 for c in cats if c == _CAT_TOP_LIBRARY)
+
+    # (a) SELECTION: keep Oracle, then the Street Wraiths, then any filler.
+    if n_choices > _DD_PILE_SIZE:
+        if oracle_i is not None:
+            return oracle_i
+        if wraith_is:
+            return wraith_is[0]
+        return 0
+
+    # Small rearrange with no combo pieces (Ponder / Brainstorm): legacy behaviour.
+    if oracle_i is None and not wraith_is:
+        return 0
+
+    # (b) REARRANGE: position-from-top being placed == remaining choice count.
+    pos = n_choices
+    if pos == 3 and oracle_i is not None:
+        return oracle_i                      # Thassa's Oracle 3rd from top
+    if pos <= 2:                             # top slots: free-draw enablers first
+        if wraith_is:
+            return wraith_is[0]
+        if oracle_i is not None:
+            return oracle_i
+    # Bottom slots (pos 4, 5): bury filler, keeping Oracle/Wraiths shallower.
+    if filler_is:
+        return filler_is[0]
+    if wraith_is:
+        return wraith_is[0]
+    if oracle_i is not None:
+        return oracle_i
+    return 0
 
 
 def _greedy_action(obs: np.ndarray, num_choices: int) -> int:
@@ -255,16 +379,29 @@ def _greedy_action(obs: np.ndarray, num_choices: int) -> int:
     # --- Doomsday deck rules ---
     has_doomsday_in_hand = _hand_has_card(obs, _DOOMSDAY_VOCAB_IDX)
 
-    # Always cast Doomsday when offered
+    # Win the game: cast Thassa's Oracle as soon as the library is small enough
+    # that its devotion-to-blue (>= 2 from its own UU) meets/exceeds the library
+    # size. "Mana is there" == the engine is offering Oracle as a legal cast.
+    if _self_library_count(obs) <= _ORACLE_WIN_LIBRARY:
+        for i, c in enumerate(cats):
+            if c == _CAT_CAST and _action_card_id(card_ids, i) == _THASSAS_ORACLE_VOCAB_IDX:
+                return i
+
+    # Cast Doomsday once we control enough blue sources to follow it up with
+    # Thassa's Oracle (UU). Firing it earlier just empties our library into a
+    # deck-out, so we hold it until the mana to win is on the board.
+    has_blue_for_oracle = _count_blue_sources(obs) >= _BLUE_SOURCES_NEEDED
     for i, c in enumerate(cats):
         if c == _CAT_CAST and _action_card_id(card_ids, i) == _DOOMSDAY_VOCAB_IDX:
-            return i
+            if has_blue_for_oracle:
+                return i
+            # else hold Doomsday until the blue mana to cast Oracle is in play
 
-    # Only cast Dark Ritual if Doomsday is also in hand
-    # (don't waste ritual mana without the combo piece)
+    # Only cast Dark Ritual if Doomsday is also in hand and we're ready to combo
+    # (don't waste ritual mana without the payoff online).
     for i, c in enumerate(cats):
         if c == _CAT_CAST and _action_card_id(card_ids, i) == _DARK_RITUAL_VOCAB_IDX:
-            if has_doomsday_in_hand:
+            if has_doomsday_in_hand and has_blue_for_oracle:
                 return i
             # else skip it
 
@@ -275,6 +412,10 @@ def _greedy_action(obs: np.ndarray, num_choices: int) -> int:
                 continue
             if cid == _DARK_RITUAL_VOCAB_IDX:
                 continue  # handled above
+            if cid == _DOOMSDAY_VOCAB_IDX:
+                continue  # handled above (held until blue mana for Oracle is online)
+            if cid == _THASSAS_ORACLE_VOCAB_IDX:
+                continue  # only cast Oracle as the wincon (handled above)
             return i
 
     # 7. Play land (may unlock mana for a spell next query)
@@ -283,15 +424,20 @@ def _greedy_action(obs: np.ndarray, num_choices: int) -> int:
             return i
 
     # 8. Activate non-mana abilities:
-    #    - Cycling (Street Wraith, Edge of Autumn): always cycle immediately (any time)
+    #    - Cycling (Street Wraith, Edge of Autumn): cycle as part of the combo
     #    - Fetch lands: tap + pay 1 life + sacrifice → search for land
     #    - Wasteland: tap + sacrifice → destroy target nonbasic land
-    #    - LED: activate when Doomsday is on the stack (discard hand for 3 mana)
 
-    # Always cycle Street Wraith (pay 2 life, draw a card)
-    for i, c in enumerate(cats):
-        if c == _CAT_ACTIVATE and _action_card_id(card_ids, i) == _STREET_WRAITH_VOCAB_IDX:
-            return i
+    # Cycle Street Wraith (pay 2 life, draw) only once we're going off: a small
+    # library means we are drawing through the Doomsday pile toward Thassa's
+    # Oracle. Cycling earlier would dump the Wraiths we need for the free-draw
+    # chain and pull Oracle out of the pile, breaking the combo. Never pay the
+    # 2 life below 3 life, so the dig can't kill us before Oracle resolves.
+    if (_self_library_count(obs) <= _DD_PILE_SIZE
+            and _self_life(obs) >= _STREET_WRAITH_MIN_LIFE):
+        for i, c in enumerate(cats):
+            if c == _CAT_ACTIVATE and _action_card_id(card_ids, i) == _STREET_WRAITH_VOCAB_IDX:
+                return i
 
     # Always cycle Edge of Autumn (sac a land, draw a card) — only offered when legal
     for i, c in enumerate(cats):
@@ -304,19 +450,19 @@ def _greedy_action(obs: np.ndarray, num_choices: int) -> int:
                 cid = _action_card_id(card_ids, i)
                 if cid == _WASTELAND_VOCAB_IDX and not _opponent_has_nonbasic_land(obs):
                     continue  # no opponent nonbasic land to target — skip
+                if cid == _STREET_WRAITH_VOCAB_IDX:
+                    continue  # only ever cycled via the gated combo rule above
                 return i
 
     # 9. (Removed - mana abilities no longer offered during normal priority in machine mode;
     #     mana is tapped automatically during cost payment via PAYING_COSTS.)
 
-    # 10. Doomsday pile ordering (TOP_LIBRARY): put Thassa's Oracle on bottom of pile
-    #     (first pick = deepest position). For all other cards, pick action 0.
+    # 10. Doomsday pile building (TOP_LIBRARY): select the 5 pile cards, then
+    #     order them so Thassa's Oracle sits 3rd from the top (== 3rd from the
+    #     bottom of the five-card pile) behind two Street Wraiths, ready for the
+    #     cycle-chain kill. See _doomsday_pile_pick for the full line.
     if any(c == _CAT_TOP_LIBRARY for c in cats):
-        # Prefer Thassa's Oracle first (goes to bottom of pile = wins with empty library)
-        for i, c in enumerate(cats):
-            if c == _CAT_TOP_LIBRARY and _action_card_id(card_ids, i) == _THASSAS_ORACLE_VOCAB_IDX:
-                return i
-        return 0  # pick first available for remaining cards
+        return _doomsday_pile_pick(cats, card_ids)
 
     # 10b. Dig choice (Once Upon a Time): pick action 1 (first matching card) if available.
     if any(c == _CAT_DIG for c in cats):
