@@ -87,7 +87,7 @@ def _play(deck_a: str, deck_b: str, seed: int, actions=None):
                 # (the narrative diff has already diverged above).
                 lines.append("<<RAN OUT OF RECORDED ACTIONS>>")
                 break
-            state, cats_int, card_ids, ctrl, num_choices = query
+            state, cats_int, card_ids, ctrl, pub, num_choices = query
             if actions is None:
                 choice = get_scripted_action(
                     state, cats_int, card_ids, ctrl, num_choices)
