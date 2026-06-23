@@ -65,6 +65,7 @@ bool pump(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool dig(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool sylvan_library(Ability &ab, std::shared_ptr<Orderer> orderer);
+bool amass(Ability &ab, std::shared_ptr<Orderer> orderer);
 
 // ── Effect-specific parse hooks ─────────────────────────────────────────────
 //
@@ -88,6 +89,7 @@ bool parse_delayed_trigger(Ability &ab, const std::string &key, const std::strin
 bool parse_discard(Ability &ab, const std::string &key, const std::string &value);
 bool parse_mill(Ability &ab, const std::string &key, const std::string &value);
 bool parse_peek_and_reveal(Ability &ab, const std::string &key, const std::string &value);
+bool parse_amass(Ability &ab, const std::string &key, const std::string &value);
 
 }  // namespace effects
 

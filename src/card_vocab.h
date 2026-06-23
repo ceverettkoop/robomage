@@ -42,6 +42,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Life from the Loam", 90},
     {"Disruptor Flute", 91},
     {"Surgical Extraction", 92},
+    {"Orcish Bowmasters", 93},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);

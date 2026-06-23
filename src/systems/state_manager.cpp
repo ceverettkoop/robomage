@@ -1227,6 +1227,23 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                         if (!is_land) continue;
                     }
                 }
+                // Drawn trigger filters (Orcish Bowmasters): PLAYER_DREW_CARD
+                if (ev.GetType() == Events::PLAYER_DREW_CARD) {
+                    // ValidCard$ Card.OppOwn — the drawn card must be owned by an
+                    // opponent of the source's controller (drawer != controller).
+                    if (ab.trigger_valid_card_opp_own && ev.HasParam(Params::PLAYER)) {
+                        Entity drawer = ev.GetParam<Entity>(Params::PLAYER);
+                        Entity ctrl_entity = (perm.controller == Zone::PLAYER_A)
+                                             ? game.player_a_entity : game.player_b_entity;
+                        if (drawer == ctrl_entity) continue;
+                    }
+                    // FirstCardInDrawStep$ False — ignore the first card drawn in the
+                    // drawer's draw step (the turn-based draw).
+                    if (ab.trigger_exclude_first_draw_step && ev.HasParam(Params::FIRST_IN_STEP) &&
+                        ev.GetParam<int>(Params::FIRST_IN_STEP) == 1)
+                        continue;
+                }
+
                 // Spell count filter (Cori-Steel Cutter)
                 if (ab.trigger_spell_count_eq > 0 && ev.HasParam(Params::PLAYER)) {
                     Entity ev_player = ev.GetParam<Entity>(Params::PLAYER);

@@ -23,7 +23,9 @@ public:
     void shuffle_library(Zone::Ownership owner);
     void generate_libraries(const Deck &deck_a, const Deck &deck_b);
     void draw_hands();
-    void draw(Zone::Ownership player, size_t ct);
+    // fire_draw_event=false suppresses the PLAYER_DREW_CARD trigger event (used for
+    // opening-hand and mulligan draws, which are not "draws" that trigger abilities).
+    void draw(Zone::Ownership player, size_t ct, bool fire_draw_event = true);
     // Move the top `ct` cards of a player's library to their graveyard. Returns the
     // milled entities in mill order (top first).
     std::vector<Entity> mill(Zone::Ownership player, size_t ct);
@@ -36,7 +38,7 @@ public:
 private:
     // Draw a single card for `player`, first offering any available dredge
     // replacement. Sets the decked-out loss if the library is empty.
-    void draw_one(Zone::Ownership player);
+    void draw_one(Zone::Ownership player, bool fire_draw_event = true);
     // If `player` has one or more dredge cards in their graveyard (with enough
     // library cards to pay the mill), prompt them to replace this draw with a
     // dredge. Returns true if a dredge was chosen and performed.

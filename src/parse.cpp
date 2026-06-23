@@ -1215,6 +1215,9 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
     bool valid_card_sorcery = false;
     bool valid_card_owner_you = false;
     bool valid_card_land = false;
+    bool mode_is_drawn = false;
+    bool valid_card_opp_own = false;
+    bool exclude_first_draw_step = false;
     size_t activator_this_turn_cast_eq = 0;
 
     // Walk pipe-delimited params
@@ -1245,6 +1248,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
                 else if (value == "Phase") mode_is_phase = true;
                 else if (value == "SpellCast") mode_is_spell_cast = true;
                 else if (value == "DamageDone") mode_is_damage_done = true;
+                else if (value == "Drawn") mode_is_drawn = true;
             } else if (key == "Phase") {
                 if (value == "Upkeep")   phase_is_upkeep   = true;
                 if (value == "EndStep")  phase_is_end_step = true;
@@ -1265,8 +1269,11 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
                 if (value.find("Instant")     != std::string::npos) valid_card_instant      = true;
                 if (value.find("Sorcery")     != std::string::npos) valid_card_sorcery      = true;
                 if (value.find(".YouOwn")     != std::string::npos) valid_card_owner_you    = true;
+                if (value.find(".OppOwn")     != std::string::npos) valid_card_opp_own      = true;
                 if (value.find("Land")        != std::string::npos) valid_card_land         = true;
                 if (value.find(".YouCtrl")    != std::string::npos) valid_player_is_you     = true;
+            } else if (key == "FirstCardInDrawStep") {
+                if (value == "False") exclude_first_draw_step = true;
             } else if (key == "CombatDamage") {
                 if (value == "True") damage_combat_only = true;
             } else if (key == "ActivatorThisTurnCast") {
@@ -1331,6 +1338,13 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
         ability.trigger_only_self = true;  // ValidSource$ Card.Self
     }
 
+    // "whenever a player draws a card" — Orcish Bowmasters (Mode$ Drawn)
+    if (mode_is_drawn) {
+        ability.trigger_on = Events::PLAYER_DREW_CARD;
+        ability.trigger_valid_card_opp_own = valid_card_opp_own;
+        ability.trigger_exclude_first_draw_step = exclude_first_draw_step;
+    }
+
     // Resolve effect from Execute$ SVar
     if (!execute_svar.empty()) {
         auto it = svars.find(execute_svar);
@@ -1355,6 +1369,8 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
                 effect.trigger_valid_card_is_creature           = ability.trigger_valid_card_is_creature;
                 effect.trigger_valid_card_is_instant_or_sorcery = ability.trigger_valid_card_is_instant_or_sorcery;
                 effect.trigger_valid_card_is_land               = ability.trigger_valid_card_is_land;
+                effect.trigger_valid_card_opp_own               = ability.trigger_valid_card_opp_own;
+                effect.trigger_exclude_first_draw_step          = ability.trigger_exclude_first_draw_step;
                 effect.trigger_valid_player_is_controller       = ability.trigger_valid_player_is_controller;
                 effect.trigger_only_self                        = ability.trigger_only_self;
                 effect.trigger_self_excluded                    = ability.trigger_self_excluded;

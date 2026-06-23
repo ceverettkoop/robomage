@@ -88,7 +88,7 @@ struct Ability{
     // variant alternatives; shared fields stay as direct members. std::monostate
     // covers effects with no exclusive fields. See ability_params.h.
     std::variant<std::monostate, PumpParams, DamageParams, DestroyAllParams, TokenParams,
-                 DelayedTriggerParams, CounterParams, DiscardParams, PeekParams> params;
+                 DelayedTriggerParams, CounterParams, DiscardParams, PeekParams, AmassParams> params;
 
     // Counter abilities (PutCounter category) now live in CounterParams (params variant).
 
@@ -102,6 +102,10 @@ struct Ability{
     bool trigger_valid_card_is_creature = false;        // ValidCard$ Creature
     bool trigger_valid_card_is_instant_or_sorcery = false;  // ValidCard$ Instant/Sorcery
     bool trigger_valid_card_is_land = false;            // ValidCard$ Land.*
+
+    // Drawn trigger (Orcish Bowmasters): Mode$ Drawn fires on PLAYER_DREW_CARD.
+    bool trigger_valid_card_opp_own = false;       // ValidCard$ Card.OppOwn — the drawn card is owned by an opponent of the source's controller
+    bool trigger_exclude_first_draw_step = false;  // FirstCardInDrawStep$ False — ignore the first card the player draws in each of their draw steps
 
     // Combat damage trigger (Barrowgoyf): damage amount stored at trigger fire time
     size_t trigger_damage_amount = 0;

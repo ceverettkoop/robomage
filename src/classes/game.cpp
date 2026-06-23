@@ -154,12 +154,9 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     }
                     // first turn first player skips draw!
                     if (turn == 0 && player_a_turn == true) break;
+                    // PLAYER_DREW_CARD is fired per-card inside Orderer::draw_one
+                    // (with the first-card-in-draw-step flag), so no emit here.
                     orderer->draw(active_player, 1);
-                    {
-                        Event draw_event(Events::PLAYER_DREW_CARD);
-                        draw_event.SetParam(Params::PLAYER, active_player_entity);
-                        global_coordinator.SendEvent(draw_event);
-                    }
                     break;
                 case DRAW:
                     cur_step = FIRST_MAIN;
@@ -253,11 +250,13 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     player.spells_cast_this_turn = 0;
                     player.noncreature_spells_cast_this_turn = 0;
                     player.cards_drawn_this_turn.clear();
+                    player.cards_drawn_this_draw_step = 0;
                     // Also clear opponent's drawn-this-turn tracking
                     {
                         Entity opp_entity = player_a_turn ? player_b_entity : player_a_entity;
                         auto &opp = global_coordinator.GetComponent<Player>(opp_entity);
                         opp.cards_drawn_this_turn.clear();
+                        opp.cards_drawn_this_draw_step = 0;
                     }
 
                     // Reset per-trigger resolution counts

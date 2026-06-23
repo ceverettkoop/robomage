@@ -42,6 +42,7 @@ enum class EffectKind {
     SylvanLibrary,
     WinsGame,
     Charm,
+    Amass,
 };
 
 // Maps a normalized category string to its EffectKind. Unknown strings → None.

@@ -62,6 +62,13 @@ struct PeekParams {
     bool no_reveal = false;  // NoReveal$ True
 };
 
+// Amass (e.g. Orcish Bowmasters: "amass Orcs 1"). The counter count lives in the
+// shared Ability::amount field; this captures the amassed creature subtype, which
+// names both the Army's token script and the type the Army gains.
+struct AmassParams {
+    std::string subtype = "";  // Type$ — amassed creature subtype, e.g. "Orc"
+};
+
 // Delayed trigger registration (e.g. Mishra's Bauble: "draw a card at the
 // beginning of your next upkeep").
 struct DelayedTriggerParams {

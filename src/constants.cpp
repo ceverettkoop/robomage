@@ -11,7 +11,7 @@ const std::set<std::string> all_types = {"Artifact", "Battle", "Conspiracy", "Cr
 const std::set<std::string> all_subtypes = {"Abian", "Adventure", "Advisor", "Aetherborn", "Ajani", "Alara",
     "Alfava Metraxis", "Alicorn", "Alien", "Ally", "Aminatou", "Amonkhet", "and/or", "Androzani Minor", "Angel",
     "Angrath", "Antausia", "Antelope", "Apalapucia", "Ape", "Arcane", "Arcavios", "Archer", "Archon", "Arkhos",
-    "Arlinn", "Armadillo", "Art", "Artificer", "Ashiok", "Assassin", "Assembly-Worker", "Astartes", "Atog",
+    "Arlinn", "Armadillo", "Army", "Art", "Artificer", "Ashiok", "Assassin", "Assembly-Worker", "Astartes", "Atog",
     "Attraction", "Aura", "Aurochs", "Autobot", "Avatar", "Azgol", "Azra", "Background", "Baddest,", "Badger",
     "Bahamut", "Barbarian", "Bard", "Basilisk", "Basri", "Bat", "Bear", "Beast", "Beaver", "Beeble", "Beholder",
     "Belenon", "Berserker", "Biggest,", "Bird", "Boar", "B.O.B.", "Bobblehead", "Bolas", "Bolas's Meditation Realm",

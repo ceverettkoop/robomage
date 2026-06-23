@@ -6,7 +6,7 @@
 #include "../card_db.h"
 #include "../card_vocab.h"
 #include "../classes/deck.h"
-#include "../classes/game.h"
+#include "../classes/game.h"357
 #include "../classes/action.h"
 #include "../classes/match_state.h"
 #include "../cli_output.h"
@@ -295,21 +295,21 @@ void Orderer::generate_libraries(const Deck &deck_a, const Deck &deck_b) {
 }
 
 void Orderer::draw_hands() {
-    draw(Zone::PLAYER_A, 7);
-    draw(Zone::PLAYER_B, 7);
+    draw(Zone::PLAYER_A, 7, false);
+    draw(Zone::PLAYER_B, 7, false);
 }
 
 // Draw `ct` cards one at a time. Each individual draw is a separate "would draw a
 // card" event, so the dredge replacement effect is offered before each one.
-void Orderer::draw(Zone::Ownership player, size_t ct) {
+void Orderer::draw(Zone::Ownership player, size_t ct, bool fire_draw_event) {
     for (size_t i = 0; i < ct; i++) {
         if (cur_game.ended) return;
-        draw_one(player);
+        draw_one(player, fire_draw_event);
     }
 }
 
 // actual effect here; replacement (dredge) handled here, triggers handled by callers
-void Orderer::draw_one(Zone::Ownership player) {
+void Orderer::draw_one(Zone::Ownership player, bool fire_draw_event) {
     // Dredge replacement (rule 702.52): the player may replace this draw with a
     // dredge from their graveyard. If they do, no card is drawn.
     if (offer_dredge(player)) return;
@@ -350,6 +350,22 @@ void Orderer::draw_one(Zone::Ownership player) {
     // closes the library gap, and updates the known-top-of-library cache.
     add_to_zone(false, top, Zone::HAND);
     pl.cards_drawn_this_turn.push_back(top);
+
+    // Fire PLAYER_DREW_CARD for this individual draw. The "first card in the
+    // drawer's draw step" is flagged so triggers like Orcish Bowmasters can
+    // ignore the turn-based draw while punishing every extra draw.
+    Zone::Ownership active = cur_game.player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B;
+    bool first_in_draw_step = false;
+    if (cur_game.cur_step == DRAW && player == active) {
+        first_in_draw_step = (pl.cards_drawn_this_draw_step == 0);
+        pl.cards_drawn_this_draw_step++;
+    }
+    if (!fire_draw_event) return;
+    Event draw_event(Events::PLAYER_DREW_CARD);
+    draw_event.SetParam(Params::PLAYER, player_entity);
+    draw_event.SetParam(Params::ENTITY, top);
+    draw_event.SetParam(Params::FIRST_IN_STEP, first_in_draw_step ? 1 : 0);
+    global_coordinator.SendEvent(draw_event);
 }
 
 bool Orderer::offer_dredge(Zone::Ownership player) {
@@ -517,7 +533,7 @@ void Orderer::do_london_mulligan() {
                         this->add_to_zone(false, card, Zone::LIBRARY);
                     }
                     this->shuffle_library(Zone::PLAYER_A);
-                    this->draw(Zone::PLAYER_A, 7);
+                    this->draw(Zone::PLAYER_A, 7, false);
                 }
             }
         }
@@ -559,7 +575,7 @@ void Orderer::do_london_mulligan() {
                         this->add_to_zone(false, card, Zone::LIBRARY);
                     }
                     this->shuffle_library(Zone::PLAYER_B);
-                    this->draw(Zone::PLAYER_B, 7);
+                    this->draw(Zone::PLAYER_B, 7, false);
                 }
             }
         }
