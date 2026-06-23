@@ -28,7 +28,7 @@ bool choose_card(Ability &ab, std::shared_ptr<Orderer> orderer) {
     Zone::Ownership opp = (ctrl == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
 
     std::vector<Entity> choices;
-    for (Entity e = 0; e < MAX_ENTITIES; ++e) {
+    for (Entity e = 0; e < global_coordinator.GetMaxIssuedEntity(); ++e) {
         if (!global_coordinator.entity_has_component<Zone>(e)) continue;
         auto &z = global_coordinator.GetComponent<Zone>(e);
         if (z.location != Zone::EXILE) continue;

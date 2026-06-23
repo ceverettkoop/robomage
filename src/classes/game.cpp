@@ -95,7 +95,7 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
             switch (cur_step) {
                 case UNTAP: {
                     // Phase in phased-out permanents controlled by active player
-                    for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
+                    for (Entity entity = 0; entity < global_coordinator.GetMaxIssuedEntity(); ++entity) {
                         if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
                         auto &perm_phase = global_coordinator.GetComponent<Permanent>(entity);
                         if (perm_phase.controller == active_player && perm_phase.is_phased_out) {
@@ -114,7 +114,7 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                         }
                     }
                     // Untap all permanents controlled by active player; reset per-turn counters
-                    for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
+                    for (Entity entity = 0; entity < global_coordinator.GetMaxIssuedEntity(); ++entity) {
                         if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
 
                         auto &permanent = global_coordinator.GetComponent<Permanent>(entity);
@@ -178,7 +178,7 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                 case DECLARE_BLOCKERS: {
                     // Scan for first strikers / double strikers
                     has_first_strikers = false;
-                    for (Entity e = 0; e < MAX_ENTITIES; ++e) {
+                    for (Entity e = 0; e < global_coordinator.GetMaxIssuedEntity(); ++e) {
                         if (!global_coordinator.entity_has_component<Creature>(e)) continue;
                         auto &cr = global_coordinator.GetComponent<Creature>(e);
                         if (!cr.is_attacking && !cr.is_blocking) continue;
@@ -207,7 +207,7 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     break;
                 case END_OF_COMBAT:
                     // Clear all combat state from creatures
-                    for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
+                    for (Entity entity = 0; entity < global_coordinator.GetMaxIssuedEntity(); ++entity) {
                         if (!global_coordinator.entity_has_component<Creature>(entity)) continue;
                         auto &creature = global_coordinator.GetComponent<Creature>(entity);
                         creature.is_attacking = false;
@@ -230,7 +230,7 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     break;
                 case CLEANUP:
                     // Clear damage from all creatures; reset prowess bonus
-                    for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
+                    for (Entity entity = 0; entity < global_coordinator.GetMaxIssuedEntity(); ++entity) {
                         if (global_coordinator.entity_has_component<Damage>(entity)) {
                             auto &damage = global_coordinator.GetComponent<Damage>(entity);
                             damage.damage_counters = 0;

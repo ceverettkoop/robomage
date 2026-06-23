@@ -26,7 +26,7 @@ bool pump(Ability &ab, std::shared_ptr<Orderer> orderer) {
     // Present target selection, then chain subabilities with that target
     Zone::Ownership ctrl = ab.controller;
     std::vector<Entity> pump_targets;
-    for (Entity e = 0; e < MAX_ENTITIES; ++e) {
+    for (Entity e = 0; e < global_coordinator.GetMaxIssuedEntity(); ++e) {
         if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
         if (!global_coordinator.entity_has_component<Creature>(e)) continue;
         auto &z = global_coordinator.GetComponent<Zone>(e);
