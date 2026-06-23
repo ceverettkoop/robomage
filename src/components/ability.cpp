@@ -21,6 +21,7 @@
 #include "../action_processor.h"
 #include "../mana_system.h"
 #include "../parse.h"
+#include "../svar_eval.h"
 #include "../effects/effects.h"
 #include "../systems/orderer.h"
 #include "creature.h"
@@ -634,7 +635,10 @@ static int evaluate_condition_svar(const std::string &expr, Entity src, Zone::Ow
 }
 
 // Returns true if val passes the compare spec (e.g. "EQ2", "NE2", "GE1", "LE3").
-// When svar_rhs is non-empty, it is evaluated as the RHS instead of parsing an int from spec.
+// When svar_rhs is non-empty, it is evaluated as the RHS instead of parsing an int
+// from spec. Unlike svar_eval::compare_svar this is permissive — a missing/unknown
+// operator passes — so the operator application (but not the defaulting) is shared
+// via apply_svar_op.
 static bool compare_svar(int val, const std::string &spec, const std::string &svar_rhs = "", Entity src = 0,
     Zone::Ownership ctrl = Zone::PLAYER_A, std::shared_ptr<Orderer> orderer = nullptr) {
     if (spec.size() < 2) return true;
@@ -646,13 +650,9 @@ static bool compare_svar(int val, const std::string &spec, const std::string &sv
         if (spec.size() < 3) return true;
         rhs = std::stoi(spec.substr(2));
     }
-    if (op == "EQ") return val == rhs;
-    if (op == "NE") return val != rhs;
-    if (op == "GE") return val >= rhs;
-    if (op == "LE") return val <= rhs;
-    if (op == "GT") return val > rhs;
-    if (op == "LT") return val < rhs;
-    return true;
+    if (op == "EQ" || op == "NE" || op == "GE" ||
+        op == "LE" || op == "GT" || op == "LT") return apply_svar_op(val, op, rhs);
+    return true;  // unknown operator passes (permissive)
 }
 
 // Evaluates a dynamic_amount_expr at runtime for the given controller.
@@ -729,7 +729,12 @@ size_t evaluate_dynamic_amount(
         if (global_coordinator.entity_has_component<Creature>(target))
             return static_cast<size_t>(global_coordinator.GetComponent<Creature>(target).power);
     }
-    return 0;
+    // Fall back to the shared static-ability SVar evaluator for graveyard-count
+    // expressions (Count$TypeInYourYard / Count$ValidGraveyard / CardTypes). It
+    // returns 0 for anything it doesn't recognise, so this preserves the prior
+    // default while making one set of Count$ handlers serve both paths.
+    int sa_val = evaluate_sa_svar(expr, ctrl);
+    return sa_val > 0 ? static_cast<size_t>(sa_val) : 0;
 }
 
 void Ability::resolve(std::shared_ptr<Orderer> orderer) {

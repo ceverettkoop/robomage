@@ -10,15 +10,25 @@
 
 extern Coordinator global_coordinator;
 
-// Simple SVar comparison logic (shared between statics and alt costs)
-bool compare_svar(int value, const std::string &compare) {
-    if (compare.rfind("EQ", 0) == 0)  return value == std::stoi(compare.substr(2));
-    if (compare.rfind("NE", 0) == 0)  return value != std::stoi(compare.substr(2));
-    if (compare.rfind("GE", 0) == 0)  return value >= std::stoi(compare.substr(2));
-    if (compare.rfind("LE", 0) == 0)  return value <= std::stoi(compare.substr(2));
-    if (compare.rfind("GT", 0) == 0)  return value >  std::stoi(compare.substr(2));
-    if (compare.rfind("LT", 0) == 0)  return value <  std::stoi(compare.substr(2));
+// The bare operator table — one home for the EQ/NE/GE/LE/GT/LT switch.
+bool apply_svar_op(int lhs, const std::string &op2, int rhs) {
+    if (op2 == "EQ") return lhs == rhs;
+    if (op2 == "NE") return lhs != rhs;
+    if (op2 == "GE") return lhs >= rhs;
+    if (op2 == "LE") return lhs <= rhs;
+    if (op2 == "GT") return lhs >  rhs;
+    if (op2 == "LT") return lhs <  rhs;
     return false;
+}
+
+// Simple SVar comparison logic (shared between statics and alt costs).
+// A leading two-letter operator followed by an integer; anything else is false.
+bool compare_svar(int value, const std::string &compare) {
+    if (compare.size() < 2) return false;
+    std::string op = compare.substr(0, 2);
+    if (op != "EQ" && op != "NE" && op != "GE" &&
+        op != "LE" && op != "GT" && op != "LT") return false;
+    return apply_svar_op(value, op, std::stoi(compare.substr(2)));
 }
 
 // Evaluate a StaticAbility SVar expression such as "Count$TypeInYourYard.Land".
