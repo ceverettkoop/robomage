@@ -599,24 +599,9 @@ void StateManager::apply_static_ability_effects() {
         } else if (a.sa->condition == "Delirium") {
             condition_met = (a.controller == Zone::PLAYER_A) ? delirium_a : delirium_b;
         } else if (!a.sa->check_svar_expr.empty()) {
-            // SVar-based condition (e.g. Keen-Eyed Curator: GE4 distinct card types among exiled_with)
-            int svar_val = 0;
-            if (a.sa->check_svar_expr.find("Count$ValidExile") != std::string::npos &&
-                a.sa->check_svar_expr.find("CardTypes") != std::string::npos) {
-                // Count distinct card types among entities in this permanent's exiled_with
-                if (global_coordinator.entity_has_component<Permanent>(a.entity)) {
-                    auto &eperm = global_coordinator.GetComponent<Permanent>(a.entity);
-                    std::set<std::string> type_names;
-                    for (auto ex_e : eperm.exiled_with) {
-                        if (!global_coordinator.entity_has_component<CardData>(ex_e)) continue;
-                        for (auto &t : global_coordinator.GetComponent<CardData>(ex_e).types)
-                            if (t.kind == TYPE) type_names.insert(t.name);
-                    }
-                    svar_val = static_cast<int>(type_names.size());
-                }
-            } else {
-                svar_val = evaluate_sa_svar(a.sa->check_svar_expr, a.controller);
-            }
+            // SVar-based condition (e.g. Keen-Eyed Curator: GE4 distinct card types
+            // among exiled_with). a.entity is the source permanent the SVar belongs to.
+            int svar_val = evaluate_sa_svar(a.sa->check_svar_expr, a.controller, a.entity);
             condition_met = compare_svar(svar_val, a.sa->svar_compare);
         } else {
             condition_met = false;  // unrecognised condition — treat as unmet

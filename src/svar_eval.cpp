@@ -4,6 +4,7 @@
 #include <string>
 
 #include "components/carddata.h"
+#include "components/permanent.h"
 #include "components/types.h"
 #include "components/zone.h"
 #include "ecs/coordinator.h"
@@ -33,13 +34,30 @@ bool compare_svar(int value, const std::string &compare) {
 
 // Evaluate a StaticAbility SVar expression such as "Count$TypeInYourYard.Land".
 // Returns the computed integer value.
-int evaluate_sa_svar(const std::string &expr, Zone::Ownership controller) {
+int evaluate_sa_svar(const std::string &expr, Zone::Ownership controller, Entity source) {
     // Handle /Plus.N suffix: strip it, evaluate the base, then add N
     size_t plus_pos = expr.find("/Plus.");
     if (plus_pos != std::string::npos) {
         std::string base = expr.substr(0, plus_pos);
         int offset = std::stoi(expr.substr(plus_pos + 6));
-        return evaluate_sa_svar(base, controller) + offset;
+        return evaluate_sa_svar(base, controller, source) + offset;
+    }
+
+    // Count$ValidExile ... CardTypes — distinct card types among the cards exiled
+    // with `source` (e.g. Keen-Eyed Curator's exiled-with pile). Scoped to the
+    // source permanent, hence the `source` parameter.
+    if (expr.find("Count$ValidExile") != std::string::npos &&
+        expr.find("CardTypes") != std::string::npos) {
+        if (source == 0 || !global_coordinator.entity_has_component<Permanent>(source))
+            return 0;
+        auto &eperm = global_coordinator.GetComponent<Permanent>(source);
+        std::set<std::string> type_names;
+        for (auto ex_e : eperm.exiled_with) {
+            if (!global_coordinator.entity_has_component<CardData>(ex_e)) continue;
+            for (auto &t : global_coordinator.GetComponent<CardData>(ex_e).types)
+                if (t.kind == TYPE) type_names.insert(t.name);
+        }
+        return static_cast<int>(type_names.size());
     }
 
     // Count$TypeInYourYard.<TypeName> — count cards of that type in controller's graveyard

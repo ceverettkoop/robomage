@@ -3,6 +3,7 @@
 
 #include <string>
 
+#include "ecs/entity.h"
 #include "components/zone.h"
 
 // SVar evaluation shared across the static-ability, alt-cost, and castability-
@@ -20,6 +21,9 @@ bool compare_svar(int value, const std::string &compare);
 
 // Evaluate a StaticAbility SVar expression (e.g. "Count$TypeInYourYard.Land",
 // "Count$ValidGraveyard Land.YouOwn") to an integer, from `controller`'s view.
-int evaluate_sa_svar(const std::string &expr, Zone::Ownership controller);
+// `source` is the permanent the SVar belongs to; only expressions scoped to a
+// specific source (e.g. "Count$ValidExile ... CardTypes", which counts card types
+// among that permanent's exiled-with pile) need it — others ignore it.
+int evaluate_sa_svar(const std::string &expr, Zone::Ownership controller, Entity source = 0);
 
 #endif /* SVAR_EVAL_H */
