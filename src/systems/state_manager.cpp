@@ -27,15 +27,14 @@
 #include "../game_queries.h"
 #include "../input_logger.h"
 #include "../mana_system.h"
+#include "../svar_eval.h"
 #include "../systems/stack_manager.h"
 #include "orderer.h"
 
 std::vector<ActiveStatic> g_active_statics;
 
 int active_raise_cost_for(const CardData &card_data) {
-    bool is_creature = false;
-    for (auto &t : card_data.types)
-        if (t.kind == TYPE && t.name == "Creature") { is_creature = true; break; }
+    bool is_creature = is_creature_card(card_data);
     int total = 0;
     for (const auto &as : g_active_statics) {
         if (as.sa->category != "RaiseCost") continue;
@@ -50,7 +49,6 @@ int active_raise_cost_for(const CardData &card_data) {
     return total;
 }
 
-static bool compare_svar(int value, const std::string &compare);
 static bool check_condition_present(const Ability &ab, Zone::Ownership caster, std::shared_ptr<Orderer> orderer);
 static void add_keywords_from_spec(Creature &cr, const std::string &spec);
 static void remove_keywords_from_spec(Creature &cr, const std::string &spec);
@@ -137,17 +135,9 @@ void StateManager::apply_permanent_components(Game &game) {
         if (zone.location == Zone::BATTLEFIELD) {  // on battlefield, check to add components
             // check types
             // TODO planeswalker here
-            bool is_creature = false;
-            bool is_land = false;
             auto &card_data = global_coordinator.GetComponent<CardData>(entity);
-            for (auto &t : card_data.types) {
-                if (t.kind == TYPE && t.name == "Creature") {
-                    is_creature = true;
-                }  // can be creature and land
-                if (t.kind == TYPE && t.name == "Land") {
-                    is_land = true;
-                }
-            }
+            bool is_creature = is_creature_card(card_data);  // can be creature and land
+            bool is_land = is_land_card(card_data);
             // providing permanent component if doesn't have
             if (!global_coordinator.entity_has_component<Permanent>(entity)) {
                 Permanent perm;
@@ -246,8 +236,7 @@ void StateManager::apply_permanent_components(Game &game) {
             if (card_data.has_etb_choose_creature_type) {
                 auto &perm_ref = global_coordinator.GetComponent<Permanent>(entity);
                 if (perm_ref.chosen_type.empty()) {
-                Entity player_entity = (perm_ref.controller == Zone::PLAYER_A)
-                    ? cur_game.player_a_entity : cur_game.player_b_entity;
+                Entity player_entity = get_player_entity(perm_ref.controller);
                 auto &player = global_coordinator.GetComponent<Player>(player_entity);
 
                 if (!player.creature_subtypes.empty()) {
@@ -266,10 +255,7 @@ void StateManager::apply_permanent_components(Game &game) {
                         auto &z2 = global_coordinator.GetComponent<Zone>(e2);
                         if (z2.owner != perm_ref.controller) continue;
                         auto &cd2 = global_coordinator.GetComponent<CardData>(e2);
-                        bool is_cr = false;
-                        for (auto &t : cd2.types)
-                            if (t.kind == TYPE && t.name == "Creature") { is_cr = true; break; }
-                        if (!is_cr) continue;
+                        if (!is_creature_card(cd2)) continue;
                         for (auto &t : cd2.types) {
                             if (t.kind != SUBTYPE) continue;
                             for (size_t i = 0; i < subtype_names.size(); i++) {
@@ -386,8 +372,7 @@ void StateManager::apply_land_abilities(Entity entity) {
     auto &perm = global_coordinator.GetComponent<Permanent>(entity);
     std::vector<std::string> land_subtypes;
     for (auto &type : perm.types) {
-        if (type.kind == SUBTYPE && (type.name == "Mountain" || type.name == "Forest" || type.name == "Plains" ||
-                                        type.name == "Island" || type.name == "Swamp" || type.name == "Wastes")) {
+        if (type.kind == SUBTYPE && is_basic_land_subtype(type.name)) {
             land_subtypes.push_back(type.name);
         }
     }
@@ -468,87 +453,6 @@ static Ability keyword_triggered_ability(const std::string &keyword) {
     return ab;
 }
 
-// Evaluate a StaticAbility SVar expression such as "Count$TypeInYourYard.Land".
-// Returns the computed integer value.
-static int evaluate_sa_svar(const std::string &expr, Zone::Ownership controller) {
-    // Handle /Plus.N suffix: strip it, evaluate the base, then add N
-    size_t plus_pos = expr.find("/Plus.");
-    if (plus_pos != std::string::npos) {
-        std::string base = expr.substr(0, plus_pos);
-        int offset = std::stoi(expr.substr(plus_pos + 6));
-        return evaluate_sa_svar(base, controller) + offset;
-    }
-
-    // Count$TypeInYourYard.<TypeName> — count cards of that type in controller's graveyard
-    if (expr.rfind("Count$TypeInYourYard.", 0) == 0) {
-        std::string type_name = expr.substr(21);  // after "Count$TypeInYourYard."
-        int count = 0;
-        Entity max_e = global_coordinator.GetMaxIssuedEntity();
-        for (Entity e = 0; e < max_e; ++e) {
-            if (!global_coordinator.entity_has_component<Zone>(e)) continue;
-            auto &z = global_coordinator.GetComponent<Zone>(e);
-            if (z.location != Zone::GRAVEYARD || z.owner != controller) continue;
-            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
-            auto &cd = global_coordinator.GetComponent<CardData>(e);
-            for (auto &t : cd.types) {
-                if (t.name == type_name) { count++; break; }
-            }
-        }
-        return count;
-    }
-
-    // Count$ValidGraveyard Card$CardTypes — count distinct card types (Creature, Instant, etc.)
-    // across both players' graveyards (Barrowgoyf)
-    if (expr == "Count$CardTypesInAllGraveyards" ||
-        expr == "Count$ValidGraveyard Card$CardTypes") {
-        std::set<std::string> type_names;
-        Entity max_e = global_coordinator.GetMaxIssuedEntity();
-        for (Entity e = 0; e < max_e; ++e) {
-            if (!global_coordinator.entity_has_component<Zone>(e)) continue;
-            auto &z = global_coordinator.GetComponent<Zone>(e);
-            if (z.location != Zone::GRAVEYARD) continue;
-            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
-            auto &cd = global_coordinator.GetComponent<CardData>(e);
-            for (auto &t : cd.types) {
-                if (t.kind == TYPE) type_names.insert(t.name);
-            }
-        }
-        return static_cast<int>(type_names.size());
-    }
-
-    // Count$ValidGraveyard <Type>[.<Restriction>...] — count cards of the given
-    // type in graveyards, optionally restricted to the controller's own cards
-    // (YouOwn/YouCtrl). E.g. "Land.YouOwn" for Knight of the Reliquary.
-    if (expr.rfind("Count$ValidGraveyard ", 0) == 0) {
-        std::string spec = expr.substr(21);  // after "Count$ValidGraveyard "
-        std::string type_name = spec;
-        bool you_own = false;
-        size_t dot = spec.find('.');
-        if (dot != std::string::npos) {
-            type_name = spec.substr(0, dot);
-            std::string rest = spec.substr(dot + 1);
-            you_own = rest.find("YouOwn") != std::string::npos ||
-                      rest.find("YouCtrl") != std::string::npos;
-        }
-        int count = 0;
-        Entity max_e = global_coordinator.GetMaxIssuedEntity();
-        for (Entity e = 0; e < max_e; ++e) {
-            if (!global_coordinator.entity_has_component<Zone>(e)) continue;
-            auto &z = global_coordinator.GetComponent<Zone>(e);
-            if (z.location != Zone::GRAVEYARD) continue;
-            if (you_own && z.owner != controller) continue;
-            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
-            auto &cd = global_coordinator.GetComponent<CardData>(e);
-            for (auto &t : cd.types) {
-                if (t.kind == TYPE && t.name == type_name) { count++; break; }
-            }
-        }
-        return count;
-    }
-
-    return 0;
-}
-
 // Rule 613.1d — Layer 4: type-changing continuous effects.
 // Resets land types to CardData originals, then applies type-changing effects
 // sorted by timestamp (rule 613.7: later timestamp wins within the same layer).
@@ -613,10 +517,7 @@ void StateManager::apply_type_changing_effects() {
             // Token land — strip existing land subtypes
             std::set<Type> new_types;
             for (auto &t : perm.types) {
-                if (t.kind == SUBTYPE &&
-                    (t.name == "Mountain" || t.name == "Forest" || t.name == "Plains" ||
-                     t.name == "Island" || t.name == "Swamp" || t.name == "Wastes"))
-                    continue;
+                if (t.kind == SUBTYPE && is_basic_land_subtype(t.name)) continue;
                 new_types.insert(t);
             }
             perm.types = new_types;
@@ -831,13 +732,6 @@ void StateManager::init() {
     Signature signature;
     signature.set(global_coordinator.GetComponentType<Zone>());
     global_coordinator.SetSystemSignature<StateManager>(signature);
-}
-
-// Returns true if the creature has the given keyword
-static bool creature_has_keyword(const Creature &cr, const char *kw) {
-    for (const auto &k : cr.keywords)
-        if (k == kw) return true;
-    return false;
 }
 
 // Should this creature deal damage during this combat damage step?
@@ -1165,8 +1059,7 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                 // ValidPlayer$ You: only fire when the event's player matches the permanent's controller
                 if (ab.trigger_valid_player_is_controller && ev.HasParam(Params::PLAYER)) {
                     Entity event_player = ev.GetParam<Entity>(Params::PLAYER);
-                    Entity ctrl_entity = (perm.controller == Zone::PLAYER_A)
-                                         ? game.player_a_entity : game.player_b_entity;
+                    Entity ctrl_entity = get_player_entity(perm.controller);
                     if (event_player != ctrl_entity) continue;
                 }
                 // DisableTriggers check (Doorkeeper Thrull): suppress ETB triggers caused by matching card types
@@ -1201,10 +1094,8 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                     if (ab.trigger_valid_card_is_creature && ev.HasParam(Params::ENTITY)) {
                         Entity ev_card = ev.GetParam<Entity>(Params::ENTITY);
                         bool is_creature = global_coordinator.entity_has_component<Token>(ev_card);
-                        if (!is_creature && global_coordinator.entity_has_component<CardData>(ev_card)) {
-                            for (auto &t : global_coordinator.GetComponent<CardData>(ev_card).types)
-                                if (t.kind == TYPE && t.name == "Creature") { is_creature = true; break; }
-                        }
+                        if (!is_creature && global_coordinator.entity_has_component<CardData>(ev_card))
+                            is_creature = is_creature_card(global_coordinator.GetComponent<CardData>(ev_card));
                         if (!is_creature) continue;
                     }
                     // ValidCard$ Instant/Sorcery filter (Murktide Regent)
@@ -1219,11 +1110,8 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                     // ValidCard$ Land.* filter (landfall)
                     if (ab.trigger_valid_card_is_land && ev.HasParam(Params::ENTITY)) {
                         Entity ev_card = ev.GetParam<Entity>(Params::ENTITY);
-                        bool is_land = false;
-                        if (global_coordinator.entity_has_component<CardData>(ev_card)) {
-                            for (auto &t : global_coordinator.GetComponent<CardData>(ev_card).types)
-                                if (t.kind == TYPE && t.name == "Land") { is_land = true; break; }
-                        }
+                        bool is_land = global_coordinator.entity_has_component<CardData>(ev_card) &&
+                                       is_land_card(global_coordinator.GetComponent<CardData>(ev_card));
                         if (!is_land) continue;
                     }
                 }
@@ -1233,8 +1121,7 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                     // opponent of the source's controller (drawer != controller).
                     if (ab.trigger_valid_card_opp_own && ev.HasParam(Params::PLAYER)) {
                         Entity drawer = ev.GetParam<Entity>(Params::PLAYER);
-                        Entity ctrl_entity = (perm.controller == Zone::PLAYER_A)
-                                             ? game.player_a_entity : game.player_b_entity;
+                        Entity ctrl_entity = get_player_entity(perm.controller);
                         if (drawer == ctrl_entity) continue;
                     }
                     // FirstCardInDrawStep$ False — ignore the first card drawn in the
@@ -1278,17 +1165,6 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
     }
 }
 
-// Simple SVar comparison logic (shared between statics and alt costs)
-static bool compare_svar(int value, const std::string &compare) {
-    if (compare.rfind("EQ", 0) == 0)  return value == std::stoi(compare.substr(2));
-    if (compare.rfind("NE", 0) == 0)  return value != std::stoi(compare.substr(2));
-    if (compare.rfind("GE", 0) == 0)  return value >= std::stoi(compare.substr(2));
-    if (compare.rfind("LE", 0) == 0)  return value <= std::stoi(compare.substr(2));
-    if (compare.rfind("GT", 0) == 0)  return value >  std::stoi(compare.substr(2));
-    if (compare.rfind("LT", 0) == 0)  return value <  std::stoi(compare.substr(2));
-    return false;
-}
-
 static bool can_afford_alt(const AltCost& alt_cost, Zone::Ownership priority_player,
                            Entity card_entity, std::shared_ptr<Orderer> orderer) {
     if (!alt_cost.has_alt_cost) return false;
@@ -1297,8 +1173,7 @@ static bool can_afford_alt(const AltCost& alt_cost, Zone::Ownership priority_pla
     if (!alt_cost.condition_svar.empty()) {
         int svar_value = 0;
         if (alt_cost.condition_svar.find("Count$YouCastThisGame") != std::string::npos) {
-            Entity pp_entity = (priority_player == Zone::PLAYER_A)
-                ? cur_game.player_a_entity : cur_game.player_b_entity;
+            Entity pp_entity = get_player_entity(priority_player);
             svar_value = static_cast<int>(global_coordinator.GetComponent<Player>(pp_entity).spells_cast_this_game);
         }
         if (!compare_svar(svar_value, alt_cost.condition_compare)) return false;
@@ -1322,8 +1197,7 @@ static bool can_afford_alt(const AltCost& alt_cost, Zone::Ownership priority_pla
     }
 
     if (alt_cost.life_cost > 0) {
-        Entity pp_entity = (priority_player == Zone::PLAYER_A)
-            ? cur_game.player_a_entity : cur_game.player_b_entity;
+        Entity pp_entity = get_player_entity(priority_player);
         if (global_coordinator.GetComponent<Player>(pp_entity).life_total < alt_cost.life_cost)
             return false;
     }
@@ -1569,9 +1443,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             la.category = ActionCategory::CAST_SPELL;
 
             // Check RaiseCost and CantBeCast statics from cached active_statics
-            bool card_is_creature = false;
-            for (auto &t : card_data.types)
-                if (t.kind == TYPE && t.name == "Creature") { card_is_creature = true; break; }
+            bool card_is_creature = is_creature_card(card_data);
             int raise_total = active_raise_cost_for(card_data);
             bool cast_blocked = false;
             for (const auto &as : g_active_statics) {
@@ -1579,8 +1451,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 // Skip if the spell doesn't match the filter (creatures are unaffected by nonCreature restriction)
                 if (as.sa->cant_cast_filter.find("nonCreature") != std::string::npos && card_is_creature)
                     continue;
-                Entity pp_entity = (priority_player == Zone::PLAYER_A)
-                    ? cur_game.player_a_entity : cur_game.player_b_entity;
+                Entity pp_entity = get_player_entity(priority_player);
                 auto &pp = global_coordinator.GetComponent<Player>(pp_entity);
                 if (as.sa->cant_cast_limit_per_turn > 0 &&
                     static_cast<int>(pp.noncreature_spells_cast_this_turn) >= as.sa->cant_cast_limit_per_turn) {
@@ -1642,8 +1513,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         // Check affordability: flashback mana cost + life cost
         bool can_afford_fb = can_pay_mana(priority_player, gcd.flashback_mana_cost, gy_entity, orderer);
         if (can_afford_fb && gcd.flashback_alt_cost.life_cost > 0) {
-            Entity pp_entity = (priority_player == Zone::PLAYER_A)
-                ? cur_game.player_a_entity : cur_game.player_b_entity;
+            Entity pp_entity = get_player_entity(priority_player);
             if (global_coordinator.GetComponent<Player>(pp_entity).life_total < gcd.flashback_alt_cost.life_cost)
                 can_afford_fb = false;
         }
