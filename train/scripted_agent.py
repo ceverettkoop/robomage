@@ -45,10 +45,12 @@ from env import (
     _DOOMSDAY_VOCAB_IDX, _DARK_RITUAL_VOCAB_IDX, _THASSAS_ORACLE_VOCAB_IDX,
     _STREET_WRAITH_VOCAB_IDX, _EDGE_OF_AUTUMN_VOCAB_IDX, _DOOMSDAY_DECK_IDS,
     _KEEP_ONE_LANDER_IDS,
+    _GREEN_SUNS_ZENITH_VOCAB_IDX, _KEEN_EYED_CURATOR_VOCAB_IDX, _MANA_DORK_IDS,
+    _UNRELIABLE_LAND_IDS,
     # library-count context index (obs[_LIBRARY_CTX_START] == self_library_ct / 60)
     _LIBRARY_CTX_START,
-    # shared helper (also used by env's reward shaping, so it stays in env.py)
-    _hand_has_card,
+    # shared helpers (also used by env's reward shaping, so they stay in env.py)
+    _hand_has_card, _stack_is_empty,
 )
 from decode import decode_game_state
 from card_costs import _LAND_VOCAB_IDS
@@ -154,6 +156,11 @@ def _opponent_has_spell_on_stack(obs: np.ndarray) -> bool:
 _DD_PILE_SIZE = 5
 _ORACLE_WIN_LIBRARY = 2
 
+# Green Sun's Zenith costs {X}{G}. Hold it until at least this many untapped mana
+# sources are available so it is never cast for X=0 (which can only fetch the
+# 0-mana Dryad Arbor); 2 sources buy X=1, more buy a bigger creature.
+_GSZ_MIN_MANA_SOURCES = 2
+
 # Street Wraith cycling costs 2 life; never pay it below this so the agent can't
 # cycle itself to death digging through the pile.
 _STREET_WRAITH_MIN_LIFE = 3
@@ -195,6 +202,31 @@ def _count_blue_sources(obs: np.ndarray) -> int:
         idx = _slot_card_idx(obs, base + _BF_CARD_OFF)
         if idx >= 0 and idx in _BLUE_SOURCE_IDS:
             count += 1
+    return count
+
+
+def _count_untapped_mana_sources(obs: np.ndarray) -> int:
+    """Untapped mana-producers self controls (self battlefield slots 0..47).
+
+    Counts every untapped land plus the untapped mana-dork creatures (Birds /
+    Noble & Ignoble Hierarch). Used to decide whether Green Sun's Zenith can
+    afford a meaningful X — its cost is {X}{G}, so N sources buy X = N-1.
+    """
+    count = 0
+    for slot in range(_PERM_A_SLOTS):
+        base = _BF_START + slot * _BF_SLOT_SIZE
+        if obs[base + _OFF_IS_TAPPED] > 0.5:
+            continue
+        idx = _slot_card_idx(obs, base + _BF_CARD_OFF)
+        is_land = obs[base + _OFF_IS_LAND] > 0.5 and idx not in _UNRELIABLE_LAND_IDS
+        is_dork = idx in _MANA_DORK_IDS
+        if not (is_land or is_dork):
+            continue
+        # A creature mana-source (dork, or a creature-land like Dryad Arbor) can't
+        # tap for mana while summoning-sick, so it can't pay toward X yet.
+        if obs[base + _OFF_IS_CREATURE] > 0.5 and obs[base + _OFF_HAS_SICKNESS] > 0.5:
+            continue
+        count += 1
     return count
 
 
@@ -413,6 +445,9 @@ def _greedy_action(obs: np.ndarray, num_choices: int) -> int:
                 continue  # handled above (held until blue mana for Oracle is online)
             if cid == _THASSAS_ORACLE_VOCAB_IDX:
                 continue  # only cast Oracle as the wincon (handled above)
+            if (cid == _GREEN_SUNS_ZENITH_VOCAB_IDX
+                    and _count_untapped_mana_sources(obs) < _GSZ_MIN_MANA_SOURCES):
+                continue  # hold GSZ until it can pay X>=1 (avoids the X=0 Dryad Arbor cast)
             return i
 
     # 7. Play land (may unlock mana for a spell next query)
@@ -449,6 +484,9 @@ def _greedy_action(obs: np.ndarray, num_choices: int) -> int:
                     continue  # no opponent nonbasic land to target — skip
                 if cid == _STREET_WRAITH_VOCAB_IDX:
                     continue  # only ever cycled via the gated combo rule above
+                if cid == _KEEN_EYED_CURATOR_VOCAB_IDX and not _stack_is_empty(obs):
+                    continue  # don't pile copies onto the stack (each extra one
+                              # fizzles when its graveyard target is already exiled)
                 return i
 
     # 9. (Removed - mana abilities no longer offered during normal priority in machine mode;
@@ -464,6 +502,16 @@ def _greedy_action(obs: np.ndarray, num_choices: int) -> int:
     # 10b. Dig choice (Once Upon a Time): pick action 1 (first matching card) if available.
     if any(c == _CAT_DIG for c in cats):
         return 1 if num_choices > 1 else 0
+
+    # 10c. X-value ladder (e.g. Green Sun's Zenith): the engine offers the whole
+    #      query as a contiguous run of OTHER_CHOICE actions "X = 0".."X = max".
+    #      Pay the maximum affordable X so GSZ fetches the biggest creature it can,
+    #      never settling for X=0. The only other all-OTHER query in these decks is
+    #      Sylvan Library's pay/return prompt, whose last option ("put on top of
+    #      library") is a safe, no-life-loss pick — so always taking the last
+    #      option here is correct for both.
+    if num_choices >= 2 and all(c == _CAT_OTHER for c in cats):
+        return num_choices - 1
 
     # 11. Other choice (Sylvan Library pay/return, unless costs): pick randomly.
     other_idxs = [i for i, c in enumerate(cats) if c == _CAT_OTHER]

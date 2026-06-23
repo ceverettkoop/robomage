@@ -545,6 +545,16 @@ _FORCE_OF_WILL_VOCAB_IDX = 12
 _DAZE_VOCAB_IDX          = 13
 _BRAINSTORM_VOCAB_IDX    = 24
 _ONCE_UPON_A_TIME_VOCAB_IDX = 43
+
+# Maverick (green/white) deck card vocab indices (mirror src/card_vocab.h)
+_GREEN_SUNS_ZENITH_VOCAB_IDX = 35
+_KEEN_EYED_CURATOR_VOCAB_IDX = 40
+# Untapped creatures that tap for mana (count toward X for Green Sun's Zenith).
+_MANA_DORK_IDS           = frozenset({30, 38, 42})  # Birds(30), Ignoble(38), Noble Hierarch(42)
+# Lands that do NOT reliably produce mana when untapped, so they shouldn't count
+# toward an affordable X: fetchlands (sacrifice for a land, no mana) and Gaea's
+# Cradle (G per creature — zero with an empty board).
+_UNRELIABLE_LAND_IDS     = frozenset({5, 6, 7, 8, 9, 52, 65, 66, 34})
 # Cantrips/digging that let us keep a one-land opening hand (they find more lands)
 _KEEP_ONE_LANDER_IDS     = frozenset({_PONDER_VOCAB_IDX, _BRAINSTORM_VOCAB_IDX,
                                       _ONCE_UPON_A_TIME_VOCAB_IDX})
