@@ -192,9 +192,15 @@ replacement) still enters tapped via the normal play path; diag 0 draws/crashes.
 ### ☐ 10. Activated-ability cost payment forked between hand and battlefield branches ✓✓
 `action_processor.cpp:88-135` vs `232-285`; hand branch lacks tap/return/discard costs.
 
-### ☐ 11. Stack-object post-resolution zone move in 3 disagreeing places
-`stack_manager.cpp:80-99`, `:104-114`, `ability.cpp:1351-1365` — a countered
-flashback spell goes to graveyard, not exile.
+### ◐ 11. Stack-object post-resolution zone move — resolution path unified, counter path still diverges
+The **resolution** copies were consolidated: `ability.cpp::resolve()` no longer
+moves zones, and `stack_manager.cpp:82-104` is now the single resolution-time
+decision (shuffle / flashback→exile / graveyard, keyed on `was_flashback`).
+**But a third path remains:** the counter handler `effect_counter.cpp:84` picks
+`EXILE` only when the *counter spell's* `ab.destination == EXILE`, never
+consulting the countered spell's `was_flashback` flag → **a countered flashback
+spell still goes to graveyard, not exile.** Fix: have `effect_counter` route the
+countered card through the same flashback-aware mover as `stack_manager`.
 
 ### ☐ 12. First/double-strike "does it matter" decided in two places
 Step-skip scan (`game.cpp:187-192`) vs per-creature damage gate
@@ -211,15 +217,22 @@ side handles `CantBeCast`.
 Combat path fires events + lifelink (`state_manager.cpp:818`); ability
 `DealDamage` does neither (`ability.cpp:1054`); no `deal_damage_to_player()`.
 
-### ☐ 16. `entity_name(Entity)` byte-identical static in two TUs
-`action_processor.cpp:42-51` vs `state_manager.cpp:37-47`.
+### ◐ 16. `entity_name(Entity)` byte-identical static in two TUs
+The StateManager subsystem split unified its copies behind
+`state_manager_internal.h` (declared there, used across the `state_manager_*`
+TUs). **`action_processor.cpp:42-51` still keeps its own private static** instead
+of including the shared declaration — partially resolved.
 
-### ☐ 17. `opponent_of(player)` open-coded 5×
-`action_processor.cpp:454,488,835`, `ability.cpp:1205`, `state_manager.cpp:1270`
-— despite an existing `get_player_entity()` helper.
+### ☑ 17. `opponent_of(player)` open-coded 5×
+**Resolved.** The open-coded `(player == A) ? B : A` flips were replaced by the
+existing `get_player_entity()` helper (`mana_system.h:18`), now called
+consistently (`action_processor.cpp`, `state_manager_statics.cpp`, etc.).
 
-### ☐ 18. "is (non)basic land" type scan copy-pasted in 3 files
-`ability.cpp:719-724`, `action_processor.cpp:528-534`, `state_manager.cpp:461-467`.
+### ◐ 18. "is (non)basic land" type scan copy-pasted in 3 files
+Helpers `is_land_card()` / `is_basic_land_subtype()` now exist in
+`game_queries.h` and `state_manager_statics.cpp` uses them — **but `ability.cpp`
+and `state_manager_actions.cpp` still open-code the scan.** Adopt the helpers at
+the remaining sites.
 
 ### ☐ 19. Cost-token parser reimplemented 3× in parse.cpp
 `parse.cpp:321-352`, `361-376`, `812-867`; Flashback & Cycling silently drop
@@ -233,20 +246,20 @@ for Phyrexian (`action_processor.cpp:1121`).
 
 ## LOW — cosmetic duplication / latent issues
 
-- ☐ `creature_has_keyword` written ~7× (`state_manager.cpp:749`,
-  `action_processor.cpp:790`, `damage.cpp:5`, plus inline scans).
-- ☐ `get_stack()` sort comparator compares `a` to itself (`orderer.cpp:334-337`,
-  should be `b`); `StackManager` does a correct min-scan instead.
+- ☑ `creature_has_keyword` — unified as `inline bool creature_has_keyword(const
+  Creature&, const char*)` in `game_queries.h`; callers (combat etc.) use it.
+- ☑ `get_stack()` sort comparator — now correctly compares `a` to `b`
+  (`orderer.cpp:451-453`).
 - ☐ "enter battlefield + set controller" open-coded at 5 sites; Dauthi free-cast
   path (`ability.cpp:1243-1248`) forgets the timestamp.
 - ☐ Timestamp `++` inline at 3 sites, no `next_timestamp()` allocator
   (`ability.cpp:1765`, `state_manager.cpp:82,143`).
 - ☐ Summoning sickness cleared in 2 scopes (`game.cpp:135` vs `main.cpp:136-138`).
-- ☐ Graveyard-contents scan loop hand-rolled 4×+ (`ability.cpp:161/273/499`,
-  `state_manager.cpp:1298`); no `Orderer::get_graveyard(owner)`.
+- ◐ Graveyard-contents scan loop — `Orderer::get_graveyard(owner)` now exists
+  (`orderer.cpp:431-440`), but `ability.cpp` still hand-rolls the loop in places.
 - ☐ Library/zone-search filter loop reimplemented 3× (`ability.cpp:142/303/489`).
-- ☐ Activated-ability `life_cost` paid but never gated in legality
-  (`action_processor.cpp:243-247` has a `//TODO VERIFY`; `state_manager.cpp:1654-1713`
-  omits the life check spells/alt-costs get).
+- ☑ Activated-ability `life_cost` now gated in legality — `can_afford_alt()`
+  (`state_manager_actions.cpp:36-94`) checks `life_cost` before the action is
+  offered, matching spell/alt-cost handling.
 - ☐ `parse_mana_cost` mis-parses multi-digit generic (`parse.cpp:546-550`,
   iterates char-by-char so `{10}` = 1 generic).
