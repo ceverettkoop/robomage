@@ -3,9 +3,12 @@
 
 #include <set>
 #include <string>
+#include <vector>
 #include "ecs/entity.h"
 #include "components/carddata.h"
 #include "components/creature.h"
+#include "components/permanent.h"
+#include "components/spell.h"
 #include "components/types.h"
 #include "components/zone.h"
 #include "ecs/coordinator.h"
@@ -40,10 +43,51 @@ inline bool creature_has_keyword(const Creature &cr, const char *kw) {
     return false;
 }
 
+// True if `e` is a spell that was cast via flashback. Such a spell is exiled
+// (rather than sent to the graveyard) when it leaves the stack — whether it
+// resolves or is countered. Single source for that "leaves-stack → exile" rule.
+inline bool spell_cast_with_flashback(Entity e) {
+    return global_coordinator.entity_has_component<Spell>(e) &&
+           global_coordinator.GetComponent<Spell>(e).cast_with_flashback;
+}
+
 // True for the six basic land subtype names that carry an innate mana ability.
 inline bool is_basic_land_subtype(const std::string &name) {
     return name == "Mountain" || name == "Forest" || name == "Plains" ||
            name == "Island" || name == "Swamp" || name == "Wastes";
+}
+
+// True if `perm` has a subtype/type named in the ';'-delimited `spec`
+// (e.g. a Sacrifice cost "Forest;Plains", or a single Return-cost subtype).
+inline bool permanent_matches_subtype_spec(const Permanent &perm, const std::string &spec) {
+    size_t pp = 0;
+    while (pp <= spec.size()) {
+        size_t sc = spec.find(';', pp);
+        if (sc == std::string::npos) sc = spec.size();
+        std::string sub = spec.substr(pp, sc - pp);
+        for (const auto &t : perm.types)
+            if (t.name == sub) return true;
+        pp = sc + 1;
+    }
+    return false;
+}
+
+// Battlefield permanents controlled by `player` matching the ';'-delimited subtype
+// `spec`. Drives both Sacrifice-a-<type> and Return-a-<type> activation costs:
+// non-empty == the cost is payable (legality), and the list itself is the player's
+// choice menu (payment).
+inline std::vector<Entity> controlled_permanents_matching(
+    Zone::Ownership player, const std::string &spec, const std::set<Entity> &entities) {
+    std::vector<Entity> out;
+    for (auto e : entities) {
+        if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
+        auto &z = global_coordinator.GetComponent<Zone>(e);
+        if (z.location != Zone::BATTLEFIELD) continue;
+        auto &perm = global_coordinator.GetComponent<Permanent>(e);
+        if (perm.controller != player) continue;
+        if (permanent_matches_subtype_spec(perm, spec)) out.push_back(e);
+    }
+    return out;
 }
 
 // Returns true when the given player has 4+ card types among cards in their graveyard.

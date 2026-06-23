@@ -185,22 +185,42 @@ replacement) still enters tapped via the normal play path; diag 0 draws/crashes.
 > `Game` layout → `cur_game` corruption (manifested as all-draws / early exit).
 > A `make clean && make` is required after any struct-layout change.
 
-### ☐ 9. Sac-spec (`;`-delimited) + return-cost matcher validated then re-executed ✓✓
-`state_manager.cpp:1613-1706` vs `action_processor.cpp:104-135` & `254-285`
-(the sac loop is copy-pasted within one function).
+### ☑ 9. Sac-spec (`;`-delimited) + return-cost matcher validated then re-executed ✓✓
+**Resolved.** Added two shared `game_queries.h` helpers:
+`permanent_matches_subtype_spec(perm, spec)` (the `;`-delimited subtype matcher)
+and `controlled_permanents_matching(player, spec, entities)` (battlefield
+permanents controlled by a player matching the spec). The six copy-pasted match
+loops — four in legality (`state_manager_actions.cpp`, sac + return, battlefield +
+hand) and two in payment (`action_processor.cpp`, hand + battlefield) — all
+delegate to these now: legality checks `.empty()`, payment iterates the same list
+to build the choice menu. One matcher, consumed by both sides. Verified: Knight of
+the Reliquary (sac a Forest/Plains → fetch) and Scryb Ranger (return a Forest →
+untap target) both pay the cost correctly.
 
-### ☐ 10. Activated-ability cost payment forked between hand and battlefield branches ✓✓
-`action_processor.cpp:88-135` vs `232-285`; hand branch lacks tap/return/discard costs.
+### ☑ 10. Activated-ability cost payment forked between hand and battlefield branches ✓✓
+**Resolved.** Extracted `pay_secondary_activation_costs(ability, source,
+controller, orderer)` in `action_processor.cpp` covering life / sac-self /
+sac-spec / return-to-hand / discard-self / discard-hand. Both the hand and
+battlefield activation branches call it after paying mana, so the hand branch no
+longer silently skips the return/discard/sac-self costs. (Tap + mana stay per
+branch — they gate activation / can be cancelled with snapshot-restore.) Surfaced
++ fixed in passing: Faerie Macabre sets `discard_self_cost` *and* relied on the
+hand branch's `!defined_self` auto-discard, so once the helper paid the discard
+the auto-move would double-send it; the auto-move is now guarded with
+`&& !ability.discard_self_cost`. Verified: Faerie Macabre discards exactly once
+(single GY copy).
 
-### ◐ 11. Stack-object post-resolution zone move — resolution path unified, counter path still diverges
-The **resolution** copies were consolidated: `ability.cpp::resolve()` no longer
-moves zones, and `stack_manager.cpp:82-104` is now the single resolution-time
-decision (shuffle / flashback→exile / graveyard, keyed on `was_flashback`).
-**But a third path remains:** the counter handler `effect_counter.cpp:84` picks
-`EXILE` only when the *counter spell's* `ab.destination == EXILE`, never
-consulting the countered spell's `was_flashback` flag → **a countered flashback
-spell still goes to graveyard, not exile.** Fix: have `effect_counter` route the
-countered card through the same flashback-aware mover as `stack_manager`.
+### ☑ 11. Stack-object post-resolution zone move — resolution + counter paths unified
+The **resolution** copies were consolidated earlier (`ability.cpp::resolve()` no
+longer moves zones; `stack_manager.cpp` is the single resolution-time decision).
+**Now resolved on the counter side too:** the flashback→exile rule lives in one
+helper `spell_cast_with_flashback(Entity)` (`game_queries.h`), consumed by both
+`stack_manager` (resolution) and `effect_counter` (counter). A countered
+flashback spell now goes to exile, not graveyard. Subtlety caught in testing:
+`effect_counter` removes the `Spell` component before choosing the destination,
+so the flashback flag is captured into `was_flashback` *before* removal. Verified:
+flashback Deep Analysis countered → exiled (absent from both graveyards);
+hardcast Deep Analysis countered → graveyard (no regression).
 
 ### ☐ 12. First/double-strike "does it matter" decided in two places
 Step-skip scan (`game.cpp:187-192`) vs per-creature damage gate

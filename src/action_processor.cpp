@@ -17,6 +17,7 @@
 #include "ecs/entity.h"
 #include "ecs/events.h"
 #include "error.h"
+#include "game_queries.h"
 #include "input_logger.h"
 #include "mana_system.h"
 #include "systems/orderer.h"
@@ -27,6 +28,9 @@ extern Game cur_game;
 
 static std::string entity_name(Entity e);
 static const char *mana_symbol_str(Colors color);
+static Entity prompt_permanent_choice(const std::vector<Entity> &choices, const char *verb, const char *suffix);
+static void pay_secondary_activation_costs(
+    const Ability &ability, Entity source, Zone::Ownership controller, std::shared_ptr<Orderer> orderer);
 static void select_single_target(Ability &ability, const std::vector<Entity> &valid_targets, bool allow_done);
 static void process_activate_ability(const LegalAction &action, Game &game, std::shared_ptr<Orderer> orderer);
 static std::vector<Entity> build_valid_targets(
@@ -69,6 +73,78 @@ static const char *mana_symbol_str(Colors color) {
     }
 }
 
+// Present the player a menu of permanents and return the chosen entity. `verb`
+// and `suffix` frame the label, e.g. ("Sacrifice ", "") or ("Return ", " to hand").
+static Entity prompt_permanent_choice(const std::vector<Entity> &choices, const char *verb, const char *suffix) {
+    std::vector<LegalAction> menu;
+    for (auto e : choices) {
+        std::string nm = global_coordinator.GetComponent<Permanent>(e).name;
+        LegalAction la(PASS_PRIORITY, e, std::string(verb) + nm + suffix);
+        la.category = ActionCategory::OTHER_CHOICE;
+        menu.push_back(la);
+    }
+    int choice = InputLogger::instance().get_input(menu);
+    return menu[static_cast<size_t>(choice)].source_entity;
+}
+
+// Pay the non-mana, non-tap activation costs shared by hand- and battlefield-
+// activated abilities (life, sacrifice, return-to-hand, discard). Targets, tap,
+// and mana are paid by the caller (those gate activation / can be cancelled);
+// these costs cannot fail once legality has passed.
+static void pay_secondary_activation_costs(
+    const Ability &ability, Entity source, Zone::Ownership controller, std::shared_ptr<Orderer> orderer) {
+    // Life cost
+    if (ability.life_cost > 0) {
+        auto &activating_player = global_coordinator.GetComponent<Player>(get_player_entity(controller));
+        activating_player.life_total -= ability.life_cost;
+        game_log("%s pays %d life\n", player_name(controller).c_str(), ability.life_cost);
+    }
+    // Sacrifice self: move to graveyard; apply_permanent_components SBA removes Permanent next pass
+    if (ability.sac_self) {
+        std::string sname = entity_name(source);
+        orderer->add_to_zone(false, source, Zone::GRAVEYARD);
+        game_log("%s sacrifices %s\n", player_name(controller).c_str(), sname.c_str());
+    }
+    // Type-based sacrifice cost (Cycling "Sac a land", Knight of the Reliquary)
+    if (!ability.sac_cost_spec.empty()) {
+        std::vector<Entity> choices =
+            controlled_permanents_matching(controller, ability.sac_cost_spec, orderer->mEntities);
+        if (!choices.empty()) {
+            Entity to_sac = prompt_permanent_choice(choices, "Sacrifice ", "");
+            std::string sac_name = global_coordinator.GetComponent<Permanent>(to_sac).name;
+            orderer->add_to_zone(false, to_sac, Zone::GRAVEYARD);
+            game_log("%s sacrifices %s\n", player_name(controller).c_str(), sac_name.c_str());
+        }
+    }
+    // Return-to-hand cost (Scryb Ranger: return a Forest to hand)
+    if (!ability.return_cost_type.empty()) {
+        std::vector<Entity> choices =
+            controlled_permanents_matching(controller, ability.return_cost_type, orderer->mEntities);
+        if (!choices.empty()) {
+            Entity to_ret = prompt_permanent_choice(choices, "Return ", " to hand");
+            std::string ret_name = global_coordinator.GetComponent<Permanent>(to_ret).name;
+            orderer->add_to_zone(false, to_ret, Zone::HAND);
+            game_log("%s returns %s to hand\n", player_name(controller).c_str(), ret_name.c_str());
+        }
+    }
+    // Discard self from hand cost (Faerie Macabre)
+    if (ability.discard_self_cost) {
+        std::string cname = global_coordinator.entity_has_component<CardData>(source)
+            ? global_coordinator.GetComponent<CardData>(source).name : "card";
+        orderer->add_to_zone(false, source, Zone::GRAVEYARD);
+        game_log("%s discards %s\n", player_name(controller).c_str(), cname.c_str());
+    }
+    // Discard hand cost (Lion's Eye Diamond)
+    if (ability.discard_hand_cost) {
+        for (auto card : orderer->get_hand(controller)) {
+            std::string cname = global_coordinator.entity_has_component<CardData>(card)
+                ? global_coordinator.GetComponent<CardData>(card).name : "card";
+            orderer->add_to_zone(false, card, Zone::GRAVEYARD);
+            game_log("%s discards %s\n", player_name(controller).c_str(), cname.c_str());
+        }
+    }
+}
+
 static void process_activate_ability(const LegalAction &action, Game &game, std::shared_ptr<Orderer> orderer) {
     Entity permanent_entity = action.source_entity;
     const Ability &ability = action.ability;
@@ -94,47 +170,12 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
                 return;
             }
         }
-        // Pay life cost
-        if (ability.life_cost > 0) {
-            auto &activating_player = global_coordinator.GetComponent<Player>(get_player_entity(ctrl));
-            activating_player.life_total -= ability.life_cost;
-            game_log("%s pays %d life\n", player_name(ctrl).c_str(), ability.life_cost);
-        }
-        // Pay type-based sacrifice cost (e.g. Cycling — Sacrifice a land)
-        if (!ability.sac_cost_spec.empty()) {
-            std::vector<LegalAction> sac_choices;
-            const std::string &spec = ability.sac_cost_spec;
-            for (auto e : orderer->mEntities) {
-                if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
-                auto &sz = global_coordinator.GetComponent<Zone>(e);
-                if (sz.location != Zone::BATTLEFIELD) continue;
-                auto &sp = global_coordinator.GetComponent<Permanent>(e);
-                if (sp.controller != ctrl) continue;
-                size_t pp = 0;
-                bool matches = false;
-                while (pp <= spec.size() && !matches) {
-                    size_t sc = spec.find(';', pp);
-                    if (sc == std::string::npos) sc = spec.size();
-                    std::string sub = spec.substr(pp, sc - pp);
-                    for (auto &t2 : sp.types) if (t2.name == sub) matches = true;
-                    pp = sc + 1;
-                }
-                if (matches) {
-                    LegalAction la(PASS_PRIORITY, e, "Sacrifice " + sp.name);
-                    la.category = ActionCategory::OTHER_CHOICE;
-                    sac_choices.push_back(la);
-                }
-            }
-            if (!sac_choices.empty()) {
-                int sac_choice = InputLogger::instance().get_input(sac_choices);
-                Entity to_sac = sac_choices[static_cast<size_t>(sac_choice)].source_entity;
-                std::string sac_name = global_coordinator.GetComponent<Permanent>(to_sac).name;
-                orderer->add_to_zone(false, to_sac, Zone::GRAVEYARD);
-                game_log("%s sacrifices %s\n", player_name(ctrl).c_str(), sac_name.c_str());
-            }
-        }
-        // Move card from hand to graveyard unless the ability moves itself (Defined$ Self)
-        if (!ability.defined_self) {
+        // Pay remaining costs (life, sacrifice, return-to-hand, discard)
+        pay_secondary_activation_costs(ability, permanent_entity, ctrl, orderer);
+        // Auto-consume the activated card to the graveyard, unless the ability relocates
+        // it itself (Defined$ Self) or it was already discarded as an explicit cost
+        // (discard_self_cost, paid above) — guarding against a double move.
+        if (!ability.defined_self && !ability.discard_self_cost) {
             orderer->add_to_zone(false, permanent_entity, Zone::GRAVEYARD);
         }
 
@@ -235,93 +276,9 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
             return;
         }
     }
-    // Pay life cost //TODO VERIFY THIS WAS CHECKED AS POSSIBLE PRIOR TO HERE
-    if (ability.life_cost > 0) {
-        auto &activating_player = global_coordinator.GetComponent<Player>(get_player_entity(controller));
-        activating_player.life_total -= ability.life_cost;
-        game_log("%s pays %d life\n", player_name(controller).c_str(), ability.life_cost);
-    }
-    // Pay sacrifice cost: move to graveyard; apply_permanent_components SBA removes Permanent next pass
-    if (ability.sac_self) {
-        orderer->add_to_zone(false, permanent_entity, Zone::GRAVEYARD);
-        game_log("%s sacrifices %s\n", player_name(controller).c_str(), permanent.name.c_str());
-    }
-    // Type-based sacrifice cost (Knight of the Reliquary: sac a Forest or Plains)
-    if (!ability.sac_cost_spec.empty()) {
-        std::vector<LegalAction> sac_choices;
-        const std::string &spec = ability.sac_cost_spec;
-        for (auto e : orderer->mEntities) {
-            if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
-            auto &sz = global_coordinator.GetComponent<Zone>(e);
-            if (sz.location != Zone::BATTLEFIELD) continue;
-            auto &sp = global_coordinator.GetComponent<Permanent>(e);
-            if (sp.controller != controller) continue;
-            size_t pp = 0;
-            bool matches = false;
-            while (pp <= spec.size() && !matches) {
-                size_t sc = spec.find(';', pp);
-                if (sc == std::string::npos) sc = spec.size();
-                std::string sub = spec.substr(pp, sc - pp);
-                for (auto &t2 : sp.types) if (t2.name == sub) matches = true;
-                pp = sc + 1;
-            }
-            if (matches) {
-                LegalAction la(PASS_PRIORITY, e, "Sacrifice " + sp.name);
-                la.category = ActionCategory::OTHER_CHOICE;
-                sac_choices.push_back(la);
-            }
-        }
-        if (!sac_choices.empty()) {
-            int sac_choice = InputLogger::instance().get_input(sac_choices);
-            Entity to_sac = sac_choices[static_cast<size_t>(sac_choice)].source_entity;
-            std::string sac_name = global_coordinator.GetComponent<Permanent>(to_sac).name;
-            orderer->add_to_zone(false, to_sac, Zone::GRAVEYARD);
-            game_log("%s sacrifices %s\n", player_name(controller).c_str(), sac_name.c_str());
-        }
-    }
-    // Return cost (Scryb Ranger: return a Forest to hand)
-    if (!ability.return_cost_type.empty()) {
-        std::vector<LegalAction> ret_choices;
-        for (auto e : orderer->mEntities) {
-            if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
-            auto &sz = global_coordinator.GetComponent<Zone>(e);
-            if (sz.location != Zone::BATTLEFIELD) continue;
-            auto &sp = global_coordinator.GetComponent<Permanent>(e);
-            if (sp.controller != controller) continue;
-            for (auto &t2 : sp.types) {
-                if (t2.name == ability.return_cost_type) {
-                    LegalAction la(PASS_PRIORITY, e, "Return " + sp.name + " to hand");
-                    la.category = ActionCategory::OTHER_CHOICE;
-                    ret_choices.push_back(la);
-                    break;
-                }
-            }
-        }
-        if (!ret_choices.empty()) {
-            int ret_choice = InputLogger::instance().get_input(ret_choices);
-            Entity to_ret = ret_choices[static_cast<size_t>(ret_choice)].source_entity;
-            std::string ret_name = global_coordinator.GetComponent<Permanent>(to_ret).name;
-            orderer->add_to_zone(false, to_ret, Zone::HAND);
-            game_log("%s returns %s to hand\n", player_name(controller).c_str(), ret_name.c_str());
-        }
-    }
-    // Discard self from hand cost (Faerie Macabre)
-    if (ability.discard_self_cost) {
-        std::string cname = global_coordinator.entity_has_component<CardData>(permanent_entity)
-            ? global_coordinator.GetComponent<CardData>(permanent_entity).name : "card";
-        orderer->add_to_zone(false, permanent_entity, Zone::GRAVEYARD);
-        game_log("%s discards %s\n", player_name(controller).c_str(), cname.c_str());
-    }
-    // Discard hand cost (Lion's Eye Diamond)
-    if (ability.discard_hand_cost) {
-        std::vector<Entity> hand = orderer->get_hand(controller);
-        for (auto card : hand) {
-            std::string cname = global_coordinator.entity_has_component<CardData>(card)
-                ? global_coordinator.GetComponent<CardData>(card).name : "card";
-            orderer->add_to_zone(false, card, Zone::GRAVEYARD);
-            game_log("%s discards %s\n", player_name(controller).c_str(), cname.c_str());
-        }
-    }
+    // Pay remaining costs (life, sacrifice, return-to-hand, discard).
+    // life_cost legality is gated upstream in can_afford_alt / determine_legal_actions.
+    pay_secondary_activation_costs(ability, permanent_entity, controller, orderer);
     // MANA ABILITY
     if (is_mana_ability) {
         // Evaluate dynamic amount (e.g. Gaea's Cradle: Count$Valid Creature.YouCtrl)

@@ -472,47 +472,13 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             // Activation limit check
             if (ab.activation_limit > 0 && ab.activations_this_turn >= ab.activation_limit) continue;
             // sac_cost_spec: require controller has a permanent matching type
-            if (!ab.sac_cost_spec.empty()) {
-                bool found_sac = false;
-                for (auto e2 : orderer->mEntities) {
-                    if (!global_coordinator.entity_has_component<Permanent>(e2)) continue;
-                    auto &sz = global_coordinator.GetComponent<Zone>(e2);
-                    if (sz.location != Zone::BATTLEFIELD) continue;
-                    auto &sp = global_coordinator.GetComponent<Permanent>(e2);
-                    if (sp.controller != priority_player) continue;
-                    // match semicolon-separated subtypes in sac_cost_spec
-                    const std::string &spec = ab.sac_cost_spec;
-                    size_t pp = 0;
-                    while (pp <= spec.size()) {
-                        size_t sc = spec.find(';', pp);
-                        if (sc == std::string::npos) sc = spec.size();
-                        std::string sub = spec.substr(pp, sc - pp);
-                        for (auto &t2 : sp.types) {
-                            if (t2.name == sub) { found_sac = true; break; }
-                        }
-                        if (found_sac) break;
-                        pp = sc + 1;
-                    }
-                    if (found_sac) break;
-                }
-                if (!found_sac) continue;
-            }
+            if (!ab.sac_cost_spec.empty() &&
+                controlled_permanents_matching(priority_player, ab.sac_cost_spec, orderer->mEntities).empty())
+                continue;
             // Return cost: require controller has a land of given subtype
-            if (!ab.return_cost_type.empty()) {
-                bool found_ret = false;
-                for (auto e2 : orderer->mEntities) {
-                    if (!global_coordinator.entity_has_component<Permanent>(e2)) continue;
-                    auto &sz = global_coordinator.GetComponent<Zone>(e2);
-                    if (sz.location != Zone::BATTLEFIELD) continue;
-                    auto &sp = global_coordinator.GetComponent<Permanent>(e2);
-                    if (sp.controller != priority_player) continue;
-                    for (auto &t2 : sp.types) {
-                        if (t2.name == ab.return_cost_type) { found_ret = true; break; }
-                    }
-                    if (found_ret) break;
-                }
-                if (!found_ret) continue;
-            }
+            if (!ab.return_cost_type.empty() &&
+                controlled_permanents_matching(priority_player, ab.return_cost_type, orderer->mEntities).empty())
+                continue;
             if (ab.category == "AddMana" && !ab.instant_speed) {
                 // Normal mana abilities collected via collect_mana_legal_actions above
                 // InstantSpeed$ abilities (e.g. LED) are not mana abilities and go on the stack
@@ -542,30 +508,9 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             // Check target legality
             if (ab.valid_tgts != "N_A" && ab.target_min > 0 && !has_legal_targets(ab, orderer)) continue;
             // sac_cost_spec: require controller has a permanent matching type
-            if (!ab.sac_cost_spec.empty()) {
-                bool found_sac = false;
-                for (auto e2 : orderer->mEntities) {
-                    if (!global_coordinator.entity_has_component<Permanent>(e2)) continue;
-                    auto &sz = global_coordinator.GetComponent<Zone>(e2);
-                    if (sz.location != Zone::BATTLEFIELD) continue;
-                    auto &sp = global_coordinator.GetComponent<Permanent>(e2);
-                    if (sp.controller != priority_player) continue;
-                    const std::string &spec = ab.sac_cost_spec;
-                    size_t pp = 0;
-                    while (pp <= spec.size()) {
-                        size_t sc = spec.find(';', pp);
-                        if (sc == std::string::npos) sc = spec.size();
-                        std::string sub = spec.substr(pp, sc - pp);
-                        for (auto &t2 : sp.types) {
-                            if (t2.name == sub) { found_sac = true; break; }
-                        }
-                        if (found_sac) break;
-                        pp = sc + 1;
-                    }
-                    if (found_sac) break;
-                }
-                if (!found_sac) continue;
-            }
+            if (!ab.sac_cost_spec.empty() &&
+                controlled_permanents_matching(priority_player, ab.sac_cost_spec, orderer->mEntities).empty())
+                continue;
             { auto it = cur_game.payment_fail_counts.find(card_entity);
               if (it != cur_game.payment_fail_counts.end() && it->second >= 2) continue; }
             std::string desc = "Activate " + card_data.name + " from hand (" + ab.category + ")";

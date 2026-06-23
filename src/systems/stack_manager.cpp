@@ -12,6 +12,7 @@
 #include "../components/zone.h"
 #include "../cli_output.h"
 #include "../ecs/coordinator.h"
+#include "../game_queries.h"
 #include "../input_logger.h"
 #include "orderer.h"
 
@@ -80,8 +81,7 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
             game_log("%s enters the battlefield\n", card_data.name.c_str());
         } else {
             // Instant/Sorcery - resolve the Ability component added at cast time, then go to graveyard
-            bool was_flashback = global_coordinator.entity_has_component<Spell>(top_entity) &&
-                                 global_coordinator.GetComponent<Spell>(top_entity).cast_with_flashback;
+            bool was_flashback = spell_cast_with_flashback(top_entity);
             if (global_coordinator.entity_has_component<Ability>(top_entity)) {
                 auto &ab = global_coordinator.GetComponent<Ability>(top_entity);
                 bool prev_priority = cur_game.player_a_has_priority;

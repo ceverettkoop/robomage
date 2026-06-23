@@ -9,6 +9,7 @@
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../error.h"
+#include "../game_queries.h"
 #include "../systems/orderer.h"
 
 extern Coordinator global_coordinator;
@@ -71,6 +72,8 @@ bool counter(Ability &ab, std::shared_ptr<Orderer> orderer) {
                                        : "<unknown>";
                 bool is_standalone_ability = !global_coordinator.entity_has_component<Spell>(ab.target) &&
                                             global_coordinator.entity_has_component<Ability>(ab.target);
+                // Capture flashback status before the Spell component (which carries it) is removed.
+                bool was_flashback = spell_cast_with_flashback(ab.target);
                 if (global_coordinator.entity_has_component<Ability>(ab.target))
                     global_coordinator.RemoveComponent<Ability>(ab.target);
                 if (global_coordinator.entity_has_component<Spell>(ab.target))
@@ -81,8 +84,11 @@ bool counter(Ability &ab, std::shared_ptr<Orderer> orderer) {
                     orderer->add_to_zone(false, ab.target, Zone::EXILE);
                     global_coordinator.DestroyEntity(ab.target);
                 } else {
-                    Zone::ZoneValue counter_dest = (ab.destination == Zone::EXILE) ? Zone::EXILE : Zone::GRAVEYARD;
-                    orderer->add_to_zone(false, ab.target, counter_dest);
+                    // Exile if the counter spell says so (e.g. "counter, then exile")
+                    // or if the countered spell was cast via flashback (it would be
+                    // exiled when it left the stack anyway). Otherwise → graveyard.
+                    bool to_exile = (ab.destination == Zone::EXILE) || was_flashback;
+                    orderer->add_to_zone(false, ab.target, to_exile ? Zone::EXILE : Zone::GRAVEYARD);
                 }
                 game_log("%s is countered\n", name.c_str());
             }
