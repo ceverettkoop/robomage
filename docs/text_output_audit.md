@@ -201,8 +201,9 @@ steps, and apostrophe-bearing card names (`Mishra's Bauble`, `Gaea's Cradle`);
   with a `_PLAY_LABELS` map for its "You"/"Model" vocabulary. Kept play.py's thin
   layout assembly and its lowercase-verb `_action_label` (reproducing them through
   decode would distort decode's general API). Token-hiding behavior preserved.
-- **Data-limitation note:** `train.py` watch/diag/observe use **absolute** "Player
-  A/B" framing derived from the driver loop's seat tracking (`obs[31]`/`obs[32]`),
+- **Data-limitation note:** the observation loop (`runner.run_games`, used by
+  `train.py observe` and the harness) uses **absolute** "Player A/B" / side framing
+  derived from the loop's seat tracking (`obs[31]`/`obs[32]`),
   not from per-action data — the binary's per-action controller flag is relative
   (`controller_is_self`). decode therefore cannot recover the absolute seat, so
   train.py's absolute framing was correctly **left as-is** (it already shares
@@ -211,6 +212,44 @@ steps, and apostrophe-bearing card names (`Mishra's Bauble`, `Gaea's Cradle`);
   play.py formatters byte-identical over captured obs + synthetic edge cases;
   label param smoke-tested (default `(own)`, custom `(you)`); all touched modules
   import.
+
+### Single observation loop — `observe` + `runner.py` (done)
+
+The three overlapping `train.py` subcommands (`watch`, `diag`, `observe`) and the
+separate observation loop inside `test_harness.py` were collapsed into **one**
+game-driving loop:
+
+- **`train/runner.py`** (new, lightweight — numpy + env + decode + the generated
+  enum tables; torch only if a model controller is passed) owns the single
+  `run_games(controller_a, controller_b, …)` loop and the unified transcript
+  rendering. Default output is the compact per-decision line; `--verbose` emits the
+  test-harness transcript format (`--- Decision N ---` block + `format_state_lines`
+  + `format_action_lines` menu + `format_chosen_action` + `--- Narrative ---`
+  blocks). Multi-game runs print per-game results + a `W/L/D` summary; a draw/stall
+  dumps the full log.
+- **`train.py observe`** is now a thin wrapper: it builds per-side controllers via
+  `opponents.make_controller` and calls `runner.run_games`. It subsumes `watch`
+  (scripted vs scripted, one game) and `diag` (`--games N` regression pass), and
+  adds `--seed`, `--bo3`, and `--verbose`. `watch`/`diag` were removed.
+- **`test_harness.py`** keeps only its real job — *seeding the state* (stacked
+  decks, inline hands, `--battlefield-a/-b`, scenarios, `--no-shuffle`) — selects a
+  controller for its play mode (`ActionListController` / `InteractiveController` /
+  scripted / `AutoPassController`, all added to `opponents.py`), and calls
+  `runner.run_games`. Its bespoke subprocess loop (`TestHarness` class:
+  start/read_until_query/run_game/_send/kill) and confirm-slot remapping were
+  deleted — the loop and the env's confirm handling are now shared.
+- **`env.py`**: `RoboMageEnv` gained `narrative` / `no_shuffle` / `battlefield_a` /
+  `battlefield_b` flags (appended to the engine command); `NarrativeEnv` defaults
+  `narrative=True` so the shared loop captures the full engine game log the way the
+  harness used to via its direct `--narrative` subprocess.
+- **TUI**: `cli_spec` drops the `watch`/`diag` Subs, expands `observe`, and adds a
+  `HARNESS_TOOL` so the `tui.py` launcher can compose/run `test_harness` (a `flat`
+  Tool, like `play`). `CLAUDE.md` and the `engine-sanity-check` skill now use
+  `observe --verbose`.
+- **Verify:** `observe` compact/verbose/`--games 10`/model-or-scripted controllers
+  all work; 10 scripted games → 0 draws (old `diag` parity); `test_harness` inline
+  hands + `--battlefield-b` + `--scripted`/`--actions` drive through the shared loop
+  and reach a winner; all modules import; `watch`/`diag` subcommands are gone.
 
 ### Remaining unification opportunities (not done)
 

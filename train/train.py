@@ -1092,114 +1092,6 @@ def train_alternate(binary_path: str, deck_a: str, deck_b: str,
     print(f"\nAlternate training complete: {total_timesteps:,} total timesteps over {round_num} rounds.")
 
 
-def diag(binary_path: str, n_games: int = 10,
-         deck_a: str | None = None, deck_b: str | None = None,
-         bo3: bool = False):
-    """Quick diagnostic: run n_games of scripted vs scripted to verify the env.
-
-    Logs every decision (like watch_scripted).  On a draw the full log is saved
-    to diag_draw_<game>.txt and printed to stdout, since draws should not occur.
-    """
-    import numpy as np
-
-    wins = losses = draws = 0
-    label = "matches" if bo3 else "games"
-    print(f"Running {n_games} {label} (scripted vs scripted)...")
-    for i in range(n_games):
-        env = NarrativeEnv(binary_path=binary_path, deck_a=deck_a, deck_b=deck_b, bo3=bo3)
-        if USE_MASKABLE:
-            env = ActionMasker(env, lambda e: e.action_masks())
-
-        obs, _ = env.reset()
-        done = False
-        total_reward = 0.0
-        decision = 0
-        turn = 0
-        prev_active_is_a = None
-        known_hand = {"A": [], "B": []}
-        log_lines = [f"=== Game {i+1}: Scripted (A) vs Scripted (B) ===\n"]
-
-        while not done:
-            # Flush narrative lines from the game process
-            raw_env = env.env if hasattr(env, "env") else env
-            for line in raw_env.flush_lines():
-                if line.strip():
-                    log_lines.append(line)
-
-            num_choices = raw_env._num_choices
-            priority_is_a = obs[32] > 0.5
-            player = "A" if priority_is_a else "B"
-            active_is_a = (obs[31] > 0.5) == priority_is_a
-            step_name = _STEP_NAMES[int(np.argmax(obs[18:31]))]
-
-            cats = np.round(obs[STATE_SIZE:STATE_SIZE + num_choices] * ACTION_CATEGORY_MAX).astype(int)
-            is_mulligan = any(c == 11 for c in cats)
-
-            known_hand[player] = _decode_hand(obs)
-
-            if not is_mulligan and active_is_a != prev_active_is_a:
-                turn += 1
-                active_label = "A" if active_is_a else "B"
-                a_hand = ", ".join(known_hand["A"]) or "(empty)"
-                b_hand = ", ".join(known_hand["B"]) or "(empty)"
-                log_lines.append(f"--- Turn {turn} (Player {active_label}) ---")
-                log_lines.append(f"  PA: {a_hand}")
-                log_lines.append(f"  PB: {b_hand}")
-                prev_active_is_a = active_is_a
-
-            # Scripted agent controls both players
-            if priority_is_a:
-                action = scripted_action(obs, num_choices)
-                agent_label = "Scripted/A"
-            else:
-                action = scripted_action(obs, num_choices)
-                agent_label = "Scripted/B"
-
-            chosen_cat = _CAT_NAMES.get(int(cats[action]), str(cats[action]))
-            all_cats = [_CAT_NAMES.get(int(c), str(c)) for c in cats]
-            log_lines.append(
-                f"[{decision:4d}] P{player}  {step_name:<14}  choices={num_choices}"
-                f"  available={all_cats}  -> {action} ({chosen_cat})  [{agent_label}]"
-            )
-
-            obs, reward, terminated, truncated, _ = env.step(action)
-            total_reward += reward
-            done = terminated or truncated
-            decision += 1
-
-        for line in raw_env.flush_lines():
-            if line.strip():
-                log_lines.append(line)
-
-        env.close()
-
-        if total_reward > 0:
-            wins += 1
-            result = "W"
-        elif total_reward < 0:
-            losses += 1
-            result = "L"
-        else:
-            draws += 1
-            result = "D"
-            # Draws should not occur — save and print the full log
-            log_path = f"diag_draw_{i+1}.txt"
-            log_lines.append("\n=== DRAW (should not occur) ===")
-            log_text = "\n".join(log_lines)
-            with open(log_path, "w") as f:
-                f.write(log_text + "\n")
-            print(f"\n{'='*60}")
-            print(f"DRAW in game {i+1} — saving log to {log_path}")
-            print('='*60)
-            print(log_text, flush=True)
-
-        print(f"  game {i+1:2d}/{n_games}: {result}  (W:{wins} L:{losses} D:{draws})", flush=True)
-
-    total = wins + losses + draws
-    win_pct = 100 * wins / total if total else 0
-    print(f"\n{wins}W / {losses}L / {draws}D over {n_games} games ({win_pct:.1f}% win rate)")
-
-
 def baseline(binary_path: str, model_path: str, n_games: int = 100):
     """Evaluate win rate of the model against the scripted agent.
 
@@ -1240,58 +1132,41 @@ def baseline(binary_path: str, model_path: str, n_games: int = 100):
 
 def observe(binary_path: str,
             player_a: str = "scripted", player_b: str = "scripted",
-            deck_a: str | None = None, deck_b: str | None = None):
-    """Watch one game with user-chosen controllers and decks for each side.
+            deck_a: str | None = None, deck_b: str | None = None,
+            n_games: int = 1, bo3: bool = False,
+            seed: int | None = None, verbose: bool = False):
+    """Observe one or more games between any pair of {scripted | model} controllers.
 
-    ``player_a``/``player_b`` are either the literal "scripted" or a path to a
-    model checkpoint (.zip path or shorthand).  ``deck_a``/``deck_b`` set each
-    side's deck.  Both players' decisions are printed so the full game flow is
-    visible.
+    ``player_a``/``player_b`` are either the literal "scripted" (or a
+    "scripted:*" variant) or a model checkpoint (.zip path or shorthand).
+    ``deck_a``/``deck_b`` set each side's deck.  Every decision by each agent is
+    logged; ``--verbose`` additionally dumps the full board state and the legal
+    action menu at each decision (the same transcript format the test harness
+    prints).  With ``n_games > 1`` a per-game result line and a final W/L/D
+    summary are printed.
+
+    This is a thin wrapper: the actual game-driving loop lives in
+    ``runner.run_games`` (shared with the test harness).
     """
     from opponents import make_controller, is_scripted_spec
+    import runner
 
-    def _label(spec, side):
-        kind = "Scripted" if is_scripted_spec(spec or "scripted") else "Model"
-        return f"{kind}/{side}"
-
-    # observe watches a fixed game, so use deterministic model predictions.
+    # Observation is a fixed replay, so use deterministic model predictions.
     ctrl_a = make_controller(player_a or "scripted",
                              checkpoint_resolver=_resolve_model, deterministic=True)
     ctrl_b = make_controller(player_b or "scripted",
                              checkpoint_resolver=_resolve_model, deterministic=True)
+    label_a = "Scripted" if is_scripted_spec(player_a or "scripted") else "Model"
+    label_b = "Scripted" if is_scripted_spec(player_b or "scripted") else "Model"
 
-    env = RoboMageEnv(binary_path=binary_path, render_mode="human",
-                      deck_a=deck_a, deck_b=deck_b)
-    obs, _ = env.reset()
+    unit = "match" if bo3 else "game"
+    print(f"=== {label_a}/A ({deck_a or 'default'} deck) vs "
+          f"{label_b}/B ({deck_b or 'default'} deck) — "
+          f"{n_games} {unit}{'es' if bo3 else 's'} ===\n", flush=True)
 
-    print(f"=== {_label(player_a, 'A')} ({deck_a or 'default'} deck) vs "
-          f"{_label(player_b, 'B')} ({deck_b or 'default'} deck) ===\n")
-
-    done = False
-    total_reward = 0.0
-    while not done:
-        a_has_priority = obs[32] > 0.5
-        cur_side = "A" if a_has_priority else "B"
-        num_choices = env._num_choices
-        controller = ctrl_a if a_has_priority else ctrl_b
-        masks = env.action_masks() if USE_MASKABLE else None
-        action = controller.choose(obs, num_choices, action_masks=masks)
-        spec = player_a if a_has_priority else player_b
-        print(f"  [{_label(spec, cur_side)}] action {action + 1} of {num_choices}")
-
-        obs, reward, terminated, truncated, _ = env.step(action)
-        total_reward += reward
-        done = terminated or truncated
-
-    env.close()
-    print()
-    # total_reward is from Player A's perspective.
-    if total_reward > 0:
-        print(f"=== {_label(player_a, 'A')} wins ===")
-    elif total_reward < 0:
-        print(f"=== {_label(player_b, 'B')} wins ===")
-    else:
-        print("=== Draw ===")
+    runner.run_games(ctrl_a, ctrl_b, label_a=label_a, label_b=label_b,
+                     binary_path=binary_path, deck_a=deck_a, deck_b=deck_b,
+                     n_games=n_games, bo3=bo3, seed=seed, verbose=verbose)
 
 
 # _CAT_NAMES / _STEP_NAMES are imported from _enums at the top of this module.
@@ -1312,79 +1187,6 @@ def _describe_action(cats, card_ids, action, num_choices):
     if card_name:
         return f"{cat_name} {card_name}"
     return cat_name
-
-
-def watch_scripted(binary_path: str, deck_a: str | None = None, deck_b: str | None = None,
-                   bo3: bool = False):
-    """Run one game with both players driven by the scripted agent and print every decision."""
-    import numpy as np
-
-    env = NarrativeEnv(binary_path=binary_path, deck_a=deck_a, deck_b=deck_b, bo3=bo3)
-    obs, _ = env.reset()
-    done = False
-    decision = 0
-    turn = 0
-    prev_active_is_a = None       # None until first non-mulligan query
-    known_hand = {"A": [], "B": []}
-
-    label_a = deck_a or "default"
-    label_b = deck_b or "default"
-    print(f"=== Scripted (A: {label_a}) vs Scripted (B: {label_b}) ===\n", flush=True)
-
-    while not done:
-        # Print narrative from the previous step; skip blank lines (e.g. leading \n
-        # from C++ printf("\n--- Declare Attackers...")) to avoid extra whitespace.
-        for line in env.flush_lines():
-            if line.strip():
-                print(line, flush=True)
-
-        num_choices = env._num_choices
-        priority_is_a = obs[32] > 0.5
-        player = "A" if priority_is_a else "B"
-        # active_is_a: obs[31]=1 means priority player IS the active player
-        active_is_a = (obs[31] > 0.5) == priority_is_a
-        step_name = _STEP_NAMES[int(np.argmax(obs[18:31]))]
-
-        cats = np.round(obs[STATE_SIZE:STATE_SIZE + num_choices] * ACTION_CATEGORY_MAX).astype(int)
-        is_mulligan = any(c == 11 for c in cats)
-
-        # Cache the priority player's hand on every query
-        known_hand[player] = _decode_hand(obs)
-
-        # Print a turn banner when the active player changes (ignore mulligan phase)
-        if not is_mulligan and active_is_a != prev_active_is_a:
-            turn += 1
-            active_label = "A" if active_is_a else "B"
-            a_hand = ", ".join(known_hand["A"]) or "(empty)"
-            b_hand = ", ".join(known_hand["B"]) or "(empty)"
-            print(f"--- Turn {turn} (Player {active_label}) ---", flush=True)
-            print(f"  PA: {a_hand}", flush=True)
-            print(f"  PB: {b_hand}", flush=True)
-            prev_active_is_a = active_is_a
-
-        action = scripted_action(obs, num_choices)
-        chosen_cat = _CAT_NAMES.get(int(cats[action]), str(cats[action]))
-        all_cats = [_CAT_NAMES.get(int(c), str(c)) for c in cats]
-
-        print(f"[{decision:4d}] P{player}  {step_name:<14}  choices={num_choices}  available={all_cats}  -> {action} ({chosen_cat})",
-              flush=True)
-
-        obs, reward, terminated, truncated, _ = env.step(action)
-        done = terminated or truncated
-        decision += 1
-
-    for line in env.flush_lines():
-        if line.strip():
-            print(line, flush=True)
-
-    print(flush=True)
-    if reward > 0:
-        print("=== Player A wins ===")
-    elif reward < 0:
-        print("=== Player B wins ===")
-    else:
-        print("=== No reward recorded ===")
-    env.close()
 
 
 def _run_sweep(args, parser, decks_filter):
@@ -1478,12 +1280,9 @@ if __name__ == "__main__":
                         tally=args.tally, record=args.record,
                         n_envs_override=args.n_envs,
                         no_shaping=args.no_shaping, **env_kwargs)
-    elif args.command == "diag":
-        diag(args.binary, args.games, deck_a=args.deck, deck_b=args.opponent, bo3=args.bo3)
-    elif args.command == "watch":
-        watch_scripted(args.binary, deck_a=args.deck, deck_b=args.opponent, bo3=args.bo3)
     elif args.command == "observe":
         observe(args.binary, player_a=args.player_a, player_b=args.player_b,
-                deck_a=args.deck, deck_b=args.opponent)
+                deck_a=args.deck, deck_b=args.opponent,
+                n_games=args.games, bo3=args.bo3, seed=args.seed, verbose=args.verbose)
     elif args.command == "baseline":
         baseline(args.binary, _resolve_model(args.model), args.games)

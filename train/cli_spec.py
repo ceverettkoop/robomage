@@ -89,6 +89,8 @@ class Tool:
     script: str          # path relative to repo root, e.g. "train/train.py"
     subs: list = field(default_factory=list)
     default_sub: str = None  # subcommand assumed when none is given (train)
+    flat: bool = False   # True when the script has a flat parser (no subcommand
+                         # token in argv, e.g. play.py / test_harness.py)
 
 
 # ── Reusable argument groups (mirror the helper functions in the scripts) ─────
@@ -245,25 +247,22 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         *train_opts(),
         *common_args(),
     ]),
-    Sub("diag", "Run quick games (scripted vs scripted) to verify the env", items=[
-        Arg("--deck", "str", default="delver", suggest="deck", help="Player A deck (.dk stem)"),
-        Arg("--opponent", "str", default=None, suggest="deck", help="Player B deck (.dk stem)"),
-        Arg("--games", "int", default=10, help="Number of games (default: 10)"),
-        *common_args(),
-    ]),
-    Sub("watch", "Watch one game: scripted A vs scripted B", items=[
-        Arg("--deck", "str", default="delver", suggest="deck", help="Player A deck (.dk stem)"),
-        Arg("--opponent", "str", default=None, suggest="deck", help="Player B deck (.dk stem)"),
-        *common_args(),
-    ]),
-    Sub("observe", "Watch one game with chosen controllers and decks for each side", items=[
+    Sub("observe",
+        "Observe game(s) between any pair of {scripted | model} controllers "
+        "(replaces the old watch/diag/observe commands)", items=[
         Arg("--player-a", "str", default="scripted", suggest="checkpoint",
-            help="Player A controller: 'scripted' or a model .zip path/shorthand (default: scripted)"),
+            help="Player A controller: 'scripted' (or 'scripted:*') or a model .zip path/shorthand (default: scripted)"),
         Arg("--player-b", "str", default="scripted", suggest="checkpoint",
-            help="Player B controller: 'scripted' or a model .zip path/shorthand (default: scripted)"),
+            help="Player B controller: 'scripted' (or 'scripted:*') or a model .zip path/shorthand (default: scripted)"),
         Arg("--deck", "str", default="delver", suggest="deck", help="Player A deck (.dk stem, default: delver)"),
-        Arg("--opponent", "str", default="delver", suggest="deck", help="Player B deck (.dk stem, default: delver)"),
-        Arg("--binary", "str", default=BINARY, help="Path to robomage binary"),
+        Arg("--opponent", "str", default=None, suggest="deck", help="Player B deck (.dk stem, default: Player A's deck)"),
+        Arg("--games", "int", default=1,
+            help="Number of games/matches to run (default: 1). >1 prints per-game results and a W/L/D summary"),
+        Arg("--seed", "int", default=None,
+            help="RNG seed for reproducible games (game N uses seed+N; default: random)"),
+        Arg("--verbose", "flag",
+            help="Dump full board state (battlefield, hands, mana, stack, graveyards) at each decision"),
+        *common_args(),
     ]),
     Sub("baseline", "Evaluate a model's win rate vs the scripted agent", items=[
         Arg("model", "str", required=True, suggest="checkpoint", help="Model .zip path or shorthand"),
@@ -336,7 +335,7 @@ ANALYSIS_TOOL = Tool("analysis", "train/analysis.py", subs=[
 ])
 
 # play.py — interactive game; the TUI path delegates to tui_game.py (placeholder).
-PLAY_TOOL = Tool("play", "train/play.py", subs=[
+PLAY_TOOL = Tool("play", "train/play.py", flat=True, subs=[
     Sub("play", "Play interactively against a trained model", mode="interactive", items=[
         Arg("--human-deck", "str", required=True, suggest="deck",
             help="Deck the human plays (stem of .dk file)"),
@@ -356,7 +355,33 @@ PLAY_TOOL = Tool("play", "train/play.py", subs=[
     ]),
 ])
 
-ALL_TOOLS = [TRAIN_TOOL, ANALYSIS_TOOL, PLAY_TOOL]
+# test_harness.py — card-behaviour test harness (flat parser, no subcommand).
+# Mirrors the argparse in test_harness.main(); the launcher composes a command
+# and runs it in the real terminal (so --interactive's stdin prompts work).
+HARNESS_TOOL = Tool("harness", "train/test_harness.py", flat=True, subs=[
+    Sub("harness", "Run a card-behaviour scenario through the engine",
+        mode="interactive", items=[
+        Arg("--scenario", "str", help="Path to a JSON scenario file (supplies hands/library/etc.)"),
+        Arg("--hand-a", "str", help="Player A starting hand (comma-separated card names)"),
+        Arg("--library-a", "str", help="Player A library after the hand (comma-separated)"),
+        Arg("--hand-b", "str", help="Player B starting hand (comma-separated card names)"),
+        Arg("--library-b", "str", help="Player B library after the hand (comma-separated)"),
+        Arg("--deck-a", "str", suggest="deck", help="Use an existing deck file for Player A (stem, not path)"),
+        Arg("--deck-b", "str", suggest="deck", help="Use an existing deck file for Player B (stem, not path)"),
+        Arg("--battlefield-a", "str", help="Cards pre-placed on Player A's battlefield (comma-separated)"),
+        Arg("--battlefield-b", "str", help="Cards pre-placed on Player B's battlefield (comma-separated)"),
+        Arg("--actions", "str", help="Comma-separated action indices to play (e.g. 9,0,7,0,8)"),
+        Arg("--interactive", "flag", help="Prompt for an action index at each decision"),
+        Arg("--scripted", "flag", help="Drive both sides with the rule-based scripted agent"),
+        Arg("--no-shuffle", "flag",
+            help="Don't shuffle libraries — deck-file order = draw order (implied by --hand-a/--hand-b)"),
+        Arg("--seed", "int", default=None, help="RNG seed (default: 1, or the scenario's seed)"),
+        Arg("--max-decisions", "int", default=None, help="Stop after N decisions (default: 500)"),
+        Arg("--binary", "str", default=BINARY, help="Path to robomage binary"),
+    ]),
+])
+
+ALL_TOOLS = [TRAIN_TOOL, ANALYSIS_TOOL, PLAY_TOOL, HARNESS_TOOL]
 
 
 # ── argparse bridge (used by the scripts) ─────────────────────────────────────

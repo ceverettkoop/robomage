@@ -310,7 +310,7 @@ class LauncherApp(App):
     def _collect(self):
         """Return (argv, missing_required_names)."""
         argv = [VENV_PY, self._script_abs()]
-        if self._tool.key != "play":     # play.py has no subcommand token
+        if not self._tool.flat:          # flat tools (play.py, test_harness.py) have no subcommand token
             argv.append(self._sub.name)
         missing = []
         for f in self._fields:

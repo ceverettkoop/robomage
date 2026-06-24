@@ -181,7 +181,9 @@ class RoboMageEnv(gym.Env):
 
     def __init__(self, binary_path: str = BINARY, render_mode=None,
                  deck_a: str | None = None, deck_b: str | None = None,
-                 bo3: bool = False, auto_sideboard: bool = False):
+                 bo3: bool = False, auto_sideboard: bool = False,
+                 narrative: bool = False, no_shuffle: bool = False,
+                 battlefield_a: str | None = None, battlefield_b: str | None = None):
         super().__init__()
         self.binary_path = os.path.realpath(binary_path)
         self.render_mode = render_mode
@@ -189,6 +191,15 @@ class RoboMageEnv(gym.Env):
         self._deck_b = deck_b
         self._bo3 = bo3
         self._auto_sideboard = auto_sideboard
+        # State-seeding / observation flags passed through to the engine. These
+        # mirror the test-harness CLI so the shared run loop (runner.run_games)
+        # can sculpt a starting state: --narrative emits the full game log,
+        # --no-shuffle keeps deck-file order = draw order, and --battlefield-a/-b
+        # pre-place permanents (comma-joined deck-name strings).
+        self._narrative = narrative
+        self._no_shuffle = no_shuffle
+        self._battlefield_a = battlefield_a
+        self._battlefield_b = battlefield_b
 
         self.observation_space = spaces.Box(
             low=-10.0, high=10.0, shape=(OBS_SIZE,), dtype=np.float32
@@ -216,12 +227,20 @@ class RoboMageEnv(gym.Env):
         # produce repeated games when many resets happen within the same second.
         rng_seed = self.np_random.integers(0, 2**31 - 1)
         cmd = [self.binary_path, "--machine", "--seed", str(rng_seed)]
+        if self._narrative:
+            cmd += ["--narrative"]
         if self._bo3:
             cmd += ["--bo3"]
         if self._deck_a:
             cmd += ["--deck-a", self._deck_a]
         if self._deck_b:
             cmd += ["--deck-b", self._deck_b]
+        if self._no_shuffle:
+            cmd += ["--no-shuffle"]
+        if self._battlefield_a:
+            cmd += ["--battlefield-a", self._battlefield_a]
+        if self._battlefield_b:
+            cmd += ["--battlefield-b", self._battlefield_b]
         self._proc = subprocess.Popen(
             cmd,
             stdin=subprocess.PIPE,
@@ -431,10 +450,17 @@ class RoboMageEnv(gym.Env):
 
 
 class NarrativeEnv(RoboMageEnv):
-    """RoboMageEnv that collects non-BQUERY game lines into a list instead of printing them."""
+    """RoboMageEnv that collects non-BQUERY game lines into a list instead of printing them.
+
+    Defaults ``narrative=True`` so the engine emits its full game log (casts,
+    damage, zone moves, combat); ``flush_lines`` hands those buffered lines to
+    the caller. This is what makes the shared observation loop show the same
+    narrative the test harness does.
+    """
 
     def __init__(self, **kwargs):
         kwargs.setdefault("render_mode", "human")
+        kwargs.setdefault("narrative", True)
         super().__init__(**kwargs)
         self.lines: list = []
 

@@ -57,28 +57,18 @@ Scenario JSON format:
 import argparse
 import json
 import os
-import struct
-import subprocess
 import sys
-import tempfile
-import numpy as np
 from pathlib import Path
 
-from env import STATE_SIZE, MAX_ACTIONS, ACTION_CATEGORY_MAX, _MANDATORY_CATS
-from decode import decode_game_state, decode_actions, fmt_mana, fmt_perm
+import runner
+from opponents import (make_controller, ActionListController,
+                       InteractiveController, AutoPassController)
 
 # ── Path setup ────────────────────────────────────────────────────────────────
 _REPO_ROOT = Path(__file__).resolve().parent.parent
 _BIN_DIR = _REPO_ROOT / "bin"
 _BINARY = _BIN_DIR / "robomage"
 _DECKS_DIR = _BIN_DIR / "resources" / "decks"
-
-# Binary payload sizes
-_STATE_BYTES = STATE_SIZE * 4
-_CATS_BYTES = MAX_ACTIONS * 4
-_IDS_BYTES = MAX_ACTIONS * 4
-_CTRL_BYTES = MAX_ACTIONS * 4
-_PUB_BYTES = MAX_ACTIONS * 4  # card_is_public per action
 
 
 # ── Deck file helpers ─────────────────────────────────────────────────────────
@@ -108,304 +98,6 @@ def _make_deck_file(hand, library, label):
         f.write("\nSIDEBOARD:\n")
     return name, path
 
-
-# ── Formatted output ─────────────────────────────────────────────────────────
-
-def _fmt_stack_entry(e):
-    """Format a decoded stack-entry dict."""
-    kind = "spell" if e["is_spell"] else "ability"
-    return f"{e['name']} ({kind}, {e['controller']})"
-
-
-def print_state(gs):
-    """Print decoded game state in a compact, LLM-readable format."""
-    print(f"  Priority: {gs['priority_player']}"
-          f" ({'active' if gs['is_active_player'] else 'non-active'})")
-    print(f"  Step: {gs['step']}")
-    hand_names = [c["name"] for c in gs["self_hand"]]
-    print(f"  Self:  {gs['self']['life']} life"
-          f" | mana: {fmt_mana(gs['self']['mana'])}"
-          f" | hand({gs['self']['hand_count']}): {', '.join(hand_names) or '(empty)'}")
-    print(f"  Opp:   {gs['opponent']['life']} life"
-          f" | mana: {fmt_mana(gs['opponent']['mana'])}"
-          f" | hand count: {gs['opponent']['hand_count']}")
-
-    if gs["self_battlefield"]:
-        print(f"  Self BF:  {' | '.join(fmt_perm(p) for p in gs['self_battlefield'])}")
-    if gs["opp_battlefield"]:
-        print(f"  Opp BF:   {' | '.join(fmt_perm(p) for p in gs['opp_battlefield'])}")
-    if gs["stack"]:
-        print(f"  Stack: {' -> '.join(_fmt_stack_entry(e) for e in gs['stack'])}")
-    if gs["self_graveyard"]:
-        print(f"  Self GY: {', '.join(gs['self_graveyard'])}")
-    if gs["opp_graveyard"]:
-        print(f"  Opp GY:  {', '.join(gs['opp_graveyard'])}")
-
-
-def print_actions(actions):
-    """Print available actions."""
-    for a in actions:
-        print(f"  {a['index']:>2}: {a['description']}")
-
-
-# ── Scripted agent (imported from env.py or simple fallback) ──────────────────
-
-def _try_import_scripted():
-    """Import scripted_action from env.py if available."""
-    try:
-        sys.path.insert(0, str(_REPO_ROOT / "train"))
-        from env import scripted_action, STATE_SIZE as _ss, MAX_ACTIONS as _ma
-        return scripted_action
-    except ImportError:
-        return None
-
-_imported_scripted = _try_import_scripted()
-
-
-def simple_scripted_action(state, cats_int, card_ids, ctrl, num_choices):
-    """Minimal scripted agent: keeps hand, confirms blockers, passes otherwise."""
-    for i in range(num_choices):
-        cat = int(cats_int[i])
-        # Always keep (don't mulligan)
-        if cat == 11:  # MULLIGAN
-            for j in range(num_choices):
-                if int(cats_int[j]) != 11:
-                    return j
-            return 0
-        # Confirm blockers immediately
-        if cat == 5:
-            return i
-        # Confirm attackers
-        if cat == 3:
-            return i
-    # Pass priority
-    return 0
-
-
-def get_scripted_action(state, cats_int, card_ids, ctrl, num_choices):
-    """Use the full scripted agent from env.py, falling back to simple version."""
-    if _imported_scripted is not None:
-        # Reconstruct the obs format expected by env.py's scripted_action
-        cat_arr = (cats_int[:MAX_ACTIONS] / ACTION_CATEGORY_MAX).astype(np.float32)
-        id_arr = card_ids[:MAX_ACTIONS].copy()
-        ctrl_arr = ctrl[:MAX_ACTIONS].copy()
-        obs = np.concatenate([state, cat_arr, id_arr, ctrl_arr])
-        # Pad to expected size if needed
-        if obs.shape[0] < STATE_SIZE + 3 * MAX_ACTIONS:
-            obs = np.pad(obs, (0, STATE_SIZE + 3 * MAX_ACTIONS - obs.shape[0]))
-        return _imported_scripted(obs, num_choices)
-    return simple_scripted_action(state, cats_int, card_ids, ctrl, num_choices)
-
-
-# ── Engine driver ─────────────────────────────────────────────────────────────
-
-class TestHarness:
-    """Drives the game engine and decodes output for LLM observation."""
-
-    def __init__(self, binary=str(_BINARY)):
-        self.binary = binary
-        self._proc = None
-        self.decision_count = 0
-        self.winner = None
-
-    def start(self, deck_a_path, deck_b_path, seed=1,
-              battlefield_a=None, battlefield_b=None, no_shuffle=True):
-        """Launch the engine process.
-
-        no_shuffle defaults True so deck-file order == draw order for the
-        hand-sculpting workflow. Pass no_shuffle=False to let the engine shuffle
-        each library with the seeded RNG (deterministic given the seed)."""
-        cmd = [
-            self.binary, "--machine", "--narrative",
-            "--seed", str(seed),
-            "--deck-a", deck_a_path,
-            "--deck-b", deck_b_path,
-        ]
-        if no_shuffle:
-            cmd.append("--no-shuffle")
-        if battlefield_a:
-            cmd += ["--battlefield-a", ",".join(_card_to_deck_name(c) for c in battlefield_a)]
-        if battlefield_b:
-            cmd += ["--battlefield-b", ",".join(_card_to_deck_name(c) for c in battlefield_b)]
-        self._proc = subprocess.Popen(
-            cmd,
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=None,
-            bufsize=-1,
-            cwd=str(_BIN_DIR),
-        )
-
-    def _send(self, action):
-        self._proc.stdin.write(f"{action}\n".encode())
-        self._proc.stdin.flush()
-
-    def _read_exactly(self, n):
-        buf = bytearray()
-        while len(buf) < n:
-            chunk = self._proc.stdout.read(n - len(buf))
-            if not chunk:
-                raise EOFError("Engine process ended during binary read")
-            buf.extend(chunk)
-        return bytes(buf)
-
-    def read_until_query(self):
-        """Read narrative lines until next BQUERY or game end.
-
-        Returns (narrative_lines, query_data) where query_data is
-        (state, cats_int, card_ids, ctrl, pub, num_choices) or None if game ended.
-        """
-        narrative = []
-
-        while True:
-            line = self._proc.stdout.readline()
-            if not line:
-                # Process ended
-                return narrative, None
-
-            line = line.rstrip(b"\n")
-
-            # Check for win/loss
-            if b"Player A wins" in line:
-                self.winner = "Player A"
-                narrative.append(line.decode("ascii", errors="replace"))
-                continue
-            elif b"Player B wins" in line:
-                self.winner = "Player B"
-                narrative.append(line.decode("ascii", errors="replace"))
-                continue
-
-            # BQUERY: parse binary payload
-            if line.startswith(b"BQUERY: "):
-                n = int(line[8:])
-                num_choices = min(n, MAX_ACTIONS)
-
-                state = np.frombuffer(
-                    self._read_exactly(_STATE_BYTES), dtype=np.float32).copy()
-                cats_int = np.frombuffer(
-                    self._read_exactly(_CATS_BYTES), dtype=np.int32).copy()
-                card_ids = np.frombuffer(
-                    self._read_exactly(_IDS_BYTES), dtype=np.float32).copy()
-                ctrl = np.frombuffer(
-                    self._read_exactly(_CTRL_BYTES), dtype=np.float32).copy()
-                pub = np.frombuffer(
-                    self._read_exactly(_PUB_BYTES), dtype=np.float32).copy()
-
-                return narrative, (state, cats_int, card_ids, ctrl, pub, num_choices)
-
-            # Regular narrative line
-            text = line.decode("ascii", errors="replace")
-            if text.strip():
-                narrative.append(text)
-
-    def kill(self):
-        if self._proc is not None:
-            try:
-                self._proc.stdin.close()
-                self._proc.stdout.close()
-                self._proc.kill()
-                self._proc.wait()
-            except Exception:
-                pass
-            self._proc = None
-
-    def run_game(self, deck_a_path, deck_b_path, seed=1,
-                 actions=None, interactive=False, scripted=False,
-                 max_decisions=500,
-                 battlefield_a=None, battlefield_b=None, no_shuffle=True):
-        """Run a full game and print decoded output.
-
-        Args:
-            deck_a_path: Path to Player A's deck file
-            deck_b_path: Path to Player B's deck file
-            seed: RNG seed
-            actions: List of action indices to play sequentially
-            interactive: If True, prompt for each action
-            scripted: If True, use the scripted agent for decisions
-            max_decisions: Safety limit on decision points
-            battlefield_a: List of card names to start on Player A's battlefield
-            battlefield_b: List of card names to start on Player B's battlefield
-        """
-        self.start(deck_a_path, deck_b_path, seed,
-                   battlefield_a=battlefield_a, battlefield_b=battlefield_b,
-                   no_shuffle=no_shuffle)
-        action_idx = 0
-        pending_confirm = False
-
-        try:
-            while self.decision_count < max_decisions:
-                narrative, query = self.read_until_query()
-
-                # Print narrative
-                if narrative:
-                    print("--- Narrative ---")
-                    for line in narrative:
-                        print(f"  {line}")
-
-                # Game ended
-                if query is None:
-                    if self.winner:
-                        print(f"\n=== GAME OVER: {self.winner} wins! ===")
-                    else:
-                        print("\n=== GAME OVER (no winner detected) ===")
-                    break
-
-                state, cats_int, card_ids, ctrl, pub, num_choices = query
-                self.decision_count += 1
-
-                # Decode and display
-                gs = decode_game_state(state)
-                decoded_actions = decode_actions(
-                    cats_int, card_ids, ctrl, num_choices, pub)
-
-                # Check for mandatory confirm categories
-                has_confirm = any(
-                    int(cats_int[i]) in _MANDATORY_CATS
-                    for i in range(num_choices))
-
-                print(f"\n--- Decision {self.decision_count} ---")
-                print_state(gs)
-                print("  Actions:")
-                print_actions(decoded_actions)
-
-                # Choose action
-                if actions is not None and action_idx < len(actions):
-                    choice = actions[action_idx]
-                    action_idx += 1
-                    print(f"  >> Scripted action: {choice}"
-                          f" ({decoded_actions[choice]['description']})")
-                elif interactive:
-                    while True:
-                        try:
-                            raw = input("  >> Enter action index: ").strip()
-                            choice = int(raw)
-                            if 0 <= choice < num_choices:
-                                break
-                            print(f"     Invalid: must be 0-{num_choices - 1}")
-                        except (ValueError, EOFError):
-                            print("     Enter a valid integer")
-                elif scripted:
-                    choice = get_scripted_action(
-                        state, cats_int, card_ids, ctrl, num_choices)
-                    print(f"  >> Agent: {choice}"
-                          f" ({decoded_actions[choice]['description']})")
-                else:
-                    # No actions provided and not interactive — auto-pass
-                    choice = 0
-                    print(f"  >> Auto: {choice}"
-                          f" ({decoded_actions[choice]['description']})")
-
-                # Remap confirm slot (-1 convention)
-                game_action = choice
-                if has_confirm and choice == num_choices - 1:
-                    game_action = -1
-
-                self._send(game_action)
-
-        finally:
-            self.kill()
-
-        return self.winner
 
 
 # ── Main entry point ──────────────────────────────────────────────────────────
@@ -548,18 +240,36 @@ def main():
             print(f"Actions: {actions}")
         print()
 
-        harness = TestHarness(binary=args.binary)
-        winner = harness.run_game(
-            deck_a_name, deck_b_name,
-            seed=seed,
-            actions=actions,
-            interactive=args.interactive,
-            scripted=args.scripted,
-            max_decisions=max_decisions,
-            battlefield_a=battlefield_a or None,
-            battlefield_b=battlefield_b or None,
-            no_shuffle=no_shuffle,
-        )
+        # Pick the controller for the chosen play mode. The same controller
+        # drives both seats (the action list / interactive prompts / auto-pass
+        # are global, not per-side), matching the original harness behaviour.
+        if actions is not None:
+            controller = ActionListController(actions)
+            mode_label = "Actions"
+        elif args.interactive:
+            controller = InteractiveController()
+            mode_label = "Human"
+        elif args.scripted:
+            controller = make_controller("scripted")
+            mode_label = "Scripted"
+        else:
+            controller = AutoPassController()
+            mode_label = "Auto"
+
+        # Pre-set battlefields are passed to the engine as comma-joined
+        # deck-name strings (apostrophes stripped), same as the deck files.
+        bf_a = ",".join(_card_to_deck_name(c) for c in battlefield_a) if battlefield_a else None
+        bf_b = ",".join(_card_to_deck_name(c) for c in battlefield_b) if battlefield_b else None
+
+        # The observation/decision loop lives in runner.run_games (shared with
+        # train.py observe). test_harness only seeds the state above.
+        wins, losses, _ = runner.run_games(
+            controller, controller, label_a=mode_label, label_b=mode_label,
+            binary_path=args.binary, deck_a=deck_a_name, deck_b=deck_b_name,
+            n_games=1, seed=seed, verbose=True,
+            battlefield_a=bf_a, battlefield_b=bf_b, no_shuffle=no_shuffle,
+            max_decisions=max_decisions)
+        winner = bool(wins or losses)
     finally:
         for p in cleanup_paths:
             try:

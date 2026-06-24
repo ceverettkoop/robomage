@@ -130,6 +130,55 @@ class ModelController:
         return int(action)
 
 
+class ActionListController:
+    """Plays a fixed sequence of action indices (test harness ``--actions``).
+
+    Consumes one index per decision regardless of which side has priority (the
+    sequence is global, matching the harness convention); once exhausted it
+    falls back to action 0 (pass / first choice).
+    """
+
+    def __init__(self, actions: Sequence[int], label: str = "Actions"):
+        self._actions = [int(a) for a in actions]
+        self._i = 0
+        self.label = label
+
+    def choose(self, obs, num_choices, action_masks=None) -> int:
+        if self._i < len(self._actions):
+            a = self._actions[self._i]
+            self._i += 1
+            return a
+        return 0
+
+
+class InteractiveController:
+    """Prompts stdin for an action index each decision (test harness ``--interactive``)."""
+
+    def __init__(self, label: str = "Human"):
+        self.label = label
+
+    def choose(self, obs, num_choices, action_masks=None) -> int:
+        while True:
+            try:
+                raw = input("  >> Enter action index: ").strip()
+                c = int(raw)
+                if 0 <= c < num_choices:
+                    return c
+                print(f"     Invalid: must be 0-{num_choices - 1}")
+            except (ValueError, EOFError):
+                print("     Enter a valid integer")
+
+
+class AutoPassController:
+    """Always picks action 0 (pass priority / first choice) — the harness default."""
+
+    def __init__(self, label: str = "Auto"):
+        self.label = label
+
+    def choose(self, obs, num_choices, action_masks=None) -> int:
+        return 0
+
+
 def _load_model(path: str):
     """Load a checkpoint with MaskablePPO (falling back to PPO). Lazy sb3 import."""
     try:

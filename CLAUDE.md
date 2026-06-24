@@ -60,8 +60,11 @@ instead of `$PIPESTATUS`.
 -Non fatal errors are not acceptable
 -Draws are not acceptable
 -Do not attempt to test cards that are not already in `src/card_vocab.h`. Cards absent from the card vocab are considered unimplemented.
--train.py diag and train.py watch are helpful for checking new builds; 
---when testing with diag and watch, supply --deck and --opponent arguments to test cards/decks relevant to recently implemented features
+-train.py observe is helpful for checking new builds (it replaced the old diag/watch
+ commands — one command observes any {scripted|model} vs {scripted|model} matchup).
+ Use `--games N` for a multi-game regression pass (per-game results + W/L/D summary),
+ `--verbose` for the full per-decision transcript (board state + action menu + narrative),
+ and supply `--deck`/`--opponent` to test cards/decks relevant to recently implemented features.
 
 ### Test harness for card behavior verification
 
@@ -322,11 +325,14 @@ train/.venv/bin/python train/train.py --self-play --deck delver --opponent mav  
 
 # Evaluation / inspection
 train/.venv/bin/python train/train.py baseline checkpoints/robomage_final.zip         # win rate vs scripted
+# observe: one command for any {scripted|model} vs {scripted|model} matchup
+# (replaces the old diag/watch/observe). --games N for a multi-game pass + summary,
+# --verbose for the full per-decision transcript, --seed for reproducibility, --bo3 for matches.
 train/.venv/bin/python train/train.py observe --player-a checkpoints/robomage_final.zip --player-b scripted --deck delver --opponent mav  # watch one game (per-side controller + deck)
-train/.venv/bin/python train/train.py diag                                            # verify env (10 quick scripted-vs-scripted games)
-train/.venv/bin/python train/train.py watch                                           # watch scripted vs scripted
-train/.venv/bin/python train/train.py diag --bo3                                      # verify bo3 env
-train/.venv/bin/python train/train.py watch --bo3                                     # watch bo3 match
+train/.venv/bin/python train/train.py observe --deck delver --opponent mav                          # scripted vs scripted, one game (compact)
+train/.venv/bin/python train/train.py observe --deck delver --opponent mav --games 10               # verify env: 10 games + W/L/D summary
+train/.venv/bin/python train/train.py observe --deck delver --opponent mav --verbose                # full transcript (state + action menu + narrative)
+train/.venv/bin/python train/train.py observe --deck delver --opponent mav --games 10 --bo3         # verify bo3 env (10 matches)
 
 # Bulk training (was --train-all / --train-deck)
 train/.venv/bin/python train/train.py sweep                                           # all deck×deck matchups

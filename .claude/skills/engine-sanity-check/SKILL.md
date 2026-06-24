@@ -40,28 +40,33 @@ separately) — that is a naming artifact, not a missing card; the engine still 
 ## 2. Generate transcripts
 
 Run **mirror** matchups (each deck vs itself — exercises its whole card pool on both sides) and
-**cross** matchups (deck interactions), at a couple of seeds each, with the test harness driving
-both sides via `--scripted`. Save each to a file.
+**cross** matchups (deck interactions), a couple of games each, with `train.py observe` driving
+both sides (scripted vs scripted is the default) in `--verbose` mode so the full per-decision
+transcript is captured. Save each to a file. `observe --games N` plays N games and prints a
+per-game result line plus a final `W / L / D` summary; `--seed` makes the run reproducible
+(game k uses seed+k).
 
 ```bash
 mkdir -p /tmp/rmtx
-run(){ train/.venv/bin/python train/test_harness.py --deck-a "$1" --deck-b "$2" \
-       --scripted --max-decisions 800 --seed "$3" > "/tmp/rmtx/$1__$2__s$3.txt" 2>&1
-       tail -1 "/tmp/rmtx/$1__$2__s$3.txt"; }
-for s in 1 2; do
-  run delver delver $s;  run doomsday doomsday $s;  run mav mav $s
-  run delver mav $s;     run delver doomsday $s;    run doomsday mav $s
-done
+run(){ train/.venv/bin/python train/train.py observe --deck "$1" --opponent "$2" \
+       --verbose --games 2 --seed 1 > "/tmp/rmtx/$1__$2.txt" 2>&1
+       tail -1 "/tmp/rmtx/$1__$2.txt"; }
+run delver delver;  run doomsday doomsday;  run mav mav
+run delver mav;     run delver doomsday;    run doomsday mav
 ```
 
-Every game should end with `=== GAME OVER: Player X wins! ===`. A game that hits the
-`--max-decisions` cap without a winner, or a **draw**, is itself a finding (per CLAUDE.md draws
-are unacceptable) — raise the cap to confirm it is a true stall, not just a long game.
+Every game must end with a winner — `observe` prints `game k/N: <Scripted/X> wins` per game and a
+`W / L / D` summary line. Any **draw** (D > 0), or a game `observe` reports as stalled (the engine
+step cap is hit with no winner — it counts as a draw and dumps the full log to `draw_<n>.txt`), is
+itself a finding (per CLAUDE.md draws are unacceptable). Review the verbose output, not just the
+summary.
 
-Transcript format: `--- Decision N ---` blocks (decoded state: life, hands, battlefield with
-`[P/T]`, `(T)`=tapped, `(SICK)`=summoning-sick, stack, graveyards) followed by `--- Narrative ---`
-lines (the engine game log: casts, damage, zone moves, triggers, combat). Review the Narrative
-lines and the state deltas around them.
+Transcript format (`observe --verbose`): `--- Decision N ---` blocks — decoded state (life, hands,
+battlefield with `[P/T]`, `(T)`=tapped, `(SICK)`=summoning-sick, stack, graveyards), then an
+`Actions:` menu of every legal choice, then the chosen `>> <Scripted/Side>: i (desc)` line —
+interleaved with `--- Narrative ---` lines (the engine game log: casts, damage, zone moves,
+triggers, combat). Turn banners (`--- Turn N (Player X) ---` + each side's known hand) mark turn
+changes. Review the Narrative lines and the state deltas around them.
 
 ## 3. Automated anomaly scan
 
@@ -70,7 +75,8 @@ cd /tmp/rmtx
 grep -rhiE "error|exception|traceback|assert|abort|segfault|non-fatal" *.txt | grep -vi "Unholy"
 grep -rhE "Unrecognized ability param" *.txt | sort | uniq -c          # card-load warnings
 grep -rhiE "fizzle|fails to find|illegal" *.txt | sort | uniq -c
-grep -rL "GAME OVER" *.txt                                              # games with no winner
+grep -rhE "^[0-9]+W / [0-9]+L / [0-9]+D" *.txt                          # per-file W/L/D summary — D must be 0
+grep -rliE "DRAW|stopped after" *.txt                                  # files with a draw / stalled game
 ```
 
 - **Unrecognized ability param** warnings are card-load cosmetics (a sub-param the parser

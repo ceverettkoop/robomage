@@ -392,6 +392,75 @@ def fmt_mana(mana):
     return ", ".join(parts) if parts else "empty"
 
 
+def fmt_stack_entry(e):
+    """Format a decoded stack-entry dict (from _decode_stack)."""
+    kind = "spell" if e["is_spell"] else "ability"
+    return f"{e['name']} ({kind}, {e['controller']})"
+
+
+def format_state_lines(gs):
+    """Render a decoded game-state dict as a list of compact display lines.
+
+    Single source for the human-readable board dump shared by the test harness
+    (`print_state`) and `train.py observe --verbose`. `gs` is the dict returned
+    by `decode_game_state`.
+    """
+    lines = [
+        f"Priority: {gs['priority_player']}"
+        f" ({'active' if gs['is_active_player'] else 'non-active'})",
+        f"Step: {gs['step']}",
+    ]
+    hand_names = [c["name"] for c in gs["self_hand"]]
+    lines.append(f"Self:  {gs['self']['life']} life"
+                 f" | mana: {fmt_mana(gs['self']['mana'])}"
+                 f" | hand({gs['self']['hand_count']}): {', '.join(hand_names) or '(empty)'}")
+    lines.append(f"Opp:   {gs['opponent']['life']} life"
+                 f" | mana: {fmt_mana(gs['opponent']['mana'])}"
+                 f" | hand count: {gs['opponent']['hand_count']}")
+    if gs["self_battlefield"]:
+        lines.append(f"Self BF:  {' | '.join(fmt_perm(p) for p in gs['self_battlefield'])}")
+    if gs["opp_battlefield"]:
+        lines.append(f"Opp BF:   {' | '.join(fmt_perm(p) for p in gs['opp_battlefield'])}")
+    if gs["stack"]:
+        lines.append(f"Stack: {' -> '.join(fmt_stack_entry(e) for e in gs['stack'])}")
+    if gs["self_graveyard"]:
+        lines.append(f"Self GY: {', '.join(gs['self_graveyard'])}")
+    if gs["opp_graveyard"]:
+        lines.append(f"Opp GY:  {', '.join(gs['opp_graveyard'])}")
+    return lines
+
+
+def format_action_lines(actions):
+    """Enumerated legal-action lines (the 'Actions:' menu, shared transcript)."""
+    return [f"  {a['index']:>2}: {a['description']}" for a in actions]
+
+
+def format_decision_block(decision_idx, gs, actions):
+    """Shared per-decision transcript block: header + state dump + action menu.
+
+    Returns a list of lines: a leading blank line, '--- Decision N ---', the
+    2-space-indented board state, 'Actions:', then the enumerated legal actions.
+    Used by both the test harness and `observe --verbose` so the transcript
+    format is identical across tools.
+    """
+    lines = ["", f"--- Decision {decision_idx} ---"]
+    lines += [f"  {ln}" for ln in format_state_lines(gs)]
+    lines.append("  Actions:")
+    lines += format_action_lines(actions)
+    return lines
+
+
+def format_chosen_action(label, choice, actions):
+    """The '>> <label>: <i> (<desc>)' line for the action an agent picked."""
+    desc = actions[choice]["description"] if 0 <= choice < len(actions) else "?"
+    return f"  >> {label}: {choice} ({desc})"
+
+
+def format_narrative_block(lines):
+    """The '--- Narrative ---' block wrapping a list of engine narrative lines."""
+    return ["--- Narrative ---"] + [f"  {ln}" for ln in lines]
+
+
 def fmt_perm(p):
     """Format a single decoded permanent dict."""
     s = p["name"]
