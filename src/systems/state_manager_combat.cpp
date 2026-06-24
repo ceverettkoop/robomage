@@ -88,7 +88,7 @@ void StateManager::deal_combat_damage(Game &game, bool first_strike_only) {
             }
         }
 
-        if (blockers.empty()) {
+        if (!cr.is_blocked) {
             // Unblocked — deal damage to attack target
             uint32_t dmg = cr.power;
             if (dmg > 0) {

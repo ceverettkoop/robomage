@@ -352,6 +352,19 @@ void StateManager::apply_permanent_components(Game &game) {
 
         } else {  // off battlefield, check to remove
             if (global_coordinator.entity_has_component<Permanent>(entity)) {
+                // Clear any equipment attachment links before the Permanent is removed, so no
+                // dangling reference survives (704.5n). A creature leaving the battlefield
+                // unattaches its equipment (which stays on the battlefield); an equipment
+                // leaving clears the host creature's back-link.
+                auto &perm = global_coordinator.GetComponent<Permanent>(entity);
+                if (perm.equipped_by != 0 &&
+                    global_coordinator.entity_has_component<Permanent>(perm.equipped_by)) {
+                    global_coordinator.GetComponent<Permanent>(perm.equipped_by).equipped_to = 0;
+                }
+                if (perm.equipped_to != 0 &&
+                    global_coordinator.entity_has_component<Permanent>(perm.equipped_to)) {
+                    global_coordinator.GetComponent<Permanent>(perm.equipped_to).equipped_by = 0;
+                }
                 global_coordinator.RemoveComponent<Permanent>(entity);
             }
             if (global_coordinator.entity_has_component<Creature>(entity)) {

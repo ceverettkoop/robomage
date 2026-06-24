@@ -210,6 +210,7 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                         creature.attack_target = 0;
                         creature.is_blocking = false;
                         creature.blocking_target = 0;
+                        creature.is_blocked = false;
                     }
                     cur_step = SECOND_MAIN;
                     break;
@@ -234,8 +235,11 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                         }
                         if (global_coordinator.entity_has_component<Creature>(entity)) {
                             auto &cr = global_coordinator.GetComponent<Creature>(entity);
-                            if (cr.prowess_bonus != 0) {
+                            if (cr.prowess_bonus != 0 || cr.eot_power_bonus != 0 ||
+                                cr.eot_toughness_bonus != 0) {
                                 cr.prowess_bonus = 0;
+                                cr.eot_power_bonus = 0;
+                                cr.eot_toughness_bonus = 0;
                                 recompute_pt(cr);
                             }
                         }

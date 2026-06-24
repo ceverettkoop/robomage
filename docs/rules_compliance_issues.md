@@ -17,7 +17,7 @@ governing rule, a fix sketch, and a complexity/risk estimate.
 
 ## Tier 1 — Active bugs on implemented cards
 
-### T1.1 — "Until end of turn" pumps never expire · `OPEN`
+### T1.1 — "Until end of turn" pumps never expire · `DONE`
 - **Rule:** 514.2 / 611.2b
 - **Engine:** `effects::pump` writes the bonus into `cr.base_power`/`base_toughness` permanently (`src/effects/effect_pump.cpp:64-67`, comment admits it). Cleanup (`src/classes/game.cpp:227-242`) only zeroes `Damage` and `prowess_bonus`.
 - **Rules require:** "until end of turn" continuous effects end during the cleanup step.
@@ -25,28 +25,51 @@ governing rule, a fix sketch, and a complexity/risk estimate.
 - **Fix:** Store EOT pumps in a dedicated duration-tagged bucket; clear it in the CLEANUP branch beside `prowess_bonus`. Prerequisite scaffolding the layer system (T2.1) will reuse.
 - **Complexity/risk:** **Medium** — needs a real temporary-effect store, but the cleanup hook already exists.
 
-### T1.2 — Blocked creature whose blockers all die hits the player · `OPEN`
+### T1.2 — Blocked creature whose blockers all die hits the player · `DONE`
 - **Rule:** 509.1h / 510.1c
 - **Engine:** `deal_combat_damage` recomputes live blockers each step (`src/systems/state_manager_combat.cpp:82-89`); if a blocked attacker's blockers all die, `blockers.empty()` routes it down the *unblocked* path and it hits the defending player (`:91-115`).
 - **Rules require:** a creature stays blocked even if its blockers leave; it then assigns no combat damage (unless it has trample).
 - **Fix:** Persist an `is_blocked` flag set at declare-blockers; a once-blocked creature with zero live blockers assigns no damage.
 - **Complexity/risk:** **Medium** — new persisted flag distinct from the live-blocker scan, plus trample interaction.
 
-### T1.3 — Equipment keeps a dangling `equipped_to` when its host dies · `OPEN`
+### T1.3 — Equipment keeps a dangling `equipped_to` when its host dies · `DONE`
 - **Rule:** 704.5n
 - **Engine:** when the equipped creature leaves, lifecycle code removes its `Permanent` but never clears the equipment's `equipped_to` or the creature's `equipped_by` (`src/systems/state_manager_statics.cpp:353-363`). No SBA re-checks attachment legality.
 - **Rules require:** Equipment attached to an illegal/absent permanent becomes unattached but stays on the battlefield.
 - **Fix:** SBA pass clearing `equipped_to` when the host is no longer a battlefield creature; defensively clear links at the leave site. Link fields already exist (`src/components/permanent.h:24-25`).
 - **Complexity/risk:** **Low–Medium** — real dangling-reference bug, small blast radius.
 
-### T1.4 — Lion's Eye Diamond misclassified as a non-mana ability · `OPEN`
+### T1.4 — Lion's Eye Diamond goes on the stack instead of resolving as a mana ability · `OPEN`
 - **Rule:** 605.1a / 605.3
-- **Engine:** `is_mana_ability = (category == "AddMana" && !instant_speed)` (`src/action_processor.cpp:188`), so LED's `InstantSpeed$` AddMana goes on the stack (`:297`) and is excluded from payable sources (`src/mana_system.cpp:165`).
-- **Rules require:** timing restrictions don't strip mana-ability status; LED must resolve off-stack and be usable mid-cast to pay a mana cost.
-- **Fix:** Stop treating `InstantSpeed$` AddMana as non-mana; expose it in `collect_available_mana_sources`/`prompt_mana_payment` as a one-shot sac+discard source. The `instant_speed` flag should encode only the "activate at instant speed" timing, not mana-ability status.
-- **Complexity/risk:** **Medium** — LED's `Sac<self>` + discard cost must be payable inside the payment loop, which currently handles sacrifice but not the hand-discard cost.
+- **Interpretation (project decision, 2026-06-24):** `InstantSpeed$` is a *timing restriction*, not a
+  loss of mana-ability status. It means the ability may be activated only when it would be legal to
+  cast an instant — i.e. when its controller has priority. It does **not** make the ability use the
+  stack. Concretely:
+  - LED's AddMana ability **is a mana ability**: it resolves immediately, off-stack, adding mana
+    directly to the pool. It must **not** be pushed onto the stack.
+  - Because of the instant-speed timing restriction, it is **not** legal to activate it in the
+    middle of paying a cost (inside the mana-payment loop). An ordinary tap-for-mana source can be
+    activated mid-payment; an instant-speed mana source can only be activated at priority, like
+    casting an instant, to float mana ahead of time (which then pays for a spell cast in that same
+    priority window before the pool empties).
+- **Engine:** `is_mana_ability = (category == "AddMana" && !instant_speed)` (`src/action_processor.cpp:188`)
+  treats LED as a non-mana ability, so it is pushed onto the stack (`:297`) and listed as a stack
+  ability (`src/systems/state_manager_actions.cpp:502`). It is also blanket-excluded from payable
+  sources (`src/mana_system.cpp:165`).
+- **Fix:** Classify `InstantSpeed$` AddMana as a mana ability so it resolves off-stack — drop the
+  `!instant_speed` guard at `action_processor.cpp:188` and the stack-listing branch at
+  `state_manager_actions.cpp:502`. Make the `instant_speed` exclusion **context-dependent** instead
+  of a blanket skip: `collect_available_mana_sources` should still skip instant-speed sources when
+  called from inside `prompt_mana_payment` (mid-cost-payment is not instant timing), but **include**
+  them when listing actions for a player who currently holds priority (the priority-time
+  `collect_mana_legal_actions` path), so LED can be activated to float mana. LED's `Sac<self>` +
+  `Discard<0/Hand>` costs are then paid via `pay_secondary_activation_costs` (which already handles
+  both) on the off-stack mana-ability activation path.
+- **Complexity/risk:** **Medium** — the `instant_speed` skip must become caller-aware (priority vs.
+  mid-payment) rather than unconditional, and the off-stack mana-ability path must offer LED's color
+  choice (`mana_choices`) the way other multi-color mana sources are presented.
 
-### T1.5 — Vigilance ignored: attackers always tap · `OPEN`
+### T1.5 — Vigilance ignored: attackers always tap · `DONE`
 - **Rule:** 702.21
 - **Engine:** every declared attacker is tapped unconditionally (`src/action_processor.cpp:611-614`); `Vigilance` is parsed into `creature.keywords` but never read.
 - **Fix:** Skip the tap when the attacker has Vigilance (`creature_has_keyword` helper exists, `src/game_queries.h:69`).

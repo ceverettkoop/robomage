@@ -5,9 +5,9 @@
 
 void recompute_pt(Creature &cr) {
     long p = static_cast<long>(cr.base_power) + cr.plus_one_counters + cr.prowess_bonus +
-             cr.static_power_bonus;
+             cr.eot_power_bonus + cr.static_power_bonus;
     long t = static_cast<long>(cr.base_toughness) + cr.plus_one_counters + cr.prowess_bonus +
-             cr.static_toughness_bonus;
+             cr.eot_toughness_bonus + cr.static_toughness_bonus;
     cr.power     = static_cast<uint32_t>(std::max(0L, p));
     cr.toughness = static_cast<uint32_t>(std::max(0L, t));
 }

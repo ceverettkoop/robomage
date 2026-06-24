@@ -20,6 +20,7 @@ struct Creature {
     Entity attack_target = 0;  // Entity of player or planeswalker being attacked (0 = none)
     bool is_blocking = false;
     Entity blocking_target = 0;  // Entity of attacker being blocked (0 = none)
+    bool is_blocked = false;     // attacker was blocked at declare-blockers; stays blocked even if all blockers leave (509.1h)
     std::vector<std::string> keywords;
     bool must_attack = false;        // set by MustAttack static ability; enforced in declare_attackers
 
@@ -28,6 +29,8 @@ struct Creature {
     int base_toughness = 0;          // characteristic base T
     int plus_one_counters = 0;       // +1/+1 counters (symmetric; affects both P and T)
     int prowess_bonus = 0;           // temporary +N/+N from Prowess/Exalted; cleared at cleanup step
+    int eot_power_bonus = 0;         // temporary +N/-N P from "until end of turn" pumps; cleared at cleanup step
+    int eot_toughness_bonus = 0;     // temporary +N/-N T from "until end of turn" pumps; cleared at cleanup step
     int static_power_bonus = 0;      // P from continuous static abilities; recomputed each SBE pass
     int static_toughness_bonus = 0;  // T from continuous static abilities; recomputed each SBE pass
 };

@@ -60,11 +60,11 @@ bool pump(Ability &ab, std::shared_ptr<Orderer> orderer) {
     if ((pump_att != 0 || pump_def != 0) && ab.target != 0 &&
         global_coordinator.entity_has_component<Creature>(ab.target)) {
         auto &cr = global_coordinator.GetComponent<Creature>(ab.target);
-        // Pump modifies the base characteristic (this engine does not auto-revert
-        // pumps at end of turn). Signed + floored at 0 by recompute_pt so a -X/-X
-        // pump can never underflow the uint32_t effective field.
-        cr.base_power += pump_att;
-        cr.base_toughness += pump_def;
+        // "Until end of turn" pump: store in the EOT bonus bucket so cleanup (514.2/611.2b)
+        // reverts it. Signed + floored at 0 by recompute_pt so a -X/-X pump (e.g. Dismember)
+        // can never underflow the uint32_t effective field.
+        cr.eot_power_bonus += pump_att;
+        cr.eot_toughness_bonus += pump_def;
         recompute_pt(cr);
         std::string tname = global_coordinator.entity_has_component<Permanent>(ab.target)
             ? global_coordinator.GetComponent<Permanent>(ab.target).name : "<unknown>";

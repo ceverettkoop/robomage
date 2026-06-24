@@ -608,9 +608,10 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
             std::string ename = entity_name(entity);
             game_log("  %s -> %s\n", ename.c_str(), attack_target_name(game, cr.attack_target).c_str());
 
-            // Tap the attacker
+            // Tap the attacker, unless it has vigilance (702.21).
             auto &permanent = global_coordinator.GetComponent<Permanent>(entity);
-            permanent.is_tapped = true;
+            if (!creature_has_keyword(cr, "Vigilance"))
+                permanent.is_tapped = true;
         }
     }
     if (!any) game_log("  (none)\n");
@@ -805,6 +806,11 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
         int attacker_choice = InputLogger::instance().get_input(blk_tgt_actions);
         cr.is_blocking = true;
         cr.blocking_target = blk_tgt_actions[static_cast<size_t>(attacker_choice)].source_entity;
+        // Mark the attacker as blocked. It stays blocked for the rest of combat even if this
+        // (and every other) blocker later leaves combat (509.1h), so it assigns no damage to
+        // the player unless it has trample.
+        if (global_coordinator.entity_has_component<Creature>(cr.blocking_target))
+            global_coordinator.GetComponent<Creature>(cr.blocking_target).is_blocked = true;
         game_log("%s blocking %s.\n", chosen_name.c_str(), entity_name(cr.blocking_target).c_str());
     }
 
