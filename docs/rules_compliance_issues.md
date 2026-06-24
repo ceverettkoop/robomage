@@ -90,7 +90,7 @@ governing rule, a fix sketch, and a complexity/risk estimate.
 
 ## Tier 2 — Architectural / foundational gaps
 
-### T2.1 — No layer system; P/T is a flat additive sum · `OPEN`
+### T2.1 — No layer system; P/T is a flat additive sum · `IN PROGRESS`
 - **Rule:** 613 (esp. 613.4 sublayers 7a–7d; 613.7 timestamp; 613.8 dependency)
 - **Engine:** `recompute_pt` sums `base_power + plus_one_counters + prowess_bonus + static_power_bonus` (`src/components/creature.cpp:7-10`). CDA "set," "set to N," and +N/+N pumps all collide in `base_*` (`src/systems/state_manager_statics.cpp:629-632`, `src/effects/effect_pump.cpp:66-67`). Only layer-4 type changes are timestamp-sorted (`state_manager_statics.cpp:482-484`); P/T statics are summed in arbitrary `g_active_statics` order (`:671-680`).
 - **Rules require:** P/T modifications apply in sublayers 7a CDA → 7b set → 7c +N/+N & counters → 7d switch, each in timestamp order, with dependency (613.8).
@@ -99,6 +99,41 @@ governing rule, a fix sketch, and a complexity/risk estimate.
   - Timestamp/dependency ordering across distinct effect sources (613.7/613.8) — absent for P/T statics.
   - P/T switch, sublayer 7d (613.4d) — not represented at all (latent; no vocab card needs it).
 - **Complexity/risk:** **High** — touches every reader of `Creature.power/toughness` (~75 sites) and all static/pump/counter writes. Largest single gap; the keystone refactor.
+- **Implemented (2026-06-24):** Introduced a continuous-effects engine implementing the
+  rule-613 layer system. New `src/systems/continuous_effects.h` defines the data model
+  (`Layer` 1–7, `PTSublayer` 7a–7d, `ContinuousEffect`, and the within-(sub)layer
+  ordering helpers `order_continuous_effects`/`resolve_dependencies`). New
+  `src/systems/state_manager_layers.cpp` holds the single ordered driver
+  `StateManager::apply_continuous_effects` (called from `state_based_effects` in place of
+  the old `apply_static_ability_effects`), which runs the layers in order: 1/2/3 (copy/
+  control/text, no-op hooks) → 4 type (existing `apply_type_changing_effects`) → 5 color
+  (no-op hook) → 6 abilities (`apply_layer6_ability_effects`, keyword grants) → 7 P/T
+  (`apply_layer7_pt_effects`) → 613.11 rules-modifiers (`apply_rules_modifying_effects`,
+  MustAttack). The old monolithic static loop was split into `gather_active_statics`
+  (preamble; condition evaluated once into `ActiveStatic::condition_met`) plus the
+  per-layer appliers in `state_manager_statics.cpp`. `recompute_pt`
+  (`src/components/creature.cpp`) now applies layer-7 sublayers explicitly 7a→7b→7c→7d;
+  new inert `Creature` slots `has_set_pt`/`set_power`/`set_toughness` (7b) and `switch_pt`
+  (7d) split "set" from "modify" per the sub-finding. Layer-7c statics are gathered as
+  timestamp-tagged `ContinuousEffect`s (613.7a: source permanent's ETB timestamp) and
+  ordered before accumulation; the result is identical to the old fixed-order sum because
+  every current-vocab 7c contribution is additive (commutative). **Deferred extension
+  points (latent; no vocab card exercises them):** layers 1/2/3/5 are documented no-op
+  hooks; sublayer 7b "set" and 7d "switch" have storage slots but no source; the 613.8
+  dependency override is a hooked no-op falling through to timestamp order. Discrete
+  per-counter/per-pump 613.7 timestamps are deferred to **T2.4** (the typed counter map),
+  whose records will be the natural home — the current aggregate `Creature` counter/pump
+  fields are commutative 7c contributions, and incrementing the global timestamp counter
+  for them would needlessly perturb existing layer-4 ordering.
+- **Verification:** Generated a 108-game baseline corpus on clean `main`
+  (`train/gen_corpus.sh`: 3 implemented decks × 9 ordered pairings × 12 seeds, full
+  `observe --verbose` transcripts) and re-ran it after the refactor. 107/108 games were
+  byte-for-byte identical; the single difference was the scripted agent's
+  `random.choice` tie-break on a "pay {1} or be countered" prompt (identical engine state
+  and action menu at the decision) flipping because Python's global RNG was unseeded
+  across processes — not an engine change. Fixed at the source by seeding the global RNG
+  per game with the engine seed in `train/runner.py`, after which that game is
+  deterministic and matches the baseline choice.
 
 ### T2.2 — Replacement effects narrow & mostly dormant; no ordering · `OPEN`
 - **Rule:** 614 (replacement effects), 616 (ordering multiple applicable replacements)
