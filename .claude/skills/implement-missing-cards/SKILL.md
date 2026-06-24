@@ -20,6 +20,11 @@ card's expected behavior or the test scope, STOP and ask the user** rather than 
 - **Never edit an existing card script** (project rule: DO NOT MODIFY CARD SCRIPTS). The
   downloader only *adds* new files. Hand-author a script only when none exists, after
   confirming behavior with the user.
+- The authoritative rules for how a mechanic *should* behave are checked in at
+  `docs/mtg_comprehensive_rules.txt` (navigation guide: `docs/mtg_comprehensive_rules.md`).
+  **When a card's behavior, timing, or keyword semantics are in question, look up the relevant
+  numbered rule there** (e.g. rule 702 for keyword abilities, 704 for state-based actions, 5xx
+  for combat) rather than relying on memory — grep by rule number, don't read the whole file.
 
 ## Tools
 

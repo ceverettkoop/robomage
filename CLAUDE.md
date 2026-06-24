@@ -24,6 +24,20 @@ Every game decision logged as an integer. Games can be replayed deterministicall
 
 The python side of the project enables machine learning of the game and analysis.
 
+## Rules Reference (authoritative)
+
+The official **MTG Comprehensive Rules** are checked in at
+[`docs/mtg_comprehensive_rules.txt`](docs/mtg_comprehensive_rules.txt), with a navigation guide
+in [`docs/mtg_comprehensive_rules.md`](docs/mtg_comprehensive_rules.md).
+
+**Whenever you implement or test a game mechanic, consult these rules** — they are the ground
+truth for how a mechanic *should* behave (timing, priority, state-based actions, combat, keyword
+definitions, the layer system), independent of the engine's current implementation. Don't read
+the 9k-line file end to end: look up the relevant numbered rule with `grep` (e.g.
+`grep -nE "^509\." docs/mtg_comprehensive_rules.txt` for combat, rule 702 for keyword abilities,
+704 for state-based actions, 613 for layers). See the navigation guide for lookup recipes. Keep
+this version current if a newer Comprehensive Rules release supersedes it.
+
 ## Build Commands
 
 - **Build the project**: `make clean && make`

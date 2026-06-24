@@ -12,6 +12,12 @@ do not fix anything unless asked.** Always separate genuine **engine bugs** from
 suboptimality** (the rule-based agent plays badly on purpose-built combos and X-spells — that
 is not an engine fault).
 
+**Ground truth for "correct" behavior is the Comprehensive Rules** at
+`docs/mtg_comprehensive_rules.txt` (navigation guide: `docs/mtg_comprehensive_rules.md`). Before
+classifying any suspicious event as an engine bug, confirm what the rules actually require for
+that mechanic — grep the relevant numbered rule (e.g. rule 702 for keyword abilities, 704 for
+state-based actions, 5xx for combat/timing) instead of relying on memory.
+
 ## 1. Pick the fully-implemented decks
 
 A deck is testable only if every card it lists is in `src/card_vocab.h`. The curated training
