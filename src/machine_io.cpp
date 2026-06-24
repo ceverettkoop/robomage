@@ -18,6 +18,7 @@
 #include "components/spell.h"
 #include "components/zone.h"
 #include "ecs/coordinator.h"
+#include "game_queries.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;
@@ -259,7 +260,7 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
                 if (global_coordinator.entity_has_component<Damage>(e))
                     ps.damage = static_cast<int>(global_coordinator.GetComponent<Damage>(e).damage_counters);
 
-                ps.loyalty = perm.loyalty;  // nonzero only for planeswalkers
+                ps.loyalty = get_counters(e, "LOYALTY");  // nonzero only for planeswalkers
 
                 ps.token_name[0] = '\0';
                 if (perm.is_token && global_coordinator.entity_has_component<Token>(e)) {

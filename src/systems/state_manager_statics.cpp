@@ -175,7 +175,7 @@ void StateManager::apply_permanent_components(Game &game) {
                 // self-sacrifice ETB trigger fires (consumed one-shot here).
                 if (game.pending_evoked.erase(entity)) perm.evoked = true;
                 // Planeswalkers enter with loyalty counters equal to printed loyalty (306.5b).
-                if (is_planeswalker_card(card_data)) perm.loyalty = card_data.starting_loyalty;
+                if (is_planeswalker_card(card_data)) perm.counters["LOYALTY"] = card_data.starting_loyalty;
                 perm.timestamp_entered_battlefield = game.timestamp++;
                 global_coordinator.AddComponent(entity, perm);
             }
@@ -227,9 +227,8 @@ void StateManager::apply_permanent_components(Game &game) {
                         cur_game.delve_exiled.clear();
                     }
                     if (n <= 0) continue;
+                    add_counters(entity, "P1P1", n);
                     auto &cr = global_coordinator.GetComponent<Creature>(entity);
-                    cr.plus_one_counters += n;
-                    recompute_pt(cr);
                     game_log("%s enters with %d +1/+1 counter(s) (%u/%u).\n",
                         card_data.name.c_str(), n, cr.power, cr.toughness);
                 }

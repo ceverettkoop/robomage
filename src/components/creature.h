@@ -27,7 +27,7 @@ struct Creature {
     // --- P/T contributions (all signed; effective = sum, floored at 0) ---
     int base_power = 0;              // characteristic base P (printed, token, CDA-set, or Pump-modified)
     int base_toughness = 0;          // characteristic base T
-    int plus_one_counters = 0;       // +1/+1 counters (symmetric; affects both P and T)
+    int counter_pt_bonus = 0;        // net +1/+1 minus -1/-1 counters (symmetric; cached from Permanent.counters, layer 7c / 613.4c)
     int prowess_bonus = 0;           // temporary +N/+N from Prowess/Exalted; cleared at cleanup step
     int eot_power_bonus = 0;         // temporary +N/-N P from "until end of turn" pumps; cleared at cleanup step
     int eot_toughness_bonus = 0;     // temporary +N/-N T from "until end of turn" pumps; cleared at cleanup step

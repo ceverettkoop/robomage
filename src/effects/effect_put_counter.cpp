@@ -4,6 +4,7 @@
 #include "../cli_output.h"
 #include "../components/creature.h"
 #include "../ecs/coordinator.h"
+#include "../game_queries.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;
@@ -18,16 +19,18 @@ bool put_counter(Ability &ab, std::shared_ptr<Orderer> orderer) {
     if (!global_coordinator.entity_has_component<Creature>(counter_tgt)) return true;
     auto &cr = global_coordinator.GetComponent<Creature>(counter_tgt);
     const CounterParams *cp = std::get_if<CounterParams>(&ab.params);
-    if (cp && cp->type == "P1P1") {
+    if (cp && !cp->type.empty()) {
         int n = cp->count;
         if (cp->count_from_delve) {
             n = static_cast<int>(cur_game.delve_exiled.size());
             cur_game.delve_exiled.clear();
         }
         if (n <= 0) return true;
-        cr.plus_one_counters += n;
-        recompute_pt(cr);
-        game_log("Put %d +1/+1 counter(s) on creature (now %u/%u).\n", n, cr.power, cr.toughness);
+        add_counters(counter_tgt, cp->type, n);
+        if (cp->type == "P1P1")
+            game_log("Put %d +1/+1 counter(s) on creature (now %u/%u).\n", n, cr.power, cr.toughness);
+        else
+            game_log("Put %d %s counter(s) on creature (now %u/%u).\n", n, cp->type.c_str(), cr.power, cr.toughness);
     }
     return true;
 }

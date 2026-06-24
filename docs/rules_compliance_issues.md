@@ -149,13 +149,43 @@ governing rule, a fix sketch, and a complexity/risk estimate.
 - **Fix:** Consult a prevention layer in `deal_damage`/`deal_damage_to_player` before applying damage, with per-source/per-turn shields.
 - **Complexity/risk:** **Medium–High** — new subsystem; no current vocab card exercises it, but it is a complete rules gap.
 
-### T2.4 — Counters: only +1/+1 modeled; loyalty tracked separately · `OPEN`
+### T2.4 — Counters: only +1/+1 modeled; loyalty tracked separately · `IN PROGRESS`
 - **Rule:** 122.1 (counter kinds), 122.3 (+1/+1 vs -1/-1 annihilation SBA), 613.4c (counters in layer 7c), 306.5c (loyalty counters)
 - **Engine:** a single `plus_one_counters` int adds symmetrically to P and T (`src/components/creature.h:29`); counter handlers reject anything ≠ `"P1P1"` (`src/effects/effect_put_counter.cpp:21-30`, `state_manager_statics.cpp:219-234`). No -1/-1, no keyword counters, no 122.3 annihilation SBA.
 - **Loyalty unification note:** planeswalker loyalty is conceptually loyalty *counters* (122.1b / 306.5c), but the engine tracks it as a standalone int `permanent.loyalty` (`src/components/permanent.h:27`), entirely divorced from the counter subsystem — loyalty-ability costs add/subtract this int directly (`src/components/ability.h:55-60`). **When building the typed counter map, loyalty counters should be unified into that mechanism** (a `LOYALTY` counter type in the map, or at minimum a shared add/remove/query API) so all counters — +1/+1, -1/-1, loyalty, keyword — share one code path. Keep `permanent.loyalty`'s existing semantics (SBA at 0, 306.5c) working through the unified store, and preserve the obs encoding (loyalty float).
 - **Rules require:** 122.1a -X/-Y counters; 122.1b keyword counters; 122.3 annihilation as an SBA; counters as timestamped 7c modifiers.
 - **Fix:** Store counters in a typed map; add the 122.3 annihilation SBA in `state_based_effects`; fold counters into layer 7c (depends on T2.1); migrate loyalty into the same store.
 - **Complexity/risk:** **Medium** — typed counter map + one new SBA + loyalty migration; currently +1/+1 and loyalty are the only live counter users.
+- **Implemented (2026-06-24):** Replaced the two separate stores — `Creature::plus_one_counters`
+  and `Permanent::loyalty` — with a single typed counter map `std::map<std::string,int>
+  Permanent::counters` keyed by counter type (`"P1P1"`, `"M1M1"`, `"LOYALTY"`, future keyword
+  counters), so all counter kinds share one store (122.1). The single add/remove/query path
+  is three header-inline helpers in `src/game_queries.h`: `get_counters(e, type)`,
+  `add_counters(e, type, delta)` (erases an entry at exactly 0; resyncs P/T for `P1P1`/`M1M1`),
+  and `refresh_counter_pt(e)`. `Creature::plus_one_counters` became `counter_pt_bonus` (net
+  +1/+1 minus -1/-1), still summed in `recompute_pt`'s layer-7c term (613.4c) but now a cache
+  derived from the map. Every counter writer routes through the API: `effect_put_counter`
+  (now accepts any counter type, not just `P1P1`), `effect_multiply_counter`,
+  `effect_amass`, and the `EtbCounter` static. Loyalty is fully migrated — ETB init
+  (`state_manager_statics.cpp`), ± loyalty-ability cost (`action_processor.cpp`), combat/spell
+  damage (`damage_planeswalker` in `game_queries.h`), the 606.6 minus-ability gate
+  (`state_manager_actions.cpp`), the 704.5i loyalty-0 SBA (`state_manager.cpp`), and the obs
+  encoding (`machine_io.cpp`, via `get_counters(e,"LOYALTY")`) all read/write the
+  `"LOYALTY"` counter; the `PermanentState.loyalty` serialization DTO and the obs `loyalty/10`
+  float are unchanged. Added the **122.3 annihilation SBA** (704.5q) to `state_based_effects`:
+  any battlefield permanent holding both `P1P1` and `M1M1` counters has `min(p,m)` of each
+  removed (sets `any_applied`, refreshing P/T). **Deferred:** discrete per-counter 613.7
+  timestamps (the T2.1 hand-off) — counters remain an aggregate commutative 7c contribution
+  for now; a per-counter timestamped record is unnecessary until a non-commutative counter
+  effect enters the vocab. -1/-1 and keyword counters are now representable in the store but
+  no vocab card produces them yet, so the annihilation SBA never fires in current play (this
+  also closes the +1/+1−1/-1 half of T3.9).
+- **Verification:** Re-ran the 108-game `train/gen_corpus.sh` corpus (3 decks × 9 pairings ×
+  12 seeds) under T2.4: **byte-for-byte identical to the pre-refactor baseline across all
+  108 games** (the corpus exercises both +1/+1 counter placement and `MultiplyCounter`
+  doubling). Loyalty — which the corpus decks don't exercise (no planeswalkers) — was
+  verified separately with a Jace, the Mind Sculptor harness scenario: ETB at loyalty 3,
+  −1 ability → loyalty 2 with its target bounced, and the once-per-turn gate enforced.
 
 ---
 
@@ -217,9 +247,13 @@ governing rule, a fix sketch, and a complexity/risk estimate.
 - **Fix:** add a poison-loss SBA when an infect/poison card is implemented.
 - **Complexity/risk:** **Low**, latent.
 
-#### T3.9 — Missing SBAs: +1/+1 vs -1/-1 annihilation, world rule · `OPEN`
+#### T3.9 — Missing SBAs: +1/+1 vs -1/-1 annihilation, world rule · `IN PROGRESS`
 - **Rule:** 704.5q (folds into T2.4), 704.5k
-- **Engine:** neither exists; no vocab card uses them.
+- **Engine:** the world rule (704.5k) still does not exist; no vocab card uses either.
+- **Done (2026-06-24):** the +1/+1 vs -1/-1 annihilation SBA (704.5q) was implemented as
+  part of **T2.4** (typed counter map) — `state_based_effects` removes `min(p,m)` of each
+  when a permanent holds both. Latent until a -1/-1 source enters the vocab. The world rule
+  remains unimplemented.
 - **Complexity/risk:** **Low**, latent.
 
 ### Combat (remaining)

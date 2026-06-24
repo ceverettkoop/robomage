@@ -24,8 +24,8 @@ void recompute_pt(Creature &cr) {
 
     // 7c — additive modifications and counters. These are commutative, so the
     // flat sum equals any timestamp-ordered application within the sublayer.
-    p += cr.plus_one_counters + cr.prowess_bonus + cr.eot_power_bonus + cr.static_power_bonus;
-    t += cr.plus_one_counters + cr.prowess_bonus + cr.eot_toughness_bonus + cr.static_toughness_bonus;
+    p += cr.counter_pt_bonus + cr.prowess_bonus + cr.eot_power_bonus + cr.static_power_bonus;
+    t += cr.counter_pt_bonus + cr.prowess_bonus + cr.eot_toughness_bonus + cr.static_toughness_bonus;
 
     // 7d — switch power and toughness (inert today).
     if (cr.switch_pt) std::swap(p, t);

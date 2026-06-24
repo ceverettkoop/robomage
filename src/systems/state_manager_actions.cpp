@@ -477,7 +477,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             if (ab.is_loyalty_ability) {
                 if (!sorcery_speed) continue;
                 if (permanent.loyalty_ability_activated_this_turn) continue;
-                if (ab.loyalty_cost < 0 && permanent.loyalty < -ab.loyalty_cost) continue;
+                if (ab.loyalty_cost < 0 && get_counters(entity, "LOYALTY") < -ab.loyalty_cost) continue;
             }
             // todo handle this elswewhere, tapping check
             if (ab.tap_cost && permanent.is_tapped) continue;

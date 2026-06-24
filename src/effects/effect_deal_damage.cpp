@@ -37,7 +37,7 @@ bool deal_damage(Ability &ab, std::shared_ptr<Orderer> orderer) {
         // Damage to a planeswalker removes that many loyalty counters (306.8).
         damage_planeswalker(ab.target, dmg);
         auto &pw = global_coordinator.GetComponent<Permanent>(ab.target);
-        game_log("Dealt %zu damage to %s (loyalty now %d)\n", dmg, pw.name.c_str(), pw.loyalty);
+        game_log("Dealt %zu damage to %s (loyalty now %d)\n", dmg, pw.name.c_str(), get_counters(ab.target, "LOYALTY"));
     } else {
         if (::deal_damage(ab.source, ab.target, dmg)) {
             game_log("Dealt %zu damage to creature\n", dmg);

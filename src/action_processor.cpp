@@ -70,10 +70,10 @@ static void pay_secondary_activation_costs(
     // goes on the stack and resolves later; the loyalty change is the cost, paid now.
     if (ability.is_loyalty_ability && global_coordinator.entity_has_component<Permanent>(source)) {
         auto &perm = global_coordinator.GetComponent<Permanent>(source);
-        perm.loyalty += ability.loyalty_cost;
+        int loyalty = add_counters(source, "LOYALTY", ability.loyalty_cost);
         perm.loyalty_ability_activated_this_turn = true;
         game_log("%s activates a loyalty ability (%+d, loyalty now %d)\n",
-                 entity_name(source).c_str(), ability.loyalty_cost, perm.loyalty);
+                 entity_name(source).c_str(), ability.loyalty_cost, loyalty);
     }
     // Life cost
     if (ability.life_cost > 0) {
@@ -587,7 +587,7 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
                 label = player_name(t) + " (" + std::to_string(player.life_total) + " life)";
             } else {
                 auto &p = global_coordinator.GetComponent<Permanent>(t_entity);
-                label = p.name + " (loyalty " + std::to_string(p.loyalty) + ")";
+                label = p.name + " (loyalty " + std::to_string(get_counters(t_entity, "LOYALTY")) + ")";
             }
             LegalAction la(PASS_PRIORITY, t_entity, label);
             la.category = ActionCategory::OTHER_CHOICE;
