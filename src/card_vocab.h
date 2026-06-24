@@ -4,6 +4,8 @@
 #include <string>
 #include <unordered_map>
 
+#include "machine_io.h"  // N_CARD_TYPES (embedding vocab size)
+
 // Single source of truth for card name <-> vocab index mapping.
 // To add a new card: append an entry to card_vocab_entries.
 // N_CARD_TYPES in machine_io.h must be >= (highest index + 1).
@@ -38,16 +40,23 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Magus of the Moon", 86},
     {"Barrowgoyf", 87}, {"Dauthi Voidwalker", 88}, {"Stifle", 89},
     {"Life from the Loam", 90},
+    {"Disruptor Flute", 91},
+    {"Surgical Extraction", 92},
+    {"Orcish Bowmasters", 93},
+    {"Flow State", 94},
+    {"Snuff Out", 95},
+    {"Shadowy Backstreet", 96},
+    {"Jace, the Mind Sculptor", 97},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);
 
-// Slot 127 (N_CARD_TYPES - 1) is reserved as sentinel for all tokens in the ML observation.
-static constexpr int TOKEN_SENTINEL = 127;
+// Slot N_CARD_TYPES - 1 is reserved as sentinel for all tokens in the ML observation.
+static constexpr int TOKEN_SENTINEL = N_CARD_TYPES - 1;
 
-// Maps a card name to a 0-based vocabulary index used for one-hot encoding in
-// the machine-mode state vector.  Returns -1 for unregistered cards (encoded
-// as all-zeros in the one-hot).
+// Maps a card name to a 0-based vocabulary index used to encode card identity in
+// the machine-mode state vector.  Returns -1 for unregistered cards (encoded as
+// the empty/unknown sentinel id).
 inline int card_name_to_index(const std::string &name) {
     static const std::unordered_map<std::string, int> vocab = [] {
         std::unordered_map<std::string, int> m;
@@ -61,14 +70,14 @@ inline int card_name_to_index(const std::string &name) {
 
 inline const char* card_index_to_name(int idx) {
     static const char** names = [] {
-        static const char* table[128]{};
-        for (int i = 0; i < 128; i++) table[i] = "";
+        static const char* table[N_CARD_TYPES]{};
+        for (int i = 0; i < N_CARD_TYPES; i++) table[i] = "";
         table[TOKEN_SENTINEL] = "Token";
         for (int i = 0; i < CARD_VOCAB_SIZE; i++)
             table[card_vocab_entries[i].index] = card_vocab_entries[i].name;
         return table;
     }();
-    if (idx < 0 || idx >= 128) return "???";
+    if (idx < 0 || idx >= N_CARD_TYPES) return "???";
     return names[idx];
 }
 

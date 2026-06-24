@@ -35,6 +35,7 @@ EffectKind effect_kind_from_string(const std::string &category) {
         {"SylvanLibrary", EffectKind::SylvanLibrary},
         {"WinsGame", EffectKind::WinsGame},
         {"Charm", EffectKind::Charm},
+        {"Amass", EffectKind::Amass},
     };
     auto it = table.find(category);
     return (it != table.end()) ? it->second : EffectKind::None;

@@ -23,6 +23,7 @@ struct AltCost {
     ManaValue mana_cost;                // mana portion of the alt cost (e.g. Evoke:R)
     std::string condition_svar = "";    // e.g. "Count$YouCastThisGame" — condition checked before allowing alt cost
     std::string condition_compare = ""; // e.g. "EQ0" — comparison for condition_svar
+    std::string condition_is_present = "";  // IsPresent$ <filter> — controller must control a matching permanent (e.g. "Swamp.YouCtrl" for Snuff Out)
     bool is_free = false;               // Cost$ 0 — no mana required
     bool condition_not_your_turn = false;  // Condition$ NotPlayerTurn
     bool is_evoke = false;              // K:Evoke — when paid, the permanent sacrifices itself on ETB
@@ -38,7 +39,7 @@ struct CardData{
     std::vector<Colors> phyrexian_mana;  // Phyrexian mana symbols: each can be paid with color OR 2 life
     uint32_t power = 0;
     uint32_t toughness = 0;
-    //starting loyalty etc described as a static ability
+    int starting_loyalty = 0;  // Loyalty: line — printed loyalty a planeswalker enters with (306.5b)
     std::vector<Ability> abilities;
     AltCost alt_cost;
     std::vector<std::string> keywords;
@@ -50,6 +51,7 @@ struct CardData{
     bool shuffle_into_library = false;   // card shuffles into library instead of going to graveyard on resolution
     bool has_flashback = false;          // K:Flashback — can cast from graveyard for flashback cost, then exile
     bool has_etb_choose_creature_type = false;  // K:ETBReplacement:Other:ChooseCT — choose creature type on ETB
+    bool has_etb_name_card = false;             // K:ETBReplacement:Other:DBNameCard — choose a card name on ETB (Disruptor Flute)
     int dredge = 0;                      // K:Dredge:N — replace a draw by milling N and returning this from graveyard to hand
     ManaValue flashback_mana_cost;       // mana portion of flashback cost
     AltCost flashback_alt_cost;          // non-mana costs (e.g. PayLife<3> for Deep Analysis)

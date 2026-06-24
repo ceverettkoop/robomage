@@ -56,15 +56,22 @@ import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from train import (
     REC_MAGIC, REC_VERSION, REC_GAME_START, REC_DECISION, REC_GAME_END,
+    REC_CARD_ID_NULL,
     _SESSION_HDR_FMT, _GAME_START_FMT, _DECISION_FMT, _GAME_END_FMT,
     _write_length_prefixed, _read_length_prefixed,
     _CAT_NAMES, _STEP_NAMES,
 )
 from card_costs import _VOCAB_NAMES, N_CARD_TYPES
+# CLI definitions come from cli_spec.py (single source shared with the TUI).
+from cli_spec import ANALYSIS_TOOL, apply_to_parser
 from env import (ACTION_CATEGORY_MAX, RoboMageEnv, scripted_action,
                  OBS_SIZE, STATE_SIZE, MAX_ACTIONS, BINARY,
                  _HAND_START, _MATCH_CTX_START, _LIBRARY_CTX_START,
-                 _CUR_TURN_IDX, _KNOWN_TOP_LIB_START)
+                 _CUR_TURN_IDX, _KNOWN_TOP_LIB_START,
+                 _SELF_PERM_START, _PERM_SLOTS as _ENV_PERM_SLOTS, _PERM_SLOT_SIZE,
+                 _GY_START, _GY_SLOTS_TOTAL, _GY_SLOT_SIZE,
+                 _STACK_START as _ENV_STACK_START, _STACK_SLOTS as _ENV_STACK_SLOTS,
+                 _STACK_SLOT_SIZE, _HAND_SLOT_SIZE, _slot_card_idx)
 
 
 # ── Data classes for parsed records ──────────────────────────────────────────
@@ -102,7 +109,7 @@ class Decision:
     opp_life: int
     self_mana: bytes
     categories: bytes
-    card_ids: bytes
+    card_ids: tuple  # 64 × u16 card ids (REC_CARD_ID_NULL = no card)
     ctrl_flags: bytes
     self_creatures: int
     self_lands: int
@@ -170,6 +177,8 @@ class RecordReader:
              categories, card_ids, ctrl_flags,
              self_creatures, self_lands, opp_creatures, opp_lands) = struct.unpack(
                 _DECISION_FMT, data)
+            # card_ids is a 64×u16 blob (vocab can exceed 255); unpack to ints.
+            card_ids = struct.unpack(f"<{len(card_ids) // 2}H", card_ids)
             return Decision(env_id, game_id, decision_idx, step_idx,
                             bool(priority_is_a), bool(active_is_a),
                             num_choices, action_chosen, self_life, opp_life,
@@ -286,8 +295,8 @@ def cmd_summary(args):
     for d in sd.decisions:
         cat = d.categories[d.action_chosen] if d.action_chosen < len(d.categories) else 255
         if cat == 7:  # CAST
-            cid = d.card_ids[d.action_chosen] if d.action_chosen < len(d.card_ids) else 255
-            if cid < len(_VOCAB_NAMES) and cid != 255:
+            cid = d.card_ids[d.action_chosen] if d.action_chosen < len(d.card_ids) else REC_CARD_ID_NULL
+            if cid < len(_VOCAB_NAMES):
                 name = _VOCAB_NAMES[cid]
                 cast_counts[name] = cast_counts.get(name, 0) + 1
     if cast_counts:
@@ -401,8 +410,8 @@ def cmd_cards(args):
     land_counts = {}
     for d in sd.decisions:
         cat = d.categories[d.action_chosen] if d.action_chosen < len(d.categories) else 255
-        cid = d.card_ids[d.action_chosen] if d.action_chosen < len(d.card_ids) else 255
-        if cid == 255 or cid >= len(_VOCAB_NAMES):
+        cid = d.card_ids[d.action_chosen] if d.action_chosen < len(d.card_ids) else REC_CARD_ID_NULL
+        if cid >= len(_VOCAB_NAMES):
             continue
         name = _VOCAB_NAMES[cid]
         if cat == 7:  # CAST
@@ -466,9 +475,9 @@ def cmd_replay(args):
         step_name = _STEP_NAMES[d.step_idx] if d.step_idx < len(_STEP_NAMES) else f"?{d.step_idx}"
         cat = d.categories[d.action_chosen] if d.action_chosen < len(d.categories) else 255
         cat_name = _CAT_NAMES.get(cat, str(cat)) if cat != 255 else "?"
-        cid = d.card_ids[d.action_chosen] if d.action_chosen < len(d.card_ids) else 255
+        cid = d.card_ids[d.action_chosen] if d.action_chosen < len(d.card_ids) else REC_CARD_ID_NULL
         card_name = ""
-        if cid < len(_VOCAB_NAMES) and cid != 255:
+        if cid < len(_VOCAB_NAMES):
             card_name = f" ({_VOCAB_NAMES[cid]})"
 
         mana_str = "/".join(str(b) for b in d.self_mana)
@@ -628,8 +637,8 @@ def cmd_cast_timing(args):
         cat = d.categories[d.action_chosen] if d.action_chosen < len(d.categories) else 255
         if cat != 7:  # CAST only
             continue
-        cid = d.card_ids[d.action_chosen] if d.action_chosen < len(d.card_ids) else 255
-        if cid >= len(_VOCAB_NAMES) or cid == 255:
+        cid = d.card_ids[d.action_chosen] if d.action_chosen < len(d.card_ids) else REC_CARD_ID_NULL
+        if cid >= len(_VOCAB_NAMES):
             continue
         name = _VOCAB_NAMES[cid]
         life_diff = d.self_life - d.opp_life
@@ -792,9 +801,9 @@ def cmd_choice_rates(args):
 
 def _resolve_card_name(cid):
     """Resolve a card vocab index to a display name, handling special cases."""
-    if cid < 0 or cid == 255:
+    if cid < 0 or cid == REC_CARD_ID_NULL:
         return "Player"
-    if cid == 127:  # TOKEN_SENTINEL
+    if cid == N_CARD_TYPES - 1:  # TOKEN_SENTINEL
         return "Token"
     if cid < len(_VOCAB_NAMES) and _VOCAB_NAMES[cid]:
         return _VOCAB_NAMES[cid]
@@ -833,8 +842,8 @@ def cmd_targeting(args):
             d = decs[i]
             cat = d.categories[d.action_chosen] if d.action_chosen < len(d.categories) else 255
             if cat == 7:  # CAST
-                cid = d.card_ids[d.action_chosen] if d.action_chosen < len(d.card_ids) else 255
-                if cid < len(_VOCAB_NAMES) and cid != 255:
+                cid = d.card_ids[d.action_chosen] if d.action_chosen < len(d.card_ids) else REC_CARD_ID_NULL
+                if cid < len(_VOCAB_NAMES):
                     cast_name = _VOCAB_NAMES[cid]
                     # Look ahead for the next TARGET decision in this game
                     j = i + 1
@@ -842,7 +851,7 @@ def cmd_targeting(args):
                         d2 = decs[j]
                         cat2 = d2.categories[d2.action_chosen] if d2.action_chosen < len(d2.categories) else 255
                         if cat2 == 8:  # TARGET
-                            tgt_cid = d2.card_ids[d2.action_chosen] if d2.action_chosen < len(d2.card_ids) else 255
+                            tgt_cid = d2.card_ids[d2.action_chosen] if d2.action_chosen < len(d2.card_ids) else REC_CARD_ID_NULL
                             tgt_ctrl = d2.ctrl_flags[d2.action_chosen] if d2.action_chosen < len(d2.ctrl_flags) else 255
                             tgt_name = _resolve_card_name(tgt_cid)
                             tgt_is_self = (tgt_ctrl == 1)
@@ -885,8 +894,8 @@ def cmd_targeting(args):
         castable = set()
         for k in range(d.num_choices):
             if k < len(d.categories) and d.categories[k] == 7:  # CAST
-                cid = d.card_ids[k] if k < len(d.card_ids) else 255
-                if cid < len(_VOCAB_NAMES) and cid != 255:
+                cid = d.card_ids[k] if k < len(d.card_ids) else REC_CARD_ID_NULL
+                if cid < len(_VOCAB_NAMES):
                     castable.add(_VOCAB_NAMES[cid])
         if not castable:
             continue
@@ -897,8 +906,8 @@ def cmd_targeting(args):
             for name in castable:
                 hold_stats.setdefault(name, []).append(entry)
         elif chosen_cat == 7:  # actually cast
-            cid = d.card_ids[d.action_chosen] if d.action_chosen < len(d.card_ids) else 255
-            if cid < len(_VOCAB_NAMES) and cid != 255:
+            cid = d.card_ids[d.action_chosen] if d.action_chosen < len(d.card_ids) else REC_CARD_ID_NULL
+            if cid < len(_VOCAB_NAMES):
                 cast_stats.setdefault(_VOCAB_NAMES[cid], []).append(entry)
 
     # ── Print results ────────────────────────────────────────────────────────
@@ -1025,25 +1034,27 @@ _INTERP_FEATURE_NAMES = [
     "is_sideboard",
 ]
 
-# Permanent slot layout (from extractor.py / machine_io.h)
-_PERM_START   = 34
-_PERM_SLOTS   = 96
-_PERM_SLOT_SZ = 138
-_SELF_PERM_SLOTS = 48  # slots 0-47 = self, 48-95 = opponent
+# Permanent slot layout (derived from env.py / machine_io.h). Card identity is a
+# single normalized id float per slot; decode via _slot_card_idx (round(val*N)).
+_PERM_START   = _SELF_PERM_START          # 34 (self slots first, then opponent)
+_PERM_SLOTS   = _ENV_PERM_SLOTS * 2       # 96 = 48 self + 48 opponent
+_PERM_SLOT_SZ = _PERM_SLOT_SIZE           # 11 (10 status + 1 card id)
+_SELF_PERM_SLOTS = _ENV_PERM_SLOTS        # 48: slots 0-47 = self, 48-95 = opponent
 # Per-slot offsets: power(0), toughness(1), tapped(2), attacking(3), blocking(4),
-#                   sickness(5), damage(6), controller_is_self(7), is_creature(8), is_land(9)
-_GY_START_OBS    = 14842
-_GY_SLOTS        = 128
-_GY_SLOT_SZ      = 128
-_GY_SELF_SLOTS   = 64   # slots 0-63 = self GY, 64-127 = opp GY
+#                   sickness(5), damage(6), controller_is_self(7), is_creature(8),
+#                   is_land(9), card_id(10)
+_PERM_CARD_OFF   = 10
+_GY_START_OBS    = _GY_START
+_GY_SLOTS        = _GY_SLOTS_TOTAL        # 128
+_GY_SLOT_SZ      = _GY_SLOT_SIZE          # 1
+_GY_SELF_SLOTS   = _GY_SLOTS_TOTAL // 2   # slots 0-63 = self GY, 64-127 = opp GY
 
-# Stack layout: [13282-14841] 12 slots x 130 floats
-# Per slot: controller_is_self(1), card_id one-hot(128), is_spell(1)
-_STACK_START   = 13282
-_STACK_SLOTS   = 12
-_STACK_SLOT_SZ = 130
+# Stack layout: 12 slots x 3 floats. Per slot: controller_is_self(1), card id(1), is_spell(1)
+_STACK_START   = _ENV_STACK_START
+_STACK_SLOTS   = _ENV_STACK_SLOTS
+_STACK_SLOT_SZ = _STACK_SLOT_SIZE         # 3
 
-# Hand layout: [31226-32505] 10 slots x 128 floats (imported _HAND_START from env.py)
+# Hand layout: 10 slots x 1 float (imported _HAND_START from env.py)
 _HAND_SLOTS = 10
 
 # Mana color labels
@@ -1075,8 +1086,7 @@ def _extract_interpretable(obs):
     # Hand size (count non-empty hand slots for self; opp comes from player block)
     hand_count = 0
     for slot in range(10):
-        base = _HAND_START + slot * N_CARD_TYPES
-        if np.max(obs[base:base + N_CARD_TYPES]) > 0.5:
+        if _slot_card_idx(obs, _HAND_START + slot * _HAND_SLOT_SIZE) >= 0:
             hand_count += 1
     f[i] = hand_count;        i += 1  # self_hand_size
     f[i] = obs[10] * 10.0;    i += 1  # opp_hand_size
@@ -1100,9 +1110,8 @@ def _extract_interpretable(obs):
         is_creat  = obs[base + 8] > 0.5
         is_land   = obs[base + 9] > 0.5
 
-        # Check if slot is occupied (any card one-hot active)
-        card_vec = obs[base + 10 : base + 10 + N_CARD_TYPES]
-        if np.max(card_vec) < 0.5:
+        # Check if slot is occupied (card id present)
+        if _slot_card_idx(obs, base + _PERM_CARD_OFF) < 0:
             continue
 
         is_self = slot < _SELF_PERM_SLOTS
@@ -1155,7 +1164,7 @@ def _extract_interpretable(obs):
     self_gy = opp_gy = 0
     for slot in range(_GY_SLOTS):
         base = _GY_START_OBS + slot * _GY_SLOT_SZ
-        if np.max(obs[base:base + _GY_SLOT_SZ]) > 0.5:
+        if _slot_card_idx(obs, base) >= 0:
             if slot < 64:
                 self_gy += 1
             else:
@@ -1171,8 +1180,8 @@ def _extract_interpretable(obs):
     stack_spells = stack_abilities = 0
     for slot in range(_STACK_SLOTS):
         base = _STACK_START + slot * _STACK_SLOT_SZ
-        # Slot occupied iff card one-hot is set (offset 1, length N_CARD_TYPES)
-        if np.max(obs[base + 1 : base + 1 + N_CARD_TYPES]) < 0.5:
+        # Slot occupied iff the card id is present (offset 1)
+        if _slot_card_idx(obs, base + 1) < 0:
             continue
         if obs[base] > 0.5:
             self_stack += 1
@@ -1399,21 +1408,6 @@ def _decode_legal_actions(obs, num_choices, chosen_action):
         marker = " <-- chosen" if i == chosen_action else ""
         lines.append(f"    [{i}] {cat_name}{card_str}{marker}")
     return lines
-
-
-def _add_sim_args(parser):
-    """Add common simulation arguments to a subparser."""
-    parser.add_argument("model", help="Path to model .zip")
-    parser.add_argument("--opponent", required=True,
-                        help="Opponent model .zip path, or 'scripted' for rule-based agent")
-    parser.add_argument("--deck-a", default=None,
-                        help="Model's deck (.dk stem). Inferred from model filename if omitted.")
-    parser.add_argument("--deck-b", default=None,
-                        help="Opponent's deck (.dk stem). Inferred from opponent filename if omitted; "
-                             "defaults to --deck-a for scripted opponent.")
-    parser.add_argument("--binary", default=BINARY, help="Path to robomage binary")
-    parser.add_argument("--bo3", action="store_true",
-                        help="Run best-of-three matches (decks must include SIDEBOARD entries)")
 
 
 def cmd_shap(args):
@@ -1646,18 +1640,17 @@ def _decode_board_state(obs, value=None):
         return " ".join(parts) if parts else "—"
 
     def card_at(base):
-        """Decode card name from one-hot starting at obs[base]."""
-        vec = obs[base:base + N_CARD_TYPES]
-        if np.max(vec) < 0.5:
+        """Decode card name from the card-id float at obs[base] (None if empty)."""
+        cid = _slot_card_idx(obs, base)
+        if cid < 0:
             return None
-        cid = int(np.argmax(vec))
         return _VOCAB_NAMES[cid] if cid < len(_VOCAB_NAMES) else f"card#{cid}"
 
     def perm_lines(slot_range):
         lines = []
         for slot in slot_range:
             base = _PERM_START + slot * _PERM_SLOT_SZ
-            name = card_at(base + 10)
+            name = card_at(base + _PERM_CARD_OFF)
             if name is None:
                 continue
             power     = obs[base + 0] * 10.0
@@ -1711,7 +1704,7 @@ def _decode_board_state(obs, value=None):
     else:
         print("  Battlefield: empty")
 
-    hand_cards = [card_at(_HAND_START + s * N_CARD_TYPES)
+    hand_cards = [card_at(_HAND_START + s * _HAND_SLOT_SIZE)
                   for s in range(_HAND_SLOTS)]
     hand_cards = [n for n in hand_cards if n is not None]
     if hand_cards:
@@ -3617,74 +3610,11 @@ def main():
     parser = argparse.ArgumentParser(description="Analyze .rmrec recording files")
     sub = parser.add_subparsers(dest="command", required=True)
 
-    p = sub.add_parser("summary", help="Session summary and statistics")
-    p.add_argument("file")
-
-    p = sub.add_parser("winrate", help="Win rate plot over time")
-    p.add_argument("file")
-
-    p = sub.add_parser("actions", help="Action category heatmap by game step")
-    p.add_argument("file")
-
-    p = sub.add_parser("cards", help="Card usage bar chart")
-    p.add_argument("file")
-
-    p = sub.add_parser("replay", help="Replay a single game")
-    p.add_argument("file")
-    p.add_argument("--game", type=int, required=True, help="Game ID to replay")
-
-    p = sub.add_parser("compare", help="Compare win rates from two sessions")
-    p.add_argument("file")
-    p.add_argument("file2")
-
-    p = sub.add_parser("wl-split", help="Action distribution split by win/loss")
-    p.add_argument("file")
-
-    p = sub.add_parser("cast-timing", help="Per-card cast timing and state by outcome")
-    p.add_argument("file")
-
-    p = sub.add_parser("choice-rates", help="P(chose X | X legal) by board state")
-    p.add_argument("file")
-
-    p = sub.add_parser("targeting", help="Targeting self vs opp, hold vs cast analysis")
-    p.add_argument("file")
-
-    p = sub.add_parser("shap", help="SHAP analysis of value function over simulated games")
-    _add_sim_args(p)
-    p.add_argument("--n-games", type=int, default=50, help="Number of games to simulate (default: 50)")
-    p.add_argument("--n-samples", type=int, default=200, help="SHAP sample count (default: 200)")
-    p.add_argument("--n-background", type=int, default=50, help="SHAP background size (default: 50)")
-
-    p = sub.add_parser("value-swings", help="Find games with largest value function swings")
-    _add_sim_args(p)
-    p.add_argument("--n-games", type=int, default=50, help="Number of games to simulate (default: 50)")
-    p.add_argument("--top", type=int, default=10, help="Show top N swings (default: 10)")
-
-    p = sub.add_parser("regret",
-                       help="Action regret analysis using policy distribution")
-    _add_sim_args(p)
-    p.add_argument("--n-games", type=int, default=50, help="Number of games to simulate (default: 50)")
-    p.add_argument("--top", type=int, default=20, help="Show top N high-regret decisions (default: 20)")
-
-    p = sub.add_parser("entropy",
-                       help="Policy entropy by game phase and board state")
-    _add_sim_args(p)
-    p.add_argument("--n-games", type=int, default=50, help="Number of games to simulate (default: 50)")
-
-    p = sub.add_parser("consistency",
-                       help="Decision consistency for similar game states")
-    _add_sim_args(p)
-    p.add_argument("--n-games", type=int, default=50, help="Number of games to simulate (default: 50)")
-    p.add_argument("--top", type=int, default=20, help="Show top N inconsistent pairs (default: 20)")
-
-    p = sub.add_parser("interactive",
-                       help="Interactive session: simulate games then inspect replays, "
-                            "board states, value charts, SHAP, and more")
-    _add_sim_args(p)
-    p.add_argument("--n-games", type=int, default=20,
-                   help="Games to pre-simulate before entering session (default: 20; 0 = skip)")
-    p.add_argument("--n-samples", type=int, default=200, help="SHAP sample count (default: 200)")
-    p.add_argument("--n-background", type=int, default=50, help="SHAP background size (default: 50)")
+    # All subcommands and their flags come from cli_spec.ANALYSIS_TOOL (single
+    # source shared with the TUI). Dispatch below stays hand-written.
+    for s in ANALYSIS_TOOL.subs:
+        sp = sub.add_parser(s.name, help=s.help)
+        apply_to_parser(sp, s)
 
     args = parser.parse_args()
     {

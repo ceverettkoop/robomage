@@ -21,6 +21,7 @@
 #include "../action_processor.h"
 #include "../mana_system.h"
 #include "../parse.h"
+#include "../svar_eval.h"
 #include "../effects/effects.h"
 #include "../systems/orderer.h"
 #include "creature.h"
@@ -100,10 +101,7 @@ static bool matches_filter_spec(Entity entity, const std::string &spec) {
             if (!found) return false;
         } else if (color_qualifier == "Basic" || color_qualifier == "nonBasic") {
             // Basic/nonBasic supertype qualifier (e.g. "Land.Basic" for fetch ramp).
-            bool is_basic = false;
-            for (auto &t : cd.types) {
-                if (t.name == "Basic") { is_basic = true; break; }
-            }
+            bool is_basic = has_basic_supertype(cd.types);
             if (color_qualifier == "Basic" && !is_basic) return false;
             if (color_qualifier == "nonBasic" && is_basic) return false;
         } else {
@@ -144,7 +142,7 @@ static bool matches_filter_spec(Entity entity, const std::string &spec) {
 // Returns the chosen Entity, or 0 for fail to find.
 // 0 is a valid entity but will always be player a  so is never correct
 Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner, Zone::ZoneValue zone,
-    const std::string &change_type, bool mandatory, Zone::ZoneValue destination) {
+    const std::string &change_type, bool mandatory, Zone::ZoneValue destination, bool reveal) {
     //  comma-separated subtypes
     std::vector<std::string> subtypes;
     size_t p = 0;
@@ -247,6 +245,7 @@ Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner, Zone
         auto &cd = global_coordinator.GetComponent<CardData>(entity);
         LegalAction la(PASS_PRIORITY, entity, cd.name);
         la.category = cat;
+        la.card_is_public = reveal;
         search_actions.push_back(la);
     }
 
@@ -266,7 +265,7 @@ Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner, Zone
 // Used by Doomsday (Origin$ Graveyard,Library).
 Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner,
     const std::vector<Zone::ZoneValue> &zones, const std::string &change_type, bool mandatory,
-    Zone::ZoneValue destination) {
+    Zone::ZoneValue destination, bool reveal) {
     // Collect contents from all zones
     std::vector<Entity> zone_contents;
     for (auto zone : zones) {
@@ -369,6 +368,7 @@ Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner
         const char *zone_label = (z.location == Zone::GRAVEYARD) ? " (graveyard)" : " (library)";
         LegalAction la(PASS_PRIORITY, entity, cd.name + zone_label);
         la.category = cat;
+        la.card_is_public = reveal;
         search_actions.push_back(la);
     }
 
@@ -445,6 +445,23 @@ void Ability::fizzle(std::shared_ptr<Orderer> orderer) {
     return;
 }
 
+// True if the card counts as the given color (explicit Colors: override first,
+// else the colors present in its mana cost).
+static bool card_is_color(const CardData &cd, Colors c) {
+    if (!cd.explicit_colors.empty()) return cd.explicit_colors.count(c) > 0;
+    return cd.mana_cost.count(c) > 0;
+}
+
+// Enforces "non<Color>" target restrictions (e.g. ValidTgts$ Creature.nonBlack on
+// Snuff Out). Returns false when the candidate is one of the excluded colors.
+static bool passes_noncolor_restriction(const std::string &vt, const CardData &cd) {
+    static const struct { const char *tok; Colors col; } table[] = {
+        {"nonWhite", WHITE}, {"nonBlue", BLUE}, {"nonBlack", BLACK}, {"nonRed", RED}, {"nonGreen", GREEN}};
+    for (auto &e : table)
+        if (vt.find(e.tok) != std::string::npos && card_is_color(cd, e.col)) return false;
+    return true;
+}
+
 // Single source of truth for target legality (see header). build_valid_targets
 // enumerates candidates and filters them through this; is_target_valid re-runs the
 // chosen target(s) through it at resolution. Keeping both on one predicate is what
@@ -517,6 +534,8 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
     bool inc_artifacts = vt.find("Artifact") != std::string::npos;
     bool inc_enchantments = vt.find("Enchantment") != std::string::npos;
     bool inc_permanents = vt.find("Permanent") != std::string::npos;
+    // "Any" includes planeswalkers (a damage spell like Lightning Bolt can hit a walker, 306.7).
+    bool inc_planeswalkers = any || vt.find("Planeswalker") != std::string::npos;
     int cmc_le = -1;
     {
         size_t cmc_pos = vt.find("cmcLE");
@@ -526,7 +545,8 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
     // Card in a graveyard targeted by a ChangeZone with a type filter (e.g. Life from
     // the Loam: ValidTgts$ Land.YouCtrl, Origin$ Graveyard). Filter by zone, owner
     // (YouCtrl/OppCtrl), and card type.
-    if (category == "ChangeZone" && origin == Zone::GRAVEYARD && destination != Zone::BATTLEFIELD) {
+    if (target_in_graveyard ||
+        (category == "ChangeZone" && origin == Zone::GRAVEYARD && destination != Zone::BATTLEFIELD)) {
         if (!global_coordinator.entity_has_component<Zone>(cand)) return false;
         auto &cz = global_coordinator.GetComponent<Zone>(cand);
         if (cz.location != Zone::GRAVEYARD) return false;
@@ -537,16 +557,14 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
         if (!global_coordinator.entity_has_component<CardData>(cand)) return false;
         auto &cd = global_coordinator.GetComponent<CardData>(cand);
         bool type_ok = !(inc_creatures || inc_lands || inc_artifacts || inc_enchantments);
-        bool is_basic = false;
         for (auto &t : cd.types) {
-            if (t.kind == SUPERTYPE && t.name == "Basic") is_basic = true;
             if (t.kind != TYPE) continue;
             if (inc_creatures    && t.name == "Creature")    type_ok = true;
             if (inc_lands        && t.name == "Land")        type_ok = true;
             if (inc_artifacts    && t.name == "Artifact")    type_ok = true;
             if (inc_enchantments && t.name == "Enchantment") type_ok = true;
         }
-        if (nonbasic_only && is_basic) return false;
+        if (nonbasic_only && has_basic_supertype(cd.types)) return false;
         return type_ok;
     }
 
@@ -579,16 +597,21 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
                 if (t.kind == SUPERTYPE && t.name == "Legendary") { is_legendary = true; break; }
             if (!is_legendary) return false;
         }
+        if (global_coordinator.entity_has_component<CardData>(cand) &&
+            !passes_noncolor_restriction(vt, global_coordinator.GetComponent<CardData>(cand)))
+            return false;
         if (has_protection_from(global_coordinator.GetComponent<Creature>(cand), source)) return false;
         return true;
     }
     if (inc_lands) {
-        bool is_land = false, is_basic = false;
-        for (auto &t : tperm.types) {
-            if (t.kind == TYPE && t.name == "Land") is_land = true;
-            if (t.kind == SUPERTYPE && t.name == "Basic") is_basic = true;
-        }
-        if (is_land && (!nonbasic_only || !is_basic)) return true;
+        bool is_land = false;
+        for (auto &t : tperm.types)
+            if (t.kind == TYPE && t.name == "Land") { is_land = true; break; }
+        if (is_land && (!nonbasic_only || !has_basic_supertype(tperm.types))) return true;
+    }
+    if (inc_planeswalkers) {
+        for (auto &t : tperm.types)
+            if (t.kind == TYPE && t.name == "Planeswalker") return true;
     }
     if (inc_permanents) return true;
     if (inc_artifacts || inc_enchantments) {
@@ -631,7 +654,10 @@ static int evaluate_condition_svar(const std::string &expr, Entity src, Zone::Ow
 }
 
 // Returns true if val passes the compare spec (e.g. "EQ2", "NE2", "GE1", "LE3").
-// When svar_rhs is non-empty, it is evaluated as the RHS instead of parsing an int from spec.
+// When svar_rhs is non-empty, it is evaluated as the RHS instead of parsing an int
+// from spec. Unlike svar_eval::compare_svar this is permissive — a missing/unknown
+// operator passes — so the operator application (but not the defaulting) is shared
+// via apply_svar_op.
 static bool compare_svar(int val, const std::string &spec, const std::string &svar_rhs = "", Entity src = 0,
     Zone::Ownership ctrl = Zone::PLAYER_A, std::shared_ptr<Orderer> orderer = nullptr) {
     if (spec.size() < 2) return true;
@@ -643,13 +669,9 @@ static bool compare_svar(int val, const std::string &spec, const std::string &sv
         if (spec.size() < 3) return true;
         rhs = std::stoi(spec.substr(2));
     }
-    if (op == "EQ") return val == rhs;
-    if (op == "NE") return val != rhs;
-    if (op == "GE") return val >= rhs;
-    if (op == "LE") return val <= rhs;
-    if (op == "GT") return val > rhs;
-    if (op == "LT") return val < rhs;
-    return true;
+    if (op == "EQ" || op == "NE" || op == "GE" ||
+        op == "LE" || op == "GT" || op == "LT") return apply_svar_op(val, op, rhs);
+    return true;  // unknown operator passes (permissive)
 }
 
 // Evaluates a dynamic_amount_expr at runtime for the given controller.
@@ -726,7 +748,12 @@ size_t evaluate_dynamic_amount(
         if (global_coordinator.entity_has_component<Creature>(target))
             return static_cast<size_t>(global_coordinator.GetComponent<Creature>(target).power);
     }
-    return 0;
+    // Fall back to the shared static-ability SVar evaluator for graveyard-count
+    // expressions (Count$TypeInYourYard / Count$ValidGraveyard / CardTypes). It
+    // returns 0 for anything it doesn't recognise, so this preserves the prior
+    // default while making one set of Count$ handlers serve both paths.
+    int sa_val = evaluate_sa_svar(expr, ctrl);
+    return sa_val > 0 ? static_cast<size_t>(sa_val) : 0;
 }
 
 void Ability::resolve(std::shared_ptr<Orderer> orderer) {
@@ -736,6 +763,15 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
             fizzle(orderer);
             return;  // subabilities do not fire; TODO revisit this in light of cards e.g. k-command
         }
+    }
+    // RememberTargets/RememberObjects: stash the target(s) so chained
+    // ChangeType$ Remembered.sameName subabilities can match by name (Surgical Extraction).
+    if (remember_targeted) {
+        cur_game.remembered_entities.clear();
+        if (!targets.empty())
+            for (auto t : targets) cur_game.remembered_entities.push_back(t);
+        else if (target != 0)
+            cur_game.remembered_entities.push_back(target);
     }
     game_log("Resolving ability (category: %s, amount: %zu)\n", category.c_str(), amount);
 

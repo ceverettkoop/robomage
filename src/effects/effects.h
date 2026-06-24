@@ -50,6 +50,9 @@ bool put_counter(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool rearrange_top_of_library(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer);
+// ChangeType$ Remembered.sameName / Targeted.sameName mover, shared by change_zone
+// (force_all=false) and change_zone_all (force_all=true).
+bool change_zone_same_name(Ability &ab, std::shared_ptr<Orderer> orderer, bool force_all);
 bool counter(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool charm(Ability &ab, std::shared_ptr<Orderer> orderer);
 // Pyroblast/Hydroblast: ConditionPresent$ <type>.<Color> gates the EFFECT (not the
@@ -62,6 +65,7 @@ bool pump(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool dig(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool sylvan_library(Ability &ab, std::shared_ptr<Orderer> orderer);
+bool amass(Ability &ab, std::shared_ptr<Orderer> orderer);
 
 // ── Effect-specific parse hooks ─────────────────────────────────────────────
 //
@@ -85,6 +89,7 @@ bool parse_delayed_trigger(Ability &ab, const std::string &key, const std::strin
 bool parse_discard(Ability &ab, const std::string &key, const std::string &value);
 bool parse_mill(Ability &ab, const std::string &key, const std::string &value);
 bool parse_peek_and_reveal(Ability &ab, const std::string &key, const std::string &value);
+bool parse_amass(Ability &ab, const std::string &key, const std::string &value);
 
 }  // namespace effects
 
@@ -96,7 +101,7 @@ size_t evaluate_dynamic_amount(
     const std::string &expr, Zone::Ownership ctrl, std::shared_ptr<Orderer> orderer, Entity target);
 Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner,
     const std::vector<Zone::ZoneValue> &zones, const std::string &change_type, bool mandatory,
-    Zone::ZoneValue destination);
+    Zone::ZoneValue destination, bool reveal = false);
 bool run_unless_loop(size_t cost, Zone::Ownership controller, std::shared_ptr<Orderer> orderer, Entity paid_for);
 
 #endif /* EFFECTS_H */

@@ -18,16 +18,18 @@ from env import (RoboMageEnv, STATE_SIZE, ACTION_CATEGORY_MAX, BINARY, MAX_ACTIO
                  BIN_DIR, OBS_SIZE, _ACTION_CARD_ID_NULL, _ACTION_CTRL_NULL,
                  _HAND_START, MAX_HAND_SLOTS,
                  _BQUERY_STATE_BYTES, _BQUERY_CATS_BYTES, _BQUERY_IDS_BYTES, _BQUERY_CTRL_BYTES,
+                 _BQUERY_PUB_BYTES,
                  _BF_START as _ENV_BF_START, _BF_SLOT_SIZE as _ENV_BF_SLOT_SIZE,
-                 _BF_CARD_OFF as _ENV_BF_CARD_OFF, _PERM_A_SLOTS as _ENV_PERM_A_SLOTS)
+                 _BF_CARD_OFF as _ENV_BF_CARD_OFF, _PERM_A_SLOTS as _ENV_PERM_A_SLOTS,
+                 _HAND_SLOT_SIZE, _BF_ID_IDX, _gather_costs, _slot_card_idx)
 import env as _env
+from decode import (card_from_id as _card_from_id, decode_step as _decode_step,
+                    _CARD_NAMES as _VOCAB_NAMES)
 
 try:
-    from card_costs import (_CARD_COST_MATRIX, _CARD_ABILITY_COST_MATRIX, N_CARD_TYPES, _N_COST_FEATS,
-                            _VOCAB_NAMES)
+    from card_costs import (_CARD_COST_MATRIX, _CARD_ABILITY_COST_MATRIX, N_CARD_TYPES, _N_COST_FEATS)
 except ImportError:
-    from train.card_costs import (_CARD_COST_MATRIX, _CARD_ABILITY_COST_MATRIX, N_CARD_TYPES, _N_COST_FEATS,
-                                  _VOCAB_NAMES)
+    from train.card_costs import (_CARD_COST_MATRIX, _CARD_ABILITY_COST_MATRIX, N_CARD_TYPES, _N_COST_FEATS)
 
 try:
     from sb3_contrib import MaskablePPO
@@ -49,29 +51,16 @@ _OFF_SICKNESS    = 5
 _OFF_IS_CREATURE = 8
 _OFF_IS_LAND     = 9
 _HAND_SLOTS      = 10
-_STEP_NAMES = [
-    "Untap", "Upkeep", "Draw", "First Main",
-    "Begin Combat", "Declare Attackers", "Declare Blockers",
-    "First Strike Damage", "Combat Damage", "End Combat",
-    "Second Main", "End", "Cleanup",
-]
 _MANA_CAT_COLOR = {13: "W", 14: "U", 15: "B", 16: "R", 17: "G", 18: "C"}
 
 
 # ── Decode helpers ────────────────────────────────────────────────────────────
 
-def _card_name(one_hot):
-    idx = int(np.argmax(one_hot))
-    if idx < len(one_hot) and one_hot[idx] > 0.5 and idx < len(_VOCAB_NAMES):
+def _card_name(id_float):
+    """Decode a card name from a single normalized card-id float (None if empty)."""
+    idx = int(round(float(id_float) * N_CARD_TYPES))
+    if 0 <= idx < len(_VOCAB_NAMES):
         return _VOCAB_NAMES[idx] if _VOCAB_NAMES[idx] else None
-    return None
-
-
-def _card_from_id(val: float):
-    """Decode a card name from a normalised card-ID float (None for null sentinel)."""
-    cid = round(float(val) * N_CARD_TYPES)
-    if cid >= 0 and cid < len(_VOCAB_NAMES) and _VOCAB_NAMES[cid]:
-        return _VOCAB_NAMES[cid]
     return None
 
 
@@ -94,14 +83,9 @@ def _action_label(cat: int, card_id_float: float) -> str:
     return f"action {cat}"
 
 
-def _decode_step(obs) -> str:
-    idx = int(np.argmax(obs[18:31]))
-    return _STEP_NAMES[idx] if obs[18 + idx] > 0.5 else "?"
-
-
 def _perm_str(obs, base):
     """Return a display string for a permanent slot, or None if empty."""
-    card = _card_name(obs[base + _BF_CARD_OFF : base + _BF_CARD_OFF + N_CARD_TYPES])
+    card = _card_name(obs[base + _BF_CARD_OFF])
     if card is None:
         return None
     if obs[base + _OFF_IS_CREATURE] > 0.5:
@@ -122,7 +106,7 @@ def _split_bf(obs, slot_offset):
     creatures, lands = [], []
     for i in range(_BF_PERM_SLOTS):
         base = _BF_START + (slot_offset + i) * _BF_SLOT_SIZE
-        card = _card_name(obs[base + _BF_CARD_OFF : base + _BF_CARD_OFF + N_CARD_TYPES])
+        card = _card_name(obs[base + _BF_CARD_OFF])
         if card is None:
             continue
         if obs[base + _OFF_IS_CREATURE] > 0.5:
@@ -146,8 +130,7 @@ def _format_state(obs) -> str:
     my_creatures,  my_lands  = _split_bf(obs, 0)
     opp_creatures, opp_lands = _split_bf(obs, _BF_PERM_SLOTS)
     hand = [s for i in range(_HAND_SLOTS)
-            if (s := _card_name(obs[_HAND_START + i * N_CARD_TYPES :
-                                    _HAND_START + (i + 1) * N_CARD_TYPES]))]
+            if (s := _card_name(obs[_HAND_START + i * _HAND_SLOT_SIZE]))]
 
     return (
         "--- Battlefield ---\n"
@@ -330,7 +313,8 @@ def play_gui(binary_path: str, model_path: str, human_player: str = None,
     line_queue: queue.Queue = queue.Queue()
 
     _MANDATORY = {2, 3, 4, 5}
-    _PAYLOAD = _BQUERY_STATE_BYTES + _BQUERY_CATS_BYTES + _BQUERY_IDS_BYTES + _BQUERY_CTRL_BYTES
+    _PAYLOAD = (_BQUERY_STATE_BYTES + _BQUERY_CATS_BYTES + _BQUERY_IDS_BYTES
+                + _BQUERY_CTRL_BYTES + _BQUERY_PUB_BYTES)
 
     def _read_exactly(n: int) -> bytes:
         buf = bytearray()
@@ -363,11 +347,15 @@ def play_gui(binary_path: str, model_path: str, human_player: str = None,
                     offset += _BQUERY_IDS_BYTES
                     ctrl_arr = np.frombuffer(payload[offset:offset + _BQUERY_CTRL_BYTES],
                                              dtype=np.float32).copy()
+                    offset += _BQUERY_CTRL_BYTES
+                    pub_arr = np.frombuffer(payload[offset:offset + _BQUERY_PUB_BYTES],
+                                            dtype=np.float32).copy()
                     cat_arr = (cats_int / ACTION_CATEGORY_MAX).astype(np.float32)
                     pending_confirm = any(cats_int[i] in _MANDATORY for i in range(n))
                     line_queue.put({"num_choices": n, "state_arr": state_arr,
                                     "cat_arr": cat_arr, "card_id_arr": id_arr,
-                                    "ctrl_arr": ctrl_arr, "pending_confirm": pending_confirm})
+                                    "ctrl_arr": ctrl_arr, "pub_arr": pub_arr,
+                                    "pending_confirm": pending_confirm})
                 else:
                     line_queue.put(line.decode("ascii", errors="replace"))
         except Exception:
@@ -398,12 +386,12 @@ def play_gui(binary_path: str, model_path: str, human_player: str = None,
             ctrl_arr     = item["ctrl_arr"]
             pending_confirm = item["pending_confirm"]
 
-            hand_onehots = state_arr[_HAND_START : _HAND_START + MAX_HAND_SLOTS * N_CARD_TYPES]
-            hand_costs = hand_onehots.reshape(MAX_HAND_SLOTS, N_CARD_TYPES) @ _CARD_COST_MATRIX
-            bf_ability_costs = np.zeros((48, _N_COST_FEATS), dtype=np.float32)
-            for slot in range(48):
-                base = _env._BF_START + slot * _env._BF_SLOT_SIZE + _env._BF_CARD_OFF
-                bf_ability_costs[slot] = state_arr[base : base + N_CARD_TYPES] @ _CARD_ABILITY_COST_MATRIX
+            hand_ids = np.rint(
+                state_arr[_HAND_START : _HAND_START + MAX_HAND_SLOTS * _HAND_SLOT_SIZE]
+                * N_CARD_TYPES).astype(np.intp)
+            hand_costs = _gather_costs(_CARD_COST_MATRIX, hand_ids)
+            bf_ids = np.rint(state_arr[_BF_ID_IDX] * N_CARD_TYPES).astype(np.intp)
+            bf_ability_costs = _gather_costs(_CARD_ABILITY_COST_MATRIX, bf_ids)
 
             obs = np.concatenate([
                 state_arr, cat_arr, card_id_arr, ctrl_arr,
@@ -444,23 +432,20 @@ if __name__ == "__main__":
     import os as _os
     _CHECKPOINT_DIR = _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), "checkpoints")
 
+    # Flags come from cli_spec.PLAY_TOOL (single source shared with the TUI).
+    from cli_spec import PLAY_TOOL, apply_to_parser
     parser = argparse.ArgumentParser()
-    parser.add_argument("--binary", default=BINARY)
-    parser.add_argument("--human-deck", required=True,
-                        help="Deck the human plays (stem of .dk file)")
-    parser.add_argument("--model-deck", required=True,
-                        help="Deck the model plays (stem of .dk file). "
-                             "Automatically loads checkpoints/<model-deck>_<human-deck>_final.zip")
-    parser.add_argument("--model", default=None,
-                        help="Override: explicit path to trained model .zip "
-                             "(default: checkpoints/<model-deck>_final.zip)")
-    parser.add_argument("--gui", action="store_true", help="Launch raylib GUI window for human input")
-    parser.add_argument("--player", choices=["A", "B"], default=None,
-                        help="Which player the human controls, in both CLI and GUI modes (default: random)")
+    apply_to_parser(parser, PLAY_TOOL.subs[0])
     args = parser.parse_args()
 
+    if args.scripted and not args.tui:
+        parser.error("--scripted is only supported with --tui")
+
     model_path = args.model
-    if model_path is None:
+    if args.scripted:
+        # Scripted opponent: no checkpoint required (sentinel passed to tui_game.run).
+        model_path = "scripted"
+    elif model_path is None:
         # Try matchup-specific checkpoint first, then model-deck-only fallback
         matchup_path = _os.path.join(_CHECKPOINT_DIR, f"{args.model_deck}_{args.human_deck}_final.zip")
         if _os.path.exists(matchup_path):
@@ -468,9 +453,13 @@ if __name__ == "__main__":
         else:
             parser.error(f"No checkpoint found at {matchup_path}. "
                          f"Train with --deck {args.model_deck} --opponent {args.human_deck} first, "
-                         f"or use --model to specify a path.")
+                         f"or use --model to specify a path, or --scripted for a rule-based opponent (TUI).")
 
-    if args.gui:
+    if args.tui:
+        import tui_game
+        tui_game.run(args.binary, model_path, human_player=args.player,
+                     human_deck=args.human_deck, model_deck=args.model_deck)
+    elif args.gui:
         play_gui(args.binary, model_path, human_player=args.player,
                  human_deck=args.human_deck, model_deck=args.model_deck)
     else:

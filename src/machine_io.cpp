@@ -7,6 +7,7 @@
 
 #include "card_vocab.h"
 #include "classes/game.h"
+#include "classes/match_state.h"
 #include "components/ability.h"
 #include "components/carddata.h"
 #include "components/token.h"
@@ -59,10 +60,12 @@ static void push_player_block(std::vector<float>& out, const PlayerState& ps) {
     for (int i = 0; i < 6; i++) out.push_back(static_cast<float>(ps.mana[i]) / 10.0f);
 }
 
-// Pushes PERM_SLOT_SIZE floats. Empty slot (card_vocab_idx == -1) = all zeros.
+// Pushes PERM_SLOT_SIZE floats (11 status + 1 card-id). Empty slot
+// (card_vocab_idx == -1) = 11 zeros + the empty/unknown id sentinel.
 static void push_perm_slot(std::vector<float>& out, const PermanentState& p) {
     if (p.card_vocab_idx == -1) {
-        out.insert(out.end(), PERM_SLOT_SIZE, 0.0f);
+        out.insert(out.end(), PERM_SLOT_SIZE - 1, 0.0f);
+        out.push_back(norm_card_id(-1));
         return;
     }
     out.push_back(static_cast<float>(p.power) / 10.0f);
@@ -75,10 +78,8 @@ static void push_perm_slot(std::vector<float>& out, const PermanentState& p) {
     out.push_back(p.controller_is_self ? 1.0f : 0.0f);
     out.push_back(p.is_creature ? 1.0f : 0.0f);
     out.push_back(p.is_land ? 1.0f : 0.0f);
-    // One-hot card identity: bulk-fill zeros, then set the active index
-    size_t onehot_start = out.size();
-    out.insert(out.end(), N_CARD_TYPES, 0.0f);
-    out[onehot_start + p.card_vocab_idx] = 1.0f;
+    out.push_back(static_cast<float>(p.loyalty) / 10.0f);
+    out.push_back(norm_card_id(p.card_vocab_idx));
 }
 
 // ── populate_gamestate ────────────────────────────────────────────────────────
@@ -131,6 +132,12 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
         ? cur_game.known_top_library_a : cur_game.known_top_library_b;
     for (int i = 0; i < KNOWN_TOP_LIBRARY_SIZE; i++)
         gs->known_top_library_self[i] = viewer_known[i];
+
+    // Opponent-of-viewer's match-scoped revealed-cards multi-hot.
+    const unsigned char* opp_revealed = (viewer == Zone::PLAYER_A)
+        ? g_revealed_by_b : g_revealed_by_a;
+    for (int i = 0; i < REVEALED_CARD_TYPES; i++)
+        gs->opp_revealed[i] = opp_revealed[i];
 
     // Fill player stat fields (hand_ct filled in the entity pass below)
     auto fill_player_stats = [&](PlayerState& ps, Entity ent) {
@@ -251,6 +258,8 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
                 ps.damage = 0;
                 if (global_coordinator.entity_has_component<Damage>(e))
                     ps.damage = static_cast<int>(global_coordinator.GetComponent<Damage>(e).damage_counters);
+
+                ps.loyalty = perm.loyalty;  // nonzero only for planeswalkers
 
                 ps.token_name[0] = '\0';
                 if (perm.is_token && global_coordinator.entity_has_component<Token>(e)) {
@@ -384,6 +393,8 @@ void populate_query(Query* q, const std::vector<LegalAction>& actions) {
             ac.zone_ref = REF_PLAYER_OPP;
         }
 
+        ac.card_is_public = la.card_is_public;
+
         snprintf(ac.description, MAX_CHOICE_DESC, "%s", la.description.c_str());
     }
 }
@@ -411,47 +422,34 @@ std::vector<float> serialize_state(const GameState* gs) {
     for (int i = 0; i < MAX_BATTLEFIELD_SLOTS; i++)
         push_perm_slot(state, gs->opp_permanents[i]);
 
-    // Stack (12 x 130 = 1560): controller_is_self(1) + card_id one-hot(128) + is_spell(1)
+    // Stack (12 x 3 = 36): controller_is_self(1) + card_id(1) + is_spell(1)
     int stored_stack = std::min(gs->stack_size, MAX_STACK_DISPLAY);
     for (int i = 0; i < MAX_STACK_DISPLAY; i++) {
         if (i < stored_stack) {
             state.push_back(gs->stack[i].controller_is_self ? 1.0f : 0.0f);
-            int idx = gs->stack[i].card_vocab_idx;
-            size_t onehot_start = state.size();
-            state.insert(state.end(), N_CARD_TYPES, 0.0f);
-            if (idx >= 0 && idx < N_CARD_TYPES) state[onehot_start + idx] = 1.0f;
+            state.push_back(norm_card_id(gs->stack[i].card_vocab_idx));
             state.push_back(gs->stack[i].is_spell ? 1.0f : 0.0f);
         } else {
-            state.insert(state.end(), STACK_SLOT_SIZE, 0.0f);
+            state.push_back(0.0f);
+            state.push_back(norm_card_id(-1));
+            state.push_back(0.0f);
         }
     }
 
-    // Self graveyard (64 x 128 = 8192)
-    for (int i = 0; i < MAX_GY_SLOTS; i++) {
-        int idx = gs->self_graveyard[i];
-        size_t onehot_start = state.size();
-        state.insert(state.end(), GY_SLOT_SIZE, 0.0f);
-        if (idx >= 0 && idx < GY_SLOT_SIZE) state[onehot_start + idx] = 1.0f;
-    }
+    // Self graveyard (64 x 1 = 64)
+    for (int i = 0; i < MAX_GY_SLOTS; i++)
+        state.push_back(norm_card_id(gs->self_graveyard[i]));
 
-    // Opp graveyard (64 x 128 = 8192)
-    for (int i = 0; i < MAX_GY_SLOTS; i++) {
-        int idx = gs->opp_graveyard[i];
-        size_t onehot_start = state.size();
-        state.insert(state.end(), GY_SLOT_SIZE, 0.0f);
-        if (idx >= 0 && idx < GY_SLOT_SIZE) state[onehot_start + idx] = 1.0f;
-    }
+    // Opp graveyard (64 x 1 = 64)
+    for (int i = 0; i < MAX_GY_SLOTS; i++)
+        state.push_back(norm_card_id(gs->opp_graveyard[i]));
 
     // NOTE: exile zones are populated in GameState but not serialized here.
     // Add them back once cards that use exile are implemented.
 
-    // Self hand (10 x 128 = 1280)
-    for (int i = 0; i < MAX_HAND_SLOTS; i++) {
-        int idx = gs->self_hand[i];
-        size_t onehot_start = state.size();
-        state.insert(state.end(), N_CARD_TYPES, 0.0f);
-        if (idx >= 0 && idx < N_CARD_TYPES) state[onehot_start + idx] = 1.0f;
-    }
+    // Self hand (10 x 1 = 10)
+    for (int i = 0; i < MAX_HAND_SLOTS; i++)
+        state.push_back(norm_card_id(gs->self_hand[i]));
 
     // Action history (128 x 4 = 512, newest first)
     for (int i = 0; i < ACTION_HISTORY_SIZE * 4; i++)
@@ -471,14 +469,15 @@ std::vector<float> serialize_state(const GameState* gs) {
     // Current turn (1 float)
     state.push_back(static_cast<float>(gs->turn) / TURN_NORMALIZER);
 
-    // Known top-of-library cards for the viewer (5 slots x 128 floats = 640)
-    // All zeros = unknown.
-    for (int i = 0; i < KNOWN_TOP_LIBRARY_SIZE; i++) {
-        int idx = gs->known_top_library_self[i];
-        size_t onehot_start = state.size();
-        state.insert(state.end(), N_CARD_TYPES, 0.0f);
-        if (idx >= 0 && idx < N_CARD_TYPES) state[onehot_start + idx] = 1.0f;
-    }
+    // Known top-of-library cards for the viewer (5 slots x 1 float = 5)
+    // Sentinel id = unknown.
+    for (int i = 0; i < KNOWN_TOP_LIBRARY_SIZE; i++)
+        state.push_back(norm_card_id(gs->known_top_library_self[i]));
+
+    // Opponent revealed-cards multi-hot (N_CARD_TYPES floats; all zeros = none seen yet).
+    // Accumulated across the match, perspective-relative to the viewer.
+    for (int i = 0; i < REVEALED_CARD_TYPES; i++)
+        state.push_back(gs->opp_revealed[i] ? 1.0f : 0.0f);
 
     assert(static_cast<int>(state.size()) == STATE_SIZE);
     return state;

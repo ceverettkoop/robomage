@@ -8,7 +8,8 @@
 // BQUERY format (machine mode): a text header line "BQUERY: <num_choices>\n"
 // followed immediately by a binary payload (see cli_emit_machine_query):
 //   float32[STATE_SIZE] state, int32[MAX_ACTIONS] cats,
-//   float32[MAX_ACTIONS] ids, float32[MAX_ACTIONS] ctrl.
+//   float32[MAX_ACTIONS] ids, float32[MAX_ACTIONS] ctrl,
+//   float32[MAX_ACTIONS] pub.
 // Per-action metadata is padded to MAX_ACTIONS; only the first num_choices
 // entries are meaningful.
 //
@@ -20,6 +21,9 @@
 //   - N controller_is_self floats: 1.0 if entity is controlled by the priority
 //     player, 0.0 if controlled by the opponent, -0.0078125 null sentinel for
 //     non-entity actions (pass priority, confirm slots, etc.).
+//   - N card_is_public floats: 1.0 if the choice's card identity is public
+//     knowledge to all players (a revealed tutor, e.g. Personal Tutor), else 0.0.
+//     Lets observers show the card name for an otherwise-private choice.
 //
 // NOTE: ActionChoice.description is NOT emitted in the BQUERY payload.
 // It is stored in Query for human-readable display (GUI/CLI) only.
@@ -33,7 +37,9 @@
 // NOTE: Exile zones are populated in GameState but NOT serialized.
 // Add them back once cards that use exile are implemented.
 //
-// Fixed-size state vector layout (STATE_SIZE = 33666 floats):
+// Fixed-size state vector layout (STATE_SIZE = 2909 floats):
+// Card identity is a single normalized id float per slot (see norm_card_id):
+// idx/N_CARD_TYPES, or -1/N_CARD_TYPES for empty/unknown. The id is NOT a one-hot.
 //
 //  [0-8]      Self player block (9 floats):
 //               life/20, hand_ct/10, poison/10, mana[W,U,B,R,G,C]/10
@@ -43,54 +49,67 @@
 //  [32]       1.0 if self is Player A, 0.0 if self is Player B
 //  [33]       Stack size / 10.0
 //
-//  [34-6657]     Self permanents: 48 slots x 138 floats = 6624
-//  [6658-13281]  Opp permanents:  48 slots x 138 floats = 6624
+//  [34-609]      Self permanents: 48 slots x 12 floats = 576
+//  [610-1185]    Opp permanents:  48 slots x 12 floats = 576
 //                Per slot: power/10, toughness/10, is_tapped, is_attacking,
 //                          is_blocking, has_summoning_sickness, damage/10,
-//                          controller_is_self, is_creature, is_land,
-//                          card_id one-hot (N_CARD_TYPES floats)
-//                Empty slots (card_vocab_idx == -1) are all zeros.
+//                          controller_is_self, is_creature, is_land, loyalty/10, card_id
+//                Empty slots: 11 zeros + card_id sentinel (-1/N_CARD_TYPES).
 //
-//  [13282-14841] Stack: 12 slots x 130 floats = 1560
-//                Per slot: controller_is_self(1), card_id one-hot(128), is_spell(1)
+//  [1186-1221]   Stack: 12 slots x 3 floats = 36
+//                Per slot: controller_is_self(1), card_id(1), is_spell(1)
 //                is_spell=1.0 for a cast spell; 0.0 for a triggered/activated ability
 //
-//  [14842-23033] Self graveyard: 64 slots x 128 floats = 8192
-//  [23034-31225] Opp graveyard:  64 slots x 128 floats = 8192
-//                Per slot: card_id one-hot (all zeros = empty)
+//  [1222-1285]   Self graveyard: 64 slots x 1 float = 64
+//  [1286-1349]   Opp graveyard:  64 slots x 1 float = 64
+//                Per slot: card_id (sentinel = empty)
 //
-//  [31226-32505] Self hand: 10 slots x 128 floats = 1280
-//                Per slot: card_id one-hot (all zeros = empty)
+//  [1350-1359]   Self hand: 10 slots x 1 float = 10
+//                Per slot: card_id (sentinel = empty)
 //
-//  [32506-33017] Action history: 128 entries x 4 floats = 512 (newest first)
+//  [1360-1871]   Action history: 128 entries x 4 floats = 512 (newest first)
 //                Per entry: category / ACTION_CATEGORY_MAX,
 //                           card_vocab_idx / N_CARD_TYPES (or -1/N_CARD_TYPES sentinel),
 //                           is_self (1.0 = viewer's action, 0.0 = opponent's),
 //                           turn / 50.0 (the game turn when the action was taken)
 //                Empty entries (beyond action_history_len) are all zeros.
 //
-//  [33018-33021] Match context (4 floats, all 0.0 in single-game mode):
+//  [1872-1875]   Match context (4 floats, all 0.0 in single-game mode):
 //                game_number / 3.0, self_match_wins / 2.0,
 //                opp_match_wins / 2.0, is_sideboard_phase (0.0 or 1.0)
 //
-//  [33022-33024] Library & post-board context (3 floats):
+//  [1876-1878]   Library & post-board context (3 floats):
 //                self_library_ct / 60.0, opp_library_ct / 60.0,
 //                is_post_board (1.0 if game 2+ of bo3, else 0.0)
 //
-//  [33025]       Current game turn / 50.0
+//  [1879]        Current game turn / 50.0
 //
-//  [33026-33665] Known top-5 library cards for the viewer: 5 slots x 128 floats = 640
-//                Per slot: card_id one-hot (all zeros = unknown). Index 0 is the
-//                top of the library. Entries are set when a card is placed on top
-//                (e.g. Ponder, Brainstorm, Rearrange) and cleared when the library
-//                is shuffled.
+//  [1880-1884]   Known top-5 library cards for the viewer: 5 slots x 1 float = 5
+//                Per slot: card_id (sentinel = unknown). Index 0 is the top of
+//                the library. Entries are set when a card is placed on top (e.g.
+//                Ponder, Brainstorm, Rearrange) and cleared when shuffled.
+//
+//  [1885-2908]   Opponent revealed-cards multi-hot (N_CARD_TYPES floats, zeros =
+//                none seen yet). Binary "has the opponent-of-viewer ever revealed
+//                card X this match"; accumulated across the games of a bo3 and
+//                persists over the per-game ECS reset. Set whenever an opponent
+//                card enters a public zone (battlefield/stack/graveyard/exile) or
+//                is revealed by a tutor. This is the only vocab-width block.
 
-static constexpr int STATE_SIZE             = 33666;
-static constexpr int N_CARD_TYPES      = 128;
-static constexpr int PERM_SLOT_SIZE    = 138;  // 8 stat/combat + 2 type flags + N_CARD_TYPES
-static constexpr int STACK_SLOT_SIZE   = 130;  // controller_is_self(1) + card one-hot(128) + is_spell(1)
-static constexpr int GY_SLOT_SIZE      = 128;  // card one-hot only
+static constexpr int STATE_SIZE             = 2909;
+static constexpr int N_CARD_TYPES      = 1024; // embedding vocab size (card identity is emitted as a normalized id, not a one-hot)
+static constexpr int PERM_SLOT_SIZE    = 12;   // 8 stat/combat + 2 type flags + loyalty + 1 card-id float
+static constexpr int STACK_SLOT_SIZE   = 3;    // controller_is_self(1) + card-id float(1) + is_spell(1)
+static constexpr int GY_SLOT_SIZE      = 1;    // card-id float only
 static constexpr float TURN_NORMALIZER = 50.0f; // divisor for turn fields
+
+// Card identity is serialized as a single normalized id float per slot:
+//   idx >= 0 -> idx / N_CARD_TYPES ;  empty/unknown -> -1.0 / N_CARD_TYPES.
+// The policy network (extractor.py) maps these back to ids and looks them up in
+// a learned nn.Embedding, so the observation cost is decoupled from vocab size.
+inline float norm_card_id(int idx) {
+    return (idx >= 0 ? static_cast<float>(idx) : -1.0f) / static_cast<float>(N_CARD_TYPES);
+}
 
 // viewer: which player's perspective to fill from. Zone::UNKNOWN defaults to the priority player.
 void populate_gamestate(GameState* gs, Zone::Ownership viewer = Zone::UNKNOWN);

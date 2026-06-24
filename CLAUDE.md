@@ -24,6 +24,20 @@ Every game decision logged as an integer. Games can be replayed deterministicall
 
 The python side of the project enables machine learning of the game and analysis.
 
+## Rules Reference (authoritative)
+
+The official **MTG Comprehensive Rules** are checked in at
+[`docs/mtg_comprehensive_rules.txt`](docs/mtg_comprehensive_rules.txt), with a navigation guide
+in [`docs/mtg_comprehensive_rules.md`](docs/mtg_comprehensive_rules.md).
+
+**Whenever you implement or test a game mechanic, consult these rules** — they are the ground
+truth for how a mechanic *should* behave (timing, priority, state-based actions, combat, keyword
+definitions, the layer system), independent of the engine's current implementation. Don't read
+the 9k-line file end to end: look up the relevant numbered rule with `grep` (e.g.
+`grep -nE "^509\." docs/mtg_comprehensive_rules.txt` for combat, rule 702 for keyword abilities,
+704 for state-based actions, 613 for layers). See the navigation guide for lookup recipes. Keep
+this version current if a newer Comprehensive Rules release supersedes it.
+
 ## Build Commands
 
 - **Build the project**: `make clean && make`
@@ -256,6 +270,19 @@ When implementing a new card, **both** of the following steps are required:
    ```
    This writes the cast-cost feature matrix used by the RL environment and extractor.
 
+**Parse script tags as intended — do not retag them.** When a card needs a mechanic the
+engine lacks, implement the mechanic so the parser honors the script's actual tags
+(`SP$`/`AB$`/`DB$` category, `Origin$`/`Destination$`/`ChangeType$`/`DefinedPlayer$`, etc.).
+Do NOT rewrite one category into another or force a different Origin/Destination to shortcut
+a single card's behavior — a retag that happens to satisfy one card silently corrupts every
+other card that shares the tag. Add a real, general handler keyed on the tag's intended
+meaning.
+
+Follow-up: in limited cases it is acceptable to *ignore* an irrelevant tag when the card's
+full functionality can already be inferred from the other tags (e.g. a cosmetic
+`StackDescription$`/`TgtPrompt$`, or a `ChangeNum$` count-SVar when the effect already moves
+all matching cards). Ignoring a tag is fine; repurposing a tag to mean something else is not.
+
 ### Deck Format
 
 Deck files (`.dk`) in `bin/resources/decks/`:
@@ -289,13 +316,13 @@ works without typing `train`.
 
 ```bash
 # Training (the 'train' subcommand is implied when omitted)
-train/.venv/bin/python train/train.py --deck delver --opponent boomer                 # train from scratch
-train/.venv/bin/python train/train.py train --opponent boomer --load checkpoints/robomage_final.zip  # resume
-train/.venv/bin/python train/train.py --self-play --deck delver --opponent boomer     # self-play training
+train/.venv/bin/python train/train.py --deck delver --opponent mav                 # train from scratch
+train/.venv/bin/python train/train.py train --opponent mav --load checkpoints/robomage_final.zip  # resume
+train/.venv/bin/python train/train.py --self-play --deck delver --opponent mav     # self-play training
 
 # Evaluation / inspection
 train/.venv/bin/python train/train.py baseline checkpoints/robomage_final.zip         # win rate vs scripted
-train/.venv/bin/python train/train.py observe --player-a checkpoints/robomage_final.zip --player-b scripted --deck delver --opponent boomer  # watch one game (per-side controller + deck)
+train/.venv/bin/python train/train.py observe --player-a checkpoints/robomage_final.zip --player-b scripted --deck delver --opponent mav  # watch one game (per-side controller + deck)
 train/.venv/bin/python train/train.py diag                                            # verify env (10 quick scripted-vs-scripted games)
 train/.venv/bin/python train/train.py watch                                           # watch scripted vs scripted
 train/.venv/bin/python train/train.py diag --bo3                                      # verify bo3 env
@@ -336,6 +363,15 @@ cards are placed on top (Ponder/Brainstorm/Rearrange/Sylvan) and cleared to
 unknown whenever the library is shuffled. Also slides up when a card is drawn
 from within the tracked top-5 window.
 
+**Opponent revealed-cards multi-hot** (indices 33666-33793): 128-float binary
+multi-hot of every card the opponent-of-viewer has revealed so far this match.
+Bit `i` = 1 once the opponent has shown card vocab index `i`. Set when an
+opponent card enters a public zone (battlefield/stack/graveyard/exile) or is
+revealed by a tutor; accumulated across the games of a bo3 and persisting over
+the per-game ECS reset (the engine's deterministic "belief state", since a
+feedforward policy cannot remember reveals across `reset()`). Empty (all zeros)
+at game-1 turn-1. Tracked in `src/classes/match_state.{h,cpp}`.
+
 ### Machine mode protocol
 
 `--machine` flag makes the game communicate over stdio for RL training:
@@ -350,12 +386,14 @@ BQUERY: <N>\n
 [int32   × MAX_ACTIONS — action categories (padded)]
 [float32 × MAX_ACTIONS — action card IDs (padded)]
 [float32 × MAX_ACTIONS — action controller_is_self flags (padded)]
+[float32 × MAX_ACTIONS — action card_is_public flags (padded)]
 ```
 - `N` = number of legal choices
-- State vector: 33666 floats (see `src/machine_io.h` for layout)
+- State vector: 33794 floats (see `src/machine_io.h` for layout)
 - Action categories: ActionCategory enum integers (0–26)
 - Card IDs: `card_vocab_index / N_CARD_TYPES`, or `-1.0 / N_CARD_TYPES` (-0.0078125) as null sentinel
 - Controller flags: `1.0` = self-controlled, `0.0` = opponent, null sentinel for non-entity actions
+- Public flags: `1.0` if the choice's card identity is public knowledge to all players (a revealed tutor, e.g. Personal Tutor), else `0.0`. Lets observers show the card name for an otherwise-private choice (search / top-of-library). Consumed as a side-channel (`env._action_public`); **not** part of the gym observation vector yet, so `OBS_SIZE` and trained checkpoints are unaffected.
 
 **ActionCategory values** (emitted per legal action):
 
@@ -387,16 +425,16 @@ BQUERY: <N>\n
 
 ### Observation space
 
-Total: **34264 floats** (OBS_SIZE in `train/env.py`)
+Total: **34392 floats** (OBS_SIZE in `train/env.py`)
 
 | Range | Size | Content |
 |---|---|---|
-| `[0:33666]` | 33666 | State vector (see `src/machine_io.h`) |
-| `[33666:33730]` | 64 | Action categories, padded to MAX_ACTIONS (64), normalised by 26 |
-| `[33730:33794]` | 64 | Action card IDs, padded to MAX_ACTIONS |
-| `[33794:33858]` | 64 | Action controller_is_self flags, padded to MAX_ACTIONS |
-| `[33858:33928]` | 70 | Hand cast costs (10 slots × 7 cost features) |
-| `[33928:34264]` | 336 | Battlefield ability costs (48 slots × 7 cost features) |
+| `[0:33794]` | 33794 | State vector (see `src/machine_io.h`) |
+| `[33794:33858]` | 64 | Action categories, padded to MAX_ACTIONS (64), normalised by 26 |
+| `[33858:33922]` | 64 | Action card IDs, padded to MAX_ACTIONS |
+| `[33922:33986]` | 64 | Action controller_is_self flags, padded to MAX_ACTIONS |
+| `[33986:34056]` | 70 | Hand cast costs (10 slots × 7 cost features) |
+| `[34056:34392]` | 336 | Battlefield ability costs (48 slots × 7 cost features) |
 
 State vector layout is documented in `src/machine_io.h`. Key indices: `obs[31]` = priority player is the active player (perspective-relative), `obs[32]` = priority player is Player A (absolute). To get `active_is_a`: `(obs[31] > 0.5) == (obs[32] > 0.5)`.
 

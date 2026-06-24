@@ -25,3 +25,15 @@ std::string mana_symbol(Colors color) {
             break;
     }
 }
+
+const char *mana_symbol_str(Colors color) {
+    switch (color) {
+        case WHITE:     return "W";
+        case BLUE:      return "U";
+        case BLACK:     return "B";
+        case RED:       return "R";
+        case GREEN:     return "G";
+        case COLORLESS: return "C";
+        default:        return "?";
+    }
+}

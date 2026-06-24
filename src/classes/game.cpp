@@ -9,6 +9,7 @@
 #include "../ecs/coordinator.h"
 #include "../ecs/entity.h"
 #include "../ecs/events.h"
+#include "../game_queries.h"
 #include "../mana_system.h"
 #include "../systems/orderer.h"
 #include "../systems/stack_manager.h"
@@ -95,7 +96,7 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
             switch (cur_step) {
                 case UNTAP: {
                     // Phase in phased-out permanents controlled by active player
-                    for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
+                    for (Entity entity = 0; entity < global_coordinator.GetMaxIssuedEntity(); ++entity) {
                         if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
                         auto &perm_phase = global_coordinator.GetComponent<Permanent>(entity);
                         if (perm_phase.controller == active_player && perm_phase.is_phased_out) {
@@ -114,7 +115,7 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                         }
                     }
                     // Untap all permanents controlled by active player; reset per-turn counters
-                    for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
+                    for (Entity entity = 0; entity < global_coordinator.GetMaxIssuedEntity(); ++entity) {
                         if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
 
                         auto &permanent = global_coordinator.GetComponent<Permanent>(entity);
@@ -134,6 +135,7 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                             if (!untap_prevented) permanent.is_tapped = false;
                             permanent.has_summoning_sickness = false;  // Clear summoning sickness
                             for (auto &ab : permanent.abilities) ab.activations_this_turn = 0;
+                            permanent.loyalty_ability_activated_this_turn = false;  // 606.3 resets each of the controller's turns
                         }
                     }
                     cur_step = UPKEEP;
@@ -154,12 +156,9 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     }
                     // first turn first player skips draw!
                     if (turn == 0 && player_a_turn == true) break;
+                    // PLAYER_DREW_CARD is fired per-card inside Orderer::draw_one
+                    // (with the first-card-in-draw-step flag), so no emit here.
                     orderer->draw(active_player, 1);
-                    {
-                        Event draw_event(Events::PLAYER_DREW_CARD);
-                        draw_event.SetParam(Params::PLAYER, active_player_entity);
-                        global_coordinator.SendEvent(draw_event);
-                    }
                     break;
                 case DRAW:
                     cur_step = FIRST_MAIN;
@@ -178,17 +177,14 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                 case DECLARE_BLOCKERS: {
                     // Scan for first strikers / double strikers
                     has_first_strikers = false;
-                    for (Entity e = 0; e < MAX_ENTITIES; ++e) {
+                    for (Entity e = 0; e < global_coordinator.GetMaxIssuedEntity(); ++e) {
                         if (!global_coordinator.entity_has_component<Creature>(e)) continue;
                         auto &cr = global_coordinator.GetComponent<Creature>(e);
                         if (!cr.is_attacking && !cr.is_blocking) continue;
-                        for (const auto &kw : cr.keywords) {
-                            if (kw == "First Strike" || kw == "Double Strike") {
-                                has_first_strikers = true;
-                                break;
-                            }
+                        if (creature_deals_first_strike_damage(cr)) {
+                            has_first_strikers = true;
+                            break;
                         }
-                        if (has_first_strikers) break;
                     }
                     if (has_first_strikers) {
                         cur_step = FIRST_STRIKE_DAMAGE;
@@ -207,7 +203,7 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     break;
                 case END_OF_COMBAT:
                     // Clear all combat state from creatures
-                    for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
+                    for (Entity entity = 0; entity < global_coordinator.GetMaxIssuedEntity(); ++entity) {
                         if (!global_coordinator.entity_has_component<Creature>(entity)) continue;
                         auto &creature = global_coordinator.GetComponent<Creature>(entity);
                         creature.is_attacking = false;
@@ -230,7 +226,7 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     break;
                 case CLEANUP:
                     // Clear damage from all creatures; reset prowess bonus
-                    for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) {
+                    for (Entity entity = 0; entity < global_coordinator.GetMaxIssuedEntity(); ++entity) {
                         if (global_coordinator.entity_has_component<Damage>(entity)) {
                             auto &damage = global_coordinator.GetComponent<Damage>(entity);
                             damage.damage_counters = 0;
@@ -253,11 +249,13 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     player.spells_cast_this_turn = 0;
                     player.noncreature_spells_cast_this_turn = 0;
                     player.cards_drawn_this_turn.clear();
+                    player.cards_drawn_this_draw_step = 0;
                     // Also clear opponent's drawn-this-turn tracking
                     {
                         Entity opp_entity = player_a_turn ? player_b_entity : player_a_entity;
                         auto &opp = global_coordinator.GetComponent<Player>(opp_entity);
                         opp.cards_drawn_this_turn.clear();
+                        opp.cards_drawn_this_draw_step = 0;
                     }
 
                     // Reset per-trigger resolution counts

@@ -52,11 +52,26 @@ struct Ability{
     bool discard_self_cost = false;     // Discard<1/CARDNAME> — discard this card from hand as activation cost
     bool instant_speed = false;         // InstantSpeed$ True — activated ability that is NOT a mana ability; goes on stack
     int activation_limit = 0;           // ActivationLimit$ N — max activations per turn (0 = unlimited)
+    // Loyalty abilities (planeswalkers). is_loyalty_ability is the load-bearing flag;
+    // loyalty_cost == 0 is still a valid loyalty ability (e.g. Jace "0:" Brainstorm), so
+    // never infer loyalty-ness from loyalty_cost. Cost$ AddCounter<N/LOYALTY> → +N,
+    // SubCounter<N/LOYALTY> → -N. Paid by modifying the source's own loyalty at activation.
+    bool is_loyalty_ability = false;    // Planeswalker$ True
+    int loyalty_cost = 0;               // +N (AddCounter) or -N (SubCounter); loyalty counters added/removed as the cost
+    bool is_ultimate = false;           // Ultimate$ True — informational; legality covered by the minus-cost check
     int activation_zone = -1;           // ActivationZone$ Hand → Zone::HAND; -1 = default (battlefield)
     int activations_this_turn = 0;      // runtime counter, reset at UNTAP
     std::string change_type = "";        // ChangeType$ — comma-separated subtypes to search
     Zone::ZoneValue origin = Zone::LIBRARY;          // Origin$ — zone to search
     Zone::ZoneValue destination = Zone::BATTLEFIELD; // Destination$ — zone to move card to
+    // RememberTargets$ / RememberObjects$ Targeted — at resolution, push the target(s)
+    // into cur_game.remembered_entities so chained ChangeType$ Remembered.sameName
+    // subabilities can reference the card whose name to match (Surgical Extraction).
+    bool remember_targeted = false;
+    // TgtZone$ Graveyard — this spell/ability targets a card in a graveyard even though
+    // its category isn't ChangeZone (e.g. Surgical Extraction's SP$ Pump vehicle). Lets
+    // target enumeration offer graveyard cards.
+    bool target_in_graveyard = false;
     uint32_t trigger_on = 0;             // EventId that fires this ability; 0 = not event-triggered
     bool trigger_self_excluded = false;  // true when ValidCard$ has .Other — won't trigger for the source itself
     bool trigger_only_self = false;      // true when ValidCard$ Card.Self — only fires when the entering entity is the source itself
@@ -80,7 +95,7 @@ struct Ability{
     // variant alternatives; shared fields stay as direct members. std::monostate
     // covers effects with no exclusive fields. See ability_params.h.
     std::variant<std::monostate, PumpParams, DamageParams, DestroyAllParams, TokenParams,
-                 DelayedTriggerParams, CounterParams, DiscardParams, PeekParams> params;
+                 DelayedTriggerParams, CounterParams, DiscardParams, PeekParams, AmassParams> params;
 
     // Counter abilities (PutCounter category) now live in CounterParams (params variant).
 
@@ -94,6 +109,10 @@ struct Ability{
     bool trigger_valid_card_is_creature = false;        // ValidCard$ Creature
     bool trigger_valid_card_is_instant_or_sorcery = false;  // ValidCard$ Instant/Sorcery
     bool trigger_valid_card_is_land = false;            // ValidCard$ Land.*
+
+    // Drawn trigger (Orcish Bowmasters): Mode$ Drawn fires on PLAYER_DREW_CARD.
+    bool trigger_valid_card_opp_own = false;       // ValidCard$ Card.OppOwn — the drawn card is owned by an opponent of the source's controller
+    bool trigger_exclude_first_draw_step = false;  // FirstCardInDrawStep$ False — ignore the first card the player draws in each of their draw steps
 
     // Combat damage trigger (Barrowgoyf): damage amount stored at trigger fire time
     size_t trigger_damage_amount = 0;
@@ -129,8 +148,21 @@ struct Ability{
     std::string change_valid = "";   // ChangeValid$ — comma-separated filter like "Card.Creature,Card.Land"
     bool rest_random_order = false;  // RestRandomOrder$ True
     bool optional_choice = false;    // Optional$ True in Dig context — can choose nothing
+    bool change_num_any = false;     // ChangeNum$ Any — may take any number (0..pool) of looked-at cards (Fateseal)
     int dig_destination = -1;        // DestinationZone$ — where chosen card goes (-1 = HAND, Zone::LIBRARY etc.)
     int dig_library_position = -1;   // LibraryPosition$ — 0 = top, -1 = unset
+    int dig_rest_library_position = -1;  // LibraryPosition2$ — where unchosen cards go: 0 = top, -1 = bottom (default)
+
+    // Conditional amount (Flow State): the effective count is `cond_amount_if_true`
+    // when the summed runtime counts in `cond_amount_exprs` satisfy
+    // `cond_amount_compare`, otherwise `amount` (the false/default value).
+    // Generalizes "Count$Compare <SVar-sum> <op><n>.<true>.<false>" where the SVar
+    // is itself a sum of capped graveyard counts (SVar$Z1/Plus.Z2 with /LimitMax).
+    // Currently consumed by the Dig effect as its take-count.
+    bool cond_amount_active = false;
+    std::vector<std::string> cond_amount_exprs;  // runtime Count$ exprs to sum (LHS of compare)
+    std::string cond_amount_compare = "";        // e.g. "GE2"
+    size_t cond_amount_if_true = 0;              // count when the compare passes
 
     // Discard ability (Thoughtseize, Duress) now lives in DiscardParams (params variant).
 
@@ -189,9 +221,12 @@ P& effect_params(Ability& ab) {
 // (empty change_type matches all cards in the zone).
 // When mandatory=true, "fail to find" is suppressed unless the zone is empty.
 // Returns the chosen Entity, or 0 if the player fails to find / zone is empty.
+// reveal=true marks every offered card choice as public knowledge (revealed
+// tutors), so observers may show the chosen card's name even into a hidden zone.
 Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner,
                    Zone::ZoneValue zone, const std::string& change_type,
                    bool mandatory = false,
-                   Zone::ZoneValue destination = Zone::GRAVEYARD);
+                   Zone::ZoneValue destination = Zone::GRAVEYARD,
+                   bool reveal = false);
 
 #endif /* ABILITY_H */

@@ -40,6 +40,7 @@ EffectHandler handler_for(EffectKind kind) {
         case EffectKind::PeekAndReveal:   return &peek_and_reveal;
         case EffectKind::Dig:             return &dig;
         case EffectKind::SylvanLibrary:   return &sylvan_library;
+        case EffectKind::Amass:           return &amass;
         default:                          return nullptr;
     }
 }
@@ -59,7 +60,8 @@ bool apply_parse_hook(Ability &ab, const std::string &key, const std::string &va
         || parse_delayed_trigger(ab, key, value)
         || parse_discard(ab, key, value)
         || parse_mill(ab, key, value)
-        || parse_peek_and_reveal(ab, key, value);
+        || parse_peek_and_reveal(ab, key, value)
+        || parse_amass(ab, key, value);
 }
 
 }  // namespace effects

@@ -22,3 +22,4 @@ bin/resources/decks/temp/*
 diag_draw_*.txt
 obj/*/*.d
 obj/*.d
+train/replays/*

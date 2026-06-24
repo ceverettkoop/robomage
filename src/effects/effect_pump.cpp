@@ -18,10 +18,15 @@ namespace effects {
 
 bool pump(Ability &ab, std::shared_ptr<Orderer> orderer) {
     (void)orderer;
+    // Pump used purely as a targeting vehicle for a graveyard card (Surgical Extraction's
+    // SP$ Pump | TgtZone$ Graveyard): the target was already chosen at cast and the
+    // subabilities do the work — don't re-pick a battlefield creature here.
+    if (ab.target_in_graveyard) return true;
+
     // Present target selection, then chain subabilities with that target
     Zone::Ownership ctrl = ab.controller;
     std::vector<Entity> pump_targets;
-    for (Entity e = 0; e < MAX_ENTITIES; ++e) {
+    for (Entity e = 0; e < global_coordinator.GetMaxIssuedEntity(); ++e) {
         if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
         if (!global_coordinator.entity_has_component<Creature>(e)) continue;
         auto &z = global_coordinator.GetComponent<Zone>(e);

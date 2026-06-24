@@ -16,6 +16,7 @@ extern "C" {
 #define MAX_HAND_SLOTS 10
 #define MAX_ACTIONS 64
 #define MAX_CHOICE_DESC 128
+#define REVEALED_CARD_TYPES 1024  // mirror N_CARD_TYPES in machine_io.h / REVEALED_SIZE in match_state.h
 
 typedef struct PlayerState_tag {
     int life;
@@ -37,6 +38,7 @@ typedef struct PermanentState_tag {
     bool is_blocking;
     bool has_summoning_sickness;
     int  damage;
+    int  loyalty;                // loyalty counters for planeswalkers (0 for non-planeswalkers)
     char token_name[32];         // non-empty for tokens (card_vocab_idx == TOKEN_SENTINEL)
 } PermanentState;
 
@@ -65,6 +67,7 @@ typedef struct ActionChoice_tag {
     int           category;                    // ActionCategory value
     int           card_vocab_idx;              // -1 = null sentinel
     bool          controller_is_self;
+    bool          card_is_public;              // card identity is public (revealed) even in a hidden zone
     ActionRefZone zone_ref;
     int           slot_idx;                    // index into zone array (-1 = N/A)
     char          description[MAX_CHOICE_DESC]; //NOT SERIALIZED TO ML
@@ -108,6 +111,10 @@ typedef struct GameState_tag {
     // Known top-of-library cards (viewer's library only). Index 0 = top.
     // -1 = unknown.
     int known_top_library_self[KNOWN_TOP_LIBRARY_SIZE];
+
+    // Opponent's revealed-cards multi-hot, accumulated across the match (bo3).
+    // opp_revealed[i] = 1 if the opponent has ever revealed card vocab index i.
+    unsigned char opp_revealed[REVEALED_CARD_TYPES];
 
     // bo3 match state
     int  match_game_number;  // -1 = single game, 0-2 = bo3 game index

@@ -18,6 +18,7 @@ struct Player {
     size_t spells_cast_this_game = 0;
     size_t noncreature_spells_cast_this_turn = 0;
     std::vector<Entity> cards_drawn_this_turn;
+    size_t cards_drawn_this_draw_step = 0;  // reset each turn; used to detect the first draw of a draw step (Orcish Bowmasters)
     // creature subtypes in this player's deck: pair<list_index, all_subtypes_index>
     std::vector<std::pair<int, int>> creature_subtypes;
 };

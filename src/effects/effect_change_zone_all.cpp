@@ -17,6 +17,10 @@ extern Game cur_game;
 namespace effects {
 
 bool change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer) {
+    // Same-name move-all (e.g. Extirpate's ExileYard): ChangeType$ Remembered.sameName.
+    if (ab.change_type.find("sameName") != std::string::npos)
+        return change_zone_same_name(ab, orderer, /*force_all=*/true);
+
     Zone::Ownership owner = ab.controller;
     // If this targets a player (e.g. Endurance: "target player puts the cards
     // from their graveyard on the bottom of their library"), operate on the
@@ -51,8 +55,12 @@ bool change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer) {
         }
     }
 
-    // Filter by change_type (supports IsNotRemembered filter)
-    bool filter_not_remembered = (ab.change_type.find("IsNotRemembered") != std::string::npos);
+    // Filter by change_type (supports the "not remembered" restriction used by
+    // Doomsday — written ChangeType$ Card.!IsRemembered in Forge syntax, also
+    // accepted as IsNotRemembered). Without this, the "exile the rest" step would
+    // exile the cards just placed on top, emptying the library.
+    bool filter_not_remembered = (ab.change_type.find("!IsRemembered") != std::string::npos
+                                  || ab.change_type.find("IsNotRemembered") != std::string::npos);
     std::vector<Entity> to_move;
     for (auto entity : zone_contents) {
         if (filter_not_remembered) {

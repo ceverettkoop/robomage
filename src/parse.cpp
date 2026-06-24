@@ -120,6 +120,77 @@ static void parse_alt_cost_tokens(const std::string& cost_str, AltCost& ac) {
     }
 }
 
+// Parses a space-separated activation-cost string (the value after Cost$, or after a
+// Cycling:/Flashback: keyword) into the cost fields of `ability`. Recognises the tap
+// symbol `T`, PayLife<N>, Sac<.../...> (CARDNAME → sacrifice self), Discard<0/Hand or
+// CARDNAME>, Return<N/Type>, and bare mana symbols. Single source for the cost-token
+// grammar so every cost-bearing keyword honours the same tokens as Cost$ (previously
+// Cycling/Flashback open-coded partial copies that silently dropped tokens).
+static void parse_activation_cost(const std::string &cost_str, Ability &ability) {
+    size_t tok_pos = 0;
+    while (tok_pos < cost_str.size()) {
+        size_t tok_end = cost_str.find(' ', tok_pos);
+        if (tok_end == std::string::npos) tok_end = cost_str.size();
+        std::string tok = cost_str.substr(tok_pos, tok_end - tok_pos);
+        if (tok == "T") {
+            ability.tap_cost = true;
+        } else if (tok.rfind("PayLife<", 0) == 0) {
+            size_t angle = tok.find('<');
+            size_t close = tok.find('>');
+            if (angle != std::string::npos && close != std::string::npos && close > angle + 1)
+                ability.life_cost = std::stoi(tok.substr(angle + 1, close - angle - 1));
+        } else if (tok.rfind("Sac<", 0) == 0) {
+            // Consume additional tokens if '>' not found (label may contain spaces)
+            while (tok.find('>') == std::string::npos && tok_pos < cost_str.size()) {
+                tok_end = cost_str.find(' ', tok_pos);
+                if (tok_end == std::string::npos) tok_end = cost_str.size();
+                tok += " " + cost_str.substr(tok_pos, tok_end - tok_pos);
+                tok_pos = (tok_end < cost_str.size()) ? tok_end + 1 : tok_end;
+            }
+            size_t slash = tok.find('/');
+            size_t close = tok.find('>');
+            if (slash != std::string::npos && close != std::string::npos && close > slash + 1) {
+                std::string spec = tok.substr(slash + 1, close - slash - 1);
+                // Remove second slash and label (e.g. "Forest;Plains/Forest or Plains" → "Forest;Plains")
+                size_t spec_slash = spec.find('/');
+                if (spec_slash != std::string::npos) spec = spec.substr(0, spec_slash);
+                if (spec == "CARDNAME") {
+                    ability.sac_self = true;
+                } else {
+                    ability.sac_cost_spec = spec;
+                }
+            }
+        } else if (tok.rfind("Discard<", 0) == 0) {
+            // Discard<0/Hand> — discard entire hand as activation cost (Lion's Eye Diamond)
+            if (tok.find("0/Hand") != std::string::npos) {
+                ability.discard_hand_cost = true;
+            } else if (tok.find("CARDNAME") != std::string::npos) {
+                ability.discard_self_cost = true;
+            }
+        } else if (tok.rfind("Return<", 0) == 0) {
+            // Return<1/Forest> — bounce a land of given subtype
+            size_t slash = tok.find('/');
+            size_t close = tok.find('>');
+            if (slash != std::string::npos && close != std::string::npos) {
+                ability.return_cost_count = std::stoi(tok.substr(7, slash - 7));
+                ability.return_cost_type = tok.substr(slash + 1, close - slash - 1);
+            }
+        } else if ((tok.rfind("AddCounter<", 0) == 0 || tok.rfind("SubCounter<", 0) == 0) &&
+                   tok.find("/LOYALTY>") != std::string::npos) {
+            // Loyalty ability cost (606.4): AddCounter<N/LOYALTY> adds, SubCounter<N/LOYALTY> removes.
+            size_t angle = tok.find('<');
+            size_t slash = tok.find('/');
+            int n = std::stoi(tok.substr(angle + 1, slash - angle - 1));
+            ability.loyalty_cost = (tok[0] == 'S') ? -n : n;
+        } else {
+            // Remaining tokens are mana symbols (e.g. "4", "1", "W", "2 B")
+            auto mana = parse_mana_cost(tok);
+            ability.activation_mana_cost.insert(mana.begin(), mana.end());
+        }
+        tok_pos = (tok_end < cost_str.size()) ? tok_end + 1 : tok_end;
+    }
+}
+
 Entity parse_card_script(std::string path) {
     auto id = global_coordinator.CreateEntity();
     std::string script_data;
@@ -184,6 +255,11 @@ Entity parse_card_script(std::string path) {
     // TODO optimize
     card.power = parse_power(value_from_script(front_script, "PT"));
     card.toughness = parse_toughness(value_from_script(front_script, "PT"));
+    // Loyalty: line — printed loyalty a planeswalker enters with (306.5b)
+    {
+        std::string loy = value_from_script(front_script, "Loyalty");
+        if (!loy.empty()) card.starting_loyalty = std::stoi(loy);
+    }
     // parse ability templates; entities are only created when abilities go on the stack
     auto svars = parse_svars(front_script);
     card.abilities = parse_abilities(multi_values_from_script(front_script, "A"), card.types, svars, card.name);
@@ -252,6 +328,8 @@ Entity parse_card_script(std::string path) {
                     ac.condition_compare = value;
                 } else if (key == "Condition" && value == "NotPlayerTurn") {
                     ac.condition_not_your_turn = true;
+                } else if (key == "IsPresent") {
+                    ac.condition_is_present = value;
                 }
             }
             pp = pe;
@@ -278,6 +356,12 @@ Entity parse_card_script(std::string path) {
         if (kw_line.find("ETBReplacement") != std::string::npos &&
             kw_line.find("ChooseCT") != std::string::npos) {
             card.has_etb_choose_creature_type = true;
+            continue;
+        }
+        // K:ETBReplacement:Other:DBNameCard — choose a card name on ETB (Disruptor Flute)
+        if (kw_line.find("ETBReplacement") != std::string::npos &&
+            kw_line.find("NameCard") != std::string::npos) {
+            card.has_etb_name_card = true;
             continue;
         }
         // K:etbCounter:P1P1:X:... — "this card enters with counters"
@@ -345,38 +429,8 @@ Entity parse_card_script(std::string path) {
             ab.category = "Draw";
             ab.amount = 1;
             ab.activation_zone = Zone::HAND;
-            // Parse cost tokens (reuse Cost$ token format: PayLife<N>, Sac<1/Type>, or mana)
-            size_t tok_pos = 0;
-            while (tok_pos < cost_str.size()) {
-                size_t tok_end = cost_str.find(' ', tok_pos);
-                if (tok_end == std::string::npos) tok_end = cost_str.size();
-                std::string tok = cost_str.substr(tok_pos, tok_end - tok_pos);
-                if (tok.rfind("PayLife<", 0) == 0) {
-                    size_t angle = tok.find('<');
-                    size_t close = tok.find('>');
-                    if (angle != std::string::npos && close != std::string::npos && close > angle + 1)
-                        ab.life_cost = std::stoi(tok.substr(angle + 1, close - angle - 1));
-                } else if (tok.rfind("Sac<", 0) == 0) {
-                    while (tok.find('>') == std::string::npos && tok_pos < cost_str.size()) {
-                        tok_end = cost_str.find(' ', tok_pos);
-                        if (tok_end == std::string::npos) tok_end = cost_str.size();
-                        tok += " " + cost_str.substr(tok_pos, tok_end - tok_pos);
-                        tok_pos = (tok_end < cost_str.size()) ? tok_end + 1 : tok_end;
-                    }
-                    size_t slash = tok.find('/');
-                    size_t close = tok.find('>');
-                    if (slash != std::string::npos && close != std::string::npos && close > slash + 1) {
-                        std::string spec = tok.substr(slash + 1, close - slash - 1);
-                        size_t spec_slash = spec.find('/');
-                        if (spec_slash != std::string::npos) spec = spec.substr(0, spec_slash);
-                        ab.sac_cost_spec = spec;
-                    }
-                } else {
-                    auto mana = parse_mana_cost(tok);
-                    ab.activation_mana_cost.insert(mana.begin(), mana.end());
-                }
-                tok_pos = (tok_end < cost_str.size()) ? tok_end + 1 : tok_end;
-            }
+            // Shared Cost$ token grammar (PayLife, Sac, Discard, Return, tap, mana).
+            parse_activation_cost(cost_str, ab);
             card.abilities.push_back(ab);
             card.keywords.push_back("Cycling");
             continue;
@@ -385,22 +439,13 @@ Entity parse_card_script(std::string path) {
         if (kw_line.rfind("Flashback:", 0) == 0) {
             std::string cost_str = kw_line.substr(strlen("Flashback:"));
             card.has_flashback = true;
-            size_t tok_pos = 0;
-            while (tok_pos < cost_str.size()) {
-                size_t tok_end = cost_str.find(' ', tok_pos);
-                if (tok_end == std::string::npos) tok_end = cost_str.size();
-                std::string tok = cost_str.substr(tok_pos, tok_end - tok_pos);
-                if (tok.rfind("PayLife<", 0) == 0) {
-                    size_t angle = tok.find('<');
-                    size_t close = tok.find('>');
-                    if (angle != std::string::npos && close != std::string::npos && close > angle + 1)
-                        card.flashback_alt_cost.life_cost = std::stoi(tok.substr(angle + 1, close - angle - 1));
-                } else {
-                    auto mana = parse_mana_cost(tok);
-                    card.flashback_mana_cost.insert(mana.begin(), mana.end());
-                }
-                tok_pos = (tok_end < cost_str.size()) ? tok_end + 1 : tok_end;
-            }
+            // Shared Cost$ token grammar, then map onto the flashback cost fields the
+            // cast path consumes (mana + life). Deep Analysis is "1 U PayLife<3>" — both
+            // mana and life — which the token-by-token grammar handles in one pass.
+            Ability fb;
+            parse_activation_cost(cost_str, fb);
+            card.flashback_mana_cost = fb.activation_mana_cost;
+            card.flashback_alt_cost.life_cost = fb.life_cost;
             card.keywords.push_back("Flashback");
             continue;
         }
@@ -598,10 +643,14 @@ static std::multiset<Colors> parse_mana_cost(std::string value, std::vector<Colo
                 // X is variable; handled separately by has_x_cost flag
                 break;
             default:
-                if (std::isdigit(value[i])) {
-                    for (size_t j = 0; j < value[i] - '0'; j++) {
-                        ret_val.emplace(GENERIC);
-                    }
+                if (std::isdigit(static_cast<unsigned char>(value[i]))) {
+                    // Consume the entire run of digits so a multi-digit generic cost
+                    // (e.g. "10") parses as one number, not one generic per digit.
+                    size_t j = i;
+                    while (j < len && std::isdigit(static_cast<unsigned char>(value[j]))) j++;
+                    int generic = std::stoi(value.substr(i, j - i));
+                    for (int g = 0; g < generic; g++) ret_val.emplace(GENERIC);
+                    i = j - 1;  // for-loop ++ advances past the last digit
                 }
                 break;
         }
@@ -698,6 +747,9 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
     if (key == "NumCards" || key == "ChangeNum" || key == "Amount") {
         if (value == "DamageAmount" || value == "TriggerCount$DamageAmount") {
             ability.amount_from_damage = true;
+        } else if (key == "ChangeNum" && value == "Any") {
+            // "Any" = the player may take any number of the looked-at cards (Dig/Fateseal).
+            ability.change_num_any = true;
         } else if (!value.empty() && std::isdigit(static_cast<unsigned char>(value[0]))) {
             ability.amount = static_cast<size_t>(std::stoi(value));
         } else if (!value.empty()) {
@@ -720,10 +772,18 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         ability.target_type = value;  // "Spell", "Activated,Triggered", etc.
     } else if (key == "Optional") {
         ability.optional_choice = (value == "True");
-    } else if (key == "Defined") {
+    } else if (key == "Defined" || key == "DefinedPlayer") {
         if (value == "Remembered") ability.defined_remembered = true;
         else if (value == "TargetedController") ability.defined_targeted_controller = true;
         else if (value == "Self") ability.defined_self = true;
+    } else if (key == "RememberTargets") {
+        ability.remember_targeted = (value == "True");
+    } else if (key == "RememberObjects") {
+        // RememberObjects$ Targeted — remember the spell's target(s) for later
+        // Remembered.sameName subabilities (Surgical Extraction).
+        if (value.find("Targeted") != std::string::npos) ability.remember_targeted = true;
+    } else if (key == "TgtZone") {
+        if (value == "Graveyard") ability.target_in_graveyard = true;
     } else if (key == "ClearRemembered") {
         ability.clear_remembered = (value == "True");
     } else if (key == "TargetMin") {
@@ -745,62 +805,12 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         ability.adds_no_counter = (value == "True");
     } else if (key == "InstantSpeed") {
         ability.instant_speed = (value == "True");
+    } else if (key == "Planeswalker") {
+        ability.is_loyalty_ability = (value == "True");
+    } else if (key == "Ultimate") {
+        ability.is_ultimate = (value == "True");
     } else if (key == "Cost") {
-        size_t tok_pos = 0;
-        while (tok_pos < value.size()) {
-            size_t tok_end = value.find(' ', tok_pos);
-            if (tok_end == std::string::npos) tok_end = value.size();
-            std::string tok = value.substr(tok_pos, tok_end - tok_pos);
-            if (tok == "T") {
-                ability.tap_cost = true;
-            } else if (tok.rfind("PayLife<", 0) == 0) {
-                size_t angle = tok.find('<');
-                size_t close = tok.find('>');
-                if (angle != std::string::npos && close != std::string::npos && close > angle + 1)
-                    ability.life_cost = std::stoi(tok.substr(angle + 1, close - angle - 1));
-            } else if (tok.rfind("Sac<", 0) == 0) {
-                // Consume additional tokens if '>' not found (label may contain spaces)
-                while (tok.find('>') == std::string::npos && tok_pos < value.size()) {
-                    tok_end = value.find(' ', tok_pos);
-                    if (tok_end == std::string::npos) tok_end = value.size();
-                    tok += " " + value.substr(tok_pos, tok_end - tok_pos);
-                    tok_pos = (tok_end < value.size()) ? tok_end + 1 : tok_end;
-                }
-                size_t slash = tok.find('/');
-                size_t close = tok.find('>');
-                if (slash != std::string::npos && close != std::string::npos && close > slash + 1) {
-                    std::string spec = tok.substr(slash + 1, close - slash - 1);
-                    // Remove second slash and label (e.g. "Forest;Plains/Forest or Plains" → "Forest;Plains")
-                    size_t spec_slash = spec.find('/');
-                    if (spec_slash != std::string::npos) spec = spec.substr(0, spec_slash);
-                    if (spec == "CARDNAME") {
-                        ability.sac_self = true;
-                    } else {
-                        ability.sac_cost_spec = spec;
-                    }
-                }
-            } else if (tok.rfind("Discard<", 0) == 0) {
-                // Discard<0/Hand> — discard entire hand as activation cost (Lion's Eye Diamond)
-                if (tok.find("0/Hand") != std::string::npos) {
-                    ability.discard_hand_cost = true;
-                } else if (tok.find("CARDNAME") != std::string::npos) {
-                    ability.discard_self_cost = true;
-                }
-            } else if (tok.rfind("Return<", 0) == 0) {
-                // Return<1/Forest> — bounce a land of given subtype
-                size_t slash = tok.find('/');
-                size_t close = tok.find('>');
-                if (slash != std::string::npos && close != std::string::npos) {
-                    ability.return_cost_count = std::stoi(tok.substr(7, slash - 7));
-                    ability.return_cost_type = tok.substr(slash + 1, close - slash - 1);
-                }
-            } else {
-                // Remaining tokens are mana symbols (e.g. "4", "1", "W", "2 B")
-                auto mana = parse_mana_cost(tok);
-                ability.activation_mana_cost.insert(mana.begin(), mana.end());
-            }
-            tok_pos = (tok_end < value.size()) ? tok_end + 1 : tok_end;
-        }
+        parse_activation_cost(value, ability);
     } else if (key == "ConditionPresent") {
         ability.condition_present = value;
     } else if (key == "ConditionDefined") {
@@ -814,7 +824,13 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
     } else {
         static const std::set<std::string> ignored_keys = {
             "SpellDescription", "AILogic", "AINoRecursiveCheck", "TgtPrompt", "StackDescription",
-            "ConditionDescription"
+            "ConditionDescription",
+            // sameName search/move (Surgical Extraction, Extirpate, ...): these refine who
+            // chooses or how the search is hidden, but the change_zone_same_name handler
+            // already derives the full behavior from ChangeType/Origin/Destination/Defined.
+            // Shuffle$ is inferred from a Library origin; Chooser/Hidden/ForgetOtherTargets
+            // are cosmetic given the "move the maximum" simplification.
+            "Chooser", "Hidden", "Shuffle", "ForgetOtherTargets", "RememberRevealed"
         };
         if (ignored_keys.find(key) == ignored_keys.end()) {
             std::string msg = "Unrecognized ability param: " + key + "$ " + value;
@@ -927,9 +943,14 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
                 sub.amount_svar = "";
                 return sub;
             }
+            // Delirium-conditional value: Count$Delirium.<yes>.<no> or Count$...GE4.<yes>.<no>.
+            size_t delirium_pos = sv.find("Count$Delirium");
             size_t ge_pos = sv.find("GE");
-            if (ge_pos != std::string::npos) {
-                std::string rest = sv.substr(ge_pos + 2);
+            size_t scale_pos = delirium_pos != std::string::npos
+                                   ? delirium_pos + std::string("Count$Delirium").size()
+                                   : (ge_pos != std::string::npos ? ge_pos + 2 : std::string::npos);
+            if (scale_pos != std::string::npos) {
+                std::string rest = sv.substr(scale_pos);
                 size_t d1 = rest.find('.');
                 if (d1 != std::string::npos) {
                     size_t d2 = rest.find('.', d1 + 1);
@@ -969,6 +990,37 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
         }
     }
     return sub;
+}
+
+// Resolves an additive SVar chain (e.g. "SVar$Z1/Plus.Z2") into the list of
+// runtime Count$ expressions to be summed at resolution. Each "SVar$<name>"
+// token is looked up in `svars`; if its value is itself an SVar$ chain it is
+// resolved recursively, otherwise the raw Count$ expression is collected as a
+// term. A non-SVar$ expression is returned as a single term. Used for the
+// conditional take-count of Flow State (Y = Z1 + Z2, each a capped yard count).
+static void resolve_additive_svar(const std::string& expr, const std::map<std::string, std::string>& svars,
+                                  std::vector<std::string>& terms) {
+    // A leaf runtime expression (not an SVar$ reference) is collected as one term.
+    if (expr.rfind("SVar$", 0) != 0) {
+        terms.push_back(expr);
+        return;
+    }
+    // Head term: the name between "SVar$" and the first '/' (or end of string).
+    size_t head_end = expr.find('/', 5);
+    std::string head = (head_end == std::string::npos) ? expr.substr(5) : expr.substr(5, head_end - 5);
+    auto hit = svars.find(head);
+    if (hit != svars.end()) resolve_additive_svar(hit->second, svars, terms);
+    // Each subsequent "/Plus.<name>" segment adds another (bare) SVar term.
+    size_t plus = (head_end == std::string::npos) ? std::string::npos : expr.find("/Plus.", head_end);
+    while (plus != std::string::npos) {
+        size_t name_start = plus + 6;  // skip "/Plus."
+        size_t name_end = expr.find('/', name_start);
+        std::string name = (name_end == std::string::npos) ? expr.substr(name_start)
+                                                           : expr.substr(name_start, name_end - name_start);
+        auto it = svars.find(name);
+        if (it != svars.end()) resolve_additive_svar(it->second, svars, terms);
+        plus = (name_end == std::string::npos) ? std::string::npos : expr.find("/Plus.", name_end);
+    }
 }
 
 // fed each ability line
@@ -1096,10 +1148,53 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
             auto it = svars.find(ability.amount_svar);
             if (it != svars.end()) {
                 const std::string &sv = it->second;
-                // Pattern: "Count$Compare Y GE4.<delirium_amount>.<default_amount>"
-                size_t ge_pos = sv.find("GE");
-                if (ge_pos != std::string::npos) {
-                    std::string rest = sv.substr(ge_pos + 2);
+                // Generalized conditional amount (Flow State): "Count$Compare <Var>
+                // <op><n>.<t>.<f>" where <Var> is an SVar that resolves to a sum of
+                // (capped) runtime counts. The effective amount is <t> when the summed
+                // counts satisfy the compare, else <f>. Distinguished from the delirium
+                // GE form below by <Var> being a nested SVar$ chain (e.g. SVar$Z1/Plus.Z2)
+                // rather than a direct Count$ expression.
+                bool handled_conditional = false;
+                if (sv.rfind("Count$Compare ", 0) == 0) {
+                    std::string rest = sv.substr(14);  // "Y GE2.2.1"
+                    size_t sp = rest.find(' ');
+                    if (sp != std::string::npos) {
+                        std::string var = rest.substr(0, sp);    // "Y"
+                        std::string tail = rest.substr(sp + 1);  // "GE2.2.1"
+                        auto vit = svars.find(var);
+                        if (vit != svars.end() && vit->second.rfind("SVar$", 0) == 0) {
+                            size_t d2 = tail.rfind('.');
+                            size_t d1 = (d2 == std::string::npos || d2 == 0)
+                                            ? std::string::npos : tail.rfind('.', d2 - 1);
+                            if (d1 != std::string::npos) {
+                                std::vector<std::string> terms;
+                                resolve_additive_svar(vit->second, svars, terms);
+                                if (!terms.empty()) {
+                                    ability.cond_amount_active = true;
+                                    ability.cond_amount_exprs = terms;
+                                    ability.cond_amount_compare = tail.substr(0, d1);  // "GE2"
+                                    ability.cond_amount_if_true =
+                                        static_cast<size_t>(std::stoi(tail.substr(d1 + 1, d2 - d1 - 1)));
+                                    ability.amount = static_cast<size_t>(std::stoi(tail.substr(d2 + 1)));
+                                    handled_conditional = true;
+                                }
+                            }
+                        }
+                    }
+                }
+                // Delirium-conditional value. Two equivalent Forge spellings, both
+                // meaning "<yes> if the caster has delirium, else <no>":
+                //   Count$Delirium.<yes>.<no>           (compact form, e.g. Unholy Heat)
+                //   Count$Compare Y GE4.<yes>.<no>      (explicit GE form)
+                size_t delirium_pos = handled_conditional ? std::string::npos : sv.find("Count$Delirium");
+                size_t ge_pos = handled_conditional ? std::string::npos : sv.find("GE");
+                size_t scale_pos = delirium_pos != std::string::npos
+                                       ? delirium_pos + std::string("Count$Delirium").size()
+                                       : (ge_pos != std::string::npos ? ge_pos + 2 : std::string::npos);
+                if (handled_conditional) {
+                    // already routed to the conditional-amount fields above
+                } else if (scale_pos != std::string::npos) {
+                    std::string rest = sv.substr(scale_pos);
                     size_t d1 = rest.find('.');
                     if (d1 != std::string::npos) {
                         size_t d2 = rest.find('.', d1 + 1);
@@ -1183,6 +1278,9 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
     bool valid_card_sorcery = false;
     bool valid_card_owner_you = false;
     bool valid_card_land = false;
+    bool mode_is_drawn = false;
+    bool valid_card_opp_own = false;
+    bool exclude_first_draw_step = false;
     size_t activator_this_turn_cast_eq = 0;
 
     // Walk pipe-delimited params
@@ -1213,6 +1311,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
                 else if (value == "Phase") mode_is_phase = true;
                 else if (value == "SpellCast") mode_is_spell_cast = true;
                 else if (value == "DamageDone") mode_is_damage_done = true;
+                else if (value == "Drawn") mode_is_drawn = true;
             } else if (key == "Phase") {
                 if (value == "Upkeep")   phase_is_upkeep   = true;
                 if (value == "EndStep")  phase_is_end_step = true;
@@ -1233,8 +1332,11 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
                 if (value.find("Instant")     != std::string::npos) valid_card_instant      = true;
                 if (value.find("Sorcery")     != std::string::npos) valid_card_sorcery      = true;
                 if (value.find(".YouOwn")     != std::string::npos) valid_card_owner_you    = true;
+                if (value.find(".OppOwn")     != std::string::npos) valid_card_opp_own      = true;
                 if (value.find("Land")        != std::string::npos) valid_card_land         = true;
                 if (value.find(".YouCtrl")    != std::string::npos) valid_player_is_you     = true;
+            } else if (key == "FirstCardInDrawStep") {
+                if (value == "False") exclude_first_draw_step = true;
             } else if (key == "CombatDamage") {
                 if (value == "True") damage_combat_only = true;
             } else if (key == "ActivatorThisTurnCast") {
@@ -1299,6 +1401,13 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
         ability.trigger_only_self = true;  // ValidSource$ Card.Self
     }
 
+    // "whenever a player draws a card" — Orcish Bowmasters (Mode$ Drawn)
+    if (mode_is_drawn) {
+        ability.trigger_on = Events::PLAYER_DREW_CARD;
+        ability.trigger_valid_card_opp_own = valid_card_opp_own;
+        ability.trigger_exclude_first_draw_step = exclude_first_draw_step;
+    }
+
     // Resolve effect from Execute$ SVar
     if (!execute_svar.empty()) {
         auto it = svars.find(execute_svar);
@@ -1323,6 +1432,8 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
                 effect.trigger_valid_card_is_creature           = ability.trigger_valid_card_is_creature;
                 effect.trigger_valid_card_is_instant_or_sorcery = ability.trigger_valid_card_is_instant_or_sorcery;
                 effect.trigger_valid_card_is_land               = ability.trigger_valid_card_is_land;
+                effect.trigger_valid_card_opp_own               = ability.trigger_valid_card_opp_own;
+                effect.trigger_exclude_first_draw_step          = ability.trigger_exclude_first_draw_step;
                 effect.trigger_valid_player_is_controller       = ability.trigger_valid_player_is_controller;
                 effect.trigger_only_self                        = ability.trigger_only_self;
                 effect.trigger_self_excluded                    = ability.trigger_self_excluded;
@@ -1408,6 +1519,10 @@ static std::vector<StaticAbility> parse_static_abilities(const std::string &scri
                     if (!value.empty() && std::isdigit(static_cast<unsigned char>(value[0])))
                         sa.raise_cost = std::stoi(value);
                 } else if (key == "ValidCard") {
+                    // Card.NamedCard restricts the static to the source's chosen card name
+                    // (RaiseCost / CantBeActivated on Disruptor Flute).
+                    if (value.find("NamedCard") != std::string::npos)
+                        sa.match_named_card = true;
                     if (sa.category == "RaiseCost") {
                         if (value.find("nonCreature") != std::string::npos)
                             sa.raise_cost_filter = "nonCreature";

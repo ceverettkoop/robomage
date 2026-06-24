@@ -17,16 +17,19 @@
 #include "ecs/entity.h"
 #include "ecs/events.h"
 #include "error.h"
+#include "game_queries.h"
 #include "input_logger.h"
 #include "mana_system.h"
 #include "systems/orderer.h"
 #include "systems/state_manager.h"
+#include "systems/state_manager_internal.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;
 
-static std::string entity_name(Entity e);
-static const char *mana_symbol_str(Colors color);
+static Entity prompt_permanent_choice(const std::vector<Entity> &choices, const char *verb, const char *suffix);
+static void pay_secondary_activation_costs(
+    const Ability &ability, Entity source, Zone::Ownership controller, std::shared_ptr<Orderer> orderer);
 static void select_single_target(Ability &ability, const std::vector<Entity> &valid_targets, bool allow_done);
 static void process_activate_ability(const LegalAction &action, Game &game, std::shared_ptr<Orderer> orderer);
 static std::vector<Entity> build_valid_targets(
@@ -39,33 +42,88 @@ static std::string landwalk_subtype(const std::string &kw);
 static std::vector<Entity> determine_blockable_attackers(Entity blocker, const std::vector<Entity> &attackers);
 static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer);
 
-static std::string entity_name(Entity e) {
-    if (global_coordinator.entity_has_component<Permanent>(e)) {
-        auto &perm = global_coordinator.GetComponent<Permanent>(e);
-        return perm.is_token ? perm.name + " token" : perm.name;
+// entity_name() is shared from the StateManager TUs via state_manager_internal.h.
+// mana_symbol_str() is the canonical const-char* color symbol from classes/colors.h.
+
+// Present the player a menu of permanents and return the chosen entity. `verb`
+// and `suffix` frame the label, e.g. ("Sacrifice ", "") or ("Return ", " to hand").
+static Entity prompt_permanent_choice(const std::vector<Entity> &choices, const char *verb, const char *suffix) {
+    std::vector<LegalAction> menu;
+    for (auto e : choices) {
+        std::string nm = global_coordinator.GetComponent<Permanent>(e).name;
+        LegalAction la(PASS_PRIORITY, e, std::string(verb) + nm + suffix);
+        la.category = ActionCategory::OTHER_CHOICE;
+        menu.push_back(la);
     }
-    if (global_coordinator.entity_has_component<CardData>(e)) return global_coordinator.GetComponent<CardData>(e).name;
-    if (global_coordinator.entity_has_component<Token>(e))
-        return global_coordinator.GetComponent<Token>(e).name + " token";
-    return "<unknown>";
+    int choice = InputLogger::instance().get_input(menu);
+    return menu[static_cast<size_t>(choice)].source_entity;
 }
 
-static const char *mana_symbol_str(Colors color) {
-    switch (color) {
-        case WHITE:
-            return "W";
-        case BLUE:
-            return "U";
-        case BLACK:
-            return "B";
-        case RED:
-            return "R";
-        case GREEN:
-            return "G";
-        case COLORLESS:
-            return "C";
-        default:
-            return "?";
+// Pay the non-mana, non-tap activation costs shared by hand- and battlefield-
+// activated abilities (life, sacrifice, return-to-hand, discard). Targets, tap,
+// and mana are paid by the caller (those gate activation / can be cancelled);
+// these costs cannot fail once legality has passed.
+static void pay_secondary_activation_costs(
+    const Ability &ability, Entity source, Zone::Ownership controller, std::shared_ptr<Orderer> orderer) {
+    // Loyalty cost (606.4/606.5): pay by adding/removing loyalty counters on the source
+    // planeswalker, and mark the per-permanent once-per-turn gate (606.3). The ability still
+    // goes on the stack and resolves later; the loyalty change is the cost, paid now.
+    if (ability.is_loyalty_ability && global_coordinator.entity_has_component<Permanent>(source)) {
+        auto &perm = global_coordinator.GetComponent<Permanent>(source);
+        perm.loyalty += ability.loyalty_cost;
+        perm.loyalty_ability_activated_this_turn = true;
+        game_log("%s activates a loyalty ability (%+d, loyalty now %d)\n",
+                 entity_name(source).c_str(), ability.loyalty_cost, perm.loyalty);
+    }
+    // Life cost
+    if (ability.life_cost > 0) {
+        auto &activating_player = global_coordinator.GetComponent<Player>(get_player_entity(controller));
+        activating_player.life_total -= ability.life_cost;
+        game_log("%s pays %d life\n", player_name(controller).c_str(), ability.life_cost);
+    }
+    // Sacrifice self: move to graveyard; apply_permanent_components SBA removes Permanent next pass
+    if (ability.sac_self) {
+        std::string sname = entity_name(source);
+        orderer->add_to_zone(false, source, Zone::GRAVEYARD);
+        game_log("%s sacrifices %s\n", player_name(controller).c_str(), sname.c_str());
+    }
+    // Type-based sacrifice cost (Cycling "Sac a land", Knight of the Reliquary)
+    if (!ability.sac_cost_spec.empty()) {
+        std::vector<Entity> choices =
+            controlled_permanents_matching(controller, ability.sac_cost_spec, orderer->mEntities);
+        if (!choices.empty()) {
+            Entity to_sac = prompt_permanent_choice(choices, "Sacrifice ", "");
+            std::string sac_name = global_coordinator.GetComponent<Permanent>(to_sac).name;
+            orderer->add_to_zone(false, to_sac, Zone::GRAVEYARD);
+            game_log("%s sacrifices %s\n", player_name(controller).c_str(), sac_name.c_str());
+        }
+    }
+    // Return-to-hand cost (Scryb Ranger: return a Forest to hand)
+    if (!ability.return_cost_type.empty()) {
+        std::vector<Entity> choices =
+            controlled_permanents_matching(controller, ability.return_cost_type, orderer->mEntities);
+        if (!choices.empty()) {
+            Entity to_ret = prompt_permanent_choice(choices, "Return ", " to hand");
+            std::string ret_name = global_coordinator.GetComponent<Permanent>(to_ret).name;
+            orderer->add_to_zone(false, to_ret, Zone::HAND);
+            game_log("%s returns %s to hand\n", player_name(controller).c_str(), ret_name.c_str());
+        }
+    }
+    // Discard self from hand cost (Faerie Macabre)
+    if (ability.discard_self_cost) {
+        std::string cname = global_coordinator.entity_has_component<CardData>(source)
+            ? global_coordinator.GetComponent<CardData>(source).name : "card";
+        orderer->add_to_zone(false, source, Zone::GRAVEYARD);
+        game_log("%s discards %s\n", player_name(controller).c_str(), cname.c_str());
+    }
+    // Discard hand cost (Lion's Eye Diamond)
+    if (ability.discard_hand_cost) {
+        for (auto card : orderer->get_hand(controller)) {
+            std::string cname = global_coordinator.entity_has_component<CardData>(card)
+                ? global_coordinator.GetComponent<CardData>(card).name : "card";
+            orderer->add_to_zone(false, card, Zone::GRAVEYARD);
+            game_log("%s discards %s\n", player_name(controller).c_str(), cname.c_str());
+        }
     }
 }
 
@@ -94,47 +152,12 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
                 return;
             }
         }
-        // Pay life cost
-        if (ability.life_cost > 0) {
-            auto &activating_player = global_coordinator.GetComponent<Player>(get_player_entity(ctrl));
-            activating_player.life_total -= ability.life_cost;
-            game_log("%s pays %d life\n", player_name(ctrl).c_str(), ability.life_cost);
-        }
-        // Pay type-based sacrifice cost (e.g. Cycling — Sacrifice a land)
-        if (!ability.sac_cost_spec.empty()) {
-            std::vector<LegalAction> sac_choices;
-            const std::string &spec = ability.sac_cost_spec;
-            for (auto e : orderer->mEntities) {
-                if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
-                auto &sz = global_coordinator.GetComponent<Zone>(e);
-                if (sz.location != Zone::BATTLEFIELD) continue;
-                auto &sp = global_coordinator.GetComponent<Permanent>(e);
-                if (sp.controller != ctrl) continue;
-                size_t pp = 0;
-                bool matches = false;
-                while (pp <= spec.size() && !matches) {
-                    size_t sc = spec.find(';', pp);
-                    if (sc == std::string::npos) sc = spec.size();
-                    std::string sub = spec.substr(pp, sc - pp);
-                    for (auto &t2 : sp.types) if (t2.name == sub) matches = true;
-                    pp = sc + 1;
-                }
-                if (matches) {
-                    LegalAction la(PASS_PRIORITY, e, "Sacrifice " + sp.name);
-                    la.category = ActionCategory::OTHER_CHOICE;
-                    sac_choices.push_back(la);
-                }
-            }
-            if (!sac_choices.empty()) {
-                int sac_choice = InputLogger::instance().get_input(sac_choices);
-                Entity to_sac = sac_choices[static_cast<size_t>(sac_choice)].source_entity;
-                std::string sac_name = global_coordinator.GetComponent<Permanent>(to_sac).name;
-                orderer->add_to_zone(false, to_sac, Zone::GRAVEYARD);
-                game_log("%s sacrifices %s\n", player_name(ctrl).c_str(), sac_name.c_str());
-            }
-        }
-        // Move card from hand to graveyard unless the ability moves itself (Defined$ Self)
-        if (!ability.defined_self) {
+        // Pay remaining costs (life, sacrifice, return-to-hand, discard)
+        pay_secondary_activation_costs(ability, permanent_entity, ctrl, orderer);
+        // Auto-consume the activated card to the graveyard, unless the ability relocates
+        // it itself (Defined$ Self) or it was already discarded as an explicit cost
+        // (discard_self_cost, paid above) — guarding against a double move.
+        if (!ability.defined_self && !ability.discard_self_cost) {
             orderer->add_to_zone(false, permanent_entity, Zone::GRAVEYARD);
         }
 
@@ -235,93 +258,9 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
             return;
         }
     }
-    // Pay life cost //TODO VERIFY THIS WAS CHECKED AS POSSIBLE PRIOR TO HERE
-    if (ability.life_cost > 0) {
-        auto &activating_player = global_coordinator.GetComponent<Player>(get_player_entity(controller));
-        activating_player.life_total -= ability.life_cost;
-        game_log("%s pays %d life\n", player_name(controller).c_str(), ability.life_cost);
-    }
-    // Pay sacrifice cost: move to graveyard; apply_permanent_components SBA removes Permanent next pass
-    if (ability.sac_self) {
-        orderer->add_to_zone(false, permanent_entity, Zone::GRAVEYARD);
-        game_log("%s sacrifices %s\n", player_name(controller).c_str(), permanent.name.c_str());
-    }
-    // Type-based sacrifice cost (Knight of the Reliquary: sac a Forest or Plains)
-    if (!ability.sac_cost_spec.empty()) {
-        std::vector<LegalAction> sac_choices;
-        const std::string &spec = ability.sac_cost_spec;
-        for (auto e : orderer->mEntities) {
-            if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
-            auto &sz = global_coordinator.GetComponent<Zone>(e);
-            if (sz.location != Zone::BATTLEFIELD) continue;
-            auto &sp = global_coordinator.GetComponent<Permanent>(e);
-            if (sp.controller != controller) continue;
-            size_t pp = 0;
-            bool matches = false;
-            while (pp <= spec.size() && !matches) {
-                size_t sc = spec.find(';', pp);
-                if (sc == std::string::npos) sc = spec.size();
-                std::string sub = spec.substr(pp, sc - pp);
-                for (auto &t2 : sp.types) if (t2.name == sub) matches = true;
-                pp = sc + 1;
-            }
-            if (matches) {
-                LegalAction la(PASS_PRIORITY, e, "Sacrifice " + sp.name);
-                la.category = ActionCategory::OTHER_CHOICE;
-                sac_choices.push_back(la);
-            }
-        }
-        if (!sac_choices.empty()) {
-            int sac_choice = InputLogger::instance().get_input(sac_choices);
-            Entity to_sac = sac_choices[static_cast<size_t>(sac_choice)].source_entity;
-            std::string sac_name = global_coordinator.GetComponent<Permanent>(to_sac).name;
-            orderer->add_to_zone(false, to_sac, Zone::GRAVEYARD);
-            game_log("%s sacrifices %s\n", player_name(controller).c_str(), sac_name.c_str());
-        }
-    }
-    // Return cost (Scryb Ranger: return a Forest to hand)
-    if (!ability.return_cost_type.empty()) {
-        std::vector<LegalAction> ret_choices;
-        for (auto e : orderer->mEntities) {
-            if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
-            auto &sz = global_coordinator.GetComponent<Zone>(e);
-            if (sz.location != Zone::BATTLEFIELD) continue;
-            auto &sp = global_coordinator.GetComponent<Permanent>(e);
-            if (sp.controller != controller) continue;
-            for (auto &t2 : sp.types) {
-                if (t2.name == ability.return_cost_type) {
-                    LegalAction la(PASS_PRIORITY, e, "Return " + sp.name + " to hand");
-                    la.category = ActionCategory::OTHER_CHOICE;
-                    ret_choices.push_back(la);
-                    break;
-                }
-            }
-        }
-        if (!ret_choices.empty()) {
-            int ret_choice = InputLogger::instance().get_input(ret_choices);
-            Entity to_ret = ret_choices[static_cast<size_t>(ret_choice)].source_entity;
-            std::string ret_name = global_coordinator.GetComponent<Permanent>(to_ret).name;
-            orderer->add_to_zone(false, to_ret, Zone::HAND);
-            game_log("%s returns %s to hand\n", player_name(controller).c_str(), ret_name.c_str());
-        }
-    }
-    // Discard self from hand cost (Faerie Macabre)
-    if (ability.discard_self_cost) {
-        std::string cname = global_coordinator.entity_has_component<CardData>(permanent_entity)
-            ? global_coordinator.GetComponent<CardData>(permanent_entity).name : "card";
-        orderer->add_to_zone(false, permanent_entity, Zone::GRAVEYARD);
-        game_log("%s discards %s\n", player_name(controller).c_str(), cname.c_str());
-    }
-    // Discard hand cost (Lion's Eye Diamond)
-    if (ability.discard_hand_cost) {
-        std::vector<Entity> hand = orderer->get_hand(controller);
-        for (auto card : hand) {
-            std::string cname = global_coordinator.entity_has_component<CardData>(card)
-                ? global_coordinator.GetComponent<CardData>(card).name : "card";
-            orderer->add_to_zone(false, card, Zone::GRAVEYARD);
-            game_log("%s discards %s\n", player_name(controller).c_str(), cname.c_str());
-        }
-    }
+    // Pay remaining costs (life, sacrifice, return-to-hand, discard).
+    // life_cost legality is gated upstream in can_afford_alt / determine_legal_actions.
+    pay_secondary_activation_costs(ability, permanent_entity, controller, orderer);
     // MANA ABILITY
     if (is_mana_ability) {
         // Evaluate dynamic amount (e.g. Gaea's Cradle: Count$Valid Creature.YouCtrl)
@@ -422,8 +361,11 @@ static std::vector<Entity> build_valid_targets(
     // or Life from the Loam targeting Land.YouCtrl): opponent's graveyard first, then
     // own. is_legal_target applies the type/owner filter, so YouCtrl effects only keep
     // the caster's own cards.
-    if (ability.category == "ChangeZone" && ability.origin == Zone::GRAVEYARD &&
-        ability.destination != Zone::BATTLEFIELD) {
+    // target_in_graveyard covers spells that target a graveyard card via a non-ChangeZone
+    // vehicle (Surgical Extraction's SP$ Pump with TgtZone$ Graveyard).
+    if (ability.target_in_graveyard ||
+        (ability.category == "ChangeZone" && ability.origin == Zone::GRAVEYARD &&
+         ability.destination != Zone::BATTLEFIELD)) {
         for (int pass = 0; pass < 2; pass++) {
             Zone::Ownership slot_owner = (pass == 0) ? opp : priority_player;
             for (auto e : orderer->mEntities) {
@@ -530,6 +472,15 @@ static void pay_alternate_cost(const LegalAction &action, Game &game, std::share
     }
 }
 
+// Display name for an attacker's target: the defending player's name, or, when the target is
+// a planeswalker, its card name. Replaces the player-only ternaries so planeswalker attack
+// targets read correctly in transcripts.
+static std::string attack_target_name(const Game &game, Entity tgt) {
+    if (global_coordinator.entity_has_component<Player>(tgt))
+        return player_name((tgt == game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B);
+    return entity_name(tgt);
+}
+
 static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
     Zone::Ownership active_player = game.player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B;
     Entity defending_entity = game.player_a_turn ? game.player_b_entity : game.player_a_entity;
@@ -560,9 +511,18 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
         return;
     }
 
-    // Build targets: defending player first, then planeswalkers (TODO)
+    // Build targets: defending player first, then the defending player's planeswalkers (rule 508.1).
+    Zone::Ownership defending_owner = game.player_a_turn ? Zone::PLAYER_B : Zone::PLAYER_A;
     std::vector<Entity> targets;
     targets.push_back(defending_entity);
+    for (auto e : orderer->mEntities) {
+        if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
+        if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+        if (global_coordinator.GetComponent<Zone>(e).location != Zone::BATTLEFIELD) continue;
+        auto &p = global_coordinator.GetComponent<Permanent>(e);
+        if (p.controller != defending_owner || p.is_phased_out) continue;
+        if (is_planeswalker(p.types)) targets.push_back(e);
+    }
 
     // Pre-declare must_attack creatures — they attack without player input
     for (auto entity : eligible) {
@@ -590,8 +550,8 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
             auto &cr = global_coordinator.GetComponent<Creature>(entity);
             if (!cr.is_attacking) continue;
             std::string ename = entity_name(entity);
-            Zone::Ownership t = (cr.attack_target == game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
-            game_log("  [attacking] %s [%d/%d] -> %s\n", ename.c_str(), cr.power, cr.toughness, player_name(t).c_str());
+            game_log("  [attacking] %s [%d/%d] -> %s\n", ename.c_str(), cr.power, cr.toughness,
+                attack_target_name(game, cr.attack_target).c_str());
         }
         // Build attacker selection actions
         std::vector<LegalAction> atk_actions;
@@ -619,21 +579,24 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
         game_log("Select target for %s:\n", chosen_name.c_str());
         std::vector<LegalAction> tgt_actions;
         for (auto t_entity : targets) {
-            auto &player = global_coordinator.GetComponent<Player>(t_entity);
-            Zone::Ownership t = (t_entity == game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
-            LegalAction la(
-                PASS_PRIORITY, t_entity, player_name(t) + " (" + std::to_string(player.life_total) + " life)");
+            std::string label;
+            if (global_coordinator.entity_has_component<Player>(t_entity)) {
+                auto &player = global_coordinator.GetComponent<Player>(t_entity);
+                Zone::Ownership t = (t_entity == game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
+                label = player_name(t) + " (" + std::to_string(player.life_total) + " life)";
+            } else {
+                auto &p = global_coordinator.GetComponent<Permanent>(t_entity);
+                label = p.name + " (loyalty " + std::to_string(p.loyalty) + ")";
+            }
+            LegalAction la(PASS_PRIORITY, t_entity, label);
             la.category = ActionCategory::OTHER_CHOICE;
             tgt_actions.push_back(la);
-            // TODO: planeswalker entries here
         }
         int target_choice = InputLogger::instance().get_input(tgt_actions);
         cr.is_attacking = true;
         cr.attack_target = tgt_actions[static_cast<size_t>(target_choice)].source_entity;
-        {
-            Zone::Ownership t = (cr.attack_target == game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
-            game_log("%s attacking %s.\n", chosen_name.c_str(), player_name(t).c_str());
-        }
+        game_log("%s attacking %s.\n", chosen_name.c_str(),
+            attack_target_name(game, cr.attack_target).c_str());
     }
 
     game_log("\nAttackers declared:\n");
@@ -643,8 +606,7 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
         if (cr.is_attacking) {
             any = true;
             std::string ename = entity_name(entity);
-            Zone::Ownership t = (cr.attack_target == game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
-            game_log("  %s -> %s\n", ename.c_str(), player_name(t).c_str());
+            game_log("  %s -> %s\n", ename.c_str(), attack_target_name(game, cr.attack_target).c_str());
 
             // Tap the attacker
             auto &permanent = global_coordinator.GetComponent<Permanent>(entity);
@@ -989,19 +951,8 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                 pay_alternate_cost(action, game, orderer, card_data, spell_entity, zone);
 
             } else {  // REGULAR COST + DELVE
-                ManaValue cost_to_pay = card_data.mana_cost;
-
-                // Check RaiseCost statics from cached g_active_statics
-                bool card_is_creature = false;
-                for (auto &t : card_data.types)
-                    if (t.kind == TYPE && t.name == "Creature") { card_is_creature = true; break; }
-                int raise_total = 0;
-                for (const auto &as : g_active_statics) {
-                    if (as.sa->category != "RaiseCost") continue;
-                    if (as.sa->raise_cost_filter == "nonCreature" && card_is_creature) continue;
-                    raise_total += as.sa->raise_cost;
-                }
-                for (int ri = 0; ri < raise_total; ri++) cost_to_pay.insert(GENERIC);
+                // RaiseCost surcharge (NamedCard-aware) folded in; shared with legality.
+                ManaValue cost_to_pay = effective_base_cost(card_data);
 
                 // X-COST: prompt player to choose X value, add X generic to cost
                 if (card_data.has_x_cost) {
@@ -1027,8 +978,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                         ? cur_game.player_a_entity : cur_game.player_b_entity;
                     auto &phyrex_player = global_coordinator.GetComponent<Player>(caster_entity);
                     for (Colors phyrex_color : card_data.phyrexian_mana) {
-                        std::string color_name = (phyrex_color == WHITE) ? "W" : (phyrex_color == BLUE) ? "U"
-                            : (phyrex_color == BLACK) ? "B" : (phyrex_color == RED) ? "R" : "G";
+                        std::string color_name = mana_symbol_str(phyrex_color);
                         std::vector<LegalAction> phyrex_actions;
                         LegalAction pay_life(PASS_PRIORITY, "Pay 2 life (instead of {" + color_name + "})");
                         pay_life.category = ActionCategory::PAYING_COSTS;

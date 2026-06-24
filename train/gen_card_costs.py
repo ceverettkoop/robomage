@@ -8,12 +8,21 @@ import re, os
 
 REPO_ROOT   = os.path.dirname(os.path.abspath(__file__)) + "/.."
 VOCAB_H     = os.path.join(REPO_ROOT, "src/card_vocab.h")
+MACHINE_IO_H = os.path.join(REPO_ROOT, "src/machine_io.h")
 CARDS_DIR   = os.path.join(REPO_ROOT, "bin/resources/cardsfolder")
 OUT_FILE    = os.path.join(REPO_ROOT, "train/card_costs.py")
-N_TYPES     = 128
 N_FEATS     = 7   # W U B R G C generic
 
 COLOR_MAP = {'W': 0, 'U': 1, 'B': 2, 'R': 3, 'G': 4, 'C': 5}
+
+def parse_n_card_types(path):
+    """Read N_CARD_TYPES (embedding vocab size) from machine_io.h."""
+    m = re.search(r'N_CARD_TYPES\s*=\s*(\d+)', open(path).read())
+    if not m:
+        raise RuntimeError(f"could not find N_CARD_TYPES in {path}")
+    return int(m.group(1))
+
+N_TYPES = parse_n_card_types(MACHINE_IO_H)
 
 def parse_vocab(path):
     """Return {card_name: index} from card_vocab.h."""
@@ -77,18 +86,30 @@ def get_mana_cost(card_name):
     print(f"  WARNING: no ManaCost field in '{path}', defaulting to zero cost")
     return [0] * N_FEATS
 
+def get_is_land(card_name):
+    """Return True if the card's Types line includes the Land type."""
+    path = find_card_file(card_name)
+    if path is None:
+        return False
+    for line in open(path):
+        if line.startswith("Types:"):
+            return "Land" in line[len("Types:"):].split()
+    return False
+
 def main():
     vocab = parse_vocab(VOCAB_H)
     print(f"Found {len(vocab)} cards in vocab: {list(vocab)}")
 
     cast_matrix  = [[0] * N_FEATS for _ in range(N_TYPES)]
+    is_land      = [False] * N_TYPES
     # _CARD_ABILITY_COST_MATRIX stays all-zeros until non-mana activated
     # abilities are parsed from card scripts (Cost$ field is not yet used by C++).
 
     for name, idx in vocab.items():
         cost = get_mana_cost(name)
         cast_matrix[idx] = cost
-        print(f"  [{idx}] {name}: {cost}")
+        is_land[idx] = get_is_land(name)
+        print(f"  [{idx}] {name}: {cost}{' (land)' if is_land[idx] else ''}")
 
     # Emit card_costs.py
     lines = [
@@ -96,7 +117,7 @@ def main():
         "# Re-run after updating src/card_vocab.h or card script files.",
         "import numpy as np",
         "",
-        "N_CARD_TYPES = 128",
+        f"N_CARD_TYPES = {N_TYPES}",
         "_N_COST_FEATS = 7  # W, U, B, R, G, C, generic (pip counts / 10.0)",
         "",
         "_CARD_COST_MATRIX = np.array([",
@@ -118,7 +139,14 @@ def main():
     for idx in range(N_TYPES):
         name = vocab_by_idx.get(idx, "")
         lines.append(f'    "{name}",  # {idx}')
-    lines += ["]"]
+    lines += ["]", ""]
+
+    # Vocab indices whose card is a Land (used by the scripted agent's mulligan).
+    land_ids = sorted(i for i in range(N_TYPES) if is_land[i])
+    lines += [
+        "# Vocab indices that are Land cards (Types line includes 'Land').",
+        f"_LAND_VOCAB_IDS = frozenset({{{', '.join(str(i) for i in land_ids)}}})",
+    ]
     with open(OUT_FILE, "w") as f:
         f.write("\n".join(lines) + "\n")
     print(f"Wrote {OUT_FILE}")

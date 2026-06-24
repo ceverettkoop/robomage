@@ -1,572 +1,811 @@
 robomage 0.001
 Using seed: 1641108517
-Player A draws Swords to Plowshares
-Player A draws Green Sun's Zenith
-Player A draws Windswept Heath
+Player A draws Ignoble Hierarch
+Player A draws Forest
+Player A draws Noble Hierarch
+Player A draws Talon Gates of Madara
 Player A draws Knight of the Reliquary
-Player A draws Karakas
-Player A draws Knight of the Reliquary
-Player A draws Wooded Foothills
-Player B draws Endurance
-Player B draws Green Sun's Zenith
-Player B draws Swords to Plowshares
-Player B draws Thalia, Guardian of Thraben
-Player B draws Once Upon a Time
-Player B draws Wooded Foothills
+Player A draws Plains
+Player A draws Thalia, Guardian of Thraben
+Player B draws Savannah
+Player B draws Forest
+Player B draws Wasteland
+Player B draws Wasteland
+Player B draws Scythecat Cub
+Player B draws Noble Hierarch
 Player B draws Wasteland
 Player A hand:
-Green Sun's Zenith
-Karakas
+Forest
+Ignoble Hierarch
 Knight of the Reliquary
-Knight of the Reliquary
-Swords to Plowshares
-Windswept Heath
-Wooded Foothills
+Noble Hierarch
+Plains
+Talon Gates of Madara
+Thalia, Guardian of Thraben
 <<DECISION 1: action=0>>
 Player B hand:
-Endurance
-Green Sun's Zenith
-Once Upon a Time
-Swords to Plowshares
-Thalia, Guardian of Thraben
+Forest
+Noble Hierarch
+Savannah
+Scythecat Cub
 Wasteland
-Wooded Foothills
+Wasteland
+Wasteland
 <<DECISION 2: action=0>>
 -------- TURN 0 (Player A) --------
 <<DECISION 3: action=1>>
-Player B casts for free (alternate cost)
-Player B casts Once Upon a Time
-Resolving ability (category: Dig, amount: 1)
-Player B looks at the top 5 card(s) of their library.
+Player A played Forest
 <<DECISION 4: action=1>>
-Player B puts Plains into hand.
-Player B puts 4 card(s) on the bottom of their library.
-<<DECISION 5: action=1>>
-Player A played Karakas
+Player A activated Forest for 1(G)
+Player A casts Ignoble Hierarch
+Ignoble Hierarch enters the battlefield
 No creatures eligible to attack.
 No attackers ��� skipping declare blockers.
 --- Combat Damage ---
 --- End Combat Damage ---
 -------- TURN 1 (Player B) --------
-Player B draws Scythecat Cub
+Player B draws Thalia, Guardian of Thraben
+<<DECISION 5: action=1>>
+Player B played Forest
 <<DECISION 6: action=1>>
-Player B played Plains
+Player B activated Forest for 1(G)
+Player B casts Noble Hierarch
+Noble Hierarch enters the battlefield
 No creatures eligible to attack.
 No attackers ��� skipping declare blockers.
 --- Combat Damage ---
 --- End Combat Damage ---
 -------- TURN 2 (Player A) --------
-Player A draws Green Sun's Zenith
+Player A draws Once Upon a Time
 <<DECISION 7: action=1>>
-Player A played Windswept Heath
+Player A activated Forest for 1(G)
+Player A activated Ignoble Hierarch for 1(B)
+Player A casts Once Upon a Time
+Resolving ability (category: Dig, amount: 1)
+Player A looks at the top 5 card(s) of their library.
 <<DECISION 8: action=1>>
-Player A pays 1 life
-Player A sacrifices Windswept Heath
-Player A's Windswept Heath ability is on the stack
-Resolving ability (category: ChangeZone, amount: 1)
-Searching Player A's library:
+Player A puts Noble Hierarch into hand.
+Player A puts 4 card(s) on the bottom of their library.
 <<DECISION 9: action=1>>
-Player A shuffles their library
-Player A puts Dryad Arbor to the battlefield
-<<DECISION 10: action=1>>
-Player A activated Karakas for 1(W)
-Choose target:
-<<DECISION 11: action=0>>
-Targeting choice 0
-Player A casts Swords to Plowshares targeting Dryad Arbor
-<<DECISION 12: action=1>>
-Player B activated Plains for 1(W)
-Choose target:
-<<DECISION 13: action=0>>
-Targeting choice 0
-Player B casts Swords to Plowshares targeting Dryad Arbor
-Resolving ability (category: ChangeZone, amount: 0)
-Dryad Arbor is moved to exile
-Resolving ability (category: GainLife, amount: 0)
-Player A gains 1 life (now at 20)
-ChangeZone fizzles
+Player A played Plains
 No creatures eligible to attack.
 No attackers ��� skipping declare blockers.
 --- Combat Damage ---
 --- End Combat Damage ---
 -------- TURN 3 (Player B) --------
-Player B draws Wasteland
-<<DECISION 14: action=1>>
-Player B played Wasteland
-<<DECISION 15: action=1>>
-Player B activated Plains for 1(W)
-Player B activated Wasteland for 1(C)
-Player B casts Thalia, Guardian of Thraben
-Thalia, Guardian of Thraben enters the battlefield
+Player B draws Once Upon a Time
+<<DECISION 10: action=1>>
+Player B activated Forest for 1(G)
+Player B activated Noble Hierarch for 1(W)
+Player B casts Once Upon a Time
+Resolving ability (category: Dig, amount: 1)
+Player B looks at the top 5 card(s) of their library.
+<<DECISION 11: action=1>>
+Player B puts Noble Hierarch into hand.
+Player B puts 4 card(s) on the bottom of their library.
+<<DECISION 12: action=1>>
+Player B played Savannah
+<<DECISION 13: action=1>>
+Player B activated Savannah for 1(G)
+Player B casts Noble Hierarch
+Noble Hierarch enters the battlefield
 No creatures eligible to attack.
 No attackers ��� skipping declare blockers.
 --- Combat Damage ---
 --- End Combat Damage ---
 -------- TURN 4 (Player A) --------
-<<DECISION 16: action=0>>
-Player A draws Scryb Ranger
-<<DECISION 17: action=0>>
-<<DECISION 18: action=1>>
-Player A played Wooded Foothills
-<<DECISION 19: action=1>>
-Choose target:
-<<DECISION 20: action=0>>
-Targeting choice 0
-Player A's Karakas ability targeting Thalia, Guardian of Thraben is on the stack
-<<DECISION 21: action=1>>
-Player A pays 1 life
-Player A sacrifices Wooded Foothills
-Player A's Wooded Foothills ability is on the stack
-Resolving ability (category: ChangeZone, amount: 1)
-Searching Player A's library:
-<<DECISION 22: action=1>>
-Player A shuffles their library
-Player A puts Forest to the battlefield
-Resolving ability (category: ChangeZone, amount: 0)
-Thalia, Guardian of Thraben is moved to hand
-<<DECISION 23: action=1>>
-Choose X value (0-0):
-<<DECISION 24: action=0>>
-Player A chooses X = 0
+Player A draws Keen-Eyed Curator
+<<DECISION 14: action=2>>
 Player A activated Forest for 1(G)
-Player A casts Green Sun's Zenith
-Resolving ability (category: ChangeZone, amount: 1)
-Searching Player A's library:
-<<DECISION 25: action=0>>
-Player A shuffles their library
-Player A fails to find
-Green Sun's Zenith is shuffled into its owner's library
+Player A activated Ignoble Hierarch for 1(G)
+Player A casts Keen-Eyed Curator
+Keen-Eyed Curator enters the battlefield
+<<DECISION 15: action=1>>
+Player A played Talon Gates of Madara
+Choose target:
+<<DECISION 16: action=0>>
+Targeting choice 0
+Talon Gates of Madara triggered
+<<DECISION 17: action=0>>
+Resolving ability (category: Phases, amount: 0)
+<<DECISION 18: action=1>>
+Player A activated Talon Gates of Madara for 1(G)
+Player A casts Noble Hierarch
+<<DECISION 19: action=0>>
+Noble Hierarch enters the battlefield
+<<DECISION 20: action=1>>
+Choose target:
+<<DECISION 21: action=0>>
+Targeting choice 0
+Player A activated Plains for 1(W)
+Player A's Keen-Eyed Curator ability targeting Once Upon a Time is on the stack
+Resolving ability (category: ChangeZone, amount: 0)
+Once Upon a Time is moved to exile
 No creatures eligible to attack.
 No attackers ��� skipping declare blockers.
 --- Combat Damage ---
 --- End Combat Damage ---
 -------- TURN 5 (Player B) --------
-<<DECISION 26: action=0>>
-Player B draws Noble Hierarch
-<<DECISION 27: action=0>>
-<<DECISION 28: action=3>>
-Player B activated Plains for 1(W)
-Player B activated Wasteland for 1(C)
-Player B casts Thalia, Guardian of Thraben
-Thalia, Guardian of Thraben enters the battlefield
-<<DECISION 29: action=1>>
-Player B played Wasteland
-<<DECISION 30: action=1>>
+Player B draws Swords to Plowshares
+<<DECISION 22: action=1>>
+Player B activated Noble Hierarch for 1(W)
 Choose target:
-<<DECISION 31: action=0>>
+<<DECISION 23: action=0>>
+Targeting choice 0
+Player B casts Swords to Plowshares targeting Ignoble Hierarch
+Resolving ability (category: ChangeZone, amount: 0)
+Ignoble Hierarch is moved to exile
+Resolving ability (category: GainLife, amount: 0)
+Player A gains 0 life (now at 20)
+<<DECISION 24: action=4>>
+Player B activated Forest for 1(G)
+Player B activated Noble Hierarch for 1(W)
+Player B casts Scythecat Cub
+Scythecat Cub enters the battlefield
+<<DECISION 25: action=1>>
+Player B played Wasteland
+Choose target:
+<<DECISION 26: action=0>>
+Targeting choice 0
+Scythecat Cub triggered
+<<DECISION 27: action=1>>
+Choose target:
+<<DECISION 28: action=0>>
 Targeting choice 0
 Player B sacrifices Wasteland
-Player B's Wasteland ability targeting Karakas is on the stack
+Player B's Wasteland ability targeting Talon Gates of Madara is on the stack
 Resolving ability (category: Destroy, amount: 0)
-Karakas is destroyed
+Talon Gates of Madara is destroyed
+Resolving ability (category: Pump, amount: 0)
+Choose a creature for Pump:
+<<DECISION 29: action=0>>
+Resolving ability (category: PutCounter, amount: 0)
+Put 1 +1/+1 counter(s) on creature (now 1/2).
+Resolving ability (category: MultiplyCounter, amount: 0)
 No creatures eligible to attack.
 No attackers ��� skipping declare blockers.
 --- Combat Damage ---
 --- End Combat Damage ---
 -------- TURN 6 (Player A) --------
-Player A draws Swords to Plowshares
-No creatures eligible to attack.
-No attackers ��� skipping declare blockers.
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 7 (Player B) --------
-<<DECISION 32: action=0>>
-Player B draws Keen-Eyed Curator
-<<DECISION 33: action=0>>
-<<DECISION 34: action=1>>
-Player B played Wooded Foothills
-<<DECISION 35: action=1>>
-Choose target:
-<<DECISION 36: action=0>>
-Targeting choice 0
-Player B sacrifices Wasteland
-Player B's Wasteland ability targeting Wasteland is on the stack
-<<DECISION 37: action=1>>
-Player B pays 1 life
-Player B sacrifices Wooded Foothills
-Player B's Wooded Foothills ability is on the stack
-Resolving ability (category: ChangeZone, amount: 1)
-Searching Player B's library:
-<<DECISION 38: action=1>>
-Player B shuffles their library
-Player B puts Dryad Arbor to the battlefield
-Destroy fizzles
---- Declare Attackers (Player B) ---
-<<DECISION 39: action=0>>
-Select target for Thalia, Guardian of Thraben:
-<<DECISION 40: action=0>>
-Thalia, Guardian of Thraben attacking Player A.
---- Declare Attackers (Player B) ---
-  [attacking] Thalia, Guardian of Thraben [2/1] -> Player A
-<<DECISION 41: action=-1>>
-Attackers declared:
-  Thalia, Guardian of Thraben -> Player A
-No creatures eligible to block.
---- First Strike Combat Damage ---
-  Thalia, Guardian of Thraben deals 2 damage to Player A
---- End First Strike Combat Damage ---
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 8 (Player A) --------
-Player A draws Windswept Heath
-<<DECISION 42: action=1>>
-Player A played Windswept Heath
-<<DECISION 43: action=1>>
-Player A pays 1 life
-Player A sacrifices Windswept Heath
-Player A's Windswept Heath ability is on the stack
-Resolving ability (category: ChangeZone, amount: 1)
-Searching Player A's library:
-<<DECISION 44: action=1>>
-Player A shuffles their library
-Player A puts Plains to the battlefield
-<<DECISION 45: action=1>>
-Choose X value (0-0):
-<<DECISION 46: action=0>>
-Player A chooses X = 0
-Player A activated Forest for 1(G)
-Player A activated Plains for 1(W)
-Player A casts Green Sun's Zenith
-Resolving ability (category: ChangeZone, amount: 1)
-Searching Player A's library:
-<<DECISION 47: action=0>>
-Player A shuffles their library
-Player A fails to find
-Green Sun's Zenith is shuffled into its owner's library
-No creatures eligible to attack.
-No attackers ��� skipping declare blockers.
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 9 (Player B) --------
-Player B draws Windswept Heath
-<<DECISION 48: action=2>>
-Choose X value (0-0):
-<<DECISION 49: action=0>>
-Player B chooses X = 0
-Player B activated Dryad Arbor for 1(G)
-Player B activated Plains for 1(W)
-Player B casts Green Sun's Zenith
-Resolving ability (category: ChangeZone, amount: 1)
-Searching Player B's library:
-<<DECISION 50: action=0>>
-Player B shuffles their library
-Player B fails to find
-Green Sun's Zenith is shuffled into its owner's library
-<<DECISION 51: action=1>>
-Player B played Windswept Heath
-<<DECISION 52: action=1>>
-Player B pays 1 life
-Player B sacrifices Windswept Heath
-Player B's Windswept Heath ability is on the stack
-Resolving ability (category: ChangeZone, amount: 1)
-Searching Player B's library:
-<<DECISION 53: action=1>>
-Player B shuffles their library
-Player B puts Forest to the battlefield
-<<DECISION 54: action=1>>
-Player B activated Forest for 1(G)
-Player B casts Noble Hierarch
-Noble Hierarch enters the battlefield
---- Declare Attackers (Player B) ---
-<<DECISION 55: action=0>>
-Select target for Thalia, Guardian of Thraben:
-<<DECISION 56: action=0>>
-Thalia, Guardian of Thraben attacking Player A.
---- Declare Attackers (Player B) ---
-  [attacking] Thalia, Guardian of Thraben [2/1] -> Player A
-<<DECISION 57: action=-1>>
-Attackers declared:
-  Thalia, Guardian of Thraben -> Player A
-Noble Hierarch triggered
-Resolving ability (category: ExaltedBonus, amount: 1)
-Exalted (Noble Hierarch): Thalia, Guardian of Thraben gets +1/+1 until end of turn.
-No creatures eligible to block.
---- First Strike Combat Damage ---
-  Thalia, Guardian of Thraben deals 3 damage to Player A
---- End First Strike Combat Damage ---
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 10 (Player A) --------
-<<DECISION 58: action=1>>
-Player A activated Forest for 1(G)
-Player A activated Plains for 1(W)
-Player A casts Scryb Ranger
-Scryb Ranger enters the battlefield
-<<DECISION 59: action=0>>
-Player A draws Savannah
-<<DECISION 60: action=0>>
-<<DECISION 61: action=1>>
-Player A played Savannah
-<<DECISION 62: action=1>>
-Choose target:
-<<DECISION 63: action=0>>
-Targeting choice 0
-<<DECISION 64: action=1>>
-Player A returns Savannah to hand
-Player A's Scryb Ranger ability targeting Dryad Arbor is on the stack
-Resolving ability (category: Untap, amount: 0)
-Dryad Arbor untaps
-No creatures eligible to attack.
-No attackers ��� skipping declare blockers.
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 11 (Player B) --------
-<<DECISION 65: action=1>>
-Player B activated Dryad Arbor for 1(G)
-Player B activated Forest for 1(G)
-Player B activated Noble Hierarch for 1(W)
-Player B casts Endurance
-Endurance enters the battlefield
-Choose target:
-<<DECISION 66: action=0>>
-Targeting choice 0
-Endurance triggered
-Resolving ability (category: ChangeZoneAll, amount: 0)
-Player B moves Wooded Foothills to the bottom of their library
-Player B moves Windswept Heath to the bottom of their library
-Player B moves Swords to Plowshares to the bottom of their library
-Player B moves Wasteland to the bottom of their library
-Player B moves Wasteland to the bottom of their library
-Player B moves Once Upon a Time to the bottom of their library
-Player B moves 6 card(s) to the bottom of their library
-Player B draws Knight of the Reliquary
---- Declare Attackers (Player B) ---
-<<DECISION 67: action=0>>
-Select target for Thalia, Guardian of Thraben:
-<<DECISION 68: action=0>>
-Thalia, Guardian of Thraben attacking Player A.
---- Declare Attackers (Player B) ---
-  [attacking] Thalia, Guardian of Thraben [2/1] -> Player A
-<<DECISION 69: action=-1>>
-Attackers declared:
-  Thalia, Guardian of Thraben -> Player A
-Noble Hierarch triggered
-Resolving ability (category: ExaltedBonus, amount: 1)
-Exalted (Noble Hierarch): Thalia, Guardian of Thraben gets +1/+1 until end of turn.
---- Declare Blockers (Player A) ---
-Attackers:
-  0: Thalia, Guardian of Thraben [3/2]
-Your creatures:
-<<DECISION 70: action=-1>>
-Blockers declared:
-  (none)
---- First Strike Combat Damage ---
-  Thalia, Guardian of Thraben deals 3 damage to Player A
---- End First Strike Combat Damage ---
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 12 (Player A) --------
-<<DECISION 71: action=1>>
+<<DECISION 30: action=0>>
+Player A draws Scythecat Cub
+<<DECISION 31: action=0>>
+<<DECISION 32: action=1>>
 Player A activated Plains for 1(W)
 Player A activated Forest for 1(G)
-Choose target:
-<<DECISION 72: action=0>>
-Targeting choice 0
-Player A casts Swords to Plowshares targeting Dryad Arbor
-<<DECISION 73: action=0>>
-Resolving ability (category: ChangeZone, amount: 0)
-Dryad Arbor is moved to exile
-Resolving ability (category: GainLife, amount: 0)
-Player B gains 1 life (now at 19)
-<<DECISION 74: action=0>>
-Player A draws Wasteland
-<<DECISION 75: action=0>>
-<<DECISION 76: action=1>>
-Player A played Savannah
-<<DECISION 77: action=1>>
-Choose target:
-<<DECISION 78: action=0>>
-Targeting choice 0
-<<DECISION 79: action=0>>
-Player A returns Forest to hand
-Player A's Scryb Ranger ability targeting Endurance is on the stack
-Resolving ability (category: Untap, amount: 0)
-Endurance untaps
---- Declare Attackers (Player A) ---
-<<DECISION 80: action=0>>
-Select target for Scryb Ranger:
-<<DECISION 81: action=0>>
-Scryb Ranger attacking Player B.
---- Declare Attackers (Player A) ---
-  [attacking] Scryb Ranger [1/1] -> Player B
-<<DECISION 82: action=-1>>
-Attackers declared:
-  Scryb Ranger -> Player B
---- Declare Blockers (Player B) ---
-Attackers:
-  0: Scryb Ranger [1/1]
-Your creatures:
-<<DECISION 83: action=-1>>
-Blockers declared:
-  (none)
---- Combat Damage ---
-  Scryb Ranger deals 1 damage to Player B
---- End Combat Damage ---
--------- TURN 13 (Player B) --------
-Player B draws Windswept Heath
-<<DECISION 84: action=2>>
-Player B activated Forest for 1(G)
-Player B activated Noble Hierarch for 1(G)
-Player B casts Keen-Eyed Curator
-Keen-Eyed Curator enters the battlefield
-<<DECISION 85: action=1>>
-Player B played Windswept Heath
-<<DECISION 86: action=1>>
-Choose target:
-<<DECISION 87: action=0>>
-Targeting choice 0
-Player B activated Plains for 1(W)
-Player B's Keen-Eyed Curator ability targeting Karakas is on the stack
-<<DECISION 88: action=1>>
-Player B pays 1 life
-Player B sacrifices Windswept Heath
-Player B's Windswept Heath ability is on the stack
-Resolving ability (category: ChangeZone, amount: 1)
-Searching Player B's library:
-<<DECISION 89: action=1>>
-Player B shuffles their library
-Player B puts Savannah to the battlefield
-<<DECISION 90: action=1>>
-Choose target:
-<<DECISION 91: action=0>>
-Targeting choice 0
-Player B activated Savannah for 1(G)
-Player B's Keen-Eyed Curator ability targeting Karakas is on the stack
-Resolving ability (category: ChangeZone, amount: 0)
-Karakas is moved to exile
-ChangeZone fizzles
---- Declare Attackers (Player B) ---
-<<DECISION 92: action=0>>
-Select target for Endurance:
-<<DECISION 93: action=0>>
-Endurance attacking Player A.
---- Declare Attackers (Player B) ---
-  [attacking] Endurance [3/4] -> Player A
-<<DECISION 94: action=0>>
-Select target for Thalia, Guardian of Thraben:
-<<DECISION 95: action=0>>
-Thalia, Guardian of Thraben attacking Player A.
---- Declare Attackers (Player B) ---
-  [attacking] Endurance [3/4] -> Player A
-  [attacking] Thalia, Guardian of Thraben [2/1] -> Player A
-<<DECISION 96: action=-1>>
-Attackers declared:
-  Endurance -> Player A
-  Thalia, Guardian of Thraben -> Player A
-No creatures eligible to block.
---- First Strike Combat Damage ---
-  Thalia, Guardian of Thraben deals 2 damage to Player A
---- End First Strike Combat Damage ---
---- Combat Damage ---
-  Endurance deals 3 damage to Player A
---- End Combat Damage ---
--------- TURN 14 (Player A) --------
-<<DECISION 97: action=0>>
-Player A draws Windswept Heath
-<<DECISION 98: action=0>>
-<<DECISION 99: action=1>>
-Player A played Forest
-<<DECISION 100: action=1>>
-Player A activated Plains for 1(W)
-Player A activated Forest for 1(G)
-Player A activated Savannah for 1(G)
+Player A activated Noble Hierarch for 1(W)
 Player A casts Knight of the Reliquary
-<<DECISION 101: action=1>>
-Choose target:
-<<DECISION 102: action=0>>
-Targeting choice 0
-<<DECISION 103: action=0>>
-Player A returns Forest to hand
-Player A's Scryb Ranger ability targeting Endurance is on the stack
-Resolving ability (category: Untap, amount: 0)
-Endurance untaps
 Knight of the Reliquary enters the battlefield
 Knight of the Reliquary gains (always)
 --- Declare Attackers (Player A) ---
-<<DECISION 104: action=0>>
-Select target for Scryb Ranger:
-<<DECISION 105: action=0>>
-Scryb Ranger attacking Player B.
+<<DECISION 33: action=0>>
+Select target for Keen-Eyed Curator:
+<<DECISION 34: action=0>>
+Keen-Eyed Curator attacking Player B.
 --- Declare Attackers (Player A) ---
-  [attacking] Scryb Ranger [1/1] -> Player B
-<<DECISION 106: action=-1>>
+  [attacking] Keen-Eyed Curator [3/3] -> Player B
+<<DECISION 35: action=-1>>
 Attackers declared:
-  Scryb Ranger -> Player B
+  Keen-Eyed Curator -> Player B
+Noble Hierarch triggered
+Resolving ability (category: ExaltedBonus, amount: 1)
+Exalted (Noble Hierarch): Keen-Eyed Curator gets +1/+1 until end of turn.
 --- Declare Blockers (Player B) ---
 Attackers:
-  0: Scryb Ranger [1/1]
+  0: Keen-Eyed Curator [4/4]
 Your creatures:
-<<DECISION 107: action=-1>>
+<<DECISION 36: action=-1>>
 Blockers declared:
   (none)
 --- Combat Damage ---
-  Scryb Ranger deals 1 damage to Player B
+  Keen-Eyed Curator deals 4 damage to Player B
 --- End Combat Damage ---
--------- TURN 15 (Player B) --------
-<<DECISION 108: action=0>>
+-------- TURN 7 (Player B) --------
 Player B draws Once Upon a Time
-<<DECISION 109: action=1>>
+<<DECISION 37: action=1>>
 Player B activated Forest for 1(G)
 Player B activated Noble Hierarch for 1(W)
-Player B activated Plains for 1(W)
 Player B casts Once Upon a Time
-<<DECISION 110: action=0>>
 Resolving ability (category: Dig, amount: 1)
 Player B looks at the top 5 card(s) of their library.
-<<DECISION 111: action=1>>
-Player B puts Knight of the Reliquary into hand.
+<<DECISION 38: action=1>>
+Player B puts Wooded Foothills into hand.
 Player B puts 4 card(s) on the bottom of their library.
-<<DECISION 112: action=0>>
-<<DECISION 113: action=1>>
-Choose target:
-<<DECISION 114: action=0>>
-Targeting choice 0
+<<DECISION 39: action=4>>
+Player B activated Noble Hierarch for 1(W)
 Player B activated Savannah for 1(G)
-Player B's Keen-Eyed Curator ability targeting Swords to Plowshares is on the stack
+Player B casts Thalia, Guardian of Thraben
+Thalia, Guardian of Thraben enters the battlefield
+<<DECISION 40: action=1>>
+Player B played Wasteland
+Choose target:
+<<DECISION 41: action=0>>
+Targeting choice 0
+Scythecat Cub triggered
+<<DECISION 42: action=1>>
+Choose target:
+<<DECISION 43: action=0>>
+Targeting choice 0
+Player B sacrifices Wasteland
+Player B's Wasteland ability targeting Savannah is on the stack
+Resolving ability (category: Destroy, amount: 0)
+Savannah is destroyed
+Resolving ability (category: Pump, amount: 0)
+Choose a creature for Pump:
+<<DECISION 44: action=0>>
+Resolving ability (category: PutCounter, amount: 0)
+Put 1 +1/+1 counter(s) on creature (now 2/3).
+Resolving ability (category: MultiplyCounter, amount: 0)
+--- Declare Attackers (Player B) ---
+<<DECISION 45: action=0>>
+Select target for Scythecat Cub:
+<<DECISION 46: action=0>>
+Scythecat Cub attacking Player A.
+--- Declare Attackers (Player B) ---
+  [attacking] Scythecat Cub [2/2] -> Player A
+<<DECISION 47: action=-1>>
+Attackers declared:
+  Scythecat Cub -> Player A
+Noble Hierarch triggered
+Noble Hierarch triggered
+Resolving ability (category: ExaltedBonus, amount: 1)
+Exalted (Noble Hierarch): Scythecat Cub gets +1/+1 until end of turn.
+Resolving ability (category: ExaltedBonus, amount: 1)
+Exalted (Noble Hierarch): Scythecat Cub gets +1/+1 until end of turn.
+--- Declare Blockers (Player A) ---
+Attackers:
+  0: Scythecat Cub [4/4]
+Your creatures:
+<<DECISION 48: action=-1>>
+Blockers declared:
+  (none)
+--- Combat Damage ---
+  Scythecat Cub deals 4 damage to Player A
+--- End Combat Damage ---
+-------- TURN 8 (Player A) --------
+<<DECISION 49: action=0>>
+Player A draws Windswept Heath
+<<DECISION 50: action=0>>
+<<DECISION 51: action=2>>
+Player A activated Forest for 1(G)
+Player A casts Noble Hierarch
+<<DECISION 52: action=2>>
+<<DECISION 53: action=1>>
+Player A sacrifices Plains
+Player A's Knight of the Reliquary ability is on the stack
+<<DECISION 54: action=0>>
+Resolving ability (category: ChangeZone, amount: 1)
+Searching Player A's library:
+<<DECISION 55: action=1>>
+Player A shuffles their library
+Player A puts Dryad Arbor to the battlefield
+<<DECISION 56: action=0>>
+Noble Hierarch enters the battlefield
+<<DECISION 57: action=1>>
+Player A played Windswept Heath
+<<DECISION 58: action=1>>
+Choose target:
+<<DECISION 59: action=0>>
+Targeting choice 0
+Player A activated Noble Hierarch for 1(W)
+Player A's Keen-Eyed Curator ability targeting Once Upon a Time is on the stack
+<<DECISION 60: action=1>>
+Player A pays 1 life
+Player A sacrifices Windswept Heath
+Player A's Windswept Heath ability is on the stack
 Resolving ability (category: ChangeZone, amount: 0)
-Swords to Plowshares is moved to exile
---- Declare Attackers (Player B) ---
-<<DECISION 115: action=0>>
-Select target for Endurance:
-<<DECISION 116: action=0>>
-Endurance attacking Player A.
---- Declare Attackers (Player B) ---
-  [attacking] Endurance [3/4] -> Player A
-<<DECISION 117: action=0>>
+Searching Player A's library:
+<<DECISION 61: action=1>>
+Player A shuffles their library
+Player A puts Savannah to the battlefield
+<<DECISION 62: action=0>>
+Resolving ability (category: ChangeZone, amount: 0)
+Once Upon a Time is moved to exile
+<<DECISION 63: action=1>>
+Choose target:
+<<DECISION 64: action=0>>
+Targeting choice 0
+Player A activated Savannah for 1(G)
+Player A's Keen-Eyed Curator ability targeting Savannah is on the stack
+Resolving ability (category: ChangeZone, amount: 0)
+Savannah is moved to exile
+--- Declare Attackers (Player A) ---
+<<DECISION 65: action=0>>
 Select target for Keen-Eyed Curator:
-<<DECISION 118: action=0>>
-Keen-Eyed Curator attacking Player A.
+<<DECISION 66: action=0>>
+Keen-Eyed Curator attacking Player B.
+--- Declare Attackers (Player A) ---
+  [attacking] Keen-Eyed Curator [3/3] -> Player B
+<<DECISION 67: action=-1>>
+Attackers declared:
+  Keen-Eyed Curator -> Player B
+Noble Hierarch triggered
+Noble Hierarch triggered
+Resolving ability (category: ExaltedBonus, amount: 1)
+Exalted (Noble Hierarch): Keen-Eyed Curator gets +1/+1 until end of turn.
+Resolving ability (category: ExaltedBonus, amount: 1)
+Exalted (Noble Hierarch): Keen-Eyed Curator gets +1/+1 until end of turn.
+--- Declare Blockers (Player B) ---
+Attackers:
+  0: Keen-Eyed Curator [5/5]
+Your creatures:
+<<DECISION 68: action=-1>>
+Blockers declared:
+  (none)
+--- Combat Damage ---
+  Keen-Eyed Curator deals 5 damage to Player B
+--- End Combat Damage ---
+-------- TURN 9 (Player B) --------
+Player B draws Savannah
+<<DECISION 69: action=1>>
+Player B played Savannah
+Choose target:
+<<DECISION 70: action=0>>
+Targeting choice 0
+Scythecat Cub triggered
+Resolving ability (category: Pump, amount: 0)
+Choose a creature for Pump:
+<<DECISION 71: action=0>>
+Resolving ability (category: PutCounter, amount: 0)
+Put 1 +1/+1 counter(s) on creature (now 3/4).
+Resolving ability (category: MultiplyCounter, amount: 0)
 --- Declare Attackers (Player B) ---
-  [attacking] Endurance [3/4] -> Player A
-  [attacking] Keen-Eyed Curator [3/3] -> Player A
-<<DECISION 119: action=0>>
+<<DECISION 72: action=0>>
+Select target for Noble Hierarch:
+<<DECISION 73: action=0>>
+Noble Hierarch attacking Player A.
+--- Declare Attackers (Player B) ---
+  [attacking] Noble Hierarch [3/4] -> Player A
+<<DECISION 74: action=0>>
+Select target for Noble Hierarch:
+<<DECISION 75: action=0>>
+Noble Hierarch attacking Player A.
+--- Declare Attackers (Player B) ---
+  [attacking] Noble Hierarch [3/4] -> Player A
+  [attacking] Noble Hierarch [0/1] -> Player A
+<<DECISION 76: action=0>>
+Select target for Scythecat Cub:
+<<DECISION 77: action=0>>
+Scythecat Cub attacking Player A.
+--- Declare Attackers (Player B) ---
+  [attacking] Noble Hierarch [3/4] -> Player A
+  [attacking] Noble Hierarch [0/1] -> Player A
+  [attacking] Scythecat Cub [2/2] -> Player A
+<<DECISION 78: action=0>>
 Select target for Thalia, Guardian of Thraben:
-<<DECISION 120: action=0>>
+<<DECISION 79: action=0>>
 Thalia, Guardian of Thraben attacking Player A.
 --- Declare Attackers (Player B) ---
-  [attacking] Endurance [3/4] -> Player A
-  [attacking] Keen-Eyed Curator [3/3] -> Player A
+  [attacking] Noble Hierarch [3/4] -> Player A
+  [attacking] Noble Hierarch [0/1] -> Player A
+  [attacking] Scythecat Cub [2/2] -> Player A
   [attacking] Thalia, Guardian of Thraben [2/1] -> Player A
-<<DECISION 121: action=-1>>
+<<DECISION 80: action=-1>>
 Attackers declared:
-  Endurance -> Player A
-  Keen-Eyed Curator -> Player A
+  Noble Hierarch -> Player A
+  Noble Hierarch -> Player A
+  Scythecat Cub -> Player A
   Thalia, Guardian of Thraben -> Player A
 --- Declare Blockers (Player A) ---
 Attackers:
-  0: Endurance [3/4]
-  1: Keen-Eyed Curator [3/3]
-  2: Thalia, Guardian of Thraben [2/1]
+  0: Noble Hierarch [3/4]
+  1: Noble Hierarch [0/1]
+  2: Scythecat Cub [2/2]
+  3: Thalia, Guardian of Thraben [2/1]
 Your creatures:
-<<DECISION 122: action=-1>>
+<<DECISION 81: action=-1>>
 Blockers declared:
   (none)
 --- First Strike Combat Damage ---
   Thalia, Guardian of Thraben deals 2 damage to Player A
 --- End First Strike Combat Damage ---
 --- Combat Damage ---
-  Endurance deals 3 damage to Player A
-  Keen-Eyed Curator deals 3 damage to Player A
+  Noble Hierarch deals 3 damage to Player A
+  Scythecat Cub deals 2 damage to Player A
 --- End Combat Damage ---
-Player A has -3 life - Player B wins!
+-------- TURN 10 (Player A) --------
+<<DECISION 82: action=0>>
+Player A draws Green Sun's Zenith
+<<DECISION 83: action=0>>
+<<DECISION 84: action=1>>
+Choose X value (0-3):
+<<DECISION 85: action=3>>
+Player A chooses X = 3
+Player A activated Dryad Arbor for 1(G)
+Player A activated Forest for 1(G)
+Player A activated Noble Hierarch for 1(W)
+Player A activated Noble Hierarch for 1(W)
+Player A activated Savannah for 1(G)
+Player A casts Green Sun's Zenith
+<<DECISION 86: action=1>>
+<<DECISION 87: action=2>>
+Player A sacrifices Savannah
+Player A's Knight of the Reliquary ability is on the stack
+Resolving ability (category: ChangeZone, amount: 1)
+Searching Player A's library:
+<<DECISION 88: action=1>>
+Player A shuffles their library
+Player A puts Gaea's Cradle to the battlefield
+<<DECISION 89: action=0>>
+Resolving ability (category: ChangeZone, amount: 1)
+Searching Player A's library:
+<<DECISION 90: action=1>>
+Player A shuffles their library
+Player A puts Birds of Paradise to the battlefield
+Green Sun's Zenith is shuffled into its owner's library
+<<DECISION 91: action=1>>
+Player A activated Gaea's Cradle for 6(G)
+Player A casts Scythecat Cub
+<<DECISION 92: action=0>>
+Scythecat Cub enters the battlefield
+<<DECISION 93: action=1>>
+Choose target:
+<<DECISION 94: action=0>>
+Targeting choice 0
+Player A's Keen-Eyed Curator ability targeting Swords to Plowshares is on the stack
+<<DECISION 95: action=0>>
+Resolving ability (category: ChangeZone, amount: 0)
+Swords to Plowshares is moved to exile
+<<DECISION 96: action=1>>
+Choose target:
+<<DECISION 97: action=0>>
+Targeting choice 0
+Player A's Keen-Eyed Curator ability targeting Wasteland is on the stack
+<<DECISION 98: action=0>>
+Resolving ability (category: ChangeZone, amount: 0)
+Wasteland is moved to exile
+<<DECISION 99: action=1>>
+Choose target:
+<<DECISION 100: action=0>>
+Targeting choice 0
+Player A's Keen-Eyed Curator ability targeting Wasteland is on the stack
+<<DECISION 101: action=0>>
+Resolving ability (category: ChangeZone, amount: 0)
+Wasteland is moved to exile
+<<DECISION 102: action=1>>
+Choose target:
+<<DECISION 103: action=0>>
+Targeting choice 0
+Player A's Keen-Eyed Curator ability targeting Once Upon a Time is on the stack
+Resolving ability (category: ChangeZone, amount: 0)
+Once Upon a Time is moved to exile
+--- Declare Attackers (Player A) ---
+<<DECISION 104: action=0>>
+Select target for Keen-Eyed Curator:
+<<DECISION 105: action=0>>
+Keen-Eyed Curator attacking Player B.
+--- Declare Attackers (Player A) ---
+  [attacking] Keen-Eyed Curator [3/3] -> Player B
+<<DECISION 106: action=-1>>
+Attackers declared:
+  Keen-Eyed Curator -> Player B
+Noble Hierarch triggered
+Noble Hierarch triggered
+Resolving ability (category: ExaltedBonus, amount: 1)
+Exalted (Noble Hierarch): Keen-Eyed Curator gets +1/+1 until end of turn.
+Resolving ability (category: ExaltedBonus, amount: 1)
+Exalted (Noble Hierarch): Keen-Eyed Curator gets +1/+1 until end of turn.
+No creatures eligible to block.
+--- Combat Damage ---
+  Keen-Eyed Curator deals 5 damage to Player B
+--- End Combat Damage ---
+-------- TURN 11 (Player B) --------
+Player B draws Knight of the Reliquary
+<<DECISION 107: action=3>>
+Player B activated Noble Hierarch for 1(W)
+Player B activated Forest for 1(G)
+Player B activated Noble Hierarch for 1(W)
+Player B casts Knight of the Reliquary
+Knight of the Reliquary enters the battlefield
+Knight of the Reliquary gains (always)
+<<DECISION 108: action=1>>
+Player B played Wasteland
+Choose target:
+<<DECISION 109: action=0>>
+Targeting choice 0
+Scythecat Cub triggered
+<<DECISION 110: action=1>>
+Choose target:
+<<DECISION 111: action=0>>
+Targeting choice 0
+Player B sacrifices Wasteland
+Player B's Wasteland ability targeting Dryad Arbor is on the stack
+Resolving ability (category: Destroy, amount: 0)
+Dryad Arbor is destroyed
+Resolving ability (category: Pump, amount: 0)
+Choose a creature for Pump:
+<<DECISION 112: action=0>>
+Resolving ability (category: PutCounter, amount: 0)
+Put 1 +1/+1 counter(s) on creature (now 4/4).
+Resolving ability (category: MultiplyCounter, amount: 0)
+--- Declare Attackers (Player B) ---
+<<DECISION 113: action=0>>
+Select target for Scythecat Cub:
+<<DECISION 114: action=0>>
+Scythecat Cub attacking Player A.
+--- Declare Attackers (Player B) ---
+  [attacking] Scythecat Cub [2/2] -> Player A
+<<DECISION 115: action=0>>
+Select target for Thalia, Guardian of Thraben:
+<<DECISION 116: action=0>>
+Thalia, Guardian of Thraben attacking Player A.
+--- Declare Attackers (Player B) ---
+  [attacking] Scythecat Cub [2/2] -> Player A
+  [attacking] Thalia, Guardian of Thraben [2/1] -> Player A
+<<DECISION 117: action=-1>>
+Attackers declared:
+  Scythecat Cub -> Player A
+  Thalia, Guardian of Thraben -> Player A
+--- Declare Blockers (Player A) ---
+Attackers:
+  0: Scythecat Cub [2/2]
+  1: Thalia, Guardian of Thraben [2/1]
+Your creatures:
+<<DECISION 118: action=-1>>
+Blockers declared:
+  (none)
+--- First Strike Combat Damage ---
+  Thalia, Guardian of Thraben deals 2 damage to Player A
+--- End First Strike Combat Damage ---
+--- Combat Damage ---
+  Scythecat Cub deals 2 damage to Player A
+--- End Combat Damage ---
+-------- TURN 12 (Player A) --------
+<<DECISION 119: action=0>>
+Player A draws Windswept Heath
+<<DECISION 120: action=0>>
+<<DECISION 121: action=2>>
+Player A activated Birds of Paradise for 1(W)
+Player A activated Forest for 1(G)
+Player A casts Thalia, Guardian of Thraben
+<<DECISION 122: action=2>>
+<<DECISION 123: action=0>>
+Player A sacrifices Forest
+Player A's Knight of the Reliquary ability is on the stack
+<<DECISION 124: action=0>>
+Resolving ability (category: ChangeZone, amount: 1)
+Searching Player A's library:
+<<DECISION 125: action=1>>
+Player A shuffles their library
+Player A puts Horizon Canopy to the battlefield
+Choose target:
+<<DECISION 126: action=0>>
+Targeting choice 0
+Scythecat Cub triggered
+<<DECISION 127: action=1>>
+Player A activated Gaea's Cradle for 6(G)
+Player A sacrifices Horizon Canopy
+Player A's Horizon Canopy ability is on the stack
+<<DECISION 128: action=0>>
+Resolving ability (category: Draw, amount: 1)
+Player A draws Scythecat Cub
+<<DECISION 129: action=0>>
+Resolving ability (category: Pump, amount: 0)
+Choose a creature for Pump:
+<<DECISION 130: action=0>>
+Resolving ability (category: PutCounter, amount: 0)
+Put 1 +1/+1 counter(s) on creature (now 1/2).
+Resolving ability (category: MultiplyCounter, amount: 0)
+<<DECISION 131: action=0>>
+Thalia, Guardian of Thraben enters the battlefield
+<<DECISION 132: action=2>>
+Player A casts Scythecat Cub
+<<DECISION 133: action=0>>
+Scythecat Cub enters the battlefield
+<<DECISION 134: action=1>>
+Player A played Windswept Heath
+Choose target:
+<<DECISION 135: action=0>>
+Targeting choice 0
+Scythecat Cub triggered
+Choose target:
+<<DECISION 136: action=0>>
+Targeting choice 0
+Scythecat Cub triggered
+<<DECISION 137: action=2>>
+Player A pays 1 life
+Player A sacrifices Windswept Heath
+Player A's Windswept Heath ability is on the stack
+<<DECISION 138: action=0>>
+Resolving ability (category: ChangeZone, amount: 0)
+Searching Player A's library:
+<<DECISION 139: action=1>>
+Player A shuffles their library
+Player A puts Savannah to the battlefield
+Choose target:
+<<DECISION 140: action=0>>
+Targeting choice 0
+Scythecat Cub triggered
+Choose target:
+<<DECISION 141: action=0>>
+Targeting choice 0
+Scythecat Cub triggered
+<<DECISION 142: action=0>>
+Resolving ability (category: Pump, amount: 0)
+Choose a creature for Pump:
+<<DECISION 143: action=0>>
+Resolving ability (category: PutCounter, amount: 0)
+Resolving ability (category: MultiplyCounter, amount: 0)
+MultiplyCounter: doubled +1/+1 counters on creature (now 2/3).
+<<DECISION 144: action=0>>
+Resolving ability (category: Pump, amount: 0)
+Choose a creature for Pump:
+<<DECISION 145: action=0>>
+Resolving ability (category: PutCounter, amount: 0)
+Put 1 +1/+1 counter(s) on creature (now 3/4).
+Resolving ability (category: MultiplyCounter, amount: 0)
+<<DECISION 146: action=0>>
+Resolving ability (category: Pump, amount: 0)
+Choose a creature for Pump:
+<<DECISION 147: action=0>>
+Resolving ability (category: PutCounter, amount: 0)
+Put 1 +1/+1 counter(s) on creature (now 4/5).
+Resolving ability (category: MultiplyCounter, amount: 0)
+<<DECISION 148: action=0>>
+Resolving ability (category: Pump, amount: 0)
+Choose a creature for Pump:
+<<DECISION 149: action=0>>
+Resolving ability (category: PutCounter, amount: 0)
+Resolving ability (category: MultiplyCounter, amount: 0)
+MultiplyCounter: doubled +1/+1 counters on creature (now 8/9).
+<<DECISION 150: action=1>>
+Choose target:
+<<DECISION 151: action=0>>
+Targeting choice 0
+Player A's Keen-Eyed Curator ability targeting Wasteland is on the stack
+<<DECISION 152: action=0>>
+Resolving ability (category: ChangeZone, amount: 0)
+Wasteland is moved to exile
+<<DECISION 153: action=1>>
+Choose target:
+<<DECISION 154: action=0>>
+Targeting choice 0
+Player A's Keen-Eyed Curator ability targeting Dryad Arbor is on the stack
+<<DECISION 155: action=0>>
+Resolving ability (category: ChangeZone, amount: 0)
+Dryad Arbor is moved to exile
+<<DECISION 156: action=1>>
+Choose target:
+<<DECISION 157: action=0>>
+Targeting choice 0
+Player A's Keen-Eyed Curator ability targeting Forest is on the stack
+<<DECISION 158: action=0>>
+Resolving ability (category: ChangeZone, amount: 0)
+Forest is moved to exile
+<<DECISION 159: action=1>>
+Choose target:
+<<DECISION 160: action=0>>
+Targeting choice 0
+Player A activated Noble Hierarch for 1(W)
+Player A's Keen-Eyed Curator ability targeting Horizon Canopy is on the stack
+<<DECISION 161: action=0>>
+Resolving ability (category: ChangeZone, amount: 0)
+Horizon Canopy is moved to exile
+<<DECISION 162: action=1>>
+Choose target:
+<<DECISION 163: action=0>>
+Targeting choice 0
+Player A activated Noble Hierarch for 1(W)
+Player A's Keen-Eyed Curator ability targeting Plains is on the stack
+<<DECISION 164: action=0>>
+Resolving ability (category: ChangeZone, amount: 0)
+Plains is moved to exile
+<<DECISION 165: action=1>>
+Choose target:
+<<DECISION 166: action=0>>
+Targeting choice 0
+Player A activated Savannah for 1(G)
+Player A's Keen-Eyed Curator ability targeting Savannah is on the stack
+Resolving ability (category: ChangeZone, amount: 0)
+Savannah is moved to exile
+--- Declare Attackers (Player A) ---
+<<DECISION 167: action=0>>
+Select target for Keen-Eyed Curator:
+<<DECISION 168: action=0>>
+Keen-Eyed Curator attacking Player B.
+--- Declare Attackers (Player A) ---
+  [attacking] Keen-Eyed Curator [3/3] -> Player B
+<<DECISION 169: action=0>>
+Select target for Scythecat Cub:
+<<DECISION 170: action=0>>
+Scythecat Cub attacking Player B.
+--- Declare Attackers (Player A) ---
+  [attacking] Keen-Eyed Curator [3/3] -> Player B
+  [attacking] Scythecat Cub [2/2] -> Player B
+<<DECISION 171: action=-1>>
+Attackers declared:
+  Keen-Eyed Curator -> Player B
+  Scythecat Cub -> Player B
+--- Declare Blockers (Player B) ---
+Attackers:
+  0: Keen-Eyed Curator [3/3]
+  1: Scythecat Cub [2/2]
+Your creatures:
+<<DECISION 172: action=-1>>
+Blockers declared:
+  (none)
+--- Combat Damage ---
+  Keen-Eyed Curator deals 3 damage to Player B
+  Scythecat Cub deals 2 damage to Player B
+--- End Combat Damage ---
+-------- TURN 13 (Player B) --------
+<<DECISION 173: action=0>>
+Player B draws Once Upon a Time
+<<DECISION 174: action=1>>
+Player B activated Forest for 1(G)
+Player B activated Noble Hierarch for 1(W)
+Player B activated Noble Hierarch for 1(W)
+Player B activated Savannah for 1(G)
+Player B casts Once Upon a Time
+<<DECISION 175: action=0>>
+Resolving ability (category: Dig, amount: 1)
+Player B looks at the top 5 card(s) of their library.
+<<DECISION 176: action=1>>
+Player B puts Savannah into hand.
+Player B puts 4 card(s) on the bottom of their library.
+<<DECISION 177: action=0>>
+<<DECISION 178: action=1>>
+Player B played Savannah
+Choose target:
+<<DECISION 179: action=0>>
+Targeting choice 0
+Scythecat Cub triggered
+<<DECISION 180: action=1>>
+<<DECISION 181: action=2>>
+Player B sacrifices Savannah
+Player B's Knight of the Reliquary ability is on the stack
+Resolving ability (category: ChangeZone, amount: 1)
+Searching Player B's library:
+<<DECISION 182: action=1>>
+Player B shuffles their library
+Player B puts Dryad Arbor to the battlefield
+Choose target:
+<<DECISION 183: action=0>>
+Targeting choice 0
+Scythecat Cub triggered
+Resolving ability (category: Pump, amount: 0)
+Choose a creature for Pump:
+<<DECISION 184: action=0>>
+Resolving ability (category: PutCounter, amount: 0)
+Put 1 +1/+1 counter(s) on creature (now 2/2).
+Resolving ability (category: MultiplyCounter, amount: 0)
+Resolving ability (category: Pump, amount: 0)
+Choose a creature for Pump:
+<<DECISION 185: action=0>>
+Resolving ability (category: PutCounter, amount: 0)
+Resolving ability (category: MultiplyCounter, amount: 0)
+MultiplyCounter: doubled +1/+1 counters on creature (now 3/3).
+--- Declare Attackers (Player B) ---
+<<DECISION 186: action=0>>
+Select target for Scythecat Cub:
+<<DECISION 187: action=0>>
+Scythecat Cub attacking Player A.
+--- Declare Attackers (Player B) ---
+  [attacking] Scythecat Cub [2/2] -> Player A
+<<DECISION 188: action=0>>
+Select target for Thalia, Guardian of Thraben:
+<<DECISION 189: action=0>>
+Thalia, Guardian of Thraben attacking Player A.
+--- Declare Attackers (Player B) ---
+  [attacking] Scythecat Cub [2/2] -> Player A
+  [attacking] Thalia, Guardian of Thraben [2/1] -> Player A
+<<DECISION 190: action=-1>>
+Attackers declared:
+  Scythecat Cub -> Player A
+  Thalia, Guardian of Thraben -> Player A
+--- Declare Blockers (Player A) ---
+Attackers:
+  0: Scythecat Cub [2/2]
+  1: Thalia, Guardian of Thraben [2/1]
+Your creatures:
+<<DECISION 191: action=-1>>
+Blockers declared:
+  (none)
+--- First Strike Combat Damage ---
+  Thalia, Guardian of Thraben deals 2 damage to Player A
+--- End First Strike Combat Damage ---
+--- Combat Damage ---
+  Scythecat Cub deals 2 damage to Player A
+--- End Combat Damage ---
+Player A has -1 life - Player B wins!
 === GAME OVER: winner=Player B ===

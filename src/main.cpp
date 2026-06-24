@@ -9,6 +9,7 @@
 #include "card_db.h"
 #include "classes/deck.h"
 #include "classes/game.h"
+#include "classes/match_state.h"
 #include "cli_output.h"
 #include "error.h"
 #include "components/ability.h"
@@ -364,6 +365,7 @@ static void *game_loop(void *args) {
         bool a_goes_first = true;
         match_wins_a = 0;
         match_wins_b = 0;
+        match_reset_revealed();  // clear revealed-cards accumulator for the whole match
 
         for (int game_num = 0; game_num < 3; game_num++) {
             match_game_number = game_num;
@@ -399,6 +401,7 @@ static void *game_loop(void *args) {
         }
         match_game_number = -1;
     } else {
+        match_reset_revealed();  // accumulator works in single-game mode too
         auto sys = init_ecs();
         play_single_game(sys, DEFAULT_DECK_ONE, DEFAULT_DECK_TWO, true, seed);
     }

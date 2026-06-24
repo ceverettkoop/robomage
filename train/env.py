@@ -24,11 +24,13 @@ Observation space
 -----------------
 State is always emitted from the PRIORITY PLAYER'S perspective ("self").
 
-33666-float state vector (32506 game state + 512 action history + 4 match context
-+ 3 library/post-board + 1 current turn + 640 known top-5 library)
-+ 64 action-category floats + 64 action card-ID floats
+2813-float state vector. Card identity is a single normalized id float per slot
+(idx/N_CARD_TYPES, -1/N_CARD_TYPES = empty), NOT a one-hot — the policy network
+maps ids through a learned nn.Embedding. The opponent revealed-cards block is the
+only vocab-width block (N_CARD_TYPES multi-hot).
+State (2813) + 64 action-category floats + 64 action card-ID floats
 + 64 action controller_is_self floats + 70 hand cost floats
-+ 336 battlefield ability cost floats = 34264 total.
++ 336 battlefield ability cost floats = OBS_SIZE total.
 NOTE: ActionChoice.description is NOT part of the observation — it is for
 human-readable display only (GUI/CLI) and is never sent to the ML model.
 NOTE: Exile zones are tracked in GameState but not serialized to the observation.
@@ -39,13 +41,11 @@ Reward
 +1.0 for winning, -1.0 for losing (from Player A's perspective).
 """
 
-import glob as _glob
 import struct
 import subprocess
 import sys
 import os
 import re
-import random
 import numpy as np
 
 try:
@@ -60,16 +60,18 @@ try:
 except ImportError:
     from train.card_costs import _CARD_COST_MATRIX, _CARD_ABILITY_COST_MATRIX, N_CARD_TYPES, _N_COST_FEATS
 
-STATE_SIZE = 33666
+STATE_SIZE = 2909  # see src/machine_io.h; card identity is 1 id float/slot, not a one-hot
 # NOTE: Exile zones are tracked in GameState but not serialized to the observation.
 # NOTE: ActionChoice.description is never emitted in the BQUERY payload — it is for
 #       human-readable display only and is not part of the ML observation.
 MAX_ACTIONS = 64         # practical upper bound on num_choices per step
-# Binary BQUERY payload sizes (bytes): state float32s + MAX_ACTIONS each of cats(int32)/ids/ctrl(float32)
+# Binary BQUERY payload sizes (bytes): state float32s + MAX_ACTIONS each of
+# cats(int32)/ids/ctrl(float32)/pub(float32)
 _BQUERY_STATE_BYTES = STATE_SIZE * 4
 _BQUERY_CATS_BYTES  = MAX_ACTIONS * 4  # int32
 _BQUERY_IDS_BYTES   = MAX_ACTIONS * 4  # float32
 _BQUERY_CTRL_BYTES  = MAX_ACTIONS * 4  # float32
+_BQUERY_PUB_BYTES   = MAX_ACTIONS * 4  # float32 — card_is_public per action
 ACTION_CATEGORY_MAX = 26 # highest ActionCategory enum value (SIDEBOARD_DONE)
 
 # ── Shaping reward magnitudes ─────────────────────────────────────────────────
@@ -102,39 +104,55 @@ _ACTION_CTRL_NULL    = -1.0 / N_CARD_TYPES  # null sentinel for non-entity actio
 MAX_HAND_SLOTS = 10
 _HAND_COST_FEATS  = MAX_HAND_SLOTS * _N_COST_FEATS  # 10 * 7 = 70
 _BF_ABILITY_FEATS = 48 * _N_COST_FEATS              # 48 * 7 = 336
-OBS_SIZE = STATE_SIZE + 3 * MAX_ACTIONS + _HAND_COST_FEATS + _BF_ABILITY_FEATS  # 34264
+OBS_SIZE = STATE_SIZE + 3 * MAX_ACTIONS + _HAND_COST_FEATS + _BF_ABILITY_FEATS  # 34392
 
 # ── State layout offsets (mirror src/machine_io.h) ───────────────────────────
 # Creatures, lands, and other permanents share one unified section (no separate land slots).
+# Card identity is a single normalized id float per slot (idx/N_CARD_TYPES, or
+# -1/N_CARD_TYPES for empty/unknown). Decode with round(val * N_CARD_TYPES).
 _GLOBAL_SIZE            = 34                   # header: player blocks, step one-hot, flags, stack size
 _PERM_SLOTS             = 48                   # per-player; 96 total (self + opp)
-_PERM_SLOT_SIZE         = 138                  # 10 status + 128 card one-hot
+_PERM_SLOT_SIZE         = 12                   # 11 status (incl. loyalty) + 1 card id
 _STACK_SLOTS            = 12
-_STACK_SLOT_SIZE        = 130
+_STACK_SLOT_SIZE        = 3                    # ctrl + card id + is_spell
 _GY_SLOTS_TOTAL         = 128                  # 64 self + 64 opponent
-_GY_SLOT_SIZE           = 128                  # card one-hot only
+_GY_SLOT_SIZE           = 1                    # card id only
 _HAND_SLOTS_TOTAL       = 10
-_HAND_SLOT_SIZE         = 128
+_HAND_SLOT_SIZE         = 1
 _ACTION_HISTORY_SIZE    = 128                  # entries in the action history ring
 _ACTION_HISTORY_ENTRY   = 4                    # cat_norm, card_id, is_self, turn/50
 _MATCH_CTX_SIZE         = 4                    # game_number, self_wins, opp_wins, sideboard_phase
 _LIBRARY_CTX_SIZE       = 3                    # self_lib/60, opp_lib/60, is_post_board
 _CUR_TURN_SIZE          = 1                    # current turn / 50
 _KNOWN_TOP_LIB_SLOTS    = 5                    # serialized known top-of-library cards
-_KNOWN_TOP_LIB_SLOT_SIZE = 128                 # card one-hot per slot
+_KNOWN_TOP_LIB_SLOT_SIZE = 1                   # card id per slot
+_REVEALED_SIZE          = N_CARD_TYPES         # opponent revealed-cards multi-hot (only vocab-width block)
 
 _SELF_PERM_START     = _GLOBAL_SIZE                                                  # 34
-_OPP_PERM_START      = _SELF_PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE              # 6658
-_STACK_START         = _OPP_PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE               # 13282
-_GY_START            = _STACK_START + _STACK_SLOTS * _STACK_SLOT_SIZE                # 14842
-_HAND_START          = _GY_START + _GY_SLOTS_TOTAL * _GY_SLOT_SIZE                   # 31226
-_HIST_START          = _HAND_START + _HAND_SLOTS_TOTAL * _HAND_SLOT_SIZE             # 32506
-_HIST_END            = _HIST_START + _ACTION_HISTORY_SIZE * _ACTION_HISTORY_ENTRY    # 33018
-_MATCH_CTX_START     = _HIST_END                                                     # 33018
-_LIBRARY_CTX_START   = _MATCH_CTX_START + _MATCH_CTX_SIZE                            # 33022
-_CUR_TURN_IDX        = _LIBRARY_CTX_START + _LIBRARY_CTX_SIZE                        # 33025
-_KNOWN_TOP_LIB_START = _CUR_TURN_IDX + _CUR_TURN_SIZE                                # 33026
-_KNOWN_TOP_LIB_END   = _KNOWN_TOP_LIB_START + _KNOWN_TOP_LIB_SLOTS * _KNOWN_TOP_LIB_SLOT_SIZE  # 33666
+_OPP_PERM_START      = _SELF_PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE              # 610
+_STACK_START         = _OPP_PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE               # 1186
+_GY_START            = _STACK_START + _STACK_SLOTS * _STACK_SLOT_SIZE                # 1222
+_HAND_START          = _GY_START + _GY_SLOTS_TOTAL * _GY_SLOT_SIZE                   # 1350
+_HIST_START          = _HAND_START + _HAND_SLOTS_TOTAL * _HAND_SLOT_SIZE             # 1360
+_HIST_END            = _HIST_START + _ACTION_HISTORY_SIZE * _ACTION_HISTORY_ENTRY    # 1872
+_MATCH_CTX_START     = _HIST_END                                                     # 1872
+_LIBRARY_CTX_START   = _MATCH_CTX_START + _MATCH_CTX_SIZE                            # 1876
+_CUR_TURN_IDX        = _LIBRARY_CTX_START + _LIBRARY_CTX_SIZE                        # 1879
+_KNOWN_TOP_LIB_START = _CUR_TURN_IDX + _CUR_TURN_SIZE                                # 1880
+_KNOWN_TOP_LIB_END   = _KNOWN_TOP_LIB_START + _KNOWN_TOP_LIB_SLOTS * _KNOWN_TOP_LIB_SLOT_SIZE  # 1885
+_REVEALED_START      = _KNOWN_TOP_LIB_END                                            # 1885
+_REVEALED_END        = _REVEALED_START + _REVEALED_SIZE                              # 2909
+
+assert _REVEALED_END == STATE_SIZE, (_REVEALED_END, STATE_SIZE)
+
+# Offset of the card-id float within a permanent slot (after the 11 status floats).
+_PERM_CARD_OFF = 11
+
+
+def _slot_card_idx(obs, i):
+    """Decode the vocab index from a single normalized id float at obs[i] (-1 = empty)."""
+    return int(round(float(obs[i]) * N_CARD_TYPES))
+
 
 _SELF_PERM_POWER_IDX = np.arange(_PERM_SLOTS) * _PERM_SLOT_SIZE + _SELF_PERM_START
 _SELF_PERM_CREATURE_IDX = _SELF_PERM_POWER_IDX + 8
@@ -149,9 +167,8 @@ def _board_power_advantage(obs):
     opp_power = np.sum(obs[_OPP_PERM_POWER_IDX[opp_mask]]) * 10.0
     return self_power - opp_power
 
-_REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-BINARY = os.path.join(_REPO_ROOT, "bin", "robomage")
-BIN_DIR = os.path.join(_REPO_ROOT, "bin")  # game must be run from here for resource lookup
+# CLI constants live in cli_spec.py (the single source shared with the TUI).
+from cli_spec import REPO_ROOT as _REPO_ROOT, BINARY, BIN_DIR  # noqa: E402
 
 
 class RoboMageEnv(gym.Env):
@@ -183,6 +200,7 @@ class RoboMageEnv(gym.Env):
         self._proc = None
         self._num_choices = 1
         self._obs = np.zeros(OBS_SIZE, dtype=np.float32)
+        self._action_public = np.zeros(MAX_ACTIONS, dtype=np.float32)  # card_is_public per action
         self._pending_confirm = False  # True when last query used the -1 convention
         self._step_count = 0
 
@@ -340,18 +358,26 @@ class RoboMageEnv(gym.Env):
                     self._read_exactly(_BQUERY_IDS_BYTES), dtype=np.float32).copy()
                 ctrl_arr = np.frombuffer(
                     self._read_exactly(_BQUERY_CTRL_BYTES), dtype=np.float32).copy()
+                pub_arr = np.frombuffer(
+                    self._read_exactly(_BQUERY_PUB_BYTES), dtype=np.float32).copy()
+
+                # Per-action "card identity is public" flags (revealed tutors). Kept as a
+                # side-channel — observers (TUI) read it; not part of the ML observation
+                # vector yet, so OBS_SIZE and trained checkpoints are unaffected.
+                self._action_public = pub_arr
 
                 # The -1 confirm convention applies to mandatory attacker/blocker queries.
                 self._pending_confirm = any(
                     c in _MANDATORY_CATS for c in cats_int[:self._num_choices])
 
-                # Hand cast costs: matrix-multiply one-hots against cost matrix
-                hand_onehots = state_arr[_HAND_START:_HAND_START + MAX_HAND_SLOTS * N_CARD_TYPES]
-                hand_costs = hand_onehots.reshape(MAX_HAND_SLOTS, N_CARD_TYPES) @ _CARD_COST_MATRIX
+                # Hand cast costs: gather cost rows by hand-slot card id
+                hand_ids = np.rint(
+                    state_arr[_HAND_START:_HAND_START + MAX_HAND_SLOTS] * N_CARD_TYPES).astype(np.intp)
+                hand_costs = _gather_costs(_CARD_COST_MATRIX, hand_ids)
 
                 # Battlefield activated ability costs (48 self permanent slots)
-                bf_onehots = state_arr[_BF_ONEHOT_IDX].reshape(48, N_CARD_TYPES)
-                bf_ability_costs = bf_onehots @ _CARD_ABILITY_COST_MATRIX
+                bf_ids = np.rint(state_arr[_BF_ID_IDX] * N_CARD_TYPES).astype(np.intp)
+                bf_ability_costs = _gather_costs(_CARD_ABILITY_COST_MATRIX, bf_ids)
 
                 # Write sections into preallocated obs buffer (avoids concatenate allocation)
                 o = self._obs
@@ -462,19 +488,28 @@ _CARD_COLORED_COSTS = {
 
 # ── Battlefield layout (aliases of the unified state offsets above) ─────────
 _BF_START         = _SELF_PERM_START           # 34
-_BF_SLOT_SIZE     = _PERM_SLOT_SIZE            # 138
+_BF_SLOT_SIZE     = _PERM_SLOT_SIZE            # 12
 _PERM_A_SLOTS     = _PERM_SLOTS                # 48: self occupies perm slots 0-47, opponent slots 48-95
 _BF_A_SLOTS       = 24                         # ability cost slots per player (unchanged)
-_BF_CARD_OFF      = 10                         # offset of card one-hot within each permanent slot
-# Precomputed indices for gathering 48 card one-hot vectors from state array
-_BF_ONEHOT_IDX    = np.concatenate([
-    np.arange(N_CARD_TYPES) + _BF_START + s * _BF_SLOT_SIZE + _BF_CARD_OFF
-    for s in range(_PERM_A_SLOTS)
-])
+_BF_CARD_OFF      = _PERM_CARD_OFF             # offset of the card-id float within each permanent slot
+# Precomputed indices for gathering the 48 self-permanent card-id floats from the state array
+_BF_ID_IDX        = _BF_START + np.arange(_PERM_A_SLOTS) * _BF_SLOT_SIZE + _BF_CARD_OFF
 _CTRL_OFF         = 7                          # offset of controller_is_self within a permanent slot
+
+
+def _gather_costs(matrix, ids):
+    """Gather per-slot cost rows by vocab id; empty slots (id < 0) get a zero row.
+
+    matrix : (N_CARD_TYPES, _N_COST_FEATS) cost table
+    ids    : (S,) int vocab ids (decoded via round(id_float * N_CARD_TYPES))
+    returns: (S, _N_COST_FEATS) float32
+    """
+    safe = np.clip(ids, 0, N_CARD_TYPES - 1)
+    rows = matrix[safe]
+    return np.where((ids >= 0)[:, None], rows, 0.0).astype(np.float32)
 _GY_A_SLOTS       = _GY_SLOTS_TOTAL // 2       # self occupies GY slots 0-63
 # Start of bf_ability_costs block in the full obs vector
-_BF_COST_START    = STATE_SIZE + 3 * MAX_ACTIONS + _HAND_COST_FEATS  # 33928
+_BF_COST_START    = STATE_SIZE + 3 * MAX_ACTIONS + _HAND_COST_FEATS  # 34056
 # Status offsets within a permanent slot
 _OFF_POWER        = 0
 _OFF_TOUGHNESS    = 1
@@ -508,6 +543,21 @@ _DURESS_VOCAB_IDX        = 69
 _PONDER_VOCAB_IDX        = 11
 _FORCE_OF_WILL_VOCAB_IDX = 12
 _DAZE_VOCAB_IDX          = 13
+_BRAINSTORM_VOCAB_IDX    = 24
+_ONCE_UPON_A_TIME_VOCAB_IDX = 43
+
+# Maverick (green/white) deck card vocab indices (mirror src/card_vocab.h)
+_GREEN_SUNS_ZENITH_VOCAB_IDX = 35
+_KEEN_EYED_CURATOR_VOCAB_IDX = 40
+# Untapped creatures that tap for mana (count toward X for Green Sun's Zenith).
+_MANA_DORK_IDS           = frozenset({30, 38, 42})  # Birds(30), Ignoble(38), Noble Hierarch(42)
+# Lands that do NOT reliably produce mana when untapped, so they shouldn't count
+# toward an affordable X: fetchlands (sacrifice for a land, no mana) and Gaea's
+# Cradle (G per creature — zero with an empty board).
+_UNRELIABLE_LAND_IDS     = frozenset({5, 6, 7, 8, 9, 52, 65, 66, 34})
+# Cantrips/digging that let us keep a one-land opening hand (they find more lands)
+_KEEP_ONE_LANDER_IDS     = frozenset({_PONDER_VOCAB_IDX, _BRAINSTORM_VOCAB_IDX,
+                                      _ONCE_UPON_A_TIME_VOCAB_IDX})
 _DISCARD_SPELL_IDS       = frozenset({_THOUGHTSEIZE_VOCAB_IDX, _DURESS_VOCAB_IDX})
 _COUNTER_STRIP_IDS       = frozenset({_FORCE_OF_WILL_VOCAB_IDX, _DAZE_VOCAB_IDX})
 _LED_DRAW_STACK_IDS      = frozenset({_STREET_WRAITH_VOCAB_IDX, _EDGE_OF_AUTUMN_VOCAB_IDX,
@@ -522,15 +572,9 @@ _CAT_SHUFFLE     = 21  # shuffle choice (0 = don't shuffle, 1 = shuffle)
 def _hand_has_card(obs: np.ndarray, vocab_idx: int) -> bool:
     """Check if the priority player's hand contains a card with the given vocab index."""
     for slot in range(MAX_HAND_SLOTS):
-        base = _HAND_START + slot * N_CARD_TYPES
-        if obs[base + vocab_idx] > 0.5:
+        if _slot_card_idx(obs, _HAND_START + slot) == vocab_idx:
             return True
     return False
-
-
-def _action_card_id(card_ids: np.ndarray, i: int) -> int:
-    """Decode the card vocab index from the action's card_id float."""
-    return int(round(float(card_ids[i]) * N_CARD_TYPES))
 
 
 def _obs_action_category(obs: np.ndarray, action: int) -> int:
@@ -549,64 +593,13 @@ def _obs_is_main_phase(obs: np.ndarray) -> bool:
     return obs[21] > 0.5 or obs[28] > 0.5
 
 
-def _is_doomsday_deck(obs: np.ndarray) -> bool:
-    """Heuristic: check if any hand card is a doomsday-deck-only card."""
-    for slot in range(MAX_HAND_SLOTS):
-        base = _HAND_START + slot * N_CARD_TYPES
-        card_vec = obs[base:base + N_CARD_TYPES]
-        idx = int(np.argmax(card_vec))
-        if card_vec[idx] > 0.5 and idx in _DOOMSDAY_DECK_IDS:
-            return True
-    return False
-
-
-def _all_eligible_creatures_attacking(obs: np.ndarray) -> bool:
-    """Return True if every untapped, non-sick creature in self's slots (0-47) is attacking."""
-    any_eligible = False
-    for slot in range(_PERM_A_SLOTS):
-        base = _BF_START + slot * _BF_SLOT_SIZE
-        if obs[base + _OFF_IS_CREATURE] < 0.5:
-            continue  # not a creature (empty slot, land, or other permanent)
-        if obs[base + _OFF_IS_TAPPED] > 0.5 or obs[base + _OFF_HAS_SICKNESS] > 0.5:
-            continue  # can't attack
-        any_eligible = True
-        if obs[base + _OFF_IS_ATTACKING] <= 0.5:
-            return False  # eligible but not yet attacking
-    return any_eligible
-
-
-def _opponent_has_nonbasic_land(obs: np.ndarray) -> bool:
-    """Return True if opponent has at least one nonbasic land (opp perm slots 48-95)."""
-    for slot in range(_PERM_A_SLOTS):
-        base = _BF_START + (slot + _PERM_A_SLOTS) * _BF_SLOT_SIZE
-        if obs[base + _OFF_IS_LAND] < 0.5:
-            continue  # not a land
-        card_vec = obs[base + _BF_CARD_OFF : base + _BF_CARD_OFF + N_CARD_TYPES]
-        idx = int(np.argmax(card_vec))
-        if card_vec[idx] > 0.5 and idx not in _BASIC_LAND_IDS:
-            return True
-    return False
-
-
-def _opponent_has_spell_on_stack(obs: np.ndarray) -> bool:
-    """Return True if at least one spell/ability on the stack is not controlled by self."""
-    for i in range(12):
-        base = _STACK_START + i * _STACK_SLOT_SIZE
-        ctrl_is_self = obs[base]
-        card_vec = obs[base + 1 : base + 1 + N_CARD_TYPES]
-        if np.max(card_vec) > 0.5 and ctrl_is_self < 0.5:
-            return True
-    return False
-
-
 def _self_has_draw_on_stack(obs: np.ndarray) -> bool:
     """Return True if self controls a cycling or draw ability/spell on the stack."""
     for i in range(12):
         base = _STACK_START + i * _STACK_SLOT_SIZE
         ctrl_is_self = obs[base]
-        card_vec = obs[base + 1 : base + 1 + N_CARD_TYPES]
-        idx = int(np.argmax(card_vec))
-        if card_vec[idx] > 0.5 and ctrl_is_self > 0.5 and idx in _LED_DRAW_STACK_IDS:
+        idx = _slot_card_idx(obs, base + 1)
+        if idx >= 0 and ctrl_is_self > 0.5 and idx in _LED_DRAW_STACK_IDS:
             return True
     return False
 
@@ -615,204 +608,9 @@ def _stack_is_empty(obs: np.ndarray) -> bool:
     """Return True if there are no items on the stack."""
     for i in range(12):
         base = _STACK_START + i * _STACK_SLOT_SIZE
-        card_vec = obs[base + 1 : base + 1 + N_CARD_TYPES]
-        if np.max(card_vec) > 0.5:
+        if _slot_card_idx(obs, base + 1) >= 0:
             return False
     return True
-
-
-def scripted_action(obs: np.ndarray, num_choices: int) -> int:
-    """
-    Rule-based agent for test_minimal.dk (blue/red fetch-land deck).
-    Works correctly for either Player A or Player B because the observation
-    is always emitted from the priority player's perspective.
-
-      - Never blocks (confirms immediately)
-      - Attacks with every eligible creature each combat
-      - Selects target 0 (opponent player or first offered spell/permanent)
-      - Searches library: always finds the first offered card (never fails to find)
-      - Casts every spell the moment it becomes affordable
-      - Plays the first available land
-      - Activates non-mana abilities (fetch lands, Wasteland destroy) during main phase
-      - Taps mana during main phases, preferring the color the hand needs most
-        (blue for Flying Men, Delver, Ponder, Daze, Counterspell, Air Elemental;
-         red for Dragon's Rage Channeler, Lightning Strike)
-      - Passes priority otherwise
-
-    Action categories are stored in obs[STATE_SIZE:] normalised by ACTION_CATEGORY_MAX.
-    """
-    cats     = np.round(obs[STATE_SIZE:STATE_SIZE + num_choices] * ACTION_CATEGORY_MAX).astype(int)
-    card_ids = obs[STATE_SIZE + MAX_ACTIONS     : STATE_SIZE + 2 * MAX_ACTIONS]
-    ctrl_arr = obs[STATE_SIZE + 2 * MAX_ACTIONS : STATE_SIZE + 3 * MAX_ACTIONS]
-
-    _STEP_FIRST_MAIN  = 21   # obs[18 + 3]
-    _STEP_SECOND_MAIN = 28   # obs[18 + 10] (shifted +1 by FIRST_STRIKE_DAMAGE step)
-    in_main_phase = obs[_STEP_FIRST_MAIN] > 0.5 or obs[_STEP_SECOND_MAIN] > 0.5
-
-    # 0a. Sideboarding: scripted agent never sideboards — always pick done (index 0)
-    if any(c == _CAT_SB_DONE for c in cats):
-        return 0
-
-    # 0. Mulligan: always keep — return the first non-mulligan action (the keep action)
-    if any(c == _CAT_MULLIGAN for c in cats):
-        for i, c in enumerate(cats):
-            if c != _CAT_MULLIGAN:
-                return i
-
-    # 1. Confirm blockers immediately — never block
-    for i, c in enumerate(cats):
-        if c == _CAT_CONF_BLK:
-            return i
-
-    # 2. Attacker selection: select until all eligible creatures are attacking, then confirm.
-    #    The game re-offers already-attacking creatures as SEL_ATK (for deselection), so we
-    #    must check the battlefield state rather than blindly picking SEL_ATK every time.
-    if any(c == _CAT_SEL_ATK for c in cats):
-        if _all_eligible_creatures_attacking(obs):
-            for i, c in enumerate(cats):
-                if c == _CAT_CONF_ATK:
-                    return i
-        else:
-            for i, c in enumerate(cats):
-                if c == _CAT_SEL_ATK:
-                    return i
-
-    # 3. Confirm attack declaration (fallback, e.g. no eligible attackers)
-    for i, c in enumerate(cats):
-        if c == _CAT_CONF_ATK:
-            return i
-
-    # 4. Select target — prefer non-self-controlled targets.
-    #    ctrl_arr[i] == 1.0 means self-controlled; 0.0 = opponent permanent/spell;
-    #    _ACTION_CTRL_NULL (-0.03125) = player target (also non-self).
-    #    The C++ game sorts targets opponent-first so action 0 is usually correct,
-    #    but guard against accidentally targeting own spells/permanents.
-    for i, c in enumerate(cats):
-        if c == _CAT_TARGET and ctrl_arr[i] < 0.5:
-            return i
-    # Fallback: all targets are self-controlled — return first (shouldn't happen in practice).
-    for i, c in enumerate(cats):
-        if c == _CAT_TARGET:
-            return i
-
-    # 5. Search library — action 0 = fail to find; action 1+ = actual cards.
-    #    For Doomsday pile building: prefer Thassa's Oracle, then draw spells.
-    #    For Personal Tutor: prefer Doomsday.
-    #    For fetch lands: pick action 1 (first land found).
-    if any(c == _CAT_SEARCH for c in cats):
-        # Prefer Thassa's Oracle when searching (Doomsday pile building)
-        for i, c in enumerate(cats):
-            if c == _CAT_SEARCH and _action_card_id(card_ids, i) == _THASSAS_ORACLE_VOCAB_IDX:
-                return i
-        # Prefer Doomsday when searching (Personal Tutor)
-        for i, c in enumerate(cats):
-            if c == _CAT_SEARCH and _action_card_id(card_ids, i) == _DOOMSDAY_VOCAB_IDX:
-                return i
-        return 1 if num_choices > 1 else 0
-
-    # 5b. Paying costs (tapping lands for mana during spell/ability payment, delve exile).
-    #     Pick the first available option — this taps a source to pay the cost.
-    if any(c == _CAT_PAYING for c in cats):
-        return 0
-
-    # 6. Cast spells.
-    #    Counter spells (Counterspell, Daze, Force of Will) require an opponent's spell
-    #    on the stack; skip them when the stack holds only own spells or is empty.
-    opponent_spell_on_stack = _opponent_has_spell_on_stack(obs)
-
-    # Priority: if opponent has a spell on stack and we have UU, cast Counterspell first.
-    if opponent_spell_on_stack and int(round(obs[_BLUE_POOL_IDX] * 10)) >= 2:
-        for i, c in enumerate(cats):
-            if c == _CAT_CAST and _action_card_id(card_ids, i) == _COUNTERSPELL_VOCAB_IDX:
-                return i
-
-    # --- Doomsday deck rules ---
-    has_doomsday_in_hand = _hand_has_card(obs, _DOOMSDAY_VOCAB_IDX)
-
-    # Always cast Doomsday when offered
-    for i, c in enumerate(cats):
-        if c == _CAT_CAST and _action_card_id(card_ids, i) == _DOOMSDAY_VOCAB_IDX:
-            return i
-
-    # Only cast Dark Ritual if Doomsday is also in hand
-    # (don't waste ritual mana without the combo piece)
-    for i, c in enumerate(cats):
-        if c == _CAT_CAST and _action_card_id(card_ids, i) == _DARK_RITUAL_VOCAB_IDX:
-            if has_doomsday_in_hand:
-                return i
-            # else skip it
-
-    for i, c in enumerate(cats):
-        if c == _CAT_CAST:
-            cid = _action_card_id(card_ids, i)
-            if cid in _COUNTER_SPELL_VOCAB_IDS and not opponent_spell_on_stack:
-                continue
-            if cid == _DARK_RITUAL_VOCAB_IDX:
-                continue  # handled above
-            return i
-
-    # 7. Play land (may unlock mana for a spell next query)
-    for i, c in enumerate(cats):
-        if c == _CAT_LAND:
-            return i
-
-    # 8. Activate non-mana abilities:
-    #    - Cycling (Street Wraith, Edge of Autumn): always cycle immediately (any time)
-    #    - Fetch lands: tap + pay 1 life + sacrifice → search for land
-    #    - Wasteland: tap + sacrifice → destroy target nonbasic land
-    #    - LED: activate when Doomsday is on the stack (discard hand for 3 mana)
-
-    # Always cycle Street Wraith (pay 2 life, draw a card)
-    for i, c in enumerate(cats):
-        if c == _CAT_ACTIVATE and _action_card_id(card_ids, i) == _STREET_WRAITH_VOCAB_IDX:
-            return i
-
-    # Always cycle Edge of Autumn (sac a land, draw a card) — only offered when legal
-    for i, c in enumerate(cats):
-        if c == _CAT_ACTIVATE and _action_card_id(card_ids, i) == _EDGE_OF_AUTUMN_VOCAB_IDX:
-            return i
-
-    if in_main_phase:
-        for i, c in enumerate(cats):
-            if c == _CAT_ACTIVATE:
-                cid = _action_card_id(card_ids, i)
-                if cid == _WASTELAND_VOCAB_IDX and not _opponent_has_nonbasic_land(obs):
-                    continue  # no opponent nonbasic land to target — skip
-                return i
-
-    # 9. (Removed - mana abilities no longer offered during normal priority in machine mode;
-    #     mana is tapped automatically during cost payment via PAYING_COSTS.)
-
-    # 10. Doomsday pile ordering (TOP_LIBRARY): put Thassa's Oracle on bottom of pile
-    #     (first pick = deepest position). For all other cards, pick action 0.
-    if any(c == _CAT_TOP_LIBRARY for c in cats):
-        # Prefer Thassa's Oracle first (goes to bottom of pile = wins with empty library)
-        for i, c in enumerate(cats):
-            if c == _CAT_TOP_LIBRARY and _action_card_id(card_ids, i) == _THASSAS_ORACLE_VOCAB_IDX:
-                return i
-        return 0  # pick first available for remaining cards
-
-    # 10b. Dig choice (Once Upon a Time): pick action 1 (first matching card) if available.
-    if any(c == _CAT_DIG for c in cats):
-        return 1 if num_choices > 1 else 0
-
-    # 11. Other choice (Sylvan Library pay/return, unless costs): pick randomly.
-    other_idxs = [i for i, c in enumerate(cats) if c == _CAT_OTHER]
-    if other_idxs:
-        return random.choice(other_idxs)
-
-    # 12. Surveil / Delver reveal: both use two PASS_PRIORITY (0) choices whose
-    #     source entity is the same library card (non-null, equal card IDs).
-    #     For surveil: action 1 = put in graveyard (good for delirium and Murktide).
-    #     For Delver's PeekAndReveal: action 1 = reveal (safe; triggers transform
-    #     only if the top card is an instant or sorcery, which is desirable).
-    if num_choices == 2 and all(c == _CAT_PASS for c in cats[:2]):
-        id0, id1 = card_ids[0], card_ids[1]
-        if id0 > _ACTION_CARD_ID_NULL + 0.01 and abs(id1 - id0) < 0.001:
-            return 1
-
-    # Default: pass priority
-    return 0
 
 
 class ModelVsScriptedEnv(gym.Env):
@@ -824,7 +622,7 @@ class ModelVsScriptedEnv(gym.Env):
     """
 
     def __init__(self, model_deck: str | None = None, opp_deck: str | None = None,
-                 **env_kwargs):
+                 opponent="scripted", **env_kwargs):
         super().__init__()
         # model_deck/opp_deck override deck_a/deck_b: decks are swapped each episode
         # to match which side the model is assigned to.
@@ -841,9 +639,36 @@ class ModelVsScriptedEnv(gym.Env):
         # Scale applied to all shaping signals. Set externally (e.g. via SB3 callback)
         # to anneal shaping toward 0 as training matures.
         self.shaping_scale = 1.0
+        # Opponent controller / pool. ``opponent`` may be an OpponentPool, an
+        # already-built Controller, or a spec string ("scripted" by default,
+        # which is byte-identical to the historical scripted agent).
+        from opponents import make_controller
+        # A pool exposes per-episode sampling (OpponentPool.sample /
+        # LeaguePool.sample_episode); a Controller exposes .choose; anything else
+        # is a spec string resolved into a Controller.
+        if hasattr(opponent, "sample_episode") or hasattr(opponent, "sample"):
+            self._opp_pool = opponent
+            self._opp_controller = None
+        elif hasattr(opponent, "choose"):
+            self._opp_pool = None
+            self._opp_controller = opponent
+        else:
+            self._opp_pool = None
+            self._opp_controller = make_controller(opponent)
+        self._opp_label = getattr(self._opp_controller, "label", "scripted")
 
     def reset(self, *, seed=None, options=None):
         self._training_is_a = bool(np.random.random() < 0.5)
+        # Sample this episode's opponent (and, in league mode, its deck) BEFORE the
+        # deck assignment below so the right opp_deck reaches the game process. A
+        # plain OpponentPool keeps the fixed opp_deck and only picks a controller;
+        # a LeaguePool also chooses which deck the opponent pilots this episode.
+        if self._opp_pool is not None:
+            if hasattr(self._opp_pool, "sample_episode"):
+                self._opp_deck, self._opp_label, self._opp_controller = \
+                    self._opp_pool.sample_episode()
+            else:
+                self._opp_label, self._opp_controller = self._opp_pool.sample()
         if self._model_deck is not None:
             self._env._deck_a = self._model_deck if self._training_is_a else self._opp_deck
             self._env._deck_b = self._opp_deck if self._training_is_a else self._model_deck
@@ -857,7 +682,7 @@ class ModelVsScriptedEnv(gym.Env):
         self._game_meta = {
             "model_is_a": self._training_is_a,
             "opp_deck": self._opp_deck or "unknown",
-            "opp_type": "scripted",
+            "opp_type": self._opp_label,
         }
         obs, info = self._env.reset(seed=seed, options=options)
         obs, _reward, terminated, truncated, info, _shaping = self._skip_opponent_turns(
@@ -1002,7 +827,7 @@ class ModelVsScriptedEnv(gym.Env):
         shaping_key = "shaping_a" if self._training_is_a else "shaping_b"
         shaping = 0.0
         while not (terminated or truncated) and (obs[32] > 0.5) != self._training_is_a:
-            action = scripted_action(obs, self._env._num_choices)
+            action = self._opp_controller.choose(obs, self._env._num_choices)
             obs, reward, terminated, truncated, info = self._env.step(action)
 
             shaping += info.get(shaping_key, 0.0)
@@ -1019,6 +844,27 @@ class ModelVsScriptedEnv(gym.Env):
 
     def action_masks(self) -> np.ndarray:
         return self._env.action_masks()
+
+    def update_opponent_weights(self, weights):
+        """Push fresh PFSP/softmax weights into the league pool (if any).
+
+        Called via ``vec_env.env_method`` from the PFSPCallback. ``env_method``
+        resolves through the wrapper chain (get_wrapper_attr), so it reliably
+        reaches this inner env — unlike ``set_attr``, which only sets the outer
+        wrapper."""
+        if self._opp_pool is not None and hasattr(self._opp_pool, "set_weights"):
+            self._opp_pool.set_weights(weights)
+
+    def set_shaping_scale(self, value):
+        """Set the shaping-reward scale (read in ``step`` as ``self.shaping_scale``).
+
+        MUST be called via ``vec_env.env_method('set_shaping_scale', v)``, not
+        ``vec_env.set_attr('shaping_scale', v)``: under SubprocVecEnv/DummyVecEnv
+        ``set_attr`` does a plain ``setattr`` on the OUTER Monitor wrapper, which
+        gymnasium never forwards inward, so it would never reach this attribute.
+        ``env_method`` resolves through the wrapper chain (get_wrapper_attr) to
+        this inner env."""
+        self.shaping_scale = float(value)
 
     def close(self):
         self._env.close()
@@ -1062,7 +908,7 @@ def mirror_obs(obs: np.ndarray) -> np.ndarray:
         m[a + _CTRL_OFF] = 1.0 - obs[b + _CTRL_OFF]
         m[b + _CTRL_OFF] = 1.0 - obs[a + _CTRL_OFF]
 
-    # 4. Flip controller_is_self in stack slots (first float of each 33-float slot)
+    # 4. Flip controller_is_self in stack slots (first float of each _STACK_SLOT_SIZE slot)
     for i in range(12):
         base = _STACK_START + i * _STACK_SLOT_SIZE
         m[base] = 1.0 - obs[base]
@@ -1127,6 +973,10 @@ class SelfPlayEnv(gym.Env):
         self._opponent_loaded = False  # defer loading to first reset()
         self._scripted_fallback_warned = False  # warn once when no checkpoint found
         self._opp_mask = np.zeros(MAX_ACTIONS, dtype=bool)  # reusable mask buffer
+        # Controller used when no compatible checkpoint exists (default GREEDY).
+        from opponents import ScriptedController
+        from scripted_agent import make_agent
+        self._fallback_controller = ScriptedController(make_agent("scripted"))
 
     # ------------------------------------------------------------------
     # gymnasium API
@@ -1181,6 +1031,10 @@ class SelfPlayEnv(gym.Env):
     def close(self):
         self._env.close()
 
+    def set_shaping_scale(self, value):
+        """Accept shaping-scale broadcasts uniformly (self-play applies no shaping)."""
+        self.shaping_scale = float(value)
+
     # ------------------------------------------------------------------
     # Internal helpers
     # ------------------------------------------------------------------
@@ -1211,27 +1065,25 @@ class SelfPlayEnv(gym.Env):
                 action = int(action)
             else:
                 # No compatible checkpoint — pilot the opponent with the scripted agent.
-                action = scripted_action(opp_obs, num_choices)
+                action = self._fallback_controller.choose(opp_obs, num_choices)
             obs, reward, terminated, truncated, info = self._env.step(action)
         return obs, reward, terminated, truncated, info
 
     def _reload_opponent(self):
         """Sample a frozen checkpoint trained to pilot the opponent's deck.
 
-        The frozen opponent plays ``opp_deck``, so we look for a model saved as
-        the mirror matchup ``{opp_deck}_{model_deck}_*.zip``.  If no compatible
-        checkpoint exists, fall back to the scripted agent and warn (once)."""
-        if self._model_deck and self._opp_deck:
-            pattern = f"{self._opp_deck}_{self._model_deck}_*.zip"
-        elif self._model_deck:
-            pattern = f"{self._model_deck}_*.zip"
-        else:
-            pattern = "*.zip"
-        files = _glob.glob(os.path.join(self._checkpoint_dir, pattern))
+        The frozen opponent plays ``opp_deck``, so we look for a model saved to
+        pilot it: the v2 deck-pilot snapshots ``{opp_deck}__v*.zip`` /
+        ``{opp_deck}__final.zip``.  If no compatible checkpoint exists, fall back
+        to the scripted agent and warn (once)."""
+        from opponents import deck_snapshots
+        deck = self._opp_deck or self._model_deck
+        files = deck_snapshots(deck, self._checkpoint_dir)
         if not files:
             if not self._scripted_fallback_warned:
-                print(f"[self-play] WARNING: no checkpoint matching '{pattern}' in "
-                      f"{self._checkpoint_dir}; opponent falling back to the scripted agent.")
+                print(f"[self-play] WARNING: no '{deck}__v*.zip' / '{deck}__final.zip' "
+                      f"checkpoint in {self._checkpoint_dir}; opponent falling back to "
+                      f"the scripted agent.")
                 self._scripted_fallback_warned = True
             self._opponent = None
             return
@@ -1324,6 +1176,10 @@ class FixedModelEnv(gym.Env):
     def close(self):
         self._env.close()
 
+    def set_shaping_scale(self, value):
+        """Accept shaping-scale broadcasts uniformly (fixed-model applies no shaping)."""
+        self.shaping_scale = float(value)
+
     def _training_has_priority(self, obs: np.ndarray) -> bool:
         a_has_priority = obs[32] > 0.5
         return a_has_priority if self._training_is_a else not a_has_priority
@@ -1337,3 +1193,18 @@ class FixedModelEnv(gym.Env):
             action = int(action)
             obs, reward, terminated, truncated, info = self._env.step(action)
         return obs, reward, terminated, truncated, info
+
+
+# ── Back-compat re-export ───────────────────────────────────────────────────
+# The scripted agent now lives in scripted_agent.py.  Importers historically do
+# `from env import scripted_action`, so re-export it here.  This import runs at
+# the bottom of env.py (after every constant/helper scripted_agent needs is
+# defined), so when env is imported first the chain resolves cleanly.  If
+# scripted_agent is imported first, scripted_action is not yet bound when this
+# line runs, so fall back to a lazy wrapper that resolves it on first call.
+try:
+    from scripted_agent import scripted_action  # noqa: E402,F401
+except ImportError:
+    def scripted_action(obs, num_choices):  # noqa: E402
+        from scripted_agent import scripted_action as _sa
+        return _sa(obs, num_choices)

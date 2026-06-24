@@ -1,9 +1,11 @@
 #include "effects.h"
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
 #include "../classes/game.h"
+#include "../classes/match_state.h"
 #include "../cli_output.h"
 #include "../components/carddata.h"
 #include "../components/permanent.h"
@@ -16,7 +18,28 @@ extern Game cur_game;
 
 namespace effects {
 
+static bool search_reveals_card(const Ability &ab);
+
+// A library search reveals the chosen card when it must satisfy a restriction
+// more specific than "any card" — the searcher proves the card qualifies (e.g.
+// Personal Tutor: "search for a sorcery card, reveal it"). An unrestricted
+// "Card" search (Vampiric/Demonic Tutor, Doomsday) reveals nothing. Searches of
+// other zones are public already, so this only matters for the library.
+static bool search_reveals_card(const Ability &ab) {
+    bool from_library = (ab.origin == Zone::LIBRARY);
+    for (auto z : ab.origins) {
+        if (z == Zone::LIBRARY) from_library = true;
+    }
+    bool specific_type = !ab.change_type.empty() && ab.change_type != "Card";
+    return from_library && specific_type;
+}
+
 bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
+    // Same-name search/move (Surgical Extraction, Infernal Tutor, Secret Salvage, Pack
+    // Hunt, ...): ChangeType$ Remembered.sameName / Targeted.sameName.
+    if (ab.change_type.find("sameName") != std::string::npos)
+        return change_zone_same_name(ab, orderer, /*force_all=*/false);
+
     Zone::Ownership owner = global_coordinator.GetComponent<Zone>(ab.source).owner;
 
     const char *dest_str = ab.destination == Zone::BATTLEFIELD ? "the battlefield"
@@ -69,13 +92,16 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
     // Search-based ChangeZone (e.g. fetch lands, Green Sun's Zenith)
     size_t num_to_move = (ab.amount > 0) ? ab.amount : 1;
     bool multi_zone = ab.origins.size() > 1;
+    bool reveal = search_reveals_card(ab);
 
     for (size_t i = 0; i < num_to_move; i++) {
         Entity chosen = 0;
         if (multi_zone) {
-            chosen = search_multi_zone(orderer, owner, ab.origins, ab.change_type, ab.mandatory, ab.destination);
+            chosen = search_multi_zone(orderer, owner, ab.origins, ab.change_type, ab.mandatory, ab.destination,
+                reveal);
         } else {
-            chosen = search_zone(orderer, owner, ab.origin, ab.change_type, ab.mandatory, ab.destination);
+            chosen = search_zone(orderer, owner, ab.origin, ab.change_type, ab.mandatory, ab.destination,
+                reveal);
         }
 
         // after we have chosen but before we place it where it goes, if we messed with library shuffle it
@@ -99,6 +125,12 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
                 (ab.destination == Zone::BATTLEFIELD || ab.destination == Zone::GRAVEYARD || ab.destination == Zone::EXILE);
             if (dest_public) {
                 game_log("%s puts %s to %s\n", player_name(owner).c_str(), chosen_cd.name.c_str(), dest_str);
+            } else if (reveal) {
+                // Hidden destination, but the card was revealed — it's public knowledge.
+                // The orderer reveal hook only fires for public zones, so mark it here.
+                mark_card_revealed(chosen, owner);
+                game_log("%s reveals %s and puts it to %s\n", player_name(owner).c_str(), chosen_cd.name.c_str(),
+                    dest_str);
             } else {
                 game_log_private(
                     owner, "%s puts %s to %s\n", player_name(owner).c_str(), chosen_cd.name.c_str(), dest_str);
@@ -159,6 +191,90 @@ bool parse_change_zone(Ability &ab, const std::string &key, const std::string &v
         return true;
     }
     return false;
+}
+
+// Shared handler for ChangeType$ Remembered.sameName / Targeted.sameName (Surgical
+// Extraction, Extirpate, Infernal Tutor, Secret Salvage, Pack Hunt, ...). Builds the set
+// of cards sharing a name with the referenced card across the ability's Origin zone(s),
+// belonging to the caster (default) or the targeted card's owner (DefinedPlayer$ /
+// Defined$ TargetedController), and moves up to the allowed number to the Destination.
+//
+// Quantity follows the agreed simplification: an "up to N" / count-SVar / ChangeZoneAll
+// quantity moves the maximum available (force_all, an empty amount_svar with a numeric
+// cap moves min(cap, found)). Searching an opponent's hand/library reveals those zones,
+// recorded into the match-scoped belief state (mark_card_revealed) — the only
+// opponent-card-identity channel in the observation.
+bool change_zone_same_name(Ability &ab, std::shared_ptr<Orderer> orderer, bool force_all) {
+    // The reference card whose name we match: the target (Targeted.sameName) or the
+    // remembered object (Remembered.sameName, set by RememberTargets/RememberObjects).
+    Entity ref = 0;
+    if (ab.change_type.find("Targeted") != std::string::npos)
+        ref = !ab.targets.empty() ? ab.targets[0] : ab.target;
+    else
+        ref = !cur_game.remembered_entities.empty() ? cur_game.remembered_entities[0]
+              : (!ab.targets.empty() ? ab.targets[0] : ab.target);
+    if (ref == 0 || !global_coordinator.entity_has_component<CardData>(ref)) return true;
+    std::string name = global_coordinator.GetComponent<CardData>(ref).name;
+
+    // Whose zones to search: the caster by default, or the owner of the referenced card
+    // (DefinedPlayer$/Defined$ TargetedController). Derive from `ref` (the remembered/
+    // targeted card) rather than ab.target, which a Pump vehicle may have overwritten.
+    Zone::Ownership caster = global_coordinator.GetComponent<Zone>(ab.source).owner;
+    Zone::Ownership searched = caster;
+    if (ab.defined_targeted_controller && global_coordinator.entity_has_component<Zone>(ref))
+        searched = global_coordinator.GetComponent<Zone>(ref).owner;
+
+    std::vector<Zone::ZoneValue> zones =
+        ab.origins.size() > 1 ? ab.origins : std::vector<Zone::ZoneValue>{ ab.origin };
+
+    bool searched_library = false;
+    std::vector<Entity> matches;
+    auto collect = [&](const std::vector<Entity> &cards) {
+        for (auto e : cards) {
+            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+            if (global_coordinator.GetComponent<CardData>(e).name == name) matches.push_back(e);
+        }
+    };
+    for (auto z : zones) {
+        if (z == Zone::LIBRARY)        { searched_library = true; collect(orderer->get_library_contents(searched)); }
+        else if (z == Zone::HAND)      collect(orderer->get_hand(searched));
+        else if (z == Zone::GRAVEYARD) collect(orderer->get_graveyard(searched));
+    }
+
+    // Cap: ChangeZoneAll / count-SVar / unset → all matches; numeric ChangeNum → min(N, found).
+    size_t cap = matches.size();
+    if (!force_all && ab.amount_svar.empty() && ab.amount > 0)
+        cap = std::min(static_cast<size_t>(ab.amount), matches.size());
+
+    const char *dest_str = ab.destination == Zone::EXILE       ? "exile"
+                           : ab.destination == Zone::GRAVEYARD ? "graveyard"
+                           : ab.destination == Zone::HAND      ? "hand"
+                           : ab.destination == Zone::BATTLEFIELD ? "the battlefield"
+                                                                 : "library";
+    for (size_t i = 0; i < cap; i++) {
+        orderer->add_to_zone(false, matches[i], ab.destination);
+        if (ab.destination == Zone::BATTLEFIELD)
+            global_coordinator.GetComponent<Zone>(matches[i]).controller = caster;
+        mark_card_revealed(matches[i], searched);  // moved card is now public / revealed
+    }
+    game_log("%s moves %zu card(s) named %s from %s's %s to %s\n", player_name(caster).c_str(),
+        cap, name.c_str(), player_name(searched).c_str(),
+        zones.size() > 1 ? "zones" : "zone", dest_str);
+
+    // Searching an opponent's hidden zones reveals their full contents to the searcher;
+    // record them into the belief state.
+    if (searched != caster) {
+        for (auto z : zones) {
+            if (z == Zone::HAND)    for (auto e : orderer->get_hand(searched))             mark_card_revealed(e, searched);
+            if (z == Zone::LIBRARY) for (auto e : orderer->get_library_contents(searched)) mark_card_revealed(e, searched);
+        }
+    }
+
+    if (searched_library) {
+        orderer->shuffle_library(searched);
+        game_log("%s shuffles their library\n", player_name(searched).c_str());
+    }
+    return true;
 }
 
 }  // namespace effects

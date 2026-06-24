@@ -23,6 +23,9 @@ struct StaticAbility {
     std::string raise_cost_filter = ""; // "nonCreature" = apply to non-creature spells
     // CantBeActivated fields (category = "CantBeActivated"):
     std::string cant_activate_card_filter = "";  // "Artifact" — card type whose activated abilities are suppressed
+    // NamedCard fields (RaiseCost / CantBeActivated with ValidCard$ Card.NamedCard, e.g. Disruptor Flute):
+    // when true the static applies only to cards whose name equals the source permanent's chosen_name.
+    bool match_named_card = false;
     // Icetill Explorer statics (category = "Continuous"):
     int adjust_land_plays = 0;            // AdjustLandPlays$ N — additional land plays per turn
     bool may_play_from_graveyard = false; // MayPlay$ True with AffectedZone$ Graveyard
