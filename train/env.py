@@ -188,7 +188,8 @@ class RoboMageEnv(gym.Env):
                  deck_a: str | None = None, deck_b: str | None = None,
                  bo3: bool = False, auto_sideboard: bool = False,
                  narrative: bool = False, no_shuffle: bool = False,
-                 battlefield_a: str | None = None, battlefield_b: str | None = None):
+                 battlefield_a: str | None = None, battlefield_b: str | None = None,
+                 log_viewer: str | None = None):
         super().__init__()
         self.binary_path = os.path.realpath(binary_path)
         self.render_mode = render_mode
@@ -205,6 +206,10 @@ class RoboMageEnv(gym.Env):
         self._no_shuffle = no_shuffle
         self._battlefield_a = battlefield_a
         self._battlefield_b = battlefield_b
+        # When set ("A"/"B"), the engine redacts game_log_private narrative to
+        # that seat's view (hidden draws, tutored/top-of-library cards) without
+        # rerouting input — both seats still respond over the machine protocol.
+        self._log_viewer = log_viewer
 
         self.observation_space = spaces.Box(
             low=-10.0, high=10.0, shape=(OBS_SIZE,), dtype=np.float32
@@ -247,6 +252,8 @@ class RoboMageEnv(gym.Env):
             cmd += ["--battlefield-a", self._battlefield_a]
         if self._battlefield_b:
             cmd += ["--battlefield-b", self._battlefield_b]
+        if self._log_viewer:
+            cmd += ["--log-viewer", self._log_viewer]
         self._proc = subprocess.Popen(
             cmd,
             stdin=subprocess.PIPE,

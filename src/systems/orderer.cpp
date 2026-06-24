@@ -346,6 +346,7 @@ void Orderer::draw_one(Zone::Ownership player, bool fire_draw_event) {
     auto &pl = global_coordinator.GetComponent<Player>(player_entity);
     game_log_private(player, "%s draws %s\n", player_name(player).c_str(),
              global_coordinator.GetComponent<CardData>(top).name.c_str());
+    game_log_redacted(player, "%s draws a card\n", player_name(player).c_str());
     // Route through the canonical zone mover so a draw fires CARD_CHANGED_ZONE,
     // closes the library gap, and updates the known-top-of-library cache.
     add_to_zone(false, top, Zone::HAND);
@@ -476,6 +477,16 @@ void Orderer::do_london_mulligan() {
         populate_gamestate(&gs, viewer);
     };
 
+    // Keep/mulligan outcomes are public knowledge (both players see them), so
+    // log via game_log. On a London-mulligan keep the final hand is 7 minus the
+    // number of mulligans taken (the rest get bottomed).
+    auto log_mull_decision = [&](Zone::Ownership owner, bool kept, int mulls) {
+        if (kept)
+            game_log("%s keeps a %d-card hand.\n", player_name(owner).c_str(), 7 - mulls);
+        else
+            game_log("%s mulligans.\n", player_name(owner).c_str());
+    };
+
     auto do_bottom_deck = [&](Zone::Ownership owner, int count) {
         std::string pname = player_name(owner);
         for (int i = 0; i < count; i++) {
@@ -517,11 +528,14 @@ void Orderer::do_london_mulligan() {
             int choice = InputLogger::instance().get_input(mull_actions);
             if (choice == 0) {
                 a_kept = true;
+                log_mull_decision(Zone::PLAYER_A, true, mulligans_a);
                 do_bottom_deck(Zone::PLAYER_A, mulligans_a);
             } else {
+                log_mull_decision(Zone::PLAYER_A, false, mulligans_a);
                 mulligans_a++;
                 if (mulligans_a == 7) {
                     a_kept = true;
+                    log_mull_decision(Zone::PLAYER_A, true, mulligans_a);
                     do_bottom_deck(Zone::PLAYER_A, mulligans_a);
                 } else {
                     if (mulligans_a >= 3 && InputLogger::instance().is_machine_mode()) {
@@ -559,11 +573,14 @@ void Orderer::do_london_mulligan() {
             int choice = InputLogger::instance().get_input(mull_actions);
             if (choice == 0) {
                 b_kept = true;
+                log_mull_decision(Zone::PLAYER_B, true, mulligans_b);
                 do_bottom_deck(Zone::PLAYER_B, mulligans_b);
             } else {
+                log_mull_decision(Zone::PLAYER_B, false, mulligans_b);
                 mulligans_b++;
                 if (mulligans_b == 7) {
                     b_kept = true;
+                    log_mull_decision(Zone::PLAYER_B, true, mulligans_b);
                     do_bottom_deck(Zone::PLAYER_B, mulligans_b);
                 } else {
                     if (mulligans_b >= 3 && InputLogger::instance().is_machine_mode()) {

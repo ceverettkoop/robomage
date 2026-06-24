@@ -134,7 +134,7 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
             } else {
                 game_log_private(
                     owner, "%s puts %s to %s\n", player_name(owner).c_str(), chosen_cd.name.c_str(), dest_str);
-                game_log("%s puts a card to %s\n", player_name(owner).c_str(), dest_str);
+                game_log_redacted(owner, "%s puts a card to %s\n", player_name(owner).c_str(), dest_str);
             }
         } else {
             game_log("%s fails to find\n", player_name(owner).c_str());

@@ -346,7 +346,7 @@ PLAY_TOOL = Tool("play", "train/play.py", flat=True, subs=[
             help="Override: explicit path to trained model .zip "
                  "(default: checkpoints/<model-deck>_<human-deck>_final.zip)"),
         Arg("--gui", "flag", help="Launch raylib GUI window for human input"),
-        Arg("--tui", "flag", help="Launch the TUI game board (train/tui_game.py)"),
+        Arg("--tui", "flag", default=True, help="Launch the TUI game board (train/tui_game.py)"),
         Arg("--scripted", "flag",
             help="Use the rule-based scripted agent as the opponent (no checkpoint needed; TUI only)"),
         Arg("--player", "choice", choices=("A", "B"), default=None,

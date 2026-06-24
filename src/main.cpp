@@ -49,6 +49,11 @@ Game cur_game;
 bool gui_mode = false;
 bool has_human_player = false;
 bool human_player_is_a = false;
+// Narrative spectator: pins game_log_private output to one player's view even
+// when both seats are driven over the machine protocol (the TUI play mode wants
+// one-sided narrative without routing input through the human-keyboard path).
+bool log_viewer_set = false;
+Zone::Ownership log_viewer_owner = Zone::UNKNOWN;
 extern volatile bool gui_killed;
 pthread_t game_loop_thread;
 
@@ -427,6 +432,13 @@ int main(int argc, char const *argv[]) {
             has_human_player = true;
             std::string p = argv[i + 1];
             human_player_is_a = (p == "A" || p == "a");
+            i++;
+        } else if (std::string(argv[i]) == "--log-viewer" && i + 1 < argc) {
+            // Narrative-only viewer: redact game_log_private to one seat's view
+            // without setting has_human_player (input stays on the machine path).
+            log_viewer_set = true;
+            std::string p = argv[i + 1];
+            log_viewer_owner = (p == "A" || p == "a") ? Zone::PLAYER_A : Zone::PLAYER_B;
             i++;
         } else if (std::string(argv[i]) == "--deck" && i + 1 < argc) {
             deck_a_name = argv[i + 1];

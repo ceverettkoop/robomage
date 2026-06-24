@@ -144,8 +144,11 @@ bool dig(Ability &ab, std::shared_ptr<Orderer> orderer) {
         if (chosen_dest == Zone::LIBRARY) {
             game_log_private(dig_owner, "%s puts %s on the %s of their library.\n", player_name(dig_owner).c_str(),
                 cd.name.c_str(), on_bottom ? "bottom" : "top");
+            game_log_redacted(dig_owner, "%s puts a card on the %s of their library.\n",
+                player_name(dig_owner).c_str(), on_bottom ? "bottom" : "top");
         } else {
             game_log_private(dig_owner, "%s puts %s into hand.\n", player_name(dig_owner).c_str(), cd.name.c_str());
+            game_log_redacted(dig_owner, "%s puts a card into hand.\n", player_name(dig_owner).c_str());
         }
     }
 

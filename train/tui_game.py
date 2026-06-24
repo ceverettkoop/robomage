@@ -484,7 +484,12 @@ def run(binary_path, model_path, human_player=None,
     deck_a = model_deck if opp_is_a else human_deck
     deck_b = human_deck if opp_is_a else model_deck
 
-    env = TuiEnv(binary_path=binary_path, deck_a=deck_a, deck_b=deck_b)
+    # Pin the engine's private-narrative perspective to the human's seat so the
+    # game log only reveals what the human would actually know (their own draws,
+    # tutored/top-of-library cards) — not the opponent's hidden information.
+    human_seat = "B" if opp_is_a else "A"
+    env = TuiEnv(binary_path=binary_path, deck_a=deck_a, deck_b=deck_b,
+                 log_viewer=human_seat)
 
     def opp_act(obs, num):
         if model is not None:

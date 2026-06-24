@@ -103,14 +103,46 @@ void game_log(const char* fmt, ...) {
     va_end(ap);
 }
 
-void game_log_private(Zone::Ownership private_to, const char* fmt, ...) {
-    if (InputLogger::instance().is_machine_mode() && !gui_mode && !narrative_mode) return;
+// Resolve the perspective that one-sided narrative output should be limited to.
+// Returns true and sets *owner when output is restricted: a human is at the
+// keyboard (--player) or a spectator view is pinned (--log-viewer, used by the
+// TUI which drives both seats over the machine protocol but still wants
+// one-sided narrative). Returns false for full perfect-information narrative.
+bool resolve_narrative_viewer(Zone::Ownership* owner) {
     extern bool has_human_player;
     extern bool human_player_is_a;
+    extern bool log_viewer_set;
+    extern Zone::Ownership log_viewer_owner;
     if (has_human_player) {
-        Zone::Ownership human_owner = human_player_is_a ? Zone::PLAYER_A : Zone::PLAYER_B;
-        if (private_to != human_owner) return;
+        *owner = human_player_is_a ? Zone::PLAYER_A : Zone::PLAYER_B;
+        return true;
     }
+    if (log_viewer_set) {
+        *owner = log_viewer_owner;
+        return true;
+    }
+    return false;
+}
+
+void game_log_private(Zone::Ownership private_to, const char* fmt, ...) {
+    if (InputLogger::instance().is_machine_mode() && !gui_mode && !narrative_mode) return;
+    Zone::Ownership viewer;
+    if (resolve_narrative_viewer(&viewer) && private_to != viewer) return;
+    va_list ap;
+    va_start(ap, fmt);
+    game_log_va(fmt, ap);
+    va_end(ap);
+}
+
+// Complement of game_log_private: emits only to a pinned viewer who is NOT
+// `owner` — the redacted/generic line an opponent sees in place of hidden info
+// (e.g. "draws a card" instead of "draws Ponder"). Silent when narrative is
+// unrestricted or the viewer IS the owner, so pairing it with game_log_private
+// on the same event yields exactly one line in every perspective.
+void game_log_redacted(Zone::Ownership owner, const char* fmt, ...) {
+    if (InputLogger::instance().is_machine_mode() && !gui_mode && !narrative_mode) return;
+    Zone::Ownership viewer;
+    if (!resolve_narrative_viewer(&viewer) || viewer == owner) return;
     va_list ap;
     va_start(ap, fmt);
     game_log_va(fmt, ap);
