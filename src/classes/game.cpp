@@ -9,6 +9,7 @@
 #include "../ecs/coordinator.h"
 #include "../ecs/entity.h"
 #include "../ecs/events.h"
+#include "../game_queries.h"
 #include "../mana_system.h"
 #include "../systems/orderer.h"
 #include "../systems/stack_manager.h"
@@ -179,13 +180,10 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                         if (!global_coordinator.entity_has_component<Creature>(e)) continue;
                         auto &cr = global_coordinator.GetComponent<Creature>(e);
                         if (!cr.is_attacking && !cr.is_blocking) continue;
-                        for (const auto &kw : cr.keywords) {
-                            if (kw == "First Strike" || kw == "Double Strike") {
-                                has_first_strikers = true;
-                                break;
-                            }
+                        if (creature_deals_first_strike_damage(cr)) {
+                            has_first_strikers = true;
+                            break;
                         }
-                        if (has_first_strikers) break;
                     }
                     if (has_first_strikers) {
                         cur_step = FIRST_STRIKE_DAMAGE;

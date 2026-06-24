@@ -36,7 +36,7 @@
 static bool should_deal_damage(const Creature &cr, bool first_strike_only) {
     bool has_fs = creature_has_keyword(cr, "First Strike");
     bool has_ds = creature_has_keyword(cr, "Double Strike");
-    if (first_strike_only) return has_fs || has_ds;
+    if (first_strike_only) return creature_deals_first_strike_damage(cr);
     // Regular damage step: skip first-strikers (they already dealt), but double strikers hit again
     if (has_fs && !has_ds) return false;
     return true;

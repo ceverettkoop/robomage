@@ -23,7 +23,6 @@
 extern Coordinator global_coordinator;
 extern Game cur_game;
 
-static const char *mana_symbol_str(Colors color);
 static bool permanent_cant_activate(Entity entity);
 static size_t eval_mana_amount(const Ability &ab, Zone::Ownership controller,
                                std::shared_ptr<Orderer> orderer);
@@ -32,6 +31,9 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
                           Entity paid_for, std::shared_ptr<Orderer> orderer, bool has_delve,
                           bool commit = true);
 static bool restricted_mana_matches(Entity source_entity, Entity paid_for);
+static bool is_delve_eligible(Entity e, Zone::Ownership controller);
+static void delve_exile_one(Entity e, Zone::Ownership controller,
+                            std::shared_ptr<Orderer> orderer, ManaValue &remaining);
 
 Entity get_player_entity(Zone::Ownership player) {
     return (player == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
@@ -92,18 +94,6 @@ void empty_mana_pool(Zone::Ownership player_owner) {
         fflush(stdout);
     }
     player.mana.clear();
-}
-
-static const char *mana_symbol_str(Colors color) {
-    switch (color) {
-        case WHITE:    return "W";
-        case BLUE:     return "U";
-        case BLACK:    return "B";
-        case RED:      return "R";
-        case GREEN:    return "G";
-        case COLORLESS: return "C";
-        default:       return "?";
-    }
 }
 
 // Check if a permanent's abilities are suppressed by a CantBeActivated static
@@ -436,6 +426,32 @@ static ManaValue pay_from_pool(ManaValue &pool, const ManaValue &cost) {
     return remaining;
 }
 
+// True if `e` is a graveyard instant/sorcery owned by `controller` — i.e. a card
+// Delve can exile to pay a generic pip. Single source for "what can Delve eat",
+// consumed by both the automatic payer and the interactive prompt.
+static bool is_delve_eligible(Entity e, Zone::Ownership controller) {
+    if (!global_coordinator.entity_has_component<Zone>(e)) return false;
+    auto &ez = global_coordinator.GetComponent<Zone>(e);
+    if (ez.location != Zone::GRAVEYARD || ez.owner != controller) return false;
+    if (!global_coordinator.entity_has_component<CardData>(e)) return false;
+    for (auto &t : global_coordinator.GetComponent<CardData>(e).types)
+        if (t.kind == TYPE && (t.name == "Instant" || t.name == "Sorcery")) return true;
+    return false;
+}
+
+// Pay one generic pip via Delve: exile `e`, record it for the etbCounter count, and
+// drop one GENERIC from `remaining`. Single source for the delve-exile action used by
+// both payment paths.
+static void delve_exile_one(Entity e, Zone::Ownership controller,
+                            std::shared_ptr<Orderer> orderer, ManaValue &remaining) {
+    auto &ecd = global_coordinator.GetComponent<CardData>(e);
+    orderer->add_to_zone(false, e, Zone::EXILE);
+    cur_game.delve_exiled.push_back(e);
+    auto git = remaining.find(GENERIC);
+    if (git != remaining.end()) remaining.erase(git);
+    game_log("%s exiles %s via Delve.\n", player_name(controller).c_str(), ecd.name.c_str());
+}
+
 // Greedily tap sources to cover the remaining cost. This is the single mana-payment
 // algorithm used by BOTH the machine-mode payer (commit=true, mutates real ECS state)
 // and the legality check via can_pay_mana (commit=false, operates on a copied pool with
@@ -465,25 +481,13 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
     if (has_delve) {
         for (auto e : orderer->mEntities) {
             if (remaining.count(GENERIC) == 0) break;
-            if (!global_coordinator.entity_has_component<Zone>(e)) continue;
-            auto &ez = global_coordinator.GetComponent<Zone>(e);
-            if (ez.location != Zone::GRAVEYARD || ez.owner != controller) continue;
-            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
-            auto &ecd = global_coordinator.GetComponent<CardData>(e);
-            bool is_inst_sorc = false;
-            for (auto &t : ecd.types)
-                if (t.kind == TYPE && (t.name == "Instant" || t.name == "Sorcery")) {
-                    is_inst_sorc = true; break;
-                }
-            if (!is_inst_sorc) continue;
+            if (!is_delve_eligible(e, controller)) continue;
             if (commit) {
-                orderer->add_to_zone(false, e, Zone::EXILE);
-                cur_game.delve_exiled.push_back(e);
-                game_log("%s exiles %s via Delve.\n",
-                         player_name(controller).c_str(), ecd.name.c_str());
+                delve_exile_one(e, controller, orderer, remaining);
+            } else {
+                auto git = remaining.find(GENERIC);
+                if (git != remaining.end()) remaining.erase(git);
             }
-            auto git = remaining.find(GENERIC);
-            if (git != remaining.end()) remaining.erase(git);
         }
     }
 
@@ -679,18 +683,8 @@ bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,
         size_t delve_action_start = pay_actions.size();
         if (has_delve && remaining.count(GENERIC) > 0) {
             for (auto e : orderer->mEntities) {
-                if (!global_coordinator.entity_has_component<Zone>(e)) continue;
-                auto &ez = global_coordinator.GetComponent<Zone>(e);
-                if (ez.location != Zone::GRAVEYARD || ez.owner != controller) continue;
-                if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+                if (!is_delve_eligible(e, controller)) continue;
                 auto &ecd = global_coordinator.GetComponent<CardData>(e);
-                bool is_instant_or_sorcery = false;
-                for (auto &t : ecd.types)
-                    if (t.kind == TYPE && (t.name == "Instant" || t.name == "Sorcery")) {
-                        is_instant_or_sorcery = true;
-                        break;
-                    }
-                if (!is_instant_or_sorcery) continue;
                 LegalAction la(PASS_PRIORITY, e, "Exile " + ecd.name + " (Delve)");
                 la.category = ActionCategory::PAYING_COSTS;
                 pay_actions.push_back(la);
@@ -730,14 +724,7 @@ bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,
         // Is this a delve exile action?
         if (static_cast<size_t>(choice) >= delve_action_start &&
             (!has_delve || chosen.type == PASS_PRIORITY)) {
-            Entity exiled = chosen.source_entity;
-            orderer->add_to_zone(false, exiled, Zone::EXILE);
-            cur_game.delve_exiled.push_back(exiled);
-            // Remove one generic from remaining
-            auto git = remaining.find(GENERIC);
-            if (git != remaining.end()) remaining.erase(git);
-            auto &ecd = global_coordinator.GetComponent<CardData>(exiled);
-            game_log("%s exiles %s via Delve.\n", player_name(controller).c_str(), ecd.name.c_str());
+            delve_exile_one(chosen.source_entity, controller, orderer, remaining);
         } else {
             // Mana ability activation
             Entity source_entity = chosen.source_entity;

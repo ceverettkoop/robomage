@@ -182,14 +182,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             auto hand = orderer->get_hand(priority_player);
             for (auto card_entity : hand) {
                 auto &card_data = global_coordinator.GetComponent<CardData>(card_entity);
-                bool is_land = false;
-                for (auto &type : card_data.types) {
-                    if (type.kind == TYPE && type.name == "Land") {
-                        is_land = true;
-                        break;
-                    }
-                }
-                if (is_land) {
+                if (is_land_card(card_data)) {
                     std::string desc = "Play " + card_data.name;
                     LegalAction la(SPECIAL_ACTION, card_entity, desc);
                     la.category = ActionCategory::PLAY_LAND;
@@ -205,10 +198,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                     if (gz.location != Zone::GRAVEYARD || gz.owner != priority_player) continue;
                     if (!global_coordinator.entity_has_component<CardData>(gy_e)) continue;
                     auto &gcd = global_coordinator.GetComponent<CardData>(gy_e);
-                    bool is_land = false;
-                    for (auto &t : gcd.types)
-                        if (t.kind == TYPE && t.name == "Land") { is_land = true; break; }
-                    if (is_land) {
+                    if (is_land_card(gcd)) {
                         std::string desc = "Play " + gcd.name + " (from graveyard)";
                         LegalAction la(SPECIAL_ACTION, gy_e, desc);
                         la.category = ActionCategory::PLAY_LAND;
@@ -310,9 +300,8 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             LegalAction la(CAST_SPELL, card_entity, desc);
             la.category = ActionCategory::CAST_SPELL;
 
-            // Check RaiseCost and CantBeCast statics from cached active_statics
+            // Check CantBeCast statics from cached active_statics
             bool card_is_creature = is_creature_card(card_data);
-            int raise_total = active_raise_cost_for(card_data);
             bool cast_blocked = false;
             for (const auto &as : g_active_statics) {
                 if (as.sa->category != "CantBeCast") continue;
@@ -328,8 +317,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             }
             if (cast_blocked) continue;
 
-            ManaValue effective_cost = card_data.mana_cost;
-            for (int ri = 0; ri < raise_total; ri++) effective_cost.insert(GENERIC);
+            ManaValue effective_cost = effective_base_cost(card_data);
 
             // X-cost spells: base cost (without X) is enough to be castable;
             // X value is chosen at cast time in action_processor

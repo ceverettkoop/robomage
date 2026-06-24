@@ -39,23 +39,6 @@ MAX_ENTITIES exhaustion / unbounded-loop detection:
 Known ML problems:
 Does not know what's in exile
 
-Scripted agent fixes (deferred from sanity-check 2026-06-22; minimum changes to reduce noise):
-- X spells: agent casts Green Sun's Zenith the moment it has 1 mana, forcing X=0. The
-  X-value choice (OTHER_CHOICE) is currently random.choice. Fix: pick the MAX affordable X,
-  and/or hold GSZ until it has >=3 mana so X>=2. X=0 only ever finds Dryad Arbor; subsequent
-  X=0 casts find nothing and shuffle GSZ back (wasted). scripted_agent.py _greedy_action.
-- Keen-Eyed Curator: agent over-activates the graveyard-exile ability, stacking several
-  copies that all target the same card (picks target index 0 each time) -> later copies
-  ChangeZone-fizzle. Fix: only one Curator ability on the stack at a time (skip ACTIVATE if a
-  self Curator ability is already on the stack), so each resolves before the next targets a
-  fresh card. scripted_agent.py _greedy_action ACTIVATE loop.
-
-Engine bugs found in scripted-vs-scripted sanity check (2026-06-22, decks delver/doomsday/mav):
-[FIXED 2026-06-22] all three below resolved and committed:
-- Unholy Heat delirium damage (Count$Delirium.<yes>.<no> now parsed; unified via check_delirium). ad450d3
-- Knight of the Reliquary land static (Count$ValidGraveyard Land.YouOwn now evaluated). b430979
-- Deep Analysis / Draw now draws for the targeted player, not the controller. c6b0e61
-
 Observation space:
 - Add opponent's hand to the observation space when it becomes revealed (e.g. by
   Surgical Extraction / Thoughtseize / Duress). There are currently no per-card

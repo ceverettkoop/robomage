@@ -43,12 +43,30 @@ inline bool creature_has_keyword(const Creature &cr, const char *kw) {
     return false;
 }
 
+// True if the creature deals damage during the first-strike combat damage step
+// (it has First Strike or Double Strike). Single source for "does a first-strike
+// damage step matter": the step-skip scan and the per-creature damage gate both
+// consume this so they cannot drift on the keyword literals.
+inline bool creature_deals_first_strike_damage(const Creature &cr) {
+    return creature_has_keyword(cr, "First Strike") ||
+           creature_has_keyword(cr, "Double Strike");
+}
+
 // True if `e` is a spell that was cast via flashback. Such a spell is exiled
 // (rather than sent to the graveyard) when it leaves the stack — whether it
 // resolves or is countered. Single source for that "leaves-stack → exile" rule.
 inline bool spell_cast_with_flashback(Entity e) {
     return global_coordinator.entity_has_component<Spell>(e) &&
            global_coordinator.GetComponent<Spell>(e).cast_with_flashback;
+}
+
+// True if the type list carries the "Basic" supertype (i.e. a basic land). This is
+// the supertype check used for nonBasic-land target/search filters — distinct from
+// is_basic_land_subtype(), which matches the six basic-land *subtype* names.
+inline bool has_basic_supertype(const std::set<Type> &types) {
+    for (const auto &t : types)
+        if (t.kind == SUPERTYPE && t.name == "Basic") return true;
+    return false;
 }
 
 // True for the six basic land subtype names that carry an innate mana ability.

@@ -22,12 +22,11 @@
 #include "mana_system.h"
 #include "systems/orderer.h"
 #include "systems/state_manager.h"
+#include "systems/state_manager_internal.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;
 
-static std::string entity_name(Entity e);
-static const char *mana_symbol_str(Colors color);
 static Entity prompt_permanent_choice(const std::vector<Entity> &choices, const char *verb, const char *suffix);
 static void pay_secondary_activation_costs(
     const Ability &ability, Entity source, Zone::Ownership controller, std::shared_ptr<Orderer> orderer);
@@ -43,35 +42,8 @@ static std::string landwalk_subtype(const std::string &kw);
 static std::vector<Entity> determine_blockable_attackers(Entity blocker, const std::vector<Entity> &attackers);
 static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer);
 
-static std::string entity_name(Entity e) {
-    if (global_coordinator.entity_has_component<Permanent>(e)) {
-        auto &perm = global_coordinator.GetComponent<Permanent>(e);
-        return perm.is_token ? perm.name + " token" : perm.name;
-    }
-    if (global_coordinator.entity_has_component<CardData>(e)) return global_coordinator.GetComponent<CardData>(e).name;
-    if (global_coordinator.entity_has_component<Token>(e))
-        return global_coordinator.GetComponent<Token>(e).name + " token";
-    return "<unknown>";
-}
-
-static const char *mana_symbol_str(Colors color) {
-    switch (color) {
-        case WHITE:
-            return "W";
-        case BLUE:
-            return "U";
-        case BLACK:
-            return "B";
-        case RED:
-            return "R";
-        case GREEN:
-            return "G";
-        case COLORLESS:
-            return "C";
-        default:
-            return "?";
-    }
-}
+// entity_name() is shared from the StateManager TUs via state_manager_internal.h.
+// mana_symbol_str() is the canonical const-char* color symbol from classes/colors.h.
 
 // Present the player a menu of permanents and return the chosen entity. `verb`
 // and `suffix` frame the label, e.g. ("Sacrifice ", "") or ("Return ", " to hand").
@@ -949,11 +921,8 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                 pay_alternate_cost(action, game, orderer, card_data, spell_entity, zone);
 
             } else {  // REGULAR COST + DELVE
-                ManaValue cost_to_pay = card_data.mana_cost;
-
-                // Check RaiseCost statics from cached g_active_statics (NamedCard-aware)
-                int raise_total = active_raise_cost_for(card_data);
-                for (int ri = 0; ri < raise_total; ri++) cost_to_pay.insert(GENERIC);
+                // RaiseCost surcharge (NamedCard-aware) folded in; shared with legality.
+                ManaValue cost_to_pay = effective_base_cost(card_data);
 
                 // X-COST: prompt player to choose X value, add X generic to cost
                 if (card_data.has_x_cost) {
@@ -979,8 +948,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                         ? cur_game.player_a_entity : cur_game.player_b_entity;
                     auto &phyrex_player = global_coordinator.GetComponent<Player>(caster_entity);
                     for (Colors phyrex_color : card_data.phyrexian_mana) {
-                        std::string color_name = (phyrex_color == WHITE) ? "W" : (phyrex_color == BLUE) ? "U"
-                            : (phyrex_color == BLACK) ? "B" : (phyrex_color == RED) ? "R" : "G";
+                        std::string color_name = mana_symbol_str(phyrex_color);
                         std::vector<LegalAction> phyrex_actions;
                         LegalAction pay_life(PASS_PRIORITY, "Pay 2 life (instead of {" + color_name + "})");
                         pay_life.category = ActionCategory::PAYING_COSTS;

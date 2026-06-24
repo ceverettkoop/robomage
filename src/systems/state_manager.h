@@ -6,6 +6,7 @@
 #include "../components/zone.h"
 #include "../components/static_ability.h"
 #include "../classes/action.h"
+#include "../classes/colors.h"
 #include <vector>
 #include <string>
 #include <memory>
@@ -36,6 +37,12 @@ extern std::vector<ActiveStatic> g_active_statics;
 // RaiseCost applies only when the spell's name equals its source's chosen_name. Shared by
 // determine_legal_actions (affordability) and action_processor (payment).
 int active_raise_cost_for(const CardData &card_data);
+
+// `card_data.mana_cost` with the active RaiseCost generic surcharge folded in (but
+// NOT the X-cost choice, which is resolved interactively at cast time). The single
+// effective-base-cost builder shared by determine_legal_actions (affordability) and
+// action_processor (payment) so the two cannot disagree on the surcharge.
+ManaValue effective_base_cost(const CardData &card_data);
 
 class StateManager : public System {
 

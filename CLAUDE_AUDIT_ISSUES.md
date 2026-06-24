@@ -222,45 +222,101 @@ so the flashback flag is captured into `was_flashback` *before* removal. Verifie
 flashback Deep Analysis countered → exiled (absent from both graveyards);
 hardcast Deep Analysis countered → graveyard (no regression).
 
-### ☐ 12. First/double-strike "does it matter" decided in two places
-Step-skip scan (`game.cpp:187-192`) vs per-creature damage gate
-(`state_manager.cpp:756-763`), separate keyword literals.
+### ☑ 12. First/double-strike "does it matter" decided in two places
+**Resolved.** Added one predicate `creature_deals_first_strike_damage(const
+Creature&)` (`game_queries.h`) — true iff the creature has First Strike or Double
+Strike. The step-skip scan (`game.cpp` DECLARE_BLOCKERS → does a first-strike
+damage step matter) and the per-creature damage gate (`should_deal_damage`'s
+`first_strike_only` branch in `state_manager_combat.cpp`) both call it, so the two
+can no longer drift on the keyword literals. Verified: a first striker (Thalia)
+attacking unblocked enters the First Strike Combat Damage step; a lone
+non-first-striker (Grizzly Bears) skips straight to Combat Damage.
 
-### ☐ 13. Delve reduction implemented 3× (planning vs execution)
-`state_manager.cpp:1297-1322` vs `mana_system.cpp:478-500` & `678-696`.
+### ☑ 13. Delve reduction implemented 3× → unified to 2 shared helpers
+The "planning" copy (`can_afford_with_delve`/`count_delve_fuel`) was already
+removed under issue 3 (legality now runs the real payer in simulate mode). The two
+remaining execution copies — the automatic payer (`auto_pay_mana`) and the
+interactive prompt (`prompt_mana_payment`), both in `mana_system.cpp` — duplicated
+both the "which graveyard card can Delve eat" scan and the "exile one card to pay a
+generic pip" action. **Resolved.** Added two statics in `mana_system.cpp`:
+`is_delve_eligible(Entity, controller)` (graveyard instant/sorcery owned by the
+caster) and `delve_exile_one(...)` (exile + record in `delve_exiled` + drop one
+GENERIC + log). Both payment paths delegate to them. Verified: delver mirror games
+exile multiple instants via Delve and Murktide Regent casts via Delve, entering as
+an 8/8 (4 instants exiled → 4 +1/+1 counters over the 4/4 base).
 
-### ☐ 14. RaiseCost + X-cost effective-cost loop written twice
-`state_manager.cpp:1487-1507` vs `action_processor.cpp:1089-1095`; only legality
-side handles `CantBeCast`.
+### ☑ 14. RaiseCost effective-cost loop written twice → one builder
+`active_raise_cost_for` already centralised "how much"; the "insert that many
+GENERIC pips into the base cost" loop was duplicated in legality
+(`state_manager_actions.cpp`) and payment (`action_processor.cpp`). **Resolved.**
+Added `effective_base_cost(const CardData&)` (`state_manager_statics.cpp`, declared
+in `state_manager.h`) = `mana_cost` + RaiseCost surcharge (NOT the X choice, which
+is interactive at cast time). Both sites consume it. The X-cost loop is execution-
+only by design (legality uses the base cost), and `CantBeCast` is legality-only by
+design (execution never re-checks an action that wasn't offered) — neither is a
+duplicated copy. Verified: with Thalia (RaiseCost) in play, Player B's Lightning
+Bolt is uncastable on a single Mountain ({1}{R}); with no Thalia it is castable
+(R).
 
-### ☐ 15. Player life-loss from damage handled two ways
-Combat path fires events + lifelink (`state_manager.cpp:818`); ability
-`DealDamage` does neither (`ability.cpp:1054`); no `deal_damage_to_player()`.
+### ☑ 15. Player life-loss from damage — one `deal_damage_to_player()`
+**Resolved.** Added `deal_damage_to_player(source, player_entity, amount)`
+(`damage.cpp`/`damage.h`): reduces the player's life and grants the source's
+controller lifelink if the source has it. The ability `DealDamage` path
+(`effect_deal_damage.cpp`) now routes through it, so ability/burn damage from a
+lifelink creature finally gains life (previously it did neither). The combat path
+(`deal_combat_damage`) intentionally keeps its own subtraction + `apply_lifelink_if_any`
+accumulation because combat lifelink must be applied *simultaneously* with damage
+taken (rule 119.3) — documented at the helper. The combat-only
+`COMBAT_DAMAGE_TO_PLAYER` event stays combat-specific (only Barrowgoyf-style
+"deals combat damage" triggers consume it); no unconsumed general damage event was
+added. Verified: Lightning Bolt to a player still deals 3 (20→17) with no spurious
+life gain (the spell source has no Lifelink); diag 10 games, 0 draws/crashes.
 
-### ◐ 16. `entity_name(Entity)` byte-identical static in two TUs
-The StateManager subsystem split unified its copies behind
-`state_manager_internal.h` (declared there, used across the `state_manager_*`
-TUs). **`action_processor.cpp:42-51` still keeps its own private static** instead
-of including the shared declaration — partially resolved.
+### ☑ 16. `entity_name(Entity)` byte-identical static in two TUs
+**Resolved.** `action_processor.cpp` now includes `state_manager_internal.h` and
+its byte-identical private static (plus the stale forward declaration) was deleted,
+so both TUs link to the single definition in `state_manager_statics.cpp`.
 
 ### ☑ 17. `opponent_of(player)` open-coded 5×
 **Resolved.** The open-coded `(player == A) ? B : A` flips were replaced by the
 existing `get_player_entity()` helper (`mana_system.h:18`), now called
 consistently (`action_processor.cpp`, `state_manager_statics.cpp`, etc.).
 
-### ◐ 18. "is (non)basic land" type scan copy-pasted in 3 files
-Helpers `is_land_card()` / `is_basic_land_subtype()` now exist in
-`game_queries.h` and `state_manager_statics.cpp` uses them — **but `ability.cpp`
-and `state_manager_actions.cpp` still open-code the scan.** Adopt the helpers at
-the remaining sites.
+### ☑ 18. "is (non)basic land" type scan copy-pasted in 3 files
+**Resolved.** `state_manager_actions.cpp`'s two standalone land scans (play-from-hand
+and play-from-graveyard legality) now call `is_land_card()`. For the "Basic"
+*supertype* test (nonBasic-land filters) — which `is_basic_land_subtype()` does NOT
+cover (that matches the six basic *subtype* names) — added a new
+`has_basic_supertype(const std::set<Type>&)` to `game_queries.h` and adopted it at
+all three `ability.cpp` sites (`matches_filter_spec` Basic/nonBasic qualifier, plus
+the graveyard and battlefield target-validity nonBasic checks), collapsing the
+hand-rolled supertype loops. Verified: Wasteland offers only nonbasic lands (Tundra,
+itself) as targets — basics excluded — and destroys the targeted Tundra; diag 10
+games, 0 draws/crashes.
 
-### ☐ 19. Cost-token parser reimplemented 3× in parse.cpp
-`parse.cpp:321-352`, `361-376`, `812-867`; Flashback & Cycling silently drop
-tokens the main `Cost$` honors.
+### ☑ 19. Cost-token parser reimplemented 3× in parse.cpp
+**Resolved.** Extracted the canonical `Cost$` token grammar into
+`parse_activation_cost(const std::string&, Ability&)` (tap `T`, PayLife<N>,
+Sac<.../...> incl. `CARDNAME`→sac-self, Discard<0/Hand|CARDNAME>, Return<N/Type>,
+mana). The three sites now share it: the `Cost$` ability param, Cycling (which had
+silently dropped tap/Discard/Return), and Flashback (which had dropped everything
+but mana+life). Flashback maps the parsed temp Ability's `activation_mana_cost` +
+`life_cost` onto its `flashback_mana_cost`/`flashback_alt_cost.life_cost` (the two
+fields the cast path consumes) — so "1 U PayLife<3>" (Deep Analysis: both mana and
+life) now flows through one token-by-token pass. Verified: Street Wraith's
+`Cycling:PayLife<2>` is offered as an activatable ability; Deep Analysis is cast
+from hand, then re-cast via flashback paying {1}{U} + 3 life and exiled; diag 10
+games, 0 parse errors / draws / crashes.
 
-### ☐ 20. `mana_symbol_str` private static duplicated, shadowing canonical `mana_symbol()`
-`mana_system.cpp:146-156`, `action_processor.cpp:53-70`, plus a 3rd inline copy
-for Phyrexian (`action_processor.cpp:1121`).
+### ☑ 20. `mana_symbol_str` private static duplicated, shadowing canonical `mana_symbol()`
+**Resolved.** Promoted `const char *mana_symbol_str(Colors)` to a single canonical
+definition in `classes/colors.{h,cpp}` (alongside the std::string `mana_symbol()`),
+returning string literals so the `const char*` call convention stays valid. Deleted
+the two byte-identical private statics in `mana_system.cpp` and
+`action_processor.cpp`, and replaced the 3rd inline copy (the Phyrexian-mana color
+name in `action_processor.cpp`) with a `mana_symbol_str()` call. Verified: mana
+activation logs still render symbols correctly (`Island for 1(U)`,
+`Volcanic Island for 1(R)`); diag 10 games, 0 draws/crashes.
 
 ---
 
@@ -281,5 +337,6 @@ for Phyrexian (`action_processor.cpp:1121`).
 - ☑ Activated-ability `life_cost` now gated in legality — `can_afford_alt()`
   (`state_manager_actions.cpp:36-94`) checks `life_cost` before the action is
   offered, matching spell/alt-cost handling.
-- ☐ `parse_mana_cost` mis-parses multi-digit generic (`parse.cpp:546-550`,
-  iterates char-by-char so `{10}` = 1 generic).
+- ☑ `parse_mana_cost` multi-digit generic — the digit case now consumes the entire
+  run of digits and `std::stoi`s it (so "10" = 10 generic), instead of adding one
+  generic per digit char. Single-digit costs unchanged (diag 10 games, 0 draws).

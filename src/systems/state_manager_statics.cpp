@@ -48,6 +48,13 @@ int active_raise_cost_for(const CardData &card_data) {
     return total;
 }
 
+ManaValue effective_base_cost(const CardData &card_data) {
+    ManaValue cost = card_data.mana_cost;
+    int raise_total = active_raise_cost_for(card_data);
+    for (int ri = 0; ri < raise_total; ri++) cost.insert(GENERIC);
+    return cost;
+}
+
 static void add_keywords_from_spec(Creature &cr, const std::string &spec);
 static void remove_keywords_from_spec(Creature &cr, const std::string &spec);
 

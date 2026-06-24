@@ -120,6 +120,70 @@ static void parse_alt_cost_tokens(const std::string& cost_str, AltCost& ac) {
     }
 }
 
+// Parses a space-separated activation-cost string (the value after Cost$, or after a
+// Cycling:/Flashback: keyword) into the cost fields of `ability`. Recognises the tap
+// symbol `T`, PayLife<N>, Sac<.../...> (CARDNAME → sacrifice self), Discard<0/Hand or
+// CARDNAME>, Return<N/Type>, and bare mana symbols. Single source for the cost-token
+// grammar so every cost-bearing keyword honours the same tokens as Cost$ (previously
+// Cycling/Flashback open-coded partial copies that silently dropped tokens).
+static void parse_activation_cost(const std::string &cost_str, Ability &ability) {
+    size_t tok_pos = 0;
+    while (tok_pos < cost_str.size()) {
+        size_t tok_end = cost_str.find(' ', tok_pos);
+        if (tok_end == std::string::npos) tok_end = cost_str.size();
+        std::string tok = cost_str.substr(tok_pos, tok_end - tok_pos);
+        if (tok == "T") {
+            ability.tap_cost = true;
+        } else if (tok.rfind("PayLife<", 0) == 0) {
+            size_t angle = tok.find('<');
+            size_t close = tok.find('>');
+            if (angle != std::string::npos && close != std::string::npos && close > angle + 1)
+                ability.life_cost = std::stoi(tok.substr(angle + 1, close - angle - 1));
+        } else if (tok.rfind("Sac<", 0) == 0) {
+            // Consume additional tokens if '>' not found (label may contain spaces)
+            while (tok.find('>') == std::string::npos && tok_pos < cost_str.size()) {
+                tok_end = cost_str.find(' ', tok_pos);
+                if (tok_end == std::string::npos) tok_end = cost_str.size();
+                tok += " " + cost_str.substr(tok_pos, tok_end - tok_pos);
+                tok_pos = (tok_end < cost_str.size()) ? tok_end + 1 : tok_end;
+            }
+            size_t slash = tok.find('/');
+            size_t close = tok.find('>');
+            if (slash != std::string::npos && close != std::string::npos && close > slash + 1) {
+                std::string spec = tok.substr(slash + 1, close - slash - 1);
+                // Remove second slash and label (e.g. "Forest;Plains/Forest or Plains" → "Forest;Plains")
+                size_t spec_slash = spec.find('/');
+                if (spec_slash != std::string::npos) spec = spec.substr(0, spec_slash);
+                if (spec == "CARDNAME") {
+                    ability.sac_self = true;
+                } else {
+                    ability.sac_cost_spec = spec;
+                }
+            }
+        } else if (tok.rfind("Discard<", 0) == 0) {
+            // Discard<0/Hand> — discard entire hand as activation cost (Lion's Eye Diamond)
+            if (tok.find("0/Hand") != std::string::npos) {
+                ability.discard_hand_cost = true;
+            } else if (tok.find("CARDNAME") != std::string::npos) {
+                ability.discard_self_cost = true;
+            }
+        } else if (tok.rfind("Return<", 0) == 0) {
+            // Return<1/Forest> — bounce a land of given subtype
+            size_t slash = tok.find('/');
+            size_t close = tok.find('>');
+            if (slash != std::string::npos && close != std::string::npos) {
+                ability.return_cost_count = std::stoi(tok.substr(7, slash - 7));
+                ability.return_cost_type = tok.substr(slash + 1, close - slash - 1);
+            }
+        } else {
+            // Remaining tokens are mana symbols (e.g. "4", "1", "W", "2 B")
+            auto mana = parse_mana_cost(tok);
+            ability.activation_mana_cost.insert(mana.begin(), mana.end());
+        }
+        tok_pos = (tok_end < cost_str.size()) ? tok_end + 1 : tok_end;
+    }
+}
+
 Entity parse_card_script(std::string path) {
     auto id = global_coordinator.CreateEntity();
     std::string script_data;
@@ -351,38 +415,8 @@ Entity parse_card_script(std::string path) {
             ab.category = "Draw";
             ab.amount = 1;
             ab.activation_zone = Zone::HAND;
-            // Parse cost tokens (reuse Cost$ token format: PayLife<N>, Sac<1/Type>, or mana)
-            size_t tok_pos = 0;
-            while (tok_pos < cost_str.size()) {
-                size_t tok_end = cost_str.find(' ', tok_pos);
-                if (tok_end == std::string::npos) tok_end = cost_str.size();
-                std::string tok = cost_str.substr(tok_pos, tok_end - tok_pos);
-                if (tok.rfind("PayLife<", 0) == 0) {
-                    size_t angle = tok.find('<');
-                    size_t close = tok.find('>');
-                    if (angle != std::string::npos && close != std::string::npos && close > angle + 1)
-                        ab.life_cost = std::stoi(tok.substr(angle + 1, close - angle - 1));
-                } else if (tok.rfind("Sac<", 0) == 0) {
-                    while (tok.find('>') == std::string::npos && tok_pos < cost_str.size()) {
-                        tok_end = cost_str.find(' ', tok_pos);
-                        if (tok_end == std::string::npos) tok_end = cost_str.size();
-                        tok += " " + cost_str.substr(tok_pos, tok_end - tok_pos);
-                        tok_pos = (tok_end < cost_str.size()) ? tok_end + 1 : tok_end;
-                    }
-                    size_t slash = tok.find('/');
-                    size_t close = tok.find('>');
-                    if (slash != std::string::npos && close != std::string::npos && close > slash + 1) {
-                        std::string spec = tok.substr(slash + 1, close - slash - 1);
-                        size_t spec_slash = spec.find('/');
-                        if (spec_slash != std::string::npos) spec = spec.substr(0, spec_slash);
-                        ab.sac_cost_spec = spec;
-                    }
-                } else {
-                    auto mana = parse_mana_cost(tok);
-                    ab.activation_mana_cost.insert(mana.begin(), mana.end());
-                }
-                tok_pos = (tok_end < cost_str.size()) ? tok_end + 1 : tok_end;
-            }
+            // Shared Cost$ token grammar (PayLife, Sac, Discard, Return, tap, mana).
+            parse_activation_cost(cost_str, ab);
             card.abilities.push_back(ab);
             card.keywords.push_back("Cycling");
             continue;
@@ -391,22 +425,13 @@ Entity parse_card_script(std::string path) {
         if (kw_line.rfind("Flashback:", 0) == 0) {
             std::string cost_str = kw_line.substr(strlen("Flashback:"));
             card.has_flashback = true;
-            size_t tok_pos = 0;
-            while (tok_pos < cost_str.size()) {
-                size_t tok_end = cost_str.find(' ', tok_pos);
-                if (tok_end == std::string::npos) tok_end = cost_str.size();
-                std::string tok = cost_str.substr(tok_pos, tok_end - tok_pos);
-                if (tok.rfind("PayLife<", 0) == 0) {
-                    size_t angle = tok.find('<');
-                    size_t close = tok.find('>');
-                    if (angle != std::string::npos && close != std::string::npos && close > angle + 1)
-                        card.flashback_alt_cost.life_cost = std::stoi(tok.substr(angle + 1, close - angle - 1));
-                } else {
-                    auto mana = parse_mana_cost(tok);
-                    card.flashback_mana_cost.insert(mana.begin(), mana.end());
-                }
-                tok_pos = (tok_end < cost_str.size()) ? tok_end + 1 : tok_end;
-            }
+            // Shared Cost$ token grammar, then map onto the flashback cost fields the
+            // cast path consumes (mana + life). Deep Analysis is "1 U PayLife<3>" — both
+            // mana and life — which the token-by-token grammar handles in one pass.
+            Ability fb;
+            parse_activation_cost(cost_str, fb);
+            card.flashback_mana_cost = fb.activation_mana_cost;
+            card.flashback_alt_cost.life_cost = fb.life_cost;
             card.keywords.push_back("Flashback");
             continue;
         }
@@ -604,10 +629,14 @@ static std::multiset<Colors> parse_mana_cost(std::string value, std::vector<Colo
                 // X is variable; handled separately by has_x_cost flag
                 break;
             default:
-                if (std::isdigit(value[i])) {
-                    for (size_t j = 0; j < value[i] - '0'; j++) {
-                        ret_val.emplace(GENERIC);
-                    }
+                if (std::isdigit(static_cast<unsigned char>(value[i]))) {
+                    // Consume the entire run of digits so a multi-digit generic cost
+                    // (e.g. "10") parses as one number, not one generic per digit.
+                    size_t j = i;
+                    while (j < len && std::isdigit(static_cast<unsigned char>(value[j]))) j++;
+                    int generic = std::stoi(value.substr(i, j - i));
+                    for (int g = 0; g < generic; g++) ret_val.emplace(GENERIC);
+                    i = j - 1;  // for-loop ++ advances past the last digit
                 }
                 break;
         }
@@ -760,61 +789,7 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
     } else if (key == "InstantSpeed") {
         ability.instant_speed = (value == "True");
     } else if (key == "Cost") {
-        size_t tok_pos = 0;
-        while (tok_pos < value.size()) {
-            size_t tok_end = value.find(' ', tok_pos);
-            if (tok_end == std::string::npos) tok_end = value.size();
-            std::string tok = value.substr(tok_pos, tok_end - tok_pos);
-            if (tok == "T") {
-                ability.tap_cost = true;
-            } else if (tok.rfind("PayLife<", 0) == 0) {
-                size_t angle = tok.find('<');
-                size_t close = tok.find('>');
-                if (angle != std::string::npos && close != std::string::npos && close > angle + 1)
-                    ability.life_cost = std::stoi(tok.substr(angle + 1, close - angle - 1));
-            } else if (tok.rfind("Sac<", 0) == 0) {
-                // Consume additional tokens if '>' not found (label may contain spaces)
-                while (tok.find('>') == std::string::npos && tok_pos < value.size()) {
-                    tok_end = value.find(' ', tok_pos);
-                    if (tok_end == std::string::npos) tok_end = value.size();
-                    tok += " " + value.substr(tok_pos, tok_end - tok_pos);
-                    tok_pos = (tok_end < value.size()) ? tok_end + 1 : tok_end;
-                }
-                size_t slash = tok.find('/');
-                size_t close = tok.find('>');
-                if (slash != std::string::npos && close != std::string::npos && close > slash + 1) {
-                    std::string spec = tok.substr(slash + 1, close - slash - 1);
-                    // Remove second slash and label (e.g. "Forest;Plains/Forest or Plains" → "Forest;Plains")
-                    size_t spec_slash = spec.find('/');
-                    if (spec_slash != std::string::npos) spec = spec.substr(0, spec_slash);
-                    if (spec == "CARDNAME") {
-                        ability.sac_self = true;
-                    } else {
-                        ability.sac_cost_spec = spec;
-                    }
-                }
-            } else if (tok.rfind("Discard<", 0) == 0) {
-                // Discard<0/Hand> — discard entire hand as activation cost (Lion's Eye Diamond)
-                if (tok.find("0/Hand") != std::string::npos) {
-                    ability.discard_hand_cost = true;
-                } else if (tok.find("CARDNAME") != std::string::npos) {
-                    ability.discard_self_cost = true;
-                }
-            } else if (tok.rfind("Return<", 0) == 0) {
-                // Return<1/Forest> — bounce a land of given subtype
-                size_t slash = tok.find('/');
-                size_t close = tok.find('>');
-                if (slash != std::string::npos && close != std::string::npos) {
-                    ability.return_cost_count = std::stoi(tok.substr(7, slash - 7));
-                    ability.return_cost_type = tok.substr(slash + 1, close - slash - 1);
-                }
-            } else {
-                // Remaining tokens are mana symbols (e.g. "4", "1", "W", "2 B")
-                auto mana = parse_mana_cost(tok);
-                ability.activation_mana_cost.insert(mana.begin(), mana.end());
-            }
-            tok_pos = (tok_end < value.size()) ? tok_end + 1 : tok_end;
-        }
+        parse_activation_cost(value, ability);
     } else if (key == "ConditionPresent") {
         ability.condition_present = value;
     } else if (key == "ConditionDefined") {

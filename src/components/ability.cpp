@@ -101,10 +101,7 @@ static bool matches_filter_spec(Entity entity, const std::string &spec) {
             if (!found) return false;
         } else if (color_qualifier == "Basic" || color_qualifier == "nonBasic") {
             // Basic/nonBasic supertype qualifier (e.g. "Land.Basic" for fetch ramp).
-            bool is_basic = false;
-            for (auto &t : cd.types) {
-                if (t.name == "Basic") { is_basic = true; break; }
-            }
+            bool is_basic = has_basic_supertype(cd.types);
             if (color_qualifier == "Basic" && !is_basic) return false;
             if (color_qualifier == "nonBasic" && is_basic) return false;
         } else {
@@ -541,16 +538,14 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
         if (!global_coordinator.entity_has_component<CardData>(cand)) return false;
         auto &cd = global_coordinator.GetComponent<CardData>(cand);
         bool type_ok = !(inc_creatures || inc_lands || inc_artifacts || inc_enchantments);
-        bool is_basic = false;
         for (auto &t : cd.types) {
-            if (t.kind == SUPERTYPE && t.name == "Basic") is_basic = true;
             if (t.kind != TYPE) continue;
             if (inc_creatures    && t.name == "Creature")    type_ok = true;
             if (inc_lands        && t.name == "Land")        type_ok = true;
             if (inc_artifacts    && t.name == "Artifact")    type_ok = true;
             if (inc_enchantments && t.name == "Enchantment") type_ok = true;
         }
-        if (nonbasic_only && is_basic) return false;
+        if (nonbasic_only && has_basic_supertype(cd.types)) return false;
         return type_ok;
     }
 
@@ -587,12 +582,10 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
         return true;
     }
     if (inc_lands) {
-        bool is_land = false, is_basic = false;
-        for (auto &t : tperm.types) {
-            if (t.kind == TYPE && t.name == "Land") is_land = true;
-            if (t.kind == SUPERTYPE && t.name == "Basic") is_basic = true;
-        }
-        if (is_land && (!nonbasic_only || !is_basic)) return true;
+        bool is_land = false;
+        for (auto &t : tperm.types)
+            if (t.kind == TYPE && t.name == "Land") { is_land = true; break; }
+        if (is_land && (!nonbasic_only || !has_basic_supertype(tperm.types))) return true;
     }
     if (inc_permanents) return true;
     if (inc_artifacts || inc_enchantments) {
