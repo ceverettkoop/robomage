@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <map>
 #include <string>
 #include <vector>
 
@@ -142,7 +143,64 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
             any_applied = true;
         }
 
-        // TODO 704.5j - legend rule
+        // 704.5i - a planeswalker with 0 (or less) loyalty is put into its owner's graveyard
+        for (auto entity : mEntities) {
+            if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
+            if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
+            if (global_coordinator.GetComponent<Zone>(entity).location != Zone::BATTLEFIELD) continue;
+            auto &perm = global_coordinator.GetComponent<Permanent>(entity);
+            if (perm.is_phased_out || !is_planeswalker(perm.types)) continue;
+            if (perm.loyalty <= 0) {
+                game_log("%s dies (0 loyalty)\n", entity_name(entity).c_str());
+                orderer->add_to_zone(false, entity, Zone::GRAVEYARD);
+                any_applied = true;
+            }
+        }
+
+        // 704.5j - legend rule: a player who controls two or more legendary permanents with
+        // the same name chooses one to keep; the rest go to their owners' graveyards. Affected
+        // players choose in APNAP order (active player first); one conflict is resolved per pass,
+        // then the SBA loop re-evaluates.
+        {
+            Zone::Ownership legend_order[2] = {
+                game.player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B,
+                game.player_a_turn ? Zone::PLAYER_B : Zone::PLAYER_A};
+            bool legend_applied = false;
+            for (Zone::Ownership owner : legend_order) {
+                if (legend_applied) break;
+                std::map<std::string, std::vector<Entity>> by_name;
+                for (auto entity : mEntities) {
+                    if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
+                    if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
+                    if (global_coordinator.GetComponent<Zone>(entity).location != Zone::BATTLEFIELD) continue;
+                    auto &perm = global_coordinator.GetComponent<Permanent>(entity);
+                    if (perm.controller != owner || perm.is_phased_out) continue;
+                    if (!has_legendary_supertype(perm.types)) continue;
+                    by_name[perm.name].push_back(entity);
+                }
+                for (auto &grp : by_name) {
+                    if (grp.second.size() < 2) continue;
+                    std::vector<LegalAction> choices;
+                    for (auto e : grp.second) {
+                        LegalAction la(PASS_PRIORITY, e, "Keep " + entity_name(e));
+                        la.category = ActionCategory::OTHER_CHOICE;
+                        choices.push_back(la);
+                    }
+                    game_log("Legend rule: %s controls %zu copies of %s; choose one to keep.\n",
+                             player_name(owner).c_str(), grp.second.size(), grp.first.c_str());
+                    int keep = InputLogger::instance().get_input(choices);
+                    Entity kept = grp.second[static_cast<size_t>(keep)];
+                    for (auto e : grp.second) {
+                        if (e == kept) continue;
+                        game_log("%s is put into the graveyard (legend rule)\n", entity_name(e).c_str());
+                        orderer->add_to_zone(false, e, Zone::GRAVEYARD);
+                    }
+                    any_applied = true;
+                    legend_applied = true;
+                    break;
+                }
+            }
+        }
 
         if (!any_applied) break;
     }

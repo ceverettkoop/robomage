@@ -534,6 +534,8 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
     bool inc_artifacts = vt.find("Artifact") != std::string::npos;
     bool inc_enchantments = vt.find("Enchantment") != std::string::npos;
     bool inc_permanents = vt.find("Permanent") != std::string::npos;
+    // "Any" includes planeswalkers (a damage spell like Lightning Bolt can hit a walker, 306.7).
+    bool inc_planeswalkers = any || vt.find("Planeswalker") != std::string::npos;
     int cmc_le = -1;
     {
         size_t cmc_pos = vt.find("cmcLE");
@@ -606,6 +608,10 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
         for (auto &t : tperm.types)
             if (t.kind == TYPE && t.name == "Land") { is_land = true; break; }
         if (is_land && (!nonbasic_only || !has_basic_supertype(tperm.types))) return true;
+    }
+    if (inc_planeswalkers) {
+        for (auto &t : tperm.types)
+            if (t.kind == TYPE && t.name == "Planeswalker") return true;
     }
     if (inc_permanents) return true;
     if (inc_artifacts || inc_enchantments) {

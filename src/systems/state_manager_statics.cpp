@@ -139,7 +139,6 @@ void StateManager::apply_permanent_components(Game &game) {
         auto &zone = global_coordinator.GetComponent<Zone>(entity);
         if (zone.location == Zone::BATTLEFIELD) {  // on battlefield, check to add components
             // check types
-            // TODO planeswalker here
             auto &card_data = global_coordinator.GetComponent<CardData>(entity);
             bool is_creature = is_creature_card(card_data);  // can be creature and land
             bool is_land = is_land_card(card_data);
@@ -174,6 +173,8 @@ void StateManager::apply_permanent_components(Game &game) {
                 // Spell was cast for its evoke cost — mark the permanent so its evoke
                 // self-sacrifice ETB trigger fires (consumed one-shot here).
                 if (game.pending_evoked.erase(entity)) perm.evoked = true;
+                // Planeswalkers enter with loyalty counters equal to printed loyalty (306.5b).
+                if (is_planeswalker_card(card_data)) perm.loyalty = card_data.starting_loyalty;
                 perm.timestamp_entered_battlefield = game.timestamp++;
                 global_coordinator.AddComponent(entity, perm);
             }

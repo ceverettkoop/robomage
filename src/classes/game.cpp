@@ -135,6 +135,7 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                             if (!untap_prevented) permanent.is_tapped = false;
                             permanent.has_summoning_sickness = false;  // Clear summoning sickness
                             for (auto &ab : permanent.abilities) ab.activations_this_turn = 0;
+                            permanent.loyalty_ability_activated_this_turn = false;  // 606.3 resets each of the controller's turns
                         }
                     }
                     cur_step = UPKEEP;

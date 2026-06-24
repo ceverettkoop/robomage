@@ -175,6 +175,13 @@ static void parse_activation_cost(const std::string &cost_str, Ability &ability)
                 ability.return_cost_count = std::stoi(tok.substr(7, slash - 7));
                 ability.return_cost_type = tok.substr(slash + 1, close - slash - 1);
             }
+        } else if ((tok.rfind("AddCounter<", 0) == 0 || tok.rfind("SubCounter<", 0) == 0) &&
+                   tok.find("/LOYALTY>") != std::string::npos) {
+            // Loyalty ability cost (606.4): AddCounter<N/LOYALTY> adds, SubCounter<N/LOYALTY> removes.
+            size_t angle = tok.find('<');
+            size_t slash = tok.find('/');
+            int n = std::stoi(tok.substr(angle + 1, slash - angle - 1));
+            ability.loyalty_cost = (tok[0] == 'S') ? -n : n;
         } else {
             // Remaining tokens are mana symbols (e.g. "4", "1", "W", "2 B")
             auto mana = parse_mana_cost(tok);
@@ -248,6 +255,11 @@ Entity parse_card_script(std::string path) {
     // TODO optimize
     card.power = parse_power(value_from_script(front_script, "PT"));
     card.toughness = parse_toughness(value_from_script(front_script, "PT"));
+    // Loyalty: line — printed loyalty a planeswalker enters with (306.5b)
+    {
+        std::string loy = value_from_script(front_script, "Loyalty");
+        if (!loy.empty()) card.starting_loyalty = std::stoi(loy);
+    }
     // parse ability templates; entities are only created when abilities go on the stack
     auto svars = parse_svars(front_script);
     card.abilities = parse_abilities(multi_values_from_script(front_script, "A"), card.types, svars, card.name);
@@ -735,6 +747,9 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
     if (key == "NumCards" || key == "ChangeNum" || key == "Amount") {
         if (value == "DamageAmount" || value == "TriggerCount$DamageAmount") {
             ability.amount_from_damage = true;
+        } else if (key == "ChangeNum" && value == "Any") {
+            // "Any" = the player may take any number of the looked-at cards (Dig/Fateseal).
+            ability.change_num_any = true;
         } else if (!value.empty() && std::isdigit(static_cast<unsigned char>(value[0]))) {
             ability.amount = static_cast<size_t>(std::stoi(value));
         } else if (!value.empty()) {
@@ -790,6 +805,10 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         ability.adds_no_counter = (value == "True");
     } else if (key == "InstantSpeed") {
         ability.instant_speed = (value == "True");
+    } else if (key == "Planeswalker") {
+        ability.is_loyalty_ability = (value == "True");
+    } else if (key == "Ultimate") {
+        ability.is_ultimate = (value == "True");
     } else if (key == "Cost") {
         parse_activation_cost(value, ability);
     } else if (key == "ConditionPresent") {

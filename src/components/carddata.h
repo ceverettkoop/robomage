@@ -39,7 +39,7 @@ struct CardData{
     std::vector<Colors> phyrexian_mana;  // Phyrexian mana symbols: each can be paid with color OR 2 life
     uint32_t power = 0;
     uint32_t toughness = 0;
-    //starting loyalty etc described as a static ability
+    int starting_loyalty = 0;  // Loyalty: line — printed loyalty a planeswalker enters with (306.5b)
     std::vector<Ability> abilities;
     AltCost alt_cost;
     std::vector<std::string> keywords;

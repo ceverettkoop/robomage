@@ -60,8 +60,8 @@ static void push_player_block(std::vector<float>& out, const PlayerState& ps) {
     for (int i = 0; i < 6; i++) out.push_back(static_cast<float>(ps.mana[i]) / 10.0f);
 }
 
-// Pushes PERM_SLOT_SIZE floats (10 status + 1 card-id). Empty slot
-// (card_vocab_idx == -1) = 10 zeros + the empty/unknown id sentinel.
+// Pushes PERM_SLOT_SIZE floats (11 status + 1 card-id). Empty slot
+// (card_vocab_idx == -1) = 11 zeros + the empty/unknown id sentinel.
 static void push_perm_slot(std::vector<float>& out, const PermanentState& p) {
     if (p.card_vocab_idx == -1) {
         out.insert(out.end(), PERM_SLOT_SIZE - 1, 0.0f);
@@ -78,6 +78,7 @@ static void push_perm_slot(std::vector<float>& out, const PermanentState& p) {
     out.push_back(p.controller_is_self ? 1.0f : 0.0f);
     out.push_back(p.is_creature ? 1.0f : 0.0f);
     out.push_back(p.is_land ? 1.0f : 0.0f);
+    out.push_back(static_cast<float>(p.loyalty) / 10.0f);
     out.push_back(norm_card_id(p.card_vocab_idx));
 }
 
@@ -257,6 +258,8 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
                 ps.damage = 0;
                 if (global_coordinator.entity_has_component<Damage>(e))
                     ps.damage = static_cast<int>(global_coordinator.GetComponent<Damage>(e).damage_counters);
+
+                ps.loyalty = perm.loyalty;  // nonzero only for planeswalkers
 
                 ps.token_name[0] = '\0';
                 if (perm.is_token && global_coordinator.entity_has_component<Token>(e)) {

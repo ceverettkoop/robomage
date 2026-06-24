@@ -60,7 +60,7 @@ try:
 except ImportError:
     from train.card_costs import _CARD_COST_MATRIX, _CARD_ABILITY_COST_MATRIX, N_CARD_TYPES, _N_COST_FEATS
 
-STATE_SIZE = 2813  # see src/machine_io.h; card identity is 1 id float/slot, not a one-hot
+STATE_SIZE = 2909  # see src/machine_io.h; card identity is 1 id float/slot, not a one-hot
 # NOTE: Exile zones are tracked in GameState but not serialized to the observation.
 # NOTE: ActionChoice.description is never emitted in the BQUERY payload — it is for
 #       human-readable display only and is not part of the ML observation.
@@ -112,7 +112,7 @@ OBS_SIZE = STATE_SIZE + 3 * MAX_ACTIONS + _HAND_COST_FEATS + _BF_ABILITY_FEATS  
 # -1/N_CARD_TYPES for empty/unknown). Decode with round(val * N_CARD_TYPES).
 _GLOBAL_SIZE            = 34                   # header: player blocks, step one-hot, flags, stack size
 _PERM_SLOTS             = 48                   # per-player; 96 total (self + opp)
-_PERM_SLOT_SIZE         = 11                   # 10 status + 1 card id
+_PERM_SLOT_SIZE         = 12                   # 11 status (incl. loyalty) + 1 card id
 _STACK_SLOTS            = 12
 _STACK_SLOT_SIZE        = 3                    # ctrl + card id + is_spell
 _GY_SLOTS_TOTAL         = 128                  # 64 self + 64 opponent
@@ -129,24 +129,24 @@ _KNOWN_TOP_LIB_SLOT_SIZE = 1                   # card id per slot
 _REVEALED_SIZE          = N_CARD_TYPES         # opponent revealed-cards multi-hot (only vocab-width block)
 
 _SELF_PERM_START     = _GLOBAL_SIZE                                                  # 34
-_OPP_PERM_START      = _SELF_PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE              # 562
-_STACK_START         = _OPP_PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE               # 1090
-_GY_START            = _STACK_START + _STACK_SLOTS * _STACK_SLOT_SIZE                # 1126
-_HAND_START          = _GY_START + _GY_SLOTS_TOTAL * _GY_SLOT_SIZE                   # 1254
-_HIST_START          = _HAND_START + _HAND_SLOTS_TOTAL * _HAND_SLOT_SIZE             # 1264
-_HIST_END            = _HIST_START + _ACTION_HISTORY_SIZE * _ACTION_HISTORY_ENTRY    # 1776
-_MATCH_CTX_START     = _HIST_END                                                     # 1776
-_LIBRARY_CTX_START   = _MATCH_CTX_START + _MATCH_CTX_SIZE                            # 1780
-_CUR_TURN_IDX        = _LIBRARY_CTX_START + _LIBRARY_CTX_SIZE                        # 1783
-_KNOWN_TOP_LIB_START = _CUR_TURN_IDX + _CUR_TURN_SIZE                                # 1784
-_KNOWN_TOP_LIB_END   = _KNOWN_TOP_LIB_START + _KNOWN_TOP_LIB_SLOTS * _KNOWN_TOP_LIB_SLOT_SIZE  # 1789
-_REVEALED_START      = _KNOWN_TOP_LIB_END                                            # 1789
-_REVEALED_END        = _REVEALED_START + _REVEALED_SIZE                              # 2813
+_OPP_PERM_START      = _SELF_PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE              # 610
+_STACK_START         = _OPP_PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE               # 1186
+_GY_START            = _STACK_START + _STACK_SLOTS * _STACK_SLOT_SIZE                # 1222
+_HAND_START          = _GY_START + _GY_SLOTS_TOTAL * _GY_SLOT_SIZE                   # 1350
+_HIST_START          = _HAND_START + _HAND_SLOTS_TOTAL * _HAND_SLOT_SIZE             # 1360
+_HIST_END            = _HIST_START + _ACTION_HISTORY_SIZE * _ACTION_HISTORY_ENTRY    # 1872
+_MATCH_CTX_START     = _HIST_END                                                     # 1872
+_LIBRARY_CTX_START   = _MATCH_CTX_START + _MATCH_CTX_SIZE                            # 1876
+_CUR_TURN_IDX        = _LIBRARY_CTX_START + _LIBRARY_CTX_SIZE                        # 1879
+_KNOWN_TOP_LIB_START = _CUR_TURN_IDX + _CUR_TURN_SIZE                                # 1880
+_KNOWN_TOP_LIB_END   = _KNOWN_TOP_LIB_START + _KNOWN_TOP_LIB_SLOTS * _KNOWN_TOP_LIB_SLOT_SIZE  # 1885
+_REVEALED_START      = _KNOWN_TOP_LIB_END                                            # 1885
+_REVEALED_END        = _REVEALED_START + _REVEALED_SIZE                              # 2909
 
 assert _REVEALED_END == STATE_SIZE, (_REVEALED_END, STATE_SIZE)
 
-# Offset of the card-id float within a permanent slot (after the 10 status floats).
-_PERM_CARD_OFF = 10
+# Offset of the card-id float within a permanent slot (after the 11 status floats).
+_PERM_CARD_OFF = 11
 
 
 def _slot_card_idx(obs, i):
@@ -488,7 +488,7 @@ _CARD_COLORED_COSTS = {
 
 # ── Battlefield layout (aliases of the unified state offsets above) ─────────
 _BF_START         = _SELF_PERM_START           # 34
-_BF_SLOT_SIZE     = _PERM_SLOT_SIZE            # 11
+_BF_SLOT_SIZE     = _PERM_SLOT_SIZE            # 12
 _PERM_A_SLOTS     = _PERM_SLOTS                # 48: self occupies perm slots 0-47, opponent slots 48-95
 _BF_A_SLOTS       = 24                         # ability cost slots per player (unchanged)
 _BF_CARD_OFF      = _PERM_CARD_OFF             # offset of the card-id float within each permanent slot

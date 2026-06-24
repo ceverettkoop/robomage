@@ -38,6 +38,7 @@ typedef struct PermanentState_tag {
     bool is_blocking;
     bool has_summoning_sickness;
     int  damage;
+    int  loyalty;                // loyalty counters for planeswalkers (0 for non-planeswalkers)
     char token_name[32];         // non-empty for tokens (card_vocab_idx == TOKEN_SENTINEL)
 } PermanentState;
 

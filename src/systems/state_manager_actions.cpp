@@ -413,6 +413,12 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         if (permanent.controller != priority_player) continue;
         if (permanent.is_phased_out) continue;
 
+        // Sorcery-speed window: controller's main phase with an empty stack. Gates both the
+        // Equip ability and planeswalker loyalty abilities (606.3), so it is computed once.
+        bool sorcery_speed = (game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
+                             (game.player_a_turn == game.player_a_has_priority) &&
+                             stack_manager->is_empty();
+
         // Check if any CantBeActivated static suppresses this permanent's abilities.
         // (Mana abilities are collected separately above, so they remain usable — this
         // matches Disruptor Flute's ValidSA$ Activated.!ManaAbility.)
@@ -437,10 +443,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         // so synthesise the action here when there is a creature to equip and the cost is payable.
         if (global_coordinator.entity_has_component<CardData>(entity)) {
             auto &cd = global_coordinator.GetComponent<CardData>(entity);
-            bool main_phase = (game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
-                              (game.player_a_turn == game.player_a_has_priority) &&
-                              stack_manager->is_empty();
-            if (cd.is_equipment && main_phase) {
+            if (cd.is_equipment && sorcery_speed) {
                 bool has_creature = false;
                 for (auto e2 : orderer->mEntities) {
                     if (!global_coordinator.entity_has_component<Permanent>(e2)) continue;
@@ -467,6 +470,14 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         for (auto ab : permanent.abilities) {
             if (ab.ability_type != Ability::ACTIVATED) continue;
             if (ab.activation_zone == Zone::HAND) continue;  // hand-only ability, not usable from battlefield
+            // Loyalty abilities (606.3): sorcery-speed only, once per turn per permanent across
+            // all its loyalty abilities, and a minus ability needs enough loyalty (606.6; equality
+            // is legal — may go to exactly 0 and die to the SBA).
+            if (ab.is_loyalty_ability) {
+                if (!sorcery_speed) continue;
+                if (permanent.loyalty_ability_activated_this_turn) continue;
+                if (ab.loyalty_cost < 0 && permanent.loyalty < -ab.loyalty_cost) continue;
+            }
             // todo handle this elswewhere, tapping check
             if (ab.tap_cost && permanent.is_tapped) continue;
             if (ab.tap_cost && permanent.has_summoning_sickness &&

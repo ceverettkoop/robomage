@@ -18,10 +18,10 @@ vocab size — growing N_CARD_TYPES costs one embedding row, not 252 one-hot slo
 
 Index layout must stay in sync with src/machine_io.h:
   obs[0:34]            global context (player stats, step, flags, stack size)
-  obs[34:1090]         96 permanent slots × 11 floats  (10 status + 1 card id)
+  obs[34:1186]         96 permanent slots × 12 floats  (11 status + 1 card id)
                          slots 0-47: self; slots 48-95: opponent
                          status: power, toughness, tapped, attacking, blocking,
-                                 sickness, damage, controller_is_self, is_creature, is_land
+                                 sickness, damage, controller_is_self, is_creature, is_land, loyalty
   obs[1090:1126]       12 stack slots   × 3 floats  (controller_is_self + card id + is_spell)
   obs[1126:1254]      128 graveyard slots × 1 float (card id)
                          slots 0-63: self; slots 64-127: opponent
@@ -79,8 +79,8 @@ def _masked_mean_max(emb: torch.Tensor, present: torch.Tensor) -> torch.Tensor:
 _GLOBAL_SIZE     = 34
 
 _PERM_SLOTS      = 96   # 48 self + 48 opponent (unified: creatures, lands, other)
-_PERM_SLOT_SIZE  = 11   # 10 status floats + 1 card id
-_PERM_CARD_OFF   = 10   # card id follows the 10 status floats
+_PERM_SLOT_SIZE  = 12   # 11 status floats (incl. loyalty) + 1 card id
+_PERM_CARD_OFF   = 11   # card id follows the 11 status floats
 
 _STACK_SLOTS     = 12
 _STACK_SLOT_SIZE = 3    # controller_is_self(1) + card id(1) + is_spell(1)
@@ -135,7 +135,7 @@ class CardGameExtractor(BaseFeaturesExtractor):
     size.
 
     Three independent encoders cover the slot formats:
-      perm_encoder   (10 status + card_embed → embed_dim): permanents
+      perm_encoder   (11 status + card_embed → embed_dim): permanents
       stack_encoder  (2 flags + card_embed → embed_dim//2): stack items
       entity_encoder (card_embed → embed_dim): graveyard, hand, known top-library
 
@@ -177,7 +177,7 @@ class CardGameExtractor(BaseFeaturesExtractor):
         # real ids 0..N_CARD_TYPES-1 map to rows 1..N_CARD_TYPES.
         self.card_emb = nn.Embedding(N_CARD_TYPES + 1, card_embed_dim, padding_idx=0)
 
-        # Encoder for permanent slots (10 status floats + card embedding)
+        # Encoder for permanent slots (11 status floats + card embedding)
         self.perm_encoder = nn.Sequential(
             nn.Linear(_PERM_CARD_OFF + card_embed_dim, embed_dim),
             nn.ReLU(),

@@ -65,6 +65,16 @@ static Entity prompt_permanent_choice(const std::vector<Entity> &choices, const 
 // these costs cannot fail once legality has passed.
 static void pay_secondary_activation_costs(
     const Ability &ability, Entity source, Zone::Ownership controller, std::shared_ptr<Orderer> orderer) {
+    // Loyalty cost (606.4/606.5): pay by adding/removing loyalty counters on the source
+    // planeswalker, and mark the per-permanent once-per-turn gate (606.3). The ability still
+    // goes on the stack and resolves later; the loyalty change is the cost, paid now.
+    if (ability.is_loyalty_ability && global_coordinator.entity_has_component<Permanent>(source)) {
+        auto &perm = global_coordinator.GetComponent<Permanent>(source);
+        perm.loyalty += ability.loyalty_cost;
+        perm.loyalty_ability_activated_this_turn = true;
+        game_log("%s activates a loyalty ability (%+d, loyalty now %d)\n",
+                 entity_name(source).c_str(), ability.loyalty_cost, perm.loyalty);
+    }
     // Life cost
     if (ability.life_cost > 0) {
         auto &activating_player = global_coordinator.GetComponent<Player>(get_player_entity(controller));
@@ -462,6 +472,15 @@ static void pay_alternate_cost(const LegalAction &action, Game &game, std::share
     }
 }
 
+// Display name for an attacker's target: the defending player's name, or, when the target is
+// a planeswalker, its card name. Replaces the player-only ternaries so planeswalker attack
+// targets read correctly in transcripts.
+static std::string attack_target_name(const Game &game, Entity tgt) {
+    if (global_coordinator.entity_has_component<Player>(tgt))
+        return player_name((tgt == game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B);
+    return entity_name(tgt);
+}
+
 static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
     Zone::Ownership active_player = game.player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B;
     Entity defending_entity = game.player_a_turn ? game.player_b_entity : game.player_a_entity;
@@ -492,9 +511,18 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
         return;
     }
 
-    // Build targets: defending player first, then planeswalkers (TODO)
+    // Build targets: defending player first, then the defending player's planeswalkers (rule 508.1).
+    Zone::Ownership defending_owner = game.player_a_turn ? Zone::PLAYER_B : Zone::PLAYER_A;
     std::vector<Entity> targets;
     targets.push_back(defending_entity);
+    for (auto e : orderer->mEntities) {
+        if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
+        if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+        if (global_coordinator.GetComponent<Zone>(e).location != Zone::BATTLEFIELD) continue;
+        auto &p = global_coordinator.GetComponent<Permanent>(e);
+        if (p.controller != defending_owner || p.is_phased_out) continue;
+        if (is_planeswalker(p.types)) targets.push_back(e);
+    }
 
     // Pre-declare must_attack creatures — they attack without player input
     for (auto entity : eligible) {
@@ -522,8 +550,8 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
             auto &cr = global_coordinator.GetComponent<Creature>(entity);
             if (!cr.is_attacking) continue;
             std::string ename = entity_name(entity);
-            Zone::Ownership t = (cr.attack_target == game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
-            game_log("  [attacking] %s [%d/%d] -> %s\n", ename.c_str(), cr.power, cr.toughness, player_name(t).c_str());
+            game_log("  [attacking] %s [%d/%d] -> %s\n", ename.c_str(), cr.power, cr.toughness,
+                attack_target_name(game, cr.attack_target).c_str());
         }
         // Build attacker selection actions
         std::vector<LegalAction> atk_actions;
@@ -551,21 +579,24 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
         game_log("Select target for %s:\n", chosen_name.c_str());
         std::vector<LegalAction> tgt_actions;
         for (auto t_entity : targets) {
-            auto &player = global_coordinator.GetComponent<Player>(t_entity);
-            Zone::Ownership t = (t_entity == game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
-            LegalAction la(
-                PASS_PRIORITY, t_entity, player_name(t) + " (" + std::to_string(player.life_total) + " life)");
+            std::string label;
+            if (global_coordinator.entity_has_component<Player>(t_entity)) {
+                auto &player = global_coordinator.GetComponent<Player>(t_entity);
+                Zone::Ownership t = (t_entity == game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
+                label = player_name(t) + " (" + std::to_string(player.life_total) + " life)";
+            } else {
+                auto &p = global_coordinator.GetComponent<Permanent>(t_entity);
+                label = p.name + " (loyalty " + std::to_string(p.loyalty) + ")";
+            }
+            LegalAction la(PASS_PRIORITY, t_entity, label);
             la.category = ActionCategory::OTHER_CHOICE;
             tgt_actions.push_back(la);
-            // TODO: planeswalker entries here
         }
         int target_choice = InputLogger::instance().get_input(tgt_actions);
         cr.is_attacking = true;
         cr.attack_target = tgt_actions[static_cast<size_t>(target_choice)].source_entity;
-        {
-            Zone::Ownership t = (cr.attack_target == game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
-            game_log("%s attacking %s.\n", chosen_name.c_str(), player_name(t).c_str());
-        }
+        game_log("%s attacking %s.\n", chosen_name.c_str(),
+            attack_target_name(game, cr.attack_target).c_str());
     }
 
     game_log("\nAttackers declared:\n");
@@ -575,8 +606,7 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
         if (cr.is_attacking) {
             any = true;
             std::string ename = entity_name(entity);
-            Zone::Ownership t = (cr.attack_target == game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
-            game_log("  %s -> %s\n", ename.c_str(), player_name(t).c_str());
+            game_log("  %s -> %s\n", ename.c_str(), attack_target_name(game, cr.attack_target).c_str());
 
             // Tap the attacker
             auto &permanent = global_coordinator.GetComponent<Permanent>(entity);

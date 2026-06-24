@@ -29,6 +29,35 @@ inline bool card_has_type(const CardData &cd, const std::string &type_name) {
 
 inline bool is_creature_card(const CardData &cd) { return card_has_type(cd, "Creature"); }
 inline bool is_land_card(const CardData &cd)     { return card_has_type(cd, "Land"); }
+inline bool is_planeswalker_card(const CardData &cd) { return card_has_type(cd, "Planeswalker"); }
+
+// True if the type list (e.g. Permanent::types) carries the given top-level type.
+inline bool type_set_has(const std::set<Type> &types, const std::string &type_name) {
+    for (const auto &t : types)
+        if (t.kind == TYPE && t.name == type_name) return true;
+    return false;
+}
+inline bool is_planeswalker(const std::set<Type> &types) { return type_set_has(types, "Planeswalker"); }
+
+// True if `e` is a planeswalker permanent on the battlefield (the form damage/combat care about).
+inline bool is_planeswalker_permanent(Entity e) {
+    return global_coordinator.entity_has_component<Permanent>(e) &&
+           is_planeswalker(global_coordinator.GetComponent<Permanent>(e).types);
+}
+
+// Damage to a planeswalker removes that many loyalty counters (306.8). The loyalty-0 SBA
+// (704.5i) then moves it to the graveyard. Single source for both combat and noncombat damage.
+inline void damage_planeswalker(Entity pw, size_t amount) {
+    auto &perm = global_coordinator.GetComponent<Permanent>(pw);
+    perm.loyalty -= static_cast<int>(amount);
+}
+
+// True if the type list carries the "Legendary" supertype (drives the legend rule, 704.5j).
+inline bool has_legendary_supertype(const std::set<Type> &types) {
+    for (const auto &t : types)
+        if (t.kind == SUPERTYPE && t.name == "Legendary") return true;
+    return false;
+}
 
 // True if the entity currently sits on the battlefield.
 inline bool on_battlefield(Entity e) {

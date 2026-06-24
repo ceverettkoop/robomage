@@ -46,7 +46,8 @@ _OFF_DAMAGE = 6
 _OFF_CTRL = 7
 _OFF_IS_CREATURE = 8
 _OFF_IS_LAND = 9
-_OFF_CARD_ID = 10                                  # offset of the card-id float within a permanent slot
+_OFF_LOYALTY = 10                                  # planeswalker loyalty (loyalty/10)
+_OFF_CARD_ID = 11                                  # offset of the card-id float within a permanent slot
 
 _NULL_SENTINEL = _ACTION_CARD_ID_NULL              # -1.0 / N_CARD_TYPES
 _TOKEN_IDX = N_CARD_TYPES - 1
@@ -149,6 +150,9 @@ def _decode_permanents(state, start, count=48):
             p["summoning_sick"] = True
         if state[base + _OFF_IS_LAND] > 0.5:
             p["is_land"] = True
+        loyalty = int(round(state[base + _OFF_LOYALTY] * 10))
+        if loyalty != 0:
+            p["loyalty"] = loyalty
         perms.append(p)
     return perms
 
@@ -360,6 +364,8 @@ def fmt_perm(p):
         if "damage" in p:
             s += f", {p['damage']}dmg"
         s += "]"
+    if "loyalty" in p:
+        s += f" [loy {p['loyalty']}]"
     flags = []
     if p.get("tapped"):
         flags.append("T")

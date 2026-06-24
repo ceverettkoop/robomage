@@ -10,6 +10,7 @@
 #include "../classes/game.h"
 #include "../cli_output.h"
 #include "../components/carddata.h"
+#include "../components/player.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../input_logger.h"
@@ -22,8 +23,12 @@ extern Game cur_game;
 namespace effects {
 
 bool dig(Ability &ab, std::shared_ptr<Orderer> orderer) {
-    // Look at top N cards, player picks one matching filter, rest go to bottom
+    // Look at top N cards, player picks one matching filter, rest go to bottom.
+    // When the ability targets a player (Fateseal, e.g. Jace +2), the dug library is
+    // the TARGET player's, not the controller's.
     Zone::Ownership dig_owner = ab.controller;
+    if (ab.target != 0 && global_coordinator.entity_has_component<Player>(ab.target))
+        dig_owner = (ab.target == cur_game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
     // Resolve dynamic dig count (e.g. Count$Devotion.Blue)
     size_t effective_dig_num = ab.dig_num;
     if (!ab.dig_num_expr.empty()) {
@@ -83,12 +88,18 @@ bool dig(Ability &ab, std::shared_ptr<Orderer> orderer) {
     // How many of the looked-at cards may be taken (default 1). A conditional
     // ChangeNum$ (Flow State) raises this to its true-value when the summed
     // graveyard counts satisfy the compare; a plain numeric ChangeNum$ uses amount.
+    // ChangeNum$ Any (Fateseal) means the player may take any number (0..pool) of the
+    // looked-at cards; treat it as optional with a take limit of the whole pool.
+    bool any_count = ab.change_num_any;
+    bool optional = ab.optional_choice || any_count;
     size_t take_count = 1;
     if (ab.cond_amount_active) {
         int sum = 0;
         for (auto &expr : ab.cond_amount_exprs)
             sum += static_cast<int>(evaluate_dynamic_amount(expr, dig_owner, orderer, 0));
         take_count = compare_svar(sum, ab.cond_amount_compare) ? ab.cond_amount_if_true : ab.amount;
+    } else if (any_count) {
+        take_count = matching.size();
     } else if (ab.amount > 0) {
         take_count = ab.amount;
     }
@@ -99,7 +110,7 @@ bool dig(Ability &ab, std::shared_ptr<Orderer> orderer) {
     std::vector<Entity> pool = matching;
     for (size_t pick = 0; pick < take_count; ++pick) {
         std::vector<LegalAction> dig_actions;
-        if (ab.optional_choice) {
+        if (optional) {
             LegalAction la(PASS_PRIORITY, "Take nothing");
             la.category = ActionCategory::DIG_CHOICE;
             dig_actions.push_back(la);
@@ -131,8 +142,8 @@ bool dig(Ability &ab, std::shared_ptr<Orderer> orderer) {
         orderer->add_to_zone(on_bottom, chosen, chosen_dest);
         auto &cd = global_coordinator.GetComponent<CardData>(chosen);
         if (chosen_dest == Zone::LIBRARY) {
-            game_log_private(dig_owner, "%s puts %s on top of their library.\n", player_name(dig_owner).c_str(),
-                cd.name.c_str());
+            game_log_private(dig_owner, "%s puts %s on the %s of their library.\n", player_name(dig_owner).c_str(),
+                cd.name.c_str(), on_bottom ? "bottom" : "top");
         } else {
             game_log_private(dig_owner, "%s puts %s into hand.\n", player_name(dig_owner).c_str(), cd.name.c_str());
         }
@@ -151,11 +162,14 @@ bool dig(Ability &ab, std::shared_ptr<Orderer> orderer) {
             std::swap(remaining[i - 1], remaining[j]);
         }
     }
+    // Unchosen cards normally go to the bottom; LibraryPosition2$ 0 (Fateseal) keeps
+    // them on top instead (i.e. you may bottom the looked-at card, else it stays put).
+    bool rest_on_bottom = (ab.dig_rest_library_position != 0);
     for (auto e : remaining) {
-        orderer->add_to_zone(true, e, Zone::LIBRARY);
+        orderer->add_to_zone(rest_on_bottom, e, Zone::LIBRARY);
     }
-    game_log(
-        "%s puts %zu card(s) on the bottom of their library.\n", player_name(dig_owner).c_str(), remaining.size());
+    game_log("%s puts %zu card(s) on the %s of their library.\n", player_name(dig_owner).c_str(),
+             remaining.size(), rest_on_bottom ? "bottom" : "top");
     return true;
 }
 
@@ -176,6 +190,10 @@ bool parse_dig(Ability &ab, const std::string &key, const std::string &value) {
         return true;
     } else if (key == "LibraryPosition") {
         ab.dig_library_position = std::stoi(value);
+        return true;
+    } else if (key == "LibraryPosition2") {
+        // Where the looked-at-but-unchosen cards go: 0 = top, otherwise bottom.
+        ab.dig_rest_library_position = std::stoi(value);
         return true;
     } else if (key == "ChangeValid") {
         ab.change_valid = value;

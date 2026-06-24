@@ -104,6 +104,12 @@ void StateManager::deal_combat_damage(Game &game, bool first_strike_only) {
                     ev.SetParam(Params::PLAYER, cr.attack_target);
                     ev.SetParam(Params::AMOUNT, dmg);
                     global_coordinator.SendEvent(ev);
+                } else if (is_planeswalker_permanent(cr.attack_target) && on_battlefield(cr.attack_target)) {
+                    // Combat damage to a planeswalker removes that many loyalty counters (306.8).
+                    damage_planeswalker(cr.attack_target, dmg);
+                    game_log("  %s deals %u damage to %s (loyalty now %d)\n", attacker_name.c_str(), dmg,
+                             entity_name(cr.attack_target).c_str(),
+                             global_coordinator.GetComponent<Permanent>(cr.attack_target).loyalty);
                 }
                 apply_lifelink_if_any(entity, dmg, life_delta_a, life_delta_b, game);
             }
@@ -149,6 +155,14 @@ void StateManager::deal_combat_damage(Game &game, bool first_strike_only) {
                     ev.SetParam(Params::PLAYER, cr.attack_target);
                     ev.SetParam(Params::AMOUNT, remaining);
                     global_coordinator.SendEvent(ev);
+                    apply_lifelink_if_any(entity, remaining, life_delta_a, life_delta_b, game);
+                } else if (has_trample && is_planeswalker_permanent(cr.attack_target) &&
+                           on_battlefield(cr.attack_target)) {
+                    // Trample excess over the blockers goes to the attacked planeswalker (306.8).
+                    damage_planeswalker(cr.attack_target, remaining);
+                    game_log("  %s tramples %u damage to %s (loyalty now %d)\n", attacker_name.c_str(),
+                             remaining, entity_name(cr.attack_target).c_str(),
+                             global_coordinator.GetComponent<Permanent>(cr.attack_target).loyalty);
                     apply_lifelink_if_any(entity, remaining, life_delta_a, life_delta_b, game);
                 }
             }
