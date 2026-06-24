@@ -251,12 +251,39 @@ game-driving loop:
   hands + `--battlefield-b` + `--scripted`/`--actions` drive through the shared loop
   and reach a winner; all modules import; `watch`/`diag` subcommands are gone.
 
+### Variation A — emit the C++ `LegalAction::description` over BQUERY (done)
+
+The `(category, card_id, controller)` metadata can't express many choices — a
+player target rendered as a blank `Target `, Sylvan Library's pay-vs-keep, charm
+modes, "fail to find", etc. The engine already builds a correct
+`LegalAction::description` for every action; it is now serialized as a
+side-channel so observers label choices exactly as the CLI/GUI do:
+
+- **`cli_output.cpp`**: under `narrative_mode`, `cli_emit_machine_query` appends a
+  fixed `[MAX_ACTIONS][MAX_CHOICE_DESC]` NUL-padded char block of
+  `q->choices[i].description` after the four numeric arrays. Gated by
+  `--narrative`, so the ML training path stays binary-only and `OBS_SIZE` /
+  checkpoints are untouched.
+- **`env.py`**: `RoboMageEnv` reads that block when `self._narrative` and exposes
+  `self._action_descriptions` (a list of strings, else `None`) — a side-channel
+  like `_action_public`. `MAX_CHOICE_DESC` must match `gamestate.h`.
+- **`decode.py`**: `decode_actions` / `decode_actions_from_obs` take an optional
+  `descriptions` and use the engine's text verbatim when present, falling back to
+  the metadata-only `describe_action` otherwise. `runner.py` and `tui_game.py`
+  pass `env._action_descriptions` through.
+- **`decode._ctrl_str` bug fix:** the old `> _NULL_SENTINEL + 0.01` test
+  mis-classified the `0.0` = opponent controller flag as `None`, so opponent-owned
+  targets never got an `(opp)` tag. Now: negative = no-owner sentinel, `0.0` =
+  opp, `1.0` = own. Also improved the empty-name player-target fallback to
+  "Target opponent" / "Target yourself".
+- **Result:** player targets read `Player B (20 life)`, creatures `Grizzly Bears`,
+  and Sylvan Library / returns / exiles / "Take nothing" / "No target" all label
+  correctly — identical to the engine's own wording. Verified the non-narrative
+  training path doesn't read the block (no desync, `_action_descriptions=None`)
+  and `observe`/test_harness over many games stay stable with 0 draws.
+
 ### Remaining unification opportunities (not done)
 
-- **Variation A — BQUERY `description`:** still Python-authoritative (decode is the
-  one Python labeler). Emitting the C++ `LegalAction::description` over the wire
-  behind `--narrative` for byte-identical CLI/GUI/harness labels remains a
-  decision (see §4 step 4).
 - **Variation D — shared C++ CLI/GUI state-line formatter:** `print_game_state`
   (`cli_output.cpp`) and `gui.c`'s `draw_perm_card`/info-bars still format the same
   `GameState` fields independently.

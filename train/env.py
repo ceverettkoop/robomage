@@ -72,6 +72,11 @@ _BQUERY_CATS_BYTES  = MAX_ACTIONS * 4  # int32
 _BQUERY_IDS_BYTES   = MAX_ACTIONS * 4  # float32
 _BQUERY_CTRL_BYTES  = MAX_ACTIONS * 4  # float32
 _BQUERY_PUB_BYTES   = MAX_ACTIONS * 4  # float32 — card_is_public per action
+# Per-action human-readable descriptions, emitted ONLY under --narrative
+# (gated on the engine side too). Fixed [MAX_ACTIONS][MAX_CHOICE_DESC] NUL-padded
+# char block — must match MAX_CHOICE_DESC in src/classes/gamestate.h.
+MAX_CHOICE_DESC     = 128
+_BQUERY_DESC_BYTES  = MAX_ACTIONS * MAX_CHOICE_DESC
 ACTION_CATEGORY_MAX = 26 # highest ActionCategory enum value (SIDEBOARD_DONE)
 
 # ── Shaping reward magnitudes ─────────────────────────────────────────────────
@@ -212,6 +217,7 @@ class RoboMageEnv(gym.Env):
         self._num_choices = 1
         self._obs = np.zeros(OBS_SIZE, dtype=np.float32)
         self._action_public = np.zeros(MAX_ACTIONS, dtype=np.float32)  # card_is_public per action
+        self._action_descriptions = None  # list[str] per action under --narrative, else None
         self._pending_confirm = False  # True when last query used the -1 convention
         self._step_count = 0
 
@@ -385,6 +391,24 @@ class RoboMageEnv(gym.Env):
                 # vector yet, so OBS_SIZE and trained checkpoints are unaffected.
                 self._action_public = pub_arr
 
+                # Under --narrative the engine appends a fixed char block of
+                # per-action descriptions (the exact CLI/GUI labels). Read and
+                # decode it so observers can show "Target Player B", "Pay 4 life",
+                # etc. — things the numeric metadata can't express. Off the
+                # training path (narrative=False), so OBS is unaffected.
+                if self._narrative:
+                    desc_bytes = self._read_exactly(_BQUERY_DESC_BYTES)
+                    descs = []
+                    for k in range(MAX_ACTIONS):
+                        chunk = desc_bytes[k * MAX_CHOICE_DESC:(k + 1) * MAX_CHOICE_DESC]
+                        end = chunk.find(b"\x00")
+                        if end >= 0:
+                            chunk = chunk[:end]
+                        descs.append(chunk.decode("utf-8", errors="replace"))
+                    self._action_descriptions = descs
+                else:
+                    self._action_descriptions = None
+
                 # The -1 confirm convention applies to mandatory attacker/blocker queries.
                 self._pending_confirm = any(
                     c in _MANDATORY_CATS for c in cats_int[:self._num_choices])
@@ -422,7 +446,7 @@ class RoboMageEnv(gym.Env):
 
             # Non-BQUERY output: optionally print for human render mode
             if self.render_mode == "human":
-                self._print_narrative_line(line.decode("ascii", errors="replace"))
+                self._print_narrative_line(line.decode("utf-8", errors="replace"))
 
         info = {"reward": reward, "done": done, "shaping_a": shaping_a, "shaping_b": shaping_b,
                 "game_result": game_result}

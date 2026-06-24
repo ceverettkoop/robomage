@@ -200,6 +200,19 @@ void cli_emit_machine_query(const Query* q, const GameState* gs) {
     fwrite(ids,  sizeof(float),   MAX_ACTIONS, stdout);
     fwrite(ctrl, sizeof(float),   MAX_ACTIONS, stdout);
     fwrite(pub,  sizeof(float),   MAX_ACTIONS, stdout);
+
+    // Human-readable per-action descriptions (e.g. "Target Player B (20 life)",
+    // "Pay 4 life", "Put on top"), only under --narrative so the ML training path
+    // stays binary-only and OBS-unaffected. Observers/test harness read this
+    // block to label choices the (category, card_id, controller) metadata alone
+    // can't — player targets, Sylvan Library pay-vs-return, charm modes, etc.
+    // Fixed-size [MAX_ACTIONS][MAX_CHOICE_DESC] for simple framing; NUL-padded.
+    if (narrative_mode) {
+        char descs[MAX_ACTIONS][MAX_CHOICE_DESC] = {};
+        for (int i = 0; i < q->num_choices; i++)
+            snprintf(descs[i], MAX_CHOICE_DESC, "%s", q->choices[i].description);
+        fwrite(descs, MAX_CHOICE_DESC, MAX_ACTIONS, stdout);
+    }
     fflush(stdout);
 }
 

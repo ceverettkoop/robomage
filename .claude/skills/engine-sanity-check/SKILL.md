@@ -76,8 +76,10 @@ grep -rhiE "error|exception|traceback|assert|abort|segfault|non-fatal" *.txt | g
 grep -rhE "Unrecognized ability param" *.txt | sort | uniq -c          # card-load warnings
 grep -rhiE "fizzle|fails to find|illegal" *.txt | sort | uniq -c
 grep -rhE "^[0-9]+W / [0-9]+L / [0-9]+D" *.txt                          # per-file W/L/D summary — D must be 0
-grep -rliE "DRAW|stopped after" *.txt                                  # files with a draw / stalled game
+grep -rlE "DRAW \(should not occur\)|stopped after" *.txt              # files with a draw / stalled game
 ```
+(Case-sensitive `DRAW` on purpose — a case-insensitive match would hit every
+"Player X draws ..." line. The draw/stall banners are the only real signals.)
 
 - **Unrecognized ability param** warnings are card-load cosmetics (a sub-param the parser
   ignores). Acceptable when behavior is inferable; suspicious only if a card visibly misbehaves.

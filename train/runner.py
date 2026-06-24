@@ -109,7 +109,8 @@ def run_games(controller_a, controller_b, *,
             if verbose:
                 gs = decode.decode_game_state(obs[:STATE_SIZE])
                 decoded = decode.decode_actions_from_obs(
-                    obs, num_choices, getattr(env, "_action_public", None))
+                    obs, num_choices, getattr(env, "_action_public", None),
+                    descriptions=getattr(env, "_action_descriptions", None))
                 for ln in decode.format_decision_block(decision + 1, gs, decoded):
                     emit(ln)
                 emit(decode.format_chosen_action(f"{label}/{player}", action, decoded))

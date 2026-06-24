@@ -224,7 +224,9 @@ class GameApp(App):
                 num = env._num_choices
                 a_has_priority = obs[32] > 0.5
                 opp_turn = (a_has_priority == self._opp_is_a)
-                actions = decode.decode_actions_from_obs(obs, num, env._action_public)
+                actions = decode.decode_actions_from_obs(
+                    obs, num, env._action_public,
+                    descriptions=getattr(env, "_action_descriptions", None))
 
                 self.post_message(StateUpdate(obs, num, [] if opp_turn else actions,
                                               human_turn=not opp_turn))

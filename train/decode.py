@@ -261,14 +261,19 @@ def action_ctrls(obs):
 def _ctrl_str(ctrl_val, labels=SELF_OPP_LABELS):
     """Resolve a viewer-relative controller flag to a label word, or None.
 
+    The engine emits the null sentinel (a small *negative* value) for actions
+    with no entity owner, and 0.0 / 1.0 for opponent / self. So anything below
+    the (negative) sentinel midpoint is "no owner"; 1.0 is self; 0.0 is opponent.
+    (The old `> _NULL_SENTINEL + 0.01` test mis-classified the 0.0 = opponent
+    case as None, so opponent-owned targets never got an "(opp)" tag.)
+
     `labels` substitutes the words used for the two roles ("own"/"opp" by
     default); pass a custom map to render e.g. "You"/"Opp".
     """
-    if ctrl_val > 0.5:
-        return labels["own"]
-    if ctrl_val > _NULL_SENTINEL + 0.01:
-        return labels["opp"]
-    return None
+    v = float(ctrl_val)
+    if v < _NULL_SENTINEL / 2:        # null sentinel (negative) → no owner info
+        return None
+    return labels["own"] if v > 0.5 else labels["opp"]
 
 
 def describe_action(cat, card_name, ctrl_str, labels=SELF_OPP_LABELS):
@@ -290,7 +295,16 @@ def describe_action(cat, card_name, ctrl_str, labels=SELF_OPP_LABELS):
     elif cat == 6:
         return f"Activate {name}{owner}"
     elif cat == 8:
-        return f"Target {name}{owner}"
+        if name:
+            return f"Target {name}{owner}"
+        # No card → a player target. The controller word tells us which player;
+        # the exact "Target Player B (N life)" wording comes from the engine's
+        # description block when available (this is the metadata-only fallback).
+        if ctrl_str == labels["own"]:
+            return "Target yourself"
+        if ctrl_str == labels["opp"]:
+            return "Target opponent"
+        return "Target player"
     elif cat == 2:
         return f"Select attacker: {name}"
     elif cat == 3:
@@ -321,7 +335,7 @@ def describe_action(cat, card_name, ctrl_str, labels=SELF_OPP_LABELS):
 
 
 def decode_actions(cats_int, card_ids, ctrl, num_choices, public_flags=None,
-                   labels=SELF_OPP_LABELS):
+                   labels=SELF_OPP_LABELS, descriptions=None):
     """Decode the per-action arrays into a list of dicts.
 
     Each dict: index, category (int), category_name, card (name or None),
@@ -331,6 +345,12 @@ def decode_actions(cats_int, card_ids, ctrl, num_choices, public_flags=None,
     `public_flags` is the per-action card_is_public array (env._action_public);
     None means "unknown", treated as not-public. `labels` substitutes the
     controller wording (default keeps today's "own"/"opp").
+
+    `descriptions` is the per-action text the engine emits under --narrative
+    (env._action_descriptions). When present and non-empty it is the exact
+    CLI/GUI label and is used verbatim — so player targets, Sylvan Library
+    pay-vs-return, charm modes, etc. read correctly. When absent, the label is
+    reconstructed from the numeric metadata via `describe_action`.
     """
     actions = []
     for i in range(num_choices):
@@ -339,7 +359,11 @@ def decode_actions(cats_int, card_ids, ctrl, num_choices, public_flags=None,
         card_name = card_index_to_name(card_idx) if card_idx >= 0 else None
         ctrl_str = _ctrl_str(float(ctrl[i]), labels)
         is_public = bool(public_flags[i] > 0.5) if public_flags is not None else False
-        if cat == 11:
+        engine_desc = (descriptions[i] if descriptions is not None
+                       and i < len(descriptions) and descriptions[i].strip() else None)
+        if engine_desc is not None:
+            desc = engine_desc
+        elif cat == 11:
             # Mulligan query: index 0 = keep, index 1 = mulligan.
             desc = "Keep hand" if i == 0 else "Mulligan"
         else:
@@ -358,16 +382,17 @@ def decode_actions(cats_int, card_ids, ctrl, num_choices, public_flags=None,
 
 
 def decode_actions_from_obs(obs, num_choices, public_flags=None,
-                            labels=SELF_OPP_LABELS):
+                            labels=SELF_OPP_LABELS, descriptions=None):
     """Convenience: decode actions straight from a full observation vector.
 
-    `public_flags` (env._action_public) is a side-channel not stored in obs;
-    pass it through so revealed-card choices aren't redacted as private.
-    `labels` substitutes controller wording (default keeps today's output).
+    `public_flags` (env._action_public) and `descriptions`
+    (env._action_descriptions) are side-channels not stored in obs; pass them
+    through so revealed-card choices aren't redacted and so engine-authored
+    labels are used when available. `labels` substitutes controller wording.
     """
     return decode_actions(action_categories(obs, num_choices),
                           action_card_ids(obs), action_ctrls(obs), num_choices,
-                          public_flags, labels)
+                          public_flags, labels, descriptions)
 
 
 # ── Decision-type classification (all read the integer category array) ────────
