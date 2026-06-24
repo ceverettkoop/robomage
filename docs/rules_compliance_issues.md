@@ -39,7 +39,7 @@ governing rule, a fix sketch, and a complexity/risk estimate.
 - **Fix:** SBA pass clearing `equipped_to` when the host is no longer a battlefield creature; defensively clear links at the leave site. Link fields already exist (`src/components/permanent.h:24-25`).
 - **Complexity/risk:** **Low–Medium** — real dangling-reference bug, small blast radius.
 
-### T1.4 — Lion's Eye Diamond goes on the stack instead of resolving as a mana ability · `OPEN`
+### T1.4 — Lion's Eye Diamond goes on the stack instead of resolving as a mana ability · `DONE`
 - **Rule:** 605.1a / 605.3
 - **Interpretation (project decision, 2026-06-24):** `InstantSpeed$` is a *timing restriction*, not a
   loss of mana-ability status. It means the ability may be activated only when it would be legal to
@@ -68,6 +68,17 @@ governing rule, a fix sketch, and a complexity/risk estimate.
 - **Complexity/risk:** **Medium** — the `instant_speed` skip must become caller-aware (priority vs.
   mid-payment) rather than unconditional, and the off-stack mana-ability path must offer LED's color
   choice (`mana_choices`) the way other multi-color mana sources are presented.
+- **Implemented (2026-06-24):** `collect_available_mana_sources`/`collect_mana_legal_actions` gained a
+  caller-aware flag (instant-speed sources included only at priority, excluded mid-payment); the
+  priority listing at `state_manager_actions.cpp:407` passes it; the stack-listing branch (`:502`) and
+  the `!instant_speed` guard at `action_processor.cpp:188` were dropped so LED resolves off-stack.
+  Color choice was already handled by the existing per-color `mana_choices` expansion. **Additional
+  change beyond the sketch:** the machine-mode gate at `state_manager_actions.cpp:549` previously hid
+  *all* priority-time mana abilities from the ML agent (normal mana is auto-paid), which would have
+  left LED unusable by the model — it now exposes instant-speed mana abilities to machine mode while
+  keeping normal lands hidden, so the agent can float LED mana. Verified via the LED+Street
+  Wraith+Doomsday combo (off-stack float persists across the cycling draw) and a 5-game scripted
+  doomsday-vs-mav regression (no draws/errors).
 
 ### T1.5 — Vigilance ignored: attackers always tap · `DONE`
 - **Rule:** 702.21

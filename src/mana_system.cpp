@@ -148,7 +148,7 @@ static bool restricted_mana_matches(Entity source_entity, Entity paid_for) {
 // summoning sickness, activation limits) but NOT activation_mana_cost — callers handle that
 // to avoid circularity with can_afford_with_sources.
 static std::vector<std::pair<Entity, Ability>> collect_available_mana_sources(
-    Zone::Ownership player, std::shared_ptr<Orderer> orderer) {
+    Zone::Ownership player, std::shared_ptr<Orderer> orderer, bool include_instant_speed = false) {
     std::vector<std::pair<Entity, Ability>> sources;
     for (auto entity : orderer->mEntities) {
         if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
@@ -162,7 +162,10 @@ static std::vector<std::pair<Entity, Ability>> collect_available_mana_sources(
         for (const auto &ab : permanent.abilities) {
             if (ab.category != "AddMana") continue;
             if (ab.ability_type != Ability::ACTIVATED) continue;
-            if (ab.instant_speed) continue;  // InstantSpeed$ abilities (e.g. LED) are not mana abilities
+            // InstantSpeed$ mana abilities (e.g. LED) may only be activated at priority, not
+            // mid-cost-payment. Callers listing actions for a player who holds priority pass
+            // include_instant_speed; the affordability/payment callers leave it false.
+            if (ab.instant_speed && !include_instant_speed) continue;
             if (ab.tap_cost && permanent.is_tapped) continue;
             if (ab.activation_limit > 0 && ab.activations_this_turn >= ab.activation_limit) continue;
             // Summoning sickness check for creatures with tap cost
@@ -200,9 +203,9 @@ ActionCategory mana_action_category(Colors color) {
 }
 
 std::vector<LegalAction> collect_mana_legal_actions(
-    Zone::Ownership player, std::shared_ptr<Orderer> orderer, Entity paid_for) {
+    Zone::Ownership player, std::shared_ptr<Orderer> orderer, Entity paid_for, bool at_priority) {
     std::vector<LegalAction> actions;
-    auto sources = collect_available_mana_sources(player, orderer);
+    auto sources = collect_available_mana_sources(player, orderer, at_priority);
     for (auto &[entity, ab] : sources) {
         // Filter restricted mana (Cavern of Souls): hide from payment when spell doesn't match
         if (ab.restrict_to_chosen_type_creature && !restricted_mana_matches(entity, paid_for))

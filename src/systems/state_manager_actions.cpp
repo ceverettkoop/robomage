@@ -404,7 +404,8 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
     // checking permanents for activated abilities
     // mana abilities parsed last, after pending_actions complete
     // Simple tap-only mana sources collected via shared function
-    std::vector<LegalAction> legal_mana_abilities = collect_mana_legal_actions(priority_player, orderer);
+    std::vector<LegalAction> legal_mana_abilities =
+        collect_mana_legal_actions(priority_player, orderer, 0, /*at_priority=*/true);
     for (auto entity : orderer->mEntities) {
         if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
         auto &zone = global_coordinator.GetComponent<Zone>(entity);
@@ -499,9 +500,9 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             if (!ab.return_cost_type.empty() &&
                 controlled_permanents_matching(priority_player, ab.return_cost_type, orderer->mEntities).empty())
                 continue;
-            if (ab.category == "AddMana" && !ab.instant_speed) {
-                // Normal mana abilities collected via collect_mana_legal_actions above
-                // InstantSpeed$ abilities (e.g. LED) are not mana abilities and go on the stack
+            if (ab.category == "AddMana") {
+                // All mana abilities — including InstantSpeed$ ones (e.g. LED) — are collected
+                // via collect_mana_legal_actions above and resolve off-stack. None go on the stack.
                 continue;
             } else {
                 // Non-mana activated ability (e.g. ChangeZone for fetch lands, Destroy for Wasteland)
@@ -546,10 +547,13 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         actions.push_back(ma);
     }
     */
-    if (!InputLogger::instance().is_machine_mode()) {
-        for (auto &ma : legal_mana_abilities) {
-            actions.push_back(ma);
-        }
+    bool machine = InputLogger::instance().is_machine_mode();
+    for (auto &ma : legal_mana_abilities) {
+        // In machine mode, normal mana sources stay hidden and are auto-paid during cost
+        // payment. Instant-speed sources (e.g. LED) can only be activated at priority to
+        // float mana, so the ML agent must be offered those explicitly.
+        if (machine && !ma.ability.instant_speed) continue;
+        actions.push_back(ma);
     }
     return actions;
 }

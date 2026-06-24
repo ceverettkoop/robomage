@@ -185,7 +185,9 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
     auto &permanent = global_coordinator.GetComponent<Permanent>(permanent_entity);
     Zone::Ownership controller = permanent.controller;
 
-    bool is_mana_ability = (ability.category == "AddMana" && !ability.instant_speed);
+    // InstantSpeed$ AddMana abilities (e.g. LED) are mana abilities too: they resolve off-stack.
+    // The instant-speed timing restriction is enforced upstream (offered only at priority).
+    bool is_mana_ability = (ability.category == "AddMana");
     Ability stack_ab = ability;  // not used for mana ability
 
     // EQUIP: special activated ability — attach equipment to a creature

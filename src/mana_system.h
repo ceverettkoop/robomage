@@ -68,8 +68,11 @@ ActionCategory mana_action_category(Colors color);
 // Collect legal actions for all activatable mana sources a player controls.
 // Each action has a color-specific ActionCategory (MANA_W, MANA_U, etc.).
 // Sources with activation_mana_cost are included only if the cost is affordable.
+// at_priority includes instant-speed mana abilities (e.g. Lion's Eye Diamond), which may
+// only be activated when their controller holds priority — never mid-cost-payment.
 std::vector<LegalAction> collect_mana_legal_actions(
-    Zone::Ownership player, std::shared_ptr<Orderer> orderer, Entity paid_for = 0);
+    Zone::Ownership player, std::shared_ptr<Orderer> orderer, Entity paid_for = 0,
+    bool at_priority = false);
 
 // Can the controller pay `cost`? Runs the real machine-mode payment algorithm in a
 // side-effect-free simulate mode, so legality and actual payment can never disagree.
