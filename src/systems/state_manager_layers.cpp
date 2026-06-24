@@ -1,0 +1,96 @@
+// Continuous-effects engine — the single ordered driver implementing the MTG layer
+// system (comprehensive rule 613). Every state-based-effects pass rebuilds object
+// characteristics by applying continuous effects in layer order (1 copy -> 2 control
+// -> 3 text -> 4 type -> 5 color -> 6 abilities -> 7 P/T), each layer in timestamp
+// order (613.7) with a dependency override (613.8).
+//
+// The per-layer appliers and the gather preamble live in state_manager_statics.cpp
+// (where the keyword/svar helpers are defined); this file holds the orchestration,
+// the within-(sub)layer ordering machinery, and the documented extension-point hooks
+// for the layers no current-vocab card exercises. See continuous_effects.h.
+
+#include "state_manager.h"
+#include "continuous_effects.h"
+
+#include <algorithm>
+#include <vector>
+
+// --- Extension-point hooks for unimplemented layers --------------------------------
+// No card in the current 32-card vocab generates these effects, so each is a
+// documented no-op. When the first card needs one, give it state access (promote to a
+// StateManager method) and populate ContinuousEffects for the relevant layer; the
+// driver already calls it in the correct position.
+
+static void apply_layer1_copy_effects() {
+    // 613.1a/b — copy effects, merges, face-down characteristics (rule 707/708/730).
+}
+static void apply_layer2_control_effects() {
+    // 613.1b — control-changing effects (e.g. Control Magic, threaten effects).
+}
+static void apply_layer3_text_effects() {
+    // 613.1c — text-changing effects (rule 612).
+}
+static void apply_layer5_color_effects() {
+    // 613.1e — color-changing effects.
+}
+
+// --- Within-(sub)layer ordering (rule 613.7 / 613.8) -------------------------------
+
+void resolve_dependencies(std::vector<ContinuousEffect> &effects) {
+    // Rule 613.8 dependency override. A dependency makes one effect wait until another
+    // in the same (sub)layer has applied, overriding timestamp order. No current-vocab
+    // effect forms a dependency, so this is a no-op that falls through to timestamp
+    // order (613.7). Implement 613.8a (detection), 613.8b (apply-after / loop
+    // handling), and 613.8c (re-evaluation after each application) here when the first
+    // dependent effect pair enters the vocab.
+    (void)effects;
+}
+
+void order_continuous_effects(std::vector<ContinuousEffect> &effects) {
+    resolve_dependencies(effects);
+    // 613.3/613.4a: characteristic-defining effects first; then ascending timestamp
+    // (613.7). stable_sort keeps equal-timestamp effects in gather (insertion) order,
+    // which is deterministic and matches the 613.7m APNAP intent for the current vocab.
+    std::stable_sort(effects.begin(), effects.end(),
+        [](const ContinuousEffect &x, const ContinuousEffect &y) {
+            if (x.is_cda != y.is_cda) return x.is_cda;
+            return x.timestamp < y.timestamp;
+        });
+}
+
+// --- The driver --------------------------------------------------------------------
+
+void StateManager::apply_continuous_effects(Game &game) {
+    gather_active_statics(game);
+
+    // Layers 1-3: copy / control / text. Extension points (no current-vocab effect).
+    apply_layer1_copy_effects();
+    apply_layer2_control_effects();
+    apply_layer3_text_effects();
+
+    // Layer 4: type-changing (timestamp-ordered inside apply_type_changing_effects).
+    // Runs before mana abilities regenerate; must run even if no other statics exist.
+    apply_type_changing_effects();
+
+    // Layer 5: color-changing. Extension point.
+    apply_layer5_color_effects();
+
+    if (g_active_statics.empty()) {
+        // No statics, but gather may have dropped a stale bonus (e.g. an anthem just
+        // left the battlefield). Flush the recompute and return — matches the old
+        // early-out in apply_static_ability_effects.
+        recompute_battlefield_pt();
+        return;
+    }
+
+    // Layer 6: ability add/remove (keyword grants).
+    apply_layer6_ability_effects();
+
+    // Layer 7: power/toughness (sublayers 7a-7d). Accumulate the contributions, then
+    // flush them through recompute_pt (which applies the 7a->7b->7c->7d sublayer order).
+    apply_layer7_pt_effects();
+    recompute_battlefield_pt();
+
+    // Rule 613.11: rules-modifying continuous effects, applied after everything else.
+    apply_rules_modifying_effects();
+}

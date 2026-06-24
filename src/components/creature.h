@@ -33,6 +33,12 @@ struct Creature {
     int eot_toughness_bonus = 0;     // temporary +N/-N T from "until end of turn" pumps; cleared at cleanup step
     int static_power_bonus = 0;      // P from continuous static abilities; recomputed each SBE pass
     int static_toughness_bonus = 0;  // T from continuous static abilities; recomputed each SBE pass
+
+    // --- Layer-7 sublayer slots (rule 613.4); inert for the current vocab ---
+    bool has_set_pt = false;         // 7b: an effect sets P/T to a specific value (613.4b)
+    int set_power = 0;               // 7b: value power is set to when has_set_pt
+    int set_toughness = 0;           // 7b: value toughness is set to when has_set_pt
+    bool switch_pt = false;          // 7d: swap power and toughness (613.4d)
 };
 
 // Recompute the cached effective power/toughness from the signed contributions.

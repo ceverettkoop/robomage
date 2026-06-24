@@ -85,7 +85,7 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
     for (;;) {
         // Continuous effects define the game state that SBAs evaluate
         apply_permanent_components(game);
-        apply_static_ability_effects();
+        apply_continuous_effects(game);
 
         bool any_applied = false;
 

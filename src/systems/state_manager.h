@@ -20,12 +20,14 @@ class Orderer;
 class StackManager;
 
 // Cached snapshot of an active static ability on the battlefield.
-// Rebuilt each SBE pass by apply_static_ability_effects(); queried by
-// determine_legal_actions, check_triggered_abilities, mana_system, game.cpp untap, etc.
+// Rebuilt each SBE pass by gather_active_statics() (the continuous-effects engine
+// preamble); queried by determine_legal_actions, check_triggered_abilities,
+// mana_system, game.cpp untap, etc.
 struct ActiveStatic {
     Entity            entity = 0;
     StaticAbility    *sa = nullptr;
     Zone::Ownership   controller = Zone::PLAYER_A;
+    bool              condition_met = false;  // evaluated once per gather pass; read by every layer applier
 };
 
 // Global cached list of active static abilities on battlefield permanents.
@@ -57,11 +59,20 @@ private:
     void apply_permanent_components(Game& game);
     void apply_land_abilities(Entity entity);
     void apply_keyword_abilities(Entity entity);
-    void apply_type_changing_effects();
-    void recompute_battlefield_pt();
     void deal_combat_damage(Game& game, bool first_strike_only);
     void check_triggered_abilities(Game& game, std::shared_ptr<Orderer> orderer);
-    void apply_static_ability_effects();
+
+    // Continuous-effects engine (rule 613). apply_continuous_effects is the single
+    // ordered driver (src/systems/state_manager_layers.cpp); the per-layer appliers
+    // and the gather preamble live in state_manager_statics.cpp where the keyword
+    // helpers are defined. See continuous_effects.h for the data model.
+    void apply_continuous_effects(Game& game);    // layer-ordered driver
+    void gather_active_statics(Game& game);       // preamble: reset bonuses, build g_active_statics, eval conditions
+    void apply_type_changing_effects();           // layer 4 (613.1d)
+    void apply_layer6_ability_effects();          // layer 6 (613.1f): keyword grant/removal
+    void apply_layer7_pt_effects();               // layer 7 (613.4): CDA set + additive P/T
+    void apply_rules_modifying_effects();         // 613.11: MustAttack and other rules-modifiers
+    void recompute_battlefield_pt();              // flush layer-7 result into cached P/T
 };
 
 #endif /* STATE_MANAGER_H */

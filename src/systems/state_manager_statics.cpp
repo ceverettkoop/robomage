@@ -30,6 +30,7 @@
 #include "../mana_system.h"
 #include "../svar_eval.h"
 #include "../systems/stack_manager.h"
+#include "continuous_effects.h"
 #include "orderer.h"
 
 int active_raise_cost_for(const CardData &card_data) {
@@ -557,9 +558,13 @@ void StateManager::apply_type_changing_effects() {
     }
 }
 
-void StateManager::apply_static_ability_effects() {
-    // Phase 1: gather active static abilities from all battlefield permanents into the
-    // global g_active_statics cache. Other systems read this instead of scanning permanents.
+// Preamble for the continuous-effects engine: rebuild the g_active_statics cache from
+// every battlefield permanent and evaluate each gathered static's condition exactly
+// once (stored in ActiveStatic::condition_met) so every layer applier reads the same
+// result. Resetting each creature's static_*_bonus here means continuous buffs are
+// rebuilt from scratch each pass and need no per-ability revert.
+void StateManager::gather_active_statics(Game &game) {
+    (void)game;
     g_active_statics.clear();
 
     for (auto entity : mEntities) {
@@ -569,8 +574,6 @@ void StateManager::apply_static_ability_effects() {
         if (zone.location != Zone::BATTLEFIELD) continue;
 
         auto &perm = global_coordinator.GetComponent<Permanent>(entity);
-        // Reset accumulated static P/T bonus on every battlefield creature; it is
-        // rebuilt from scratch below so continuous buffs need no per-ability revert.
         if (global_coordinator.entity_has_component<Creature>(entity)) {
             auto &cr = global_coordinator.GetComponent<Creature>(entity);
             cr.static_power_bonus = 0;
@@ -582,28 +585,13 @@ void StateManager::apply_static_ability_effects() {
             continue;
         }
         for (auto &sa : perm.static_abilities)
-            g_active_statics.push_back({entity, &sa, perm.controller});
+            g_active_statics.push_back({entity, &sa, perm.controller, false});
     }
 
-    // Layer 4 (rule 613.1d): type-changing continuous effects applied before mana
-    // abilities are regenerated. Must run even if no other statics are active, but
-    // only the type-changing subset matters here — the rest is handled below.
-    apply_type_changing_effects();
-
-    // Alias for local readability
-    auto &active = g_active_statics;
-
-    if (active.empty()) {
-        // No buffs to apply, but the reset above may have dropped a stale static bonus
-        // (e.g. an anthem just left the battlefield) — flush the recompute and return.
-        recompute_battlefield_pt();
-        return;
-    }
-
-    // Phase 2: evaluate only the conditions actually referenced by gathered abilities.
-    // Each condition is computed at most once per player rather than once per permanent.
+    // Evaluate only the conditions actually referenced; compute each at most once per
+    // player rather than once per permanent.
     bool need_delirium_a = false, need_delirium_b = false;
-    for (auto &a : active) {
+    for (auto &a : g_active_statics) {
         if (a.sa->condition == "Delirium") {
             if (a.controller == Zone::PLAYER_A) need_delirium_a = true;
             else                                need_delirium_b = true;
@@ -612,114 +600,161 @@ void StateManager::apply_static_ability_effects() {
     bool delirium_a = need_delirium_a ? check_delirium(Zone::PLAYER_A, mEntities) : false;
     bool delirium_b = need_delirium_b ? check_delirium(Zone::PLAYER_B, mEntities) : false;
 
-    // Phase 3: apply or revert effects based on condition results.
-    for (auto &a : active) {
-        bool condition_met;
+    for (auto &a : g_active_statics) {
         if (a.sa->condition.empty() && a.sa->check_svar_expr.empty()) {
-            condition_met = true;
+            a.condition_met = true;
         } else if (a.sa->condition == "Delirium") {
-            condition_met = (a.controller == Zone::PLAYER_A) ? delirium_a : delirium_b;
+            a.condition_met = (a.controller == Zone::PLAYER_A) ? delirium_a : delirium_b;
         } else if (!a.sa->check_svar_expr.empty()) {
             // SVar-based condition (e.g. Keen-Eyed Curator: GE4 distinct card types
             // among exiled_with). a.entity is the source permanent the SVar belongs to.
             int svar_val = evaluate_sa_svar(a.sa->check_svar_expr, a.controller, a.entity);
-            condition_met = compare_svar(svar_val, a.sa->svar_compare);
+            a.condition_met = compare_svar(svar_val, a.sa->svar_compare);
         } else {
-            condition_met = false;  // unrecognised condition — treat as unmet
-        }
-
-        if (a.sa->category == "Continuous") {
-            // Characteristic-defining ability (rule 604.3): sets base P/T each SBE pass.
-            // Handled separately because it replaces rather than modifies P/T.
-            if (a.sa->characteristic_defining &&
-                (!a.sa->set_power_svar.empty() || !a.sa->set_toughness_svar.empty())) {
-                if (!global_coordinator.entity_has_component<Creature>(a.entity)) continue;
-                auto &cr = global_coordinator.GetComponent<Creature>(a.entity);
-                // Set the characteristic-defining base; counters, prowess/exalted, and
-                // static bonuses are layered on top by the final recompute_pt pass. This
-                // also fixes the old bug where Exalted's toughness boost was dropped here
-                // (prowess was re-added to power only).
-                cr.base_power = !a.sa->set_power_svar.empty()
-                    ? evaluate_sa_svar(a.sa->set_power_svar, a.controller) : 0;
-                cr.base_toughness = !a.sa->set_toughness_svar.empty()
-                    ? evaluate_sa_svar(a.sa->set_toughness_svar, a.controller) : 0;
-                a.sa->applied = true;
-                continue;
-            }
-
-            // Determine which entity receives the buff (source or equipped creature).
-            // Affected$ is stored verbatim (e.g. "Creature.EquippedBy"), so match by substring.
-            Entity target_entity = a.entity;
-            if (a.sa->affected.find("EquippedBy") != std::string::npos) {
-                if (!global_coordinator.entity_has_component<Permanent>(a.entity)) continue;
-                target_entity = global_coordinator.GetComponent<Permanent>(a.entity).equipped_to;
-            }
-
-            // If the buff moved to a different creature (e.g. equipment re-attached),
-            // strip granted keywords from the previous one. P/T needs no manual revert:
-            // every creature's static bonus was reset to 0 at the top of this pass and is
-            // rebuilt below, so a stale bonus simply isn't re-added.
-            if (a.sa->applied && a.sa->last_applied_entity != target_entity) {
-                Entity prev = static_cast<Entity>(a.sa->last_applied_entity);
-                if (prev != 0 && global_coordinator.entity_has_component<Creature>(prev) &&
-                    !a.sa->add_keyword.empty()) {
-                    remove_keywords_from_spec(global_coordinator.GetComponent<Creature>(prev),
-                                              a.sa->add_keyword);
-                }
-                a.sa->applied = false;
-            }
-
-            if (target_entity == 0 || !global_coordinator.entity_has_component<Creature>(target_entity)) {
-                // No valid target; mark unapplied so keywords re-grant when one appears.
-                if (a.sa->applied) a.sa->applied = false;
-                continue;
-            }
-
-            auto &cr = global_coordinator.GetComponent<Creature>(target_entity);
-            const std::string name_for_log = entity_name(target_entity);
-
-            // P/T contribution: accumulate fresh into static_*_bonus each pass (no delta
-            // tracking, no revert). Static (add_power) and dynamic-svar (add_power_svar)
-            // buffs share one path. recompute_pt() turns the bonus into effective P/T.
-            if (condition_met) {
-                int add_p = a.sa->add_power_svar.empty()
-                                ? a.sa->add_power
-                                : evaluate_sa_svar(a.sa->add_power_svar, a.controller);
-                int add_t = a.sa->add_toughness_svar.empty()
-                                ? a.sa->add_toughness
-                                : evaluate_sa_svar(a.sa->add_toughness_svar, a.controller);
-                cr.static_power_bonus     += add_p;
-                cr.static_toughness_bonus += add_t;
-            }
-
-            // Keywords: granted/removed only on condition transitions, tracked by `applied`.
-            if (condition_met && !a.sa->applied) {
-                if (!a.sa->add_keyword.empty()) add_keywords_from_spec(cr, a.sa->add_keyword);
-                a.sa->applied = true;
-                a.sa->last_applied_entity = static_cast<uint32_t>(target_entity);
-                game_log("%s gains %s%s(%s)\n", name_for_log.c_str(),
-                         a.sa->add_power != 0 ? (std::to_string(a.sa->add_power) + "/" +
-                                                  std::to_string(a.sa->add_toughness) + " ").c_str() : "",
-                         !a.sa->add_keyword.empty() ? (a.sa->add_keyword + " ").c_str() : "",
-                         a.sa->condition.empty() ? "always" : a.sa->condition.c_str());
-            } else if (!condition_met && a.sa->applied) {
-                if (!a.sa->add_keyword.empty()) remove_keywords_from_spec(cr, a.sa->add_keyword);
-                a.sa->applied = false;
-                game_log("%s loses %s bonus\n", name_for_log.c_str(),
-                         a.sa->condition.empty() ? "static" : a.sa->condition.c_str());
-            }
-        }
-
-        if (a.sa->category == "MustAttack") {
-            if (!global_coordinator.entity_has_component<Creature>(a.entity)) continue;
-            auto &cr = global_coordinator.GetComponent<Creature>(a.entity);
-            cr.must_attack = condition_met;
-            a.sa->applied = condition_met;
+            a.condition_met = false;  // unrecognised condition — treat as unmet
         }
     }
+}
 
-    // Flush the freshly-accumulated static bonuses into effective P/T.
-    recompute_battlefield_pt();
+// Layer 6 (rule 613.1f): ability-adding/removing continuous effects. Today this is
+// keyword grants from "Continuous" statics, granted/removed on condition transitions
+// (tracked by StaticAbility::applied). P/T is handled entirely in layer 7, so this
+// pass never touches static_*_bonus — only keywords and the applied/last_applied state.
+void StateManager::apply_layer6_ability_effects() {
+    for (auto &a : g_active_statics) {
+        if (a.sa->category != "Continuous") continue;
+        // Characteristic-defining P/T statics are pure layer 7a (no keyword); skip them
+        // here exactly as the original combined loop did before the keyword branch.
+        if (a.sa->characteristic_defining &&
+            (!a.sa->set_power_svar.empty() || !a.sa->set_toughness_svar.empty()))
+            continue;
+
+        // Determine which entity receives the grant (source or equipped creature).
+        // Affected$ is stored verbatim (e.g. "Creature.EquippedBy"), so match by substring.
+        Entity target_entity = a.entity;
+        if (a.sa->affected.find("EquippedBy") != std::string::npos) {
+            if (!global_coordinator.entity_has_component<Permanent>(a.entity)) continue;
+            target_entity = global_coordinator.GetComponent<Permanent>(a.entity).equipped_to;
+        }
+
+        // If the grant moved to a different creature (e.g. equipment re-attached),
+        // strip granted keywords from the previous one. P/T needs no manual revert:
+        // layer 7 rebuilds every static bonus from zero each pass.
+        if (a.sa->applied && a.sa->last_applied_entity != target_entity) {
+            Entity prev = static_cast<Entity>(a.sa->last_applied_entity);
+            if (prev != 0 && global_coordinator.entity_has_component<Creature>(prev) &&
+                !a.sa->add_keyword.empty()) {
+                remove_keywords_from_spec(global_coordinator.GetComponent<Creature>(prev),
+                                          a.sa->add_keyword);
+            }
+            a.sa->applied = false;
+        }
+
+        if (target_entity == 0 || !global_coordinator.entity_has_component<Creature>(target_entity)) {
+            // No valid target; mark unapplied so keywords re-grant when one appears.
+            if (a.sa->applied) a.sa->applied = false;
+            continue;
+        }
+
+        auto &cr = global_coordinator.GetComponent<Creature>(target_entity);
+        const std::string name_for_log = entity_name(target_entity);
+
+        if (a.condition_met && !a.sa->applied) {
+            if (!a.sa->add_keyword.empty()) add_keywords_from_spec(cr, a.sa->add_keyword);
+            a.sa->applied = true;
+            a.sa->last_applied_entity = static_cast<uint32_t>(target_entity);
+            game_log("%s gains %s%s(%s)\n", name_for_log.c_str(),
+                     a.sa->add_power != 0 ? (std::to_string(a.sa->add_power) + "/" +
+                                              std::to_string(a.sa->add_toughness) + " ").c_str() : "",
+                     !a.sa->add_keyword.empty() ? (a.sa->add_keyword + " ").c_str() : "",
+                     a.sa->condition.empty() ? "always" : a.sa->condition.c_str());
+        } else if (!a.condition_met && a.sa->applied) {
+            if (!a.sa->add_keyword.empty()) remove_keywords_from_spec(cr, a.sa->add_keyword);
+            a.sa->applied = false;
+            game_log("%s loses %s bonus\n", name_for_log.c_str(),
+                     a.sa->condition.empty() ? "static" : a.sa->condition.c_str());
+        }
+    }
+}
+
+// Layer 7 (rule 613.4): power/toughness continuous effects, in sublayer order.
+//   7a — characteristic-defining abilities set base P/T (rule 604.3), applied first
+//        and unconditionally; recompute_pt then layers counters/pumps/etc. on top.
+//   7c — additive +N/+N statics, collected as timestamp-tagged ContinuousEffects,
+//        ordered per 613.7/613.8, then accumulated into static_*_bonus. Accumulation
+//        is commutative so the result matches the old fixed-order sum; the ordering
+//        machinery is wired in so future non-commutative layer-7 effects order
+//        correctly. (Sublayers 7b "set" and 7d "switch" have storage slots on Creature
+//        but no current-vocab source — see recompute_pt.)
+void StateManager::apply_layer7_pt_effects() {
+    // 7a — characteristic-defining base P/T.
+    for (auto &a : g_active_statics) {
+        if (a.sa->category != "Continuous") continue;
+        if (!(a.sa->characteristic_defining &&
+              (!a.sa->set_power_svar.empty() || !a.sa->set_toughness_svar.empty())))
+            continue;
+        if (!global_coordinator.entity_has_component<Creature>(a.entity)) continue;
+        auto &cr = global_coordinator.GetComponent<Creature>(a.entity);
+        cr.base_power = !a.sa->set_power_svar.empty()
+            ? evaluate_sa_svar(a.sa->set_power_svar, a.controller) : 0;
+        cr.base_toughness = !a.sa->set_toughness_svar.empty()
+            ? evaluate_sa_svar(a.sa->set_toughness_svar, a.controller) : 0;
+        a.sa->applied = true;
+    }
+
+    // 7c — additive modifications, gathered then ordered before accumulation.
+    std::vector<ContinuousEffect> mods;
+    for (auto &a : g_active_statics) {
+        if (a.sa->category != "Continuous") continue;
+        if (a.sa->characteristic_defining &&
+            (!a.sa->set_power_svar.empty() || !a.sa->set_toughness_svar.empty()))
+            continue;  // handled in 7a
+        if (!a.condition_met) continue;
+
+        Entity target_entity = a.entity;
+        if (a.sa->affected.find("EquippedBy") != std::string::npos) {
+            if (!global_coordinator.entity_has_component<Permanent>(a.entity)) continue;
+            target_entity = global_coordinator.GetComponent<Permanent>(a.entity).equipped_to;
+        }
+        if (target_entity == 0 || !global_coordinator.entity_has_component<Creature>(target_entity)) continue;
+
+        ContinuousEffect e;
+        e.layer    = Layer::PT;
+        e.sublayer = PTSublayer::MODIFY;
+        e.source   = a.entity;
+        e.affected = target_entity;
+        e.delta_power = a.sa->add_power_svar.empty()
+                            ? a.sa->add_power
+                            : evaluate_sa_svar(a.sa->add_power_svar, a.controller);
+        e.delta_toughness = a.sa->add_toughness_svar.empty()
+                            ? a.sa->add_toughness
+                            : evaluate_sa_svar(a.sa->add_toughness_svar, a.controller);
+        // 613.7a — a static ability's effect has its source object's timestamp.
+        e.timestamp = global_coordinator.entity_has_component<Permanent>(a.entity)
+            ? global_coordinator.GetComponent<Permanent>(a.entity).timestamp_entered_battlefield
+            : 0;
+        mods.push_back(e);
+    }
+
+    order_continuous_effects(mods);
+    for (const auto &e : mods) {
+        if (!global_coordinator.entity_has_component<Creature>(e.affected)) continue;
+        auto &cr = global_coordinator.GetComponent<Creature>(e.affected);
+        cr.static_power_bonus     += e.delta_power;
+        cr.static_toughness_bonus += e.delta_toughness;
+    }
+}
+
+// Rule 613.11: continuous effects that modify the rules rather than characteristics,
+// applied after all other continuous effects. Today: MustAttack.
+void StateManager::apply_rules_modifying_effects() {
+    for (auto &a : g_active_statics) {
+        if (a.sa->category != "MustAttack") continue;
+        if (!global_coordinator.entity_has_component<Creature>(a.entity)) continue;
+        auto &cr = global_coordinator.GetComponent<Creature>(a.entity);
+        cr.must_attack = a.condition_met;
+        a.sa->applied = a.condition_met;
+    }
 }
 
 // Recompute cached effective P/T from contributions for every battlefield creature.
