@@ -254,6 +254,11 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
             help="Player A controller: 'scripted' (or 'scripted:*') or a model .zip path/shorthand (default: scripted)"),
         Arg("--player-b", "str", default="scripted", suggest="checkpoint",
             help="Player B controller: 'scripted' (or 'scripted:*') or a model .zip path/shorthand (default: scripted)"),
+        Arg("--play-a", "str", default=None,
+            help="Drive Player A by semantic action specs instead of --player-a, e.g. "
+                 "\"cast:Lightning Bolt,target:Grizzly Bears@opp,pass\" (see action_spec.py grammar)"),
+        Arg("--play-b", "str", default=None,
+            help="Drive Player B by semantic action specs instead of --player-b (see --play-a)"),
         Arg("--deck", "str", default="delver", suggest="deck", help="Player A deck (.dk stem, default: delver)"),
         Arg("--opponent", "str", default=None, suggest="deck", help="Player B deck (.dk stem, default: Player A's deck)"),
         Arg("--games", "int", default=1,

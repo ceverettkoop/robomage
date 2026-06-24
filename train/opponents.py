@@ -94,10 +94,17 @@ def matchup_checkpoints(model_deck: Optional[str], opp_deck: Optional[str],
 
 
 class Controller(Protocol):
-    """Uniform decision interface for any opponent."""
+    """Uniform decision interface for any opponent.
+
+    ``decoded_actions`` is the decision's decoded action menu
+    (``decode.decode_actions_from_obs`` output); the runner supplies it only
+    when a controller advertises ``wants_decoded = True`` (e.g. PlayController),
+    so index/model/scripted controllers ignore it.
+    """
 
     def choose(self, obs: np.ndarray, num_choices: int,
-               action_masks: Optional[np.ndarray] = None) -> int: ...
+               action_masks: Optional[np.ndarray] = None,
+               decoded_actions: Optional[list] = None) -> int: ...
 
 
 class ScriptedController:
@@ -107,7 +114,7 @@ class ScriptedController:
         self._agent = agent
         self.label = label
 
-    def choose(self, obs, num_choices, action_masks=None) -> int:
+    def choose(self, obs, num_choices, action_masks=None, decoded_actions=None) -> int:
         return self._agent.act(obs, num_choices)
 
 
@@ -120,7 +127,7 @@ class ModelController:
         self._deterministic = deterministic
         self._mask = np.zeros(MAX_ACTIONS, dtype=bool)
 
-    def choose(self, obs, num_choices, action_masks=None) -> int:
+    def choose(self, obs, num_choices, action_masks=None, decoded_actions=None) -> int:
         if action_masks is None:
             self._mask[:] = False
             self._mask[:num_choices] = True
@@ -143,12 +150,57 @@ class ActionListController:
         self._i = 0
         self.label = label
 
-    def choose(self, obs, num_choices, action_masks=None) -> int:
+    def choose(self, obs, num_choices, action_masks=None, decoded_actions=None) -> int:
         if self._i < len(self._actions):
             a = self._actions[self._i]
             self._i += 1
             return a
         return 0
+
+
+class PlayController:
+    """Plays a fixed sequence of semantic action specs (``--play``).
+
+    Each spec (``cast:Lightning Bolt``, ``target:Grizzly Bears@opp``, ``pass``,
+    ``#7`` …) is resolved against *this* decision's decoded menu via
+    :mod:`action_spec`, so the sequence is robust to dynamic index reordering.
+    Like :class:`ActionListController` the sequence is global (one spec consumed
+    per decision regardless of which side has priority); once exhausted it falls
+    back to action ``0`` (pass / first choice — always legal) so the game keeps
+    advancing to its conclusion or the decision cap.
+
+    ``wants_decoded = True`` tells the runner to hand ``choose`` the decoded menu.
+    A spec that resolves to zero or multiple legal actions raises
+    :class:`action_spec.PlayResolveError` — a loud failure with the legal menu,
+    instead of silently playing the wrong index. ``self.resolved`` accumulates
+    the integer indices chosen, so a run can be replayed as a plain ``--actions``
+    list.
+    """
+
+    wants_decoded = True
+
+    def __init__(self, specs, label: str = "Play"):
+        import action_spec
+        self._action_spec = action_spec
+        self._specs = action_spec.parse_spec_list(specs)
+        self._i = 0
+        self.label = label
+        self.resolved: list[int] = []
+
+    def choose(self, obs, num_choices, action_masks=None, decoded_actions=None) -> int:
+        if decoded_actions is None:
+            raise RuntimeError("PlayController requires decoded_actions; drive it "
+                               "through runner.run_games (which supplies the menu).")
+        # Specs exhausted: auto-advance with action 0 (always legal), like
+        # AutoPassController, so the game runs to its end / the decision cap.
+        if self._i >= len(self._specs):
+            self.resolved.append(0)
+            return 0
+        spec = self._specs[self._i]
+        self._i += 1
+        idx = self._action_spec.resolve_to_index(spec, decoded_actions)
+        self.resolved.append(idx)
+        return idx
 
 
 class InteractiveController:
@@ -157,7 +209,7 @@ class InteractiveController:
     def __init__(self, label: str = "Human"):
         self.label = label
 
-    def choose(self, obs, num_choices, action_masks=None) -> int:
+    def choose(self, obs, num_choices, action_masks=None, decoded_actions=None) -> int:
         while True:
             try:
                 raw = input("  >> Enter action index: ").strip()
@@ -175,7 +227,7 @@ class AutoPassController:
     def __init__(self, label: str = "Auto"):
         self.label = label
 
-    def choose(self, obs, num_choices, action_masks=None) -> int:
+    def choose(self, obs, num_choices, action_masks=None, decoded_actions=None) -> int:
         return 0
 
 

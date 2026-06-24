@@ -244,6 +244,28 @@ def play(binary_path: str, model_path: str, human_deck: str = "delver", model_de
                 for i, c in enumerate(cats):
                     print(f"  {i}: {_action_label(int(c), float(card_ids[i]))}")
 
+            # FOLLOW-UP (semantic string input): this prompt accepts a numeric
+            # index today. To let a human type intent commands (e.g. "cast bolt",
+            # "target grizzly@opp", "pass") wire in the shared resolver — the same
+            # one PlayController uses — so numeric and semantic input are
+            # interchangeable:
+            #
+            #   import action_spec, decode
+            #   menu = decode.decode_actions_from_obs(
+            #       obs, num_choices, getattr(env, "_action_public", None),
+            #       descriptions=getattr(env, "_action_descriptions", None))
+            #   if raw.lstrip("#").isdigit():
+            #       action = int(raw.lstrip("#"))
+            #   else:
+            #       r = action_spec.resolve(raw, menu)
+            #       if not r.ok:
+            #           print(f"  {r.reason}\n  legal: {action_spec.format_menu(menu)}")
+            #           continue
+            #       action = r.index
+            #
+            # The resolution logic is identical to the harness; only the source of
+            # the spec differs (typed line vs. pre-baked --play list). The GUI
+            # input thread (play_gui) can reuse the same two lines.
             while True:
                 try:
                     raw = input("Choose> ").strip()

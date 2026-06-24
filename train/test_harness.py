@@ -31,7 +31,17 @@ Usage examples:
         --deck-b delver \\
         --scripted --max-decisions 40
 
-    # Interactive: pause at each decision and prompt for action index
+    # Semantic action specs (resolved against the live menu each decision —
+    # robust to index reordering; the preferred way to script a precise line).
+    python test_harness.py \\
+        --hand-a "Mountain,Lightning Bolt" \\
+        --library-a "Mountain,Island,Island,Mountain,Mountain,Mountain,Mountain" \\
+        --battlefield-b "Grizzly Bears" \\
+        --play "play:Mountain,pass,cast:Lightning Bolt,target:Grizzly Bears@opp,pass"
+
+    # Interactive: pause at each decision and prompt a HUMAN for an action index.
+    # Not usable when an automated agent drives the harness (no TTY to type into)
+    # — precompute --actions or, better, use --play instead.
     python test_harness.py \\
         --hand-a "Swamp,Dark Ritual,Doomsday" \\
         --library-a "Swamp,Swamp,Swamp,Swamp,Swamp,Swamp,Swamp" \\
@@ -62,7 +72,7 @@ from pathlib import Path
 
 import runner
 from opponents import (make_controller, ActionListController,
-                       InteractiveController, AutoPassController)
+                       InteractiveController, AutoPassController, PlayController)
 
 # ── Path setup ────────────────────────────────────────────────────────────────
 _REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -151,7 +161,15 @@ def main():
     parser.add_argument("--battlefield-a", help="Cards starting on Player A's battlefield (comma-separated)")
     parser.add_argument("--battlefield-b", help="Cards starting on Player B's battlefield (comma-separated)")
     parser.add_argument("--actions", help="Comma-separated action indices to play")
-    parser.add_argument("--interactive", action="store_true", help="Prompt for each action")
+    parser.add_argument("--play",
+                        help="Comma-separated semantic action specs resolved against the "
+                             "live menu each decision, e.g. "
+                             "\"cast:Lightning Bolt,target:Grizzly Bears@opp,pass\". "
+                             "Robust to index reordering; see action_spec.py for the grammar. "
+                             "An unmatched/ambiguous spec fails loudly with the legal menu.")
+    parser.add_argument("--interactive", action="store_true",
+                        help="Prompt a human at the terminal for each action (NOT usable "
+                             "when Claude drives the harness — there is no TTY; use --play)")
     parser.add_argument("--scripted", action="store_true", help="Use scripted agent")
     parser.add_argument("--no-shuffle", action="store_true",
                         help="Don't shuffle libraries — deck-file order = draw order "
@@ -186,6 +204,7 @@ def main():
     # deck file passed through --deck-a). Otherwise libraries are shuffled.
     no_shuffle = args.no_shuffle or bool(hand_a) or bool(hand_b)
     actions_str = args.actions or scenario.get("actions")
+    play_specs = args.play or scenario.get("play")
     max_decisions = (args.max_decisions if args.max_decisions is not None
                      else scenario.get("max_decisions", 500))
 
@@ -238,12 +257,17 @@ def main():
         print(f"Seed: {seed}")
         if actions:
             print(f"Actions: {actions}")
+        if play_specs:
+            print(f"Play: {play_specs}")
         print()
 
         # Pick the controller for the chosen play mode. The same controller
         # drives both seats (the action list / interactive prompts / auto-pass
         # are global, not per-side), matching the original harness behaviour.
-        if actions is not None:
+        if play_specs is not None:
+            controller = PlayController(play_specs)
+            mode_label = "Play"
+        elif actions is not None:
             controller = ActionListController(actions)
             mode_label = "Actions"
         elif args.interactive:
@@ -270,6 +294,10 @@ def main():
             battlefield_a=bf_a, battlefield_b=bf_b, no_shuffle=no_shuffle,
             max_decisions=max_decisions)
         winner = bool(wins or losses)
+        # A --play run resolves specs to concrete indices; print them so the line
+        # can be replayed deterministically as a plain --actions integer list.
+        if isinstance(controller, PlayController) and controller.resolved:
+            print(f"\nresolved --actions: {','.join(map(str, controller.resolved))}")
     finally:
         for p in cleanup_paths:
             try:

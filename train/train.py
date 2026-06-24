@@ -1134,30 +1134,40 @@ def observe(binary_path: str,
             player_a: str = "scripted", player_b: str = "scripted",
             deck_a: str | None = None, deck_b: str | None = None,
             n_games: int = 1, bo3: bool = False,
-            seed: int | None = None, verbose: bool = False):
+            seed: int | None = None, verbose: bool = False,
+            play_a: str | None = None, play_b: str | None = None):
     """Observe one or more games between any pair of {scripted | model} controllers.
 
     ``player_a``/``player_b`` are either the literal "scripted" (or a
     "scripted:*" variant) or a model checkpoint (.zip path or shorthand).
-    ``deck_a``/``deck_b`` set each side's deck.  Every decision by each agent is
-    logged; ``--verbose`` additionally dumps the full board state and the legal
-    action menu at each decision (the same transcript format the test harness
-    prints).  With ``n_games > 1`` a per-game result line and a final W/L/D
-    summary are printed.
+    ``play_a``/``play_b`` override the corresponding side with a semantic action
+    script (see ``action_spec``) — handy for driving one seat through a fixed
+    line while watching the other.  ``deck_a``/``deck_b`` set each side's deck.
+    Every decision by each agent is logged; ``--verbose`` additionally dumps the
+    full board state and the legal action menu at each decision (the same
+    transcript format the test harness prints).  With ``n_games > 1`` a per-game
+    result line and a final W/L/D summary are printed.
 
     This is a thin wrapper: the actual game-driving loop lives in
     ``runner.run_games`` (shared with the test harness).
     """
-    from opponents import make_controller, is_scripted_spec
+    from opponents import make_controller, is_scripted_spec, PlayController
     import runner
 
     # Observation is a fixed replay, so use deterministic model predictions.
-    ctrl_a = make_controller(player_a or "scripted",
-                             checkpoint_resolver=_resolve_model, deterministic=True)
-    ctrl_b = make_controller(player_b or "scripted",
-                             checkpoint_resolver=_resolve_model, deterministic=True)
-    label_a = "Scripted" if is_scripted_spec(player_a or "scripted") else "Model"
-    label_b = "Scripted" if is_scripted_spec(player_b or "scripted") else "Model"
+    # A --play-{a,b} script takes precedence over --player-{a,b} for that seat.
+    if play_a is not None:
+        ctrl_a, label_a = PlayController(play_a), "Play"
+    else:
+        ctrl_a = make_controller(player_a or "scripted",
+                                 checkpoint_resolver=_resolve_model, deterministic=True)
+        label_a = "Scripted" if is_scripted_spec(player_a or "scripted") else "Model"
+    if play_b is not None:
+        ctrl_b, label_b = PlayController(play_b), "Play"
+    else:
+        ctrl_b = make_controller(player_b or "scripted",
+                                 checkpoint_resolver=_resolve_model, deterministic=True)
+        label_b = "Scripted" if is_scripted_spec(player_b or "scripted") else "Model"
 
     unit = "match" if bo3 else "game"
     print(f"=== {label_a}/A ({deck_a or 'default'} deck) vs "
@@ -1283,6 +1293,7 @@ if __name__ == "__main__":
     elif args.command == "observe":
         observe(args.binary, player_a=args.player_a, player_b=args.player_b,
                 deck_a=args.deck, deck_b=args.opponent,
-                n_games=args.games, bo3=args.bo3, seed=args.seed, verbose=args.verbose)
+                n_games=args.games, bo3=args.bo3, seed=args.seed, verbose=args.verbose,
+                play_a=args.play_a, play_b=args.play_b)
     elif args.command == "baseline":
         baseline(args.binary, _resolve_model(args.model), args.games)

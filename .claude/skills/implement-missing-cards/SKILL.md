@@ -84,7 +84,14 @@ card's expected behavior or the test scope, STOP and ask the user** rather than 
 
    f. **Test with the harness.** Construct a focused scenario that exercises *this* card's
       behavior — use inline `--hand-a/--library-a/--battlefield-a` (and the opponent side) or
-      a stacked `temp/` deck, driven with `--scripted` or an explicit `--actions` sequence.
+      a stacked `temp/` deck, driven with `--scripted` or, to script a precise line, the
+      semantic `--play` flag (e.g.
+      `--play "keep,keep,play:Mountain,pass,cast:Lightning Bolt,target:Grizzly Bears@opp"`;
+      grammar in `CLAUDE.md` / `train/action_spec.py`). `--play` resolves each spec against
+      the live menu by intent, so it's robust to index shifts and fails loudly with the legal
+      menu when a spec doesn't match — read that menu and fix the spec. Do **not** use
+      `--interactive` (it waits on terminal input you can't provide). The opening decisions
+      are mulligans, so sculpted-hand lines start with `keep,keep,…`.
       Verify the narrative and decoded state match the expected outcome (e.g. the spell
       resolves, deals the right damage, moves the right zones, leaves the right board).
       - **If the expected behavior or the full test scope is not totally clear** — modal

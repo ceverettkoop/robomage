@@ -104,13 +104,22 @@ def run_games(controller_a, controller_b, *,
 
             controller = controller_a if priority_is_a else controller_b
             label = label_a if priority_is_a else label_b
-            action = controller.choose(obs, num_choices, action_masks=env.action_masks())
+
+            # Decode the menu once if either the transcript (verbose) or the
+            # controller (e.g. PlayController, which matches specs against it)
+            # needs it; otherwise skip the work for the model/scripted path.
+            need_decoded = verbose or getattr(controller, "wants_decoded", False)
+            decoded = (decode.decode_actions_from_obs(
+                obs, num_choices, getattr(env, "_action_public", None),
+                descriptions=getattr(env, "_action_descriptions", None))
+                if need_decoded else None)
+
+            action = controller.choose(obs, num_choices,
+                                       action_masks=env.action_masks(),
+                                       decoded_actions=decoded)
 
             if verbose:
                 gs = decode.decode_game_state(obs[:STATE_SIZE])
-                decoded = decode.decode_actions_from_obs(
-                    obs, num_choices, getattr(env, "_action_public", None),
-                    descriptions=getattr(env, "_action_descriptions", None))
                 for ln in decode.format_decision_block(decision + 1, gs, decoded):
                     emit(ln)
                 emit(decode.format_chosen_action(f"{label}/{player}", action, decoded))

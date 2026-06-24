@@ -106,10 +106,69 @@ train/.venv/bin/python train/test_harness.py \
 ```
 
 **Play modes:**
+- `--play "cast:Lightning Bolt,target:Grizzly Bears@opp,pass"` — **semantic action specs**
+  (the preferred way to script a precise line of play, especially for Claude). Each spec is
+  resolved against *this* decision's live menu by intent (verb + card name + controller), so
+  it is robust to index reordering and authorable up front. See "Scripting with `--play`"
+  below. An unmatched or ambiguous spec **fails loudly with the legal menu** instead of
+  silently playing the wrong action.
 - `--scripted` — rule-based agent (from env.py) plays both sides automatically
-- `--actions "9,0,7,0,8"` — pre-scripted action index sequence
-- `--interactive` — prompt for each decision (useful for step-by-step debugging)
+- `--actions "9,0,7,0,8"` — pre-scripted *positional* action index sequence (fragile; prefer
+  `--play`). Indices shift if the menu reorders. Still useful as a canonical replay form —
+  a `--play` run prints the `resolved --actions:` integer list it played.
+- `--interactive` — prompt a human at the terminal for each decision. **Claude cannot use
+  this mode** — there is no TTY for Claude to type into, so the `input()` prompt just hits
+  EOF and spins. When *you* (Claude) are driving the harness, never pass `--interactive`;
+  use `--play` (or precompute `--actions`) instead.
 - Default (no flag) — auto-passes every decision
+
+**Scripting with `--play` (the method for automated/Claude-driven testing):**
+A `--play` value is a comma-separated list of semantic specs, one consumed per decision (the
+list is global across both seats, like `--actions`). Grammar lives in `train/action_spec.py`;
+the common verbs:
+
+| Spec | Meaning |
+|---|---|
+| `pass` | pass priority / take the first choice |
+| `keep` / `mulligan` | the opening mulligan decision |
+| `cast:<card>` | cast a spell from hand |
+| `play:<card>` / `land:<card>` | play a land |
+| `activate:<card>[@own/opp]` | activate a permanent's ability |
+| `target:<card>[@own/opp]` or `target:<text>` | choose a target (card, or a player/modal by description text) |
+| `attack:<card>` / `attack:done` | declare one attacker / confirm attackers |
+| `block:<card>` / `block:done` | declare one blocker / confirm blockers |
+| `mana:<w/u/b/r/g/c>` / `tap:<land>` | tap for mana |
+| `search:<card>` / `search:fail` | library search / fail to find |
+| `top:<card>` · `bottom:<card>` · `dig:<card>` | top-of-library / bottoming / dig pick |
+| `desc:<text>` | match any action whose description contains `<text>` |
+| `#<n>` or a bare integer | literal index escape hatch |
+
+Notes:
+- Card names match case- and apostrophe-insensitively; an exact name wins, else a unique
+  substring (`cast:bolt` → Lightning Bolt). Identical duplicate choices (e.g. four "Play
+  Mountain" from a hand of duplicates) collapse to the first automatically; genuinely distinct
+  matches are reported ambiguous — pin them with `@own`/`@opp`, `desc:`, or `#<n>`.
+- The opening decisions are mulligans — start a sculpted-hand line with `keep,keep,…` (one
+  `keep` per seat, since the harness drives both seats from the one list).
+- After the specs run out the game auto-advances (action `0`) to its end or `--max-decisions`.
+- Read the transcript: every decision prints the numbered **Available actions** menu next to
+  the decoded board state, so when a spec fails you can see exactly what was legal and fix it.
+  Keep `--seed` constant (default `1`) so the prefix replays identically while you extend the line.
+
+Example (Bolt kills a bear that is already in play):
+```bash
+train/.venv/bin/python train/test_harness.py \
+  --hand-a "Mountain,Lightning Bolt" \
+  --library-a "Island,Island,Mountain,Mountain,Mountain,Mountain,Mountain,Mountain" \
+  --battlefield-b "Grizzly Bears" \
+  --play "keep,keep,play:Mountain,pass,cast:Lightning Bolt,target:Grizzly Bears@opp"
+```
+
+`train.py observe` takes per-seat `--play-a` / `--play-b` to drive one side by specs while the
+other stays scripted/model (e.g. `observe --play-a "keep,play:Island,pass" --player-b scripted`).
+
+For fully reproducible scenarios, capture the spec list (plus hands/libraries) in a JSON
+scenario file via the `"play"` field (alongside or instead of `"actions"`).
 
 **JSON scenario files:**
 ```bash
@@ -453,6 +512,7 @@ State vector layout is documented in `src/machine_io.h`. Key indices: `obs[31]` 
 - `train/play.py` — interactive human-vs-model play
 - `train/gen_card_costs.py` — regenerates `train/card_costs.py` from `src/card_vocab.h`
 - `train/test_harness.py` — LLM test harness for card behavior verification (see Testing guidelines)
+- `train/action_spec.py` — shared semantic-action resolver: turns a `--play` spec string (`cast:Lightning Bolt`, `target:X@opp`, `pass`, …) into the matching legal action index against the current decision's decoded menu. Used by `PlayController` (test harness `--play`, `observe --play-a/--play-b`) and, later, by `play.py` for typed human input.
 - `train/card_costs.py` — auto-generated cast-cost and ability-cost matrices (do not edit manually)
 - `src/machine_io.h` — state vector layout documentation and constants
 - `src/input_logger.cpp` — machine mode BQUERY emission, replay, and CLI input handling
