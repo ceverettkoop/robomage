@@ -144,6 +144,17 @@ struct Ability{
     int dig_destination = -1;        // DestinationZone$ — where chosen card goes (-1 = HAND, Zone::LIBRARY etc.)
     int dig_library_position = -1;   // LibraryPosition$ — 0 = top, -1 = unset
 
+    // Conditional amount (Flow State): the effective count is `cond_amount_if_true`
+    // when the summed runtime counts in `cond_amount_exprs` satisfy
+    // `cond_amount_compare`, otherwise `amount` (the false/default value).
+    // Generalizes "Count$Compare <SVar-sum> <op><n>.<true>.<false>" where the SVar
+    // is itself a sum of capped graveyard counts (SVar$Z1/Plus.Z2 with /LimitMax).
+    // Currently consumed by the Dig effect as its take-count.
+    bool cond_amount_active = false;
+    std::vector<std::string> cond_amount_exprs;  // runtime Count$ exprs to sum (LHS of compare)
+    std::string cond_amount_compare = "";        // e.g. "GE2"
+    size_t cond_amount_if_true = 0;              // count when the compare passes
+
     // Discard ability (Thoughtseize, Duress) now lives in DiscardParams (params variant).
 
     // Conditional subability execution (Scythecat Cub, Thassa's Oracle)

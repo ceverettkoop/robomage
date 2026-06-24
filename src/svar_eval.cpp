@@ -43,6 +43,16 @@ int evaluate_sa_svar(const std::string &expr, Zone::Ownership controller, Entity
         return evaluate_sa_svar(base, controller, source) + offset;
     }
 
+    // Handle /LimitMax.N suffix: strip it, evaluate the base, then cap at N
+    // (e.g. "Count$ValidGraveyard Instant.YouOwn/LimitMax.1" → 0 or 1).
+    size_t limit_pos = expr.find("/LimitMax.");
+    if (limit_pos != std::string::npos) {
+        std::string base = expr.substr(0, limit_pos);
+        int cap = std::stoi(expr.substr(limit_pos + 10));
+        int val = evaluate_sa_svar(base, controller, source);
+        return val < cap ? val : cap;
+    }
+
     // Count$ValidExile ... CardTypes — distinct card types among the cards exiled
     // with `source` (e.g. Keen-Eyed Curator's exiled-with pile). Scoped to the
     // source permanent, hence the `source` parameter.

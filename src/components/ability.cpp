@@ -445,6 +445,23 @@ void Ability::fizzle(std::shared_ptr<Orderer> orderer) {
     return;
 }
 
+// True if the card counts as the given color (explicit Colors: override first,
+// else the colors present in its mana cost).
+static bool card_is_color(const CardData &cd, Colors c) {
+    if (!cd.explicit_colors.empty()) return cd.explicit_colors.count(c) > 0;
+    return cd.mana_cost.count(c) > 0;
+}
+
+// Enforces "non<Color>" target restrictions (e.g. ValidTgts$ Creature.nonBlack on
+// Snuff Out). Returns false when the candidate is one of the excluded colors.
+static bool passes_noncolor_restriction(const std::string &vt, const CardData &cd) {
+    static const struct { const char *tok; Colors col; } table[] = {
+        {"nonWhite", WHITE}, {"nonBlue", BLUE}, {"nonBlack", BLACK}, {"nonRed", RED}, {"nonGreen", GREEN}};
+    for (auto &e : table)
+        if (vt.find(e.tok) != std::string::npos && card_is_color(cd, e.col)) return false;
+    return true;
+}
+
 // Single source of truth for target legality (see header). build_valid_targets
 // enumerates candidates and filters them through this; is_target_valid re-runs the
 // chosen target(s) through it at resolution. Keeping both on one predicate is what
@@ -578,6 +595,9 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
                 if (t.kind == SUPERTYPE && t.name == "Legendary") { is_legendary = true; break; }
             if (!is_legendary) return false;
         }
+        if (global_coordinator.entity_has_component<CardData>(cand) &&
+            !passes_noncolor_restriction(vt, global_coordinator.GetComponent<CardData>(cand)))
+            return false;
         if (has_protection_from(global_coordinator.GetComponent<Creature>(cand), source)) return false;
         return true;
     }

@@ -13,6 +13,7 @@
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../input_logger.h"
+#include "../svar_eval.h"
 #include "../systems/orderer.h"
 
 extern Coordinator global_coordinator;
@@ -79,35 +80,54 @@ bool dig(Ability &ab, std::shared_ptr<Orderer> orderer) {
 
     game_log("%s looks at the top %zu card(s) of their library.\n", player_name(dig_owner).c_str(), lib.size());
 
-    // Present choices
-    std::vector<LegalAction> dig_actions;
-    if (ab.optional_choice) {
-        LegalAction la(PASS_PRIORITY, "Take nothing");
-        la.category = ActionCategory::DIG_CHOICE;
-        dig_actions.push_back(la);
-    }
-    for (auto e : matching) {
-        auto &cd = global_coordinator.GetComponent<CardData>(e);
-        LegalAction la(PASS_PRIORITY, e, cd.name);
-        la.category = ActionCategory::DIG_CHOICE;
-        dig_actions.push_back(la);
-    }
-    // If no matching and not optional, fall through (all go to bottom)
-    Entity chosen = 0;
-    if (!dig_actions.empty()) {
-        int choice = InputLogger::instance().get_input(dig_actions);
-        chosen = dig_actions[static_cast<size_t>(choice)].source_entity;
+    // How many of the looked-at cards may be taken (default 1). A conditional
+    // ChangeNum$ (Flow State) raises this to its true-value when the summed
+    // graveyard counts satisfy the compare; a plain numeric ChangeNum$ uses amount.
+    size_t take_count = 1;
+    if (ab.cond_amount_active) {
+        int sum = 0;
+        for (auto &expr : ab.cond_amount_exprs)
+            sum += static_cast<int>(evaluate_dynamic_amount(expr, dig_owner, orderer, 0));
+        take_count = compare_svar(sum, ab.cond_amount_compare) ? ab.cond_amount_if_true : ab.amount;
+    } else if (ab.amount > 0) {
+        take_count = ab.amount;
     }
 
-    if (chosen != 0) {
-        // Determine destination: default is HAND, but DestinationZone$ can override
-        Zone::ZoneValue chosen_dest = Zone::HAND;
-        bool on_bottom = false;
-        if (ab.dig_destination >= 0) {
-            chosen_dest = static_cast<Zone::ZoneValue>(ab.dig_destination);
-            // LibraryPosition$ 0 = top of library
-            on_bottom = (ab.dig_library_position != 0);
+    // Present choices, one card at a time until take_count are taken (or the player
+    // declines / the pool runs dry).
+    std::vector<Entity> chosen_cards;
+    std::vector<Entity> pool = matching;
+    for (size_t pick = 0; pick < take_count; ++pick) {
+        std::vector<LegalAction> dig_actions;
+        if (ab.optional_choice) {
+            LegalAction la(PASS_PRIORITY, "Take nothing");
+            la.category = ActionCategory::DIG_CHOICE;
+            dig_actions.push_back(la);
         }
+        for (auto e : pool) {
+            auto &cd = global_coordinator.GetComponent<CardData>(e);
+            LegalAction la(PASS_PRIORITY, e, cd.name);
+            la.category = ActionCategory::DIG_CHOICE;
+            dig_actions.push_back(la);
+        }
+        // If no matching and not optional, fall through (all go to bottom)
+        if (dig_actions.empty()) break;
+        int choice = InputLogger::instance().get_input(dig_actions);
+        Entity sel = dig_actions[static_cast<size_t>(choice)].source_entity;
+        if (sel == 0) break;  // chose "Take nothing"
+        chosen_cards.push_back(sel);
+        pool.erase(std::remove(pool.begin(), pool.end(), sel), pool.end());
+    }
+
+    // Determine destination: default is HAND, but DestinationZone$ can override
+    Zone::ZoneValue chosen_dest = Zone::HAND;
+    bool on_bottom = false;
+    if (ab.dig_destination >= 0) {
+        chosen_dest = static_cast<Zone::ZoneValue>(ab.dig_destination);
+        // LibraryPosition$ 0 = top of library
+        on_bottom = (ab.dig_library_position != 0);
+    }
+    for (Entity chosen : chosen_cards) {
         orderer->add_to_zone(on_bottom, chosen, chosen_dest);
         auto &cd = global_coordinator.GetComponent<CardData>(chosen);
         if (chosen_dest == Zone::LIBRARY) {
@@ -121,7 +141,7 @@ bool dig(Ability &ab, std::shared_ptr<Orderer> orderer) {
     // Remaining cards go to bottom of library
     std::vector<Entity> remaining;
     for (auto e : lib) {
-        if (e != chosen) remaining.push_back(e);
+        if (std::find(chosen_cards.begin(), chosen_cards.end(), e) == chosen_cards.end()) remaining.push_back(e);
     }
     if (ab.rest_random_order) {
         // Shuffle remaining with game RNG

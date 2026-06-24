@@ -47,6 +47,27 @@ static bool can_afford_alt(const AltCost& alt_cost, Zone::Ownership priority_pla
         if (!compare_svar(svar_value, alt_cost.condition_compare)) return false;
     }
 
+    // IsPresent$ <type>[.YouCtrl] — the alt cost is only available while the
+    // caster controls a matching permanent (e.g. Snuff Out: control a Swamp).
+    if (!alt_cost.condition_is_present.empty()) {
+        std::string filter = alt_cost.condition_is_present;
+        size_t dot = filter.find('.');
+        std::string type_name = (dot == std::string::npos) ? filter : filter.substr(0, dot);
+        bool found = false;
+        for (auto e : orderer->mEntities) {
+            if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
+            if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+            if (global_coordinator.GetComponent<Zone>(e).location != Zone::BATTLEFIELD) continue;
+            auto &perm = global_coordinator.GetComponent<Permanent>(e);
+            if (perm.controller != priority_player) continue;
+            for (auto &t : perm.types) {
+                if (t.name == type_name) { found = true; break; }
+            }
+            if (found) break;
+        }
+        if (!found) return false;
+    }
+
     // Free alt cost: no further affordability checks needed
     if (alt_cost.is_free) return true;
 

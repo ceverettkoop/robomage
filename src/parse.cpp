@@ -316,6 +316,8 @@ Entity parse_card_script(std::string path) {
                     ac.condition_compare = value;
                 } else if (key == "Condition" && value == "NotPlayerTurn") {
                     ac.condition_not_your_turn = true;
+                } else if (key == "IsPresent") {
+                    ac.condition_is_present = value;
                 }
             }
             pp = pe;
@@ -971,6 +973,37 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
     return sub;
 }
 
+// Resolves an additive SVar chain (e.g. "SVar$Z1/Plus.Z2") into the list of
+// runtime Count$ expressions to be summed at resolution. Each "SVar$<name>"
+// token is looked up in `svars`; if its value is itself an SVar$ chain it is
+// resolved recursively, otherwise the raw Count$ expression is collected as a
+// term. A non-SVar$ expression is returned as a single term. Used for the
+// conditional take-count of Flow State (Y = Z1 + Z2, each a capped yard count).
+static void resolve_additive_svar(const std::string& expr, const std::map<std::string, std::string>& svars,
+                                  std::vector<std::string>& terms) {
+    // A leaf runtime expression (not an SVar$ reference) is collected as one term.
+    if (expr.rfind("SVar$", 0) != 0) {
+        terms.push_back(expr);
+        return;
+    }
+    // Head term: the name between "SVar$" and the first '/' (or end of string).
+    size_t head_end = expr.find('/', 5);
+    std::string head = (head_end == std::string::npos) ? expr.substr(5) : expr.substr(5, head_end - 5);
+    auto hit = svars.find(head);
+    if (hit != svars.end()) resolve_additive_svar(hit->second, svars, terms);
+    // Each subsequent "/Plus.<name>" segment adds another (bare) SVar term.
+    size_t plus = (head_end == std::string::npos) ? std::string::npos : expr.find("/Plus.", head_end);
+    while (plus != std::string::npos) {
+        size_t name_start = plus + 6;  // skip "/Plus."
+        size_t name_end = expr.find('/', name_start);
+        std::string name = (name_end == std::string::npos) ? expr.substr(name_start)
+                                                           : expr.substr(name_start, name_end - name_start);
+        auto it = svars.find(name);
+        if (it != svars.end()) resolve_additive_svar(it->second, svars, terms);
+        plus = (name_end == std::string::npos) ? std::string::npos : expr.find("/Plus.", name_end);
+    }
+}
+
 // fed each ability line
 static std::vector<Ability> parse_abilities(std::vector<std::string> lines, const std::set<Type>& types,
                                             const std::map<std::string, std::string>& svars,
@@ -1096,16 +1129,52 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
             auto it = svars.find(ability.amount_svar);
             if (it != svars.end()) {
                 const std::string &sv = it->second;
+                // Generalized conditional amount (Flow State): "Count$Compare <Var>
+                // <op><n>.<t>.<f>" where <Var> is an SVar that resolves to a sum of
+                // (capped) runtime counts. The effective amount is <t> when the summed
+                // counts satisfy the compare, else <f>. Distinguished from the delirium
+                // GE form below by <Var> being a nested SVar$ chain (e.g. SVar$Z1/Plus.Z2)
+                // rather than a direct Count$ expression.
+                bool handled_conditional = false;
+                if (sv.rfind("Count$Compare ", 0) == 0) {
+                    std::string rest = sv.substr(14);  // "Y GE2.2.1"
+                    size_t sp = rest.find(' ');
+                    if (sp != std::string::npos) {
+                        std::string var = rest.substr(0, sp);    // "Y"
+                        std::string tail = rest.substr(sp + 1);  // "GE2.2.1"
+                        auto vit = svars.find(var);
+                        if (vit != svars.end() && vit->second.rfind("SVar$", 0) == 0) {
+                            size_t d2 = tail.rfind('.');
+                            size_t d1 = (d2 == std::string::npos || d2 == 0)
+                                            ? std::string::npos : tail.rfind('.', d2 - 1);
+                            if (d1 != std::string::npos) {
+                                std::vector<std::string> terms;
+                                resolve_additive_svar(vit->second, svars, terms);
+                                if (!terms.empty()) {
+                                    ability.cond_amount_active = true;
+                                    ability.cond_amount_exprs = terms;
+                                    ability.cond_amount_compare = tail.substr(0, d1);  // "GE2"
+                                    ability.cond_amount_if_true =
+                                        static_cast<size_t>(std::stoi(tail.substr(d1 + 1, d2 - d1 - 1)));
+                                    ability.amount = static_cast<size_t>(std::stoi(tail.substr(d2 + 1)));
+                                    handled_conditional = true;
+                                }
+                            }
+                        }
+                    }
+                }
                 // Delirium-conditional value. Two equivalent Forge spellings, both
                 // meaning "<yes> if the caster has delirium, else <no>":
                 //   Count$Delirium.<yes>.<no>           (compact form, e.g. Unholy Heat)
                 //   Count$Compare Y GE4.<yes>.<no>      (explicit GE form)
-                size_t delirium_pos = sv.find("Count$Delirium");
-                size_t ge_pos = sv.find("GE");
+                size_t delirium_pos = handled_conditional ? std::string::npos : sv.find("Count$Delirium");
+                size_t ge_pos = handled_conditional ? std::string::npos : sv.find("GE");
                 size_t scale_pos = delirium_pos != std::string::npos
                                        ? delirium_pos + std::string("Count$Delirium").size()
                                        : (ge_pos != std::string::npos ? ge_pos + 2 : std::string::npos);
-                if (scale_pos != std::string::npos) {
+                if (handled_conditional) {
+                    // already routed to the conditional-amount fields above
+                } else if (scale_pos != std::string::npos) {
                     std::string rest = sv.substr(scale_pos);
                     size_t d1 = rest.find('.');
                     if (d1 != std::string::npos) {
