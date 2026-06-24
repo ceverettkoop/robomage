@@ -28,10 +28,14 @@ from collections import deque
 
 from env import (RoboMageEnv, ModelVsScriptedEnv, SelfPlayEnv, FixedModelEnv, NarrativeEnv,
                  scripted_action,
-                 OBS_SIZE, STATE_SIZE, MAX_ACTIONS, ACTION_CATEGORY_MAX, BINARY,
-                 _HAND_START)
+                 OBS_SIZE, STATE_SIZE, MAX_ACTIONS, ACTION_CATEGORY_MAX, BINARY)
 from extractor import CardGameExtractor
-from card_costs import _VOCAB_NAMES, N_CARD_TYPES
+from card_costs import N_CARD_TYPES
+import decode
+# Action-category / step display names are generated from the C++ enums
+# (train/gen_enums.py) and shared via decode.py — re-exported here so existing
+# `from train import _CAT_NAMES, _STEP_NAMES` consumers (analysis.py) keep working.
+from _enums import _CAT_NAMES, _STEP_NAMES
 # CLI definitions + training defaults live in cli_spec.py (single source shared with the TUI).
 from cli_spec import (TOTAL_TIMESTEPS, N_ENVS, N_ENVS_SELF_PLAY, EMBED_DIM,
                       LEAGUE_SELF_PLAY_FRAC, LEAGUE_SCRIPTED_ANCHOR_FRAC,
@@ -1290,45 +1294,21 @@ def observe(binary_path: str,
         print("=== Draw ===")
 
 
-_CAT_NAMES = {
-    0: "PASS", 1: "MANA", 2: "SEL_ATK", 3: "CONF_ATK",
-    4: "SEL_BLK", 5: "CONF_BLK", 6: "ACTIVATE", 7: "CAST",
-    8: "TARGET", 9: "LAND", 10: "OTHER", 11: "MULLIGAN", 12: "BOTTOM_CARD",
-    13: "MANA_W", 14: "MANA_U", 15: "MANA_B", 16: "MANA_R", 17: "MANA_G",
-    18: "MANA_C", 19: "SEARCH", 20: "TOP_LIB", 21: "SHUFFLE", 22: "PAYING",
-    23: "DIG", 24: "SB_IN", 25: "SB_OUT", 26: "SB_DONE",
-}
-
-_STEP_NAMES = [
-    "Untap", "Upkeep", "Draw", "First Main", "Begin Combat",
-    "Declare Atk", "Declare Blk", "First Strike Dmg", "Combat Dmg",
-    "End Combat", "Second Main", "End Step", "Cleanup",
-]
-
+# _CAT_NAMES / _STEP_NAMES are imported from _enums at the top of this module.
+# Card-name and hand decoding route through decode.py (the single source of
+# truth) so vocab lookups, the Token sentinel and out-of-range handling stay
+# consistent with the rest of the tooling.
 
 def _decode_hand(obs):
     """Return list of card names for the priority player's hand."""
-    cards = []
-    for slot in range(10):            # MAX_HAND_SLOTS = 10
-        idx = int(round(float(obs[_HAND_START + slot]) * N_CARD_TYPES))
-        if idx >= 0:
-            cards.append(_VOCAB_NAMES[idx] if idx < len(_VOCAB_NAMES) else f"?{idx}")
-    return cards
+    return decode.decode_hand(obs)
 
 
 def _describe_action(cats, card_ids, action, num_choices):
-    """Return a human-readable string for the chosen action."""
+    """Return a human-readable string for the chosen action (CAT-token style)."""
     cat = int(cats[action])
     cat_name = _CAT_NAMES.get(cat, str(cat))
-
-    # Decode card name from the normalized card ID float
-    raw_id = float(card_ids[action])
-    card_name = None
-    if raw_id >= 0:
-        vocab_idx = round(raw_id * N_CARD_TYPES)
-        if vocab_idx < len(_VOCAB_NAMES) and _VOCAB_NAMES[vocab_idx]:
-            card_name = _VOCAB_NAMES[vocab_idx]
-
+    card_name = decode.card_from_id(card_ids[action])
     if card_name:
         return f"{cat_name} {card_name}"
     return cat_name

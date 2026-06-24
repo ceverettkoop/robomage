@@ -23,8 +23,7 @@ from env import (RoboMageEnv, STATE_SIZE, ACTION_CATEGORY_MAX, BINARY, MAX_ACTIO
                  _BF_CARD_OFF as _ENV_BF_CARD_OFF, _PERM_A_SLOTS as _ENV_PERM_A_SLOTS,
                  _HAND_SLOT_SIZE, _BF_ID_IDX, _gather_costs, _slot_card_idx)
 import env as _env
-from decode import (card_from_id as _card_from_id, decode_step as _decode_step,
-                    _CARD_NAMES as _VOCAB_NAMES)
+from decode import card_from_id as _card_from_id, decode_step as _decode_step
 
 try:
     from card_costs import (_CARD_COST_MATRIX, _CARD_ABILITY_COST_MATRIX, N_CARD_TYPES, _N_COST_FEATS)
@@ -56,13 +55,8 @@ _MANA_CAT_COLOR = {13: "W", 14: "U", 15: "B", 16: "R", 17: "G", 18: "C"}
 
 # ── Decode helpers ────────────────────────────────────────────────────────────
 
-def _card_name(id_float):
-    """Decode a card name from a single normalized card-id float (None if empty)."""
-    idx = int(round(float(id_float) * N_CARD_TYPES))
-    if 0 <= idx < len(_VOCAB_NAMES):
-        return _VOCAB_NAMES[idx] if _VOCAB_NAMES[idx] else None
-    return None
-
+# Card-name decoding (vocab lookup + Token sentinel + out-of-range handling)
+# lives in decode.card_from_id — the single source of truth. Use _card_from_id.
 
 def _action_label(cat: int, card_id_float: float) -> str:
     card = _card_from_id(card_id_float)
@@ -85,7 +79,7 @@ def _action_label(cat: int, card_id_float: float) -> str:
 
 def _perm_str(obs, base):
     """Return a display string for a permanent slot, or None if empty."""
-    card = _card_name(obs[base + _BF_CARD_OFF])
+    card = _card_from_id(obs[base + _BF_CARD_OFF])
     if card is None:
         return None
     if obs[base + _OFF_IS_CREATURE] > 0.5:
@@ -106,7 +100,7 @@ def _split_bf(obs, slot_offset):
     creatures, lands = [], []
     for i in range(_BF_PERM_SLOTS):
         base = _BF_START + (slot_offset + i) * _BF_SLOT_SIZE
-        card = _card_name(obs[base + _BF_CARD_OFF])
+        card = _card_from_id(obs[base + _BF_CARD_OFF])
         if card is None:
             continue
         if obs[base + _OFF_IS_CREATURE] > 0.5:
@@ -130,7 +124,7 @@ def _format_state(obs) -> str:
     my_creatures,  my_lands  = _split_bf(obs, 0)
     opp_creatures, opp_lands = _split_bf(obs, _BF_PERM_SLOTS)
     hand = [s for i in range(_HAND_SLOTS)
-            if (s := _card_name(obs[_HAND_START + i * _HAND_SLOT_SIZE]))]
+            if (s := _card_from_id(obs[_HAND_START + i * _HAND_SLOT_SIZE]))]
 
     return (
         "--- Battlefield ---\n"

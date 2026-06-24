@@ -21,7 +21,7 @@ from env import (STATE_SIZE, MAX_ACTIONS, ACTION_CATEGORY_MAX,
                  _SELF_PERM_START, _OPP_PERM_START, _STACK_START,
                  _GY_START, _HAND_START, _PERM_SLOT_SIZE as PERM_SLOT_SIZE,
                  _STACK_SLOT_SIZE, _GY_SLOT_SIZE, _HAND_SLOT_SIZE,
-                 _LIBRARY_CTX_START, _CUR_TURN_IDX,
+                 _LIBRARY_CTX_START, _CUR_TURN_IDX, MAX_HAND_SLOTS,
                  _slot_card_idx, _ACTION_CARD_ID_NULL)
 from card_costs import N_CARD_TYPES, _VOCAB_NAMES as _CARD_NAMES
 
@@ -55,20 +55,10 @@ _TOKEN_IDX = N_CARD_TYPES - 1
 # Action-metadata categories that constitute a mandatory attacker/blocker loop.
 MANDATORY_CATS = frozenset({2, 3, 4, 5})
 
-_CAT_NAMES = {
-    0: "PASS", 1: "MANA", 2: "SEL_ATK", 3: "CONF_ATK",
-    4: "SEL_BLK", 5: "CONF_BLK", 6: "ACTIVATE", 7: "CAST",
-    8: "TARGET", 9: "LAND", 10: "OTHER", 11: "MULLIGAN", 12: "BOTTOM_CARD",
-    13: "MANA_W", 14: "MANA_U", 15: "MANA_B", 16: "MANA_R", 17: "MANA_G",
-    18: "MANA_C", 19: "SEARCH", 20: "TOP_LIB", 21: "SHUFFLE", 22: "PAYING",
-    23: "DIG", 24: "SB_IN", 25: "SB_OUT", 26: "SB_DONE",
-}
-
-_STEP_NAMES = [
-    "Untap", "Upkeep", "Draw", "First Main", "Begin Combat",
-    "Declare Atk", "Declare Blk", "First Strike Dmg", "Combat Dmg",
-    "End Combat", "Second Main", "End Step", "Cleanup",
-]
+# Action-category / step display names are generated from the C++ enums by
+# train/gen_enums.py — the single source of truth for both the integer values
+# and these names. Re-run that script after changing the C++ enums.
+from _enums import _CAT_NAMES, _STEP_NAMES  # noqa: E402
 
 _MANA_COLORS = ("W", "U", "B", "R", "G", "C")
 
@@ -101,6 +91,16 @@ def card_from_id(val):
     if 0 <= idx < len(_CARD_NAMES) and _CARD_NAMES[idx]:
         return card_index_to_name(idx)
     return None
+
+
+def decode_hand(obs):
+    """Return the list of card names in the priority player's hand slots."""
+    names = []
+    for slot in range(MAX_HAND_SLOTS):
+        name = onehot_to_card(obs, _HAND_START + slot * _HAND_SLOT_SIZE)
+        if name is not None:
+            names.append(name)
+    return names
 
 
 # ── State decoders (operate on `state` = obs[:STATE_SIZE]) ─────────────────────

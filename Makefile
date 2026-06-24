@@ -24,6 +24,12 @@ SRCDIR=src
 DEPFLAGS = -MMD -MP
 BINDIR=bin
 BINNAME=robomage
+
+# Python used to regenerate the train/ codegen files. Prefer the project venv;
+# fall back to python3 (both generators use only the stdlib).
+PYTHON := $(shell [ -x train/.venv/bin/python ] && echo train/.venv/bin/python || echo python3)
+# Auto-generated Python files kept in sync with the C++ sources at build time.
+PYGEN := train/_enums.py train/card_costs.py
 GUI=TRUE
 HEADLESS:=FALSE
 DEBUGFLAGS = -ggdb
@@ -81,11 +87,26 @@ $(ODIR)/%.o: $(SRCDIR)/%.cpp
 	@mkdir -p $(dir $@)
 	$(CXX) -c -o $@ $< $(IFLAGS) $(CXXFLAGS) $(DEPFLAGS) $(PLATFLAGS)
 
+.DEFAULT_GOAL := all
+
+all: pygen program
+
+# Regenerate the train/ codegen files from the C++ sources. Each is a real file
+# target with its inputs as prerequisites, so codegen only runs when those
+# sources actually change (not on every build).
+pygen: $(PYGEN)
+
+train/_enums.py: src/classes/action.h src/classes/game.h train/gen_enums.py
+	$(PYTHON) train/gen_enums.py
+
+train/card_costs.py: src/card_vocab.h src/machine_io.h train/gen_card_costs.py
+	$(PYTHON) train/gen_card_costs.py
+
 program:$(C_OBJ) $(CXX_OBJ)
 	@mkdir -p $(BINDIR)
 	$(CXX) -o $(BINDIR)/$(BINNAME) $(C_OBJ) $(CXX_OBJ) $(LDFLAGS) $(LDLIBS) $(PLATFLAGS)
 
-.PHONY: clean
+.PHONY: all pygen clean
 
 clean:
 	rm -f $(ODIR)/*/*.o $(ODIR)/*/*.d

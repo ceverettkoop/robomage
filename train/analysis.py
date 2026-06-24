@@ -59,8 +59,10 @@ from train import (
     REC_CARD_ID_NULL,
     _SESSION_HDR_FMT, _GAME_START_FMT, _DECISION_FMT, _GAME_END_FMT,
     _write_length_prefixed, _read_length_prefixed,
-    _CAT_NAMES, _STEP_NAMES,
 )
+# Action-category / step display names come from the generated C++ enum tables
+# (train/gen_enums.py), the single source of truth.
+from _enums import _CAT_NAMES, _STEP_NAMES
 from card_costs import _VOCAB_NAMES, N_CARD_TYPES
 # CLI definitions come from cli_spec.py (single source shared with the TUI).
 from cli_spec import ANALYSIS_TOOL, apply_to_parser
