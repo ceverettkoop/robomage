@@ -21,6 +21,13 @@ bool change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer) {
     if (ab.change_type.find("sameName") != std::string::npos)
         return change_zone_same_name(ab, orderer, /*force_all=*/true);
 
+    // A targeted ability resolved with no target chosen (e.g. Endurance's "up to
+    // one target player", TargetMin$ 0) affects no one — do nothing rather than
+    // falling back to the controller's own zones. Untargeted ChangeZoneAll
+    // (valid_tgts "N_A", e.g. Doomsday) still operates on the controller below.
+    if (ab.valid_tgts != "N_A" && ab.target == 0 && ab.targets.empty())
+        return true;
+
     Zone::Ownership owner = ab.controller;
     // If this targets a player (e.g. Endurance: "target player puts the cards
     // from their graveyard on the bottom of their library"), operate on the
