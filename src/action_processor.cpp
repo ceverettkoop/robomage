@@ -576,7 +576,6 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
         auto &cr = global_coordinator.GetComponent<Creature>(chosen_attacker);
         std::string chosen_name = entity_name(chosen_attacker);
 
-        game_log("Select target for %s:\n", chosen_name.c_str());
         std::vector<LegalAction> tgt_actions;
         for (auto t_entity : targets) {
             std::string label;
@@ -592,7 +591,14 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
             la.category = ActionCategory::OTHER_CHOICE;
             tgt_actions.push_back(la);
         }
-        int target_choice = InputLogger::instance().get_input(tgt_actions);
+        // Only prompt for a target when there is a real choice (the defending
+        // player plus at least one planeswalker). With just the defending player
+        // the target is forced, so skip the decision and auto-assign it.
+        int target_choice = 0;
+        if (tgt_actions.size() > 1) {
+            game_log("Select target for %s:\n", chosen_name.c_str());
+            target_choice = InputLogger::instance().get_input(tgt_actions);
+        }
         cr.is_attacking = true;
         cr.attack_target = tgt_actions[static_cast<size_t>(target_choice)].source_entity;
         game_log("%s attacking %s.\n", chosen_name.c_str(),
