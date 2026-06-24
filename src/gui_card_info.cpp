@@ -32,9 +32,9 @@ const char* gui_card_oracle(int vocab_idx) {
 
 const char* gui_card_type_line(int vocab_idx) {
     static char buf[256];
-    const char* name = card_index_to_name(vocab_idx);
-    if (name[0] == '?') return "";
-    auto it = card_db.find(name);
+    auto uid = name_to_uid(card_index_to_name(vocab_idx));
+    if (uid[0] == '?') return "";
+    auto it = card_db.find(uid);
     if (it == card_db.end()) return "";
     if (!global_coordinator.entity_has_component<CardData>(it->second)) return "";
     const CardData& cd = global_coordinator.GetComponent<CardData>(it->second);
@@ -141,18 +141,18 @@ int gui_card_color_identity(int vocab_idx) {
 }
 
 int gui_card_base_power(int vocab_idx) {
-    const char* name = card_index_to_name(vocab_idx);
-    if (name[0] == '?') return 0;
-    auto it = card_db.find(name);
+    auto uid = name_to_uid(card_index_to_name(vocab_idx));
+    if (uid[0] == '?') return 0;
+    auto it = card_db.find(uid);
     if (it == card_db.end()) return 0;
     if (!global_coordinator.entity_has_component<CardData>(it->second)) return 0;
     return (int)global_coordinator.GetComponent<CardData>(it->second).power;
 }
 
 int gui_card_base_toughness(int vocab_idx) {
-    const char* name = card_index_to_name(vocab_idx);
-    if (name[0] == '?') return 0;
-    auto it = card_db.find(name);
+    auto uid = name_to_uid(card_index_to_name(vocab_idx));
+    if (uid[0] == '?') return 0;
+    auto it = card_db.find(uid);
     if (it == card_db.end()) return 0;
     if (!global_coordinator.entity_has_component<CardData>(it->second)) return 0;
     return (int)global_coordinator.GetComponent<CardData>(it->second).toughness;

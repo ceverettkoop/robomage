@@ -62,6 +62,23 @@ from _enums import _CAT_NAMES, _STEP_NAMES  # noqa: E402
 
 _MANA_COLORS = ("W", "U", "B", "R", "G", "C")
 
+# ── Controller-label vocabulary ───────────────────────────────────────────────
+# The action/stack controller flag is RELATIVE TO THE VIEWER (controller_is_self),
+# so decode can only speak in perspective-relative words: a permanent/action is
+# the viewer's "own", the "opp"-onent's, or (on the stack) "self"/"opponent".
+# These maps let callers substitute their own vocabulary (e.g. "You"/"Opp")
+# through the one shared code path. Passing nothing keeps today's wording, so
+# decode's default output is byte-for-byte unchanged.
+#
+#   "own" / "opp"      — the suffix appended to action descriptions
+#   "self" / "opponent" — the stack-entry controller field in decode_game_state
+SELF_OPP_LABELS = {
+    "own": "own",
+    "opp": "opp",
+    "self": "self",
+    "opponent": "opponent",
+}
+
 
 # ── Card-name helpers ─────────────────────────────────────────────────────────
 
@@ -177,7 +194,7 @@ def _decode_graveyard(state, start):
     return cards
 
 
-def _decode_stack(state):
+def _decode_stack(state, labels=SELF_OPP_LABELS):
     """Decode the stack (12 slots x 130: ctrl + card_onehot + is_spell)."""
     entries = []
     for i in range(12):
@@ -188,14 +205,18 @@ def _decode_stack(state):
         entries.append({
             "name": card_index_to_name(idx),
             "card_idx": idx,
-            "controller": "self" if state[base] > 0.5 else "opponent",
+            "controller": labels["self"] if state[base] > 0.5 else labels["opponent"],
             "is_spell": state[base + 2] > 0.5,
         })
     return entries
 
 
-def decode_game_state(state):
-    """Decode the full state vector into a human-readable dict."""
+def decode_game_state(state, labels=SELF_OPP_LABELS):
+    """Decode the full state vector into a human-readable dict.
+
+    `labels` substitutes the controller words used in stack entries (and any
+    other perspective-relative wording); the default keeps today's output.
+    """
     is_active = state[31] > 0.5
     is_player_a = state[32] > 0.5
     return {
@@ -212,7 +233,7 @@ def decode_game_state(state):
         "opp_library": int(round(state[_IDX_OPP_LIB] * 60)),
         "self_battlefield": _decode_permanents(state, _SELF_PERM_START),
         "opp_battlefield": _decode_permanents(state, _OPP_PERM_START),
-        "stack": _decode_stack(state),
+        "stack": _decode_stack(state, labels),
         "self_hand": _decode_hand(state),
         "self_graveyard": _decode_graveyard(state, _GY_START),
         "opp_graveyard": _decode_graveyard(state, _OPP_GY_START),
@@ -237,16 +258,27 @@ def action_ctrls(obs):
     return obs[STATE_SIZE + 2 * MAX_ACTIONS: STATE_SIZE + 3 * MAX_ACTIONS]
 
 
-def _ctrl_str(ctrl_val):
+def _ctrl_str(ctrl_val, labels=SELF_OPP_LABELS):
+    """Resolve a viewer-relative controller flag to a label word, or None.
+
+    `labels` substitutes the words used for the two roles ("own"/"opp" by
+    default); pass a custom map to render e.g. "You"/"Opp".
+    """
     if ctrl_val > 0.5:
-        return "own"
+        return labels["own"]
     if ctrl_val > _NULL_SENTINEL + 0.01:
-        return "opp"
+        return labels["opp"]
     return None
 
 
-def describe_action(cat, card_name, ctrl_str):
-    """Build a concise human-readable action description."""
+def describe_action(cat, card_name, ctrl_str, labels=SELF_OPP_LABELS):
+    """Build a concise human-readable action description.
+
+    `ctrl_str` is the already-resolved controller word (see `_ctrl_str`) and is
+    used verbatim; `labels` is accepted for signature symmetry with the other
+    formatters so a caller can pass one label map everywhere — it does not
+    re-map an already-resolved `ctrl_str`.
+    """
     owner = f" ({ctrl_str})" if ctrl_str else ""
     name = card_name or ""
     if cat == 0:
@@ -288,7 +320,8 @@ def describe_action(cat, card_name, ctrl_str):
         return f"{cat_name}: {name}{owner}" if name else cat_name
 
 
-def decode_actions(cats_int, card_ids, ctrl, num_choices, public_flags=None):
+def decode_actions(cats_int, card_ids, ctrl, num_choices, public_flags=None,
+                   labels=SELF_OPP_LABELS):
     """Decode the per-action arrays into a list of dicts.
 
     Each dict: index, category (int), category_name, card (name or None),
@@ -296,20 +329,21 @@ def decode_actions(cats_int, card_ids, ctrl, num_choices, public_flags=None):
     card_is_public (bool — card identity publicly known, e.g. a revealed tutor).
 
     `public_flags` is the per-action card_is_public array (env._action_public);
-    None means "unknown", treated as not-public.
+    None means "unknown", treated as not-public. `labels` substitutes the
+    controller wording (default keeps today's "own"/"opp").
     """
     actions = []
     for i in range(num_choices):
         cat = int(cats_int[i])
         card_idx = int(round(float(card_ids[i]) * N_CARD_TYPES))
         card_name = card_index_to_name(card_idx) if card_idx >= 0 else None
-        ctrl_str = _ctrl_str(float(ctrl[i]))
+        ctrl_str = _ctrl_str(float(ctrl[i]), labels)
         is_public = bool(public_flags[i] > 0.5) if public_flags is not None else False
         if cat == 11:
             # Mulligan query: index 0 = keep, index 1 = mulligan.
             desc = "Keep hand" if i == 0 else "Mulligan"
         else:
-            desc = describe_action(cat, card_name, ctrl_str)
+            desc = describe_action(cat, card_name, ctrl_str, labels)
         actions.append({
             "index": i,
             "category": cat,
@@ -323,15 +357,17 @@ def decode_actions(cats_int, card_ids, ctrl, num_choices, public_flags=None):
     return actions
 
 
-def decode_actions_from_obs(obs, num_choices, public_flags=None):
+def decode_actions_from_obs(obs, num_choices, public_flags=None,
+                            labels=SELF_OPP_LABELS):
     """Convenience: decode actions straight from a full observation vector.
 
     `public_flags` (env._action_public) is a side-channel not stored in obs;
     pass it through so revealed-card choices aren't redacted as private.
+    `labels` substitutes controller wording (default keeps today's output).
     """
     return decode_actions(action_categories(obs, num_choices),
                           action_card_ids(obs), action_ctrls(obs), num_choices,
-                          public_flags)
+                          public_flags, labels)
 
 
 # ── Decision-type classification (all read the integer category array) ────────

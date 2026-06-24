@@ -23,7 +23,16 @@ from env import (RoboMageEnv, STATE_SIZE, ACTION_CATEGORY_MAX, BINARY, MAX_ACTIO
                  _BF_CARD_OFF as _ENV_BF_CARD_OFF, _PERM_A_SLOTS as _ENV_PERM_A_SLOTS,
                  _HAND_SLOT_SIZE, _BF_ID_IDX, _gather_costs, _slot_card_idx)
 import env as _env
+import decode
 from decode import card_from_id as _card_from_id, decode_step as _decode_step
+
+# play.py renders the human seat as "You"/"Model". decode speaks in viewer-
+# relative words ("own"/"opp"); this map substitutes play.py's vocabulary
+# through decode's shared formatters. The action-label *wording* below stays
+# play.py-specific (lowercase verbs), since routing it through decode's
+# describe_action would change decode's own output — only the card-name and
+# permanent-field decoding is shared with decode.
+_PLAY_LABELS = {"own": "you", "opp": "model", "self": "you", "opponent": "model"}
 
 try:
     from card_costs import (_CARD_COST_MATRIX, _CARD_ABILITY_COST_MATRIX, N_CARD_TYPES, _N_COST_FEATS)
@@ -77,38 +86,37 @@ def _action_label(cat: int, card_id_float: float) -> str:
     return f"action {cat}"
 
 
-def _perm_str(obs, base):
-    """Return a display string for a permanent slot, or None if empty."""
-    card = _card_from_id(obs[base + _BF_CARD_OFF])
-    if card is None:
-        return None
-    if obs[base + _OFF_IS_CREATURE] > 0.5:
-        pw = int(round(float(obs[base + _OFF_POWER]) * 10))
-        tg = int(round(float(obs[base + _OFF_TOUGHNESS]) * 10))
+def _perm_str(p) -> str:
+    """Format one decoded permanent dict (from decode._decode_permanents)."""
+    card = p["name"]
+    if "power" in p:  # creature
         tags = []
-        if obs[base + _OFF_TAPPED]    > 0.5: tags.append("tapped")
-        if obs[base + _OFF_ATTACKING] > 0.5: tags.append("atk")
-        if obs[base + _OFF_SICKNESS]  > 0.5: tags.append("sick")
+        if p.get("tapped"):         tags.append("tapped")
+        if p.get("attacking"):      tags.append("atk")
+        if p.get("summoning_sick"): tags.append("sick")
         suffix = f"[{','.join(tags)}]" if tags else ""
-        return f"{card} {pw}/{tg}{suffix}"
+        return f"{card} {p['power']}/{p['toughness']}{suffix}"
     # land or other permanent
-    return f"{card}{'*' if obs[base + _OFF_TAPPED] > 0.5 else ''}"
+    return f"{card}{'*' if p.get('tapped') else ''}"
 
 
-def _split_bf(obs, slot_offset):
-    """Return (creatures, lands) lists for the 48 permanent slots starting at slot_offset."""
+def _split_bf(perms):
+    """Return (creatures, lands) display lists from decoded permanent dicts.
+
+    Mirrors the original card-identity test: a slot is shown only when its
+    card-id resolves to a named vocab entry (decode.card_from_id is not None).
+    Tokens (whose vocab name is empty) and unnamed slots are skipped, exactly
+    as the pre-refactor raw-offset reader did.
+    """
     creatures, lands = [], []
-    for i in range(_BF_PERM_SLOTS):
-        base = _BF_START + (slot_offset + i) * _BF_SLOT_SIZE
-        card = _card_from_id(obs[base + _BF_CARD_OFF])
-        if card is None:
+    for p in perms:
+        idx = p["card_idx"]
+        if not (0 <= idx < len(decode._CARD_NAMES) and decode._CARD_NAMES[idx]):
             continue
-        if obs[base + _OFF_IS_CREATURE] > 0.5:
-            s = _perm_str(obs, base)
-            if s: creatures.append(s)
-        elif obs[base + _OFF_IS_LAND] > 0.5:
-            s = _perm_str(obs, base)
-            if s: lands.append(s)
+        if "power" in p:                 # creature
+            creatures.append(_perm_str(p))
+        elif p.get("is_land"):
+            lands.append(_perm_str(p))
     return creatures, lands
 
 
@@ -117,14 +125,19 @@ def _format_state(obs) -> str:
 
     obs is always perspective-normalised: self occupies permanent slots 0-47,
     opponent slots 48-95. Hand at _HAND_START is the priority player's hand.
+    Permanent / hand fields are decoded by decode.py (the shared decoder); this
+    function only lays the pieces out in play.py's "[You]"/"[Model]" format.
     """
+    state = obs[:STATE_SIZE]
     my_life  = int(round(float(obs[0]) * 20))
     opp_life = int(round(float(obs[9]) * 20))
 
-    my_creatures,  my_lands  = _split_bf(obs, 0)
-    opp_creatures, opp_lands = _split_bf(obs, _BF_PERM_SLOTS)
-    hand = [s for i in range(_HAND_SLOTS)
-            if (s := _card_from_id(obs[_HAND_START + i * _HAND_SLOT_SIZE]))]
+    my_creatures,  my_lands  = _split_bf(
+        decode._decode_permanents(state, decode._SELF_PERM_START))
+    opp_creatures, opp_lands = _split_bf(
+        decode._decode_permanents(state, decode._OPP_PERM_START))
+    hand = [c["name"] for c in decode._decode_hand(state)
+            if 0 <= c["card_idx"] < len(decode._CARD_NAMES) and decode._CARD_NAMES[c["card_idx"]]]
 
     return (
         "--- Battlefield ---\n"

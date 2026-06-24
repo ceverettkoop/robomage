@@ -157,15 +157,70 @@ renders state/actions correctly; `train.py watch` shows correct abbreviations,
 steps, and apostrophe-bearing card names (`Mishra's Bauble`, `Gaea's Cradle`);
 `train.py diag` reported 7W/3L/0D with no draws or non-fatal errors.
 
-**Deliberately out of scope (left for a follow-up):** `analysis.py` still does
-~20 inline `_VOCAB_NAMES[cid]` lookups, several guarded by empty-string
-truthiness checks that don't map cleanly onto `card_index_to_name` (which
-returns `"Token"`/`"?(idx)"` rather than `""`). Converting those risks behavior
-changes and was left untouched; they already read the single shared data source
-(`card_costs._VOCAB_NAMES`).
+### Item 1 — `gui_card_info.cpp` uid-vs-display-name fix (variation F) — **done**
+
+- `gui_card_type_line`, `gui_card_base_power`, `gui_card_base_toughness` looked up
+  via `card_db.find(<display name>)` while `gui_card_oracle`/`gui_card_mana_cost`/
+  `gui_card_color_identity` (which render correctly) use
+  `name_to_uid(card_index_to_name(idx))`. `card_db` is **only ever keyed by uid**
+  (`card_db.cpp` `load_card` emplaces `name_to_uid(...)` keys exclusively), so the
+  display-name lookups missed for any card whose uid ≠ display name (apostrophes,
+  spaces, punctuation) — blank type line and 0/0 base P/T in the GUI.
+- Fixed the three accessors to use the identical `name_to_uid(...)` + `uid[0]=='?'`
+  guard + `card_db.find(uid)` pattern as the working three. All six now resolve a
+  card the same way.
+- **Verify:** `make` (GUI) recompiles `gui_card_info.o` and links cleanly. Code
+  walkthrough confirmed e.g. "Lightning Bolt" → `lightning_bolt` resolves in all
+  six accessors. (No graphical run in this environment.)
+
+### Item 2 — collapse `analysis.py` inline vocab lookups (variation B) — **done**
+
+- Added `import decode`; converted the **clean** name-resolution sites (including
+  `_resolve_card_name`) to `decode.card_index_to_name`, keeping each site's own
+  guards (e.g. `cid<0/NULL → "Player"`).
+- **Deliberately kept** the empty-string-sensitive / different-fallback sites
+  (`analysis.py:484`, `:1406`, `:1649`, `:1966`, `:1974`) verbatim: they rely on
+  `_VOCAB_NAMES[cid]` being `""` for unused slots or use a `card#<n>` fallback,
+  which `card_index_to_name` ("Token"/"?(idx)") would change. `_VOCAB_NAMES`
+  import retained for those.
+- **Verify:** `import analysis` OK; report output (`summary`/`cards`/`cast-timing`/
+  `targeting`/`choice-rates`/`replay`) byte-identical before/after on a fresh
+  recording, including a SELECT_TARGET-at-Token decision; unit-compared old vs new
+  `_resolve_card_name` across valid/Token/null/out-of-range cids — 0 mismatches on
+  values that occur in real data.
+
+### Item 3 — parameterize framing on `decode.py` formatters (variation E) — **done**
+
+- Added `SELF_OPP_LABELS` (the exact current wording: action suffix `own`/`opp`;
+  stack-entry controller `self`/`opponent`) and an optional `labels=SELF_OPP_LABELS`
+  parameter threaded through `_ctrl_str`, `describe_action`, `_decode_stack`,
+  `decode_game_state`, `decode_actions`, `decode_actions_from_obs`. Default output
+  is byte-for-byte unchanged.
+- `play.py`: removed the duplicated raw-offset permanent decoding — `_perm_str`/
+  `_split_bf`/`_format_state` now consume `decode._decode_permanents`/`_decode_hand`,
+  with a `_PLAY_LABELS` map for its "You"/"Model" vocabulary. Kept play.py's thin
+  layout assembly and its lowercase-verb `_action_label` (reproducing them through
+  decode would distort decode's general API). Token-hiding behavior preserved.
+- **Data-limitation note:** `train.py` watch/diag/observe use **absolute** "Player
+  A/B" framing derived from the driver loop's seat tracking (`obs[31]`/`obs[32]`),
+  not from per-action data — the binary's per-action controller flag is relative
+  (`controller_is_self`). decode therefore cannot recover the absolute seat, so
+  train.py's absolute framing was correctly **left as-is** (it already shares
+  card-name/hand decoding via `decode.card_from_id`/`decode.decode_hand`).
+- **Verify:** `test_harness.py` 20-decision run byte-identical before/after;
+  play.py formatters byte-identical over captured obs + synthetic edge cases;
+  label param smoke-tested (default `(own)`, custom `(you)`); all touched modules
+  import.
 
 ### Remaining unification opportunities (not done)
 
-Steps 3–6 from §4 are unaddressed: framing parameterization (E), the BQUERY
-`description` decision (A), the shared C++ CLI/GUI state-line formatter (D), and
-the `gui_card_info.cpp` uid-vs-display-name fix (F).
+- **Variation A — BQUERY `description`:** still Python-authoritative (decode is the
+  one Python labeler). Emitting the C++ `LegalAction::description` over the wire
+  behind `--narrative` for byte-identical CLI/GUI/harness labels remains a
+  decision (see §4 step 4).
+- **Variation D — shared C++ CLI/GUI state-line formatter:** `print_game_state`
+  (`cli_output.cpp`) and `gui.c`'s `draw_perm_card`/info-bars still format the same
+  `GameState` fields independently.
+- **Residual framing:** `analysis.py`'s absolute "Player A/B" rendering and the
+  guarded vocab sites listed above, and train.py's absolute-seat framing, are not
+  routed through decode (by design — see the data-limitation note).

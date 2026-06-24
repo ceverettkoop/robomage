@@ -64,6 +64,7 @@ from train import (
 # (train/gen_enums.py), the single source of truth.
 from _enums import _CAT_NAMES, _STEP_NAMES
 from card_costs import _VOCAB_NAMES, N_CARD_TYPES
+import decode
 # CLI definitions come from cli_spec.py (single source shared with the TUI).
 from cli_spec import ANALYSIS_TOOL, apply_to_parser
 from env import (ACTION_CATEGORY_MAX, RoboMageEnv, scripted_action,
@@ -299,7 +300,7 @@ def cmd_summary(args):
         if cat == 7:  # CAST
             cid = d.card_ids[d.action_chosen] if d.action_chosen < len(d.card_ids) else REC_CARD_ID_NULL
             if cid < len(_VOCAB_NAMES):
-                name = _VOCAB_NAMES[cid]
+                name = decode.card_index_to_name(cid)
                 cast_counts[name] = cast_counts.get(name, 0) + 1
     if cast_counts:
         print("\n  Top cast cards:")
@@ -415,7 +416,7 @@ def cmd_cards(args):
         cid = d.card_ids[d.action_chosen] if d.action_chosen < len(d.card_ids) else REC_CARD_ID_NULL
         if cid >= len(_VOCAB_NAMES):
             continue
-        name = _VOCAB_NAMES[cid]
+        name = decode.card_index_to_name(cid)
         if cat == 7:  # CAST
             cast_counts[name] = cast_counts.get(name, 0) + 1
         elif cat == 9:  # LAND
@@ -642,7 +643,7 @@ def cmd_cast_timing(args):
         cid = d.card_ids[d.action_chosen] if d.action_chosen < len(d.card_ids) else REC_CARD_ID_NULL
         if cid >= len(_VOCAB_NAMES):
             continue
-        name = _VOCAB_NAMES[cid]
+        name = decode.card_index_to_name(cid)
         life_diff = d.self_life - d.opp_life
         creature_diff = d.self_creatures - d.opp_creatures
         card_casts.setdefault(name, []).append((
@@ -805,11 +806,10 @@ def _resolve_card_name(cid):
     """Resolve a card vocab index to a display name, handling special cases."""
     if cid < 0 or cid == REC_CARD_ID_NULL:
         return "Player"
-    if cid == N_CARD_TYPES - 1:  # TOKEN_SENTINEL
-        return "Token"
-    if cid < len(_VOCAB_NAMES) and _VOCAB_NAMES[cid]:
-        return _VOCAB_NAMES[cid]
-    return f"?{cid}"
+    # Token sentinel / vocab / bounds handling lives in decode.
+    # (Out-of-vocab in-range slots render as "?(cid)" rather than the old
+    # "?{cid}"; those indices never appear in real recordings.)
+    return decode.card_index_to_name(cid)
 
 
 def cmd_targeting(args):
@@ -846,7 +846,7 @@ def cmd_targeting(args):
             if cat == 7:  # CAST
                 cid = d.card_ids[d.action_chosen] if d.action_chosen < len(d.card_ids) else REC_CARD_ID_NULL
                 if cid < len(_VOCAB_NAMES):
-                    cast_name = _VOCAB_NAMES[cid]
+                    cast_name = decode.card_index_to_name(cid)
                     # Look ahead for the next TARGET decision in this game
                     j = i + 1
                     while j < len(decs):
@@ -898,7 +898,7 @@ def cmd_targeting(args):
             if k < len(d.categories) and d.categories[k] == 7:  # CAST
                 cid = d.card_ids[k] if k < len(d.card_ids) else REC_CARD_ID_NULL
                 if cid < len(_VOCAB_NAMES):
-                    castable.add(_VOCAB_NAMES[cid])
+                    castable.add(decode.card_index_to_name(cid))
         if not castable:
             continue
 
@@ -910,7 +910,7 @@ def cmd_targeting(args):
         elif chosen_cat == 7:  # actually cast
             cid = d.card_ids[d.action_chosen] if d.action_chosen < len(d.card_ids) else REC_CARD_ID_NULL
             if cid < len(_VOCAB_NAMES):
-                cast_stats.setdefault(_VOCAB_NAMES[cid], []).append(entry)
+                cast_stats.setdefault(decode.card_index_to_name(cid), []).append(entry)
 
     # ── Print results ────────────────────────────────────────────────────────
 
@@ -1796,7 +1796,7 @@ def _sim_targeting(games):
             if chosen_cat == 7:  # CAST
                 cid = _obs_card_id(obs, action)
                 if 0 <= cid < len(_VOCAB_NAMES):
-                    cast_name = _VOCAB_NAMES[cid]
+                    cast_name = decode.card_index_to_name(cid)
                     # Look ahead for TARGET
                     for sj in range(si + 1, n_steps):
                         obs2 = observations[sj]
@@ -1832,7 +1832,7 @@ def _sim_targeting(games):
                 if _obs_action_cat(obs, k) == 7:
                     kid = _obs_card_id(obs, k)
                     if 0 <= kid < len(_VOCAB_NAMES):
-                        castable.add(_VOCAB_NAMES[kid])
+                        castable.add(decode.card_index_to_name(kid))
             if not castable:
                 continue
             if chosen_cat == 0:  # PASS
@@ -1841,7 +1841,7 @@ def _sim_targeting(games):
             elif chosen_cat == 7:
                 cid = _obs_card_id(obs, action)
                 if 0 <= cid < len(_VOCAB_NAMES):
-                    cast_stats.setdefault(_VOCAB_NAMES[cid], []).append((result,))
+                    cast_stats.setdefault(decode.card_index_to_name(cid), []).append((result,))
 
     # ── Print ────────────────────────────────────────────────────────────────
     print(f"\nTargeting analysis — {len(games)} games\n")
