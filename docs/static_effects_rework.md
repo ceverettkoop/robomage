@@ -45,6 +45,32 @@ Two structural facts drive everything below:
 
 ## 1. Miscategorized / ad-hoc effects
 
+> **Re-scoped after code inspection (2026-06-24).** The original "dead field" premise here was
+> largely **inaccurate** (it came from an over-eager survey). On inspection, most listed effects
+> are already wired and working:
+> - `adjust_land_plays` — consumed at `state_manager_actions.cpp:207` (Icetill Explorer). **Works.**
+> - `may_play_from_graveyard` — consumed at `state_manager_actions.cpp:204-224`. **Works.**
+> - untap-prevention (`hidden_keyword "doesn't untap"`) — handled at `game.cpp:107-135` (Choke). **Works.**
+> - can't-be-countered — cast-time flag at `action_processor.cpp:1063` → `effect_counter.cpp:61`. **Works.**
+>
+> So §1a/§1c are **not** bug fixes — they would be pure architectural consolidation (move scattered
+> special cases into one `rules_modifying` query surface; route untap through the dispatcher; model
+> can't-be-countered as a `CantBeCountered` static). No behavioral gain, real regression risk.
+> **Deferred as optional cleanup.**
+>
+> **Implemented (2026-06-24)** — the two genuine fidelity items:
+> - **§1d Blood Moon 305.7** — a land set to a basic type now loses its rules-text abilities
+>   (keeping the regenerated intrinsic mana). Layer 4 records type-set lands + suppresses their
+>   statics; `recompute_abilities` erases the rest. Verified: Magus of the Moon turns Gaea's Cradle
+>   into a Mountain (Lightning Bolt castable off it; scripted "Add G for each creature" gone).
+>   Corpus byte-identical (Magus is sideboard-only; the type-set path is dormant in corpus games).
+> - **§1b honor-suppressed** — all 7 non-layer `g_active_statics` consumers (RaiseCost,
+>   CantBeActivated ×2, CantBeCast, DisableTriggers, untap-prevention, land-plays) now skip
+>   `suppressed` statics, so Humility (§4) removes prohibition/permission/cost statics from creature
+>   sources (Collector Ouphe, Icetill Explorer, Doorkeeper Thrull) too. Inert for current vocab.
+>
+> Original plan (kept for context):
+
 Each row is an effect that is currently mishandled, dead, or implemented off-pipeline, with its
 correct CR classification and a target pipeline. "Target" is where it *should* live.
 

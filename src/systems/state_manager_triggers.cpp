@@ -150,6 +150,7 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                     bool suppressed = false;
                     Entity entering = ev.HasParam(Params::ENTITY) ? ev.GetParam<Entity>(Params::ENTITY) : 0;
                     for (const auto &as : g_active_statics) {
+                        if (as.suppressed) continue;  // 613.1f: source lost all abilities (Humility)
                         if (as.sa->category != "DisableTriggers") continue;
                         if (entering != 0 && global_coordinator.entity_has_component<CardData>(entering)) {
                             auto &ecd = global_coordinator.GetComponent<CardData>(entering);

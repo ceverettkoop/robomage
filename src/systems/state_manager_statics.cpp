@@ -38,6 +38,7 @@ int active_raise_cost_for(const CardData &card_data) {
     bool is_creature = is_creature_card(card_data);
     int total = 0;
     for (const auto &as : g_active_statics) {
+        if (as.suppressed) continue;  // 613.1f: source lost all abilities (Humility)
         if (as.sa->category != "RaiseCost") continue;
         if (as.sa->raise_cost_filter == "nonCreature" && is_creature) continue;
         if (as.sa->match_named_card) {
@@ -59,6 +60,13 @@ ManaValue effective_base_cost(const CardData &card_data) {
 
 static void add_keywords_from_spec(Creature &cr, const std::string &spec);
 static bool removal_affects(const ActiveStatic &r, Entity entity);
+
+// Lands whose subtype was set to a basic land type this SBE pass (Blood Moon / Magus of
+// the Moon). Rule 305.7: such a land loses all abilities generated from its rules text,
+// keeping only the regenerated intrinsic (subtype-derived) mana ability. Populated in
+// apply_type_changing_effects (layer 4), consumed by recompute_abilities (after layer 7);
+// cleared each pass in gather_active_statics.
+static std::vector<Entity> g_type_set_lands;
 
 // Apply a " & "-delimited keyword spec (e.g. "Flying & Trample") to a creature. Removal
 // of a granted keyword needs no counterpart helper: gather_active_statics rebuilds each
@@ -525,6 +533,14 @@ void StateManager::apply_type_changing_effects() {
         if (winner->as->sa->remove_land_types) {
             // Already stripped above; add the new subtype
             perm.types.insert({SUBTYPE, winner->as->sa->add_type});
+            // 305.7: setting a land's subtype to a basic land type makes it lose all
+            // abilities generated from its rules text (printed activated/triggered/static
+            // and any scripted mana ability). Suppress its statics now so layers 6/7 skip
+            // them, and record it so recompute_abilities (after layer 7) erases the rest;
+            // the subtype-derived mana ability regenerated just below is kept.
+            g_type_set_lands.push_back(entity);
+            for (auto &a : g_active_statics)
+                if (a.entity == entity) a.suppressed = true;
         }
 
         // Strip subtype-derived mana abilities and regenerate from new types
@@ -544,6 +560,7 @@ void StateManager::apply_type_changing_effects() {
 void StateManager::gather_active_statics(Game &game) {
     (void)game;
     g_active_statics.clear();
+    g_type_set_lands.clear();
 
     for (auto entity : mEntities) {
         if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
@@ -709,7 +726,7 @@ void StateManager::recompute_abilities(Game &game) {
     std::vector<const ActiveStatic *> removers;
     for (auto &a : g_active_statics)
         if (a.sa->remove_all_abilities && a.condition_met) removers.push_back(&a);
-    if (removers.empty()) return;
+    if (removers.empty() && g_type_set_lands.empty()) return;
 
     for (auto entity : mEntities) {
         if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
@@ -719,15 +736,28 @@ void StateManager::recompute_abilities(Game &game) {
         auto &perm = global_coordinator.GetComponent<Permanent>(entity);
         if (perm.is_phased_out) continue;
 
-        bool affected = false;
+        // (a) "Loses all abilities" (Humility) — a full clear, intrinsic mana included.
+        bool full_removal = false;
         for (auto *r : removers)
-            if (removal_affects(*r, entity)) { affected = true; break; }
-        if (!affected) continue;
+            if (removal_affects(*r, entity)) { full_removal = true; break; }
 
-        // Erase the object's activated/triggered abilities and clear its keyword abilities
-        // (already rebuilt from base this pass). Re-derived next pass once the remover is
-        // gone — see the note above.
-        perm.abilities.clear();
+        // (b) 305.7 land set to a basic type — loses its rules-text abilities but keeps
+        //     the regenerated intrinsic (subtype-derived) mana ability.
+        bool type_set = std::find(g_type_set_lands.begin(), g_type_set_lands.end(), entity)
+                        != g_type_set_lands.end();
+
+        if (!full_removal && !type_set) continue;
+
+        // These are re-derived next pass by apply_permanent_components / apply_land_abilities
+        // / the keyword rebuild in gather, so removal is reversible once the effect leaves.
+        auto &abilities = perm.abilities;
+        if (full_removal) {
+            abilities.clear();
+        } else {  // type_set only — keep subtype-derived mana, drop printed rules-text abilities
+            abilities.erase(std::remove_if(abilities.begin(), abilities.end(),
+                                           [](const Ability &ab) { return !ab.subtype_derived; }),
+                            abilities.end());
+        }
         if (global_coordinator.entity_has_component<Creature>(entity))
             global_coordinator.GetComponent<Creature>(entity).keywords.clear();
     }

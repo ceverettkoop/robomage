@@ -203,6 +203,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         int land_play_limit = 1;
         bool may_play_from_graveyard = false;
         for (const auto &as : g_active_statics) {
+            if (as.suppressed) continue;  // 613.1f: source lost all abilities (Humility)
             if (as.controller != priority_player) continue;
             if (as.sa->adjust_land_plays > 0) land_play_limit += as.sa->adjust_land_plays;
             if (as.sa->may_play_from_graveyard) may_play_from_graveyard = true;
@@ -335,6 +336,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             bool card_is_creature = is_creature_card(card_data);
             bool cast_blocked = false;
             for (const auto &as : g_active_statics) {
+                if (as.suppressed) continue;  // 613.1f: source lost all abilities (Humility)
                 if (as.sa->category != "CantBeCast") continue;
                 // Skip if the spell doesn't match the filter (creatures are unaffected by nonCreature restriction)
                 if (as.sa->cant_cast_filter.find("nonCreature") != std::string::npos && card_is_creature)
@@ -435,6 +437,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         // matches Disruptor Flute's ValidSA$ Activated.!ManaAbility.)
         bool cant_activate = false;
         for (const auto &as : g_active_statics) {
+            if (as.suppressed) continue;  // 613.1f: source lost all abilities (Humility)
             if (as.sa->category != "CantBeActivated") continue;
             if (as.sa->match_named_card) {
                 // NamedCard (Disruptor Flute): suppress sources whose name matches the chosen name

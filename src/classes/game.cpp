@@ -108,6 +108,7 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     // TODO other untap prevention effects, including those not related to type, go here
                     std::vector<std::string> untap_prevented_subtypes;
                     for (const auto &as : g_active_statics) {
+                        if (as.suppressed) continue;  // 613.1f: source lost all abilities (Humility)
                         if (!as.sa->hidden_keyword.empty() &&
                             as.sa->hidden_keyword.find("doesn't untap") != std::string::npos &&
                             !as.sa->affected_subtype.empty()) {

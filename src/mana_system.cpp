@@ -100,6 +100,7 @@ void empty_mana_pool(Zone::Ownership player_owner) {
 static bool permanent_cant_activate(Entity entity) {
     auto &permanent = global_coordinator.GetComponent<Permanent>(entity);
     for (const auto &as : g_active_statics) {
+        if (as.suppressed) continue;  // 613.1f: source lost all abilities (Humility)
         if (as.sa->category != "CantBeActivated" || as.sa->cant_activate_card_filter.empty()) continue;
         if (as.sa->cant_activate_card_filter == "Artifact") {
             for (auto &t : permanent.types)
