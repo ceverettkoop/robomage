@@ -60,6 +60,7 @@ struct DiscardParams {
 // reveal choice. Distinguishes the peek path inside the PeekAndReveal handler.
 struct PeekParams {
     bool no_reveal = false;  // NoReveal$ True
+    int peek_amount = 1;     // PeekAmount$ N — how many top cards to look at (Birthing Ritual: 7)
 };
 
 // Amass (e.g. Orcish Bowmasters: "amass Orcs 1"). The counter count lives in the

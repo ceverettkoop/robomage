@@ -111,8 +111,8 @@ void dump_entity(Entity e) {
         fprintf(stderr, "    power=%u  toughness=%u\n", c.power, c.toughness);
         fprintf(stderr, "    is_attacking=%d  attack_target=%u\n", c.is_attacking, c.attack_target);
         fprintf(stderr, "    is_blocking=%d  blocking_target=%u\n", c.is_blocking, c.blocking_target);
-        fprintf(stderr, "    must_attack=%d  plus_one_counters=%d  prowess_bonus=%d\n",
-                c.must_attack, c.plus_one_counters, c.prowess_bonus);
+        fprintf(stderr, "    must_attack=%d  counter_pt_bonus=%d  prowess_bonus=%d\n",
+                c.must_attack, c.counter_pt_bonus, c.prowess_bonus);
         fprintf(stderr, "    keywords:");
         for (auto &k : c.keywords) fprintf(stderr, " %s", k.c_str());
         fprintf(stderr, "\n");

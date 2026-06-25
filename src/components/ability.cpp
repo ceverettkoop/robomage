@@ -16,6 +16,7 @@
 #include "../ecs/coordinator.h"
 #include "../ecs/events.h"
 #include "../error.h"
+#include "../action_processor.h"
 #include "../game_queries.h"
 #include "../input_logger.h"
 #include "../action_processor.h"
@@ -748,6 +749,19 @@ size_t evaluate_dynamic_amount(
         if (global_coordinator.entity_has_component<Creature>(target))
             return static_cast<size_t>(global_coordinator.GetComponent<Creature>(target).power);
     }
+    // Remembered$CardManaCost[/Plus.N] — mana value of the first remembered card (Birthing
+    // Ritual: X = 1 plus the sacrificed creature's mana value).
+    if (expr.find("Remembered$CardManaCost") != std::string::npos) {
+        int base = 0;
+        if (!cur_game.remembered_entities.empty()) {
+            Entity r = cur_game.remembered_entities[0];
+            if (global_coordinator.entity_has_component<CardData>(r))
+                base = static_cast<int>(global_coordinator.GetComponent<CardData>(r).mana_cost.size());
+        }
+        size_t plus = expr.find("/Plus.");
+        if (plus != std::string::npos) base += std::stoi(expr.substr(plus + 6));
+        return static_cast<size_t>(base < 0 ? 0 : base);
+    }
     // Fall back to the shared static-ability SVar evaluator for graveyard-count
     // expressions (Count$TypeInYourYard / Count$ValidGraveyard / CardTypes). It
     // returns 0 for anything it doesn't recognise, so this preserves the prior
@@ -757,6 +771,13 @@ size_t evaluate_dynamic_amount(
 }
 
 void Ability::resolve(std::shared_ptr<Orderer> orderer) {
+    // 603.4 intervening-if: re-check the trigger's "if" condition on resolution. If it is no
+    // longer true the ability is removed from the stack and does nothing — not even its
+    // subabilities fire (unlike a ConditionCheckSVar gate).
+    if (intervening_if && !evaluate_present_condition(*this, controller, orderer)) {
+        game_log("Triggered ability's intervening-if condition is no longer true; it does nothing.\n");
+        return;
+    }
     // Pre-resolve target validity check — skipped for categories that select their own target internally
     if (valid_tgts != "N_A" && category != "Pump") {
         if (!is_target_valid()) {
@@ -782,6 +803,11 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
         condition_passed =
             compare_svar(val, condition_svar_compare, condition_compare_svar_expr, source, controller, orderer);
     }
+    // ConditionDefined$ Remembered gate (Birthing Ritual): the dig only happens if a creature
+    // was sacrificed (remembered count satisfies condition_present/condition_compare). Like the
+    // SVar gate, failure skips this body but still chains subabilities.
+    if (condition_passed && condition_on_remembered)
+        condition_passed = evaluate_present_condition(*this, controller, orderer);
     if (!condition_passed) {
         for (auto sub_ab : this->subabilities) {
             sub_ab.source = this->source;

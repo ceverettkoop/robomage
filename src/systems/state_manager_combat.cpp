@@ -109,7 +109,7 @@ void StateManager::deal_combat_damage(Game &game, bool first_strike_only) {
                     damage_planeswalker(cr.attack_target, dmg);
                     game_log("  %s deals %u damage to %s (loyalty now %d)\n", attacker_name.c_str(), dmg,
                              entity_name(cr.attack_target).c_str(),
-                             global_coordinator.GetComponent<Permanent>(cr.attack_target).loyalty);
+                             get_counters(cr.attack_target, "LOYALTY"));
                 }
                 apply_lifelink_if_any(entity, dmg, life_delta_a, life_delta_b, game);
             }
@@ -162,7 +162,7 @@ void StateManager::deal_combat_damage(Game &game, bool first_strike_only) {
                     damage_planeswalker(cr.attack_target, remaining);
                     game_log("  %s tramples %u damage to %s (loyalty now %d)\n", attacker_name.c_str(),
                              remaining, entity_name(cr.attack_target).c_str(),
-                             global_coordinator.GetComponent<Permanent>(cr.attack_target).loyalty);
+                             get_counters(cr.attack_target, "LOYALTY"));
                     apply_lifelink_if_any(entity, remaining, life_delta_a, life_delta_b, game);
                 }
             }

@@ -97,6 +97,8 @@ _HIST_ENTRY_SIZE = 4    # category_norm, card_id_norm, is_self, turn/50
 _KNOWN_TOP_LIB_SLOTS     = 5   # known top-of-library cards
 _KNOWN_TOP_LIB_SLOT_SIZE = 1   # card id per slot
 _REVEALED_SIZE           = N_CARD_TYPES  # opponent revealed-cards multi-hot (dense, not one-hot-per-slot)
+_OPP_KNOWN_HAND_SLOTS    = 10  # known opponent-hand card identities
+_OPP_KNOWN_HAND_SLOT_SIZE = 1  # card id per slot
 
 _CARD_EMBED_DIM  = 32   # dimension of the learned card-identity embedding
 
@@ -120,8 +122,10 @@ _KNOWN_TOP_LIB_START  = _CUR_TURN_IDX + 1                      # 33026
 _KNOWN_TOP_LIB_END    = _KNOWN_TOP_LIB_START + _KNOWN_TOP_LIB_SLOTS * _KNOWN_TOP_LIB_SLOT_SIZE  # 33666
 _REVEALED_START       = _KNOWN_TOP_LIB_END                    # 33666
 _REVEALED_END         = _REVEALED_START + _REVEALED_SIZE      # 33794
-_STATE_END            = _REVEALED_END                         # 33794
-# obs[33794:] = action metadata + cost features appended by env.py
+_OPP_KNOWN_HAND_START = _REVEALED_END
+_OPP_KNOWN_HAND_END   = _OPP_KNOWN_HAND_START + _OPP_KNOWN_HAND_SLOTS * _OPP_KNOWN_HAND_SLOT_SIZE
+_STATE_END            = _OPP_KNOWN_HAND_END
+# obs[_STATE_END:] = action metadata + cost features appended by env.py
 
 
 class CardGameExtractor(BaseFeaturesExtractor):
@@ -147,7 +151,8 @@ class CardGameExtractor(BaseFeaturesExtractor):
       revealed_agg(embed) +
       action_extras(match+lib+turn skipped; action metadata + cost feats) +
       perm_agg(embed*2: masked mean+max) + stack_agg(embed//2 * 2) +
-      graveyard_agg(embed*2: masked mean+max) + hand_agg(embed*2: masked mean+max)
+      graveyard_agg(embed*2: masked mean+max) + hand_agg(embed*2: masked mean+max) +
+      opp_known_hand_agg(embed*2: masked mean+max)
     """
 
     def __init__(
@@ -170,6 +175,7 @@ class CardGameExtractor(BaseFeaturesExtractor):
             + half * 2                                   # stack mean+max
             + embed_dim * 2                              # graveyard masked-mean + max
             + embed_dim * 2                              # hand masked-mean + max
+            + embed_dim * 2                              # known opponent-hand masked-mean + max
         )
         super().__init__(observation_space, features_dim=features_dim)
 
@@ -230,6 +236,8 @@ class CardGameExtractor(BaseFeaturesExtractor):
         stack     = obs[:, _STACK_START:_STACK_END].reshape(-1, _STACK_SLOTS, _STACK_SLOT_SIZE)
         graveyard = obs[:, _GY_START:_GY_END].reshape(-1, _GY_SLOTS, _GY_SLOT_SIZE)
         hand      = obs[:, _HAND_START:_HAND_END].reshape(-1, _HAND_SLOTS, _HAND_SLOT_SIZE)
+        opp_hand  = obs[:, _OPP_KNOWN_HAND_START:_OPP_KNOWN_HAND_END].reshape(
+            -1, _OPP_KNOWN_HAND_SLOTS, _OPP_KNOWN_HAND_SLOT_SIZE)
         top_lib   = obs[:, _KNOWN_TOP_LIB_START:_KNOWN_TOP_LIB_END].reshape(
             -1, _KNOWN_TOP_LIB_SLOTS, _KNOWN_TOP_LIB_SLOT_SIZE)
 
@@ -242,6 +250,7 @@ class CardGameExtractor(BaseFeaturesExtractor):
 
         gy_emb_in, gy_present = self._embed_ids(graveyard[:, :, 0])
         hand_emb_in, hand_present = self._embed_ids(hand[:, :, 0])
+        opp_hand_emb_in, opp_hand_present = self._embed_ids(opp_hand[:, :, 0])
         top_lib_emb_in, _ = self._embed_ids(top_lib[:, :, 0])
 
         # Encode each slot type with its shared-weight encoder
@@ -249,6 +258,7 @@ class CardGameExtractor(BaseFeaturesExtractor):
         stk_emb     = self.stack_encoder(stk_in)       # (B, 12, embed//2)
         gy_emb      = self.entity_encoder(gy_emb_in)   # (B, 128, embed)
         hand_emb    = self.entity_encoder(hand_emb_in) # (B, 10, embed)  — shared weights
+        opp_hand_emb = self.entity_encoder(opp_hand_emb_in)  # (B, 10, embed)  — shared weights
         top_lib_emb = self.entity_encoder(top_lib_emb_in)  # (B, 5, embed)  — shared weights
 
         # Aggregate: masked mean+max for perms, graveyard, and hand (skip empty
@@ -257,8 +267,9 @@ class CardGameExtractor(BaseFeaturesExtractor):
         stk_agg     = torch.cat([stk_emb.mean(1),  stk_emb.max(1).values],  dim=-1)
         gy_agg      = _masked_mean_max(gy_emb,   gy_present)
         hand_agg    = _masked_mean_max(hand_emb, hand_present)
+        opp_hand_agg = _masked_mean_max(opp_hand_emb, opp_hand_present)
         top_lib_agg = top_lib_emb.mean(1)
         revealed_agg = self.revealed_encoder(revealed)  # (B, embed) dense multi-hot encoding
 
         return torch.cat([global_ctx, hist_ctx, meta_ctx, top_lib_agg, revealed_agg, action_extras,
-                          perm_agg, stk_agg, gy_agg, hand_agg], dim=-1)
+                          perm_agg, stk_agg, gy_agg, hand_agg, opp_hand_agg], dim=-1)

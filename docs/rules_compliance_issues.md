@@ -90,7 +90,7 @@ governing rule, a fix sketch, and a complexity/risk estimate.
 
 ## Tier 2 — Architectural / foundational gaps
 
-### T2.1 — No layer system; P/T is a flat additive sum · `OPEN`
+### T2.1 — No layer system; P/T is a flat additive sum · `IN PROGRESS`
 - **Rule:** 613 (esp. 613.4 sublayers 7a–7d; 613.7 timestamp; 613.8 dependency)
 - **Engine:** `recompute_pt` sums `base_power + plus_one_counters + prowess_bonus + static_power_bonus` (`src/components/creature.cpp:7-10`). CDA "set," "set to N," and +N/+N pumps all collide in `base_*` (`src/systems/state_manager_statics.cpp:629-632`, `src/effects/effect_pump.cpp:66-67`). Only layer-4 type changes are timestamp-sorted (`state_manager_statics.cpp:482-484`); P/T statics are summed in arbitrary `g_active_statics` order (`:671-680`).
 - **Rules require:** P/T modifications apply in sublayers 7a CDA → 7b set → 7c +N/+N & counters → 7d switch, each in timestamp order, with dependency (613.8).
@@ -99,13 +99,114 @@ governing rule, a fix sketch, and a complexity/risk estimate.
   - Timestamp/dependency ordering across distinct effect sources (613.7/613.8) — absent for P/T statics.
   - P/T switch, sublayer 7d (613.4d) — not represented at all (latent; no vocab card needs it).
 - **Complexity/risk:** **High** — touches every reader of `Creature.power/toughness` (~75 sites) and all static/pump/counter writes. Largest single gap; the keystone refactor.
+- **Implemented (2026-06-24):** Introduced a continuous-effects engine implementing the
+  rule-613 layer system. New `src/systems/continuous_effects.h` defines the data model
+  (`Layer` 1–7, `PTSublayer` 7a–7d, `ContinuousEffect`, and the within-(sub)layer
+  ordering helpers `order_continuous_effects`/`resolve_dependencies`). New
+  `src/systems/state_manager_layers.cpp` holds the single ordered driver
+  `StateManager::apply_continuous_effects` (called from `state_based_effects` in place of
+  the old `apply_static_ability_effects`), which runs the layers in order: 1/2/3 (copy/
+  control/text, no-op hooks) → 4 type (existing `apply_type_changing_effects`) → 5 color
+  (no-op hook) → 6 abilities (`apply_layer6_ability_effects`, keyword grants) → 7 P/T
+  (`apply_layer7_pt_effects`) → 613.11 rules-modifiers (`apply_rules_modifying_effects`,
+  MustAttack). The old monolithic static loop was split into `gather_active_statics`
+  (preamble; condition evaluated once into `ActiveStatic::condition_met`) plus the
+  per-layer appliers in `state_manager_statics.cpp`. `recompute_pt`
+  (`src/components/creature.cpp`) now applies layer-7 sublayers explicitly 7a→7b→7c→7d;
+  new inert `Creature` slots `has_set_pt`/`set_power`/`set_toughness` (7b) and `switch_pt`
+  (7d) split "set" from "modify" per the sub-finding. Layer-7c statics are gathered as
+  timestamp-tagged `ContinuousEffect`s (613.7a: source permanent's ETB timestamp) and
+  ordered before accumulation; the result is identical to the old fixed-order sum because
+  every current-vocab 7c contribution is additive (commutative). **Deferred extension
+  points (latent; no vocab card exercises them):** layers 1/2/3/5 are documented no-op
+  hooks; sublayer 7b "set" and 7d "switch" have storage slots but no source; the 613.8
+  dependency override is a hooked no-op falling through to timestamp order. Discrete
+  per-counter/per-pump 613.7 timestamps are deferred to **T2.4** (the typed counter map),
+  whose records will be the natural home — the current aggregate `Creature` counter/pump
+  fields are commutative 7c contributions, and incrementing the global timestamp counter
+  for them would needlessly perturb existing layer-4 ordering.
+- **Verification:** Generated a 108-game baseline corpus on clean `main`
+  (`train/gen_corpus.sh`: 3 implemented decks × 9 ordered pairings × 12 seeds, full
+  `observe --verbose` transcripts) and re-ran it after the refactor. 107/108 games were
+  byte-for-byte identical; the single difference was the scripted agent's
+  `random.choice` tie-break on a "pay {1} or be countered" prompt (identical engine state
+  and action menu at the decision) flipping because Python's global RNG was unseeded
+  across processes — not an engine change. Fixed at the source by seeding the global RNG
+  per game with the engine seed in `train/runner.py`, after which that game is
+  deterministic and matches the baseline choice.
+- **Further work (2026-06-24, static-effects rework — see `docs/static_effects_rework.md`):**
+  several of the layer engine's previously-latent extension points now have real vocab sources and
+  are live:
+  - **Layer 6 ability removal + ability re-derivation (611.3a / 613.1f)** — abilities are now
+    rebuilt from base each SBA pass (keywords reset to `CardData`/`Token` base in
+    `gather_active_statics`; `recompute_abilities` erases activated/triggered/keyword abilities of
+    objects under an ability-removal effect; static-ability removal via an `ActiveStatic::suppressed`
+    flag honored by layers 4/6/7). New carrier `StaticAbility::remove_all_abilities`
+    (`RemoveAllAbilities$ True`). Was the §2 keystone; landed corpus byte-identical.
+  - **Sublayer 7b "set P/T to N" (613.4b)** — now has a live applier between 7a and 7c and a real
+    source: **Humility** (vocab idx 99, `S:… SetPower$ 1 | SetToughness$ 1 | RemoveAllAbilities$ True`).
+    `apply_layer7_pt_effects` applies the latest-timestamp non-CDA setter matching each creature
+    (incl. `Affected$ Creature` = all creatures); the 7c additive loop now excludes all setters.
+    A general `evaluate_sa_svar` integer-literal fix (a plain numeric SVar evaluates to itself
+    instead of falling through to `Count$` → 0) landed with it. Verified: Knight of the Reliquary
+    with a graveyard land is 3/3 normally but **1/1 under Humility** (self-pump removed in L6, not
+    merely base-overridden); Dryad Arbor → 1/1 with its mana ability gone.
+  - **Layer 4 §1d Blood Moon / 305.7** — a land whose subtype is set to a basic type now loses its
+    rules-text abilities (keeping regenerated intrinsic mana): layer 4 records type-set lands and
+    suppresses their statics, `recompute_abilities` erases the rest. Verified via Magus of the Moon
+    (idx 86) turning Gaea's Cradle into a Mountain.
+  - **Still deferred:** layers 1/2/3/5 no-op hooks; sublayer 7d "switch" (storage but no source); the
+    613.8 **dependency** override (no-op falling through to timestamp order — §5, deferred until a
+    vocab pair forms a same-layer dependency, e.g. Humility + Opalescence); same-layer
+    grant-vs-removal timestamp ordering (removal currently always wins).
 
-### T2.2 — Replacement effects narrow & mostly dormant; no ordering · `OPEN`
-- **Rule:** 614 (replacement effects), 616 (ordering multiple applicable replacements)
+### T2.2 — Replacement effects narrow & mostly dormant; no ordering · `IN PROGRESS`
+- **Rule:** 614 (replacement effects), 616 (interaction of multiple applicable replacements)
 - **Engine:** `Effect::Replacement` supports only `ENTERS_TAPPED`, `CANT_BE_COUNTERED`, `EXILE_INSTEAD_OF_GRAVEYARD` (`src/components/effect.h:12-31`); `affected_zones`/`affected_types`/`category`/`amount` are reserved/unused. Enters-tapped/with-counters are hard-coded in `apply_permanent_components` (`src/systems/state_manager_statics.cpp:153-164`, `:219-234`), applied in fixed order with no player choice.
-- **Rules require:** 614 — general event-interception class (enters-with-counters, "if it would die, exile instead," damage replacement, "enters as a copy," etc.); 616.1 — affected player/controller orders multiple applicable replacements.
-- **Fix:** Generalize into an event-interception layer applied at the relevant events; route enters-tapped/with-counters/finality through it; prompt for order when >1 applies.
+- **Rules require:** 614 — general event-interception class (enters-with-counters, "if it would die, exile instead," damage replacement, "enters as a copy," etc.); 616.1 — when multiple replacements apply, the affected player/controller chooses one to apply, then re-evaluates.
+- **Fix:** Generalize into an event-interception dispatcher applied at the relevant events; route enters-tapped/with-counters/exile-instead/dredge through it; choose-one when >1 applies.
 - **Complexity/risk:** **High** — architectural; only three hard-coded cases exist today.
+- **Implemented (2026-06-24):** Generalized the scattered, hard-coded replacement sites into a single
+  event-interception dispatcher, `replacement::dispatch(ReplacementEvent&)`
+  (`src/systems/replacement_effects.{h,cpp}`). A `ReplacementEvent` is a small mutable description of
+  an imminent event (`ENTERS_BATTLEFIELD` / `MOVE_TO_ZONE` / `DRAW_CARD`); the caller fills its inputs,
+  calls `dispatch`, then carries out the (possibly modified) outcome fields. The dispatcher `collect`s
+  every applicable replacement effect, applies one per pass, and **re-collects each pass** (616.1f /
+  616.2) until none remain, marking each (source,index) applied so it fires at most once per event
+  (614.5). **Routed through it:** enters-tapped (614.1d — self replacement + the fetch
+  `pending_enters_tapped` one-shot), enters-with-counters (614.1c — the `EtbCounter` delve count,
+  applied once the `Creature` exists), exile-instead-of-graveyard (614.1a, Dauthi Voidwalker —
+  replaces `Orderer::check_exile_replacement`), and **dredge** (702.52a / 614.1a — the bespoke
+  `Orderer::offer_dredge` is deleted; its enumeration + choose-one menu + mill/return move into the
+  `DRAW_CARD` path).
+- **616.1 is choose-one, NOT ordering:** when >1 replacement applies to one event, the affected
+  object's controller/owner (or affected player) chooses ONE to apply, then the dispatcher
+  re-evaluates the remainder — a choose-one-then-repeat process, not a timestamp ordering (timestamp
+  ordering is the 613 *static-ability* layer system, a separate mechanism). The 616.1a
+  self-replacement (614.15) gate is honored. **Latent:** no current vocab deck ever has >1 applicable
+  replacement on a single event, so the choose-one branch is implemented and compiled but not
+  exercised by real cards.
+- **Static-ability vs. replacement-effect distinction:** these are orthogonal axes (614.3 — a static
+  ability can *generate* a replacement effect). **Can't-be-countered is intentionally NOT routed:** it
+  replaces no event — it is a static-ability prohibition that functions on the stack (113.6g / 701.5)
+  — so it keeps its existing cast-time `Spell.cant_be_countered` flag, untouched (the dispatcher never
+  consults the `Effect::Replacement::CANT_BE_COUNTERED` enum). A general **static-ability framework
+  (604) is deferred.**
+- **Verification:** Added the routed-effect cards to the corpus main decks (Life from the Loam → mav;
+  Barrowgoyf + Dauthi Voidwalker → doomsday) so the 108-game `gen_corpus.sh` corpus exercises all four
+  effects (dredge ×6, void-counter ×60, enters-with-counters ×14, enters-tapped ×59 games),
+  regenerated the baseline on that deck set, and confirmed it **byte-for-byte identical** after each
+  migration step (exile-instead, then enters-tapped/counters, then dredge). Targeted harness scenarios
+  confirmed Dauthi exile-instead ("exiled with a void counter" + castable void-countered card) and
+  Undercity Sewers enters-tapped.
+- **Further work (2026-06-24, static-effects rework §1c — see `docs/static_effects_rework.md`):**
+  added a fourth routed event — **untap-prevention (614.1d)**. New `ReplacementEvent::UNTAP` +
+  `Effect::Replacement::SKIP_UNTAP` (carrying a `ValidCard` subtype); the untap step (`game.cpp`)
+  now dispatches one UNTAP event per untapping permanent and skips it if replaced. **Choke**
+  (`R:Event$ Untap | Layer$ CantHappen | ValidCard$ Island`) keeps tapped Islands tapped through
+  their controller's untap steps — the old dead `hidden_keyword "doesn't untap"` static path and the
+  superseded `rules_mod::untap_prevented` were removed. Corpus byte-identical (Choke is
+  sideboard-only; the UNTAP dispatch is a no-op when absent).
 
 ### T2.3 — Prevention effects entirely absent · `OPEN`
 - **Rule:** 615 (prevention), 122.1c (shield counters)
@@ -114,13 +215,43 @@ governing rule, a fix sketch, and a complexity/risk estimate.
 - **Fix:** Consult a prevention layer in `deal_damage`/`deal_damage_to_player` before applying damage, with per-source/per-turn shields.
 - **Complexity/risk:** **Medium–High** — new subsystem; no current vocab card exercises it, but it is a complete rules gap.
 
-### T2.4 — Counters: only +1/+1 modeled; loyalty tracked separately · `OPEN`
+### T2.4 — Counters: only +1/+1 modeled; loyalty tracked separately · `IN PROGRESS`
 - **Rule:** 122.1 (counter kinds), 122.3 (+1/+1 vs -1/-1 annihilation SBA), 613.4c (counters in layer 7c), 306.5c (loyalty counters)
 - **Engine:** a single `plus_one_counters` int adds symmetrically to P and T (`src/components/creature.h:29`); counter handlers reject anything ≠ `"P1P1"` (`src/effects/effect_put_counter.cpp:21-30`, `state_manager_statics.cpp:219-234`). No -1/-1, no keyword counters, no 122.3 annihilation SBA.
 - **Loyalty unification note:** planeswalker loyalty is conceptually loyalty *counters* (122.1b / 306.5c), but the engine tracks it as a standalone int `permanent.loyalty` (`src/components/permanent.h:27`), entirely divorced from the counter subsystem — loyalty-ability costs add/subtract this int directly (`src/components/ability.h:55-60`). **When building the typed counter map, loyalty counters should be unified into that mechanism** (a `LOYALTY` counter type in the map, or at minimum a shared add/remove/query API) so all counters — +1/+1, -1/-1, loyalty, keyword — share one code path. Keep `permanent.loyalty`'s existing semantics (SBA at 0, 306.5c) working through the unified store, and preserve the obs encoding (loyalty float).
 - **Rules require:** 122.1a -X/-Y counters; 122.1b keyword counters; 122.3 annihilation as an SBA; counters as timestamped 7c modifiers.
 - **Fix:** Store counters in a typed map; add the 122.3 annihilation SBA in `state_based_effects`; fold counters into layer 7c (depends on T2.1); migrate loyalty into the same store.
 - **Complexity/risk:** **Medium** — typed counter map + one new SBA + loyalty migration; currently +1/+1 and loyalty are the only live counter users.
+- **Implemented (2026-06-24):** Replaced the two separate stores — `Creature::plus_one_counters`
+  and `Permanent::loyalty` — with a single typed counter map `std::map<std::string,int>
+  Permanent::counters` keyed by counter type (`"P1P1"`, `"M1M1"`, `"LOYALTY"`, future keyword
+  counters), so all counter kinds share one store (122.1). The single add/remove/query path
+  is three header-inline helpers in `src/game_queries.h`: `get_counters(e, type)`,
+  `add_counters(e, type, delta)` (erases an entry at exactly 0; resyncs P/T for `P1P1`/`M1M1`),
+  and `refresh_counter_pt(e)`. `Creature::plus_one_counters` became `counter_pt_bonus` (net
+  +1/+1 minus -1/-1), still summed in `recompute_pt`'s layer-7c term (613.4c) but now a cache
+  derived from the map. Every counter writer routes through the API: `effect_put_counter`
+  (now accepts any counter type, not just `P1P1`), `effect_multiply_counter`,
+  `effect_amass`, and the `EtbCounter` static. Loyalty is fully migrated — ETB init
+  (`state_manager_statics.cpp`), ± loyalty-ability cost (`action_processor.cpp`), combat/spell
+  damage (`damage_planeswalker` in `game_queries.h`), the 606.6 minus-ability gate
+  (`state_manager_actions.cpp`), the 704.5i loyalty-0 SBA (`state_manager.cpp`), and the obs
+  encoding (`machine_io.cpp`, via `get_counters(e,"LOYALTY")`) all read/write the
+  `"LOYALTY"` counter; the `PermanentState.loyalty` serialization DTO and the obs `loyalty/10`
+  float are unchanged. Added the **122.3 annihilation SBA** (704.5q) to `state_based_effects`:
+  any battlefield permanent holding both `P1P1` and `M1M1` counters has `min(p,m)` of each
+  removed (sets `any_applied`, refreshing P/T). **Deferred:** discrete per-counter 613.7
+  timestamps (the T2.1 hand-off) — counters remain an aggregate commutative 7c contribution
+  for now; a per-counter timestamped record is unnecessary until a non-commutative counter
+  effect enters the vocab. -1/-1 and keyword counters are now representable in the store but
+  no vocab card produces them yet, so the annihilation SBA never fires in current play (this
+  also closes the +1/+1−1/-1 half of T3.9).
+- **Verification:** Re-ran the 108-game `train/gen_corpus.sh` corpus (3 decks × 9 pairings ×
+  12 seeds) under T2.4: **byte-for-byte identical to the pre-refactor baseline across all
+  108 games** (the corpus exercises both +1/+1 counter placement and `MultiplyCounter`
+  doubling). Loyalty — which the corpus decks don't exercise (no planeswalkers) — was
+  verified separately with a Jace, the Mind Sculptor harness scenario: ETB at loyalty 3,
+  −1 ability → loyalty 2 with its target bounced, and the once-per-turn gate enforced.
 
 ---
 
@@ -128,23 +259,78 @@ governing rule, a fix sketch, and a complexity/risk estimate.
 
 ### Triggered abilities & priority
 
-#### T3.1 — Triggered abilities not ordered APNAP · `OPEN`
+#### T3.1 — Triggered abilities not ordered APNAP · `DONE`
 - **Rule:** 603.3b
 - **Engine:** triggers are pushed onto the stack in raw entity-ID order (`src/systems/state_manager_triggers.cpp:72-92`), not active-player-first. (Flagged by multiple audit passes.)
 - **Fix:** collect pending triggers, partition by controller (active player first), let each player order their own group, then push so the LIFO stack matches APNAP.
 - **Complexity/risk:** **Medium** — two-pass collect-then-push + controller ordering prompt; changes resolution order, so seeds/recordings shift.
+- **Implemented (2026-06-24):** `check_triggered_abilities` (`state_manager_triggers.cpp`) now
+  *collects* every ability that fires off the current event batch (regular and delayed
+  triggers) into a `PendingTrigger` list instead of pushing each the instant it is found, then
+  hands the list to a new file-static `place_triggers_apnap`. That helper places triggers in
+  APNAP order (603.3b): the active player's triggers go on the stack first (so they resolve
+  last), then the non-active player's. **Same-player ordering (603.3b):** when one player has
+  ≥2 simultaneous triggers, they are prompted with a mandatory choice (`OTHER_CHOICE`, like the
+  legend rule) to pick the order one at a time — the first chosen goes on the bottom (resolves
+  last). A lone trigger needs no prompt. Target selection (`select_target`) now happens at
+  placement time in APNAP/chosen order rather than during the scan. The labels distinguish
+  same-source triggers (e.g. Endurance's `(evoke: sacrifice)` vs `(ChangeZoneAll, targeted)`).
+- **Verification:** Targeted harness tests with **Endurance evoked** (its evoke-sacrifice
+  trigger + its enters-the-battlefield graveyard-bottom trigger, both controlled by the same
+  player): the controller is prompted to order them, and both orderings were confirmed to flip
+  the resolution order correctly. Cross-player APNAP confirmed with **Endurance (active player)
+  + an opponent's Soul Warden**: the active player orders their two triggers first, the
+  opponent's Soul Warden trigger is placed last and its life gain resolves first. Regenerating
+  the 108-game corpus, 62/108 games changed — every diff is trigger reordering (the new
+  same-player ordering prompt for Endurance ×2 and Dragon's Rage Channeler ×2 surveil, plus
+  cross-player APNAP). No draws, no new errors, all 108 games still decisive. This issue
+  *intentionally* changes resolution order, so unlike T2.1/T2.4 the corpus is not byte-identical
+  — the diff is the review surface and was confirmed to be APNAP ordering only.
 
-#### T3.2 — No priority window when triggers fire during cleanup · `OPEN`
+#### T3.2 — No priority window when triggers fire during cleanup · `OPEN (DEFERRED — not testable with current vocab)`
 - **Rule:** 514.3a
 - **Engine:** entering CLEANUP force-sets both pass flags (`src/classes/game.cpp:276-278`); a cleanup-triggered ability then resolves via `resolve_top` before any player is offered priority (`:82-89`).
 - **Fix:** when triggers fire / SBAs occur in cleanup, reset the pass flags and give the active player priority instead of pre-passing.
 - **Complexity/risk:** **Medium** — must distinguish the no-trigger fast path from the trigger-present path within the untap/cleanup "pretend both passed" hack.
+- **Deferred (2026-06-24):** no vocab card has a cleanup-step trigger that uses the stack, so
+  this bug cannot be observed or verified with the current card pool. (The Forge `Phase$ Cleanup`
+  triggers in the DB are mostly `Static$ True` bookkeeping that bypasses the stack; the genuine
+  514.3a cases are delayed "at the next cleanup step" triggers like Thawing Glaciers, or
+  discard/madness triggers firing during the cleanup discard — none in vocab.) Per the project
+  testing policy (verify against a real card, no untested mechanics), this is deferred until such
+  a card is added to the vocab. See `todo.md`.
 
-#### T3.3 — "Intervening if" checked once, not twice · `OPEN`
+#### T3.3 — "Intervening if" checked once, not twice · `DONE`
 - **Rule:** 603.4
 - **Engine:** only the resolution-time check runs (`condition_check_svar`, `src/components/ability.cpp:780-784`); the trigger-time gate is missing, so intervening-if triggers always go on the stack.
 - **Fix:** evaluate the condition in `check_triggered_abilities` before pushing, in addition to the resolution-time check; requires flagging intervening-if triggers at parse time.
 - **Complexity/risk:** **Medium** — touches trigger plumbing; low rules-risk.
+- **Implemented (2026-06-24):** A trigger line's `IsPresent$`/`PresentCompare$` now parse into
+  `condition_present`/`condition_compare` with a new `Ability::intervening_if` flag
+  (`parse_one_trigger`; carried onto the resolved ability across the `Execute$` SVar swap). The
+  condition is evaluated by a shared free function `evaluate_present_condition`
+  (refactored out of the old spell-castability `check_condition_present`; empty compare defaults
+  to "≥ 1", `Card` is a type wildcard). It is checked in **both** places per 603.4: in
+  `check_triggered_abilities` before the trigger is queued (it does not go on the stack if false)
+  and again at the top of `Ability::resolve()` (if false on resolution the ability is removed and
+  does nothing — not even subabilities, unlike a `ConditionCheckSVar` gate). Test vehicle: the
+  card **Birthing Ritual** (vocab idx 98) — "At the beginning of your end step, **if you control a
+  creature**, …". Implementing it also added a general **`DB$ Sacrifice` effect** (SacValid$ /
+  Optional$ / RememberSacrificed$), a **`Remembered$CardManaCost[/Plus.N]`** SVar (mana value of
+  the sacrificed creature), a **cmc-bounded + Battlefield-destination Dig** (`Creature.cmcLEX`
+  reanimation, with an explicit `ChangeNum$ 0` "look but take nothing" path via a new
+  `change_num` field), a `ConditionDefined$ Remembered` subability gate, and recognition of
+  `Phase$ End of Turn` as the end step.
+- **Verification:** Birthing Ritual harness tests — the end-step trigger fires when its
+  controller has a creature and is **suppressed (0 firings) when they control none**
+  (trigger-time 603.4 check); the full chain works (sacrifice a creature → reanimate a creature
+  with mana value ≤ 1 + sacrificed's from the top 7; decline → look-but-take-nothing). The
+  resolution-time re-check is the same `evaluate_present_condition` guard at the top of
+  `resolve()` (603.4's second check); it reuses the trigger-time-verified evaluator and matters
+  whenever the board changes between the trigger going on the stack and resolving (e.g. an
+  earlier APNAP-ordered trigger removes the last creature before this one resolves). The 108-game
+  corpus was regenerated to confirm the existing 98-card decks are unaffected (Birthing Ritual is
+  not in them).
 
 ### Stack / resolution / targeting
 
@@ -182,9 +368,13 @@ governing rule, a fix sketch, and a complexity/risk estimate.
 - **Fix:** add a poison-loss SBA when an infect/poison card is implemented.
 - **Complexity/risk:** **Low**, latent.
 
-#### T3.9 — Missing SBAs: +1/+1 vs -1/-1 annihilation, world rule · `OPEN`
+#### T3.9 — Missing SBAs: +1/+1 vs -1/-1 annihilation, world rule · `IN PROGRESS`
 - **Rule:** 704.5q (folds into T2.4), 704.5k
-- **Engine:** neither exists; no vocab card uses them.
+- **Engine:** the world rule (704.5k) still does not exist; no vocab card uses either.
+- **Done (2026-06-24):** the +1/+1 vs -1/-1 annihilation SBA (704.5q) was implemented as
+  part of **T2.4** (typed counter map) — `state_based_effects` removes `min(p,m)` of each
+  when a permanent holds both. Latent until a -1/-1 source enters the vocab. The world rule
+  remains unimplemented.
 - **Complexity/risk:** **Low**, latent.
 
 ### Combat (remaining)

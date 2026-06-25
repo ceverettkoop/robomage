@@ -5,6 +5,7 @@
 
 #include "../classes/action.h"
 #include "../classes/game.h"
+#include "../classes/match_state.h"
 #include "../cli_output.h"
 #include "../components/carddata.h"
 #include "../components/player.h"
@@ -29,6 +30,9 @@ bool discard(Ability &ab, std::shared_ptr<Orderer> orderer) {
     for (auto e : hand) {
         auto &cd = global_coordinator.GetComponent<CardData>(e);
         game_log("  %s\n", cd.name.c_str());
+        // The whole hand is revealed to the caster: record each card's identity in
+        // the belief state (match-scoped multi-hot + per-card known-in-hand flag).
+        mark_card_revealed(e, tgt_owner);
     }
 
     // Filter by DiscardValid$ — "Card.nonLand", "Card.nonCreature+nonLand"

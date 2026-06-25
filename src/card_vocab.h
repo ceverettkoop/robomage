@@ -47,6 +47,8 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Snuff Out", 95},
     {"Shadowy Backstreet", 96},
     {"Jace, the Mind Sculptor", 97},
+    {"Birthing Ritual", 98},
+    {"Humility", 99},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);

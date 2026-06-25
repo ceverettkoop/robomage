@@ -45,11 +45,45 @@ inline bool is_planeswalker_permanent(Entity e) {
            is_planeswalker(global_coordinator.GetComponent<Permanent>(e).types);
 }
 
+// ── Counters (122.1) ────────────────────────────────────────────────────────
+// Every counter kind (+1/+1, -1/-1, loyalty, keyword) lives in Permanent::counters
+// keyed by type; these helpers are the single add/remove/query path (T2.4).
+
+// Number of counters of `type` on `e` (0 if none, or `e` is not a permanent).
+inline int get_counters(Entity e, const std::string &type) {
+    if (!global_coordinator.entity_has_component<Permanent>(e)) return 0;
+    auto &perm = global_coordinator.GetComponent<Permanent>(e);
+    auto it = perm.counters.find(type);
+    return it == perm.counters.end() ? 0 : it->second;
+}
+
+// Recompute a creature's cached +1/+1 − -1/-1 P/T contribution from its counters
+// (layer 7c, 613.4c) and refresh effective P/T. No-op if `e` is not a creature.
+inline void refresh_counter_pt(Entity e) {
+    if (!global_coordinator.entity_has_component<Creature>(e)) return;
+    auto &cr = global_coordinator.GetComponent<Creature>(e);
+    cr.counter_pt_bonus = get_counters(e, "P1P1") - get_counters(e, "M1M1");
+    recompute_pt(cr);
+}
+
+// Add `delta` counters of `type` to `e` (delta may be negative). An entry reaching
+// exactly 0 is erased so the map only holds live counters. +1/+1 and -1/-1 changes
+// resync the creature's P/T. Returns the new total; no-op (returns current) if not a permanent.
+inline int add_counters(Entity e, const std::string &type, int delta) {
+    if (delta == 0 || !global_coordinator.entity_has_component<Permanent>(e))
+        return get_counters(e, type);
+    auto &perm = global_coordinator.GetComponent<Permanent>(e);
+    int total = perm.counters[type] + delta;
+    if (total == 0) perm.counters.erase(type);
+    else perm.counters[type] = total;
+    if (type == "P1P1" || type == "M1M1") refresh_counter_pt(e);
+    return total;
+}
+
 // Damage to a planeswalker removes that many loyalty counters (306.8). The loyalty-0 SBA
 // (704.5i) then moves it to the graveyard. Single source for both combat and noncombat damage.
 inline void damage_planeswalker(Entity pw, size_t amount) {
-    auto &perm = global_coordinator.GetComponent<Permanent>(pw);
-    perm.loyalty -= static_cast<int>(amount);
+    add_counters(pw, "LOYALTY", -static_cast<int>(amount));
 }
 
 // True if the type list carries the "Legendary" supertype (drives the legend rule, 704.5j).

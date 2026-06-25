@@ -18,6 +18,7 @@
 #include "components/spell.h"
 #include "components/zone.h"
 #include "ecs/coordinator.h"
+#include "game_queries.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;
@@ -92,7 +93,7 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
         gs->self_permanents[i].card_vocab_idx = -1;
         gs->opp_permanents[i].card_vocab_idx  = -1;
     }
-    for (int i = 0; i < MAX_HAND_SLOTS; i++) gs->self_hand[i] = -1;
+    for (int i = 0; i < MAX_HAND_SLOTS; i++) { gs->self_hand[i] = -1; gs->opp_known_hand[i] = -1; }
     for (int i = 0; i < MAX_GY_SLOTS; i++) {
         gs->self_graveyard[i] = -1;
         gs->opp_graveyard[i]  = -1;
@@ -165,6 +166,7 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
     int self_bf = 0, opp_bf = 0;
     int self_gy = 0, opp_gy = 0;
     int self_hand_idx = 0;
+    int opp_known_hand_idx = 0;
 
     // Single pass over all entities (naturally ascending entity ID order).
     // Use high-water-mark instead of MAX_ENTITIES to skip unallocated slots.
@@ -182,6 +184,10 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
                         gs->self_hand[self_hand_idx++] = get_card_vocab_idx(e);
                 } else {
                     gs->opponent.hand_ct++;
+                    // Opponent-hand cards the viewer has had revealed are carried by
+                    // their specific identity (not just the match-scoped multi-hot).
+                    if (zone.identity_known && opp_known_hand_idx < MAX_HAND_SLOTS)
+                        gs->opp_known_hand[opp_known_hand_idx++] = get_card_vocab_idx(e);
                 }
                 break;
 
@@ -259,7 +265,7 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
                 if (global_coordinator.entity_has_component<Damage>(e))
                     ps.damage = static_cast<int>(global_coordinator.GetComponent<Damage>(e).damage_counters);
 
-                ps.loyalty = perm.loyalty;  // nonzero only for planeswalkers
+                ps.loyalty = get_counters(e, "LOYALTY");  // nonzero only for planeswalkers
 
                 ps.token_name[0] = '\0';
                 if (perm.is_token && global_coordinator.entity_has_component<Token>(e)) {
@@ -478,6 +484,13 @@ std::vector<float> serialize_state(const GameState* gs) {
     // Accumulated across the match, perspective-relative to the viewer.
     for (int i = 0; i < REVEALED_CARD_TYPES; i++)
         state.push_back(gs->opp_revealed[i] ? 1.0f : 0.0f);
+
+    // Known opponent-hand cards (10 x 1 = 10): specific card identities the viewer
+    // has had revealed from the opponent's hand and that are still in hand. Sentinel
+    // id = empty/unknown slot. Distinct from the multi-hot above: this tracks the
+    // exact card and clears when that card leaves the hand.
+    for (int i = 0; i < MAX_HAND_SLOTS; i++)
+        state.push_back(norm_card_id(gs->opp_known_hand[i]));
 
     assert(static_cast<int>(state.size()) == STATE_SIZE);
     return state;

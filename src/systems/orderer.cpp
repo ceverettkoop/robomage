@@ -6,7 +6,7 @@
 #include "../card_db.h"
 #include "../card_vocab.h"
 #include "../classes/deck.h"
-#include "../classes/game.h"357
+#include "../classes/game.h"
 #include "../classes/action.h"
 #include "../classes/match_state.h"
 #include "../cli_output.h"
@@ -21,6 +21,7 @@
 #include "../ecs/coordinator.h"
 #include "../ecs/events.h"
 #include "../input_logger.h"
+#include "replacement_effects.h"
 #include "../machine_io.h"
 #include "../type_constants.h"
 #include "../components/types.h"
@@ -31,8 +32,6 @@ void Orderer::init() {
     signature.set(global_coordinator.GetComponentType<Zone>());
     global_coordinator.SetSystemSignature<Orderer>(signature);
 }
-
-static void check_exile_replacement(Entity target, Zone::ZoneValue &destination);
 
 Entity Orderer::push_ability_onto_stack(const Ability &ability, Zone::Ownership controller) {
     // Initialize the entity's Zone as HAND so add_to_zone's origin-zone removal is a
@@ -50,7 +49,15 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     auto &target_zone = global_coordinator.GetComponent<Zone>(target);
 
     // Replacement effects (rule 614): redirect graveyard → exile when Dauthi Voidwalker etc. apply.
-    check_exile_replacement(target, destination);
+    {
+        ReplacementEvent rev;
+        rev.type = ReplacementEvent::MOVE_TO_ZONE;
+        rev.entity = target;
+        rev.affected_player = target_zone.owner;  // 616.1: the card's owner is the affected player
+        rev.destination = destination;
+        replacement::dispatch(rev);
+        destination = rev.destination;
+    }
 
     // Fire CARD_CHANGED_ZONE on every zone transition so any parsed ChangesZone trigger can match.
     {
@@ -129,6 +136,12 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     if (on_bottom) target_zone.distance_from_top = back + 1;
     target_zone.location = destination;
 
+    // A zone change re-derives visibility from the new zone: any prior "identity
+    // known to the opponent while hidden in hand" belief no longer applies (the
+    // card is now either public, or a fresh hidden object). Reveal sites set this
+    // flag again if the destination is a revealed hidden zone.
+    target_zone.identity_known = false;
+
     // Match-scoped reveal tracking: any card entering a PUBLIC zone becomes known
     // to both players, so accumulate it in the owner's revealed multi-hot. This
     // single chokepoint covers casts (→STACK), ETB (→BATTLEFIELD), and
@@ -137,38 +150,6 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     if (destination == Zone::BATTLEFIELD || destination == Zone::STACK ||
         destination == Zone::GRAVEYARD || destination == Zone::EXILE) {
         mark_card_revealed(target, target_zone.owner);
-    }
-}
-
-// Dauthi Voidwalker replacement effect (rule 614): when a non-token card owned by
-// an opponent would go to graveyard, exile it with a void counter instead.
-// Scans battlefield permanents for the EXILE_INSTEAD_OF_GRAVEYARD replacement effect.
-static void check_exile_replacement(Entity target, Zone::ZoneValue &destination) {
-    if (destination != Zone::GRAVEYARD) return;
-    if (global_coordinator.entity_has_component<Token>(target)) return;
-    if (!global_coordinator.entity_has_component<CardData>(target)) return;
-    auto &tz = global_coordinator.GetComponent<Zone>(target);
-
-    Entity max_e = global_coordinator.GetMaxIssuedEntity();
-    for (Entity e = 0; e < max_e; e++) {
-        if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
-        if (!global_coordinator.entity_has_component<Zone>(e)) continue;
-        auto &ez = global_coordinator.GetComponent<Zone>(e);
-        if (ez.location != Zone::BATTLEFIELD) continue;
-        auto &perm = global_coordinator.GetComponent<Permanent>(e);
-        if (perm.is_phased_out) continue;
-        // The replacement source must be controlled by the opponent of the card's owner
-        if (perm.controller == tz.owner) continue;
-        if (!global_coordinator.entity_has_component<CardData>(e)) continue;
-        auto &cd = global_coordinator.GetComponent<CardData>(e);
-        for (const auto &r : cd.replacement_effects) {
-            if (r.kind != Effect::Replacement::EXILE_INSTEAD_OF_GRAVEYARD) continue;
-            destination = Zone::EXILE;
-            cur_game.void_countered.insert(target);
-            std::string name = global_coordinator.GetComponent<CardData>(target).name;
-            game_log("%s is exiled with a void counter.\n", name.c_str());
-            return;
-        }
     }
 }
 
@@ -310,9 +291,27 @@ void Orderer::draw(Zone::Ownership player, size_t ct, bool fire_draw_event) {
 
 // actual effect here; replacement (dredge) handled here, triggers handled by callers
 void Orderer::draw_one(Zone::Ownership player, bool fire_draw_event) {
-    // Dredge replacement (rule 702.52): the player may replace this draw with a
-    // dredge from their graveyard. If they do, no card is drawn.
-    if (offer_dredge(player)) return;
+    // Dredge replacement (rule 702.52a / 614.1a): the player may replace this draw
+    // with a dredge from their graveyard. If they do, no card is drawn.
+    {
+        Entity player_entity = (player == Zone::PLAYER_A) ? cur_game.player_a_entity
+                                                          : cur_game.player_b_entity;
+        ReplacementEvent rev;
+        rev.type = ReplacementEvent::DRAW_CARD;
+        rev.entity = player_entity;
+        rev.affected_player = player;
+        replacement::dispatch(rev);
+        if (rev.draw_replaced) {
+            // Mill N, then return the dredge card from graveyard to hand. The dredge card is
+            // in the graveyard (not the library), so milling never touches it.
+            std::string dname = global_coordinator.GetComponent<CardData>(rev.dredge_source).name;
+            mill(player, static_cast<size_t>(rev.dredge_mill));
+            add_to_zone(false, rev.dredge_source, Zone::HAND);
+            game_log("%s dredges %s (milled %d)\n", player_name(player).c_str(), dname.c_str(),
+                     rev.dredge_mill);
+            return;
+        }
+    }
 
     // Find the single top card of the player's library.
     Entity top = 0;
@@ -367,47 +366,6 @@ void Orderer::draw_one(Zone::Ownership player, bool fire_draw_event) {
     draw_event.SetParam(Params::ENTITY, top);
     draw_event.SetParam(Params::FIRST_IN_STEP, first_in_draw_step ? 1 : 0);
     global_coordinator.SendEvent(draw_event);
-}
-
-bool Orderer::offer_dredge(Zone::Ownership player) {
-    // A dredge card is only a legal replacement if its owner has at least that
-    // many cards left in their library to mill.
-    size_t lib_size = get_library_contents(player).size();
-    std::vector<Entity> dredge_cards;
-    for (auto &&card : get_graveyard(player)) {
-        if (!global_coordinator.entity_has_component<CardData>(card)) continue;
-        auto &cd = global_coordinator.GetComponent<CardData>(card);
-        if (cd.dredge > 0 && static_cast<size_t>(cd.dredge) <= lib_size) {
-            dredge_cards.push_back(card);
-        }
-    }
-    if (dredge_cards.empty()) return false;
-
-    // Option 0 is always "draw normally" so the default (auto-pass / index 0) keeps
-    // the draw. Remaining options dredge a specific card.
-    std::vector<LegalAction> actions;
-    LegalAction draw_act(PASS_PRIORITY, std::string("Draw a card"));
-    draw_act.category = ActionCategory::OTHER_CHOICE;
-    actions.push_back(draw_act);
-    for (auto card : dredge_cards) {
-        auto &cd = global_coordinator.GetComponent<CardData>(card);
-        LegalAction la(PASS_PRIORITY, card,
-                       "Dredge " + cd.name + " (mill " + std::to_string(cd.dredge) + ")");
-        la.category = ActionCategory::OTHER_CHOICE;
-        actions.push_back(la);
-    }
-    int choice = InputLogger::instance().get_input(actions);
-    if (choice == 0) return false;  // chose to draw normally
-
-    Entity dredged = actions[static_cast<size_t>(choice)].source_entity;
-    int n = global_coordinator.GetComponent<CardData>(dredged).dredge;
-    std::string dname = global_coordinator.GetComponent<CardData>(dredged).name;
-    // Mill N, then return the dredge card from graveyard to hand. The dredge card is
-    // in the graveyard (not the library), so milling never touches it.
-    mill(player, static_cast<size_t>(n));
-    add_to_zone(false, dredged, Zone::HAND);
-    game_log("%s dredges %s (milled %d)\n", player_name(player).c_str(), dname.c_str(), n);
-    return true;
 }
 
 std::vector<Entity> Orderer::mill(Zone::Ownership player, size_t ct) {

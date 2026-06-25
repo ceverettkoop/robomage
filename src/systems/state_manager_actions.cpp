@@ -1,5 +1,6 @@
 #include "state_manager.h"
 #include "state_manager_internal.h"
+#include "rules_modifying.h"
 
 #include <algorithm>
 #include <cstddef>
@@ -32,7 +33,6 @@
 #include "../systems/stack_manager.h"
 #include "orderer.h"
 
-static bool check_condition_present(const Ability &ab, Zone::Ownership caster, std::shared_ptr<Orderer> orderer);
 static bool can_afford_alt(const AltCost& alt_cost, Zone::Ownership priority_player,
                            Entity card_entity, std::shared_ptr<Orderer> orderer) {
     if (!alt_cost.has_alt_cost) return false;
@@ -118,11 +118,21 @@ static bool can_afford_alt(const AltCost& alt_cost, Zone::Ownership priority_pla
     return true;
 }
 
-// Check ConditionPresent$ / ConditionCompare$ castability condition.
-// Counts battlefield permanents matching the filter and compares against the threshold.
-// Filter format: "Type.YouCtrl" or "Type.OppCtrl" (e.g. "Land.YouCtrl").
-static bool check_condition_present(const Ability &ab, Zone::Ownership caster, std::shared_ptr<Orderer> orderer) {
+// Check ConditionPresent$ / ConditionCompare$ condition (rule-603.4 intervening-if, spell
+// castability, and ConditionDefined$ Remembered subability gates all share this).
+// Counts battlefield permanents matching the filter (or remembered cards when
+// condition_on_remembered) and compares against the threshold (default ">= 1").
+// Filter format: "Type.YouCtrl" or "Type.OppCtrl" (e.g. "Land.YouCtrl"); "Card" matches any.
+bool evaluate_present_condition(const Ability &ab, Zone::Ownership caster, std::shared_ptr<Orderer> orderer) {
     if (ab.condition_present.empty()) return true;
+    // Empty compare means the bare "if you control a <thing>" form → at least one.
+    std::string compare = ab.condition_compare.empty() ? "GE1" : ab.condition_compare;
+
+    // ConditionDefined$ Remembered: count remembered cards, not battlefield permanents.
+    if (ab.condition_on_remembered) {
+        size_t count = cur_game.remembered_entities.size();
+        return compare_svar(static_cast<int>(count), compare);
+    }
 
     // Parse filter: "Land.YouCtrl" → type_filter="Land", controller check
     std::string filter = ab.condition_present;
@@ -138,6 +148,7 @@ static bool check_condition_present(const Ability &ab, Zone::Ownership caster, s
     } else {
         type_filter = filter;
     }
+    if (type_filter == "Card") type_filter.clear();  // "Card" = any permanent
 
     Zone::Ownership required_ctrl = you_ctrl ? caster :
         opp_ctrl ? (caster == Zone::PLAYER_A ? Zone::PLAYER_B : Zone::PLAYER_A) :
@@ -164,7 +175,7 @@ static bool check_condition_present(const Ability &ab, Zone::Ownership caster, s
         count++;
     }
 
-    return compare_svar(static_cast<int>(count), ab.condition_compare);
+    return compare_svar(static_cast<int>(count), compare);
 }
 
 
@@ -190,13 +201,8 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         auto &player = global_coordinator.GetComponent<Player>(priority_player_entity);
 
         // Compute effective land play limit (base 1 + AdjustLandPlays statics)
-        int land_play_limit = 1;
-        bool may_play_from_graveyard = false;
-        for (const auto &as : g_active_statics) {
-            if (as.controller != priority_player) continue;
-            if (as.sa->adjust_land_plays > 0) land_play_limit += as.sa->adjust_land_plays;
-            if (as.sa->may_play_from_graveyard) may_play_from_graveyard = true;
-        }
+        int land_play_limit = 1 + rules_mod::land_play_bonus(priority_player);
+        bool may_play_from_graveyard = rules_mod::may_play_lands_from_graveyard(priority_player);
 
         if (player.lands_played_this_turn < land_play_limit) {
             // Check hand for lands
@@ -274,7 +280,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             // may target anything legal; the condition is checked on the target at
             // resolution, so it must not gate cast-time legality.
             if (!ab.condition_present.empty() && !ab.condition_on_target)
-                condition_ok = check_condition_present(ab, priority_player, orderer);
+                condition_ok = evaluate_present_condition(ab, priority_player, orderer);
             break;
         }
         // Machine mode only: action-masking optimization — don't offer a conditional-destroy
@@ -323,20 +329,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
 
             // Check CantBeCast statics from cached active_statics
             bool card_is_creature = is_creature_card(card_data);
-            bool cast_blocked = false;
-            for (const auto &as : g_active_statics) {
-                if (as.sa->category != "CantBeCast") continue;
-                // Skip if the spell doesn't match the filter (creatures are unaffected by nonCreature restriction)
-                if (as.sa->cant_cast_filter.find("nonCreature") != std::string::npos && card_is_creature)
-                    continue;
-                Entity pp_entity = get_player_entity(priority_player);
-                auto &pp = global_coordinator.GetComponent<Player>(pp_entity);
-                if (as.sa->cant_cast_limit_per_turn > 0 &&
-                    static_cast<int>(pp.noncreature_spells_cast_this_turn) >= as.sa->cant_cast_limit_per_turn) {
-                    cast_blocked = true;
-                }
-            }
-            if (cast_blocked) continue;
+            if (rules_mod::cast_prohibited(priority_player, card_is_creature)) continue;
 
             ManaValue effective_cost = effective_base_cost(card_data);
 
@@ -423,21 +416,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         // Check if any CantBeActivated static suppresses this permanent's abilities.
         // (Mana abilities are collected separately above, so they remain usable — this
         // matches Disruptor Flute's ValidSA$ Activated.!ManaAbility.)
-        bool cant_activate = false;
-        for (const auto &as : g_active_statics) {
-            if (as.sa->category != "CantBeActivated") continue;
-            if (as.sa->match_named_card) {
-                // NamedCard (Disruptor Flute): suppress sources whose name matches the chosen name
-                if (!global_coordinator.entity_has_component<Permanent>(as.entity)) continue;
-                auto &src = global_coordinator.GetComponent<Permanent>(as.entity);
-                if (!src.chosen_name.empty() && src.chosen_name == permanent.name) cant_activate = true;
-            } else if (as.sa->cant_activate_card_filter == "Artifact") {
-                for (auto &t : permanent.types)
-                    if (t.kind == TYPE && t.name == "Artifact") { cant_activate = true; break; }
-            }
-            if (cant_activate) break;
-        }
-        if (cant_activate) continue;
+        if (rules_mod::activation_prohibited(entity)) continue;
 
         // EQUIP: equipment's equip ability is sorcery-speed (main phase, your turn, empty stack).
         // The Equip keyword is parsed into is_equipment/equip_cost but produces no stored Ability,
@@ -477,7 +456,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             if (ab.is_loyalty_ability) {
                 if (!sorcery_speed) continue;
                 if (permanent.loyalty_ability_activated_this_turn) continue;
-                if (ab.loyalty_cost < 0 && permanent.loyalty < -ab.loyalty_cost) continue;
+                if (ab.loyalty_cost < 0 && get_counters(entity, "LOYALTY") < -ab.loyalty_cost) continue;
             }
             // todo handle this elswewhere, tapping check
             if (ab.tap_cost && permanent.is_tapped) continue;

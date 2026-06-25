@@ -60,7 +60,7 @@ try:
 except ImportError:
     from train.card_costs import _CARD_COST_MATRIX, _CARD_ABILITY_COST_MATRIX, N_CARD_TYPES, _N_COST_FEATS
 
-STATE_SIZE = 2909  # see src/machine_io.h; card identity is 1 id float/slot, not a one-hot
+STATE_SIZE = 2919  # see src/machine_io.h; card identity is 1 id float/slot, not a one-hot
 # NOTE: Exile zones are tracked in GameState but not serialized to the observation.
 # NOTE: ActionChoice.description is never emitted in the BQUERY payload — it is for
 #       human-readable display only and is not part of the ML observation.
@@ -132,6 +132,8 @@ _CUR_TURN_SIZE          = 1                    # current turn / 50
 _KNOWN_TOP_LIB_SLOTS    = 5                    # serialized known top-of-library cards
 _KNOWN_TOP_LIB_SLOT_SIZE = 1                   # card id per slot
 _REVEALED_SIZE          = N_CARD_TYPES         # opponent revealed-cards multi-hot (only vocab-width block)
+_OPP_KNOWN_HAND_SLOTS   = 10                   # known opponent-hand card identities
+_OPP_KNOWN_HAND_SLOT_SIZE = 1                  # card id per slot
 
 _SELF_PERM_START     = _GLOBAL_SIZE                                                  # 34
 _OPP_PERM_START      = _SELF_PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE              # 610
@@ -147,8 +149,10 @@ _KNOWN_TOP_LIB_START = _CUR_TURN_IDX + _CUR_TURN_SIZE                           
 _KNOWN_TOP_LIB_END   = _KNOWN_TOP_LIB_START + _KNOWN_TOP_LIB_SLOTS * _KNOWN_TOP_LIB_SLOT_SIZE  # 1885
 _REVEALED_START      = _KNOWN_TOP_LIB_END                                            # 1885
 _REVEALED_END        = _REVEALED_START + _REVEALED_SIZE                              # 2909
+_OPP_KNOWN_HAND_START = _REVEALED_END                                                # 2909
+_OPP_KNOWN_HAND_END  = _OPP_KNOWN_HAND_START + _OPP_KNOWN_HAND_SLOTS * _OPP_KNOWN_HAND_SLOT_SIZE  # 2919
 
-assert _REVEALED_END == STATE_SIZE, (_REVEALED_END, STATE_SIZE)
+assert _OPP_KNOWN_HAND_END == STATE_SIZE, (_OPP_KNOWN_HAND_END, STATE_SIZE)
 
 # Offset of the card-id float within a permanent slot (after the 11 status floats).
 _PERM_CARD_OFF = 11
@@ -547,11 +551,9 @@ _CARD_COLORED_COSTS = {
 _BF_START         = _SELF_PERM_START           # 34
 _BF_SLOT_SIZE     = _PERM_SLOT_SIZE            # 12
 _PERM_A_SLOTS     = _PERM_SLOTS                # 48: self occupies perm slots 0-47, opponent slots 48-95
-_BF_A_SLOTS       = 24                         # ability cost slots per player (unchanged)
 _BF_CARD_OFF      = _PERM_CARD_OFF             # offset of the card-id float within each permanent slot
 # Precomputed indices for gathering the 48 self-permanent card-id floats from the state array
 _BF_ID_IDX        = _BF_START + np.arange(_PERM_A_SLOTS) * _BF_SLOT_SIZE + _BF_CARD_OFF
-_CTRL_OFF         = 7                          # offset of controller_is_self within a permanent slot
 
 
 def _gather_costs(matrix, ids):
@@ -564,7 +566,6 @@ def _gather_costs(matrix, ids):
     safe = np.clip(ids, 0, N_CARD_TYPES - 1)
     rows = matrix[safe]
     return np.where((ids >= 0)[:, None], rows, 0.0).astype(np.float32)
-_GY_A_SLOTS       = _GY_SLOTS_TOTAL // 2       # self occupies GY slots 0-63
 # Start of bf_ability_costs block in the full obs vector
 _BF_COST_START    = STATE_SIZE + 3 * MAX_ACTIONS + _HAND_COST_FEATS  # 34056
 # Status offsets within a permanent slot
@@ -925,70 +926,6 @@ class ModelVsScriptedEnv(gym.Env):
 
     def close(self):
         self._env.close()
-
-
-# ── Observation mirroring ─────────────────────────────────────────────────────
-
-def mirror_obs(obs: np.ndarray) -> np.ndarray:
-    """Flip the observation from Player A's perspective to Player B's (or vice versa).
-
-    NOTE: This function is no longer invoked in normal training flow.
-    Perspective normalization is now handled by the game engine (serialize_state
-    always emits from the priority player's view).  mirror_obs is retained for
-    legacy compatibility and offline analysis only.
-
-    After mirroring:
-      - obs[32] = 1.0 always means "I (the calling player) have priority"
-      - controller_is_self = 1.0 always marks the calling player's permanents
-      - slots 0-47 always contain the calling player's permanents
-      - slots 0-63 always contain the calling player's graveyard
-
-    Only the first STATE_SIZE floats and the bf_ability_costs block (derived from
-    creature slot ordering) are modified.  Action categories, action card-IDs, and
-    hand cast-costs are perspective-independent and left unchanged.
-    """
-    m = obs.copy()
-
-    # 1. Swap player scalar stats: life, hand size, poison, mana×6 (indices 0-8 ↔ 9-17)
-    m[0:9], m[9:18] = obs[9:18].copy(), obs[0:9].copy()
-
-    # 2. Flip turn/priority flags
-    m[31] = 1.0 - obs[31]
-    m[32] = 1.0 - obs[32]
-
-    # 3. Swap unified perm slots 0-47 (self) ↔ 48-95 (opp) and flip controller_is_self
-    for i in range(_PERM_A_SLOTS):
-        a = _BF_START + i * _BF_SLOT_SIZE
-        b = _BF_START + (i + _PERM_A_SLOTS) * _BF_SLOT_SIZE
-        m[a:a + _BF_SLOT_SIZE] = obs[b:b + _BF_SLOT_SIZE]
-        m[b:b + _BF_SLOT_SIZE] = obs[a:a + _BF_SLOT_SIZE]
-        m[a + _CTRL_OFF] = 1.0 - obs[b + _CTRL_OFF]
-        m[b + _CTRL_OFF] = 1.0 - obs[a + _CTRL_OFF]
-
-    # 4. Flip controller_is_self in stack slots (first float of each _STACK_SLOT_SIZE slot)
-    for i in range(12):
-        base = _STACK_START + i * _STACK_SLOT_SIZE
-        m[base] = 1.0 - obs[base]
-
-    # 5. Swap graveyard slots 0-63 ↔ 64-127 (pure card one-hots, no flag to flip)
-    for i in range(_GY_A_SLOTS):
-        a = _GY_START + i * _GY_SLOT_SIZE
-        b = _GY_START + (i + _GY_A_SLOTS) * _GY_SLOT_SIZE
-        m[a:a + _GY_SLOT_SIZE] = obs[b:b + _GY_SLOT_SIZE]
-        m[b:b + _GY_SLOT_SIZE] = obs[a:a + _GY_SLOT_SIZE]
-
-    # 6. Hand slots (obs[_HAND_START:STATE_SIZE]): always the priority player's hand —
-    #    no change needed; after mirror obs[32]=1.0 still means the acting player's hand
-    #    is shown here.
-
-    # 7. Swap bf_ability_costs slots 0-23 ↔ 24-47 (mirrors the permanent slot reordering)
-    for i in range(_BF_A_SLOTS):
-        a = _BF_COST_START + i * _N_COST_FEATS
-        b = _BF_COST_START + (i + _BF_A_SLOTS) * _N_COST_FEATS
-        m[a:a + _N_COST_FEATS] = obs[b:b + _N_COST_FEATS]
-        m[b:b + _N_COST_FEATS] = obs[a:a + _N_COST_FEATS]
-
-    return m
 
 
 # ── Self-play environment ─────────────────────────────────────────────────────

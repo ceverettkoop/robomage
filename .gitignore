@@ -23,3 +23,4 @@ diag_draw_*.txt
 obj/*/*.d
 obj/*.d
 train/replays/*
+corpus/

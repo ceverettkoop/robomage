@@ -3,11 +3,33 @@
 #include "../ecs/coordinator.h"
 #include <algorithm>
 
+// Apply layer-7 P/T effects to a single creature in sublayer order (rule 613.4):
+//   7a CDA -> 7b set -> 7c modify (counters & +N/+N) -> 7d switch.
+// Each contribution is stored on the Creature; the layer engine
+// (StateManager::apply_continuous_effects) rebuilds them every SBE pass so this
+// recompute applies the full layer-7 result, not an out-of-band delta. Signed
+// arithmetic floors at 0 so a transient negative can never underflow the uint32_t
+// cached fields read by the ~75 combat/damage/ML consumers.
 void recompute_pt(Creature &cr) {
-    long p = static_cast<long>(cr.base_power) + cr.plus_one_counters + cr.prowess_bonus +
-             cr.eot_power_bonus + cr.static_power_bonus;
-    long t = static_cast<long>(cr.base_toughness) + cr.plus_one_counters + cr.prowess_bonus +
-             cr.eot_toughness_bonus + cr.static_toughness_bonus;
+    // 7a — characteristic-defining base, folded into base_* by the CDA pass.
+    long p = static_cast<long>(cr.base_power);
+    long t = static_cast<long>(cr.base_toughness);
+
+    // 7b — "set power/toughness to N" overrides the base (inert today: has_set_pt
+    // is never set by any current-vocab effect, so 7a flows straight to 7c).
+    if (cr.has_set_pt) {
+        p = static_cast<long>(cr.set_power);
+        t = static_cast<long>(cr.set_toughness);
+    }
+
+    // 7c — additive modifications and counters. These are commutative, so the
+    // flat sum equals any timestamp-ordered application within the sublayer.
+    p += cr.counter_pt_bonus + cr.prowess_bonus + cr.eot_power_bonus + cr.static_power_bonus;
+    t += cr.counter_pt_bonus + cr.prowess_bonus + cr.eot_toughness_bonus + cr.static_toughness_bonus;
+
+    // 7d — switch power and toughness (inert today).
+    if (cr.switch_pt) std::swap(p, t);
+
     cr.power     = static_cast<uint32_t>(std::max(0L, p));
     cr.toughness = static_cast<uint32_t>(std::max(0L, t));
 }

@@ -27,12 +27,18 @@ struct Creature {
     // --- P/T contributions (all signed; effective = sum, floored at 0) ---
     int base_power = 0;              // characteristic base P (printed, token, CDA-set, or Pump-modified)
     int base_toughness = 0;          // characteristic base T
-    int plus_one_counters = 0;       // +1/+1 counters (symmetric; affects both P and T)
+    int counter_pt_bonus = 0;        // net +1/+1 minus -1/-1 counters (symmetric; cached from Permanent.counters, layer 7c / 613.4c)
     int prowess_bonus = 0;           // temporary +N/+N from Prowess/Exalted; cleared at cleanup step
     int eot_power_bonus = 0;         // temporary +N/-N P from "until end of turn" pumps; cleared at cleanup step
     int eot_toughness_bonus = 0;     // temporary +N/-N T from "until end of turn" pumps; cleared at cleanup step
     int static_power_bonus = 0;      // P from continuous static abilities; recomputed each SBE pass
     int static_toughness_bonus = 0;  // T from continuous static abilities; recomputed each SBE pass
+
+    // --- Layer-7 sublayer slots (rule 613.4); inert for the current vocab ---
+    bool has_set_pt = false;         // 7b: an effect sets P/T to a specific value (613.4b)
+    int set_power = 0;               // 7b: value power is set to when has_set_pt
+    int set_toughness = 0;           // 7b: value toughness is set to when has_set_pt
+    bool switch_pt = false;          // 7d: swap power and toughness (613.4d)
 };
 
 // Recompute the cached effective power/toughness from the signed contributions.

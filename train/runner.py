@@ -13,6 +13,8 @@ Dependency-light on purpose (numpy + env + decode + the generated enum tables);
 torch is only pulled in if a caller passes a model ``Controller``.
 """
 
+import random
+
 import numpy as np
 
 import decode
@@ -54,6 +56,15 @@ def run_games(controller_a, controller_b, *,
                            bo3=bo3, battlefield_a=battlefield_a,
                            battlefield_b=battlefield_b, no_shuffle=no_shuffle)
         obs, _ = env.reset(seed=(seed + i) if seed is not None else None)
+        # Seed Python's global RNG with the SAME per-game seed passed to the engine.
+        # The scripted agent breaks ties on ambiguous OTHER_CHOICE prompts with
+        # random.choice (e.g. the "pay {1} or be countered" / Sylvan Library
+        # pay-or-return prompts); without this seeding those picks varied between
+        # processes, making otherwise-deterministic scripted-vs-scripted games
+        # non-reproducible across builds. Tying it to the engine seed makes the full
+        # game deterministic.
+        if seed is not None:
+            random.seed(seed + i)
         done = False
         capped = False
         total_reward = 0.0

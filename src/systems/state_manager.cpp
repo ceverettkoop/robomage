@@ -85,7 +85,7 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
     for (;;) {
         // Continuous effects define the game state that SBAs evaluate
         apply_permanent_components(game);
-        apply_static_ability_effects();
+        apply_continuous_effects(game);
 
         bool any_applied = false;
 
@@ -150,11 +150,28 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
             if (global_coordinator.GetComponent<Zone>(entity).location != Zone::BATTLEFIELD) continue;
             auto &perm = global_coordinator.GetComponent<Permanent>(entity);
             if (perm.is_phased_out || !is_planeswalker(perm.types)) continue;
-            if (perm.loyalty <= 0) {
+            if (get_counters(entity, "LOYALTY") <= 0) {
                 game_log("%s dies (0 loyalty)\n", entity_name(entity).c_str());
                 orderer->add_to_zone(false, entity, Zone::GRAVEYARD);
                 any_applied = true;
             }
+        }
+
+        // 704.5q - if a permanent has both a +1/+1 and a -1/-1 counter, N of each are
+        // removed, where N is the smaller of the two counts (122.3 annihilation).
+        for (auto entity : mEntities) {
+            if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
+            if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
+            if (global_coordinator.GetComponent<Zone>(entity).location != Zone::BATTLEFIELD) continue;
+            int plus = get_counters(entity, "P1P1");
+            int minus = get_counters(entity, "M1M1");
+            int n = std::min(plus, minus);
+            if (n <= 0) continue;
+            add_counters(entity, "P1P1", -n);
+            add_counters(entity, "M1M1", -n);
+            game_log("%s: %d +1/+1 and %d -1/-1 counter(s) annihilate.\n",
+                     entity_name(entity).c_str(), n, n);
+            any_applied = true;
         }
 
         // 704.5j - legend rule: a player who controls two or more legendary permanents with

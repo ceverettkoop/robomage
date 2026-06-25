@@ -15,10 +15,12 @@ struct Effect {
             ENTERS_TAPPED,              // permanent enters the battlefield tapped
             CANT_BE_COUNTERED,          // this spell can't be countered
             EXILE_INSTEAD_OF_GRAVEYARD, // opponent's cards exiled with void counter instead of going to graveyard
+            SKIP_UNTAP,                 // 614.1d — a matching permanent doesn't untap during its controller's untap step (Choke)
         };
         Kind kind = ENTERS_TAPPED;
         bool applies_to_self_only = false;  // only fires when the affected entity is the source itself
         bool applied = false;               // true once consumed; prevents re-application
+        std::string valid_subtype = "";     // SKIP_UNTAP: the (sub)type the untap-prevention applies to (e.g. "Island")
     };
 
     std::vector<Replacement> replacements;

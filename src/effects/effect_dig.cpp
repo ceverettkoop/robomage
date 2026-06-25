@@ -56,31 +56,41 @@ bool dig(Ability &ab, std::shared_ptr<Orderer> orderer) {
         }
     }
 
-    // Filter matching cards
+    // A filter like "Creature.cmcLEX" or "Card.cmcLEX" carries a mana-value bound X, resolved
+    // from dynamic_amount_expr (e.g. Birthing Ritual: 1 + sacrificed creature's mana value).
+    bool has_cmc_le = !ab.change_valid.empty() && ab.change_valid.find("cmcLE") != std::string::npos;
+    int cmc_threshold = 0;
+    if (has_cmc_le && !ab.dynamic_amount_expr.empty())
+        cmc_threshold = static_cast<int>(evaluate_dynamic_amount(ab.dynamic_amount_expr, dig_owner, orderer, ab.target));
+
+    // Filter matching cards. A filter is dot-separated: "Card" is a type wildcard, a "cmc.."
+    // token is a mana-value bound (handled above), and any other token is the required type
+    // (so both "Card.Creature" and "Creature.cmcLEX" name the Creature type).
     std::vector<Entity> matching;
     for (auto e : lib) {
-        if (filters.empty()) {
-            matching.push_back(e);
-            continue;
-        }
-        bool card_matches = false;
         auto &cd = global_coordinator.GetComponent<CardData>(e);
+        bool card_matches = filters.empty();
         for (auto &f : filters) {
-            std::string type_name;
-            size_t dot = f.find('.');
-            if (dot != std::string::npos)
-                type_name = f.substr(dot + 1);
-            else
-                type_name = f;
-            for (auto &t : cd.types) {
-                if (t.name == type_name) {
-                    card_matches = true;
-                    break;
-                }
+            std::string want_type;
+            size_t start = 0;
+            while (start <= f.size()) {
+                size_t dot = f.find('.', start);
+                std::string part = f.substr(start, dot == std::string::npos ? std::string::npos : dot - start);
+                if (!part.empty() && part != "Card" && part.rfind("cmc", 0) != 0)
+                    want_type = part;
+                if (dot == std::string::npos) break;
+                start = dot + 1;
             }
-            if (card_matches) break;
+            bool type_ok = want_type.empty();
+            if (!type_ok)
+                for (auto &t : cd.types)
+                    if (t.name == want_type) { type_ok = true; break; }
+            if (type_ok) { card_matches = true; break; }
         }
-        if (card_matches) matching.push_back(e);
+        if (!card_matches) continue;
+        // Apply the mana-value bound if present (cmc <= threshold).
+        if (has_cmc_le && static_cast<int>(cd.mana_cost.size()) > cmc_threshold) continue;
+        matching.push_back(e);
     }
 
     game_log("%s looks at the top %zu card(s) of their library.\n", player_name(dig_owner).c_str(), lib.size());
@@ -93,7 +103,10 @@ bool dig(Ability &ab, std::shared_ptr<Orderer> orderer) {
     bool any_count = ab.change_num_any;
     bool optional = ab.optional_choice || any_count;
     size_t take_count = 1;
-    if (ab.cond_amount_active) {
+    if (ab.change_num >= 0) {
+        // Explicit ChangeNum$ N (incl. 0 = "look but take nothing", Birthing Ritual DBDigBis).
+        take_count = static_cast<size_t>(ab.change_num);
+    } else if (ab.cond_amount_active) {
         int sum = 0;
         for (auto &expr : ab.cond_amount_exprs)
             sum += static_cast<int>(evaluate_dynamic_amount(expr, dig_owner, orderer, 0));
@@ -146,6 +159,9 @@ bool dig(Ability &ab, std::shared_ptr<Orderer> orderer) {
                 cd.name.c_str(), on_bottom ? "bottom" : "top");
             game_log_redacted(dig_owner, "%s puts a card on the %s of their library.\n",
                 player_name(dig_owner).c_str(), on_bottom ? "bottom" : "top");
+        } else if (chosen_dest == Zone::BATTLEFIELD) {
+            // Public information once it hits the battlefield.
+            game_log("%s puts %s onto the battlefield.\n", player_name(dig_owner).c_str(), cd.name.c_str());
         } else {
             game_log_private(dig_owner, "%s puts %s into hand.\n", player_name(dig_owner).c_str(), cd.name.c_str());
             game_log_redacted(dig_owner, "%s puts a card into hand.\n", player_name(dig_owner).c_str());
@@ -190,6 +206,7 @@ bool parse_dig(Ability &ab, const std::string &key, const std::string &value) {
         if (value == "Library") ab.dig_destination = Zone::LIBRARY;
         else if (value == "Hand") ab.dig_destination = Zone::HAND;
         else if (value == "Graveyard") ab.dig_destination = Zone::GRAVEYARD;
+        else if (value == "Battlefield") ab.dig_destination = Zone::BATTLEFIELD;
         return true;
     } else if (key == "LibraryPosition") {
         ab.dig_library_position = std::stoi(value);

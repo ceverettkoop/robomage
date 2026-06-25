@@ -11,6 +11,7 @@
 #include "../components/types.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
+#include "../game_queries.h"
 #include "../parse.h"
 #include "../systems/orderer.h"
 
@@ -74,9 +75,8 @@ bool amass(Ability &ab, std::shared_ptr<Orderer> orderer) {
     }
 
     if (n > 0 && global_coordinator.entity_has_component<Creature>(army)) {
+        add_counters(army, "P1P1", n);
         auto &cr = global_coordinator.GetComponent<Creature>(army);
-        cr.plus_one_counters += n;
-        recompute_pt(cr);
         game_log("Amass %s %d: %s Army is now %u/%u.\n", subtype.c_str(), n,
                  player_name(ctrl).c_str(), cr.power, cr.toughness);
     }

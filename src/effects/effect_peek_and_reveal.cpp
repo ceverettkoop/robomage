@@ -1,5 +1,6 @@
 #include "effects.h"
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -25,25 +26,35 @@ namespace effects {
 bool peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer) {
     const PeekParams *pp = std::get_if<PeekParams>(&ab.params);
     if (pp && pp->no_reveal) {
-        // Mishra's Bauble: look at target player's top card privately, no reveal choice
+        // Look at the top N cards of the target player's library privately, no reveal choice.
+        // N = PeekAmount (Mishra's Bauble = 1; Birthing Ritual = 7, so the controller sees the
+        // top 7 *before* the subsequent sacrifice decision, per "look at the top seven... Then
+        // you may sacrifice"). No card movement here — a chained Dig does the actual selection.
         Zone::Ownership peek_owner = global_coordinator.entity_has_component<Player>(ab.target)
                                          ? (ab.target == cur_game.player_a_entity ? Zone::PLAYER_A : Zone::PLAYER_B)
                                          : ab.controller;
-        Entity top_card = 0;
+        int n = pp->peek_amount > 0 ? pp->peek_amount : 1;
+        std::vector<Entity> top;
         for (auto e : orderer->mEntities) {
             if (!global_coordinator.entity_has_component<Zone>(e)) continue;
             auto &z = global_coordinator.GetComponent<Zone>(e);
-            if (z.location == Zone::LIBRARY && z.owner == peek_owner && z.distance_from_top == 0) {
-                top_card = e;
-                break;
-            }
+            if (z.location == Zone::LIBRARY && z.owner == peek_owner &&
+                static_cast<int>(z.distance_from_top) < n)
+                top.push_back(e);
         }
-        if (top_card == 0) {
+        std::sort(top.begin(), top.end(), [](Entity a, Entity b) {
+            return global_coordinator.GetComponent<Zone>(a).distance_from_top <
+                   global_coordinator.GetComponent<Zone>(b).distance_from_top;
+        });
+        if (top.empty()) {
             game_log("%s's library is empty — nothing to peek.\n", player_name(peek_owner).c_str());
-        } else if (global_coordinator.entity_has_component<CardData>(top_card)) {
-            auto &top_cd = global_coordinator.GetComponent<CardData>(top_card);
-            game_log_private(ab.controller, "%s looks at top of %s's library: %s\n",
-                player_name(ab.controller).c_str(), player_name(peek_owner).c_str(), top_cd.name.c_str());
+        } else {
+            for (auto e : top) {
+                if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+                auto &cd = global_coordinator.GetComponent<CardData>(e);
+                game_log_private(ab.controller, "%s looks at top of %s's library: %s\n",
+                    player_name(ab.controller).c_str(), player_name(peek_owner).c_str(), cd.name.c_str());
+            }
         }
         // fall through to subabilities (DelayedTrigger sub-ability fires next upkeep)
         return true;
@@ -111,9 +122,9 @@ bool peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer) {
 }
 
 bool parse_peek_and_reveal(Ability &ab, const std::string &key, const std::string &value) {
-    if (key != "NoReveal") return false;
-    effect_params<PeekParams>(ab).no_reveal = (value == "True");
-    return true;
+    if (key == "NoReveal") { effect_params<PeekParams>(ab).no_reveal = (value == "True"); return true; }
+    if (key == "PeekAmount") { effect_params<PeekParams>(ab).peek_amount = std::stoi(value); return true; }
+    return false;
 }
 
 }  // namespace effects

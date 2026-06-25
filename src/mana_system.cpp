@@ -18,12 +18,12 @@
 #include "error.h"
 #include "input_logger.h"
 #include "systems/orderer.h"
+#include "systems/rules_modifying.h"
 #include "systems/state_manager.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;
 
-static bool permanent_cant_activate(Entity entity);
 static size_t eval_mana_amount(const Ability &ab, Zone::Ownership controller,
                                std::shared_ptr<Orderer> orderer);
 static ManaValue pay_from_pool(ManaValue &pool, const ManaValue &cost);
@@ -97,18 +97,6 @@ void empty_mana_pool(Zone::Ownership player_owner) {
 }
 
 // Check if a permanent's abilities are suppressed by a CantBeActivated static
-static bool permanent_cant_activate(Entity entity) {
-    auto &permanent = global_coordinator.GetComponent<Permanent>(entity);
-    for (const auto &as : g_active_statics) {
-        if (as.sa->category != "CantBeActivated" || as.sa->cant_activate_card_filter.empty()) continue;
-        if (as.sa->cant_activate_card_filter == "Artifact") {
-            for (auto &t : permanent.types)
-                if (t.kind == TYPE && t.name == "Artifact") return true;
-        }
-    }
-    return false;
-}
-
 // Evaluate the mana amount a source produces (handles dynamic amounts like Gaea's Cradle)
 static size_t eval_mana_amount(const Ability &ab, Zone::Ownership controller,
                                std::shared_ptr<Orderer> orderer) {
@@ -157,7 +145,7 @@ static std::vector<std::pair<Entity, Ability>> collect_available_mana_sources(
         auto &permanent = global_coordinator.GetComponent<Permanent>(entity);
         if (permanent.controller != player) continue;
         if (permanent.is_phased_out) continue;
-        if (permanent_cant_activate(entity)) continue;
+        if (rules_mod::mana_activation_prohibited(entity)) continue;
 
         for (const auto &ab : permanent.abilities) {
             if (ab.category != "AddMana") continue;

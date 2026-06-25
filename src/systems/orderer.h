@@ -37,12 +37,9 @@ public:
 
 private:
     // Draw a single card for `player`, first offering any available dredge
-    // replacement. Sets the decked-out loss if the library is empty.
+    // replacement (rule 702.52a) via replacement::dispatch. Sets the decked-out
+    // loss if the library is empty.
     void draw_one(Zone::Ownership player, bool fire_draw_event = true);
-    // If `player` has one or more dredge cards in their graveyard (with enough
-    // library cards to pay the mill), prompt them to replace this draw with a
-    // dredge. Returns true if a dredge was chosen and performed.
-    bool offer_dredge(Zone::Ownership player);
 
 };
 
