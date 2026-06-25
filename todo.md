@@ -72,8 +72,14 @@ Tier 1 (working through in order, each committed separately):
        Behavior-preserving: helper does NOT test is_phased_out; phased checks
        kept explicit at sites that had them. Build + 26-game scripted regression
        across delver/mav/doomsday: 0 draws, no non-fatal errors.
-[ ] 2. Entity -> display name ("Player A/B" else card name) -> target_display_name()
-       in game_queries.h; refactor 7+ sites (action_processor, machine_io, combat).
+[X] 2. Entity -> display name ("Player A/B" else card name) -> target_display_name()
+       in state_manager_internal.h (next to entity_name; defined in
+       state_manager_statics.cpp). Replaced the player-or-entity ternary at the
+       3 action_processor tgt_name logs, deleted the attack_target_name static
+       (3 callers -> helper), folded the select-target life label, and the 2
+       combat damage-to-player logs + machine_io stack-target name. Behavior-
+       preserving (player_name() returns the same "Player A"/"Player B").
+       Verified: build + transcript shows correct names + 18-game regression, 0 draws.
 [ ] 3. Entity -> card-vocab-index (4 drifting copies; record_chosen_action omits the
        token case -> logged vs queried id mismatch) -> entity_card_vocab_idx().
        NOTE: this one is a latent correctness bug, not just cleanup.

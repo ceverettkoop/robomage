@@ -96,8 +96,8 @@ void StateManager::deal_combat_damage(Game &game, bool first_strike_only) {
                 if (global_coordinator.entity_has_component<Player>(cr.attack_target)) {
                     auto &target_player = global_coordinator.GetComponent<Player>(cr.attack_target);
                     target_player.life_total -= static_cast<int>(dmg);
-                    const char *tname = (cr.attack_target == game.player_a_entity) ? "Player A" : "Player B";
-                    game_log("  %s deals %u damage to %s\n", attacker_name.c_str(), dmg, tname);
+                    std::string tname = target_display_name(game, cr.attack_target);
+                    game_log("  %s deals %u damage to %s\n", attacker_name.c_str(), dmg, tname.c_str());
 
                     Event ev(Events::COMBAT_DAMAGE_TO_PLAYER);
                     ev.SetParam(Params::ENTITY, entity);
@@ -157,8 +157,8 @@ void StateManager::deal_combat_damage(Game &game, bool first_strike_only) {
                     deal_damage(entity, cr.attack_target, remaining);
                     auto &target_player = global_coordinator.GetComponent<Player>(cr.attack_target);
                     target_player.life_total -= static_cast<int>(remaining);
-                    const char *tname = (cr.attack_target == game.player_a_entity) ? "Player A" : "Player B";
-                    game_log("  %s tramples %u damage to %s\n", attacker_name.c_str(), remaining, tname);
+                    std::string tname = target_display_name(game, cr.attack_target);
+                    game_log("  %s tramples %u damage to %s\n", attacker_name.c_str(), remaining, tname.c_str());
 
                     Event ev(Events::COMBAT_DAMAGE_TO_PLAYER);
                     ev.SetParam(Params::ENTITY, entity);

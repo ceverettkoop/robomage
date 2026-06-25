@@ -95,6 +95,12 @@ std::string entity_name(Entity e) {
     return "<unknown>";
 }
 
+std::string target_display_name(const Game &game, Entity tgt) {
+    if (global_coordinator.entity_has_component<Player>(tgt))
+        return player_name((tgt == game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B);
+    return entity_name(tgt);
+}
+
 static Colors mana_color_for_subtype(const std::string &subtype) {
     if (subtype == "Mountain") return RED;
     if (subtype == "Forest") return GREEN;

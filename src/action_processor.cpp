@@ -173,11 +173,7 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
 
         auto &cd = global_coordinator.GetComponent<CardData>(permanent_entity);
         if (stack_ab.target != 0) {
-            std::string tgt_name;
-            if (global_coordinator.entity_has_component<Player>(stack_ab.target))
-                tgt_name = (stack_ab.target == cur_game.player_a_entity) ? "Player A" : "Player B";
-            else
-                tgt_name = entity_name(stack_ab.target);
+            std::string tgt_name = target_display_name(cur_game, stack_ab.target);
             game_log("%s activates %s from hand targeting %s\n",
                 player_name(ctrl).c_str(), cd.name.c_str(), tgt_name.c_str());
         } else {
@@ -308,11 +304,7 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
         orderer->push_ability_onto_stack(stack_ab, controller);
 
         if (stack_ab.target != 0) {
-            std::string tgt_name;
-            if (global_coordinator.entity_has_component<Player>(stack_ab.target))
-                tgt_name = (stack_ab.target == cur_game.player_a_entity) ? "Player A" : "Player B";
-            else
-                tgt_name = entity_name(stack_ab.target);
+            std::string tgt_name = target_display_name(cur_game, stack_ab.target);
             game_log("%s's %s ability targeting %s is on the stack\n",
                 player_name(controller).c_str(), permanent.name.c_str(), tgt_name.c_str());
         } else {
@@ -479,15 +471,6 @@ static void pay_alternate_cost(const LegalAction &action, Game &game, std::share
     }
 }
 
-// Display name for an attacker's target: the defending player's name, or, when the target is
-// a planeswalker, its card name. Replaces the player-only ternaries so planeswalker attack
-// targets read correctly in transcripts.
-static std::string attack_target_name(const Game &game, Entity tgt) {
-    if (global_coordinator.entity_has_component<Player>(tgt))
-        return player_name((tgt == game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B);
-    return entity_name(tgt);
-}
-
 static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
     Zone::Ownership active_player = game.player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B;
     Entity defending_entity = game.player_a_turn ? game.player_b_entity : game.player_a_entity;
@@ -558,7 +541,7 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
             if (!cr.is_attacking) continue;
             std::string ename = entity_name(entity);
             game_log("  [attacking] %s [%d/%d] -> %s\n", ename.c_str(), cr.power, cr.toughness,
-                attack_target_name(game, cr.attack_target).c_str());
+                target_display_name(game, cr.attack_target).c_str());
         }
         // Build attacker selection actions
         std::vector<LegalAction> atk_actions;
@@ -609,7 +592,7 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
         cr.is_attacking = true;
         cr.attack_target = tgt_actions[static_cast<size_t>(target_choice)].source_entity;
         game_log("%s attacking %s.\n", chosen_name.c_str(),
-            attack_target_name(game, cr.attack_target).c_str());
+            target_display_name(game, cr.attack_target).c_str());
     }
 
     game_log("\nAttackers declared:\n");
@@ -619,7 +602,7 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
         if (cr.is_attacking) {
             any = true;
             std::string ename = entity_name(entity);
-            game_log("  %s -> %s\n", ename.c_str(), attack_target_name(game, cr.attack_target).c_str());
+            game_log("  %s -> %s\n", ename.c_str(), target_display_name(game, cr.attack_target).c_str());
 
             // Tap the attacker, unless it has vigilance (702.21).
             auto &permanent = global_coordinator.GetComponent<Permanent>(entity);
@@ -863,8 +846,8 @@ static void select_single_target(Ability &ability, const std::vector<Entity> &va
         std::string desc;
         if (global_coordinator.entity_has_component<Player>(target)) {
             auto &player = global_coordinator.GetComponent<Player>(target);
-            std::string name = (target == cur_game.player_a_entity) ? "Player A" : "Player B";
-            desc = name + " (" + std::to_string(player.life_total) + " life)";
+            desc = target_display_name(cur_game, target) + " (" +
+                   std::to_string(player.life_total) + " life)";
         } else {
             desc = entity_name(target);
         }
@@ -1045,11 +1028,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             if (global_coordinator.entity_has_component<Ability>(spell_entity)) {
                 Entity tgt = global_coordinator.GetComponent<Ability>(spell_entity).target;
                 if (tgt != 0) {
-                    std::string tgt_name;
-                    if (global_coordinator.entity_has_component<Player>(tgt))
-                        tgt_name = (tgt == cur_game.player_a_entity) ? "Player A" : "Player B";
-                    else
-                        tgt_name = entity_name(tgt);
+                    std::string tgt_name = target_display_name(cur_game, tgt);
                     game_log("%s casts %s targeting %s\n", player_name(caster).c_str(),
                         card_data.name.c_str(), tgt_name.c_str());
                 } else {

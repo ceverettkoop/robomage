@@ -19,6 +19,7 @@
 #include "components/zone.h"
 #include "ecs/coordinator.h"
 #include "game_queries.h"
+#include "systems/state_manager_internal.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;
@@ -217,14 +218,8 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
                     if (global_coordinator.entity_has_component<Ability>(e)) {
                         Entity tgt = global_coordinator.GetComponent<Ability>(e).target;
                         if (tgt != 0) {
-                            const char* tname = "";
-                            if (global_coordinator.entity_has_component<Permanent>(tgt))
-                                tname = global_coordinator.GetComponent<Permanent>(tgt).name.c_str();
-                            else if (global_coordinator.entity_has_component<CardData>(tgt))
-                                tname = global_coordinator.GetComponent<CardData>(tgt).name.c_str();
-                            else if (global_coordinator.entity_has_component<Player>(tgt))
-                                tname = (tgt == cur_game.player_a_entity) ? "Player A" : "Player B";
-                            strncpy(se.target_name, tname, sizeof(se.target_name) - 1);
+                            std::string tname = target_display_name(cur_game, tgt);
+                            strncpy(se.target_name, tname.c_str(), sizeof(se.target_name) - 1);
                             se.target_name[sizeof(se.target_name) - 1] = '\0';
                         }
                     }
