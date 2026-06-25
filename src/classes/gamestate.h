@@ -99,6 +99,11 @@ typedef struct GameState_tag {
     int  opp_exile[MAX_GY_SLOTS];//NOT SERIALIZED TO ML FOR NOW -too expensive -TODO Revisit when exile matters
 
     int  self_hand[MAX_HAND_SLOTS];      // card_vocab_idx, -1 = empty
+    // Opponent-hand cards whose identity the viewer knows (revealed in hand by
+    // Duress/Thoughtseize/tutor, and not yet moved to another zone). card_vocab_idx,
+    // -1 = empty/unknown slot. Tracks the specific card, unlike opp_revealed which
+    // is only a match-scoped "ever seen" multi-hot.
+    int  opp_known_hand[MAX_HAND_SLOTS];
     int  self_library_ct;
     int  opp_library_ct;
 

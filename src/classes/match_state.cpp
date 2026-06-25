@@ -3,6 +3,7 @@
 #include "../card_vocab.h"
 #include "../components/carddata.h"
 #include "../components/permanent.h"
+#include "../components/zone.h"
 #include "../ecs/coordinator.h"
 
 extern Coordinator global_coordinator;
@@ -19,6 +20,15 @@ void match_reset_revealed() {
 
 void mark_card_revealed(Entity e, Zone::Ownership owner) {
     if (owner != Zone::PLAYER_A && owner != Zone::PLAYER_B) return;
+
+    // Per-card, per-game belief: if this card is revealed while still in a hidden
+    // zone (hand), record that its specific identity is now known to the non-owner
+    // so the observation can carry the exact card, not just "seen once this match".
+    // Cleared by Orderer::add_to_zone when the card next changes zones.
+    if (global_coordinator.entity_has_component<Zone>(e)) {
+        auto &z = global_coordinator.GetComponent<Zone>(e);
+        if (z.location == Zone::HAND) z.identity_known = true;
+    }
 
     // Resolve the card's vocab index the same way machine_io does: a battlefield
     // permanent carries its name on Permanent; everything else on CardData.

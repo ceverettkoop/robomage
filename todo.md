@@ -1,13 +1,14 @@
 TODO:
 
 Observation space:
-- Add opponent's hand to the observation space when it becomes revealed (e.g. by
-  Surgical Extraction / Thoughtseize / Duress). There are currently no per-card
-  opponent-hand identity slots — only a hand count + the match-scoped revealed
-  multi-hot (mark_card_revealed). Add per-card slots for known opponent-hand cards,
-  and have those slots update (move/clear) when a known card leaves the hand for
-  another public zone, so the belief tracks the specific card rather than just
-  "was revealed once this match".
+- DONE: Opponent-hand cards are now carried by their specific identity once revealed
+  (Duress/Thoughtseize/tutor). Added a per-game Zone::identity_known flag, set inside
+  mark_card_revealed when the card is in HAND and cleared on any zone change
+  (Orderer::add_to_zone). machine_io serializes a 10-slot known-opponent-hand block
+  (STATE_SIZE 2909->2919, layout [2909-2918]); env.py/extractor.py consume it via the
+  shared entity encoder (masked mean+max). A slot clears automatically when the known
+  card leaves the hand, so the belief tracks the specific card, not just "seen once
+  this match". (effect_discard now also records the Duress/Thoughtseize reveal.)
 parse and display ability descriptions and targeting prompts
 
 at present a player can pay life to negative life - should not be allowed, they should be allowed to pay to 0 (i.e. kill themselves) but not pay more life than they have

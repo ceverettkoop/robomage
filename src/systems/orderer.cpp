@@ -136,6 +136,12 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     if (on_bottom) target_zone.distance_from_top = back + 1;
     target_zone.location = destination;
 
+    // A zone change re-derives visibility from the new zone: any prior "identity
+    // known to the opponent while hidden in hand" belief no longer applies (the
+    // card is now either public, or a fresh hidden object). Reveal sites set this
+    // flag again if the destination is a revealed hidden zone.
+    target_zone.identity_known = false;
+
     // Match-scoped reveal tracking: any card entering a PUBLIC zone becomes known
     // to both players, so accumulate it in the owner's revealed multi-hot. This
     // single chokepoint covers casts (→STACK), ETB (→BATTLEFIELD), and

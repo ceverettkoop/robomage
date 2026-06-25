@@ -134,6 +134,31 @@ governing rule, a fix sketch, and a complexity/risk estimate.
   across processes — not an engine change. Fixed at the source by seeding the global RNG
   per game with the engine seed in `train/runner.py`, after which that game is
   deterministic and matches the baseline choice.
+- **Further work (2026-06-24, static-effects rework — see `docs/static_effects_rework.md`):**
+  several of the layer engine's previously-latent extension points now have real vocab sources and
+  are live:
+  - **Layer 6 ability removal + ability re-derivation (611.3a / 613.1f)** — abilities are now
+    rebuilt from base each SBA pass (keywords reset to `CardData`/`Token` base in
+    `gather_active_statics`; `recompute_abilities` erases activated/triggered/keyword abilities of
+    objects under an ability-removal effect; static-ability removal via an `ActiveStatic::suppressed`
+    flag honored by layers 4/6/7). New carrier `StaticAbility::remove_all_abilities`
+    (`RemoveAllAbilities$ True`). Was the §2 keystone; landed corpus byte-identical.
+  - **Sublayer 7b "set P/T to N" (613.4b)** — now has a live applier between 7a and 7c and a real
+    source: **Humility** (vocab idx 99, `S:… SetPower$ 1 | SetToughness$ 1 | RemoveAllAbilities$ True`).
+    `apply_layer7_pt_effects` applies the latest-timestamp non-CDA setter matching each creature
+    (incl. `Affected$ Creature` = all creatures); the 7c additive loop now excludes all setters.
+    A general `evaluate_sa_svar` integer-literal fix (a plain numeric SVar evaluates to itself
+    instead of falling through to `Count$` → 0) landed with it. Verified: Knight of the Reliquary
+    with a graveyard land is 3/3 normally but **1/1 under Humility** (self-pump removed in L6, not
+    merely base-overridden); Dryad Arbor → 1/1 with its mana ability gone.
+  - **Layer 4 §1d Blood Moon / 305.7** — a land whose subtype is set to a basic type now loses its
+    rules-text abilities (keeping regenerated intrinsic mana): layer 4 records type-set lands and
+    suppresses their statics, `recompute_abilities` erases the rest. Verified via Magus of the Moon
+    (idx 86) turning Gaea's Cradle into a Mountain.
+  - **Still deferred:** layers 1/2/3/5 no-op hooks; sublayer 7d "switch" (storage but no source); the
+    613.8 **dependency** override (no-op falling through to timestamp order — §5, deferred until a
+    vocab pair forms a same-layer dependency, e.g. Humility + Opalescence); same-layer
+    grant-vs-removal timestamp ordering (removal currently always wins).
 
 ### T2.2 — Replacement effects narrow & mostly dormant; no ordering · `IN PROGRESS`
 - **Rule:** 614 (replacement effects), 616 (interaction of multiple applicable replacements)
@@ -174,6 +199,14 @@ governing rule, a fix sketch, and a complexity/risk estimate.
   migration step (exile-instead, then enters-tapped/counters, then dredge). Targeted harness scenarios
   confirmed Dauthi exile-instead ("exiled with a void counter" + castable void-countered card) and
   Undercity Sewers enters-tapped.
+- **Further work (2026-06-24, static-effects rework §1c — see `docs/static_effects_rework.md`):**
+  added a fourth routed event — **untap-prevention (614.1d)**. New `ReplacementEvent::UNTAP` +
+  `Effect::Replacement::SKIP_UNTAP` (carrying a `ValidCard` subtype); the untap step (`game.cpp`)
+  now dispatches one UNTAP event per untapping permanent and skips it if replaced. **Choke**
+  (`R:Event$ Untap | Layer$ CantHappen | ValidCard$ Island`) keeps tapped Islands tapped through
+  their controller's untap steps — the old dead `hidden_keyword "doesn't untap"` static path and the
+  superseded `rules_mod::untap_prevented` were removed. Corpus byte-identical (Choke is
+  sideboard-only; the UNTAP dispatch is a no-op when absent).
 
 ### T2.3 — Prevention effects entirely absent · `OPEN`
 - **Rule:** 615 (prevention), 122.1c (shield counters)

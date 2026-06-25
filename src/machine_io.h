@@ -37,7 +37,7 @@
 // NOTE: Exile zones are populated in GameState but NOT serialized.
 // Add them back once cards that use exile are implemented.
 //
-// Fixed-size state vector layout (STATE_SIZE = 2909 floats):
+// Fixed-size state vector layout (STATE_SIZE = 2919 floats):
 // Card identity is a single normalized id float per slot (see norm_card_id):
 // idx/N_CARD_TYPES, or -1/N_CARD_TYPES for empty/unknown. The id is NOT a one-hot.
 //
@@ -95,8 +95,15 @@
 //                persists over the per-game ECS reset. Set whenever an opponent
 //                card enters a public zone (battlefield/stack/graveyard/exile) or
 //                is revealed by a tutor. This is the only vocab-width block.
+//
+//  [2909-2918]   Known opponent-hand cards: 10 slots x 1 float = 10
+//                Per slot: card_id (sentinel = empty/unknown). The specific
+//                identities of opponent-hand cards the viewer has had revealed
+//                (Duress/Thoughtseize/tutor) and that are still in hand. Unlike
+//                the multi-hot above this tracks the exact card and a slot clears
+//                when that card leaves the hand for another zone.
 
-static constexpr int STATE_SIZE             = 2909;
+static constexpr int STATE_SIZE             = 2919;
 static constexpr int N_CARD_TYPES      = 1024; // embedding vocab size (card identity is emitted as a normalized id, not a one-hot)
 static constexpr int PERM_SLOT_SIZE    = 12;   // 8 stat/combat + 2 type flags + loyalty + 1 card-id float
 static constexpr int STACK_SLOT_SIZE   = 3;    // controller_is_self(1) + card-id float(1) + is_spell(1)
