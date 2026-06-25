@@ -50,7 +50,14 @@ Two structural facts drive everything below:
 > are already wired and working:
 > - `adjust_land_plays` — consumed at `state_manager_actions.cpp:207` (Icetill Explorer). **Works.**
 > - `may_play_from_graveyard` — consumed at `state_manager_actions.cpp:204-224`. **Works.**
-> - untap-prevention (`hidden_keyword "doesn't untap"`) — handled at `game.cpp:107-135` (Choke). **Works.**
+> - untap-prevention (`hidden_keyword "doesn't untap"`) — the `game.cpp:107-135` path exists but
+>   is **dead code**: no vocab card sets `hidden_keyword`. **Choke** actually uses
+>   `R:Event$ Untap | Layer$ CantHappen` (a *replacement* effect), which the engine does **not**
+>   handle — so Choke's untap-prevention is genuinely **unimplemented** (its Islands untap normally).
+>   This is a real gap (a feature, not consolidation): properly fixing it means routing untap through
+>   the replacement dispatcher (`ReplacementEvent::UNTAP`) and parsing the `R:Event$ Untap` line.
+>   Deferred/offered separately — the §1 consolidation only relocated the (dead) `hidden_keyword`
+>   query into `rules_mod::untap_prevented` (behavior-preserving).
 > - can't-be-countered — cast-time flag at `action_processor.cpp:1063` → `effect_counter.cpp:61`. **Works.**
 >
 > So §1a/§1c are **not** bug fixes — they would be pure architectural consolidation (move scattered
@@ -68,6 +75,20 @@ Two structural facts drive everything below:
 >   CantBeActivated ×2, CantBeCast, DisableTriggers, untap-prevention, land-plays) now skip
 >   `suppressed` statics, so Humility (§4) removes prohibition/permission/cost statics from creature
 >   sources (Collector Ouphe, Icetill Explorer, Doorkeeper Thrull) too. Inert for current vocab.
+>
+> **Consolidation (2026-06-24)** — Part A done; Part B reduced; Part C N/A:
+> - **Part A** — new `src/systems/rules_modifying.{h,cpp}` (`rules_mod::` namespace) is the single
+>   home for the prohibition/permission/cost static queries: `activation_prohibited` /
+>   `mana_activation_prohibited` (CantBeActivated — dedups the two intentionally-different variants,
+>   replacing `permanent_cant_activate`), `cast_prohibited` (CantBeCast), `land_play_bonus` +
+>   `may_play_lands_from_graveyard`, `etb_triggers_suppressed` (DisableTriggers), `untap_prevented`.
+>   Call sites in mana_system / state_manager_actions / state_manager_triggers / game.cpp now call
+>   these. Behavior-preserving (corpus byte-identical). RaiseCost (`active_raise_cost_for`) left in
+>   place (already a clean free function).
+> - **Part B** — untap query relocated into `rules_mod::untap_prevented` (the `hidden_keyword`
+>   path), but that path is dead (see the untap note above). Routing it through the replacement
+>   dispatcher is the real fix and is deferred as a feature.
+> - **Part C** — not applicable (can't-be-countered is correctly a cast-time `Spell` flag).
 >
 > Original plan (kept for context):
 

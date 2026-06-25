@@ -1,5 +1,6 @@
 #include "state_manager.h"
 #include "state_manager_internal.h"
+#include "rules_modifying.h"
 
 #include <algorithm>
 #include <cstddef>
@@ -147,22 +148,8 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                 // DisableTriggers check (Doorkeeper Thrull): suppress ETB triggers caused by matching card types
                 if (ev.GetType() == Events::CARD_CHANGED_ZONE &&
                     ev.GetParam<Zone::ZoneValue>(Params::DESTINATION) == Zone::BATTLEFIELD) {
-                    bool suppressed = false;
                     Entity entering = ev.HasParam(Params::ENTITY) ? ev.GetParam<Entity>(Params::ENTITY) : 0;
-                    for (const auto &as : g_active_statics) {
-                        if (as.suppressed) continue;  // 613.1f: source lost all abilities (Humility)
-                        if (as.sa->category != "DisableTriggers") continue;
-                        if (entering != 0 && global_coordinator.entity_has_component<CardData>(entering)) {
-                            auto &ecd = global_coordinator.GetComponent<CardData>(entering);
-                            for (auto &t : ecd.types) {
-                                if (as.sa->disable_triggers_cause.find(t.name) != std::string::npos) {
-                                    suppressed = true; break;
-                                }
-                            }
-                        }
-                        if (suppressed) break;
-                    }
-                    if (suppressed) continue;
+                    if (rules_mod::etb_triggers_suppressed(entering)) continue;
                 }
 
                 // CARD_CHANGED_ZONE filters: origin, destination, card type

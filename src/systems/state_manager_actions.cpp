@@ -1,5 +1,6 @@
 #include "state_manager.h"
 #include "state_manager_internal.h"
+#include "rules_modifying.h"
 
 #include <algorithm>
 #include <cstddef>
@@ -200,14 +201,8 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         auto &player = global_coordinator.GetComponent<Player>(priority_player_entity);
 
         // Compute effective land play limit (base 1 + AdjustLandPlays statics)
-        int land_play_limit = 1;
-        bool may_play_from_graveyard = false;
-        for (const auto &as : g_active_statics) {
-            if (as.suppressed) continue;  // 613.1f: source lost all abilities (Humility)
-            if (as.controller != priority_player) continue;
-            if (as.sa->adjust_land_plays > 0) land_play_limit += as.sa->adjust_land_plays;
-            if (as.sa->may_play_from_graveyard) may_play_from_graveyard = true;
-        }
+        int land_play_limit = 1 + rules_mod::land_play_bonus(priority_player);
+        bool may_play_from_graveyard = rules_mod::may_play_lands_from_graveyard(priority_player);
 
         if (player.lands_played_this_turn < land_play_limit) {
             // Check hand for lands
@@ -334,21 +329,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
 
             // Check CantBeCast statics from cached active_statics
             bool card_is_creature = is_creature_card(card_data);
-            bool cast_blocked = false;
-            for (const auto &as : g_active_statics) {
-                if (as.suppressed) continue;  // 613.1f: source lost all abilities (Humility)
-                if (as.sa->category != "CantBeCast") continue;
-                // Skip if the spell doesn't match the filter (creatures are unaffected by nonCreature restriction)
-                if (as.sa->cant_cast_filter.find("nonCreature") != std::string::npos && card_is_creature)
-                    continue;
-                Entity pp_entity = get_player_entity(priority_player);
-                auto &pp = global_coordinator.GetComponent<Player>(pp_entity);
-                if (as.sa->cant_cast_limit_per_turn > 0 &&
-                    static_cast<int>(pp.noncreature_spells_cast_this_turn) >= as.sa->cant_cast_limit_per_turn) {
-                    cast_blocked = true;
-                }
-            }
-            if (cast_blocked) continue;
+            if (rules_mod::cast_prohibited(priority_player, card_is_creature)) continue;
 
             ManaValue effective_cost = effective_base_cost(card_data);
 
@@ -435,22 +416,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         // Check if any CantBeActivated static suppresses this permanent's abilities.
         // (Mana abilities are collected separately above, so they remain usable — this
         // matches Disruptor Flute's ValidSA$ Activated.!ManaAbility.)
-        bool cant_activate = false;
-        for (const auto &as : g_active_statics) {
-            if (as.suppressed) continue;  // 613.1f: source lost all abilities (Humility)
-            if (as.sa->category != "CantBeActivated") continue;
-            if (as.sa->match_named_card) {
-                // NamedCard (Disruptor Flute): suppress sources whose name matches the chosen name
-                if (!global_coordinator.entity_has_component<Permanent>(as.entity)) continue;
-                auto &src = global_coordinator.GetComponent<Permanent>(as.entity);
-                if (!src.chosen_name.empty() && src.chosen_name == permanent.name) cant_activate = true;
-            } else if (as.sa->cant_activate_card_filter == "Artifact") {
-                for (auto &t : permanent.types)
-                    if (t.kind == TYPE && t.name == "Artifact") { cant_activate = true; break; }
-            }
-            if (cant_activate) break;
-        }
-        if (cant_activate) continue;
+        if (rules_mod::activation_prohibited(entity)) continue;
 
         // EQUIP: equipment's equip ability is sorcery-speed (main phase, your turn, empty stack).
         // The Equip keyword is parsed into is_equipment/equip_cost but produces no stored Ability,
