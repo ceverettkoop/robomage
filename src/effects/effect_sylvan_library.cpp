@@ -57,7 +57,7 @@ bool sylvan_library(Ability &ab, std::shared_ptr<Orderer> orderer) {
             if (already) continue;
             auto &cd = global_coordinator.GetComponent<CardData>(e);
             LegalAction la(PASS_PRIORITY, e, cd.name);
-            la.category = ActionCategory::OTHER_CHOICE;
+            la.category = ActionCategory::SYLVAN_CHOICE;
             choose_actions.push_back(la);
         }
         if (choose_actions.empty()) break;
@@ -73,8 +73,8 @@ bool sylvan_library(Ability &ab, std::shared_ptr<Orderer> orderer) {
             LegalAction(PASS_PRIORITY, std::string("Pay 4 life")),
             LegalAction(PASS_PRIORITY, std::string("Put on top of library")),
         };
-        pay_actions[0].category = ActionCategory::OTHER_CHOICE;
-        pay_actions[1].category = ActionCategory::OTHER_CHOICE;
+        pay_actions[0].category = ActionCategory::SYLVAN_CHOICE;
+        pay_actions[1].category = ActionCategory::SYLVAN_CHOICE;
         int choice = InputLogger::instance().get_input(pay_actions);
         if (choice == 0) {
             pl.life_total -= 4;

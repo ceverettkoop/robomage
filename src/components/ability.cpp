@@ -216,11 +216,11 @@ Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner, Zone
                             : (zone == Zone::EXILE)     ? "exile"
                                                         : "zone";
     // Determine category: library searches going to top of library use TOP_LIBRARY,
-    // other library searches use SEARCH_LIBRARY, hand picks use OTHER_CHOICE
+    // other library searches use SEARCH_LIBRARY, non-library zone picks use CHOOSE_CARD
     ActionCategory cat = (destination == Zone::LIBRARY && (zone == Zone::LIBRARY || zone == Zone::HAND))
                              ? ActionCategory::TOP_LIBRARY
                          : (zone == Zone::LIBRARY) ? ActionCategory::SEARCH_LIBRARY
-                                                   : ActionCategory::OTHER_CHOICE;
+                                                   : ActionCategory::CHOOSE_CARD;
 
     // Fail-to-find is shown when: not mandatory, OR zone is empty (nothing else to choose)
     bool show_fail_to_find = !mandatory || choices.empty();
@@ -403,13 +403,13 @@ bool run_unless_loop(
         size_t pay_idx = unless_actions.size();
         if (can_pay) {
             LegalAction pay(PASS_PRIORITY, std::string("Pay {") + std::to_string(cost) + "} (spell is not countered)");
-            pay.category = ActionCategory::OTHER_CHOICE;
+            pay.category = ActionCategory::PAY_UNLESS;
             unless_actions.push_back(pay);
         }
         size_t decline_idx = unless_actions.size();
         {
             LegalAction decline(PASS_PRIORITY, std::string("Don't pay (spell is countered)"));
-            decline.category = ActionCategory::OTHER_CHOICE;
+            decline.category = ActionCategory::PAY_UNLESS;
             unless_actions.push_back(decline);
         }
 

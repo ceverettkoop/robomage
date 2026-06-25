@@ -60,6 +60,14 @@ try:
 except ImportError:
     from train.card_costs import _CARD_COST_MATRIX, _CARD_ABILITY_COST_MATRIX, N_CARD_TYPES, _N_COST_FEATS
 
+# ACTION_CATEGORY_MAX is generated from the C++ ActionCategory enum (single source
+# of truth) by train/gen_enums.py — import it so this module never drifts from the
+# engine's category normalization (used for both the action block and history).
+try:
+    from _enums import ACTION_CATEGORY_MAX
+except ImportError:
+    from train._enums import ACTION_CATEGORY_MAX
+
 STATE_SIZE = 2919  # see src/machine_io.h; card identity is 1 id float/slot, not a one-hot
 # NOTE: Exile zones are tracked in GameState but not serialized to the observation.
 # NOTE: ActionChoice.description is never emitted in the BQUERY payload — it is for
@@ -77,7 +85,7 @@ _BQUERY_PUB_BYTES   = MAX_ACTIONS * 4  # float32 — card_is_public per action
 # char block — must match MAX_CHOICE_DESC in src/classes/gamestate.h.
 MAX_CHOICE_DESC     = 128
 _BQUERY_DESC_BYTES  = MAX_ACTIONS * MAX_CHOICE_DESC
-ACTION_CATEGORY_MAX = 26 # highest ActionCategory enum value (SIDEBOARD_DONE)
+# ACTION_CATEGORY_MAX imported from _enums above (mirrors src/classes/action.h).
 
 # ── Shaping reward magnitudes ─────────────────────────────────────────────────
 SHAPING_MANA_WASTED      = -0.00  # per drain event with mana remaining in pool; commented out because we aren't letting it float anymore
@@ -521,7 +529,8 @@ _CAT_TARGET     = 8
 _CAT_LAND       = 9
 _CAT_MULLIGAN   = 11
 _CAT_SEARCH     = 19  # search library (action 0 = fail to find, 1+ = actual cards)
-_CAT_OTHER      = 10  # generic choice (Sylvan Library pay/return, unless costs, etc.)
+_CAT_OTHER      = 10  # generic/unclassified choice (fallback default)
+_CAT_DISCARD    = 30  # choose a card to discard (cost, effect, or cleanup)
 _CAT_PAYING     = 22  # paying costs (tap lands for mana, delve exile, pitch cards)
 _CAT_DIG        = 23  # dig choice (Once Upon a Time: pick creature/land from top N)
 _CAT_SB_IN      = 24  # sideboard: choose card from sideboard to add
@@ -795,7 +804,7 @@ class ModelVsScriptedEnv(gym.Env):
                 self._dd_pending_shaping += SHAPING_DD_CAST_DISCARD
                 self._dd_fired.add("cast_discard")
             # Reward selecting Force of Will or Daze with the discard choice (once per game)
-            if (cat == _CAT_OTHER and card in _COUNTER_STRIP_IDS
+            if (cat == _CAT_DISCARD and card in _COUNTER_STRIP_IDS
                     and "strip_counter" not in self._dd_fired):
                 self._dd_pending_shaping += SHAPING_DD_STRIP_COUNTER
                 self._dd_fired.add("strip_counter")

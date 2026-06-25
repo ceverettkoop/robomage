@@ -29,7 +29,7 @@ bool charm(Ability &ab, std::shared_ptr<Orderer> orderer) {
             ? ab.charm_choice_descriptions[i]
             : ("Mode " + std::to_string(i + 1));
         LegalAction la(PASS_PRIORITY, desc);
-        la.category = ActionCategory::OTHER_CHOICE;
+        la.category = ActionCategory::CHOOSE_MODE;
         mode_actions.push_back(la);
         mode_indices.push_back(i);
     }

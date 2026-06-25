@@ -30,8 +30,8 @@ bool attach(Ability &ab, std::shared_ptr<Orderer> orderer) {
             LegalAction(PASS_PRIORITY, std::string("No")),
             LegalAction(PASS_PRIORITY, std::string("Yes")),
         };
-        attach_actions[0].category = ActionCategory::OTHER_CHOICE;
-        attach_actions[1].category = ActionCategory::OTHER_CHOICE;
+        attach_actions[0].category = ActionCategory::OPTIONAL_YESNO;
+        attach_actions[1].category = ActionCategory::OPTIONAL_YESNO;
         int choice = InputLogger::instance().get_input(attach_actions);
         if (choice == 0) goto attach_done;
     }

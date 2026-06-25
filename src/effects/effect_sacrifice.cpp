@@ -55,13 +55,13 @@ bool sacrifice(Ability &ab, std::shared_ptr<Orderer> orderer) {
     std::vector<LegalAction> choices;
     if (ab.optional_choice) {
         LegalAction la(PASS_PRIORITY, std::string("Don't sacrifice"));
-        la.category = ActionCategory::OTHER_CHOICE;
+        la.category = ActionCategory::SACRIFICE_PERMANENT;
         choices.push_back(la);
     }
     for (auto e : candidates) {
         const std::string &nm = global_coordinator.GetComponent<Permanent>(e).name;
         LegalAction la(PASS_PRIORITY, e, "Sacrifice " + nm);
-        la.category = ActionCategory::OTHER_CHOICE;
+        la.category = ActionCategory::SACRIFICE_PERMANENT;
         choices.push_back(la);
     }
     int choice = InputLogger::instance().get_input(choices);

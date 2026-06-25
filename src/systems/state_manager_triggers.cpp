@@ -278,7 +278,7 @@ static void place_triggers_apnap(Game &game, std::shared_ptr<Orderer> orderer,
                 std::vector<LegalAction> choices;
                 for (size_t gi : group) {
                     LegalAction la(PASS_PRIORITY, pending[gi].source, pending[gi].label);
-                    la.category = ActionCategory::OTHER_CHOICE;
+                    la.category = ActionCategory::ORDER_TRIGGERS;
                     choices.push_back(la);
                 }
                 game_log("%s orders %zu simultaneous triggers (pick which goes on the stack next).\n",

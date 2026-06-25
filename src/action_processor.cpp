@@ -27,7 +27,8 @@
 extern Coordinator global_coordinator;
 extern Game cur_game;
 
-static Entity prompt_permanent_choice(const std::vector<Entity> &choices, const char *verb, const char *suffix);
+static Entity prompt_permanent_choice(const std::vector<Entity> &choices, const char *verb, const char *suffix,
+                                      ActionCategory category);
 static void pay_secondary_activation_costs(
     const Ability &ability, Entity source, Zone::Ownership controller, std::shared_ptr<Orderer> orderer);
 static void select_single_target(Ability &ability, const std::vector<Entity> &valid_targets, bool allow_done);
@@ -47,12 +48,13 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer);
 
 // Present the player a menu of permanents and return the chosen entity. `verb`
 // and `suffix` frame the label, e.g. ("Sacrifice ", "") or ("Return ", " to hand").
-static Entity prompt_permanent_choice(const std::vector<Entity> &choices, const char *verb, const char *suffix) {
+static Entity prompt_permanent_choice(const std::vector<Entity> &choices, const char *verb, const char *suffix,
+                                      ActionCategory category) {
     std::vector<LegalAction> menu;
     for (auto e : choices) {
         std::string nm = global_coordinator.GetComponent<Permanent>(e).name;
         LegalAction la(PASS_PRIORITY, e, std::string(verb) + nm + suffix);
-        la.category = ActionCategory::OTHER_CHOICE;
+        la.category = category;
         menu.push_back(la);
     }
     int choice = InputLogger::instance().get_input(menu);
@@ -92,7 +94,7 @@ static void pay_secondary_activation_costs(
         std::vector<Entity> choices =
             controlled_permanents_matching(controller, ability.sac_cost_spec, orderer->mEntities);
         if (!choices.empty()) {
-            Entity to_sac = prompt_permanent_choice(choices, "Sacrifice ", "");
+            Entity to_sac = prompt_permanent_choice(choices, "Sacrifice ", "", ActionCategory::SACRIFICE_PERMANENT);
             std::string sac_name = global_coordinator.GetComponent<Permanent>(to_sac).name;
             orderer->add_to_zone(false, to_sac, Zone::GRAVEYARD);
             game_log("%s sacrifices %s\n", player_name(controller).c_str(), sac_name.c_str());
@@ -103,7 +105,7 @@ static void pay_secondary_activation_costs(
         std::vector<Entity> choices =
             controlled_permanents_matching(controller, ability.return_cost_type, orderer->mEntities);
         if (!choices.empty()) {
-            Entity to_ret = prompt_permanent_choice(choices, "Return ", " to hand");
+            Entity to_ret = prompt_permanent_choice(choices, "Return ", " to hand", ActionCategory::RETURN_PERMANENT);
             std::string ret_name = global_coordinator.GetComponent<Permanent>(to_ret).name;
             orderer->add_to_zone(false, to_ret, Zone::HAND);
             game_log("%s returns %s to hand\n", player_name(controller).c_str(), ret_name.c_str());
@@ -463,7 +465,7 @@ static void pay_alternate_cost(const LegalAction &action, Game &game, std::share
             }
             if (!matches) continue;
             LegalAction la(PASS_PRIORITY, e, "Return " + eperm.name);
-            la.category = ActionCategory::OTHER_CHOICE;
+            la.category = ActionCategory::RETURN_PERMANENT;
             rth_actions.push_back(la);
         }
         int choice = InputLogger::instance().get_input(rth_actions);
@@ -590,7 +592,7 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
                 label = p.name + " (loyalty " + std::to_string(get_counters(t_entity, "LOYALTY")) + ")";
             }
             LegalAction la(PASS_PRIORITY, t_entity, label);
-            la.category = ActionCategory::OTHER_CHOICE;
+            la.category = ActionCategory::ATTACK_TARGET;
             tgt_actions.push_back(la);
         }
         // Only prompt for a target when there is a real choice (the defending
@@ -808,7 +810,7 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
             auto &acr = global_coordinator.GetComponent<Creature>(atk_entity);
             LegalAction la(PASS_PRIORITY, atk_entity,
                 aname + " [" + std::to_string(acr.power) + "/" + std::to_string(acr.toughness) + "]");
-            la.category = ActionCategory::OTHER_CHOICE;
+            la.category = ActionCategory::BLOCK_TARGET;
             blk_tgt_actions.push_back(la);
         }
         int attacker_choice = InputLogger::instance().get_input(blk_tgt_actions);
@@ -976,7 +978,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                     std::vector<LegalAction> x_actions;
                     for (size_t xv = 0; xv <= max_x; xv++) {
                         LegalAction la(PASS_PRIORITY, std::string("X = " + std::to_string(xv)));
-                        la.category = ActionCategory::OTHER_CHOICE;
+                        la.category = ActionCategory::CHOOSE_X;
                         x_actions.push_back(la);
                     }
                     int x_choice = InputLogger::instance().get_input(x_actions);
@@ -1133,7 +1135,7 @@ void proc_mandatory_choice(Game &game, std::shared_ptr<Orderer> orderer) {
             for (auto card : hand) {
                 auto &cd = global_coordinator.GetComponent<CardData>(card);
                 LegalAction la(PASS_PRIORITY, card, cd.name);
-                la.category = ActionCategory::OTHER_CHOICE;
+                la.category = ActionCategory::DISCARD;
                 discard_actions.push_back(la);
             }
             int choice = InputLogger::instance().get_input(discard_actions);

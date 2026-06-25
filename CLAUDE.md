@@ -455,7 +455,7 @@ BQUERY: <N>\n
 ```
 - `N` = number of legal choices
 - State vector: 33794 floats (see `src/machine_io.h` for layout)
-- Action categories: ActionCategory enum integers (0–26)
+- Action categories: ActionCategory enum integers (0–44)
 - Card IDs: `card_vocab_index / N_CARD_TYPES`, or `-1.0 / N_CARD_TYPES` (-0.0078125) as null sentinel
 - Controller flags: `1.0` = self-controlled, `0.0` = opponent, null sentinel for non-entity actions
 - Public flags: `1.0` if the choice's card identity is public knowledge to all players (a revealed tutor, e.g. Personal Tutor), else `0.0`. Lets observers show the card name for an otherwise-private choice (search / top-of-library). Consumed as a side-channel (`env._action_public`); **not** part of the gym observation vector yet, so `OBS_SIZE` and trained checkpoints are unaffected.
@@ -473,7 +473,7 @@ BQUERY: <N>\n
 | 7 | CAST_SPELL | Cast a spell from hand |
 | 8 | SELECT_TARGET | Choose a target for a spell/ability |
 | 9 | PLAY_LAND | Play a land from hand |
-| 10 | OTHER_CHOICE | Generic choice (e.g. Sylvan Library pay/return, unless costs) |
+| 10 | OTHER_CHOICE | Generic/unclassified choice — fallback default for any decision not given a specific category below |
 | 11 | MULLIGAN | Keep (0) or mulligan (1) |
 | 12 | BOTTOM_DECK_CARD | Choose card to put on library bottom (post-mulligan) |
 | 13–18 | MANA_W/U/B/R/G/C | Tap a land for the corresponding color |
@@ -485,6 +485,24 @@ BQUERY: <N>\n
 | 24 | SIDEBOARD_IN | Choose a card from sideboard to add to main deck (bo3) |
 | 25 | SIDEBOARD_OUT | Choose a card from main deck to move to sideboard (bo3) |
 | 26 | SIDEBOARD_DONE | Finish sideboarding (bo3) |
+| 27 | SACRIFICE_PERMANENT | Choose a permanent to sacrifice (cost or effect) |
+| 28 | RETURN_PERMANENT | Choose a permanent to return to its owner's hand |
+| 29 | CHOOSE_X | Choose the value of X for an X cost |
+| 30 | DISCARD | Choose a card to discard (cost, effect, or cleanup) |
+| 31 | CHOOSE_MODE | Choose a modal/charm mode |
+| 32 | CHOOSE_MANA_COLOR | Choose the color of a flexible mana producer (e.g. LED) |
+| 33 | PAY_UNLESS | Pay-or-decline of a "counter unless pay" cost (Mana Leak/Daze) |
+| 34 | NAME_CARD | Name a card |
+| 35 | CHOOSE_TYPE | Choose a creature type |
+| 36 | KEEP_LEGEND | Legend rule: choose which duplicate to keep |
+| 37 | ORDER_TRIGGERS | Order simultaneous triggers onto the stack |
+| 38 | CHOOSE_REPLACEMENT | Choose which replacement effect / dredge-or-draw to apply |
+| 39 | ATTACK_TARGET | Choose what a creature attacks (player or planeswalker) |
+| 40 | BLOCK_TARGET | Choose which attacker a blocker blocks |
+| 41 | OPTIONAL_YESNO | Optional yes/no confirmation |
+| 42 | PLAY_FREE | Play a card for free (e.g. cast from exile) |
+| 43 | SYLVAN_CHOICE | Sylvan Library card pick / pay-4-life-or-top choice |
+| 44 | CHOOSE_CARD | Choose a card from a (non-library) zone for a zone-change effect |
 
 **Confirm slot convention:** mandatory attacker/blocker queries end with a confirm action. The Python env remaps `action = num_choices - 1` to `-1` before sending to the game.
 

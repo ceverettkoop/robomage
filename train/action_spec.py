@@ -64,6 +64,12 @@ import decode
 
 # ── Verb -> the ActionCategory ints it may resolve to ─────────────────────────
 # (ints mirror src/classes/action.h, surfaced in train/_enums.py::_CAT_NAMES.)
+# The former OTHER_CHOICE (10) catch-all was split into the dedicated categories
+# 27-44. `choice` stays broad — it resolves against any of them (plus the 10
+# fallback) so legacy `choice:` specs keep working — while the new verbs below
+# pin a specific kind of decision.
+_OTHER_CATS = {10, 27, 28, 29, 30, 31, 32, 33, 34, 35,
+               36, 37, 38, 39, 40, 41, 42, 43, 44}
 _VERB_CATS = {
     "pass": {0},
     "cast": {7},
@@ -74,8 +80,11 @@ _VERB_CATS = {
     "mana": {13, 14, 15, 16, 17, 18}, "tap": {13, 14, 15, 16, 17, 18},
     "search": {19}, "top": {20}, "bottom": {12}, "dig": {23},
     "mulligan": {11}, "keep": {11},
-    "pay": {22}, "choice": {10}, "shuffle": {21},
+    "pay": {22}, "choice": set(_OTHER_CATS), "shuffle": {21},
     "sb-in": {24}, "sb-out": {25}, "sb-done": {26},
+    # Convenience verbs that pin a specific former-OTHER decision kind.
+    "sacrifice": {27}, "return": {28}, "x": {29}, "discard": {30},
+    "mode": {31}, "color": {32}, "name": {34}, "free": {42},
     "desc": set(),   # any category — pure description-substring match
 }
 

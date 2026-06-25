@@ -219,7 +219,7 @@ size_t choose_one(Zone::Ownership chooser, const std::vector<Candidate> &cands) 
     std::vector<LegalAction> choices;
     for (size_t i : eligible) {
         LegalAction la(PASS_PRIORITY, cands[i].source, cands[i].label);
-        la.category = ActionCategory::OTHER_CHOICE;
+        la.category = ActionCategory::CHOOSE_REPLACEMENT;
         choices.push_back(la);
     }
     game_log("%s chooses which replacement effect applies next (%zu applicable).\n",
@@ -254,11 +254,11 @@ void dispatch_draw(ReplacementEvent &ev) {
     // Option 0 is always "draw normally" so the default (index 0) keeps the draw.
     std::vector<LegalAction> actions;
     LegalAction draw_act(PASS_PRIORITY, std::string("Draw a card"));
-    draw_act.category = ActionCategory::OTHER_CHOICE;
+    draw_act.category = ActionCategory::CHOOSE_REPLACEMENT;
     actions.push_back(draw_act);
     for (const Candidate &c : dredges) {
         LegalAction la(PASS_PRIORITY, c.source, c.label);
-        la.category = ActionCategory::OTHER_CHOICE;
+        la.category = ActionCategory::CHOOSE_REPLACEMENT;
         actions.push_back(la);
     }
     int choice = InputLogger::instance().get_input(actions);

@@ -200,7 +200,7 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
                     std::vector<LegalAction> choices;
                     for (auto e : grp.second) {
                         LegalAction la(PASS_PRIORITY, e, "Keep " + entity_name(e));
-                        la.category = ActionCategory::OTHER_CHOICE;
+                        la.category = ActionCategory::KEEP_LEGEND;
                         choices.push_back(la);
                     }
                     game_log("Legend rule: %s controls %zu copies of %s; choose one to keep.\n",

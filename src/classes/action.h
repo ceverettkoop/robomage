@@ -43,9 +43,30 @@ enum class ActionCategory {
     SIDEBOARD_IN = 24,      // choose a card from sideboard to add to main deck
     SIDEBOARD_OUT = 25,     // choose a card from main deck to move to sideboard
     SIDEBOARD_DONE = 26,    // finish sideboarding
+    // --- Categories below split out the former OTHER_CHOICE (10) catch-all so the
+    //     model sees a distinct semantic per decision. OTHER_CHOICE remains the
+    //     default/fallback for any choice not specifically classified. ---
+    SACRIFICE_PERMANENT = 27,  // choose a permanent to sacrifice (cost or effect)
+    RETURN_PERMANENT = 28,     // choose a permanent to return to its owner's hand
+    CHOOSE_X = 29,             // choose the value of X for an X cost
+    DISCARD = 30,              // choose a card to discard (cost, effect, or cleanup)
+    CHOOSE_MODE = 31,          // choose a modal/charm mode
+    CHOOSE_MANA_COLOR = 32,    // choose the color of a flexible mana producer
+    PAY_UNLESS = 33,           // pay-or-decline of a "counter unless pay" cost
+    NAME_CARD = 34,            // name a card
+    CHOOSE_TYPE = 35,          // choose a creature type
+    KEEP_LEGEND = 36,          // legend rule: choose which duplicate to keep
+    ORDER_TRIGGERS = 37,       // order simultaneous triggers onto the stack
+    CHOOSE_REPLACEMENT = 38,   // choose which replacement effect / dredge-or-draw to apply
+    ATTACK_TARGET = 39,        // choose what a creature attacks (player or planeswalker)
+    BLOCK_TARGET = 40,         // choose which attacker a blocker blocks
+    OPTIONAL_YESNO = 41,       // optional yes/no confirmation
+    PLAY_FREE = 42,            // play a card for free (e.g. cast from exile)
+    SYLVAN_CHOICE = 43,        // Sylvan Library card pick / pay-4-life-or-top choice
+    CHOOSE_CARD = 44,          // choose a card from a zone for a non-library zone-change
 };
 
-static constexpr int ACTION_CATEGORY_MAX = 26;  // highest ActionCategory value
+static constexpr int ACTION_CATEGORY_MAX = 44;  // highest ActionCategory value
 
 struct LegalAction {
         ActionType type;

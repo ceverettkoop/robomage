@@ -43,7 +43,7 @@ bool choose_card(Ability &ab, std::shared_ptr<Orderer> orderer) {
         for (auto e : choices) {
             auto &cd = global_coordinator.GetComponent<CardData>(e);
             LegalAction la(PASS_PRIORITY, e, "Play " + cd.name + " (exiled, free)");
-            la.category = ActionCategory::OTHER_CHOICE;
+            la.category = ActionCategory::PLAY_FREE;
             pick_actions.push_back(la);
         }
 

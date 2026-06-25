@@ -3,8 +3,8 @@
 # src/classes/action.h (ActionCategory) and src/classes/game.h (Step).
 # Re-run train/gen_enums.py after changing either enum.
 
-ACTION_CATEGORY_MAX = 26
-N_ACTION_CATEGORIES = 27
+ACTION_CATEGORY_MAX = 44
+N_ACTION_CATEGORIES = 45
 
 # ActionCategory value -> short display name.
 _CAT_NAMES = {
@@ -35,6 +35,24 @@ _CAT_NAMES = {
     24: "SB_IN",  # SIDEBOARD_IN
     25: "SB_OUT",  # SIDEBOARD_OUT
     26: "SB_DONE",  # SIDEBOARD_DONE
+    27: "SACRIFICE",  # SACRIFICE_PERMANENT
+    28: "RETURN",  # RETURN_PERMANENT
+    29: "CHOOSE_X",  # CHOOSE_X
+    30: "DISCARD",  # DISCARD
+    31: "MODE",  # CHOOSE_MODE
+    32: "MANA_COLOR",  # CHOOSE_MANA_COLOR
+    33: "PAY_UNLESS",  # PAY_UNLESS
+    34: "NAME_CARD",  # NAME_CARD
+    35: "CHOOSE_TYPE",  # CHOOSE_TYPE
+    36: "KEEP_LEGEND",  # KEEP_LEGEND
+    37: "ORDER_TRIG",  # ORDER_TRIGGERS
+    38: "REPLACE",  # CHOOSE_REPLACEMENT
+    39: "ATK_TGT",  # ATTACK_TARGET
+    40: "BLK_TGT",  # BLOCK_TARGET
+    41: "YES_NO",  # OPTIONAL_YESNO
+    42: "PLAY_FREE",  # PLAY_FREE
+    43: "SYLVAN",  # SYLVAN_CHOICE
+    44: "CHOOSE_CARD",  # CHOOSE_CARD
 }
 
 # Step (turn phase) display names, in enum order.

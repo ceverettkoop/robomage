@@ -27,7 +27,7 @@ bool add_mana(Ability &ab, std::shared_ptr<Orderer> orderer) {
         for (auto c : ab.mana_choices) {
             std::string desc = "Add " + std::to_string(mana_amount) + "{" + mana_symbol(c) + "}";
             LegalAction la(PASS_PRIORITY, std::string(desc));
-            la.category = ActionCategory::OTHER_CHOICE;
+            la.category = ActionCategory::CHOOSE_MANA_COLOR;
             color_actions.push_back(la);
         }
         int choice = InputLogger::instance().get_input(color_actions);

@@ -76,7 +76,7 @@ bool discard(Ability &ab, std::shared_ptr<Orderer> orderer) {
         for (auto e : valid) {
             auto &cd = global_coordinator.GetComponent<CardData>(e);
             LegalAction la(PASS_PRIORITY, e, cd.name);
-            la.category = ActionCategory::OTHER_CHOICE;
+            la.category = ActionCategory::DISCARD;
             discard_actions.push_back(la);
         }
         int choice = InputLogger::instance().get_input(discard_actions);

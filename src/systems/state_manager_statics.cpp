@@ -266,7 +266,7 @@ void StateManager::apply_permanent_components(Game &game) {
                     std::vector<LegalAction> type_choices;
                     for (size_t idx : order) {
                         LegalAction la(PASS_PRIORITY, entity, "Choose creature type: " + subtype_names[idx]);
-                        la.category = ActionCategory::OTHER_CHOICE;
+                        la.category = ActionCategory::CHOOSE_TYPE;
                         type_choices.push_back(la);
                     }
 
@@ -320,7 +320,7 @@ void StateManager::apply_permanent_components(Game &game) {
                         std::vector<LegalAction> name_choices;
                         for (size_t idx : order) {
                             LegalAction la(PASS_PRIORITY, reps[idx], "Name card: " + names[idx]);
-                            la.category = ActionCategory::OTHER_CHOICE;
+                            la.category = ActionCategory::NAME_CARD;
                             la.card_is_public = true;
                             name_choices.push_back(la);
                         }
