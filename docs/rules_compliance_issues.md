@@ -260,10 +260,11 @@ governing rule, a fix sketch, and a complexity/risk estimate.
   (trigger-time 603.4 check); the full chain works (sacrifice a creature → reanimate a creature
   with mana value ≤ 1 + sacrificed's from the top 7; decline → look-but-take-nothing). The
   resolution-time re-check is the same `evaluate_present_condition` guard at the top of
-  `resolve()`; it could not be exercised by an opponent's in-response removal because the engine
-  resolves the end-step trigger without offering a clean response window (see T3.2), so it is
-  covered by the shared, trigger-time-verified evaluator. The 108-game corpus was regenerated to
-  confirm the existing 98-card decks are unaffected (Birthing Ritual is not in them).
+  `resolve()` (603.4's second check); it reuses the trigger-time-verified evaluator and matters
+  whenever the board changes between the trigger going on the stack and resolving (e.g. an
+  earlier APNAP-ordered trigger removes the last creature before this one resolves). The 108-game
+  corpus was regenerated to confirm the existing 98-card decks are unaffected (Birthing Ritual is
+  not in them).
 
 ### Stack / resolution / targeting
 
