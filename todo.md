@@ -61,5 +61,19 @@ MAX_ENTITIES exhaustion / unbounded-loop detection:
 Known ML problems:
 Does not know what's in exile
 
+=========================================================================
+DEAD-CODE / DUPLICATION CLEANUP (see docs/dead_code_audit.md)
+=========================================================================
+Tier 1 (working through in order, each committed separately):
+[ ] 1. Battlefield-permanent scan loop -> active_battlefield_permanent() in
+       game_queries.h; refactor 15+ open-coded loops (state_manager*, effects).
+[ ] 2. Entity -> display name ("Player A/B" else card name) -> target_display_name()
+       in game_queries.h; refactor 7+ sites (action_processor, machine_io, combat).
+[ ] 3. Entity -> card-vocab-index (4 drifting copies; record_chosen_action omits the
+       token case -> logged vs queried id mismatch) -> entity_card_vocab_idx().
+       NOTE: this one is a latent correctness bug, not just cleanup.
+
+Tier 2/3: deferred (safe deletions + localized dup) — see audit doc.
+
 
 
