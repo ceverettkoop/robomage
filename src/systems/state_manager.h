@@ -28,6 +28,7 @@ struct ActiveStatic {
     StaticAbility    *sa = nullptr;
     Zone::Ownership   controller = Zone::PLAYER_A;
     bool              condition_met = false;  // evaluated once per gather pass; read by every layer applier
+    bool              suppressed = false;     // an ability-removal effect (Humility) removed this static's source's abilities; every layer applier skips it
 };
 
 // Global cached list of active static abilities on battlefield permanents.
@@ -67,9 +68,11 @@ private:
     // and the gather preamble live in state_manager_statics.cpp where the keyword
     // helpers are defined. See continuous_effects.h for the data model.
     void apply_continuous_effects(Game& game);    // layer-ordered driver
-    void gather_active_statics(Game& game);       // preamble: reset bonuses, build g_active_statics, eval conditions
+    void gather_active_statics(Game& game);       // preamble: reset bonuses (incl. keyword rebuild-from-base), build g_active_statics, eval conditions
+    void suppress_removed_statics(Game& game);    // layer 6 (613.1f): mark statics on objects that lose all abilities (Humility) as suppressed
     void apply_type_changing_effects();           // layer 4 (613.1d)
     void apply_layer6_ability_effects();          // layer 6 (613.1f): keyword grant/removal
+    void recompute_abilities(Game& game);         // layer 6 (613.1f): erase activated/keyword abilities removed by an ability-removal effect
     void apply_layer7_pt_effects();               // layer 7 (613.4): CDA set + additive P/T
     void apply_rules_modifying_effects();         // 613.11: MustAttack and other rules-modifiers
     void recompute_battlefield_pt();              // flush layer-7 result into cached P/T

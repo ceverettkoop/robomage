@@ -41,6 +41,9 @@ struct StaticAbility {
     std::string add_type = "";              // AddType$ Mountain — land subtype to set
     bool remove_land_types = false;         // RemoveLandTypes$ True — strip existing land subtypes first
 
+    // Ability-removal field (category = "Continuous", layer 6; Humility):
+    bool remove_all_abilities = false;      // RemoveAllAbilities$ True — affected objects lose all abilities
+
     // Untap prevention fields (category = "Continuous" with AddHiddenKeyword):
     std::string hidden_keyword = "";        // "CARDNAME doesn't untap during your untap step."
     std::string affected_subtype = "";      // Affected$ Island — land subtype affected

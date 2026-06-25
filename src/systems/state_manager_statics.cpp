@@ -58,9 +58,12 @@ ManaValue effective_base_cost(const CardData &card_data) {
 }
 
 static void add_keywords_from_spec(Creature &cr, const std::string &spec);
-static void remove_keywords_from_spec(Creature &cr, const std::string &spec);
+static bool removal_affects(const ActiveStatic &r, Entity entity);
 
-// Apply/remove a " & "-delimited keyword spec (e.g. "Flying & Trample") to a creature.
+// Apply a " & "-delimited keyword spec (e.g. "Flying & Trample") to a creature. Removal
+// of a granted keyword needs no counterpart helper: gather_active_statics rebuilds each
+// creature's keyword set from its printed base every SBE pass (rule 611.3a), so a grant
+// that stops applying simply isn't re-added.
 static void add_keywords_from_spec(Creature &cr, const std::string &spec) {
     size_t p = 0;
     while (p < spec.size()) {
@@ -68,20 +71,6 @@ static void add_keywords_from_spec(Creature &cr, const std::string &spec) {
         if (sep == std::string::npos) sep = spec.size();
         std::string kw = spec.substr(p, sep - p);
         if (!kw.empty()) cr.keywords.push_back(kw);
-        p = (sep < spec.size()) ? sep + 3 : sep;
-    }
-}
-
-static void remove_keywords_from_spec(Creature &cr, const std::string &spec) {
-    size_t p = 0;
-    while (p < spec.size()) {
-        size_t sep = spec.find(" & ", p);
-        if (sep == std::string::npos) sep = spec.size();
-        std::string kw = spec.substr(p, sep - p);
-        if (!kw.empty()) {
-            auto it = std::find(cr.keywords.begin(), cr.keywords.end(), kw);
-            if (it != cr.keywords.end()) cr.keywords.erase(it);
-        }
         p = (sep < spec.size()) ? sep + 3 : sep;
     }
 }
@@ -473,6 +462,7 @@ void StateManager::apply_type_changing_effects() {
     };
     std::vector<TypeChanger> changers;
     for (auto &a : g_active_statics) {
+        if (a.suppressed) continue;
         if (a.sa->add_type.empty()) continue;
         if (!global_coordinator.entity_has_component<Permanent>(a.entity)) continue;
         auto &src_perm = global_coordinator.GetComponent<Permanent>(a.entity);
@@ -566,6 +556,17 @@ void StateManager::gather_active_statics(Game &game) {
             auto &cr = global_coordinator.GetComponent<Creature>(entity);
             cr.static_power_bonus = 0;
             cr.static_toughness_bonus = 0;
+            // Rebuild keywords from the printed base each pass (rule 611.3a) so layer-6
+            // grants (apply_layer6_ability_effects) and removals (recompute_abilities,
+            // Humility) are not sticky — mirrors the static_*_bonus rebuild above. A
+            // transformed DFC keeps its back-face keywords (set at transform; it is not
+            // gathered for statics below), so skip the reset for it.
+            if (!perm.transformed) {
+                if (global_coordinator.entity_has_component<CardData>(entity))
+                    cr.keywords = global_coordinator.GetComponent<CardData>(entity).keywords;
+                else if (global_coordinator.entity_has_component<Token>(entity))
+                    cr.keywords = global_coordinator.GetComponent<Token>(entity).keywords;
+            }
         }
         if (perm.is_phased_out) continue;
         if (perm.transformed) {
@@ -610,6 +611,7 @@ void StateManager::gather_active_statics(Game &game) {
 // pass never touches static_*_bonus — only keywords and the applied/last_applied state.
 void StateManager::apply_layer6_ability_effects() {
     for (auto &a : g_active_statics) {
+        if (a.suppressed) continue;  // source lost all abilities (Humility) — grant is gone
         if (a.sa->category != "Continuous") continue;
         // Characteristic-defining P/T statics are pure layer 7a (no keyword); skip them
         // here exactly as the original combined loop did before the keyword branch.
@@ -625,18 +627,11 @@ void StateManager::apply_layer6_ability_effects() {
             target_entity = global_coordinator.GetComponent<Permanent>(a.entity).equipped_to;
         }
 
-        // If the grant moved to a different creature (e.g. equipment re-attached),
-        // strip granted keywords from the previous one. P/T needs no manual revert:
-        // layer 7 rebuilds every static bonus from zero each pass.
-        if (a.sa->applied && a.sa->last_applied_entity != target_entity) {
-            Entity prev = static_cast<Entity>(a.sa->last_applied_entity);
-            if (prev != 0 && global_coordinator.entity_has_component<Creature>(prev) &&
-                !a.sa->add_keyword.empty()) {
-                remove_keywords_from_spec(global_coordinator.GetComponent<Creature>(prev),
-                                          a.sa->add_keyword);
-            }
+        // Keywords are rebuilt from base every pass (gather_active_statics), so a grant
+        // that moved to a different creature (equipment re-attached) needs no manual
+        // revert on the old one — just reset the applied/log state so it re-logs.
+        if (a.sa->applied && a.sa->last_applied_entity != target_entity)
             a.sa->applied = false;
-        }
 
         if (target_entity == 0 || !global_coordinator.entity_has_component<Creature>(target_entity)) {
             // No valid target; mark unapplied so keywords re-grant when one appears.
@@ -647,21 +642,94 @@ void StateManager::apply_layer6_ability_effects() {
         auto &cr = global_coordinator.GetComponent<Creature>(target_entity);
         const std::string name_for_log = entity_name(target_entity);
 
-        if (a.condition_met && !a.sa->applied) {
+        if (a.condition_met) {
+            // Re-grant onto the base-reset keyword set every pass (keywords are no longer
+            // sticky); log only on the condition/target transition.
             if (!a.sa->add_keyword.empty()) add_keywords_from_spec(cr, a.sa->add_keyword);
-            a.sa->applied = true;
-            a.sa->last_applied_entity = static_cast<uint32_t>(target_entity);
-            game_log("%s gains %s%s(%s)\n", name_for_log.c_str(),
-                     a.sa->add_power != 0 ? (std::to_string(a.sa->add_power) + "/" +
-                                              std::to_string(a.sa->add_toughness) + " ").c_str() : "",
-                     !a.sa->add_keyword.empty() ? (a.sa->add_keyword + " ").c_str() : "",
-                     a.sa->condition.empty() ? "always" : a.sa->condition.c_str());
-        } else if (!a.condition_met && a.sa->applied) {
-            if (!a.sa->add_keyword.empty()) remove_keywords_from_spec(cr, a.sa->add_keyword);
+            if (!a.sa->applied) {
+                a.sa->applied = true;
+                a.sa->last_applied_entity = static_cast<uint32_t>(target_entity);
+                game_log("%s gains %s%s(%s)\n", name_for_log.c_str(),
+                         a.sa->add_power != 0 ? (std::to_string(a.sa->add_power) + "/" +
+                                                  std::to_string(a.sa->add_toughness) + " ").c_str() : "",
+                         !a.sa->add_keyword.empty() ? (a.sa->add_keyword + " ").c_str() : "",
+                         a.sa->condition.empty() ? "always" : a.sa->condition.c_str());
+            }
+        } else if (a.sa->applied) {
+            // Keywords already dropped by the base rebuild; just clear state and log.
             a.sa->applied = false;
             game_log("%s loses %s bonus\n", name_for_log.c_str(),
                      a.sa->condition.empty() ? "static" : a.sa->condition.c_str());
         }
+    }
+}
+
+// Layer 6 (rule 613.1f) ability REMOVAL — the counterpart to the keyword grants above.
+// An effect that says an object "loses all abilities" (Humility) is applied in two phases
+// so it interacts correctly with the rest of the layer engine:
+//   * suppress_removed_statics() runs right after gather, before any layer applier, and
+//     marks every gathered static whose SOURCE loses its abilities as suppressed. A static
+//     cannot be erased from perm.static_abilities — g_active_statics holds raw pointers
+//     into that vector — so the layer appliers skip suppressed entries instead. This makes
+//     the affected object's CDAs, P/T pumps and keyword grants vanish in layers 4/6/7.
+//   * recompute_abilities() runs after layer 7 and erases the affected object's activated/
+//     triggered abilities and clears its (already base-rebuilt) keywords. They are
+//     re-derived next pass by apply_permanent_components / apply_land_abilities / the
+//     keyword rebuild in gather, so the removal is reversible once the effect leaves.
+//
+// LIMITATION: removal currently wins over same-layer grants unconditionally (it runs after
+// the grant pass). Timestamp ordering between a grant and a removal within layer 6 (the
+// Humility + anthem interaction, rule 613.7) is deferred to the dependency work (§5).
+
+// Does ability-removal static `r` apply to `entity`? Honours the Affected$ filter; today
+// only "Creature" is exercised (Humility). An unfiltered remover applies to all permanents.
+static bool removal_affects(const ActiveStatic &r, Entity entity) {
+    const std::string &aff = r.sa->affected;
+    if (aff.find("Creature") != std::string::npos)
+        return global_coordinator.entity_has_component<Creature>(entity);
+    return aff.empty();
+}
+
+void StateManager::suppress_removed_statics(Game &game) {
+    (void)game;
+    std::vector<const ActiveStatic *> removers;
+    for (auto &a : g_active_statics)
+        if (a.sa->remove_all_abilities && a.condition_met) removers.push_back(&a);
+    if (removers.empty()) return;
+
+    for (auto &a : g_active_statics) {
+        if (a.sa->remove_all_abilities) continue;  // a remover keeps its own ability
+        for (auto *r : removers)
+            if (removal_affects(*r, a.entity)) { a.suppressed = true; break; }
+    }
+}
+
+void StateManager::recompute_abilities(Game &game) {
+    (void)game;
+    std::vector<const ActiveStatic *> removers;
+    for (auto &a : g_active_statics)
+        if (a.sa->remove_all_abilities && a.condition_met) removers.push_back(&a);
+    if (removers.empty()) return;
+
+    for (auto entity : mEntities) {
+        if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
+        if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
+        auto &zone = global_coordinator.GetComponent<Zone>(entity);
+        if (zone.location != Zone::BATTLEFIELD) continue;
+        auto &perm = global_coordinator.GetComponent<Permanent>(entity);
+        if (perm.is_phased_out) continue;
+
+        bool affected = false;
+        for (auto *r : removers)
+            if (removal_affects(*r, entity)) { affected = true; break; }
+        if (!affected) continue;
+
+        // Erase the object's activated/triggered abilities and clear its keyword abilities
+        // (already rebuilt from base this pass). Re-derived next pass once the remover is
+        // gone — see the note above.
+        perm.abilities.clear();
+        if (global_coordinator.entity_has_component<Creature>(entity))
+            global_coordinator.GetComponent<Creature>(entity).keywords.clear();
     }
 }
 
@@ -677,6 +745,7 @@ void StateManager::apply_layer6_ability_effects() {
 void StateManager::apply_layer7_pt_effects() {
     // 7a — characteristic-defining base P/T.
     for (auto &a : g_active_statics) {
+        if (a.suppressed) continue;
         if (a.sa->category != "Continuous") continue;
         if (!(a.sa->characteristic_defining &&
               (!a.sa->set_power_svar.empty() || !a.sa->set_toughness_svar.empty())))
@@ -693,6 +762,7 @@ void StateManager::apply_layer7_pt_effects() {
     // 7c — additive modifications, gathered then ordered before accumulation.
     std::vector<ContinuousEffect> mods;
     for (auto &a : g_active_statics) {
+        if (a.suppressed) continue;
         if (a.sa->category != "Continuous") continue;
         if (a.sa->characteristic_defining &&
             (!a.sa->set_power_svar.empty() || !a.sa->set_toughness_svar.empty()))

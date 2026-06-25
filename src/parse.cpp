@@ -1605,6 +1605,8 @@ static std::vector<StaticAbility> parse_static_abilities(const std::string &scri
                     sa.add_type = value;
                 } else if (key == "RemoveLandTypes") {
                     sa.remove_land_types = (value == "True");
+                } else if (key == "RemoveAllAbilities") {
+                    sa.remove_all_abilities = (value == "True");
                 } else if (key == "AdjustLandPlays") {
                     if (!value.empty() && std::isdigit(static_cast<unsigned char>(value[0])))
                         sa.adjust_land_plays = std::stoi(value);
