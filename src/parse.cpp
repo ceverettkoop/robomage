@@ -1661,6 +1661,8 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
     for (const auto& line : lines) {
         bool event_is_moved       = false;
         bool event_is_counter     = false;
+        bool event_is_untap       = false;
+        std::string untap_valid_subtype;  // ValidCard$ <subtype> for an Untap-prevention (Choke: Island)
         bool valid_card_self      = false;
         bool dest_is_battlefield  = false;
         bool dest_is_graveyard_r  = false;
@@ -1691,7 +1693,10 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
 
                 if      (key == "Event"       && value == "Moved")       event_is_moved          = true;
                 else if (key == "Event"       && value == "Counter")    event_is_counter        = true;
+                else if (key == "Event"       && value == "Untap")      event_is_untap          = true;
                 else if (key == "ValidCard"   && value == "Card.Self")   valid_card_self         = true;
+                else if (key == "ValidCard"   && value.find('.') == std::string::npos)
+                    untap_valid_subtype = value;  // a bare subtype filter (Choke: ValidCard$ Island)
                 else if (key == "ValidCard"   && value.find("OppOwn") != std::string::npos &&
                          (value.find("!token") != std::string::npos ||
                           value.find("nonToken") != std::string::npos)) valid_card_opp_non_token = true;
@@ -1725,6 +1730,14 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
             Effect::Replacement r;
             r.kind = Effect::Replacement::EXILE_INSTEAD_OF_GRAVEYARD;
             r.applies_to_self_only = false;
+            result.push_back(r);
+        }
+        // Choke: matching lands don't untap during their controllers' untap steps (614.1d).
+        if (event_is_untap && layer_cant_happen && !untap_valid_subtype.empty()) {
+            Effect::Replacement r;
+            r.kind = Effect::Replacement::SKIP_UNTAP;
+            r.applies_to_self_only = false;
+            r.valid_subtype = untap_valid_subtype;
             result.push_back(r);
         }
     }

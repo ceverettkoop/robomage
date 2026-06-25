@@ -75,21 +75,6 @@ bool may_play_lands_from_graveyard(Zone::Ownership player) {
     return false;
 }
 
-bool untap_prevented(Entity permanent_entity) {
-    if (!global_coordinator.entity_has_component<Permanent>(permanent_entity)) return false;
-    auto &permanent = global_coordinator.GetComponent<Permanent>(permanent_entity);
-    for (const auto &as : g_active_statics) {
-        if (as.suppressed) continue;  // 613.1f: source lost all abilities (Humility)
-        if (as.sa->hidden_keyword.empty() ||
-            as.sa->hidden_keyword.find("doesn't untap") == std::string::npos ||
-            as.sa->affected_subtype.empty())
-            continue;
-        for (auto &t : permanent.types)
-            if (t.name == as.sa->affected_subtype) return true;
-    }
-    return false;
-}
-
 bool etb_triggers_suppressed(Entity entering) {
     for (const auto &as : g_active_statics) {
         if (as.suppressed) continue;  // 613.1f: source lost all abilities (Humility)

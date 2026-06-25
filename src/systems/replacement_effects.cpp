@@ -24,6 +24,7 @@ enum CandidateKind {
     PENDING_TAPPED, // a resolving ability put this permanent onto the battlefield tapped
     ETB_COUNTERS,   // 614.1c — this permanent enters with +1/+1 counters (self-replacement)
     EXILE_INSTEAD,  // 614.1a — opponent's card is exiled (with a void counter) instead of going to graveyard
+    SKIP_UNTAP,     // 614.1d — this permanent doesn't untap during its controller's untap step (Choke)
 };
 
 struct Candidate {
@@ -136,6 +137,41 @@ std::vector<Candidate> collect(const ReplacementEvent &ev,
         return out;
     }
 
+    if (ev.type == ReplacementEvent::UNTAP) {
+        // Choke etc.: a battlefield permanent generates a "matching lands don't untap"
+        // replacement. The untap step only processes the active player's permanents during
+        // their own turn, so "during their controllers' untap steps" holds implicitly.
+        if (!global_coordinator.entity_has_component<Permanent>(ev.entity)) return out;
+        auto &subject = global_coordinator.GetComponent<Permanent>(ev.entity);
+
+        Entity max_e = global_coordinator.GetMaxIssuedEntity();
+        for (Entity e = 0; e < max_e; e++) {
+            if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
+            if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+            if (global_coordinator.GetComponent<Zone>(e).location != Zone::BATTLEFIELD) continue;
+            auto &perm = global_coordinator.GetComponent<Permanent>(e);
+            if (perm.is_phased_out) continue;
+            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+            auto &cd = global_coordinator.GetComponent<CardData>(e);
+            for (size_t i = 0; i < cd.replacement_effects.size(); i++) {
+                const Effect::Replacement &r = cd.replacement_effects[i];
+                if (r.kind != Effect::Replacement::SKIP_UNTAP) continue;
+                bool matches = false;
+                for (const auto &t : subject.types)
+                    if (t.name == r.valid_subtype) { matches = true; break; }
+                if (!matches) continue;
+                Candidate c;
+                c.source = e;
+                c.kind = SKIP_UNTAP;
+                c.index = static_cast<int>(i);
+                c.self_replacement = false;
+                c.label = perm.name + ": doesn't untap";
+                if (!already_applied(applied, c)) out.push_back(c);
+            }
+        }
+        return out;
+    }
+
     return out;
 }
 
@@ -161,6 +197,9 @@ void apply_one(ReplacementEvent &ev, const Candidate &c) {
             game_log("%s is exiled with a void counter.\n", name.c_str());
             break;
         }
+        case SKIP_UNTAP:
+            ev.skip_untap = true;
+            break;
     }
 }
 

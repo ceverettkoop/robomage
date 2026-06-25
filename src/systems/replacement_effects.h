@@ -24,6 +24,7 @@ struct ReplacementEvent {
         ENTERS_BATTLEFIELD,  // a permanent is about to enter the battlefield
         MOVE_TO_ZONE,        // a card is about to change zones
         DRAW_CARD,           // a player is about to draw a card
+        UNTAP,               // a permanent is about to untap during its controller's untap step
     };
 
     Type type;
@@ -41,6 +42,9 @@ struct ReplacementEvent {
     bool   draw_replaced = false;                      // a dredge replaced the draw — caller performs no draw
     Entity dredge_source = 0;                          // the dredge card to return from graveyard to hand
     int    dredge_mill = 0;                            // number of cards to mill for the dredge
+
+    // UNTAP outcome (Choke, 614.1d)
+    bool   skip_untap = false;                         // a replacement prevents this permanent from untapping
 };
 
 namespace replacement {

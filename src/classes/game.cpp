@@ -12,7 +12,7 @@
 #include "../game_queries.h"
 #include "../mana_system.h"
 #include "../systems/orderer.h"
-#include "../systems/rules_modifying.h"
+#include "../systems/replacement_effects.h"
 #include "../systems/stack_manager.h"
 #include "../systems/state_manager.h"
 #include "deck.h"
@@ -112,8 +112,14 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                         auto &permanent = global_coordinator.GetComponent<Permanent>(entity);
                         if (permanent.controller == active_player) {
                             if (permanent.is_phased_out) continue;  // don't untap phased-out permanents
-                            // Untap-prevention (Choke; rule 614.1d) — queried via rules_mod.
-                            if (!rules_mod::untap_prevented(entity)) permanent.is_tapped = false;
+                            // Untap-prevention (Choke; rule 614.1d) is a replacement effect:
+                            // dispatch an UNTAP event and skip untapping if it is replaced.
+                            ReplacementEvent rev;
+                            rev.type = ReplacementEvent::UNTAP;
+                            rev.entity = entity;
+                            rev.affected_player = active_player;
+                            replacement::dispatch(rev);
+                            if (!rev.skip_untap) permanent.is_tapped = false;
                             permanent.has_summoning_sickness = false;  // Clear summoning sickness
                             for (auto &ab : permanent.abilities) ab.activations_this_turn = 0;
                             permanent.loyalty_ability_activated_this_turn = false;  // 606.3 resets each of the controller's turns

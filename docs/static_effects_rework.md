@@ -50,14 +50,15 @@ Two structural facts drive everything below:
 > are already wired and working:
 > - `adjust_land_plays` — consumed at `state_manager_actions.cpp:207` (Icetill Explorer). **Works.**
 > - `may_play_from_graveyard` — consumed at `state_manager_actions.cpp:204-224`. **Works.**
-> - untap-prevention (`hidden_keyword "doesn't untap"`) — the `game.cpp:107-135` path exists but
->   is **dead code**: no vocab card sets `hidden_keyword`. **Choke** actually uses
->   `R:Event$ Untap | Layer$ CantHappen` (a *replacement* effect), which the engine does **not**
->   handle — so Choke's untap-prevention is genuinely **unimplemented** (its Islands untap normally).
->   This is a real gap (a feature, not consolidation): properly fixing it means routing untap through
->   the replacement dispatcher (`ReplacementEvent::UNTAP`) and parsing the `R:Event$ Untap` line.
->   Deferred/offered separately — the §1 consolidation only relocated the (dead) `hidden_keyword`
->   query into `rules_mod::untap_prevented` (behavior-preserving).
+> - untap-prevention — **now implemented (2026-06-24)** via the replacement dispatcher. **Choke**
+>   uses `R:Event$ Untap | Layer$ CantHappen | ValidCard$ Island` (a *replacement* effect, 614.1d);
+>   the old `hidden_keyword "doesn't untap"` static path was dead code (no vocab card sets it) and
+>   Choke's untap-prevention did nothing. Fix: parse `Event$ Untap` → `Effect::Replacement::SKIP_UNTAP`
+>   (with the `ValidCard` subtype); add `ReplacementEvent::UNTAP`; the untap step
+>   (`game.cpp`) dispatches one UNTAP event per untapping permanent and skips it if replaced. The
+>   superseded `rules_mod::untap_prevented` was removed. Verified: Choke keeps tapped Islands tapped
+>   through their controller's untap steps; corpus byte-identical (Choke is sideboard-only; the UNTAP
+>   dispatch is a no-op when absent).
 > - can't-be-countered — cast-time flag at `action_processor.cpp:1063` → `effect_counter.cpp:61`. **Works.**
 >
 > So §1a/§1c are **not** bug fixes — they would be pure architectural consolidation (move scattered
