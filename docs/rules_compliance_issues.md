@@ -193,11 +193,33 @@ governing rule, a fix sketch, and a complexity/risk estimate.
 
 ### Triggered abilities & priority
 
-#### T3.1 — Triggered abilities not ordered APNAP · `OPEN`
+#### T3.1 — Triggered abilities not ordered APNAP · `DONE`
 - **Rule:** 603.3b
 - **Engine:** triggers are pushed onto the stack in raw entity-ID order (`src/systems/state_manager_triggers.cpp:72-92`), not active-player-first. (Flagged by multiple audit passes.)
 - **Fix:** collect pending triggers, partition by controller (active player first), let each player order their own group, then push so the LIFO stack matches APNAP.
 - **Complexity/risk:** **Medium** — two-pass collect-then-push + controller ordering prompt; changes resolution order, so seeds/recordings shift.
+- **Implemented (2026-06-24):** `check_triggered_abilities` (`state_manager_triggers.cpp`) now
+  *collects* every ability that fires off the current event batch (regular and delayed
+  triggers) into a `PendingTrigger` list instead of pushing each the instant it is found, then
+  hands the list to a new file-static `place_triggers_apnap`. That helper places triggers in
+  APNAP order (603.3b): the active player's triggers go on the stack first (so they resolve
+  last), then the non-active player's. **Same-player ordering (603.3b):** when one player has
+  ≥2 simultaneous triggers, they are prompted with a mandatory choice (`OTHER_CHOICE`, like the
+  legend rule) to pick the order one at a time — the first chosen goes on the bottom (resolves
+  last). A lone trigger needs no prompt. Target selection (`select_target`) now happens at
+  placement time in APNAP/chosen order rather than during the scan. The labels distinguish
+  same-source triggers (e.g. Endurance's `(evoke: sacrifice)` vs `(ChangeZoneAll, targeted)`).
+- **Verification:** Targeted harness tests with **Endurance evoked** (its evoke-sacrifice
+  trigger + its enters-the-battlefield graveyard-bottom trigger, both controlled by the same
+  player): the controller is prompted to order them, and both orderings were confirmed to flip
+  the resolution order correctly. Cross-player APNAP confirmed with **Endurance (active player)
+  + an opponent's Soul Warden**: the active player orders their two triggers first, the
+  opponent's Soul Warden trigger is placed last and its life gain resolves first. Regenerating
+  the 108-game corpus, 62/108 games changed — every diff is trigger reordering (the new
+  same-player ordering prompt for Endurance ×2 and Dragon's Rage Channeler ×2 surveil, plus
+  cross-player APNAP). No draws, no new errors, all 108 games still decisive. This issue
+  *intentionally* changes resolution order, so unlike T2.1/T2.4 the corpus is not byte-identical
+  — the diff is the review surface and was confirmed to be APNAP ordering only.
 
 #### T3.2 — No priority window when triggers fire during cleanup · `OPEN`
 - **Rule:** 514.3a
