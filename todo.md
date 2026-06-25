@@ -80,9 +80,14 @@ Tier 1 (working through in order, each committed separately):
        combat damage-to-player logs + machine_io stack-target name. Behavior-
        preserving (player_name() returns the same "Player A"/"Player B").
        Verified: build + transcript shows correct names + 18-game regression, 0 draws.
-[ ] 3. Entity -> card-vocab-index (4 drifting copies; record_chosen_action omits the
-       token case -> logged vs queried id mismatch) -> entity_card_vocab_idx().
-       NOTE: this one is a latent correctness bug, not just cleanup.
+[X] 3. Entity -> card-vocab-index. Added action_card_vocab_idx() (machine_io.h/.cpp)
+       implementing the full Permanent(token)->CardData->Ability.source chain. Now
+       used by populate_query (BQUERY), record_chosen_action (action-history log,
+       FIXES the bug where it omitted the Permanent/token + ability-source-permanent
+       cases -> logged vs queried id mismatch), and the stack feature extractor
+       (folded in get_stack_card_vocab_idx, kept its Token-source fallback;
+       behavior-preserving). get_card_vocab_idx kept separate (slot extractor with
+       its own TOKEN_SENTINEL fallback). Build + 18-game regression: 0 draws, no errors.
 
 Tier 2/3: deferred (safe deletions + localized dup) — see audit doc.
 

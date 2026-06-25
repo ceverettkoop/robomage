@@ -128,17 +128,10 @@ static void record_chosen_action(const std::vector<LegalAction> &actions, int ch
     if (choice < 0 || choice >= static_cast<int>(actions.size())) return;
     const LegalAction &la = actions[static_cast<size_t>(choice)];
     int cat = static_cast<int>(la.category);
-    int vocab = -1;
-    Entity src = la.source_entity;
-    if (src != 0) {
-        if (global_coordinator.entity_has_component<CardData>(src)) {
-            vocab = card_name_to_index(global_coordinator.GetComponent<CardData>(src).name);
-        } else if (global_coordinator.entity_has_component<Ability>(src)) {
-            Entity ab_src = global_coordinator.GetComponent<Ability>(src).source;
-            if (global_coordinator.entity_has_component<CardData>(ab_src))
-                vocab = card_name_to_index(global_coordinator.GetComponent<CardData>(ab_src).name);
-        }
-    }
+    // Same vocab-index chain populate_query emits for this action, so the logged id
+    // matches the queried id (previously this omitted the Permanent/token and
+    // ability-source-permanent cases, drifting from the BQUERY payload).
+    int vocab = action_card_vocab_idx(la.source_entity);
     cur_game.record_action(cat, vocab, cur_game.player_a_has_priority);
 }
 

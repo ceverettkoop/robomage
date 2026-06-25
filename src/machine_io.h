@@ -121,6 +121,13 @@ inline float norm_card_id(int idx) {
 // viewer: which player's perspective to fill from. Zone::UNKNOWN defaults to the priority player.
 void populate_gamestate(GameState* gs, Zone::Ownership viewer = Zone::UNKNOWN);
 void populate_query(Query* q, const std::vector<LegalAction>& actions);
+
+// Card vocab index for an action's source entity (or a stack entity): the card's
+// vocab index, TOKEN_SENTINEL for a token, or -1 for a non-card source. Walks the
+// Permanent(token) -> CardData -> Ability.source(Permanent(token)/CardData) chain.
+// Single source so the index logged for a chosen action (input_logger) matches the
+// index emitted for that same action in the BQUERY (populate_query).
+int action_card_vocab_idx(Entity e);
 std::vector<float> serialize_state(const GameState* gs);
 
 #endif /* MACHINE_IO_H */

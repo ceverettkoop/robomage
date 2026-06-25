@@ -27,7 +27,6 @@ extern Game cur_game;
 // ── Static helpers ────────────────────────────────────────────────────────────
 
 static int get_card_vocab_idx(Entity e);
-static int get_stack_card_vocab_idx(Entity e);
 static void push_player_block(std::vector<float>& out, const PlayerState& ps);
 static void push_perm_slot(std::vector<float>& out, const PermanentState& p);
 
@@ -41,13 +40,28 @@ static int get_card_vocab_idx(Entity e) {
     return card_name_to_index(global_coordinator.GetComponent<CardData>(e).name);
 }
 
-static int get_stack_card_vocab_idx(Entity e) {
+// Vocab index for an action's source entity or a stack entity. The single chain
+// shared by populate_query (BQUERY) and record_chosen_action (action log) so the
+// two never disagree, and by the stack feature extractor (a stack entry is a spell
+// with CardData or a standalone ability whose source resolves the same way).
+int action_card_vocab_idx(Entity e) {
+    if (e == 0) return -1;
+    if (global_coordinator.entity_has_component<Permanent>(e)) {
+        auto& perm = global_coordinator.GetComponent<Permanent>(e);
+        return perm.is_token ? TOKEN_SENTINEL : card_name_to_index(perm.name);
+    }
     if (global_coordinator.entity_has_component<CardData>(e))
         return card_name_to_index(global_coordinator.GetComponent<CardData>(e).name);
     if (global_coordinator.entity_has_component<Ability>(e)) {
         Entity src = global_coordinator.GetComponent<Ability>(e).source;
+        if (global_coordinator.entity_has_component<Permanent>(src)) {
+            auto& sp = global_coordinator.GetComponent<Permanent>(src);
+            return sp.is_token ? TOKEN_SENTINEL : card_name_to_index(sp.name);
+        }
         if (global_coordinator.entity_has_component<CardData>(src))
             return card_name_to_index(global_coordinator.GetComponent<CardData>(src).name);
+        // An ability whose token source has already left play keeps no Permanent/CardData;
+        // a lingering Token component still identifies it as a token (stack extractor case).
         if (global_coordinator.entity_has_component<Token>(src))
             return TOKEN_SENTINEL;
     }
@@ -211,7 +225,7 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
                 gs->stack_size++;
                 if (stack_item_count < MAX_STACK_DISPLAY + 8) {
                     StackEntry se;
-                    se.card_vocab_idx    = get_stack_card_vocab_idx(e);
+                    se.card_vocab_idx    = action_card_vocab_idx(e);
                     se.controller_is_self = (zone.owner == viewer);
                     se.is_spell           = global_coordinator.entity_has_component<Spell>(e);
                     se.target_name[0] = '\0';
@@ -333,25 +347,11 @@ void populate_query(Query* q, const std::vector<LegalAction>& actions) {
         ac.category = static_cast<int>(la.category);
         ac.slot_idx = -1;
 
-        // Card vocab index from source entity (or ability source)
         Entity src = la.source_entity;
-        int vocab_idx = -1;
-        if (src != 0) {
-            if (global_coordinator.entity_has_component<Permanent>(src)) {
-                auto& sp = global_coordinator.GetComponent<Permanent>(src);
-                vocab_idx = sp.is_token ? TOKEN_SENTINEL : card_name_to_index(sp.name);
-            } else if (global_coordinator.entity_has_component<CardData>(src)) {
-                vocab_idx = card_name_to_index(global_coordinator.GetComponent<CardData>(src).name);
-            } else if (global_coordinator.entity_has_component<Ability>(src)) {
-                Entity ab_src = global_coordinator.GetComponent<Ability>(src).source;
-                if (global_coordinator.entity_has_component<Permanent>(ab_src)) {
-                    auto& ap = global_coordinator.GetComponent<Permanent>(ab_src);
-                    vocab_idx = ap.is_token ? TOKEN_SENTINEL : card_name_to_index(ap.name);
-                } else if (global_coordinator.entity_has_component<CardData>(ab_src))
-                    vocab_idx = card_name_to_index(global_coordinator.GetComponent<CardData>(ab_src).name);
-            }
-        }
-        ac.card_vocab_idx = vocab_idx;
+
+        // Card vocab index from source entity (or ability source). Shared with the
+        // action log (input_logger) so the logged and emitted ids cannot diverge.
+        ac.card_vocab_idx = action_card_vocab_idx(src);
 
         // Controller is self
         ac.controller_is_self = false;
