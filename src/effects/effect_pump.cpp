@@ -10,6 +10,7 @@
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../ecs/entity.h"
+#include "../game_queries.h"
 #include "../input_logger.h"
 
 extern Coordinator global_coordinator;
@@ -27,10 +28,8 @@ bool pump(Ability &ab, std::shared_ptr<Orderer> orderer) {
     Zone::Ownership ctrl = ab.controller;
     std::vector<Entity> pump_targets;
     for (Entity e = 0; e < global_coordinator.GetMaxIssuedEntity(); ++e) {
-        if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
+        if (!is_battlefield_permanent(e)) continue;
         if (!global_coordinator.entity_has_component<Creature>(e)) continue;
-        auto &z = global_coordinator.GetComponent<Zone>(e);
-        if (z.location != Zone::BATTLEFIELD) continue;
         auto &p = global_coordinator.GetComponent<Permanent>(e);
         if (ab.valid_tgts.find("YouCtrl") != std::string::npos && p.controller != ctrl) continue;
         pump_targets.push_back(e);

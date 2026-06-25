@@ -154,9 +154,7 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
 
         // 704.5i - a planeswalker with 0 (or less) loyalty is put into its owner's graveyard
         for (auto entity : mEntities) {
-            if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
-            if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
-            if (global_coordinator.GetComponent<Zone>(entity).location != Zone::BATTLEFIELD) continue;
+            if (!is_battlefield_permanent(entity)) continue;
             auto &perm = global_coordinator.GetComponent<Permanent>(entity);
             if (perm.is_phased_out || !is_planeswalker(perm.types)) continue;
             if (get_counters(entity, "LOYALTY") <= 0) {
@@ -169,9 +167,7 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
         // 704.5q - if a permanent has both a +1/+1 and a -1/-1 counter, N of each are
         // removed, where N is the smaller of the two counts (122.3 annihilation).
         for (auto entity : mEntities) {
-            if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
-            if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
-            if (global_coordinator.GetComponent<Zone>(entity).location != Zone::BATTLEFIELD) continue;
+            if (!is_battlefield_permanent(entity)) continue;
             int plus = get_counters(entity, "P1P1");
             int minus = get_counters(entity, "M1M1");
             int n = std::min(plus, minus);
@@ -196,11 +192,9 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
                 if (legend_applied) break;
                 std::map<std::string, std::vector<Entity>> by_name;
                 for (auto entity : mEntities) {
-                    if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
-                    if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
-                    if (global_coordinator.GetComponent<Zone>(entity).location != Zone::BATTLEFIELD) continue;
+                    if (!is_battlefield_permanent(entity, owner)) continue;
                     auto &perm = global_coordinator.GetComponent<Permanent>(entity);
-                    if (perm.controller != owner || perm.is_phased_out) continue;
+                    if (perm.is_phased_out) continue;
                     if (!has_legendary_supertype(perm.types)) continue;
                     by_name[perm.name].push_back(entity);
                 }

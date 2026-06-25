@@ -55,11 +55,8 @@ static bool can_afford_alt(const AltCost& alt_cost, Zone::Ownership priority_pla
         std::string type_name = (dot == std::string::npos) ? filter : filter.substr(0, dot);
         bool found = false;
         for (auto e : orderer->mEntities) {
-            if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
-            if (!global_coordinator.entity_has_component<Zone>(e)) continue;
-            if (global_coordinator.GetComponent<Zone>(e).location != Zone::BATTLEFIELD) continue;
+            if (!is_battlefield_permanent(e, priority_player)) continue;
             auto &perm = global_coordinator.GetComponent<Permanent>(e);
-            if (perm.controller != priority_player) continue;
             for (auto &t : perm.types) {
                 if (t.name == type_name) { found = true; break; }
             }
@@ -75,9 +72,8 @@ static bool can_afford_alt(const AltCost& alt_cost, Zone::Ownership priority_pla
         int matching = 0;
         const std::string& sub = alt_cost.return_to_hand_type;
         for (auto e : orderer->mEntities) {
-            if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
+            if (!is_battlefield_permanent(e, priority_player)) continue;
             auto& perm = global_coordinator.GetComponent<Permanent>(e);
-            if (perm.controller != priority_player) continue;
             for (auto& t : perm.types) {
                 if (t.kind == SUBTYPE && t.name == sub) { matching++; break; }
             }
@@ -156,14 +152,7 @@ bool evaluate_present_condition(const Ability &ab, Zone::Ownership caster, std::
 
     size_t count = 0;
     for (auto e : orderer->mEntities) {
-        if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
-        if (!global_coordinator.entity_has_component<Zone>(e)) continue;
-        auto &z = global_coordinator.GetComponent<Zone>(e);
-        if (z.location != Zone::BATTLEFIELD) continue;
-        if (required_ctrl != Zone::UNKNOWN) {
-            auto &perm = global_coordinator.GetComponent<Permanent>(e);
-            if (perm.controller != required_ctrl) continue;
-        }
+        if (!is_battlefield_permanent(e, required_ctrl)) continue;
         if (!type_filter.empty() && global_coordinator.entity_has_component<CardData>(e)) {
             auto &cd = global_coordinator.GetComponent<CardData>(e);
             bool match = false;
@@ -400,11 +389,8 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
     std::vector<LegalAction> legal_mana_abilities =
         collect_mana_legal_actions(priority_player, orderer, 0, /*at_priority=*/true);
     for (auto entity : orderer->mEntities) {
-        if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
-        auto &zone = global_coordinator.GetComponent<Zone>(entity);
-        if (zone.location != Zone::BATTLEFIELD) continue;
+        if (!is_battlefield_permanent(entity, priority_player)) continue;
         auto &permanent = global_coordinator.GetComponent<Permanent>(entity);
-        if (permanent.controller != priority_player) continue;
         if (permanent.is_phased_out) continue;
 
         // Sorcery-speed window: controller's main phase with an empty stack. Gates both the

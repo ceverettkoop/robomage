@@ -9,6 +9,7 @@
 #include "../components/permanent.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
+#include "../game_queries.h"
 #include "../input_logger.h"
 #include "../systems/orderer.h"
 
@@ -36,11 +37,8 @@ bool sacrifice(Ability &ab, std::shared_ptr<Orderer> orderer) {
 
     std::vector<Entity> candidates;
     for (auto e : orderer->mEntities) {
-        if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
-        if (!global_coordinator.entity_has_component<Zone>(e)) continue;
-        if (global_coordinator.GetComponent<Zone>(e).location != Zone::BATTLEFIELD) continue;
+        if (!is_battlefield_permanent(e, ab.controller)) continue;
         auto &perm = global_coordinator.GetComponent<Permanent>(e);
-        if (perm.controller != ab.controller) continue;
         if (!type_filter.empty()) {
             bool match = false;
             for (auto &t : perm.types) if (t.name == type_filter) { match = true; break; }

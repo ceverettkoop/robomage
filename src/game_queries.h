@@ -100,6 +100,23 @@ inline bool on_battlefield(Entity e) {
            global_coordinator.GetComponent<Zone>(e).location == Zone::BATTLEFIELD;
 }
 
+// True if `e` is a battlefield permanent: it carries a Permanent component and its
+// Zone is BATTLEFIELD, optionally controlled by `ctrl` (UNKNOWN = any controller).
+// This is the single guard for the "scan the battlefield" loops in the systems and
+// effect handlers, replacing the open-coded Permanent+Zone+BATTLEFIELD(+controller)
+// check. It deliberately does NOT test is_phased_out: a caller that must exclude
+// phased-out permanents (702.26) keeps that `&& !perm.is_phased_out` check explicit,
+// since several SBA/counter scans intentionally do not filter on it.
+inline bool is_battlefield_permanent(Entity e, Zone::Ownership ctrl = Zone::UNKNOWN) {
+    if (!global_coordinator.entity_has_component<Permanent>(e)) return false;
+    if (!global_coordinator.entity_has_component<Zone>(e)) return false;
+    if (global_coordinator.GetComponent<Zone>(e).location != Zone::BATTLEFIELD) return false;
+    if (ctrl != Zone::UNKNOWN &&
+        global_coordinator.GetComponent<Permanent>(e).controller != ctrl)
+        return false;
+    return true;
+}
+
 // True if the creature carries the given keyword string (exact match).
 inline bool creature_has_keyword(const Creature &cr, const char *kw) {
     for (const auto &k : cr.keywords)

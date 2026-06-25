@@ -14,6 +14,7 @@
 #include "../components/token.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
+#include "../game_queries.h"
 #include "../input_logger.h"
 
 // Internal description of a single applicable replacement effect for one dispatch.
@@ -112,10 +113,7 @@ std::vector<Candidate> collect(const ReplacementEvent &ev,
 
         Entity max_e = global_coordinator.GetMaxIssuedEntity();
         for (Entity e = 0; e < max_e; e++) {
-            if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
-            if (!global_coordinator.entity_has_component<Zone>(e)) continue;
-            auto &ez = global_coordinator.GetComponent<Zone>(e);
-            if (ez.location != Zone::BATTLEFIELD) continue;
+            if (!is_battlefield_permanent(e)) continue;
             auto &perm = global_coordinator.GetComponent<Permanent>(e);
             if (perm.is_phased_out) continue;
             // The replacement source must be controlled by the opponent of the card's owner.
@@ -146,9 +144,7 @@ std::vector<Candidate> collect(const ReplacementEvent &ev,
 
         Entity max_e = global_coordinator.GetMaxIssuedEntity();
         for (Entity e = 0; e < max_e; e++) {
-            if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
-            if (!global_coordinator.entity_has_component<Zone>(e)) continue;
-            if (global_coordinator.GetComponent<Zone>(e).location != Zone::BATTLEFIELD) continue;
+            if (!is_battlefield_permanent(e)) continue;
             auto &perm = global_coordinator.GetComponent<Permanent>(e);
             if (perm.is_phased_out) continue;
             if (!global_coordinator.entity_has_component<CardData>(e)) continue;

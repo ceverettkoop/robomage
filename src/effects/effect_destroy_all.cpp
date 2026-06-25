@@ -10,6 +10,7 @@
 #include "../components/types.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
+#include "../game_queries.h"
 #include "../systems/orderer.h"
 
 extern Coordinator global_coordinator;
@@ -31,9 +32,7 @@ bool destroy_all(Ability &ab, std::shared_ptr<Orderer> orderer) {
     }
     std::vector<Entity> to_destroy;
     for (auto e : orderer->mEntities) {
-        if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
-        auto &ez = global_coordinator.GetComponent<Zone>(e);
-        if (ez.location != Zone::BATTLEFIELD) continue;
+        if (!is_battlefield_permanent(e)) continue;
         auto &perm = global_coordinator.GetComponent<Permanent>(e);
         // Type filter
         bool type_match = (!filter_artifact && !filter_creature && !filter_enchantment);

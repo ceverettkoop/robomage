@@ -43,11 +43,8 @@ bool amass(Ability &ab, std::shared_ptr<Orderer> orderer) {
     // Find an Army the controller already controls.
     Entity army = 0;
     for (auto e : orderer->mEntities) {
-        if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
-        if (!global_coordinator.entity_has_component<Zone>(e)) continue;
-        if (global_coordinator.GetComponent<Zone>(e).location != Zone::BATTLEFIELD) continue;
+        if (!is_battlefield_permanent(e, ctrl)) continue;
         auto &perm = global_coordinator.GetComponent<Permanent>(e);
-        if (perm.controller != ctrl) continue;
         if (permanent_has_type(perm, "Army")) { army = e; break; }
     }
 

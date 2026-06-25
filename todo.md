@@ -65,8 +65,13 @@ Does not know what's in exile
 DEAD-CODE / DUPLICATION CLEANUP (see docs/dead_code_audit.md)
 =========================================================================
 Tier 1 (working through in order, each committed separately):
-[ ] 1. Battlefield-permanent scan loop -> active_battlefield_permanent() in
-       game_queries.h; refactor 15+ open-coded loops (state_manager*, effects).
+[X] 1. Battlefield-permanent scan loop -> is_battlefield_permanent() in
+       game_queries.h; refactored 13 open-coded loops across state_manager,
+       state_manager_actions, replacement_effects, effect_{sacrifice,amass,pump,
+       destroy_all}. effect_choose_card excluded (scans EXILE, not battlefield).
+       Behavior-preserving: helper does NOT test is_phased_out; phased checks
+       kept explicit at sites that had them. Build + 26-game scripted regression
+       across delver/mav/doomsday: 0 draws, no non-fatal errors.
 [ ] 2. Entity -> display name ("Player A/B" else card name) -> target_display_name()
        in game_queries.h; refactor 7+ sites (action_processor, machine_io, combat).
 [ ] 3. Entity -> card-vocab-index (4 drifting copies; record_chosen_action omits the
