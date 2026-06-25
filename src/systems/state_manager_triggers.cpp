@@ -105,12 +105,8 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
 
     if (!events.empty()) {
     for (auto entity : mEntities) {
-        if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
-        auto &zone = global_coordinator.GetComponent<Zone>(entity);
-        if (zone.location != Zone::BATTLEFIELD) continue;
-
+        if (!is_battlefield_permanent(entity)) continue;
         auto &perm = global_coordinator.GetComponent<Permanent>(entity);
-        if (perm.is_phased_out) continue;
 
         // Gather triggered abilities from all sources:
         // CardData/Token for innate abilities, Permanent for keyword-granted abilities

@@ -122,11 +122,7 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
         std::vector<Entity> creatures_to_destroy;
         for (auto entity : mEntities) {
             if (!global_coordinator.entity_has_component<Creature>(entity)) continue;
-            if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
-            auto &zone = global_coordinator.GetComponent<Zone>(entity);
-            if (zone.location != Zone::BATTLEFIELD) continue;
-            if (global_coordinator.entity_has_component<Permanent>(entity) &&
-                global_coordinator.GetComponent<Permanent>(entity).is_phased_out) continue;
+            if (!is_battlefield_permanent(entity)) continue;
 
             auto &creature = global_coordinator.GetComponent<Creature>(entity);
             if (creature.toughness == 0) {
@@ -156,7 +152,7 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
         for (auto entity : mEntities) {
             if (!is_battlefield_permanent(entity)) continue;
             auto &perm = global_coordinator.GetComponent<Permanent>(entity);
-            if (perm.is_phased_out || !is_planeswalker(perm.types)) continue;
+            if (!is_planeswalker(perm.types)) continue;
             if (get_counters(entity, "LOYALTY") <= 0) {
                 game_log("%s dies (0 loyalty)\n", entity_name(entity).c_str());
                 orderer->add_to_zone(false, entity, Zone::GRAVEYARD);
@@ -194,7 +190,6 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
                 for (auto entity : mEntities) {
                     if (!is_battlefield_permanent(entity, owner)) continue;
                     auto &perm = global_coordinator.GetComponent<Permanent>(entity);
-                    if (perm.is_phased_out) continue;
                     if (!has_legendary_supertype(perm.types)) continue;
                     by_name[perm.name].push_back(entity);
                 }

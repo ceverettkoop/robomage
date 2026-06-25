@@ -490,12 +490,8 @@ void StateManager::apply_type_changing_effects() {
               [](const TypeChanger &a, const TypeChanger &b) { return a.timestamp < b.timestamp; });
 
     for (auto entity : mEntities) {
-        if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
-        if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
-        auto &zone = global_coordinator.GetComponent<Zone>(entity);
-        if (zone.location != Zone::BATTLEFIELD) continue;
+        if (!is_battlefield_permanent(entity)) continue;
         auto &perm = global_coordinator.GetComponent<Permanent>(entity);
-        if (perm.is_phased_out) continue;
 
         bool is_land = false;
         bool is_basic = false;
@@ -569,10 +565,10 @@ void StateManager::gather_active_statics(Game &game) {
     g_type_set_lands.clear();
 
     for (auto entity : mEntities) {
-        if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
-        if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
-        auto &zone = global_coordinator.GetComponent<Zone>(entity);
-        if (zone.location != Zone::BATTLEFIELD) continue;
+        // Phased-out permanents are treated as nonexistent (702.26e): skip them entirely.
+        // Their cached P/T and keywords are rebuilt from base on a later pass once they
+        // phase back in, so there is nothing to reset here.
+        if (!is_battlefield_permanent(entity)) continue;
 
         auto &perm = global_coordinator.GetComponent<Permanent>(entity);
         if (global_coordinator.entity_has_component<Creature>(entity)) {
@@ -596,7 +592,6 @@ void StateManager::gather_active_statics(Game &game) {
                     cr.keywords = global_coordinator.GetComponent<Token>(entity).keywords;
             }
         }
-        if (perm.is_phased_out) continue;
         if (perm.transformed) {
             for (auto &sa : perm.static_abilities) sa.applied = false;
             continue;
@@ -740,12 +735,8 @@ void StateManager::recompute_abilities(Game &game) {
     if (removers.empty() && g_type_set_lands.empty()) return;
 
     for (auto entity : mEntities) {
-        if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
-        if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
-        auto &zone = global_coordinator.GetComponent<Zone>(entity);
-        if (zone.location != Zone::BATTLEFIELD) continue;
+        if (!is_battlefield_permanent(entity)) continue;
         auto &perm = global_coordinator.GetComponent<Permanent>(entity);
-        if (perm.is_phased_out) continue;
 
         // (a) "Loses all abilities" (Humility) — a full clear, intrinsic mana included.
         bool full_removal = false;
@@ -824,10 +815,7 @@ void StateManager::apply_layer7_pt_effects() {
                              [](const SetPT &x, const SetPT &y) { return x.timestamp < y.timestamp; });
             for (auto entity : mEntities) {
                 if (!global_coordinator.entity_has_component<Creature>(entity)) continue;
-                if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
-                if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
-                if (global_coordinator.GetComponent<Zone>(entity).location != Zone::BATTLEFIELD) continue;
-                if (global_coordinator.GetComponent<Permanent>(entity).is_phased_out) continue;
+                if (!is_battlefield_permanent(entity)) continue;
                 const ActiveStatic *winner = nullptr;
                 for (auto &s : setters) {
                     const std::string &aff = s.a->sa->affected;

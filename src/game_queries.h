@@ -100,21 +100,35 @@ inline bool on_battlefield(Entity e) {
            global_coordinator.GetComponent<Zone>(e).location == Zone::BATTLEFIELD;
 }
 
-// True if `e` is a battlefield permanent: it carries a Permanent component and its
-// Zone is BATTLEFIELD, optionally controlled by `ctrl` (UNKNOWN = any controller).
-// This is the single guard for the "scan the battlefield" loops in the systems and
-// effect handlers, replacing the open-coded Permanent+Zone+BATTLEFIELD(+controller)
-// check. It deliberately does NOT test is_phased_out: a caller that must exclude
-// phased-out permanents (702.26) keeps that `&& !perm.is_phased_out` check explicit,
-// since several SBA/counter scans intentionally do not filter on it.
+// True if `e` is a *live* battlefield permanent: it carries a Permanent component,
+// its Zone is BATTLEFIELD, and it is not phased out (702.26e — a phased-out permanent
+// is treated as though it doesn't exist), optionally controlled by `ctrl` (UNKNOWN =
+// any controller). This is the single source of "is this on the battlefield": prefer
+// it (or battlefield_permanents() below) over open-coding the
+// Permanent+Zone+BATTLEFIELD(+phased)(+controller) check, so the phasing rule lives in
+// exactly one place. The only code that should read Permanent::is_phased_out directly
+// is the phasing subsystem itself (the untap-step phase-in/skip in game.cpp) and the
+// rare loop that must still process phased-out permanents (e.g. resetting their cached
+// P/T before skipping them when gathering static abilities).
 inline bool is_battlefield_permanent(Entity e, Zone::Ownership ctrl = Zone::UNKNOWN) {
     if (!global_coordinator.entity_has_component<Permanent>(e)) return false;
     if (!global_coordinator.entity_has_component<Zone>(e)) return false;
     if (global_coordinator.GetComponent<Zone>(e).location != Zone::BATTLEFIELD) return false;
-    if (ctrl != Zone::UNKNOWN &&
-        global_coordinator.GetComponent<Permanent>(e).controller != ctrl)
-        return false;
+    auto &perm = global_coordinator.GetComponent<Permanent>(e);
+    if (perm.is_phased_out) return false;
+    if (ctrl != Zone::UNKNOWN && perm.controller != ctrl) return false;
     return true;
+}
+
+// All live battlefield permanents (phased-out excluded), optionally only those
+// controlled by `ctrl`. Pass the iterating system's mEntities (or orderer->mEntities).
+// Prefer this over re-scanning entities inline when you need the whole set.
+inline std::vector<Entity> battlefield_permanents(
+    const std::set<Entity> &entities, Zone::Ownership ctrl = Zone::UNKNOWN) {
+    std::vector<Entity> out;
+    for (auto e : entities)
+        if (is_battlefield_permanent(e, ctrl)) out.push_back(e);
+    return out;
 }
 
 // True if the creature carries the given keyword string (exact match).

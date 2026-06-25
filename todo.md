@@ -89,6 +89,19 @@ Tier 1 (working through in order, each committed separately):
        behavior-preserving). get_card_vocab_idx kept separate (slot extractor with
        its own TOKEN_SENTINEL fallback). Build + 18-game regression: 0 draws, no errors.
 
+[X] Phasing follow-up: baked the "phased-out = not on battlefield" rule (CR 702.26e)
+       into is_battlefield_permanent(); added battlefield_permanents() list accessor.
+       Removed ~13 scattered is_phased_out filter checks across statics (4), state_manager
+       (3), replacement_effects (2), state_manager_actions, triggers, mana_system,
+       ability target-legality, action_processor attack-targets, machine_io serialization.
+       Only intrinsic phasing sites keep the flag (game.cpp untap phase-in/skip,
+       effect_phases setter, error.cpp dump). Chose the accessor approach over a new
+       PHASED_OUT zone (a zone change would fire CARD_CHANGED_ZONE + strip/re-add the
+       Permanent component + re-fire ETB, violating phasing rules). CLAUDE.md updated to
+       point future code at these accessors. Build + 32-game regression: 0 draws, no errors.
+       (Note: no phasing card is in the vocab yet, so this is behavior-preserving for all
+       current games and a latent correctness fix for when one is added.)
+
 Tier 2/3: deferred (safe deletions + localized dup) — see audit doc.
 
 

@@ -115,7 +115,6 @@ std::vector<Candidate> collect(const ReplacementEvent &ev,
         for (Entity e = 0; e < max_e; e++) {
             if (!is_battlefield_permanent(e)) continue;
             auto &perm = global_coordinator.GetComponent<Permanent>(e);
-            if (perm.is_phased_out) continue;
             // The replacement source must be controlled by the opponent of the card's owner.
             if (perm.controller == tz.owner) continue;
             if (!global_coordinator.entity_has_component<CardData>(e)) continue;
@@ -146,7 +145,6 @@ std::vector<Candidate> collect(const ReplacementEvent &ev,
         for (Entity e = 0; e < max_e; e++) {
             if (!is_battlefield_permanent(e)) continue;
             auto &perm = global_coordinator.GetComponent<Permanent>(e);
-            if (perm.is_phased_out) continue;
             if (!global_coordinator.entity_has_component<CardData>(e)) continue;
             auto &cd = global_coordinator.GetComponent<CardData>(e);
             for (size_t i = 0; i < cd.replacement_effects.size(); i++) {

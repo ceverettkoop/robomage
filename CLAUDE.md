@@ -10,6 +10,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Declare local functions as private in the class, if the header contains a single class/struct, if header does not contain a class, write them as static functions in global namespace C-style.
 - Iterate through mEntities when possible (working within a system class), rather than iterating through all entities
 - Try to consolidate iterations through entities within a function, rather than iterating through many times
+- To find battlefield permanents, use the shared accessors in `src/game_queries.h` — the
+  `is_battlefield_permanent(entity, ctrl)` predicate as a loop guard / single-entity check,
+  or `battlefield_permanents(mEntities, ctrl)` for the whole list — instead of open-coding
+  the `Permanent` + `Zone` + `BATTLEFIELD` (+ controller) scan inline. These bake in the rule
+  that a phased-out permanent is treated as not on the battlefield (CR 702.26e), so do **not**
+  add your own `is_phased_out` check at the call site. The only code that reads
+  `Permanent::is_phased_out` directly is the phasing subsystem itself (the untap-step
+  phase-in/skip in `classes/game.cpp`) and the phase-out setter in `effects/effect_phases.cpp`.
+  Add similar shared accessors (next to these) when a new entity-scan pattern starts repeating.
 - Static (local) functions should be forward declared at top of source file for clarity
 - C++17 with exceptions disabled (`-fno-exceptions`)
 - GUI is written in C99 with raylib

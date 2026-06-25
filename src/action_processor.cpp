@@ -506,11 +506,8 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
     std::vector<Entity> targets;
     targets.push_back(defending_entity);
     for (auto e : orderer->mEntities) {
-        if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
-        if (!global_coordinator.entity_has_component<Zone>(e)) continue;
-        if (global_coordinator.GetComponent<Zone>(e).location != Zone::BATTLEFIELD) continue;
+        if (!is_battlefield_permanent(e, defending_owner)) continue;
         auto &p = global_coordinator.GetComponent<Permanent>(e);
-        if (p.controller != defending_owner || p.is_phased_out) continue;
         if (is_planeswalker(p.types)) targets.push_back(e);
     }
 

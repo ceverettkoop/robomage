@@ -579,12 +579,9 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
         return true;
     }
 
-    // Battlefield permanent target
-    if (!global_coordinator.entity_has_component<Zone>(cand)) return false;
-    if (global_coordinator.GetComponent<Zone>(cand).location != Zone::BATTLEFIELD) return false;
-    if (!global_coordinator.entity_has_component<Permanent>(cand)) return false;
+    // Battlefield permanent target (phased-out permanents can't be targeted, 702.26e)
+    if (!is_battlefield_permanent(cand)) return false;
     auto &tperm = global_coordinator.GetComponent<Permanent>(cand);
-    if (tperm.is_phased_out) return false;
 
     if (cmc_le >= 0 && global_coordinator.entity_has_component<CardData>(cand)) {
         int cmc = static_cast<int>(global_coordinator.GetComponent<CardData>(cand).mana_cost.size());

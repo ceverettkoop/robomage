@@ -391,7 +391,6 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
     for (auto entity : orderer->mEntities) {
         if (!is_battlefield_permanent(entity, priority_player)) continue;
         auto &permanent = global_coordinator.GetComponent<Permanent>(entity);
-        if (permanent.is_phased_out) continue;
 
         // Sorcery-speed window: controller's main phase with an empty stack. Gates both the
         // Equip ability and planeswalker loyalty abilities (606.3), so it is computed once.

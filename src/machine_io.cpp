@@ -243,9 +243,9 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
             }
 
             case Zone::BATTLEFIELD: {
-                if (!global_coordinator.entity_has_component<Permanent>(e)) break;
+                // Phased-out permanents are treated as nonexistent (702.26e): don't serialize.
+                if (!is_battlefield_permanent(e)) break;
                 auto& perm = global_coordinator.GetComponent<Permanent>(e);
-                if (perm.is_phased_out) break;
 
                 PermanentState ps;
                 ps.card_vocab_idx        = get_card_vocab_idx(e);

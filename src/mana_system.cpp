@@ -16,6 +16,7 @@
 #include "components/types.h"
 #include "ecs/coordinator.h"
 #include "error.h"
+#include "game_queries.h"
 #include "input_logger.h"
 #include "systems/orderer.h"
 #include "systems/rules_modifying.h"
@@ -139,12 +140,8 @@ static std::vector<std::pair<Entity, Ability>> collect_available_mana_sources(
     Zone::Ownership player, std::shared_ptr<Orderer> orderer, bool include_instant_speed = false) {
     std::vector<std::pair<Entity, Ability>> sources;
     for (auto entity : orderer->mEntities) {
-        if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
-        auto &zone = global_coordinator.GetComponent<Zone>(entity);
-        if (zone.location != Zone::BATTLEFIELD) continue;
+        if (!is_battlefield_permanent(entity, player)) continue;
         auto &permanent = global_coordinator.GetComponent<Permanent>(entity);
-        if (permanent.controller != player) continue;
-        if (permanent.is_phased_out) continue;
         if (rules_mod::mana_activation_prohibited(entity)) continue;
 
         for (const auto &ab : permanent.abilities) {
