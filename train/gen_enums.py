@@ -43,7 +43,7 @@ _CAT_DISPLAY = {
     "CHOOSE_REPLACEMENT": "REPLACE", "ATTACK_TARGET": "ATK_TGT",
     "BLOCK_TARGET": "BLK_TGT", "OPTIONAL_YESNO": "YES_NO",
     "PLAY_FREE": "PLAY_FREE", "SYLVAN_CHOICE": "SYLVAN",
-    "CHOOSE_CARD": "CHOOSE_CARD",
+    "CHOOSE_CARD": "CHOOSE_CARD", "ASSIGN_DAMAGE": "ASSIGN_DMG",
 }
 
 # C++ Step enum name -> display string (the only place these are defined).

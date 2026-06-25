@@ -42,6 +42,9 @@ static bool player_controls_land_subtype(Zone::Ownership player, const std::stri
 static std::string landwalk_subtype(const std::string &kw);
 static std::vector<Entity> determine_blockable_attackers(Entity blocker, const std::vector<Entity> &attackers);
 static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer);
+static std::vector<Entity> collect_live_blockers(Entity attacker, std::shared_ptr<Orderer> orderer);
+static bool attacker_needs_assignment(Entity attacker, std::shared_ptr<Orderer> orderer, bool first_strike_only);
+static void assign_combat_damage(Game &game, std::shared_ptr<Orderer> orderer);
 
 // entity_name() is shared from the StateManager TUs via state_manager_internal.h.
 // mana_symbol_str() is the canonical const-char* color symbol from classes/colors.h.
@@ -1117,6 +1120,114 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
     }
 }
 
+// ── T3.10: prompted combat damage assignment among multiple blockers ──────────
+// Collect an attacker's live blockers — the same set deal_combat_damage() iterates
+// (a blocker killed in the first-strike step has already lost its Creature component).
+static std::vector<Entity> collect_live_blockers(Entity attacker, std::shared_ptr<Orderer> orderer) {
+    std::vector<Entity> blockers;
+    for (auto b : orderer->mEntities) {
+        if (!global_coordinator.entity_has_component<Creature>(b)) continue;
+        auto &bcr = global_coordinator.GetComponent<Creature>(b);
+        if (bcr.is_blocking && bcr.blocking_target == attacker) blockers.push_back(b);
+    }
+    return blockers;
+}
+
+// Does this attacker need its controller to choose how to divide combat damage this step?
+// Only when it deals damage this step, is blocked by 2+ live blockers, and CANNOT assign lethal
+// to all of them (power <= total lethal). When it can kill everything (power > total lethal) the
+// choice is immaterial, so deal_combat_damage() auto-assigns instead (the ML simplification).
+static bool attacker_needs_assignment(Entity attacker, std::shared_ptr<Orderer> orderer,
+                                      bool first_strike_only) {
+    if (!global_coordinator.entity_has_component<Creature>(attacker)) return false;
+    auto &cr = global_coordinator.GetComponent<Creature>(attacker);
+    if (!cr.is_attacking || !cr.is_blocked) return false;
+    if (!should_deal_damage(cr, first_strike_only)) return false;
+    auto blockers = collect_live_blockers(attacker, orderer);
+    if (blockers.size() < 2) return false;
+    uint32_t total_lethal = 0;
+    for (auto b : blockers) total_lethal += lethal_needed_for_blocker(attacker, b);
+    return cr.power <= total_lethal;
+}
+
+bool any_attacker_needs_damage_assignment(Game &game, std::shared_ptr<Orderer> orderer,
+                                          bool first_strike_only) {
+    for (auto entity : orderer->mEntities) {
+        // Re-entrancy guard: the handler stores an entry for every attacker it prompts, so an
+        // already-decided attacker is skipped and the step falls through to deal_combat_damage.
+        if (game.combat_damage_assignment.count(entity)) continue;
+        if (attacker_needs_assignment(entity, orderer, first_strike_only)) return true;
+    }
+    return false;
+}
+
+// Prompt the attacking player (rule 510.1c) to pick which blockers receive lethal damage, one
+// at a time, until power runs out. Records the per-blocker assignment in
+// game.combat_damage_assignment for deal_combat_damage() to apply.
+static void assign_combat_damage(Game &game, std::shared_ptr<Orderer> orderer) {
+    bool first_strike_only = (game.cur_step == FIRST_STRIKE_DAMAGE);
+    // The attacking (active) player chooses the division — route input to them.
+    game.player_a_has_priority = game.player_a_turn;
+    game.combat_damage_assignment.clear();  // per strike step; survivors re-decide next step
+
+    for (auto attacker : orderer->mEntities) {
+        if (!attacker_needs_assignment(attacker, orderer, first_strike_only)) continue;
+        auto &acr = global_coordinator.GetComponent<Creature>(attacker);
+        std::string attacker_name = entity_name(attacker);
+
+        std::vector<Entity> blockers = collect_live_blockers(attacker, orderer);
+        auto &assign = game.combat_damage_assignment[attacker];  // creates the entry (also the guard)
+        uint32_t remaining = acr.power;
+        std::vector<Entity> pool = blockers;  // blockers not yet assigned lethal
+        Entity last_assigned = 0;
+
+        while (true) {
+            // Offer only blockers we can still assign lethal to with the remaining damage.
+            std::vector<LegalAction> actions;
+            std::vector<Entity> offered;
+            for (auto b : pool) {
+                uint32_t need = lethal_needed_for_blocker(attacker, b);
+                if (need == 0 || need > remaining) continue;
+                auto &bcr = global_coordinator.GetComponent<Creature>(b);
+                LegalAction la(PASS_PRIORITY, b,
+                    entity_name(b) + " [" + std::to_string(bcr.power) + "/" +
+                        std::to_string(bcr.toughness) + "] (lethal " + std::to_string(need) + ")");
+                la.category = ActionCategory::ASSIGN_DAMAGE;
+                actions.push_back(la);
+                offered.push_back(b);
+            }
+            if (offered.empty()) break;  // can't kill any more blockers
+            LegalAction done(PASS_PRIORITY, std::string("Done assigning ") + attacker_name);
+            done.category = ActionCategory::ASSIGN_DAMAGE;
+            actions.push_back(done);
+
+            game_log("\n--- Assign %s's combat damage (%u left) ---\n", attacker_name.c_str(), remaining);
+            int choice = InputLogger::instance().get_input(actions);
+            if (choice == static_cast<int>(actions.size()) - 1) break;  // done
+
+            Entity chosen = offered[static_cast<size_t>(choice)];
+            uint32_t need = lethal_needed_for_blocker(attacker, chosen);
+            assign[chosen] = need;
+            remaining -= need;
+            last_assigned = chosen;
+            pool.erase(std::remove(pool.begin(), pool.end(), chosen), pool.end());
+            game_log("  %s assigns %u (lethal) to %s\n", attacker_name.c_str(), need,
+                     entity_name(chosen).c_str());
+        }
+
+        // 510.1a: all the attacker's power must be assigned among its blockers (no trample reaches
+        // the player in the prompt case, since power <= total lethal). Pour any leftover onto one
+        // blocker — harmless overkill on a chosen one, or a non-lethal mark if none were killable.
+        if (remaining > 0) {
+            Entity dump = last_assigned ? last_assigned : blockers.front();
+            assign[dump] += remaining;
+            remaining = 0;
+        }
+    }
+
+    game.pending_choice = NONE;
+}
+
 void proc_mandatory_choice(Game &game, std::shared_ptr<Orderer> orderer) {
     switch (game.pending_choice) {
         case DECLARE_ATTACKERS_CHOICE:
@@ -1124,6 +1235,9 @@ void proc_mandatory_choice(Game &game, std::shared_ptr<Orderer> orderer) {
             break;
         case DECLARE_BLOCKERS_CHOICE:
             declare_blockers(game, orderer);
+            break;
+        case ASSIGN_COMBAT_DAMAGE_CHOICE:
+            assign_combat_damage(game, orderer);
             break;
         case CLEANUP_DISCARD: {
             Zone::Ownership active_player = game.player_a_turn ? Zone::PLAYER_A : Zone::PLAYER_B;

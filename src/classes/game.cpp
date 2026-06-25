@@ -184,6 +184,7 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                 case FIRST_STRIKE_DAMAGE:
                     cur_step = COMBAT_DAMAGE;
                     combat_damage_dealt = false;
+                    combat_damage_assignment.clear();  // T3.10: regular step re-decides for survivors
                     break;
                 case COMBAT_DAMAGE:
                     cur_step = END_OF_COMBAT;
@@ -199,6 +200,7 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                         creature.blocking_target = 0;
                         creature.is_blocked = false;
                     }
+                    combat_damage_assignment.clear();  // T3.10: drop any per-attacker assignments
                     cur_step = SECOND_MAIN;
                     break;
                 case SECOND_MAIN:

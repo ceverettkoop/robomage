@@ -33,7 +33,7 @@
 #include "orderer.h"
 
 // Should this creature deal damage during this combat damage step?
-static bool should_deal_damage(const Creature &cr, bool first_strike_only) {
+bool should_deal_damage(const Creature &cr, bool first_strike_only) {
     bool has_fs = creature_has_keyword(cr, "First Strike");
     bool has_ds = creature_has_keyword(cr, "Double Strike");
     if (first_strike_only) return creature_deals_first_strike_damage(cr);
@@ -114,7 +114,13 @@ void StateManager::deal_combat_damage(Game &game, bool first_strike_only) {
                 apply_lifelink_if_any(entity, dmg, life_delta_a, life_delta_b, game);
             }
         } else {
-            // Blocked — assign damage to blockers in order, blockers deal damage back
+            // Blocked — assign damage to blockers, blockers deal damage back.
+            // T3.10: if the controller was prompted to divide damage (it couldn't kill every
+            // blocker), apply their stored per-blocker assignment; otherwise auto-assign lethal
+            // in order. Either way lethal accounts for damage already marked on the blocker
+            // (the T3.11 fix) and treats deathtouch as lethal-1 (702.2c) — see lethal_needed_for_blocker.
+            auto assign_it = game.combat_damage_assignment.find(entity);
+            bool have_assignment = (assign_it != game.combat_damage_assignment.end());
             uint32_t remaining = cr.power;
             for (auto blocker : blockers) {
                 auto &bcr = global_coordinator.GetComponent<Creature>(blocker);
@@ -127,13 +133,17 @@ void StateManager::deal_combat_damage(Game &game, bool first_strike_only) {
                     apply_lifelink_if_any(blocker, bcr.power, life_delta_a, life_delta_b, game);
                 }
 
-                // Attacker deals damage to blocker. Deathtouch on the attacker means
-                // 1 damage is considered lethal (702.2c), so we don't have to stack
-                // toughness worth onto the first blocker.
-                if (remaining > 0) {
-                    bool attacker_dt = creature_has_keyword(cr, "Deathtouch");
-                    uint32_t needed = attacker_dt ? 1u : bcr.toughness;
-                    uint32_t assigned = (remaining >= needed) ? needed : remaining;
+                // Attacker deals damage to this blocker.
+                uint32_t assigned = 0;
+                if (have_assignment) {
+                    auto bit = assign_it->second.find(blocker);
+                    assigned = (bit != assign_it->second.end()) ? bit->second : 0u;
+                    if (assigned > remaining) assigned = remaining;
+                } else if (remaining > 0) {
+                    uint32_t needed = lethal_needed_for_blocker(entity, blocker);
+                    assigned = (remaining >= needed) ? needed : remaining;
+                }
+                if (assigned > 0) {
                     deal_damage(entity, blocker, assigned);
                     game_log("  %s deals %u damage to %s\n", attacker_name.c_str(), assigned, blocker_name.c_str());
                     remaining -= assigned;

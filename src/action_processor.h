@@ -18,6 +18,12 @@ void process_action(const LegalAction& action, Game& game, std::shared_ptr<Order
 // Handle the current mandatory choice (declare attackers, blockers, etc.)
 void proc_mandatory_choice(Game& game, std::shared_ptr<Orderer> orderer);
 
+// T3.10: true if some attacker this combat-damage step needs its controller to divide damage
+// among 2+ blockers it cannot all kill (and hasn't already been asked). When true, the combat
+// step requests ASSIGN_COMBAT_DAMAGE_CHOICE before dealing damage.
+bool any_attacker_needs_damage_assignment(Game& game, std::shared_ptr<Orderer> orderer,
+                                          bool first_strike_only);
+
 // Returns true if the ability has no targeting requirement or at least one legal target exists.
 bool has_legal_targets(const Ability& ability, std::shared_ptr<Orderer> orderer);
 

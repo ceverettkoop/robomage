@@ -7,6 +7,7 @@
 #include "ecs/entity.h"
 #include "components/carddata.h"
 #include "components/creature.h"
+#include "components/damage.h"
 #include "components/permanent.h"
 #include "components/spell.h"
 #include "components/types.h"
@@ -113,6 +114,25 @@ inline bool creature_has_keyword(const Creature &cr, const char *kw) {
 inline bool creature_deals_first_strike_damage(const Creature &cr) {
     return creature_has_keyword(cr, "First Strike") ||
            creature_has_keyword(cr, "Double Strike");
+}
+
+// Combat damage already marked on an entity this turn (0 if it has no Damage component).
+inline uint32_t marked_damage_on(Entity e) {
+    if (global_coordinator.entity_has_component<Damage>(e))
+        return static_cast<uint32_t>(global_coordinator.GetComponent<Damage>(e).damage_counters);
+    return 0u;
+}
+
+// Damage `attacker` must assign to `blocker` for that blocker to count as receiving
+// lethal damage (used both for the auto-assign path and the "can it kill everything?"
+// threshold). Deathtouch makes any nonzero amount lethal (702.2c); otherwise lethal is
+// the blocker's remaining toughness after damage already marked on it (702.19b / T3.11).
+inline uint32_t lethal_needed_for_blocker(Entity attacker, Entity blocker) {
+    const Creature &acr = global_coordinator.GetComponent<Creature>(attacker);
+    const Creature &bcr = global_coordinator.GetComponent<Creature>(blocker);
+    if (creature_has_keyword(acr, "Deathtouch")) return bcr.toughness > 0 ? 1u : 0u;
+    uint32_t marked = marked_damage_on(blocker);
+    return (bcr.toughness > marked) ? bcr.toughness - marked : 0u;
 }
 
 // True if `e` is a spell that was cast via flashback. Such a spell is exiled

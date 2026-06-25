@@ -47,10 +47,19 @@ void StateManager::process_turn_based_actions(Game &game, std::shared_ptr<Ordere
 
     // First strike combat damage (rule 510.1)
     if (game.cur_step == FIRST_STRIKE_DAMAGE && !game.combat_damage_dealt) {
+        // T3.10: let a controller divide damage among blockers it can't all kill before dealing.
+        if (any_attacker_needs_damage_assignment(game, orderer, /*first_strike_only=*/true)) {
+            game.pending_choice = ASSIGN_COMBAT_DAMAGE_CHOICE;
+            return;
+        }
         deal_combat_damage(game, true);
     }
     // Regular combat damage (rule 510.2)
     if (game.cur_step == COMBAT_DAMAGE && !game.combat_damage_dealt) {
+        if (any_attacker_needs_damage_assignment(game, orderer, /*first_strike_only=*/false)) {
+            game.pending_choice = ASSIGN_COMBAT_DAMAGE_CHOICE;
+            return;
+        }
         deal_combat_damage(game, false);
     }
 

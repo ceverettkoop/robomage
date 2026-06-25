@@ -379,18 +379,54 @@ governing rule, a fix sketch, and a complexity/risk estimate.
 
 ### Combat (remaining)
 
-#### T3.10 — No damage-assignment order/division for multiple blockers · `OPEN`
-- **Rule:** 509.2 / 510.1c
-- **Engine:** damage assigned to blockers in entity-ID order with no player choice (`src/systems/state_manager_combat.cpp:119-142`).
-- **Rules require:** attacking player orders blockers and divides damage; with trample, lethal to each blocker before excess.
-- **Fix:** prompt the attacking player for blocker order / damage division at the combat-damage step.
-- **Complexity/risk:** **High** — new decision point + ActionCategory; ML action-space impact.
+#### T3.10 — No damage-assignment order/division for multiple blockers · `DONE`
+- **Rule:** 510.1c (note: the old pre-declared "damage assignment order," former 509.2, was removed —
+  the controller now simply divides damage among blockers as it chooses; no forced order).
+- **Engine (was):** damage assigned to blockers in entity-ID order with no player choice
+  (`src/systems/state_manager_combat.cpp:119-142`).
+- **Implemented (2026-06-24) — with a deliberate ML simplification.** The attacking player (human or
+  ML) is now prompted to divide combat damage among its blockers, but **only when the division
+  changes the outcome**: the attacker is blocked by **≥2 live blockers AND its power ≤ the total
+  lethal needed for all of them** (it cannot kill everything, so it must choose which blockers die).
+  When power > total lethal there is no meaningful choice, so damage is **auto-assigned** with no
+  prompt (lethal to each blocker, remainder to the player via trample or wasted). This keeps the ML
+  decision surface minimal. Pieces:
+  - New `MandatoryChoice::ASSIGN_COMBAT_DAMAGE_CHOICE`, requested in `process_turn_based_actions`
+    (`state_manager.cpp`) before each `deal_combat_damage` call when
+    `any_attacker_needs_damage_assignment(...)` is true (a re-entrancy guard skips attackers that
+    already have a stored assignment).
+  - Handler `assign_combat_damage` (`action_processor.cpp`, mirrors `declare_blockers`): the
+    attacking player picks **which blockers receive lethal, in order** (≤ blockers−1 decisions),
+    each a new `ActionCategory::ASSIGN_DAMAGE` (45). 510.1a is honored — any leftover power is poured
+    onto the last chosen blocker so all power is assigned among blockers (no trample reaches the
+    player in the prompt case, since power ≤ total lethal). Assignments stored in
+    `Game::combat_damage_assignment` (attacker→blocker→amount), cleared per strike step and at
+    END_OF_COMBAT.
+  - `deal_combat_damage` reads the store for prompted attackers and auto-assigns the rest.
+  - ML ripple: `ACTION_CATEGORY_MAX` 44→45 (single normalized float; `OBS_SIZE` unchanged, checkpoints
+    should be retrained); regenerated `train/_enums.py`; `machine_io.h`/`CLAUDE.md` docs updated. The
+    scripted agent has no explicit branch and falls through to index 0 = "kill first offered blocker,"
+    i.e. greedy max-kills — a sensible default.
+- **Verification:** harness `--play` scenarios — (1) Endurance 3/4 vs two Grizzly Bears 2/2
+  (power 3 ≤ lethal 4): prompt fires, chosen Bear takes 2+1 leftover and dies, the **other survives**;
+  (2) Endurance vs two Soul Warden 1/1 (3 > 2): **no prompt**, both die, 1 wasted; (3) Scythecat Cub
+  2/2 Trample vs one Soul Warden: no prompt, 1 lethal + **1 tramples to player**; (4) Scythecat Cub vs
+  two Grizzly Bears (2 ≤ 4): prompt fires, one Bear dies, **no trample to the player**. Plus 46
+  scripted games across 5 deck pairings (incl. first-strike Thalia, trample Scythecat) — all decisive,
+  no draws, no non-fatal errors. Deathtouch (lethal 1) and the marked-damage subtraction (T3.11) are
+  code-covered in `lethal_needed_for_blocker` but not separately live-tested (no easy in-vocab
+  deathtouch/double-strike setup).
 
-#### T3.11 — Trample lethal accounting ignores already-marked damage · `OPEN`
-- **Rule:** 510.1c
-- **Engine:** trample excess uses `needed = toughness` (or 1 with deathtouch) ignoring damage already marked on the blocker (`src/systems/state_manager_combat.cpp:133-168`).
-- **Fix:** per-blocker lethal = `max(0, toughness - already_marked)` (or 1 with deathtouch). Couples to T3.10.
-- **Complexity/risk:** **Medium**.
+#### T3.11 — Trample lethal accounting ignores already-marked damage · `DONE`
+- **Rule:** 510.1c / 702.19b
+- **Engine (was):** trample/lethal used `needed = toughness` (or 1 with deathtouch), ignoring damage
+  already marked on the blocker (`src/systems/state_manager_combat.cpp:133-168`).
+- **Implemented (2026-06-24):** folded into T3.10. Both the auto-assign path and the prompt threshold
+  use the shared inline helper `lethal_needed_for_blocker(attacker, blocker)` (`src/game_queries.h`):
+  `deathtouch ? 1 : max(0, toughness − already_marked_damage)`. So a blocker that survived the
+  first-strike step with marked damage now needs only its *remaining* toughness as lethal, and trample
+  excess is computed correctly. Verified via the T3.10 trample scenarios; the deeper marked-damage
+  (double-strike) case is code-covered but awaits a suitable vocab card for a dedicated live test.
 
 #### T3.12 — First/double strike eligibility re-evaluated live, not snapshotted · `OPEN`
 - **Rule:** 510.4 / 702.4c / 702.7c

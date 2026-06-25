@@ -60,7 +60,8 @@ enum MandatoryChoice {
     DECLARE_ATTACKERS_CHOICE,
     DECLARE_BLOCKERS_CHOICE,
     CLEANUP_DISCARD,
-    CHOOSE_ENTITY  // Legend rule, replacement effect, choose card name, choose permanent
+    CHOOSE_ENTITY,  // Legend rule, replacement effect, choose card name, choose permanent
+    ASSIGN_COMBAT_DAMAGE_CHOICE  // T3.10: attacker divides damage among 2+ blockers it can't all kill
 };
 
 struct ActionHistoryEntry {
@@ -95,6 +96,11 @@ struct Game {
         bool blockers_declared = false;
         bool combat_damage_dealt = false;
         bool has_first_strikers = false;
+        // T3.10: attacker -> (blocker -> damage assigned). Populated by assign_combat_damage()
+        // only for attackers that required a controller choice this strike step; deal_combat_damage()
+        // reads it and auto-assigns any attacker absent from the map. Cleared at handler entry
+        // (per strike step) and in the END_OF_COMBAT cleanup.
+        std::map<Entity, std::map<Entity, uint32_t>> combat_damage_assignment;
         std::vector<DelayedTrigger> delayed_triggers;
         std::vector<Entity> delve_exiled;   // entities exiled during current delve cast; cleared after ETB
         size_t x_paid = 0;                  // X value chosen at cast time for X-cost spells

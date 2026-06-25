@@ -64,9 +64,10 @@ enum class ActionCategory {
     PLAY_FREE = 42,            // play a card for free (e.g. cast from exile)
     SYLVAN_CHOICE = 43,        // Sylvan Library card pick / pay-4-life-or-top choice
     CHOOSE_CARD = 44,          // choose a card from a zone for a non-library zone-change
+    ASSIGN_DAMAGE = 45,        // T3.10: attacker assigns lethal combat damage to a chosen blocker
 };
 
-static constexpr int ACTION_CATEGORY_MAX = 44;  // highest ActionCategory value
+static constexpr int ACTION_CATEGORY_MAX = 45;  // highest ActionCategory value
 
 struct LegalAction {
         ActionType type;
