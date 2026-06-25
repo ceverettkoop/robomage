@@ -135,12 +135,45 @@ governing rule, a fix sketch, and a complexity/risk estimate.
   per game with the engine seed in `train/runner.py`, after which that game is
   deterministic and matches the baseline choice.
 
-### T2.2 — Replacement effects narrow & mostly dormant; no ordering · `OPEN`
-- **Rule:** 614 (replacement effects), 616 (ordering multiple applicable replacements)
+### T2.2 — Replacement effects narrow & mostly dormant; no ordering · `IN PROGRESS`
+- **Rule:** 614 (replacement effects), 616 (interaction of multiple applicable replacements)
 - **Engine:** `Effect::Replacement` supports only `ENTERS_TAPPED`, `CANT_BE_COUNTERED`, `EXILE_INSTEAD_OF_GRAVEYARD` (`src/components/effect.h:12-31`); `affected_zones`/`affected_types`/`category`/`amount` are reserved/unused. Enters-tapped/with-counters are hard-coded in `apply_permanent_components` (`src/systems/state_manager_statics.cpp:153-164`, `:219-234`), applied in fixed order with no player choice.
-- **Rules require:** 614 — general event-interception class (enters-with-counters, "if it would die, exile instead," damage replacement, "enters as a copy," etc.); 616.1 — affected player/controller orders multiple applicable replacements.
-- **Fix:** Generalize into an event-interception layer applied at the relevant events; route enters-tapped/with-counters/finality through it; prompt for order when >1 applies.
+- **Rules require:** 614 — general event-interception class (enters-with-counters, "if it would die, exile instead," damage replacement, "enters as a copy," etc.); 616.1 — when multiple replacements apply, the affected player/controller chooses one to apply, then re-evaluates.
+- **Fix:** Generalize into an event-interception dispatcher applied at the relevant events; route enters-tapped/with-counters/exile-instead/dredge through it; choose-one when >1 applies.
 - **Complexity/risk:** **High** — architectural; only three hard-coded cases exist today.
+- **Implemented (2026-06-24):** Generalized the scattered, hard-coded replacement sites into a single
+  event-interception dispatcher, `replacement::dispatch(ReplacementEvent&)`
+  (`src/systems/replacement_effects.{h,cpp}`). A `ReplacementEvent` is a small mutable description of
+  an imminent event (`ENTERS_BATTLEFIELD` / `MOVE_TO_ZONE` / `DRAW_CARD`); the caller fills its inputs,
+  calls `dispatch`, then carries out the (possibly modified) outcome fields. The dispatcher `collect`s
+  every applicable replacement effect, applies one per pass, and **re-collects each pass** (616.1f /
+  616.2) until none remain, marking each (source,index) applied so it fires at most once per event
+  (614.5). **Routed through it:** enters-tapped (614.1d — self replacement + the fetch
+  `pending_enters_tapped` one-shot), enters-with-counters (614.1c — the `EtbCounter` delve count,
+  applied once the `Creature` exists), exile-instead-of-graveyard (614.1a, Dauthi Voidwalker —
+  replaces `Orderer::check_exile_replacement`), and **dredge** (702.52a / 614.1a — the bespoke
+  `Orderer::offer_dredge` is deleted; its enumeration + choose-one menu + mill/return move into the
+  `DRAW_CARD` path).
+- **616.1 is choose-one, NOT ordering:** when >1 replacement applies to one event, the affected
+  object's controller/owner (or affected player) chooses ONE to apply, then the dispatcher
+  re-evaluates the remainder — a choose-one-then-repeat process, not a timestamp ordering (timestamp
+  ordering is the 613 *static-ability* layer system, a separate mechanism). The 616.1a
+  self-replacement (614.15) gate is honored. **Latent:** no current vocab deck ever has >1 applicable
+  replacement on a single event, so the choose-one branch is implemented and compiled but not
+  exercised by real cards.
+- **Static-ability vs. replacement-effect distinction:** these are orthogonal axes (614.3 — a static
+  ability can *generate* a replacement effect). **Can't-be-countered is intentionally NOT routed:** it
+  replaces no event — it is a static-ability prohibition that functions on the stack (113.6g / 701.5)
+  — so it keeps its existing cast-time `Spell.cant_be_countered` flag, untouched (the dispatcher never
+  consults the `Effect::Replacement::CANT_BE_COUNTERED` enum). A general **static-ability framework
+  (604) is deferred.**
+- **Verification:** Added the routed-effect cards to the corpus main decks (Life from the Loam → mav;
+  Barrowgoyf + Dauthi Voidwalker → doomsday) so the 108-game `gen_corpus.sh` corpus exercises all four
+  effects (dredge ×6, void-counter ×60, enters-with-counters ×14, enters-tapped ×59 games),
+  regenerated the baseline on that deck set, and confirmed it **byte-for-byte identical** after each
+  migration step (exile-instead, then enters-tapped/counters, then dredge). Targeted harness scenarios
+  confirmed Dauthi exile-instead ("exiled with a void counter" + castable void-countered card) and
+  Undercity Sewers enters-tapped.
 
 ### T2.3 — Prevention effects entirely absent · `OPEN`
 - **Rule:** 615 (prevention), 122.1c (shield counters)

@@ -30,6 +30,7 @@
 #include "../mana_system.h"
 #include "../svar_eval.h"
 #include "../systems/stack_manager.h"
+#include "replacement_effects.h"
 #include "continuous_effects.h"
 #include "orderer.h"
 
@@ -143,6 +144,7 @@ void StateManager::apply_permanent_components(Game &game) {
             auto &card_data = global_coordinator.GetComponent<CardData>(entity);
             bool is_creature = is_creature_card(card_data);  // can be creature and land
             bool is_land = is_land_card(card_data);
+            int etb_p1p1 = 0;  // +1/+1 counters this permanent enters with (614.1c), applied once the Creature exists
             // providing permanent component if doesn't have
             if (!global_coordinator.entity_has_component<Permanent>(entity)) {
                 Permanent perm;
@@ -151,24 +153,18 @@ void StateManager::apply_permanent_components(Game &game) {
                 perm.controller = zone.controller;
                 perm.has_summoning_sickness = is_creature;
                 perm.is_tapped = false;
-                // Apply replacement effects at the point the permanent enters (rule 614)
-                for (const auto &r : card_data.replacement_effects) {
-                    switch (r.kind) {
-                        case Effect::Replacement::ENTERS_TAPPED:
-                            perm.is_tapped = true;
-                            break;
-                        case Effect::Replacement::CANT_BE_COUNTERED:
-                            break;  // handled at cast time, not ETB
-                        case Effect::Replacement::EXILE_INSTEAD_OF_GRAVEYARD:
-                            break;  // handled in Orderer::add_to_zone, not ETB
-                    }
-                }
-                // A ChangeZone effect (e.g. fetch "onto the battlefield tapped") may also
-                // require this permanent to enter tapped — same single decision point.
-                auto pet = game.pending_enters_tapped.find(entity);
-                if (pet != game.pending_enters_tapped.end()) {
-                    perm.is_tapped = true;
-                    game.pending_enters_tapped.erase(pet);
+                // Replacement effects at the point the permanent enters (rule 614): "enters
+                // tapped" (a self-replacement, or a fetch's "onto the battlefield tapped") and
+                // "enters with +1/+1 counters". The counters are applied once the Creature
+                // component exists (below).
+                {
+                    ReplacementEvent rev;
+                    rev.type = ReplacementEvent::ENTERS_BATTLEFIELD;
+                    rev.entity = entity;
+                    rev.affected_player = zone.controller;  // 616.1: the permanent's controller chooses
+                    replacement::dispatch(rev);
+                    perm.is_tapped = rev.enters_tapped;
+                    etb_p1p1 = rev.etb_p1p1;
                 }
                 if (perm.is_tapped) game_log("%s enters tapped.\n", perm.name.c_str());
                 // Spell was cast for its evoke cost — mark the permanent so its evoke
@@ -217,20 +213,13 @@ void StateManager::apply_permanent_components(Game &game) {
                 damage.damage_counters = 0;
                 global_coordinator.AddComponent(entity, damage);
 
-                // Apply "enters with" counters from static abilities
-                for (auto &sa : card_data.static_abilities) {
-                    if (sa.category != "EtbCounter") continue;
-                    if (sa.counter_type != "P1P1") continue;
-                    int n = 0;
-                    if (sa.counter_count_from_delve) {
-                        n = static_cast<int>(cur_game.delve_exiled.size());
-                        cur_game.delve_exiled.clear();
-                    }
-                    if (n <= 0) continue;
-                    add_counters(entity, "P1P1", n);
+                // Apply the "enters with" +1/+1 counters chosen by the ETB replacement
+                // dispatch above (rule 614.1c), now that the Creature component exists.
+                if (etb_p1p1 > 0) {
+                    add_counters(entity, "P1P1", etb_p1p1);
                     auto &cr = global_coordinator.GetComponent<Creature>(entity);
                     game_log("%s enters with %d +1/+1 counter(s) (%u/%u).\n",
-                        card_data.name.c_str(), n, cr.power, cr.toughness);
+                        card_data.name.c_str(), etb_p1p1, cr.power, cr.toughness);
                 }
             }
             if (is_land) {
