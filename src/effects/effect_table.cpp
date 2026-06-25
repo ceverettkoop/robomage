@@ -41,6 +41,7 @@ EffectHandler handler_for(EffectKind kind) {
         case EffectKind::Dig:             return &dig;
         case EffectKind::SylvanLibrary:   return &sylvan_library;
         case EffectKind::Amass:           return &amass;
+        case EffectKind::Sacrifice:       return &sacrifice;
         default:                          return nullptr;
     }
 }

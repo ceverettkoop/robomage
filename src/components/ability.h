@@ -46,6 +46,10 @@ struct Ability{
     int life_cost = 0;                  // PayLife<N> — life paid at activation
     bool sac_self = false;              // Sac<1/CARDNAME> — sacrifice source permanent as cost
     std::string sac_cost_spec = "";     // Sac<1/Type;Type/> — type-based sac cost; empty = none
+    // DB$ Sacrifice EFFECT (not a cost): sacrifice a chosen permanent you control matching
+    // sac_valid (Birthing Ritual). Distinct from sac_self/sac_cost_spec which are activation costs.
+    std::string sac_valid = "";         // SacValid$ — filter for the creature/permanent to sacrifice (e.g. "Creature")
+    bool remember_sacrificed = false;   // RememberSacrificed$ True — push the sacrificed entity to remembered_entities
     std::string return_cost_type = "";  // Return<N/Type> — bounce a land of this subtype as cost
     int return_cost_count = 0;          // number of lands to return
     bool discard_hand_cost = false;     // Discard<0/Hand> — discard entire hand as activation cost (Lion's Eye Diamond)
@@ -149,6 +153,7 @@ struct Ability{
     bool rest_random_order = false;  // RestRandomOrder$ True
     bool optional_choice = false;    // Optional$ True in Dig context — can choose nothing
     bool change_num_any = false;     // ChangeNum$ Any — may take any number (0..pool) of looked-at cards (Fateseal)
+    int change_num = -1;             // ChangeNum$ <N> for Dig — exact take count incl. 0 (-1 = unset); honored over amount so "take 0" works (Birthing Ritual DBDigBis)
     int dig_destination = -1;        // DestinationZone$ — where chosen card goes (-1 = HAND, Zone::LIBRARY etc.)
     int dig_library_position = -1;   // LibraryPosition$ — 0 = top, -1 = unset
     int dig_rest_library_position = -1;  // LibraryPosition2$ — where unchosen cards go: 0 = top, -1 = bottom (default)
@@ -179,6 +184,18 @@ struct Ability{
     // at cast time. Such abilities can target anything legal; the conditional effect is
     // enforced when they resolve, so cast-time legality must NOT gate on the condition.
     bool condition_on_target = false;
+    // ConditionDefined$ Remembered — condition_present/condition_compare are evaluated over
+    // cur_game.remembered_entities (count of remembered cards) rather than battlefield
+    // permanents (Birthing Ritual: the dig only happens if a creature was sacrificed). Gated
+    // at resolution in Ability::resolve(): on failure the body is skipped, subabilities chain.
+    bool condition_on_remembered = false;
+
+    // Intervening-if (rule 603.4) for a TRIGGERED ability: condition_present/condition_compare
+    // are checked BOTH when the trigger would go on the stack (check_triggered_abilities) AND
+    // again as it resolves; if false at resolution the ability does nothing (no subabilities).
+    // Set from a trigger line's IsPresent$/PresentCompare$. Distinct from condition_present used
+    // for spell castability, which is checked only at cast time.
+    bool intervening_if = false;
 
     // (delayed-trigger Phase$/Execute$/ValidPlayer$ moved to DelayedTriggerParams)
 

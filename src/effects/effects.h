@@ -66,6 +66,7 @@ bool peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool dig(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool sylvan_library(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool amass(Ability &ab, std::shared_ptr<Orderer> orderer);
+bool sacrifice(Ability &ab, std::shared_ptr<Orderer> orderer);
 
 // ── Effect-specific parse hooks ─────────────────────────────────────────────
 //

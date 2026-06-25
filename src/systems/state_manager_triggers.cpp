@@ -233,6 +233,12 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                 if (ev.GetType() == Events::COMBAT_DAMAGE_TO_PLAYER && ev.HasParam(Params::AMOUNT))
                     trigger_ab.trigger_damage_amount = ev.GetParam<uint32_t>(Params::AMOUNT);
 
+                // 603.4 intervening-if: a trigger whose "if" condition is false right now does
+                // not go on the stack at all (it is re-checked again on resolution).
+                if (trigger_ab.intervening_if &&
+                    !evaluate_present_condition(trigger_ab, perm.controller, orderer))
+                    continue;
+
                 PendingTrigger pt;
                 pt.ab = trigger_ab;
                 pt.controller = perm.controller;

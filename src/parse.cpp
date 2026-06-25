@@ -752,6 +752,9 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
             ability.change_num_any = true;
         } else if (!value.empty() && std::isdigit(static_cast<unsigned char>(value[0]))) {
             ability.amount = static_cast<size_t>(std::stoi(value));
+            // For Dig, ChangeNum$ is the exact take count and 0 is meaningful ("take nothing"),
+            // which amount==0 (the unset default) can't express — record it explicitly.
+            if (key == "ChangeNum") ability.change_num = std::stoi(value);
         } else if (!value.empty()) {
             // Non-numeric value is a SVar key — store for runtime resolution
             ability.amount_svar = value;
@@ -817,8 +820,15 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         // "Targeted" → the condition is evaluated against the chosen target at
         // resolution, so it must not gate cast-time legality.
         ability.condition_on_target = (value == "Targeted");
+        // "Remembered" → condition_present is counted over the remembered cards at
+        // resolution (Birthing Ritual: only dig if a creature was sacrificed).
+        ability.condition_on_remembered = (value == "Remembered");
     } else if (key == "ConditionCompare") {
         ability.condition_compare = value;
+    } else if (key == "SacValid") {
+        ability.sac_valid = value;            // DB$ Sacrifice — what may be sacrificed
+    } else if (key == "RememberSacrificed") {
+        ability.remember_sacrificed = (value == "True");
     } else if (effects::apply_parse_hook(ability, key, value)) {
         // Consumed by an effect-specific parse hook co-located with its handler.
     } else {
@@ -975,6 +985,21 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
         auto it = svars.find(sub.dig_num_expr);
         if (it != svars.end()) {
             sub.dig_num_expr = it->second;
+        }
+    }
+    // Resolve a cmcLE<SVar> threshold inside ChangeValid$ (Birthing Ritual: "Creature.cmcLEX")
+    // into dynamic_amount_expr, evaluated by the Dig effect at resolution.
+    if (sub.dynamic_amount_expr.empty() && !sub.change_valid.empty()) {
+        size_t lex = sub.change_valid.find("cmcLE");
+        if (lex != std::string::npos) {
+            std::string svar_ref = sub.change_valid.substr(lex + 5);
+            size_t end = 0;
+            while (end < svar_ref.size() &&
+                   (std::isalpha(static_cast<unsigned char>(svar_ref[end])) || svar_ref[end] == '_'))
+                end++;
+            svar_ref = svar_ref.substr(0, end);
+            auto it = svars.find(svar_ref);
+            if (it != svars.end()) sub.dynamic_amount_expr = it->second;
         }
     }
     // Resolve ConditionSVarCompare$ when RHS is an SVar reference (e.g. "LEX" where X = "Count$Devotion.Blue")
@@ -1314,7 +1339,8 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
                 else if (value == "Drawn") mode_is_drawn = true;
             } else if (key == "Phase") {
                 if (value == "Upkeep")   phase_is_upkeep   = true;
-                if (value == "EndStep")  phase_is_end_step = true;
+                // Forge writes the end step as either "EndStep" or "End of Turn".
+                if (value == "EndStep" || value == "End of Turn")  phase_is_end_step = true;
                 if (value == "Draw")     phase_is_draw     = true;
             } else if (key == "ValidPlayer" || key == "ValidActivatingPlayer") {
                 if (value == "You") valid_player_is_you = true;
@@ -1343,6 +1369,13 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
                 if (value.rfind("EQ", 0) == 0) {
                     activator_this_turn_cast_eq = static_cast<size_t>(std::stoi(value.substr(2)));
                 }
+            } else if (key == "IsPresent") {
+                // Intervening-if (603.4): "..., if you control a <thing>, ...". Checked both
+                // when the trigger would go on the stack and again on resolution.
+                ability.condition_present = value;
+                ability.intervening_if = true;
+            } else if (key == "PresentCompare") {
+                ability.condition_compare = value;  // e.g. "GE2"; empty defaults to ">= 1"
             } else if (key == "Execute") {
                 execute_svar = value;
             }
@@ -1438,6 +1471,13 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
                 effect.trigger_only_self                        = ability.trigger_only_self;
                 effect.trigger_self_excluded                    = ability.trigger_self_excluded;
                 effect.trigger_spell_count_eq                   = ability.trigger_spell_count_eq;
+                // 603.4 intervening-if lives on the trigger line, not the Execute SVar — carry
+                // it onto the resolved ability so it is re-checked at resolution.
+                effect.intervening_if                           = ability.intervening_if;
+                if (ability.intervening_if) {
+                    effect.condition_present = ability.condition_present;
+                    effect.condition_compare = ability.condition_compare;
+                }
                 ability = effect;
             }
         }

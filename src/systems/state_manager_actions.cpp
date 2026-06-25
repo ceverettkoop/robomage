@@ -32,7 +32,6 @@
 #include "../systems/stack_manager.h"
 #include "orderer.h"
 
-static bool check_condition_present(const Ability &ab, Zone::Ownership caster, std::shared_ptr<Orderer> orderer);
 static bool can_afford_alt(const AltCost& alt_cost, Zone::Ownership priority_player,
                            Entity card_entity, std::shared_ptr<Orderer> orderer) {
     if (!alt_cost.has_alt_cost) return false;
@@ -118,11 +117,21 @@ static bool can_afford_alt(const AltCost& alt_cost, Zone::Ownership priority_pla
     return true;
 }
 
-// Check ConditionPresent$ / ConditionCompare$ castability condition.
-// Counts battlefield permanents matching the filter and compares against the threshold.
-// Filter format: "Type.YouCtrl" or "Type.OppCtrl" (e.g. "Land.YouCtrl").
-static bool check_condition_present(const Ability &ab, Zone::Ownership caster, std::shared_ptr<Orderer> orderer) {
+// Check ConditionPresent$ / ConditionCompare$ condition (rule-603.4 intervening-if, spell
+// castability, and ConditionDefined$ Remembered subability gates all share this).
+// Counts battlefield permanents matching the filter (or remembered cards when
+// condition_on_remembered) and compares against the threshold (default ">= 1").
+// Filter format: "Type.YouCtrl" or "Type.OppCtrl" (e.g. "Land.YouCtrl"); "Card" matches any.
+bool evaluate_present_condition(const Ability &ab, Zone::Ownership caster, std::shared_ptr<Orderer> orderer) {
     if (ab.condition_present.empty()) return true;
+    // Empty compare means the bare "if you control a <thing>" form → at least one.
+    std::string compare = ab.condition_compare.empty() ? "GE1" : ab.condition_compare;
+
+    // ConditionDefined$ Remembered: count remembered cards, not battlefield permanents.
+    if (ab.condition_on_remembered) {
+        size_t count = cur_game.remembered_entities.size();
+        return compare_svar(static_cast<int>(count), compare);
+    }
 
     // Parse filter: "Land.YouCtrl" → type_filter="Land", controller check
     std::string filter = ab.condition_present;
@@ -138,6 +147,7 @@ static bool check_condition_present(const Ability &ab, Zone::Ownership caster, s
     } else {
         type_filter = filter;
     }
+    if (type_filter == "Card") type_filter.clear();  // "Card" = any permanent
 
     Zone::Ownership required_ctrl = you_ctrl ? caster :
         opp_ctrl ? (caster == Zone::PLAYER_A ? Zone::PLAYER_B : Zone::PLAYER_A) :
@@ -164,7 +174,7 @@ static bool check_condition_present(const Ability &ab, Zone::Ownership caster, s
         count++;
     }
 
-    return compare_svar(static_cast<int>(count), ab.condition_compare);
+    return compare_svar(static_cast<int>(count), compare);
 }
 
 
@@ -274,7 +284,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             // may target anything legal; the condition is checked on the target at
             // resolution, so it must not gate cast-time legality.
             if (!ab.condition_present.empty() && !ab.condition_on_target)
-                condition_ok = check_condition_present(ab, priority_player, orderer);
+                condition_ok = evaluate_present_condition(ab, priority_player, orderer);
             break;
         }
         // Machine mode only: action-masking optimization — don't offer a conditional-destroy

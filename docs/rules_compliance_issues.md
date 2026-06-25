@@ -221,17 +221,49 @@ governing rule, a fix sketch, and a complexity/risk estimate.
   *intentionally* changes resolution order, so unlike T2.1/T2.4 the corpus is not byte-identical
   — the diff is the review surface and was confirmed to be APNAP ordering only.
 
-#### T3.2 — No priority window when triggers fire during cleanup · `OPEN`
+#### T3.2 — No priority window when triggers fire during cleanup · `OPEN (DEFERRED — not testable with current vocab)`
 - **Rule:** 514.3a
 - **Engine:** entering CLEANUP force-sets both pass flags (`src/classes/game.cpp:276-278`); a cleanup-triggered ability then resolves via `resolve_top` before any player is offered priority (`:82-89`).
 - **Fix:** when triggers fire / SBAs occur in cleanup, reset the pass flags and give the active player priority instead of pre-passing.
 - **Complexity/risk:** **Medium** — must distinguish the no-trigger fast path from the trigger-present path within the untap/cleanup "pretend both passed" hack.
+- **Deferred (2026-06-24):** no vocab card has a cleanup-step trigger that uses the stack, so
+  this bug cannot be observed or verified with the current card pool. (The Forge `Phase$ Cleanup`
+  triggers in the DB are mostly `Static$ True` bookkeeping that bypasses the stack; the genuine
+  514.3a cases are delayed "at the next cleanup step" triggers like Thawing Glaciers, or
+  discard/madness triggers firing during the cleanup discard — none in vocab.) Per the project
+  testing policy (verify against a real card, no untested mechanics), this is deferred until such
+  a card is added to the vocab. See `todo.md`.
 
-#### T3.3 — "Intervening if" checked once, not twice · `OPEN`
+#### T3.3 — "Intervening if" checked once, not twice · `DONE`
 - **Rule:** 603.4
 - **Engine:** only the resolution-time check runs (`condition_check_svar`, `src/components/ability.cpp:780-784`); the trigger-time gate is missing, so intervening-if triggers always go on the stack.
 - **Fix:** evaluate the condition in `check_triggered_abilities` before pushing, in addition to the resolution-time check; requires flagging intervening-if triggers at parse time.
 - **Complexity/risk:** **Medium** — touches trigger plumbing; low rules-risk.
+- **Implemented (2026-06-24):** A trigger line's `IsPresent$`/`PresentCompare$` now parse into
+  `condition_present`/`condition_compare` with a new `Ability::intervening_if` flag
+  (`parse_one_trigger`; carried onto the resolved ability across the `Execute$` SVar swap). The
+  condition is evaluated by a shared free function `evaluate_present_condition`
+  (refactored out of the old spell-castability `check_condition_present`; empty compare defaults
+  to "≥ 1", `Card` is a type wildcard). It is checked in **both** places per 603.4: in
+  `check_triggered_abilities` before the trigger is queued (it does not go on the stack if false)
+  and again at the top of `Ability::resolve()` (if false on resolution the ability is removed and
+  does nothing — not even subabilities, unlike a `ConditionCheckSVar` gate). Test vehicle: the
+  card **Birthing Ritual** (vocab idx 98) — "At the beginning of your end step, **if you control a
+  creature**, …". Implementing it also added a general **`DB$ Sacrifice` effect** (SacValid$ /
+  Optional$ / RememberSacrificed$), a **`Remembered$CardManaCost[/Plus.N]`** SVar (mana value of
+  the sacrificed creature), a **cmc-bounded + Battlefield-destination Dig** (`Creature.cmcLEX`
+  reanimation, with an explicit `ChangeNum$ 0` "look but take nothing" path via a new
+  `change_num` field), a `ConditionDefined$ Remembered` subability gate, and recognition of
+  `Phase$ End of Turn` as the end step.
+- **Verification:** Birthing Ritual harness tests — the end-step trigger fires when its
+  controller has a creature and is **suppressed (0 firings) when they control none**
+  (trigger-time 603.4 check); the full chain works (sacrifice a creature → reanimate a creature
+  with mana value ≤ 1 + sacrificed's from the top 7; decline → look-but-take-nothing). The
+  resolution-time re-check is the same `evaluate_present_condition` guard at the top of
+  `resolve()`; it could not be exercised by an opponent's in-response removal because the engine
+  resolves the end-step trigger without offering a clean response window (see T3.2), so it is
+  covered by the shared, trigger-time-verified evaluator. The 108-game corpus was regenerated to
+  confirm the existing 98-card decks are unaffected (Birthing Ritual is not in them).
 
 ### Stack / resolution / targeting
 
