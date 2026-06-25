@@ -314,6 +314,26 @@ they should also be covered by `gen_corpus.sh`, per the T2.2 coverage-prep patte
 
 ## 4. Humility implementation plan
 
+> **Implemented (2026-06-24).** Humility added to vocab (idx 99, `{2}{W}{W}`); card-costs regenerated.
+> Ability removal was already scaffolded in §2 (suppression + `recompute_abilities`); this step added
+> the missing **layer 7b** "set P/T to N" path and a general-SVar fix:
+> - **Layer 7b applier** (`apply_layer7_pt_effects`, between 7a and 7c): collects active non-CDA
+>   setters (`set_power_svar`/`set_toughness_svar`, not `characteristic_defining`), then for each
+>   battlefield creature applies the latest-timestamp setter whose `Affected$` matches it — including
+>   `Affected$ Creature` = **every creature** (the all-creatures application pattern, new vs the
+>   self/EquippedBy appliers). `gather_active_statics` resets `has_set_pt`/`set_power`/`set_toughness`
+>   each pass. The 7c additive loop now excludes *all* setters (was: only CDA setters).
+> - **`evaluate_sa_svar` integer-literal fix** — a plain numeric SVar (Humility's `SetPower$ 1`) used
+>   to fall through to the `Count$` handlers and return 0, making creatures 0/0 (they died). Now a
+>   numeric literal evaluates to itself. General fix, not Humility-specific.
+> - **Verified via harness:** Grizzly Bears → **1/1 (alive)**; Knight of the Reliquary with a land in
+>   its graveyard → **3/3 without Humility but 1/1 with** (definitive proof the self-pump is *removed*
+>   in layer 6, not merely base-overridden — the §4d headline); Dryad Arbor → **1/1** and its `{T}: Add
+>   G` mana ability **removed** (Ignoble Hierarch no longer castable off it). Corpus byte-identical
+>   (Humility/7b dormant for the current corpus vocab).
+>
+> Original plan (kept for context):
+
 Humility (`bin/resources/cardsfolder/h/humility.txt`, **not yet in `card_vocab.h`**):
 `S:Mode$ Continuous | Affected$ Creature | SetPower$ 1 | SetToughness$ 1 | RemoveAllAbilities$ True`.
 

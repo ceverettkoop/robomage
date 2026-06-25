@@ -573,6 +573,11 @@ void StateManager::gather_active_statics(Game &game) {
             auto &cr = global_coordinator.GetComponent<Creature>(entity);
             cr.static_power_bonus = 0;
             cr.static_toughness_bonus = 0;
+            // Rebuild the layer-7b "set P/T" slot from scratch each pass (Humility); the 7b
+            // applier re-sets it when a setter applies, recompute_pt reads it.
+            cr.has_set_pt = false;
+            cr.set_power = 0;
+            cr.set_toughness = 0;
             // Rebuild keywords from the printed base each pass (rule 611.3a) so layer-6
             // grants (apply_layer6_ability_effects) and removals (recompute_abilities,
             // Humility) are not sticky — mirrors the static_*_bonus rebuild above. A
@@ -789,14 +794,69 @@ void StateManager::apply_layer7_pt_effects() {
         a.sa->applied = true;
     }
 
+    // 7b — non-CDA "set power/toughness to N" statics (Humility). Unlike 7a/7c (which apply
+    // to the source or its equipped creature), a 7b setter may affect a whole class of
+    // objects via Affected$ (e.g. Affected$ Creature = every creature). Collect the active
+    // setters, then for each battlefield creature apply the latest-timestamp setter that
+    // matches it (rule 613.7; recompute_pt reads has_set_pt/set_power/set_toughness).
+    {
+        struct SetPT { ActiveStatic *a; size_t timestamp; };
+        std::vector<SetPT> setters;
+        for (auto &a : g_active_statics) {
+            if (a.suppressed) continue;
+            if (a.sa->category != "Continuous") continue;
+            if (a.sa->characteristic_defining) continue;  // CDA setters are 7a
+            if (a.sa->set_power_svar.empty() && a.sa->set_toughness_svar.empty()) continue;
+            if (!a.condition_met) continue;
+            size_t ts = global_coordinator.entity_has_component<Permanent>(a.entity)
+                ? global_coordinator.GetComponent<Permanent>(a.entity).timestamp_entered_battlefield
+                : 0;
+            setters.push_back({&a, ts});
+        }
+        if (!setters.empty()) {
+            std::stable_sort(setters.begin(), setters.end(),
+                             [](const SetPT &x, const SetPT &y) { return x.timestamp < y.timestamp; });
+            for (auto entity : mEntities) {
+                if (!global_coordinator.entity_has_component<Creature>(entity)) continue;
+                if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
+                if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
+                if (global_coordinator.GetComponent<Zone>(entity).location != Zone::BATTLEFIELD) continue;
+                if (global_coordinator.GetComponent<Permanent>(entity).is_phased_out) continue;
+                const ActiveStatic *winner = nullptr;
+                for (auto &s : setters) {
+                    const std::string &aff = s.a->sa->affected;
+                    bool match;
+                    if (aff.find("EquippedBy") != std::string::npos) {
+                        match = global_coordinator.entity_has_component<Permanent>(s.a->entity) &&
+                                global_coordinator.GetComponent<Permanent>(s.a->entity).equipped_to == entity;
+                    } else if (aff.find("Self") != std::string::npos) {
+                        match = (s.a->entity == entity);
+                    } else if (aff.find("Creature") != std::string::npos) {
+                        match = true;  // Affected$ Creature — every creature
+                    } else {
+                        match = (s.a->entity == entity);
+                    }
+                    if (match) winner = s.a;  // later timestamp overwrites
+                }
+                if (!winner) continue;
+                auto &cr = global_coordinator.GetComponent<Creature>(entity);
+                cr.has_set_pt = true;
+                cr.set_power = !winner->sa->set_power_svar.empty()
+                    ? evaluate_sa_svar(winner->sa->set_power_svar, winner->controller) : 0;
+                cr.set_toughness = !winner->sa->set_toughness_svar.empty()
+                    ? evaluate_sa_svar(winner->sa->set_toughness_svar, winner->controller) : 0;
+            }
+        }
+    }
+
     // 7c — additive modifications, gathered then ordered before accumulation.
     std::vector<ContinuousEffect> mods;
     for (auto &a : g_active_statics) {
         if (a.suppressed) continue;
         if (a.sa->category != "Continuous") continue;
-        if (a.sa->characteristic_defining &&
-            (!a.sa->set_power_svar.empty() || !a.sa->set_toughness_svar.empty()))
-            continue;  // handled in 7a
+        // Setters (CDA or not) are handled in 7a / 7b, never as additive modifiers.
+        if (!a.sa->set_power_svar.empty() || !a.sa->set_toughness_svar.empty())
+            continue;
         if (!a.condition_met) continue;
 
         Entity target_entity = a.entity;

@@ -1,5 +1,6 @@
 #include "svar_eval.h"
 
+#include <cctype>
 #include <set>
 #include <string>
 
@@ -35,6 +36,17 @@ bool compare_svar(int value, const std::string &compare) {
 // Evaluate a StaticAbility SVar expression such as "Count$TypeInYourYard.Land".
 // Returns the computed integer value.
 int evaluate_sa_svar(const std::string &expr, Zone::Ownership controller, Entity source) {
+    // A plain integer literal (e.g. Humility's SetPower$ 1 / SetToughness$ 1) evaluates
+    // to itself. Without this, a constant SetPower/SetToughness would fall through to the
+    // Count$ handlers and return 0 (making the creature 0/0).
+    if (!expr.empty()) {
+        size_t i = (expr[0] == '-') ? 1 : 0;
+        bool all_digits = i < expr.size();
+        for (; i < expr.size(); ++i)
+            if (!std::isdigit(static_cast<unsigned char>(expr[i]))) { all_digits = false; break; }
+        if (all_digits) return std::stoi(expr);
+    }
+
     // Handle /Plus.N suffix: strip it, evaluate the base, then add N
     size_t plus_pos = expr.find("/Plus.");
     if (plus_pos != std::string::npos) {
