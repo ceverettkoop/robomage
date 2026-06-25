@@ -1,7 +1,16 @@
 TODO:
+
+Observation space:
+- Add opponent's hand to the observation space when it becomes revealed (e.g. by
+  Surgical Extraction / Thoughtseize / Duress). There are currently no per-card
+  opponent-hand identity slots — only a hand count + the match-scoped revealed
+  multi-hot (mark_card_revealed). Add per-card slots for known opponent-hand cards,
+  and have those slots update (move/clear) when a known card leaves the hand for
+  another public zone, so the belief tracks the specific card rather than just
+  "was revealed once this match".
 parse and display ability descriptions and targeting prompts
 
-can pay life to negative life - should not be allowed
+at present a player can pay life to negative life - should not be allowed, they should be allowed to pay to 0 (i.e. kill themselves) but not pay more life than they have
 
   - TODO: when a permanent has multiple simultaneous ETB triggers (e.g. evoked Endurance:
     its graveyard-bottom trigger + the evoke sacrifice trigger), the controller should
@@ -15,7 +24,7 @@ keen eyed curator buff from types exiled untested
 Pro color untested
 
 Engine stuff:
-ML can only pay for spells after choosing them, this does not allow some rare cases of optimal behavior (e.g. floating mana) but should reduce noise
+ML can only pay for spells after choosing them, this does not allow some rare cases of optimal behavior (e.g. floating mana) but should reduce noise. LED is an exception, written so ML can float
 
 MAX_ENTITIES exhaustion / unbounded-loop detection:
 - MAX_ENTITIES lowered 5000 -> 1000 to cut per-sim component-array memory (~13MB -> ~2.6MB;
@@ -39,12 +48,5 @@ MAX_ENTITIES exhaustion / unbounded-loop detection:
 Known ML problems:
 Does not know what's in exile
 
-Observation space:
-- Add opponent's hand to the observation space when it becomes revealed (e.g. by
-  Surgical Extraction / Thoughtseize / Duress). There are currently no per-card
-  opponent-hand identity slots — only a hand count + the match-scoped revealed
-  multi-hot (mark_card_revealed). Add per-card slots for known opponent-hand cards,
-  and have those slots update (move/clear) when a known card leaves the hand for
-  another public zone, so the belief tracks the specific card rather than just
-  "was revealed once this match".
+
 
