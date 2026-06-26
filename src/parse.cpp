@@ -1561,6 +1561,13 @@ static std::vector<StaticAbility> parse_static_abilities(const std::string &scri
                 // CantBeCast Caster$ Opponent (Voice of Victory): the restriction applies to
                 // the source controller's opponents, not the controller themselves.
                 if (value == "Opponent") sa.cant_cast_by_opponent = true;
+            } else if (key == "Origin") {
+                // CantBeCast Origin$ Graveyard,Library (Grafdigger's Cage): restrict casting
+                // spells from these zones (e.g. flashback).
+                if (sa.category == "CantBeCast") {
+                    if (value.find("Graveyard") != std::string::npos) sa.cant_cast_from_graveyard = true;
+                    if (value.find("Library")   != std::string::npos) sa.cant_cast_from_library   = true;
+                }
             } else if (key == "AddHiddenKeyword") {
                 sa.hidden_keyword = value;
             } else if (key == "ValidCause") {
@@ -1654,6 +1661,10 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
         bool active_zones_battlefield = false;
         bool valid_card_opp_non_token = false;
         bool valid_card_uncast_creature = false;  // Containment Priest: Creature.!token+!wasCast
+        bool prevent_true         = false;        // Prevent$ True — the event simply doesn't happen
+        bool valid_lki_creature   = false;        // ValidLKI$ Creature.* — the moving card is (last known) a creature
+        bool origin_graveyard     = false;        // Origin$ includes Graveyard
+        bool origin_library       = false;        // Origin$ includes Library
         std::string replace_with_svar;  // the SVar named by ReplaceWith$ (e.g. "Exile"), used to inspect the actual zone-change effect
 
         size_t param_pos = 0;
@@ -1679,6 +1690,13 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
             else if (key == "ReplaceWith") { replace_with_svar = value; if (value == "Exile") replace_with_exile = true; }
             else if (key == "Layer"       && value == "CantHappen") layer_cant_happen        = true;
             else if (key == "ActiveZones" && value == "Battlefield") active_zones_battlefield = true;
+            else if (key == "Prevent"     && value == "True")        prevent_true             = true;
+            else if (key == "ValidLKI"    && value.find("Creature") != std::string::npos)
+                valid_lki_creature = true;
+            else if (key == "Origin") {
+                if (value.find("Graveyard") != std::string::npos) origin_graveyard = true;
+                if (value.find("Library")   != std::string::npos) origin_library   = true;
+            }
         }
 
         // Does the replacement's zone-change effect attach a void counter (Dauthi Voidwalker:
@@ -1721,6 +1739,19 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
             Effect::Replacement r;
             r.kind = Effect::Replacement::EXILE_INSTEAD_OF_ETB;
             r.applies_to_self_only = false;
+            result.push_back(r);
+        }
+        // Grafdigger's Cage: creature cards in graveyards and libraries can't enter the
+        // battlefield (614.13). This is a prevention (Prevent$ True) — the moving card simply
+        // doesn't enter and stays in its origin zone, distinct from Containment Priest's
+        // exile-instead replacement above.
+        if (event_is_moved && dest_is_battlefield && prevent_true && valid_lki_creature &&
+            active_zones_battlefield && (origin_graveyard || origin_library)) {
+            Effect::Replacement r;
+            r.kind = Effect::Replacement::PREVENT_ETB_FROM_ZONES;
+            r.applies_to_self_only = false;
+            r.prevent_from_graveyard = origin_graveyard;
+            r.prevent_from_library = origin_library;
             result.push_back(r);
         }
         // Choke: matching lands don't untap during their controllers' untap steps (614.1d).

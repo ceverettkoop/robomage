@@ -51,14 +51,18 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     size_t back = 0;
     auto &target_zone = global_coordinator.GetComponent<Zone>(target);
 
-    // Replacement effects (rule 614): redirect graveyard → exile when Dauthi Voidwalker etc. apply.
+    // Replacement effects (rule 614): redirect graveyard → exile when Dauthi Voidwalker etc.
+    // apply, or prevent a creature card from entering the battlefield out of a graveyard/library
+    // (Grafdigger's Cage, 614.13) — in which case the move doesn't happen and the card stays put.
     {
         ReplacementEvent rev;
         rev.type = ReplacementEvent::MOVE_TO_ZONE;
         rev.entity = target;
         rev.affected_player = target_zone.owner;  // 616.1: the card's owner is the affected player
+        rev.origin = target_zone.location;
         rev.destination = destination;
         replacement::dispatch(rev);
+        if (rev.prevented) return;  // 614.13 — the move is prevented; the card remains in its origin zone
         destination = rev.destination;
     }
 

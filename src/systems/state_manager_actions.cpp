@@ -407,6 +407,10 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         }
         if (!can_afford_fb) continue;
 
+        // A graveyard-cast static (Grafdigger's Cage: Origin$ Graveyard) prohibits flashback.
+        bool fb_is_creature = is_creature_card(gcd);
+        if (rules_mod::cast_prohibited(priority_player, fb_is_creature, Zone::GRAVEYARD)) continue;
+
         LegalAction fb_la(CAST_SPELL, gy_entity, "Cast " + gcd.name + " (flashback)");
         fb_la.category = ActionCategory::CAST_SPELL;
         fb_la.use_flashback = true;

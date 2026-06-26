@@ -54,13 +54,23 @@ bool activation_prohibited(Entity permanent_entity) {
     return false;
 }
 
-bool cast_prohibited(Zone::Ownership caster, bool card_is_creature) {
+bool cast_prohibited(Zone::Ownership caster, bool card_is_creature, Zone::ZoneValue cast_from) {
     for (const auto &as : g_active_statics) {
         if (as.suppressed) continue;  // 613.1f: source lost all abilities (Humility)
         if (as.sa->category != "CantBeCast") continue;
         // Creatures are unaffected by a nonCreature restriction.
         if (as.sa->cant_cast_filter.find("nonCreature") != std::string::npos && card_is_creature)
             continue;
+        // Origin$ Graveyard,Library (Grafdigger's Cage): only spells cast from those zones are
+        // prohibited. A spell cast from any other zone (e.g. the hand) is unaffected by this
+        // static; when neither origin flag is set the restriction is zone-agnostic.
+        if (as.sa->cant_cast_from_graveyard || as.sa->cant_cast_from_library) {
+            bool origin_restricted =
+                (cast_from == Zone::GRAVEYARD && as.sa->cant_cast_from_graveyard) ||
+                (cast_from == Zone::LIBRARY && as.sa->cant_cast_from_library);
+            if (!origin_restricted) continue;
+            return true;
+        }
         // Caster$ Opponent (Voice of Victory): the controller's opponents can't cast spells.
         // condition_met (e.g. Condition$ PlayerTurn) gates when the static is live; an
         // unconditional opponent-lock has condition_met == true already.

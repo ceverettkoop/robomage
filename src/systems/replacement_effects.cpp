@@ -27,6 +27,7 @@ enum CandidateKind {
     EXILE_INSTEAD,  // 614.1a — opponent's card is exiled (with a void counter) instead of going to graveyard
     EXILE_INSTEAD_OF_ETB, // 614.1a — a non-token creature that wasn't cast is exiled instead of entering (Containment Priest)
     SKIP_UNTAP,     // 614.1d — this permanent doesn't untap during its controller's untap step (Choke)
+    PREVENT_ETB,    // 614.13 — a creature card from a restricted origin zone is prevented from entering (Grafdigger's Cage)
 };
 
 struct Candidate {
@@ -134,6 +135,38 @@ std::vector<Candidate> collect(const ReplacementEvent &ev,
     }
 
     if (ev.type == ReplacementEvent::MOVE_TO_ZONE) {
+        // Grafdigger's Cage (614.13): a creature card moving from a graveyard or library onto
+        // the battlefield is prevented from entering — it stays in its origin zone. This covers
+        // reanimation (graveyard → battlefield) and search-to-battlefield (Green Sun's Zenith,
+        // library → battlefield). It is a prevention, not an exile-redirect.
+        if (ev.destination == Zone::BATTLEFIELD &&
+            (ev.origin == Zone::GRAVEYARD || ev.origin == Zone::LIBRARY) &&
+            !global_coordinator.entity_has_component<Token>(ev.entity) &&
+            global_coordinator.entity_has_component<CardData>(ev.entity) &&
+            is_creature_card(global_coordinator.GetComponent<CardData>(ev.entity))) {
+            Entity max_e = global_coordinator.GetMaxIssuedEntity();
+            for (Entity e = 0; e < max_e; e++) {
+                if (!is_battlefield_permanent(e)) continue;
+                if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+                auto &cd = global_coordinator.GetComponent<CardData>(e);
+                for (size_t i = 0; i < cd.replacement_effects.size(); i++) {
+                    const Effect::Replacement &r = cd.replacement_effects[i];
+                    if (r.kind != Effect::Replacement::PREVENT_ETB_FROM_ZONES) continue;
+                    if (ev.origin == Zone::GRAVEYARD && !r.prevent_from_graveyard) continue;
+                    if (ev.origin == Zone::LIBRARY && !r.prevent_from_library) continue;
+                    Candidate c;
+                    c.source = e;
+                    c.kind = PREVENT_ETB;
+                    c.index = static_cast<int>(i);
+                    c.self_replacement = false;
+                    c.label = global_coordinator.GetComponent<Permanent>(e).name +
+                              ": can't enter from that zone";
+                    if (!already_applied(applied, c)) out.push_back(c);
+                }
+            }
+            return out;
+        }
+
         // Dauthi Voidwalker etc.: only a graveyard-bound, non-token, owned card is eligible.
         if (ev.destination != Zone::GRAVEYARD) return out;
         if (global_coordinator.entity_has_component<Token>(ev.entity)) return out;
@@ -234,6 +267,12 @@ void apply_one(ReplacementEvent &ev, const Candidate &c) {
         case SKIP_UNTAP:
             ev.skip_untap = true;
             break;
+        case PREVENT_ETB: {
+            ev.prevented = true;
+            std::string name = global_coordinator.GetComponent<CardData>(ev.entity).name;
+            game_log("%s can't enter the battlefield from that zone.\n", name.c_str());
+            break;
+        }
     }
 }
 

@@ -39,6 +39,10 @@ struct StaticAbility {
     bool cant_cast_by_opponent = false;     // Caster$ Opponent — restricts the controller's opponents
                                             // (Voice of Victory: "your opponents can't cast spells
                                             // during your turn", gated by Condition$ PlayerTurn).
+    // Origin$ Graveyard,Library (Grafdigger's Cage): the restriction applies only to spells cast
+    // from these zones (e.g. flashback). Both false = the restriction is zone-agnostic.
+    bool cant_cast_from_graveyard = false;
+    bool cant_cast_from_library = false;
 
     // Type-changing fields (category = "Continuous", layer 4):
     std::string add_type = "";              // AddType$ Mountain — land subtype to set

@@ -38,6 +38,8 @@ struct ReplacementEvent {
 
     // MOVE_TO_ZONE in/out
     Zone::ZoneValue destination = Zone::GRAVEYARD;     // caller seeds the natural destination; dispatch may redirect
+    Zone::ZoneValue origin = Zone::LIBRARY;            // caller seeds the zone the card is leaving
+    bool prevented = false;                            // 614.13/CantHappen — the move doesn't happen; the card stays in its origin zone (Grafdigger's Cage)
 
     // DRAW_CARD outcome (dredge, 702.52a / 614.1a)
     bool   draw_replaced = false;                      // a dredge replaced the draw — caller performs no draw
