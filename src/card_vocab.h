@@ -96,6 +96,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Preordain", 152},
     {"Scrubland", 153},
     {"Aether Spellbomb", 154},
+    {"Badlands", 155},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);
