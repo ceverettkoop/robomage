@@ -192,19 +192,16 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                 // "enters with +1/+1 counters". The counters are applied once the Creature
                 // component exists (below).
                 {
+                    // Containment Priest's "exile instead of entering" (614.1a) is handled
+                    // earlier, in the MOVE_TO_ZONE dispatch inside add_to_zone, so a redirected
+                    // creature never reaches the battlefield and is never seen by this scan.
+                    // Here we only read self-replacements that shape how the permanent enters:
+                    // "enters tapped" (614.1d) and "enters with counters" (614.1c).
                     ReplacementEvent rev;
                     rev.type = ReplacementEvent::ENTERS_BATTLEFIELD;
                     rev.entity = entity;
                     rev.affected_player = zone.controller;  // 616.1: the permanent's controller chooses
                     replacement::dispatch(rev);
-                    // Containment Priest (614.1a): a non-token creature that wasn't cast is
-                    // exiled instead of entering. Redirect the card to exile and skip creating
-                    // its Permanent component entirely (it never enters the battlefield).
-                    if (rev.redirect_to_exile) {
-                        game.cast_to_battlefield.erase(entity);
-                        orderer->add_to_zone(false, entity, Zone::EXILE);
-                        continue;
-                    }
                     perm.is_tapped = rev.enters_tapped;
                     etb_p1p1 = rev.etb_p1p1;
                     etb_counter_type = rev.etb_counter_type;

@@ -114,64 +114,77 @@ std::vector<Candidate> collect(const ReplacementEvent &ev,
             c.label = "enters tapped";
             if (!already_applied(applied, c)) out.push_back(c);
         }
-        // Containment Priest: a non-token creature that wasn't cast is exiled instead of
-        // entering the battlefield (614.1a). The entering object must be a real card (not a
-        // token), a creature, and it must NOT have been cast (cur_game.cast_to_battlefield).
-        if (global_coordinator.entity_has_component<CardData>(ev.entity) &&
-            !global_coordinator.entity_has_component<Token>(ev.entity) &&
-            is_creature_card(global_coordinator.GetComponent<CardData>(ev.entity)) &&
-            cur_game.cast_to_battlefield.count(ev.entity) == 0) {
-            Entity max_e = global_coordinator.GetMaxIssuedEntity();
-            for (Entity e = 0; e < max_e; e++) {
-                if (!is_battlefield_permanent(e)) continue;
-                if (e == ev.entity) continue;  // a permanent doesn't exile itself as it enters
-                if (!global_coordinator.entity_has_component<CardData>(e)) continue;
-                auto &cd = global_coordinator.GetComponent<CardData>(e);
-                for (size_t i = 0; i < cd.replacement_effects.size(); i++) {
-                    if (cd.replacement_effects[i].kind != Effect::Replacement::EXILE_INSTEAD_OF_ETB)
-                        continue;
-                    Candidate c;
-                    c.source = e;
-                    c.kind = EXILE_INSTEAD_OF_ETB;
-                    c.index = static_cast<int>(i);
-                    c.self_replacement = false;
-                    c.label = global_coordinator.GetComponent<Permanent>(e).name +
-                              ": exile instead of entering";
-                    if (!already_applied(applied, c)) out.push_back(c);
-                }
-            }
-        }
         return out;
     }
 
     if (ev.type == ReplacementEvent::MOVE_TO_ZONE) {
-        // Grafdigger's Cage (614.13): a creature card moving from a graveyard or library onto
-        // the battlefield is prevented from entering — it stays in its origin zone. This covers
-        // reanimation (graveyard → battlefield) and search-to-battlefield (Green Sun's Zenith,
-        // library → battlefield). It is a prevention, not an exile-redirect.
-        if (ev.destination == Zone::BATTLEFIELD &&
-            (ev.origin == Zone::GRAVEYARD || ev.origin == Zone::LIBRARY) &&
-            !global_coordinator.entity_has_component<Token>(ev.entity) &&
-            global_coordinator.entity_has_component<CardData>(ev.entity) &&
-            is_creature_card(global_coordinator.GetComponent<CardData>(ev.entity))) {
-            Entity max_e = global_coordinator.GetMaxIssuedEntity();
-            for (Entity e = 0; e < max_e; e++) {
-                if (!is_battlefield_permanent(e)) continue;
-                if (!global_coordinator.entity_has_component<CardData>(e)) continue;
-                auto &cd = global_coordinator.GetComponent<CardData>(e);
-                for (size_t i = 0; i < cd.replacement_effects.size(); i++) {
-                    const Effect::Replacement &r = cd.replacement_effects[i];
-                    if (r.kind != Effect::Replacement::PREVENT_ETB_FROM_ZONES) continue;
-                    if (ev.origin == Zone::GRAVEYARD && !r.prevent_from_graveyard) continue;
-                    if (ev.origin == Zone::LIBRARY && !r.prevent_from_library) continue;
-                    Candidate c;
-                    c.source = e;
-                    c.kind = PREVENT_ETB;
-                    c.index = static_cast<int>(i);
-                    c.self_replacement = false;
-                    c.label = global_coordinator.GetComponent<Permanent>(e).name +
-                              ": can't enter from that zone";
-                    if (!already_applied(applied, c)) out.push_back(c);
+        // A move already prevented (614.13) admits no further replacements.
+        if (ev.prevented) return out;
+        Entity max_e = global_coordinator.GetMaxIssuedEntity();
+
+        // A card about to enter the battlefield can meet two replacement effects, and both
+        // are evaluated here — inside the zone move, *before* add_to_zone emits the
+        // enters-the-battlefield CARD_CHANGED_ZONE event. Applying the exile-redirect later
+        // (at the ENTERS_BATTLEFIELD dispatch) would be too late: the creature would already
+        // be on the battlefield and other permanents' "whenever a creature enters" triggers
+        // (and its own ETB) would have fired for a creature that is supposed to never enter.
+        if (ev.destination == Zone::BATTLEFIELD) {
+            bool nontoken_creature =
+                !global_coordinator.entity_has_component<Token>(ev.entity) &&
+                global_coordinator.entity_has_component<CardData>(ev.entity) &&
+                is_creature_card(global_coordinator.GetComponent<CardData>(ev.entity));
+
+            // Grafdigger's Cage (614.13): a creature card moving from a graveyard or library
+            // onto the battlefield is prevented from entering — it stays in its origin zone.
+            // This covers reanimation (graveyard → battlefield) and search-to-battlefield
+            // (Green Sun's Zenith, library → battlefield). A card that can't enter at all
+            // needn't also be exiled, so a prevention takes precedence over Containment
+            // Priest's exile-redirect below.
+            if (nontoken_creature &&
+                (ev.origin == Zone::GRAVEYARD || ev.origin == Zone::LIBRARY)) {
+                for (Entity e = 0; e < max_e; e++) {
+                    if (!is_battlefield_permanent(e)) continue;
+                    if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+                    auto &cd = global_coordinator.GetComponent<CardData>(e);
+                    for (size_t i = 0; i < cd.replacement_effects.size(); i++) {
+                        const Effect::Replacement &r = cd.replacement_effects[i];
+                        if (r.kind != Effect::Replacement::PREVENT_ETB_FROM_ZONES) continue;
+                        if (ev.origin == Zone::GRAVEYARD && !r.prevent_from_graveyard) continue;
+                        if (ev.origin == Zone::LIBRARY && !r.prevent_from_library) continue;
+                        Candidate c;
+                        c.source = e;
+                        c.kind = PREVENT_ETB;
+                        c.index = static_cast<int>(i);
+                        c.self_replacement = false;
+                        c.label = global_coordinator.GetComponent<Permanent>(e).name +
+                                  ": can't enter from that zone";
+                        if (!already_applied(applied, c)) out.push_back(c);
+                    }
+                }
+                if (!out.empty()) return out;
+            }
+
+            // Containment Priest (614.1a): a non-token creature that wasn't cast is exiled
+            // instead of entering, regardless of which zone it would have entered from
+            // (reanimation, blink out of exile, put onto the battlefield from hand, ...). A
+            // creature spell resolving from the stack is in cast_to_battlefield and let through.
+            if (nontoken_creature && cur_game.cast_to_battlefield.count(ev.entity) == 0) {
+                for (Entity e = 0; e < max_e; e++) {
+                    if (!is_battlefield_permanent(e)) continue;
+                    if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+                    auto &cd = global_coordinator.GetComponent<CardData>(e);
+                    for (size_t i = 0; i < cd.replacement_effects.size(); i++) {
+                        if (cd.replacement_effects[i].kind != Effect::Replacement::EXILE_INSTEAD_OF_ETB)
+                            continue;
+                        Candidate c;
+                        c.source = e;
+                        c.kind = EXILE_INSTEAD_OF_ETB;
+                        c.index = static_cast<int>(i);
+                        c.self_replacement = false;
+                        c.label = global_coordinator.GetComponent<Permanent>(e).name +
+                                  ": exile instead of entering";
+                        if (!already_applied(applied, c)) out.push_back(c);
+                    }
                 }
             }
             return out;
@@ -183,7 +196,6 @@ std::vector<Candidate> collect(const ReplacementEvent &ev,
         if (!global_coordinator.entity_has_component<CardData>(ev.entity)) return out;
         auto &tz = global_coordinator.GetComponent<Zone>(ev.entity);
 
-        Entity max_e = global_coordinator.GetMaxIssuedEntity();
         for (Entity e = 0; e < max_e; e++) {
             if (!is_battlefield_permanent(e)) continue;
             auto &perm = global_coordinator.GetComponent<Permanent>(e);
@@ -271,7 +283,7 @@ void apply_one(ReplacementEvent &ev, const Candidate &c) {
             break;
         }
         case EXILE_INSTEAD_OF_ETB: {
-            ev.redirect_to_exile = true;
+            ev.destination = Zone::EXILE;
             std::string name = global_coordinator.GetComponent<CardData>(ev.entity).name;
             game_log("%s is exiled instead of entering the battlefield.\n", name.c_str());
             break;

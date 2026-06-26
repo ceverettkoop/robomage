@@ -37,7 +37,6 @@ struct ReplacementEvent {
     bool enters_tapped = false;
     int  etb_p1p1 = 0;                                 // counters to add when the permanent enters (614.1c); count of etb_counter_type
     std::string etb_counter_type = "P1P1";             // kind of "enters with" counter ("P1P1", "CHARGE", ...)
-    bool redirect_to_exile = false;                    // 614.1a — the permanent is exiled instead of entering (Containment Priest)
 
     // MOVE_TO_ZONE in/out
     Zone::ZoneValue destination = Zone::GRAVEYARD;     // caller seeds the natural destination; dispatch may redirect
