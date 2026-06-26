@@ -104,6 +104,9 @@ struct Game {
         std::vector<DelayedTrigger> delayed_triggers;
         std::vector<Entity> delve_exiled;   // entities exiled during current delve cast; cleared after ETB
         size_t x_paid = 0;                  // X value chosen at cast time for X-cost spells
+        int last_targeted_power = 0;        // last-known effective power of a targeted creature,
+                                            // captured before its ability's handler may move it
+                                            // (CR 608.2g; Swords to Plowshares: gain life = its power)
         std::vector<Entity> remembered_entities;  // Defined$ Remembered — used by Attach sub-ability, Doomsday remember-changed
         std::map<Entity, int> ability_resolution_counts;  // Count$ResolvedThisTurn: incremented per triggered-ability resolve
         std::map<Entity, int> payment_fail_counts;  // machine mode: block casting after 2 failed payments

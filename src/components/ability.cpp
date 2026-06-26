@@ -841,10 +841,11 @@ size_t evaluate_dynamic_amount(
         return static_cast<size_t>(revolt ? high_val : low_val);
     }
     if (expr.find("Targeted$CardPower") != std::string::npos) {
-        if (global_coordinator.entity_has_component<CardData>(target))
-            return static_cast<size_t>(global_coordinator.GetComponent<CardData>(target).power);
-        if (global_coordinator.entity_has_component<Creature>(target))
+        // Effective power while the creature is on the battlefield (counters/buffs included);
+        // otherwise the last-known value captured before it left (CR 608.2g).
+        if (is_battlefield_permanent(target) && global_coordinator.entity_has_component<Creature>(target))
             return static_cast<size_t>(global_coordinator.GetComponent<Creature>(target).power);
+        return static_cast<size_t>(cur_game.last_targeted_power < 0 ? 0 : cur_game.last_targeted_power);
     }
     // Remembered$CardManaCost[/Plus.N] — mana value of the first remembered card (Birthing
     // Ritual: X = 1 plus the sacrificed creature's mana value).
@@ -939,6 +940,17 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
         else if (target != 0)
             cur_game.remembered_entities.push_back(target);
     }
+    // Last-known information (CR 608.2g): capture the targeted creature's effective power
+    // (incl. counters/continuous buffs) before this ability's handler may move it from the
+    // battlefield. Swords to Plowshares exiles the creature in its main ChangeZone, then its
+    // DBGainLife sub-ability needs the power the creature had in play. Guard on the target
+    // still being a battlefield creature so the post-move sub-resolve does not overwrite the
+    // captured value with a stale read.
+    if (target != 0 && is_battlefield_permanent(target) &&
+        global_coordinator.entity_has_component<Creature>(target))
+        cur_game.last_targeted_power =
+            static_cast<int>(global_coordinator.GetComponent<Creature>(target).power);
+
     game_log("Resolving ability (category: %s, amount: %zu)\n", category.c_str(), amount);
 
     // Conditional execution: if condition fails, skip this ability's body but still chain subabilities
