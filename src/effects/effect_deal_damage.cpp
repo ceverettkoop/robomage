@@ -53,6 +53,18 @@ bool deal_damage(Ability &ab, std::shared_ptr<Orderer> orderer) {
         game_log("Dealt %zu damage to player (now at %d life)\n", dmg, player.life_total);
         return true;
     }
+    // Defined$ You — "deals N damage to you" (Ancient Tomb's mana-ability pain rider).
+    // The damaged player is the source's controller; no target was chosen. CR 109.5.
+    if (ab.defined_you) {
+        Zone::Ownership caster = global_coordinator.entity_has_component<Permanent>(ab.source)
+                                     ? global_coordinator.GetComponent<Permanent>(ab.source).controller
+                                     : global_coordinator.GetComponent<Zone>(ab.source).owner;
+        Entity you_entity = get_player_entity(caster);
+        deal_damage_to_player(ab.source, you_entity, dmg);
+        auto &player = global_coordinator.GetComponent<Player>(you_entity);
+        game_log("Dealt %zu damage to player (now at %d life)\n", dmg, player.life_total);
+        return true;
+    }
     if (global_coordinator.entity_has_component<Player>(ab.target)) {
         deal_damage_to_player(ab.source, ab.target, dmg);
         auto &player = global_coordinator.GetComponent<Player>(ab.target);

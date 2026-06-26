@@ -805,6 +805,9 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         if (value == "Remembered") ability.defined_remembered = true;
         else if (value == "TargetedController") ability.defined_targeted_controller = true;
         else if (value == "Self") ability.defined_self = true;
+        // Defined$ You — the effect's player is the source's controller (CR 109.5). Used by
+        // self-pain riders like Ancient Tomb's "deals 2 damage to you" sub-ability.
+        else if (value == "You") ability.defined_you = true;
         // Defined$ Player.Opponent — the effect's player is "each opponent" (no chosen
         // target). CR 109.5 / 102.1: in a two-player game this is the single opponent.
         else if (value == "Player.Opponent" || value == "Opponent") ability.defined_each_opponent = true;

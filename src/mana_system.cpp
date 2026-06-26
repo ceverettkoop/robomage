@@ -505,6 +505,16 @@ static void activate_mana_source(Entity entity, const Ability &ab, Zone::Ownersh
     if (commit)
         game_log("%s activated %s for %zu(%s)\n", player_name(controller).c_str(),
                  perm.name.c_str(), amount, mana_symbol_str(ab.color));
+    // A mana ability may carry a SubAbility$ rider that is part of the mana ability and
+    // resolves off-stack with it — e.g. Ancient Tomb's "deals 2 damage to you" (CR 605.1a,
+    // 606.3). Only fire it when committing the activation (not during legality simulation).
+    if (commit) {
+        for (auto sub_ab : ab.subabilities) {
+            sub_ab.source = entity;
+            sub_ab.controller = controller;
+            sub_ab.resolve(orderer);
+        }
+    }
     if (commit) increment_activation_count(perm, ab);
 }
 

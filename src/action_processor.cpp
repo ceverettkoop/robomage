@@ -286,6 +286,16 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
             mana_amount, mana_symbol_str(mana_color));
         // priority does not pass
 
+        // A mana ability may carry a SubAbility$ rider that is part of the same mana ability
+        // and resolves immediately (off-stack) as the ability resolves — e.g. Ancient Tomb's
+        // "Ancient Tomb deals 2 damage to you" (CR 605.1a, 606.3). Resolve each sub-ability
+        // here with the source/controller of the mana ability.
+        for (auto sub_ab : ability.subabilities) {
+            sub_ab.source = permanent_entity;
+            sub_ab.controller = controller;
+            sub_ab.resolve(orderer);
+        }
+
         // Increment activation counter if this ability has a limit
         increment_activation_count(permanent, ability);
     } else {  // ACTIVATED ABILITY THAT IS NOT A MANA ABILITY - GOES ON STACK

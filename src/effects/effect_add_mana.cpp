@@ -41,10 +41,15 @@ bool add_mana(Ability &ab, std::shared_ptr<Orderer> orderer) {
 
 bool parse_add_mana(Ability &ab, const std::string &key, const std::string &value) {
     if (key != "Produced") return false;
+    // A mana ability may specify how much mana it makes via Amount$ (e.g. Ancient Tomb:
+    // Produced$ C | Amount$ 2). Amount$ is consumed separately and sets ab.amount, but the
+    // two params can appear in either order on the line, so only fall back to the default of
+    // 1 when no explicit amount has been parsed yet (ab.amount still at its 0 default).
+    size_t default_amount = (ab.amount > 0) ? ab.amount : 1;
     if (value == "Any") {
         // Birds of Paradise: produce any color
         ab.mana_choices = {WHITE, BLUE, BLACK, RED, GREEN};
-        ab.amount = 1;
+        ab.amount = default_amount;
     } else if (value.find("Combo") != std::string::npos) {
         // Noble Hierarch: "Combo W U G" — space-separated colors after "Combo"
         size_t combo_pos = value.find("Combo");
@@ -64,7 +69,7 @@ bool parse_add_mana(Ability &ab, const std::string &key, const std::string &valu
                 start = ci + 1;
             }
         }
-        ab.amount = 1;
+        ab.amount = default_amount;
     } else {
         for (char c : value) {
             if      (c == 'W') { ab.color = WHITE;     break; }
@@ -74,7 +79,7 @@ bool parse_add_mana(Ability &ab, const std::string &key, const std::string &valu
             else if (c == 'G') { ab.color = GREEN;     break; }
             else if (c == 'C') { ab.color = COLORLESS; break; }
         }
-        ab.amount = 1;
+        ab.amount = default_amount;
     }
     return true;
 }
