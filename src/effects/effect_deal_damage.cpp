@@ -13,6 +13,7 @@
 #include "../ecs/coordinator.h"
 #include "../error.h"
 #include "../game_queries.h"
+#include "../mana_system.h"
 #include "../systems/orderer.h"
 
 extern Coordinator global_coordinator;
@@ -37,6 +38,20 @@ bool deal_damage(Ability &ab, std::shared_ptr<Orderer> orderer) {
                                      ? global_coordinator.GetComponent<Permanent>(ab.source).controller
                                      : global_coordinator.GetComponent<Zone>(ab.source).owner;
         if (check_delirium(caster, orderer->mEntities)) dmg = dp->delirium_amount;
+    }
+    // Defined$ Player.Opponent — "deals N damage to each opponent" (no chosen target).
+    // CR 109.5: in a two-player game, "each opponent" is the source controller's single
+    // opponent. Resolve the opponent from the source's controller at resolution time.
+    if (ab.defined_each_opponent) {
+        Zone::Ownership caster = global_coordinator.entity_has_component<Permanent>(ab.source)
+                                     ? global_coordinator.GetComponent<Permanent>(ab.source).controller
+                                     : global_coordinator.GetComponent<Zone>(ab.source).owner;
+        Zone::Ownership opp = (caster == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+        Entity opp_entity = get_player_entity(opp);
+        deal_damage_to_player(ab.source, opp_entity, dmg);
+        auto &player = global_coordinator.GetComponent<Player>(opp_entity);
+        game_log("Dealt %zu damage to player (now at %d life)\n", dmg, player.life_total);
+        return true;
     }
     if (global_coordinator.entity_has_component<Player>(ab.target)) {
         deal_damage_to_player(ab.source, ab.target, dmg);

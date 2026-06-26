@@ -133,6 +133,8 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                     ev.GetParam<Entity>(Params::ENTITY) != entity) continue;
                 // Evoke self-sacrifice only fires when this permanent was cast via evoke
                 if (ab.is_evoke_sacrifice && !perm.evoked) continue;
+                // Offspring token copy only fires when this permanent was cast with offspring
+                if (ab.is_offspring_token && !perm.entered_with_offspring) continue;
                 // Don't fire front-face triggers on a transformed permanent
                 if (perm.transformed) continue;
                 // ValidPlayer$ You: only fire when the event's player matches the permanent's controller
@@ -272,6 +274,7 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
 
 static std::string trigger_label(const std::string &name, const Ability &ab) {
     if (ab.is_evoke_sacrifice) return name + " (evoke: sacrifice)";
+    if (ab.is_offspring_token) return name + " (offspring: token copy)";
     std::string s = name + " (" + ab.category;
     if (ab.valid_tgts != "N_A" && !ab.valid_tgts.empty()) s += ", targeted";
     s += ")";

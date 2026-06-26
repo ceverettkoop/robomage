@@ -70,6 +70,9 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
             if (global_coordinator.entity_has_component<Spell>(top_entity) &&
                 global_coordinator.GetComponent<Spell>(top_entity).cast_with_evoke)
                 cur_game.pending_evoked.insert(top_entity);
+            if (global_coordinator.entity_has_component<Spell>(top_entity) &&
+                global_coordinator.GetComponent<Spell>(top_entity).cast_with_offspring)
+                cur_game.pending_offspring.insert(top_entity);
             if (global_coordinator.entity_has_component<Spell>(top_entity))
                 global_coordinator.RemoveComponent<Spell>(top_entity);
             if (global_coordinator.entity_has_component<Ability>(top_entity))

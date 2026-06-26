@@ -87,6 +87,7 @@ struct Ability{
     bool trigger_self_excluded = false;  // true when ValidCard$ has .Other — won't trigger for the source itself
     bool trigger_only_self = false;      // true when ValidCard$ Card.Self — only fires when the entering entity is the source itself
     bool is_evoke_sacrifice = false;     // synthetic ETB self-trigger from K:Evoke — only fires when the permanent was evoked
+    bool is_offspring_token = false;     // synthetic ETB self-trigger from K:Offspring — only fires when the permanent was cast with offspring; creates a 1/1 token copy
     bool trigger_valid_player_is_controller = false;  // true when ValidPlayer$ You
     bool mandatory = false;              // Mandatory$ True — player must choose; suppresses fail-to-find when zone non-empty
     bool may_shuffle = false;            // MayShuffle$ True — player may optionally shuffle after
@@ -98,6 +99,7 @@ struct Ability{
     std::string dynamic_amount_expr = "";   // runtime SVar expression (e.g. "Count$Valid Creature.YouCtrl" or "Targeted$CardPower")
     bool defined_targeted_controller = false;  // Defined$ TargetedController — GainLife goes to target's controller
     bool defined_self = false;                  // Defined$ Self — ability moves its own source
+    bool defined_each_opponent = false;         // Defined$ Player.Opponent — effect applies to each opponent (no target)
 
     // Filter naming which permanents a mass effect affects (DestroyAll / SacrificeAll /
     // PutCounterAll): the ValidCards$ spec, e.g. "Cat.YouCtrl" or

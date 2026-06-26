@@ -55,6 +55,22 @@ bool copy_permanent(Ability &ab, std::shared_ptr<Orderer> orderer) {
     if (global_coordinator.entity_has_component<Permanent>(ab.source))
         ctrl = global_coordinator.GetComponent<Permanent>(ab.source).controller;
 
+    // Offspring (CR 702.171c): "create a 1/1 token that's a copy of" the source creature.
+    // Copy the source permanent itself, then override the copy's P/T to 1/1.
+    if (ab.is_offspring_token) {
+        Token tok = copyable_token_of(ab.source);
+        if (tok.name.empty()) return true;
+        tok.power = 1;
+        tok.toughness = 1;
+        Entity tok_entity = global_coordinator.CreateEntity();
+        global_coordinator.AddComponent(tok_entity, Zone(Zone::HAND, ctrl, ctrl));
+        global_coordinator.AddComponent(tok_entity, tok);
+        orderer->add_to_zone(false, tok_entity, Zone::BATTLEFIELD);
+        bootstrap_token_components(tok_entity, tok, ctrl, cur_game.timestamp);
+        game_log("Offspring token copy created: %u/%u %s\n", tok.power, tok.toughness, tok.name.c_str());
+        return true;
+    }
+
     // Snapshot the matching permanents first (707.2 / "for each ... that entered this turn").
     std::vector<Entity> sources;
     for (auto e : orderer->mEntities)

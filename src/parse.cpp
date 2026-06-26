@@ -529,6 +529,31 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             card.abilities.push_back(sac);
             continue;
         }
+        // K:Offspring:<cost> — an optional additional cost (CR 702.171). You may pay the
+        // offspring cost in addition to the spell's mana cost as you cast it; if you do,
+        // when this creature enters, create a 1/1 token that's a copy of it. Modeled as a
+        // second cast option (paying base + offspring) that sets Permanent::entered_with_offspring,
+        // gating a synthetic ETB self-trigger that creates the 1/1 token copy.
+        if (kw_line.rfind("Offspring", 0) == 0) {
+            size_t colon = kw_line.find(':');
+            if (colon != std::string::npos)
+                card.offspring_cost = parse_mana_cost(kw_line.substr(colon + 1));
+            card.has_offspring = true;
+            card.keywords.push_back("Offspring");
+
+            Ability tok;
+            tok.ability_type = Ability::TRIGGERED;
+            tok.category = "CopyPermanent";
+            tok.trigger_on = Events::CARD_CHANGED_ZONE;
+            tok.trigger_zone_destination = Zone::BATTLEFIELD;
+            tok.trigger_only_self = true;
+            tok.is_offspring_token = true;
+            tok.defined_self = true;          // copies its own source (no targeting)
+            tok.valid_tgts = "N_A";
+            tok.mandatory = true;
+            card.abilities.push_back(tok);
+            continue;
+        }
         split_keywords(kw_line, card.keywords);
     }
 }
@@ -780,6 +805,9 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         if (value == "Remembered") ability.defined_remembered = true;
         else if (value == "TargetedController") ability.defined_targeted_controller = true;
         else if (value == "Self") ability.defined_self = true;
+        // Defined$ Player.Opponent — the effect's player is "each opponent" (no chosen
+        // target). CR 109.5 / 102.1: in a two-player game this is the single opponent.
+        else if (value == "Player.Opponent" || value == "Opponent") ability.defined_each_opponent = true;
         // Defined$ Valid <filter> (CopyPermanent's "for each token you control that entered
         // this turn") — store the filter spec the same place ValidCards$ writes it, so the
         // effect can scan the battlefield for matches.

@@ -57,6 +57,8 @@ struct CardData{
     AltCost flashback_alt_cost;          // non-mana costs (e.g. PayLife<3> for Deep Analysis)
     bool is_equipment = false;           // has K:Equip line
     ManaValue equip_cost;                // parsed from K:Equip:cost
+    bool has_offspring = false;          // K:Offspring:cost — optional additional cost (CR 702.171)
+    ManaValue offspring_cost;            // mana paid in addition to the spell's cost for Offspring
     std::set<Colors> explicit_colors;    // Colors: field override (e.g. Dryad Arbor)
 };
 

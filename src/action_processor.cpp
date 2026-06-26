@@ -940,6 +940,10 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                 // RaiseCost surcharge (NamedCard-aware) folded in; shared with legality.
                 ManaValue cost_to_pay = effective_base_cost(card_data);
 
+                // Offspring (CR 702.171): additional cost paid on top of the spell's cost.
+                if (action.use_offspring)
+                    for (Colors c : card_data.offspring_cost) cost_to_pay.insert(c);
+
                 // X-COST: prompt player to choose X value, add X generic to cost
                 if (card_data.has_x_cost) {
                     size_t max_x = max_available_mana(caster, cost_to_pay, orderer);
@@ -1027,6 +1031,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             spell.caster = caster;
             spell.cast_with_flashback = action.use_flashback;
             spell.cast_with_evoke = action.use_alt_cost && card_data.alt_cost.is_evoke;
+            spell.cast_with_offspring = action.use_offspring;
             if (cur_game.pending_cant_be_countered) {
                 spell.cant_be_countered = true;
                 cur_game.pending_cant_be_countered = false;

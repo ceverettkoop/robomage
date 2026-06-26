@@ -366,6 +366,19 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 alt_la.description = "Cast " + card_data.name + " (alternate cost)";
                 actions.push_back(alt_la);
             }
+            // Offspring (CR 702.171): optional ADDITIONAL cost. Offer a separate cast option
+            // that must pay the base cost plus the offspring cost together.
+            if (card_data.has_offspring) {
+                ManaValue offspring_total = effective_cost;
+                for (Colors c : card_data.offspring_cost) offspring_total.insert(c);
+                if (can_pay_mana(priority_player, offspring_total, card_entity, orderer,
+                                 card_data.has_delve)) {
+                    LegalAction off_la = la;
+                    off_la.use_offspring = true;
+                    off_la.description = "Cast " + card_data.name + " (offspring)";
+                    actions.push_back(off_la);
+                }
+            }
         }
     }
     // checking graveyard for flashback spells

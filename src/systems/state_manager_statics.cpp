@@ -192,6 +192,9 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                 // Spell was cast for its evoke cost — mark the permanent so its evoke
                 // self-sacrifice ETB trigger fires (consumed one-shot here).
                 if (game.pending_evoked.erase(entity)) perm.evoked = true;
+                // Spell was cast with its Offspring additional cost — mark the permanent so
+                // its offspring token-copy ETB trigger fires (consumed one-shot here).
+                if (game.pending_offspring.erase(entity)) perm.entered_with_offspring = true;
                 // Planeswalkers enter with loyalty counters equal to printed loyalty (306.5b).
                 if (is_planeswalker_card(card_data)) perm.counters["LOYALTY"] = card_data.starting_loyalty;
                 perm.timestamp_entered_battlefield = game.timestamp++;
