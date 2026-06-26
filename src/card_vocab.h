@@ -81,6 +81,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Kappa Cannoneer", 136},
     {"Kozilek's Command", 137},
     {"Moonshadow", 138},
+    {"Seat of the Synod", 140},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);
