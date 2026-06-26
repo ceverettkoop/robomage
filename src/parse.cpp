@@ -1574,7 +1574,6 @@ static std::vector<StaticAbility> parse_static_abilities(const std::string &scri
 //   Event$ Moved | ValidCard$ Card.Self | Destination$ Battlefield | ReplaceWith$ ETBTapped
 static std::vector<Effect::Replacement> parse_replacement_effects(const std::string& script,
                                                                    const std::map<std::string, std::string>& svars) {
-    (void)svars;
     std::vector<Effect::Replacement> result;
 
     // Collect all R: lines
@@ -1611,6 +1610,7 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
         bool layer_cant_happen    = false;
         bool active_zones_battlefield = false;
         bool valid_card_opp_non_token = false;
+        std::string replace_with_svar;  // the SVar named by ReplaceWith$ (e.g. "Exile"), used to inspect the actual zone-change effect
 
         size_t param_pos = 0;
         std::string key, value;
@@ -1627,9 +1627,19 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
             else if (key == "Destination" && value == "Battlefield") dest_is_battlefield     = true;
             else if (key == "Destination" && value == "Graveyard")   dest_is_graveyard_r     = true;
             else if (key == "ReplaceWith" && value == "ETBTapped")   replace_with_etb_tapped = true;
-            else if (key == "ReplaceWith" && value == "Exile")       replace_with_exile      = true;
+            else if (key == "ReplaceWith") { replace_with_svar = value; if (value == "Exile") replace_with_exile = true; }
             else if (key == "Layer"       && value == "CantHappen") layer_cant_happen        = true;
             else if (key == "ActiveZones" && value == "Battlefield") active_zones_battlefield = true;
+        }
+
+        // Does the replacement's zone-change effect attach a void counter (Dauthi Voidwalker:
+        // WithCountersType$ VOID)? Leyline of the Void omits it — a plain exile. We read this
+        // off the SVar named by ReplaceWith$ rather than retagging the identical R: lines.
+        bool replace_with_void_counter = false;
+        if (!replace_with_svar.empty()) {
+            auto sv = svars.find(replace_with_svar);
+            if (sv != svars.end() && sv->second.find("VOID") != std::string::npos)
+                replace_with_void_counter = true;
         }
 
         if (event_is_moved && valid_card_self && dest_is_battlefield && replace_with_etb_tapped) {
@@ -1644,12 +1654,14 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
             r.applies_to_self_only = true;
             result.push_back(r);
         }
-        // Dauthi Voidwalker: opponent's non-token cards go to exile instead of graveyard
+        // Opponent's non-token cards go to exile instead of graveyard (Dauthi Voidwalker exiles
+        // with a void counter; Leyline of the Void plain-exiles — distinguished by the SVar above).
         if (event_is_moved && dest_is_graveyard_r && replace_with_exile &&
             valid_card_opp_non_token && active_zones_battlefield) {
             Effect::Replacement r;
             r.kind = Effect::Replacement::EXILE_INSTEAD_OF_GRAVEYARD;
             r.applies_to_self_only = false;
+            r.with_void_counter = replace_with_void_counter;
             result.push_back(r);
         }
         // Choke: matching lands don't untap during their controllers' untap steps (614.1d).

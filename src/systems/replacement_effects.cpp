@@ -35,6 +35,7 @@ struct Candidate {
     bool self_replacement = false; // 614.15 — gates choice order under 616.1a
     std::string label;            // menu label when >1 applies
     int amount = 0;               // ETB_COUNTERS: counter count
+    bool with_void_counter = false; // EXILE_INSTEAD: tag the exiled card with a void counter (Dauthi), else plain exile (Leyline)
 };
 
 // Number of cards in a player's library / graveyard scan helpers mirror the
@@ -127,6 +128,7 @@ std::vector<Candidate> collect(const ReplacementEvent &ev,
                 c.kind = EXILE_INSTEAD;
                 c.index = static_cast<int>(i);
                 c.self_replacement = false;
+                c.with_void_counter = cd.replacement_effects[i].with_void_counter;
                 c.label = perm.name + ": exile instead of graveyard";
                 if (!already_applied(applied, c)) out.push_back(c);
             }
@@ -186,9 +188,13 @@ void apply_one(ReplacementEvent &ev, const Candidate &c) {
             break;
         case EXILE_INSTEAD: {
             ev.destination = Zone::EXILE;
-            cur_game.void_countered.insert(ev.entity);
             std::string name = global_coordinator.GetComponent<CardData>(ev.entity).name;
-            game_log("%s is exiled with a void counter.\n", name.c_str());
+            if (c.with_void_counter) {
+                cur_game.void_countered.insert(ev.entity);
+                game_log("%s is exiled with a void counter.\n", name.c_str());
+            } else {
+                game_log("%s is exiled instead of being put into a graveyard.\n", name.c_str());
+            }
             break;
         }
         case SKIP_UNTAP:
