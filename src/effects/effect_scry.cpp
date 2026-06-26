@@ -63,8 +63,11 @@ bool scry(Ability &ab, std::shared_ptr<Orderer> orderer) {
             LegalAction(PASS_PRIORITY, card, std::string("Keep on top")),
             LegalAction(PASS_PRIORITY, card, std::string("Put on bottom")),
         };
+        // Both options reference the same card, so they must differ by category to be
+        // distinguishable to the semantic action resolver (a `top:`/`bottom:` --play spec
+        // keys on category + card): keep = TOP_LIBRARY, bottom = BOTTOM_DECK_CARD.
         scry_actions[0].category = ActionCategory::TOP_LIBRARY;
-        scry_actions[1].category = ActionCategory::TOP_LIBRARY;
+        scry_actions[1].category = ActionCategory::BOTTOM_DECK_CARD;
         int choice = InputLogger::instance().get_input(scry_actions);
         if (choice == 1) {
             orderer->add_to_zone(true, card, Zone::LIBRARY);
