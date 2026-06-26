@@ -171,8 +171,6 @@ bool evaluate_present_condition(const Ability &ab, Zone::Ownership caster, std::
 std::vector<LegalAction> StateManager::determine_legal_actions(
     const Game &game, std::shared_ptr<Orderer> orderer, std::shared_ptr<StackManager> stack_manager) {
     std::vector<LegalAction> actions;          // return value
-    std::vector<LegalAction> pending_actions;  // non mana-ability actions possible if costs could be paid; used to
-                                               // check what mana abilities can be rationally activated
 
     // Determine whose turn/priority it is
     Zone::Ownership priority_player = game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
@@ -336,7 +334,6 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 alt_la.description = "Cast " + card_data.name + " (alternate cost)";
                 actions.push_back(alt_la);
             }
-            if (!can_regular && !can_alt) pending_actions.push_back(la);
         }
     }
     // checking graveyard for flashback spells
@@ -384,7 +381,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         actions.push_back(fb_la);
     }
     // checking permanents for activated abilities
-    // mana abilities parsed last, after pending_actions complete
+    // mana abilities parsed last
     // Simple tap-only mana sources collected via shared function
     std::vector<LegalAction> legal_mana_abilities =
         collect_mana_legal_actions(priority_player, orderer, 0, /*at_priority=*/true);
@@ -506,11 +503,6 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
     }
 
     // not filtering mana abilities based on if they contribute to a spell- will revisit this if it makes ML harder
-    /*
-    for (auto &ma : useful_mana_abilities(legal_mana_abilities, pending_actions)) {
-        actions.push_back(ma);
-    }
-    */
     bool machine = InputLogger::instance().is_machine_mode();
     for (auto &ma : legal_mana_abilities) {
         // In machine mode, normal mana sources stay hidden and are auto-paid during cost

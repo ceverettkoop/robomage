@@ -91,7 +91,6 @@ bool discard(Ability &ab, std::shared_ptr<Orderer> orderer) {
 
 bool parse_discard(Ability &ab, const std::string &key, const std::string &value) {
     if (key == "DiscardValid") { effect_params<DiscardParams>(ab).valid = value; return true; }
-    if (key == "Mode")         { effect_params<DiscardParams>(ab).mode = value; return true; }
     return false;
 }
 

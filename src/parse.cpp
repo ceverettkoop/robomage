@@ -20,7 +20,6 @@
 #include "ecs/coordinator.h"
 #include "ecs/events.h"
 #include "error.h"
-#include "error.h"
 #include "type_constants.h"
 
 extern std::string RESOURCE_DIR;
@@ -810,8 +809,6 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         ability.instant_speed = (value == "True");
     } else if (key == "Planeswalker") {
         ability.is_loyalty_ability = (value == "True");
-    } else if (key == "Ultimate") {
-        ability.is_ultimate = (value == "True");
     } else if (key == "Cost") {
         parse_activation_cost(value, ability);
     } else if (key == "ConditionPresent") {
@@ -840,7 +837,10 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
             // already derives the full behavior from ChangeType/Origin/Destination/Defined.
             // Shuffle$ is inferred from a Library origin; Chooser/Hidden/ForgetOtherTargets
             // are cosmetic given the "move the maximum" simplification.
-            "Chooser", "Hidden", "Shuffle", "ForgetOtherTargets", "RememberRevealed"
+            "Chooser", "Hidden", "Shuffle", "ForgetOtherTargets", "RememberRevealed",
+            // Ultimate$ True is informational: ultimate legality is already covered by the
+            // minus-loyalty cost check, so the flag is unused.
+            "Ultimate"
         };
         if (ignored_keys.find(key) == ignored_keys.end()) {
             std::string msg = "Unrecognized ability param: " + key + "$ " + value;

@@ -46,8 +46,7 @@ bool should_deal_damage(const Creature &cr, bool first_strike_only) {
 // (simultaneous damage/life-gain) applies: a controller only dies if the NET
 // life change leaves them at 0 or less after both effects resolve together.
 static void apply_lifelink_if_any(Entity source, size_t amount,
-                                  int &life_delta_a, int &life_delta_b,
-                                  Game &game) {
+                                  int &life_delta_a, int &life_delta_b) {
     if (amount == 0) return;
     if (!global_coordinator.entity_has_component<Creature>(source)) return;
     auto &cr = global_coordinator.GetComponent<Creature>(source);
@@ -59,7 +58,6 @@ static void apply_lifelink_if_any(Entity source, size_t amount,
     Zone::Ownership ctrl = global_coordinator.GetComponent<Permanent>(source).controller;
     if (ctrl == Zone::PLAYER_A)      life_delta_a += static_cast<int>(amount);
     else if (ctrl == Zone::PLAYER_B) life_delta_b += static_cast<int>(amount);
-    (void)game;
 }
 
 // Combat damage is a turn-based action (rule 510.2), not a state-based action
@@ -111,7 +109,7 @@ void StateManager::deal_combat_damage(Game &game, bool first_strike_only) {
                              entity_name(cr.attack_target).c_str(),
                              get_counters(cr.attack_target, "LOYALTY"));
                 }
-                apply_lifelink_if_any(entity, dmg, life_delta_a, life_delta_b, game);
+                apply_lifelink_if_any(entity, dmg, life_delta_a, life_delta_b);
             }
         } else {
             // Blocked — assign damage to blockers, blockers deal damage back.
@@ -130,7 +128,7 @@ void StateManager::deal_combat_damage(Game &game, bool first_strike_only) {
                 if (bcr.power > 0 && should_deal_damage(bcr, first_strike_only)) {
                     deal_damage(blocker, entity, bcr.power);
                     game_log("  %s deals %u damage to %s\n", blocker_name.c_str(), bcr.power, attacker_name.c_str());
-                    apply_lifelink_if_any(blocker, bcr.power, life_delta_a, life_delta_b, game);
+                    apply_lifelink_if_any(blocker, bcr.power, life_delta_a, life_delta_b);
                 }
 
                 // Attacker deals damage to this blocker.
@@ -147,7 +145,7 @@ void StateManager::deal_combat_damage(Game &game, bool first_strike_only) {
                     deal_damage(entity, blocker, assigned);
                     game_log("  %s deals %u damage to %s\n", attacker_name.c_str(), assigned, blocker_name.c_str());
                     remaining -= assigned;
-                    apply_lifelink_if_any(entity, assigned, life_delta_a, life_delta_b, game);
+                    apply_lifelink_if_any(entity, assigned, life_delta_a, life_delta_b);
                 }
             }
             // Trample: excess damage goes to attack target
@@ -165,7 +163,7 @@ void StateManager::deal_combat_damage(Game &game, bool first_strike_only) {
                     ev.SetParam(Params::PLAYER, cr.attack_target);
                     ev.SetParam(Params::AMOUNT, remaining);
                     global_coordinator.SendEvent(ev);
-                    apply_lifelink_if_any(entity, remaining, life_delta_a, life_delta_b, game);
+                    apply_lifelink_if_any(entity, remaining, life_delta_a, life_delta_b);
                 } else if (has_trample && is_planeswalker_permanent(cr.attack_target) &&
                            on_battlefield(cr.attack_target)) {
                     // Trample excess over the blockers goes to the attacked planeswalker (306.8).
@@ -173,7 +171,7 @@ void StateManager::deal_combat_damage(Game &game, bool first_strike_only) {
                     game_log("  %s tramples %u damage to %s (loyalty now %d)\n", attacker_name.c_str(),
                              remaining, entity_name(cr.attack_target).c_str(),
                              get_counters(cr.attack_target, "LOYALTY"));
-                    apply_lifelink_if_any(entity, remaining, life_delta_a, life_delta_b, game);
+                    apply_lifelink_if_any(entity, remaining, life_delta_a, life_delta_b);
                 }
             }
         }

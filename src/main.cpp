@@ -103,7 +103,6 @@ static EcsSystems init_ecs() {
     global_coordinator.RegisterComponent<Player>();
     global_coordinator.RegisterComponent<Spell>();
     global_coordinator.RegisterComponent<Zone>();
-    global_coordinator.RegisterComponent<Effect>();
     global_coordinator.RegisterComponent<Token>();
 
     auto orderer = global_coordinator.RegisterSystem<Orderer>();

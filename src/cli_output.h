@@ -13,7 +13,6 @@ void cli_print_help(const char* program, const char* version);
 void cli_print_seed(unsigned int seed);
 void cli_print_turn_header(size_t turn, bool player_a_turn);
 void cli_print_invalid_action();
-void cli_print_gui_exit();
 
 // Game state display (reads from GameState only — no ECS access)
 void print_game_state(const GameState* gs);

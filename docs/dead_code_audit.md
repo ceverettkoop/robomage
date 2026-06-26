@@ -91,6 +91,11 @@ but is copy-pasted at `damage.cpp:10` (`source_has_keyword`) and
 
 ## Tier 2 — Confirmed dead code (safe deletions)
 
+**Status: addressed.** All deletions below applied — dead functions/fields removed, the
+`Effect` component registration + error dump dropped (nested `Replacement` kept), and the
+`Ultimate$`/`Mode$` script tags routed to ignored keys. `MANA_ABILITY` was intentionally
+left as an explicitly-reserved enum hole to preserve the ML action-category numbering.
+
 Each verified: definition is the only reference in `src/`.
 
 | Symbol | Location | Note |

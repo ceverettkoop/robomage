@@ -47,13 +47,11 @@ struct TokenParams {
 struct CounterParams {
     std::string type = "";          // CounterType$ — "P1P1" for +1/+1 counters
     int count = 0;                  // CounterNum$ — static count; 0 when dynamic
-    bool count_from_delve = false;  // count = delve_exiled.size() at resolve (unused on Ability today)
 };
 
-// Discard (e.g. Thoughtseize/Duress). mode is currently parsed but unread.
+// Discard (e.g. Thoughtseize/Duress).
 struct DiscardParams {
     std::string valid = "";  // DiscardValid$ — filter (e.g. "Card.nonLand")
-    std::string mode = "";   // Mode$ — e.g. "RevealYouChoose" (parsed, not yet read)
 };
 
 // Peek-no-reveal variant (Mishra's Bauble): look at top card privately, no

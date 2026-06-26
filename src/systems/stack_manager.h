@@ -15,7 +15,6 @@ public:
     static void init();
     bool is_empty();
     void resolve_top(std::shared_ptr<Orderer> orderer);
-    std::vector<Entity> get_stack_contents();
 };
 
 #endif /* STACK_MANAGER_H */

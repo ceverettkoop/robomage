@@ -7,7 +7,6 @@
 #include "../game_queries.h"
 
 extern Coordinator global_coordinator;
-extern Game cur_game;
 
 namespace effects {
 
@@ -21,10 +20,6 @@ bool put_counter(Ability &ab, std::shared_ptr<Orderer> orderer) {
     const CounterParams *cp = std::get_if<CounterParams>(&ab.params);
     if (cp && !cp->type.empty()) {
         int n = cp->count;
-        if (cp->count_from_delve) {
-            n = static_cast<int>(cur_game.delve_exiled.size());
-            cur_game.delve_exiled.clear();
-        }
         if (n <= 0) return true;
         add_counters(counter_tgt, cp->type, n);
         if (cp->type == "P1P1")

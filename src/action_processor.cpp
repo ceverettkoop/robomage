@@ -652,11 +652,6 @@ static std::string landwalk_subtype(const std::string &kw) {
     return "";
 }
 
-static bool creature_has_kw(const Creature &cr, const char *kw) {
-    for (const auto &k : cr.keywords) if (k == kw) return true;
-    return false;
-}
-
 static std::vector<Entity> determine_blockable_attackers(Entity blocker, const std::vector<Entity> &attackers) {
     auto &bcr = global_coordinator.GetComponent<Creature>(blocker);
     bool blocker_can_fly = false;

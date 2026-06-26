@@ -127,9 +127,9 @@ void dump_entity(Entity e) {
     if (global_coordinator.entity_has_component<Player>(e)) {
         auto &p = global_coordinator.GetComponent<Player>(e);
         fprintf(stderr, "  Player:\n");
-        fprintf(stderr, "    life_total=%d  otp=%d\n", p.life_total, p.otp);
-        fprintf(stderr, "    poison=%u  energy=%u  lands_played=%u\n",
-                p.poison_counters, p.energy_counters, p.lands_played_this_turn);
+        fprintf(stderr, "    life_total=%d\n", p.life_total);
+        fprintf(stderr, "    poison=%u  lands_played=%u\n",
+                p.poison_counters, p.lands_played_this_turn);
         fprintf(stderr, "    spells_cast_turn=%zu  spells_cast_game=%zu\n",
                 p.spells_cast_this_turn, p.spells_cast_this_game);
         fprintf(stderr, "    mana_pool:");
@@ -154,13 +154,6 @@ void dump_entity(Entity e) {
         auto &s = global_coordinator.GetComponent<Spell>(e);
         fprintf(stderr, "  Spell:\n");
         fprintf(stderr, "    caster=%s\n", owner_str(s.caster));
-    }
-
-    if (global_coordinator.entity_has_component<Effect>(e)) {
-        auto &ef = global_coordinator.GetComponent<Effect>(e);
-        fprintf(stderr, "  Effect:\n");
-        fprintf(stderr, "    category=%s  amount=%d  replacements=%zu\n",
-                ef.category.c_str(), ef.amount, ef.replacements.size());
     }
 
     if (global_coordinator.entity_has_component<Token>(e)) {

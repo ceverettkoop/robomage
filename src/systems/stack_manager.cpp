@@ -119,16 +119,3 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
         global_coordinator.DestroyEntity(top_entity);
     }
 }
-
-std::vector<Entity> StackManager::get_stack_contents() {
-    std::vector<Entity> stack_entities;
-
-    for (auto &&entity : mEntities) {
-        auto &zone = global_coordinator.GetComponent<Zone>(entity);
-        if (zone.location == Zone::STACK) {
-            stack_entities.push_back(entity);
-        }
-    }
-
-    return stack_entities;
-}

@@ -283,10 +283,6 @@ void cli_print_invalid_action() {
     game_log("Invalid action\n");
 }
 
-void cli_print_gui_exit() {
-    printf("User exited GUI, quitting\n");
-}
-
 // ── Game state display ────────────────────────────────────────────────────────
 
 void print_game_state(const GameState* gs) {

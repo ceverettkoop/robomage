@@ -62,7 +62,6 @@ struct Ability{
     // SubCounter<N/LOYALTY> → -N. Paid by modifying the source's own loyalty at activation.
     bool is_loyalty_ability = false;    // Planeswalker$ True
     int loyalty_cost = 0;               // +N (AddCounter) or -N (SubCounter); loyalty counters added/removed as the cost
-    bool is_ultimate = false;           // Ultimate$ True — informational; legality covered by the minus-cost check
     int activation_zone = -1;           // ActivationZone$ Hand → Zone::HAND; -1 = default (battlefield)
     int activations_this_turn = 0;      // runtime counter, reset at UNTAP
     std::string change_type = "";        // ChangeType$ — comma-separated subtypes to search

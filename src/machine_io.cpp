@@ -345,7 +345,6 @@ void populate_query(Query* q, const std::vector<LegalAction>& actions) {
         ActionChoice& ac = q->choices[i];
 
         ac.category = static_cast<int>(la.category);
-        ac.slot_idx = -1;
 
         Entity src = la.source_entity;
 

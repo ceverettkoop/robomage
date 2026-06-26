@@ -8,7 +8,8 @@
 #include "types.h"
 
 // Replacement effects modify how an event occurs (e.g. entering tapped instead of untapped).
-// Each Replacement is a one-time effect consumed when it fires; `applied` is set true afterwards.
+// Only the nested Replacement type is live — it is parsed from a card's R: lines and stored on
+// CardData::replacement_effects. The Effect component itself is never instantiated.
 struct Effect {
     struct Replacement {
         enum Kind {
@@ -19,17 +20,8 @@ struct Effect {
         };
         Kind kind = ENTERS_TAPPED;
         bool applies_to_self_only = false;  // only fires when the affected entity is the source itself
-        bool applied = false;               // true once consumed; prevents re-application
         std::string valid_subtype = "";     // SKIP_UNTAP: the (sub)type the untap-prevention applies to (e.g. "Island")
     };
-
-    std::vector<Replacement> replacements;
-
-    // Reserved for future continuous effects (stat modifications, keyword grants, etc.)
-    std::set<Zone::ZoneValue> affected_zones;
-    std::set<Type> affected_types;
-    std::string category;
-    int amount = 0;
 };
 
 
