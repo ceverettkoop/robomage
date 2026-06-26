@@ -45,7 +45,13 @@ int active_raise_cost_for(const CardData &card_data);
 // NOT the X-cost choice, which is resolved interactively at cast time). The single
 // effective-base-cost builder shared by determine_legal_actions (affordability) and
 // action_processor (payment) so the two cannot disagree on the surcharge.
-ManaValue effective_base_cost(const CardData &card_data);
+//
+// `caster` (when not UNKNOWN) additionally folds in cost reductions that depend on the
+// casting player's board — currently Affinity for artifacts (CR 702.41): the generic
+// portion is reduced by {1} per artifact the caster controls. CR 601.2f applies all
+// such reductions after additions; the generic total never drops below zero.
+ManaValue effective_base_cost(const CardData &card_data,
+                              Zone::Ownership caster = Zone::UNKNOWN);
 
 class StateManager : public System {
 

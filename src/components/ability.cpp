@@ -600,8 +600,10 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
         if (!global_coordinator.entity_has_component<Zone>(cand)) return false;
         auto &cz = global_coordinator.GetComponent<Zone>(cand);
         if (cz.location != Zone::GRAVEYARD) return false;
-        bool you_ctrl = vt.find("YouCtrl") != std::string::npos;
-        bool opp_ctrl = vt.find("OppCtrl") != std::string::npos;
+        // For a card in a graveyard, its owner is also its controller, so YouCtrl/OppCtrl
+        // and YouOwn/OppOwn restrict the same way (Emry: ValidTgts$ Artifact.YouOwn).
+        bool you_ctrl = vt.find("YouCtrl") != std::string::npos || vt.find("YouOwn") != std::string::npos;
+        bool opp_ctrl = vt.find("OppCtrl") != std::string::npos || vt.find("OppOwn") != std::string::npos;
         if (you_ctrl && cz.owner != caster) return false;
         if (opp_ctrl && cz.owner == caster) return false;
         if (!global_coordinator.entity_has_component<CardData>(cand)) return false;

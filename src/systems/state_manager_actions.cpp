@@ -362,7 +362,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             bool card_is_creature = is_creature_card(card_data);
             if (rules_mod::cast_prohibited(priority_player, card_is_creature)) continue;
 
-            ManaValue effective_cost = effective_base_cost(card_data);
+            ManaValue effective_cost = effective_base_cost(card_data, priority_player);
 
             // X-cost spells: base cost (without X) is enough to be castable;
             // X value is chosen at cast time in action_processor
@@ -440,6 +440,46 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         fb_la.category = ActionCategory::CAST_SPELL;
         fb_la.use_flashback = true;
         actions.push_back(fb_la);
+    }
+    // CAST-FROM-GRAVEYARD PERMISSIONS (Emry's AB$ Effect): a card the priority player has
+    // been granted permission to cast this turn (CR 601.3e). It is cast from the graveyard
+    // for its normal cost, at the timing its type allows. Only the granting player may
+    // cast it, so filter the permission set by graveyard owner.
+    for (auto gy_entity : cur_game.may_cast_this_turn) {
+        if (!global_coordinator.entity_has_component<Zone>(gy_entity)) continue;
+        auto &gz = global_coordinator.GetComponent<Zone>(gy_entity);
+        if (gz.location != Zone::GRAVEYARD || gz.owner != priority_player) continue;
+        if (!global_coordinator.entity_has_component<CardData>(gy_entity)) continue;
+        auto &gcd = global_coordinator.GetComponent<CardData>(gy_entity);
+        if (is_land_card(gcd)) continue;  // lands aren't cast (601.1)
+
+        // Flash / instant cards may be cast anytime; everything else is sorcery-speed.
+        bool can_cast_at_instant_speed = card_has_type(gcd, "Instant");
+        for (const auto &kw : gcd.keywords)
+            if (kw == "Flash") { can_cast_at_instant_speed = true; break; }
+        bool can_cast_now = can_cast_at_instant_speed ||
+            ((game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
+             (game.player_a_turn == game.player_a_has_priority) && stack_empty);
+        if (!can_cast_now) continue;
+
+        // Any targeting requirement must have at least one legal target.
+        bool tgt_ok = true;
+        for (const auto &ab : gcd.abilities) {
+            if (ab.ability_type != Ability::SPELL) continue;
+            tgt_ok = has_legal_targets(ab, orderer);
+            break;
+        }
+        if (!tgt_ok) continue;
+
+        if (rules_mod::cast_prohibited(priority_player, is_creature_card(gcd), Zone::GRAVEYARD))
+            continue;
+
+        ManaValue gy_cost = effective_base_cost(gcd, priority_player);
+        if (!can_pay_mana(priority_player, gy_cost, gy_entity, orderer, gcd.has_delve)) continue;
+
+        LegalAction gy_la(CAST_SPELL, gy_entity, "Cast " + gcd.name + " (from graveyard)");
+        gy_la.category = ActionCategory::CAST_SPELL;
+        actions.push_back(gy_la);
     }
     // checking permanents for activated abilities
     // mana abilities parsed last

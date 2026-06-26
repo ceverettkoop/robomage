@@ -404,6 +404,14 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             card.keywords.push_back("Delve");
             continue;
         }
+        // K:Affinity:Artifact — this spell costs {1} less to cast for each artifact you
+        // control (CR 702.41). A generic cost reduction applied at cast time in
+        // effective_base_cost(); only the artifact variant is supported.
+        if (kw_line.rfind("Affinity", 0) == 0) {
+            if (kw_line.find("Artifact") != std::string::npos) card.affinity_artifact = true;
+            card.keywords.push_back("Affinity");
+            continue;
+        }
         // K:ETBReplacement:Other:ChooseCT — choose creature type on ETB (Cavern of Souls)
         if (kw_line.find("ETBReplacement") != std::string::npos &&
             kw_line.find("ChooseCT") != std::string::npos) {

@@ -948,7 +948,8 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
 
             } else {  // REGULAR COST + DELVE
                 // RaiseCost surcharge (NamedCard-aware) folded in; shared with legality.
-                ManaValue cost_to_pay = effective_base_cost(card_data);
+                // caster passed so Affinity for artifacts reduces the generic cost (702.41).
+                ManaValue cost_to_pay = effective_base_cost(card_data, caster);
 
                 // Offspring (CR 702.171): additional cost paid on top of the spell's cost.
                 if (action.use_offspring)

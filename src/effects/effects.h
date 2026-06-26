@@ -80,6 +80,9 @@ bool sacrifice_tokens(Ability &ab, std::shared_ptr<Orderer> orderer);
 // RepeatEach over players (Price of Progress): resolve the RepeatSubAbility once per
 // player, with cur_game.remembered_entities set to that player's entity each iteration.
 bool repeat_each(Ability &ab, std::shared_ptr<Orderer> orderer);
+// AB$ Effect granting "you may cast that card this turn" (Emry): records the targeted
+// graveyard card in cur_game.may_cast_this_turn so the casting path offers it this turn.
+bool grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer);
 
 // True if battlefield permanent `e` matches a Forge ValidCards$/ConditionPresent$
 // filter spec: a type/subtype head plus '+'-delimited qualifiers (YouCtrl, OppCtrl,

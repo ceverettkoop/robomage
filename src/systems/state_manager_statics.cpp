@@ -52,10 +52,32 @@ int active_raise_cost_for(const CardData &card_data) {
     return total;
 }
 
-ManaValue effective_base_cost(const CardData &card_data) {
+// Number of artifacts `caster` controls on the battlefield (Affinity count, CR 702.41).
+static int artifacts_controlled_by(Zone::Ownership caster) {
+    int count = 0;
+    Entity max_e = global_coordinator.GetMaxIssuedEntity();
+    for (Entity e = 0; e < max_e; ++e) {
+        if (!is_battlefield_permanent(e, caster)) continue;
+        if (permanent_has_type(global_coordinator.GetComponent<Permanent>(e), "Artifact")) count++;
+    }
+    return count;
+}
+
+ManaValue effective_base_cost(const CardData &card_data, Zone::Ownership caster) {
     ManaValue cost = card_data.mana_cost;
     int raise_total = active_raise_cost_for(card_data);
     for (int ri = 0; ri < raise_total; ri++) cost.insert(GENERIC);
+    // Affinity for artifacts (CR 702.41): reduce the generic portion by {1} per artifact
+    // the caster controls. Cost reductions are applied after additions (601.2f) and only
+    // the generic pips can be removed (a colored pip is never reduced); never go below 0.
+    if (card_data.affinity_artifact && caster != Zone::UNKNOWN) {
+        int reduce = artifacts_controlled_by(caster);
+        while (reduce-- > 0) {
+            auto it = cost.find(GENERIC);
+            if (it == cost.end()) break;
+            cost.erase(it);
+        }
+    }
     return cost;
 }
 

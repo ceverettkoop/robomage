@@ -49,6 +49,7 @@ EffectHandler handler_for(EffectKind kind) {
         case EffectKind::Mobilize:        return &mobilize;
         case EffectKind::SacrificeTokens: return &sacrifice_tokens;
         case EffectKind::RepeatEach:      return &repeat_each;
+        case EffectKind::GrantCast:       return &grant_cast;
         default:                          return nullptr;
     }
 }

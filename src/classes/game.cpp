@@ -244,6 +244,8 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     // Reset per-turn state
                     revolt_player_a = false;
                     revolt_player_b = false;
+                    // "You may cast that card this turn" grants (Emry) expire at cleanup (601.3e).
+                    may_cast_this_turn.clear();
                     auto &player = global_coordinator.GetComponent<Player>(active_player_entity);
                     player.lands_played_this_turn = 0;
                     player.spells_cast_this_turn = 0;

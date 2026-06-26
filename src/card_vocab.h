@@ -74,6 +74,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Delver of Secrets Insectile Aberration", 128},
     {"Eldrazi Linebreaker", 129},
     {"Eldrazi Temple", 130},
+    {"Emry, Lurker of the Loch", 131},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);
