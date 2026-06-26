@@ -72,6 +72,27 @@ static bool matches_filter_spec(Entity entity, const std::string &spec, int cmc_
         return q.rfind("cmc", 0) == 0;
     };
 
+    // A power/toughness comparison qualifier: "power"/"toughness" followed by a two-letter
+    // comparator (LE/GE/EQ/LT/GT/NE) and an integer, e.g. "toughnessLE2" (Recruiter of the
+    // Guard) or "powerGE5". Static characteristic compared against the card's base P/T
+    // (CR 208.2 / 107.1). Returns true when `q` is such a qualifier and evaluates it into
+    // `ok`; returns false when `q` is not a P/T qualifier (so the caller can keep parsing).
+    auto try_pt_qualifier = [&cd](const std::string &q, bool &ok) -> bool {
+        const std::string lead = q.rfind("power", 0) == 0       ? "power"
+                                 : q.rfind("toughness", 0) == 0 ? "toughness"
+                                                                : "";
+        if (lead.empty()) return false;
+        std::string rest = q.substr(lead.size());  // e.g. "LE2"
+        if (rest.size() < 3) return false;
+        std::string op = rest.substr(0, 2);
+        std::string num = rest.substr(2);
+        for (char c : num)
+            if (!std::isdigit(static_cast<unsigned char>(c))) return false;
+        int lhs = (lead == "power") ? static_cast<int>(cd.power) : static_cast<int>(cd.toughness);
+        ok = apply_svar_op(lhs, op, std::stoi(num));
+        return true;
+    };
+
     // Split on '+' for additional constraints (e.g. "Creature.Green+cmcLEX", or the
     // "+YouCtrl" controller qualifier on a own-zone search, which is trivially satisfied).
     std::string type_part = spec;
@@ -129,6 +150,9 @@ static bool matches_filter_spec(Entity entity, const std::string &spec, int cmc_
             bool is_basic = has_basic_supertype(cd.types);
             if (color_qualifier == "Basic" && !is_basic) return false;
             if (color_qualifier == "nonBasic" && is_basic) return false;
+        } else if (bool pt_ok = false; try_pt_qualifier(color_qualifier, pt_ok)) {
+            // power/toughness comparison qualifier (e.g. "toughnessLE2").
+            if (!pt_ok) return false;
         } else if (color_qualifier == "Green" || color_qualifier == "White" ||
                    color_qualifier == "Blue" || color_qualifier == "Black" ||
                    color_qualifier == "Red") {
