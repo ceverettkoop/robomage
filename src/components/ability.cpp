@@ -491,6 +491,11 @@ void Ability::fizzle(std::shared_ptr<Orderer> orderer) {
 bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
     if (cand == 0) return false;
 
+    // ValidTgts$ ...Other (e.g. Solitude/Flickerwisp "another"/"other" target): the source
+    // of the ability cannot be chosen as its own target (CR 115.1; "other" is a target
+    // restriction). Enforced uniformly here so it applies to every target type.
+    if (cand == source && valid_tgts.find("Other") != std::string::npos) return false;
+
     // NOTE: Pyroblast/Hydroblast (ValidTgts$ Card + ConditionPresent$ <type>.<Color>)
     // intentionally do NOT restrict target legality by color — they may target any
     // spell/permanent and their counter/destroy effect is conditional on the target's
