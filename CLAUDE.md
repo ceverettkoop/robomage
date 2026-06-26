@@ -69,6 +69,11 @@ instead of `$PIPESTATUS`.
 -Non fatal errors are not acceptable
 -Draws are not acceptable
 -Do not attempt to test cards that are not already in `src/card_vocab.h`. Cards absent from the card vocab are considered unimplemented.
+-Do not use commas when using the test harness. The harness splits `--play`, `--hand-a/-b`,
+ `--library-a/-b`, and `--battlefield-a/-b` on commas, so a comma inside a card name (e.g.
+ "Thalia, Guardian of Thraben", "Tamiyo, Inquisitive Student") breaks the parse. Refer to such
+ cards by a comma-free unique substring (e.g. `cast:thalia`, `Tamiyo@own`) or use a stacked
+ `temp/` deck file (one card per line, no commas) instead of inline comma-separated lists.
 -train.py observe is helpful for checking new builds (it replaced the old diag/watch
  commands — one command observes any {scripted|model} vs {scripted|model} matchup).
  Use `--games N` for a multi-game regression pass (per-game results + W/L/D summary),
@@ -159,10 +164,18 @@ painful part. Prefix a spec with `A:` or `B:` (case-insensitive) to pin it to a 
 applying the next spec the harness checks who currently holds priority: **if the next spec is
 keyed to the seat that does _not_ have priority, the priority holder auto-passes** (the spec is
 left unconsumed) until the keyed seat is on the clock. So you write each player's intended line
-in order and never insert the intervening `pass`es yourself. The seat key chooses *which
-decision* a spec applies to; it's independent of the `@own`/`@opp` target suffix (which is the
-target's controller relative to the acting seat). Seat keys are optional — an unkeyed spec
-applies to whoever has priority (the original behaviour), so existing scripts are unchanged, and
+in order and never insert the intervening `pass`es yourself. A keyed spec also **auto-passes the
+keyed seat forward through its _own_ priority windows until the action is actually legal** — e.g.
+`A:attack:Voice of Victory` written while A still holds priority in its main phase keeps passing
+(spec unconsumed) until A reaches the declare-attackers step where `attack:` is offered, so you
+don't hand-count the `pass`es from main to combat either. (This forward-advance fires only on a
+genuinely not-yet-legal action and only while a `pass` is available; an ambiguous or misspelled
+spec, or one that reaches a mandatory choice — declare attackers/blockers, a target prompt — where
+it still doesn't match, fails loudly with the legal menu rather than passing the game away.) The
+seat key chooses *which decision* a spec applies to; it's independent of the `@own`/`@opp` target
+suffix (which is the target's controller relative to the acting seat). Seat keys are optional — an
+unkeyed spec applies to whoever has priority (the original behaviour) and is **not** auto-advanced
+(it must match the current menu or fail loudly), so existing scripts are unchanged, and
 keyed/unkeyed specs may be mixed. (Seat keys are meant for the dual-seat `--play` case; under
 `observe --play-a/--play-b` each list already drives a single seat, so just leave specs unkeyed
 or key them to that seat.)

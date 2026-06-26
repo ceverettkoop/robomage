@@ -159,13 +159,17 @@ class Intent:
 class ResolveResult:
     """Outcome of resolving one spec against one decoded menu."""
 
-    __slots__ = ("index", "ok", "reason", "candidates")
+    __slots__ = ("index", "ok", "reason", "candidates", "kind")
 
-    def __init__(self, index, ok, reason="", candidates=None):
+    def __init__(self, index, ok, reason="", candidates=None, kind=""):
         self.index = index
         self.ok = ok
         self.reason = reason
         self.candidates = candidates or []
+        # Coarse failure category for callers that branch on *why* resolution failed
+        # (the PlayController auto-advances only on "no_match"): one of "ok",
+        # "parse_error", "bad_index", "ambiguous", "no_match".
+        self.kind = kind or ("ok" if ok else "no_match")
 
 
 def parse_spec_list(s):
@@ -281,14 +285,14 @@ def resolve(token, actions):
     try:
         intent = parse_spec(token)
     except ValueError as e:
-        return ResolveResult(None, False, reason=str(e))
+        return ResolveResult(None, False, reason=str(e), kind="parse_error")
 
     if intent.literal is not None:
         if 0 <= intent.literal < len(actions):
             return ResolveResult(intent.literal, True)
         return ResolveResult(None, False,
                              reason=f"literal index {intent.literal} out of range "
-                                    f"(0..{len(actions) - 1})")
+                                    f"(0..{len(actions) - 1})", kind="bad_index")
 
     for exact in (True, False):
         hits = [a for a in actions if _matches(intent, a, exact)]
@@ -304,7 +308,7 @@ def resolve(token, actions):
             return ResolveResult(hits[0]["index"], True)
         return ResolveResult(None, False,
                              reason=f"{token!r} is ambiguous ({len(hits)} matches)",
-                             candidates=hits)
+                             candidates=hits, kind="ambiguous")
     return ResolveResult(None, False, reason=f"no legal action matches {token!r}",
                          candidates=actions)
 
