@@ -124,6 +124,12 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
             for (const auto *src : ab_sources) {
             for (const auto &ab : *src) {
                 if (ab.ability_type != Ability::TRIGGERED) continue;
+                // A graveyard-functioning trigger (TriggerZones$ Graveyard, e.g. Arclight
+                // Phoenix's begin-combat return) functions ONLY while its source is in the
+                // graveyard — TriggerZones overrides the default battlefield functioning
+                // (CR 113.6). It is handled by the dedicated graveyard scan below; firing it
+                // from the battlefield would place a spurious (no-op) trigger on the stack.
+                if (ab.trigger_from_graveyard) continue;
                 if (ab.trigger_on == 0 || ab.trigger_on != ev.GetType()) continue;
                 // "another" check: skip if the event entity is the triggering permanent itself
                 if (ab.trigger_self_excluded && ev.HasParam(Params::ENTITY) &&
