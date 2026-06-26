@@ -43,14 +43,24 @@ def name_to_uid(name):
     # Mirror src/parse.cpp name_to_uid (and the fetch tool).
     return re.sub(r"[^a-z0-9_]", "", name.lower().replace(" ", "_").replace("-", "_"))
 
-# Curated decks the engine/training/harness actually use end to end. (The
-# meta/ decks reference cards not yet in src/card_vocab.h and are out of scope.)
-decks = ["delver.dk", "doomsday.dk", "mav.dk"]
+# Decks to provision card scripts for: the curated, fully-implemented decks the
+# engine/training/harness use end to end (delver/doomsday/mav, the top-level
+# .dk files) plus the scraped metagame decks under meta/. The meta/ decks
+# reference some cards not yet in src/card_vocab.h, but fetching their scripts
+# is harmless (add-only / non-fatal) and lets those decks load for testing.
+# (not_used/ holds throwaway test decks and is intentionally excluded.)
+deck_paths = []
+for fn in sorted(os.listdir(decks_dir)):
+    if fn.endswith(".dk"):
+        deck_paths.append(os.path.join(decks_dir, fn))
+meta_dir = os.path.join(decks_dir, "meta")
+if os.path.isdir(meta_dir):
+    for fn in sorted(os.listdir(meta_dir)):
+        if fn.endswith(".dk"):
+            deck_paths.append(os.path.join(meta_dir, fn))
+
 names = {"Mountain", "Forest", "Island", "Plains", "Swamp"}
-for dk in decks:
-    path = os.path.join(decks_dir, dk)
-    if not os.path.exists(path):
-        continue
+for path in deck_paths:
     with open(path) as f:
         for line in f:
             line = line.strip()
