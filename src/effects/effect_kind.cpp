@@ -40,6 +40,7 @@ EffectKind effect_kind_from_string(const std::string &category) {
         {"PutCounterAll", EffectKind::PutCounterAll},
         {"SacrificeAll", EffectKind::SacrificeAll},
         {"ImmediateTrigger", EffectKind::ImmediateTrigger},
+        {"CopyPermanent", EffectKind::CopyPermanent},
     };
     auto it = table.find(category);
     return (it != table.end()) ? it->second : EffectKind::None;

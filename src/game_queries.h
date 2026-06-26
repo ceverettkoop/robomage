@@ -9,6 +9,7 @@
 #include "components/creature.h"
 #include "components/damage.h"
 #include "components/permanent.h"
+#include "components/player.h"
 #include "components/spell.h"
 #include "components/types.h"
 #include "components/zone.h"
@@ -229,6 +230,18 @@ inline std::vector<Entity> controlled_permanents_matching(
         if (permanent_matches_subtype_spec(perm, spec)) out.push_back(e);
     }
     return out;
+}
+
+// Single source for "a player gains life": raises their life total and accumulates
+// life_gained_this_turn (118.9 / the "if you gained life this turn" check on cards like
+// Ocelot Pride). Every life-gain site (lifelink, GainLife effects, combat lifelink) routes
+// through this so the per-turn counter cannot drift from life_total. Pass the player's
+// Player-component entity. No-op for amount <= 0.
+inline void player_gain_life(Entity player_entity, int32_t amount) {
+    if (amount <= 0 || !global_coordinator.entity_has_component<Player>(player_entity)) return;
+    auto &pl = global_coordinator.GetComponent<Player>(player_entity);
+    pl.life_total += amount;
+    pl.life_gained_this_turn += amount;
 }
 
 // Returns true when the given player has 4+ card types among cards in their graveyard.

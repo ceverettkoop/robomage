@@ -10,6 +10,7 @@
 #include "../components/player.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
+#include "../game_queries.h"
 #include "../mana_system.h"
 
 extern Coordinator global_coordinator;
@@ -39,8 +40,8 @@ bool gain_life(Ability &ab, std::shared_ptr<Orderer> orderer) {
         }
     }
     Entity ctrl_entity = get_player_entity(gain_controller);
+    player_gain_life(ctrl_entity, static_cast<int32_t>(gain_amount));
     auto &player = global_coordinator.GetComponent<Player>(ctrl_entity);
-    player.life_total += static_cast<int32_t>(gain_amount);
     game_log(
         "%s gains %zu life (now at %d)\n", player_name(gain_controller).c_str(), gain_amount, player.life_total);
     return true;

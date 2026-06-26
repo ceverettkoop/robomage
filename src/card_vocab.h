@@ -52,6 +52,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Ajani, Nacatl Pariah Ajani, Nacatl Avenger", 100},
     {"Arid Mesa", 102},
     {"Leyline of the Void", 104},
+    {"Ocelot Pride", 105},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);

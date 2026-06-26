@@ -248,6 +248,12 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                         opp.cards_drawn_this_turn.clear();
                         opp.cards_drawn_this_draw_step = 0;
                     }
+                    // "Life gained this turn" (Ocelot Pride) and "tokens entered this turn"
+                    // reset for BOTH players each turn — life can be gained on either player's
+                    // turn, and the end-step trigger above has already checked them. Done in
+                    // cleanup so the just-fired end step still saw this turn's totals.
+                    global_coordinator.GetComponent<Player>(player_a_entity).life_gained_this_turn = 0;
+                    global_coordinator.GetComponent<Player>(player_b_entity).life_gained_this_turn = 0;
 
                     // Reset per-trigger resolution counts
                     ability_resolution_counts.clear();

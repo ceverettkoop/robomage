@@ -21,6 +21,7 @@ struct Permanent {
     std::vector<StaticAbility> static_abilities;
     Zone::Ownership controller = Zone::UNKNOWN;
     size_t timestamp_entered_battlefield = 0;  // For ordering simultaneous ETBs
+    size_t entered_on_turn = 0;  // cur_game.turn when this entered the battlefield (Ocelot Pride "entered this turn")
     bool transformed = false;  // true when DFC is showing its back face
     Entity equipped_to = 0;   // for equipment: which creature entity is equipped (0 = unattached)
     Entity equipped_by = 0;   // for creatures: which equipment is attached (0 = none)

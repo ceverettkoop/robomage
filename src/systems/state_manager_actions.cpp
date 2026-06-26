@@ -130,6 +130,17 @@ bool evaluate_present_condition(const Ability &ab, Zone::Ownership caster, std::
         return compare_svar(static_cast<int>(count), compare);
     }
 
+    // Count$LifeYouGainedThisTurn (Ocelot Pride's "if you gained life this turn"): the
+    // condition counts life the controller gained this turn, not battlefield permanents.
+    // Empty compare → "gained at least 1" (GE1), matching the bare "if you gained life".
+    if (ab.condition_present == "Count$LifeYouGainedThisTurn") {
+        Entity pe = get_player_entity(caster);
+        int gained = global_coordinator.entity_has_component<Player>(pe)
+                         ? global_coordinator.GetComponent<Player>(pe).life_gained_this_turn
+                         : 0;
+        return compare_svar(gained, compare);
+    }
+
     // Parse filter: "Land.YouCtrl" → type_filter="Land", controller check
     std::string filter = ab.condition_present;
     std::string type_filter;

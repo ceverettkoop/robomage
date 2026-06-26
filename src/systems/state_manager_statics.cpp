@@ -184,6 +184,7 @@ void StateManager::apply_permanent_components(Game &game) {
                 // Planeswalkers enter with loyalty counters equal to printed loyalty (306.5b).
                 if (is_planeswalker_card(card_data)) perm.counters["LOYALTY"] = card_data.starting_loyalty;
                 perm.timestamp_entered_battlefield = game.timestamp++;
+                perm.entered_on_turn = game.turn;
                 global_coordinator.AddComponent(entity, perm);
             }
             // copy activated abilities from card_data to permanent; incl mana abilities although mana abilities innate to basic land types
@@ -388,6 +389,39 @@ void StateManager::apply_permanent_components(Game &game) {
         global_coordinator.DestroyEntity(e);
     }
 
+}
+
+// 702.131b: Ascend on a permanent — any time its controller controls ten or more
+// permanents and doesn't yet have the city's blessing, they get the city's blessing
+// for the rest of the game (a one-way latch; never lost once gained, 702.131c). Run as
+// part of the continuous-effects preamble each SBA pass. The keyword lives on the source
+// CardData, so this also covers non-creature permanents that have Ascend.
+void StateManager::update_city_blessing(Game &game) {
+    bool ascend_a = false, ascend_b = false;
+    int perms_a = 0, perms_b = 0;
+    for (auto entity : mEntities) {
+        if (!is_battlefield_permanent(entity)) continue;
+        Zone::Ownership ctrl = global_coordinator.GetComponent<Permanent>(entity).controller;
+        if (ctrl == Zone::PLAYER_A) ++perms_a;
+        else if (ctrl == Zone::PLAYER_B) ++perms_b;
+        if (global_coordinator.entity_has_component<CardData>(entity)) {
+            auto &cd = global_coordinator.GetComponent<CardData>(entity);
+            for (const auto &kw : cd.keywords)
+                if (kw == "Ascend") {
+                    if (ctrl == Zone::PLAYER_A) ascend_a = true;
+                    else if (ctrl == Zone::PLAYER_B) ascend_b = true;
+                }
+        }
+    }
+    auto grant = [](Entity pe, int perms, const char *who) {
+        auto &pl = global_coordinator.GetComponent<Player>(pe);
+        if (!pl.has_city_blessing && perms >= 10) {
+            pl.has_city_blessing = true;
+            game_log("%s gets the city's blessing.\n", who);
+        }
+    };
+    if (ascend_a) grant(game.player_a_entity, perms_a, "Player A");
+    if (ascend_b) grant(game.player_b_entity, perms_b, "Player B");
 }
 
 // Applies mana abilities to lands based on the land subtypes in perm.types.

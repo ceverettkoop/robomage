@@ -70,6 +70,7 @@ bool sacrifice(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool put_counter_all(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool sacrifice_all(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool immediate_trigger(Ability &ab, std::shared_ptr<Orderer> orderer);
+bool copy_permanent(Ability &ab, std::shared_ptr<Orderer> orderer);
 
 // True if battlefield permanent `e` matches a Forge ValidCards$/ConditionPresent$
 // filter spec: a type/subtype head plus '+'-delimited qualifiers (YouCtrl, OppCtrl,

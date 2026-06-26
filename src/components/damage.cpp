@@ -5,6 +5,7 @@
 #include "zone.h"
 #include "../cli_output.h"
 #include "../ecs/coordinator.h"
+#include "../game_queries.h"
 #include "../mana_system.h"
 
 static bool source_has_keyword(Entity source, const char *kw) {
@@ -52,7 +53,7 @@ bool deal_damage_to_player(Entity source, Entity player_entity, size_t amount) {
         Zone::Ownership ctrl = coord.GetComponent<Permanent>(source).controller;
         Entity ctrl_entity = get_player_entity(ctrl);
         if (coord.entity_has_component<Player>(ctrl_entity)) {
-            coord.GetComponent<Player>(ctrl_entity).life_total += static_cast<int32_t>(amount);
+            player_gain_life(ctrl_entity, static_cast<int32_t>(amount));
             game_log("%s gains %zu life (lifelink)\n", player_name(ctrl).c_str(), amount);
         }
     }

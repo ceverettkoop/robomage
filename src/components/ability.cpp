@@ -823,6 +823,13 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
     // SVar gate, failure skips this body but still chains subabilities.
     if (condition_passed && condition_on_remembered)
         condition_passed = evaluate_present_condition(*this, controller, orderer);
+    // Condition$ Blessing (Ocelot Pride's CopyPermanent): the body runs only if the
+    // controller has the city's blessing (702.131). Failure still chains subabilities.
+    if (condition_passed && condition_city_blessing) {
+        Entity pe = get_player_entity(controller);
+        condition_passed = global_coordinator.entity_has_component<Player>(pe) &&
+                           global_coordinator.GetComponent<Player>(pe).has_city_blessing;
+    }
     if (!condition_passed) {
         for (auto sub_ab : this->subabilities) {
             sub_ab.source = this->source;

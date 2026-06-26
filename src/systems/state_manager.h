@@ -58,6 +58,7 @@ public:
 
 private:
     void apply_permanent_components(Game& game);
+    void update_city_blessing(Game& game);  // 702.131: grant ascend's city's blessing at 10+ permanents
     void apply_land_abilities(Entity entity);
     void apply_keyword_abilities(Entity entity);
     void deal_combat_damage(Game& game, bool first_strike_only);

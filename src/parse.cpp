@@ -780,6 +780,12 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         if (value == "Remembered") ability.defined_remembered = true;
         else if (value == "TargetedController") ability.defined_targeted_controller = true;
         else if (value == "Self") ability.defined_self = true;
+        // Defined$ Valid <filter> (CopyPermanent's "for each token you control that entered
+        // this turn") — store the filter spec the same place ValidCards$ writes it, so the
+        // effect can scan the battlefield for matches.
+        else if (value.rfind("Valid ", 0) == 0) ability.valid_cards_filter = value.substr(6);
+    } else if (key == "Condition" && value == "Blessing") {
+        ability.condition_city_blessing = true;  // CopyPermanent gated on the city's blessing
     } else if (key == "RememberTargets") {
         ability.remember_targeted = (value == "True");
     } else if (key == "RememberObjects") {
@@ -1339,6 +1345,16 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
             ability.intervening_if = true;
         } else if (key == "PresentCompare") {
             ability.condition_compare = value;  // e.g. "GE2"; empty defaults to ">= 1"
+        } else if (key == "CheckSVar") {
+            // Intervening-if (603.4) gated on an SVar count rather than a board presence,
+            // e.g. Ocelot Pride's "if you gained life this turn" (CheckSVar$ YouLifeGained →
+            // Count$LifeYouGainedThisTurn). Resolve the SVar to its Count$ expression and store
+            // it as the intervening-if condition so the whole trigger fizzles when false.
+            auto it = svars.find(value);
+            ability.condition_present = (it != svars.end()) ? it->second : value;
+            ability.intervening_if = true;
+        } else if (key == "SVarCompare") {
+            ability.condition_compare = value;  // explicit compare for the CheckSVar gate
         } else if (key == "Execute") {
             execute_svar = value;
         }

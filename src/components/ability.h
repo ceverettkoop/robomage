@@ -97,6 +97,11 @@ struct Ability{
     // variant) so PutCounterAll can carry it alongside CounterParams.
     std::string valid_cards_filter = "";
 
+    // Condition$ Blessing (CopyPermanent on Ocelot Pride): the effect body runs only if the
+    // ability's controller has the city's blessing (702.131). Like other condition gates, a
+    // false condition skips the body but still chains subabilities.
+    bool condition_city_blessing = false;
+
     // Effect-specific parameter blocks. As effects migrate off the flat
     // god-struct fields (Phase 3), their exclusive data moves into one of these
     // variant alternatives; shared fields stay as direct members. std::monostate

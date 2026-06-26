@@ -55,6 +55,8 @@ bool permanent_matches_cards_filter(Entity e, const std::string &spec,
         else if (q == "Other") { if (e == source) return false; }
         else if (q == "nonLand") { if (permanent_has_type(perm, "Land")) return false; }
         else if (q == "nonToken") { if (perm.is_token) return false; }
+        else if (q == "token") { if (!perm.is_token) return false; }
+        else if (q == "ThisTurnEntered") { if (perm.entered_on_turn != cur_game.turn) return false; }
         else if (q == "nonChosenCard") { if (cur_game.chosen_cards.count(e)) return false; }
         else if (q == "White") { if (!perm_is_color(e, WHITE)) return false; }
         else if (q == "Blue")  { if (!perm_is_color(e, BLUE))  return false; }
