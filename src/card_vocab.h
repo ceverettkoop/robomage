@@ -89,6 +89,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Thoughtcast", 145},
     {"Urza's Bauble", 146},
     {"White Orchid Phantom", 147},
+    {"Super Shredder", 148},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);
