@@ -410,7 +410,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 ManaValue offspring_total = effective_cost;
                 for (Colors c : card_data.offspring_cost) offspring_total.insert(c);
                 if (can_pay_mana(priority_player, offspring_total, card_entity, orderer,
-                                 card_data.has_delve)) {
+                                 card_data.has_delve, card_data.has_improvise)) {
                     LegalAction off_la = la;
                     off_la.use_offspring = true;
                     off_la.description = "Cast " + card_data.name + " (offspring)";
@@ -501,7 +501,8 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             continue;
 
         ManaValue gy_cost = effective_base_cost(gcd, priority_player);
-        if (!can_pay_mana(priority_player, gy_cost, gy_entity, orderer, gcd.has_delve)) continue;
+        if (!can_pay_mana(priority_player, gy_cost, gy_entity, orderer, gcd.has_delve, gcd.has_improvise))
+            continue;
 
         LegalAction gy_la(CAST_SPELL, gy_entity, "Cast " + gcd.name + " (from graveyard)");
         gy_la.category = ActionCategory::CAST_SPELL;
