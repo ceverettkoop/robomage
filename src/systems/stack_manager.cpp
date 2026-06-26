@@ -97,9 +97,11 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
             bool was_flashback = spell_cast_with_flashback(top_entity);
             // Restore the X paid at cast time so a Count$xPaid amount in the resolving
             // ability (Kozilek's Command's token/scry/exile counts) reads the value this
-            // spell was cast with, not a later cast's. cur_game.x_paid is global.
-            if (global_coordinator.entity_has_component<Spell>(top_entity) &&
-                global_coordinator.GetComponent<Spell>(top_entity).x_paid > 0)
+            // spell was cast with, not a later cast's. cur_game.x_paid is global, so this must
+            // run for every resolving spell — including one cast with X=0 (which still needs to
+            // overwrite a stale nonzero value from an unrelated earlier cast) and a non-X spell
+            // (x_paid == 0) — not only when x_paid > 0.
+            if (global_coordinator.entity_has_component<Spell>(top_entity))
                 cur_game.x_paid = static_cast<size_t>(global_coordinator.GetComponent<Spell>(top_entity).x_paid);
             if (global_coordinator.entity_has_component<Ability>(top_entity)) {
                 auto &ab = global_coordinator.GetComponent<Ability>(top_entity);
