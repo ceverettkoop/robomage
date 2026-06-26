@@ -767,6 +767,25 @@ size_t evaluate_dynamic_amount(
 }
 
 void Ability::resolve(std::shared_ptr<Orderer> orderer) {
+    // OptionalDecider$ You ("you may ..."): the controller may decline the whole
+    // triggered ability as it resolves (Ajani's exile-and-return-transformed).
+    if (trigger_optional) {
+        std::vector<LegalAction> yn;
+        LegalAction decline(PASS_PRIORITY, std::string("Decline"));
+        decline.category = ActionCategory::OPTIONAL_YESNO;
+        yn.push_back(decline);
+        LegalAction accept(PASS_PRIORITY, std::string("Accept"));
+        accept.category = ActionCategory::OPTIONAL_YESNO;
+        yn.push_back(accept);
+        bool prev_priority = cur_game.player_a_has_priority;
+        cur_game.player_a_has_priority = (controller == Zone::PLAYER_A);
+        int yc = InputLogger::instance().get_input(yn);
+        cur_game.player_a_has_priority = prev_priority;
+        if (yc == 0) {
+            game_log("%s declines the optional triggered ability.\n", player_name(controller).c_str());
+            return;
+        }
+    }
     // 603.4 intervening-if: re-check the trigger's "if" condition on resolution. If it is no
     // longer true the ability is removed from the stack and does nothing — not even its
     // subabilities fire (unlike a ConditionCheckSVar gate).

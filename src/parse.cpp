@@ -51,6 +51,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
                                  const std::string& card_name = "");
 static void split_keywords(const std::string& kw_line, std::vector<std::string>& out);
 static bool next_param(const std::string& line, size_t& pos, std::string& key, std::string& value);
+static void parse_card_face(const std::string& front_script, CardData& card);
 
 // Split a comma-separated K: keyword list into trimmed keywords appended to out.
 static void split_keywords(const std::string& kw_line, std::vector<std::string>& out) {
@@ -266,6 +267,28 @@ Entity parse_card_script(std::string path) {
     }
 
     CardData card;
+    parse_card_face(front_script, card);
+
+    // Parse the DFC back face as a complete second face so a transformed permanent
+    // (Delver -> Insectile Aberration, Ajani Pariah -> Avenger) has its own name,
+    // types, P/T, loyalty, abilities, and triggers -- not just a P/T swap.
+    if (!back_script.empty()) {
+        auto backside = std::make_shared<CardData>();
+        parse_card_face(back_script, *backside);
+        card.backside = backside;
+    }
+
+    // no error handling here
+    global_coordinator.AddComponent(id, card);
+
+    return id;
+}
+
+// Parses one card face (front or DFC back) into `card`: mana cost, types, colors,
+// oracle text, P/T, starting loyalty, activated/spell abilities, triggered abilities,
+// alternate costs, static abilities, replacement effects, and keywords. Shared by
+// both faces so each face of a DFC is a fully-functional permanent definition.
+static void parse_card_face(const std::string& front_script, CardData& card) {
     card.name = value_from_script(front_script, "Name");
     card.uid = name_to_uid(card.name);
     std::string mana_cost_str = value_from_script(front_script, "ManaCost");
@@ -508,25 +531,6 @@ Entity parse_card_script(std::string path) {
         }
         split_keywords(kw_line, card.keywords);
     }
-
-    // Parse backside for DFCs
-    if (!back_script.empty()) {
-        auto backside = std::make_shared<CardData>();
-        backside->name = value_from_script(back_script, "Name");
-        backside->uid  = name_to_uid(backside->name);
-        backside->types = parse_types(value_from_script(back_script, "Types"));
-        backside->power     = parse_power(value_from_script(back_script, "PT"));
-        backside->toughness = parse_toughness(value_from_script(back_script, "PT"));
-        for (auto& kw_line : multi_values_from_script(back_script, "K")) {
-            split_keywords(kw_line, backside->keywords);
-        }
-        card.backside = backside;
-    }
-
-    // no error handling here
-    global_coordinator.AddComponent(id, card);
-
-    return id;
 }
 
 Token parse_token_script(const std::string &script_name) {
@@ -786,6 +790,10 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         if (value == "Graveyard") ability.target_in_graveyard = true;
     } else if (key == "ClearRemembered") {
         ability.clear_remembered = (value == "True");
+    } else if (key == "ClearChosenCard") {
+        ability.clear_chosen = (value == "True");
+    } else if (key == "ChooseEach") {
+        ability.choose_each = value;
     } else if (key == "TargetMin") {
         ability.target_min = std::stoi(value);
     } else if (key == "TargetMax") {
@@ -836,6 +844,10 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
             // Shuffle$ is inferred from a Library origin; Chooser/Hidden/ForgetOtherTargets
             // are cosmetic given the "move the maximum" simplification.
             "Chooser", "Hidden", "Shuffle", "ForgetOtherTargets", "RememberRevealed",
+            // ChooseCard ChooseEach (Ajani -4): the per-type breakdown is the load-bearing
+            // ChooseEach$; Choices$ (the umbrella pool), ControlledByPlayer$ Chooser, and
+            // Reveal$ are captured by / cosmetic to the choose_each handler.
+            "Choices", "ControlledByPlayer", "Reveal",
             // Ultimate$ True is informational: ultimate legality is already covered by the
             // minus-loyalty cost check, so the flag is unused.
             "Ultimate"
@@ -1260,6 +1272,8 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
     bool mode_is_drawn = false;
     bool valid_card_opp_own = false;
     bool exclude_first_draw_step = false;
+    bool trigger_optional_local = false;
+    std::string valid_card_subtype;
     size_t activator_this_turn_cast_eq = 0;
 
     // Walk pipe-delimited params
@@ -1267,7 +1281,10 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
     std::string key, value;
     while (next_param(line, param_pos, key, value)) {
         if (key == "Mode") {
-            if (value == "ChangesZone") mode_changes_zone = true;
+            // ChangesZoneAll ("one or more ... ") is matched per changing card like
+            // ChangesZone; the once-per-batch nuance is elided (it differs only when
+            // multiple matching cards change zone simultaneously).
+            if (value == "ChangesZone" || value == "ChangesZoneAll") mode_changes_zone = true;
             else if (value == "Phase") mode_is_phase = true;
             else if (value == "SpellCast") mode_is_spell_cast = true;
             else if (value == "DamageDone") mode_is_damage_done = true;
@@ -1285,7 +1302,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
         } else if (key == "Destination") {
             if (value == "Battlefield") dest_is_battlefield = true;
             if (value == "Graveyard")   dest_is_graveyard   = true;
-        } else if (key == "ValidCard") {
+        } else if (key == "ValidCard" || key == "ValidCards") {
             if (value.find("Creature")    != std::string::npos) valid_card_creature     = true;
             if (value.find("nonCreature") != std::string::npos) valid_card_non_creature = true;
             if (value.find(".Other")      != std::string::npos) ability.trigger_self_excluded = true;
@@ -1295,7 +1312,18 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
             if (value.find(".YouOwn")     != std::string::npos) valid_card_owner_you    = true;
             if (value.find(".OppOwn")     != std::string::npos) valid_card_opp_own      = true;
             if (value.find("Land")        != std::string::npos) valid_card_land         = true;
-            if (value.find(".YouCtrl")    != std::string::npos) valid_player_is_you     = true;
+            // YouCtrl may be the first ('.YouCtrl') or a later ('+YouCtrl') qualifier.
+            if (value.find("YouCtrl")     != std::string::npos) valid_player_is_you     = true;
+            // Leading token before '.'/'+' that isn't a recognized card type is a
+            // subtype filter (e.g. "Cat.Other+YouCtrl" -> subtype "Cat").
+            std::string head = value.substr(0, value.find_first_of(".+"));
+            static const std::set<std::string> known_types = {
+                "Creature", "Land", "Instant", "Sorcery", "Card", "Permanent",
+                "Artifact", "Enchantment", "Planeswalker"};
+            if (!head.empty() && known_types.find(head) == known_types.end())
+                valid_card_subtype = head;
+        } else if (key == "OptionalDecider") {
+            if (value.find("You") != std::string::npos) trigger_optional_local = true;
         } else if (key == "FirstCardInDrawStep") {
             if (value == "False") exclude_first_draw_step = true;
         } else if (key == "CombatDamage") {
@@ -1328,6 +1356,8 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
         ability.trigger_valid_card_is_creature            = valid_card_creature;
         ability.trigger_valid_card_is_instant_or_sorcery  = valid_card_instant || valid_card_sorcery;
         ability.trigger_valid_card_is_land                = valid_card_land;
+        ability.trigger_valid_card_subtype                = valid_card_subtype;
+        ability.trigger_optional                          = trigger_optional_local;
         ability.trigger_valid_player_is_controller        = valid_card_owner_you || valid_player_is_you;
         if (valid_card_self) ability.trigger_only_self = true;
     }
@@ -1396,6 +1426,8 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
                 effect.trigger_valid_card_is_creature           = ability.trigger_valid_card_is_creature;
                 effect.trigger_valid_card_is_instant_or_sorcery = ability.trigger_valid_card_is_instant_or_sorcery;
                 effect.trigger_valid_card_is_land               = ability.trigger_valid_card_is_land;
+                effect.trigger_valid_card_subtype               = ability.trigger_valid_card_subtype;
+                effect.trigger_optional                         = ability.trigger_optional;
                 effect.trigger_valid_card_opp_own               = ability.trigger_valid_card_opp_own;
                 effect.trigger_exclude_first_draw_step          = ability.trigger_exclude_first_draw_step;
                 effect.trigger_valid_player_is_controller       = ability.trigger_valid_player_is_controller;

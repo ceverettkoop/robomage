@@ -17,6 +17,7 @@
 #include "../ecs/coordinator.h"
 #include "../input_logger.h"
 #include "../systems/orderer.h"
+#include "../transform.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;
@@ -100,21 +101,10 @@ bool peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer) {
         if (is_instant_or_sorcery && global_coordinator.entity_has_component<CardData>(ab.source)) {
             auto &src_cd = global_coordinator.GetComponent<CardData>(ab.source);
             if (src_cd.backside && !src_perm.transformed) {
-                src_perm.transformed = true;
-                if (global_coordinator.entity_has_component<Creature>(ab.source))
-                    global_coordinator.RemoveComponent<Creature>(ab.source);
-                if (global_coordinator.entity_has_component<Damage>(ab.source))
-                    global_coordinator.RemoveComponent<Damage>(ab.source);
-                Creature back_creature;
-                back_creature.base_power = static_cast<int>(src_cd.backside->power);
-                back_creature.base_toughness = static_cast<int>(src_cd.backside->toughness);
-                back_creature.keywords = src_cd.backside->keywords;
-                recompute_pt(back_creature);
-                global_coordinator.AddComponent(ab.source, back_creature);
-                Damage dmg;
-                dmg.damage_counters = 0;
-                global_coordinator.AddComponent(ab.source, dmg);
-                game_log("%s transforms into %s!\n", src_perm.name.c_str(), src_cd.backside->name.c_str());
+                // Flip to the back face through the shared transform subsystem so
+                // Delver's creature->creature flip and Ajani's creature->planeswalker
+                // flip travel the same code path.
+                set_permanent_face(ab.source, true);
             }
         }
     }

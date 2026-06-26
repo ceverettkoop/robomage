@@ -106,7 +106,7 @@ _CARD_COST_MATRIX = np.array([
     [0.0, 0.2, 0.0, 0.0, 0.0, 0.0, 0.2],  # 97: Jace, the Mind Sculptor
     [0.0, 0.0, 0.0, 0.0, 0.1, 0.0, 0.1],  # 98: Birthing Ritual
     [0.2, 0.0, 0.0, 0.0, 0.0, 0.0, 0.2],  # 99: Humility
-    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 100: 
+    [0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1],  # 100: Ajani, Nacatl Pariah Ajani, Nacatl Avenger
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 101: 
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 102: 
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 103: 
@@ -1137,7 +1137,7 @@ _VOCAB_NAMES = [
     "Jace, the Mind Sculptor",  # 97
     "Birthing Ritual",  # 98
     "Humility",  # 99
-    "",  # 100
+    "Ajani, Nacatl Pariah Ajani, Nacatl Avenger",  # 100
     "",  # 101
     "",  # 102
     "",  # 103

@@ -39,6 +39,17 @@ Usage examples:
         --battlefield-b "Grizzly Bears" \\
         --play "play:Mountain,pass,cast:Lightning Bolt,target:Grizzly Bears@opp,pass"
 
+    # Seat-keyed specs: when --play drives BOTH seats, prefix a spec with "A:" or
+    # "B:" to pin it to a player. When the next spec is keyed to the seat that
+    # does NOT have priority, the priority holder auto-passes until the keyed seat
+    # is on the clock — so you write each player's intended line and never have to
+    # hand-interleave the priority-passes. (Unkeyed specs apply to whoever has
+    # priority, exactly as before.)
+    python test_harness.py \\
+        --hand-a "Lightning Bolt" --battlefield-a "Mountain" \\
+        --battlefield-b "Grizzly Bears" \\
+        --play "A:keep,B:keep,A:cast:Lightning Bolt,A:target:Grizzly Bears@opp,B:pass"
+
     # Interactive: pause at each decision and prompt a HUMAN for an action index.
     # Not usable when an automated agent drives the harness (no TTY to type into)
     # — precompute --actions or, better, use --play instead.
@@ -166,7 +177,11 @@ def main():
                              "live menu each decision, e.g. "
                              "\"cast:Lightning Bolt,target:Grizzly Bears@opp,pass\". "
                              "Robust to index reordering; see action_spec.py for the grammar. "
-                             "An unmatched/ambiguous spec fails loudly with the legal menu.")
+                             "An unmatched/ambiguous spec fails loudly with the legal menu. "
+                             "Prefix a spec with \"A:\"/\"B:\" to pin it to a player seat: "
+                             "the priority holder auto-passes until the keyed seat is on the "
+                             "clock, so both seats can be scripted without hand-interleaving "
+                             "the priority-passes.")
     parser.add_argument("--interactive", action="store_true",
                         help="Prompt a human at the terminal for each action (NOT usable "
                              "when Claude drives the harness — there is no TTY; use --play)")

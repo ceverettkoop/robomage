@@ -20,8 +20,7 @@ namespace effects {
 
 bool destroy_all(Ability &ab, std::shared_ptr<Orderer> orderer) {
     // Destroy all permanents matching the filter (e.g. Meltdown: "Artifact.cmcLEX")
-    const DestroyAllParams *dp = std::get_if<DestroyAllParams>(&ab.params);
-    std::string filter = dp ? dp->filter : "";
+    std::string filter = ab.valid_cards_filter;
     bool filter_artifact = filter.find("Artifact") != std::string::npos;
     bool filter_creature = filter.find("Creature") != std::string::npos;
     bool filter_enchantment = filter.find("Enchantment") != std::string::npos;
@@ -60,7 +59,9 @@ bool destroy_all(Ability &ab, std::shared_ptr<Orderer> orderer) {
 
 bool parse_destroy_all(Ability &ab, const std::string &key, const std::string &value) {
     if (key != "ValidCards") return false;
-    effect_params<DestroyAllParams>(ab).filter = value;
+    // Shared by DestroyAll / SacrificeAll / PutCounterAll — a plain member so it can
+    // coexist with each effect's own params block.
+    ab.valid_cards_filter = value;
     return true;
 }
 

@@ -20,6 +20,7 @@
 #include "../components/player.h"
 #include "../components/token.h"
 #include "../components/types.h"
+#include "../transform.h"
 #include "../type_constants.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
@@ -145,8 +146,15 @@ void StateManager::apply_permanent_components(Game &game) {
         if (zone.location == Zone::BATTLEFIELD) {  // on battlefield, check to add components
             // check types
             auto &card_data = global_coordinator.GetComponent<CardData>(entity);
-            bool is_creature = is_creature_card(card_data);  // can be creature and land
-            bool is_land = is_land_card(card_data);
+            // A transformed DFC shows its back face: determine creature/land-ness from the
+            // active face so a later SBA pass doesn't re-add a front-face Creature component
+            // to a permanent that flipped to a non-creature back face (Ajani -> planeswalker).
+            const CardData *face = &card_data;
+            if (global_coordinator.entity_has_component<Permanent>(entity) &&
+                global_coordinator.GetComponent<Permanent>(entity).transformed && card_data.backside)
+                face = card_data.backside.get();
+            bool is_creature = is_creature_card(*face);  // can be creature and land
+            bool is_land = is_land_card(*face);
             int etb_p1p1 = 0;  // +1/+1 counters this permanent enters with (614.1c), applied once the Creature exists
             // providing permanent component if doesn't have
             if (!global_coordinator.entity_has_component<Permanent>(entity)) {
@@ -229,6 +237,12 @@ void StateManager::apply_permanent_components(Game &game) {
                 apply_land_abilities(entity);
             }
             apply_keyword_abilities(entity);
+
+            // A card moved here "transformed" (Ajani's exile-and-return) enters showing
+            // its DFC back face. The front-face components exist now, so flip to the back
+            // face before triggers are checked — this also suppresses the front-face ETB
+            // triggers (a permanent entering as its back face fires only that face's ETBs).
+            if (game.pending_enters_transformed.erase(entity)) set_permanent_face(entity, true);
 
             // ETBReplacement: choose creature type (Cavern of Souls)
             if (card_data.has_etb_choose_creature_type) {

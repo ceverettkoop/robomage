@@ -6,8 +6,19 @@ description: Implement Magic cards that decks reference but are missing from the
 # Implement missing cards
 
 Adds cards the engine doesn't yet know about, **one card at a time**, verifying each
-before moving on. The guiding rule: **when anything is less than totally clear about a
-card's expected behavior or the test scope, STOP and ask the user** rather than guess.
+before moving on.
+
+**The intent is always to implement the card with its full rules functionality.** Every
+mechanic the card has should work correctly per the Comprehensive Rules — we do **not**
+want to skip, stub, or simplify a card's mechanics. Skipping the implementation of a
+mechanic is a **very rare exception**, taken only when the user explicitly approves it.
+
+The guiding rule for stopping: **when it is unclear *how* a rule or mechanic should
+behave** (ambiguous timing, modal choices, several reasonable interpretations) **— or
+when the test scope is unclear — STOP and ask the user** rather than guess. Stopping is
+about resolving *how the rule works*, not about getting permission to leave a mechanic
+out. Default is full implementation; ask only to clarify behavior, never to find a
+shortcut.
 
 ## Background
 
@@ -55,10 +66,16 @@ card's expected behavior or the test scope, STOP and ask the user** rather than 
       `R:` lines and their `AB$` / `SP$` / `DB$` categories. Confirm each is supported by the
       parser (`src/parse.cpp`) and the effect handlers (`src/effects/effect_kind.cpp`,
       `src/effects/effect_table.cpp`). If the card needs a mechanic the engine does not
-      implement (an unsupported category, keyword, or replacement effect), **STOP and ask the
-      user** how to proceed: implement the mechanic, simplify the card, or skip it. The
-      `WARNING: Unrecognized ability param` lines the engine prints are acceptable for
-      cosmetic sub-params but NOT when they change what the card does — when unsure, ask.
+      implement (an unsupported category, keyword, or replacement effect), **the default is
+      to implement that mechanic** so the card works in full — that is the whole point of the
+      task. Build a real, general handler for the missing mechanic (see the retag warning
+      below). Only **STOP and ask the user** when it is genuinely unclear *how* the mechanic
+      should behave, or when the mechanic is large enough that you need a decision on scope —
+      and in that case present implementing it as the expected path. **Simplifying or skipping
+      a mechanic is a very rare exception that requires the user's explicit approval**; never
+      choose it on your own to shortcut the work. The `WARNING: Unrecognized ability param`
+      lines the engine prints are acceptable for cosmetic sub-params but NOT when they change
+      what the card does — when unsure, ask.
 
       **When you do implement a mechanic, parse the script tags as intended — never retag
       them.** Honor the script's actual `SP$`/`AB$`/`DB$` category and its
@@ -99,7 +116,22 @@ card's expected behavior or the test scope, STOP and ask the user** rather than 
         reasonable interpretations, or you are unsure what a complete test should cover —
         **STOP and ask the user** before declaring pass/fail.
 
-   g. **Record the result** (card name, index, pass/fail, notes) and move to the next card.
+   g. **Regression-test the card inside a real game.** Beyond the focused harness scenario,
+      run a few scripted games with the new card actually in a deck, to confirm it doesn't
+      break normal play (no non-fatal errors, no draws). Find a deck in
+      `bin/resources/decks/` that already runs (its cards are all implemented) and contains —
+      or can cast — the new card:
+      - If such a deck already lists the card, use it directly:
+        `train/.venv/bin/python train/train.py observe --deck <that-deck> --opponent <impl-deck> --games 6`.
+      - Otherwise, copy a fully-implemented deck that has the right colors/mana to cast the
+        new card, drop in **4 copies** of it (trimming 4 other cards to keep the count), and
+        write that as a **temporary** deck under `bin/resources/decks/temp/` (or the decks
+        folder). Run the scripted regression with that temp deck as one side. The point is to
+        see the card drawn and played across real games, not just the sculpted scenario.
+      Expect **no non-fatal errors and no draws** (per `CLAUDE.md`); only pre-existing cosmetic
+      `WARNING: Unrecognized ability param` lines are acceptable. Clean up the temp deck after.
+
+   h. **Record the result** (card name, index, pass/fail, notes) and move to the next card.
 
 3. **When a deck's cards are all implemented**, sanity-check it end-to-end:
    `train/.venv/bin/python train/train.py diag --deck <meta-deck> --opponent <meta-deck>` —
@@ -107,12 +139,17 @@ card's expected behavior or the test scope, STOP and ask the user** rather than 
 
 ## Stop-and-ask gates (summary)
 
-Default to asking the user whenever you hit any of these:
+Default to **implementing the card in full**. Stop and ask the user only to resolve
+*how* something should work — never to get permission to leave a mechanic out:
 
 - The card has **no Forge script** and must be hand-authored.
-- The script needs a **mechanic the engine doesn't support**.
-- The card's **expected behavior is ambiguous**.
+- The card's **expected behavior is ambiguous** — unclear timing, modal choices, or
+  several reasonable interpretations of how a rule should resolve.
 - The **test scope is unclear** — you can't confidently say what a complete test covers.
+- A needed **mechanic is large enough that scope needs a decision** — present implementing
+  it as the expected path; simplifying or skipping it requires the user's explicit approval.
 - Adding the card would **overflow the vocab** (`N_CARD_TYPES`).
 
-Total clarity or ask. Never guess a card's behavior.
+A mechanic the engine doesn't yet support is **not** a reason to skip — the default is to
+build a real handler for it. Total clarity or ask, but ask to clarify behavior, not to
+shortcut implementation. Never guess a card's behavior, and never silently drop a mechanic.

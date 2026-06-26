@@ -22,6 +22,15 @@ namespace effects {
 bool deal_damage(Ability &ab, std::shared_ptr<Orderer> orderer) {
     // Delirium-conditional damage (Unholy Heat)
     size_t dmg = ab.amount;
+    // Dynamic damage (e.g. Ajani's "damage equal to the number of creatures you control",
+    // NumDmg$ X with X = Count$Valid Creature.YouCtrl). Mirrors lose_life/gain_life, which
+    // evaluate their dynamic amount at resolution.
+    if (!ab.dynamic_amount_expr.empty()) {
+        Zone::Ownership caster = global_coordinator.entity_has_component<Permanent>(ab.source)
+                                     ? global_coordinator.GetComponent<Permanent>(ab.source).controller
+                                     : global_coordinator.GetComponent<Zone>(ab.source).owner;
+        dmg = evaluate_dynamic_amount(ab.dynamic_amount_expr, caster, orderer, ab.target);
+    }
     const DamageParams *dp = std::get_if<DamageParams>(&ab.params);
     if (dp && dp->is_delirium_scale) {
         Zone::Ownership caster = global_coordinator.entity_has_component<Permanent>(ab.source)

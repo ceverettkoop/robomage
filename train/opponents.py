@@ -164,10 +164,20 @@ class PlayController:
     Each spec (``cast:Lightning Bolt``, ``target:Grizzly Bears@opp``, ``pass``,
     ``#7`` …) is resolved against *this* decision's decoded menu via
     :mod:`action_spec`, so the sequence is robust to dynamic index reordering.
-    Like :class:`ActionListController` the sequence is global (one spec consumed
-    per decision regardless of which side has priority); once exhausted it falls
-    back to action ``0`` (pass / first choice — always legal) so the game keeps
-    advancing to its conclusion or the decision cap.
+    The sequence is global (one spec consumed per decision); once exhausted it
+    falls back to action ``0`` (pass / first choice — always legal) so the game
+    keeps advancing to its conclusion or the decision cap.
+
+    **Seat keys.** When the SAME controller drives both seats (the test harness's
+    dual-seat ``--play`` mode), sequencing the priority hand-offs between the two
+    players by hand is error-prone. So a spec may be pinned to a seat with a
+    leading ``A:`` / ``B:`` key (see :mod:`action_spec`). Before applying the next
+    spec this controller checks the seat that currently holds priority
+    (``obs[32]`` — true = Player A): if the next spec is keyed to the *other*
+    seat, the current priority holder passes (the spec is **not** consumed) and
+    play advances until the keyed seat is on the clock. Unkeyed specs are applied
+    to whoever has priority (the legacy behaviour), so existing scripts are
+    unaffected.
 
     ``wants_decoded = True`` tells the runner to hand ``choose`` the decoded menu.
     A spec that resolves to zero or multiple legal actions raises
@@ -197,6 +207,14 @@ class PlayController:
             self.resolved.append(0)
             return 0
         spec = self._specs[self._i]
+        # Seat-keyed spec for the seat that is NOT on the clock: the current
+        # priority holder passes (spec left for later) so we advance to the keyed
+        # seat's decision instead of mis-applying its action to this player.
+        seat = self._action_spec.spec_seat(spec)
+        if seat is not None and seat != ("A" if obs[32] > 0.5 else "B"):
+            idx = self._action_spec.resolve_to_index("pass", decoded_actions)
+            self.resolved.append(idx)
+            return idx
         self._i += 1
         idx = self._action_spec.resolve_to_index(spec, decoded_actions)
         self.resolved.append(idx)

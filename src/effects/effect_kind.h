@@ -44,6 +44,9 @@ enum class EffectKind {
     Charm,
     Amass,
     Sacrifice,
+    PutCounterAll,
+    SacrificeAll,
+    ImmediateTrigger,
 };
 
 // Maps a normalized category string to its EffectKind. Unknown strings → None.

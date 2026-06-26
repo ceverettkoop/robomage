@@ -138,6 +138,7 @@ the common verbs:
 
 | Spec | Meaning |
 |---|---|
+| `A:<spec>` / `B:<spec>` | **seat key** — pin a spec to player A or B (see below) |
 | `pass` | pass priority / take the first choice |
 | `keep` / `mulligan` | the opening mulligan decision |
 | `cast:<card>` | cast a spell from hand |
@@ -152,25 +153,48 @@ the common verbs:
 | `desc:<text>` | match any action whose description contains `<text>` |
 | `#<n>` or a bare integer | literal index escape hatch |
 
+**Seat keys (`A:` / `B:`) — the easy way to drive both seats.** Because `--play` drives both
+players from one global list, sequencing the priority hand-offs between them by hand is the
+painful part. Prefix a spec with `A:` or `B:` (case-insensitive) to pin it to a seat. Before
+applying the next spec the harness checks who currently holds priority: **if the next spec is
+keyed to the seat that does _not_ have priority, the priority holder auto-passes** (the spec is
+left unconsumed) until the keyed seat is on the clock. So you write each player's intended line
+in order and never insert the intervening `pass`es yourself. The seat key chooses *which
+decision* a spec applies to; it's independent of the `@own`/`@opp` target suffix (which is the
+target's controller relative to the acting seat). Seat keys are optional — an unkeyed spec
+applies to whoever has priority (the original behaviour), so existing scripts are unchanged, and
+keyed/unkeyed specs may be mixed. (Seat keys are meant for the dual-seat `--play` case; under
+`observe --play-a/--play-b` each list already drives a single seat, so just leave specs unkeyed
+or key them to that seat.)
+
 Notes:
 - Card names match case- and apostrophe-insensitively; an exact name wins, else a unique
   substring (`cast:bolt` → Lightning Bolt). Identical duplicate choices (e.g. four "Play
   Mountain" from a hand of duplicates) collapse to the first automatically; genuinely distinct
   matches are reported ambiguous — pin them with `@own`/`@opp`, `desc:`, or `#<n>`.
 - The opening decisions are mulligans — start a sculpted-hand line with `keep,keep,…` (one
-  `keep` per seat, since the harness drives both seats from the one list).
+  `keep` per seat, since the harness drives both seats from the one list); with seat keys that's
+  `A:keep,B:keep,…`.
 - After the specs run out the game auto-advances (action `0`) to its end or `--max-decisions`.
 - Read the transcript: every decision prints the numbered **Available actions** menu next to
   the decoded board state, so when a spec fails you can see exactly what was legal and fix it.
   Keep `--seed` constant (default `1`) so the prefix replays identically while you extend the line.
 
-Example (Bolt kills a bear that is already in play):
+Example (Bolt kills a bear that is already in play), unkeyed:
 ```bash
 train/.venv/bin/python train/test_harness.py \
   --hand-a "Mountain,Lightning Bolt" \
   --library-a "Island,Island,Mountain,Mountain,Mountain,Mountain,Mountain,Mountain" \
   --battlefield-b "Grizzly Bears" \
   --play "keep,keep,play:Mountain,pass,cast:Lightning Bolt,target:Grizzly Bears@opp"
+```
+
+Same line with seat keys (the harness fills in B's passes and A's post-cast passes for you):
+```bash
+train/.venv/bin/python train/test_harness.py \
+  --hand-a "Lightning Bolt" --battlefield-a "Mountain" \
+  --battlefield-b "Grizzly Bears" \
+  --play "A:keep,B:keep,A:cast:Lightning Bolt,A:target:Grizzly Bears@opp,B:pass"
 ```
 
 `train.py observe` takes per-seat `--play-a` / `--play-b` to drive one side by specs while the

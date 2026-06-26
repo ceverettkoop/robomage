@@ -180,6 +180,29 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                                        is_land_card(global_coordinator.GetComponent<CardData>(ev_card));
                         if (!is_land) continue;
                     }
+                    // ValidCard(s)$ <Subtype> filter (Ajani: a Cat changing zone). Checked
+                    // against the changing card's CardData or Token subtypes.
+                    if (!ab.trigger_valid_card_subtype.empty() && ev.HasParam(Params::ENTITY)) {
+                        Entity ev_card = ev.GetParam<Entity>(Params::ENTITY);
+                        bool has_sub = false;
+                        if (global_coordinator.entity_has_component<CardData>(ev_card)) {
+                            for (auto &t : global_coordinator.GetComponent<CardData>(ev_card).types)
+                                if (t.name == ab.trigger_valid_card_subtype) { has_sub = true; break; }
+                        }
+                        if (!has_sub && global_coordinator.entity_has_component<Token>(ev_card)) {
+                            for (auto &t : global_coordinator.GetComponent<Token>(ev_card).types)
+                                if (t.name == ab.trigger_valid_card_subtype) { has_sub = true; break; }
+                        }
+                        // 603.10 look-back: a token that died has already ceased to exist, so
+                        // fall back to its last-known type names captured at battlefield-leave.
+                        if (!has_sub) {
+                            auto it = game.lk_battlefield_types.find(ev_card);
+                            if (it != game.lk_battlefield_types.end())
+                                for (auto &n : it->second)
+                                    if (n == ab.trigger_valid_card_subtype) { has_sub = true; break; }
+                        }
+                        if (!has_sub) continue;
+                    }
                 }
                 // Drawn trigger filters (Orcish Bowmasters): PLAYER_DREW_CARD
                 if (ev.GetType() == Events::PLAYER_DREW_CARD) {
@@ -241,6 +264,10 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
     }
 
     place_triggers_apnap(game, orderer, pending);
+
+    // Last-known type snapshots are only valid for this batch of leave-the-battlefield
+    // events; clear them so a later, unrelated trigger can't match a stale entity id.
+    game.lk_battlefield_types.clear();
 }
 
 static std::string trigger_label(const std::string &name, const Ability &ab) {

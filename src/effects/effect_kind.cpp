@@ -37,6 +37,9 @@ EffectKind effect_kind_from_string(const std::string &category) {
         {"Charm", EffectKind::Charm},
         {"Amass", EffectKind::Amass},
         {"Sacrifice", EffectKind::Sacrifice},
+        {"PutCounterAll", EffectKind::PutCounterAll},
+        {"SacrificeAll", EffectKind::SacrificeAll},
+        {"ImmediateTrigger", EffectKind::ImmediateTrigger},
     };
     auto it = table.find(category);
     return (it != table.end()) ? it->second : EffectKind::None;

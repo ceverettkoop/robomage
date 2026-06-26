@@ -49,6 +49,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Jace, the Mind Sculptor", 97},
     {"Birthing Ritual", 98},
     {"Humility", 99},
+    {"Ajani, Nacatl Pariah Ajani, Nacatl Avenger", 100},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);

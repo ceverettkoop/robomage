@@ -89,6 +89,45 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
         return true;
     }
 
+    // Defined$ Remembered — move the remembered card(s) directly. Ajani's exile-and-
+    // return chain uses this: TrigExile remembers the exiled permanent, DBReturn brings
+    // that same card back to the battlefield (transformed) under its owner's control.
+    if (ab.defined_remembered) {
+        for (auto e : cur_game.remembered_entities) {
+            if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+            std::string nm = global_coordinator.entity_has_component<CardData>(e)
+                                 ? global_coordinator.GetComponent<CardData>(e).name
+                                 : "<unknown>";
+            orderer->add_to_zone(false, e, ab.destination);
+            if (ab.destination == Zone::BATTLEFIELD) {
+                global_coordinator.GetComponent<Zone>(e).controller = owner;
+                if (ab.enters_tapped) cur_game.pending_enters_tapped.insert(e);
+                if (ab.enters_transformed) cur_game.pending_enters_transformed.insert(e);
+            }
+            game_log("%s is moved to %s\n", nm.c_str(), dest_str);
+        }
+        return true;
+    }
+
+    // A ChangeZone leaving the battlefield with no target and no search filter operates
+    // on the ability's own source (Forge's Defined$ Self default; e.g. Ajani's TrigExile
+    // exiles himself). search_zone can't enumerate the battlefield, so a self-move is the
+    // only sensible reading of a battlefield origin here.
+    if (ab.origin == Zone::BATTLEFIELD && ab.change_type.empty() && ab.source != 0 &&
+        global_coordinator.entity_has_component<Zone>(ab.source)) {
+        std::string nm = global_coordinator.entity_has_component<CardData>(ab.source)
+                             ? global_coordinator.GetComponent<CardData>(ab.source).name
+                             : "<unknown>";
+        orderer->add_to_zone(false, ab.source, ab.destination);
+        if (ab.remember_changed) cur_game.remembered_entities.push_back(ab.source);
+        if (ab.destination == Zone::BATTLEFIELD) {
+            global_coordinator.GetComponent<Zone>(ab.source).controller = owner;
+            if (ab.enters_transformed) cur_game.pending_enters_transformed.insert(ab.source);
+        }
+        game_log("%s is moved to %s\n", nm.c_str(), dest_str);
+        return true;
+    }
+
     // Search-based ChangeZone (e.g. fetch lands, Green Sun's Zenith)
     size_t num_to_move = (ab.amount > 0) ? ab.amount : 1;
     bool multi_zone = ab.origins.size() > 1;
@@ -117,6 +156,7 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
             if (ab.destination == Zone::BATTLEFIELD) {
                 chosen_zone.controller = owner;
                 if (ab.enters_tapped) cur_game.pending_enters_tapped.insert(chosen);
+                if (ab.enters_transformed) cur_game.pending_enters_transformed.insert(chosen);
             }
             if (ab.remember_changed) {
                 cur_game.remembered_entities.push_back(chosen);
@@ -161,6 +201,7 @@ bool parse_change_zone(Ability &ab, const std::string &key, const std::string &v
             if (s == "Graveyard")      return Zone::GRAVEYARD;
             if (s == "Exile")          return Zone::EXILE;
             if (s == "Stack")          return Zone::STACK;
+            if (s == "Battlefield")    return Zone::BATTLEFIELD;
             return Zone::LIBRARY;
         };
         ab.origins.clear();
@@ -188,6 +229,9 @@ bool parse_change_zone(Ability &ab, const std::string &key, const std::string &v
         return true;
     } else if (key == "Tapped") {
         ab.enters_tapped = (value == "True");
+        return true;
+    } else if (key == "Transformed") {
+        ab.enters_transformed = (value == "True");
         return true;
     }
     return false;

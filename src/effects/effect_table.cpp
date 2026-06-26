@@ -42,6 +42,9 @@ EffectHandler handler_for(EffectKind kind) {
         case EffectKind::SylvanLibrary:   return &sylvan_library;
         case EffectKind::Amass:           return &amass;
         case EffectKind::Sacrifice:       return &sacrifice;
+        case EffectKind::PutCounterAll:   return &put_counter_all;
+        case EffectKind::SacrificeAll:    return &sacrifice_all;
+        case EffectKind::ImmediateTrigger: return &immediate_trigger;
         default:                          return nullptr;
     }
 }

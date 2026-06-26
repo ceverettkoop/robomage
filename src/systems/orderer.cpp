@@ -80,6 +80,15 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
         Zone::Ownership ctrl = global_coordinator.GetComponent<Permanent>(target).controller;
         if (ctrl == Zone::PLAYER_A) cur_game.revolt_player_a = true;
         else                        cur_game.revolt_player_b = true;
+
+        // 603.10 look-back: snapshot the permanent's type/subtype names as it leaves the
+        // battlefield so a "dies"/leaves-the-battlefield trigger can still match it after a
+        // token has ceased to exist (and after CardData/Permanent are stripped). Consumed
+        // and cleared by check_triggered_abilities.
+        std::vector<std::string> &names = cur_game.lk_battlefield_types[target];
+        names.clear();
+        for (const auto &t : global_coordinator.GetComponent<Permanent>(target).types)
+            names.push_back(t.name);
     }
 
     // If the entity is leaving an ordered zone, close the gap it leaves behind.

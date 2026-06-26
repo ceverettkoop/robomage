@@ -91,7 +91,11 @@ struct Ability{
     bool defined_targeted_controller = false;  // Defined$ TargetedController — GainLife goes to target's controller
     bool defined_self = false;                  // Defined$ Self — ability moves its own source
 
-    // DestroyAll filter now lives in DestroyAllParams (params variant).
+    // Filter naming which permanents a mass effect affects (DestroyAll / SacrificeAll /
+    // PutCounterAll): the ValidCards$ spec, e.g. "Cat.YouCtrl" or
+    // "Permanent.nonLand+OppCtrl+nonChosenCard". A plain member (not in the params
+    // variant) so PutCounterAll can carry it alongside CounterParams.
+    std::string valid_cards_filter = "";
 
     // Effect-specific parameter blocks. As effects migrate off the flat
     // god-struct fields (Phase 3), their exclusive data moves into one of these
@@ -112,6 +116,12 @@ struct Ability{
     bool trigger_valid_card_is_creature = false;        // ValidCard$ Creature
     bool trigger_valid_card_is_instant_or_sorcery = false;  // ValidCard$ Instant/Sorcery
     bool trigger_valid_card_is_land = false;            // ValidCard$ Land.*
+    // ValidCard(s)$ <Subtype> — the changing card must have this subtype (e.g. Ajani's
+    // "Cat.Other+YouCtrl"). Empty = no subtype filter. Matched against CardData/Token types.
+    std::string trigger_valid_card_subtype = "";
+    // OptionalDecider$ You — a "you may ..." triggered ability; its controller is prompted
+    // to accept or decline as it resolves (Mode$ ChangesZoneAll on Ajani).
+    bool trigger_optional = false;
 
     // Drawn trigger (Orcish Bowmasters): Mode$ Drawn fires on PLAYER_DREW_CARD.
     bool trigger_valid_card_opp_own = false;       // ValidCard$ Card.OppOwn — the drawn card is owned by an opponent of the source's controller
@@ -135,12 +145,22 @@ struct Ability{
 
     // Cleanup sub-ability
     bool clear_remembered = false;   // ClearRemembered$ True
+    bool clear_chosen = false;       // ClearChosenCard$ True — clears cur_game.chosen_cards
+
+    // ChooseCard ChooseEach$ "Type & Type & ..." (Ajani -4): each affected player chooses
+    // one permanent of each listed type from among their matching permanents to keep
+    // (recorded in cur_game.chosen_cards). Empty = the legacy single-pick ChooseCard.
+    std::string choose_each = "";
 
     // RememberChanged$ — remember entities moved by this ChangeZone (for Doomsday)
     bool remember_changed = false;
 
     // Tapped$ True — searched card enters the battlefield tapped (Edge of Autumn)
     bool enters_tapped = false;
+
+    // Transformed$ True — the moved card enters the battlefield showing its DFC back
+    // face (Ajani's exile-and-return-transformed). Consumed at permanent creation.
+    bool enters_transformed = false;
 
     // Multi-zone origin support (e.g. Origin$ Graveyard,Library)
     std::vector<Zone::ZoneValue> origins;  // populated when Origin$ has commas; origin holds first value

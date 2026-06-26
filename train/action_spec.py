@@ -49,6 +49,23 @@ Grammar (case-insensitive; one spec resolves to exactly one action):
     desc:<text>               match ANY action by description substring
     #<n>  or a bare integer   literal action index (escape hatch)
 
+  Optional leading SEAT KEY (``A:`` / ``B:``, case-insensitive) pins a spec to a
+  player seat::
+
+      A:play:Mountain     B:cast:Lightning Bolt     A:target:Grizzly Bears@opp
+
+  This matters only when ONE spec list drives BOTH seats (the test harness's
+  dual-seat ``--play`` mode). There, :class:`opponents.PlayController` looks at
+  the next spec's seat: if that seat does not currently hold priority, the seat
+  that *does* hold priority passes (the spec is left unconsumed) until the keyed
+  seat is on the clock — so the author writes the intended line per player and
+  never has to hand-interleave the priority-passes between them. A spec with no
+  seat key is applied to whoever currently has priority (the legacy behaviour).
+  The seat key never affects *which* action a spec resolves to within a single
+  decision — only *which decision* it is applied to. ``A:``/``B:`` is the player
+  seat; the separate ``@own``/``@opp`` suffix is the target's controller relative
+  to the acting seat — the two are independent.
+
   * ``<card>`` matches case- and apostrophe-insensitively; an exact name wins,
     otherwise a unique substring match is accepted ("bolt" -> "Lightning Bolt").
   * ``@side`` is ``own`` / ``opp`` (also ``me`` / ``self`` / ``you`` -> own,
@@ -97,6 +114,22 @@ _SIDE_ALIASES = {
 }
 
 
+# Leading seat key: a single 'A'/'B' (case-insensitive) followed by ':'. No verb
+# is a single letter, so this never collides with the verb grammar.
+_SEAT_RE = re.compile(r"\s*([abAB])\s*:\s*(.*)$", re.DOTALL)
+
+
+def spec_seat(token):
+    """Return the player seat ('A' or 'B') a spec is pinned to, or None.
+
+    A cheap front-of-string check (does not validate the rest of the spec) used
+    by :class:`opponents.PlayController` to decide, before resolving, whether the
+    current priority holder should pass because the next spec belongs to the
+    other seat."""
+    m = _SEAT_RE.match(token or "")
+    return m.group(1).upper() if m else None
+
+
 def _norm(s):
     """Normalize a name/description for matching: lowercase, drop apostrophes and
     punctuation, collapse whitespace."""
@@ -108,14 +141,16 @@ def _norm(s):
 class Intent:
     """A parsed spec: what the user wants, independent of any concrete menu."""
 
-    __slots__ = ("verb", "cats", "card", "side", "color", "keyword", "literal", "raw")
+    __slots__ = ("verb", "cats", "card", "side", "seat", "color", "keyword",
+                 "literal", "raw")
 
     def __init__(self, raw):
         self.raw = raw
         self.verb = None
         self.cats = set()       # candidate categories (empty => any)
         self.card = None        # normalized card/description text, or None
-        self.side = None        # 'own' | 'opp' | None
+        self.side = None        # 'own' | 'opp' | None (target's controller)
+        self.seat = None        # 'A' | 'B' | None (player seat this spec is for)
         self.color = None       # mana category int, or None
         self.keyword = None     # 'done' | 'fail' | 'keep' | 'mulligan' | None
         self.literal = None     # literal action index for '#N' / bare int
@@ -149,6 +184,16 @@ def parse_spec(token):
     unknown verb so typos fail loudly rather than silently passing."""
     raw = token.strip()
     intent = Intent(raw)
+
+    # Optional leading seat key ('A:' / 'B:') — strip it off and remember the
+    # seat; the rest of the token is parsed exactly as before. (Resolution
+    # against a menu ignores the seat; PlayController consumes it separately.)
+    m = _SEAT_RE.match(raw)
+    if m:
+        intent.seat = m.group(1).upper()
+        raw = m.group(2).strip()
+        if not raw:
+            raise ValueError(f"seat key with no action in spec {token!r}")
 
     # Literal index escape hatch: '#7' or a bare integer.
     m = re.fullmatch(r"#?(\d+)", raw)
