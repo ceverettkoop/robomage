@@ -868,11 +868,29 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
     game.pending_choice = NONE;
 }
 
+// Perspective player for an ability's target search. Ownership-restricted targets
+// (.YouOwn/.YouCtrl/.OppOwn — e.g. Emry's "target artifact card in YOUR graveyard") are
+// relative to the activating/controlling player, so the existence check must use that player
+// rather than a hardcoded placeholder. Derive it from the ability's source: a battlefield
+// permanent's controller, else its owning zone, else the ability's stored controller.
+static Zone::Ownership ability_perspective_player(const Ability &ability) {
+    Entity src = ability.source;
+    if (src != 0) {
+        if (global_coordinator.entity_has_component<Permanent>(src))
+            return global_coordinator.GetComponent<Permanent>(src).controller;
+        if (global_coordinator.entity_has_component<Zone>(src))
+            return global_coordinator.GetComponent<Zone>(src).owner;
+    }
+    return ability.controller;
+}
+
 bool has_legal_targets(const Ability &ability, std::shared_ptr<Orderer> orderer) {
     if (ability.valid_tgts == "N_A") return true;
     if (ability.target_min == 0) return true;  // optional targeting always has "legal targets"
-    // Ordering doesn't matter for existence check; use PLAYER_A as a placeholder.
-    return !build_valid_targets(ability, orderer, Zone::PLAYER_A).empty();
+    // Ordering doesn't affect existence for symmetric targets, but ownership-restricted
+    // targets must be evaluated from the controlling player's perspective (see above), or a
+    // ".YouOwn" ability could be offered with no legal target and crash on an empty target menu.
+    return !build_valid_targets(ability, orderer, ability_perspective_player(ability)).empty();
 }
 
 static void select_single_target(Ability &ability, const std::vector<Entity> &valid_targets,
