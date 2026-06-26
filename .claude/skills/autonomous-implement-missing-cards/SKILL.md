@@ -68,6 +68,11 @@ Sequential, single-tree implementation trades parallel throughput for **simplici
 
 ## Background
 
+- **Build headless.** Every `make` invocation in this skill means `make HEADLESS=TRUE` unless the
+  user explicitly asks for the GUI. The GUI (raylib) front end is deprecated/unmaintained and
+  raylib is typically unavailable in the sandbox cloud container, so a plain `make` fails at link
+  time. `HEADLESS=TRUE` still runs `pygen` (regenerating `train/card_costs.py`) and produces the
+  same `bin/robomage` the test harness drives, so it satisfies every build/regen step below.
 - Cards are registered in `src/card_vocab.h` as `{"Card Name", N}` (next free index `N`).
   `N_CARD_TYPES = 1024`, so indices up to 1022 are free (1023 is the token sentinel). A card
   absent from this file is "unimplemented".

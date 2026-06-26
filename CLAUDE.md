@@ -54,6 +54,13 @@ this version current if a newer Comprehensive Rules release supersedes it.
 - **Build for release**: `make BUILD=RELEASE`
 - **Disable GUI**: `make HEADLESS=TRUE`
 
+**Build headless by default.** Unless the user explicitly asks for the GUI, build with
+`make HEADLESS=TRUE` (and `make clean && make HEADLESS=TRUE` for a clean build). The GUI (raylib)
+front end is **deprecated** and no longer actively maintained — the text/CLI (TUI) interface is the
+actively maintained front end. The GUI code is retained in the tree in case it is revived in the
+future, but it requires raylib (often unavailable, e.g. in headless cloud containers), so prefer
+`HEADLESS=TRUE` everywhere it isn't specifically requested.
+
 The compiled binary is output to `bin/robomage`.
 
 **Codegen is part of the build.** The default `make` target runs `pygen` before compiling,

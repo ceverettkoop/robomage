@@ -17,6 +17,11 @@ make HEADLESS=TRUE    # no GUI, no raylib dependancy
 
 The binary is written to `bin/robomage`. Game must be run from the bin directory.
 
+> **Note:** The GUI (raylib) front end is **deprecated** and no longer actively maintained. The
+> text/CLI (TUI) interface is the actively maintained front end. The GUI code is retained in the
+> tree in case it is revived in the future, but `make HEADLESS=TRUE` (no raylib dependency) is the
+> recommended way to build unless you specifically need the GUI.
+
 ## Running
 
 ```bash
@@ -24,7 +29,7 @@ cd bin
 ./robomage                                         # interactive (you play both sides)
 ./robomage --replay resources/logs/game_12345.log  # replay a saved game
 ./robomage --machine                               # machine mode for RL training
-./robomage --gui                                   # gui 
+./robomage --gui                                   # gui (deprecated, not actively maintained)
 ```
 
 In interactive mode, numbers select a choice (every choice is logged), z passes priority, q quits.
