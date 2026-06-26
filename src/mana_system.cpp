@@ -33,6 +33,7 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
                           bool commit = true);
 static bool restricted_mana_matches(Entity source_entity, Entity paid_for);
 static bool creature_restricted_mana_matches(Entity paid_for);
+static bool colorless_eldrazi_restricted_mana_matches(Entity paid_for);
 static bool is_delve_eligible(Entity e, Zone::Ownership controller);
 static void delve_exile_one(Entity e, Zone::Ownership controller,
                             std::shared_ptr<Orderer> orderer, ManaValue &remaining);
@@ -147,6 +148,31 @@ static bool creature_restricted_mana_matches(Entity paid_for) {
     return false;
 }
 
+// Check whether a "spend only to cast colorless Eldrazi spells" mana source (Eldrazi
+// Temple's {C}{C} ability) can pay for the given spell: true iff the spell is an Eldrazi
+// (subtype) and colorless. A card is colorless when it has no colored mana symbols and no
+// explicit color override other than COLORLESS (Devoid sets explicit_colors = {COLORLESS}).
+// CR 106.7 mana spending restrictions.
+static bool colorless_eldrazi_restricted_mana_matches(Entity paid_for) {
+    if (paid_for == 0) return false;
+    if (!global_coordinator.entity_has_component<CardData>(paid_for)) return false;
+    auto &paid_cd = global_coordinator.GetComponent<CardData>(paid_for);
+    bool is_eldrazi = false;
+    for (auto &t : paid_cd.types)
+        if (t.kind == SUBTYPE && t.name == "Eldrazi") { is_eldrazi = true; break; }
+    if (!is_eldrazi) return false;
+    // Colorless test: any explicit color other than COLORLESS, or any colored mana symbol,
+    // disqualifies the card.
+    for (Colors c : {WHITE, BLUE, BLACK, RED, GREEN}) {
+        if (!paid_cd.explicit_colors.empty()) {
+            if (paid_cd.explicit_colors.count(c)) return false;
+        } else if (paid_cd.mana_cost.count(c)) {
+            return false;
+        }
+    }
+    return true;
+}
+
 // Collect all mana abilities a player could activate.
 // Checks physical activation requirements (untapped, controller, phased out, CantBeActivated,
 // summoning sickness, activation limits) but NOT activation_mana_cost — callers handle that
@@ -213,6 +239,11 @@ std::vector<LegalAction> collect_mana_legal_actions(
         // Creature-only mana (Abundant Countryside): only when paying for a creature spell
         if (ab.restrict_to_creature && !creature_restricted_mana_matches(paid_for))
             continue;
+        // Colorless-Eldrazi-only mana (Eldrazi Temple): only when paying for a colorless
+        // Eldrazi spell
+        if (ab.restrict_to_colorless_eldrazi &&
+            !colorless_eldrazi_restricted_mana_matches(paid_for))
+            continue;
         // Sources with activation mana cost: check affordability
         if (!ab.activation_mana_cost.empty()) {
             Entity exclude = ab.tap_cost ? entity : 0;
@@ -255,6 +286,9 @@ bool can_afford_with_sources(Zone::Ownership player_owner, const std::multiset<C
             if (s.second.restrict_to_creature &&
                 !creature_restricted_mana_matches(paid_for))
                 return true;
+            if (s.second.restrict_to_colorless_eldrazi &&
+                !colorless_eldrazi_restricted_mana_matches(paid_for))
+                return true;
             return false;
         }), sources.end());
 
@@ -266,6 +300,16 @@ bool can_afford_with_sources(Zone::Ownership player_owner, const std::multiset<C
         if (counted_entities.count(entity)) continue;
         if (!ab.activation_mana_cost.empty()) continue;
         size_t amount = eval_mana_amount(ab, player_owner, orderer);
+        // A permanent can only be tapped once, so when it offers several same-color mana
+        // abilities of differing yield (Eldrazi Temple: {C} vs {C}{C}), the player picks the
+        // largest applicable one. Count the maximum amount among this entity's other free,
+        // same-color abilities so affordability reflects the best single activation.
+        for (auto &[e2, ab2] : sources) {
+            if (e2 != entity || &ab2 == &ab) continue;
+            if (!ab2.activation_mana_cost.empty()) continue;
+            if (ab2.color != ab.color) continue;
+            amount = std::max(amount, eval_mana_amount(ab2, player_owner, orderer));
+        }
         // Check if this entity has more entries (multi-color source)
         bool is_multi_color = false;
         for (auto &[e2, ab2] : sources) {
@@ -582,6 +626,10 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
         // Creature-only mana (Abundant Countryside)
         if (ab.restrict_to_creature && !creature_restricted_mana_matches(paid_for))
             continue;
+        // Colorless-Eldrazi-only mana (Eldrazi Temple)
+        if (ab.restrict_to_colorless_eldrazi &&
+            !colorless_eldrazi_restricted_mana_matches(paid_for))
+            continue;
         if (!ab.activation_mana_cost.empty()) {
             if (!can_afford_with_sources(controller, ab.activation_mana_cost, orderer, ab.tap_cost ? entity : 0))
                 continue;
@@ -589,6 +637,22 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
         bool is_multi = false;
         for (auto &[e2, ab2] : sources)
             if (e2 == entity && ab2.color != ab.color) { is_multi = true; break; }
+        // A permanent taps only once. When it has several valid same-color mana abilities of
+        // differing yield (Eldrazi Temple: {C} vs the restricted {C}{C}), keep only the
+        // highest-yield one so the greedy payer realizes the affordability the gating check
+        // (can_afford_with_sources, which counts the max) promised, instead of burning the
+        // single tap on the smaller ability.
+        bool replaced = false;
+        for (auto &existing : valid_sources) {
+            if (existing.entity != entity || existing.color != ab.color) continue;
+            if (eval_mana_amount(ab, controller, orderer) >
+                eval_mana_amount(existing.ability, controller, orderer)) {
+                existing.ability = ab;
+            }
+            replaced = true;
+            break;
+        }
+        if (replaced) continue;
         valid_sources.push_back({entity, ab, ab.color, is_multi});
     }
 

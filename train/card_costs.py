@@ -136,7 +136,7 @@ _CARD_COST_MATRIX = np.array([
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 127: Chalice of the Void
     [0.0, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0],  # 128: Delver of Secrets Insectile Aberration
     [0.0, 0.0, 0.0, 0.1, 0.0, 0.1, 0.1],  # 129: Eldrazi Linebreaker
-    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 130: 
+    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 130: Eldrazi Temple
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 131: 
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 132: 
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 133: 
@@ -1167,7 +1167,7 @@ _VOCAB_NAMES = [
     "Chalice of the Void",  # 127
     "Delver of Secrets Insectile Aberration",  # 128
     "Eldrazi Linebreaker",  # 129
-    "",  # 130
+    "Eldrazi Temple",  # 130
     "",  # 131
     "",  # 132
     "",  # 133
@@ -2064,4 +2064,4 @@ _VOCAB_NAMES = [
 ]
 
 # Vocab indices that are Land cards (Types line includes 'Land').
-_LAND_VOCAB_IDS = frozenset({0, 1, 4, 5, 6, 7, 8, 9, 10, 19, 25, 32, 34, 36, 39, 44, 45, 50, 52, 62, 63, 64, 65, 66, 67, 102, 111, 114, 118, 120, 123})
+_LAND_VOCAB_IDS = frozenset({0, 1, 4, 5, 6, 7, 8, 9, 10, 19, 25, 32, 34, 36, 39, 44, 45, 50, 52, 62, 63, 64, 65, 66, 67, 102, 111, 114, 118, 120, 123, 130})

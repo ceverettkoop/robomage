@@ -562,6 +562,16 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             card.abilities.push_back(tok);
             continue;
         }
+        // K:Devoid — the object is colorless (CR 702.114a). Forge cards with Devoid omit a
+        // Colors: line and rely on the keyword for their colorlessness, so apply it here as a
+        // general color override (e.g. an Eldrazi printed with colored mana symbols is still
+        // colorless). explicit_colors = {COLORLESS} marks the card colorless for ColorIdentity.
+        if (kw_line == "Devoid") {
+            card.explicit_colors.clear();
+            card.explicit_colors.insert(COLORLESS);
+            card.keywords.push_back("Devoid");
+            continue;
+        }
         split_keywords(kw_line, card.keywords);
     }
 }
@@ -866,6 +876,13 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         if (value.find("Creature") != std::string::npos &&
             value.find("ChosenType") != std::string::npos) {
             ability.restrict_to_chosen_type_creature = true;
+        } else if (value.find("Eldrazi") != std::string::npos &&
+                   value.find("Colorless") != std::string::npos) {
+            // RestrictValid$ Spell.Eldrazi+Colorless,... — mana usable only to cast a
+            // colorless Eldrazi spell (Eldrazi Temple). The trailing Activated.Eldrazi…
+            // clause (activate abilities of colorless Eldrazi) is folded into the same
+            // restriction. CR 106.7.
+            ability.restrict_to_colorless_eldrazi = true;
         } else if (value.find("Creature") != std::string::npos) {
             // RestrictValid$ Spell.Creature — mana usable only to cast a creature spell
             // (any creature, no subtype constraint), e.g. Abundant Countryside. CR 106.7.
