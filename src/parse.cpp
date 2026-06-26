@@ -803,7 +803,16 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
     } else if (key == "TargetMin") {
         ability.target_min = std::stoi(value);
     } else if (key == "TargetMax") {
-        ability.target_max = std::stoi(value);
+        // A numeric cap (TargetMax$ 3) is used directly. A count-SVar cap
+        // (TargetMax$ MaxTgts, where MaxTgts = Count$ValidStack Card) means "any
+        // number of targets" — there is no fixed upper bound, so treat it as
+        // effectively unlimited; the multi-target selection loop stops on its own
+        // once no further legal targets remain (Mindbreak Trap: exile any number of
+        // target spells).
+        if (!value.empty() && std::isdigit(static_cast<unsigned char>(value[0])))
+            ability.target_max = std::stoi(value);
+        else
+            ability.target_max = MAX_ENTITIES;
     } else if (key == "ActivationZone") {
         if (value == "Hand") ability.activation_zone = Zone::HAND;
     } else if (key == "ActivationLimit") {

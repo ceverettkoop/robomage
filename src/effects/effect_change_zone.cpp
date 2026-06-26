@@ -7,8 +7,10 @@
 #include "../classes/game.h"
 #include "../classes/match_state.h"
 #include "../cli_output.h"
+#include "../components/ability.h"
 #include "../components/carddata.h"
 #include "../components/permanent.h"
+#include "../components/spell.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../systems/orderer.h"
@@ -65,7 +67,27 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
                                     : (global_coordinator.entity_has_component<Permanent>(tgt)
                                               ? global_coordinator.GetComponent<Permanent>(tgt).name
                                               : "<unknown>");
+            // A target that is a spell/ability on the stack (Mindbreak Trap: "exile any
+            // number of target spells") is being removed from the stack. Strip its Spell/
+            // Ability components — like effects::counter does — so the stack no longer
+            // treats it as a live object to resolve (CR 701.5a / 702.59c). A standalone
+            // ability entity (no card / CardData) is destroyed after leaving the stack.
+            bool on_stack = global_coordinator.GetComponent<Zone>(tgt).location == Zone::STACK;
+            bool standalone_ability = on_stack &&
+                                      !global_coordinator.entity_has_component<CardData>(tgt) &&
+                                      global_coordinator.entity_has_component<Ability>(tgt);
+            if (on_stack) {
+                if (global_coordinator.entity_has_component<Spell>(tgt))
+                    global_coordinator.RemoveComponent<Spell>(tgt);
+                if (global_coordinator.entity_has_component<Ability>(tgt))
+                    global_coordinator.RemoveComponent<Ability>(tgt);
+            }
             orderer->add_to_zone(false, tgt, ab.destination);
+            if (standalone_ability) {
+                global_coordinator.DestroyEntity(tgt);
+                game_log("%s is exiled from the stack\n", tname.c_str());
+                continue;
+            }
             if (ab.destination == Zone::EXILE && ab.source != 0 &&
                 global_coordinator.entity_has_component<Permanent>(ab.source)) {
                 global_coordinator.GetComponent<Permanent>(ab.source).exiled_with.push_back(tgt);

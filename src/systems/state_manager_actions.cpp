@@ -39,12 +39,33 @@ static bool can_afford_alt(const AltCost& alt_cost, Zone::Ownership priority_pla
 
     // Check SVar condition (e.g. Once Upon a Time: free only if first spell this game)
     if (!alt_cost.condition_svar.empty()) {
-        int svar_value = 0;
-        if (alt_cost.condition_svar.find("Count$YouCastThisGame") != std::string::npos) {
-            Entity pp_entity = get_player_entity(priority_player);
-            svar_value = static_cast<int>(global_coordinator.GetComponent<Player>(pp_entity).spells_cast_this_game);
+        const std::string &cond = alt_cost.condition_svar;
+        // Mindbreak Trap (Trap alt cost, CR 702.59): "If an opponent cast three or more
+        // spells this turn, you may pay {0}…". Scripted as
+        // PlayerCountOpponents$Condition<OP><N> SpellsCastThisTurn — the alt cost is
+        // enabled when at least one opponent's per-turn spell count satisfies the
+        // condition. condition_compare is unset; the comparison op/threshold are embedded
+        // in the SVar's "Condition<OP><N>" token.
+        if (cond.find("PlayerCountOpponents$") != std::string::npos &&
+            cond.find("SpellsCastThisTurn") != std::string::npos) {
+            std::string compare;  // e.g. "GE3"
+            size_t cpos = cond.find("Condition");
+            if (cpos != std::string::npos) compare = cond.substr(cpos + 9);  // strip "Condition"
+            // Truncate at the first space (the count metric follows the condition token).
+            size_t sp = compare.find(' ');
+            if (sp != std::string::npos) compare = compare.substr(0, sp);
+            Zone::Ownership opp = (priority_player == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+            int opp_spells =
+                static_cast<int>(global_coordinator.GetComponent<Player>(get_player_entity(opp)).spells_cast_this_turn);
+            if (!compare_svar(opp_spells, compare)) return false;
+        } else {
+            int svar_value = 0;
+            if (cond.find("Count$YouCastThisGame") != std::string::npos) {
+                Entity pp_entity = get_player_entity(priority_player);
+                svar_value = static_cast<int>(global_coordinator.GetComponent<Player>(pp_entity).spells_cast_this_game);
+            }
+            if (!compare_svar(svar_value, alt_cost.condition_compare)) return false;
         }
-        if (!compare_svar(svar_value, alt_cost.condition_compare)) return false;
     }
 
     // IsPresent$ <type>[.YouCtrl] — the alt cost is only available while the
