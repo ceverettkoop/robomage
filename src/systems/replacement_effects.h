@@ -34,6 +34,7 @@ struct ReplacementEvent {
     // ENTERS_BATTLEFIELD outcome
     bool enters_tapped = false;
     int  etb_p1p1 = 0;                                 // +1/+1 counters to add after the Creature component exists
+    bool redirect_to_exile = false;                    // 614.1a — the permanent is exiled instead of entering (Containment Priest)
 
     // MOVE_TO_ZONE in/out
     Zone::ZoneValue destination = Zone::GRAVEYARD;     // caller seeds the natural destination; dispatch may redirect

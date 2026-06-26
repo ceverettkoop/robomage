@@ -74,6 +74,10 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
                 global_coordinator.RemoveComponent<Spell>(top_entity);
             if (global_coordinator.entity_has_component<Ability>(top_entity))
                 global_coordinator.RemoveComponent<Ability>(top_entity);
+            // This permanent is entering the battlefield because it was cast (CR 614.12):
+            // mark it so an ETB replacement that cares about "wasn't cast" (Containment Priest)
+            // lets it through. Consumed when its Permanent component is created.
+            cur_game.cast_to_battlefield.insert(top_entity);
             orderer->add_to_zone(false, top_entity, Zone::BATTLEFIELD);
             auto &top_zone = global_coordinator.GetComponent<Zone>(top_entity);
             top_zone.controller = top_zone.owner;

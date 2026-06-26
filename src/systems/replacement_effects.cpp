@@ -25,6 +25,7 @@ enum CandidateKind {
     PENDING_TAPPED, // a resolving ability put this permanent onto the battlefield tapped
     ETB_COUNTERS,   // 614.1c — this permanent enters with +1/+1 counters (self-replacement)
     EXILE_INSTEAD,  // 614.1a — opponent's card is exiled (with a void counter) instead of going to graveyard
+    EXILE_INSTEAD_OF_ETB, // 614.1a — a non-token creature that wasn't cast is exiled instead of entering (Containment Priest)
     SKIP_UNTAP,     // 614.1d — this permanent doesn't untap during its controller's untap step (Choke)
 };
 
@@ -101,6 +102,33 @@ std::vector<Candidate> collect(const ReplacementEvent &ev,
             c.self_replacement = false;
             c.label = "enters tapped";
             if (!already_applied(applied, c)) out.push_back(c);
+        }
+        // Containment Priest: a non-token creature that wasn't cast is exiled instead of
+        // entering the battlefield (614.1a). The entering object must be a real card (not a
+        // token), a creature, and it must NOT have been cast (cur_game.cast_to_battlefield).
+        if (global_coordinator.entity_has_component<CardData>(ev.entity) &&
+            !global_coordinator.entity_has_component<Token>(ev.entity) &&
+            is_creature_card(global_coordinator.GetComponent<CardData>(ev.entity)) &&
+            cur_game.cast_to_battlefield.count(ev.entity) == 0) {
+            Entity max_e = global_coordinator.GetMaxIssuedEntity();
+            for (Entity e = 0; e < max_e; e++) {
+                if (!is_battlefield_permanent(e)) continue;
+                if (e == ev.entity) continue;  // a permanent doesn't exile itself as it enters
+                if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+                auto &cd = global_coordinator.GetComponent<CardData>(e);
+                for (size_t i = 0; i < cd.replacement_effects.size(); i++) {
+                    if (cd.replacement_effects[i].kind != Effect::Replacement::EXILE_INSTEAD_OF_ETB)
+                        continue;
+                    Candidate c;
+                    c.source = e;
+                    c.kind = EXILE_INSTEAD_OF_ETB;
+                    c.index = static_cast<int>(i);
+                    c.self_replacement = false;
+                    c.label = global_coordinator.GetComponent<Permanent>(e).name +
+                              ": exile instead of entering";
+                    if (!already_applied(applied, c)) out.push_back(c);
+                }
+            }
         }
         return out;
     }
@@ -195,6 +223,12 @@ void apply_one(ReplacementEvent &ev, const Candidate &c) {
             } else {
                 game_log("%s is exiled instead of being put into a graveyard.\n", name.c_str());
             }
+            break;
+        }
+        case EXILE_INSTEAD_OF_ETB: {
+            ev.redirect_to_exile = true;
+            std::string name = global_coordinator.GetComponent<CardData>(ev.entity).name;
+            game_log("%s is exiled instead of entering the battlefield.\n", name.c_str());
             break;
         }
         case SKIP_UNTAP:

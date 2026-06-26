@@ -1643,6 +1643,7 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
         bool layer_cant_happen    = false;
         bool active_zones_battlefield = false;
         bool valid_card_opp_non_token = false;
+        bool valid_card_uncast_creature = false;  // Containment Priest: Creature.!token+!wasCast
         std::string replace_with_svar;  // the SVar named by ReplaceWith$ (e.g. "Exile"), used to inspect the actual zone-change effect
 
         size_t param_pos = 0;
@@ -1657,6 +1658,11 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
             else if (key == "ValidCard"   && value.find("OppOwn") != std::string::npos &&
                      (value.find("!token") != std::string::npos ||
                       value.find("nonToken") != std::string::npos)) valid_card_opp_non_token = true;
+            // Containment Priest: a non-token creature that wasn't cast (Creature.!token+!wasCast).
+            else if (key == "ValidCard"   && value.find("Creature") != std::string::npos &&
+                     value.find("!wasCast") != std::string::npos &&
+                     (value.find("!token") != std::string::npos ||
+                      value.find("nonToken") != std::string::npos)) valid_card_uncast_creature = true;
             else if (key == "Destination" && value == "Battlefield") dest_is_battlefield     = true;
             else if (key == "Destination" && value == "Graveyard")   dest_is_graveyard_r     = true;
             else if (key == "ReplaceWith" && value == "ETBTapped")   replace_with_etb_tapped = true;
@@ -1695,6 +1701,16 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
             r.kind = Effect::Replacement::EXILE_INSTEAD_OF_GRAVEYARD;
             r.applies_to_self_only = false;
             r.with_void_counter = replace_with_void_counter;
+            result.push_back(r);
+        }
+        // Containment Priest: a non-token creature that wasn't cast is exiled instead of
+        // entering the battlefield (614.1a). The replacement applies to any such creature
+        // entering the battlefield while this permanent is on the battlefield.
+        if (event_is_moved && dest_is_battlefield && replace_with_exile &&
+            valid_card_uncast_creature && active_zones_battlefield) {
+            Effect::Replacement r;
+            r.kind = Effect::Replacement::EXILE_INSTEAD_OF_ETB;
+            r.applies_to_self_only = false;
             result.push_back(r);
         }
         // Choke: matching lands don't untap during their controllers' untap steps (614.1d).

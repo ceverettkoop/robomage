@@ -114,7 +114,7 @@ static Colors mana_color_for_subtype(const std::string &subtype) {
 
 // Permanents on battlefield set to have appropriate components
 // if they are in a different zone these are removed as no longer applicable
-void StateManager::apply_permanent_components(Game &game) {
+void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Orderer> orderer) {
     // Collect token entities that have left the battlefield for destruction after iteration.
     std::vector<Entity> tokens_to_destroy;
 
@@ -174,9 +174,20 @@ void StateManager::apply_permanent_components(Game &game) {
                     rev.entity = entity;
                     rev.affected_player = zone.controller;  // 616.1: the permanent's controller chooses
                     replacement::dispatch(rev);
+                    // Containment Priest (614.1a): a non-token creature that wasn't cast is
+                    // exiled instead of entering. Redirect the card to exile and skip creating
+                    // its Permanent component entirely (it never enters the battlefield).
+                    if (rev.redirect_to_exile) {
+                        game.cast_to_battlefield.erase(entity);
+                        orderer->add_to_zone(false, entity, Zone::EXILE);
+                        continue;
+                    }
                     perm.is_tapped = rev.enters_tapped;
                     etb_p1p1 = rev.etb_p1p1;
                 }
+                // It was cast and is now becoming a real permanent — consume the one-shot
+                // "was cast" marker so a later non-cast re-entry isn't treated as a cast.
+                game.cast_to_battlefield.erase(entity);
                 if (perm.is_tapped) game_log("%s enters tapped.\n", perm.name.c_str());
                 // Spell was cast for its evoke cost — mark the permanent so its evoke
                 // self-sacrifice ETB trigger fires (consumed one-shot here).
