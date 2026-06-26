@@ -45,6 +45,20 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
 
     Zone::Ownership owner = global_coordinator.GetComponent<Zone>(ab.source).owner;
 
+    // DefinedPlayer$ TargetedController (Erode: "Its controller may search their library
+    // for a basic land card, put it onto the battlefield tapped, then shuffle."): the
+    // searching/owning player for a search-based ChangeZone is the targeted card's
+    // controller, not the spell's caster (CR 109.5). The target may already have left the
+    // battlefield (Erode's Destroy sub-ability ran first), but Zone.controller persists
+    // through the move to the graveyard, so it still names the last controller. This only
+    // redirects the search path; the targeted-move branch below is skipped because such a
+    // sub-ability carries no target of its own (ValidTgts$ N_A).
+    if (ab.defined_targeted_controller && ab.target != 0 &&
+        global_coordinator.entity_has_component<Zone>(ab.target)) {
+        Zone::Ownership tc = global_coordinator.GetComponent<Zone>(ab.target).controller;
+        if (tc != Zone::UNKNOWN) owner = tc;
+    }
+
     const char *dest_str = ab.destination == Zone::BATTLEFIELD ? "the battlefield"
                            : ab.destination == Zone::LIBRARY   ? "top of library"
                            : ab.destination == Zone::GRAVEYARD ? "graveyard"
