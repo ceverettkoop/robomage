@@ -1534,6 +1534,10 @@ static std::vector<StaticAbility> parse_static_abilities(const std::string &scri
                 }
             } else if (key == "NumLimitEachTurn") {
                 sa.cant_cast_limit_per_turn = std::stoi(value);
+            } else if (key == "Caster") {
+                // CantBeCast Caster$ Opponent (Voice of Victory): the restriction applies to
+                // the source controller's opponents, not the controller themselves.
+                if (value == "Opponent") sa.cant_cast_by_opponent = true;
             } else if (key == "AddHiddenKeyword") {
                 sa.hidden_keyword = value;
             } else if (key == "ValidCause") {

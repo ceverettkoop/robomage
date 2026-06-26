@@ -48,6 +48,14 @@ bool cast_prohibited(Zone::Ownership caster, bool card_is_creature) {
         // Creatures are unaffected by a nonCreature restriction.
         if (as.sa->cant_cast_filter.find("nonCreature") != std::string::npos && card_is_creature)
             continue;
+        // Caster$ Opponent (Voice of Victory): the controller's opponents can't cast spells.
+        // condition_met (e.g. Condition$ PlayerTurn) gates when the static is live; an
+        // unconditional opponent-lock has condition_met == true already.
+        if (as.sa->cant_cast_by_opponent) {
+            if (!as.condition_met) continue;
+            if (caster != as.controller) return true;  // caster is an opponent of the source
+            continue;
+        }
         auto &pp = global_coordinator.GetComponent<Player>(get_player_entity(caster));
         if (as.sa->cant_cast_limit_per_turn > 0 &&
             static_cast<int>(pp.noncreature_spells_cast_this_turn) >= as.sa->cant_cast_limit_per_turn)

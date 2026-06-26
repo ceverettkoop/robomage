@@ -71,6 +71,12 @@ bool put_counter_all(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool sacrifice_all(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool immediate_trigger(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool copy_permanent(Ability &ab, std::shared_ptr<Orderer> orderer);
+// Mobilize N (702.176): create N tapped+attacking 1/1 red Warrior tokens and register a
+// delayed end-step sacrifice of exactly those tokens.
+bool mobilize(Ability &ab, std::shared_ptr<Orderer> orderer);
+// Delayed end-step sacrifice fired by Mobilize: sacrifice each entity in ab.targets that is
+// still on the battlefield (the tokens created when the creature attacked).
+bool sacrifice_tokens(Ability &ab, std::shared_ptr<Orderer> orderer);
 
 // True if battlefield permanent `e` matches a Forge ValidCards$/ConditionPresent$
 // filter spec: a type/subtype head plus '+'-delimited qualifiers (YouCtrl, OppCtrl,

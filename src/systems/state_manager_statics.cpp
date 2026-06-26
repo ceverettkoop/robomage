@@ -508,6 +508,15 @@ static Ability keyword_triggered_ability(const std::string &keyword) {
         ab.trigger_valid_player_is_controller = true;
         ab.category = "ExaltedBonus";
         ab.amount = 1;
+    } else if (keyword.rfind("Mobilize:", 0) == 0) {
+        // Mobilize N (702.176): whenever this creature attacks, create N tapped and
+        // attacking 1/1 red Warrior creature tokens; sacrifice them at the beginning
+        // of the next end step. trigger_only_self restricts it to this creature attacking.
+        ab.ability_type = Ability::TRIGGERED;
+        ab.trigger_on = Events::CREATURE_ATTACKED;
+        ab.trigger_only_self = true;
+        ab.category = "Mobilize";
+        ab.amount = static_cast<size_t>(std::stoi(keyword.substr(9)));
     }
     return ab;
 }
@@ -665,6 +674,10 @@ void StateManager::gather_active_statics(Game &game) {
             a.condition_met = true;
         } else if (a.sa->condition == "Delirium") {
             a.condition_met = (a.controller == Zone::PLAYER_A) ? delirium_a : delirium_b;
+        } else if (a.sa->condition == "PlayerTurn") {
+            // Active during the source controller's own turn (Voice of Victory).
+            bool a_turn = cur_game.player_a_turn;
+            a.condition_met = (a.controller == Zone::PLAYER_A) ? a_turn : !a_turn;
         } else if (!a.sa->check_svar_expr.empty()) {
             // SVar-based condition (e.g. Keen-Eyed Curator: GE4 distinct card types
             // among exiled_with). a.entity is the source permanent the SVar belongs to.

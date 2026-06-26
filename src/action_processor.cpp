@@ -588,6 +588,15 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
             auto &permanent = global_coordinator.GetComponent<Permanent>(entity);
             if (!creature_has_keyword(cr, "Vigilance"))
                 permanent.is_tapped = true;
+
+            // Fire a per-attacker "whenever this creature attacks" event (508.2 attack
+            // declaration), so triggers like Mobilize go on the stack for each attacker.
+            Entity actrl_entity = (active_player == Zone::PLAYER_A)
+                                  ? game.player_a_entity : game.player_b_entity;
+            Event attacked_ev(Events::CREATURE_ATTACKED);
+            attacked_ev.SetParam(Params::ENTITY, entity);
+            attacked_ev.SetParam(Params::PLAYER, actrl_entity);
+            global_coordinator.SendEvent(attacked_ev);
         }
     }
     if (!any) game_log("  (none)\n");

@@ -36,6 +36,9 @@ struct StaticAbility {
     // CantBeCast fields (category = "CantBeCast"):
     std::string cant_cast_filter = "";      // "Card.nonCreature" — card type filter
     int cant_cast_limit_per_turn = 0;       // NumLimitEachTurn$ N — limit per player per turn
+    bool cant_cast_by_opponent = false;     // Caster$ Opponent — restricts the controller's opponents
+                                            // (Voice of Victory: "your opponents can't cast spells
+                                            // during your turn", gated by Condition$ PlayerTurn).
 
     // Type-changing fields (category = "Continuous", layer 4):
     std::string add_type = "";              // AddType$ Mountain — land subtype to set
