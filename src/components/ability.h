@@ -149,6 +149,13 @@ struct Ability{
     // Spell count trigger (Cori-Steel Cutter)
     size_t trigger_spell_count_eq = 0;  // ActivatorThisTurnCast$ EQN — fires on Nth spell
 
+    // SpellCast trigger with a dynamic mana-value filter on the cast spell
+    // (Chalice of the Void: ValidCard$ Card.cmcEQY, Y = Count$CardCounters.CHARGE — fires
+    // when a spell's mana value equals the source's charge-counter count). Empty expr = no
+    // such filter. The expr is the resolved Count$ expression; op is "EQ"/"LE"/"GE"/...
+    std::string trigger_cmc_expr = "";
+    std::string trigger_cmc_op = "";
+
     // TriggerZones$ Graveyard (Arclight Phoenix): the triggered ability functions from
     // the graveyard, not the battlefield (CR 113.6 / 603.6). When set, the trigger scan
     // matches the source while it is in its owner's graveyard.
@@ -159,6 +166,7 @@ struct Ability{
     // Attach / Equip sub-ability
     bool optional = false;           // Optional$ True — player may decline
     bool defined_remembered = false; // Defined$ Remembered — target is cur_game.remembered_entities[0]
+    bool defined_triggered_spell = false; // Defined$ TriggeredSpellAbility — target is the spell that triggered this ability (Chalice of the Void counters it)
 
     // RepeatEach over players (Price of Progress): RepeatPlayers$ Player makes the effect
     // loop once per player, setting cur_game.remembered_entities to that player's entity

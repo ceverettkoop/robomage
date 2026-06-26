@@ -1,6 +1,8 @@
 #ifndef REPLACEMENT_EFFECTS_H
 #define REPLACEMENT_EFFECTS_H
 
+#include <string>
+
 #include "../components/zone.h"
 #include "../ecs/entity.h"
 
@@ -33,7 +35,8 @@ struct ReplacementEvent {
 
     // ENTERS_BATTLEFIELD outcome
     bool enters_tapped = false;
-    int  etb_p1p1 = 0;                                 // +1/+1 counters to add after the Creature component exists
+    int  etb_p1p1 = 0;                                 // counters to add when the permanent enters (614.1c); count of etb_counter_type
+    std::string etb_counter_type = "P1P1";             // kind of "enters with" counter ("P1P1", "CHARGE", ...)
     bool redirect_to_exile = false;                    // 614.1a — the permanent is exiled instead of entering (Containment Priest)
 
     // MOVE_TO_ZONE in/out

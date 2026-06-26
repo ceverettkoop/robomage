@@ -37,6 +37,7 @@ struct Candidate {
     bool self_replacement = false; // 614.15 — gates choice order under 616.1a
     std::string label;            // menu label when >1 applies
     int amount = 0;               // ETB_COUNTERS: counter count
+    std::string counter_type = "P1P1"; // ETB_COUNTERS: kind of counter
     bool with_void_counter = false; // EXILE_INSTEAD: tag the exiled card with a void counter (Dauthi), else plain exile (Leyline)
 };
 
@@ -78,11 +79,18 @@ std::vector<Candidate> collect(const ReplacementEvent &ev,
                 c.label = "enters tapped";
                 if (!already_applied(applied, c)) out.push_back(c);
             }
-            // "Enters with +1/+1 counters" replacement effect (614.1c) from an EtbCounter static ability.
+            // "Enters with N counters" replacement effect (614.1c) from an EtbCounter static
+            // ability. Count from delve (Hangarback-style) or from X paid at cast (Chalice of
+            // the Void's CHARGE counters); the counter kind is whatever the script declared.
             for (size_t i = 0; i < cd.static_abilities.size(); i++) {
                 const StaticAbility &sa = cd.static_abilities[i];
-                if (sa.category != "EtbCounter" || sa.counter_type != "P1P1") continue;
-                int n = sa.counter_count_from_delve ? static_cast<int>(cur_game.delve_exiled.size()) : 0;
+                if (sa.category != "EtbCounter") continue;
+                int n = 0;
+                if (sa.counter_count_from_delve) n = static_cast<int>(cur_game.delve_exiled.size());
+                else if (sa.counter_count_from_xpaid) {
+                    auto it = cur_game.pending_etb_xpaid.find(ev.entity);
+                    if (it != cur_game.pending_etb_xpaid.end()) n = it->second;
+                }
                 if (n <= 0) continue;
                 Candidate c;
                 c.source = ev.entity;
@@ -90,6 +98,7 @@ std::vector<Candidate> collect(const ReplacementEvent &ev,
                 c.index = -1000 - static_cast<int>(i);  // disjoint from replacement_effects indices
                 c.self_replacement = true;
                 c.amount = n;
+                c.counter_type = sa.counter_type.empty() ? "P1P1" : sa.counter_type;
                 c.label = "enters with counters";
                 if (!already_applied(applied, c)) out.push_back(c);
             }
@@ -245,7 +254,9 @@ void apply_one(ReplacementEvent &ev, const Candidate &c) {
             break;
         case ETB_COUNTERS:
             ev.etb_p1p1 += c.amount;
+            ev.etb_counter_type = c.counter_type;
             cur_game.delve_exiled.clear();
+            cur_game.pending_etb_xpaid.erase(ev.entity);
             break;
         case EXILE_INSTEAD: {
             ev.destination = Zone::EXILE;

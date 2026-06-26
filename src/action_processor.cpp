@@ -1042,6 +1042,10 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             spell.cast_with_flashback = action.use_flashback;
             spell.cast_with_evoke = action.use_alt_cost && card_data.alt_cost.is_evoke;
             spell.cast_with_offspring = action.use_offspring;
+            // Record the X value paid so an "enters with X counters" replacement can read
+            // it (Chalice of the Void: enters with X charge counters). cur_game.x_paid is
+            // global and may be overwritten by a later cast before this spell resolves.
+            if (card_data.has_x_cost) spell.x_paid = static_cast<int>(cur_game.x_paid);
             if (cur_game.pending_cant_be_countered) {
                 spell.cant_be_countered = true;
                 cur_game.pending_cant_be_countered = false;
@@ -1096,6 +1100,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                 if (spell_is_instant_or_sorcery) caster_player.instant_sorcery_spells_cast_this_turn++;
                 Event spell_event(Events::SPELL_CAST);
                 spell_event.SetParam(Params::PLAYER, caster_entity);
+                spell_event.SetParam(Params::ENTITY, spell_entity);
                 global_coordinator.SendEvent(spell_event);
             }
 

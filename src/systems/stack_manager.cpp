@@ -73,6 +73,12 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
             if (global_coordinator.entity_has_component<Spell>(top_entity) &&
                 global_coordinator.GetComponent<Spell>(top_entity).cast_with_offspring)
                 cur_game.pending_offspring.insert(top_entity);
+            // Carry the X paid for an X-cost permanent into the ETB so an "enters with X
+            // counters" replacement can read it (Chalice of the Void).
+            if (global_coordinator.entity_has_component<Spell>(top_entity) &&
+                global_coordinator.GetComponent<Spell>(top_entity).x_paid > 0)
+                cur_game.pending_etb_xpaid[top_entity] =
+                    global_coordinator.GetComponent<Spell>(top_entity).x_paid;
             if (global_coordinator.entity_has_component<Spell>(top_entity))
                 global_coordinator.RemoveComponent<Spell>(top_entity);
             if (global_coordinator.entity_has_component<Ability>(top_entity))

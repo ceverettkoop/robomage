@@ -419,9 +419,12 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
         // K:etbCounter:P1P1:X:... — "this card enters with counters"
         // Parsed as a static ability; counters applied in apply_permanent_components on ETB.
         if (kw_line.rfind("etbCounter", 0) == 0) {
+            // K:etbCounter:<TYPE>:<count>  where <count> is either a literal number or a
+            // SVar key resolving to a Count$ expression (e.g. Chalice's "X" → Count$xPaid).
             std::string sub = kw_line.substr(strlen("etbCounter"));
             std::string counter_type_str = "P1P1";
             bool from_delve = false;
+            bool from_xpaid = false;
             if (!sub.empty() && sub[0] == ':') {
                 size_t c1 = sub.find(':', 1);
                 if (c1 != std::string::npos) {
@@ -431,9 +434,13 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
                         ? sub.substr(c1 + 1, c2 - c1 - 1)
                         : sub.substr(c1 + 1);
                     auto svar_it = svars.find(svar_key);
-                    if (svar_it != svars.end() &&
-                        svar_it->second.find("ExiledWithSource") != std::string::npos) {
-                        from_delve = true;
+                    if (svar_it != svars.end()) {
+                        if (svar_it->second.find("ExiledWithSource") != std::string::npos)
+                            from_delve = true;
+                        // Count$xPaid — the count equals the X value paid at cast time
+                        // (Chalice of the Void enters with X charge counters).
+                        else if (svar_it->second.find("xPaid") != std::string::npos)
+                            from_xpaid = true;
                     }
                 }
             }
@@ -441,6 +448,7 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             sa.category = "EtbCounter";
             sa.counter_type = counter_type_str;
             sa.counter_count_from_delve = from_delve;
+            sa.counter_count_from_xpaid = from_xpaid;
             card.static_abilities.push_back(sa);
             continue;
         }
@@ -803,6 +811,10 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         ability.optional_choice = (value == "True");
     } else if (key == "Defined" || key == "DefinedPlayer") {
         if (value == "Remembered") ability.defined_remembered = true;
+        // Defined$ TriggeredSpellAbility — the effect acts on the spell that fired this
+        // trigger (Chalice of the Void: "counter that spell"). Set at trigger fire time.
+        else if (value == "TriggeredSpellAbility" || value == "TriggeredSpell")
+            ability.defined_triggered_spell = true;
         else if (value == "TargetedController") ability.defined_targeted_controller = true;
         else if (value == "Self") ability.defined_self = true;
         // Defined$ You — the effect's player is the source's controller (CR 109.5). Used by
@@ -1406,13 +1418,31 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
             if (value.find("Land")        != std::string::npos) valid_card_land         = true;
             // YouCtrl may be the first ('.YouCtrl') or a later ('+YouCtrl') qualifier.
             if (value.find("YouCtrl")     != std::string::npos) valid_player_is_you     = true;
+            // Dynamic mana-value filter on the cast spell (Chalice of the Void:
+            // "Card.cmcEQY", Y = Count$CardCounters.CHARGE). Resolve the cmc<op><svar>
+            // qualifier to its runtime Count$ expression + comparison op, mirroring the
+            // ChangeType cmcEQ handling used by Aether Vial.
+            for (const char *op : {"cmcEQ", "cmcLE", "cmcGE", "cmcLT", "cmcGT", "cmcNE"}) {
+                size_t p = value.find(op);
+                if (p == std::string::npos) continue;
+                std::string svar_key = value.substr(p + strlen(op));
+                size_t end = svar_key.find_first_of(".+");
+                if (end != std::string::npos) svar_key = svar_key.substr(0, end);
+                auto it = svars.find(svar_key);
+                if (it != svars.end()) {
+                    ability.trigger_cmc_expr = it->second;
+                    ability.trigger_cmc_op = std::string(op + 3);  // "cmcEQ" → "EQ"
+                }
+                break;
+            }
             // Leading token before '.'/'+' that isn't a recognized card type is a
             // subtype filter (e.g. "Cat.Other+YouCtrl" -> subtype "Cat").
             std::string head = value.substr(0, value.find_first_of(".+"));
             static const std::set<std::string> known_types = {
                 "Creature", "Land", "Instant", "Sorcery", "Card", "Permanent",
                 "Artifact", "Enchantment", "Planeswalker"};
-            if (!head.empty() && known_types.find(head) == known_types.end())
+            if (!head.empty() && known_types.find(head) == known_types.end() &&
+                head.rfind("cmc", 0) != 0)
                 valid_card_subtype = head;
         } else if (key == "OptionalDecider") {
             if (value.find("You") != std::string::npos) trigger_optional_local = true;
@@ -1503,6 +1533,14 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
         ability.trigger_spell_count_eq = activator_this_turn_cast_eq;
     }
 
+    // "Whenever a player casts a spell with mana value equal to ..." — Chalice of the Void
+    // (Mode$ SpellCast | ValidCard$ Card.cmcEQY | ValidActivatingPlayer$ Player). A dynamic
+    // mana-value filter on any player's spell. The cmc match is checked at trigger time.
+    if (mode_is_spell_cast && !ability.trigger_cmc_expr.empty()) {
+        ability.trigger_on = Events::SPELL_CAST;
+        ability.trigger_valid_player_is_controller = valid_player_is_you;
+    }
+
     // "Whenever CARDNAME deals combat damage to a player" — Barrowgoyf
     if (mode_is_damage_done && damage_combat_only) {
         ability.trigger_on = Events::COMBAT_DAMAGE_TO_PLAYER;
@@ -1548,6 +1586,8 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
                 effect.trigger_only_self                        = ability.trigger_only_self;
                 effect.trigger_self_excluded                    = ability.trigger_self_excluded;
                 effect.trigger_spell_count_eq                   = ability.trigger_spell_count_eq;
+                effect.trigger_cmc_expr                         = ability.trigger_cmc_expr;
+                effect.trigger_cmc_op                           = ability.trigger_cmc_op;
                 effect.trigger_from_graveyard                   = ability.trigger_from_graveyard;
                 // 603.4 intervening-if lives on the trigger line, not the Execute SVar — carry
                 // it onto the resolved ability so it is re-checked at resolution.

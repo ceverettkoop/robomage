@@ -230,11 +230,36 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                     if (pl.spells_cast_this_turn != ab.trigger_spell_count_eq) continue;
                 }
 
+                // Dynamic mana-value filter on the cast spell (Chalice of the Void:
+                // ValidCard$ Card.cmcEQY, Y = Count$CardCounters.CHARGE). Compare the cast
+                // spell's mana value to the count resolved against this source permanent.
+                if (!ab.trigger_cmc_expr.empty() && ev.GetType() == Events::SPELL_CAST) {
+                    if (!ev.HasParam(Params::ENTITY)) continue;
+                    Entity spell_e = ev.GetParam<Entity>(Params::ENTITY);
+                    if (!global_coordinator.entity_has_component<CardData>(spell_e)) continue;
+                    int spell_mv = static_cast<int>(
+                        global_coordinator.GetComponent<CardData>(spell_e).mana_cost.size());
+                    int bound = evaluate_sa_svar(ab.trigger_cmc_expr, perm.controller, entity);
+                    const std::string &op = ab.trigger_cmc_op;
+                    bool ok = (op == "EQ") ? (spell_mv == bound)
+                            : (op == "LE") ? (spell_mv <= bound)
+                            : (op == "GE") ? (spell_mv >= bound)
+                            : (op == "LT") ? (spell_mv <  bound)
+                            : (op == "GT") ? (spell_mv >  bound)
+                            : (op == "NE") ? (spell_mv != bound)
+                            : (spell_mv == bound);
+                    if (!ok) continue;
+                }
+
                 // Prepare the triggered ability and queue it; APNAP placement (and any target
                 // selection) happens after the full scan, in place_triggers_apnap().
                 Ability trigger_ab = ab;
                 trigger_ab.source = entity;
                 trigger_ab.controller = perm.controller;
+                // Defined$ TriggeredSpellAbility — the effect (Counter) acts on the spell that
+                // fired this trigger. Capture it from the event as the ability's target.
+                if (trigger_ab.defined_triggered_spell && ev.HasParam(Params::ENTITY))
+                    trigger_ab.target = ev.GetParam<Entity>(Params::ENTITY);
                 // For exalted, target the sole attacker from the event
                 if (trigger_ab.category == "ExaltedBonus" && ev.HasParam(Params::ENTITY))
                     trigger_ab.target = ev.GetParam<Entity>(Params::ENTITY);

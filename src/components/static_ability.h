@@ -16,8 +16,9 @@ struct StaticAbility {
     std::string add_keyword = "";
     std::string affected = "";        // "EquippedBy" = apply buff to equipped creature, not source
     // ETB counter fields (category = "EtbCounter"):
-    std::string counter_type = "";    // "P1P1" for +1/+1 counters
+    std::string counter_type = "";    // "P1P1" for +1/+1 counters, "CHARGE" for charge counters
     bool counter_count_from_delve = false;  // counter count = cur_game.delve_exiled.size()
+    bool counter_count_from_xpaid = false;  // counter count = X paid at cast (Chalice of the Void: Count$xPaid)
     // RaiseCost fields (category = "RaiseCost"):
     int raise_cost = 0;               // generic mana added to cost of matching spells
     std::string raise_cost_filter = ""; // "nonCreature" = apply to non-creature spells

@@ -155,7 +155,8 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                 face = card_data.backside.get();
             bool is_creature = is_creature_card(*face);  // can be creature and land
             bool is_land = is_land_card(*face);
-            int etb_p1p1 = 0;  // +1/+1 counters this permanent enters with (614.1c), applied once the Creature exists
+            int etb_p1p1 = 0;  // counters this permanent enters with (614.1c), applied once the Permanent exists
+            std::string etb_counter_type = "P1P1";  // kind of "enters with" counter (P1P1, CHARGE, ...)
             // providing permanent component if doesn't have
             if (!global_coordinator.entity_has_component<Permanent>(entity)) {
                 Permanent perm;
@@ -184,6 +185,7 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                     }
                     perm.is_tapped = rev.enters_tapped;
                     etb_p1p1 = rev.etb_p1p1;
+                    etb_counter_type = rev.etb_counter_type;
                 }
                 // It was cast and is now becoming a real permanent — consume the one-shot
                 // "was cast" marker so a later non-cast re-entry isn't treated as a cast.
@@ -200,6 +202,14 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                 perm.timestamp_entered_battlefield = game.timestamp++;
                 perm.entered_on_turn = game.turn;
                 global_coordinator.AddComponent(entity, perm);
+                // Non-P1P1 "enters with" counters (614.1c) attach to any permanent, not just
+                // creatures — Chalice of the Void enters with X CHARGE counters. P1P1 counters
+                // are applied in the creature block below so its P/T can be logged.
+                if (etb_p1p1 > 0 && etb_counter_type != "P1P1") {
+                    add_counters(entity, etb_counter_type, etb_p1p1);
+                    game_log("%s enters with %d %s counter(s).\n",
+                        card_data.name.c_str(), etb_p1p1, etb_counter_type.c_str());
+                }
             }
             // copy activated abilities from card_data to permanent; incl mana abilities although mana abilities innate to basic land types
             // added elsewhere
