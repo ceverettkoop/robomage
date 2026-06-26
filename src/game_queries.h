@@ -44,6 +44,41 @@ inline bool is_creature_card(const CardData &cd) { return card_has_type(cd, "Cre
 inline bool is_land_card(const CardData &cd)     { return card_has_type(cd, "Land"); }
 inline bool is_planeswalker_card(const CardData &cd) { return card_has_type(cd, "Planeswalker"); }
 
+// Printed colors of a card: an explicit Colors$ override if present (e.g. Devoid's COLORLESS),
+// otherwise the colors of its mana cost (CR 105.2 / 202.2). Single source for the color of a
+// card object, shared by the targeting color checks and the last-known-info snapshot.
+inline std::set<Colors> card_colors(const CardData &cd) {
+    if (!cd.explicit_colors.empty()) return cd.explicit_colors;
+    std::set<Colors> result;
+    for (Colors c : {WHITE, BLUE, BLACK, RED, GREEN})
+        if (cd.mana_cost.count(c)) result.insert(c);
+    return result;
+}
+
+// Enforce a positive color target restriction (e.g. ValidTgts$ Permanent.Blue on Red Elemental
+// Blast: "target blue permanent", CR 115.1) against an already-resolved color set. Sharing the
+// color set (rather than re-reading printed colors) is what lets battlefield/last-known callers
+// honour effective color uniformly.
+inline bool color_set_passes(const std::string &vt, const std::set<Colors> &colors) {
+    static const struct { const char *tok; Colors col; } table[] = {
+        {".White", WHITE}, {".Blue", BLUE}, {".Black", BLACK}, {".Red", RED}, {".Green", GREEN}};
+    for (auto &e : table)
+        if (vt.find(e.tok) != std::string::npos && !colors.count(e.col)) return false;
+    return true;
+}
+
+// Unified "characteristic at the time it is read" accessors (CR 608.2h). Each returns the
+// object's effective value: read live from its battlefield components while it is in play
+// (so all applied continuous effects/counters are reflected — and, because every effective-P/T
+// mutator resyncs the cached Creature P/T synchronously, this is correct even mid-resolution),
+// and from the last-known-info snapshot captured at battlefield-leave once it has gone. Falls
+// back to the card's printed characteristics for objects that were never on the battlefield
+// (e.g. a spell on the stack). Defined in game_queries.cpp (needs cur_game). All
+// "read a target's power/toughness/color at resolution" sites route through these.
+int effective_power(Entity e);
+int effective_toughness(Entity e);
+std::set<Colors> effective_colors(Entity e);
+
 // True if the card has a permanent card type (CR 110.4a: artifact, battle, creature,
 // enchantment, land, planeswalker). Used by ValidCard$ Permanent zone-change filters
 // (Moonshadow: "permanent cards put into your graveyard" excludes instants/sorceries).

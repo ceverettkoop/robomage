@@ -3,7 +3,6 @@
 #include <cstdint>
 #include <string>
 
-#include "../classes/game.h"
 #include "../cli_output.h"
 #include "../components/carddata.h"
 #include "../components/creature.h"
@@ -31,18 +30,14 @@ bool gain_life(Ability &ab, std::shared_ptr<Orderer> orderer) {
     } else {
         gain_controller = global_coordinator.GetComponent<Zone>(ab.source).owner;
     }
-    // Evaluate dynamic amount if set (e.g. "Targeted$CardPower"). Use the creature's
-    // EFFECTIVE power (counters / continuous buffs included) while it is still on the
-    // battlefield; once it has left (Swords to Plowshares exiles it in the main effect,
-    // before this sub-ability), fall back to the last-known power captured at the
-    // targeting ability's resolution start (CR 608.2g).
+    // Evaluate dynamic amount if set (e.g. "Targeted$CardPower"). effective_power gives the
+    // creature's EFFECTIVE power (counters / continuous buffs included) read live while it is
+    // still in play, or its last-known value once it has left — Swords to Plowshares exiles
+    // the creature in its main effect before this sub-ability runs (CR 608.2h).
     size_t gain_amount = ab.amount;
     if (!ab.dynamic_amount_expr.empty() && ab.dynamic_amount_expr.find("Targeted$CardPower") != std::string::npos) {
-        if (is_battlefield_permanent(ab.target) &&
-            global_coordinator.entity_has_component<Creature>(ab.target))
-            gain_amount = static_cast<size_t>(global_coordinator.GetComponent<Creature>(ab.target).power);
-        else
-            gain_amount = static_cast<size_t>(cur_game.last_targeted_power < 0 ? 0 : cur_game.last_targeted_power);
+        int p = effective_power(ab.target);
+        gain_amount = static_cast<size_t>(p < 0 ? 0 : p);
     }
     Entity ctrl_entity = get_player_entity(gain_controller);
     player_gain_life(ctrl_entity, static_cast<int32_t>(gain_amount));

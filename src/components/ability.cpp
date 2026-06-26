@@ -506,14 +506,6 @@ static bool passes_noncolor_restriction(const std::string &vt, const CardData &c
 // Matches only the dotted qualifier form (".Blue") so it does not collide with the
 // "non<Color>" tokens, which contain the bare color name. Returns false when a
 // positive color qualifier is present and the candidate is not that color.
-static bool passes_color_restriction(const std::string &vt, const CardData &cd) {
-    static const struct { const char *tok; Colors col; } table[] = {
-        {".White", WHITE}, {".Blue", BLUE}, {".Black", BLACK}, {".Red", RED}, {".Green", GREEN}};
-    for (auto &e : table)
-        if (vt.find(e.tok) != std::string::npos && !card_is_color(cd, e.col)) return false;
-    return true;
-}
-
 // Single source of truth for target legality (see header). build_valid_targets
 // enumerates candidates and filters them through this; is_target_valid re-runs the
 // chosen target(s) through it at resolution. Keeping both on one predicate is what
@@ -527,7 +519,8 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
     // color (enforced in effects::counter / effects::destroy via
     // target_color_condition_met). By contrast Red Elemental Blast (ValidTgts$ Card.Blue /
     // Permanent.Blue) bakes blue into the target restriction itself, enforced below via
-    // passes_color_restriction (CR 115.1: target restrictions are checked when chosen).
+    // color_set_passes(vt, effective_colors(cand)) (CR 115.1: target restrictions are checked
+    // when chosen, against the candidate's effective color).
 
     const std::string &vt = valid_tgts;
 
@@ -555,7 +548,7 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
         // Positive color restriction (e.g. ValidTgts$ Card.Blue on Red Elemental Blast:
         // "Counter target blue spell" — blue is a targeting restriction, CR 115.1).
         if (global_coordinator.entity_has_component<CardData>(cand) &&
-            !passes_color_restriction(vt, global_coordinator.GetComponent<CardData>(cand)))
+            !color_set_passes(vt, effective_colors(cand)))
             return false;
         return true;
     }
@@ -656,7 +649,7 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
     // Positive color restriction (e.g. ValidTgts$ Permanent.Blue on Red Elemental Blast:
     // "Destroy target blue permanent" — blue is a targeting restriction, CR 115.1).
     if (global_coordinator.entity_has_component<CardData>(cand) &&
-        !passes_color_restriction(vt, global_coordinator.GetComponent<CardData>(cand)))
+        !color_set_passes(vt, effective_colors(cand)))
         return false;
 
     if (cmc_le >= 0 && global_coordinator.entity_has_component<CardData>(cand)) {
@@ -841,11 +834,11 @@ size_t evaluate_dynamic_amount(
         return static_cast<size_t>(revolt ? high_val : low_val);
     }
     if (expr.find("Targeted$CardPower") != std::string::npos) {
-        // Effective power while the creature is on the battlefield (counters/buffs included);
-        // otherwise the last-known value captured before it left (CR 608.2g).
-        if (is_battlefield_permanent(target) && global_coordinator.entity_has_component<Creature>(target))
-            return static_cast<size_t>(global_coordinator.GetComponent<Creature>(target).power);
-        return static_cast<size_t>(cur_game.last_targeted_power < 0 ? 0 : cur_game.last_targeted_power);
+        // CR 608.2h: effective power, read live while the creature is in play (counters/buffs
+        // included), else its last-known value once it has left (e.g. Swords to Plowshares
+        // reads the power of the creature it just exiled). Single unified accessor.
+        int p = effective_power(target);
+        return static_cast<size_t>(p < 0 ? 0 : p);
     }
     // Remembered$CardManaCost[/Plus.N] — mana value of the first remembered card (Birthing
     // Ritual: X = 1 plus the sacrificed creature's mana value).
@@ -940,17 +933,6 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
         else if (target != 0)
             cur_game.remembered_entities.push_back(target);
     }
-    // Last-known information (CR 608.2g): capture the targeted creature's effective power
-    // (incl. counters/continuous buffs) before this ability's handler may move it from the
-    // battlefield. Swords to Plowshares exiles the creature in its main ChangeZone, then its
-    // DBGainLife sub-ability needs the power the creature had in play. Guard on the target
-    // still being a battlefield creature so the post-move sub-resolve does not overwrite the
-    // captured value with a stale read.
-    if (target != 0 && is_battlefield_permanent(target) &&
-        global_coordinator.entity_has_component<Creature>(target))
-        cur_game.last_targeted_power =
-            static_cast<int>(global_coordinator.GetComponent<Creature>(target).power);
-
     game_log("Resolving ability (category: %s, amount: %zu)\n", category.c_str(), amount);
 
     // Conditional execution: if condition fails, skip this ability's body but still chain subabilities

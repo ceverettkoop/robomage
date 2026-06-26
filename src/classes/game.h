@@ -39,8 +39,11 @@ typedef enum Step {
 #include <set>
 #include <vector>
 
+#include <string>
+
 #include "../ecs/entity.h"
 #include "../components/ability.h"
+#include "colors.h"
 
 struct Deck;
 struct Game;
@@ -53,6 +56,19 @@ struct DelayedTrigger {
     uint32_t fire_on;       // event ID (e.g. Events::UPKEEP_BEGAN)
     Entity owner_entity;    // player entity who controls it
     size_t fire_on_turn;    // game.turn value at which to fire (cur_game.turn + 1 at registration)
+};
+
+// Last-known information (CR 608.2h / 112.7a): a permanent's effective characteristics —
+// after all continuous effects and counters — captured the instant it leaves the battlefield.
+// An effect that references the object after it has changed zones (e.g. Swords to Plowshares'
+// "its controller gains life equal to its power", read from a creature it just exiled) uses
+// these last-known values rather than the printed base. While the object is still in its
+// expected zone, effective characteristics are read live from its components instead.
+struct LastKnownInfo {
+    int power = 0;
+    int toughness = 0;
+    std::vector<std::string> type_names;   // type/subtype/supertype names
+    std::set<Colors> colors;               // effective colors
 };
 
 enum MandatoryChoice {
@@ -104,9 +120,9 @@ struct Game {
         std::vector<DelayedTrigger> delayed_triggers;
         std::vector<Entity> delve_exiled;   // entities exiled during current delve cast; cleared after ETB
         size_t x_paid = 0;                  // X value chosen at cast time for X-cost spells
-        int last_targeted_power = 0;        // last-known effective power of a targeted creature,
-                                            // captured before its ability's handler may move it
-                                            // (CR 608.2g; Swords to Plowshares: gain life = its power)
+        std::map<Entity, LastKnownInfo> last_known_info;  // effective characteristics captured as a
+                                            // permanent leaves the battlefield (CR 608.2h); read by the
+                                            // effective_* accessors when the object is no longer in play
         std::vector<Entity> remembered_entities;  // Defined$ Remembered — used by Attach sub-ability, Doomsday remember-changed
         std::map<Entity, int> ability_resolution_counts;  // Count$ResolvedThisTurn: incremented per triggered-ability resolve
         std::map<Entity, int> payment_fail_counts;  // machine mode: block casting after 2 failed payments
