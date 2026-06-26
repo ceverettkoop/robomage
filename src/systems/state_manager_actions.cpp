@@ -33,6 +33,8 @@
 #include "../systems/stack_manager.h"
 #include "orderer.h"
 
+static bool count_intervening_condition(const std::string &expr, Zone::Ownership caster, int &out);
+
 static bool can_afford_alt(const AltCost& alt_cost, Zone::Ownership priority_player,
                            Entity card_entity, std::shared_ptr<Orderer> orderer) {
     if (!alt_cost.has_alt_cost) return false;
@@ -140,6 +142,32 @@ static bool can_afford_alt(const AltCost& alt_cost, Zone::Ownership priority_pla
 // Counts battlefield permanents matching the filter (or remembered cards when
 // condition_on_remembered) and compares against the threshold (default ">= 1").
 // Filter format: "Type.YouCtrl" or "Type.OppCtrl" (e.g. "Land.YouCtrl"); "Card" matches any.
+// Evaluate a Count$<...> intervening-if expression (CR 603.4 dynamic condition) to an integer.
+// Returns true and sets `out` when the token is recognized; returns false for an unrecognized
+// Count$ token so the caller fails loudly instead of mis-reading the raw string as a board
+// filter. This is the single place the intervening-if Count$ tokens are listed — a new
+// "count X this turn / this game" condition is added here, once, rather than as another literal
+// branch in evaluate_present_condition. Each token mirrors a count the engine tracks on Player.
+static bool count_intervening_condition(const std::string &expr, Zone::Ownership caster, int &out) {
+    Entity pe = get_player_entity(caster);
+    const Player *pl = global_coordinator.entity_has_component<Player>(pe)
+                           ? &global_coordinator.GetComponent<Player>(pe)
+                           : nullptr;
+    // Ocelot Pride: "if you gained life this turn".
+    if (expr.find("LifeYouGainedThisTurn") != std::string::npos) {
+        out = pl ? pl->life_gained_this_turn : 0;
+        return true;
+    }
+    // Arclight Phoenix: "if you've cast three or more instant and sorcery spells this turn"
+    // (the engine tracks the combined instant+sorcery count on the player).
+    if (expr.find("ThisTurnCast") != std::string::npos &&
+        (expr.find("Instant") != std::string::npos || expr.find("Sorcery") != std::string::npos)) {
+        out = pl ? static_cast<int>(pl->instant_sorcery_spells_cast_this_turn) : 0;
+        return true;
+    }
+    return false;
+}
+
 bool evaluate_present_condition(const Ability &ab, Zone::Ownership caster, std::shared_ptr<Orderer> orderer) {
     if (ab.condition_present.empty()) return true;
     // Empty compare means the bare "if you control a <thing>" form → at least one.
@@ -177,27 +205,21 @@ bool evaluate_present_condition(const Ability &ab, Zone::Ownership caster, std::
         return get_counters(ab.source, ctype) >= need;
     }
 
-    // Count$LifeYouGainedThisTurn (Ocelot Pride's "if you gained life this turn"): the
-    // condition counts life the controller gained this turn, not battlefield permanents.
-    // Empty compare → "gained at least 1" (GE1), matching the bare "if you gained life".
-    if (ab.condition_present == "Count$LifeYouGainedThisTurn") {
-        Entity pe = get_player_entity(caster);
-        int gained = global_coordinator.entity_has_component<Player>(pe)
-                         ? global_coordinator.GetComponent<Player>(pe).life_gained_this_turn
-                         : 0;
-        return compare_svar(gained, compare);
-    }
-
-    // Count$ThisTurnCast_Instant.YouCtrl,Sorcery.YouCtrl (Arclight Phoenix's "if you've
-    // cast three or more instant and sorcery spells this turn"): counts the instant and
-    // sorcery spells the controller has cast this turn, not battlefield permanents.
-    if (ab.condition_present.rfind("Count$ThisTurnCast_Instant", 0) == 0 &&
-        ab.condition_present.find("Sorcery") != std::string::npos) {
-        Entity pe = get_player_entity(caster);
-        int cast = global_coordinator.entity_has_component<Player>(pe)
-                       ? static_cast<int>(global_coordinator.GetComponent<Player>(pe).instant_sorcery_spells_cast_this_turn)
-                       : 0;
-        return compare_svar(cast, compare);
+    // Count$<...> dynamic intervening-if (Ocelot Pride's life gained this turn, Arclight
+    // Phoenix's instant/sorcery spells cast this turn, ...). These are counts over game history
+    // / player state, NOT board presence, so route every Count$ condition through the shared
+    // count helper and compare. A Count$ token the helper does not recognize fails loudly here
+    // rather than falling through to the permanent-presence scan below — where the raw
+    // "Count$..." string would be read as a permanent type name, match nothing, and yield a
+    // confident-but-wrong count (silently suppressing or firing the trigger).
+    if (ab.condition_present.rfind("Count$", 0) == 0) {
+        int value = 0;
+        if (!count_intervening_condition(ab.condition_present, caster, value)) {
+            game_log("WARNING: unrecognized Count$ intervening-if condition '%s' — treated as unmet.\n",
+                     ab.condition_present.c_str());
+            return false;
+        }
+        return compare_svar(value, compare);
     }
 
     // Parse filter: "Land.YouCtrl" → type_filter="Land", controller check
