@@ -4,6 +4,7 @@
 #include <set>
 #include <string>
 
+#include "classes/game.h"
 #include "components/carddata.h"
 #include "components/permanent.h"
 #include "components/types.h"
@@ -65,6 +66,13 @@ int evaluate_sa_svar(const std::string &expr, Zone::Ownership controller, Entity
         int val = evaluate_sa_svar(base, controller, source);
         return val < cap ? val : cap;
     }
+
+    // Count$xPaid — the X value paid at cast time for the X-cost spell currently resolving
+    // (Green Sun's Zenith: ChangeType$ Creature.Green+cmcLEX with SVar:X:Count$xPaid → the
+    // search's mana-value bound is X). cur_game.x_paid is restored from the resolving spell
+    // before its ability runs (stack_manager), so it holds this spell's X here.
+    if (expr == "Count$xPaid")
+        return static_cast<int>(cur_game.x_paid);
 
     // Count$ValidExile ... CardTypes — distinct card types among the cards exiled
     // with `source` (e.g. Keen-Eyed Curator's exiled-with pile). Scoped to the
