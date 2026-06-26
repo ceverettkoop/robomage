@@ -1527,8 +1527,12 @@ static std::vector<StaticAbility> parse_static_abilities(const std::string &scri
                     if (value.find("nonCreature") != std::string::npos)
                         sa.raise_cost_filter = "nonCreature";
                 } else if (sa.category == "CantBeActivated") {
-                    if (value.find("Artifact") != std::string::npos)
-                        sa.cant_activate_card_filter = "Artifact";
+                    // Store the full type list (e.g. "Artifact" for Null Rod, or
+                    // "Artifact,Creature,Planeswalker" for Clarion Conqueror). The
+                    // NamedCard variant (Disruptor Flute) is handled via match_named_card
+                    // above and leaves this filter empty.
+                    if (!sa.match_named_card)
+                        sa.cant_activate_card_filter = value;
                 } else if (sa.category == "CantBeCast") {
                     sa.cant_cast_filter = value;
                 }
