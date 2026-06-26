@@ -99,6 +99,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Badlands", 155},
     {"Bojuka Bog", 156},
     {"Recruiter of the Guard", 157},
+    {"Wight of the Reliquary", 158},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);

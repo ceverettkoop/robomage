@@ -285,17 +285,39 @@ inline bool is_basic_land_subtype(const std::string &name) {
            name == "Island" || name == "Swamp" || name == "Wastes";
 }
 
-// True if `perm` has a subtype/type named in the ';'-delimited `spec`
-// (e.g. a Sacrifice cost "Forest;Plains", or a single Return-cost subtype).
-inline bool permanent_matches_subtype_spec(const Permanent &perm, const std::string &spec) {
+// True if `perm` (the entity `perm_entity`) matches the ';'-delimited `spec` used by
+// Sacrifice-a-<type> / Return-a-<type> activation costs (e.g. "Forest;Plains",
+// "Creature", "Creature.Other"). Each ';'-delimited alternative is a type/subtype name
+// (a top-level card type like "Creature"/"Land" matches alongside subtype names, since
+// Permanent::types stores both) optionally followed by a '.'-joined qualifier:
+//   .Other  — self-exclusion (CR 700.5 / 109.3): the permanent must NOT be the cost's
+//             source (`exclude_entity`), i.e. "another <type>". An empty/0 exclude makes
+//             .Other a no-op match on type alone.
+inline bool permanent_matches_subtype_spec(const Permanent &perm, const std::string &spec,
+                                           Entity perm_entity = 0, Entity exclude_entity = 0) {
     size_t pp = 0;
     while (pp <= spec.size()) {
         size_t sc = spec.find(';', pp);
         if (sc == std::string::npos) sc = spec.size();
-        std::string sub = spec.substr(pp, sc - pp);
-        for (const auto &t : perm.types)
-            if (t.name == sub) return true;
+        std::string alt = spec.substr(pp, sc - pp);
         pp = sc + 1;
+
+        // Split off a '.'-joined qualifier (e.g. "Creature.Other" → "Creature" + "Other").
+        std::string type_name = alt;
+        bool require_other = false;
+        size_t dot = alt.find('.');
+        if (dot != std::string::npos) {
+            type_name = alt.substr(0, dot);
+            std::string qual = alt.substr(dot + 1);
+            if (qual == "Other") require_other = true;
+        }
+
+        // .Other: the matching permanent must not be the cost's source (self-exclusion).
+        if (require_other && perm_entity != 0 && exclude_entity != 0 && perm_entity == exclude_entity)
+            continue;
+
+        for (const auto &t : perm.types)
+            if (t.name == type_name) return true;
     }
     return false;
 }
@@ -303,9 +325,11 @@ inline bool permanent_matches_subtype_spec(const Permanent &perm, const std::str
 // Battlefield permanents controlled by `player` matching the ';'-delimited subtype
 // `spec`. Drives both Sacrifice-a-<type> and Return-a-<type> activation costs:
 // non-empty == the cost is payable (legality), and the list itself is the player's
-// choice menu (payment).
+// choice menu (payment). `exclude_entity` is the cost's source, honoured by a `.Other`
+// qualifier in the spec (e.g. Wight of the Reliquary's "Sacrifice another creature").
 inline std::vector<Entity> controlled_permanents_matching(
-    Zone::Ownership player, const std::string &spec, const std::set<Entity> &entities) {
+    Zone::Ownership player, const std::string &spec, const std::set<Entity> &entities,
+    Entity exclude_entity = 0) {
     std::vector<Entity> out;
     for (auto e : entities) {
         if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
@@ -313,7 +337,7 @@ inline std::vector<Entity> controlled_permanents_matching(
         if (z.location != Zone::BATTLEFIELD) continue;
         auto &perm = global_coordinator.GetComponent<Permanent>(e);
         if (perm.controller != player) continue;
-        if (permanent_matches_subtype_spec(perm, spec)) out.push_back(e);
+        if (permanent_matches_subtype_spec(perm, spec, e, exclude_entity)) out.push_back(e);
     }
     return out;
 }

@@ -603,9 +603,10 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             }
             // Activation limit check
             if (ab.activation_limit > 0 && ab.activations_this_turn >= ab.activation_limit) continue;
-            // sac_cost_spec: require controller has a permanent matching type
+            // sac_cost_spec: require controller has a permanent matching type (honouring a
+            // .Other self-exclusion against the ability's source — "another creature").
             if (!ab.sac_cost_spec.empty() &&
-                controlled_permanents_matching(priority_player, ab.sac_cost_spec, orderer->mEntities).empty())
+                controlled_permanents_matching(priority_player, ab.sac_cost_spec, orderer->mEntities, ab.source).empty())
                 continue;
             // Return cost: require controller has a land of given subtype
             if (!ab.return_cost_type.empty() &&
@@ -639,9 +640,10 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             if (!ab.activation_mana_cost.empty() && !can_pay_mana(priority_player, ab.activation_mana_cost, card_entity, orderer)) continue;
             // Check target legality
             if (ab.valid_tgts != "N_A" && ab.target_min > 0 && !has_legal_targets(ab, orderer)) continue;
-            // sac_cost_spec: require controller has a permanent matching type
+            // sac_cost_spec: require controller has a permanent matching type (honouring a
+            // .Other self-exclusion against the activating card).
             if (!ab.sac_cost_spec.empty() &&
-                controlled_permanents_matching(priority_player, ab.sac_cost_spec, orderer->mEntities).empty())
+                controlled_permanents_matching(priority_player, ab.sac_cost_spec, orderer->mEntities, card_entity).empty())
                 continue;
             { auto it = cur_game.payment_fail_counts.find(card_entity);
               if (it != cur_game.payment_fail_counts.end() && it->second >= 2) continue; }

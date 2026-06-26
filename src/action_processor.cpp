@@ -100,7 +100,7 @@ static void pay_secondary_activation_costs(
     // Type-based sacrifice cost (Cycling "Sac a land", Knight of the Reliquary)
     if (!ability.sac_cost_spec.empty()) {
         std::vector<Entity> choices =
-            controlled_permanents_matching(controller, ability.sac_cost_spec, orderer->mEntities);
+            controlled_permanents_matching(controller, ability.sac_cost_spec, orderer->mEntities, source);
         if (!choices.empty()) {
             Entity to_sac = prompt_permanent_choice(choices, "Sacrifice ", "", ActionCategory::SACRIFICE_PERMANENT);
             std::string sac_name = global_coordinator.GetComponent<Permanent>(to_sac).name;
