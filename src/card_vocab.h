@@ -49,7 +49,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Jace, the Mind Sculptor", 97},
     {"Birthing Ritual", 98},
     {"Humility", 99},
-    {"Ajani, Nacatl Pariah Ajani, Nacatl Avenger", 100},
+    {"Ajani, Nacatl Pariah", 100}, {"Ajani, Nacatl Avenger", 101},
     {"Arid Mesa", 102},
     {"Leyline of the Void", 104},
     {"Ocelot Pride", 105},
