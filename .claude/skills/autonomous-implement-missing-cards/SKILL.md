@@ -38,7 +38,12 @@ autonomously with confidence.
   `bin/resources/cardsfolder/<letter>/<name>.txt`. Many missing cards already have a local
   script; others download from the upstream Forge repo.
 - **Never edit an existing card script** (project rule: DO NOT MODIFY CARD SCRIPTS). The
-  downloader only *adds* new files. Hand-author a script only when none exists.
+  downloader only *adds* new files.
+- **NEVER hand-author a card script.** A card's script must come either from a pre-existing
+  local file or from the upstream Forge repo via the downloader. If `fetch_script.py` cannot
+  find the card (non-zero exit) and no local script exists, **abandon the card immediately and
+  move on** — defer it (clean tree, reason "no Forge script available"). Do not write, invent,
+  or reconstruct a script by hand under any circumstances.
 - The authoritative rules for how a mechanic *should* behave are checked in at
   `docs/mtg_comprehensive_rules.txt` (navigation guide: `docs/mtg_comprehensive_rules.md`).
   **When behavior, timing, or keyword semantics are in question, grep the relevant numbered
@@ -51,7 +56,8 @@ autonomously with confidence.
   by decks (default `bin/resources/decks/meta/`) but missing from the vocab, sorted by
   cross-deck frequency, each tagged `has_local_script` and a `suggested_index`.
 - `python tools/forge_fetch/fetch_script.py "Card Name"` — fetch a card's Forge script into
-  `cardsfolder/` (add-only; non-zero exit ⇒ not found ⇒ hand-author or defer).
+  `cardsfolder/` (add-only; non-zero exit ⇒ not found ⇒ **defer the card and move on; never
+  hand-author**).
 - `train/.venv/bin/python train/gen_card_costs.py` — regenerate `train/card_costs.py` after
   editing the vocab (required).
 - `train/test_harness.py` — exercise a card's behavior (full usage in `CLAUDE.md`).
@@ -106,10 +112,10 @@ memory of other cards and must finish with a clean tree no matter what.
 > this exactly and finish with a **clean git tree** (committed on success, reverted on defer).
 >
 > 1. **Get a script.** If no local `cardsfolder/` script exists, run
->    `python tools/forge_fetch/fetch_script.py "<NAME>"`. If NOT FOUND, you may hand-author a
->    script **only if** the card's full behavior is unambiguous from its Oracle text and the
->    Comprehensive Rules; otherwise **defer** (see Defer protocol). Never modify an existing
->    script.
+>    `python tools/forge_fetch/fetch_script.py "<NAME>"`. If NOT FOUND (non-zero exit),
+>    **abandon this card immediately and defer it** (see Defer protocol) with reason "no Forge
+>    script available". **NEVER hand-author or reconstruct a script by hand** — a script must
+>    come only from a pre-existing local file or the Forge repo. Never modify an existing script.
 > 2. **Check feasibility.** Read the `A:`/`T:`/`S:`/`K:`/`R:` lines and their
 >    `AB$`/`SP$`/`DB$` categories. Confirm each is supported by `src/parse.cpp`,
 >    `src/effects/effect_kind.cpp`, and `src/effects/effect_table.cpp`. If a needed mechanic is
@@ -139,15 +145,15 @@ memory of other cards and must finish with a clean tree no matter what.
 >    asking a human (with the rule citation that justifies it), the exact test scenarios and
 >    their observed results, and the regression result.
 > 8. **Commit.** Stage exactly: the new/edited engine source, `src/card_vocab.h`,
->    `train/card_costs.py`, the new `cardsfolder/` script (if hand-authored or freshly
->    fetched), and the new design doc. Commit with message
+>    `train/card_costs.py`, the new `cardsfolder/` script (if freshly fetched), and the new
+>    design doc. Commit with message
 >    `Implement <NAME>` + a short body summarizing mechanics added and tests run, plus the
 >    required Co-Authored-By / Claude-Session trailers. Do **not** push (the orchestrator or a
 >    final step handles pushing). Report the commit hash.
 > 9. **Defer protocol (if you cannot finish with confidence).** If the card is genuinely
->    ambiguous, needs a mechanic too large to implement safely here, has no script and
->    unclear behavior, or would overflow the vocab — do **not** commit a partial or guessed
->    implementation. Run `git checkout -- . && git clean -fd` to **fully restore a clean tree**
+>    ambiguous, needs a mechanic too large to implement safely here, has **no Forge script
+>    available** (fetch failed and no local script — never hand-author one), or would overflow
+>    the vocab — do **not** commit a partial or guessed implementation. Run `git checkout -- . && git clean -fd` to **fully restore a clean tree**
 >    (remove your vocab edit, regenerated costs, any fetched script and partial source), then
 >    return a deferral summary stating the card name and the specific reason. A wrong guess is
 >    worse than a deferral.
@@ -165,7 +171,7 @@ and **document the decision**; only defer when you cannot be confident.
 |---|---|
 | Behavior/timing/modal ambiguity | Resolve it from `docs/mtg_comprehensive_rules.txt` (cite the rule number in the doc). If, after consulting the rules, two readings remain genuinely defensible and would produce different game results → **defer**. |
 | Needed mechanic is unsupported | **Implement** a real, general handler (default). Defer only if the mechanic is large/cross-cutting enough that a safe, correct implementation can't be verified within this single-card scope. |
-| No Forge script | Hand-author **only** if behavior is unambiguous from Oracle + rules; else **defer**. |
+| No Forge script | **Defer and move on** — never hand-author a script. A script must come only from a pre-existing local file or the Forge repo. |
 | Unclear test scope | Derive the scope from the card's modes/triggers and rules; test each. If you can't state what a complete test covers → **defer**. |
 | Would overflow the vocab (`N_CARD_TYPES`) | **Defer** (never grow `N_CARD_TYPES` autonomously — it changes the observation size and breaks trained checkpoints). |
 | Build won't go clean, or a test fails and the fix is unclear | Fix if clear; otherwise **revert and defer**. |
@@ -177,6 +183,8 @@ and **document the decision**; only defer when you cannot be confident.
   git clean -fd` back to a pristine tree.
 - Never retag a script category/Origin/Destination to shortcut one card.
 - Never edit an existing card script.
+- Never hand-author a card script. If no local script exists and the Forge fetch fails, defer
+  the card and move on.
 - Never guess behavior that the rules don't support; defer instead.
 - Every committed card carries a design doc that a human could audit later — that doc **is**
   the record that would otherwise have been a conversation with the user.
@@ -190,7 +198,7 @@ and **document the decision**; only defer when you cannot be confident.
 <verbatim oracle text>
 
 ## Forge script
-- Source: fetched (Forge@master) | hand-authored | pre-existing local
+- Source: fetched (Forge@master) | pre-existing local
 - Key tags: <A:/T:/S:/K:/R: lines and the AB$/SP$/DB$ categories that matter>
 
 ## Engine work
