@@ -134,7 +134,7 @@ _CARD_COST_MATRIX = np.array([
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 125: 
     [0.0, 0.0, 0.1, 0.0, 0.0, 0.0, 0.2],  # 126: Buried Alive
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 127: Chalice of the Void
-    [0.0, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0],  # 128: Delver of Secrets Insectile Aberration
+    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 128: 
     [0.0, 0.0, 0.0, 0.1, 0.0, 0.1, 0.1],  # 129: Eldrazi Linebreaker
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 130: Eldrazi Temple
     [0.0, 0.1, 0.0, 0.0, 0.0, 0.0, 0.2],  # 131: Emry, Lurker of the Loch
@@ -1165,7 +1165,7 @@ _VOCAB_NAMES = [
     "",  # 125
     "Buried Alive",  # 126
     "Chalice of the Void",  # 127
-    "Delver of Secrets Insectile Aberration",  # 128
+    "",  # 128
     "Eldrazi Linebreaker",  # 129
     "Eldrazi Temple",  # 130
     "Emry, Lurker of the Loch",  # 131

@@ -71,7 +71,6 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Arclight Phoenix", 124},
     {"Buried Alive", 126},
     {"Chalice of the Void", 127},
-    {"Delver of Secrets Insectile Aberration", 128},
     {"Eldrazi Linebreaker", 129},
     {"Eldrazi Temple", 130},
     {"Emry, Lurker of the Loch", 131},
