@@ -67,6 +67,17 @@ inline bool color_set_passes(const std::string &vt, const std::set<Colors> &colo
     return true;
 }
 
+// Enforce a "non<Color>" target restriction (e.g. ValidTgts$ Creature.nonBlack on Snuff Out)
+// against an already-resolved color set: reject when the candidate is one of the excluded
+// colors. Counterpart to color_set_passes; routed through effective_colors for the same reason.
+inline bool color_set_passes_noncolor(const std::string &vt, const std::set<Colors> &colors) {
+    static const struct { const char *tok; Colors col; } table[] = {
+        {"nonWhite", WHITE}, {"nonBlue", BLUE}, {"nonBlack", BLACK}, {"nonRed", RED}, {"nonGreen", GREEN}};
+    for (auto &e : table)
+        if (vt.find(e.tok) != std::string::npos && colors.count(e.col)) return false;
+    return true;
+}
+
 // Unified "characteristic at the time it is read" accessors (CR 608.2h). Each returns the
 // object's effective value: read live from its battlefield components while it is in play
 // (so all applied continuous effects/counters are reflected — and, because every effective-P/T
