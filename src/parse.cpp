@@ -31,6 +31,7 @@ static std::vector<std::string> multi_values_from_script(std::string script, std
 static std::multiset<Colors> parse_mana_cost(std::string value, std::vector<Colors> *phyrexian_out = nullptr);
 static void parse_alt_cost_tokens(const std::string& cost_str, AltCost& ac);
 static std::set<Type> parse_types(std::string value);
+static std::set<Colors> parse_colors_field(const std::string &colors_field);
 static std::map<std::string, std::string> parse_svars(const std::string& script);
 static std::string normalize_category(std::string category);
 static void apply_param_to_ability(Ability& ability, const std::string& key, const std::string& value,
@@ -296,22 +297,7 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
     card.has_x_cost = (mana_cost_str.find('X') != std::string::npos);
     card.types = parse_types(value_from_script(front_script, "Types"));
     // Parse explicit Colors: override (e.g. Dryad Arbor which is a land/creature with green identity)
-    std::string colors_field = value_from_script(front_script, "Colors");
-    if (!colors_field.empty()) {
-        size_t cp = 0;
-        while (cp <= colors_field.size()) {
-            size_t sp = colors_field.find(' ', cp);
-            if (sp == std::string::npos) sp = colors_field.size();
-            std::string ctok = colors_field.substr(cp, sp - cp);
-            if      (ctok == "white")    card.explicit_colors.insert(WHITE);
-            else if (ctok == "blue")     card.explicit_colors.insert(BLUE);
-            else if (ctok == "black")    card.explicit_colors.insert(BLACK);
-            else if (ctok == "red")      card.explicit_colors.insert(RED);
-            else if (ctok == "green")    card.explicit_colors.insert(GREEN);
-            else if (ctok == "colorless")card.explicit_colors.insert(COLORLESS);
-            cp = (sp < colors_field.size()) ? sp + 1 : sp + 1;
-        }
-    }
+    card.explicit_colors = parse_colors_field(value_from_script(front_script, "Colors"));
     card.oracle_text = value_from_script(front_script, "Oracle");
     // Expand literal \n escape sequences to real newlines for word-wrap rendering
     for (size_t i = 0; i + 1 < card.oracle_text.size(); ++i) {
@@ -604,6 +590,7 @@ Token parse_token_script(const std::string &script_name) {
 
     tok.name = value_from_script(script_data, "Name");
     tok.types = parse_types(value_from_script(script_data, "Types"));
+    tok.explicit_colors = parse_colors_field(value_from_script(script_data, "Colors"));
 
     std::string pt = value_from_script(script_data, "PT");
     tok.power = parse_power(pt);
@@ -614,9 +601,16 @@ Token parse_token_script(const std::string &script_name) {
         split_keywords(kw_line, tok.keywords);
     }
 
-    // Parse T: triggered abilities
+    // Parse T: triggered abilities, then A: activated/spell abilities. A token can carry an
+    // intrinsic activated ability (e.g. the Eldrazi Spawn token's "Sacrifice this creature:
+    // Add {C}.", c_0_1_eldrazi_spawn_sac) — parse_abilities honours the same cost/category
+    // grammar as a real card's A: line, so the sac-for-mana ability resolves identically to
+    // Lotus Petal's.
     auto svars = parse_svars(script_data);
     tok.abilities = parse_triggered_abilities(script_data, svars, tok.name);
+    for (auto &ab : parse_abilities(multi_values_from_script(script_data, "A"), tok.types,
+                                    svars, tok.name))
+        tok.abilities.push_back(ab);
 
     return tok;
 }
@@ -708,6 +702,29 @@ static std::multiset<Colors> parse_mana_cost(std::string value, std::vector<Colo
         }
     }
     return ret_val;
+}
+
+// Parse a Forge "Colors:" field (space-separated color words) into an explicit color set.
+// Shared by card and token parsing so both compute colorlessness identically: an empty set
+// (no Colors: line) leaves the object's color to be derived from its mana cost (CR 105.2),
+// which for a costless token means colorless.
+static std::set<Colors> parse_colors_field(const std::string &colors_field) {
+    std::set<Colors> ret;
+    if (colors_field.empty()) return ret;
+    size_t cp = 0;
+    while (cp <= colors_field.size()) {
+        size_t sp = colors_field.find(' ', cp);
+        if (sp == std::string::npos) sp = colors_field.size();
+        std::string ctok = colors_field.substr(cp, sp - cp);
+        if      (ctok == "white")    ret.insert(WHITE);
+        else if (ctok == "blue")     ret.insert(BLUE);
+        else if (ctok == "black")    ret.insert(BLACK);
+        else if (ctok == "red")      ret.insert(RED);
+        else if (ctok == "green")    ret.insert(GREEN);
+        else if (ctok == "colorless")ret.insert(COLORLESS);
+        cp = sp + 1;
+    }
+    return ret;
 }
 
 static std::set<Type> parse_types(std::string value) {
@@ -1401,6 +1418,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
     bool valid_card_sorcery = false;
     bool valid_card_owner_you = false;
     bool valid_card_land = false;
+    bool valid_card_colorless = false;
     bool mode_is_drawn = false;
     bool valid_card_opp_own = false;
     bool exclude_first_draw_step = false;
@@ -1451,6 +1469,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
             if (value.find(".YouOwn")     != std::string::npos) valid_card_owner_you    = true;
             if (value.find(".OppOwn")     != std::string::npos) valid_card_opp_own      = true;
             if (value.find("Land")        != std::string::npos) valid_card_land         = true;
+            if (value.find("Colorless")   != std::string::npos) valid_card_colorless    = true;
             // YouCtrl may be the first ('.YouCtrl') or a later ('+YouCtrl') qualifier.
             if (value.find("YouCtrl")     != std::string::npos) valid_player_is_you     = true;
             // Dynamic mana-value filter on the cast spell (Chalice of the Void:
@@ -1533,6 +1552,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
         ability.trigger_valid_card_is_creature            = valid_card_creature;
         ability.trigger_valid_card_is_instant_or_sorcery  = valid_card_instant || valid_card_sorcery;
         ability.trigger_valid_card_is_land                = valid_card_land;
+        ability.trigger_valid_card_colorless              = valid_card_colorless;
         ability.trigger_valid_card_subtype                = valid_card_subtype;
         ability.trigger_valid_player_is_controller        = valid_card_owner_you || valid_player_is_you;
         if (valid_card_self) ability.trigger_only_self = true;
@@ -1563,6 +1583,16 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
 
     if (mode_is_spell_cast && valid_card_non_creature) {
         ability.trigger_on = Events::NONCREATURE_SPELL_CAST;
+        ability.trigger_valid_player_is_controller = valid_player_is_you;
+    }
+
+    // "Whenever you cast a colorless spell, ..." — Glaring Fleshraker
+    // (Mode$ SpellCast | ValidCard$ Card.Colorless | ValidActivatingPlayer$ You). A plain
+    // SpellCast with a colorless filter on the cast spell; matched at trigger time against the
+    // spell's colorlessness (CR 105.2c). Keyed on the general Colorless tag, not this card.
+    if (mode_is_spell_cast && valid_card_colorless) {
+        ability.trigger_on = Events::SPELL_CAST;
+        ability.trigger_valid_card_colorless = true;
         ability.trigger_valid_player_is_controller = valid_player_is_you;
     }
 
@@ -1618,6 +1648,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
                 effect.trigger_valid_card_is_creature           = ability.trigger_valid_card_is_creature;
                 effect.trigger_valid_card_is_instant_or_sorcery = ability.trigger_valid_card_is_instant_or_sorcery;
                 effect.trigger_valid_card_is_land               = ability.trigger_valid_card_is_land;
+                effect.trigger_valid_card_colorless             = ability.trigger_valid_card_colorless;
                 effect.trigger_valid_card_subtype               = ability.trigger_valid_card_subtype;
                 effect.trigger_optional                         = ability.trigger_optional;
                 effect.trigger_valid_card_opp_own               = ability.trigger_valid_card_opp_own;

@@ -133,6 +133,10 @@ struct Ability{
     bool trigger_valid_card_is_creature = false;        // ValidCard$ Creature
     bool trigger_valid_card_is_instant_or_sorcery = false;  // ValidCard$ Instant/Sorcery
     bool trigger_valid_card_is_land = false;            // ValidCard$ Land.*
+    // ValidCard$ ...+Colorless — the cast spell (SpellCast) or changing card (ChangesZone)
+    // must be colorless (CR 105.2c / 202.2). Used by Glaring Fleshraker (Card.Colorless
+    // SpellCast trigger; Creature.Other+Colorless+YouCtrl ChangesZone trigger).
+    bool trigger_valid_card_colorless = false;
     // ValidCard(s)$ <Subtype> — the changing card must have this subtype (e.g. Ajani's
     // "Cat.Other+YouCtrl"). Empty = no subtype filter. Matched against CardData/Token types.
     std::string trigger_valid_card_subtype = "";

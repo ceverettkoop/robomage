@@ -8,6 +8,7 @@
 #include "ability.h"
 #include "types.h"
 #include "zone.h"
+#include "../classes/colors.h"
 #include "../ecs/entity.h"
 
 // Token entities have Zone + Permanent + Creature + Damage + Token on the battlefield.
@@ -19,6 +20,10 @@ struct Token {
     std::vector<std::string> keywords; // informational; copied to Creature on creation
     uint32_t power = 0;
     uint32_t toughness = 0;
+    // Token colors from the token script's Colors: line (Forge). Empty = colorless (CR 105.2c)
+    // — a token has no mana cost, so its color comes solely from this indicator. Mirrors
+    // CardData::explicit_colors so colorlessness is computed the same way for tokens and cards.
+    std::set<Colors> explicit_colors;
 };
 
 // Attach the Permanent + Creature + Damage components a token needs on the battlefield,

@@ -222,6 +222,14 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                         continue;
                 }
 
+                // Colorless filter (Glaring Fleshraker): the cast spell (SPELL_CAST) or the
+                // entering card (CARD_CHANGED_ZONE) must be colorless (CR 105.2c). The card is
+                // carried as Params::ENTITY on both event types.
+                if (ab.trigger_valid_card_colorless && ev.HasParam(Params::ENTITY)) {
+                    Entity ev_card = ev.GetParam<Entity>(Params::ENTITY);
+                    if (!is_colorless_entity(ev_card)) continue;
+                }
+
                 // Spell count filter (Cori-Steel Cutter)
                 if (ab.trigger_spell_count_eq > 0 && ev.HasParam(Params::PLAYER)) {
                     Entity ev_player = ev.GetParam<Entity>(Params::PLAYER);

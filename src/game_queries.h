@@ -11,8 +11,10 @@
 #include "components/permanent.h"
 #include "components/player.h"
 #include "components/spell.h"
+#include "components/token.h"
 #include "components/types.h"
 #include "components/zone.h"
+#include "classes/colors.h"
 #include "ecs/coordinator.h"
 
 extern Coordinator global_coordinator;
@@ -41,6 +43,35 @@ inline bool permanent_has_type(const Permanent &perm, const std::string &type_na
 inline bool is_creature_card(const CardData &cd) { return card_has_type(cd, "Creature"); }
 inline bool is_land_card(const CardData &cd)     { return card_has_type(cd, "Land"); }
 inline bool is_planeswalker_card(const CardData &cd) { return card_has_type(cd, "Planeswalker"); }
+
+// True if the card is colorless (CR 105.2c): no colored mana symbol in its mana cost and no
+// Colors: override granting it a color. A `Colors:`/Devoid override (explicit_colors) takes
+// precedence over the cost; otherwise the printed mana cost's colored symbols decide. Mirrors
+// the colorless test in mana_system.cpp so spell/permanent colorlessness is computed once.
+inline bool is_colorless_card(const CardData &cd) {
+    for (Colors c : {WHITE, BLUE, BLACK, RED, GREEN}) {
+        if (!cd.explicit_colors.empty()) {
+            if (cd.explicit_colors.count(c)) return false;
+        } else if (cd.mana_cost.count(c)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+// True if the entity is colorless (CR 105.2c), handling both real cards (CardData) and
+// tokens (Token, which have no mana cost — their color is the token's color indicator).
+inline bool is_colorless_entity(Entity e) {
+    if (global_coordinator.entity_has_component<CardData>(e))
+        return is_colorless_card(global_coordinator.GetComponent<CardData>(e));
+    if (global_coordinator.entity_has_component<Token>(e)) {
+        const auto &cols = global_coordinator.GetComponent<Token>(e).explicit_colors;
+        for (Colors c : {WHITE, BLUE, BLACK, RED, GREEN})
+            if (cols.count(c)) return false;
+        return true;  // no colored indicator ⇒ colorless
+    }
+    return false;
+}
 
 // True if the type list (e.g. Permanent::types) carries the given top-level type.
 inline bool type_set_has(const std::set<Type> &types, const std::string &type_name) {
