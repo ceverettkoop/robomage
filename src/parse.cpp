@@ -1042,6 +1042,16 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
         }
         sub.amount_svar = "";
     }
+    // Resolve a Pump NumAtt$/NumDef$ given as a count-SVar (e.g. "+X", X = Count$Valid
+    // Eldrazi.YouCtrl): turn the stored SVar key into its runtime Count$ expression so the
+    // pump effect can evaluate the magnitude at resolution (Eldrazi Linebreaker).
+    if (auto *pp = std::get_if<PumpParams>(&sub.params)) {
+        for (std::string *expr : {&pp->att_expr, &pp->def_expr}) {
+            if (expr->empty()) continue;
+            auto it = svars.find(*expr);
+            if (it != svars.end()) *expr = it->second;
+        }
+    }
     // Resolve dig_num_expr SVar reference (e.g. "X" → "Count$Devotion.Blue")
     if (!sub.dig_num_expr.empty()) {
         auto it = svars.find(sub.dig_num_expr);

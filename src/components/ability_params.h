@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <string>
+#include <vector>
 
 // Per-effect parameter blocks held by Ability's `params` variant (see ability.h).
 //
@@ -22,6 +23,15 @@
 struct PumpParams {
     int att = 0;  // NumAtt$ — power modifier (can be negative)
     int def = 0;  // NumDef$ — toughness modifier (can be negative)
+    // NumAtt$/NumDef$ given as a count-SVar (e.g. "+X", X = Count$Valid Eldrazi.YouCtrl):
+    // the static att/def above stay 0 and the magnitude is evaluated at resolution from
+    // these Count$ expressions. The sign of the original "+X"/"-X" token is captured here.
+    std::string att_expr = "";   // dynamic power magnitude expression (empty = use att)
+    std::string def_expr = "";   // dynamic toughness magnitude expression (empty = use def)
+    int att_sign = 1;            // +1 for "+X", -1 for "-X"
+    int def_sign = 1;
+    // KW$ — keyword(s) granted to the pumped creature until end of turn (e.g. Haste).
+    std::vector<std::string> grant_keywords;
 };
 
 // Delirium-conditional damage (Unholy Heat). The base damage stays in the

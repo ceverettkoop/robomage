@@ -786,6 +786,24 @@ size_t evaluate_dynamic_amount(
         }
         return count;
     }
+    // Count$Valid <Filter>.YouCtrl — number of battlefield permanents you control that
+    // match <Filter>, where <Filter> is any top-level type, supertype, or subtype name
+    // (e.g. Eldrazi Linebreaker: "Count$Valid Eldrazi.YouCtrl" = Eldrazi you control).
+    // The Creature-specific branch above is kept for the common case; this generic branch
+    // handles arbitrary type/subtype filters via permanent_has_type.
+    if (expr.rfind("Count$Valid ", 0) == 0 && expr.find(".YouCtrl") != std::string::npos) {
+        std::string rest = expr.substr(std::string("Count$Valid ").size());
+        std::string filter = rest.substr(0, rest.find('.'));  // text before ".YouCtrl"
+        if (!filter.empty()) {
+            size_t count = 0;
+            for (auto e : orderer->mEntities) {
+                if (!is_battlefield_permanent(e, ctrl)) continue;
+                if (permanent_has_type(global_coordinator.GetComponent<Permanent>(e), filter))
+                    count++;
+            }
+            return count;
+        }
+    }
     // Count$Revolt.high.low — returns high if revolt active for controller, low otherwise
     if (expr.find("Count$Revolt.") != std::string::npos) {
         size_t dot1 = expr.find("Revolt.") + 7;

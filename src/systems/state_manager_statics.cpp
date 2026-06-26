@@ -672,6 +672,13 @@ void StateManager::gather_active_statics(Game &game) {
                 else if (global_coordinator.entity_has_component<Token>(entity))
                     cr.keywords = global_coordinator.GetComponent<Token>(entity).keywords;
             }
+            // Re-merge "until end of turn" keyword grants (e.g. Haste from Eldrazi
+            // Linebreaker) onto the freshly-rebuilt base keyword list. These persist
+            // across the per-pass rebuild and are cleared at cleanup (514.2).
+            for (const auto &kw : cr.eot_keywords) {
+                if (std::find(cr.keywords.begin(), cr.keywords.end(), kw) == cr.keywords.end())
+                    cr.keywords.push_back(kw);
+            }
         }
         if (perm.transformed) {
             for (auto &sa : perm.static_abilities) sa.applied = false;

@@ -234,6 +234,10 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                                 cr.eot_toughness_bonus = 0;
                                 recompute_pt(cr);
                             }
+                            // Drop "until end of turn" keyword grants (e.g. Haste); the
+                            // static pass re-merges these onto cr.keywords each pass, so
+                            // clearing the bucket here lets them lapse at cleanup (514.2).
+                            cr.eot_keywords.clear();
                         }
                     }
 

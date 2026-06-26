@@ -22,6 +22,11 @@ struct Creature {
     Entity blocking_target = 0;  // Entity of attacker being blocked (0 = none)
     bool is_blocked = false;     // attacker was blocked at declare-blockers; stays blocked even if all blockers leave (509.1h)
     std::vector<std::string> keywords;
+    // Keywords granted "until end of turn" by a one-shot effect (e.g. Eldrazi Linebreaker's
+    // combat trigger grants Haste). Stored separately from `keywords` because the static
+    // pass rebuilds `keywords` from the printed base each pass (611.3a); these are re-merged
+    // onto `keywords` after that rebuild and cleared at the cleanup step (514.2 / 611.2b).
+    std::vector<std::string> eot_keywords;
     bool must_attack = false;        // set by MustAttack static ability; enforced in declare_attackers
 
     // --- P/T contributions (all signed; effective = sum, floored at 0) ---
