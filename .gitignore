@@ -8,7 +8,10 @@ bin/resources/cardsfolder/.DS_Store
 bin/resources/logs/**
 src/classes/game.cpp
 logs/**
+train/.venv/**
+train/.venv
 train/__pycache__/**
+**/__pycache__/**
 train/logs/**
 checkpoints/*.zip
 replays/*.txt
