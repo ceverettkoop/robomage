@@ -56,6 +56,16 @@ this version current if a newer Comprehensive Rules release supersedes it.
 
 The compiled binary is output to `bin/robomage`.
 
+**Codegen is part of the build.** The default `make` target runs `pygen` before compiling,
+which regenerates the auto-generated Python files (`train/_enums.py`, `train/card_costs.py`)
+whenever their declared C++ inputs change. `train/card_costs.py` is rebuilt from
+`gen_card_costs.py` keyed on `src/card_vocab.h` and `src/machine_io.h`, so **adding/removing a
+vocab entry and running `make` keeps the cast-cost matrix in sync automatically** — the manual
+`gen_card_costs.py` invocation in "Adding a New Card" is only needed to regenerate without a
+full build. (The generator reads each vocab card's `ManaCost` from its script; a card in the
+vocab is assumed to have its script present, so the scripts themselves are not Make
+prerequisites.)
+
 **Run build/test commands plainly so they don't trigger a permission prompt.** A single
 command, or a single pipeline whose programs are all allowlisted (`make`, the `train/...`
 python entry points, `grep`/`head`/`tail`/`echo`), auto-approves. Avoid the shell plumbing
@@ -372,11 +382,13 @@ Cards are loaded on-demand from `bin/resources/cardsfolder/`:
 When implementing a new card, **both** of the following steps are required:
 
 1. Add the card to `src/card_vocab.h` — append a `{"Card Name", N}` entry where N is the next available index. `N_CARD_TYPES` in `src/machine_io.h` must be >= (highest index + 1).
-2. Regenerate `train/card_costs.py` by running from the repo root:
+2. Regenerate `train/card_costs.py` — the cast-cost feature matrix used by the RL environment
+   and extractor. A normal `make` does this for you (the `pygen` step regenerates it because
+   `src/card_vocab.h` changed); run it by hand only to regenerate without a full build:
    ```
    train/.venv/bin/python train/gen_card_costs.py
    ```
-   This writes the cast-cost feature matrix used by the RL environment and extractor.
+   Either way, commit the regenerated `train/card_costs.py` alongside the vocab change.
 
 **Parse script tags as intended — do not retag them.** When a card needs a mechanic the
 engine lacks, implement the mechanic so the parser honors the script's actual tags
