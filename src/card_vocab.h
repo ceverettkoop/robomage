@@ -92,6 +92,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Super Shredder", 148},
     {"Tormod's Crypt", 149},
     {"Bayou", 150},
+    {"Metallic Rebuke", 151},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);
