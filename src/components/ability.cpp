@@ -462,6 +462,19 @@ static bool passes_noncolor_restriction(const std::string &vt, const CardData &c
     return true;
 }
 
+// Enforces a positive ".<Color>" target restriction (e.g. ValidTgts$ Card.Blue /
+// Permanent.Blue on Red Elemental Blast — blue is a targeting restriction, CR 115.1).
+// Matches only the dotted qualifier form (".Blue") so it does not collide with the
+// "non<Color>" tokens, which contain the bare color name. Returns false when a
+// positive color qualifier is present and the candidate is not that color.
+static bool passes_color_restriction(const std::string &vt, const CardData &cd) {
+    static const struct { const char *tok; Colors col; } table[] = {
+        {".White", WHITE}, {".Blue", BLUE}, {".Black", BLACK}, {".Red", RED}, {".Green", GREEN}};
+    for (auto &e : table)
+        if (vt.find(e.tok) != std::string::npos && !card_is_color(cd, e.col)) return false;
+    return true;
+}
+
 // Single source of truth for target legality (see header). build_valid_targets
 // enumerates candidates and filters them through this; is_target_valid re-runs the
 // chosen target(s) through it at resolution. Keeping both on one predicate is what
@@ -469,11 +482,13 @@ static bool passes_noncolor_restriction(const std::string &vt, const CardData &c
 bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
     if (cand == 0) return false;
 
-    // NOTE: Pyroblast/Hydroblast (ConditionPresent$ <type>.<Color>) intentionally do
-    // NOT restrict target legality by color — they may target any spell/permanent and
-    // their counter/destroy effect is conditional on the target's color (enforced in
-    // effects::counter / effects::destroy via target_color_condition_met). So no color
-    // filter is applied here.
+    // NOTE: Pyroblast/Hydroblast (ValidTgts$ Card + ConditionPresent$ <type>.<Color>)
+    // intentionally do NOT restrict target legality by color — they may target any
+    // spell/permanent and their counter/destroy effect is conditional on the target's
+    // color (enforced in effects::counter / effects::destroy via
+    // target_color_condition_met). By contrast Red Elemental Blast (ValidTgts$ Card.Blue /
+    // Permanent.Blue) bakes blue into the target restriction itself, enforced below via
+    // passes_color_restriction (CR 115.1: target restrictions are checked when chosen).
 
     const std::string &vt = valid_tgts;
 
@@ -498,6 +513,11 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
             if (non_creature_only && is_creature) return false;
             if (instant_sorcery_only && !is_instant && !is_sorcery) return false;
         }
+        // Positive color restriction (e.g. ValidTgts$ Card.Blue on Red Elemental Blast:
+        // "Counter target blue spell" — blue is a targeting restriction, CR 115.1).
+        if (global_coordinator.entity_has_component<CardData>(cand) &&
+            !passes_color_restriction(vt, global_coordinator.GetComponent<CardData>(cand)))
+            return false;
         return true;
     }
 
@@ -581,6 +601,12 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
     // Battlefield permanent target (phased-out permanents can't be targeted, 702.26e)
     if (!is_battlefield_permanent(cand)) return false;
     auto &tperm = global_coordinator.GetComponent<Permanent>(cand);
+
+    // Positive color restriction (e.g. ValidTgts$ Permanent.Blue on Red Elemental Blast:
+    // "Destroy target blue permanent" — blue is a targeting restriction, CR 115.1).
+    if (global_coordinator.entity_has_component<CardData>(cand) &&
+        !passes_color_restriction(vt, global_coordinator.GetComponent<CardData>(cand)))
+        return false;
 
     if (cmc_le >= 0 && global_coordinator.entity_has_component<CardData>(cand)) {
         int cmc = static_cast<int>(global_coordinator.GetComponent<CardData>(cand).mana_cost.size());
