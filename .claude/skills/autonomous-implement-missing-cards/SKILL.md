@@ -101,9 +101,17 @@ Sequential, single-tree implementation trades parallel throughput for **simplici
   `cardsfolder/` (add-only; non-zero exit ⇒ not found ⇒ **defer the card; never hand-author**).
 - `train/.venv/bin/python train/gen_card_costs.py` — regenerate `train/card_costs.py` after the
   vocab changes. Normally unnecessary to call directly: a plain `make` regenerates it via `pygen`.
-- `train/test_harness.py` — exercise a card's behavior (full usage in `CLAUDE.md`).
+- `train/test_harness.py` — exercise a card's behavior (full usage in `CLAUDE.md`). Also the
+  torch-free way to run a **scripted full-game regression**: `--deck-a <a> --deck-b <b> --scripted
+  --seed N` across a few seeds drives the same C++ engine and the same rule-based agent as
+  `observe`.
 - `train/.venv/bin/python train/train.py observe --deck <a> --opponent <b> --games N` —
-  scripted in-game regression.
+  scripted in-game regression. **Requires torch** (`train.py` imports `stable_baselines3`/`sb3-contrib`
+  at load), so it is unavailable wherever torch isn't installed — e.g. the headless sandbox
+  container, where torch would also cost ~0.5–1 GB to re-install every session. **When `observe`
+  is unavailable, fall back to the test-harness scripted games above** — they give equivalent
+  engine/rules-correctness coverage (`observe` only adds model-driven play and the gym
+  env/extractor pipeline, which are RL-eval concerns, not card-behavior verification).
 
 ## Orchestration
 
@@ -262,10 +270,14 @@ success, fully reverted on defer.
 >       skip to (d). Otherwise: **isolation test** with `train/test_harness.py` (inline
 >       `--hand-a/--library-a/--battlefield-a/...` or a `temp/` stacked deck, driven by semantic
 >       `--play` specs; **never `--interactive`**), covering every mode/trigger; then **real-game
->       regression** via `train/.venv/bin/python train/train.py observe --games 6` with a deck that
->       casts it (swap 4 copies into a `temp/` deck if needed). Expect **no non-fatal errors and no
->       draws**; only pre-existing cosmetic `WARNING: Unrecognized ability param` lines are
->       acceptable. Clean up temp decks.
+>       regression** with a deck that casts it (swap ~4 copies into a `temp/` deck if needed):
+>       prefer `train/.venv/bin/python train/train.py observe --games 6`, but **if `observe` is
+>       unavailable (no torch — e.g. the headless container) fall back to torch-free scripted full
+>       games through the harness across a few seeds**: `train/.venv/bin/python
+>       train/test_harness.py --deck-a temp/<deck> --deck-b temp/<opp> --scripted --seed N` for
+>       N=1,2,3 (same engine + same scripted agent). Expect **no non-fatal errors and no draws**;
+>       only pre-existing cosmetic `WARNING: Unrecognized ability param` lines are acceptable. Clean
+>       up temp decks.
 >    d. **Document** `docs/card_implementations/<uid>.md` (uid = lowercased name, spaces→`_`,
 >       apostrophes dropped) using the **Design-doc template** — note explicitly when verification
 >       was skipped and which pre-existing card proves each mechanic.
@@ -375,8 +387,8 @@ Implementable this run but left for a future run because the N=<N> cap was reach
 ## Tests
 - Isolation (test_harness): <scenario → observed result> for each mode/trigger
   — OR "skipped: mechanics already proven by <pre-existing card(s)>"
-- Regression (observe, N games): <deck used, result: no non-fatal errors / no draws>
-  — OR "skipped (verify_skip)"
+- Regression (observe, or torch-free harness scripted games, N games/seeds): <tool + deck used,
+  result: no non-fatal errors / no draws> — OR "skipped (verify_skip)"
 
 ## Result
 implemented | implemented (verification skipped — proven by <card>) | deferred(<reason>)
