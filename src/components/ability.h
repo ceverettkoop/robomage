@@ -66,6 +66,13 @@ struct Ability{
     int activation_zone = -1;           // ActivationZone$ Hand → Zone::HAND; -1 = default (battlefield)
     int activations_this_turn = 0;      // runtime counter, reset at UNTAP
     std::string change_type = "";        // ChangeType$ — comma-separated subtypes to search
+    // ChangeType filter with a dynamic mana-value bound (Aether Vial: "Creature.cmcEQX",
+    // X = Count$CardCounters.CHARGE). Holds the resolved runtime Count$ expression and the
+    // two-letter comparator ("EQ"/"LE"); evaluated against this ability's source at
+    // resolution and applied as a per-card mana-value gate in the zone search. Empty = no
+    // dynamic cmc filter (the legacy cmcLEX path keys off cur_game.x_paid instead).
+    std::string change_type_cmc_expr = "";
+    std::string change_type_cmc_op = "";
     Zone::ZoneValue origin = Zone::LIBRARY;          // Origin$ — zone to search
     Zone::ZoneValue destination = Zone::BATTLEFIELD; // Destination$ — zone to move card to
     // RememberTargets$ / RememberObjects$ Targeted — at resolution, push the target(s)
@@ -271,10 +278,13 @@ P& effect_params(Ability& ab) {
 // Returns the chosen Entity, or 0 if the player fails to find / zone is empty.
 // reveal=true marks every offered card choice as public knowledge (revealed
 // tutors), so observers may show the chosen card's name even into a hidden zone.
+// cmc_bound (>= 0) plus cmc_op ("EQ"/"LE"/...) additionally gate candidate cards by
+// mana value (Aether Vial: MV == charge-counter count, resolved by the caller); -1 = none.
 Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner,
                    Zone::ZoneValue zone, const std::string& change_type,
                    bool mandatory = false,
                    Zone::ZoneValue destination = Zone::GRAVEYARD,
-                   bool reveal = false);
+                   bool reveal = false,
+                   int cmc_bound = -1, const std::string& cmc_op = "");
 
 #endif /* ABILITY_H */

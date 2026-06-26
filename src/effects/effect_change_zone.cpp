@@ -13,6 +13,7 @@
 #include "../components/spell.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
+#include "../svar_eval.h"
 #include "../systems/orderer.h"
 
 extern Coordinator global_coordinator;
@@ -155,6 +156,13 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
     bool multi_zone = ab.origins.size() > 1;
     bool reveal = search_reveals_card(ab);
 
+    // Dynamic mana-value bound on the search filter (Aether Vial: "Creature.cmcEQX",
+    // X = charge counters on this Aether Vial). Resolve against the ability's source so
+    // the hand search only offers creatures of the matching mana value (CR 122.1).
+    int cmc_bound = -1;
+    if (!ab.change_type_cmc_expr.empty())
+        cmc_bound = evaluate_sa_svar(ab.change_type_cmc_expr, owner, ab.source);
+
     for (size_t i = 0; i < num_to_move; i++) {
         Entity chosen = 0;
         if (multi_zone) {
@@ -162,7 +170,7 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
                 reveal);
         } else {
             chosen = search_zone(orderer, owner, ab.origin, ab.change_type, ab.mandatory, ab.destination,
-                reveal);
+                reveal, cmc_bound, ab.change_type_cmc_op);
         }
 
         // after we have chosen but before we place it where it goes, if we messed with library shuffle it

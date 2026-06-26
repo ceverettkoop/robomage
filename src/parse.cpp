@@ -1161,6 +1161,29 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
                     ability.amount_svar = svar_ref;
             }
         }
+        // Aether Vial pattern: a ChangeType search filter whose mana-value bound is dynamic,
+        // e.g. "Creature.cmcEQX+YouCtrl" with SVar:X:Count$CardCounters.CHARGE. Resolve the
+        // "cmcEQ<svar>"/"cmcLE<svar>" SVar reference to its runtime Count$ expression and stash
+        // it (with the comparator) so the ChangeZone search can gate hand cards by mana value
+        // == the source's charge-counter count at resolution time.
+        if (ability.change_type_cmc_expr.empty() && !ability.change_type.empty()) {
+            for (const char *op : {"cmcEQ", "cmcLE", "cmcGE", "cmcLT", "cmcGT", "cmcNE"}) {
+                size_t pos = ability.change_type.find(op);
+                if (pos == std::string::npos) continue;
+                std::string svar_ref = ability.change_type.substr(pos + 5);
+                size_t end = 0;
+                while (end < svar_ref.size() &&
+                       (std::isalpha(static_cast<unsigned char>(svar_ref[end])) || svar_ref[end] == '_'))
+                    end++;
+                svar_ref = svar_ref.substr(0, end);
+                auto it = svars.find(svar_ref);
+                if (it != svars.end()) {
+                    ability.change_type_cmc_expr = it->second;
+                    ability.change_type_cmc_op = std::string(op + 3);  // "cmcEQ" → "EQ"
+                }
+                break;
+            }
+        }
         // Resolve amount_svar for delirium-conditional damage (Unholy Heat pattern).
         // SVar:X:Count$Compare Y GE4.6.2 where Y resolves to a graveyard card-type count.
         // Also handles runtime SVar expressions: Count$Valid ..., Targeted$CardPower
@@ -1385,6 +1408,11 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
 
     // Map trigger condition to event ID.
 
+    // OptionalDecider$ You ("At the beginning of your upkeep, you may ...") makes the whole
+    // triggered ability optional at resolution, independent of the trigger mode (Aether
+    // Vial's upkeep charge-counter trigger is a Phase trigger, not a zone-change trigger).
+    ability.trigger_optional = trigger_optional_local;
+
     // All ChangesZone triggers use CARD_CHANGED_ZONE; origin/destination/type filters applied at match time.
     if (mode_changes_zone) {
         ability.trigger_on = Events::CARD_CHANGED_ZONE;
@@ -1396,7 +1424,6 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
         ability.trigger_valid_card_is_instant_or_sorcery  = valid_card_instant || valid_card_sorcery;
         ability.trigger_valid_card_is_land                = valid_card_land;
         ability.trigger_valid_card_subtype                = valid_card_subtype;
-        ability.trigger_optional                          = trigger_optional_local;
         ability.trigger_valid_player_is_controller        = valid_card_owner_you || valid_player_is_you;
         if (valid_card_self) ability.trigger_only_self = true;
     }

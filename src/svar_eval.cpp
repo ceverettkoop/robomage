@@ -9,6 +9,7 @@
 #include "components/types.h"
 #include "components/zone.h"
 #include "ecs/coordinator.h"
+#include "game_queries.h"
 
 extern Coordinator global_coordinator;
 
@@ -80,6 +81,16 @@ int evaluate_sa_svar(const std::string &expr, Zone::Ownership controller, Entity
                 if (t.kind == TYPE) type_names.insert(t.name);
         }
         return static_cast<int>(type_names.size());
+    }
+
+    // Count$CardCounters.<CounterType> — number of counters of that kind on the SVar's
+    // own source permanent (Aether Vial: "Count$CardCounters.CHARGE" for the charge-counter
+    // count, used as the mana-value bound on the creature it can put onto the battlefield).
+    // Scoped to `source`, hence the parameter (CR 122.1).
+    if (expr.rfind("Count$CardCounters.", 0) == 0) {
+        std::string counter_type = expr.substr(19);  // after "Count$CardCounters."
+        if (source == 0) return 0;
+        return get_counters(source, counter_type);
     }
 
     // Count$TypeInYourYard.<TypeName> — count cards of that type in controller's graveyard

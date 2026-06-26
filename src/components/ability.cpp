@@ -58,18 +58,36 @@ bool Ability::identical_activated_ability(const Ability &other) {
 
 // Checks if a card entity matches a single filter spec.
 // Supports: plain type name ("Forest"), dot-qualified color ("Creature.Green"),
-// and +cmcLEX (CMC <= cur_game.x_paid).
-static bool matches_filter_spec(Entity entity, const std::string &spec) {
+// +cmcLEX (CMC <= cur_game.x_paid), and a dynamic mana-value bound supplied by the
+// caller (cmc_bound >= 0 with cmc_op "EQ"/"LE"/... — Aether Vial's per-resolution
+// charge-counter MV gate). cmc_bound < 0 means no dynamic bound.
+static bool matches_filter_spec(Entity entity, const std::string &spec, int cmc_bound = -1,
+    const std::string &cmc_op = "") {
     auto &cd = global_coordinator.GetComponent<CardData>(entity);
 
-    // Split on '+' for additional constraints (e.g. "Creature.Green+cmcLEX")
+    // Strip any '.'-joined qualifiers that name a dynamic-cmc constraint (e.g.
+    // "Creature.cmcEQX"); those are enforced via cmc_bound below, not as a color.
+    auto is_cmc_qualifier = [](const std::string &q) {
+        return q.rfind("cmc", 0) == 0;
+    };
+
+    // Split on '+' for additional constraints (e.g. "Creature.Green+cmcLEX", or the
+    // "+YouCtrl" controller qualifier on a own-zone search, which is trivially satisfied).
     std::string type_part = spec;
     bool has_cmc_le_x = false;
     size_t plus_pos = spec.find('+');
     if (plus_pos != std::string::npos) {
         type_part = spec.substr(0, plus_pos);
-        std::string constraint = spec.substr(plus_pos + 1);
-        if (constraint == "cmcLEX") has_cmc_le_x = true;
+        std::string rest = spec.substr(plus_pos + 1);
+        // Each '+'-joined constraint; cmcLEX keys the legacy x_paid bound, YouCtrl/cmc*
+        // dynamic qualifiers are handled by cmc_bound or are no-ops for an own-zone search.
+        size_t cp = 0;
+        while (cp < rest.size()) {
+            size_t nxt = rest.find('+', cp);
+            std::string constraint = rest.substr(cp, nxt == std::string::npos ? std::string::npos : nxt - cp);
+            if (constraint == "cmcLEX") has_cmc_le_x = true;
+            cp = (nxt == std::string::npos) ? rest.size() : nxt + 1;
+        }
     }
 
     // Split type_part on '.' for color qualifier (e.g. "Creature.Green")
@@ -79,6 +97,7 @@ static bool matches_filter_spec(Entity entity, const std::string &spec) {
     if (dot_pos != std::string::npos) {
         type_name = type_part.substr(0, dot_pos);
         color_qualifier = type_part.substr(dot_pos + 1);
+        if (is_cmc_qualifier(color_qualifier)) color_qualifier.clear();  // enforced via cmc_bound
     }
 
     // Check type match
@@ -135,6 +154,12 @@ static bool matches_filter_spec(Entity entity, const std::string &spec) {
         if (cmc > cur_game.x_paid) return false;
     }
 
+    // Dynamic mana-value bound supplied by the caller (Aether Vial: MV == charge count).
+    if (cmc_bound >= 0) {
+        int cmc = static_cast<int>(cd.mana_cost.size());
+        if (!apply_svar_op(cmc, cmc_op, cmc_bound)) return false;
+    }
+
     return true;
 }
 
@@ -143,7 +168,8 @@ static bool matches_filter_spec(Entity entity, const std::string &spec) {
 // Returns the chosen Entity, or 0 for fail to find.
 // 0 is a valid entity but will always be player a  so is never correct
 Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner, Zone::ZoneValue zone,
-    const std::string &change_type, bool mandatory, Zone::ZoneValue destination, bool reveal) {
+    const std::string &change_type, bool mandatory, Zone::ZoneValue destination, bool reveal,
+    int cmc_bound, const std::string &cmc_op) {
     //  comma-separated subtypes
     std::vector<std::string> subtypes;
     size_t p = 0;
@@ -184,12 +210,15 @@ Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner, Zone
                 break;
             }
         }
+        // A dynamic mana-value bound (Aether Vial) forces the extended path so each
+        // candidate is gated by both type and mana value.
+        if (cmc_bound >= 0) has_extended = true;
 
         for (auto entity : zone_contents) {
             bool matches = false;
             if (has_extended) {
                 for (auto &st : subtypes) {
-                    if (matches_filter_spec(entity, st)) {
+                    if (matches_filter_spec(entity, st, cmc_bound, cmc_op)) {
                         matches = true;
                         break;
                     }
