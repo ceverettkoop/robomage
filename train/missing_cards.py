@@ -11,6 +11,12 @@ whether a Forge script already exists locally and a suggested next vocab index.
 
 Output is sorted by cross-deck frequency (most-played missing cards first), so
 high-impact cards get implemented first.
+
+Double-faced / adventure cards are matched the way the engine understands them: a
+deck entry that concatenates both face names (e.g. "Delver of Secrets Insectile
+Aberration") is resolved through its script to its front-face name and checked
+against the vocab by that name, so an already-implemented DFC is not reported missing
+merely because of its combined deck-file name.
 """
 
 import argparse
@@ -52,8 +58,66 @@ def parse_deck(path):
             yield int(m.group(1)), m.group(2).strip()
 
 
+def resolve_script_path(uid):
+    """The script file the engine would load for this uid, mirroring src/card_db.cpp.
+
+    Returns "<uid>.txt" when it exists, else a double-faced card's combined
+    "<uid>_<back>.txt" file (the engine's DFC fallback when a front-face uid has no
+    script of its own), else None."""
+    if not uid:
+        return None
+    direct = os.path.join(CARDS_DIR, uid[0], f"{uid}.txt")
+    if os.path.exists(direct):
+        return direct
+    letter_dir = os.path.join(CARDS_DIR, uid[0])
+    if os.path.isdir(letter_dir):
+        prefix = uid + "_"
+        for fn in sorted(os.listdir(letter_dir)):
+            if fn.startswith(prefix) and fn.endswith(".txt"):
+                return os.path.join(letter_dir, fn)
+    return None
+
+
+def front_face_uid(script_path):
+    """UID of a script's FRONT face (its first `Name:` line), or None.
+
+    For a double-faced/adventure card the combined deck name (e.g. "Delver of Secrets
+    Insectile Aberration") is not how the engine identifies the card: the engine
+    registers and one-hot-encodes it by its front-face name ("Delver of Secrets").
+    This returns that front-face uid so a DFC can be matched against the vocab the
+    same way the engine understands it."""
+    try:
+        with open(script_path) as f:
+            for raw in f:
+                line = raw.strip()
+                if line.startswith("Name:"):
+                    return name_to_uid(line[len("Name:"):].strip())
+    except OSError:
+        pass
+    return None
+
+
+def vocab_identity(uid, vocab):
+    """The vocab index by which the engine understands this deck card, or None.
+
+    A card referenced directly by a registered name matches immediately. A
+    double-faced card referenced by its combined "<front> <back>" deck name (whose
+    concatenated uid is not itself a vocab key) is resolved through its script to the
+    FRONT-FACE name — which is the identity the engine registers (src/card_db.cpp
+    load_card) and the vocab encodes — so an already-implemented DFC is not reported
+    missing just because of its combined deck-file name."""
+    if uid in vocab:
+        return vocab[uid]
+    path = resolve_script_path(uid)
+    if path:
+        front = front_face_uid(path)
+        if front and front in vocab:
+            return vocab[front]
+    return None
+
+
 def has_local_script(uid):
-    return os.path.exists(os.path.join(CARDS_DIR, uid[0], f"{uid}.txt")) if uid else False
+    return resolve_script_path(uid) is not None
 
 
 def collect(decks_dir):
@@ -87,11 +151,14 @@ def main(argv=None):
     vocab, highest = parse_vocab(VOCAB_H)
     refs, dk_files = collect(args.decks_dir)
 
+    # A card is "missing" only if the engine has no vocab identity for it. This
+    # resolves double-faced cards by their front-face name (see vocab_identity), so an
+    # implemented DFC referenced by its combined deck-file name is not falsely flagged.
     missing = [
         {"name": r["name"], "uid": uid, "in_vocab": False,
          "has_local_script": has_local_script(uid),
          "deck_count": r["deck_count"], "copies": r["copies"]}
-        for uid, r in refs.items() if uid not in vocab
+        for uid, r in refs.items() if vocab_identity(uid, vocab) is None
     ]
     # Most-played first: by deck presence, then total copies, then name.
     missing.sort(key=lambda d: (-d["deck_count"], -d["copies"], d["name"].lower()))
