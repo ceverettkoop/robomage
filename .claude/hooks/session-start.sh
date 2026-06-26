@@ -57,6 +57,17 @@ tool = os.path.join(root, "tools", "forge_fetch", "fetch_script.py")
 subprocess.run([sys.executable, tool, *sorted(names)], check=False)
 PY
 
+echo "[session-start] Refreshing top Legacy meta decks from MTGTop8..."
+# Pull the current top-10 Legacy archetypes into bin/resources/decks/meta/.
+# Non-fatal: this reaches mtgtop8.com, which is only available if the
+# environment's egress policy allows it. If the host is blocked (403/407 from
+# the agent proxy) or MTGTop8 is unreachable, keep the meta decks already
+# checked into the repo and continue — never abort startup over it.
+if ! "$VENV_PY" tools/meta_scraper/scrape_meta.py --top 10; then
+  echo "[session-start] meta-deck refresh skipped (MTGTop8 unreachable or" \
+       "blocked by egress policy); using the committed decks." >&2
+fi
+
 echo "[session-start] Building the engine (headless)..."
 make HEADLESS=TRUE
 
