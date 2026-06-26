@@ -37,6 +37,48 @@ Note any deck that only fails coverage because of a combined double-faced name
 (e.g. delver lists `Delver of Secrets Insectile Aberration` while the vocab has the faces
 separately) — that is a naming artifact, not a missing card; the engine still loads it.
 
+## 1b. Build temp decks to exercise a freshly-implemented batch of cards
+
+When the point of the run is to validate cards just added to the engine (e.g. after an
+autonomous implementation session), the curated decks above won't contain them, so the games
+never touch the new code. Build **temp decks** = a base curated deck with the new cards folded
+in, so they actually get drawn and resolved. (For the exhaustive *per-card* demonstration loop —
+grep every new card, fill gaps with `test_harness.py` — use the **`demonstrate-session-cards`**
+skill; this section is the lighter "make sure the new cards show up in the sanity games" version.)
+
+1. Enumerate the batch: `git diff --name-only main..HEAD -- docs/card_implementations/ | sort`
+   (each implemented card has a committed design doc); read each doc for the card's exact vocab
+   name, mana cost, color, and defining mechanic.
+2. For each base deck (`delver` = U/R + artifacts + colorless-Eldrazi, `mav` = G/W + lands,
+   `doomsday` = U/B), write `bin/resources/decks/temp/t<base>.dk` = the base deck with the new
+   cards of that colour identity swapped in for some base spells. Keep each deck at **60 cards**
+   plus a `SIDEBOARD:` line and keep enough lands/cantrips that it still functions; make the new
+   cards a heavy fraction so they get drawn. Put each card in the deck whose mana can cast it;
+   off-colour misfits still go in the closest deck (the per-card loop in
+   `demonstrate-session-cards` covers anything the scripted agent never casts organically).
+3. **Colorless `{C}` costs are NOT castable with generic mana** — the engine requires a
+   `COLORLESS` source (`pay_from_pool` in `src/mana_system.cpp`). Any new card whose cost
+   contains `{C}` (e.g. Glaring Fleshraker `{2}{C}`, Eldrazi Linebreaker `{1}{C}{R}`, Kozilek's
+   Command `{X}{C}{C}`) must land in a deck carrying a colorless source — **Wasteland** (`{C}`),
+   **Ancient Tomb** (`{C}{C}`), or **Eldrazi Temple** (`{C}` / `{C}{C}` for colorless Eldrazi).
+   `delver`/`mav` already run 4× Wasteland; add Ancient Tomb / Eldrazi Temple when a card needs
+   two `{C}` in one turn. In the transcripts, confirm the `{C}` pip is paid by a colorless source
+   (`activated Wasteland for 1(C)` / `Ancient Tomb for 2(C)`), never generic.
+4. Validate before running (60 cards, every name in vocab):
+
+```bash
+train/.venv/bin/python -c "
+import sys; sys.path.insert(0,'train'); import missing_cards as mc
+vocab,_ = mc.parse_vocab(mc.VOCAB_H)
+for fn in ['temp/tdelver.dk','temp/tmav.dk','temp/tdoomsday.dk']:
+    cards=mc.parse_deck('bin/resources/decks/'+fn); total=sum(q for q,n in cards)
+    miss=[n for q,n in cards if mc.name_to_uid(n) not in vocab]
+    print(fn,'count=',total,'COMPLETE' if not miss else ('MISSING: '+str(miss)))"
+```
+
+Then run section 2 against the temp decks (pass `temp/tdelver` etc. as the deck stem). Temp deck
+files under `decks/temp/` are scratch — leave them or note they can be removed.
+
 ## 2. Generate transcripts
 
 Run **mirror** matchups (each deck vs itself — exercises its whole card pool on both sides) and
@@ -48,11 +90,17 @@ per-game result line plus a final `W / L / D` summary; `--seed` makes the run re
 
 ```bash
 mkdir -p /tmp/rmtx
+# $1/$2 are deck stems: base curated decks (delver/doomsday/mav) for a plain regression, or the
+# temp/t<base> decks from section 1b when validating a freshly-implemented batch of cards.
 run(){ train/.venv/bin/python train/train.py observe --deck "$1" --opponent "$2" \
-       --verbose --games 2 --seed 1 > "/tmp/rmtx/$1__$2.txt" 2>&1
-       tail -1 "/tmp/rmtx/$1__$2.txt"; }
+       --verbose --games "${3:-2}" --seed 1 > "/tmp/rmtx/$(basename $1)__$(basename $2).txt" 2>&1
+       tail -1 "/tmp/rmtx/$(basename $1)__$(basename $2).txt"; }
+# Base decks:
 run delver delver;  run doomsday doomsday;  run mav mav
 run delver mav;     run delver doomsday;    run doomsday mav
+# Or temp decks (mirrors get more games — they exercise the new pool on both sides):
+# run temp/tdelver temp/tdelver 3; run temp/tmav temp/tmav 3; run temp/tdoomsday temp/tdoomsday 3
+# run temp/tdelver temp/tmav; run temp/tdelver temp/tdoomsday; run temp/tmav temp/tdoomsday
 ```
 
 Every game must end with a winner — `observe` prints `game k/N: <Scripted/X> wins` per game and a
