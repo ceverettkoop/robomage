@@ -876,7 +876,11 @@ void select_target(Ability &ability, std::shared_ptr<Orderer> orderer, Zone::Own
 
     // Multi-target selection loop
     ability.targets.clear();
-    for (int i = 0; i < ability.target_max; i++) {
+    // "Up to X target ..." (Kozilek's Command): the cap is the X paid at cast time.
+    int effective_max = ability.target_max;
+    if (ability.target_max_from_xpaid)
+        effective_max = static_cast<int>(cur_game.x_paid);
+    for (int i = 0; i < effective_max; i++) {
         if (valid_targets.empty()) break;
         bool can_stop = (i >= ability.target_min);
         select_single_target(ability, valid_targets, can_stop);

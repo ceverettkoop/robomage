@@ -36,6 +36,7 @@ enum class EffectKind {
     DestroyAll,
     Counter,
     Surveil,
+    Scry,
     PeekAndReveal,
     Phases,
     Dig,

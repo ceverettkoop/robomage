@@ -48,7 +48,8 @@ struct DestroyAllParams {
 
 // Token creation (e.g. Cori-Steel Cutter). TokenScript$ string parsed at resolve.
 struct TokenParams {
-    std::string script = "";  // TokenScript$ e.g. "w_1_1_monk_prowess"
+    std::string script = "";      // TokenScript$ e.g. "w_1_1_monk_prowess"
+    bool owner_is_target = false;  // TokenOwner$ TargetedPlayer — tokens go to the targeted player
 };
 
 // PutCounter (e.g. Scythecat Cub landfall +1/+1). NOTE: this is the Ability

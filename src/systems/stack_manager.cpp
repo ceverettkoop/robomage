@@ -95,6 +95,12 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
         } else {
             // Instant/Sorcery - resolve the Ability component added at cast time, then go to graveyard
             bool was_flashback = spell_cast_with_flashback(top_entity);
+            // Restore the X paid at cast time so a Count$xPaid amount in the resolving
+            // ability (Kozilek's Command's token/scry/exile counts) reads the value this
+            // spell was cast with, not a later cast's. cur_game.x_paid is global.
+            if (global_coordinator.entity_has_component<Spell>(top_entity) &&
+                global_coordinator.GetComponent<Spell>(top_entity).x_paid > 0)
+                cur_game.x_paid = static_cast<size_t>(global_coordinator.GetComponent<Spell>(top_entity).x_paid);
             if (global_coordinator.entity_has_component<Ability>(top_entity)) {
                 auto &ab = global_coordinator.GetComponent<Ability>(top_entity);
                 bool prev_priority = cur_game.player_a_has_priority;

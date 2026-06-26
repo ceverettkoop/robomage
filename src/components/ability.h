@@ -25,6 +25,7 @@ struct Ability{
     std::string valid_tgts = "N_A";  // Value of ValidTgts$ param; "N_A" if no targeting required
     int target_min = 1;              // TargetMin$ 0 = optional targeting (can choose no target)
     int target_max = 1;             // TargetMax$ N — max number of targets (1 = single target)
+    bool target_max_from_xpaid = false;  // TargetMax$ X (X = Count$xPaid): cap = X paid at cast (Kozilek's Command)
     Entity source = 0;
     Entity target = 0;
     std::vector<Entity> targets;    // used when target_max > 1

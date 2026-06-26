@@ -835,7 +835,8 @@ static std::map<std::string, std::string> parse_svars(const std::string& script)
 // Applies a single key/value parameter to an ability struct.
 static void apply_param_to_ability(Ability& ability, const std::string& key, const std::string& value,
                                    const std::string& card_name) {
-    if (key == "NumCards" || key == "ChangeNum" || key == "Amount") {
+    if (key == "NumCards" || key == "ChangeNum" || key == "Amount" ||
+        key == "TokenAmount" || key == "ScryNum") {
         if (value == "DamageAmount" || value == "TriggerCount$DamageAmount") {
             ability.amount_from_damage = true;
         } else if (key == "ChangeNum" && value == "Any") {
@@ -990,7 +991,11 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
             // bookkeeping flag that the per-iteration damage is collected into one
             // simultaneous damage event. Our resolution deals each player's damage in the
             // repeat loop; the simultaneity is cosmetic for a one-shot instant.
-            "DamageMap"
+            "DamageMap",
+            // Announce$ X (Kozilek's Command): declares the X to announce while casting. The
+            // X cost is already auto-detected from a ManaCost containing X (has_x_cost), so
+            // the announce is prompted regardless; the tag is informational here.
+            "Announce"
         };
         if (ignored_keys.find(key) == ignored_keys.end()) {
             std::string msg = "Unrecognized ability param: " + key + "$ " + value;
@@ -1071,6 +1076,16 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
             sub.condition_check_svar = (it != svars.end()) ? it->second : value;
         } else if (key == "ConditionSVarCompare") {
             sub.condition_svar_compare = value;
+        } else if (key == "TargetMax" && !value.empty() &&
+                   !std::isdigit(static_cast<unsigned char>(value[0]))) {
+            // A count-SVar cap. If it resolves to Count$xPaid (Kozilek's Command:
+            // "up to X target cards"), the true cap is the X paid at cast — flag it so
+            // select_target can clamp the multi-target loop to x_paid at resolution.
+            // Other count-SVar caps fall back to "any number" (MAX_ENTITIES).
+            auto it = svars.find(value);
+            if (it != svars.end() && it->second.find("xPaid") != std::string::npos)
+                sub.target_max_from_xpaid = true;
+            sub.target_max = MAX_ENTITIES;
         } else {
             apply_param_to_ability(sub, key, value, card_name);
         }
@@ -1107,7 +1122,10 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
             } else if (sv.find("Count$Valid") != std::string::npos ||
                        sv.find("Targeted$") != std::string::npos ||
                        sv.find("Count$InYourLibrary") != std::string::npos ||
-                       sv.find("Count$YourLifeTotal") != std::string::npos) {
+                       sv.find("Count$YourLifeTotal") != std::string::npos ||
+                       // Count$xPaid — amount equals the X paid at cast (Kozilek's Command:
+                       // TokenAmount$/ScryNum$/TargetMax$ all = X = Count$xPaid).
+                       sv.find("xPaid") != std::string::npos) {
                 sub.dynamic_amount_expr = sv;
             }
         }

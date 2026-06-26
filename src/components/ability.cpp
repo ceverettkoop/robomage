@@ -1,6 +1,7 @@
 #include "ability.h"
 
 #include <algorithm>
+#include <cctype>
 #include <cstdio>
 #include <string>
 #include <vector>
@@ -597,7 +598,17 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
     int cmc_le = -1;
     {
         size_t cmc_pos = vt.find("cmcLE");
-        if (cmc_pos != std::string::npos) cmc_le = std::stoi(vt.substr(cmc_pos + 5));
+        if (cmc_pos != std::string::npos) {
+            std::string bound = vt.substr(cmc_pos + 5);
+            // Trim to the leading token (stop at the next '.'/'+' qualifier).
+            size_t end = bound.find_first_of(".+");
+            if (end != std::string::npos) bound = bound.substr(0, end);
+            if (!bound.empty() && std::isdigit(static_cast<unsigned char>(bound[0])))
+                cmc_le = std::stoi(bound);
+            else
+                // cmcLEX (Kozilek's Command): the bound is the X paid at cast time.
+                cmc_le = static_cast<int>(cur_game.x_paid);
+        }
     }
 
     // Card in a graveyard targeted by a ChangeZone with a type filter (e.g. Life from
@@ -768,6 +779,12 @@ size_t evaluate_dynamic_amount(
             count += cd.mana_cost.count(devotion_color);
         }
         return count;
+    }
+    // Count$xPaid — the value of X chosen for an X cost when this spell/ability was
+    // cast/activated (Kozilek's Command: X = Count$xPaid feeds the token count, scry
+    // count and graveyard-exile cap). cur_game.x_paid is recorded at cast time.
+    if (expr.find("xPaid") != std::string::npos) {
+        return cur_game.x_paid;
     }
     if (expr.find("Count$InYourLibrary") != std::string::npos ||
         expr.find("Count$ValidLibrary Card.YouOwn") != std::string::npos) {

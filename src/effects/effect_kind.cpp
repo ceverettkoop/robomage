@@ -29,6 +29,7 @@ EffectKind effect_kind_from_string(const std::string &category) {
         {"DestroyAll", EffectKind::DestroyAll},
         {"Counter", EffectKind::Counter},
         {"Surveil", EffectKind::Surveil},
+        {"Scry", EffectKind::Scry},
         {"PeekAndReveal", EffectKind::PeekAndReveal},
         {"Phases", EffectKind::Phases},
         {"Dig", EffectKind::Dig},

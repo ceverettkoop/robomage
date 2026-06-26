@@ -27,6 +27,7 @@ EffectHandler handler_for(EffectKind kind) {
         case EffectKind::Destroy:         return &destroy;
         case EffectKind::Token:           return &token;
         case EffectKind::Surveil:         return &surveil;
+        case EffectKind::Scry:            return &scry;
         case EffectKind::DelayedTrigger:  return &delayed_trigger;
         case EffectKind::PutCounter:      return &put_counter;
         case EffectKind::RearrangeTopOfLibrary: return &rearrange_top_of_library;
