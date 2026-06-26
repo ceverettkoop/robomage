@@ -43,6 +43,7 @@ EffectKind effect_kind_from_string(const std::string &category) {
         {"CopyPermanent", EffectKind::CopyPermanent},
         {"Mobilize", EffectKind::Mobilize},
         {"SacrificeTokens", EffectKind::SacrificeTokens},
+        {"RepeatEach", EffectKind::RepeatEach},
     };
     auto it = table.find(category);
     return (it != table.end()) ? it->second : EffectKind::None;

@@ -77,6 +77,9 @@ bool mobilize(Ability &ab, std::shared_ptr<Orderer> orderer);
 // Delayed end-step sacrifice fired by Mobilize: sacrifice each entity in ab.targets that is
 // still on the battlefield (the tokens created when the creature attacked).
 bool sacrifice_tokens(Ability &ab, std::shared_ptr<Orderer> orderer);
+// RepeatEach over players (Price of Progress): resolve the RepeatSubAbility once per
+// player, with cur_game.remembered_entities set to that player's entity each iteration.
+bool repeat_each(Ability &ab, std::shared_ptr<Orderer> orderer);
 
 // True if battlefield permanent `e` matches a Forge ValidCards$/ConditionPresent$
 // filter spec: a type/subtype head plus '+'-delimited qualifiers (YouCtrl, OppCtrl,

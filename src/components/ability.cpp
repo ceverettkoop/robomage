@@ -758,6 +758,35 @@ size_t evaluate_dynamic_amount(
         if (plus != std::string::npos) base += std::stoi(expr.substr(plus + 6));
         return static_cast<size_t>(base < 0 ? 0 : base);
     }
+    // Count$Valid Land.nonBasic+RememberedPlayerCtrl[/Times.N] — number of nonbasic
+    // lands controlled by the remembered player (Price of Progress, evaluated once per
+    // player by the RepeatEach loop), optionally multiplied by N. The remembered player
+    // is cur_game.remembered_entities[0] (a Player entity set by the repeat_each handler).
+    if (expr.find("Count$Valid Land.nonBasic+RememberedPlayerCtrl") != std::string::npos) {
+        Zone::Ownership remembered_ctrl = ctrl;
+        if (!cur_game.remembered_entities.empty()) {
+            Entity rp = cur_game.remembered_entities[0];
+            if (rp == cur_game.player_a_entity) remembered_ctrl = Zone::PLAYER_A;
+            else if (rp == cur_game.player_b_entity) remembered_ctrl = Zone::PLAYER_B;
+        }
+        size_t count = 0;
+        for (auto e : orderer->mEntities) {
+            if (!is_battlefield_permanent(e, remembered_ctrl)) continue;
+            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+            auto &cd = global_coordinator.GetComponent<CardData>(e);
+            bool is_land = false;
+            for (auto &t : cd.types)
+                if (t.name == "Land") { is_land = true; break; }
+            if (!is_land) continue;
+            if (has_basic_supertype(cd.types)) continue;  // nonBasic only
+            count++;
+        }
+        size_t mult = 1;
+        size_t times_pos = expr.find("/Times.");
+        if (times_pos != std::string::npos)
+            mult = static_cast<size_t>(std::stoi(expr.substr(times_pos + 7)));
+        return count * mult;
+    }
     // Fall back to the shared static-ability SVar evaluator for graveyard-count
     // expressions (Count$TypeInYourYard / Count$ValidGraveyard / CardTypes). It
     // returns 0 for anything it doesn't recognise, so this preserves the prior

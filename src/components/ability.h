@@ -144,6 +144,12 @@ struct Ability{
     bool optional = false;           // Optional$ True — player may decline
     bool defined_remembered = false; // Defined$ Remembered — target is cur_game.remembered_entities[0]
 
+    // RepeatEach over players (Price of Progress): RepeatPlayers$ Player makes the effect
+    // loop once per player, setting cur_game.remembered_entities to that player's entity
+    // before resolving the RepeatSubAbility (parsed into subabilities). Empty = not a
+    // per-player repeat.
+    std::string repeat_players = "";  // RepeatPlayers$ — currently "Player" (each player)
+
     // Mill: remember milled cards in cur_game.remembered_entities
     bool remember_milled = false;    // RememberMilled$ True
     bool amount_from_damage = false; // NumCards$ DamageAmount — use trigger_damage_amount

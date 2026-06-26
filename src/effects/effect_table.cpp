@@ -48,6 +48,7 @@ EffectHandler handler_for(EffectKind kind) {
         case EffectKind::CopyPermanent:   return &copy_permanent;
         case EffectKind::Mobilize:        return &mobilize;
         case EffectKind::SacrificeTokens: return &sacrifice_tokens;
+        case EffectKind::RepeatEach:      return &repeat_each;
         default:                          return nullptr;
     }
 }

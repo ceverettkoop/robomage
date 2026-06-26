@@ -847,6 +847,8 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         ability.sac_valid = value;            // DB$ Sacrifice — what may be sacrificed
     } else if (key == "RememberSacrificed") {
         ability.remember_sacrificed = (value == "True");
+    } else if (key == "RepeatPlayers") {
+        ability.repeat_players = value;       // RepeatEach over players (Price of Progress)
     } else if (effects::apply_parse_hook(ability, key, value)) {
         // Consumed by an effect-specific parse hook co-located with its handler.
     } else {
@@ -865,7 +867,12 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
             "Choices", "ControlledByPlayer", "Reveal",
             // Ultimate$ True is informational: ultimate legality is already covered by the
             // minus-loyalty cost check, so the flag is unused.
-            "Ultimate"
+            "Ultimate",
+            // DamageMap$ True (RepeatEach DealDamage, e.g. Price of Progress): a Forge
+            // bookkeeping flag that the per-iteration damage is collected into one
+            // simultaneous damage event. Our resolution deals each player's damage in the
+            // repeat loop; the simultaneity is cosmetic for a one-shot instant.
+            "DamageMap"
         };
         if (ignored_keys.find(key) == ignored_keys.end()) {
             std::string msg = "Unrecognized ability param: " + key + "$ " + value;
@@ -1093,7 +1100,10 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
         size_t param_pos = line.find("|", pos);
         std::string key, value;
         while (next_param(line, param_pos, key, value)) {
-            if (key == "SubAbility") {
+            if (key == "SubAbility" || key == "RepeatSubAbility") {
+                // RepeatSubAbility$ (RepeatEach) resolves the same way as SubAbility$: the
+                // value names an SVar holding a DB$ ability. For RepeatEach the parsed
+                // sub-ability is the per-iteration body the handler resolves once per player.
                 auto it = svars.find(value);
                 if (it != svars.end())
                     ability.subabilities.push_back(parse_svar_ability(it->second, ability.ability_type, svars, card_name));
