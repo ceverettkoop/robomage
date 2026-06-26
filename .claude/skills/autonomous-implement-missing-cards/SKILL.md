@@ -192,6 +192,28 @@ Then implement units **strictly one at a time, directly on the run branch**, unt
 and regression** — register it, confirm a clean `make`, document it, and commit. Every other card
 (covered-unproven, and every card in a mechanic batch) is fully tested before its commit.
 
+### Phase 3.5 — Post-implementation code review (when the run completes in-session)
+
+If the run reaches its target — the `N`-card cap is hit, or the implementable queue is exhausted —
+**while the session is still live** (the user has not terminated it), run a self-review before the
+final report:
+
+1. Run the **`code-review`** skill at **medium** effort over the run branch's accumulated diff
+   (its changes vs. the run's starting HEAD).
+2. **Fix only LOW-RISK findings** — a clear, localized correctness or cleanup fix that is obviously
+   safe and that you can re-verify with a quick build (and a harness/regression check when it
+   touches card behavior). Anything risky, cross-cutting, or ambiguous is **left for the human**,
+   not patched autonomously — never destabilize the green run branch to chase a finding. Each fix
+   is its own commit (or folded into the relevant card's follow-up commit) with the usual trailers,
+   and the branch must still build clean afterward.
+3. **Emit a summary report** of the review: issues found (with severity and location) vs. issues
+   fixed (with the commit), and which were deliberately left for the user and why. This report goes
+   into the Phase 4 final report (and may be appended to the deferred-cards doc as a "Review
+   findings" section if any were deferred for the human).
+
+This step is best-effort and bounded: if the session is terminated before it runs, skip it; the
+per-card design docs and deferred-cards doc remain the durable handoff.
+
 ### Phase 4 — Final report & handoff
 
 Print a tally: implemented (each its own commit on the run branch; note which skipped verification
