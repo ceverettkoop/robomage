@@ -52,10 +52,32 @@ int active_raise_cost_for(const CardData &card_data) {
     return total;
 }
 
-ManaValue effective_base_cost(const CardData &card_data) {
+// Number of artifacts `caster` controls on the battlefield (Affinity count, CR 702.41).
+static int artifacts_controlled_by(Zone::Ownership caster) {
+    int count = 0;
+    Entity max_e = global_coordinator.GetMaxIssuedEntity();
+    for (Entity e = 0; e < max_e; ++e) {
+        if (!is_battlefield_permanent(e, caster)) continue;
+        if (permanent_has_type(global_coordinator.GetComponent<Permanent>(e), "Artifact")) count++;
+    }
+    return count;
+}
+
+ManaValue effective_base_cost(const CardData &card_data, Zone::Ownership caster) {
     ManaValue cost = card_data.mana_cost;
     int raise_total = active_raise_cost_for(card_data);
     for (int ri = 0; ri < raise_total; ri++) cost.insert(GENERIC);
+    // Affinity for artifacts (CR 702.41): reduce the generic portion by {1} per artifact
+    // the caster controls. Cost reductions are applied after additions (601.2f) and only
+    // the generic pips can be removed (a colored pip is never reduced); never go below 0.
+    if (card_data.affinity_artifact && caster != Zone::UNKNOWN) {
+        int reduce = artifacts_controlled_by(caster);
+        while (reduce-- > 0) {
+            auto it = cost.find(GENERIC);
+            if (it == cost.end()) break;
+            cost.erase(it);
+        }
+    }
     return cost;
 }
 
@@ -114,7 +136,7 @@ static Colors mana_color_for_subtype(const std::string &subtype) {
 
 // Permanents on battlefield set to have appropriate components
 // if they are in a different zone these are removed as no longer applicable
-void StateManager::apply_permanent_components(Game &game) {
+void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Orderer> orderer) {
     // Collect token entities that have left the battlefield for destruction after iteration.
     std::vector<Entity> tokens_to_destroy;
 
@@ -155,7 +177,8 @@ void StateManager::apply_permanent_components(Game &game) {
                 face = card_data.backside.get();
             bool is_creature = is_creature_card(*face);  // can be creature and land
             bool is_land = is_land_card(*face);
-            int etb_p1p1 = 0;  // +1/+1 counters this permanent enters with (614.1c), applied once the Creature exists
+            int etb_p1p1 = 0;  // counters this permanent enters with (614.1c), applied once the Permanent exists
+            std::string etb_counter_type = "P1P1";  // kind of "enters with" counter (P1P1, CHARGE, ...)
             // providing permanent component if doesn't have
             if (!global_coordinator.entity_has_component<Permanent>(entity)) {
                 Permanent perm;
@@ -169,6 +192,11 @@ void StateManager::apply_permanent_components(Game &game) {
                 // "enters with +1/+1 counters". The counters are applied once the Creature
                 // component exists (below).
                 {
+                    // Containment Priest's "exile instead of entering" (614.1a) is handled
+                    // earlier, in the MOVE_TO_ZONE dispatch inside add_to_zone, so a redirected
+                    // creature never reaches the battlefield and is never seen by this scan.
+                    // Here we only read self-replacements that shape how the permanent enters:
+                    // "enters tapped" (614.1d) and "enters with counters" (614.1c).
                     ReplacementEvent rev;
                     rev.type = ReplacementEvent::ENTERS_BATTLEFIELD;
                     rev.entity = entity;
@@ -176,15 +204,33 @@ void StateManager::apply_permanent_components(Game &game) {
                     replacement::dispatch(rev);
                     perm.is_tapped = rev.enters_tapped;
                     etb_p1p1 = rev.etb_p1p1;
+                    etb_counter_type = rev.etb_counter_type;
                 }
+                // It was cast and is now becoming a real permanent — consume the one-shot
+                // "was cast" marker so a later non-cast re-entry isn't treated as a cast.
+                game.cast_to_battlefield.erase(entity);
                 if (perm.is_tapped) game_log("%s enters tapped.\n", perm.name.c_str());
                 // Spell was cast for its evoke cost — mark the permanent so its evoke
                 // self-sacrifice ETB trigger fires (consumed one-shot here).
                 if (game.pending_evoked.erase(entity)) perm.evoked = true;
+                // Spell was cast with its Offspring additional cost — mark the permanent so
+                // its offspring token-copy ETB trigger fires (consumed one-shot here).
+                if (game.pending_offspring.erase(entity)) perm.entered_with_offspring = true;
                 // Planeswalkers enter with loyalty counters equal to printed loyalty (306.5b).
                 if (is_planeswalker_card(card_data)) perm.counters["LOYALTY"] = card_data.starting_loyalty;
                 perm.timestamp_entered_battlefield = game.timestamp++;
+                perm.entered_on_turn = game.turn;
                 global_coordinator.AddComponent(entity, perm);
+                // Non-P1P1 "enters with" counters (614.1c) attach to any permanent, not just
+                // creatures — Chalice of the Void enters with X CHARGE counters. P1P1 counters
+                // are applied in the creature block below so its P/T can be logged.
+                // P/T counters (P1P1, M1M1) are applied in the creature block below, after the
+                // Creature component exists, so add_counters can resync the cached P/T and log it.
+                if (etb_p1p1 > 0 && etb_counter_type != "P1P1" && etb_counter_type != "M1M1") {
+                    add_counters(entity, etb_counter_type, etb_p1p1);
+                    game_log("%s enters with %d %s counter(s).\n",
+                        card_data.name.c_str(), etb_p1p1, etb_counter_type.c_str());
+                }
             }
             // copy activated abilities from card_data to permanent; incl mana abilities although mana abilities innate to basic land types
             // added elsewhere
@@ -224,13 +270,17 @@ void StateManager::apply_permanent_components(Game &game) {
                 damage.damage_counters = 0;
                 global_coordinator.AddComponent(entity, damage);
 
-                // Apply the "enters with" +1/+1 counters chosen by the ETB replacement
-                // dispatch above (rule 614.1c), now that the Creature component exists.
+                // Apply the "enters with" P/T counters chosen by the ETB replacement
+                // dispatch above (rule 614.1c), now that the Creature component exists so
+                // add_counters can resync the cached P/T. Honors the declared counter kind:
+                // +1/+1 (Hangarback) or -1/-1 (Moonshadow enters with six -1/-1 counters).
                 if (etb_p1p1 > 0) {
-                    add_counters(entity, "P1P1", etb_p1p1);
+                    std::string pt_type = (etb_counter_type == "M1M1") ? "M1M1" : "P1P1";
+                    add_counters(entity, pt_type, etb_p1p1);
                     auto &cr = global_coordinator.GetComponent<Creature>(entity);
-                    game_log("%s enters with %d +1/+1 counter(s) (%u/%u).\n",
-                        card_data.name.c_str(), etb_p1p1, cr.power, cr.toughness);
+                    game_log("%s enters with %d %s counter(s) (%u/%u).\n",
+                        card_data.name.c_str(), etb_p1p1,
+                        pt_type == "M1M1" ? "-1/-1" : "+1/+1", cr.power, cr.toughness);
                 }
             }
             if (is_land) {
@@ -390,6 +440,39 @@ void StateManager::apply_permanent_components(Game &game) {
 
 }
 
+// 702.131b: Ascend on a permanent — any time its controller controls ten or more
+// permanents and doesn't yet have the city's blessing, they get the city's blessing
+// for the rest of the game (a one-way latch; never lost once gained, 702.131c). Run as
+// part of the continuous-effects preamble each SBA pass. The keyword lives on the source
+// CardData, so this also covers non-creature permanents that have Ascend.
+void StateManager::update_city_blessing(Game &game) {
+    bool ascend_a = false, ascend_b = false;
+    int perms_a = 0, perms_b = 0;
+    for (auto entity : mEntities) {
+        if (!is_battlefield_permanent(entity)) continue;
+        Zone::Ownership ctrl = global_coordinator.GetComponent<Permanent>(entity).controller;
+        if (ctrl == Zone::PLAYER_A) ++perms_a;
+        else if (ctrl == Zone::PLAYER_B) ++perms_b;
+        if (global_coordinator.entity_has_component<CardData>(entity)) {
+            auto &cd = global_coordinator.GetComponent<CardData>(entity);
+            for (const auto &kw : cd.keywords)
+                if (kw == "Ascend") {
+                    if (ctrl == Zone::PLAYER_A) ascend_a = true;
+                    else if (ctrl == Zone::PLAYER_B) ascend_b = true;
+                }
+        }
+    }
+    auto grant = [](Entity pe, int perms, const char *who) {
+        auto &pl = global_coordinator.GetComponent<Player>(pe);
+        if (!pl.has_city_blessing && perms >= 10) {
+            pl.has_city_blessing = true;
+            game_log("%s gets the city's blessing.\n", who);
+        }
+    };
+    if (ascend_a) grant(game.player_a_entity, perms_a, "Player A");
+    if (ascend_b) grant(game.player_b_entity, perms_b, "Player B");
+}
+
 // Applies mana abilities to lands based on the land subtypes in perm.types.
 // Type-changing effects (Blood Moon, etc.) modify perm.types before this runs.
 void StateManager::apply_land_abilities(Entity entity) {
@@ -474,6 +557,15 @@ static Ability keyword_triggered_ability(const std::string &keyword) {
         ab.trigger_valid_player_is_controller = true;
         ab.category = "ExaltedBonus";
         ab.amount = 1;
+    } else if (keyword.rfind("Mobilize:", 0) == 0) {
+        // Mobilize N (702.176): whenever this creature attacks, create N tapped and
+        // attacking 1/1 red Warrior creature tokens; sacrifice them at the beginning
+        // of the next end step. trigger_only_self restricts it to this creature attacking.
+        ab.ability_type = Ability::TRIGGERED;
+        ab.trigger_on = Events::CREATURE_ATTACKED;
+        ab.trigger_only_self = true;
+        ab.category = "Mobilize";
+        ab.amount = static_cast<size_t>(std::stoi(keyword.substr(9)));
     }
     return ab;
 }
@@ -605,6 +697,13 @@ void StateManager::gather_active_statics(Game &game) {
                 else if (global_coordinator.entity_has_component<Token>(entity))
                     cr.keywords = global_coordinator.GetComponent<Token>(entity).keywords;
             }
+            // Re-merge "until end of turn" keyword grants (e.g. Haste from Eldrazi
+            // Linebreaker) onto the freshly-rebuilt base keyword list. These persist
+            // across the per-pass rebuild and are cleared at cleanup (514.2).
+            for (const auto &kw : cr.eot_keywords) {
+                if (std::find(cr.keywords.begin(), cr.keywords.end(), kw) == cr.keywords.end())
+                    cr.keywords.push_back(kw);
+            }
         }
         if (perm.transformed) {
             for (auto &sa : perm.static_abilities) sa.applied = false;
@@ -631,6 +730,10 @@ void StateManager::gather_active_statics(Game &game) {
             a.condition_met = true;
         } else if (a.sa->condition == "Delirium") {
             a.condition_met = (a.controller == Zone::PLAYER_A) ? delirium_a : delirium_b;
+        } else if (a.sa->condition == "PlayerTurn") {
+            // Active during the source controller's own turn (Voice of Victory).
+            bool a_turn = cur_game.player_a_turn;
+            a.condition_met = (a.controller == Zone::PLAYER_A) ? a_turn : !a_turn;
         } else if (!a.sa->check_svar_expr.empty()) {
             // SVar-based condition (e.g. Keen-Eyed Curator: GE4 distinct card types
             // among exiled_with). a.entity is the source permanent the SVar belongs to.

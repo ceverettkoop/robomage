@@ -9,9 +9,12 @@
 #include "components/creature.h"
 #include "components/damage.h"
 #include "components/permanent.h"
+#include "components/player.h"
 #include "components/spell.h"
+#include "components/token.h"
 #include "components/types.h"
 #include "components/zone.h"
+#include "classes/colors.h"
 #include "ecs/coordinator.h"
 
 extern Coordinator global_coordinator;
@@ -40,6 +43,90 @@ inline bool permanent_has_type(const Permanent &perm, const std::string &type_na
 inline bool is_creature_card(const CardData &cd) { return card_has_type(cd, "Creature"); }
 inline bool is_land_card(const CardData &cd)     { return card_has_type(cd, "Land"); }
 inline bool is_planeswalker_card(const CardData &cd) { return card_has_type(cd, "Planeswalker"); }
+
+// Printed colors of a card: an explicit Colors$ override if present (e.g. Devoid's COLORLESS),
+// otherwise the colors of its mana cost (CR 105.2 / 202.2). Single source for the color of a
+// card object, shared by the targeting color checks and the last-known-info snapshot.
+inline std::set<Colors> card_colors(const CardData &cd) {
+    if (!cd.explicit_colors.empty()) return cd.explicit_colors;
+    std::set<Colors> result;
+    for (Colors c : {WHITE, BLUE, BLACK, RED, GREEN})
+        if (cd.mana_cost.count(c)) result.insert(c);
+    return result;
+}
+
+// Enforce a positive color target restriction (e.g. ValidTgts$ Permanent.Blue on Red Elemental
+// Blast: "target blue permanent", CR 115.1) against an already-resolved color set. Sharing the
+// color set (rather than re-reading printed colors) is what lets battlefield/last-known callers
+// honour effective color uniformly.
+inline bool color_set_passes(const std::string &vt, const std::set<Colors> &colors) {
+    static const struct { const char *tok; Colors col; } table[] = {
+        {".White", WHITE}, {".Blue", BLUE}, {".Black", BLACK}, {".Red", RED}, {".Green", GREEN}};
+    for (auto &e : table)
+        if (vt.find(e.tok) != std::string::npos && !colors.count(e.col)) return false;
+    return true;
+}
+
+// Enforce a "non<Color>" target restriction (e.g. ValidTgts$ Creature.nonBlack on Snuff Out)
+// against an already-resolved color set: reject when the candidate is one of the excluded
+// colors. Counterpart to color_set_passes; routed through effective_colors for the same reason.
+inline bool color_set_passes_noncolor(const std::string &vt, const std::set<Colors> &colors) {
+    static const struct { const char *tok; Colors col; } table[] = {
+        {"nonWhite", WHITE}, {"nonBlue", BLUE}, {"nonBlack", BLACK}, {"nonRed", RED}, {"nonGreen", GREEN}};
+    for (auto &e : table)
+        if (vt.find(e.tok) != std::string::npos && colors.count(e.col)) return false;
+    return true;
+}
+
+// Unified "characteristic at the time it is read" accessors (CR 608.2h). Each returns the
+// object's effective value: read live from its battlefield components while it is in play
+// (so all applied continuous effects/counters are reflected — and, because every effective-P/T
+// mutator resyncs the cached Creature P/T synchronously, this is correct even mid-resolution),
+// and from the last-known-info snapshot captured at battlefield-leave once it has gone. Falls
+// back to the card's printed characteristics for objects that were never on the battlefield
+// (e.g. a spell on the stack). Defined in game_queries.cpp (needs cur_game). All
+// "read a target's power/toughness/color at resolution" sites route through these.
+int effective_power(Entity e);
+int effective_toughness(Entity e);
+std::set<Colors> effective_colors(Entity e);
+
+// True if the card has a permanent card type (CR 110.4a: artifact, battle, creature,
+// enchantment, land, planeswalker). Used by ValidCard$ Permanent zone-change filters
+// (Moonshadow: "permanent cards put into your graveyard" excludes instants/sorceries).
+inline bool is_permanent_card(const CardData &cd) {
+    return card_has_type(cd, "Artifact") || card_has_type(cd, "Battle") ||
+           card_has_type(cd, "Creature") || card_has_type(cd, "Enchantment") ||
+           card_has_type(cd, "Land") || card_has_type(cd, "Planeswalker");
+}
+
+// True if the card is colorless (CR 105.2c): no colored mana symbol in its mana cost and no
+// Colors: override granting it a color. A `Colors:`/Devoid override (explicit_colors) takes
+// precedence over the cost; otherwise the printed mana cost's colored symbols decide. Mirrors
+// the colorless test in mana_system.cpp so spell/permanent colorlessness is computed once.
+inline bool is_colorless_card(const CardData &cd) {
+    for (Colors c : {WHITE, BLUE, BLACK, RED, GREEN}) {
+        if (!cd.explicit_colors.empty()) {
+            if (cd.explicit_colors.count(c)) return false;
+        } else if (cd.mana_cost.count(c)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+// True if the entity is colorless (CR 105.2c), handling both real cards (CardData) and
+// tokens (Token, which have no mana cost — their color is the token's color indicator).
+inline bool is_colorless_entity(Entity e) {
+    if (global_coordinator.entity_has_component<CardData>(e))
+        return is_colorless_card(global_coordinator.GetComponent<CardData>(e));
+    if (global_coordinator.entity_has_component<Token>(e)) {
+        const auto &cols = global_coordinator.GetComponent<Token>(e).explicit_colors;
+        for (Colors c : {WHITE, BLUE, BLACK, RED, GREEN})
+            if (cols.count(c)) return false;
+        return true;  // no colored indicator ⇒ colorless
+    }
+    return false;
+}
 
 // True if the type list (e.g. Permanent::types) carries the given top-level type.
 inline bool type_set_has(const std::set<Type> &types, const std::string &type_name) {
@@ -229,6 +316,18 @@ inline std::vector<Entity> controlled_permanents_matching(
         if (permanent_matches_subtype_spec(perm, spec)) out.push_back(e);
     }
     return out;
+}
+
+// Single source for "a player gains life": raises their life total and accumulates
+// life_gained_this_turn (118.9 / the "if you gained life this turn" check on cards like
+// Ocelot Pride). Every life-gain site (lifelink, GainLife effects, combat lifelink) routes
+// through this so the per-turn counter cannot drift from life_total. Pass the player's
+// Player-component entity. No-op for amount <= 0.
+inline void player_gain_life(Entity player_entity, int32_t amount) {
+    if (amount <= 0 || !global_coordinator.entity_has_component<Player>(player_entity)) return;
+    auto &pl = global_coordinator.GetComponent<Player>(player_entity);
+    pl.life_total += amount;
+    pl.life_gained_this_turn += amount;
 }
 
 // Returns true when the given player has 4+ card types among cards in their graveyard.

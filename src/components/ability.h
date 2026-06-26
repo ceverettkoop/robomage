@@ -25,6 +25,7 @@ struct Ability{
     std::string valid_tgts = "N_A";  // Value of ValidTgts$ param; "N_A" if no targeting required
     int target_min = 1;              // TargetMin$ 0 = optional targeting (can choose no target)
     int target_max = 1;             // TargetMax$ N — max number of targets (1 = single target)
+    bool target_max_from_xpaid = false;  // TargetMax$ X (X = Count$xPaid): cap = X paid at cast (Kozilek's Command)
     Entity source = 0;
     Entity target = 0;
     std::vector<Entity> targets;    // used when target_max > 1
@@ -34,6 +35,8 @@ struct Ability{
     Colors color = NO_COLOR; //for mana ability
     std::vector<Colors> mana_choices;   // Produced$ Combo or Any — ordered list of selectable mana colors
     bool restrict_to_chosen_type_creature = false;  // RestrictValid$ Spell.Creature+ChosenType
+    bool restrict_to_creature = false;               // RestrictValid$ Spell.Creature (any creature spell)
+    bool restrict_to_colorless_eldrazi = false;      // RestrictValid$ Spell.Eldrazi+Colorless (Eldrazi Temple)
     bool adds_no_counter = false;                    // AddsNoCounter$ True — spell can't be countered
 
     // Set by apply_land_abilities for mana abilities generated from land subtypes;
@@ -65,6 +68,13 @@ struct Ability{
     int activation_zone = -1;           // ActivationZone$ Hand → Zone::HAND; -1 = default (battlefield)
     int activations_this_turn = 0;      // runtime counter, reset at UNTAP
     std::string change_type = "";        // ChangeType$ — comma-separated subtypes to search
+    // ChangeType filter with a dynamic mana-value bound (Aether Vial: "Creature.cmcEQX",
+    // X = Count$CardCounters.CHARGE). Holds the resolved runtime Count$ expression and the
+    // two-letter comparator ("EQ"/"LE"); evaluated against this ability's source at
+    // resolution and applied as a per-card mana-value gate in the zone search. Empty = no
+    // dynamic cmc filter (the legacy cmcLEX path keys off cur_game.x_paid instead).
+    std::string change_type_cmc_expr = "";
+    std::string change_type_cmc_op = "";
     Zone::ZoneValue origin = Zone::LIBRARY;          // Origin$ — zone to search
     Zone::ZoneValue destination = Zone::BATTLEFIELD; // Destination$ — zone to move card to
     // RememberTargets$ / RememberObjects$ Targeted — at resolution, push the target(s)
@@ -79,6 +89,7 @@ struct Ability{
     bool trigger_self_excluded = false;  // true when ValidCard$ has .Other — won't trigger for the source itself
     bool trigger_only_self = false;      // true when ValidCard$ Card.Self — only fires when the entering entity is the source itself
     bool is_evoke_sacrifice = false;     // synthetic ETB self-trigger from K:Evoke — only fires when the permanent was evoked
+    bool is_offspring_token = false;     // synthetic ETB self-trigger from K:Offspring — only fires when the permanent was cast with offspring; creates a 1/1 token copy
     bool trigger_valid_player_is_controller = false;  // true when ValidPlayer$ You
     bool mandatory = false;              // Mandatory$ True — player must choose; suppresses fail-to-find when zone non-empty
     bool may_shuffle = false;            // MayShuffle$ True — player may optionally shuffle after
@@ -90,12 +101,19 @@ struct Ability{
     std::string dynamic_amount_expr = "";   // runtime SVar expression (e.g. "Count$Valid Creature.YouCtrl" or "Targeted$CardPower")
     bool defined_targeted_controller = false;  // Defined$ TargetedController — GainLife goes to target's controller
     bool defined_self = false;                  // Defined$ Self — ability moves its own source
+    bool defined_each_opponent = false;         // Defined$ Player.Opponent — effect applies to each opponent (no target)
+    bool defined_you = false;                   // Defined$ You — effect's player is the source's controller (e.g. Ancient Tomb pain)
 
     // Filter naming which permanents a mass effect affects (DestroyAll / SacrificeAll /
     // PutCounterAll): the ValidCards$ spec, e.g. "Cat.YouCtrl" or
     // "Permanent.nonLand+OppCtrl+nonChosenCard". A plain member (not in the params
     // variant) so PutCounterAll can carry it alongside CounterParams.
     std::string valid_cards_filter = "";
+
+    // Condition$ Blessing (CopyPermanent on Ocelot Pride): the effect body runs only if the
+    // ability's controller has the city's blessing (702.131). Like other condition gates, a
+    // false condition skips the body but still chains subabilities.
+    bool condition_city_blessing = false;
 
     // Effect-specific parameter blocks. As effects migrate off the flat
     // god-struct fields (Phase 3), their exclusive data moves into one of these
@@ -116,6 +134,17 @@ struct Ability{
     bool trigger_valid_card_is_creature = false;        // ValidCard$ Creature
     bool trigger_valid_card_is_instant_or_sorcery = false;  // ValidCard$ Instant/Sorcery
     bool trigger_valid_card_is_land = false;            // ValidCard$ Land.*
+    bool trigger_valid_card_is_artifact = false;        // ValidCard$ Artifact.* (Kappa Cannoneer)
+    // ValidCard$ ...+!token — the changing card must be a real card, not a token (CR 110.1 /
+    // 111.7). Moonshadow's "permanent cards put into your graveyard" excludes tokens.
+    bool trigger_valid_card_non_token = false;
+    // ValidCard$ Permanent — the changing card must be a permanent card (CR 110.4a: artifact,
+    // battle, creature, enchantment, land, planeswalker), excluding instants/sorceries.
+    bool trigger_valid_card_is_permanent = false;
+    // ValidCard$ ...+Colorless — the cast spell (SpellCast) or changing card (ChangesZone)
+    // must be colorless (CR 105.2c / 202.2). Used by Glaring Fleshraker (Card.Colorless
+    // SpellCast trigger; Creature.Other+Colorless+YouCtrl ChangesZone trigger).
+    bool trigger_valid_card_colorless = false;
     // ValidCard(s)$ <Subtype> — the changing card must have this subtype (e.g. Ajani's
     // "Cat.Other+YouCtrl"). Empty = no subtype filter. Matched against CardData/Token types.
     std::string trigger_valid_card_subtype = "";
@@ -133,11 +162,30 @@ struct Ability{
     // Spell count trigger (Cori-Steel Cutter)
     size_t trigger_spell_count_eq = 0;  // ActivatorThisTurnCast$ EQN — fires on Nth spell
 
+    // SpellCast trigger with a dynamic mana-value filter on the cast spell
+    // (Chalice of the Void: ValidCard$ Card.cmcEQY, Y = Count$CardCounters.CHARGE — fires
+    // when a spell's mana value equals the source's charge-counter count). Empty expr = no
+    // such filter. The expr is the resolved Count$ expression; op is "EQ"/"LE"/"GE"/...
+    std::string trigger_cmc_expr = "";
+    std::string trigger_cmc_op = "";
+
+    // TriggerZones$ Graveyard (Arclight Phoenix): the triggered ability functions from
+    // the graveyard, not the battlefield (CR 113.6 / 603.6). When set, the trigger scan
+    // matches the source while it is in its owner's graveyard.
+    bool trigger_from_graveyard = false;
+
     // Token creation (Cori-Steel Cutter) now lives in TokenParams (params variant).
 
     // Attach / Equip sub-ability
     bool optional = false;           // Optional$ True — player may decline
     bool defined_remembered = false; // Defined$ Remembered — target is cur_game.remembered_entities[0]
+    bool defined_triggered_spell = false; // Defined$ TriggeredSpellAbility — target is the spell that triggered this ability (Chalice of the Void counters it)
+
+    // RepeatEach over players (Price of Progress): RepeatPlayers$ Player makes the effect
+    // loop once per player, setting cur_game.remembered_entities to that player's entity
+    // before resolving the RepeatSubAbility (parsed into subabilities). Empty = not a
+    // per-player repeat.
+    std::string repeat_players = "";  // RepeatPlayers$ — currently "Player" (each player)
 
     // Mill: remember milled cards in cur_game.remembered_entities
     bool remember_milled = false;    // RememberMilled$ True
@@ -154,6 +202,14 @@ struct Ability{
 
     // RememberChanged$ — remember entities moved by this ChangeZone (for Doomsday)
     bool remember_changed = false;
+
+    // DB$ Effect — a transient continuous effect created by an ability (CR 611). The
+    // StaticAbilities$ list names the continuous static(s) it grants; RememberObjects$ Self
+    // means the effect tracks its own source. Kappa Cannoneer's "it can't be blocked this
+    // turn" is StaticAbilities$ Unblockable + RememberObjects$ Self — applied as an
+    // until-end-of-turn "can't be blocked" mark on the source rather than a stack object.
+    std::string effect_static_ability = "";  // StaticAbilities$ value (e.g. "Unblockable")
+    bool effect_remember_self = false;        // RememberObjects$ Self
 
     // Tapped$ True — searched card enters the battlefield tapped (Edge of Autumn)
     bool enters_tapped = false;
@@ -259,10 +315,13 @@ P& effect_params(Ability& ab) {
 // Returns the chosen Entity, or 0 if the player fails to find / zone is empty.
 // reveal=true marks every offered card choice as public knowledge (revealed
 // tutors), so observers may show the chosen card's name even into a hidden zone.
+// cmc_bound (>= 0) plus cmc_op ("EQ"/"LE"/...) additionally gate candidate cards by
+// mana value (Aether Vial: MV == charge-counter count, resolved by the caller); -1 = none.
 Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner,
                    Zone::ZoneValue zone, const std::string& change_type,
                    bool mandatory = false,
                    Zone::ZoneValue destination = Zone::GRAVEYARD,
-                   bool reveal = false);
+                   bool reveal = false,
+                   int cmc_bound = -1, const std::string& cmc_op = "");
 
 #endif /* ABILITY_H */

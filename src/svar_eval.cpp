@@ -4,11 +4,13 @@
 #include <set>
 #include <string>
 
+#include "classes/game.h"
 #include "components/carddata.h"
 #include "components/permanent.h"
 #include "components/types.h"
 #include "components/zone.h"
 #include "ecs/coordinator.h"
+#include "game_queries.h"
 
 extern Coordinator global_coordinator;
 
@@ -65,6 +67,13 @@ int evaluate_sa_svar(const std::string &expr, Zone::Ownership controller, Entity
         return val < cap ? val : cap;
     }
 
+    // Count$xPaid — the X value paid at cast time for the X-cost spell currently resolving
+    // (Green Sun's Zenith: ChangeType$ Creature.Green+cmcLEX with SVar:X:Count$xPaid → the
+    // search's mana-value bound is X). cur_game.x_paid is restored from the resolving spell
+    // before its ability runs (stack_manager), so it holds this spell's X here.
+    if (expr == "Count$xPaid")
+        return static_cast<int>(cur_game.x_paid);
+
     // Count$ValidExile ... CardTypes — distinct card types among the cards exiled
     // with `source` (e.g. Keen-Eyed Curator's exiled-with pile). Scoped to the
     // source permanent, hence the `source` parameter.
@@ -80,6 +89,16 @@ int evaluate_sa_svar(const std::string &expr, Zone::Ownership controller, Entity
                 if (t.kind == TYPE) type_names.insert(t.name);
         }
         return static_cast<int>(type_names.size());
+    }
+
+    // Count$CardCounters.<CounterType> — number of counters of that kind on the SVar's
+    // own source permanent (Aether Vial: "Count$CardCounters.CHARGE" for the charge-counter
+    // count, used as the mana-value bound on the creature it can put onto the battlefield).
+    // Scoped to `source`, hence the parameter (CR 122.1).
+    if (expr.rfind("Count$CardCounters.", 0) == 0) {
+        std::string counter_type = expr.substr(19);  // after "Count$CardCounters."
+        if (source == 0) return 0;
+        return get_counters(source, counter_type);
     }
 
     // Count$TypeInYourYard.<TypeName> — count cards of that type in controller's graveyard

@@ -179,6 +179,16 @@ class PlayController:
     to whoever has priority (the legacy behaviour), so existing scripts are
     unaffected.
 
+    A keyed spec also **passes the keyed seat forward through its own priority
+    windows** until the action becomes legal: e.g. ``A:attack:Voice`` given while A
+    still holds priority in its main phase auto-passes (leaving the spec unconsumed)
+    until A reaches the declare-attackers step where ``attack:`` is offered, instead
+    of erroring because no attacker menu exists yet. This fires only on a genuine "not
+    offered at this decision" (``no_match``) and only while a pass is itself legal (a
+    priority window); an ambiguous/typo'd spec, or one that reaches a mandatory choice
+    with no pass, still raises :class:`action_spec.PlayResolveError` with the menu,
+    bounded by ``_MAX_WAIT`` so a never-legal spec can't silently pass the game away.
+
     ``wants_decoded = True`` tells the runner to hand ``choose`` the decoded menu.
     A spec that resolves to zero or multiple legal actions raises
     :class:`action_spec.PlayResolveError` — a loud failure with the legal menu,
@@ -189,11 +199,17 @@ class PlayController:
 
     wants_decoded = True
 
+    # Cap on consecutive auto-passes spent waiting for a seat-keyed spec to become
+    # legal, so a spec that is never offered (a typo, or an action the seat can never
+    # take) fails loudly instead of silently passing the rest of the game away.
+    _MAX_WAIT = 200
+
     def __init__(self, specs, label: str = "Play"):
         import action_spec
         self._action_spec = action_spec
         self._specs = action_spec.parse_spec_list(specs)
         self._i = 0
+        self._wait = 0
         self.label = label
         self.resolved: list[int] = []
 
@@ -215,10 +231,29 @@ class PlayController:
             idx = self._action_spec.resolve_to_index("pass", decoded_actions)
             self.resolved.append(idx)
             return idx
-        self._i += 1
-        idx = self._action_spec.resolve_to_index(spec, decoded_actions)
-        self.resolved.append(idx)
-        return idx
+
+        r = self._action_spec.resolve(spec, decoded_actions)
+        if r.ok:
+            self._i += 1
+            self._wait = 0
+            self.resolved.append(r.index)
+            return r.index
+
+        # The keyed seat IS on the clock but its action isn't legal at THIS decision
+        # (e.g. `A:attack:Voice` while A still holds priority in its main phase — the
+        # attacker menu only appears at the declare-attackers step). Pass priority to
+        # advance the keyed seat toward the step where the action becomes legal, leaving
+        # the spec unconsumed, instead of failing. Bounded by _MAX_WAIT, and only on a
+        # genuine "not offered here" (`no_match`): an ambiguous/typo'd spec, or one whose
+        # decision offers no pass (a mandatory choice), still fails loudly with the menu.
+        if (seat is not None and r.kind == "no_match" and self._wait < self._MAX_WAIT):
+            pass_r = self._action_spec.resolve("pass", decoded_actions)
+            if pass_r.ok:
+                self._wait += 1
+                self.resolved.append(pass_r.index)
+                return pass_r.index
+
+        raise self._action_spec.PlayResolveError(r, decoded_actions)
 
 
 class InteractiveController:

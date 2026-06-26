@@ -21,6 +21,7 @@ enum class EffectKind {
     RearrangeTopOfLibrary,
     DealDamage,
     PutCounter,
+    RemoveCounter,
     ProwessBonus,
     ExaltedBonus,
     Token,
@@ -36,6 +37,7 @@ enum class EffectKind {
     DestroyAll,
     Counter,
     Surveil,
+    Scry,
     PeekAndReveal,
     Phases,
     Dig,
@@ -47,6 +49,11 @@ enum class EffectKind {
     PutCounterAll,
     SacrificeAll,
     ImmediateTrigger,
+    CopyPermanent,
+    Mobilize,
+    SacrificeTokens,
+    RepeatEach,
+    GrantCast,
 };
 
 // Maps a normalized category string to its EffectKind. Unknown strings → None.

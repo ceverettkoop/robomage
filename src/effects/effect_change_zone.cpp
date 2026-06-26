@@ -7,10 +7,13 @@
 #include "../classes/game.h"
 #include "../classes/match_state.h"
 #include "../cli_output.h"
+#include "../components/ability.h"
 #include "../components/carddata.h"
 #include "../components/permanent.h"
+#include "../components/spell.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
+#include "../svar_eval.h"
 #include "../systems/orderer.h"
 
 extern Coordinator global_coordinator;
@@ -19,6 +22,21 @@ extern Game cur_game;
 namespace effects {
 
 static bool search_reveals_card(const Ability &ab);
+static Zone::ZoneValue change_zone_move(const std::shared_ptr<Orderer> &orderer, Entity e,
+                                        Zone::ZoneValue dest);
+
+// Move a card for a ChangeZone effect and report the zone it actually landed in. A
+// replacement effect can divert the move during add_to_zone — Containment Priest redirects an
+// uncast creature to exile (614.1a), Grafdigger's Cage prevents the entry so the card stays in
+// its origin zone (614.13) — so the result may differ from `dest`. Callers gate their
+// battlefield-only bookkeeping (controller / enters-tapped / enters-transformed) and their
+// "moved to <dest>" log on the returned zone; when it differs from `dest` the replacement
+// dispatcher has already logged the reason for the divert, so no generic line is emitted.
+static Zone::ZoneValue change_zone_move(const std::shared_ptr<Orderer> &orderer, Entity e,
+                                        Zone::ZoneValue dest) {
+    orderer->add_to_zone(false, e, dest);
+    return global_coordinator.GetComponent<Zone>(e).location;
+}
 
 // A library search reveals the chosen card when it must satisfy a restriction
 // more specific than "any card" — the searcher proves the card qualifies (e.g.
@@ -41,6 +59,20 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
         return change_zone_same_name(ab, orderer, /*force_all=*/false);
 
     Zone::Ownership owner = global_coordinator.GetComponent<Zone>(ab.source).owner;
+
+    // DefinedPlayer$ TargetedController (Erode: "Its controller may search their library
+    // for a basic land card, put it onto the battlefield tapped, then shuffle."): the
+    // searching/owning player for a search-based ChangeZone is the targeted card's
+    // controller, not the spell's caster (CR 109.5). The target may already have left the
+    // battlefield (Erode's Destroy sub-ability ran first), but Zone.controller persists
+    // through the move to the graveyard, so it still names the last controller. This only
+    // redirects the search path; the targeted-move branch below is skipped because such a
+    // sub-ability carries no target of its own (ValidTgts$ N_A).
+    if (ab.defined_targeted_controller && ab.target != 0 &&
+        global_coordinator.entity_has_component<Zone>(ab.target)) {
+        Zone::Ownership tc = global_coordinator.GetComponent<Zone>(ab.target).controller;
+        if (tc != Zone::UNKNOWN) owner = tc;
+    }
 
     const char *dest_str = ab.destination == Zone::BATTLEFIELD ? "the battlefield"
                            : ab.destination == Zone::LIBRARY   ? "top of library"
@@ -65,12 +97,33 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
                                     : (global_coordinator.entity_has_component<Permanent>(tgt)
                                               ? global_coordinator.GetComponent<Permanent>(tgt).name
                                               : "<unknown>");
-            orderer->add_to_zone(false, tgt, ab.destination);
+            // A target that is a spell/ability on the stack (Mindbreak Trap: "exile any
+            // number of target spells") is being removed from the stack. Strip its Spell/
+            // Ability components — like effects::counter does — so the stack no longer
+            // treats it as a live object to resolve (CR 701.5a / 702.59c). A standalone
+            // ability entity (no card / CardData) is destroyed after leaving the stack.
+            bool on_stack = global_coordinator.GetComponent<Zone>(tgt).location == Zone::STACK;
+            bool standalone_ability = on_stack &&
+                                      !global_coordinator.entity_has_component<CardData>(tgt) &&
+                                      global_coordinator.entity_has_component<Ability>(tgt);
+            if (on_stack) {
+                if (global_coordinator.entity_has_component<Spell>(tgt))
+                    global_coordinator.RemoveComponent<Spell>(tgt);
+                if (global_coordinator.entity_has_component<Ability>(tgt))
+                    global_coordinator.RemoveComponent<Ability>(tgt);
+            }
+            Zone::ZoneValue landed = change_zone_move(orderer, tgt, ab.destination);
+            if (standalone_ability) {
+                global_coordinator.DestroyEntity(tgt);
+                game_log("%s is exiled from the stack\n", tname.c_str());
+                continue;
+            }
             if (ab.destination == Zone::EXILE && ab.source != 0 &&
                 global_coordinator.entity_has_component<Permanent>(ab.source)) {
                 global_coordinator.GetComponent<Permanent>(ab.source).exiled_with.push_back(tgt);
             }
-            game_log("%s is moved to %s\n", tname.c_str(), dest_str);
+            if (landed == ab.destination)
+                game_log("%s is moved to %s\n", tname.c_str(), dest_str);
         }
         return true;
     }
@@ -80,12 +133,11 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
         std::string sname = global_coordinator.entity_has_component<CardData>(ab.source)
                                 ? global_coordinator.GetComponent<CardData>(ab.source).name
                                 : "<unknown>";
-        orderer->add_to_zone(false, ab.source, ab.destination);
-        if (ab.destination == Zone::BATTLEFIELD) {
-            auto &src_zone = global_coordinator.GetComponent<Zone>(ab.source);
-            src_zone.controller = owner;
-        }
-        game_log("%s is moved to %s\n", sname.c_str(), dest_str);
+        Zone::ZoneValue landed = change_zone_move(orderer, ab.source, ab.destination);
+        if (landed == Zone::BATTLEFIELD)
+            global_coordinator.GetComponent<Zone>(ab.source).controller = owner;
+        if (landed == ab.destination)
+            game_log("%s is moved to %s\n", sname.c_str(), dest_str);
         return true;
     }
 
@@ -98,13 +150,14 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
             std::string nm = global_coordinator.entity_has_component<CardData>(e)
                                  ? global_coordinator.GetComponent<CardData>(e).name
                                  : "<unknown>";
-            orderer->add_to_zone(false, e, ab.destination);
-            if (ab.destination == Zone::BATTLEFIELD) {
+            Zone::ZoneValue landed = change_zone_move(orderer, e, ab.destination);
+            if (landed == Zone::BATTLEFIELD) {
                 global_coordinator.GetComponent<Zone>(e).controller = owner;
                 if (ab.enters_tapped) cur_game.pending_enters_tapped.insert(e);
                 if (ab.enters_transformed) cur_game.pending_enters_transformed.insert(e);
             }
-            game_log("%s is moved to %s\n", nm.c_str(), dest_str);
+            if (landed == ab.destination)
+                game_log("%s is moved to %s\n", nm.c_str(), dest_str);
         }
         return true;
     }
@@ -118,13 +171,14 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
         std::string nm = global_coordinator.entity_has_component<CardData>(ab.source)
                              ? global_coordinator.GetComponent<CardData>(ab.source).name
                              : "<unknown>";
-        orderer->add_to_zone(false, ab.source, ab.destination);
+        Zone::ZoneValue landed = change_zone_move(orderer, ab.source, ab.destination);
         if (ab.remember_changed) cur_game.remembered_entities.push_back(ab.source);
-        if (ab.destination == Zone::BATTLEFIELD) {
+        if (landed == Zone::BATTLEFIELD) {
             global_coordinator.GetComponent<Zone>(ab.source).controller = owner;
             if (ab.enters_transformed) cur_game.pending_enters_transformed.insert(ab.source);
         }
-        game_log("%s is moved to %s\n", nm.c_str(), dest_str);
+        if (landed == ab.destination)
+            game_log("%s is moved to %s\n", nm.c_str(), dest_str);
         return true;
     }
 
@@ -133,6 +187,13 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
     bool multi_zone = ab.origins.size() > 1;
     bool reveal = search_reveals_card(ab);
 
+    // Dynamic mana-value bound on the search filter (Aether Vial: "Creature.cmcEQX",
+    // X = charge counters on this Aether Vial). Resolve against the ability's source so
+    // the hand search only offers creatures of the matching mana value (CR 122.1).
+    int cmc_bound = -1;
+    if (!ab.change_type_cmc_expr.empty())
+        cmc_bound = evaluate_sa_svar(ab.change_type_cmc_expr, owner, ab.source);
+
     for (size_t i = 0; i < num_to_move; i++) {
         Entity chosen = 0;
         if (multi_zone) {
@@ -140,7 +201,7 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
                 reveal);
         } else {
             chosen = search_zone(orderer, owner, ab.origin, ab.change_type, ab.mandatory, ab.destination,
-                reveal);
+                reveal, cmc_bound, ab.change_type_cmc_op);
         }
 
         // after we have chosen but before we place it where it goes, if we messed with library shuffle it
@@ -152,8 +213,8 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
         if (chosen != 0) {
             auto &chosen_cd = global_coordinator.GetComponent<CardData>(chosen);
             auto &chosen_zone = global_coordinator.GetComponent<Zone>(chosen);
-            orderer->add_to_zone(false, chosen, ab.destination);
-            if (ab.destination == Zone::BATTLEFIELD) {
+            Zone::ZoneValue landed = change_zone_move(orderer, chosen, ab.destination);
+            if (landed == Zone::BATTLEFIELD) {
                 chosen_zone.controller = owner;
                 if (ab.enters_tapped) cur_game.pending_enters_tapped.insert(chosen);
                 if (ab.enters_transformed) cur_game.pending_enters_transformed.insert(chosen);
@@ -163,7 +224,10 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
             }
             bool dest_public =
                 (ab.destination == Zone::BATTLEFIELD || ab.destination == Zone::GRAVEYARD || ab.destination == Zone::EXILE);
-            if (dest_public) {
+            if (landed != ab.destination) {
+                // A replacement effect diverted the move (Containment Priest → exile,
+                // Grafdigger's Cage → prevented) and already logged its reason; emit nothing.
+            } else if (dest_public) {
                 game_log("%s puts %s to %s\n", player_name(owner).c_str(), chosen_cd.name.c_str(), dest_str);
             } else if (reveal) {
                 // Hidden destination, but the card was revealed — it's public knowledge.
@@ -296,8 +360,8 @@ bool change_zone_same_name(Ability &ab, std::shared_ptr<Orderer> orderer, bool f
                            : ab.destination == Zone::BATTLEFIELD ? "the battlefield"
                                                                  : "library";
     for (size_t i = 0; i < cap; i++) {
-        orderer->add_to_zone(false, matches[i], ab.destination);
-        if (ab.destination == Zone::BATTLEFIELD)
+        Zone::ZoneValue landed = change_zone_move(orderer, matches[i], ab.destination);
+        if (landed == Zone::BATTLEFIELD)
             global_coordinator.GetComponent<Zone>(matches[i]).controller = caster;
         mark_card_revealed(matches[i], searched);  // moved card is now public / revealed
     }

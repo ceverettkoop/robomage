@@ -18,7 +18,10 @@ bool draw(Ability &ab, std::shared_ptr<Orderer> orderer) {
         owner = (ab.target == cur_game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
     else
         owner = global_coordinator.GetComponent<Zone>(ab.source).owner;
-    orderer->draw(owner, ab.amount);
+    // A Draw with no NumCards$ draws a single card (Forge default), e.g. Kozilek's
+    // Command's "then draws a card" rider (DB$ Draw | Defined$ ParentTarget).
+    size_t count = ab.amount > 0 ? ab.amount : 1;
+    orderer->draw(owner, count);
     return true;
 }
 

@@ -13,7 +13,9 @@
 #include "../components/ability.h"
 #include "../components/carddata.h"
 #include "../components/color_identity.h"
+#include "../components/creature.h"
 #include "../components/permanent.h"
+#include "../game_queries.h"
 #include "../components/player.h"
 #include "../components/effect.h"
 #include "../components/token.h"
@@ -51,14 +53,18 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     size_t back = 0;
     auto &target_zone = global_coordinator.GetComponent<Zone>(target);
 
-    // Replacement effects (rule 614): redirect graveyard → exile when Dauthi Voidwalker etc. apply.
+    // Replacement effects (rule 614): redirect graveyard → exile when Dauthi Voidwalker etc.
+    // apply, or prevent a creature card from entering the battlefield out of a graveyard/library
+    // (Grafdigger's Cage, 614.13) — in which case the move doesn't happen and the card stays put.
     {
         ReplacementEvent rev;
         rev.type = ReplacementEvent::MOVE_TO_ZONE;
         rev.entity = target;
         rev.affected_player = target_zone.owner;  // 616.1: the card's owner is the affected player
+        rev.origin = target_zone.location;
         rev.destination = destination;
         replacement::dispatch(rev);
+        if (rev.prevented) return;  // 614.13 — the move is prevented; the card remains in its origin zone
         destination = rev.destination;
     }
 
@@ -89,6 +95,22 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
         names.clear();
         for (const auto &t : global_coordinator.GetComponent<Permanent>(target).types)
             names.push_back(t.name);
+
+        // Full last-known-information snapshot (CR 608.2h / 112.7a): the permanent's effective
+        // characteristics as it last existed in play, so the effective_* accessors can answer a
+        // post-departure read (e.g. Swords to Plowshares' "gains life equal to its power" for the
+        // creature it just exiled) with its in-play values. Captured here while the Creature/
+        // CardData components are still intact (they are stripped later, by the SBA pass).
+        LastKnownInfo &lki = cur_game.last_known_info[target];
+        lki = LastKnownInfo{};
+        lki.type_names = names;
+        if (global_coordinator.entity_has_component<Creature>(target)) {
+            auto &cr = global_coordinator.GetComponent<Creature>(target);
+            lki.power = static_cast<int>(cr.power);
+            lki.toughness = static_cast<int>(cr.toughness);
+        }
+        if (global_coordinator.entity_has_component<CardData>(target))
+            lki.colors = card_colors(global_coordinator.GetComponent<CardData>(target));
     }
 
     // If the entity is leaving an ordered zone, close the gap it leaves behind.
@@ -176,6 +198,16 @@ std::vector<Entity> Orderer::get_library_contents(Zone::Ownership owner) {
         }
     }
     return contents;
+}
+
+std::vector<Entity> Orderer::get_library_top(Zone::Ownership owner, size_t n) {
+    std::vector<Entity> lib = get_library_contents(owner);
+    std::sort(lib.begin(), lib.end(), [](Entity a, Entity b) {
+        return global_coordinator.GetComponent<Zone>(a).distance_from_top <
+               global_coordinator.GetComponent<Zone>(b).distance_from_top;
+    });
+    if (lib.size() > n) lib.resize(n);
+    return lib;
 }
 
 std::vector<Entity> Orderer::get_hand(Zone::Ownership owner) {
@@ -550,6 +582,24 @@ std::vector<Entity> Orderer::place_on_battlefield(const std::vector<std::string>
         auto &z = coordinator.GetComponent<Zone>(card_id);
         z.controller = owner;
 
+        auto &cd = coordinator.GetComponent<CardData>(card_id);
+        coordinator.AddComponent(card_id, color_identity_from(cd));
+        placed.push_back(card_id);
+    }
+
+    return placed;
+}
+
+std::vector<Entity> Orderer::place_in_graveyard(const std::vector<std::string> &card_names,
+                                                Zone::Ownership owner) {
+    Coordinator &coordinator = Coordinator::global();
+    std::vector<Entity> placed;
+
+    for (const auto &name : card_names) {
+        Entity card_id = coordinator.CreateEntity();
+        auto card_data_id = load_card(name);
+        coordinator.AddComponent(card_id, coordinator.GetComponent<CardData>(card_data_id));
+        coordinator.AddComponent(card_id, Zone(Zone::GRAVEYARD, owner, owner));
         auto &cd = coordinator.GetComponent<CardData>(card_id);
         coordinator.AddComponent(card_id, color_identity_from(cd));
         placed.push_back(card_id);

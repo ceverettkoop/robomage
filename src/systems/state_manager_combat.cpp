@@ -179,13 +179,11 @@ void StateManager::deal_combat_damage(Game &game, bool first_strike_only) {
 
     // Apply lifelink life gains simultaneously with damage taken (rule 119.3).
     if (life_delta_a != 0) {
-        auto &pa = global_coordinator.GetComponent<Player>(game.player_a_entity);
-        pa.life_total += life_delta_a;
+        player_gain_life(game.player_a_entity, life_delta_a);
         game_log("  Player A gains %d life (lifelink)\n", life_delta_a);
     }
     if (life_delta_b != 0) {
-        auto &pb = global_coordinator.GetComponent<Player>(game.player_b_entity);
-        pb.life_total += life_delta_b;
+        player_gain_life(game.player_b_entity, life_delta_b);
         game_log("  Player B gains %d life (lifelink)\n", life_delta_b);
     }
 

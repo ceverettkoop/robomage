@@ -124,6 +124,12 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
             for (const auto *src : ab_sources) {
             for (const auto &ab : *src) {
                 if (ab.ability_type != Ability::TRIGGERED) continue;
+                // A graveyard-functioning trigger (TriggerZones$ Graveyard, e.g. Arclight
+                // Phoenix's begin-combat return) functions ONLY while its source is in the
+                // graveyard — TriggerZones overrides the default battlefield functioning
+                // (CR 113.6). It is handled by the dedicated graveyard scan below; firing it
+                // from the battlefield would place a spurious (no-op) trigger on the stack.
+                if (ab.trigger_from_graveyard) continue;
                 if (ab.trigger_on == 0 || ab.trigger_on != ev.GetType()) continue;
                 // "another" check: skip if the event entity is the triggering permanent itself
                 if (ab.trigger_self_excluded && ev.HasParam(Params::ENTITY) &&
@@ -133,6 +139,8 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                     ev.GetParam<Entity>(Params::ENTITY) != entity) continue;
                 // Evoke self-sacrifice only fires when this permanent was cast via evoke
                 if (ab.is_evoke_sacrifice && !perm.evoked) continue;
+                // Offspring token copy only fires when this permanent was cast with offspring
+                if (ab.is_offspring_token && !perm.entered_with_offspring) continue;
                 // Don't fire front-face triggers on a transformed permanent
                 if (perm.transformed) continue;
                 // ValidPlayer$ You: only fire when the event's player matches the permanent's controller
@@ -180,6 +188,37 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                                        is_land_card(global_coordinator.GetComponent<CardData>(ev_card));
                         if (!is_land) continue;
                     }
+                    // ValidCard$ Artifact.* filter (Kappa Cannoneer: another artifact entering).
+                    // Token artifacts have their types on the Token component, not CardData.
+                    if (ab.trigger_valid_card_is_artifact && ev.HasParam(Params::ENTITY)) {
+                        Entity ev_card = ev.GetParam<Entity>(Params::ENTITY);
+                        bool is_art = false;
+                        if (global_coordinator.entity_has_component<CardData>(ev_card))
+                            is_art = card_has_type(global_coordinator.GetComponent<CardData>(ev_card),
+                                                   "Artifact");
+                        if (!is_art && global_coordinator.entity_has_component<Token>(ev_card)) {
+                            for (auto &t : global_coordinator.GetComponent<Token>(ev_card).types)
+                                if (t.name == "Artifact") { is_art = true; break; }
+                        }
+                        if (!is_art) continue;
+                    }
+                    // ValidCard$ ...+!token — only real cards match, not tokens (CR 110.1).
+                    // Token permanents carry a Token component (their identity lives there
+                    // rather than on CardData). Moonshadow's "permanent CARDS put into your
+                    // graveyard" must ignore a dying token you own.
+                    if (ab.trigger_valid_card_non_token && ev.HasParam(Params::ENTITY)) {
+                        Entity ev_card = ev.GetParam<Entity>(Params::ENTITY);
+                        if (global_coordinator.entity_has_component<Token>(ev_card)) continue;
+                    }
+                    // ValidCard$ Permanent — only permanent card types match (CR 110.4a);
+                    // an instant/sorcery moving to the graveyard must not trigger (Moonshadow:
+                    // "permanent cards put into your graveyard").
+                    if (ab.trigger_valid_card_is_permanent && ev.HasParam(Params::ENTITY)) {
+                        Entity ev_card = ev.GetParam<Entity>(Params::ENTITY);
+                        if (!global_coordinator.entity_has_component<CardData>(ev_card)) continue;
+                        if (!is_permanent_card(global_coordinator.GetComponent<CardData>(ev_card)))
+                            continue;
+                    }
                     // ValidCard(s)$ <Subtype> filter (Ajani: a Cat changing zone). Checked
                     // against the changing card's CardData or Token subtypes.
                     if (!ab.trigger_valid_card_subtype.empty() && ev.HasParam(Params::ENTITY)) {
@@ -220,6 +259,14 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                         continue;
                 }
 
+                // Colorless filter (Glaring Fleshraker): the cast spell (SPELL_CAST) or the
+                // entering card (CARD_CHANGED_ZONE) must be colorless (CR 105.2c). The card is
+                // carried as Params::ENTITY on both event types.
+                if (ab.trigger_valid_card_colorless && ev.HasParam(Params::ENTITY)) {
+                    Entity ev_card = ev.GetParam<Entity>(Params::ENTITY);
+                    if (!is_colorless_entity(ev_card)) continue;
+                }
+
                 // Spell count filter (Cori-Steel Cutter)
                 if (ab.trigger_spell_count_eq > 0 && ev.HasParam(Params::PLAYER)) {
                     Entity ev_player = ev.GetParam<Entity>(Params::PLAYER);
@@ -228,11 +275,36 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                     if (pl.spells_cast_this_turn != ab.trigger_spell_count_eq) continue;
                 }
 
+                // Dynamic mana-value filter on the cast spell (Chalice of the Void:
+                // ValidCard$ Card.cmcEQY, Y = Count$CardCounters.CHARGE). Compare the cast
+                // spell's mana value to the count resolved against this source permanent.
+                if (!ab.trigger_cmc_expr.empty() && ev.GetType() == Events::SPELL_CAST) {
+                    if (!ev.HasParam(Params::ENTITY)) continue;
+                    Entity spell_e = ev.GetParam<Entity>(Params::ENTITY);
+                    if (!global_coordinator.entity_has_component<CardData>(spell_e)) continue;
+                    int spell_mv = static_cast<int>(
+                        global_coordinator.GetComponent<CardData>(spell_e).mana_cost.size());
+                    int bound = evaluate_sa_svar(ab.trigger_cmc_expr, perm.controller, entity);
+                    const std::string &op = ab.trigger_cmc_op;
+                    bool ok = (op == "EQ") ? (spell_mv == bound)
+                            : (op == "LE") ? (spell_mv <= bound)
+                            : (op == "GE") ? (spell_mv >= bound)
+                            : (op == "LT") ? (spell_mv <  bound)
+                            : (op == "GT") ? (spell_mv >  bound)
+                            : (op == "NE") ? (spell_mv != bound)
+                            : (spell_mv == bound);
+                    if (!ok) continue;
+                }
+
                 // Prepare the triggered ability and queue it; APNAP placement (and any target
                 // selection) happens after the full scan, in place_triggers_apnap().
                 Ability trigger_ab = ab;
                 trigger_ab.source = entity;
                 trigger_ab.controller = perm.controller;
+                // Defined$ TriggeredSpellAbility — the effect (Counter) acts on the spell that
+                // fired this trigger. Capture it from the event as the ability's target.
+                if (trigger_ab.defined_triggered_spell && ev.HasParam(Params::ENTITY))
+                    trigger_ab.target = ev.GetParam<Entity>(Params::ENTITY);
                 // For exalted, target the sole attacker from the event
                 if (trigger_ab.category == "ExaltedBonus" && ev.HasParam(Params::ENTITY))
                     trigger_ab.target = ev.GetParam<Entity>(Params::ENTITY);
@@ -261,6 +333,103 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
             }
         }
     }
+
+    // Leaves-the-battlefield self-triggers (CR 603.6b / 603.10): a triggered ability that
+    // watches its own source being put into the graveyard from the battlefield (Flagstones
+    // of Trokair: "When CARDNAME is put into a graveyard from the battlefield, ...") cannot be
+    // caught by the battlefield scan above — by the time triggers are checked the source has
+    // already left the battlefield and lost its Permanent component. The game instead looks
+    // back at the moment just before the event (603.10) to decide whether the ability
+    // triggered. We do that here: for each CARD_CHANGED_ZONE event leaving the battlefield,
+    // re-scan the changing card's own CardData abilities for a Card.Self trigger whose
+    // origin/destination filter matches, and queue it. CardData (and thus the ability list and
+    // the card's persisted last controller in its Zone) survives the move, so the source is
+    // fully recoverable.
+    for (const auto &ev : events) {
+        if (ev.GetType() != Events::CARD_CHANGED_ZONE) continue;
+        if (!ev.HasParam(Params::ENTITY)) continue;
+        Zone::ZoneValue ev_origin = ev.GetParam<Zone::ZoneValue>(Params::ORIGIN);
+        if (ev_origin != Zone::BATTLEFIELD) continue;
+        Zone::ZoneValue ev_dest = ev.GetParam<Zone::ZoneValue>(Params::DESTINATION);
+        Entity entity = ev.GetParam<Entity>(Params::ENTITY);
+        if (!global_coordinator.entity_has_component<CardData>(entity)) continue;
+        if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
+        // The source's controller as it left the battlefield persists on its Zone component
+        // (only overwritten when a card enters the battlefield), so it still names the last
+        // controller; fall back to the owner if it was never set.
+        auto &z = global_coordinator.GetComponent<Zone>(entity);
+        Zone::Ownership ctrl = (z.controller != Zone::UNKNOWN) ? z.controller : z.owner;
+        const std::string ent_name = entity_name(entity);
+        for (const auto &ab : global_coordinator.GetComponent<CardData>(entity).abilities) {
+            if (ab.ability_type != Ability::TRIGGERED) continue;
+            if (ab.trigger_on != Events::CARD_CHANGED_ZONE) continue;
+            if (!ab.trigger_only_self) continue;  // Card.Self — only the source's own move
+            if (ab.trigger_zone_origin >= 0 &&
+                ev_origin != static_cast<Zone::ZoneValue>(ab.trigger_zone_origin)) continue;
+            if (ab.trigger_zone_destination >= 0 &&
+                ev_dest != static_cast<Zone::ZoneValue>(ab.trigger_zone_destination)) continue;
+
+            Ability trigger_ab = ab;
+            trigger_ab.source = entity;
+            trigger_ab.controller = ctrl;
+
+            PendingTrigger pt;
+            pt.ab = trigger_ab;
+            pt.controller = ctrl;
+            pt.source = entity;
+            pt.label = trigger_label(ent_name, trigger_ab);
+            pt.log_line = ent_name + " triggered";
+            pt.needs_target = (trigger_ab.valid_tgts != "N_A" && trigger_ab.target == 0);
+            pending.push_back(pt);
+        }
+    }
+
+    // Graveyard-functioning triggered abilities (CR 113.6 / 603.6): a card whose triggered
+    // ability has TriggerZones$ Graveyard (e.g. Arclight Phoenix's "at the beginning of
+    // combat on your turn, ... return ~ from your graveyard to the battlefield") functions
+    // while in its owner's graveyard, so it is never scanned by the battlefield loop above.
+    // Scan the graveyards for these abilities. Only phase-type triggers (PLAYER param) are
+    // supported here, which covers the current card; ValidPlayer$ You and the 603.4
+    // intervening-if are honoured exactly as on the battlefield.
+    for (auto entity : mEntities) {
+        if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
+        auto &z = global_coordinator.GetComponent<Zone>(entity);
+        if (z.location != Zone::GRAVEYARD) continue;
+        if (!global_coordinator.entity_has_component<CardData>(entity)) continue;
+        Zone::Ownership owner = z.owner;
+        const std::string ent_name = entity_name(entity);
+        for (const auto &ev : events) {
+            for (const auto &ab : global_coordinator.GetComponent<CardData>(entity).abilities) {
+                if (ab.ability_type != Ability::TRIGGERED) continue;
+                if (!ab.trigger_from_graveyard) continue;
+                if (ab.trigger_on == 0 || ab.trigger_on != ev.GetType()) continue;
+                // ValidPlayer$ You: the source's owner must be the event's player (the
+                // active player whose combat / phase began).
+                if (ab.trigger_valid_player_is_controller && ev.HasParam(Params::PLAYER)) {
+                    if (ev.GetParam<Entity>(Params::PLAYER) != get_player_entity(owner)) continue;
+                }
+
+                Ability trigger_ab = ab;
+                trigger_ab.source = entity;
+                trigger_ab.controller = owner;
+
+                // 603.4 intervening-if: a trigger whose "if" condition is false right now
+                // does not go on the stack at all (re-checked again on resolution).
+                if (trigger_ab.intervening_if &&
+                    !evaluate_present_condition(trigger_ab, owner, orderer))
+                    continue;
+
+                PendingTrigger pt;
+                pt.ab = trigger_ab;
+                pt.controller = owner;
+                pt.source = entity;
+                pt.label = trigger_label(ent_name, trigger_ab);
+                pt.log_line = ent_name + " triggered";
+                pt.needs_target = (trigger_ab.valid_tgts != "N_A" && trigger_ab.target == 0);
+                pending.push_back(pt);
+            }
+        }
+    }
     }
 
     place_triggers_apnap(game, orderer, pending);
@@ -272,6 +441,7 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
 
 static std::string trigger_label(const std::string &name, const Ability &ab) {
     if (ab.is_evoke_sacrifice) return name + " (evoke: sacrifice)";
+    if (ab.is_offspring_token) return name + " (offspring: token copy)";
     std::string s = name + " (" + ab.category;
     if (ab.valid_tgts != "N_A" && !ab.valid_tgts.empty()) s += ", targeted";
     s += ")";

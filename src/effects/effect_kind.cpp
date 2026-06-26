@@ -14,6 +14,7 @@ EffectKind effect_kind_from_string(const std::string &category) {
         {"RearrangeTopOfLibrary", EffectKind::RearrangeTopOfLibrary},
         {"DealDamage", EffectKind::DealDamage},
         {"PutCounter", EffectKind::PutCounter},
+        {"RemoveCounter", EffectKind::RemoveCounter},
         {"ProwessBonus", EffectKind::ProwessBonus},
         {"ExaltedBonus", EffectKind::ExaltedBonus},
         {"Token", EffectKind::Token},
@@ -29,6 +30,7 @@ EffectKind effect_kind_from_string(const std::string &category) {
         {"DestroyAll", EffectKind::DestroyAll},
         {"Counter", EffectKind::Counter},
         {"Surveil", EffectKind::Surveil},
+        {"Scry", EffectKind::Scry},
         {"PeekAndReveal", EffectKind::PeekAndReveal},
         {"Phases", EffectKind::Phases},
         {"Dig", EffectKind::Dig},
@@ -40,6 +42,14 @@ EffectKind effect_kind_from_string(const std::string &category) {
         {"PutCounterAll", EffectKind::PutCounterAll},
         {"SacrificeAll", EffectKind::SacrificeAll},
         {"ImmediateTrigger", EffectKind::ImmediateTrigger},
+        {"CopyPermanent", EffectKind::CopyPermanent},
+        {"Mobilize", EffectKind::Mobilize},
+        {"SacrificeTokens", EffectKind::SacrificeTokens},
+        {"RepeatEach", EffectKind::RepeatEach},
+        // AB$ Effect that grants "you may cast that card this turn" (Emry, Lurker of the
+        // Loch). The transient continuous Effect object is modeled as a per-turn cast
+        // permission rather than a stack object; see effect_grant_cast.cpp.
+        {"Effect", EffectKind::GrantCast},
     };
     auto it = table.find(category);
     return (it != table.end()) ? it->second : EffectKind::None;

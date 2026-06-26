@@ -70,10 +70,23 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
             if (global_coordinator.entity_has_component<Spell>(top_entity) &&
                 global_coordinator.GetComponent<Spell>(top_entity).cast_with_evoke)
                 cur_game.pending_evoked.insert(top_entity);
+            if (global_coordinator.entity_has_component<Spell>(top_entity) &&
+                global_coordinator.GetComponent<Spell>(top_entity).cast_with_offspring)
+                cur_game.pending_offspring.insert(top_entity);
+            // Carry the X paid for an X-cost permanent into the ETB so an "enters with X
+            // counters" replacement can read it (Chalice of the Void).
+            if (global_coordinator.entity_has_component<Spell>(top_entity) &&
+                global_coordinator.GetComponent<Spell>(top_entity).x_paid > 0)
+                cur_game.pending_etb_xpaid[top_entity] =
+                    global_coordinator.GetComponent<Spell>(top_entity).x_paid;
             if (global_coordinator.entity_has_component<Spell>(top_entity))
                 global_coordinator.RemoveComponent<Spell>(top_entity);
             if (global_coordinator.entity_has_component<Ability>(top_entity))
                 global_coordinator.RemoveComponent<Ability>(top_entity);
+            // This permanent is entering the battlefield because it was cast (CR 614.12):
+            // mark it so an ETB replacement that cares about "wasn't cast" (Containment Priest)
+            // lets it through. Consumed when its Permanent component is created.
+            cur_game.cast_to_battlefield.insert(top_entity);
             orderer->add_to_zone(false, top_entity, Zone::BATTLEFIELD);
             auto &top_zone = global_coordinator.GetComponent<Zone>(top_entity);
             top_zone.controller = top_zone.owner;
@@ -82,6 +95,14 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
         } else {
             // Instant/Sorcery - resolve the Ability component added at cast time, then go to graveyard
             bool was_flashback = spell_cast_with_flashback(top_entity);
+            // Restore the X paid at cast time so a Count$xPaid amount in the resolving
+            // ability (Kozilek's Command's token/scry/exile counts) reads the value this
+            // spell was cast with, not a later cast's. cur_game.x_paid is global, so this must
+            // run for every resolving spell — including one cast with X=0 (which still needs to
+            // overwrite a stale nonzero value from an unrelated earlier cast) and a non-X spell
+            // (x_paid == 0) — not only when x_paid > 0.
+            if (global_coordinator.entity_has_component<Spell>(top_entity))
+                cur_game.x_paid = static_cast<size_t>(global_coordinator.GetComponent<Spell>(top_entity).x_paid);
             if (global_coordinator.entity_has_component<Ability>(top_entity)) {
                 auto &ab = global_coordinator.GetComponent<Ability>(top_entity);
                 bool prev_priority = cur_game.player_a_has_priority;

@@ -19,6 +19,12 @@ public:
     // already have source/controller/target populated. Returns the new entity.
     Entity push_ability_onto_stack(const Ability &ability, Zone::Ownership controller);
     std::vector<Entity> get_library_contents(Zone::Ownership owner);
+    // The top `n` cards of `owner`'s library, ordered so result[0] is the actual top card
+    // (sorted by Zone::distance_from_top ascending); fewer than `n` if the library is smaller.
+    // The single top-of-library accessor for scry/dig/surveil/rearrange/peek — get_library_contents
+    // returns cards in arbitrary entity order, so reading the top must go through here rather than
+    // re-sorting inline at each call site.
+    std::vector<Entity> get_library_top(Zone::Ownership owner, size_t n);
     std::vector<Entity> get_hand(Zone::Ownership owner);
     void shuffle_library(Zone::Ownership owner);
     void generate_libraries(const Deck &deck_a, const Deck &deck_b);
@@ -34,6 +40,10 @@ public:
     void do_london_mulligan();
     std::vector<Entity> place_on_battlefield(const std::vector<std::string> &card_names,
                                              Zone::Ownership owner);
+    // Test-harness helper: start cards already in a player's graveyard (mirrors
+    // place_on_battlefield) so graveyard-functioning cards can be exercised in isolation.
+    std::vector<Entity> place_in_graveyard(const std::vector<std::string> &card_names,
+                                           Zone::Ownership owner);
 
 private:
     // Draw a single card for `player`, first offering any available dredge

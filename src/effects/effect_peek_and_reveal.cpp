@@ -35,18 +35,7 @@ bool peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer) {
                                          ? (ab.target == cur_game.player_a_entity ? Zone::PLAYER_A : Zone::PLAYER_B)
                                          : ab.controller;
         int n = pp->peek_amount > 0 ? pp->peek_amount : 1;
-        std::vector<Entity> top;
-        for (auto e : orderer->mEntities) {
-            if (!global_coordinator.entity_has_component<Zone>(e)) continue;
-            auto &z = global_coordinator.GetComponent<Zone>(e);
-            if (z.location == Zone::LIBRARY && z.owner == peek_owner &&
-                static_cast<int>(z.distance_from_top) < n)
-                top.push_back(e);
-        }
-        std::sort(top.begin(), top.end(), [](Entity a, Entity b) {
-            return global_coordinator.GetComponent<Zone>(a).distance_from_top <
-                   global_coordinator.GetComponent<Zone>(b).distance_from_top;
-        });
+        std::vector<Entity> top = orderer->get_library_top(peek_owner, static_cast<size_t>(n));
         if (top.empty()) {
             game_log("%s's library is empty — nothing to peek.\n", player_name(peek_owner).c_str());
         } else {

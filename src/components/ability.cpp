@@ -1,6 +1,7 @@
 #include "ability.h"
 
 #include <algorithm>
+#include <cctype>
 #include <cstdio>
 #include <string>
 #include <vector>
@@ -51,24 +52,43 @@ bool Ability::identical_activated_ability(const Ability &other) {
     if (other.color != this->color) return false;
     if (other.mana_choices != this->mana_choices) return false;
     if (other.restrict_to_chosen_type_creature != this->restrict_to_chosen_type_creature) return false;
+    if (other.restrict_to_creature != this->restrict_to_creature) return false;
     if (other.adds_no_counter != this->adds_no_counter) return false;
     return true;
 };
 
 // Checks if a card entity matches a single filter spec.
 // Supports: plain type name ("Forest"), dot-qualified color ("Creature.Green"),
-// and +cmcLEX (CMC <= cur_game.x_paid).
-static bool matches_filter_spec(Entity entity, const std::string &spec) {
+// +cmcLEX (CMC <= cur_game.x_paid), and a dynamic mana-value bound supplied by the
+// caller (cmc_bound >= 0 with cmc_op "EQ"/"LE"/... — Aether Vial's per-resolution
+// charge-counter MV gate). cmc_bound < 0 means no dynamic bound.
+static bool matches_filter_spec(Entity entity, const std::string &spec, int cmc_bound = -1,
+    const std::string &cmc_op = "") {
     auto &cd = global_coordinator.GetComponent<CardData>(entity);
 
-    // Split on '+' for additional constraints (e.g. "Creature.Green+cmcLEX")
+    // Strip any '.'-joined qualifiers that name a dynamic-cmc constraint (e.g.
+    // "Creature.cmcEQX"); those are enforced via cmc_bound below, not as a color.
+    auto is_cmc_qualifier = [](const std::string &q) {
+        return q.rfind("cmc", 0) == 0;
+    };
+
+    // Split on '+' for additional constraints (e.g. "Creature.Green+cmcLEX", or the
+    // "+YouCtrl" controller qualifier on a own-zone search, which is trivially satisfied).
     std::string type_part = spec;
     bool has_cmc_le_x = false;
     size_t plus_pos = spec.find('+');
     if (plus_pos != std::string::npos) {
         type_part = spec.substr(0, plus_pos);
-        std::string constraint = spec.substr(plus_pos + 1);
-        if (constraint == "cmcLEX") has_cmc_le_x = true;
+        std::string rest = spec.substr(plus_pos + 1);
+        // Each '+'-joined constraint; cmcLEX keys the legacy x_paid bound, YouCtrl/cmc*
+        // dynamic qualifiers are handled by cmc_bound or are no-ops for an own-zone search.
+        size_t cp = 0;
+        while (cp < rest.size()) {
+            size_t nxt = rest.find('+', cp);
+            std::string constraint = rest.substr(cp, nxt == std::string::npos ? std::string::npos : nxt - cp);
+            if (constraint == "cmcLEX") has_cmc_le_x = true;
+            cp = (nxt == std::string::npos) ? rest.size() : nxt + 1;
+        }
     }
 
     // Split type_part on '.' for color qualifier (e.g. "Creature.Green")
@@ -78,14 +98,19 @@ static bool matches_filter_spec(Entity entity, const std::string &spec) {
     if (dot_pos != std::string::npos) {
         type_name = type_part.substr(0, dot_pos);
         color_qualifier = type_part.substr(dot_pos + 1);
+        if (is_cmc_qualifier(color_qualifier)) color_qualifier.clear();  // enforced via cmc_bound
     }
 
-    // Check type match
-    bool type_matches = false;
-    for (auto &t : cd.types) {
-        if (t.name == type_name) {
-            type_matches = true;
-            break;
+    // Check type match. "Card" / "Permanent" are wildcard heads (Forge's "any card"
+    // filter, e.g. Flagstones of Trokair's "Card.Plains" = any card with subtype Plains);
+    // they match every card and leave the actual restriction to the dot qualifier.
+    bool type_matches = (type_name == "Card" || type_name == "Permanent");
+    if (!type_matches) {
+        for (auto &t : cd.types) {
+            if (t.name == type_name) {
+                type_matches = true;
+                break;
+            }
         }
     }
     if (!type_matches) return false;
@@ -104,19 +129,14 @@ static bool matches_filter_spec(Entity entity, const std::string &spec) {
             bool is_basic = has_basic_supertype(cd.types);
             if (color_qualifier == "Basic" && !is_basic) return false;
             if (color_qualifier == "nonBasic" && is_basic) return false;
-        } else {
-            Colors required_color = NO_COLOR;
-            if (color_qualifier == "Green")
-                required_color = GREEN;
-            else if (color_qualifier == "White")
-                required_color = WHITE;
-            else if (color_qualifier == "Blue")
-                required_color = BLUE;
-            else if (color_qualifier == "Black")
-                required_color = BLACK;
-            else if (color_qualifier == "Red")
-                required_color = RED;
-
+        } else if (color_qualifier == "Green" || color_qualifier == "White" ||
+                   color_qualifier == "Blue" || color_qualifier == "Black" ||
+                   color_qualifier == "Red") {
+            Colors required_color = (color_qualifier == "Green")  ? GREEN
+                                  : (color_qualifier == "White")  ? WHITE
+                                  : (color_qualifier == "Blue")   ? BLUE
+                                  : (color_qualifier == "Black")  ? BLACK
+                                                                  : RED;
             // Check explicit_colors first, then mana cost colors
             bool has_color = false;
             if (!cd.explicit_colors.empty()) {
@@ -125,6 +145,15 @@ static bool matches_filter_spec(Entity entity, const std::string &spec) {
                 has_color = cd.mana_cost.count(required_color) > 0;
             }
             if (!has_color) return false;
+        } else {
+            // Any other qualifier is a subtype name (e.g. "Card.Plains" → subtype Plains,
+            // "Creature.Goblin" → subtype Goblin). Match it against the card's type list,
+            // where subtypes live alongside card types.
+            bool has_subtype = false;
+            for (auto &t : cd.types) {
+                if (t.name == color_qualifier) { has_subtype = true; break; }
+            }
+            if (!has_subtype) return false;
         }
     }
 
@@ -132,6 +161,12 @@ static bool matches_filter_spec(Entity entity, const std::string &spec) {
     if (has_cmc_le_x) {
         size_t cmc = cd.mana_cost.size();
         if (cmc > cur_game.x_paid) return false;
+    }
+
+    // Dynamic mana-value bound supplied by the caller (Aether Vial: MV == charge count).
+    if (cmc_bound >= 0) {
+        int cmc = static_cast<int>(cd.mana_cost.size());
+        if (!apply_svar_op(cmc, cmc_op, cmc_bound)) return false;
     }
 
     return true;
@@ -142,7 +177,8 @@ static bool matches_filter_spec(Entity entity, const std::string &spec) {
 // Returns the chosen Entity, or 0 for fail to find.
 // 0 is a valid entity but will always be player a  so is never correct
 Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner, Zone::ZoneValue zone,
-    const std::string &change_type, bool mandatory, Zone::ZoneValue destination, bool reveal) {
+    const std::string &change_type, bool mandatory, Zone::ZoneValue destination, bool reveal,
+    int cmc_bound, const std::string &cmc_op) {
     //  comma-separated subtypes
     std::vector<std::string> subtypes;
     size_t p = 0;
@@ -183,12 +219,15 @@ Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner, Zone
                 break;
             }
         }
+        // A dynamic mana-value bound (Aether Vial) forces the extended path so each
+        // candidate is gated by both type and mana value.
+        if (cmc_bound >= 0) has_extended = true;
 
         for (auto entity : zone_contents) {
             bool matches = false;
             if (has_extended) {
                 for (auto &st : subtypes) {
-                    if (matches_filter_spec(entity, st)) {
+                    if (matches_filter_spec(entity, st, cmc_bound, cmc_op)) {
                         matches = true;
                         break;
                     }
@@ -445,23 +484,6 @@ void Ability::fizzle(std::shared_ptr<Orderer> orderer) {
     return;
 }
 
-// True if the card counts as the given color (explicit Colors: override first,
-// else the colors present in its mana cost).
-static bool card_is_color(const CardData &cd, Colors c) {
-    if (!cd.explicit_colors.empty()) return cd.explicit_colors.count(c) > 0;
-    return cd.mana_cost.count(c) > 0;
-}
-
-// Enforces "non<Color>" target restrictions (e.g. ValidTgts$ Creature.nonBlack on
-// Snuff Out). Returns false when the candidate is one of the excluded colors.
-static bool passes_noncolor_restriction(const std::string &vt, const CardData &cd) {
-    static const struct { const char *tok; Colors col; } table[] = {
-        {"nonWhite", WHITE}, {"nonBlue", BLUE}, {"nonBlack", BLACK}, {"nonRed", RED}, {"nonGreen", GREEN}};
-    for (auto &e : table)
-        if (vt.find(e.tok) != std::string::npos && card_is_color(cd, e.col)) return false;
-    return true;
-}
-
 // Single source of truth for target legality (see header). build_valid_targets
 // enumerates candidates and filters them through this; is_target_valid re-runs the
 // chosen target(s) through it at resolution. Keeping both on one predicate is what
@@ -469,11 +491,14 @@ static bool passes_noncolor_restriction(const std::string &vt, const CardData &c
 bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
     if (cand == 0) return false;
 
-    // NOTE: Pyroblast/Hydroblast (ConditionPresent$ <type>.<Color>) intentionally do
-    // NOT restrict target legality by color — they may target any spell/permanent and
-    // their counter/destroy effect is conditional on the target's color (enforced in
-    // effects::counter / effects::destroy via target_color_condition_met). So no color
-    // filter is applied here.
+    // NOTE: Pyroblast/Hydroblast (ValidTgts$ Card + ConditionPresent$ <type>.<Color>)
+    // intentionally do NOT restrict target legality by color — they may target any
+    // spell/permanent and their counter/destroy effect is conditional on the target's
+    // color (enforced in effects::counter / effects::destroy via
+    // target_color_condition_met). By contrast Red Elemental Blast (ValidTgts$ Card.Blue /
+    // Permanent.Blue) bakes blue into the target restriction itself, enforced below via
+    // color_set_passes(vt, effective_colors(cand)) (CR 115.1: target restrictions are checked
+    // when chosen, against the candidate's effective color).
 
     const std::string &vt = valid_tgts;
 
@@ -498,6 +523,11 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
             if (non_creature_only && is_creature) return false;
             if (instant_sorcery_only && !is_instant && !is_sorcery) return false;
         }
+        // Positive color restriction (e.g. ValidTgts$ Card.Blue on Red Elemental Blast:
+        // "Counter target blue spell" — blue is a targeting restriction, CR 115.1).
+        if (global_coordinator.entity_has_component<CardData>(cand) &&
+            !color_set_passes(vt, effective_colors(cand)))
+            return false;
         return true;
     }
 
@@ -539,7 +569,17 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
     int cmc_le = -1;
     {
         size_t cmc_pos = vt.find("cmcLE");
-        if (cmc_pos != std::string::npos) cmc_le = std::stoi(vt.substr(cmc_pos + 5));
+        if (cmc_pos != std::string::npos) {
+            std::string bound = vt.substr(cmc_pos + 5);
+            // Trim to the leading token (stop at the next '.'/'+' qualifier).
+            size_t end = bound.find_first_of(".+");
+            if (end != std::string::npos) bound = bound.substr(0, end);
+            if (!bound.empty() && std::isdigit(static_cast<unsigned char>(bound[0])))
+                cmc_le = std::stoi(bound);
+            else
+                // cmcLEX (Kozilek's Command): the bound is the X paid at cast time.
+                cmc_le = static_cast<int>(cur_game.x_paid);
+        }
     }
 
     // Card in a graveyard targeted by a ChangeZone with a type filter (e.g. Life from
@@ -550,8 +590,10 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
         if (!global_coordinator.entity_has_component<Zone>(cand)) return false;
         auto &cz = global_coordinator.GetComponent<Zone>(cand);
         if (cz.location != Zone::GRAVEYARD) return false;
-        bool you_ctrl = vt.find("YouCtrl") != std::string::npos;
-        bool opp_ctrl = vt.find("OppCtrl") != std::string::npos;
+        // For a card in a graveyard, its owner is also its controller, so YouCtrl/OppCtrl
+        // and YouOwn/OppOwn restrict the same way (Emry: ValidTgts$ Artifact.YouOwn).
+        bool you_ctrl = vt.find("YouCtrl") != std::string::npos || vt.find("YouOwn") != std::string::npos;
+        bool opp_ctrl = vt.find("OppCtrl") != std::string::npos || vt.find("OppOwn") != std::string::npos;
         if (you_ctrl && cz.owner != caster) return false;
         if (opp_ctrl && cz.owner == caster) return false;
         if (!global_coordinator.entity_has_component<CardData>(cand)) return false;
@@ -582,6 +624,12 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
     if (!is_battlefield_permanent(cand)) return false;
     auto &tperm = global_coordinator.GetComponent<Permanent>(cand);
 
+    // Positive color restriction (e.g. ValidTgts$ Permanent.Blue on Red Elemental Blast:
+    // "Destroy target blue permanent" — blue is a targeting restriction, CR 115.1).
+    if (global_coordinator.entity_has_component<CardData>(cand) &&
+        !color_set_passes(vt, effective_colors(cand)))
+        return false;
+
     if (cmc_le >= 0 && global_coordinator.entity_has_component<CardData>(cand)) {
         int cmc = static_cast<int>(global_coordinator.GetComponent<CardData>(cand).mana_cost.size());
         if (cmc > cmc_le) return false;
@@ -595,7 +643,7 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
             if (!is_legendary) return false;
         }
         if (global_coordinator.entity_has_component<CardData>(cand) &&
-            !passes_noncolor_restriction(vt, global_coordinator.GetComponent<CardData>(cand)))
+            !color_set_passes_noncolor(vt, effective_colors(cand)))
             return false;
         if (has_protection_from(global_coordinator.GetComponent<Creature>(cand), source)) return false;
         return true;
@@ -703,6 +751,12 @@ size_t evaluate_dynamic_amount(
         }
         return count;
     }
+    // Count$xPaid — the value of X chosen for an X cost when this spell/ability was
+    // cast/activated (Kozilek's Command: X = Count$xPaid feeds the token count, scry
+    // count and graveyard-exile cap). cur_game.x_paid is recorded at cast time.
+    if (expr.find("xPaid") != std::string::npos) {
+        return cur_game.x_paid;
+    }
     if (expr.find("Count$InYourLibrary") != std::string::npos ||
         expr.find("Count$ValidLibrary Card.YouOwn") != std::string::npos) {
         return orderer->get_library_contents(ctrl).size();
@@ -730,6 +784,24 @@ size_t evaluate_dynamic_amount(
         }
         return count;
     }
+    // Count$Valid <Filter>.YouCtrl — number of battlefield permanents you control that
+    // match <Filter>, where <Filter> is any top-level type, supertype, or subtype name
+    // (e.g. Eldrazi Linebreaker: "Count$Valid Eldrazi.YouCtrl" = Eldrazi you control).
+    // The Creature-specific branch above is kept for the common case; this generic branch
+    // handles arbitrary type/subtype filters via permanent_has_type.
+    if (expr.rfind("Count$Valid ", 0) == 0 && expr.find(".YouCtrl") != std::string::npos) {
+        std::string rest = expr.substr(std::string("Count$Valid ").size());
+        std::string filter = rest.substr(0, rest.find('.'));  // text before ".YouCtrl"
+        if (!filter.empty()) {
+            size_t count = 0;
+            for (auto e : orderer->mEntities) {
+                if (!is_battlefield_permanent(e, ctrl)) continue;
+                if (permanent_has_type(global_coordinator.GetComponent<Permanent>(e), filter))
+                    count++;
+            }
+            return count;
+        }
+    }
     // Count$Revolt.high.low — returns high if revolt active for controller, low otherwise
     if (expr.find("Count$Revolt.") != std::string::npos) {
         size_t dot1 = expr.find("Revolt.") + 7;
@@ -740,10 +812,11 @@ size_t evaluate_dynamic_amount(
         return static_cast<size_t>(revolt ? high_val : low_val);
     }
     if (expr.find("Targeted$CardPower") != std::string::npos) {
-        if (global_coordinator.entity_has_component<CardData>(target))
-            return static_cast<size_t>(global_coordinator.GetComponent<CardData>(target).power);
-        if (global_coordinator.entity_has_component<Creature>(target))
-            return static_cast<size_t>(global_coordinator.GetComponent<Creature>(target).power);
+        // CR 608.2h: effective power, read live while the creature is in play (counters/buffs
+        // included), else its last-known value once it has left (e.g. Swords to Plowshares
+        // reads the power of the creature it just exiled). Single unified accessor.
+        int p = effective_power(target);
+        return static_cast<size_t>(p < 0 ? 0 : p);
     }
     // Remembered$CardManaCost[/Plus.N] — mana value of the first remembered card (Birthing
     // Ritual: X = 1 plus the sacrificed creature's mana value).
@@ -757,6 +830,35 @@ size_t evaluate_dynamic_amount(
         size_t plus = expr.find("/Plus.");
         if (plus != std::string::npos) base += std::stoi(expr.substr(plus + 6));
         return static_cast<size_t>(base < 0 ? 0 : base);
+    }
+    // Count$Valid Land.nonBasic+RememberedPlayerCtrl[/Times.N] — number of nonbasic
+    // lands controlled by the remembered player (Price of Progress, evaluated once per
+    // player by the RepeatEach loop), optionally multiplied by N. The remembered player
+    // is cur_game.remembered_entities[0] (a Player entity set by the repeat_each handler).
+    if (expr.find("Count$Valid Land.nonBasic+RememberedPlayerCtrl") != std::string::npos) {
+        Zone::Ownership remembered_ctrl = ctrl;
+        if (!cur_game.remembered_entities.empty()) {
+            Entity rp = cur_game.remembered_entities[0];
+            if (rp == cur_game.player_a_entity) remembered_ctrl = Zone::PLAYER_A;
+            else if (rp == cur_game.player_b_entity) remembered_ctrl = Zone::PLAYER_B;
+        }
+        size_t count = 0;
+        for (auto e : orderer->mEntities) {
+            if (!is_battlefield_permanent(e, remembered_ctrl)) continue;
+            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+            auto &cd = global_coordinator.GetComponent<CardData>(e);
+            bool is_land = false;
+            for (auto &t : cd.types)
+                if (t.name == "Land") { is_land = true; break; }
+            if (!is_land) continue;
+            if (has_basic_supertype(cd.types)) continue;  // nonBasic only
+            count++;
+        }
+        size_t mult = 1;
+        size_t times_pos = expr.find("/Times.");
+        if (times_pos != std::string::npos)
+            mult = static_cast<size_t>(std::stoi(expr.substr(times_pos + 7)));
+        return count * mult;
     }
     // Fall back to the shared static-ability SVar evaluator for graveyard-count
     // expressions (Count$TypeInYourYard / Count$ValidGraveyard / CardTypes). It
@@ -823,6 +925,13 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
     // SVar gate, failure skips this body but still chains subabilities.
     if (condition_passed && condition_on_remembered)
         condition_passed = evaluate_present_condition(*this, controller, orderer);
+    // Condition$ Blessing (Ocelot Pride's CopyPermanent): the body runs only if the
+    // controller has the city's blessing (702.131). Failure still chains subabilities.
+    if (condition_passed && condition_city_blessing) {
+        Entity pe = get_player_entity(controller);
+        condition_passed = global_coordinator.entity_has_component<Player>(pe) &&
+                           global_coordinator.GetComponent<Player>(pe).has_city_blessing;
+    }
     if (!condition_passed) {
         for (auto sub_ab : this->subabilities) {
             sub_ab.source = this->source;

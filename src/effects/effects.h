@@ -45,8 +45,10 @@ bool destroy_all(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool destroy(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool token(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool surveil(Ability &ab, std::shared_ptr<Orderer> orderer);
+bool scry(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool put_counter(Ability &ab, std::shared_ptr<Orderer> orderer);
+bool remove_counter(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool rearrange_top_of_library(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer);
@@ -70,6 +72,19 @@ bool sacrifice(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool put_counter_all(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool sacrifice_all(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool immediate_trigger(Ability &ab, std::shared_ptr<Orderer> orderer);
+bool copy_permanent(Ability &ab, std::shared_ptr<Orderer> orderer);
+// Mobilize N (702.176): create N tapped+attacking 1/1 red Warrior tokens and register a
+// delayed end-step sacrifice of exactly those tokens.
+bool mobilize(Ability &ab, std::shared_ptr<Orderer> orderer);
+// Delayed end-step sacrifice fired by Mobilize: sacrifice each entity in ab.targets that is
+// still on the battlefield (the tokens created when the creature attacked).
+bool sacrifice_tokens(Ability &ab, std::shared_ptr<Orderer> orderer);
+// RepeatEach over players (Price of Progress): resolve the RepeatSubAbility once per
+// player, with cur_game.remembered_entities set to that player's entity each iteration.
+bool repeat_each(Ability &ab, std::shared_ptr<Orderer> orderer);
+// AB$ Effect granting "you may cast that card this turn" (Emry): records the targeted
+// graveyard card in cur_game.may_cast_this_turn so the casting path offers it this turn.
+bool grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer);
 
 // True if battlefield permanent `e` matches a Forge ValidCards$/ConditionPresent$
 // filter spec: a type/subtype head plus '+'-delimited qualifiers (YouCtrl, OppCtrl,

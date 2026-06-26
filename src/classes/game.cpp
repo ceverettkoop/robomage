@@ -150,6 +150,11 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     break;
                 case FIRST_MAIN:
                     cur_step = BEGIN_COMBAT;
+                    {
+                        Event begin_combat_event(Events::BEGIN_COMBAT_BEGAN);
+                        begin_combat_event.SetParam(Params::PLAYER, active_player_entity);
+                        global_coordinator.SendEvent(begin_combat_event);
+                    }
                     break;
                 case BEGIN_COMBAT:
                     cur_step = DECLARE_ATTACKERS;
@@ -229,16 +234,25 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                                 cr.eot_toughness_bonus = 0;
                                 recompute_pt(cr);
                             }
+                            // Drop "until end of turn" keyword grants (e.g. Haste); the
+                            // static pass re-merges these onto cr.keywords each pass, so
+                            // clearing the bucket here lets them lapse at cleanup (514.2).
+                            cr.eot_keywords.clear();
+                            // "Can't be blocked this turn" (Kappa Cannoneer) lapses at cleanup.
+                            cr.cant_be_blocked_this_turn = false;
                         }
                     }
 
                     // Reset per-turn state
                     revolt_player_a = false;
                     revolt_player_b = false;
+                    // "You may cast that card this turn" grants (Emry) expire at cleanup (601.3e).
+                    may_cast_this_turn.clear();
                     auto &player = global_coordinator.GetComponent<Player>(active_player_entity);
                     player.lands_played_this_turn = 0;
                     player.spells_cast_this_turn = 0;
                     player.noncreature_spells_cast_this_turn = 0;
+                    player.instant_sorcery_spells_cast_this_turn = 0;
                     player.cards_drawn_this_turn.clear();
                     player.cards_drawn_this_draw_step = 0;
                     // Also clear opponent's drawn-this-turn tracking
@@ -248,6 +262,12 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                         opp.cards_drawn_this_turn.clear();
                         opp.cards_drawn_this_draw_step = 0;
                     }
+                    // "Life gained this turn" (Ocelot Pride) and "tokens entered this turn"
+                    // reset for BOTH players each turn — life can be gained on either player's
+                    // turn, and the end-step trigger above has already checked them. Done in
+                    // cleanup so the just-fired end step still saw this turn's totals.
+                    global_coordinator.GetComponent<Player>(player_a_entity).life_gained_this_turn = 0;
+                    global_coordinator.GetComponent<Player>(player_b_entity).life_gained_this_turn = 0;
 
                     // Reset per-trigger resolution counts
                     ability_resolution_counts.clear();

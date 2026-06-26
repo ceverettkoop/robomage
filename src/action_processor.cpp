@@ -41,10 +41,15 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer);
 static bool player_controls_land_subtype(Zone::Ownership player, const std::string &subtype);
 static std::string landwalk_subtype(const std::string &kw);
 static std::vector<Entity> determine_blockable_attackers(Entity blocker, const std::vector<Entity> &attackers);
+static void release_illegal_menace_blockers(const std::vector<Entity> &eligible,
+                                            const std::vector<Entity> &attackers);
 static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer);
 static std::vector<Entity> collect_live_blockers(Entity attacker, std::shared_ptr<Orderer> orderer);
 static bool attacker_needs_assignment(Entity attacker, std::shared_ptr<Orderer> orderer, bool first_strike_only);
 static void assign_combat_damage(Game &game, std::shared_ptr<Orderer> orderer);
+static void trigger_ward_for_targets(Entity targeting_entity, Zone::Ownership controller,
+                                     const std::vector<Entity> &targets,
+                                     std::shared_ptr<Orderer> orderer);
 
 // entity_name() is shared from the StateManager TUs via state_manager_internal.h.
 // mana_symbol_str() is the canonical const-char* color symbol from classes/colors.h.
@@ -286,13 +291,30 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
             mana_amount, mana_symbol_str(mana_color));
         // priority does not pass
 
+        // A mana ability may carry a SubAbility$ rider that is part of the same mana ability
+        // and resolves immediately (off-stack) as the ability resolves — e.g. Ancient Tomb's
+        // "Ancient Tomb deals 2 damage to you" (CR 605.1a, 606.3). Resolve each sub-ability
+        // here with the source/controller of the mana ability.
+        for (auto sub_ab : ability.subabilities) {
+            sub_ab.source = permanent_entity;
+            sub_ab.controller = controller;
+            sub_ab.resolve(orderer);
+        }
+
         // Increment activation counter if this ability has a limit
         increment_activation_count(permanent, ability);
     } else {  // ACTIVATED ABILITY THAT IS NOT A MANA ABILITY - GOES ON STACK
         // puts on stack; we have targets from earlier
         stack_ab.source = permanent_entity;
         stack_ab.controller = controller;
-        orderer->push_ability_onto_stack(stack_ab, controller);
+        Entity ability_stack_entity = orderer->push_ability_onto_stack(stack_ab, controller);
+
+        // Ward (702.21): an opponent's permanent that this ability targets may counter it.
+        if (stack_ab.valid_tgts != "N_A") {
+            std::vector<Entity> tgts = stack_ab.targets.empty()
+                ? std::vector<Entity>{stack_ab.target} : stack_ab.targets;
+            trigger_ward_for_targets(ability_stack_entity, controller, tgts, orderer);
+        }
 
         if (stack_ab.target != 0) {
             std::string tgt_name = target_display_name(cur_game, stack_ab.target);
@@ -588,6 +610,15 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
             auto &permanent = global_coordinator.GetComponent<Permanent>(entity);
             if (!creature_has_keyword(cr, "Vigilance"))
                 permanent.is_tapped = true;
+
+            // Fire a per-attacker "whenever this creature attacks" event (508.2 attack
+            // declaration), so triggers like Mobilize go on the stack for each attacker.
+            Entity actrl_entity = (active_player == Zone::PLAYER_A)
+                                  ? game.player_a_entity : game.player_b_entity;
+            Event attacked_ev(Events::CREATURE_ATTACKED);
+            attacked_ev.SetParam(Params::ENTITY, entity);
+            attacked_ev.SetParam(Params::PLAYER, actrl_entity);
+            global_coordinator.SendEvent(attacked_ev);
         }
     }
     if (!any) game_log("  (none)\n");
@@ -651,6 +682,8 @@ static std::vector<Entity> determine_blockable_attackers(Entity blocker, const s
     std::vector<Entity> result;
     for (auto atk : attackers) {
         auto &acr = global_coordinator.GetComponent<Creature>(atk);
+        // "Can't be blocked this turn" (Kappa Cannoneer): no creature may block it (509.1b).
+        if (acr.cant_be_blocked_this_turn) continue;
         bool atk_flying = false;
         bool atk_has_shadow = false;
         bool has_landwalk_evasion = false;
@@ -672,6 +705,32 @@ static std::vector<Entity> determine_blockable_attackers(Entity blocker, const s
         result.push_back(atk);
     }
     return result;
+}
+
+// 702.111b / 509.1b: a creature with menace can only be blocked by two or more creatures.
+// After blocks are declared, any menace attacker blocked by exactly one creature has an
+// illegal block; the legal resolution is that the lone blocker isn't blocking it. Release
+// such lone blockers (clear is_blocking, and the attacker's is_blocked if it now has none).
+static void release_illegal_menace_blockers(const std::vector<Entity> &eligible,
+                                            const std::vector<Entity> &attackers) {
+    for (auto atk : attackers) {
+        if (!global_coordinator.entity_has_component<Creature>(atk)) continue;
+        auto &acr = global_coordinator.GetComponent<Creature>(atk);
+        if (!creature_has_keyword(acr, "Menace")) continue;
+        std::vector<Entity> blockers;
+        for (auto b : eligible) {
+            auto &bcr = global_coordinator.GetComponent<Creature>(b);
+            if (bcr.is_blocking && bcr.blocking_target == atk) blockers.push_back(b);
+        }
+        if (blockers.size() == 1) {
+            auto &bcr = global_coordinator.GetComponent<Creature>(blockers[0]);
+            bcr.is_blocking = false;
+            bcr.blocking_target = 0;
+            acr.is_blocked = false;  // no other blocker assigned this attacker
+            game_log("%s cannot block %s alone (menace) — block released.\n",
+                     entity_name(blockers[0]).c_str(), entity_name(atk).c_str());
+        }
+    }
 }
 
 static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
@@ -757,7 +816,16 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
         }
         int blocker_choice = InputLogger::instance().get_input(blk_actions);
 
-        if (blocker_choice == static_cast<int>(blk_actions.size()) - 1) break;
+        if (blocker_choice == static_cast<int>(blk_actions.size()) - 1) {
+            // 509.1b / 702.111b: a creature with menace can't be blocked except by two or
+            // more creatures. A declaration leaving a menace attacker blocked by exactly one
+            // creature is illegal; the only legal resolution is that the lone creature isn't
+            // blocking it. Release any such lone blocker (it deals/takes no combat damage)
+            // rather than reject the confirm, so the step can never deadlock when no second
+            // blocker is available.
+            release_illegal_menace_blockers(eligible, attackers);
+            break;
+        }
 
         Entity chosen = unblocked[static_cast<size_t>(blocker_choice)];
         auto &cr = global_coordinator.GetComponent<Creature>(chosen);
@@ -800,11 +868,29 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
     game.pending_choice = NONE;
 }
 
+// Perspective player for an ability's target search. Ownership-restricted targets
+// (.YouOwn/.YouCtrl/.OppOwn — e.g. Emry's "target artifact card in YOUR graveyard") are
+// relative to the activating/controlling player, so the existence check must use that player
+// rather than a hardcoded placeholder. Derive it from the ability's source: a battlefield
+// permanent's controller, else its owning zone, else the ability's stored controller.
+static Zone::Ownership ability_perspective_player(const Ability &ability) {
+    Entity src = ability.source;
+    if (src != 0) {
+        if (global_coordinator.entity_has_component<Permanent>(src))
+            return global_coordinator.GetComponent<Permanent>(src).controller;
+        if (global_coordinator.entity_has_component<Zone>(src))
+            return global_coordinator.GetComponent<Zone>(src).owner;
+    }
+    return ability.controller;
+}
+
 bool has_legal_targets(const Ability &ability, std::shared_ptr<Orderer> orderer) {
     if (ability.valid_tgts == "N_A") return true;
     if (ability.target_min == 0) return true;  // optional targeting always has "legal targets"
-    // Ordering doesn't matter for existence check; use PLAYER_A as a placeholder.
-    return !build_valid_targets(ability, orderer, Zone::PLAYER_A).empty();
+    // Ordering doesn't affect existence for symmetric targets, but ownership-restricted
+    // targets must be evaluated from the controlling player's perspective (see above), or a
+    // ".YouOwn" ability could be offered with no legal target and crash on an empty target menu.
+    return !build_valid_targets(ability, orderer, ability_perspective_player(ability)).empty();
 }
 
 static void select_single_target(Ability &ability, const std::vector<Entity> &valid_targets,
@@ -845,7 +931,11 @@ void select_target(Ability &ability, std::shared_ptr<Orderer> orderer, Zone::Own
 
     // Multi-target selection loop
     ability.targets.clear();
-    for (int i = 0; i < ability.target_max; i++) {
+    // "Up to X target ..." (Kozilek's Command): the cap is the X paid at cast time.
+    int effective_max = ability.target_max;
+    if (ability.target_max_from_xpaid)
+        effective_max = static_cast<int>(cur_game.x_paid);
+    for (int i = 0; i < effective_max; i++) {
         if (valid_targets.empty()) break;
         bool can_stop = (i >= ability.target_min);
         select_single_target(ability, valid_targets, can_stop);
@@ -858,6 +948,41 @@ void select_target(Ability &ability, std::shared_ptr<Orderer> orderer, Zone::Own
     }
     // Set primary target to first chosen (for backward compat)
     if (!ability.targets.empty()) ability.target = ability.targets[0];
+}
+
+// Ward (CR 702.21): "Whenever this permanent becomes the target of a spell or ability an
+// opponent controls, counter that spell or ability unless that player pays {N}." Called right
+// after a spell/ability with chosen targets is put on the stack. For each target that is a
+// battlefield permanent with a Ward cost, controlled by an opponent of the targeting object's
+// controller, push a Ward trigger onto the stack ABOVE the targeting object (so it resolves
+// first). The Ward trigger is a Counter ability whose unless_generic_cost is the ward cost —
+// reusing the existing "counter unless pay {N}" resolution. A permanent targeted multiple
+// times (one spell, several targets) fires Ward once per time it became a target.
+static void trigger_ward_for_targets(Entity targeting_entity, Zone::Ownership controller,
+                                     const std::vector<Entity> &targets,
+                                     std::shared_ptr<Orderer> orderer) {
+    Zone::Ownership opp = (controller == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+    for (Entity tgt : targets) {
+        if (tgt == 0) continue;
+        // The Ward permanent must be controlled by an opponent of the targeting player.
+        if (!is_battlefield_permanent(tgt, opp)) continue;
+        if (!global_coordinator.entity_has_component<CardData>(tgt)) continue;
+        int ward_cost = global_coordinator.GetComponent<CardData>(tgt).ward_cost;
+        if (ward_cost <= 0) continue;
+
+        Ability ward;
+        ward.ability_type = Ability::TRIGGERED;
+        ward.category = "Counter";
+        ward.source = tgt;
+        ward.controller = opp;            // the Ward permanent's controller
+        ward.target = targeting_entity;   // counter the spell/ability that targeted it
+        ward.unless_generic_cost = static_cast<size_t>(ward_cost);
+
+        orderer->push_ability_onto_stack(ward, opp);
+        std::string nm = entity_name(tgt);
+        game_log("Ward {%d}: %s's controller may pay to counter the spell or ability "
+                 "targeting %s\n", ward_cost, nm.c_str(), nm.c_str());
+    }
 }
 
 void process_action(const LegalAction &action, Game &game, std::shared_ptr<Orderer> orderer) {
@@ -929,7 +1054,12 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
 
             } else {  // REGULAR COST + DELVE
                 // RaiseCost surcharge (NamedCard-aware) folded in; shared with legality.
-                ManaValue cost_to_pay = effective_base_cost(card_data);
+                // caster passed so Affinity for artifacts reduces the generic cost (702.41).
+                ManaValue cost_to_pay = effective_base_cost(card_data, caster);
+
+                // Offspring (CR 702.171): additional cost paid on top of the spell's cost.
+                if (action.use_offspring)
+                    for (Colors c : card_data.offspring_cost) cost_to_pay.insert(c);
 
                 // X-COST: prompt player to choose X value, add X generic to cost
                 if (card_data.has_x_cost) {
@@ -974,7 +1104,8 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                 }
 
                 if (card_data.has_delve) cur_game.delve_exiled.clear();
-                if (!prompt_mana_payment(caster, cost_to_pay, spell_entity, orderer, card_data.has_delve)) {
+                if (!prompt_mana_payment(caster, cost_to_pay, spell_entity, orderer,
+                                         card_data.has_delve, card_data.has_improvise)) {
                     restore_mana_state(caster, mana_snap, orderer);
                     cur_game.payment_fail_counts[spell_entity]++;
                     game_log("Payment cancelled.\n");
@@ -1018,6 +1149,11 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             spell.caster = caster;
             spell.cast_with_flashback = action.use_flashback;
             spell.cast_with_evoke = action.use_alt_cost && card_data.alt_cost.is_evoke;
+            spell.cast_with_offspring = action.use_offspring;
+            // Record the X value paid so an "enters with X counters" replacement can read
+            // it (Chalice of the Void: enters with X charge counters). cur_game.x_paid is
+            // global and may be overwritten by a later cast before this spell resolves.
+            if (card_data.has_x_cost) spell.x_paid = static_cast<int>(cur_game.x_paid);
             if (cur_game.pending_cant_be_countered) {
                 spell.cant_be_countered = true;
                 cur_game.pending_cant_be_countered = false;
@@ -1058,14 +1194,34 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                 auto &caster_player = global_coordinator.GetComponent<Player>(caster_entity);
                 caster_player.spells_cast_this_turn++;
                 caster_player.spells_cast_this_game++;
-                // Track noncreature spells for Deafening Silence
+                // Track noncreature spells for Deafening Silence, and instant/sorcery
+                // spells for Arclight Phoenix's "cast three or more instant and sorcery
+                // spells this turn" count.
                 bool spell_is_creature = false;
+                bool spell_is_instant_or_sorcery = false;
                 for (auto &t : card_data.types)
-                    if (t.kind == TYPE && t.name == "Creature") { spell_is_creature = true; break; }
+                    if (t.kind == TYPE) {
+                        if (t.name == "Creature") spell_is_creature = true;
+                        if (t.name == "Instant" || t.name == "Sorcery") spell_is_instant_or_sorcery = true;
+                    }
                 if (!spell_is_creature) caster_player.noncreature_spells_cast_this_turn++;
+                if (spell_is_instant_or_sorcery) caster_player.instant_sorcery_spells_cast_this_turn++;
                 Event spell_event(Events::SPELL_CAST);
                 spell_event.SetParam(Params::PLAYER, caster_entity);
+                spell_event.SetParam(Params::ENTITY, spell_entity);
                 global_coordinator.SendEvent(spell_event);
+            }
+
+            // Ward (702.21): an opponent's permanent this spell targets may counter it. The
+            // spell is already on the stack, so the Ward trigger pushed here lands above it and
+            // resolves first. Read the chosen target(s) off the spell's Ability component.
+            if (global_coordinator.entity_has_component<Ability>(spell_entity)) {
+                auto &spell_ab = global_coordinator.GetComponent<Ability>(spell_entity);
+                if (spell_ab.valid_tgts != "N_A") {
+                    std::vector<Entity> tgts = spell_ab.targets.empty()
+                        ? std::vector<Entity>{spell_ab.target} : spell_ab.targets;
+                    trigger_ward_for_targets(spell_entity, caster, tgts, orderer);
+                }
             }
 
             game.take_action();

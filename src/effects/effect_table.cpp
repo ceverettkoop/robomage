@@ -27,8 +27,10 @@ EffectHandler handler_for(EffectKind kind) {
         case EffectKind::Destroy:         return &destroy;
         case EffectKind::Token:           return &token;
         case EffectKind::Surveil:         return &surveil;
+        case EffectKind::Scry:            return &scry;
         case EffectKind::DelayedTrigger:  return &delayed_trigger;
         case EffectKind::PutCounter:      return &put_counter;
+        case EffectKind::RemoveCounter:   return &remove_counter;
         case EffectKind::RearrangeTopOfLibrary: return &rearrange_top_of_library;
         case EffectKind::ChangeZone:      return &change_zone;
         case EffectKind::ChangeZoneAll:   return &change_zone_all;
@@ -45,6 +47,11 @@ EffectHandler handler_for(EffectKind kind) {
         case EffectKind::PutCounterAll:   return &put_counter_all;
         case EffectKind::SacrificeAll:    return &sacrifice_all;
         case EffectKind::ImmediateTrigger: return &immediate_trigger;
+        case EffectKind::CopyPermanent:   return &copy_permanent;
+        case EffectKind::Mobilize:        return &mobilize;
+        case EffectKind::SacrificeTokens: return &sacrifice_tokens;
+        case EffectKind::RepeatEach:      return &repeat_each;
+        case EffectKind::GrantCast:       return &grant_cast;
         default:                          return nullptr;
     }
 }

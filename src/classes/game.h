@@ -39,8 +39,11 @@ typedef enum Step {
 #include <set>
 #include <vector>
 
+#include <string>
+
 #include "../ecs/entity.h"
 #include "../components/ability.h"
+#include "colors.h"
 
 struct Deck;
 struct Game;
@@ -53,6 +56,19 @@ struct DelayedTrigger {
     uint32_t fire_on;       // event ID (e.g. Events::UPKEEP_BEGAN)
     Entity owner_entity;    // player entity who controls it
     size_t fire_on_turn;    // game.turn value at which to fire (cur_game.turn + 1 at registration)
+};
+
+// Last-known information (CR 608.2h / 112.7a): a permanent's effective characteristics —
+// after all continuous effects and counters — captured the instant it leaves the battlefield.
+// An effect that references the object after it has changed zones (e.g. Swords to Plowshares'
+// "its controller gains life equal to its power", read from a creature it just exiled) uses
+// these last-known values rather than the printed base. While the object is still in its
+// expected zone, effective characteristics are read live from its components instead.
+struct LastKnownInfo {
+    int power = 0;
+    int toughness = 0;
+    std::vector<std::string> type_names;   // type/subtype/supertype names
+    std::set<Colors> colors;               // effective colors
 };
 
 enum MandatoryChoice {
@@ -104,6 +120,9 @@ struct Game {
         std::vector<DelayedTrigger> delayed_triggers;
         std::vector<Entity> delve_exiled;   // entities exiled during current delve cast; cleared after ETB
         size_t x_paid = 0;                  // X value chosen at cast time for X-cost spells
+        std::map<Entity, LastKnownInfo> last_known_info;  // effective characteristics captured as a
+                                            // permanent leaves the battlefield (CR 608.2h); read by the
+                                            // effective_* accessors when the object is no longer in play
         std::vector<Entity> remembered_entities;  // Defined$ Remembered — used by Attach sub-ability, Doomsday remember-changed
         std::map<Entity, int> ability_resolution_counts;  // Count$ResolvedThisTurn: incremented per triggered-ability resolve
         std::map<Entity, int> payment_fail_counts;  // machine mode: block casting after 2 failed payments
@@ -111,11 +130,15 @@ struct Game {
         bool revolt_player_a = false;  // a permanent Player A controlled left the battlefield this turn
         bool revolt_player_b = false;  // a permanent Player B controlled left the battlefield this turn
         std::set<Entity> void_countered;  // entities exiled with void counters (Dauthi Voidwalker)
+        std::set<Entity> may_cast_this_turn;  // cards a permission effect (Emry's AB$ Effect) lets their owner cast from the graveyard this turn (CR 601.3e); cleared each cleanup
         std::set<Entity> chosen_cards;  // permanents chosen/kept by a ChooseCard effect (Ajani -4); read by SacrificeAll's nonChosenCard filter, cleared by Cleanup ClearChosenCard$
         std::map<Entity, std::vector<std::string>> lk_battlefield_types;  // last-known type/subtype names of a permanent captured as it leaves the battlefield (603.10 look-back), so a "dies"/leaves trigger can match a token that has already ceased to exist by the time triggers are checked
         std::set<Entity> pending_enters_tapped;  // one-shot: a ChangeZone effect put this card onto the battlefield tapped; consumed when its Permanent is created
         std::set<Entity> pending_enters_transformed;  // one-shot: a ChangeZone effect (Transformed$ True) put this card onto the battlefield showing its DFC back face; consumed when its Permanent is created
         std::set<Entity> pending_evoked;  // one-shot: a spell cast for its evoke cost is resolving; consumed when its Permanent is created (sets Permanent::evoked)
+        std::set<Entity> pending_offspring;  // one-shot: a spell cast with its Offspring additional cost is resolving; consumed when its Permanent is created (sets Permanent::entered_with_offspring)
+        std::set<Entity> cast_to_battlefield;  // one-shot: a cast spell is resolving from the stack onto the battlefield (it "was cast", CR 614.12 / Containment Priest); consumed when its Permanent is created
+        std::map<Entity, int> pending_etb_xpaid;  // one-shot: X paid for an X-cost permanent spell now resolving, used by an "enters with X counters" replacement (Chalice of the Void); consumed when its Permanent is created
 
         // Recent action history ring buffer for ML observation
         ActionHistoryEntry action_history[ACTION_HISTORY_SIZE] = {};

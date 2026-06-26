@@ -21,6 +21,7 @@ struct Permanent {
     std::vector<StaticAbility> static_abilities;
     Zone::Ownership controller = Zone::UNKNOWN;
     size_t timestamp_entered_battlefield = 0;  // For ordering simultaneous ETBs
+    size_t entered_on_turn = 0;  // cur_game.turn when this entered the battlefield (Ocelot Pride "entered this turn")
     bool transformed = false;  // true when DFC is showing its back face
     Entity equipped_to = 0;   // for equipment: which creature entity is equipped (0 = unattached)
     Entity equipped_by = 0;   // for creatures: which equipment is attached (0 = none)
@@ -36,6 +37,7 @@ struct Permanent {
     // loyalty abilities), not per-ability, so it can't reuse Ability::activations_this_turn.
     bool loyalty_ability_activated_this_turn = false;
     bool evoked = false;  // entered via its evoke alternate cost — fires the evoke sacrifice ETB trigger
+    bool entered_with_offspring = false;  // cast with its Offspring additional cost paid — fires the offspring token-copy ETB trigger (CR 702.171)
     std::string chosen_type = "";  // creature type chosen on ETB (Cavern of Souls)
     std::string chosen_name = "";  // card name chosen on ETB (Disruptor Flute) — keys Card.NamedCard statics
     std::vector<Entity> exiled_with;  // entities exiled by this permanent (for Keen-Eyed Curator)

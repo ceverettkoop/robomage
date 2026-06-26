@@ -78,6 +78,7 @@ struct LegalAction {
         ActionCategory category = ActionCategory::OTHER_CHOICE;
         bool use_alt_cost = false;
         bool use_flashback = false;
+        bool use_offspring = false;  // cast paying the Offspring additional cost (CR 702.171)
         // True when this choice's card identity is public knowledge to all players
         // (e.g. a revealed tutor like Personal Tutor). Lets observers show the card
         // name even for an otherwise-private choice (search/top-of-library).

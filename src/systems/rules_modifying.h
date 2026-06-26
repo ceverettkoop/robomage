@@ -24,9 +24,12 @@ namespace rules_mod {
 bool activation_prohibited(Entity permanent);
 bool mana_activation_prohibited(Entity permanent);
 
-// CantBeCast: may `caster` not cast a spell right now because of a per-turn noncreature
-// limit? `card_is_creature` short-circuits the nonCreature filter.
-bool cast_prohibited(Zone::Ownership caster, bool card_is_creature);
+// CantBeCast: may `caster` not cast a spell right now? `card_is_creature` short-circuits the
+// nonCreature filter (per-turn noncreature limit). `cast_from` is the zone the spell is being
+// cast from (HAND for a normal cast, GRAVEYARD for flashback, etc.) — an Origin$-restricted
+// static (Grafdigger's Cage: graveyard/library) applies only when `cast_from` matches.
+bool cast_prohibited(Zone::Ownership caster, bool card_is_creature,
+                     Zone::ZoneValue cast_from = Zone::HAND);
 
 // AdjustLandPlays / MayPlay (Icetill Explorer), evaluated for `player`.
 int  land_play_bonus(Zone::Ownership player);

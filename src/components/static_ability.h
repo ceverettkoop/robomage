@@ -16,8 +16,10 @@ struct StaticAbility {
     std::string add_keyword = "";
     std::string affected = "";        // "EquippedBy" = apply buff to equipped creature, not source
     // ETB counter fields (category = "EtbCounter"):
-    std::string counter_type = "";    // "P1P1" for +1/+1 counters
+    std::string counter_type = "";    // "P1P1" for +1/+1 counters, "CHARGE" for charge counters
+    int counter_count = 0;            // literal count (etbCounter:M1M1:6 → 6); 0 when dynamic
     bool counter_count_from_delve = false;  // counter count = cur_game.delve_exiled.size()
+    bool counter_count_from_xpaid = false;  // counter count = X paid at cast (Chalice of the Void: Count$xPaid)
     // RaiseCost fields (category = "RaiseCost"):
     int raise_cost = 0;               // generic mana added to cost of matching spells
     std::string raise_cost_filter = ""; // "nonCreature" = apply to non-creature spells
@@ -36,6 +38,13 @@ struct StaticAbility {
     // CantBeCast fields (category = "CantBeCast"):
     std::string cant_cast_filter = "";      // "Card.nonCreature" — card type filter
     int cant_cast_limit_per_turn = 0;       // NumLimitEachTurn$ N — limit per player per turn
+    bool cant_cast_by_opponent = false;     // Caster$ Opponent — restricts the controller's opponents
+                                            // (Voice of Victory: "your opponents can't cast spells
+                                            // during your turn", gated by Condition$ PlayerTurn).
+    // Origin$ Graveyard,Library (Grafdigger's Cage): the restriction applies only to spells cast
+    // from these zones (e.g. flashback). Both false = the restriction is zone-agnostic.
+    bool cant_cast_from_graveyard = false;
+    bool cant_cast_from_library = false;
 
     // Type-changing fields (category = "Continuous", layer 4):
     std::string add_type = "";              // AddType$ Mountain — land subtype to set

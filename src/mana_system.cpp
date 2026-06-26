@@ -30,11 +30,16 @@ static size_t eval_mana_amount(const Ability &ab, Zone::Ownership controller,
 static ManaValue pay_from_pool(ManaValue &pool, const ManaValue &cost);
 static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
                           Entity paid_for, std::shared_ptr<Orderer> orderer, bool has_delve,
-                          bool commit = true);
+                          bool commit = true, bool has_improvise = false);
 static bool restricted_mana_matches(Entity source_entity, Entity paid_for);
+static bool creature_restricted_mana_matches(Entity paid_for);
+static bool colorless_eldrazi_restricted_mana_matches(Entity paid_for);
+static bool mana_source_usable_for(const Ability &ab, Entity source_entity, Entity paid_for);
 static bool is_delve_eligible(Entity e, Zone::Ownership controller);
 static void delve_exile_one(Entity e, Zone::Ownership controller,
                             std::shared_ptr<Orderer> orderer, ManaValue &remaining);
+static bool is_improvise_eligible(Entity e, Zone::Ownership controller, Entity paid_for);
+static void improvise_tap_one(Entity e, Zone::Ownership controller, ManaValue &remaining);
 static void activate_mana_source(Entity entity, const Ability &ab, Zone::Ownership controller,
                                  std::shared_ptr<Orderer> orderer, ManaValue &pool,
                                  Player &player, bool commit);
@@ -135,6 +140,49 @@ static bool restricted_mana_matches(Entity source_entity, Entity paid_for) {
     return is_creature && has_chosen_subtype;
 }
 
+// Check whether a "spend only to cast a creature spell" mana source (Abundant
+// Countryside) can pay for the given spell: true iff the spell is a creature.
+static bool creature_restricted_mana_matches(Entity paid_for) {
+    if (paid_for == 0) return false;
+    if (!global_coordinator.entity_has_component<CardData>(paid_for)) return false;
+    return is_creature_card(global_coordinator.GetComponent<CardData>(paid_for));
+}
+
+// Check whether a "spend only to cast colorless Eldrazi spells" mana source (Eldrazi
+// Temple's {C}{C} ability) can pay for the given spell: true iff the spell is an Eldrazi
+// (subtype) and colorless. A card is colorless when it has no colored mana symbols and no
+// explicit color override other than COLORLESS (Devoid sets explicit_colors = {COLORLESS}).
+// CR 106.7 mana spending restrictions.
+static bool colorless_eldrazi_restricted_mana_matches(Entity paid_for) {
+    if (paid_for == 0) return false;
+    if (!global_coordinator.entity_has_component<CardData>(paid_for)) return false;
+    auto &paid_cd = global_coordinator.GetComponent<CardData>(paid_for);
+    bool is_eldrazi = false;
+    for (auto &t : paid_cd.types)
+        if (t.kind == SUBTYPE && t.name == "Eldrazi") { is_eldrazi = true; break; }
+    if (!is_eldrazi) return false;
+    // Colorless test (CR 105.2c) shared with the rest of the engine via game_queries.h, so an
+    // Eldrazi Temple mana restriction and a color-targeting check can never disagree on whether
+    // the same spell is colorless.
+    return is_colorless_card(paid_cd);
+}
+
+// True if a mana source (its ability `ab`, on `source_entity`) may be spent to pay for
+// `paid_for` under its mana spending restriction (CR 106.7). An unrestricted source is always
+// usable; a restricted source is usable only when the spell being paid for matches. This is the
+// single predicate behind all three payment paths — legal-action listing, the affordability
+// gate, and the auto-payer — so they can never disagree on whether a source is spendable (the
+// "offered legal then fails to pay" divergence can_pay_mana exists to prevent).
+static bool mana_source_usable_for(const Ability &ab, Entity source_entity, Entity paid_for) {
+    if (ab.restrict_to_chosen_type_creature && !restricted_mana_matches(source_entity, paid_for))
+        return false;
+    if (ab.restrict_to_creature && !creature_restricted_mana_matches(paid_for))
+        return false;
+    if (ab.restrict_to_colorless_eldrazi && !colorless_eldrazi_restricted_mana_matches(paid_for))
+        return false;
+    return true;
+}
+
 // Collect all mana abilities a player could activate.
 // Checks physical activation requirements (untapped, controller, phased out, CantBeActivated,
 // summoning sickness, activation limits) but NOT activation_mana_cost — callers handle that
@@ -195,9 +243,9 @@ std::vector<LegalAction> collect_mana_legal_actions(
     std::vector<LegalAction> actions;
     auto sources = collect_available_mana_sources(player, orderer, at_priority);
     for (auto &[entity, ab] : sources) {
-        // Filter restricted mana (Cavern of Souls): hide from payment when spell doesn't match
-        if (ab.restrict_to_chosen_type_creature && !restricted_mana_matches(entity, paid_for))
-            continue;
+        // Filter restricted mana (Cavern of Souls / Abundant Countryside / Eldrazi Temple):
+        // hide a source whose spending restriction doesn't match the spell being paid for.
+        if (!mana_source_usable_for(ab, entity, paid_for)) continue;
         // Sources with activation mana cost: check affordability
         if (!ab.activation_mana_cost.empty()) {
             Entity exclude = ab.tap_cost ? entity : 0;
@@ -231,11 +279,11 @@ bool can_afford_with_sources(Zone::Ownership player_owner, const std::multiset<C
 
     auto sources = collect_available_mana_sources(player_owner, orderer);
 
-    // Filter restricted mana sources (Cavern of Souls): exclude unless spell matches
+    // Filter restricted mana sources (Cavern of Souls etc.): drop any whose spending
+    // restriction doesn't match the spell being paid for.
     sources.erase(std::remove_if(sources.begin(), sources.end(),
         [&](const std::pair<Entity, Ability> &s) {
-            return s.second.restrict_to_chosen_type_creature &&
-                   !restricted_mana_matches(s.first, paid_for);
+            return !mana_source_usable_for(s.second, s.first, paid_for);
         }), sources.end());
 
     // First pass: add free sources (no activation mana cost)
@@ -246,6 +294,16 @@ bool can_afford_with_sources(Zone::Ownership player_owner, const std::multiset<C
         if (counted_entities.count(entity)) continue;
         if (!ab.activation_mana_cost.empty()) continue;
         size_t amount = eval_mana_amount(ab, player_owner, orderer);
+        // A permanent can only be tapped once, so when it offers several same-color mana
+        // abilities of differing yield (Eldrazi Temple: {C} vs {C}{C}), the player picks the
+        // largest applicable one. Count the maximum amount among this entity's other free,
+        // same-color abilities so affordability reflects the best single activation.
+        for (auto &[e2, ab2] : sources) {
+            if (e2 != entity || &ab2 == &ab) continue;
+            if (!ab2.activation_mana_cost.empty()) continue;
+            if (ab2.color != ab.color) continue;
+            amount = std::max(amount, eval_mana_amount(ab2, player_owner, orderer));
+        }
         // Check if this entity has more entries (multi-color source)
         bool is_multi_color = false;
         for (auto &[e2, ab2] : sources) {
@@ -443,6 +501,29 @@ static void delve_exile_one(Entity e, Zone::Ownership controller,
     game_log("%s exiles %s via Delve.\n", player_name(controller).c_str(), ecd.name.c_str());
 }
 
+// True if `e` is an untapped artifact `controller` controls on the battlefield — i.e. an
+// artifact Improvise can tap to pay one generic pip (CR 702.126b/c). The spell being paid
+// for (`paid_for`) is excluded: it is on the stack, not the battlefield, but guard anyway so
+// the artifact creature can never tap itself to help pay its own Improvise cost.
+static bool is_improvise_eligible(Entity e, Zone::Ownership controller, Entity paid_for) {
+    if (e == paid_for) return false;
+    if (!is_battlefield_permanent(e, controller)) return false;
+    auto &perm = global_coordinator.GetComponent<Permanent>(e);
+    if (perm.is_tapped) return false;
+    return permanent_has_type(perm, "Artifact");
+}
+
+// Pay one generic pip via Improvise: tap `e` and drop one GENERIC from `remaining`. Mirrors
+// delve_exile_one for the tap-an-artifact cost. Tapping an artifact this way is not a mana
+// ability and produces no mana — it directly satisfies a {1} (CR 702.126b).
+static void improvise_tap_one(Entity e, Zone::Ownership controller, ManaValue &remaining) {
+    auto &perm = global_coordinator.GetComponent<Permanent>(e);
+    perm.is_tapped = true;
+    auto git = remaining.find(GENERIC);
+    if (git != remaining.end()) remaining.erase(git);
+    game_log("%s taps %s for Improvise.\n", player_name(controller).c_str(), perm.name.c_str());
+}
+
 void increment_activation_count(Permanent &perm, const Ability &ability) {
     if (ability.activation_limit <= 0) return;
     for (auto &perm_ab : perm.abilities) {
@@ -485,6 +566,16 @@ static void activate_mana_source(Entity entity, const Ability &ab, Zone::Ownersh
     if (commit)
         game_log("%s activated %s for %zu(%s)\n", player_name(controller).c_str(),
                  perm.name.c_str(), amount, mana_symbol_str(ab.color));
+    // A mana ability may carry a SubAbility$ rider that is part of the mana ability and
+    // resolves off-stack with it — e.g. Ancient Tomb's "deals 2 damage to you" (CR 605.1a,
+    // 606.3). Only fire it when committing the activation (not during legality simulation).
+    if (commit) {
+        for (auto sub_ab : ab.subabilities) {
+            sub_ab.source = entity;
+            sub_ab.controller = controller;
+            sub_ab.resolve(orderer);
+        }
+    }
     if (commit) increment_activation_count(perm, ab);
 }
 
@@ -504,7 +595,7 @@ static void activate_mana_source(Entity entity, const Ability &ab, Zone::Ownersh
 // set — so the decision sequence is identical to a real payment.
 static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
                           Entity paid_for, std::shared_ptr<Orderer> orderer, bool has_delve,
-                          bool commit) {
+                          bool commit, bool has_improvise) {
     Entity player_entity = get_player_entity(controller);
     auto &player = global_coordinator.GetComponent<Player>(player_entity);
 
@@ -527,6 +618,7 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
         }
     }
 
+
     // Check if pool covers remaining after delve
     if (can_afford_pool(pool, remaining)) {
         pay_from_pool(pool, remaining);
@@ -546,9 +638,9 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
     // Filter to actions valid for this payment (same as collect_mana_legal_actions)
     std::vector<SourceInfo> valid_sources;
     for (auto &[entity, ab] : sources) {
-        // Restricted mana check (Cavern of Souls)
-        if (ab.restrict_to_chosen_type_creature && !restricted_mana_matches(entity, paid_for))
-            continue;
+        // Restricted mana check (Cavern of Souls / Abundant Countryside / Eldrazi Temple):
+        // same gate as collect_mana_legal_actions so a listed source is always spendable here.
+        if (!mana_source_usable_for(ab, entity, paid_for)) continue;
         if (!ab.activation_mana_cost.empty()) {
             if (!can_afford_with_sources(controller, ab.activation_mana_cost, orderer, ab.tap_cost ? entity : 0))
                 continue;
@@ -556,6 +648,22 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
         bool is_multi = false;
         for (auto &[e2, ab2] : sources)
             if (e2 == entity && ab2.color != ab.color) { is_multi = true; break; }
+        // A permanent taps only once. When it has several valid same-color mana abilities of
+        // differing yield (Eldrazi Temple: {C} vs the restricted {C}{C}), keep only the
+        // highest-yield one so the greedy payer realizes the affordability the gating check
+        // (can_afford_with_sources, which counts the max) promised, instead of burning the
+        // single tap on the smaller ability.
+        bool replaced = false;
+        for (auto &existing : valid_sources) {
+            if (existing.entity != entity || existing.color != ab.color) continue;
+            if (eval_mana_amount(ab, controller, orderer) >
+                eval_mana_amount(existing.ability, controller, orderer)) {
+                existing.ability = ab;
+            }
+            replaced = true;
+            break;
+        }
+        if (replaced) continue;
         valid_sources.push_back({entity, ab, ab.color, is_multi});
     }
 
@@ -631,6 +739,26 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
         if (try_generic([](const SourceInfo &s) { return s.ability.adds_no_counter && !s.ability.sac_self; })) continue;
         if (try_generic([](const SourceInfo &s) { return !s.ability.sac_self; })) continue;
         if (try_generic([](const SourceInfo &) { return true; })) continue;  // sac_self last resort
+        // Improvise: a {1} can also be paid by tapping an untapped artifact (CR 702.126).
+        // Tried after mana sources so colored pips (paid above) keep their producers; an
+        // artifact already tapped for mana is excluded via tapped_entities.
+        if (has_improvise) {
+            bool tapped_one = false;
+            for (auto e : orderer->mEntities) {
+                if (tapped_entities.count(e)) continue;
+                if (!is_improvise_eligible(e, controller, paid_for)) continue;
+                if (commit) {
+                    improvise_tap_one(e, controller, remaining);
+                } else {
+                    auto git = remaining.find(GENERIC);
+                    if (git != remaining.end()) remaining.erase(git);
+                }
+                tapped_entities.insert(e);
+                tapped_one = true;
+                break;
+            }
+            if (tapped_one) continue;
+        }
         return false;
     }
 
@@ -638,19 +766,21 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
 }
 
 bool can_pay_mana(Zone::Ownership controller, const ManaValue &cost,
-                  Entity paid_for, std::shared_ptr<Orderer> orderer, bool has_delve) {
+                  Entity paid_for, std::shared_ptr<Orderer> orderer, bool has_delve,
+                  bool has_improvise) {
     Entity player_entity = get_player_entity(controller);
     if (!global_coordinator.entity_has_component<Player>(player_entity)) return false;
     // Run the exact machine-mode payment algorithm in simulate mode (no side effects).
     // This is the single predicate behind both "is this castable" and "pay for it",
     // so a spell can never be offered as legal and then fail to pay (and vice versa).
     ManaValue remaining = cost;
-    return auto_pay_mana(controller, remaining, paid_for, orderer, has_delve, /*commit=*/false);
+    return auto_pay_mana(controller, remaining, paid_for, orderer, has_delve, /*commit=*/false,
+                         has_improvise);
 }
 
 bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,
                          Entity paid_for, std::shared_ptr<Orderer> orderer,
-                         bool has_delve) {
+                         bool has_delve, bool has_improvise) {
     Entity player_entity = get_player_entity(controller);
     auto &player = global_coordinator.GetComponent<Player>(player_entity);
 
@@ -667,7 +797,8 @@ bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,
 
     // Machine mode: auto-select mana sources (no interactive prompts)
     if (is_machine) {
-        return auto_pay_mana(controller, remaining, paid_for, orderer, has_delve);
+        return auto_pay_mana(controller, remaining, paid_for, orderer, has_delve, /*commit=*/true,
+                             has_improvise);
     }
 
     // Payment loop: prompt player to tap sources or delve until cost is paid
@@ -695,6 +826,18 @@ bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,
                 if (!is_delve_eligible(e, controller)) continue;
                 auto &ecd = global_coordinator.GetComponent<CardData>(e);
                 LegalAction la(PASS_PRIORITY, e, "Exile " + ecd.name + " (Delve)");
+                la.category = ActionCategory::PAYING_COSTS;
+                pay_actions.push_back(la);
+            }
+        }
+
+        // Improvise: tap untapped artifacts to pay generic costs (CR 702.126)
+        size_t improvise_action_start = pay_actions.size();
+        if (has_improvise && remaining.count(GENERIC) > 0) {
+            for (auto e : orderer->mEntities) {
+                if (!is_improvise_eligible(e, controller, paid_for)) continue;
+                auto &perm = global_coordinator.GetComponent<Permanent>(e);
+                LegalAction la(PASS_PRIORITY, e, "Tap " + perm.name + " (Improvise)");
                 la.category = ActionCategory::PAYING_COSTS;
                 pay_actions.push_back(la);
             }
@@ -730,9 +873,14 @@ bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,
 
         auto &chosen = pay_actions[static_cast<size_t>(choice)];
 
-        // Is this a delve exile action?
-        if (static_cast<size_t>(choice) >= delve_action_start &&
-            (!has_delve || chosen.type == PASS_PRIORITY)) {
+        size_t uchoice = static_cast<size_t>(choice);
+        if (has_improvise && uchoice >= improvise_action_start &&
+            uchoice < pay_actions.size() - (is_machine ? 0 : 1)) {
+            // Improvise: tap the chosen artifact to pay one generic.
+            improvise_tap_one(chosen.source_entity, controller, remaining);
+        } else if (has_delve && uchoice >= delve_action_start &&
+                   uchoice < improvise_action_start) {
+            // Delve exile action.
             delve_exile_one(chosen.source_entity, controller, orderer, remaining);
         } else {
             // Mana ability activation — same core sequence as the auto-payer. The interactive

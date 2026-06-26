@@ -25,7 +25,9 @@ enum CandidateKind {
     PENDING_TAPPED, // a resolving ability put this permanent onto the battlefield tapped
     ETB_COUNTERS,   // 614.1c — this permanent enters with +1/+1 counters (self-replacement)
     EXILE_INSTEAD,  // 614.1a — opponent's card is exiled (with a void counter) instead of going to graveyard
+    EXILE_INSTEAD_OF_ETB, // 614.1a — a non-token creature that wasn't cast is exiled instead of entering (Containment Priest)
     SKIP_UNTAP,     // 614.1d — this permanent doesn't untap during its controller's untap step (Choke)
+    PREVENT_ETB,    // 614.13 — a creature card from a restricted origin zone is prevented from entering (Grafdigger's Cage)
 };
 
 struct Candidate {
@@ -35,6 +37,8 @@ struct Candidate {
     bool self_replacement = false; // 614.15 — gates choice order under 616.1a
     std::string label;            // menu label when >1 applies
     int amount = 0;               // ETB_COUNTERS: counter count
+    std::string counter_type = "P1P1"; // ETB_COUNTERS: kind of counter
+    bool with_void_counter = false; // EXILE_INSTEAD: tag the exiled card with a void counter (Dauthi), else plain exile (Leyline)
 };
 
 // Number of cards in a player's library / graveyard scan helpers mirror the
@@ -75,11 +79,19 @@ std::vector<Candidate> collect(const ReplacementEvent &ev,
                 c.label = "enters tapped";
                 if (!already_applied(applied, c)) out.push_back(c);
             }
-            // "Enters with +1/+1 counters" replacement effect (614.1c) from an EtbCounter static ability.
+            // "Enters with N counters" replacement effect (614.1c) from an EtbCounter static
+            // ability. Count from delve (Hangarback-style) or from X paid at cast (Chalice of
+            // the Void's CHARGE counters); the counter kind is whatever the script declared.
             for (size_t i = 0; i < cd.static_abilities.size(); i++) {
                 const StaticAbility &sa = cd.static_abilities[i];
-                if (sa.category != "EtbCounter" || sa.counter_type != "P1P1") continue;
-                int n = sa.counter_count_from_delve ? static_cast<int>(cur_game.delve_exiled.size()) : 0;
+                if (sa.category != "EtbCounter") continue;
+                int n = 0;
+                if (sa.counter_count_from_delve) n = static_cast<int>(cur_game.delve_exiled.size());
+                else if (sa.counter_count_from_xpaid) {
+                    auto it = cur_game.pending_etb_xpaid.find(ev.entity);
+                    if (it != cur_game.pending_etb_xpaid.end()) n = it->second;
+                }
+                else n = sa.counter_count;  // literal count (etbCounter:M1M1:6 → 6)
                 if (n <= 0) continue;
                 Candidate c;
                 c.source = ev.entity;
@@ -87,6 +99,7 @@ std::vector<Candidate> collect(const ReplacementEvent &ev,
                 c.index = -1000 - static_cast<int>(i);  // disjoint from replacement_effects indices
                 c.self_replacement = true;
                 c.amount = n;
+                c.counter_type = sa.counter_type.empty() ? "P1P1" : sa.counter_type;
                 c.label = "enters with counters";
                 if (!already_applied(applied, c)) out.push_back(c);
             }
@@ -105,13 +118,84 @@ std::vector<Candidate> collect(const ReplacementEvent &ev,
     }
 
     if (ev.type == ReplacementEvent::MOVE_TO_ZONE) {
+        // A move already prevented (614.13) admits no further replacements.
+        if (ev.prevented) return out;
+        Entity max_e = global_coordinator.GetMaxIssuedEntity();
+
+        // A card about to enter the battlefield can meet two replacement effects, and both
+        // are evaluated here — inside the zone move, *before* add_to_zone emits the
+        // enters-the-battlefield CARD_CHANGED_ZONE event. Applying the exile-redirect later
+        // (at the ENTERS_BATTLEFIELD dispatch) would be too late: the creature would already
+        // be on the battlefield and other permanents' "whenever a creature enters" triggers
+        // (and its own ETB) would have fired for a creature that is supposed to never enter.
+        if (ev.destination == Zone::BATTLEFIELD) {
+            bool nontoken_creature =
+                !global_coordinator.entity_has_component<Token>(ev.entity) &&
+                global_coordinator.entity_has_component<CardData>(ev.entity) &&
+                is_creature_card(global_coordinator.GetComponent<CardData>(ev.entity));
+
+            // Grafdigger's Cage (614.13): a creature card moving from a graveyard or library
+            // onto the battlefield is prevented from entering — it stays in its origin zone.
+            // This covers reanimation (graveyard → battlefield) and search-to-battlefield
+            // (Green Sun's Zenith, library → battlefield). A card that can't enter at all
+            // needn't also be exiled, so a prevention takes precedence over Containment
+            // Priest's exile-redirect below.
+            if (nontoken_creature &&
+                (ev.origin == Zone::GRAVEYARD || ev.origin == Zone::LIBRARY)) {
+                for (Entity e = 0; e < max_e; e++) {
+                    if (!is_battlefield_permanent(e)) continue;
+                    if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+                    auto &cd = global_coordinator.GetComponent<CardData>(e);
+                    for (size_t i = 0; i < cd.replacement_effects.size(); i++) {
+                        const Effect::Replacement &r = cd.replacement_effects[i];
+                        if (r.kind != Effect::Replacement::PREVENT_ETB_FROM_ZONES) continue;
+                        if (ev.origin == Zone::GRAVEYARD && !r.prevent_from_graveyard) continue;
+                        if (ev.origin == Zone::LIBRARY && !r.prevent_from_library) continue;
+                        Candidate c;
+                        c.source = e;
+                        c.kind = PREVENT_ETB;
+                        c.index = static_cast<int>(i);
+                        c.self_replacement = false;
+                        c.label = global_coordinator.GetComponent<Permanent>(e).name +
+                                  ": can't enter from that zone";
+                        if (!already_applied(applied, c)) out.push_back(c);
+                    }
+                }
+                if (!out.empty()) return out;
+            }
+
+            // Containment Priest (614.1a): a non-token creature that wasn't cast is exiled
+            // instead of entering, regardless of which zone it would have entered from
+            // (reanimation, blink out of exile, put onto the battlefield from hand, ...). A
+            // creature spell resolving from the stack is in cast_to_battlefield and let through.
+            if (nontoken_creature && cur_game.cast_to_battlefield.count(ev.entity) == 0) {
+                for (Entity e = 0; e < max_e; e++) {
+                    if (!is_battlefield_permanent(e)) continue;
+                    if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+                    auto &cd = global_coordinator.GetComponent<CardData>(e);
+                    for (size_t i = 0; i < cd.replacement_effects.size(); i++) {
+                        if (cd.replacement_effects[i].kind != Effect::Replacement::EXILE_INSTEAD_OF_ETB)
+                            continue;
+                        Candidate c;
+                        c.source = e;
+                        c.kind = EXILE_INSTEAD_OF_ETB;
+                        c.index = static_cast<int>(i);
+                        c.self_replacement = false;
+                        c.label = global_coordinator.GetComponent<Permanent>(e).name +
+                                  ": exile instead of entering";
+                        if (!already_applied(applied, c)) out.push_back(c);
+                    }
+                }
+            }
+            return out;
+        }
+
         // Dauthi Voidwalker etc.: only a graveyard-bound, non-token, owned card is eligible.
         if (ev.destination != Zone::GRAVEYARD) return out;
         if (global_coordinator.entity_has_component<Token>(ev.entity)) return out;
         if (!global_coordinator.entity_has_component<CardData>(ev.entity)) return out;
         auto &tz = global_coordinator.GetComponent<Zone>(ev.entity);
 
-        Entity max_e = global_coordinator.GetMaxIssuedEntity();
         for (Entity e = 0; e < max_e; e++) {
             if (!is_battlefield_permanent(e)) continue;
             auto &perm = global_coordinator.GetComponent<Permanent>(e);
@@ -127,6 +211,7 @@ std::vector<Candidate> collect(const ReplacementEvent &ev,
                 c.kind = EXILE_INSTEAD;
                 c.index = static_cast<int>(i);
                 c.self_replacement = false;
+                c.with_void_counter = cd.replacement_effects[i].with_void_counter;
                 c.label = perm.name + ": exile instead of graveyard";
                 if (!already_applied(applied, c)) out.push_back(c);
             }
@@ -182,18 +267,36 @@ void apply_one(ReplacementEvent &ev, const Candidate &c) {
             break;
         case ETB_COUNTERS:
             ev.etb_p1p1 += c.amount;
+            ev.etb_counter_type = c.counter_type;
             cur_game.delve_exiled.clear();
+            cur_game.pending_etb_xpaid.erase(ev.entity);
             break;
         case EXILE_INSTEAD: {
             ev.destination = Zone::EXILE;
-            cur_game.void_countered.insert(ev.entity);
             std::string name = global_coordinator.GetComponent<CardData>(ev.entity).name;
-            game_log("%s is exiled with a void counter.\n", name.c_str());
+            if (c.with_void_counter) {
+                cur_game.void_countered.insert(ev.entity);
+                game_log("%s is exiled with a void counter.\n", name.c_str());
+            } else {
+                game_log("%s is exiled instead of being put into a graveyard.\n", name.c_str());
+            }
+            break;
+        }
+        case EXILE_INSTEAD_OF_ETB: {
+            ev.destination = Zone::EXILE;
+            std::string name = global_coordinator.GetComponent<CardData>(ev.entity).name;
+            game_log("%s is exiled instead of entering the battlefield.\n", name.c_str());
             break;
         }
         case SKIP_UNTAP:
             ev.skip_untap = true;
             break;
+        case PREVENT_ETB: {
+            ev.prevented = true;
+            std::string name = global_coordinator.GetComponent<CardData>(ev.entity).name;
+            game_log("%s can't enter the battlefield from that zone.\n", name.c_str());
+            break;
+        }
     }
 }
 

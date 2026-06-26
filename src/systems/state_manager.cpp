@@ -93,8 +93,9 @@ void StateManager::process_turn_based_actions(Game &game, std::shared_ptr<Ordere
 void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orderer) {
     for (;;) {
         // Continuous effects define the game state that SBAs evaluate
-        apply_permanent_components(game);
+        apply_permanent_components(game, orderer);
         apply_continuous_effects(game);
+        update_city_blessing(game);  // 702.131: ascend grants the city's blessing at 10+ permanents
 
         bool any_applied = false;
 

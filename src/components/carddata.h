@@ -47,6 +47,9 @@ struct CardData{
     std::vector<Effect::Replacement> replacement_effects;  // parsed from R: lines TODO expand this to parse SVAR below
     std::shared_ptr<CardData> backside;  // populated for DFCs; nullptr for normal cards
     bool has_delve = false;              // K:Delve — exile from graveyard to reduce generic cost
+    bool has_improvise = false;          // K:Improvise — tap untapped artifacts you control to pay {1} each (CR 702.126)
+    int ward_cost = 0;                   // K:Ward:N — opponent's spell/ability targeting this is countered unless they pay {N} (CR 702.21)
+    bool affinity_artifact = false;      // K:Affinity:Artifact — costs {1} less to cast per artifact you control (CR 702.41)
     bool has_x_cost = false;             // ManaCost contains X — variable generic cost chosen at cast time
     bool shuffle_into_library = false;   // card shuffles into library instead of going to graveyard on resolution
     bool has_flashback = false;          // K:Flashback — can cast from graveyard for flashback cost, then exile
@@ -57,6 +60,8 @@ struct CardData{
     AltCost flashback_alt_cost;          // non-mana costs (e.g. PayLife<3> for Deep Analysis)
     bool is_equipment = false;           // has K:Equip line
     ManaValue equip_cost;                // parsed from K:Equip:cost
+    bool has_offspring = false;          // K:Offspring:cost — optional additional cost (CR 702.171)
+    ManaValue offspring_cost;            // mana paid in addition to the spell's cost for Offspring
     std::set<Colors> explicit_colors;    // Colors: field override (e.g. Dryad Arbor)
 };
 

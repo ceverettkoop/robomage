@@ -39,12 +39,33 @@ static bool can_afford_alt(const AltCost& alt_cost, Zone::Ownership priority_pla
 
     // Check SVar condition (e.g. Once Upon a Time: free only if first spell this game)
     if (!alt_cost.condition_svar.empty()) {
-        int svar_value = 0;
-        if (alt_cost.condition_svar.find("Count$YouCastThisGame") != std::string::npos) {
-            Entity pp_entity = get_player_entity(priority_player);
-            svar_value = static_cast<int>(global_coordinator.GetComponent<Player>(pp_entity).spells_cast_this_game);
+        const std::string &cond = alt_cost.condition_svar;
+        // Mindbreak Trap (Trap alt cost, CR 702.59): "If an opponent cast three or more
+        // spells this turn, you may pay {0}…". Scripted as
+        // PlayerCountOpponents$Condition<OP><N> SpellsCastThisTurn — the alt cost is
+        // enabled when at least one opponent's per-turn spell count satisfies the
+        // condition. condition_compare is unset; the comparison op/threshold are embedded
+        // in the SVar's "Condition<OP><N>" token.
+        if (cond.find("PlayerCountOpponents$") != std::string::npos &&
+            cond.find("SpellsCastThisTurn") != std::string::npos) {
+            std::string compare;  // e.g. "GE3"
+            size_t cpos = cond.find("Condition");
+            if (cpos != std::string::npos) compare = cond.substr(cpos + 9);  // strip "Condition"
+            // Truncate at the first space (the count metric follows the condition token).
+            size_t sp = compare.find(' ');
+            if (sp != std::string::npos) compare = compare.substr(0, sp);
+            Zone::Ownership opp = (priority_player == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+            int opp_spells =
+                static_cast<int>(global_coordinator.GetComponent<Player>(get_player_entity(opp)).spells_cast_this_turn);
+            if (!compare_svar(opp_spells, compare)) return false;
+        } else {
+            int svar_value = 0;
+            if (cond.find("Count$YouCastThisGame") != std::string::npos) {
+                Entity pp_entity = get_player_entity(priority_player);
+                svar_value = static_cast<int>(global_coordinator.GetComponent<Player>(pp_entity).spells_cast_this_game);
+            }
+            if (!compare_svar(svar_value, alt_cost.condition_compare)) return false;
         }
-        if (!compare_svar(svar_value, alt_cost.condition_compare)) return false;
     }
 
     // IsPresent$ <type>[.YouCtrl] — the alt cost is only available while the
@@ -128,6 +149,55 @@ bool evaluate_present_condition(const Ability &ab, Zone::Ownership caster, std::
     if (ab.condition_on_remembered) {
         size_t count = cur_game.remembered_entities.size();
         return compare_svar(static_cast<int>(count), compare);
+    }
+
+    // IsPresent$ Card.Self: the source must itself be on the battlefield (Kappa Cannoneer's
+    // "Whenever another artifact you control enters" only functions while Kappa is in play).
+    if (ab.condition_present == "Card.Self") {
+        return is_battlefield_permanent(ab.source);
+    }
+
+    // IsPresent$ Card.Self+counters_GE<N>_<TYPE>: the source must be on the battlefield AND
+    // carry at least N counters of the given type (Moonshadow: "while this creature has a
+    // -1/-1 counter on it" → Card.Self+counters_GE1_M1M1). CR 122.1/603.4 — the counter
+    // count is re-checked when the trigger would go on the stack and again on resolution, so
+    // once the last -1/-1 counter is gone the trigger stops firing.
+    if (ab.condition_present.rfind("Card.Self+counters_GE", 0) == 0) {
+        if (!is_battlefield_permanent(ab.source)) return false;
+        std::string rest = ab.condition_present.substr(std::string("Card.Self+counters_GE").size());
+        size_t us = rest.find('_');
+        int need = 1;
+        std::string ctype = "M1M1";
+        if (us != std::string::npos) {
+            need = std::stoi(rest.substr(0, us));
+            ctype = rest.substr(us + 1);
+        } else if (!rest.empty()) {
+            need = std::stoi(rest);
+        }
+        return get_counters(ab.source, ctype) >= need;
+    }
+
+    // Count$LifeYouGainedThisTurn (Ocelot Pride's "if you gained life this turn"): the
+    // condition counts life the controller gained this turn, not battlefield permanents.
+    // Empty compare → "gained at least 1" (GE1), matching the bare "if you gained life".
+    if (ab.condition_present == "Count$LifeYouGainedThisTurn") {
+        Entity pe = get_player_entity(caster);
+        int gained = global_coordinator.entity_has_component<Player>(pe)
+                         ? global_coordinator.GetComponent<Player>(pe).life_gained_this_turn
+                         : 0;
+        return compare_svar(gained, compare);
+    }
+
+    // Count$ThisTurnCast_Instant.YouCtrl,Sorcery.YouCtrl (Arclight Phoenix's "if you've
+    // cast three or more instant and sorcery spells this turn"): counts the instant and
+    // sorcery spells the controller has cast this turn, not battlefield permanents.
+    if (ab.condition_present.rfind("Count$ThisTurnCast_Instant", 0) == 0 &&
+        ab.condition_present.find("Sorcery") != std::string::npos) {
+        Entity pe = get_player_entity(caster);
+        int cast = global_coordinator.entity_has_component<Player>(pe)
+                       ? static_cast<int>(global_coordinator.GetComponent<Player>(pe).instant_sorcery_spells_cast_this_turn)
+                       : 0;
+        return compare_svar(cast, compare);
     }
 
     // Parse filter: "Land.YouCtrl" → type_filter="Land", controller check
@@ -318,12 +388,12 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             bool card_is_creature = is_creature_card(card_data);
             if (rules_mod::cast_prohibited(priority_player, card_is_creature)) continue;
 
-            ManaValue effective_cost = effective_base_cost(card_data);
+            ManaValue effective_cost = effective_base_cost(card_data, priority_player);
 
             // X-cost spells: base cost (without X) is enough to be castable;
             // X value is chosen at cast time in action_processor
             bool can_regular = can_pay_mana(priority_player, effective_cost, card_entity,
-                                            orderer, card_data.has_delve);
+                                            orderer, card_data.has_delve, card_data.has_improvise);
 
             bool can_alt = can_afford_alt(card_data.alt_cost, priority_player, card_entity, orderer);
 
@@ -333,6 +403,19 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 alt_la.use_alt_cost = true;
                 alt_la.description = "Cast " + card_data.name + " (alternate cost)";
                 actions.push_back(alt_la);
+            }
+            // Offspring (CR 702.171): optional ADDITIONAL cost. Offer a separate cast option
+            // that must pay the base cost plus the offspring cost together.
+            if (card_data.has_offspring) {
+                ManaValue offspring_total = effective_cost;
+                for (Colors c : card_data.offspring_cost) offspring_total.insert(c);
+                if (can_pay_mana(priority_player, offspring_total, card_entity, orderer,
+                                 card_data.has_delve, card_data.has_improvise)) {
+                    LegalAction off_la = la;
+                    off_la.use_offspring = true;
+                    off_la.description = "Cast " + card_data.name + " (offspring)";
+                    actions.push_back(off_la);
+                }
             }
         }
     }
@@ -375,10 +458,55 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         }
         if (!can_afford_fb) continue;
 
+        // A graveyard-cast static (Grafdigger's Cage: Origin$ Graveyard) prohibits flashback.
+        bool fb_is_creature = is_creature_card(gcd);
+        if (rules_mod::cast_prohibited(priority_player, fb_is_creature, Zone::GRAVEYARD)) continue;
+
         LegalAction fb_la(CAST_SPELL, gy_entity, "Cast " + gcd.name + " (flashback)");
         fb_la.category = ActionCategory::CAST_SPELL;
         fb_la.use_flashback = true;
         actions.push_back(fb_la);
+    }
+    // CAST-FROM-GRAVEYARD PERMISSIONS (Emry's AB$ Effect): a card the priority player has
+    // been granted permission to cast this turn (CR 601.3e). It is cast from the graveyard
+    // for its normal cost, at the timing its type allows. Only the granting player may
+    // cast it, so filter the permission set by graveyard owner.
+    for (auto gy_entity : cur_game.may_cast_this_turn) {
+        if (!global_coordinator.entity_has_component<Zone>(gy_entity)) continue;
+        auto &gz = global_coordinator.GetComponent<Zone>(gy_entity);
+        if (gz.location != Zone::GRAVEYARD || gz.owner != priority_player) continue;
+        if (!global_coordinator.entity_has_component<CardData>(gy_entity)) continue;
+        auto &gcd = global_coordinator.GetComponent<CardData>(gy_entity);
+        if (is_land_card(gcd)) continue;  // lands aren't cast (601.1)
+
+        // Flash / instant cards may be cast anytime; everything else is sorcery-speed.
+        bool can_cast_at_instant_speed = card_has_type(gcd, "Instant");
+        for (const auto &kw : gcd.keywords)
+            if (kw == "Flash") { can_cast_at_instant_speed = true; break; }
+        bool can_cast_now = can_cast_at_instant_speed ||
+            ((game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
+             (game.player_a_turn == game.player_a_has_priority) && stack_empty);
+        if (!can_cast_now) continue;
+
+        // Any targeting requirement must have at least one legal target.
+        bool tgt_ok = true;
+        for (const auto &ab : gcd.abilities) {
+            if (ab.ability_type != Ability::SPELL) continue;
+            tgt_ok = has_legal_targets(ab, orderer);
+            break;
+        }
+        if (!tgt_ok) continue;
+
+        if (rules_mod::cast_prohibited(priority_player, is_creature_card(gcd), Zone::GRAVEYARD))
+            continue;
+
+        ManaValue gy_cost = effective_base_cost(gcd, priority_player);
+        if (!can_pay_mana(priority_player, gy_cost, gy_entity, orderer, gcd.has_delve, gcd.has_improvise))
+            continue;
+
+        LegalAction gy_la(CAST_SPELL, gy_entity, "Cast " + gcd.name + " (from graveyard)");
+        gy_la.category = ActionCategory::CAST_SPELL;
+        actions.push_back(gy_la);
     }
     // checking permanents for activated abilities
     // mana abilities parsed last

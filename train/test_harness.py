@@ -171,6 +171,8 @@ def main():
     parser.add_argument("--deck-b", help="Use existing deck file for Player B (name, not path)")
     parser.add_argument("--battlefield-a", help="Cards starting on Player A's battlefield (comma-separated)")
     parser.add_argument("--battlefield-b", help="Cards starting on Player B's battlefield (comma-separated)")
+    parser.add_argument("--graveyard-a", help="Cards starting in Player A's graveyard (comma-separated)")
+    parser.add_argument("--graveyard-b", help="Cards starting in Player B's graveyard (comma-separated)")
     parser.add_argument("--actions", help="Comma-separated action indices to play")
     parser.add_argument("--play",
                         help="Comma-separated semantic action specs resolved against the "
@@ -212,6 +214,8 @@ def main():
     library_b = _parse_card_list(args.library_b) or scenario.get("library_b", [])
     battlefield_a = _parse_card_list(args.battlefield_a) or scenario.get("battlefield_a", [])
     battlefield_b = _parse_card_list(args.battlefield_b) or scenario.get("battlefield_b", [])
+    graveyard_a = _parse_card_list(args.graveyard_a) or scenario.get("graveyard_a", [])
+    graveyard_b = _parse_card_list(args.graveyard_b) or scenario.get("graveyard_b", [])
     seed = args.seed if args.seed is not None else scenario.get("seed", 1)
     # Stacked-deck mode: deck-file order == draw order. Implied by hand sculpting
     # (--hand-a/--hand-b build a stacked temp deck whose first 7 cards must be the
@@ -269,6 +273,10 @@ def main():
             print(f"Player A battlefield: {', '.join(battlefield_a)}")
         if battlefield_b:
             print(f"Player B battlefield: {', '.join(battlefield_b)}")
+        if graveyard_a:
+            print(f"Player A graveyard: {', '.join(graveyard_a)}")
+        if graveyard_b:
+            print(f"Player B graveyard: {', '.join(graveyard_b)}")
         print(f"Seed: {seed}")
         if actions:
             print(f"Actions: {actions}")
@@ -299,6 +307,8 @@ def main():
         # deck-name strings (apostrophes stripped), same as the deck files.
         bf_a = ",".join(_card_to_deck_name(c) for c in battlefield_a) if battlefield_a else None
         bf_b = ",".join(_card_to_deck_name(c) for c in battlefield_b) if battlefield_b else None
+        gy_a = ",".join(_card_to_deck_name(c) for c in graveyard_a) if graveyard_a else None
+        gy_b = ",".join(_card_to_deck_name(c) for c in graveyard_b) if graveyard_b else None
 
         # The observation/decision loop lives in runner.run_games (shared with
         # train.py observe). test_harness only seeds the state above.
@@ -306,7 +316,8 @@ def main():
             controller, controller, label_a=mode_label, label_b=mode_label,
             binary_path=args.binary, deck_a=deck_a_name, deck_b=deck_b_name,
             n_games=1, seed=seed, verbose=True,
-            battlefield_a=bf_a, battlefield_b=bf_b, no_shuffle=no_shuffle,
+            battlefield_a=bf_a, battlefield_b=bf_b,
+            graveyard_a=gy_a, graveyard_b=gy_b, no_shuffle=no_shuffle,
             max_decisions=max_decisions)
         winner = bool(wins or losses)
         # A --play run resolves specs to concrete indices; print them so the line

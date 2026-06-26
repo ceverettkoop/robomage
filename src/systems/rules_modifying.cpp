@@ -10,15 +10,29 @@
 
 namespace rules_mod {
 
+// Does `permanent` have any of the card types named in `filter` (a comma-separated
+// CantBeActivated ValidCard$ list, e.g. "Artifact" or "Artifact,Creature,Planeswalker")?
+static bool permanent_matches_type_filter(const Permanent &permanent, const std::string &filter) {
+    if (filter.empty()) return false;
+    size_t pos = 0;
+    while (pos < filter.size()) {
+        size_t comma = filter.find(',', pos);
+        std::string type_name = filter.substr(pos, comma == std::string::npos ? std::string::npos
+                                                                              : comma - pos);
+        for (auto &t : permanent.types)
+            if (t.kind == TYPE && t.name == type_name) return true;
+        if (comma == std::string::npos) break;
+        pos = comma + 1;
+    }
+    return false;
+}
+
 bool mana_activation_prohibited(Entity permanent_entity) {
     auto &permanent = global_coordinator.GetComponent<Permanent>(permanent_entity);
     for (const auto &as : g_active_statics) {
         if (as.suppressed) continue;  // 613.1f: source lost all abilities (Humility)
         if (as.sa->category != "CantBeActivated" || as.sa->cant_activate_card_filter.empty()) continue;
-        if (as.sa->cant_activate_card_filter == "Artifact") {
-            for (auto &t : permanent.types)
-                if (t.kind == TYPE && t.name == "Artifact") return true;
-        }
+        if (permanent_matches_type_filter(permanent, as.sa->cant_activate_card_filter)) return true;
     }
     return false;
 }
@@ -33,21 +47,38 @@ bool activation_prohibited(Entity permanent_entity) {
             if (!global_coordinator.entity_has_component<Permanent>(as.entity)) continue;
             auto &src = global_coordinator.GetComponent<Permanent>(as.entity);
             if (!src.chosen_name.empty() && src.chosen_name == permanent.name) return true;
-        } else if (as.sa->cant_activate_card_filter == "Artifact") {
-            for (auto &t : permanent.types)
-                if (t.kind == TYPE && t.name == "Artifact") return true;
+        } else if (permanent_matches_type_filter(permanent, as.sa->cant_activate_card_filter)) {
+            return true;
         }
     }
     return false;
 }
 
-bool cast_prohibited(Zone::Ownership caster, bool card_is_creature) {
+bool cast_prohibited(Zone::Ownership caster, bool card_is_creature, Zone::ZoneValue cast_from) {
     for (const auto &as : g_active_statics) {
         if (as.suppressed) continue;  // 613.1f: source lost all abilities (Humility)
         if (as.sa->category != "CantBeCast") continue;
         // Creatures are unaffected by a nonCreature restriction.
         if (as.sa->cant_cast_filter.find("nonCreature") != std::string::npos && card_is_creature)
             continue;
+        // Origin$ Graveyard,Library (Grafdigger's Cage): only spells cast from those zones are
+        // prohibited. A spell cast from any other zone (e.g. the hand) is unaffected by this
+        // static; when neither origin flag is set the restriction is zone-agnostic.
+        if (as.sa->cant_cast_from_graveyard || as.sa->cant_cast_from_library) {
+            bool origin_restricted =
+                (cast_from == Zone::GRAVEYARD && as.sa->cant_cast_from_graveyard) ||
+                (cast_from == Zone::LIBRARY && as.sa->cant_cast_from_library);
+            if (!origin_restricted) continue;
+            return true;
+        }
+        // Caster$ Opponent (Voice of Victory): the controller's opponents can't cast spells.
+        // condition_met (e.g. Condition$ PlayerTurn) gates when the static is live; an
+        // unconditional opponent-lock has condition_met == true already.
+        if (as.sa->cant_cast_by_opponent) {
+            if (!as.condition_met) continue;
+            if (caster != as.controller) return true;  // caster is an opponent of the source
+            continue;
+        }
         auto &pp = global_coordinator.GetComponent<Player>(get_player_entity(caster));
         if (as.sa->cant_cast_limit_per_turn > 0 &&
             static_cast<int>(pp.noncreature_spells_cast_this_turn) >= as.sa->cant_cast_limit_per_turn)
