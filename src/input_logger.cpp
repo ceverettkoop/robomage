@@ -135,6 +135,14 @@ static void record_chosen_action(const std::vector<LegalAction> &actions, int ch
     cur_game.record_action(cat, vocab, cur_game.player_a_has_priority);
 }
 
+void InputLogger::commit_choice(const std::vector<LegalAction> &actions, int choice) {
+    if (log_file.is_open()) {
+        log_file << choice << std::endl;
+        log_file.flush();
+    }
+    record_chosen_action(actions, choice);
+}
+
 int InputLogger::get_input(const std::vector<LegalAction> &actions) {
     extern bool has_human_player;
     extern bool human_player_is_a;
@@ -178,11 +186,7 @@ int InputLogger::get_input(const std::vector<LegalAction> &actions) {
         if (choice == -1 && !actions.empty()) {
             choice = static_cast<int>(actions.size()) - 1;
         }
-        if (log_file.is_open()) {
-            log_file << choice << std::endl;
-            log_file.flush();
-        }
-        record_chosen_action(actions, choice);
+        commit_choice(actions, choice);
         return choice;
     }
 
@@ -191,11 +195,7 @@ int InputLogger::get_input(const std::vector<LegalAction> &actions) {
         if (cur_game.cur_step == DECLARE_ATTACKERS) {
             auto_pass_until_turn = -1;
         } else if ((int)cur_game.turn < auto_pass_until_turn) {
-            if (log_file.is_open()) {
-                log_file << 0 << std::endl;
-                log_file.flush();
-            }
-            record_chosen_action(actions, 0);
+            commit_choice(actions, 0);
             return 0;
         }
         auto_pass_until_turn = -1;
@@ -217,11 +217,7 @@ int InputLogger::get_input(const std::vector<LegalAction> &actions) {
             case PASS_TURN_CMD:
                 game_log("Auto-passing turn.\n");
                 auto_pass_until_turn = (int)cur_game.turn + 1;
-                if (log_file.is_open()) {
-                    log_file << 0 << std::endl;
-                    log_file.flush();
-                }
-                record_chosen_action(actions, 0);
+                commit_choice(actions, 0);
                 return 0;
                 break;
             case FLAG_QUIT:
@@ -239,11 +235,7 @@ int InputLogger::get_input(const std::vector<LegalAction> &actions) {
             cli_print_invalid_action();
             continue;
         }
-        if (log_file.is_open()) {
-            log_file << choice << std::endl;
-            log_file.flush();
-        }
-        record_chosen_action(actions, choice);
+        commit_choice(actions, choice);
         return choice;
     }
 }

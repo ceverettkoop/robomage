@@ -13,9 +13,19 @@
 #include "ecs/entity.h"
 
 class Orderer;
+struct Permanent;
+struct Ability;
 
 // Get player entity from ownership
 Entity get_player_entity(Zone::Ownership player);
+
+// Bump the per-turn activation counter for the ability on `perm` that matches `ability`,
+// if that ability is activation-limited (no-op when activation_limit == 0). Mana abilities
+// (category "AddMana") are keyed by tap-cost + color, since one permanent can expose several
+// AddMana abilities of different colors; every other activated ability is keyed by its
+// return-to-hand cost (Return<N/Type>). Shared by the spell/ability processor and both mana
+// payers so the (formerly four-times duplicated) match rule lives in one place.
+void increment_activation_count(Permanent &perm, const Ability &ability);
 
 // Check if a given mana pool can afford a cost (does not read player state)
 bool can_afford_pool(const std::multiset<Colors>& pool, const std::multiset<Colors>& cost);

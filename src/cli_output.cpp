@@ -8,6 +8,7 @@
 #include <pthread.h>
 
 #include "card_vocab.h"
+#include "classes/colors.h"
 #include "input_logger.h"
 #include "machine_io.h"
 
@@ -52,18 +53,6 @@ const char* step_to_string(Step in_step) {
 
 std::string player_name(Zone::Ownership owner) {
     return (owner == Zone::PLAYER_A) ? "Player A" : "Player B";
-}
-
-static const char* mana_symbol(int idx) {
-    switch (idx) {
-        case 0: return "(W)";
-        case 1: return "(U)";
-        case 2: return "(B)";
-        case 3: return "(R)";
-        case 4: return "(G)";
-        case 5: return "(C)";
-        default: return "(?)";
-    }
 }
 
 // ── game_log ──────────────────────────────────────────────────────────────────
@@ -354,7 +343,8 @@ void print_game_state(const GameState* gs) {
         for (int i = 0; i < 6; i++) {
             for (int n = 0; n < players[p]->mana[i]; n++) {
                 if (len < (int)sizeof(line))
-                    len += snprintf(line + len, (size_t)((int)sizeof(line) - len), " %s", mana_symbol(i));
+                    len += snprintf(line + len, (size_t)((int)sizeof(line) - len), " (%s)",
+                                    mana_symbol_str((Colors)i));
             }
         }
         game_log("%s\n", line);

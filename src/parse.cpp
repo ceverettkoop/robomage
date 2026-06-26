@@ -49,6 +49,51 @@ static uint32_t parse_toughness(std::string value);
 static std::vector<std::string> find_trigger_lines(const std::string &script);
 static Ability parse_one_trigger(const std::string &line, const std::map<std::string, std::string> &svars,
                                  const std::string& card_name = "");
+static void split_keywords(const std::string& kw_line, std::vector<std::string>& out);
+static bool next_param(const std::string& line, size_t& pos, std::string& key, std::string& value);
+
+// Split a comma-separated K: keyword list into trimmed keywords appended to out.
+static void split_keywords(const std::string& kw_line, std::vector<std::string>& out) {
+    size_t pos = 0;
+    while (pos < kw_line.size()) {
+        size_t comma = kw_line.find(',', pos);
+        if (comma == std::string::npos) comma = kw_line.size();
+        std::string kw = kw_line.substr(pos, comma - pos);
+        size_t s = kw.find_first_not_of(" ");
+        size_t e = kw.find_last_not_of(" ");
+        if (s != std::string::npos)
+            out.push_back(kw.substr(s, e - s + 1));
+        pos = (comma < kw_line.size()) ? comma + 1 : comma;
+    }
+}
+
+// Walk a '|'-delimited Forge parameter line ("Key$Value | Key$Value | ...").
+// Starting at *pos*, find the next "Key$Value" chunk, split it on the first '$',
+// trim surrounding spaces from key and value, and advance *pos* past the chunk.
+// Chunks lacking a '$' are skipped. A leading '|' at *pos* is consumed, so the
+// helper works whether the walk starts at the first param (pos == 0) or at a '|'
+// separator following a prefix (e.g. an ability category). Returns false once
+// the line is exhausted.
+static bool next_param(const std::string& line, size_t& pos, std::string& key, std::string& value) {
+    while (pos < line.size()) {
+        if (line[pos] == '|') pos++;
+        while (pos < line.size() && line[pos] == ' ') pos++;
+        size_t end = line.find('|', pos);
+        if (end == std::string::npos) end = line.size();
+        std::string param = line.substr(pos, end - pos);
+        pos = end;
+        size_t dollar = param.find('$');
+        if (dollar == std::string::npos) continue;
+        key = param.substr(0, dollar);
+        value = param.substr(dollar + 1);
+        size_t ks = key.find_first_not_of(" "), ke = key.find_last_not_of(" ");
+        if (ks != std::string::npos) key = key.substr(ks, ke - ks + 1);
+        size_t vs = value.find_first_not_of(" "), ve = value.find_last_not_of(" ");
+        if (vs != std::string::npos) value = value.substr(vs, ve - vs + 1);
+        return true;
+    }
+    return false;
+}
 
 // all to lowercase, spaces to underscores, other characters removed
 std::string name_to_uid(std::string name) {
@@ -305,33 +350,18 @@ Entity parse_card_script(std::string path) {
         // Parse CheckSVar$ and SVarCompare$ conditions
         // Walk remaining pipe-separated params for condition fields
         size_t pp = cost_end;
-        while (pp < line.size()) {
-            if (line[pp] == '|') pp++;
-            while (pp < line.size() && line[pp] == ' ') pp++;
-            size_t pe = line.find('|', pp);
-            if (pe == std::string::npos) pe = line.size();
-            std::string param = line.substr(pp, pe - pp);
-            while (!param.empty() && param.back() == ' ') param.pop_back();
-            size_t dollar = param.find('$');
-            if (dollar != std::string::npos) {
-                std::string key = param.substr(0, dollar);
-                std::string value = param.substr(dollar + 1);
-                while (!key.empty() && key.front() == ' ') key.erase(key.begin());
-                while (!key.empty() && key.back() == ' ') key.pop_back();
-                while (!value.empty() && value.front() == ' ') value.erase(value.begin());
-                while (!value.empty() && value.back() == ' ') value.pop_back();
-                if (key == "CheckSVar") {
-                    auto it = svars.find(value);
-                    ac.condition_svar = (it != svars.end()) ? it->second : value;
-                } else if (key == "SVarCompare") {
-                    ac.condition_compare = value;
-                } else if (key == "Condition" && value == "NotPlayerTurn") {
-                    ac.condition_not_your_turn = true;
-                } else if (key == "IsPresent") {
-                    ac.condition_is_present = value;
-                }
+        std::string key, value;
+        while (next_param(line, pp, key, value)) {
+            if (key == "CheckSVar") {
+                auto it = svars.find(value);
+                ac.condition_svar = (it != svars.end()) ? it->second : value;
+            } else if (key == "SVarCompare") {
+                ac.condition_compare = value;
+            } else if (key == "Condition" && value == "NotPlayerTurn") {
+                ac.condition_not_your_turn = true;
+            } else if (key == "IsPresent") {
+                ac.condition_is_present = value;
             }
-            pp = pe;
         }
         card.alt_cost = ac;
         break;
@@ -476,17 +506,7 @@ Entity parse_card_script(std::string path) {
             card.abilities.push_back(sac);
             continue;
         }
-        size_t pos = 0;
-        while (pos < kw_line.size()) {
-            size_t comma = kw_line.find(',', pos);
-            if (comma == std::string::npos) comma = kw_line.size();
-            std::string kw = kw_line.substr(pos, comma - pos);
-            size_t s = kw.find_first_not_of(" ");
-            size_t e = kw.find_last_not_of(" ");
-            if (s != std::string::npos)
-                card.keywords.push_back(kw.substr(s, e - s + 1));
-            pos = (comma < kw_line.size()) ? comma + 1 : comma;
-        }
+        split_keywords(kw_line, card.keywords);
     }
 
     // Parse backside for DFCs
@@ -498,15 +518,7 @@ Entity parse_card_script(std::string path) {
         backside->power     = parse_power(value_from_script(back_script, "PT"));
         backside->toughness = parse_toughness(value_from_script(back_script, "PT"));
         for (auto& kw_line : multi_values_from_script(back_script, "K")) {
-            size_t pos = 0;
-            while (pos < kw_line.size()) {
-                size_t comma = kw_line.find(',', pos);
-                if (comma == std::string::npos) comma = kw_line.size();
-                std::string kw = kw_line.substr(pos, comma - pos);
-                size_t s = kw.find_first_not_of(" "), e = kw.find_last_not_of(" ");
-                if (s != std::string::npos) backside->keywords.push_back(kw.substr(s, e - s + 1));
-                pos = (comma < kw_line.size()) ? comma + 1 : comma;
-            }
+            split_keywords(kw_line, backside->keywords);
         }
         card.backside = backside;
     }
@@ -544,26 +556,12 @@ Token parse_token_script(const std::string &script_name) {
 
     // Parse K: keyword lines — keyword stored; triggered ability applied by apply_keyword_abilities
     for (auto &kw_line : multi_values_from_script(script_data, "K")) {
-        size_t pos = 0;
-        while (pos < kw_line.size()) {
-            size_t comma = kw_line.find(',', pos);
-            if (comma == std::string::npos) comma = kw_line.size();
-            std::string kw = kw_line.substr(pos, comma - pos);
-            size_t s = kw.find_first_not_of(" ");
-            size_t e = kw.find_last_not_of(" ");
-            if (s != std::string::npos)
-                tok.keywords.push_back(kw.substr(s, e - s + 1));
-            pos = (comma < kw_line.size()) ? comma + 1 : comma;
-        }
+        split_keywords(kw_line, tok.keywords);
     }
 
     // Parse T: triggered abilities
     auto svars = parse_svars(script_data);
-    for (const auto &line : find_trigger_lines(script_data)) {
-        Ability ab = parse_one_trigger(line, svars, tok.name);
-        if (ab.trigger_on != 0)
-            tok.abilities.push_back(ab);
-    }
+    tok.abilities = parse_triggered_abilities(script_data, svars, tok.name);
 
     return tok;
 }
@@ -876,71 +874,54 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
         sub.category = normalize_category(content.substr(p, cat_end - p));
 
     size_t param_pos = content.find("|", p);
-    while (param_pos != std::string::npos) {
-        if (param_pos >= content.size()) break;
-        param_pos++;
-        while (param_pos < content.length() && content[param_pos] == ' ') param_pos++;
-        size_t param_end = content.find("|", param_pos);
-        if (param_end == std::string::npos) param_end = content.length();
-        std::string param = content.substr(param_pos, param_end - param_pos);
-
-        size_t dollar_pos = param.find("$");
-        if (dollar_pos != std::string::npos) {
-            std::string key = param.substr(0, dollar_pos);
-            std::string value = param.substr(dollar_pos + 1);
-            size_t ks = key.find_first_not_of(" "), ke = key.find_last_not_of(" ");
-            if (ks != std::string::npos) key = key.substr(ks, ke - ks + 1);
-            size_t vs = value.find_first_not_of(" "), ve = value.find_last_not_of(" ");
-            if (vs != std::string::npos) value = value.substr(vs, ve - vs + 1);
-
-            if (key == "SubAbility") {
-                auto it = svars.find(value);
-                if (it != svars.end())
-                    sub.subabilities.push_back(parse_svar_ability(it->second, ability_type, svars, card_name));
-            } else if (key == "Choices") {
-                // Charm modal in DB$ context (e.g. Knight of Autumn ETB)
-                size_t cpos = 0;
-                while (cpos < value.size()) {
-                    size_t comma = value.find(',', cpos);
-                    if (comma == std::string::npos) comma = value.size();
-                    std::string svar_name = value.substr(cpos, comma - cpos);
-                    auto cit = svars.find(svar_name);
-                    if (cit != svars.end()) {
-                        Ability choice = parse_svar_ability(cit->second, ability_type, svars, card_name);
-                        std::string desc;
-                        size_t sd = cit->second.find("SpellDescription$");
-                        if (sd != std::string::npos) {
-                            sd += 17;
-                            while (sd < cit->second.size() && cit->second[sd] == ' ') sd++;
-                            size_t de = cit->second.find('|', sd);
-                            if (de == std::string::npos) de = cit->second.size();
-                            desc = cit->second.substr(sd, de - sd);
-                            while (!desc.empty() && desc.back() == ' ') desc.pop_back();
-                        }
-                        sub.charm_choices.push_back(choice);
-                        sub.charm_choice_descriptions.push_back(desc);
+    std::string key, value;
+    while (next_param(content, param_pos, key, value)) {
+        if (key == "SubAbility") {
+            auto it = svars.find(value);
+            if (it != svars.end())
+                sub.subabilities.push_back(parse_svar_ability(it->second, ability_type, svars, card_name));
+        } else if (key == "Choices") {
+            // Charm modal in DB$ context (e.g. Knight of Autumn ETB)
+            size_t cpos = 0;
+            while (cpos < value.size()) {
+                size_t comma = value.find(',', cpos);
+                if (comma == std::string::npos) comma = value.size();
+                std::string svar_name = value.substr(cpos, comma - cpos);
+                auto cit = svars.find(svar_name);
+                if (cit != svars.end()) {
+                    Ability choice = parse_svar_ability(cit->second, ability_type, svars, card_name);
+                    std::string desc;
+                    size_t sd = cit->second.find("SpellDescription$");
+                    if (sd != std::string::npos) {
+                        sd += 17;
+                        while (sd < cit->second.size() && cit->second[sd] == ' ') sd++;
+                        size_t de = cit->second.find('|', sd);
+                        if (de == std::string::npos) de = cit->second.size();
+                        desc = cit->second.substr(sd, de - sd);
+                        while (!desc.empty() && desc.back() == ' ') desc.pop_back();
                     }
-                    cpos = comma + 1;
+                    sub.charm_choices.push_back(choice);
+                    sub.charm_choice_descriptions.push_back(desc);
                 }
-            } else if (key == "CharmNum") {
-                sub.charm_num = std::stoi(value);
-            } else if (key == "Execute") {
-                // Execute$ references an SVar containing the ability to fire (delayed triggers)
-                effect_params<DelayedTriggerParams>(sub).execute_svar = value;
-                auto it = svars.find(value);
-                if (it != svars.end())
-                    sub.subabilities.push_back(parse_svar_ability(it->second, ability_type, svars, card_name));
-            } else if (key == "ConditionCheckSVar") {
-                // Resolve SVar reference to its expression (e.g. "X" → "Count$ResolvedThisTurn")
-                auto it = svars.find(value);
-                sub.condition_check_svar = (it != svars.end()) ? it->second : value;
-            } else if (key == "ConditionSVarCompare") {
-                sub.condition_svar_compare = value;
-            } else {
-                apply_param_to_ability(sub, key, value, card_name);
+                cpos = comma + 1;
             }
+        } else if (key == "CharmNum") {
+            sub.charm_num = std::stoi(value);
+        } else if (key == "Execute") {
+            // Execute$ references an SVar containing the ability to fire (delayed triggers)
+            effect_params<DelayedTriggerParams>(sub).execute_svar = value;
+            auto it = svars.find(value);
+            if (it != svars.end())
+                sub.subabilities.push_back(parse_svar_ability(it->second, ability_type, svars, card_name));
+        } else if (key == "ConditionCheckSVar") {
+            // Resolve SVar reference to its expression (e.g. "X" → "Count$ResolvedThisTurn")
+            auto it = svars.find(value);
+            sub.condition_check_svar = (it != svars.end()) ? it->second : value;
+        } else if (key == "ConditionSVarCompare") {
+            sub.condition_svar_compare = value;
+        } else {
+            apply_param_to_ability(sub, key, value, card_name);
         }
-        param_pos = param_end;
     }
     // Resolve amount_svar through SVars map (same logic as parse_abilities)
     if (!sub.amount_svar.empty()) {
@@ -1083,70 +1064,43 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
 
         // Parse pipe-delimited parameters — applies to all ability categories
         size_t param_pos = line.find("|", pos);
-        while (param_pos != std::string::npos) {
-            if (param_pos >= line.size()) break;
-            param_pos++;  // Skip '|'
-
-            while (param_pos < line.length() && line[param_pos] == ' ') param_pos++;
-
-            size_t param_end = line.find("|", param_pos);
-            if (param_end == std::string::npos) param_end = line.length();
-
-            std::string param = line.substr(param_pos, param_end - param_pos);
-
-            size_t dollar_pos = param.find("$");
-            if (dollar_pos != std::string::npos) {
-                std::string key = param.substr(0, dollar_pos);
-                std::string value = param.substr(dollar_pos + 1);
-
-                size_t key_start = key.find_first_not_of(" ");
-                size_t key_end = key.find_last_not_of(" ");
-                if (key_start != std::string::npos)
-                    key = key.substr(key_start, key_end - key_start + 1);
-
-                size_t value_start = value.find_first_not_of(" ");
-                size_t value_end = value.find_last_not_of(" ");
-                if (value_start != std::string::npos)
-                    value = value.substr(value_start, value_end - value_start + 1);
-
-                if (key == "SubAbility") {
-                    auto it = svars.find(value);
-                    if (it != svars.end())
-                        ability.subabilities.push_back(parse_svar_ability(it->second, ability.ability_type, svars, card_name));
-                } else if (key == "Choices") {
-                    // Charm modal: resolve comma-separated SVar names into sub-abilities
-                    size_t cpos = 0;
-                    while (cpos < value.size()) {
-                        size_t comma = value.find(',', cpos);
-                        if (comma == std::string::npos) comma = value.size();
-                        std::string svar_name = value.substr(cpos, comma - cpos);
-                        auto it = svars.find(svar_name);
-                        if (it != svars.end()) {
-                            Ability choice = parse_svar_ability(it->second, ability.ability_type, svars, card_name);
-                            // Extract SpellDescription from the choice for display
-                            std::string desc;
-                            size_t sd = it->second.find("SpellDescription$");
-                            if (sd != std::string::npos) {
-                                sd += 17; // skip "SpellDescription$"
-                                while (sd < it->second.size() && it->second[sd] == ' ') sd++;
-                                size_t de = it->second.find('|', sd);
-                                if (de == std::string::npos) de = it->second.size();
-                                desc = it->second.substr(sd, de - sd);
-                                while (!desc.empty() && desc.back() == ' ') desc.pop_back();
-                            }
-                            ability.charm_choices.push_back(choice);
-                            ability.charm_choice_descriptions.push_back(desc);
+        std::string key, value;
+        while (next_param(line, param_pos, key, value)) {
+            if (key == "SubAbility") {
+                auto it = svars.find(value);
+                if (it != svars.end())
+                    ability.subabilities.push_back(parse_svar_ability(it->second, ability.ability_type, svars, card_name));
+            } else if (key == "Choices") {
+                // Charm modal: resolve comma-separated SVar names into sub-abilities
+                size_t cpos = 0;
+                while (cpos < value.size()) {
+                    size_t comma = value.find(',', cpos);
+                    if (comma == std::string::npos) comma = value.size();
+                    std::string svar_name = value.substr(cpos, comma - cpos);
+                    auto it = svars.find(svar_name);
+                    if (it != svars.end()) {
+                        Ability choice = parse_svar_ability(it->second, ability.ability_type, svars, card_name);
+                        // Extract SpellDescription from the choice for display
+                        std::string desc;
+                        size_t sd = it->second.find("SpellDescription$");
+                        if (sd != std::string::npos) {
+                            sd += 17; // skip "SpellDescription$"
+                            while (sd < it->second.size() && it->second[sd] == ' ') sd++;
+                            size_t de = it->second.find('|', sd);
+                            if (de == std::string::npos) de = it->second.size();
+                            desc = it->second.substr(sd, de - sd);
+                            while (!desc.empty() && desc.back() == ' ') desc.pop_back();
                         }
-                        cpos = comma + 1;
+                        ability.charm_choices.push_back(choice);
+                        ability.charm_choice_descriptions.push_back(desc);
                     }
-                } else if (key == "CharmNum") {
-                    ability.charm_num = std::stoi(value);
-                } else {
-                    apply_param_to_ability(ability, key, value, card_name);
+                    cpos = comma + 1;
                 }
+            } else if (key == "CharmNum") {
+                ability.charm_num = std::stoi(value);
+            } else {
+                apply_param_to_ability(ability, key, value, card_name);
             }
-
-            param_pos = param_end;
         }
         // Fatal Push pattern: ConditionPresent "Creature.cmcLE<SVar>" references an SVar
         // (X = Count$Revolt.4.2) for the cmc threshold but sets no Amount/NumDmg, so
@@ -1310,79 +1264,56 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
 
     // Walk pipe-delimited params
     size_t param_pos = 0;
-    while (param_pos <= line.size()) {
-        size_t param_end = line.find('|', param_pos);
-        if (param_end == std::string::npos) param_end = line.size();
-        std::string param = line.substr(param_pos, param_end - param_pos);
-
-        // trim whitespace
-        size_t ks = param.find_first_not_of(" ");
-        size_t ke = param.find_last_not_of(" ");
-        if (ks != std::string::npos) param = param.substr(ks, ke - ks + 1);
-
-        size_t dollar = param.find('$');
-        if (dollar != std::string::npos) {
-            std::string key = param.substr(0, dollar);
-            std::string value = param.substr(dollar + 1);
-            size_t vs = value.find_first_not_of(" ");
-            size_t ve = value.find_last_not_of(" ");
-            if (vs != std::string::npos) value = value.substr(vs, ve - vs + 1);
-            size_t ks2 = key.find_first_not_of(" ");
-            size_t ke2 = key.find_last_not_of(" ");
-            if (ks2 != std::string::npos) key = key.substr(ks2, ke2 - ks2 + 1);
-
-            if (key == "Mode") {
-                if (value == "ChangesZone") mode_changes_zone = true;
-                else if (value == "Phase") mode_is_phase = true;
-                else if (value == "SpellCast") mode_is_spell_cast = true;
-                else if (value == "DamageDone") mode_is_damage_done = true;
-                else if (value == "Drawn") mode_is_drawn = true;
-            } else if (key == "Phase") {
-                if (value == "Upkeep")   phase_is_upkeep   = true;
-                // Forge writes the end step as either "EndStep" or "End of Turn".
-                if (value == "EndStep" || value == "End of Turn")  phase_is_end_step = true;
-                if (value == "Draw")     phase_is_draw     = true;
-            } else if (key == "ValidPlayer" || key == "ValidActivatingPlayer") {
-                if (value == "You") valid_player_is_you = true;
-            } else if (key == "Origin") {
-                if (value == "Battlefield") origin_is_battlefield = true;
-                if (value == "Graveyard")   origin_is_graveyard   = true;
-            } else if (key == "Destination") {
-                if (value == "Battlefield") dest_is_battlefield = true;
-                if (value == "Graveyard")   dest_is_graveyard   = true;
-            } else if (key == "ValidCard") {
-                if (value.find("Creature")    != std::string::npos) valid_card_creature     = true;
-                if (value.find("nonCreature") != std::string::npos) valid_card_non_creature = true;
-                if (value.find(".Other")      != std::string::npos) ability.trigger_self_excluded = true;
-                if (value == "Card.Self")                            valid_card_self         = true;
-                if (value.find("Instant")     != std::string::npos) valid_card_instant      = true;
-                if (value.find("Sorcery")     != std::string::npos) valid_card_sorcery      = true;
-                if (value.find(".YouOwn")     != std::string::npos) valid_card_owner_you    = true;
-                if (value.find(".OppOwn")     != std::string::npos) valid_card_opp_own      = true;
-                if (value.find("Land")        != std::string::npos) valid_card_land         = true;
-                if (value.find(".YouCtrl")    != std::string::npos) valid_player_is_you     = true;
-            } else if (key == "FirstCardInDrawStep") {
-                if (value == "False") exclude_first_draw_step = true;
-            } else if (key == "CombatDamage") {
-                if (value == "True") damage_combat_only = true;
-            } else if (key == "ActivatorThisTurnCast") {
-                if (value.rfind("EQ", 0) == 0) {
-                    activator_this_turn_cast_eq = static_cast<size_t>(std::stoi(value.substr(2)));
-                }
-            } else if (key == "IsPresent") {
-                // Intervening-if (603.4): "..., if you control a <thing>, ...". Checked both
-                // when the trigger would go on the stack and again on resolution.
-                ability.condition_present = value;
-                ability.intervening_if = true;
-            } else if (key == "PresentCompare") {
-                ability.condition_compare = value;  // e.g. "GE2"; empty defaults to ">= 1"
-            } else if (key == "Execute") {
-                execute_svar = value;
+    std::string key, value;
+    while (next_param(line, param_pos, key, value)) {
+        if (key == "Mode") {
+            if (value == "ChangesZone") mode_changes_zone = true;
+            else if (value == "Phase") mode_is_phase = true;
+            else if (value == "SpellCast") mode_is_spell_cast = true;
+            else if (value == "DamageDone") mode_is_damage_done = true;
+            else if (value == "Drawn") mode_is_drawn = true;
+        } else if (key == "Phase") {
+            if (value == "Upkeep")   phase_is_upkeep   = true;
+            // Forge writes the end step as either "EndStep" or "End of Turn".
+            if (value == "EndStep" || value == "End of Turn")  phase_is_end_step = true;
+            if (value == "Draw")     phase_is_draw     = true;
+        } else if (key == "ValidPlayer" || key == "ValidActivatingPlayer") {
+            if (value == "You") valid_player_is_you = true;
+        } else if (key == "Origin") {
+            if (value == "Battlefield") origin_is_battlefield = true;
+            if (value == "Graveyard")   origin_is_graveyard   = true;
+        } else if (key == "Destination") {
+            if (value == "Battlefield") dest_is_battlefield = true;
+            if (value == "Graveyard")   dest_is_graveyard   = true;
+        } else if (key == "ValidCard") {
+            if (value.find("Creature")    != std::string::npos) valid_card_creature     = true;
+            if (value.find("nonCreature") != std::string::npos) valid_card_non_creature = true;
+            if (value.find(".Other")      != std::string::npos) ability.trigger_self_excluded = true;
+            if (value == "Card.Self")                            valid_card_self         = true;
+            if (value.find("Instant")     != std::string::npos) valid_card_instant      = true;
+            if (value.find("Sorcery")     != std::string::npos) valid_card_sorcery      = true;
+            if (value.find(".YouOwn")     != std::string::npos) valid_card_owner_you    = true;
+            if (value.find(".OppOwn")     != std::string::npos) valid_card_opp_own      = true;
+            if (value.find("Land")        != std::string::npos) valid_card_land         = true;
+            if (value.find(".YouCtrl")    != std::string::npos) valid_player_is_you     = true;
+        } else if (key == "FirstCardInDrawStep") {
+            if (value == "False") exclude_first_draw_step = true;
+        } else if (key == "CombatDamage") {
+            if (value == "True") damage_combat_only = true;
+        } else if (key == "ActivatorThisTurnCast") {
+            if (value.rfind("EQ", 0) == 0) {
+                activator_this_turn_cast_eq = static_cast<size_t>(std::stoi(value.substr(2)));
             }
+        } else if (key == "IsPresent") {
+            // Intervening-if (603.4): "..., if you control a <thing>, ...". Checked both
+            // when the trigger would go on the stack and again on resolution.
+            ability.condition_present = value;
+            ability.intervening_if = true;
+        } else if (key == "PresentCompare") {
+            ability.condition_compare = value;  // e.g. "GE2"; empty defaults to ">= 1"
+        } else if (key == "Execute") {
+            execute_svar = value;
         }
-
-        if (param_end >= line.size()) break;
-        param_pos = param_end + 1;
     }
 
     // Map trigger condition to event ID.
@@ -1507,121 +1438,98 @@ static std::vector<StaticAbility> parse_static_abilities(const std::string &scri
 
         StaticAbility sa;
         size_t param_pos = 0;
-        while (param_pos <= line.size()) {
-            size_t param_end = line.find('|', param_pos);
-            if (param_end == std::string::npos) param_end = line.size();
-            std::string param = line.substr(param_pos, param_end - param_pos);
-
-            // trim whitespace
-            size_t ks = param.find_first_not_of(" ");
-            size_t ke = param.find_last_not_of(" ");
-            if (ks != std::string::npos) param = param.substr(ks, ke - ks + 1);
-
-            size_t dollar = param.find('$');
-            if (dollar != std::string::npos) {
-                std::string key = param.substr(0, dollar);
-                std::string value = param.substr(dollar + 1);
-                size_t vs = value.find_first_not_of(" ");
-                size_t ve = value.find_last_not_of(" ");
-                if (vs != std::string::npos) value = value.substr(vs, ve - vs + 1);
-                size_t ks2 = key.find_first_not_of(" ");
-                size_t ke2 = key.find_last_not_of(" ");
-                if (ks2 != std::string::npos) key = key.substr(ks2, ke2 - ks2 + 1);
-
-                if (key == "Mode") {
-                    sa.category = value;
-                } else if (key == "Condition") {
-                    sa.condition = value;
-                } else if (key == "AddPower") {
-                    if (!value.empty() && (std::isdigit(static_cast<unsigned char>(value[0])) || value[0] == '-'))
-                        sa.add_power = std::stoi(value);
-                    else if (!value.empty()) {
-                        auto it = svars.find(value);
-                        sa.add_power_svar = (it != svars.end()) ? it->second : value;
-                    }
-                } else if (key == "AddToughness") {
-                    if (!value.empty() && (std::isdigit(static_cast<unsigned char>(value[0])) || value[0] == '-'))
-                        sa.add_toughness = std::stoi(value);
-                    else if (!value.empty()) {
-                        auto it = svars.find(value);
-                        sa.add_toughness_svar = (it != svars.end()) ? it->second : value;
-                    }
-                } else if (key == "AddKeyword") {
-                    sa.add_keyword = value;
-                } else if (key == "Affected") {
-                    sa.affected = value;
-                    // Also store as affected_subtype for untap prevention (Choke: Affected$ Island)
-                    if (sa.category == "Continuous" && value.find("EquippedBy") == std::string::npos) {
-                        sa.affected_subtype = value;
-                    }
-                } else if (key == "Amount") {
-                    // Used by RaiseCost
-                    if (!value.empty() && std::isdigit(static_cast<unsigned char>(value[0])))
-                        sa.raise_cost = std::stoi(value);
-                } else if (key == "ValidCard") {
-                    // Card.NamedCard restricts the static to the source's chosen card name
-                    // (RaiseCost / CantBeActivated on Disruptor Flute).
-                    if (value.find("NamedCard") != std::string::npos)
-                        sa.match_named_card = true;
-                    if (sa.category == "RaiseCost") {
-                        if (value.find("nonCreature") != std::string::npos)
-                            sa.raise_cost_filter = "nonCreature";
-                    } else if (sa.category == "CantBeActivated") {
-                        if (value.find("Artifact") != std::string::npos)
-                            sa.cant_activate_card_filter = "Artifact";
-                    } else if (sa.category == "CantBeCast") {
-                        sa.cant_cast_filter = value;
-                    }
-                } else if (key == "NumLimitEachTurn") {
-                    sa.cant_cast_limit_per_turn = std::stoi(value);
-                } else if (key == "AddHiddenKeyword") {
-                    sa.hidden_keyword = value;
-                } else if (key == "ValidCause") {
-                    sa.disable_triggers_cause = value;
-                } else if (key == "ValidMode") {
-                    sa.disable_triggers_mode = value;
-                } else if (key == "CharacteristicDefining") {
-                    sa.characteristic_defining = (value == "True");
-                } else if (key == "SetPower") {
+        std::string key, value;
+        while (next_param(line, param_pos, key, value)) {
+            if (key == "Mode") {
+                sa.category = value;
+            } else if (key == "Condition") {
+                sa.condition = value;
+            } else if (key == "AddPower") {
+                if (!value.empty() && (std::isdigit(static_cast<unsigned char>(value[0])) || value[0] == '-'))
+                    sa.add_power = std::stoi(value);
+                else if (!value.empty()) {
                     auto it = svars.find(value);
-                    sa.set_power_svar = (it != svars.end()) ? it->second : value;
-                } else if (key == "SetToughness") {
-                    auto it = svars.find(value);
-                    std::string resolved = (it != svars.end()) ? it->second : value;
-                    // Resolve SVar$<name>/Plus.<N> pattern at parse time
-                    // e.g. "SVar$X/Plus.1" → resolve X from svars, append "/Plus.1"
-                    if (resolved.rfind("SVar$", 0) == 0) {
-                        size_t slash = resolved.find('/');
-                        std::string ref_name = (slash != std::string::npos)
-                            ? resolved.substr(5, slash - 5) : resolved.substr(5);
-                        std::string suffix = (slash != std::string::npos)
-                            ? resolved.substr(slash) : "";
-                        auto ref_it = svars.find(ref_name);
-                        if (ref_it != svars.end())
-                            resolved = ref_it->second + suffix;
-                    }
-                    sa.set_toughness_svar = resolved;
-                } else if (key == "AddType") {
-                    sa.add_type = value;
-                } else if (key == "RemoveLandTypes") {
-                    sa.remove_land_types = (value == "True");
-                } else if (key == "RemoveAllAbilities") {
-                    sa.remove_all_abilities = (value == "True");
-                } else if (key == "AdjustLandPlays") {
-                    if (!value.empty() && std::isdigit(static_cast<unsigned char>(value[0])))
-                        sa.adjust_land_plays = std::stoi(value);
-                } else if (key == "MayPlay") {
-                    if (value == "True") sa.may_play_from_graveyard = true;
-                } else if (key == "CheckSVar") {
-                    auto it = svars.find(value);
-                    sa.check_svar_expr = (it != svars.end()) ? it->second : value;
-                } else if (key == "SVarCompare") {
-                    sa.svar_compare = value;
+                    sa.add_power_svar = (it != svars.end()) ? it->second : value;
                 }
+            } else if (key == "AddToughness") {
+                if (!value.empty() && (std::isdigit(static_cast<unsigned char>(value[0])) || value[0] == '-'))
+                    sa.add_toughness = std::stoi(value);
+                else if (!value.empty()) {
+                    auto it = svars.find(value);
+                    sa.add_toughness_svar = (it != svars.end()) ? it->second : value;
+                }
+            } else if (key == "AddKeyword") {
+                sa.add_keyword = value;
+            } else if (key == "Affected") {
+                sa.affected = value;
+                // Also store as affected_subtype for untap prevention (Choke: Affected$ Island)
+                if (sa.category == "Continuous" && value.find("EquippedBy") == std::string::npos) {
+                    sa.affected_subtype = value;
+                }
+            } else if (key == "Amount") {
+                // Used by RaiseCost
+                if (!value.empty() && std::isdigit(static_cast<unsigned char>(value[0])))
+                    sa.raise_cost = std::stoi(value);
+            } else if (key == "ValidCard") {
+                // Card.NamedCard restricts the static to the source's chosen card name
+                // (RaiseCost / CantBeActivated on Disruptor Flute).
+                if (value.find("NamedCard") != std::string::npos)
+                    sa.match_named_card = true;
+                if (sa.category == "RaiseCost") {
+                    if (value.find("nonCreature") != std::string::npos)
+                        sa.raise_cost_filter = "nonCreature";
+                } else if (sa.category == "CantBeActivated") {
+                    if (value.find("Artifact") != std::string::npos)
+                        sa.cant_activate_card_filter = "Artifact";
+                } else if (sa.category == "CantBeCast") {
+                    sa.cant_cast_filter = value;
+                }
+            } else if (key == "NumLimitEachTurn") {
+                sa.cant_cast_limit_per_turn = std::stoi(value);
+            } else if (key == "AddHiddenKeyword") {
+                sa.hidden_keyword = value;
+            } else if (key == "ValidCause") {
+                sa.disable_triggers_cause = value;
+            } else if (key == "ValidMode") {
+                sa.disable_triggers_mode = value;
+            } else if (key == "CharacteristicDefining") {
+                sa.characteristic_defining = (value == "True");
+            } else if (key == "SetPower") {
+                auto it = svars.find(value);
+                sa.set_power_svar = (it != svars.end()) ? it->second : value;
+            } else if (key == "SetToughness") {
+                auto it = svars.find(value);
+                std::string resolved = (it != svars.end()) ? it->second : value;
+                // Resolve SVar$<name>/Plus.<N> pattern at parse time
+                // e.g. "SVar$X/Plus.1" → resolve X from svars, append "/Plus.1"
+                if (resolved.rfind("SVar$", 0) == 0) {
+                    size_t slash = resolved.find('/');
+                    std::string ref_name = (slash != std::string::npos)
+                        ? resolved.substr(5, slash - 5) : resolved.substr(5);
+                    std::string suffix = (slash != std::string::npos)
+                        ? resolved.substr(slash) : "";
+                    auto ref_it = svars.find(ref_name);
+                    if (ref_it != svars.end())
+                        resolved = ref_it->second + suffix;
+                }
+                sa.set_toughness_svar = resolved;
+            } else if (key == "AddType") {
+                sa.add_type = value;
+            } else if (key == "RemoveLandTypes") {
+                sa.remove_land_types = (value == "True");
+            } else if (key == "RemoveAllAbilities") {
+                sa.remove_all_abilities = (value == "True");
+            } else if (key == "AdjustLandPlays") {
+                if (!value.empty() && std::isdigit(static_cast<unsigned char>(value[0])))
+                    sa.adjust_land_plays = std::stoi(value);
+            } else if (key == "MayPlay") {
+                if (value == "True") sa.may_play_from_graveyard = true;
+            } else if (key == "CheckSVar") {
+                auto it = svars.find(value);
+                sa.check_svar_expr = (it != svars.end()) ? it->second : value;
+            } else if (key == "SVarCompare") {
+                sa.svar_compare = value;
             }
-
-            if (param_end >= line.size()) break;
-            param_pos = param_end + 1;
         }
 
         if (!sa.category.empty()) result.push_back(sa);
@@ -1673,43 +1581,23 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
         bool valid_card_opp_non_token = false;
 
         size_t param_pos = 0;
-        while (param_pos <= line.size()) {
-            size_t param_end = line.find('|', param_pos);
-            if (param_end == std::string::npos) param_end = line.size();
-            std::string param = line.substr(param_pos, param_end - param_pos);
-
-            size_t ks = param.find_first_not_of(" ");
-            size_t ke = param.find_last_not_of(" ");
-            if (ks != std::string::npos) param = param.substr(ks, ke - ks + 1);
-
-            size_t dollar = param.find('$');
-            if (dollar != std::string::npos) {
-                std::string key = param.substr(0, dollar);
-                std::string value = param.substr(dollar + 1);
-                size_t vs = value.find_first_not_of(" "), ve = value.find_last_not_of(" ");
-                if (vs != std::string::npos) value = value.substr(vs, ve - vs + 1);
-                size_t ks2 = key.find_first_not_of(" "), ke2 = key.find_last_not_of(" ");
-                if (ks2 != std::string::npos) key = key.substr(ks2, ke2 - ks2 + 1);
-
-                if      (key == "Event"       && value == "Moved")       event_is_moved          = true;
-                else if (key == "Event"       && value == "Counter")    event_is_counter        = true;
-                else if (key == "Event"       && value == "Untap")      event_is_untap          = true;
-                else if (key == "ValidCard"   && value == "Card.Self")   valid_card_self         = true;
-                else if (key == "ValidCard"   && value.find('.') == std::string::npos)
-                    untap_valid_subtype = value;  // a bare subtype filter (Choke: ValidCard$ Island)
-                else if (key == "ValidCard"   && value.find("OppOwn") != std::string::npos &&
-                         (value.find("!token") != std::string::npos ||
-                          value.find("nonToken") != std::string::npos)) valid_card_opp_non_token = true;
-                else if (key == "Destination" && value == "Battlefield") dest_is_battlefield     = true;
-                else if (key == "Destination" && value == "Graveyard")   dest_is_graveyard_r     = true;
-                else if (key == "ReplaceWith" && value == "ETBTapped")   replace_with_etb_tapped = true;
-                else if (key == "ReplaceWith" && value == "Exile")       replace_with_exile      = true;
-                else if (key == "Layer"       && value == "CantHappen") layer_cant_happen        = true;
-                else if (key == "ActiveZones" && value == "Battlefield") active_zones_battlefield = true;
-            }
-
-            if (param_end >= line.size()) break;
-            param_pos = param_end + 1;
+        std::string key, value;
+        while (next_param(line, param_pos, key, value)) {
+            if      (key == "Event"       && value == "Moved")       event_is_moved          = true;
+            else if (key == "Event"       && value == "Counter")    event_is_counter        = true;
+            else if (key == "Event"       && value == "Untap")      event_is_untap          = true;
+            else if (key == "ValidCard"   && value == "Card.Self")   valid_card_self         = true;
+            else if (key == "ValidCard"   && value.find('.') == std::string::npos)
+                untap_valid_subtype = value;  // a bare subtype filter (Choke: ValidCard$ Island)
+            else if (key == "ValidCard"   && value.find("OppOwn") != std::string::npos &&
+                     (value.find("!token") != std::string::npos ||
+                      value.find("nonToken") != std::string::npos)) valid_card_opp_non_token = true;
+            else if (key == "Destination" && value == "Battlefield") dest_is_battlefield     = true;
+            else if (key == "Destination" && value == "Graveyard")   dest_is_graveyard_r     = true;
+            else if (key == "ReplaceWith" && value == "ETBTapped")   replace_with_etb_tapped = true;
+            else if (key == "ReplaceWith" && value == "Exile")       replace_with_exile      = true;
+            else if (key == "Layer"       && value == "CantHappen") layer_cant_happen        = true;
+            else if (key == "ActiveZones" && value == "Battlefield") active_zones_battlefield = true;
         }
 
         if (event_is_moved && valid_card_self && dest_is_battlefield && replace_with_etb_tapped) {

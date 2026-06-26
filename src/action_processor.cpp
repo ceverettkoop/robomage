@@ -287,16 +287,7 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
         // priority does not pass
 
         // Increment activation counter if this ability has a limit
-        if (ability.activation_limit > 0) {
-            for (auto &perm_ab : permanent.abilities) {
-                if (perm_ab.category == ability.category &&
-                    perm_ab.tap_cost == ability.tap_cost &&
-                    perm_ab.color == ability.color) {
-                    perm_ab.activations_this_turn++;
-                    break;
-                }
-            }
-        }
+        increment_activation_count(permanent, ability);
     } else {  // ACTIVATED ABILITY THAT IS NOT A MANA ABILITY - GOES ON STACK
         // puts on stack; we have targets from earlier
         stack_ab.source = permanent_entity;
@@ -313,15 +304,7 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
         game.take_action();
 
         // Increment activation counter for limited abilities (e.g. Scryb Ranger)
-        if (ability.activation_limit > 0) {
-            for (auto &perm_ab : permanent.abilities) {
-                if (perm_ab.category == ability.category &&
-                    perm_ab.return_cost_type == ability.return_cost_type) {
-                    perm_ab.activations_this_turn++;
-                    break;
-                }
-            }
-        }
+        increment_activation_count(permanent, ability);
         // if target remains legal checked at resolution
     }
 }

@@ -26,6 +26,9 @@
 #include "../type_constants.h"
 #include "../components/types.h"
 
+// --- file-local helpers (forward declarations) ---
+static ColorIdentity color_identity_from(const CardData &cd);
+
 // orderer cares about anything that has a zone
 void Orderer::init() {
     Signature signature;
@@ -198,6 +201,21 @@ void Orderer::shuffle_library(Zone::Ownership owner) {
 
 extern bool no_shuffle;
 
+// Derive a card's color identity from its mana cost, honoring an explicit
+// color-identity override (e.g. Dryad Arbor) when present.
+static ColorIdentity color_identity_from(const CardData &cd) {
+    ColorIdentity ci;
+    if (!cd.explicit_colors.empty()) {
+        // Use explicit color identity override (e.g. Dryad Arbor)
+        ci.colors = cd.explicit_colors;
+    } else {
+        for (auto c : cd.mana_cost) {
+            if (c != GENERIC && c != COLORLESS && c != NO_COLOR) ci.colors.insert(c);
+        }
+    }
+    return ci;
+}
+
 void Orderer::generate_libraries(const Deck &deck_a, const Deck &deck_b) {
     Zone::Ownership owner = Zone::PLAYER_A;
     auto target_deck = deck_a;
@@ -223,17 +241,8 @@ void Orderer::generate_libraries(const Deck &deck_a, const Deck &deck_b) {
                     auto &z = coordinator.GetComponent<Zone>(card_id);
                     z.distance_from_top = deck_position++;
                 }
-                ColorIdentity ci;
                 auto &cd = coordinator.GetComponent<CardData>(card_id);
-                if (!cd.explicit_colors.empty()) {
-                    // Use explicit color identity override (e.g. Dryad Arbor)
-                    ci.colors = cd.explicit_colors;
-                } else {
-                    for (auto c : cd.mana_cost) {
-                        if (c != GENERIC && c != COLORLESS && c != NO_COLOR) ci.colors.insert(c);
-                    }
-                }
-                coordinator.AddComponent(card_id, ci);
+                coordinator.AddComponent(card_id, color_identity_from(cd));
             }
         }
     }
@@ -464,96 +473,58 @@ void Orderer::do_london_mulligan() {
         }
     };
 
+    // One seat's keep/mulligan decision. The two seats are identical apart from
+    // which player owns the hand and who holds priority while deciding.
+    auto decide_for = [&](Zone::Ownership owner, bool &kept, int &mulligans, bool priority_is_a) {
+        cur_game.player_a_has_priority = priority_is_a;
+        {
+            auto hand_display = this->get_hand(owner);
+            game_log_private(owner, "%s hand:\n", player_name(owner).c_str());
+            for (auto card : hand_display) {
+                auto &data = global_coordinator.GetComponent<CardData>(card);
+                game_log_private(owner, "%s\n", data.name.c_str());
+            }
+        }
+        std::vector<LegalAction> mull_actions = {
+            LegalAction(PASS_PRIORITY, std::string("Keep")),
+            LegalAction(PASS_PRIORITY, std::string("Mulligan")),
+        };
+        mull_actions[0].category = ActionCategory::MULLIGAN;
+        mull_actions[1].category = ActionCategory::MULLIGAN;
+        populate_gs_for_mulligan();
+        int choice = InputLogger::instance().get_input(mull_actions);
+        if (choice == 0) {
+            kept = true;
+            log_mull_decision(owner, true, mulligans);
+            do_bottom_deck(owner, mulligans);
+        } else {
+            log_mull_decision(owner, false, mulligans);
+            mulligans++;
+            if (mulligans == 7) {
+                kept = true;
+                log_mull_decision(owner, true, mulligans);
+                do_bottom_deck(owner, mulligans);
+            } else {
+                if (mulligans >= 3 && InputLogger::instance().is_machine_mode()) {
+                    printf("MULLIGAN_PENALTY: %s\n", owner == Zone::PLAYER_A ? "A" : "B");
+                    fflush(stdout);
+                }
+                auto hand = this->get_hand(owner);
+                for (auto card : hand) {
+                    this->add_to_zone(false, card, Zone::LIBRARY);
+                }
+                this->shuffle_library(owner);
+                this->draw(owner, 7, false);
+            }
+        }
+    };
+
     while (!a_kept || !b_kept) {
         // Player A decides
-        if (!a_kept) {
-            cur_game.player_a_has_priority = true;
-            {
-                auto hand_display = this->get_hand(Zone::PLAYER_A);
-                game_log_private(Zone::PLAYER_A, "%s hand:\n", player_name(Zone::PLAYER_A).c_str());
-                for (auto card : hand_display) {
-                    auto &data = global_coordinator.GetComponent<CardData>(card);
-                    game_log_private(Zone::PLAYER_A, "%s\n", data.name.c_str());
-                }
-            }
-            std::vector<LegalAction> mull_actions = {
-                LegalAction(PASS_PRIORITY, std::string("Keep")),
-                LegalAction(PASS_PRIORITY, std::string("Mulligan")),
-            };
-            mull_actions[0].category = ActionCategory::MULLIGAN;
-            mull_actions[1].category = ActionCategory::MULLIGAN;
-            populate_gs_for_mulligan();
-            int choice = InputLogger::instance().get_input(mull_actions);
-            if (choice == 0) {
-                a_kept = true;
-                log_mull_decision(Zone::PLAYER_A, true, mulligans_a);
-                do_bottom_deck(Zone::PLAYER_A, mulligans_a);
-            } else {
-                log_mull_decision(Zone::PLAYER_A, false, mulligans_a);
-                mulligans_a++;
-                if (mulligans_a == 7) {
-                    a_kept = true;
-                    log_mull_decision(Zone::PLAYER_A, true, mulligans_a);
-                    do_bottom_deck(Zone::PLAYER_A, mulligans_a);
-                } else {
-                    if (mulligans_a >= 3 && InputLogger::instance().is_machine_mode()) {
-                        printf("MULLIGAN_PENALTY: A\n");
-                        fflush(stdout);
-                    }
-                    auto hand = this->get_hand(Zone::PLAYER_A);
-                    for (auto card : hand) {
-                        this->add_to_zone(false, card, Zone::LIBRARY);
-                    }
-                    this->shuffle_library(Zone::PLAYER_A);
-                    this->draw(Zone::PLAYER_A, 7, false);
-                }
-            }
-        }
+        if (!a_kept) decide_for(Zone::PLAYER_A, a_kept, mulligans_a, true);
 
         // Player B decides
-        if (!b_kept) {
-            cur_game.player_a_has_priority = false;
-            {
-                auto hand_display = this->get_hand(Zone::PLAYER_B);
-                game_log_private(Zone::PLAYER_B, "%s hand:\n", player_name(Zone::PLAYER_B).c_str());
-                for (auto card : hand_display) {
-                    auto &data = global_coordinator.GetComponent<CardData>(card);
-                    game_log_private(Zone::PLAYER_B, "%s\n", data.name.c_str());
-                }
-            }
-            std::vector<LegalAction> mull_actions = {
-                LegalAction(PASS_PRIORITY, std::string("Keep")),
-                LegalAction(PASS_PRIORITY, std::string("Mulligan")),
-            };
-            mull_actions[0].category = ActionCategory::MULLIGAN;
-            mull_actions[1].category = ActionCategory::MULLIGAN;
-            populate_gs_for_mulligan();
-            int choice = InputLogger::instance().get_input(mull_actions);
-            if (choice == 0) {
-                b_kept = true;
-                log_mull_decision(Zone::PLAYER_B, true, mulligans_b);
-                do_bottom_deck(Zone::PLAYER_B, mulligans_b);
-            } else {
-                log_mull_decision(Zone::PLAYER_B, false, mulligans_b);
-                mulligans_b++;
-                if (mulligans_b == 7) {
-                    b_kept = true;
-                    log_mull_decision(Zone::PLAYER_B, true, mulligans_b);
-                    do_bottom_deck(Zone::PLAYER_B, mulligans_b);
-                } else {
-                    if (mulligans_b >= 3 && InputLogger::instance().is_machine_mode()) {
-                        printf("MULLIGAN_PENALTY: B\n");
-                        fflush(stdout);
-                    }
-                    auto hand = this->get_hand(Zone::PLAYER_B);
-                    for (auto card : hand) {
-                        this->add_to_zone(false, card, Zone::LIBRARY);
-                    }
-                    this->shuffle_library(Zone::PLAYER_B);
-                    this->draw(Zone::PLAYER_B, 7, false);
-                }
-            }
-        }
+        if (!b_kept) decide_for(Zone::PLAYER_B, b_kept, mulligans_b, false);
     }
 }
 
@@ -570,16 +541,8 @@ std::vector<Entity> Orderer::place_on_battlefield(const std::vector<std::string>
         auto &z = coordinator.GetComponent<Zone>(card_id);
         z.controller = owner;
 
-        ColorIdentity ci;
         auto &cd = coordinator.GetComponent<CardData>(card_id);
-        if (!cd.explicit_colors.empty()) {
-            ci.colors = cd.explicit_colors;
-        } else {
-            for (auto c : cd.mana_cost) {
-                if (c != GENERIC && c != COLORLESS && c != NO_COLOR) ci.colors.insert(c);
-            }
-        }
-        coordinator.AddComponent(card_id, ci);
+        coordinator.AddComponent(card_id, color_identity_from(cd));
         placed.push_back(card_id);
     }
 

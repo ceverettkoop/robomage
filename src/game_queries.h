@@ -28,6 +28,15 @@ inline bool card_has_type(const CardData &cd, const std::string &type_name) {
     return false;
 }
 
+// True if the permanent carries a type/subtype whose name matches `type_name`
+// (any kind — top-level type, supertype, or subtype). Used by effects that scan a
+// permanent's type line (Amass's Army check, sacrifice's SacValid$ filter).
+inline bool permanent_has_type(const Permanent &perm, const std::string &type_name) {
+    for (const auto &t : perm.types)
+        if (t.name == type_name) return true;
+    return false;
+}
+
 inline bool is_creature_card(const CardData &cd) { return card_has_type(cd, "Creature"); }
 inline bool is_land_card(const CardData &cd)     { return card_has_type(cd, "Land"); }
 inline bool is_planeswalker_card(const CardData &cd) { return card_has_type(cd, "Planeswalker"); }

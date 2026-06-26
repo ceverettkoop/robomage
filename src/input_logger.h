@@ -22,6 +22,9 @@ class InputLogger {
 
    private:
     InputLogger() = default;
+    // Persist a committed choice: echo it to the log file (if open) and record it in
+    // the action history. Shared by the machine / auto-pass / CLI input paths.
+    void commit_choice(const std::vector<LegalAction>& actions, int choice);
     bool replay_mode = false;
     bool machine_mode = false;
     unsigned int replay_seed = 0;

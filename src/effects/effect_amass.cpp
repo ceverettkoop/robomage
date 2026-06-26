@@ -20,13 +20,6 @@ extern Game cur_game;
 
 namespace effects {
 
-// Returns true if the permanent has a subtype/type matching `name`.
-static bool permanent_has_type(const Permanent &perm, const std::string &name) {
-    for (const auto &t : perm.types)
-        if (t.name == name) return true;
-    return false;
-}
-
 // "Amass <subtype> N" (rule 701.46): if you control an Army, put N +1/+1 counters
 // on it and it becomes the amassed creature type in addition to its other types.
 // If you control no Army, first create a 0/0 black Army creature token of the

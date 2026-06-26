@@ -39,11 +39,7 @@ bool sacrifice(Ability &ab, std::shared_ptr<Orderer> orderer) {
     for (auto e : orderer->mEntities) {
         if (!is_battlefield_permanent(e, ab.controller)) continue;
         auto &perm = global_coordinator.GetComponent<Permanent>(e);
-        if (!type_filter.empty()) {
-            bool match = false;
-            for (auto &t : perm.types) if (t.name == type_filter) { match = true; break; }
-            if (!match) continue;
-        }
+        if (!type_filter.empty() && !permanent_has_type(perm, type_filter)) continue;
         candidates.push_back(e);
     }
 

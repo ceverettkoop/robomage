@@ -135,6 +135,18 @@ component registration and dead fields, or document as a deliberate placeholder.
 
 ## Tier 3 — Localized duplication (lower priority)
 
+**Status: addressed.** 9 of 11 items refactored (behavior-preserving; verified with a clean
+build + 14 scripted games across delver/doomsday/mav and a targeted mana-payment harness).
+Two items were intentionally left in place:
+- **`library_size()`** — no `Orderer` is reachable in `replacement_effects.cpp`'s
+  `dispatch`/`dispatch_draw` path (it takes no orderer, and there is no global/`GetSystem`
+  accessor). Delegating would require changing the public `replacement_effects.h` signature
+  and its callers — out of scope for a localized cleanup. The hand-rolled scan stays.
+- **`permanent_has_type` at `effect_destroy_all.cpp`** — that site's loop does more than the
+  shared predicate (single pass over three type filters, each guarded by `t.kind == TYPE`),
+  so it was left inline. The `effect_amass.cpp`/`effect_sacrifice.cpp` sites were unified onto
+  the promoted `game_queries.h` helper.
+
 - **K: keyword comma-split loop** copied 3× in `parse.cpp:480-490, 502-510, 547-558`
   → extract `static void split_keywords(const std::string&, std::vector<std::string>&)`.
 - **Pipe-param key/value split+trim** repeated 6× in `parse.cpp` (`:316-323, 887-894,

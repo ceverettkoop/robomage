@@ -713,11 +713,18 @@ static bool removal_affects(const ActiveStatic &r, Entity entity) {
     return aff.empty();
 }
 
-void StateManager::suppress_removed_statics(Game &game) {
-    (void)game;
+// Gather every active static that removes all abilities and whose condition is met
+// (Humility and friends). Shared by suppress_removed_statics / recompute_abilities.
+static std::vector<const ActiveStatic *> collect_ability_removers() {
     std::vector<const ActiveStatic *> removers;
     for (auto &a : g_active_statics)
         if (a.sa->remove_all_abilities && a.condition_met) removers.push_back(&a);
+    return removers;
+}
+
+void StateManager::suppress_removed_statics(Game &game) {
+    (void)game;
+    std::vector<const ActiveStatic *> removers = collect_ability_removers();
     if (removers.empty()) return;
 
     for (auto &a : g_active_statics) {
@@ -729,9 +736,7 @@ void StateManager::suppress_removed_statics(Game &game) {
 
 void StateManager::recompute_abilities(Game &game) {
     (void)game;
-    std::vector<const ActiveStatic *> removers;
-    for (auto &a : g_active_statics)
-        if (a.sa->remove_all_abilities && a.condition_met) removers.push_back(&a);
+    std::vector<const ActiveStatic *> removers = collect_ability_removers();
     if (removers.empty() && g_type_set_lands.empty()) return;
 
     for (auto entity : mEntities) {

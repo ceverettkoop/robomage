@@ -35,6 +35,9 @@ static bool restricted_mana_matches(Entity source_entity, Entity paid_for);
 static bool is_delve_eligible(Entity e, Zone::Ownership controller);
 static void delve_exile_one(Entity e, Zone::Ownership controller,
                             std::shared_ptr<Orderer> orderer, ManaValue &remaining);
+static void activate_mana_source(Entity entity, const Ability &ab, Zone::Ownership controller,
+                                 std::shared_ptr<Orderer> orderer, ManaValue &pool,
+                                 Player &player, bool commit);
 
 Entity get_player_entity(Zone::Ownership player) {
     return (player == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
@@ -440,6 +443,51 @@ static void delve_exile_one(Entity e, Zone::Ownership controller,
     game_log("%s exiles %s via Delve.\n", player_name(controller).c_str(), ecd.name.c_str());
 }
 
+void increment_activation_count(Permanent &perm, const Ability &ability) {
+    if (ability.activation_limit <= 0) return;
+    for (auto &perm_ab : perm.abilities) {
+        if (perm_ab.category != ability.category) continue;
+        // Mana abilities are keyed by tap/color; other activated abilities by return cost.
+        bool match = (ability.category == "AddMana")
+                         ? (perm_ab.tap_cost == ability.tap_cost && perm_ab.color == ability.color)
+                         : (perm_ab.return_cost_type == ability.return_cost_type);
+        if (match) {
+            perm_ab.activations_this_turn++;
+            break;
+        }
+    }
+}
+
+// Activate one mana source: tap/sacrifice it, pay its activation mana + life cost, add the
+// mana it produces to `pool`, and (when committing) flag uncounterability, log, and bump the
+// activation counter. Pool changes (activation cost paid, mana produced) always apply to the
+// working `pool`; the write-only ECS side effects are skipped when !commit (simulate mode).
+// Shared by the auto-payer (commit toggles per simulate/real) and the interactive payer
+// (always commit, with pool == the player's real mana pool).
+static void activate_mana_source(Entity entity, const Ability &ab, Zone::Ownership controller,
+                                 std::shared_ptr<Orderer> orderer, ManaValue &pool,
+                                 Player &player, bool commit) {
+    auto &perm = global_coordinator.GetComponent<Permanent>(entity);
+    if (commit && ab.tap_cost) perm.is_tapped = true;
+    if (commit && ab.sac_self) {
+        game_log("%s sacrifices %s\n", player_name(controller).c_str(), perm.name.c_str());
+        orderer->add_to_zone(false, entity, Zone::GRAVEYARD);
+    }
+    if (!ab.activation_mana_cost.empty())
+        pay_from_pool(pool, ab.activation_mana_cost);
+    if (commit && ab.life_cost > 0) {
+        player.life_total -= ab.life_cost;
+        game_log("%s pays %d life\n", player_name(controller).c_str(), ab.life_cost);
+    }
+    size_t amount = eval_mana_amount(ab, controller, orderer);
+    for (size_t i = 0; i < amount; i++) pool.insert(ab.color);
+    if (commit && ab.adds_no_counter) cur_game.pending_cant_be_countered = true;
+    if (commit)
+        game_log("%s activated %s for %zu(%s)\n", player_name(controller).c_str(),
+                 perm.name.c_str(), amount, mana_symbol_str(ab.color));
+    if (commit) increment_activation_count(perm, ab);
+}
+
 // Greedily tap sources to cover the remaining cost. This is the single mana-payment
 // algorithm used by BOTH the machine-mode payer (commit=true, mutates real ECS state)
 // and the legality check via can_pay_mana (commit=false, operates on a copied pool with
@@ -511,38 +559,11 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
         valid_sources.push_back({entity, ab, ab.color, is_multi});
     }
 
-    // Helper: activate a source (tap, sacrifice, pay costs, add mana).
-    // Pool changes (activation cost paid, mana produced) always apply to the working
-    // pool; the remaining write-only ECS side effects are skipped when !commit.
+    // Helper: activate a source (tap, sacrifice, pay costs, add mana). si.color always
+    // equals si.ability.color (set when the SourceInfo was built), so the shared
+    // activate_mana_source reads the produced color straight off the ability.
     auto activate_source = [&](const SourceInfo &si) {
-        auto &perm = global_coordinator.GetComponent<Permanent>(si.entity);
-        if (commit && si.ability.tap_cost) perm.is_tapped = true;
-        if (commit && si.ability.sac_self) {
-            game_log("%s sacrifices %s\n", player_name(controller).c_str(), perm.name.c_str());
-            orderer->add_to_zone(false, si.entity, Zone::GRAVEYARD);
-        }
-        if (!si.ability.activation_mana_cost.empty())
-            pay_from_pool(pool, si.ability.activation_mana_cost);
-        if (commit && si.ability.life_cost > 0) {
-            player.life_total -= si.ability.life_cost;
-            game_log("%s pays %d life\n", player_name(controller).c_str(), si.ability.life_cost);
-        }
-        size_t amount = eval_mana_amount(si.ability, controller, orderer);
-        for (size_t i = 0; i < amount; i++) pool.insert(si.color);
-        if (commit && si.ability.adds_no_counter) cur_game.pending_cant_be_countered = true;
-        if (commit)
-            game_log("%s activated %s for %zu(%s)\n", player_name(controller).c_str(),
-                     perm.name.c_str(), amount, mana_symbol_str(si.color));
-        if (commit && si.ability.activation_limit > 0) {
-            for (auto &perm_ab : perm.abilities) {
-                if (perm_ab.category == si.ability.category &&
-                    perm_ab.tap_cost == si.ability.tap_cost &&
-                    perm_ab.color == si.ability.color) {
-                    perm_ab.activations_this_turn++;
-                    break;
-                }
-            }
-        }
+        activate_mana_source(si.entity, si.ability, controller, orderer, pool, player, commit);
     };
 
     std::set<Entity> tapped_entities;
@@ -714,52 +735,10 @@ bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,
             (!has_delve || chosen.type == PASS_PRIORITY)) {
             delve_exile_one(chosen.source_entity, controller, orderer, remaining);
         } else {
-            // Mana ability activation
-            Entity source_entity = chosen.source_entity;
-            const Ability &chosen_ab = chosen.ability;
-
-            auto &perm = global_coordinator.GetComponent<Permanent>(source_entity);
-            if (chosen_ab.tap_cost) perm.is_tapped = true;
-            if (chosen_ab.sac_self) {
-                game_log("%s sacrifices %s\n", player_name(controller).c_str(), perm.name.c_str());
-                orderer->add_to_zone(false, source_entity, Zone::GRAVEYARD);
-            }
-
-            // Pay activation mana cost if any
-            if (!chosen_ab.activation_mana_cost.empty()) {
-                spend_mana(controller, chosen_ab.activation_mana_cost, source_entity);
-            }
-
-            // Pay life cost if any
-            if (chosen_ab.life_cost > 0) {
-                auto &p = global_coordinator.GetComponent<Player>(player_entity);
-                p.life_total -= chosen_ab.life_cost;
-                game_log("%s pays %d life\n", player_name(controller).c_str(), chosen_ab.life_cost);
-            }
-
-            size_t mana_amount = eval_mana_amount(chosen_ab, controller, orderer);
-            add_mana(controller, chosen_ab.color, mana_amount);
-
-            // Cavern of Souls: mark spell as uncounterable when restricted mana is used
-            if (chosen_ab.adds_no_counter) {
-                cur_game.pending_cant_be_countered = true;
-            }
-
-            game_log("%s activated %s for %zu(%s)\n", player_name(controller).c_str(),
-                     perm.name.c_str(), mana_amount, mana_symbol_str(chosen_ab.color));
-
-            // Increment activation counter if limited
-            if (chosen_ab.activation_limit > 0) {
-                for (auto &perm_ab : perm.abilities) {
-                    if (perm_ab.category == chosen_ab.category &&
-                        perm_ab.tap_cost == chosen_ab.tap_cost &&
-                        perm_ab.color == chosen_ab.color) {
-                        perm_ab.activations_this_turn++;
-                        break;
-                    }
-                }
-            }
-
+            // Mana ability activation — same core sequence as the auto-payer. The interactive
+            // payer always commits to real state, so pool == the player's real mana pool.
+            activate_mana_source(chosen.source_entity, chosen.ability, controller, orderer,
+                                 player.mana, player, /*commit=*/true);
         }
     }
 
