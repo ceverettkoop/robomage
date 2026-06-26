@@ -200,6 +200,16 @@ std::vector<Entity> Orderer::get_library_contents(Zone::Ownership owner) {
     return contents;
 }
 
+std::vector<Entity> Orderer::get_library_top(Zone::Ownership owner, size_t n) {
+    std::vector<Entity> lib = get_library_contents(owner);
+    std::sort(lib.begin(), lib.end(), [](Entity a, Entity b) {
+        return global_coordinator.GetComponent<Zone>(a).distance_from_top <
+               global_coordinator.GetComponent<Zone>(b).distance_from_top;
+    });
+    if (lib.size() > n) lib.resize(n);
+    return lib;
+}
+
 std::vector<Entity> Orderer::get_hand(Zone::Ownership owner) {
     std::vector<Entity> contents;
 

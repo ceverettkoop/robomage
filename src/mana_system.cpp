@@ -34,6 +34,7 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
 static bool restricted_mana_matches(Entity source_entity, Entity paid_for);
 static bool creature_restricted_mana_matches(Entity paid_for);
 static bool colorless_eldrazi_restricted_mana_matches(Entity paid_for);
+static bool mana_source_usable_for(const Ability &ab, Entity source_entity, Entity paid_for);
 static bool is_delve_eligible(Entity e, Zone::Ownership controller);
 static void delve_exile_one(Entity e, Zone::Ownership controller,
                             std::shared_ptr<Orderer> orderer, ManaValue &remaining);
@@ -144,10 +145,7 @@ static bool restricted_mana_matches(Entity source_entity, Entity paid_for) {
 static bool creature_restricted_mana_matches(Entity paid_for) {
     if (paid_for == 0) return false;
     if (!global_coordinator.entity_has_component<CardData>(paid_for)) return false;
-    auto &paid_cd = global_coordinator.GetComponent<CardData>(paid_for);
-    for (auto &t : paid_cd.types)
-        if (t.kind == TYPE && t.name == "Creature") return true;
-    return false;
+    return is_creature_card(global_coordinator.GetComponent<CardData>(paid_for));
 }
 
 // Check whether a "spend only to cast colorless Eldrazi spells" mana source (Eldrazi
@@ -163,15 +161,25 @@ static bool colorless_eldrazi_restricted_mana_matches(Entity paid_for) {
     for (auto &t : paid_cd.types)
         if (t.kind == SUBTYPE && t.name == "Eldrazi") { is_eldrazi = true; break; }
     if (!is_eldrazi) return false;
-    // Colorless test: any explicit color other than COLORLESS, or any colored mana symbol,
-    // disqualifies the card.
-    for (Colors c : {WHITE, BLUE, BLACK, RED, GREEN}) {
-        if (!paid_cd.explicit_colors.empty()) {
-            if (paid_cd.explicit_colors.count(c)) return false;
-        } else if (paid_cd.mana_cost.count(c)) {
-            return false;
-        }
-    }
+    // Colorless test (CR 105.2c) shared with the rest of the engine via game_queries.h, so an
+    // Eldrazi Temple mana restriction and a color-targeting check can never disagree on whether
+    // the same spell is colorless.
+    return is_colorless_card(paid_cd);
+}
+
+// True if a mana source (its ability `ab`, on `source_entity`) may be spent to pay for
+// `paid_for` under its mana spending restriction (CR 106.7). An unrestricted source is always
+// usable; a restricted source is usable only when the spell being paid for matches. This is the
+// single predicate behind all three payment paths — legal-action listing, the affordability
+// gate, and the auto-payer — so they can never disagree on whether a source is spendable (the
+// "offered legal then fails to pay" divergence can_pay_mana exists to prevent).
+static bool mana_source_usable_for(const Ability &ab, Entity source_entity, Entity paid_for) {
+    if (ab.restrict_to_chosen_type_creature && !restricted_mana_matches(source_entity, paid_for))
+        return false;
+    if (ab.restrict_to_creature && !creature_restricted_mana_matches(paid_for))
+        return false;
+    if (ab.restrict_to_colorless_eldrazi && !colorless_eldrazi_restricted_mana_matches(paid_for))
+        return false;
     return true;
 }
 
@@ -235,17 +243,9 @@ std::vector<LegalAction> collect_mana_legal_actions(
     std::vector<LegalAction> actions;
     auto sources = collect_available_mana_sources(player, orderer, at_priority);
     for (auto &[entity, ab] : sources) {
-        // Filter restricted mana (Cavern of Souls): hide from payment when spell doesn't match
-        if (ab.restrict_to_chosen_type_creature && !restricted_mana_matches(entity, paid_for))
-            continue;
-        // Creature-only mana (Abundant Countryside): only when paying for a creature spell
-        if (ab.restrict_to_creature && !creature_restricted_mana_matches(paid_for))
-            continue;
-        // Colorless-Eldrazi-only mana (Eldrazi Temple): only when paying for a colorless
-        // Eldrazi spell
-        if (ab.restrict_to_colorless_eldrazi &&
-            !colorless_eldrazi_restricted_mana_matches(paid_for))
-            continue;
+        // Filter restricted mana (Cavern of Souls / Abundant Countryside / Eldrazi Temple):
+        // hide a source whose spending restriction doesn't match the spell being paid for.
+        if (!mana_source_usable_for(ab, entity, paid_for)) continue;
         // Sources with activation mana cost: check affordability
         if (!ab.activation_mana_cost.empty()) {
             Entity exclude = ab.tap_cost ? entity : 0;
@@ -279,19 +279,11 @@ bool can_afford_with_sources(Zone::Ownership player_owner, const std::multiset<C
 
     auto sources = collect_available_mana_sources(player_owner, orderer);
 
-    // Filter restricted mana sources (Cavern of Souls): exclude unless spell matches
+    // Filter restricted mana sources (Cavern of Souls etc.): drop any whose spending
+    // restriction doesn't match the spell being paid for.
     sources.erase(std::remove_if(sources.begin(), sources.end(),
         [&](const std::pair<Entity, Ability> &s) {
-            if (s.second.restrict_to_chosen_type_creature &&
-                !restricted_mana_matches(s.first, paid_for))
-                return true;
-            if (s.second.restrict_to_creature &&
-                !creature_restricted_mana_matches(paid_for))
-                return true;
-            if (s.second.restrict_to_colorless_eldrazi &&
-                !colorless_eldrazi_restricted_mana_matches(paid_for))
-                return true;
-            return false;
+            return !mana_source_usable_for(s.second, s.first, paid_for);
         }), sources.end());
 
     // First pass: add free sources (no activation mana cost)
@@ -646,16 +638,9 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
     // Filter to actions valid for this payment (same as collect_mana_legal_actions)
     std::vector<SourceInfo> valid_sources;
     for (auto &[entity, ab] : sources) {
-        // Restricted mana check (Cavern of Souls)
-        if (ab.restrict_to_chosen_type_creature && !restricted_mana_matches(entity, paid_for))
-            continue;
-        // Creature-only mana (Abundant Countryside)
-        if (ab.restrict_to_creature && !creature_restricted_mana_matches(paid_for))
-            continue;
-        // Colorless-Eldrazi-only mana (Eldrazi Temple)
-        if (ab.restrict_to_colorless_eldrazi &&
-            !colorless_eldrazi_restricted_mana_matches(paid_for))
-            continue;
+        // Restricted mana check (Cavern of Souls / Abundant Countryside / Eldrazi Temple):
+        // same gate as collect_mana_legal_actions so a listed source is always spendable here.
+        if (!mana_source_usable_for(ab, entity, paid_for)) continue;
         if (!ab.activation_mana_cost.empty()) {
             if (!can_afford_with_sources(controller, ab.activation_mana_cost, orderer, ab.tap_cost ? entity : 0))
                 continue;

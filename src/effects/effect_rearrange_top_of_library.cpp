@@ -23,14 +23,8 @@ bool rearrange_top_of_library(Ability &ab, std::shared_ptr<Orderer> orderer) {
     if (!ab.dynamic_amount_expr.empty())
         num_cards = evaluate_dynamic_amount(ab.dynamic_amount_expr, owner, orderer, ab.target);
 
-    std::vector<Entity> lib = orderer->get_library_contents(owner);
-    // Sort by distance_from_top ascending so lib[0] is the actual top card
-    std::sort(lib.begin(), lib.end(), [](Entity a, Entity b) {
-        return global_coordinator.GetComponent<Zone>(a).distance_from_top <
-               global_coordinator.GetComponent<Zone>(b).distance_from_top;
-    });
     // looking at top n only
-    if (lib.size() > num_cards) lib.resize(num_cards);
+    std::vector<Entity> lib = orderer->get_library_top(owner, num_cards);
     size_t actual = lib.size();
     std::vector<Entity> remaining = lib;
 

@@ -41,13 +41,7 @@ bool scry(Ability &ab, std::shared_ptr<Orderer> orderer) {
         num = evaluate_dynamic_amount(ab.dynamic_amount_expr, owner, orderer, ab.target);
     if (num == 0) return true;
 
-    std::vector<Entity> lib = orderer->get_library_contents(owner);
-    // Sort so lib[0] is the actual top card.
-    std::sort(lib.begin(), lib.end(), [](Entity a, Entity b) {
-        return global_coordinator.GetComponent<Zone>(a).distance_from_top <
-               global_coordinator.GetComponent<Zone>(b).distance_from_top;
-    });
-    if (lib.size() > num) lib.resize(num);
+    std::vector<Entity> lib = orderer->get_library_top(owner, num);
     if (lib.empty()) {
         game_log("%s's library is empty — nothing to scry.\n", player_name(owner).c_str());
         return true;

@@ -34,12 +34,7 @@ bool dig(Ability &ab, std::shared_ptr<Orderer> orderer) {
     if (!ab.dig_num_expr.empty()) {
         effective_dig_num = evaluate_dynamic_amount(ab.dig_num_expr, dig_owner, orderer, 0);
     }
-    std::vector<Entity> lib = orderer->get_library_contents(dig_owner);
-    std::sort(lib.begin(), lib.end(), [](Entity a, Entity b) {
-        return global_coordinator.GetComponent<Zone>(a).distance_from_top <
-               global_coordinator.GetComponent<Zone>(b).distance_from_top;
-    });
-    if (lib.size() > effective_dig_num) lib.resize(effective_dig_num);
+    std::vector<Entity> lib = orderer->get_library_top(dig_owner, effective_dig_num);
 
     // Parse change_valid filters (comma-separated "Card.Creature,Card.Land" etc.)
     std::vector<std::string> filters;
