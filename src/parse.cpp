@@ -1480,7 +1480,12 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
                 head.rfind("cmc", 0) != 0)
                 valid_card_subtype = head;
         } else if (key == "OptionalDecider") {
-            if (value.find("You") != std::string::npos) trigger_optional_local = true;
+            // Any named decider ("You" / "TriggeredCardController" / "Controller") makes the
+            // whole triggered ability optional ("you may ...") for that player — the controller
+            // of the source, which is who the engine prompts in every supported case.
+            if (value.find("You") != std::string::npos ||
+                value.find("Controller") != std::string::npos)
+                trigger_optional_local = true;
         } else if (key == "FirstCardInDrawStep") {
             if (value == "False") exclude_first_draw_step = true;
         } else if (key == "CombatDamage") {

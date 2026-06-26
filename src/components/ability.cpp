@@ -100,12 +100,16 @@ static bool matches_filter_spec(Entity entity, const std::string &spec, int cmc_
         if (is_cmc_qualifier(color_qualifier)) color_qualifier.clear();  // enforced via cmc_bound
     }
 
-    // Check type match
-    bool type_matches = false;
-    for (auto &t : cd.types) {
-        if (t.name == type_name) {
-            type_matches = true;
-            break;
+    // Check type match. "Card" / "Permanent" are wildcard heads (Forge's "any card"
+    // filter, e.g. Flagstones of Trokair's "Card.Plains" = any card with subtype Plains);
+    // they match every card and leave the actual restriction to the dot qualifier.
+    bool type_matches = (type_name == "Card" || type_name == "Permanent");
+    if (!type_matches) {
+        for (auto &t : cd.types) {
+            if (t.name == type_name) {
+                type_matches = true;
+                break;
+            }
         }
     }
     if (!type_matches) return false;
@@ -124,19 +128,14 @@ static bool matches_filter_spec(Entity entity, const std::string &spec, int cmc_
             bool is_basic = has_basic_supertype(cd.types);
             if (color_qualifier == "Basic" && !is_basic) return false;
             if (color_qualifier == "nonBasic" && is_basic) return false;
-        } else {
-            Colors required_color = NO_COLOR;
-            if (color_qualifier == "Green")
-                required_color = GREEN;
-            else if (color_qualifier == "White")
-                required_color = WHITE;
-            else if (color_qualifier == "Blue")
-                required_color = BLUE;
-            else if (color_qualifier == "Black")
-                required_color = BLACK;
-            else if (color_qualifier == "Red")
-                required_color = RED;
-
+        } else if (color_qualifier == "Green" || color_qualifier == "White" ||
+                   color_qualifier == "Blue" || color_qualifier == "Black" ||
+                   color_qualifier == "Red") {
+            Colors required_color = (color_qualifier == "Green")  ? GREEN
+                                  : (color_qualifier == "White")  ? WHITE
+                                  : (color_qualifier == "Blue")   ? BLUE
+                                  : (color_qualifier == "Black")  ? BLACK
+                                                                  : RED;
             // Check explicit_colors first, then mana cost colors
             bool has_color = false;
             if (!cd.explicit_colors.empty()) {
@@ -145,6 +144,15 @@ static bool matches_filter_spec(Entity entity, const std::string &spec, int cmc_
                 has_color = cd.mana_cost.count(required_color) > 0;
             }
             if (!has_color) return false;
+        } else {
+            // Any other qualifier is a subtype name (e.g. "Card.Plains" → subtype Plains,
+            // "Creature.Goblin" → subtype Goblin). Match it against the card's type list,
+            // where subtypes live alongside card types.
+            bool has_subtype = false;
+            for (auto &t : cd.types) {
+                if (t.name == color_qualifier) { has_subtype = true; break; }
+            }
+            if (!has_subtype) return false;
         }
     }
 

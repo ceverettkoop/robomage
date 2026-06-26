@@ -289,6 +289,56 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
         }
     }
 
+    // Leaves-the-battlefield self-triggers (CR 603.6b / 603.10): a triggered ability that
+    // watches its own source being put into the graveyard from the battlefield (Flagstones
+    // of Trokair: "When CARDNAME is put into a graveyard from the battlefield, ...") cannot be
+    // caught by the battlefield scan above — by the time triggers are checked the source has
+    // already left the battlefield and lost its Permanent component. The game instead looks
+    // back at the moment just before the event (603.10) to decide whether the ability
+    // triggered. We do that here: for each CARD_CHANGED_ZONE event leaving the battlefield,
+    // re-scan the changing card's own CardData abilities for a Card.Self trigger whose
+    // origin/destination filter matches, and queue it. CardData (and thus the ability list and
+    // the card's persisted last controller in its Zone) survives the move, so the source is
+    // fully recoverable.
+    for (const auto &ev : events) {
+        if (ev.GetType() != Events::CARD_CHANGED_ZONE) continue;
+        if (!ev.HasParam(Params::ENTITY)) continue;
+        Zone::ZoneValue ev_origin = ev.GetParam<Zone::ZoneValue>(Params::ORIGIN);
+        if (ev_origin != Zone::BATTLEFIELD) continue;
+        Zone::ZoneValue ev_dest = ev.GetParam<Zone::ZoneValue>(Params::DESTINATION);
+        Entity entity = ev.GetParam<Entity>(Params::ENTITY);
+        if (!global_coordinator.entity_has_component<CardData>(entity)) continue;
+        if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
+        // The source's controller as it left the battlefield persists on its Zone component
+        // (only overwritten when a card enters the battlefield), so it still names the last
+        // controller; fall back to the owner if it was never set.
+        auto &z = global_coordinator.GetComponent<Zone>(entity);
+        Zone::Ownership ctrl = (z.controller != Zone::UNKNOWN) ? z.controller : z.owner;
+        const std::string ent_name = entity_name(entity);
+        for (const auto &ab : global_coordinator.GetComponent<CardData>(entity).abilities) {
+            if (ab.ability_type != Ability::TRIGGERED) continue;
+            if (ab.trigger_on != Events::CARD_CHANGED_ZONE) continue;
+            if (!ab.trigger_only_self) continue;  // Card.Self — only the source's own move
+            if (ab.trigger_zone_origin >= 0 &&
+                ev_origin != static_cast<Zone::ZoneValue>(ab.trigger_zone_origin)) continue;
+            if (ab.trigger_zone_destination >= 0 &&
+                ev_dest != static_cast<Zone::ZoneValue>(ab.trigger_zone_destination)) continue;
+
+            Ability trigger_ab = ab;
+            trigger_ab.source = entity;
+            trigger_ab.controller = ctrl;
+
+            PendingTrigger pt;
+            pt.ab = trigger_ab;
+            pt.controller = ctrl;
+            pt.source = entity;
+            pt.label = trigger_label(ent_name, trigger_ab);
+            pt.log_line = ent_name + " triggered";
+            pt.needs_target = (trigger_ab.valid_tgts != "N_A" && trigger_ab.target == 0);
+            pending.push_back(pt);
+        }
+    }
+
     // Graveyard-functioning triggered abilities (CR 113.6 / 603.6): a card whose triggered
     // ability has TriggerZones$ Graveyard (e.g. Arclight Phoenix's "at the beginning of
     // combat on your turn, ... return ~ from your graveyard to the battlefield") functions
