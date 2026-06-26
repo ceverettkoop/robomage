@@ -5,8 +5,11 @@
 #include "../classes/game.h"
 #include "../cli_output.h"
 #include "../components/carddata.h"
+#include "../components/creature.h"
+#include "../components/permanent.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
+#include "../game_queries.h"
 
 extern Coordinator global_coordinator;
 extern Game cur_game;
@@ -25,6 +28,26 @@ namespace effects {
 // here we only grant the permission for a target that is still in a graveyard.
 bool grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer) {
     (void)orderer;
+
+    // DB$ Effect | StaticAbilities$ Unblockable | RememberObjects$ Self — a transient
+    // continuous effect that makes the source unblockable until end of turn (Kappa
+    // Cannoneer, CR 509.1b / 702.x). Modeled as a per-turn "can't be blocked" mark on the
+    // remembered creature (the source), set here and cleared at the cleanup step (514.2),
+    // rather than instantiating a continuous-effect object. The mark is read by the combat
+    // blocker-legality check so the creature is removed from every blocker's legal list.
+    if (ab.effect_static_ability == "Unblockable") {
+        Entity who = ab.effect_remember_self ? ab.source : ab.target;
+        if (who != 0 && global_coordinator.entity_has_component<Creature>(who) &&
+            is_battlefield_permanent(who)) {
+            global_coordinator.GetComponent<Creature>(who).cant_be_blocked_this_turn = true;
+            const char *nm = global_coordinator.entity_has_component<Permanent>(who)
+                                 ? global_coordinator.GetComponent<Permanent>(who).name.c_str()
+                                 : "Creature";
+            game_log("%s can't be blocked this turn.\n", nm);
+        }
+        return true;
+    }
+
     Entity tgt = ab.target;
     if (tgt == 0 || !global_coordinator.entity_has_component<Zone>(tgt)) return true;
     if (global_coordinator.GetComponent<Zone>(tgt).location != Zone::GRAVEYARD) return true;

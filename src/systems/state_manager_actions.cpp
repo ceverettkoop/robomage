@@ -151,6 +151,12 @@ bool evaluate_present_condition(const Ability &ab, Zone::Ownership caster, std::
         return compare_svar(static_cast<int>(count), compare);
     }
 
+    // IsPresent$ Card.Self: the source must itself be on the battlefield (Kappa Cannoneer's
+    // "Whenever another artifact you control enters" only functions while Kappa is in play).
+    if (ab.condition_present == "Card.Self") {
+        return is_battlefield_permanent(ab.source);
+    }
+
     // Count$LifeYouGainedThisTurn (Ocelot Pride's "if you gained life this turn"): the
     // condition counts life the controller gained this turn, not battlefield permanents.
     // Empty compare → "gained at least 1" (GE1), matching the bare "if you gained life".
@@ -367,7 +373,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             // X-cost spells: base cost (without X) is enough to be castable;
             // X value is chosen at cast time in action_processor
             bool can_regular = can_pay_mana(priority_player, effective_cost, card_entity,
-                                            orderer, card_data.has_delve);
+                                            orderer, card_data.has_delve, card_data.has_improvise);
 
             bool can_alt = can_afford_alt(card_data.alt_cost, priority_player, card_entity, orderer);
 

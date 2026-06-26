@@ -30,13 +30,15 @@ static size_t eval_mana_amount(const Ability &ab, Zone::Ownership controller,
 static ManaValue pay_from_pool(ManaValue &pool, const ManaValue &cost);
 static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
                           Entity paid_for, std::shared_ptr<Orderer> orderer, bool has_delve,
-                          bool commit = true);
+                          bool commit = true, bool has_improvise = false);
 static bool restricted_mana_matches(Entity source_entity, Entity paid_for);
 static bool creature_restricted_mana_matches(Entity paid_for);
 static bool colorless_eldrazi_restricted_mana_matches(Entity paid_for);
 static bool is_delve_eligible(Entity e, Zone::Ownership controller);
 static void delve_exile_one(Entity e, Zone::Ownership controller,
                             std::shared_ptr<Orderer> orderer, ManaValue &remaining);
+static bool is_improvise_eligible(Entity e, Zone::Ownership controller, Entity paid_for);
+static void improvise_tap_one(Entity e, Zone::Ownership controller, ManaValue &remaining);
 static void activate_mana_source(Entity entity, const Ability &ab, Zone::Ownership controller,
                                  std::shared_ptr<Orderer> orderer, ManaValue &pool,
                                  Player &player, bool commit);
@@ -507,6 +509,29 @@ static void delve_exile_one(Entity e, Zone::Ownership controller,
     game_log("%s exiles %s via Delve.\n", player_name(controller).c_str(), ecd.name.c_str());
 }
 
+// True if `e` is an untapped artifact `controller` controls on the battlefield — i.e. an
+// artifact Improvise can tap to pay one generic pip (CR 702.126b/c). The spell being paid
+// for (`paid_for`) is excluded: it is on the stack, not the battlefield, but guard anyway so
+// the artifact creature can never tap itself to help pay its own Improvise cost.
+static bool is_improvise_eligible(Entity e, Zone::Ownership controller, Entity paid_for) {
+    if (e == paid_for) return false;
+    if (!is_battlefield_permanent(e, controller)) return false;
+    auto &perm = global_coordinator.GetComponent<Permanent>(e);
+    if (perm.is_tapped) return false;
+    return permanent_has_type(perm, "Artifact");
+}
+
+// Pay one generic pip via Improvise: tap `e` and drop one GENERIC from `remaining`. Mirrors
+// delve_exile_one for the tap-an-artifact cost. Tapping an artifact this way is not a mana
+// ability and produces no mana — it directly satisfies a {1} (CR 702.126b).
+static void improvise_tap_one(Entity e, Zone::Ownership controller, ManaValue &remaining) {
+    auto &perm = global_coordinator.GetComponent<Permanent>(e);
+    perm.is_tapped = true;
+    auto git = remaining.find(GENERIC);
+    if (git != remaining.end()) remaining.erase(git);
+    game_log("%s taps %s for Improvise.\n", player_name(controller).c_str(), perm.name.c_str());
+}
+
 void increment_activation_count(Permanent &perm, const Ability &ability) {
     if (ability.activation_limit <= 0) return;
     for (auto &perm_ab : perm.abilities) {
@@ -578,7 +603,7 @@ static void activate_mana_source(Entity entity, const Ability &ab, Zone::Ownersh
 // set — so the decision sequence is identical to a real payment.
 static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
                           Entity paid_for, std::shared_ptr<Orderer> orderer, bool has_delve,
-                          bool commit) {
+                          bool commit, bool has_improvise) {
     Entity player_entity = get_player_entity(controller);
     auto &player = global_coordinator.GetComponent<Player>(player_entity);
 
@@ -600,6 +625,7 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
             }
         }
     }
+
 
     // Check if pool covers remaining after delve
     if (can_afford_pool(pool, remaining)) {
@@ -728,6 +754,26 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
         if (try_generic([](const SourceInfo &s) { return s.ability.adds_no_counter && !s.ability.sac_self; })) continue;
         if (try_generic([](const SourceInfo &s) { return !s.ability.sac_self; })) continue;
         if (try_generic([](const SourceInfo &) { return true; })) continue;  // sac_self last resort
+        // Improvise: a {1} can also be paid by tapping an untapped artifact (CR 702.126).
+        // Tried after mana sources so colored pips (paid above) keep their producers; an
+        // artifact already tapped for mana is excluded via tapped_entities.
+        if (has_improvise) {
+            bool tapped_one = false;
+            for (auto e : orderer->mEntities) {
+                if (tapped_entities.count(e)) continue;
+                if (!is_improvise_eligible(e, controller, paid_for)) continue;
+                if (commit) {
+                    improvise_tap_one(e, controller, remaining);
+                } else {
+                    auto git = remaining.find(GENERIC);
+                    if (git != remaining.end()) remaining.erase(git);
+                }
+                tapped_entities.insert(e);
+                tapped_one = true;
+                break;
+            }
+            if (tapped_one) continue;
+        }
         return false;
     }
 
@@ -735,19 +781,21 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
 }
 
 bool can_pay_mana(Zone::Ownership controller, const ManaValue &cost,
-                  Entity paid_for, std::shared_ptr<Orderer> orderer, bool has_delve) {
+                  Entity paid_for, std::shared_ptr<Orderer> orderer, bool has_delve,
+                  bool has_improvise) {
     Entity player_entity = get_player_entity(controller);
     if (!global_coordinator.entity_has_component<Player>(player_entity)) return false;
     // Run the exact machine-mode payment algorithm in simulate mode (no side effects).
     // This is the single predicate behind both "is this castable" and "pay for it",
     // so a spell can never be offered as legal and then fail to pay (and vice versa).
     ManaValue remaining = cost;
-    return auto_pay_mana(controller, remaining, paid_for, orderer, has_delve, /*commit=*/false);
+    return auto_pay_mana(controller, remaining, paid_for, orderer, has_delve, /*commit=*/false,
+                         has_improvise);
 }
 
 bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,
                          Entity paid_for, std::shared_ptr<Orderer> orderer,
-                         bool has_delve) {
+                         bool has_delve, bool has_improvise) {
     Entity player_entity = get_player_entity(controller);
     auto &player = global_coordinator.GetComponent<Player>(player_entity);
 
@@ -764,7 +812,8 @@ bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,
 
     // Machine mode: auto-select mana sources (no interactive prompts)
     if (is_machine) {
-        return auto_pay_mana(controller, remaining, paid_for, orderer, has_delve);
+        return auto_pay_mana(controller, remaining, paid_for, orderer, has_delve, /*commit=*/true,
+                             has_improvise);
     }
 
     // Payment loop: prompt player to tap sources or delve until cost is paid
@@ -792,6 +841,18 @@ bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,
                 if (!is_delve_eligible(e, controller)) continue;
                 auto &ecd = global_coordinator.GetComponent<CardData>(e);
                 LegalAction la(PASS_PRIORITY, e, "Exile " + ecd.name + " (Delve)");
+                la.category = ActionCategory::PAYING_COSTS;
+                pay_actions.push_back(la);
+            }
+        }
+
+        // Improvise: tap untapped artifacts to pay generic costs (CR 702.126)
+        size_t improvise_action_start = pay_actions.size();
+        if (has_improvise && remaining.count(GENERIC) > 0) {
+            for (auto e : orderer->mEntities) {
+                if (!is_improvise_eligible(e, controller, paid_for)) continue;
+                auto &perm = global_coordinator.GetComponent<Permanent>(e);
+                LegalAction la(PASS_PRIORITY, e, "Tap " + perm.name + " (Improvise)");
                 la.category = ActionCategory::PAYING_COSTS;
                 pay_actions.push_back(la);
             }
@@ -827,9 +888,14 @@ bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,
 
         auto &chosen = pay_actions[static_cast<size_t>(choice)];
 
-        // Is this a delve exile action?
-        if (static_cast<size_t>(choice) >= delve_action_start &&
-            (!has_delve || chosen.type == PASS_PRIORITY)) {
+        size_t uchoice = static_cast<size_t>(choice);
+        if (has_improvise && uchoice >= improvise_action_start &&
+            uchoice < pay_actions.size() - (is_machine ? 0 : 1)) {
+            // Improvise: tap the chosen artifact to pay one generic.
+            improvise_tap_one(chosen.source_entity, controller, remaining);
+        } else if (has_delve && uchoice >= delve_action_start &&
+                   uchoice < improvise_action_start) {
+            // Delve exile action.
             delve_exile_one(chosen.source_entity, controller, orderer, remaining);
         } else {
             // Mana ability activation — same core sequence as the auto-payer. The interactive

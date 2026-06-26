@@ -390,6 +390,28 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             card.keywords.push_back("Delve");
             continue;
         }
+        // K:Improvise — your artifacts can help cast this spell; each untapped artifact you
+        // tap after activating mana abilities pays for {1} of the generic cost (CR 702.126).
+        // A cast-time generic cost reduction, mirroring Delve but tapping battlefield
+        // artifacts instead of exiling graveyard cards.
+        if (kw_line == "Improvise" || kw_line.rfind("Improvise", 0) == 0) {
+            card.has_improvise = true;
+            card.keywords.push_back("Improvise");
+            continue;
+        }
+        // K:Ward:N — "Whenever this permanent becomes the target of a spell or ability an
+        // opponent controls, counter that spell or ability unless that player pays {N}."
+        // (CR 702.21). Stored as the keyword + a numeric cost; the becomes-targeted trigger
+        // is synthesized when a targeting spell/ability is put on the stack.
+        if (kw_line.rfind("Ward", 0) == 0) {
+            size_t colon = kw_line.find(':');
+            if (colon != std::string::npos)
+                card.ward_cost = std::stoi(kw_line.substr(colon + 1));
+            else
+                card.ward_cost = 1;  // K:Ward without a cost defaults to {1}
+            card.keywords.push_back("Ward");
+            continue;
+        }
         // K:Affinity:Artifact — this spell costs {1} less to cast for each artifact you
         // control (CR 702.41). A generic cost reduction applied at cast time in
         // effective_base_cost(); only the artifact variant is supported.
@@ -870,6 +892,13 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         // RememberObjects$ Targeted — remember the spell's target(s) for later
         // Remembered.sameName subabilities (Surgical Extraction).
         if (value.find("Targeted") != std::string::npos) ability.remember_targeted = true;
+        // RememberObjects$ Self — a DB$ Effect that tracks its own source (Kappa Cannoneer's
+        // can't-be-blocked effect remembers the creature it applies to).
+        if (value.find("Self") != std::string::npos) ability.effect_remember_self = true;
+    } else if (key == "StaticAbilities") {
+        // DB$ Effect | StaticAbilities$ <name> — names the continuous static the transient
+        // effect grants (e.g. Unblockable). Stored for the Effect handler to interpret.
+        ability.effect_static_ability = value;
     } else if (key == "TgtZone") {
         if (value == "Graveyard") ability.target_in_graveyard = true;
     } else if (key == "ClearRemembered") {
@@ -1418,6 +1447,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
     bool valid_card_sorcery = false;
     bool valid_card_owner_you = false;
     bool valid_card_land = false;
+    bool valid_card_artifact = false;
     bool valid_card_colorless = false;
     bool mode_is_drawn = false;
     bool valid_card_opp_own = false;
@@ -1469,6 +1499,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
             if (value.find(".YouOwn")     != std::string::npos) valid_card_owner_you    = true;
             if (value.find(".OppOwn")     != std::string::npos) valid_card_opp_own      = true;
             if (value.find("Land")        != std::string::npos) valid_card_land         = true;
+            if (value.find("Artifact")    != std::string::npos) valid_card_artifact     = true;
             if (value.find("Colorless")   != std::string::npos) valid_card_colorless    = true;
             // YouCtrl may be the first ('.YouCtrl') or a later ('+YouCtrl') qualifier.
             if (value.find("YouCtrl")     != std::string::npos) valid_player_is_you     = true;
@@ -1552,10 +1583,17 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
         ability.trigger_valid_card_is_creature            = valid_card_creature;
         ability.trigger_valid_card_is_instant_or_sorcery  = valid_card_instant || valid_card_sorcery;
         ability.trigger_valid_card_is_land                = valid_card_land;
+        ability.trigger_valid_card_is_artifact            = valid_card_artifact;
         ability.trigger_valid_card_colorless              = valid_card_colorless;
         ability.trigger_valid_card_subtype                = valid_card_subtype;
         ability.trigger_valid_player_is_controller        = valid_card_owner_you || valid_player_is_you;
         if (valid_card_self) ability.trigger_only_self = true;
+        // A Destination$ Battlefield trigger gated by IsPresent$ Card.Self (the source must
+        // already be on the battlefield) is Forge's idiom for "Whenever ANOTHER permanent
+        // enters" — the source's own entry must not satisfy it (Kappa Cannoneer's Oracle text
+        // reads "another artifact you control"). Exclude the source from this trigger.
+        if (dest_is_battlefield && ability.condition_present == "Card.Self")
+            ability.trigger_self_excluded = true;
     }
 
     if (mode_is_phase && phase_is_upkeep) {
@@ -1648,6 +1686,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
                 effect.trigger_valid_card_is_creature           = ability.trigger_valid_card_is_creature;
                 effect.trigger_valid_card_is_instant_or_sorcery = ability.trigger_valid_card_is_instant_or_sorcery;
                 effect.trigger_valid_card_is_land               = ability.trigger_valid_card_is_land;
+                effect.trigger_valid_card_is_artifact           = ability.trigger_valid_card_is_artifact;
                 effect.trigger_valid_card_colorless             = ability.trigger_valid_card_colorless;
                 effect.trigger_valid_card_subtype               = ability.trigger_valid_card_subtype;
                 effect.trigger_optional                         = ability.trigger_optional;

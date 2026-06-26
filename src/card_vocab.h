@@ -79,6 +79,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Flagstones of Trokair", 133},
     {"Ghost Quarter", 134},
     {"Glaring Fleshraker", 135},
+    {"Kappa Cannoneer", 136},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);

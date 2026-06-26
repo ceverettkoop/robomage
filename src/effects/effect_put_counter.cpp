@@ -44,7 +44,14 @@ bool put_counter(Ability &ab, std::shared_ptr<Orderer> orderer) {
 }
 
 bool parse_put_counter(Ability &ab, const std::string &key, const std::string &value) {
-    if (key == "CounterType") { effect_params<CounterParams>(ab).type = value; return true; }
+    if (key == "CounterType") {
+        auto &cp = effect_params<CounterParams>(ab);
+        cp.type = value;
+        // Forge defaults CounterNum$ to 1 when omitted (e.g. Kappa Cannoneer's
+        // "put a +1/+1 counter"). A later explicit CounterNum$ overrides this.
+        if (cp.count == 0) cp.count = 1;
+        return true;
+    }
     if (key == "CounterNum")  { effect_params<CounterParams>(ab).count = std::stoi(value); return true; }
     return false;
 }

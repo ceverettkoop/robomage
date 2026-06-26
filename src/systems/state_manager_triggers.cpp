@@ -182,6 +182,20 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                                        is_land_card(global_coordinator.GetComponent<CardData>(ev_card));
                         if (!is_land) continue;
                     }
+                    // ValidCard$ Artifact.* filter (Kappa Cannoneer: another artifact entering).
+                    // Token artifacts have their types on the Token component, not CardData.
+                    if (ab.trigger_valid_card_is_artifact && ev.HasParam(Params::ENTITY)) {
+                        Entity ev_card = ev.GetParam<Entity>(Params::ENTITY);
+                        bool is_art = false;
+                        if (global_coordinator.entity_has_component<CardData>(ev_card))
+                            is_art = card_has_type(global_coordinator.GetComponent<CardData>(ev_card),
+                                                   "Artifact");
+                        if (!is_art && global_coordinator.entity_has_component<Token>(ev_card)) {
+                            for (auto &t : global_coordinator.GetComponent<Token>(ev_card).types)
+                                if (t.name == "Artifact") { is_art = true; break; }
+                        }
+                        if (!is_art) continue;
+                    }
                     // ValidCard(s)$ <Subtype> filter (Ajani: a Cat changing zone). Checked
                     // against the changing card's CardData or Token subtypes.
                     if (!ab.trigger_valid_card_subtype.empty() && ev.HasParam(Params::ENTITY)) {

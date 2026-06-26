@@ -47,6 +47,8 @@ struct CardData{
     std::vector<Effect::Replacement> replacement_effects;  // parsed from R: lines TODO expand this to parse SVAR below
     std::shared_ptr<CardData> backside;  // populated for DFCs; nullptr for normal cards
     bool has_delve = false;              // K:Delve — exile from graveyard to reduce generic cost
+    bool has_improvise = false;          // K:Improvise — tap untapped artifacts you control to pay {1} each (CR 702.126)
+    int ward_cost = 0;                   // K:Ward:N — opponent's spell/ability targeting this is countered unless they pay {N} (CR 702.21)
     bool affinity_artifact = false;      // K:Affinity:Artifact — costs {1} less to cast per artifact you control (CR 702.41)
     bool has_x_cost = false;             // ManaCost contains X — variable generic cost chosen at cast time
     bool shuffle_into_library = false;   // card shuffles into library instead of going to graveyard on resolution

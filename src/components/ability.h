@@ -133,6 +133,7 @@ struct Ability{
     bool trigger_valid_card_is_creature = false;        // ValidCard$ Creature
     bool trigger_valid_card_is_instant_or_sorcery = false;  // ValidCard$ Instant/Sorcery
     bool trigger_valid_card_is_land = false;            // ValidCard$ Land.*
+    bool trigger_valid_card_is_artifact = false;        // ValidCard$ Artifact.* (Kappa Cannoneer)
     // ValidCard$ ...+Colorless — the cast spell (SpellCast) or changing card (ChangesZone)
     // must be colorless (CR 105.2c / 202.2). Used by Glaring Fleshraker (Card.Colorless
     // SpellCast trigger; Creature.Other+Colorless+YouCtrl ChangesZone trigger).
@@ -194,6 +195,14 @@ struct Ability{
 
     // RememberChanged$ — remember entities moved by this ChangeZone (for Doomsday)
     bool remember_changed = false;
+
+    // DB$ Effect — a transient continuous effect created by an ability (CR 611). The
+    // StaticAbilities$ list names the continuous static(s) it grants; RememberObjects$ Self
+    // means the effect tracks its own source. Kappa Cannoneer's "it can't be blocked this
+    // turn" is StaticAbilities$ Unblockable + RememberObjects$ Self — applied as an
+    // until-end-of-turn "can't be blocked" mark on the source rather than a stack object.
+    std::string effect_static_ability = "";  // StaticAbilities$ value (e.g. "Unblockable")
+    bool effect_remember_self = false;        // RememberObjects$ Self
 
     // Tapped$ True — searched card enters the battlefield tapped (Edge of Autumn)
     bool enters_tapped = false;

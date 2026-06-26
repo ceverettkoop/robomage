@@ -45,6 +45,9 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer);
 static std::vector<Entity> collect_live_blockers(Entity attacker, std::shared_ptr<Orderer> orderer);
 static bool attacker_needs_assignment(Entity attacker, std::shared_ptr<Orderer> orderer, bool first_strike_only);
 static void assign_combat_damage(Game &game, std::shared_ptr<Orderer> orderer);
+static void trigger_ward_for_targets(Entity targeting_entity, Zone::Ownership controller,
+                                     const std::vector<Entity> &targets,
+                                     std::shared_ptr<Orderer> orderer);
 
 // entity_name() is shared from the StateManager TUs via state_manager_internal.h.
 // mana_symbol_str() is the canonical const-char* color symbol from classes/colors.h.
@@ -302,7 +305,14 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
         // puts on stack; we have targets from earlier
         stack_ab.source = permanent_entity;
         stack_ab.controller = controller;
-        orderer->push_ability_onto_stack(stack_ab, controller);
+        Entity ability_stack_entity = orderer->push_ability_onto_stack(stack_ab, controller);
+
+        // Ward (702.21): an opponent's permanent that this ability targets may counter it.
+        if (stack_ab.valid_tgts != "N_A") {
+            std::vector<Entity> tgts = stack_ab.targets.empty()
+                ? std::vector<Entity>{stack_ab.target} : stack_ab.targets;
+            trigger_ward_for_targets(ability_stack_entity, controller, tgts, orderer);
+        }
 
         if (stack_ab.target != 0) {
             std::string tgt_name = target_display_name(cur_game, stack_ab.target);
@@ -670,6 +680,8 @@ static std::vector<Entity> determine_blockable_attackers(Entity blocker, const s
     std::vector<Entity> result;
     for (auto atk : attackers) {
         auto &acr = global_coordinator.GetComponent<Creature>(atk);
+        // "Can't be blocked this turn" (Kappa Cannoneer): no creature may block it (509.1b).
+        if (acr.cant_be_blocked_this_turn) continue;
         bool atk_flying = false;
         bool atk_has_shadow = false;
         bool has_landwalk_evasion = false;
@@ -879,6 +891,41 @@ void select_target(Ability &ability, std::shared_ptr<Orderer> orderer, Zone::Own
     if (!ability.targets.empty()) ability.target = ability.targets[0];
 }
 
+// Ward (CR 702.21): "Whenever this permanent becomes the target of a spell or ability an
+// opponent controls, counter that spell or ability unless that player pays {N}." Called right
+// after a spell/ability with chosen targets is put on the stack. For each target that is a
+// battlefield permanent with a Ward cost, controlled by an opponent of the targeting object's
+// controller, push a Ward trigger onto the stack ABOVE the targeting object (so it resolves
+// first). The Ward trigger is a Counter ability whose unless_generic_cost is the ward cost —
+// reusing the existing "counter unless pay {N}" resolution. A permanent targeted multiple
+// times (one spell, several targets) fires Ward once per time it became a target.
+static void trigger_ward_for_targets(Entity targeting_entity, Zone::Ownership controller,
+                                     const std::vector<Entity> &targets,
+                                     std::shared_ptr<Orderer> orderer) {
+    Zone::Ownership opp = (controller == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+    for (Entity tgt : targets) {
+        if (tgt == 0) continue;
+        // The Ward permanent must be controlled by an opponent of the targeting player.
+        if (!is_battlefield_permanent(tgt, opp)) continue;
+        if (!global_coordinator.entity_has_component<CardData>(tgt)) continue;
+        int ward_cost = global_coordinator.GetComponent<CardData>(tgt).ward_cost;
+        if (ward_cost <= 0) continue;
+
+        Ability ward;
+        ward.ability_type = Ability::TRIGGERED;
+        ward.category = "Counter";
+        ward.source = tgt;
+        ward.controller = opp;            // the Ward permanent's controller
+        ward.target = targeting_entity;   // counter the spell/ability that targeted it
+        ward.unless_generic_cost = static_cast<size_t>(ward_cost);
+
+        orderer->push_ability_onto_stack(ward, opp);
+        std::string nm = entity_name(tgt);
+        game_log("Ward {%d}: %s's controller may pay to counter the spell or ability "
+                 "targeting %s\n", ward_cost, nm.c_str(), nm.c_str());
+    }
+}
+
 void process_action(const LegalAction &action, Game &game, std::shared_ptr<Orderer> orderer) {
     switch (action.type) {
         case PASS_PRIORITY:
@@ -998,7 +1045,8 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                 }
 
                 if (card_data.has_delve) cur_game.delve_exiled.clear();
-                if (!prompt_mana_payment(caster, cost_to_pay, spell_entity, orderer, card_data.has_delve)) {
+                if (!prompt_mana_payment(caster, cost_to_pay, spell_entity, orderer,
+                                         card_data.has_delve, card_data.has_improvise)) {
                     restore_mana_state(caster, mana_snap, orderer);
                     cur_game.payment_fail_counts[spell_entity]++;
                     game_log("Payment cancelled.\n");
@@ -1103,6 +1151,18 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                 spell_event.SetParam(Params::PLAYER, caster_entity);
                 spell_event.SetParam(Params::ENTITY, spell_entity);
                 global_coordinator.SendEvent(spell_event);
+            }
+
+            // Ward (702.21): an opponent's permanent this spell targets may counter it. The
+            // spell is already on the stack, so the Ward trigger pushed here lands above it and
+            // resolves first. Read the chosen target(s) off the spell's Ability component.
+            if (global_coordinator.entity_has_component<Ability>(spell_entity)) {
+                auto &spell_ab = global_coordinator.GetComponent<Ability>(spell_entity);
+                if (spell_ab.valid_tgts != "N_A") {
+                    std::vector<Entity> tgts = spell_ab.targets.empty()
+                        ? std::vector<Entity>{spell_ab.target} : spell_ab.targets;
+                    trigger_ward_for_targets(spell_entity, caster, tgts, orderer);
+                }
             }
 
             game.take_action();

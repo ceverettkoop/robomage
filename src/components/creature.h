@@ -28,6 +28,7 @@ struct Creature {
     // onto `keywords` after that rebuild and cleared at the cleanup step (514.2 / 611.2b).
     std::vector<std::string> eot_keywords;
     bool must_attack = false;        // set by MustAttack static ability; enforced in declare_attackers
+    bool cant_be_blocked_this_turn = false;  // set by a "can't be blocked this turn" effect (Kappa Cannoneer); cleared at cleanup (514.2)
 
     // --- P/T contributions (all signed; effective = sum, floored at 0) ---
     int base_power = 0;              // characteristic base P (printed, token, CDA-set, or Pump-modified)
