@@ -130,6 +130,12 @@ shortcut.
         see the card drawn and played across real games, not just the sculpted scenario.
       Expect **no non-fatal errors and no draws** (per `CLAUDE.md`); only pre-existing cosmetic
       `WARNING: Unrecognized ability param` lines are acceptable. Clean up the temp deck after.
+      **Treat any draw as a bug — every draw is an engine failure, not a pass.** A drawn game
+      means a game that can't resolve (a loop, a stuck stack, an unkillable board) and is a real
+      defect to root-cause and fix, exactly like a non-fatal error; never wave it through. The
+      **only** exception is a draw the **user has explicitly identified as acceptable** — if a
+      regression draws and you're unsure why, STOP and surface it to the user rather than
+      passing the card.
 
    h. **Record the result** (card name, index, pass/fail, notes) and move to the next card.
 
