@@ -480,6 +480,13 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         }
         if (!can_afford_fb) continue;
 
+        // Flashback sacrifice cost (Cabal Therapy: Flashback—Sacrifice a creature): can't be
+        // cast unless a matching permanent is available to sacrifice (CR 601.2f / 601.3a).
+        if (!gcd.flashback_alt_cost.sac_cost_spec.empty() &&
+            controlled_permanents_matching(priority_player, gcd.flashback_alt_cost.sac_cost_spec,
+                                           orderer->mEntities, gy_entity).empty())
+            continue;
+
         // A graveyard-cast static (Grafdigger's Cage: Origin$ Graveyard) prohibits flashback.
         bool fb_is_creature = is_creature_card(gcd);
         if (rules_mod::cast_prohibited(priority_player, fb_is_creature, Zone::GRAVEYARD)) continue;

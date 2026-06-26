@@ -532,6 +532,9 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             parse_activation_cost(cost_str, fb);
             card.flashback_mana_cost = fb.activation_mana_cost;
             card.flashback_alt_cost.life_cost = fb.life_cost;
+            // Flashback—Sacrifice a creature (Cabal Therapy): Sac<1/Creature> in the
+            // flashback cost. Carry the sac filter so the cast path pays it.
+            card.flashback_alt_cost.sac_cost_spec = fb.sac_cost_spec;
             card.keywords.push_back("Flashback");
             continue;
         }
@@ -1005,7 +1008,11 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
             // Announce$ X (Kozilek's Command): declares the X to announce while casting. The
             // X cost is already auto-detected from a ManaCost containing X (has_x_cost), so
             // the announce is prompted regardless; the tag is informational here.
-            "Announce"
+            "Announce",
+            // SP$ NameCard ValidCards$ Card.nonLand / ValidDescription$ nonland (Cabal
+            // Therapy): the name_card handler already restricts the candidate set to nonland
+            // vocab cards, so the filter spec and its prose are informational here.
+            "ValidCards", "ValidDescription"
         };
         if (ignored_keys.find(key) == ignored_keys.end()) {
             std::string msg = "Unrecognized ability param: " + key + "$ " + value;

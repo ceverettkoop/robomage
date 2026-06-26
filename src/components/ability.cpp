@@ -964,7 +964,9 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
     if (!condition_passed) {
         for (auto sub_ab : this->subabilities) {
             sub_ab.source = this->source;
-            sub_ab.target = this->target;
+            // A sub-ability that targets independently (its own ValidTgts$, target chosen at
+            // cast) keeps its own target; otherwise it inherits the parent's.
+            if (sub_ab.valid_tgts == "N_A") sub_ab.target = this->target;
             sub_ab.controller = this->controller;
             sub_ab.resolve(orderer);
         }
@@ -983,11 +985,20 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
     if (run_subs) {
         for (auto sub_ab : this->subabilities) {
             sub_ab.source = this->source;
-            sub_ab.target = this->target;  // propagate target so GainLife etc. can reference it
+            // A sub-ability that targets independently (its own ValidTgts$, target chosen at
+            // cast — e.g. Cabal Therapy's DB$ Discard) keeps the target selected for it at
+            // cast; otherwise it inherits the parent's target so GainLife etc. can reference it.
+            if (sub_ab.valid_tgts == "N_A") sub_ab.target = this->target;
             sub_ab.controller = this->controller;
             sub_ab.resolve(orderer);
         }
     }
+    // Clear the named card once the whole spell/ability has finished resolving, so it
+    // doesn't leak into an unrelated later Card.NamedCard check (CR 201.4 — the name is
+    // chosen for this effect only). Only the top-level resolve clears it; sub-abilities
+    // (ability_type SPELL parent vs. its DB$ children) are resolved within this call.
+    if (effect_kind_from_string(category) == EffectKind::NameCard)
+        cur_game.named_card.clear();
 }
 
 

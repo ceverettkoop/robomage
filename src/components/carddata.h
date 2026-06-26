@@ -27,6 +27,7 @@ struct AltCost {
     bool is_free = false;               // Cost$ 0 — no mana required
     bool condition_not_your_turn = false;  // Condition$ NotPlayerTurn
     bool is_evoke = false;              // K:Evoke — when paid, the permanent sacrifices itself on ETB
+    std::string sac_cost_spec = "";     // Sac<N/Type> portion of an alt/flashback cost (e.g. "Creature" for Cabal Therapy's Flashback—Sacrifice a creature)
 };
 
 //this is the underlying card, not a permanent or spell

@@ -1047,6 +1047,20 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                     player.life_total -= card_data.flashback_alt_cost.life_cost;
                     game_log("%s pays %d life\n", player_name(caster).c_str(), card_data.flashback_alt_cost.life_cost);
                 }
+                // Pay flashback sacrifice cost (Cabal Therapy: Flashback—Sacrifice a creature).
+                // The cast is only offered when a matching permanent exists (cast legality),
+                // so there is always something to sacrifice here.
+                if (!card_data.flashback_alt_cost.sac_cost_spec.empty()) {
+                    std::vector<Entity> choices = controlled_permanents_matching(
+                        caster, card_data.flashback_alt_cost.sac_cost_spec, orderer->mEntities, spell_entity);
+                    if (!choices.empty()) {
+                        Entity to_sac = prompt_permanent_choice(
+                            choices, "Sacrifice ", "", ActionCategory::SACRIFICE_PERMANENT);
+                        std::string sac_name = global_coordinator.GetComponent<Permanent>(to_sac).name;
+                        orderer->add_to_zone(false, to_sac, Zone::GRAVEYARD);
+                        game_log("%s sacrifices %s\n", player_name(caster).c_str(), sac_name.c_str());
+                    }
+                }
 
             // ALTERNATE COST
             } else if (action.use_alt_cost) {
@@ -1124,6 +1138,18 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                 // Handle targeting
                 if (ability.valid_tgts != "N_A") {
                     select_target(ability, orderer, caster);
+                }
+                // A spell whose top-level effect doesn't itself target, but whose chained
+                // sub-ability does, chooses that target as it's cast (CR 601.2c). Cabal
+                // Therapy: SP$ NameCard (Defined$ You, no target) + DB$ Discard (ValidTgts$
+                // Player). Select each targeting sub-ability's target now and store it on the
+                // sub-ability template; resolution preserves it (see Ability::resolve).
+                for (auto &sub : ability.subabilities) {
+                    if (sub.valid_tgts != "N_A") {
+                        sub.source = spell_entity;
+                        sub.controller = caster;
+                        select_target(sub, orderer, caster);
+                    }
                 }
 
                 global_coordinator.AddComponent(spell_entity, ability);

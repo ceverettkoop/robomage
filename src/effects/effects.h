@@ -85,6 +85,10 @@ bool repeat_each(Ability &ab, std::shared_ptr<Orderer> orderer);
 // AB$ Effect granting "you may cast that card this turn" (Emry): records the targeted
 // graveyard card in cur_game.may_cast_this_turn so the casting path offers it this turn.
 bool grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer);
+// SP$/DB$ NameCard (Cabal Therapy): the ability's controller names a card (CR 201.4); the
+// chosen name is stored in cur_game.named_card so a chained Card.NamedCard sub-ability
+// (here a RevealDiscardAll discard) can reference it.
+bool name_card(Ability &ab, std::shared_ptr<Orderer> orderer);
 
 // True if battlefield permanent `e` matches a Forge ValidCards$/ConditionPresent$
 // filter spec: a type/subtype head plus '+'-delimited qualifiers (YouCtrl, OppCtrl,

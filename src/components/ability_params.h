@@ -60,9 +60,14 @@ struct CounterParams {
     int count = 0;                  // CounterNum$ — static count; 0 when dynamic
 };
 
-// Discard (e.g. Thoughtseize/Duress).
+// Discard (e.g. Thoughtseize/Duress/Cabal Therapy).
 struct DiscardParams {
-    std::string valid = "";  // DiscardValid$ — filter (e.g. "Card.nonLand")
+    std::string valid = "";  // DiscardValid$ — filter (e.g. "Card.nonLand", "Card.NamedCard")
+    // Mode$ — "RevealYouChoose" (default): target player reveals hand, the ability's
+    // controller picks ONE matching card to discard (Thoughtseize/Duress). Empty is
+    // treated as this default. "RevealDiscardAll": target player reveals hand and discards
+    // EVERY card matching `valid` (Cabal Therapy).
+    std::string mode = "";
 };
 
 // Peek-no-reveal variant (Mishra's Bauble): look at top card privately, no

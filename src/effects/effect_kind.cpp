@@ -50,6 +50,9 @@ EffectKind effect_kind_from_string(const std::string &category) {
         // Loch). The transient continuous Effect object is modeled as a per-turn cast
         // permission rather than a stack object; see effect_grant_cast.cpp.
         {"Effect", EffectKind::GrantCast},
+        // SP$/DB$ NameCard (Cabal Therapy): the active player names a card; a chained
+        // Card.NamedCard sub-ability then references the chosen name (CR 201.4).
+        {"NameCard", EffectKind::NameCard},
     };
     auto it = table.find(category);
     return (it != table.end()) ? it->second : EffectKind::None;

@@ -52,6 +52,7 @@ EffectHandler handler_for(EffectKind kind) {
         case EffectKind::SacrificeTokens: return &sacrifice_tokens;
         case EffectKind::RepeatEach:      return &repeat_each;
         case EffectKind::GrantCast:       return &grant_cast;
+        case EffectKind::NameCard:        return &name_card;
         default:                          return nullptr;
     }
 }

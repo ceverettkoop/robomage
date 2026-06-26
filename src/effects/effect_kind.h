@@ -54,6 +54,7 @@ enum class EffectKind {
     SacrificeTokens,
     RepeatEach,
     GrantCast,
+    NameCard,
 };
 
 // Maps a normalized category string to its EffectKind. Unknown strings → None.
