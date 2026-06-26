@@ -823,6 +823,10 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         if (value.find("Creature") != std::string::npos &&
             value.find("ChosenType") != std::string::npos) {
             ability.restrict_to_chosen_type_creature = true;
+        } else if (value.find("Creature") != std::string::npos) {
+            // RestrictValid$ Spell.Creature — mana usable only to cast a creature spell
+            // (any creature, no subtype constraint), e.g. Abundant Countryside. CR 106.7.
+            ability.restrict_to_creature = true;
         }
     } else if (key == "AddsNoCounter") {
         ability.adds_no_counter = (value == "True");

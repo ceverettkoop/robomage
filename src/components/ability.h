@@ -34,6 +34,7 @@ struct Ability{
     Colors color = NO_COLOR; //for mana ability
     std::vector<Colors> mana_choices;   // Produced$ Combo or Any — ordered list of selectable mana colors
     bool restrict_to_chosen_type_creature = false;  // RestrictValid$ Spell.Creature+ChosenType
+    bool restrict_to_creature = false;               // RestrictValid$ Spell.Creature (any creature spell)
     bool adds_no_counter = false;                    // AddsNoCounter$ True — spell can't be countered
 
     // Set by apply_land_abilities for mana abilities generated from land subtypes;
