@@ -162,6 +162,18 @@ bool evaluate_present_condition(const Ability &ab, Zone::Ownership caster, std::
         return compare_svar(gained, compare);
     }
 
+    // Count$ThisTurnCast_Instant.YouCtrl,Sorcery.YouCtrl (Arclight Phoenix's "if you've
+    // cast three or more instant and sorcery spells this turn"): counts the instant and
+    // sorcery spells the controller has cast this turn, not battlefield permanents.
+    if (ab.condition_present.rfind("Count$ThisTurnCast_Instant", 0) == 0 &&
+        ab.condition_present.find("Sorcery") != std::string::npos) {
+        Entity pe = get_player_entity(caster);
+        int cast = global_coordinator.entity_has_component<Player>(pe)
+                       ? static_cast<int>(global_coordinator.GetComponent<Player>(pe).instant_sorcery_spells_cast_this_turn)
+                       : 0;
+        return compare_svar(cast, compare);
+    }
+
     // Parse filter: "Land.YouCtrl" → type_filter="Land", controller check
     std::string filter = ab.condition_present;
     std::string type_filter;

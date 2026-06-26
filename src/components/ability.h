@@ -149,6 +149,11 @@ struct Ability{
     // Spell count trigger (Cori-Steel Cutter)
     size_t trigger_spell_count_eq = 0;  // ActivatorThisTurnCast$ EQN — fires on Nth spell
 
+    // TriggerZones$ Graveyard (Arclight Phoenix): the triggered ability functions from
+    // the graveyard, not the battlefield (CR 113.6 / 603.6). When set, the trigger scan
+    // matches the source while it is in its owner's graveyard.
+    bool trigger_from_graveyard = false;
+
     // Token creation (Cori-Steel Cutter) now lives in TokenParams (params variant).
 
     // Attach / Equip sub-ability

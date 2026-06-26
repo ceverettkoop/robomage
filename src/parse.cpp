@@ -1343,6 +1343,8 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
     bool phase_is_upkeep = false;
     bool phase_is_end_step = false;
     bool phase_is_draw = false;
+    bool phase_is_begin_combat = false;
+    bool trigger_zone_is_graveyard = false;
     bool valid_player_is_you = false;
     bool mode_is_spell_cast = false;
     bool mode_is_damage_done = false;
@@ -1377,6 +1379,13 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
             // Forge writes the end step as either "EndStep" or "End of Turn".
             if (value == "EndStep" || value == "End of Turn")  phase_is_end_step = true;
             if (value == "Draw")     phase_is_draw     = true;
+            if (value == "BeginCombat") phase_is_begin_combat = true;
+        } else if (key == "TriggerZones") {
+            // The zone(s) the source must be in for this triggered ability to function
+            // (CR 113.6 / 603.6). Arclight Phoenix's combat trigger functions from the
+            // graveyard, so the trigger scan must look at graveyard cards, not just the
+            // battlefield.
+            if (value.find("Graveyard") != std::string::npos) trigger_zone_is_graveyard = true;
         } else if (key == "ValidPlayer" || key == "ValidActivatingPlayer") {
             if (value == "You") valid_player_is_you = true;
         } else if (key == "Origin") {
@@ -1474,6 +1483,14 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
         ability.trigger_valid_player_is_controller = valid_player_is_you;
     }
 
+    if (mode_is_phase && phase_is_begin_combat) {
+        ability.trigger_on = Events::BEGIN_COMBAT_BEGAN;
+        ability.trigger_valid_player_is_controller = valid_player_is_you;
+    }
+
+    // TriggerZones$ Graveyard — the ability functions while its source is in the graveyard.
+    ability.trigger_from_graveyard = trigger_zone_is_graveyard;
+
     if (mode_is_spell_cast && valid_card_non_creature) {
         ability.trigger_on = Events::NONCREATURE_SPELL_CAST;
         ability.trigger_valid_player_is_controller = valid_player_is_you;
@@ -1531,6 +1548,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
                 effect.trigger_only_self                        = ability.trigger_only_self;
                 effect.trigger_self_excluded                    = ability.trigger_self_excluded;
                 effect.trigger_spell_count_eq                   = ability.trigger_spell_count_eq;
+                effect.trigger_from_graveyard                   = ability.trigger_from_graveyard;
                 // 603.4 intervening-if lives on the trigger line, not the Execute SVar — carry
                 // it onto the resolved ability so it is re-checked at resolution.
                 effect.intervening_if                           = ability.intervening_if;

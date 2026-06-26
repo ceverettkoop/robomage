@@ -16,6 +16,7 @@ namespace Events {
     constexpr EventId CREATURE_ATTACKED_ALONE = 10; // exactly one creature declared as attacker; Params: ENTITY=sole attacker, PLAYER=controller
     constexpr EventId COMBAT_DAMAGE_TO_PLAYER = 11; // creature dealt combat damage to a player; Params: ENTITY=source creature, PLAYER=damaged player entity, AMOUNT=damage
     constexpr EventId CREATURE_ATTACKED       = 12; // "whenever this creature attacks" — fired once per declared attacker; Params: ENTITY=attacker, PLAYER=controller
+    constexpr EventId BEGIN_COMBAT_BEGAN      = 13; // "at the beginning of combat on your turn" / Phase$ BeginCombat; Params: PLAYER=active player
 }
 
 // Param IDs used across events

@@ -1082,11 +1082,18 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                 auto &caster_player = global_coordinator.GetComponent<Player>(caster_entity);
                 caster_player.spells_cast_this_turn++;
                 caster_player.spells_cast_this_game++;
-                // Track noncreature spells for Deafening Silence
+                // Track noncreature spells for Deafening Silence, and instant/sorcery
+                // spells for Arclight Phoenix's "cast three or more instant and sorcery
+                // spells this turn" count.
                 bool spell_is_creature = false;
+                bool spell_is_instant_or_sorcery = false;
                 for (auto &t : card_data.types)
-                    if (t.kind == TYPE && t.name == "Creature") { spell_is_creature = true; break; }
+                    if (t.kind == TYPE) {
+                        if (t.name == "Creature") spell_is_creature = true;
+                        if (t.name == "Instant" || t.name == "Sorcery") spell_is_instant_or_sorcery = true;
+                    }
                 if (!spell_is_creature) caster_player.noncreature_spells_cast_this_turn++;
+                if (spell_is_instant_or_sorcery) caster_player.instant_sorcery_spells_cast_this_turn++;
                 Event spell_event(Events::SPELL_CAST);
                 spell_event.SetParam(Params::PLAYER, caster_entity);
                 global_coordinator.SendEvent(spell_event);

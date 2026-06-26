@@ -34,6 +34,10 @@ public:
     void do_london_mulligan();
     std::vector<Entity> place_on_battlefield(const std::vector<std::string> &card_names,
                                              Zone::Ownership owner);
+    // Test-harness helper: start cards already in a player's graveyard (mirrors
+    // place_on_battlefield) so graveyard-functioning cards can be exercised in isolation.
+    std::vector<Entity> place_in_graveyard(const std::vector<std::string> &card_names,
+                                           Zone::Ownership owner);
 
 private:
     // Draw a single card for `player`, first offering any available dredge

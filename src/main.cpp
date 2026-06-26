@@ -71,6 +71,8 @@ bool narrative_mode = false;
 bool bo3_mode = false;
 std::vector<std::string> battlefield_a_cards;
 std::vector<std::string> battlefield_b_cards;
+std::vector<std::string> graveyard_a_cards;
+std::vector<std::string> graveyard_b_cards;
 
 // match state (accessible for state serialization)
 int match_game_number = -1;  // -1 = single game, 0-2 = bo3 game index
@@ -135,6 +137,12 @@ static int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &dec
         auto placed = sys.orderer->place_on_battlefield(battlefield_b_cards, Zone::PLAYER_B);
         preplaced.insert(preplaced.end(), placed.begin(), placed.end());
     }
+    // pre-set graveyard cards (test harness): no Permanent/Creature components are
+    // attached, so they are skipped by the summoning-sickness clear below.
+    if (!graveyard_a_cards.empty())
+        sys.orderer->place_in_graveyard(graveyard_a_cards, Zone::PLAYER_A);
+    if (!graveyard_b_cards.empty())
+        sys.orderer->place_in_graveyard(graveyard_b_cards, Zone::PLAYER_B);
     // run SBE once to attach Permanent/Creature components, then clear summoning sickness
     if (!preplaced.empty()) {
         sys.state_manager->state_based_effects(cur_game, sys.orderer);
@@ -460,6 +468,12 @@ int main(int argc, char const *argv[]) {
             i++;
         } else if (std::string(argv[i]) == "--battlefield-b" && i + 1 < argc) {
             battlefield_b_cards = split_card_list(argv[i + 1]);
+            i++;
+        } else if (std::string(argv[i]) == "--graveyard-a" && i + 1 < argc) {
+            graveyard_a_cards = split_card_list(argv[i + 1]);
+            i++;
+        } else if (std::string(argv[i]) == "--graveyard-b" && i + 1 < argc) {
+            graveyard_b_cards = split_card_list(argv[i + 1]);
             i++;
         } else if (std::string(argv[i]) == "--narrative") {
             narrative_mode = true;

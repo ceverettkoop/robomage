@@ -150,6 +150,11 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     break;
                 case FIRST_MAIN:
                     cur_step = BEGIN_COMBAT;
+                    {
+                        Event begin_combat_event(Events::BEGIN_COMBAT_BEGAN);
+                        begin_combat_event.SetParam(Params::PLAYER, active_player_entity);
+                        global_coordinator.SendEvent(begin_combat_event);
+                    }
                     break;
                 case BEGIN_COMBAT:
                     cur_step = DECLARE_ATTACKERS;
@@ -239,6 +244,7 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     player.lands_played_this_turn = 0;
                     player.spells_cast_this_turn = 0;
                     player.noncreature_spells_cast_this_turn = 0;
+                    player.instant_sorcery_spells_cast_this_turn = 0;
                     player.cards_drawn_this_turn.clear();
                     player.cards_drawn_this_draw_step = 0;
                     // Also clear opponent's drawn-this-turn tracking

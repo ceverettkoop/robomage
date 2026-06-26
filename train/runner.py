@@ -34,7 +34,8 @@ def run_games(controller_a, controller_b, *,
               label_a="A", label_b="B",
               binary_path=BINARY, deck_a=None, deck_b=None,
               n_games=1, bo3=False, seed=None, verbose=False,
-              battlefield_a=None, battlefield_b=None, no_shuffle=False,
+              battlefield_a=None, battlefield_b=None,
+              graveyard_a=None, graveyard_b=None, no_shuffle=False,
               max_decisions=None):
     """Run ``n_games`` between two controllers and render the transcript.
 
@@ -54,7 +55,9 @@ def run_games(controller_a, controller_b, *,
     for i in range(n_games):
         env = NarrativeEnv(binary_path=binary_path, deck_a=deck_a, deck_b=deck_b,
                            bo3=bo3, battlefield_a=battlefield_a,
-                           battlefield_b=battlefield_b, no_shuffle=no_shuffle)
+                           battlefield_b=battlefield_b,
+                           graveyard_a=graveyard_a, graveyard_b=graveyard_b,
+                           no_shuffle=no_shuffle)
         obs, _ = env.reset(seed=(seed + i) if seed is not None else None)
         # Seed Python's global RNG with the SAME per-game seed passed to the engine.
         # The scripted agent breaks ties on ambiguous OTHER_CHOICE prompts with

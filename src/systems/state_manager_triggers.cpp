@@ -263,6 +263,53 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
             }
         }
     }
+
+    // Graveyard-functioning triggered abilities (CR 113.6 / 603.6): a card whose triggered
+    // ability has TriggerZones$ Graveyard (e.g. Arclight Phoenix's "at the beginning of
+    // combat on your turn, ... return ~ from your graveyard to the battlefield") functions
+    // while in its owner's graveyard, so it is never scanned by the battlefield loop above.
+    // Scan the graveyards for these abilities. Only phase-type triggers (PLAYER param) are
+    // supported here, which covers the current card; ValidPlayer$ You and the 603.4
+    // intervening-if are honoured exactly as on the battlefield.
+    for (auto entity : mEntities) {
+        if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
+        auto &z = global_coordinator.GetComponent<Zone>(entity);
+        if (z.location != Zone::GRAVEYARD) continue;
+        if (!global_coordinator.entity_has_component<CardData>(entity)) continue;
+        Zone::Ownership owner = z.owner;
+        const std::string ent_name = entity_name(entity);
+        for (const auto &ev : events) {
+            for (const auto &ab : global_coordinator.GetComponent<CardData>(entity).abilities) {
+                if (ab.ability_type != Ability::TRIGGERED) continue;
+                if (!ab.trigger_from_graveyard) continue;
+                if (ab.trigger_on == 0 || ab.trigger_on != ev.GetType()) continue;
+                // ValidPlayer$ You: the source's owner must be the event's player (the
+                // active player whose combat / phase began).
+                if (ab.trigger_valid_player_is_controller && ev.HasParam(Params::PLAYER)) {
+                    if (ev.GetParam<Entity>(Params::PLAYER) != get_player_entity(owner)) continue;
+                }
+
+                Ability trigger_ab = ab;
+                trigger_ab.source = entity;
+                trigger_ab.controller = owner;
+
+                // 603.4 intervening-if: a trigger whose "if" condition is false right now
+                // does not go on the stack at all (re-checked again on resolution).
+                if (trigger_ab.intervening_if &&
+                    !evaluate_present_condition(trigger_ab, owner, orderer))
+                    continue;
+
+                PendingTrigger pt;
+                pt.ab = trigger_ab;
+                pt.controller = owner;
+                pt.source = entity;
+                pt.label = trigger_label(ent_name, trigger_ab);
+                pt.log_line = ent_name + " triggered";
+                pt.needs_target = (trigger_ab.valid_tgts != "N_A" && trigger_ab.target == 0);
+                pending.push_back(pt);
+            }
+        }
+    }
     }
 
     place_triggers_apnap(game, orderer, pending);

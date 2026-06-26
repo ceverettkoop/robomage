@@ -68,6 +68,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Aether Vial", 121},
     {"Agate Instigator", 122},
     {"Ancient Tomb", 123},
+    {"Arclight Phoenix", 124},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);
