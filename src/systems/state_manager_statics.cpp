@@ -227,7 +227,9 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                 // Non-P1P1 "enters with" counters (614.1c) attach to any permanent, not just
                 // creatures — Chalice of the Void enters with X CHARGE counters. P1P1 counters
                 // are applied in the creature block below so its P/T can be logged.
-                if (etb_p1p1 > 0 && etb_counter_type != "P1P1") {
+                // P/T counters (P1P1, M1M1) are applied in the creature block below, after the
+                // Creature component exists, so add_counters can resync the cached P/T and log it.
+                if (etb_p1p1 > 0 && etb_counter_type != "P1P1" && etb_counter_type != "M1M1") {
                     add_counters(entity, etb_counter_type, etb_p1p1);
                     game_log("%s enters with %d %s counter(s).\n",
                         card_data.name.c_str(), etb_p1p1, etb_counter_type.c_str());
@@ -271,13 +273,17 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                 damage.damage_counters = 0;
                 global_coordinator.AddComponent(entity, damage);
 
-                // Apply the "enters with" +1/+1 counters chosen by the ETB replacement
-                // dispatch above (rule 614.1c), now that the Creature component exists.
+                // Apply the "enters with" P/T counters chosen by the ETB replacement
+                // dispatch above (rule 614.1c), now that the Creature component exists so
+                // add_counters can resync the cached P/T. Honors the declared counter kind:
+                // +1/+1 (Hangarback) or -1/-1 (Moonshadow enters with six -1/-1 counters).
                 if (etb_p1p1 > 0) {
-                    add_counters(entity, "P1P1", etb_p1p1);
+                    std::string pt_type = (etb_counter_type == "M1M1") ? "M1M1" : "P1P1";
+                    add_counters(entity, pt_type, etb_p1p1);
                     auto &cr = global_coordinator.GetComponent<Creature>(entity);
-                    game_log("%s enters with %d +1/+1 counter(s) (%u/%u).\n",
-                        card_data.name.c_str(), etb_p1p1, cr.power, cr.toughness);
+                    game_log("%s enters with %d %s counter(s) (%u/%u).\n",
+                        card_data.name.c_str(), etb_p1p1,
+                        pt_type == "M1M1" ? "-1/-1" : "+1/+1", cr.power, cr.toughness);
                 }
             }
             if (is_land) {

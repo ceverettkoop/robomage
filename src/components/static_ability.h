@@ -17,6 +17,7 @@ struct StaticAbility {
     std::string affected = "";        // "EquippedBy" = apply buff to equipped creature, not source
     // ETB counter fields (category = "EtbCounter"):
     std::string counter_type = "";    // "P1P1" for +1/+1 counters, "CHARGE" for charge counters
+    int counter_count = 0;            // literal count (etbCounter:M1M1:6 → 6); 0 when dynamic
     bool counter_count_from_delve = false;  // counter count = cur_game.delve_exiled.size()
     bool counter_count_from_xpaid = false;  // counter count = X paid at cast (Chalice of the Void: Count$xPaid)
     // RaiseCost fields (category = "RaiseCost"):

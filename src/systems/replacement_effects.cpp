@@ -91,6 +91,7 @@ std::vector<Candidate> collect(const ReplacementEvent &ev,
                     auto it = cur_game.pending_etb_xpaid.find(ev.entity);
                     if (it != cur_game.pending_etb_xpaid.end()) n = it->second;
                 }
+                else n = sa.counter_count;  // literal count (etbCounter:M1M1:6 → 6)
                 if (n <= 0) continue;
                 Candidate c;
                 c.source = ev.entity;

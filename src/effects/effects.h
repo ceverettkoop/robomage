@@ -48,6 +48,7 @@ bool surveil(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool scry(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool put_counter(Ability &ab, std::shared_ptr<Orderer> orderer);
+bool remove_counter(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool rearrange_top_of_library(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer);

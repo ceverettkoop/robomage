@@ -14,6 +14,7 @@ EffectKind effect_kind_from_string(const std::string &category) {
         {"RearrangeTopOfLibrary", EffectKind::RearrangeTopOfLibrary},
         {"DealDamage", EffectKind::DealDamage},
         {"PutCounter", EffectKind::PutCounter},
+        {"RemoveCounter", EffectKind::RemoveCounter},
         {"ProwessBonus", EffectKind::ProwessBonus},
         {"ExaltedBonus", EffectKind::ExaltedBonus},
         {"Token", EffectKind::Token},

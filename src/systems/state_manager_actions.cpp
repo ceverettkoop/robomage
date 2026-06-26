@@ -157,6 +157,26 @@ bool evaluate_present_condition(const Ability &ab, Zone::Ownership caster, std::
         return is_battlefield_permanent(ab.source);
     }
 
+    // IsPresent$ Card.Self+counters_GE<N>_<TYPE>: the source must be on the battlefield AND
+    // carry at least N counters of the given type (Moonshadow: "while this creature has a
+    // -1/-1 counter on it" → Card.Self+counters_GE1_M1M1). CR 122.1/603.4 — the counter
+    // count is re-checked when the trigger would go on the stack and again on resolution, so
+    // once the last -1/-1 counter is gone the trigger stops firing.
+    if (ab.condition_present.rfind("Card.Self+counters_GE", 0) == 0) {
+        if (!is_battlefield_permanent(ab.source)) return false;
+        std::string rest = ab.condition_present.substr(std::string("Card.Self+counters_GE").size());
+        size_t us = rest.find('_');
+        int need = 1;
+        std::string ctype = "M1M1";
+        if (us != std::string::npos) {
+            need = std::stoi(rest.substr(0, us));
+            ctype = rest.substr(us + 1);
+        } else if (!rest.empty()) {
+            need = std::stoi(rest);
+        }
+        return get_counters(ab.source, ctype) >= need;
+    }
+
     // Count$LifeYouGainedThisTurn (Ocelot Pride's "if you gained life this turn"): the
     // condition counts life the controller gained this turn, not battlefield permanents.
     // Empty compare → "gained at least 1" (GE1), matching the bare "if you gained life".

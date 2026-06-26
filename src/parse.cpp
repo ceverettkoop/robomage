@@ -441,28 +441,38 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             std::string counter_type_str = "P1P1";
             bool from_delve = false;
             bool from_xpaid = false;
+            int literal_count = 0;
             if (!sub.empty() && sub[0] == ':') {
                 size_t c1 = sub.find(':', 1);
                 if (c1 != std::string::npos) {
                     counter_type_str = sub.substr(1, c1 - 1);
                     size_t c2 = sub.find(':', c1 + 1);
-                    std::string svar_key = (c2 != std::string::npos)
+                    std::string count_tok = (c2 != std::string::npos)
                         ? sub.substr(c1 + 1, c2 - c1 - 1)
                         : sub.substr(c1 + 1);
-                    auto svar_it = svars.find(svar_key);
-                    if (svar_it != svars.end()) {
-                        if (svar_it->second.find("ExiledWithSource") != std::string::npos)
-                            from_delve = true;
-                        // Count$xPaid — the count equals the X value paid at cast time
-                        // (Chalice of the Void enters with X charge counters).
-                        else if (svar_it->second.find("xPaid") != std::string::npos)
-                            from_xpaid = true;
+                    // The count is either a literal number (etbCounter:M1M1:6 → 6) or an SVar
+                    // key resolving to a Count$ expression (delve / X paid at cast).
+                    if (!count_tok.empty() &&
+                        std::all_of(count_tok.begin(), count_tok.end(),
+                                    [](unsigned char ch) { return std::isdigit(ch); })) {
+                        literal_count = std::stoi(count_tok);
+                    } else {
+                        auto svar_it = svars.find(count_tok);
+                        if (svar_it != svars.end()) {
+                            if (svar_it->second.find("ExiledWithSource") != std::string::npos)
+                                from_delve = true;
+                            // Count$xPaid — the count equals the X value paid at cast time
+                            // (Chalice of the Void enters with X charge counters).
+                            else if (svar_it->second.find("xPaid") != std::string::npos)
+                                from_xpaid = true;
+                        }
                     }
                 }
             }
             StaticAbility sa;
             sa.category = "EtbCounter";
             sa.counter_type = counter_type_str;
+            sa.counter_count = literal_count;
             sa.counter_count_from_delve = from_delve;
             sa.counter_count_from_xpaid = from_xpaid;
             card.static_abilities.push_back(sa);
@@ -1467,6 +1477,8 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
     bool valid_card_land = false;
     bool valid_card_artifact = false;
     bool valid_card_colorless = false;
+    bool valid_card_non_token = false;
+    bool valid_card_permanent = false;
     bool mode_is_drawn = false;
     bool valid_card_opp_own = false;
     bool exclude_first_draw_step = false;
@@ -1519,6 +1531,11 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
             if (value.find("Land")        != std::string::npos) valid_card_land         = true;
             if (value.find("Artifact")    != std::string::npos) valid_card_artifact     = true;
             if (value.find("Colorless")   != std::string::npos) valid_card_colorless    = true;
+            if (value.find("!token")      != std::string::npos) valid_card_non_token    = true;
+            // ValidCard$ Permanent (head token) — restrict to permanent card types. Matched
+            // on the leading token so a subtype merely named within isn't misread.
+            if (value.substr(0, value.find_first_of(".+")) == "Permanent")
+                valid_card_permanent = true;
             // YouCtrl may be the first ('.YouCtrl') or a later ('+YouCtrl') qualifier.
             if (value.find("YouCtrl")     != std::string::npos) valid_player_is_you     = true;
             // Dynamic mana-value filter on the cast spell (Chalice of the Void:
@@ -1603,6 +1620,8 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
         ability.trigger_valid_card_is_land                = valid_card_land;
         ability.trigger_valid_card_is_artifact            = valid_card_artifact;
         ability.trigger_valid_card_colorless              = valid_card_colorless;
+        ability.trigger_valid_card_non_token              = valid_card_non_token;
+        ability.trigger_valid_card_is_permanent           = valid_card_permanent;
         ability.trigger_valid_card_subtype                = valid_card_subtype;
         ability.trigger_valid_player_is_controller        = valid_card_owner_you || valid_player_is_you;
         if (valid_card_self) ability.trigger_only_self = true;
@@ -1706,6 +1725,8 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
                 effect.trigger_valid_card_is_land               = ability.trigger_valid_card_is_land;
                 effect.trigger_valid_card_is_artifact           = ability.trigger_valid_card_is_artifact;
                 effect.trigger_valid_card_colorless             = ability.trigger_valid_card_colorless;
+                effect.trigger_valid_card_non_token             = ability.trigger_valid_card_non_token;
+                effect.trigger_valid_card_is_permanent          = ability.trigger_valid_card_is_permanent;
                 effect.trigger_valid_card_subtype               = ability.trigger_valid_card_subtype;
                 effect.trigger_optional                         = ability.trigger_optional;
                 effect.trigger_valid_card_opp_own               = ability.trigger_valid_card_opp_own;

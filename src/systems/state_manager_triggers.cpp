@@ -196,6 +196,23 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                         }
                         if (!is_art) continue;
                     }
+                    // ValidCard$ ...+!token — only real cards match, not tokens (CR 110.1).
+                    // Token permanents carry a Token component (their identity lives there
+                    // rather than on CardData). Moonshadow's "permanent CARDS put into your
+                    // graveyard" must ignore a dying token you own.
+                    if (ab.trigger_valid_card_non_token && ev.HasParam(Params::ENTITY)) {
+                        Entity ev_card = ev.GetParam<Entity>(Params::ENTITY);
+                        if (global_coordinator.entity_has_component<Token>(ev_card)) continue;
+                    }
+                    // ValidCard$ Permanent — only permanent card types match (CR 110.4a);
+                    // an instant/sorcery moving to the graveyard must not trigger (Moonshadow:
+                    // "permanent cards put into your graveyard").
+                    if (ab.trigger_valid_card_is_permanent && ev.HasParam(Params::ENTITY)) {
+                        Entity ev_card = ev.GetParam<Entity>(Params::ENTITY);
+                        if (!global_coordinator.entity_has_component<CardData>(ev_card)) continue;
+                        if (!is_permanent_card(global_coordinator.GetComponent<CardData>(ev_card)))
+                            continue;
+                    }
                     // ValidCard(s)$ <Subtype> filter (Ajani: a Cat changing zone). Checked
                     // against the changing card's CardData or Token subtypes.
                     if (!ab.trigger_valid_card_subtype.empty() && ev.HasParam(Params::ENTITY)) {

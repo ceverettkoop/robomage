@@ -135,6 +135,12 @@ struct Ability{
     bool trigger_valid_card_is_instant_or_sorcery = false;  // ValidCard$ Instant/Sorcery
     bool trigger_valid_card_is_land = false;            // ValidCard$ Land.*
     bool trigger_valid_card_is_artifact = false;        // ValidCard$ Artifact.* (Kappa Cannoneer)
+    // ValidCard$ ...+!token — the changing card must be a real card, not a token (CR 110.1 /
+    // 111.7). Moonshadow's "permanent cards put into your graveyard" excludes tokens.
+    bool trigger_valid_card_non_token = false;
+    // ValidCard$ Permanent — the changing card must be a permanent card (CR 110.4a: artifact,
+    // battle, creature, enchantment, land, planeswalker), excluding instants/sorceries.
+    bool trigger_valid_card_is_permanent = false;
     // ValidCard$ ...+Colorless — the cast spell (SpellCast) or changing card (ChangesZone)
     // must be colorless (CR 105.2c / 202.2). Used by Glaring Fleshraker (Card.Colorless
     // SpellCast trigger; Creature.Other+Colorless+YouCtrl ChangesZone trigger).

@@ -21,6 +21,7 @@ enum class EffectKind {
     RearrangeTopOfLibrary,
     DealDamage,
     PutCounter,
+    RemoveCounter,
     ProwessBonus,
     ExaltedBonus,
     Token,

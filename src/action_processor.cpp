@@ -41,6 +41,8 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer);
 static bool player_controls_land_subtype(Zone::Ownership player, const std::string &subtype);
 static std::string landwalk_subtype(const std::string &kw);
 static std::vector<Entity> determine_blockable_attackers(Entity blocker, const std::vector<Entity> &attackers);
+static void release_illegal_menace_blockers(const std::vector<Entity> &eligible,
+                                            const std::vector<Entity> &attackers);
 static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer);
 static std::vector<Entity> collect_live_blockers(Entity attacker, std::shared_ptr<Orderer> orderer);
 static bool attacker_needs_assignment(Entity attacker, std::shared_ptr<Orderer> orderer, bool first_strike_only);
@@ -705,6 +707,32 @@ static std::vector<Entity> determine_blockable_attackers(Entity blocker, const s
     return result;
 }
 
+// 702.111b / 509.1b: a creature with menace can only be blocked by two or more creatures.
+// After blocks are declared, any menace attacker blocked by exactly one creature has an
+// illegal block; the legal resolution is that the lone blocker isn't blocking it. Release
+// such lone blockers (clear is_blocking, and the attacker's is_blocked if it now has none).
+static void release_illegal_menace_blockers(const std::vector<Entity> &eligible,
+                                            const std::vector<Entity> &attackers) {
+    for (auto atk : attackers) {
+        if (!global_coordinator.entity_has_component<Creature>(atk)) continue;
+        auto &acr = global_coordinator.GetComponent<Creature>(atk);
+        if (!creature_has_keyword(acr, "Menace")) continue;
+        std::vector<Entity> blockers;
+        for (auto b : eligible) {
+            auto &bcr = global_coordinator.GetComponent<Creature>(b);
+            if (bcr.is_blocking && bcr.blocking_target == atk) blockers.push_back(b);
+        }
+        if (blockers.size() == 1) {
+            auto &bcr = global_coordinator.GetComponent<Creature>(blockers[0]);
+            bcr.is_blocking = false;
+            bcr.blocking_target = 0;
+            acr.is_blocked = false;  // no other blocker assigned this attacker
+            game_log("%s cannot block %s alone (menace) — block released.\n",
+                     entity_name(blockers[0]).c_str(), entity_name(atk).c_str());
+        }
+    }
+}
+
 static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
     Zone::Ownership defending_player = game.player_a_turn ? Zone::PLAYER_B : Zone::PLAYER_A;
     // defending player declares blockers — priority must be theirs for the input routing to work correctly
@@ -788,7 +816,16 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer) {
         }
         int blocker_choice = InputLogger::instance().get_input(blk_actions);
 
-        if (blocker_choice == static_cast<int>(blk_actions.size()) - 1) break;
+        if (blocker_choice == static_cast<int>(blk_actions.size()) - 1) {
+            // 509.1b / 702.111b: a creature with menace can't be blocked except by two or
+            // more creatures. A declaration leaving a menace attacker blocked by exactly one
+            // creature is illegal; the only legal resolution is that the lone creature isn't
+            // blocking it. Release any such lone blocker (it deals/takes no combat damage)
+            // rather than reject the confirm, so the step can never deadlock when no second
+            // blocker is available.
+            release_illegal_menace_blockers(eligible, attackers);
+            break;
+        }
 
         Entity chosen = unblocked[static_cast<size_t>(blocker_choice)];
         auto &cr = global_coordinator.GetComponent<Creature>(chosen);

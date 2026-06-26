@@ -44,6 +44,15 @@ inline bool is_creature_card(const CardData &cd) { return card_has_type(cd, "Cre
 inline bool is_land_card(const CardData &cd)     { return card_has_type(cd, "Land"); }
 inline bool is_planeswalker_card(const CardData &cd) { return card_has_type(cd, "Planeswalker"); }
 
+// True if the card has a permanent card type (CR 110.4a: artifact, battle, creature,
+// enchantment, land, planeswalker). Used by ValidCard$ Permanent zone-change filters
+// (Moonshadow: "permanent cards put into your graveyard" excludes instants/sorceries).
+inline bool is_permanent_card(const CardData &cd) {
+    return card_has_type(cd, "Artifact") || card_has_type(cd, "Battle") ||
+           card_has_type(cd, "Creature") || card_has_type(cd, "Enchantment") ||
+           card_has_type(cd, "Land") || card_has_type(cd, "Planeswalker");
+}
+
 // True if the card is colorless (CR 105.2c): no colored mana symbol in its mana cost and no
 // Colors: override granting it a color. A `Colors:`/Devoid override (explicit_colors) takes
 // precedence over the cost; otherwise the printed mana cost's colored symbols decide. Mirrors

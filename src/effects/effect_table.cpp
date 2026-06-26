@@ -30,6 +30,7 @@ EffectHandler handler_for(EffectKind kind) {
         case EffectKind::Scry:            return &scry;
         case EffectKind::DelayedTrigger:  return &delayed_trigger;
         case EffectKind::PutCounter:      return &put_counter;
+        case EffectKind::RemoveCounter:   return &remove_counter;
         case EffectKind::RearrangeTopOfLibrary: return &rearrange_top_of_library;
         case EffectKind::ChangeZone:      return &change_zone;
         case EffectKind::ChangeZoneAll:   return &change_zone_all;
