@@ -242,3 +242,37 @@ bool permanent_matches_filter(Entity e, const std::string &spec, const MatchCtx 
     if (!is_battlefield_permanent(e)) return false;
     return match_filter_core(permanent_view(e, global_coordinator.GetComponent<Permanent>(e)), spec, ctx);
 }
+
+// ── Defined$ player resolution (declared in game_queries.h) ─────────────────
+Zone::Ownership source_controller(Entity source) {
+    if (global_coordinator.entity_has_component<Permanent>(source))
+        return global_coordinator.GetComponent<Permanent>(source).controller;
+    if (global_coordinator.entity_has_component<Zone>(source))
+        return global_coordinator.GetComponent<Zone>(source).owner;
+    return Zone::UNKNOWN;
+}
+
+Zone::Ownership last_known_controller(Entity e) {
+    if (global_coordinator.entity_has_component<Zone>(e)) {
+        Zone::Ownership c = global_coordinator.GetComponent<Zone>(e).controller;
+        if (c != Zone::UNKNOWN) return c;  // still on the battlefield (or wherever Zone records it)
+    }
+    if (global_coordinator.entity_has_component<Permanent>(e))
+        return global_coordinator.GetComponent<Permanent>(e).controller;  // mid-resolution, pre-SBA strip
+    if (const LastKnownInfo *lki = lki_for(e)) return lki->controller;     // already left the battlefield
+    return Zone::UNKNOWN;
+}
+
+static Zone::Ownership opponent_of(Zone::Ownership p) {
+    if (p == Zone::PLAYER_A) return Zone::PLAYER_B;
+    if (p == Zone::PLAYER_B) return Zone::PLAYER_A;
+    return Zone::UNKNOWN;
+}
+
+Zone::Ownership resolve_defined_player(const Ability &ab) {
+    if (ab.defined_you)                 return source_controller(ab.source);
+    if (ab.defined_each_opponent)       return opponent_of(source_controller(ab.source));
+    if (ab.defined_targeted_controller) return ab.target != 0 ? last_known_controller(ab.target) : Zone::UNKNOWN;
+    if (ab.defined_triggered_activator) return ab.triggered_activator;
+    return Zone::UNKNOWN;
+}

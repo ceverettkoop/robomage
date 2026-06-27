@@ -13,6 +13,7 @@
 #include "../components/spell.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
+#include "../game_queries.h"
 #include "../svar_eval.h"
 #include "../systems/orderer.h"
 
@@ -68,9 +69,8 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
     // through the move to the graveyard, so it still names the last controller. This only
     // redirects the search path; the targeted-move branch below is skipped because such a
     // sub-ability carries no target of its own (ValidTgts$ N_A).
-    if (ab.defined_targeted_controller && ab.target != 0 &&
-        global_coordinator.entity_has_component<Zone>(ab.target)) {
-        Zone::Ownership tc = global_coordinator.GetComponent<Zone>(ab.target).controller;
+    if (ab.defined_targeted_controller && ab.target != 0) {
+        Zone::Ownership tc = last_known_controller(ab.target);  // CR 608.2g/h, robust to post-move reads
         if (tc != Zone::UNKNOWN) owner = tc;
     }
 

@@ -9,6 +9,7 @@
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../ecs/events.h"
+#include "../game_queries.h"
 #include "../mana_system.h"
 
 extern Coordinator global_coordinator;
@@ -25,9 +26,7 @@ static uint32_t phase_string_to_event(const std::string &phase) {
 
 bool delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer) {
     (void)orderer;
-    Zone::Ownership owner = global_coordinator.entity_has_component<Permanent>(ab.source)
-                                ? global_coordinator.GetComponent<Permanent>(ab.source).controller
-                                : global_coordinator.GetComponent<Zone>(ab.source).owner;
+    Zone::Ownership owner = source_controller(ab.source);
     Entity owner_entity = get_player_entity(owner);
 
     const DelayedTriggerParams *dp = std::get_if<DelayedTriggerParams>(&ab.params);

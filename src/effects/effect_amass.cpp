@@ -29,9 +29,7 @@ bool amass(Ability &ab, std::shared_ptr<Orderer> orderer) {
     const AmassParams *ap = std::get_if<AmassParams>(&ab.params);
     std::string subtype = (ap && !ap->subtype.empty()) ? ap->subtype : "Orc";
 
-    Zone::Ownership ctrl = global_coordinator.entity_has_component<Permanent>(ab.source)
-                               ? global_coordinator.GetComponent<Permanent>(ab.source).controller
-                               : global_coordinator.GetComponent<Zone>(ab.source).owner;
+    Zone::Ownership ctrl = source_controller(ab.source);
 
     // Find an Army the controller already controls.
     Entity army = 0;

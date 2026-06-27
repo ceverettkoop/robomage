@@ -10,6 +10,7 @@
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../ecs/events.h"
+#include "../game_queries.h"
 #include "../mana_system.h"
 #include "../parse.h"
 #include "../systems/orderer.h"
@@ -29,9 +30,7 @@ bool mobilize(Ability &ab, std::shared_ptr<Orderer> orderer) {
     int n = static_cast<int>(ab.amount);
     if (n <= 0) return true;
 
-    Zone::Ownership ctrl = global_coordinator.entity_has_component<Permanent>(ab.source)
-                               ? global_coordinator.GetComponent<Permanent>(ab.source).controller
-                               : global_coordinator.GetComponent<Zone>(ab.source).owner;
+    Zone::Ownership ctrl = source_controller(ab.source);
 
     // The defender the Mobilize creature is attacking; the tokens attack the same target.
     Entity attack_target = 0;

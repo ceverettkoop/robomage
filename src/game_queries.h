@@ -138,6 +138,26 @@ bool card_matches_filter(Entity e, const std::string &spec, const MatchCtx &ctx 
 bool card_matches_filter(const CardData &cd, const std::string &spec, const MatchCtx &ctx = MatchCtx{});
 bool permanent_matches_filter(Entity e, const std::string &spec, const MatchCtx &ctx = MatchCtx{});
 
+// ── Defined$ player resolution (CR 109.5 / 608.2g) ──────────────────────────
+// Who controls an ability's SOURCE object: its live Permanent.controller while on the
+// battlefield, else the owner of its current zone. The "source controller" idiom that
+// token/amass/mobilize/delayed-trigger/deal-damage/etc. otherwise repeat inline.
+Zone::Ownership source_controller(Entity source);
+
+// Last-known controller of an object for a "that permanent's controller" effect
+// (CR 608.2g/h): its Zone.controller while it still records one, else the live
+// Permanent.controller (mid-resolution before the SBA strips it), else the controller
+// captured in its last-known info as it left the battlefield. UNKNOWN if never controlled.
+Zone::Ownership last_known_controller(Entity e);
+
+// Resolve the Defined$ player an ability designates, or UNKNOWN when it names none (the
+// caller then falls back to its own chosen target):
+//   Defined$ You                -> the source's controller
+//   Defined$ Player.Opponent    -> that controller's single opponent (2-player; CR 109.5)
+//   Defined$ TargetedController -> the last-known controller of ab.target
+//   Defined$ TriggeredActivator -> the player bound when the trigger fired
+Zone::Ownership resolve_defined_player(const Ability &ab);
+
 // True if the card has a permanent card type (CR 110.4a: artifact, battle, creature,
 // enchantment, land, planeswalker). Used by ValidCard$ Permanent zone-change filters
 // (Moonshadow: "permanent cards put into your graveyard" excludes instants/sorceries).

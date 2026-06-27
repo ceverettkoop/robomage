@@ -69,6 +69,7 @@ struct LastKnownInfo {
     int toughness = 0;
     std::vector<std::string> type_names;   // type/subtype/supertype names
     std::set<Colors> colors;               // effective colors
+    Zone::Ownership controller = Zone::UNKNOWN;  // last controller (CR 608.2g): "that permanent's controller"
 };
 
 enum MandatoryChoice {
