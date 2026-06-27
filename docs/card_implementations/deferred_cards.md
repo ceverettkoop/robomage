@@ -31,7 +31,7 @@ implemented in the 2026-06-27 run below; the energy subsystem now exists.
 - **Pinnacle Emissary** — Warp alternative cost (cast for warp cost, exile at end step, recast from exile) (Forge script: available)
 - **Wastescape Battlemage** — Kicker (multi-kicker cost choice at cast + `kicked N` SpellCast condition) (Forge script: available)
 - **Eiganjo, Seat of the Empire** — Channel-from-hand works, but `ReduceCost$ X` on an activated ability (cost reduced per legendary creature) is unsupported (Forge script: available)
-- **It That Heralds the End** — anthem-style broadcast `+1/+1` to an `Affected$` class + spell cost-reduction static (Forge script: available)
+- ~~**It That Heralds the End** — anthem-style broadcast `+1/+1` to an `Affected$` class + spell cost-reduction static (Forge script: available)~~ **IMPLEMENTED** (general `Affected$`-filter resolver for continuous P/T statics + `cmcGE7` static mana-value bound on the `ReduceCost` filter; see `docs/card_implementations/it_that_heralds_the_end.md`)
 - ~~**Lorehold Charm** — `DB$ PumpAll` (no PumpAll handler) + targeted graveyard→battlefield reanimation (Forge script: available)~~ **IMPLEMENTED** (general `PumpAll` mass-pump handler + targeted graveyard→battlefield reanimation targeting/control; see `docs/card_implementations/lorehold_charm.md`)
 - **Mox Amber** — `ManaReflected` (produce one mana of any color found among legendary permanents you control) (Forge script: available)
 - **Alpha Deathclaw** — Monstrosity (`Monstrosity$` on PutCounter + `BecomeMonstrous` trigger) (Forge script: available)

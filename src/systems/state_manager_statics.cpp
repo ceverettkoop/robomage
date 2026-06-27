@@ -77,12 +77,41 @@ int active_reduce_cost_for(const CardData &card_data, Zone::Ownership caster) {
         if (as.sa->category != "ReduceCost") continue;
         if (as.sa->reduce_cost_you_only && as.controller != caster) continue;
         // An empty filter means the reduction applies to every spell (no characteristic gate).
-        if (!as.sa->reduce_cost_filter.empty() &&
-            !card_matches_filter(card_data, as.sa->reduce_cost_filter))
-            continue;
+        if (!as.sa->reduce_cost_filter.empty()) {
+            // Seed any static mana-value qualifier (It That Heralds the End's cmcGE7) into the
+            // MatchCtx — the evaluator defers cmc comparators to ctx.cmc_bound, so without this
+            // the bound is silently ignored and every colorless spell would be reduced.
+            MatchCtx ctx;
+            extract_static_cmc_bound(as.sa->reduce_cost_filter, ctx);
+            if (!card_matches_filter(card_data, as.sa->reduce_cost_filter, ctx)) continue;
+        }
         total += as.sa->reduce_cost;
     }
     return total;
+}
+
+// Resolve the battlefield permanents a continuous static's Affected$ filter designates
+// (declared in state_manager.h). The EquippedBy / Self forms target a single creature that
+// the layer appliers resolve directly (equipped_to / the source), so this returns empty for
+// them and for an empty filter; every other Affected$ value (e.g. "Creature.Colorless+
+// Other+YouCtrl") is a permanent filter matched through permanent_matches_filter with the
+// static's controller as the YouCtrl reference and the source permanent as the .Other
+// self-exclusion seam. A static numeric mana-value qualifier (cmcGE7) in the filter is seeded
+// into the MatchCtx so the comparator is honoured rather than silently passing.
+std::vector<Entity> affected_permanents_for_static(const ActiveStatic &as,
+                                                   const std::set<Entity> &entities) {
+    std::vector<Entity> out;
+    const std::string &aff = as.sa->affected;
+    if (aff.empty()) return out;
+    if (aff.find("EquippedBy") != std::string::npos) return out;
+    if (aff.find("Self") != std::string::npos) return out;
+    MatchCtx ctx;
+    ctx.controller = as.controller;   // YouCtrl/OppCtrl reference (CR 109.5)
+    ctx.source = as.entity;           // .Other self-exclusion
+    extract_static_cmc_bound(aff, ctx);
+    for (auto e : entities)
+        if (permanent_matches_filter(e, aff, ctx)) out.push_back(e);
+    return out;
 }
 
 ManaValue effective_base_cost(const CardData &card_data, Zone::Ownership caster) {
@@ -798,6 +827,18 @@ void StateManager::apply_layer6_ability_effects() {
             (!a.sa->set_power_svar.empty() || !a.sa->set_toughness_svar.empty()))
             continue;
 
+        // A pure-P/T anthem that affects a class of permanents via a general Affected$ filter
+        // (It That Heralds the End: "Creature.Colorless+Other+YouCtrl", no keyword) is applied
+        // entirely in layer 7's per-target loop. Skip it here so this single-target (source)
+        // path doesn't mis-log a +N/+N "grant" on the anthem source itself.
+        {
+            const std::string &aff = a.sa->affected;
+            bool general_filter = !aff.empty() &&
+                                  aff.find("EquippedBy") == std::string::npos &&
+                                  aff.find("Self") == std::string::npos;
+            if (general_filter && a.sa->add_keyword.empty()) continue;
+        }
+
         // Determine which entity receives the grant (source or equipped creature).
         // Affected$ is stored verbatim (e.g. "Creature.EquippedBy"), so match by substring.
         Entity target_entity = a.entity;
@@ -1014,29 +1055,51 @@ void StateManager::apply_layer7_pt_effects() {
             continue;
         if (!a.condition_met) continue;
 
-        Entity target_entity = a.entity;
-        if (a.sa->affected.find("EquippedBy") != std::string::npos) {
-            if (!global_coordinator.entity_has_component<Permanent>(a.entity)) continue;
-            target_entity = global_coordinator.GetComponent<Permanent>(a.entity).equipped_to;
-        }
-        if (target_entity == 0 || !global_coordinator.entity_has_component<Creature>(target_entity)) continue;
-
-        ContinuousEffect e;
-        e.layer    = Layer::PT;
-        e.sublayer = PTSublayer::MODIFY;
-        e.source   = a.entity;
-        e.affected = target_entity;
-        e.delta_power = a.sa->add_power_svar.empty()
-                            ? a.sa->add_power
-                            : evaluate_sa_svar(a.sa->add_power_svar, a.controller);
-        e.delta_toughness = a.sa->add_toughness_svar.empty()
-                            ? a.sa->add_toughness
-                            : evaluate_sa_svar(a.sa->add_toughness_svar, a.controller);
+        int dp = a.sa->add_power_svar.empty()
+                     ? a.sa->add_power
+                     : evaluate_sa_svar(a.sa->add_power_svar, a.controller);
+        int dt = a.sa->add_toughness_svar.empty()
+                     ? a.sa->add_toughness
+                     : evaluate_sa_svar(a.sa->add_toughness_svar, a.controller);
         // 613.7a — a static ability's effect has its source object's timestamp.
-        e.timestamp = global_coordinator.entity_has_component<Permanent>(a.entity)
+        size_t ts = global_coordinator.entity_has_component<Permanent>(a.entity)
             ? global_coordinator.GetComponent<Permanent>(a.entity).timestamp_entered_battlefield
             : 0;
-        mods.push_back(e);
+
+        // Resolve the affected creature set. A general Affected$ filter (anthem:
+        // "Creature.Colorless+Other+YouCtrl" on It That Heralds the End) buffs every matching
+        // battlefield permanent — go through the shared resolver, which honours +Other (skip
+        // self) and YouCtrl (controller scope). The EquippedBy / Self / no-Affected$ forms keep
+        // the original single-target behaviour (source, or the equipped creature).
+        const std::string &aff = a.sa->affected;
+        bool general_filter = !aff.empty() &&
+                              aff.find("EquippedBy") == std::string::npos &&
+                              aff.find("Self") == std::string::npos;
+        std::vector<Entity> targets;
+        if (general_filter) {
+            targets = affected_permanents_for_static(a, mEntities);
+        } else {
+            Entity target_entity = a.entity;
+            if (aff.find("EquippedBy") != std::string::npos) {
+                if (!global_coordinator.entity_has_component<Permanent>(a.entity)) continue;
+                target_entity = global_coordinator.GetComponent<Permanent>(a.entity).equipped_to;
+            }
+            if (target_entity != 0) targets.push_back(target_entity);
+        }
+
+        for (Entity target_entity : targets) {
+            if (target_entity == 0 || !global_coordinator.entity_has_component<Creature>(target_entity))
+                continue;
+            ContinuousEffect e;
+            e.layer    = Layer::PT;
+            e.sublayer = PTSublayer::MODIFY;
+            e.source   = a.entity;
+            e.affected = target_entity;
+            e.delta_power = dp;
+            e.delta_toughness = dt;
+            e.timestamp = ts;
+            mods.push_back(e);
+        }
     }
 
     order_continuous_effects(mods);

@@ -10,6 +10,7 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include <set>
 
 struct CardData;
 
@@ -34,6 +35,18 @@ struct ActiveStatic {
 // Global cached list of active static abilities on battlefield permanents.
 // Rebuilt every SBE pass. Consumers read this instead of scanning all permanents.
 extern std::vector<ActiveStatic> g_active_statics;
+
+// Resolve the set of battlefield permanents a continuous static's Affected$ filter
+// designates (CR 611/613 — the objects a continuous effect applies to). The filter is
+// evaluated through the shared permanent_matches_filter so the full qualifier grammar
+// (colors, Colorless, subtypes, P/T, …) is honoured; YouCtrl/OppCtrl are controller-scoped
+// to the static's controller and `+Other` excludes the source permanent itself. Returns an
+// empty list for the EquippedBy / Self forms (those resolve to a single creature in the
+// applier) or for an empty filter. This is the single, reusable "which permanents does this
+// static affect" step — the additive-P/T anthem path (It That Heralds the End) uses it, and
+// future Affected$-filter statics (AddAbility$, AddKeyword$ anthems) reuse it too.
+std::vector<Entity> affected_permanents_for_static(const ActiveStatic &as,
+                                                   const std::set<Entity> &entities);
 
 // Total generic mana that active RaiseCost statics add to the cost of casting `card_data`.
 // Honours the nonCreature filter and the NamedCard filter (Disruptor Flute): a NamedCard

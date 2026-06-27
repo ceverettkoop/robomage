@@ -1,6 +1,7 @@
 #ifndef GAME_QUERIES_H
 #define GAME_QUERIES_H
 
+#include <cctype>
 #include <set>
 #include <string>
 #include <vector>
@@ -138,6 +139,31 @@ struct MatchCtx {
 bool card_matches_filter(Entity e, const std::string &spec, const MatchCtx &ctx = MatchCtx{});
 bool card_matches_filter(const CardData &cd, const std::string &spec, const MatchCtx &ctx = MatchCtx{});
 bool permanent_matches_filter(Entity e, const std::string &spec, const MatchCtx &ctx = MatchCtx{});
+
+// Pull a STATIC numeric mana-value qualifier out of a filter spec into a MatchCtx
+// (e.g. "Card.Colorless+cmcGE7" → ctx.cmc_op = "GE", ctx.cmc_bound = 7). The qualifier
+// evaluator defers `cmcLE3`/`cmcGE7`/… to ctx.cmc_bound (returning true for the bare token),
+// so a caller that matches a static cmc filter through card_matches_filter must seed the bound
+// here or the comparator is silently ignored. Non-numeric forms (cmcLEX / cmcEQX, keyed off X
+// paid) are left to the inline evaluator and not extracted. Mirrors the per-token extraction in
+// svar_eval.cpp; shared so static-cmc filter sites (ReduceCost, …) cannot drift on the parsing.
+inline void extract_static_cmc_bound(const std::string &spec, MatchCtx &ctx) {
+    size_t p = 0;
+    while (p < spec.size()) {
+        size_t pos = spec.find("cmc", p);
+        if (pos == std::string::npos) return;
+        // A numeric cmc qualifier is "cmc" + 2-letter op + at least one digit (cmcGE7).
+        if (pos + 5 < spec.size() &&
+            std::isdigit(static_cast<unsigned char>(spec[pos + 5]))) {
+            size_t e = pos + 5;
+            while (e < spec.size() && std::isdigit(static_cast<unsigned char>(spec[e]))) ++e;
+            ctx.cmc_op = spec.substr(pos + 3, 2);
+            ctx.cmc_bound = std::stoi(spec.substr(pos + 5, e - (pos + 5)));
+            return;
+        }
+        p = pos + 3;
+    }
+}
 
 // ── Defined$ player resolution (CR 109.5 / 608.2g) ──────────────────────────
 // Who controls an ability's SOURCE object: its live Permanent.controller while on the
