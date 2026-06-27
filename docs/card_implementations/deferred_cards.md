@@ -12,9 +12,8 @@ Each card below has a local Forge script available; the blocker is a missing eng
 (grouped by the mechanic that needs to be built first). Implementing one card in a group usually
 unblocks the others in that group.
 
-**Energy** (energy counters, `PayEnergy` cost, energy-gated effects):
-- **Guide of Souls** — energy counters + `PayEnergy<3>` immediate-trigger cost (Forge script: available)
-- ~~**Wrath of the Skies** — `PutCounter ENERGY` on player + `ChooseNumber` + `DestroyAll` bounded by `PayEnergy<Y>` (Forge script: available)~~ — implemented this run (see `wrath_of_the_skies.md`)
+**Energy** — all three energy cards (Amped Raptor, Guide of Souls, Wrath of the Skies) were
+implemented in the 2026-06-27 run below; the energy subsystem now exists.
 
 **Adventure / split-mode cards** (cast one half, exile, recast other half later):
 - **Brazen Borrower Petty Theft** — Adventure (`AlternateMode:Adventure`) (Forge script: available)
@@ -83,3 +82,60 @@ breaks a currently-implemented card, but each is worth a deliberate fix:
   the leaving permanent's controller is now captured in `LastKnownInfo` so "that permanent's
   controller" resolves even after it has left the battlefield (fixed the previously-dead fallback
   that could deal 0).
+
+## Run 2026-06-27  (implement-deferred, N=10 — no deferrals)
+
+User-directed `implement-deferred-cards` run: 10 cards pulled from the deferred queue above and
+**all implemented** (one commit per card / shared-mechanic batch on branch
+`claude/autonomous-card-batch-8072th`):
+
+| Card | vocab | commit | new mechanic(s) |
+|---|---|---|---|
+| Guide of Souls | 171 | `442f8c9` | energy foundation (player counter map, `PayEnergy`, Animate type-add, keyword counters, immediate-trigger optional cost, AttackersDeclared) |
+| Wrath of the Skies | 186 | `b1bc865` | `ChooseNumber`, dynamic-CMC `DestroyAll` + PayEnergy-unless |
+| Amped Raptor | 170 | `d152cf3` | `DigUntil`, general resource-parameterized alt-cost cast (`DB$ Play`) |
+| Badgermole Cub + Ba Sing Se | 175, 197 | `3185ab4` | Earthbend (land→creature Animate), leaves-battlefield return-tapped delayed trigger, `TapsForMana`, conditional ETB-tapped |
+| Mox Opal | 176 | `ed24922` | general `Activation$` gate + Metalcraft predicate |
+| Nethergoyf | 177 | `5dc0a6d` | controller-scoped `CardTypes` CDA P/T, Escape keyword + `ExileFromGrave` group cost |
+| Reality Smasher | 181 | `529cac2` | general `BecomesTarget` trigger (Ward left untouched), `TriggeredSourceSA`, discard-unless-cost |
+| Thought-Knot Seer | 182 | `396ec38` | `RevealHand` effect, `Chooser$ You` cross-player hand exile |
+| Skyclave Apparition | 188 | `7650318` | `TokenOwner$ RememberedOwner`, SVar-sized token P/T, ExiledWithSource condition |
+
+### Review findings (post-implementation code review 2026-06-27, for human follow-up)
+
+A medium `code-review` over the full run diff (3 finder passes) found **no bug in any of the 10
+shipped cards** — each was verified behaving correctly and the scripted regression is green. The
+following are **latent fragilities in the *generalized* mechanisms** (they would bite a *future*
+card, not a current one); left for a human because each touches a hot/cross-cutting path with no
+shipping card to verify a fix against, and the run branch was kept green:
+
+- **`is_legal_target` controller/token filter matches substrings over the whole `ValidTgts$`
+  string, not per-clause** (`src/components/ability.cpp` ~640–660). (a) A comma-joined
+  `…YouCtrl,…OppCtrl` spec sets both flags and rejects every candidate; (b) a filter whose text
+  contains `token` without the `!token`/`nonToken` negation is wrongly treated as token-only. No
+  current card has such a spec. Fix: evaluate controller/token qualifiers per clause.
+- **Activated `Cost$ PayEnergy<N>` is parsed into `Ability::energy_cost` but never paid or gated**
+  on a normal `AB$` ability (`src/action_processor.cpp` activation-cost path; only
+  `effect_immediate_trigger` consumes `energy_cost`). An activated ability with a PayEnergy cost
+  would activate for free. Latent (Guide of Souls' PayEnergy is on an ImmediateTrigger).
+- **Single permanent-target `PutCounter` ignores dynamic `CounterNum$` (`count_expr`) and the
+  second counter (`CounterType2$`/`CounterNum2$`)** (`src/effects/effect_put_counter.cpp` ~51) —
+  only the `Defined$ You` branch and `put_counter_all` honor them. A targeted dynamic-count counter
+  would place zero. Latent (Wrath uses `Defined$ You`; Guide uses `PutCounterAll`).
+- **Non-switched energy `UnlessCost` in `DestroyAll` pays energy unconditionally and destroys
+  regardless of payment** (`src/effects/effect_destroy_all.cpp` ~39) — only `UnlessSwitched$ True`
+  consults the paid result. A normal "destroy … unless its controller pays {E}" would be inverted.
+  Latent (Wrath of the Skies is switched).
+- **The generic `ValidPlayer$ You` trigger gate is not exempted for `BECAME_TARGET`**
+  (`src/systems/state_manager_triggers.cpp` ~180), where the event's PLAYER param is the *targeting*
+  spell's controller. `trigger_only_self` was exempted but `ValidPlayer` was not, so a future
+  becomes-target trigger authored with `ValidPlayer$ You` would be mis-gated. Latent (Reality
+  Smasher uses `ValidSource$`).
+- **`Count$ValidGraveyard Card.YouOwn$CardTypes` honors only the ownership restriction; any extra
+  type/CMC subfilter in the Card clause is ignored** (`src/svar_eval.cpp` ~153). Correct for
+  Nethergoyf (plain `.YouOwn`); a future card with a real subfilter would mis-count.
+- **`can_afford_with_sources()` omits the `TapsForMana` additional-mana bonus**
+  (`src/mana_system.cpp` ~273), diverging from the real payment path for *nested* mana-source
+  activation costs (a mana source whose own activation cost could be covered by a creature's mana +
+  Badgermole's extra {G} is undercounted and not offered). Narrow and latent; spell-cast
+  affordability uses the correct `can_pay_mana` path.
