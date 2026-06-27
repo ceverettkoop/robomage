@@ -19,6 +19,56 @@ extern Coordinator global_coordinator;
 
 namespace effects {
 
+// Apply a single creature's "until end of turn" Pump: the +P/+T from `pump_att`/`pump_def`
+// and any granted keyword(s) in `pp->grant_keywords`. The bonus goes in the EOT bonus bucket
+// (Creature::eot_power_bonus / eot_toughness_bonus / eot_keywords) so cleanup (CR 514.2 /
+// 611.2b) reverts it exactly like every other until-end-of-turn pump. Shared by single-target
+// Pump and mass PumpAll so the P/T-and-keyword application + logging live in one place. No-op
+// if `target` is not a creature, or if there is nothing to apply.
+void apply_pump_to_creature(Entity target, int pump_att, int pump_def, const PumpParams *pp) {
+    bool grants_kw = pp && !pp->grant_keywords.empty();
+    if ((pump_att == 0 && pump_def == 0 && !grants_kw) || target == 0 ||
+        !global_coordinator.entity_has_component<Creature>(target))
+        return;
+    auto &cr = global_coordinator.GetComponent<Creature>(target);
+    // "Until end of turn" pump: store in the EOT bonus bucket so cleanup (514.2/611.2b)
+    // reverts it. Signed + floored at 0 by recompute_pt so a -X/-X pump (e.g. Dismember)
+    // can never underflow the uint32_t effective field.
+    cr.eot_power_bonus += pump_att;
+    cr.eot_toughness_bonus += pump_def;
+    recompute_pt(cr);
+    std::string tname = global_coordinator.entity_has_component<Permanent>(target)
+        ? global_coordinator.GetComponent<Permanent>(target).name : "<unknown>";
+    if (pump_att != 0 || pump_def != 0)
+        game_log("%s gets %+d/%+d (now %u/%u)\n", tname.c_str(), pump_att, pump_def, cr.power, cr.toughness);
+    // Grant "until end of turn" keyword(s) (e.g. Haste). Stored in the eot_keywords
+    // bucket; the static pass re-merges them onto cr.keywords each pass and cleanup
+    // clears them (514.2). De-dup so repeated grants don't pile up.
+    if (pp) {
+        for (const auto &kw : pp->grant_keywords) {
+            if (std::find(cr.eot_keywords.begin(), cr.eot_keywords.end(), kw) == cr.eot_keywords.end())
+                cr.eot_keywords.push_back(kw);
+            if (std::find(cr.keywords.begin(), cr.keywords.end(), kw) == cr.keywords.end())
+                cr.keywords.push_back(kw);
+            game_log("%s gains %s until end of turn.\n", tname.c_str(), kw.c_str());
+        }
+    }
+}
+
+// Resolve a PumpParams' NumAtt$/NumDef$ magnitudes for `ctrl`/`target` at resolution: a static
+// literal stays as-is; a count-SVar (att_expr/def_expr) is evaluated now (signed). Shared by
+// single-target Pump and mass PumpAll so the dynamic-amount evaluation is written once.
+void resolve_pump_amounts(const PumpParams *pp, Zone::Ownership ctrl,
+                          std::shared_ptr<Orderer> orderer, Entity target,
+                          int &out_att, int &out_def) {
+    out_att = pp ? pp->att : 0;
+    out_def = pp ? pp->def : 0;
+    if (pp && !pp->att_expr.empty())
+        out_att = pp->att_sign * static_cast<int>(evaluate_dynamic_amount(pp->att_expr, ctrl, orderer, target));
+    if (pp && !pp->def_expr.empty())
+        out_def = pp->def_sign * static_cast<int>(evaluate_dynamic_amount(pp->def_expr, ctrl, orderer, target));
+}
+
 bool pump(Ability &ab, std::shared_ptr<Orderer> orderer) {
     (void)orderer;
     // Pump used purely as a targeting vehicle for a graveyard card (Surgical Extraction's
@@ -58,37 +108,9 @@ bool pump(Ability &ab, std::shared_ptr<Orderer> orderer) {
     // (e.g. Eldrazi Linebreaker's "+X" where X = number of Eldrazi you control) is
     // evaluated now against the ability's controller.
     const PumpParams *pp = std::get_if<PumpParams>(&ab.params);
-    int pump_att = pp ? pp->att : 0;
-    int pump_def = pp ? pp->def : 0;
-    if (pp && !pp->att_expr.empty())
-        pump_att = pp->att_sign * static_cast<int>(evaluate_dynamic_amount(pp->att_expr, ctrl, orderer, ab.target));
-    if (pp && !pp->def_expr.empty())
-        pump_def = pp->def_sign * static_cast<int>(evaluate_dynamic_amount(pp->def_expr, ctrl, orderer, ab.target));
-    bool grants_kw = pp && !pp->grant_keywords.empty();
-    if ((pump_att != 0 || pump_def != 0 || grants_kw) && ab.target != 0 &&
-        global_coordinator.entity_has_component<Creature>(ab.target)) {
-        auto &cr = global_coordinator.GetComponent<Creature>(ab.target);
-        // "Until end of turn" pump: store in the EOT bonus bucket so cleanup (514.2/611.2b)
-        // reverts it. Signed + floored at 0 by recompute_pt so a -X/-X pump (e.g. Dismember)
-        // can never underflow the uint32_t effective field.
-        cr.eot_power_bonus += pump_att;
-        cr.eot_toughness_bonus += pump_def;
-        recompute_pt(cr);
-        std::string tname = global_coordinator.entity_has_component<Permanent>(ab.target)
-            ? global_coordinator.GetComponent<Permanent>(ab.target).name : "<unknown>";
-        if (pump_att != 0 || pump_def != 0)
-            game_log("%s gets %+d/%+d (now %u/%u)\n", tname.c_str(), pump_att, pump_def, cr.power, cr.toughness);
-        // Grant "until end of turn" keyword(s) (e.g. Haste). Stored in the eot_keywords
-        // bucket; the static pass re-merges them onto cr.keywords each pass and cleanup
-        // clears them (514.2). De-dup so repeated grants don't pile up.
-        for (const auto &kw : pp->grant_keywords) {
-            if (std::find(cr.eot_keywords.begin(), cr.eot_keywords.end(), kw) == cr.eot_keywords.end())
-                cr.eot_keywords.push_back(kw);
-            if (std::find(cr.keywords.begin(), cr.keywords.end(), kw) == cr.keywords.end())
-                cr.keywords.push_back(kw);
-            game_log("%s gains %s until end of turn.\n", tname.c_str(), kw.c_str());
-        }
-    }
+    int pump_att = 0, pump_def = 0;
+    resolve_pump_amounts(pp, ctrl, orderer, ab.target, pump_att, pump_def);
+    apply_pump_to_creature(ab.target, pump_att, pump_def, pp);
     return true;
 }
 

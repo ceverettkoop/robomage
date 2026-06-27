@@ -440,14 +440,15 @@ static std::vector<Entity> build_valid_targets(
     Zone::Ownership opp = (priority_player == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
 
     // Target cards in a graveyard (e.g. Faerie Macabre targeting any graveyard card,
-    // or Life from the Loam targeting Land.YouCtrl): opponent's graveyard first, then
-    // own. is_legal_target applies the type/owner filter, so YouCtrl effects only keep
-    // the caster's own cards.
+    // Life from the Loam targeting Land.YouCtrl, or targeted reanimation graveyard→
+    // battlefield like Lorehold Charm): opponent's graveyard first, then own.
+    // is_legal_target applies the type/owner/MV filter, so YouOwn effects only keep the
+    // caster's own cards. The destination is irrelevant to where the candidate sits, so
+    // a graveyard-origin ChangeZone enumerates the graveyard regardless of destination.
     // target_in_graveyard covers spells that target a graveyard card via a non-ChangeZone
     // vehicle (Surgical Extraction's SP$ Pump with TgtZone$ Graveyard).
     if (ability.target_in_graveyard ||
-        (ability.category == "ChangeZone" && ability.origin == Zone::GRAVEYARD &&
-         ability.destination != Zone::BATTLEFIELD)) {
+        (ability.category == "ChangeZone" && ability.origin == Zone::GRAVEYARD)) {
         for (int pass = 0; pass < 2; pass++) {
             Zone::Ownership slot_owner = (pass == 0) ? opp : priority_player;
             for (auto e : orderer->mEntities) {

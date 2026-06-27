@@ -65,6 +65,19 @@ bool target_color_condition_met(const Ability &ab, Entity target);
 bool add_mana(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool discard(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool pump(Ability &ab, std::shared_ptr<Orderer> orderer);
+// DB$ PumpAll (Lorehold Charm's pump mode): mass +P/+T and keyword grant, until end of turn,
+// to every battlefield permanent matching ValidCards$ (controller-scoped by YouCtrl/OppCtrl).
+// General over "creatures you control get +X/+Y and gain <keyword> until end of turn". Reuses
+// the single-target Pump application + amount-resolution helpers below. See effect_pump_all.cpp.
+bool pump_all(Ability &ab, std::shared_ptr<Orderer> orderer);
+// Apply one creature's until-end-of-turn +P/+T and granted keyword(s) (CR 514.2/611.2b cleanup
+// bucket). Shared by single-target Pump and mass PumpAll. Defined in effect_pump.cpp.
+void apply_pump_to_creature(Entity target, int pump_att, int pump_def, const PumpParams *pp);
+// Resolve a PumpParams' NumAtt$/NumDef$ (static literal or count-SVar) at resolution. Shared by
+// single-target Pump and mass PumpAll. Defined in effect_pump.cpp.
+void resolve_pump_amounts(const PumpParams *pp, Zone::Ownership ctrl,
+                          std::shared_ptr<Orderer> orderer, Entity target,
+                          int &out_att, int &out_def);
 bool peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool reveal(Ability &ab, std::shared_ptr<Orderer> orderer);
 // DB$ RevealHand (Thought-Knot Seer): the targeted player (ValidTgts$ Opponent) reveals their

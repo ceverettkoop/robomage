@@ -591,11 +591,15 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
         }
     }
 
-    // Card in a graveyard targeted by a ChangeZone with a type filter (e.g. Life from
-    // the Loam: ValidTgts$ Land.YouCtrl, Origin$ Graveyard). Filter by zone, owner
-    // (YouCtrl/OppCtrl), and card type.
+    // Card in a graveyard targeted by a ChangeZone with a type filter. Covers both
+    // graveyard→non-battlefield moves (e.g. Life from the Loam: ValidTgts$ Land.YouCtrl,
+    // Origin$ Graveyard, Destination$ Hand) and targeted reanimation graveyard→battlefield
+    // (e.g. Lorehold Charm's "return target artifact or creature with mana value 2 or less
+    // from your graveyard to the battlefield"). In every case the target is the card sitting
+    // in the graveyard, so it is matched there regardless of destination. Filter by zone,
+    // owner (YouCtrl/OppCtrl/YouOwn), card type, mana value (cmcLE), and Basic supertype.
     if (target_in_graveyard ||
-        (category == "ChangeZone" && origin == Zone::GRAVEYARD && destination != Zone::BATTLEFIELD)) {
+        (category == "ChangeZone" && origin == Zone::GRAVEYARD)) {
         if (!global_coordinator.entity_has_component<Zone>(cand)) return false;
         auto &cz = global_coordinator.GetComponent<Zone>(cand);
         if (cz.location != Zone::GRAVEYARD) return false;
@@ -615,8 +619,12 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
             if (inc_artifacts    && t.name == "Artifact")    type_ok = true;
             if (inc_enchantments && t.name == "Enchantment") type_ok = true;
         }
+        if (!type_ok) return false;
+        // Mana-value bound (e.g. Lorehold Charm's cmcLE2): a graveyard card has no live MV
+        // layer, so read its printed mana value.
+        if (cmc_le >= 0 && static_cast<int>(cd.mana_cost.size()) > cmc_le) return false;
         if (nonbasic_only && has_basic_supertype(cd.types)) return false;
-        return type_ok;
+        return true;
     }
 
     // Player target

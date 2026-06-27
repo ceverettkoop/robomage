@@ -21,6 +21,7 @@ EffectKind effect_kind_from_string(const std::string &category) {
         {"Attach", EffectKind::Attach},
         {"Mill", EffectKind::Mill},
         {"Pump", EffectKind::Pump},
+        {"PumpAll", EffectKind::PumpAll},
         {"MultiplyCounter", EffectKind::MultiplyCounter},
         {"ChooseCard", EffectKind::ChooseCard},
         {"Cleanup", EffectKind::Cleanup},

@@ -28,6 +28,7 @@ enum class EffectKind {
     Attach,
     Mill,
     Pump,
+    PumpAll,
     MultiplyCounter,
     ChooseCard,
     Cleanup,
