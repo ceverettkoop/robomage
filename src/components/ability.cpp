@@ -8,6 +8,7 @@
 
 #include "../classes/action.h"
 #include "../classes/game.h"
+#include "../classes/match_state.h"
 #include "../cli_output.h"
 #include "../components/carddata.h"
 #include "../components/color_identity.h"
@@ -327,18 +328,77 @@ Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner
 
 
 
+// Offer `controller` the choice to discard `count` card(s) of their choice from hand to pay an
+// unless-cost (CR 701.8). Returns true if the cost was NOT paid (they declined or have too few
+// cards), i.e. the spell should be countered. Reusable by any "unless they discard N cards"
+// effect; the chosen cards go to the graveyard (a public zone — record the reveal in the belief
+// state). The caller has already set cur_game.player_a_has_priority to `controller`.
+static bool run_discard_unless(size_t count, Zone::Ownership controller,
+                               std::shared_ptr<Orderer> orderer) {
+    std::vector<Entity> hand = orderer->get_hand(controller);
+    bool can_pay = hand.size() >= count;  // CR 701.8: must discard the full count or none
+
+    std::vector<LegalAction> actions;
+    size_t pay_idx = actions.size();
+    if (can_pay) {
+        LegalAction pay(PASS_PRIORITY,
+            std::string("Discard ") + std::to_string(count) +
+            (count == 1 ? " card (spell is not countered)" : " cards (spell is not countered)"));
+        pay.category = ActionCategory::PAY_UNLESS;
+        actions.push_back(pay);
+    }
+    size_t decline_idx = actions.size();
+    LegalAction decline(PASS_PRIORITY, std::string("Don't discard (spell is countered)"));
+    decline.category = ActionCategory::PAY_UNLESS;
+    actions.push_back(decline);
+
+    int choice = InputLogger::instance().get_input(actions);
+    if (!can_pay || choice == static_cast<int>(decline_idx)) {
+        (void)pay_idx;
+        return true;  // countered
+    }
+
+    // Pay: the payer chooses `count` distinct cards from hand to discard.
+    for (size_t i = 0; i < count; i++) {
+        std::vector<Entity> cur_hand = orderer->get_hand(controller);
+        if (cur_hand.empty()) break;
+        std::vector<LegalAction> dactions;
+        for (auto e : cur_hand) {
+            auto &cd = global_coordinator.GetComponent<CardData>(e);
+            LegalAction la(PASS_PRIORITY, e, cd.name);
+            la.category = ActionCategory::DISCARD;
+            dactions.push_back(la);
+        }
+        int dchoice = InputLogger::instance().get_input(dactions);
+        Entity chosen = dactions[static_cast<size_t>(dchoice)].source_entity;
+        auto &cd = global_coordinator.GetComponent<CardData>(chosen);
+        game_log("%s discards %s — spell is not countered\n",
+                 player_name(controller).c_str(), cd.name.c_str());
+        // The discarded card enters a public zone — record its identity in the belief state.
+        mark_card_revealed(chosen, controller);
+        orderer->add_to_zone(false, chosen, Zone::GRAVEYARD);
+    }
+    return false;  // not countered
+}
+
 // Returns true if the spell should be countered (controller declined or couldn't pay).
-// pay_as_life: the unless-cost is paid as `cost` life rather than {cost} mana (Ward—Pay N
-// life, CR 702.21). A life payment is only offered when the payer's life total >= cost
-// (CR 119.4 — a player can't pay more life than they have).
+// kind: how the unless-cost is paid — {cost} generic mana (default), `cost` life (Ward—Pay N life,
+// CR 702.21), or discard `cost` card(s) (Reality Smasher, CR 701.8). A life payment is only offered
+// when the payer's life total >= cost (CR 119.4 — a player can't pay more life than they have).
 bool run_unless_loop(
     size_t cost, Zone::Ownership controller, std::shared_ptr<Orderer> orderer, Entity paid_for,
-    bool pay_as_life) {
+    UnlessPayKind kind) {
     // the target's controller decides whether to pay, not the Daze caster
     bool prev_priority = cur_game.player_a_has_priority;
     cur_game.player_a_has_priority = (controller == Zone::PLAYER_A);
 
-    if (pay_as_life) {
+    if (kind == UnlessPayKind::DISCARD) {
+        bool countered = run_discard_unless(cost, controller, orderer);
+        cur_game.player_a_has_priority = prev_priority;
+        return countered;
+    }
+
+    if (kind == UnlessPayKind::LIFE) {
         auto &payer = global_coordinator.GetComponent<Player>(get_player_entity(controller));
         bool can_pay = payer.life_total >= static_cast<int>(cost);  // CR 119.4
 

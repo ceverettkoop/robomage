@@ -950,17 +950,32 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         // not the generic {N} mana unless-cost: route the energy amount (an SVar) to the
         // DestroyAll params. A numeric value is the legacy generic-mana unless-cost.
         size_t pe = value.find("PayEnergy<");
+        size_t pd = value.find("Discard<");
         if (pe != std::string::npos) {
             size_t close = value.find('>', pe);
             std::string n = (close != std::string::npos)
                                 ? value.substr(pe + 10, close - (pe + 10)) : "";
             effect_params<DestroyAllParams>(ability).energy_unless_expr = n;  // SVar token; resolved post-parse
+        } else if (pd != std::string::npos) {
+            // UnlessCost$ Discard<N/Card> (Reality Smasher): the payer discards N card(s) from
+            // hand to prevent the counter. The N count rides on unless_generic_cost; the discard
+            // flag selects the discard payment path in run_unless_loop. The "/Card" filter is the
+            // (only) supported discard-any-card filter today.
+            std::string inner = value.substr(pd + 8);  // after "Discard<"
+            size_t slash = inner.find('/');
+            std::string n = (slash != std::string::npos) ? inner.substr(0, slash) : inner;
+            ability.unless_generic_cost = static_cast<size_t>(std::stoi(n));
+            ability.unless_cost_is_discard = true;
         } else {
             ability.unless_generic_cost = static_cast<size_t>(std::stoi(value));
         }
     } else if (key == "UnlessPayer") {
         // UnlessPayer$ You — the controller is the payer of the unless-cost (the only payer we
         // model for the energy unless-cost). Cosmetic given the energy is paid by the controller.
+        // UnlessPayer$ TriggeredSourceSAController — the payer is the controller of the spell that
+        // targeted the source (Reality Smasher's opponent), bound at trigger-fire time.
+        if (value == "TriggeredSourceSAController")
+            ability.unless_payer_is_triggered_source_sa_ctrl = true;
     } else if (key == "UnlessSwitched") {
         // UnlessSwitched$ True inverts the normal "do unless paid" into "do only if paid"
         // (Wrath of the Skies: destroy only if the energy was paid).
@@ -984,6 +999,11 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         // trigger (Chalice of the Void: "counter that spell"). Set at trigger fire time.
         else if (value == "TriggeredSpellAbility" || value == "TriggeredSpell")
             ability.defined_triggered_spell = true;
+        // Defined$ TriggeredSourceSA — the effect acts on the spell/ability that targeted the
+        // source (Reality Smasher: "counter that spell"). Bound at trigger fire time from the
+        // BECAME_TARGET event's ENTITY (the targeting object).
+        else if (value == "TriggeredSourceSA")
+            ability.defined_triggered_source_sa = true;
         else if (value == "TargetedController") ability.defined_targeted_controller = true;
         // Defined$ TriggeredActivator — the effect acts on the player who caused the trigger
         // (the caster of the triggering spell). The actual player is bound at trigger-fire
@@ -1697,6 +1717,10 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
     bool mode_is_drawn = false;
     bool mode_is_attackers_declared = false;
     bool mode_is_taps_for_mana = false;
+    bool mode_is_becomes_target = false;
+    bool source_is_spell = false;
+    bool source_opp_ctrl = false;
+    bool valid_target_self = false;
     bool trigger_static = false;
     bool attacking_player_is_you = false;
     bool valid_card_opp_own = false;
@@ -1720,6 +1744,15 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
             else if (value == "Drawn") mode_is_drawn = true;
             else if (value == "AttackersDeclared") mode_is_attackers_declared = true;
             else if (value == "TapsForMana") mode_is_taps_for_mana = true;
+            else if (value == "BecomesTarget") mode_is_becomes_target = true;
+        } else if (key == "ValidSource") {
+            // Mode$ BecomesTarget | ValidSource$ Spell.OppCtrl — the targeting object must be a
+            // SPELL (not an ability) controlled by an opponent of the source's controller.
+            if (value.rfind("Spell", 0) == 0) source_is_spell = true;
+            if (value.find("OppCtrl") != std::string::npos) source_opp_ctrl = true;
+        } else if (key == "ValidTarget") {
+            // ValidTarget$ Card.Self — the permanent that became a target must be this source.
+            if (value == "Card.Self") valid_target_self = true;
         } else if (key == "Activator") {
             // Mode$ TapsForMana | Activator$ You — only the source controller tapping a
             // permanent for mana fires this ("whenever YOU tap ...").
@@ -1950,6 +1983,17 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
         ability.trigger_taps_for_mana_static = trigger_static;
     }
 
+    // "Whenever CARDNAME becomes the target of a spell an opponent controls, ..." — Reality
+    // Smasher (Mode$ BecomesTarget | ValidSource$ Spell.OppCtrl | ValidTarget$ Card.Self). Fires
+    // when this permanent becomes the target of a matching spell (CR 603.2c). ValidTarget$
+    // Card.Self reuses trigger_only_self (the targeted permanent must be the source).
+    if (mode_is_becomes_target) {
+        ability.trigger_on = Events::BECAME_TARGET;
+        ability.trigger_source_must_be_spell = source_is_spell;
+        ability.trigger_source_opp_ctrl = source_opp_ctrl;
+        if (valid_target_self) ability.trigger_only_self = true;
+    }
+
     // Resolve effect from Execute$ SVar
     if (!execute_svar.empty()) {
         auto it = svars.find(execute_svar);
@@ -1990,6 +2034,8 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
                 effect.trigger_cmc_op                           = ability.trigger_cmc_op;
                 effect.trigger_from_graveyard                   = ability.trigger_from_graveyard;
                 effect.trigger_taps_for_mana_static             = ability.trigger_taps_for_mana_static;
+                effect.trigger_source_must_be_spell             = ability.trigger_source_must_be_spell;
+                effect.trigger_source_opp_ctrl                  = ability.trigger_source_opp_ctrl;
                 // 603.4 intervening-if lives on the trigger line, not the Execute SVar — carry
                 // it onto the resolved ability so it is re-checked at resolution.
                 effect.intervening_if                           = ability.intervening_if;

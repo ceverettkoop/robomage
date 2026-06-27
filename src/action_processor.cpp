@@ -50,6 +50,8 @@ static void assign_combat_damage(Game &game, std::shared_ptr<Orderer> orderer);
 static void trigger_ward_for_targets(Entity targeting_entity, Zone::Ownership controller,
                                      const std::vector<Entity> &targets,
                                      std::shared_ptr<Orderer> orderer);
+static void fire_became_target_events(Entity targeting_entity, Zone::Ownership controller,
+                                      const std::vector<Entity> &targets);
 static void pay_sacrifice_cost(Zone::Ownership caster, const std::string &spec, Entity spell_entity,
                                std::shared_ptr<Orderer> orderer);
 static void pay_exile_from_grave_cost(Zone::Ownership caster, int min_types, Entity spell_entity,
@@ -380,6 +382,9 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
             std::vector<Entity> tgts = stack_ab.targets.empty()
                 ? std::vector<Entity>{stack_ab.target} : stack_ab.targets;
             trigger_ward_for_targets(ability_stack_entity, controller, tgts, orderer);
+            // Mode$ BecomesTarget triggers (CR 603.2c) fire on abilities too; the per-trigger
+            // ValidSource$ filter (e.g. Reality Smasher's Spell.OppCtrl) gates out ability sources.
+            fire_became_target_events(ability_stack_entity, controller, tgts);
         }
 
         if (stack_ab.target != 0) {
@@ -1065,6 +1070,32 @@ static void trigger_ward_for_targets(Entity targeting_entity, Zone::Ownership co
     }
 }
 
+// Mode$ BecomesTarget (CR 603.2c): a permanent's "Whenever ~ becomes the target of a spell ..."
+// triggered ability fires when a spell/ability with chosen targets is put on the stack. Called at
+// the same point as the Ward hook (right after the targeting object is placed on the stack). For
+// each target, emit a BECAME_TARGET event carrying the targeting object (ENTITY), its controller
+// (PLAYER), and the targeted permanent (TARGET). The trigger scan (state_manager_triggers) drains
+// these on the next SBA pass, matches each permanent's BecomesTarget trigger (ValidTarget$/
+// ValidSource$ filters), and places the resulting trigger ABOVE the still-resolving spell so it
+// resolves first. General: any becomes-target trigger reuses this; not special-cased to one card.
+// A permanent targeted multiple times by one spell fires its trigger once per time it became a
+// target (one event per (object, target) pair, matching the Ward "once per target" rule).
+static void fire_became_target_events(Entity targeting_entity, Zone::Ownership controller,
+                                      const std::vector<Entity> &targets) {
+    Entity ctrl_entity = get_player_entity(controller);
+    for (Entity tgt : targets) {
+        if (tgt == 0) continue;
+        // Only battlefield permanents can carry a BecomesTarget triggered ability (TriggerZones$
+        // Battlefield). A player or a stack object that was targeted never fires one.
+        if (!is_battlefield_permanent(tgt)) continue;
+        Event ev(Events::BECAME_TARGET);
+        ev.SetParam(Params::ENTITY, targeting_entity);
+        ev.SetParam(Params::PLAYER, ctrl_entity);
+        ev.SetParam(Params::TARGET, tgt);
+        global_coordinator.SendEvent(ev);
+    }
+}
+
 void process_action(const LegalAction &action, Game &game, std::shared_ptr<Orderer> orderer) {
     switch (action.type) {
         case PASS_PRIORITY:
@@ -1385,6 +1416,9 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                     std::vector<Entity> tgts = spell_ab.targets.empty()
                         ? std::vector<Entity>{spell_ab.target} : spell_ab.targets;
                     trigger_ward_for_targets(spell_entity, caster, tgts, orderer);
+                    // Mode$ BecomesTarget triggers (Reality Smasher): a targeted permanent whose
+                    // becomes-target trigger matches fires it above this spell (CR 603.2c/603.3).
+                    fire_became_target_events(spell_entity, caster, tgts);
                 }
             }
 

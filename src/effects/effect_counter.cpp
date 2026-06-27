@@ -52,12 +52,22 @@ bool counter(Ability &ab, std::shared_ptr<Orderer> orderer) {
                 std::string tname = global_coordinator.entity_has_component<CardData>(ab.target)
                                         ? global_coordinator.GetComponent<CardData>(ab.target).name
                                         : "<unknown>";
-                if (ab.unless_cost_is_life)
+                // UnlessPayer$ (Reality Smasher: TriggeredSourceSAController) selects WHO pays —
+                // the controller of the spell that targeted the source. When unset, default to the
+                // countered spell's controller (Ward / Mana Leak / Daze).
+                Zone::Ownership payer = (ab.unless_payer != Zone::UNKNOWN) ? ab.unless_payer
+                                                                          : target_controller;
+                UnlessPayKind kind = ab.unless_cost_is_discard ? UnlessPayKind::DISCARD
+                                   : ab.unless_cost_is_life     ? UnlessPayKind::LIFE
+                                                                : UnlessPayKind::MANA;
+                if (kind == UnlessPayKind::DISCARD)
+                    game_log("%s may discard %zu card%s to save %s:\n", player_name(payer).c_str(),
+                             ab.unless_generic_cost, ab.unless_generic_cost == 1 ? "" : "s", tname.c_str());
+                else if (kind == UnlessPayKind::LIFE)
                     game_log("%s's controller may pay %zu life to save it:\n", tname.c_str(), ab.unless_generic_cost);
                 else
                     game_log("%s's controller may pay {%zu} to save it:\n", tname.c_str(), ab.unless_generic_cost);
-                do_counter = run_unless_loop(ab.unless_generic_cost, target_controller, orderer, ab.target,
-                                             ab.unless_cost_is_life);
+                do_counter = run_unless_loop(ab.unless_generic_cost, payer, orderer, ab.target, kind);
             }
 
             // Can't be countered check (Cavern of Souls)

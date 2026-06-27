@@ -165,7 +165,11 @@ size_t evaluate_dynamic_amount(
 Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner,
     const std::vector<Zone::ZoneValue> &zones, const std::string &change_type, bool mandatory,
     Zone::ZoneValue destination, bool reveal = false);
+// The unless-cost payment kind for run_unless_loop: pay {N} generic mana (default), pay N life
+// (Ward—Pay life, CR 702.21), or discard N card(s) from hand (Reality Smasher, CR 701.8). Returns
+// true if the spell should be countered (payer declined or couldn't pay).
+enum class UnlessPayKind { MANA, LIFE, DISCARD };
 bool run_unless_loop(size_t cost, Zone::Ownership controller, std::shared_ptr<Orderer> orderer, Entity paid_for,
-                     bool pay_as_life = false);
+                     UnlessPayKind kind = UnlessPayKind::MANA);
 
 #endif /* EFFECTS_H */

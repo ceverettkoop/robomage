@@ -30,7 +30,6 @@ unblocks the others in that group.
 - **Consign to Memory** — Replicate keyword + countering a triggered ability on the stack (Forge script: available)
 - **Petrified Hamlet** — `DB$ NameCard` effect + Continuous `AddAbility$` granting a mana ability to other named lands (Forge script: available)
 - **Pinnacle Emissary** — Warp alternative cost (cast for warp cost, exile at end step, recast from exile) (Forge script: available)
-- **Reality Smasher** — general `T: Mode$ BecomesTarget` triggered ability + `UnlessCost$ Discard<1/Card>` / `UnlessPayer$` (Forge script: available)
 - **Thought-Knot Seer** — `RevealHand` effect + opponent-hand exile with `Chooser$ You` / `DefinedPlayer$ Targeted` (Forge script: available)
 - **Wastescape Battlemage** — Kicker (multi-kicker cost choice at cast + `kicked N` SpellCast condition) (Forge script: available)
 - **Skyclave Apparition** — exile-on-ETB + LTB token sized by exiled card's MV (`TokenOwner$ RememberedOwner`, `Remembered$CardManaCost`) (Forge script: available)

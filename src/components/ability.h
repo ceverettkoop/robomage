@@ -105,6 +105,17 @@ struct Ability{
     bool may_shuffle = false;            // MayShuffle$ True — player may optionally shuffle after
     size_t unless_generic_cost = 0;      // UnlessCost$ N — target controller pays {N} to prevent counter
     bool unless_cost_is_life = false;    // when true, unless_generic_cost is paid as N life rather than {N} mana (Ward—Pay life, CR 702.21)
+    // UnlessCost$ Discard<N/Card> (Reality Smasher: "counter ... unless its controller discards a
+    // card"). The payer discards `unless_generic_cost` card(s) of their choice from hand to prevent
+    // the counter; if they can't (or decline) the spell is countered. General "counter unless
+    // discard" path (CR 701.8 discard); reuses the same run_unless_loop choice machinery.
+    bool unless_cost_is_discard = false;
+    // UnlessPayer$ TriggeredSourceSAController — the payer of the unless-cost is the controller of
+    // the triggering spell/ability (the opponent who targeted the permanent), NOT the trigger's own
+    // controller. Bound at trigger-fire time into unless_payer (UNKNOWN ⇒ default to the countered
+    // spell's controller, as Ward does). General for any "unless its controller pays/discards".
+    bool unless_payer_is_triggered_source_sa_ctrl = false;
+    Zone::Ownership unless_payer = Zone::UNKNOWN;  // resolved payer for the unless-cost; UNKNOWN ⇒ default
     std::string target_type = "";        // TargetType$ Spell — restricts targeting to stack spells
 
     // Delirium-conditional damage (Unholy Heat) now lives in DamageParams (params variant).
@@ -204,6 +215,14 @@ struct Ability{
     std::string trigger_cmc_expr = "";
     std::string trigger_cmc_op = "";
 
+    // Mode$ BecomesTarget | ValidSource$ Spell.OppCtrl (Reality Smasher): the trigger fires only
+    // when the targeting object is a SPELL controlled by an opponent of the source's controller
+    // ("a spell an opponent controls"). Matched at trigger-fire time against the targeting object
+    // (BECAME_TARGET event's ENTITY/PLAYER). ValidTarget$ Card.Self reuses trigger_only_self (the
+    // permanent that became a target must be this source). General over becomes-target triggers.
+    bool trigger_source_must_be_spell = false;    // ValidSource$ Spell — targeting object is a spell
+    bool trigger_source_opp_ctrl = false;         // ValidSource$ ...OppCtrl — controlled by an opponent of the source's controller
+
     // TriggerZones$ Graveyard (Arclight Phoenix): the triggered ability functions from
     // the graveyard, not the battlefield (CR 113.6 / 603.6). When set, the trigger scan
     // matches the source while it is in its owner's graveyard.
@@ -222,6 +241,12 @@ struct Ability{
     bool optional = false;           // Optional$ True — player may decline
     bool defined_remembered = false; // Defined$ Remembered — target is cur_game.remembered_entities[0]
     bool defined_triggered_spell = false; // Defined$ TriggeredSpellAbility — target is the spell that triggered this ability (Chalice of the Void counters it)
+    // Defined$ TriggeredSourceSA — target is the spell/ability that targeted the source (the
+    // "triggering source spell ability" of a Mode$ BecomesTarget trigger, Reality Smasher). Bound
+    // at trigger-fire time from the BECAME_TARGET event's ENTITY (the targeting object). The Counter
+    // effect counters that specific spell. Distinct from TriggeredSpellAbility (the spell whose cast
+    // fired a SpellCast trigger) — here the trigger is "became the target of", not "was cast".
+    bool defined_triggered_source_sa = false;
 
     // RepeatEach over players (Price of Progress): RepeatPlayers$ Player makes the effect
     // loop once per player, setting cur_game.remembered_entities to that player's entity

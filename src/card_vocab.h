@@ -116,6 +116,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Badgermole Cub", 175},
     {"Mox Opal", 176},
     {"Nethergoyf", 177},
+    {"Reality Smasher", 181},
     {"Wrath of the Skies", 186},
     {"Ba Sing Se", 197},
 };
