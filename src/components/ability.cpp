@@ -854,15 +854,12 @@ size_t evaluate_dynamic_amount(
     // characteristics via the shared card_matches_filter; control qualifiers resolve against ctrl.
     if (expr.rfind("Remembered$Valid ", 0) == 0) {
         std::string filters = expr.substr(std::string("Remembered$Valid ").size());
-        std::vector<std::string> specs = split(filters, ',', /*skip_empty=*/true);
         MatchCtx mctx;
         mctx.controller = ctrl;  // "you" reference for YouCtrl/OppCtrl in any filter
         size_t count = 0;
         for (auto e : cur_game.remembered_entities) {
             if (!global_coordinator.entity_has_component<CardData>(e)) continue;
-            for (const auto &spec : specs) {
-                if (card_matches_filter(e, spec, mctx)) { count++; break; }
-            }
+            if (card_matches_any(e, filters, mctx)) count++;  // ',' = OR over the filters
         }
         return count;
     }

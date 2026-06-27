@@ -225,14 +225,11 @@ static std::vector<Colors> reflected_color_set(const Ability &ab, Zone::Ownershi
     std::set<Colors> colors;
     MatchCtx ctx;
     ctx.controller = player;
-    // ManaReflected's Valid$ lists its alternatives comma-separated (Forge Valid$ convention),
-    // whereas permanent_matches_filter ORs on ';'. Normalize commas to ';' so each alternative
-    // (legendary creature / legendary planeswalker) is matched independently.
-    std::string filter = ab.reflected_mana_filter;
-    for (char &ch : filter)
-        if (ch == ',') ch = ';';
+    // ManaReflected's Valid$ lists its alternatives comma-separated (Forge Valid$ convention).
+    // permanent_matches_any matches each alternative (legendary creature / legendary
+    // planeswalker) independently, so the comma-OR is handled in one shared place.
     for (auto entity : battlefield_permanents(orderer->mEntities, player)) {
-        if (!permanent_matches_filter(entity, filter, ctx)) continue;
+        if (!permanent_matches_any(entity, ab.reflected_mana_filter, ctx)) continue;
         for (Colors c : effective_colors(entity)) colors.insert(c);
     }
     std::vector<Colors> ordered;

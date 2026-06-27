@@ -17,6 +17,7 @@
 #include "components/zone.h"
 #include "classes/colors.h"
 #include "ecs/coordinator.h"
+#include "str_util.h"
 
 extern Coordinator global_coordinator;
 
@@ -139,6 +140,28 @@ struct MatchCtx {
 bool card_matches_filter(Entity e, const std::string &spec, const MatchCtx &ctx = MatchCtx{});
 bool card_matches_filter(const CardData &cd, const std::string &spec, const MatchCtx &ctx = MatchCtx{});
 bool permanent_matches_filter(Entity e, const std::string &spec, const MatchCtx &ctx = MatchCtx{});
+
+// ── Forge-style comma-OR filter matching (one convention, one place) ────────
+// A Forge `Valid$`/`ValidTgts$` spec lists its OR alternatives separated by ',' (e.g.
+// Mox Amber's "Creature.Legendary+YouCtrl,Planeswalker.Legendary+YouCtrl"), whereas the
+// single-clause matchers above use ';' as their internal OR delimiter. These wrappers split
+// the comma-joined spec into its alternatives and OR the per-clause matcher over them, so a
+// caller hands a Forge comma-OR spec straight through and gets correct OR semantics WITHOUT
+// hand-normalizing ',' → ';' (or hand-splitting) at the call site. ',' is not meaningful
+// inside a single clause (the clause grammar joins qualifiers with '.'/'+'), so splitting on
+// ',' is unambiguous. Empty alternatives are skipped; an all-empty/empty spec matches nothing.
+inline bool permanent_matches_any(Entity e, const std::string &comma_or_spec,
+                                  const MatchCtx &ctx = MatchCtx{}) {
+    for (const auto &alt : split(comma_or_spec, ',', /*skip_empty=*/true))
+        if (permanent_matches_filter(e, alt, ctx)) return true;
+    return false;
+}
+inline bool card_matches_any(Entity e, const std::string &comma_or_spec,
+                             const MatchCtx &ctx = MatchCtx{}) {
+    for (const auto &alt : split(comma_or_spec, ',', /*skip_empty=*/true))
+        if (card_matches_filter(e, alt, ctx)) return true;
+    return false;
+}
 
 // Pull a STATIC numeric mana-value qualifier out of a filter spec into a MatchCtx
 // (e.g. "Card.Colorless+cmcGE7" → ctx.cmc_op = "GE", ctx.cmc_bound = 7). The qualifier
