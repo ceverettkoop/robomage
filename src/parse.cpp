@@ -137,6 +137,12 @@ static void parse_alt_cost_tokens(const std::string& cost_str, AltCost& ac) {
         ac.life_cost = std::stoi(cost_str.substr(pl + 8, close - pl - 8));
         matched_special = true;
     }
+    size_t pe = cost_str.find("PayEnergy<");
+    if (pe != std::string::npos) {
+        size_t close = cost_str.find('>', pe);
+        ac.energy_cost = std::stoi(cost_str.substr(pe + 10, close - pe - 10));
+        matched_special = true;
+    }
     size_t ef = cost_str.find("ExileFromHand<");
     if (ef != std::string::npos) {
         size_t slash = cost_str.find('/', ef);
@@ -185,6 +191,13 @@ static void parse_activation_cost(const std::string &cost_str, Ability &ability)
             size_t close = tok.find('>');
             if (angle != std::string::npos && close != std::string::npos && close > angle + 1)
                 ability.life_cost = std::stoi(tok.substr(angle + 1, close - angle - 1));
+        } else if (tok.rfind("PayEnergy<", 0) == 0) {
+            // PayEnergy<N> — pay N energy ({E}) as part of the cost (CR 122.1c). Used on
+            // Guide of Souls' AttackersDeclared ImmediateTrigger ("you may pay {E}{E}{E}").
+            size_t angle = tok.find('<');
+            size_t close = tok.find('>');
+            if (angle != std::string::npos && close != std::string::npos && close > angle + 1)
+                ability.energy_cost = std::stoi(tok.substr(angle + 1, close - angle - 1));
         } else if (tok.rfind("Sac<", 0) == 0) {
             // Consume additional tokens if '>' not found (label may contain spaces)
             while (tok.find('>') == std::string::npos && tok_pos < cost_str.size()) {
@@ -1010,12 +1023,22 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         ability.remember_sacrificed = (value == "True");
     } else if (key == "RepeatPlayers") {
         ability.repeat_players = value;       // RepeatEach over players (Price of Progress)
+    } else if (key == "Types" && ability.category == "Animate") {
+        // DB$ Animate | Types$ Angel [Cleric ...] — the space-separated type/subtype list the
+        // animated permanent gains "in addition to its other types" (Guide of Souls). Classify
+        // each token (TYPE/SUBTYPE/SUPERTYPE) the same way the printed Types: line is parsed.
+        for (const auto &t : parse_types(value)) ability.animate_types.push_back(t);
+    } else if (key == "Duration" && ability.category == "Animate") {
+        ability.animate_duration_permanent = (value == "Permanent");
     } else if (effects::apply_parse_hook(ability, key, value)) {
         // Consumed by an effect-specific parse hook co-located with its handler.
     } else {
         static const std::set<std::string> ignored_keys = {
             "SpellDescription", "AILogic", "AINoRecursiveCheck", "TgtPrompt", "StackDescription",
             "ConditionDescription",
+            // TriggerDescription$ — reminder/Oracle prose on an AB$ ImmediateTrigger's reflexive
+            // ability (Guide of Souls). Purely cosmetic, like SpellDescription/StackDescription.
+            "TriggerDescription",
             // sameName search/move (Surgical Extraction, Extirpate, ...): these refine who
             // chooses or how the search is hidden, but the change_zone_same_name handler
             // already derives the full behavior from ChangeType/Origin/Destination/Defined.
@@ -1068,9 +1091,15 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
                                   const std::string& card_name) {
     Ability sub;
     sub.ability_type = ability_type;
+    // An Execute$/SubAbility$ SVar normally holds a DB$ ability, but some hold an AB$
+    // (e.g. Guide of Souls' TrigImmediateTrig: "AB$ ImmediateTrigger | Cost$ PayEnergy<3>").
+    // All three prefixes (DB$/AB$/SP$) are 3 chars + a space, so the category offset is the
+    // same; accept whichever leads the content.
     size_t db_pos = content.find("DB$");
+    if (db_pos == std::string::npos) db_pos = content.find("AB$");
+    if (db_pos == std::string::npos) db_pos = content.find("SP$");
     if (db_pos == std::string::npos) return sub;
-    size_t p = db_pos + 4;  // skip "DB$ "
+    size_t p = db_pos + 4;  // skip the "XX$ " prefix
     size_t cat_end = content.find_first_of(" |", p);
     if (cat_end == std::string::npos) cat_end = content.length();
     if (cat_end > p)
@@ -1516,6 +1545,8 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
     bool valid_card_non_token = false;
     bool valid_card_permanent = false;
     bool mode_is_drawn = false;
+    bool mode_is_attackers_declared = false;
+    bool attacking_player_is_you = false;
     bool valid_card_opp_own = false;
     bool exclude_first_draw_step = false;
     bool trigger_optional_local = false;
@@ -1535,6 +1566,11 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
             else if (value == "SpellCast") mode_is_spell_cast = true;
             else if (value == "DamageDone") mode_is_damage_done = true;
             else if (value == "Drawn") mode_is_drawn = true;
+            else if (value == "AttackersDeclared") mode_is_attackers_declared = true;
+        } else if (key == "AttackingPlayer") {
+            // Mode$ AttackersDeclared | AttackingPlayer$ You — the trigger fires only when
+            // the player who declared attackers is this ability's controller ("whenever you attack").
+            if (value == "You") attacking_player_is_you = true;
         } else if (key == "Phase") {
             if (value == "Upkeep")   phase_is_upkeep   = true;
             // Forge writes the end step as either "EndStep" or "End of Turn".
@@ -1733,6 +1769,13 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
         ability.trigger_on = Events::PLAYER_DREW_CARD;
         ability.trigger_valid_card_opp_own = valid_card_opp_own;
         ability.trigger_exclude_first_draw_step = exclude_first_draw_step;
+    }
+
+    // "Whenever you attack" — Guide of Souls (Mode$ AttackersDeclared | AttackingPlayer$ You).
+    // Fires once per combat when the source's controller declares one or more attackers.
+    if (mode_is_attackers_declared) {
+        ability.trigger_on = Events::ATTACKERS_DECLARED;
+        ability.trigger_valid_player_is_controller = attacking_player_is_you;
     }
 
     // Resolve effect from Execute$ SVar

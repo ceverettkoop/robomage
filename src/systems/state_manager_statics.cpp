@@ -579,6 +579,16 @@ static Ability keyword_triggered_ability(const std::string &keyword) {
 // sorted by timestamp (rule 613.7: later timestamp wins within the same layer).
 // Regenerates subtype-derived mana abilities after types are finalized.
 void StateManager::apply_type_changing_effects() {
+    // Layer 4 reapply of DB$ Animate "becomes ..." type grants (Guide of Souls). These are
+    // baked onto each permanent (animate_added_types) by the Animate effect rather than sourced
+    // from a battlefield static, so reassert them here every pass — survives any same-pass type
+    // reset (e.g. the land type-changer below) and the rest of the game.
+    for (auto entity : mEntities) {
+        if (!is_battlefield_permanent(entity)) continue;
+        auto &perm = global_coordinator.GetComponent<Permanent>(entity);
+        for (const auto &t : perm.animate_added_types) perm.types.insert(t);
+    }
+
     // Collect type-changing statics from the already-populated g_active_statics.
     struct TypeChanger {
         ActiveStatic *as;
@@ -707,6 +717,20 @@ void StateManager::gather_active_statics(Game &game) {
             for (const auto &kw : cr.eot_keywords) {
                 if (std::find(cr.keywords.begin(), cr.keywords.end(), kw) == cr.keywords.end())
                     cr.keywords.push_back(kw);
+            }
+            // Re-merge permanent keyword grants baked on by DB$ Animate (Duration$ Permanent),
+            // which also survive the per-pass base rebuild (these are NOT cleared at cleanup).
+            for (const auto &kw : perm.animate_added_keywords) {
+                if (std::find(cr.keywords.begin(), cr.keywords.end(), kw) == cr.keywords.end())
+                    cr.keywords.push_back(kw);
+            }
+            // Keyword counters (CR 122.1d / 702.x): a counter whose type names a keyword ability
+            // grants that keyword to the permanent for as long as the counter is present (Guide
+            // of Souls' flying counter ⇒ Flying). Reapplied each pass like other granted keywords.
+            for (const auto &kc : perm.counters) {
+                if (!is_keyword_counter_type(kc.first) || kc.second <= 0) continue;
+                if (std::find(cr.keywords.begin(), cr.keywords.end(), kc.first) == cr.keywords.end())
+                    cr.keywords.push_back(kc.first);
             }
         }
         if (perm.transformed) {

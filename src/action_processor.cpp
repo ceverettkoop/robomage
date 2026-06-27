@@ -641,6 +641,16 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
     }
     if (!any) game_log("  (none)\n");
 
+    // "Whenever you attack" (Mode$ AttackersDeclared) — a player-level trigger that fires once
+    // when one or more attackers are declared (508.2), independent of how many. Guide of Souls.
+    if (any) {
+        Entity actrl_entity = (active_player == Zone::PLAYER_A)
+                              ? game.player_a_entity : game.player_b_entity;
+        Event declared_ev(Events::ATTACKERS_DECLARED);
+        declared_ev.SetParam(Params::PLAYER, actrl_entity);
+        global_coordinator.SendEvent(declared_ev);
+    }
+
     // Exalted: if exactly one creature is attacking, fire the event so triggers go on the stack
     int attacker_count = 0;
     Entity sole_attacker = 0;

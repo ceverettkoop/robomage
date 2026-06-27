@@ -3,8 +3,10 @@
 #include "../action_processor.h"
 #include "../classes/game.h"
 #include "../cli_output.h"
+#include "../components/player.h"
 #include "../ecs/coordinator.h"
 #include "../game_queries.h"
+#include "../input_logger.h"
 #include "../systems/orderer.h"
 
 extern Coordinator global_coordinator;
@@ -18,6 +20,11 @@ namespace effects {
 // filter, then run the Execute$ sub-ability (selecting a target if it needs one). Any
 // Cleanup sub-ability runs regardless so remembered objects are cleared. Returns false so
 // resolve() does not also chain the sub-abilities (we ran them here).
+//
+// An optional Cost$ (PayEnergy<N>) turns the trigger into a reflexive "you MAY pay {cost}.
+// When you do, [Execute]" ability (CR 603.2c, Guide of Souls). The cost is offered only when
+// the controller can actually pay it; on accept the cost is paid and the Execute chain runs,
+// on decline (or when it can't be paid) the reflexive effect is skipped.
 bool immediate_trigger(Ability &ab, std::shared_ptr<Orderer> orderer) {
     bool fire = ab.condition_present.empty();
     if (!fire) {
@@ -25,6 +32,24 @@ bool immediate_trigger(Ability &ab, std::shared_ptr<Orderer> orderer) {
             if (permanent_matches_filter(e, ab.condition_present, MatchCtx{ab.controller, ab.source})) {
                 fire = true;
                 break;
+            }
+        }
+    }
+
+    // Optional PayEnergy<N> cost: only fire the reflexive effect if the controller chooses to
+    // pay and has the energy to do so (CR 122.1c). Decline / insufficient ⇒ skip Execute.
+    if (fire && ab.energy_cost > 0) {
+        Entity ctrl_entity =
+            (ab.controller == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
+        auto &pl = global_coordinator.GetComponent<Player>(ctrl_entity);
+        if (player_energy(pl) < ab.energy_cost) {
+            fire = false;  // can't pay — not offered
+        } else {
+            std::string prompt = "Pay " + std::to_string(ab.energy_cost) + " energy";
+            if (request_optional_yesno(ab.controller, prompt) && pay_energy(pl, ab.energy_cost)) {
+                game_log("%s pays %d energy.\n", player_name(ab.controller).c_str(), ab.energy_cost);
+            } else {
+                fire = false;  // declined
             }
         }
     }
@@ -37,7 +62,10 @@ bool immediate_trigger(Ability &ab, std::shared_ptr<Orderer> orderer) {
             continue;
         }
         if (!fire) continue;  // condition not met: skip the reflexive effect
-        if (sub.valid_tgts != "N_A" && has_legal_targets(sub, orderer))
+        // A DB$ Pump sub picks its own target inside the pump handler (mirrors resolve()'s
+        // `category != "Pump"` carve-out), so pre-selecting here would prompt twice and let
+        // the second pick override the first (Guide of Souls' put-counters-on-target-attacker).
+        if (sub.valid_tgts != "N_A" && sub.category != "Pump" && has_legal_targets(sub, orderer))
             select_target(sub, orderer, ab.controller);
         sub.resolve(orderer);
     }

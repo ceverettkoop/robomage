@@ -91,6 +91,11 @@ bool grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer);
 // chosen name is stored in cur_game.named_card so a chained Card.NamedCard sub-ability
 // (here a RevealDiscardAll discard) can reference it.
 bool name_card(Ability &ab, std::shared_ptr<Orderer> orderer);
+// DB$ Animate (Guide of Souls): the targeted permanent "becomes ..." — bakes the
+// Duration$ Permanent continuous effect (added types/subtypes, and the extension-point
+// base-P/T / keyword / creature grants) onto the permanent so the layer system reapplies
+// it each SBE pass. See effect_animate.cpp.
+bool animate(Ability &ab, std::shared_ptr<Orderer> orderer);
 
 
 // ── Effect-specific parse hooks ─────────────────────────────────────────────

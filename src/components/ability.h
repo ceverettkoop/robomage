@@ -4,6 +4,7 @@
 #include "../classes/colors.h"
 #include "../ecs/entity.h"
 #include "ability_params.h"
+#include "types.h"
 #include "zone.h"
 #include <memory>
 #include <string>
@@ -47,6 +48,7 @@ struct Ability{
     bool tap_cost = false;              // {T} is part of the activation cost
     ManaValue activation_mana_cost;     // Mana that must be paid to activate
     int life_cost = 0;                  // PayLife<N> — life paid at activation
+    int energy_cost = 0;                // PayEnergy<N> — energy ({E}) paid as part of the cost (CR 122.1c)
     bool sac_self = false;              // Sac<1/CARDNAME> — sacrifice source permanent as cost
     std::string sac_cost_spec = "";     // Sac<1/Type;Type/> — type-based sac cost; empty = none
     // DB$ Sacrifice EFFECT (not a cost): sacrifice a chosen permanent you control matching
@@ -120,6 +122,14 @@ struct Ability{
     // The player who caused this triggered ability to fire (the triggering event's PLAYER).
     // Populated at trigger-fire time when defined_triggered_activator is set; UNKNOWN until then.
     Zone::Ownership triggered_activator = Zone::UNKNOWN;
+
+    // DB$ Animate (Guide of Souls): the Types$ list (classified into TYPE/SUBTYPE/SUPERTYPE
+    // at parse time) to add to the targeted permanent (e.g. "Angel"), and whether the grant
+    // is permanent (Duration$ Permanent). The Animate handler bakes these onto the target's
+    // Permanent so the layer system reapplies them. Only the type-add path is exercised today;
+    // base-P/T/keyword/creature extension points live on Permanent (see permanent.h).
+    std::vector<Type> animate_types;
+    bool animate_duration_permanent = false;
 
     // Filter naming which permanents a mass effect affects (DestroyAll / SacrificeAll /
     // PutCounterAll): the ValidCards$ spec, e.g. "Cat.YouCtrl" or

@@ -58,6 +58,11 @@ struct TokenParams {
 struct CounterParams {
     std::string type = "";          // CounterType$ — "P1P1" for +1/+1 counters
     int count = 0;                  // CounterNum$ — static count; 0 when dynamic
+    // Optional SECOND counter kind placed by the same effect (PutCounterAll on Guide of
+    // Souls: CounterType2$ Flying | CounterNum2$ 1 — also put a flying counter). Empty type2
+    // = no second counter.
+    std::string type2 = "";         // CounterType2$
+    int count2 = 0;                 // CounterNum2$
 };
 
 // Discard (e.g. Thoughtseize/Duress/Cabal Therapy).

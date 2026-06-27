@@ -111,6 +111,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Sire of Seven Deaths", 167},
     {"Smash to Smithereens", 168},
     {"Whipflare", 169},
+    {"Guide of Souls", 171},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);

@@ -57,6 +57,10 @@ EffectKind effect_kind_from_string(const std::string &category) {
         // SP$/DB$ NameCard (Cabal Therapy): the active player names a card; a chained
         // Card.NamedCard sub-ability then references the chosen name (CR 201.4).
         {"NameCard", EffectKind::NameCard},
+        // DB$ Animate (Guide of Souls): the targeted permanent "becomes ..." — adds
+        // types/subtypes (and, for later cards, base P/T / keywords / creature-ness) for
+        // the effect's Duration (Permanent = rest of the game). See effect_animate.cpp.
+        {"Animate", EffectKind::Animate},
     };
     auto it = table.find(category);
     return (it != table.end()) ? it->second : EffectKind::None;

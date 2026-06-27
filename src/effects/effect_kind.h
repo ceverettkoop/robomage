@@ -57,6 +57,7 @@ enum class EffectKind {
     RepeatEach,
     GrantCast,
     NameCard,
+    Animate,
 };
 
 // Maps a normalized category string to its EffectKind. Unknown strings → None.

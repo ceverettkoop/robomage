@@ -16,6 +16,7 @@
 struct AltCost {
     bool has_alt_cost = false;
     int life_cost = 0;
+    int energy_cost = 0;  // PayEnergy<N> — energy ({E}) paid as part of this cost (CR 122.1c)
     int exile_from_hand_count = 0;
     Colors exile_from_hand_color = NO_COLOR;  // color of card to exile (BLUE, GREEN, etc.)
     int return_to_hand_count = 0;

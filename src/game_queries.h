@@ -196,6 +196,19 @@ inline bool is_colorless_entity(Entity e) {
     return false;
 }
 
+// True if a counter type names a keyword ability, so a counter of that type grants the
+// keyword to its permanent (CR 122.1d: keyword counters). The names match the keyword
+// strings the engine checks via creature_has_keyword (e.g. "Flying", "Trample"). Single
+// source so the keyword-counter rebuild and any future "remove keyword counter" share it.
+inline bool is_keyword_counter_type(const std::string &type) {
+    static const std::set<std::string> kKeywordCounters = {
+        "Flying", "First Strike", "Double Strike", "Deathtouch", "Haste", "Hexproof",
+        "Indestructible", "Lifelink", "Menace", "Reach", "Trample", "Vigilance",
+        "Shadow", "Skulk", "Fear", "Intimidate", "Horsemanship", "Infect", "Wither",
+        "Toxic", "Defender", "Flash", "Persist", "Undying", "Decayed"};
+    return kKeywordCounters.count(type) != 0;
+}
+
 // True if the type list (e.g. Permanent::types) carries the given top-level type.
 inline bool type_set_has(const std::set<Type> &types, const std::string &type_name) {
     for (const auto &t : types)
@@ -428,6 +441,25 @@ inline void player_gain_life(Entity player_entity, int32_t amount) {
     auto &pl = global_coordinator.GetComponent<Player>(player_entity);
     pl.life_total += amount;
     pl.life_gained_this_turn += amount;
+}
+
+// ── Player energy ({E}, CR 122.1c) ──────────────────────────────────────────
+// Energy is stored as an "ENERGY" counter in Player::counters. These are the single
+// read/spend path so every energy producer/consumer (Guide of Souls, Wrath of the Skies,
+// Amped Raptor) agrees on the key and the "can't pay if insufficient" rule.
+
+// Amount of energy ({E}) the player currently has.
+inline int player_energy(const Player &pl) { return pl.counter_count("ENERGY"); }
+
+// Pay `n` energy from `pl` (CR 122.1c / 118.x — paying {E} is a cost). Returns false and
+// leaves the pool untouched if the player has fewer than `n`; otherwise deducts and returns
+// true. `n <= 0` is a trivially-payable no-op (returns true). Reusable by every "pay {E}"
+// cost / optional payment.
+inline bool pay_energy(Player &pl, int n) {
+    if (n <= 0) return true;
+    if (player_energy(pl) < n) return false;
+    pl.add_counters("ENERGY", -n);
+    return true;
 }
 
 // Returns true when the given player has 4+ card types among cards in their graveyard.

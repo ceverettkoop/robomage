@@ -32,7 +32,6 @@ Entity Game::gen_player(const Deck &deck) {
     Entity player_entity = global_coordinator.CreateEntity();
     Player player;
     player.life_total = 20;
-    player.poison_counters = 0;
     player.lands_played_this_turn = 0;
     global_coordinator.AddComponent(player_entity, player);
     return player_entity;

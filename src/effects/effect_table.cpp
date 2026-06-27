@@ -55,6 +55,7 @@ EffectHandler handler_for(EffectKind kind) {
         case EffectKind::RepeatEach:      return &repeat_each;
         case EffectKind::GrantCast:       return &grant_cast;
         case EffectKind::NameCard:        return &name_card;
+        case EffectKind::Animate:         return &animate;
         default:                          return nullptr;
     }
 }
