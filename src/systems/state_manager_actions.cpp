@@ -763,6 +763,10 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             } else {
                 // Non-mana activated ability (e.g. ChangeZone for fetch lands, Destroy for Wasteland)
                 if (!ab.activation_mana_cost.empty() && !can_pay_mana(priority_player, ab.activation_mana_cost, ab.source, orderer)) continue;
+                // PayEnergy<N> additional cost (CR 122.1c): you can't pay {E} you don't have.
+                if (ab.energy_cost > 0 &&
+                    player_energy(global_coordinator.GetComponent<Player>(get_player_entity(priority_player))) < ab.energy_cost)
+                    continue;
                 if (ab.valid_tgts != "N_A" && !has_legal_targets(ab, orderer)) continue;
                 { auto it = cur_game.payment_fail_counts.find(ab.source);
                   if (it != cur_game.payment_fail_counts.end() && it->second >= 2) continue; }
@@ -782,6 +786,10 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             if (ab.activation_zone != Zone::HAND) continue;
             // Check mana affordability
             if (!ab.activation_mana_cost.empty() && !can_pay_mana(priority_player, ab.activation_mana_cost, card_entity, orderer)) continue;
+            // PayEnergy<N> additional cost (CR 122.1c): you can't pay {E} you don't have.
+            if (ab.energy_cost > 0 &&
+                player_energy(global_coordinator.GetComponent<Player>(get_player_entity(priority_player))) < ab.energy_cost)
+                continue;
             // Check target legality
             if (ab.valid_tgts != "N_A" && ab.target_min > 0 && !has_legal_targets(ab, orderer)) continue;
             // sac_cost_spec: require controller has a permanent matching type (honouring a
