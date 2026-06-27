@@ -50,14 +50,10 @@ void copy_spell_on_stack(Entity original, int count, Zone::Ownership controller,
             global_coordinator.AddComponent(
                 copy, global_coordinator.GetComponent<ColorIdentity>(original));
 
-        // The copy is a spell on the stack controlled by `controller`. Owner tracks the
-        // controller so any owner-relative bookkeeping has a sane value for this card-less
-        // copy; it never moves to a zone (it ceases to exist on resolution). Initialize its
-        // Zone to a NON-stack zone (HAND) the way push_ability_onto_stack does, so the
-        // add_to_zone call below is a genuine transition onto the stack rather than a spurious
-        // STACK->STACK self-move (which would fire a bogus CARD_CHANGED_ZONE / MOVE_TO_ZONE
-        // replacement and mangle the stack ordering); add_to_zone then sets distance_from_top.
-        global_coordinator.AddComponent(copy, Zone(Zone::HAND, controller, controller));
+        // The copy's Zone is added by place_created_on_stack() at the end (CR 707.10: the copy
+        // is created on the stack, not moved there from any zone). Until then it has no Zone, so
+        // it can't appear as a target candidate during its own targeting below, and target
+        // perspective falls back to the ability's controller.
 
         Spell copy_spell;
         copy_spell.caster = controller;
@@ -103,8 +99,9 @@ void copy_spell_on_stack(Entity original, int count, Zone::Ownership controller,
             global_coordinator.AddComponent(copy, ability);
         }
 
-        // Put the copy on top of the stack so the copies resolve before the original.
-        orderer->add_to_zone(false, copy, Zone::STACK);
+        // Bring the copy into existence on top of the stack (above the original, so it resolves
+        // first) without firing a zone-change event/replacement it never earned.
+        orderer->place_created_on_stack(copy, controller);
         game_log("%s copies %s\n", player_name(controller).c_str(), orig_card.name.c_str());
     }
 }

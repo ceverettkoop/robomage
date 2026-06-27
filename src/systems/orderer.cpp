@@ -49,6 +49,24 @@ Entity Orderer::push_ability_onto_stack(const Ability &ability, Zone::Ownership 
     return ability_entity;
 }
 
+void Orderer::place_created_on_stack(Entity target, Zone::Ownership controller) {
+    // The object comes into existence on the stack — no origin zone, so no MOVE_TO_ZONE
+    // replacement (614) and no CARD_CHANGED_ZONE event (which would model a transition the
+    // copy never made). Just register it as the new top and shift the existing stack down.
+    Zone z(Zone::STACK, controller, controller);
+    z.distance_from_top = 0;
+    z.identity_known = false;
+    for (auto &&card : mEntities) {
+        if (card == target) continue;
+        auto &cmp_zone = global_coordinator.GetComponent<Zone>(card);
+        if (cmp_zone.location == Zone::STACK) cmp_zone.distance_from_top++;
+    }
+    global_coordinator.AddComponent(target, z);
+    // A stack object is public information (CR 400.2): record it in the owner's revealed set,
+    // the same chokepoint add_to_zone uses when a card enters a public zone.
+    mark_card_revealed(target, controller);
+}
+
 void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destination) {
     size_t back = 0;
     auto &target_zone = global_coordinator.GetComponent<Zone>(target);

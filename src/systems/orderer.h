@@ -15,6 +15,14 @@ class Orderer : public System, public std::enable_shared_from_this<Orderer>{
 public:
     static void init();
     void add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destination);
+    // Place a freshly-created entity directly on top of the stack (CR 707.10: a spell copy is
+    // *created* on the stack, it does not move there from another zone). Adds a STACK Zone owned
+    // by `controller`, sets it as the new top (distance_from_top 0, shifting the rest down), and
+    // marks it publicly revealed — but fires NO CARD_CHANGED_ZONE event and NO MOVE_TO_ZONE
+    // replacement, so an Origin$ Hand / leaves-a-zone trigger or move replacement can't mis-match
+    // an object that was never in that zone. Use for copies/tokens that come into existence on the
+    // stack rather than add_to_zone (which models a genuine zone transition).
+    void place_created_on_stack(Entity target, Zone::Ownership controller);
     // Create a standalone ability entity and place it on the stack. `ability` must
     // already have source/controller/target populated. Returns the new entity.
     Entity push_ability_onto_stack(const Ability &ability, Zone::Ownership controller);
