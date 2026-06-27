@@ -20,6 +20,14 @@ extern Game cur_game;
 
 namespace effects {
 
+// Prompt-and-record for a "name a card" decision (CR 201.4): temporarily hand priority to the
+// chooser so they are the one queried, log the prompt, run the choice over the prepared candidate
+// list, restore priority, and return the chosen name. The candidate list (names + parallel
+// name_choices) is built separately by build_name_card_choices(); this helper is only the
+// priority-swap + get_input + name lookup. Returns "" if there is no eligible card to name.
+static std::string prompt_name_card(Zone::Ownership chooser, const std::vector<std::string> &names,
+                                    const std::vector<LegalAction> &name_choices);
+
 // SP$/DB$ NameCard (Cabal Therapy): the ability's controller chooses a card name
 // (CR 201.4). The chosen name is recorded in cur_game.named_card so a chained
 // Card.NamedCard sub-ability — here a RevealDiscardAll discard that makes a player discard
@@ -51,15 +59,7 @@ bool name_card(Ability &ab, std::shared_ptr<Orderer> orderer) {
         std::vector<LegalAction> name_choices =
             build_name_card_choices(orderer->mEntities, chooser, /*exclude_lands=*/false, names,
                                     /*only_lands=*/only_lands, scope);
-        std::string chosen;
-        if (!name_choices.empty()) {
-            bool prev_priority = cur_game.player_a_has_priority;
-            cur_game.player_a_has_priority = (chooser == Zone::PLAYER_A);
-            game_log("%s names a card:\n", player_name(chooser).c_str());
-            int choice = InputLogger::instance().get_input(name_choices);
-            cur_game.player_a_has_priority = prev_priority;
-            chosen = names[static_cast<size_t>(choice)];
-        }
+        std::string chosen = prompt_name_card(chooser, names, name_choices);
         // Record on the source permanent so its continuous static can read it; also set the
         // global for any chained sub-ability resolving in the same call (cleared afterward).
         if (ab.source != 0 && global_coordinator.entity_has_component<Permanent>(ab.source))
@@ -94,15 +94,22 @@ bool name_card(Ability &ab, std::shared_ptr<Orderer> orderer) {
         return true;
     }
 
-    bool prev_priority = cur_game.player_a_has_priority;
-    cur_game.player_a_has_priority = (ab.controller == Zone::PLAYER_A);
-    game_log("%s names a card:\n", player_name(ab.controller).c_str());
-    int choice = InputLogger::instance().get_input(name_choices);
-    cur_game.player_a_has_priority = prev_priority;
-
-    cur_game.named_card = names[static_cast<size_t>(choice)];
+    cur_game.named_card = prompt_name_card(ab.controller, names, name_choices);
     game_log("%s names card: %s\n", player_name(ab.controller).c_str(), cur_game.named_card.c_str());
     return true;
+}
+
+// See forward declaration at top of file.
+static std::string prompt_name_card(Zone::Ownership chooser, const std::vector<std::string> &names,
+                                    const std::vector<LegalAction> &name_choices) {
+    if (name_choices.empty())
+        return "";
+    bool prev_priority = cur_game.player_a_has_priority;
+    cur_game.player_a_has_priority = (chooser == Zone::PLAYER_A);
+    game_log("%s names a card:\n", player_name(chooser).c_str());
+    int choice = InputLogger::instance().get_input(name_choices);
+    cur_game.player_a_has_priority = prev_priority;
+    return names[static_cast<size_t>(choice)];
 }
 
 }  // namespace effects
