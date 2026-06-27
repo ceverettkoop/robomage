@@ -23,6 +23,7 @@
 #include "../input_logger.h"
 #include "../mana_system.h"
 #include "../parse.h"
+#include "../str_util.h"
 #include "../svar_eval.h"
 #include "../effects/effects.h"
 #include "../systems/orderer.h"
@@ -44,6 +45,16 @@ extern Game cur_game;
 // (CR 608.2c). Forward-declared per CLAUDE.md.
 static void bind_sub_target(const Ability &parent, Ability &sub);
 
+// ── Stack-object target matching (TargetType$) ──────────────────────────────
+// TargetType$ is a comma-separated list of OR alternatives, each restricting the chosen
+// target to a kind of object ON THE STACK: a "Spell[.quals]" alternative matches a spell
+// (with optional color / type qualifiers), an "Activated"/"Triggered" alternative matches a
+// standalone ability of that kind (CR 113.7). Consign to Memory's
+// "Spell.Colorless,Triggered" is one such disjunction. Forward-declared per CLAUDE.md.
+static bool stack_spell_alt_matches(const std::string &alt, Entity cand);
+static bool stack_ability_alt_matches(const std::string &alt, Entity cand);
+static bool target_type_matches_stack_object(const std::string &target_type, Entity cand);
+
 // edge case of two identical abilities being applied from two sources not handled
 bool Ability::identical_activated_ability(const Ability &other) {
     if (other.category != this->category) return false;
@@ -57,6 +68,7 @@ bool Ability::identical_activated_ability(const Ability &other) {
     if (other.destination != this->destination) return false;
     if (other.color != this->color) return false;
     if (other.mana_choices != this->mana_choices) return false;
+    if (other.reflected_mana_filter != this->reflected_mana_filter) return false;
     if (other.restrict_to_chosen_type_creature != this->restrict_to_chosen_type_creature) return false;
     if (other.restrict_to_creature != this->restrict_to_creature) return false;
     if (other.adds_no_counter != this->adds_no_counter) return false;
@@ -84,17 +96,7 @@ Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner, Zone
     const std::string &change_type, bool mandatory, Zone::ZoneValue destination, bool reveal,
     int cmc_bound, const std::string &cmc_op) {
     //  comma-separated subtypes
-    std::vector<std::string> subtypes;
-    size_t p = 0;
-    while (true) {
-        size_t comma = change_type.find(',', p);
-        if (comma == std::string::npos) {
-            subtypes.push_back(change_type.substr(p));
-            break;
-        }
-        subtypes.push_back(change_type.substr(p, comma - p));
-        p = comma + 1;
-    }
+    std::vector<std::string> subtypes = split(change_type, ',');
 
     // Collect zone contents
     std::vector<Entity> zone_contents;
@@ -249,17 +251,7 @@ Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner
         choices = zone_contents;
     } else {
         // Parse comma-separated subtypes
-        std::vector<std::string> subtypes;
-        size_t p = 0;
-        while (true) {
-            size_t comma = change_type.find(',', p);
-            if (comma == std::string::npos) {
-                subtypes.push_back(change_type.substr(p));
-                break;
-            }
-            subtypes.push_back(change_type.substr(p, comma - p));
-            p = comma + 1;
-        }
+        std::vector<std::string> subtypes = split(change_type, ',');
         bool has_extended = false;
         for (auto &st : subtypes) {
             if (st.find('.') != std::string::npos || st.find('+') != std::string::npos) {
@@ -480,6 +472,72 @@ void Ability::fizzle(std::shared_ptr<Orderer> orderer) {
     return;
 }
 
+// Does one "Spell[.quals]" TargetType alternative match a spell on the stack? Checks the
+// stack-spell preconditions plus the alternative's own qualifiers: type negations
+// (nonCreature / Instant|Sorcery-only), a positive color restriction (.Blue — Red Elemental
+// Blast, CR 115.1), and Colorless (Consign to Memory: a spell with no color). `alt` is the
+// single alternative (e.g. "Spell.Colorless"). Returns false for a candidate that is not a
+// spell on the stack.
+static bool stack_spell_alt_matches(const std::string &alt, Entity cand) {
+    if (!global_coordinator.entity_has_component<Zone>(cand)) return false;
+    if (global_coordinator.GetComponent<Zone>(cand).location != Zone::STACK) return false;
+    if (!global_coordinator.entity_has_component<Spell>(cand)) return false;
+    bool non_creature_only = alt.find("nonCreature") != std::string::npos;
+    bool instant_sorcery_only =
+        (alt.find("Instant") != std::string::npos || alt.find("Sorcery") != std::string::npos) &&
+        alt.find("Creature") == std::string::npos;
+    if ((non_creature_only || instant_sorcery_only) &&
+        global_coordinator.entity_has_component<CardData>(cand)) {
+        auto &cd = global_coordinator.GetComponent<CardData>(cand);
+        bool is_creature = false, is_instant = false, is_sorcery = false;
+        for (auto &t : cd.types) {
+            if (t.name == "Creature") is_creature = true;
+            if (t.name == "Instant") is_instant = true;
+            if (t.name == "Sorcery") is_sorcery = true;
+        }
+        if (non_creature_only && is_creature) return false;
+        if (instant_sorcery_only && !is_instant && !is_sorcery) return false;
+    }
+    // Positive color restriction (.Blue — Red Elemental Blast, CR 115.1).
+    if (global_coordinator.entity_has_component<CardData>(cand) &&
+        !color_set_passes(alt, effective_colors(cand)))
+        return false;
+    // Colorless restriction (Consign to Memory): the spell must have NO color (CR 105.2c).
+    if (alt.find("Colorless") != std::string::npos && !effective_colors(cand).empty())
+        return false;
+    return true;
+}
+
+// Does one "Activated"/"Triggered" TargetType alternative match a standalone ability on the
+// stack (Stifle, Consign to Memory)? Spells have a Spell component and are excluded.
+static bool stack_ability_alt_matches(const std::string &alt, Entity cand) {
+    if (!global_coordinator.entity_has_component<Zone>(cand)) return false;
+    if (global_coordinator.GetComponent<Zone>(cand).location != Zone::STACK) return false;
+    if (global_coordinator.entity_has_component<Spell>(cand)) return false;  // spells aren't abilities
+    if (!global_coordinator.entity_has_component<Ability>(cand)) return false;
+    auto &ab = global_coordinator.GetComponent<Ability>(cand);
+    if (alt.find("Activated") != std::string::npos && ab.ability_type == Ability::ACTIVATED)
+        return true;
+    if (alt.find("Triggered") != std::string::npos && ab.ability_type == Ability::TRIGGERED)
+        return true;
+    return false;
+}
+
+// TargetType$ is an OR list of stack-object alternatives — split on commas and accept the
+// candidate if ANY alternative matches it (CR 115.1 target restrictions are satisfied by any
+// one named kind). Drives counterspells (Spell), Stifle (Activated,Triggered) and Consign to
+// Memory (Spell.Colorless,Triggered) off one matcher.
+static bool target_type_matches_stack_object(const std::string &target_type, Entity cand) {
+    for (const std::string &alt : split(target_type, ',', /*skip_empty=*/true)) {
+        bool is_ability_alt = (alt.find("Activated") != std::string::npos ||
+                               alt.find("Triggered") != std::string::npos);
+        bool is_spell_alt = (alt.find("Spell") != std::string::npos);
+        if (is_ability_alt && stack_ability_alt_matches(alt, cand)) return true;
+        if (is_spell_alt && stack_spell_alt_matches(alt, cand)) return true;
+    }
+    return false;
+}
+
 // Single source of truth for target legality (see header). build_valid_targets
 // enumerates candidates and filters them through this; is_target_valid re-runs the
 // chosen target(s) through it at resolution. Keeping both on one predicate is what
@@ -515,48 +573,13 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
 
     const std::string &vt = valid_tgts;
 
-    // Spell on the stack (counterspells etc.)
-    if (target_type == "Spell") {
-        if (!global_coordinator.entity_has_component<Zone>(cand)) return false;
-        if (global_coordinator.GetComponent<Zone>(cand).location != Zone::STACK) return false;
-        if (!global_coordinator.entity_has_component<Spell>(cand)) return false;
-        bool non_creature_only = vt.find("nonCreature") != std::string::npos;
-        bool instant_sorcery_only =
-            (vt.find("Instant") != std::string::npos || vt.find("Sorcery") != std::string::npos) &&
-            vt.find("Creature") == std::string::npos;
-        if ((non_creature_only || instant_sorcery_only) &&
-            global_coordinator.entity_has_component<CardData>(cand)) {
-            auto &cd = global_coordinator.GetComponent<CardData>(cand);
-            bool is_creature = false, is_instant = false, is_sorcery = false;
-            for (auto &t : cd.types) {
-                if (t.name == "Creature") is_creature = true;
-                if (t.name == "Instant") is_instant = true;
-                if (t.name == "Sorcery") is_sorcery = true;
-            }
-            if (non_creature_only && is_creature) return false;
-            if (instant_sorcery_only && !is_instant && !is_sorcery) return false;
-        }
-        // Positive color restriction (e.g. ValidTgts$ Card.Blue on Red Elemental Blast:
-        // "Counter target blue spell" — blue is a targeting restriction, CR 115.1).
-        if (global_coordinator.entity_has_component<CardData>(cand) &&
-            !color_set_passes(vt, effective_colors(cand)))
-            return false;
-        return true;
-    }
-
-    // Stifle: standalone activated/triggered ability on the stack
-    if (target_type.find("Activated") != std::string::npos ||
-        target_type.find("Triggered") != std::string::npos) {
-        if (!global_coordinator.entity_has_component<Zone>(cand)) return false;
-        if (global_coordinator.GetComponent<Zone>(cand).location != Zone::STACK) return false;
-        if (global_coordinator.entity_has_component<Spell>(cand)) return false;  // spells aren't abilities
-        if (!global_coordinator.entity_has_component<Ability>(cand)) return false;
-        auto &ab = global_coordinator.GetComponent<Ability>(cand);
-        bool want_activated = target_type.find("Activated") != std::string::npos;
-        bool want_triggered = target_type.find("Triggered") != std::string::npos;
-        if (want_activated && ab.ability_type == Ability::ACTIVATED) return true;
-        if (want_triggered && ab.ability_type == Ability::TRIGGERED) return true;
-        return false;
+    // Stack-object targets (counterspells, Stifle, Consign to Memory): TargetType$ names one or
+    // more kinds of stack object — "Spell[.quals]", "Activated", "Triggered" — as an OR list.
+    if (!target_type.empty() &&
+        (target_type.find("Spell") != std::string::npos ||
+         target_type.find("Activated") != std::string::npos ||
+         target_type.find("Triggered") != std::string::npos)) {
+        return target_type_matches_stack_object(target_type, cand);
     }
 
     // Card in a non-battlefield zone (e.g. Faerie Macabre targeting graveyard cards)
@@ -591,11 +614,15 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
         }
     }
 
-    // Card in a graveyard targeted by a ChangeZone with a type filter (e.g. Life from
-    // the Loam: ValidTgts$ Land.YouCtrl, Origin$ Graveyard). Filter by zone, owner
-    // (YouCtrl/OppCtrl), and card type.
+    // Card in a graveyard targeted by a ChangeZone with a type filter. Covers both
+    // graveyard→non-battlefield moves (e.g. Life from the Loam: ValidTgts$ Land.YouCtrl,
+    // Origin$ Graveyard, Destination$ Hand) and targeted reanimation graveyard→battlefield
+    // (e.g. Lorehold Charm's "return target artifact or creature with mana value 2 or less
+    // from your graveyard to the battlefield"). In every case the target is the card sitting
+    // in the graveyard, so it is matched there regardless of destination. Filter by zone,
+    // owner (YouCtrl/OppCtrl/YouOwn), card type, mana value (cmcLE), and Basic supertype.
     if (target_in_graveyard ||
-        (category == "ChangeZone" && origin == Zone::GRAVEYARD && destination != Zone::BATTLEFIELD)) {
+        (category == "ChangeZone" && origin == Zone::GRAVEYARD)) {
         if (!global_coordinator.entity_has_component<Zone>(cand)) return false;
         auto &cz = global_coordinator.GetComponent<Zone>(cand);
         if (cz.location != Zone::GRAVEYARD) return false;
@@ -615,8 +642,12 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
             if (inc_artifacts    && t.name == "Artifact")    type_ok = true;
             if (inc_enchantments && t.name == "Enchantment") type_ok = true;
         }
+        if (!type_ok) return false;
+        // Mana-value bound (e.g. Lorehold Charm's cmcLE2): a graveyard card has no live MV
+        // layer, so read its printed mana value.
+        if (cmc_le >= 0 && static_cast<int>(cd.mana_cost.size()) > cmc_le) return false;
         if (nonbasic_only && has_basic_supertype(cd.types)) return false;
-        return type_ok;
+        return true;
     }
 
     // Player target
@@ -777,20 +808,25 @@ size_t evaluate_dynamic_amount(
         }
         return count;
     }
-    // Count$Valid <Filter>.YouCtrl — number of battlefield permanents you control that
-    // match <Filter>, where <Filter> is any top-level type, supertype, or subtype name
-    // (e.g. Eldrazi Linebreaker: "Count$Valid Eldrazi.YouCtrl" = Eldrazi you control).
-    // The Creature-specific branch above is kept for the common case; this generic branch
-    // handles arbitrary type/subtype filters via permanent_has_type.
-    if (expr.rfind("Count$Valid ", 0) == 0 && expr.find(".YouCtrl") != std::string::npos) {
-        std::string rest = expr.substr(std::string("Count$Valid ").size());
-        std::string filter = rest.substr(0, rest.find('.'));  // text before ".YouCtrl"
-        if (!filter.empty()) {
+    // Count$Valid <Filter> — number of battlefield permanents matching the full Forge filter
+    // spec (e.g. Eldrazi Linebreaker: "Count$Valid Eldrazi.YouCtrl"; Eiganjo's Channel
+    // ReduceCost: "Count$Valid Creature.Legendary+YouCtrl" = legendary creatures you control).
+    // The Creature-specific branch above is kept for its common case; this generic branch
+    // routes the whole spec (head type + '.'/'+'-joined qualifiers like Legendary/YouCtrl/
+    // colors) through the shared permanent_matches_filter so supertype/color/etc. qualifiers
+    // are honored, not just the head type. The RememberedPlayerCtrl form is excluded so it
+    // falls through to its dedicated handler below (it needs the remembered-player reference
+    // and the /Times multiplier, neither of which permanent_matches_filter understands).
+    if (expr.rfind("Count$Valid ", 0) == 0 &&
+        expr.find("RememberedPlayerCtrl") == std::string::npos) {
+        std::string spec = expr.substr(std::string("Count$Valid ").size());  // full filter spec
+        if (!spec.empty()) {
+            MatchCtx mctx;
+            mctx.controller = ctrl;  // the "you" reference for YouCtrl/OppCtrl in the spec
             size_t count = 0;
             for (auto e : orderer->mEntities) {
-                if (!is_battlefield_permanent(e, ctrl)) continue;
-                if (permanent_has_type(global_coordinator.GetComponent<Permanent>(e), filter))
-                    count++;
+                if (!is_battlefield_permanent(e)) continue;  // control is enforced by the filter
+                if (permanent_matches_filter(e, spec, mctx)) count++;
             }
             return count;
         }
@@ -810,6 +846,22 @@ size_t evaluate_dynamic_amount(
         // reads the power of the creature it just exiled). Single unified accessor.
         int p = effective_power(target);
         return static_cast<size_t>(p < 0 ? 0 : p);
+    }
+    // Remembered$Valid <comma-OR-filter> — number of remembered cards (e.g. cards just moved
+    // by a RememberChanged$ ChangeZoneAll) matching ANY of the comma-separated filters (Canoptek
+    // Scarab Swarm: X = Remembered$Valid Land,Artifact, "for each artifact or land card exiled
+    // this way"). These are now in their destination zone (e.g. exile), so match by printed
+    // characteristics via the shared card_matches_filter; control qualifiers resolve against ctrl.
+    if (expr.rfind("Remembered$Valid ", 0) == 0) {
+        std::string filters = expr.substr(std::string("Remembered$Valid ").size());
+        MatchCtx mctx;
+        mctx.controller = ctrl;  // "you" reference for YouCtrl/OppCtrl in any filter
+        size_t count = 0;
+        for (auto e : cur_game.remembered_entities) {
+            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+            if (card_matches_any(e, filters, mctx)) count++;  // ',' = OR over the filters
+        }
+        return count;
     }
     // Remembered$CardManaCost[/Plus.N] — mana value of the first remembered card (Birthing
     // Ritual: X = 1 plus the sacrificed creature's mana value).

@@ -733,7 +733,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             // Activation$ gate (CR 602.5): "activate only if <condition>" (e.g. Metalcraft) —
             // illegal unless the controller meets the named condition. (Mana abilities take the
             // same gate in collect_available_mana_sources; this covers non-mana gated activations.)
-            if (!activation_condition_met(ab, priority_player, orderer->mEntities)) continue;
+            if (!activation_condition_met(ab, priority_player, orderer->mEntities, entity)) continue;
             // todo handle this elswewhere, tapping check
             if (ab.tap_cost && permanent.is_tapped) continue;
             if (ab.tap_cost && permanent.has_summoning_sickness &&
@@ -756,13 +756,16 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             if (!ab.return_cost_type.empty() &&
                 controlled_permanents_matching(priority_player, ab.return_cost_type, orderer->mEntities).empty())
                 continue;
-            if (ab.category == "AddMana") {
-                // All mana abilities — including InstantSpeed$ ones (e.g. LED) — are collected
-                // via collect_mana_legal_actions above and resolve off-stack. None go on the stack.
+            if (ability_is_mana(ab)) {
+                // All mana abilities — including InstantSpeed$ ones (e.g. LED) and AB$
+                // ManaReflected (Mox Amber) — are collected via collect_mana_legal_actions above
+                // and resolve off-stack. None go on the stack.
                 continue;
             } else {
-                // Non-mana activated ability (e.g. ChangeZone for fetch lands, Destroy for Wasteland)
-                if (!ab.activation_mana_cost.empty() && !can_pay_mana(priority_player, ab.activation_mana_cost, ab.source, orderer)) continue;
+                // Non-mana activated ability (e.g. ChangeZone for fetch lands, Destroy for Wasteland).
+                // Gate on the post-ReduceCost$ cost so legality matches what payment will charge.
+                ManaValue ab_cost = effective_activation_mana_cost(ab, priority_player, orderer);
+                if (!ab_cost.empty() && !can_pay_mana(priority_player, ab_cost, ab.source, orderer)) continue;
                 // PayEnergy<N> additional cost (CR 122.1c): you can't pay {E} you don't have.
                 if (ab.energy_cost > 0 &&
                     player_energy(global_coordinator.GetComponent<Player>(get_player_entity(priority_player))) < ab.energy_cost)
@@ -784,8 +787,10 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         for (const auto &ab : card_data.abilities) {
             if (ab.ability_type != Ability::ACTIVATED) continue;
             if (ab.activation_zone != Zone::HAND) continue;
-            // Check mana affordability
-            if (!ab.activation_mana_cost.empty() && !can_pay_mana(priority_player, ab.activation_mana_cost, card_entity, orderer)) continue;
+            // Check mana affordability against the post-ReduceCost$ cost (Eiganjo's Channel is
+            // cheaper per legendary creature you control), so legality matches payment.
+            ManaValue from_hand_cost = effective_activation_mana_cost(ab, priority_player, orderer);
+            if (!from_hand_cost.empty() && !can_pay_mana(priority_player, from_hand_cost, card_entity, orderer)) continue;
             // PayEnergy<N> additional cost (CR 122.1c): you can't pay {E} you don't have.
             if (ab.energy_cost > 0 &&
                 player_energy(global_coordinator.GetComponent<Player>(get_player_entity(priority_player))) < ab.energy_cost)

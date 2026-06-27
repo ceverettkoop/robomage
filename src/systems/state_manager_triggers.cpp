@@ -129,6 +129,91 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
             game.delayed_triggers.erase(game.delayed_triggers.begin() + static_cast<ptrdiff_t>(*it));
     }
 
+    // Floating triggered abilities (CR 603.7e): transient until-end-of-turn triggers created by a
+    // DB$ Effect | Triggers$ SVar (Forth Eorlingas!). They have no source permanent, so they are
+    // scanned here against the drained events rather than by the battlefield loop. Currently the
+    // one supported floating trigger is "Mode$ DamageAll | ValidSource$ Creature.YouCtrl |
+    // ValidTarget$ Player | CombatDamage$ True" — fires once per combat-damage batch when one or
+    // more creatures the trigger's controller controls deal combat damage to one or more players.
+    for (const auto &ft : game.floating_triggers) {
+        if (ft.trigger_on != Events::COMBAT_DAMAGE_TO_PLAYER) continue;
+        bool matched = false;
+        for (const auto &ev : events) {
+            if (ev.GetType() != Events::COMBAT_DAMAGE_TO_PLAYER) continue;
+            if (ft.trigger_damage_source_youctrl) {
+                if (!ev.HasParam(Params::ENTITY)) continue;
+                Entity dmg_src = ev.GetParam<Entity>(Params::ENTITY);
+                if (source_controller(dmg_src) != ft.controller) continue;
+            }
+            matched = true;
+            break;
+        }
+        if (!matched) continue;
+        Ability trigger_ab = ft;
+        trigger_ab.controller = ft.controller;
+        PendingTrigger pt;
+        pt.ab = trigger_ab;
+        pt.controller = ft.controller;
+        pt.source = 0;
+        pt.label = "Floating trigger (" + trigger_ab.category + ")";
+        pt.log_line = "A floating triggered ability triggers.";
+        pt.needs_target = false;
+        pending.push_back(pt);
+    }
+
+    // The monarch's inherent sourceless triggered abilities (CR 725.2): "At the beginning of the
+    // monarch's end step, that player draws a card" and "Whenever a creature deals combat damage to
+    // the monarch, its controller becomes the monarch." These have no source object and are not
+    // card abilities, so they are produced here directly from the drained events against
+    // game.monarch_entity. General over any monarch card (Forth Eorlingas! and future ones).
+    if (game.monarch_entity != MAX_ENTITIES) {
+        Zone::Ownership monarch_ctrl = (game.monarch_entity == game.player_a_entity)
+                                       ? Zone::PLAYER_A : Zone::PLAYER_B;
+        for (const auto &ev : events) {
+            // End-step draw: the monarch draws an extra card at the beginning of their end step.
+            if (ev.GetType() == Events::END_STEP_BEGAN && ev.HasParam(Params::PLAYER) &&
+                ev.GetParam<Entity>(Params::PLAYER) == game.monarch_entity) {
+                Ability draw_ab;
+                draw_ab.ability_type = Ability::TRIGGERED;
+                draw_ab.category = "Draw";
+                draw_ab.amount = 1;
+                draw_ab.controller = monarch_ctrl;
+                draw_ab.target = game.monarch_entity;  // effect_draw reads target player when set
+                PendingTrigger pt;
+                pt.ab = draw_ab;
+                pt.controller = monarch_ctrl;
+                pt.source = 0;
+                pt.label = "Monarch (end-step draw)";
+                pt.log_line = "The monarch draws a card at the beginning of their end step.";
+                pt.needs_target = false;
+                pending.push_back(pt);
+            }
+            // Steal: a creature dealing combat damage to the monarch makes its controller the
+            // monarch. The damaged player is the event's PLAYER; the new monarch is the controller
+            // of the damaging creature (the event's ENTITY).
+            if (ev.GetType() == Events::COMBAT_DAMAGE_TO_PLAYER && ev.HasParam(Params::PLAYER) &&
+                ev.GetParam<Entity>(Params::PLAYER) == game.monarch_entity &&
+                ev.HasParam(Params::ENTITY)) {
+                Zone::Ownership attacker_ctrl = source_controller(ev.GetParam<Entity>(Params::ENTITY));
+                if (attacker_ctrl == Zone::UNKNOWN) continue;
+                Entity new_monarch = get_player_entity(attacker_ctrl);
+                if (new_monarch == game.monarch_entity) continue;  // already the monarch
+                Ability steal_ab;
+                steal_ab.ability_type = Ability::TRIGGERED;
+                steal_ab.category = "BecomeMonarch";
+                steal_ab.controller = attacker_ctrl;
+                PendingTrigger pt;
+                pt.ab = steal_ab;
+                pt.controller = attacker_ctrl;
+                pt.source = 0;
+                pt.label = "Monarch (steal on combat damage)";
+                pt.log_line = "A creature dealt combat damage to the monarch.";
+                pt.needs_target = false;
+                pending.push_back(pt);
+            }
+        }
+    }
+
     if (!events.empty()) {
     for (auto entity : mEntities) {
         if (!is_battlefield_permanent(entity)) continue;
@@ -467,6 +552,47 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
             pt.ab = trigger_ab;
             pt.controller = ctrl;
             pt.source = entity;
+            pt.label = trigger_label(ent_name, trigger_ab);
+            pt.log_line = ent_name + " triggered";
+            pt.needs_target = (trigger_ab.valid_tgts != "N_A" && trigger_ab.target == 0);
+            pending.push_back(pt);
+        }
+    }
+
+    // Self-cast triggered abilities (CR 702.33e/f, Wastescape Battlemage): "When you cast this
+    // spell, [if it was kicked with its [N] kicker,] ..." fires on SPELL_CAST of the spell
+    // ITSELF, while it sits on the stack — not from the battlefield — so the battlefield scan
+    // above never sees it. The source is the cast spell entity (the event's ENTITY); read its
+    // own CardData abilities for a trigger_only_self SPELL_CAST trigger and, when the trigger
+    // names a kicker (trigger_kicked_index > 0), gate it on that kicker having been paid
+    // (Spell::kicked). General over any self-cast / kicked-N SpellCast trigger.
+    for (const auto &ev : events) {
+        if (ev.GetType() != Events::SPELL_CAST) continue;
+        if (!ev.HasParam(Params::ENTITY)) continue;
+        Entity spell_e = ev.GetParam<Entity>(Params::ENTITY);
+        if (!global_coordinator.entity_has_component<CardData>(spell_e)) continue;
+        if (!global_coordinator.entity_has_component<Spell>(spell_e)) continue;
+        const auto &spell = global_coordinator.GetComponent<Spell>(spell_e);
+        Zone::Ownership ctrl = spell.caster;
+        const std::string ent_name = entity_name(spell_e);
+        for (const auto &ab : global_coordinator.GetComponent<CardData>(spell_e).abilities) {
+            if (ab.ability_type != Ability::TRIGGERED) continue;
+            if (ab.trigger_on != Events::SPELL_CAST) continue;
+            if (!ab.trigger_only_self) continue;  // ValidCard$ Card.Self — only the cast spell itself
+            // Linked kicker condition (CR 702.33f): fires only if the named kicker was paid.
+            if (ab.trigger_kicked_index > 0) {
+                size_t idx = static_cast<size_t>(ab.trigger_kicked_index - 1);
+                if (idx >= spell.kicked.size() || !spell.kicked[idx]) continue;
+            }
+
+            Ability trigger_ab = ab;
+            trigger_ab.source = spell_e;
+            trigger_ab.controller = ctrl;
+
+            PendingTrigger pt;
+            pt.ab = trigger_ab;
+            pt.controller = ctrl;
+            pt.source = spell_e;
             pt.label = trigger_label(ent_name, trigger_ab);
             pt.log_line = ent_name + " triggered";
             pt.needs_target = (trigger_ab.valid_tgts != "N_A" && trigger_ab.target == 0);

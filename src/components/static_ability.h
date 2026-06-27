@@ -14,6 +14,13 @@ struct StaticAbility {
     int last_applied_power = 0;           // tracks dynamic delta last applied (reset when condition lost)
     int last_applied_toughness = 0;
     std::string add_keyword = "";
+    // AddAbility$ <SVar> (Petrified Hamlet): a continuous static that GRANTS a full
+    // activated ability (the SVar's resolved AB$ body) to every permanent the Affected$
+    // filter designates — layer 6 (CR 613.1f). add_ability holds the resolved ability
+    // line (e.g. "AB$ Mana | Cost$ T | Produced$ C"); the layer-6 grant pass parses it to
+    // an Ability and attaches it to each affected permanent's ability list, de-duped per
+    // source static so SBA repeats don't stack copies. Empty = no granted ability.
+    std::string add_ability = "";
     std::string affected = "";        // "EquippedBy" = apply buff to equipped creature, not source
     // ETB counter fields (category = "EtbCounter"):
     std::string counter_type = "";    // "P1P1" for +1/+1 counters, "CHARGE" for charge counters

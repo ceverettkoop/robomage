@@ -35,6 +35,12 @@ struct Ability{
     size_t amount = 0;
     Colors color = NO_COLOR; //for mana ability
     std::vector<Colors> mana_choices;   // Produced$ Combo or Any — ordered list of selectable mana colors
+    // AB$ ManaReflected (Mox Amber): a mana ability whose producible colors are the UNION of the
+    // colors of the permanents matching this filter (Valid$, controller-scoped). The set is
+    // computed dynamically at mana-source enumeration from the live board (each matching
+    // permanent's effective_colors), then expanded into per-color choices like mana_choices.
+    // Empty = not a reflected-mana ability. CR 605 / "mana of any color among …".
+    std::string reflected_mana_filter = "";
     bool restrict_to_chosen_type_creature = false;  // RestrictValid$ Spell.Creature+ChosenType
     bool restrict_to_creature = false;               // RestrictValid$ Spell.Creature (any creature spell)
     bool restrict_to_colorless_eldrazi = false;      // RestrictValid$ Spell.Eldrazi+Colorless (Eldrazi Temple)
@@ -43,6 +49,12 @@ struct Ability{
     // Set by apply_land_abilities for mana abilities generated from land subtypes;
     // cleared and regenerated each SBE pass when type-changing effects are active.
     bool subtype_derived = false;
+
+    // Layer-6 ability grant (CR 613.1f): a continuous AddAbility$ static (Petrified Hamlet)
+    // attached this activated ability to the permanent. Holds the granting static's SOURCE
+    // entity so the grant pass can de-dupe (one copy per source static) and remove the grant
+    // when the static stops applying / leaves the battlefield. 0 = an intrinsic ability.
+    Entity granted_by_static = 0;
 
     // Activated ability costs
     bool tap_cost = false;              // {T} is part of the activation cost
@@ -67,6 +79,13 @@ struct Ability{
     // (CR 702.46). General: future gated activations (Threshold, Delirium, …) add their name
     // here and a case in activation_condition_met(). Empty = no activation gate.
     std::string activation_condition = "";
+    // Monstrosity$ N on an AB$/DB$ PutCounter (CR 701.37): "Monstrosity N" = if this permanent
+    // isn't monstrous, put N +1/+1 counters on it and it becomes monstrous. Parsed by
+    // parse_put_counter into CounterParams (P1P1 / count N) plus this flag; the flag also installs
+    // the "NotMonstrous" activation gate so the ability is illegal once the source is monstrous.
+    // At resolution put_counter() places the counters, sets Permanent::is_monstrous, and fires the
+    // BECAME_MONSTROUS event (firing the BecomeMonstrous triggers). General over any Monstrosity card.
+    bool is_monstrosity = false;
     bool tap_on_etb = false;            // ETB$ True on a DB$ Tap — taps Defined$ Self as it enters the battlefield
     int activation_limit = 0;           // ActivationLimit$ N — max activations per turn (0 = unlimited)
     // Loyalty abilities (planeswalkers). is_loyalty_ability is the load-bearing flag;
@@ -77,6 +96,15 @@ struct Ability{
     int loyalty_cost = 0;               // +N (AddCounter) or -N (SubCounter); loyalty counters added/removed as the cost
     int activation_zone = -1;           // ActivationZone$ Hand → Zone::HAND; -1 = default (battlefield)
     int activations_this_turn = 0;      // runtime counter, reset at UNTAP
+    // ReduceCost$ on an ACTIVATED ability (Eiganjo's Channel: "ReduceCost$ X",
+    // X = Count$Valid Creature.Legendary+YouCtrl): the GENERIC portion of
+    // activation_mana_cost is reduced by this amount at activation time (CR 601.2f —
+    // cost reductions reduce only generic mana, colored pips are never reduced). Either a
+    // literal integer (stored verbatim, e.g. "1") or a runtime Count$/SVar expression
+    // resolved via evaluate_dynamic_amount with the activating controller as "you". Empty
+    // = no reduction. effective_activation_mana_cost() applies it for BOTH the affordability
+    // check and the actual payment so the two never diverge.
+    std::string reduce_cost_expr = "";
     std::string change_type = "";        // ChangeType$ — comma-separated subtypes to search
     // ChangeType filter with a dynamic mana-value bound (Aether Vial: "Creature.cmcEQX",
     // X = Count$CardCounters.CHARGE). Holds the resolved runtime Count$ expression and the
@@ -215,6 +243,14 @@ struct Ability{
     // Spell count trigger (Cori-Steel Cutter)
     size_t trigger_spell_count_eq = 0;  // ActivatorThisTurnCast$ EQN — fires on Nth spell
 
+    // Kicker-linked SpellCast trigger (CR 702.33e/f, Wastescape Battlemage): a
+    // "When you cast this spell, if it was kicked with its [N] kicker, ..." trigger.
+    // ValidCard$ Card.Self+kicked N — fires on SPELL_CAST of the source spell itself only
+    // when its (N)th kicker was paid. 0 = no kicker requirement; N >= 1 requires the spell's
+    // kicked[N-1] flag. Matched against the cast spell's Spell::kicked in the dedicated
+    // self-cast trigger scan (the spell is on the stack, not the battlefield, when it fires).
+    int trigger_kicked_index = 0;
+
     // SpellCast trigger with a dynamic mana-value filter on the cast spell
     // (Chalice of the Void: ValidCard$ Card.cmcEQY, Y = Count$CardCounters.CHARGE — fires
     // when a spell's mana value equals the source's charge-counter count). Empty expr = no
@@ -229,6 +265,13 @@ struct Ability{
     // permanent that became a target must be this source). General over becomes-target triggers.
     bool trigger_source_must_be_spell = false;    // ValidSource$ Spell — targeting object is a spell
     bool trigger_source_opp_ctrl = false;         // ValidSource$ ...OppCtrl — controlled by an opponent of the source's controller
+
+    // Mode$ DamageAll | ValidSource$ Creature.YouCtrl | ValidTarget$ Player | CombatDamage$ True —
+    // "Whenever one or more creatures you control deal combat damage to one or more players" (Forth
+    // Eorlingas!'s floating monarch trigger). Fires on COMBAT_DAMAGE_TO_PLAYER when the damaging
+    // creature (the event's ENTITY) is controlled by this ability's controller. Used by floating
+    // triggers (no source permanent), so it cannot rely on trigger_only_self/source scans.
+    bool trigger_damage_source_youctrl = false;   // ValidSource$ Creature.YouCtrl on a DamageAll combat-damage trigger
 
     // TriggerZones$ Graveyard (Arclight Phoenix): the triggered ability functions from
     // the graveyard, not the battlefield (CR 113.6 / 603.6). When set, the trigger scan
@@ -292,6 +335,15 @@ struct Ability{
     // until-end-of-turn "can't be blocked" mark on the source rather than a stack object.
     std::string effect_static_ability = "";  // StaticAbilities$ value (e.g. "Unblockable")
     bool effect_remember_self = false;        // RememberObjects$ Self
+
+    // DB$ Effect | Triggers$ <SVar> — a transient until-end-of-turn floating triggered ability
+    // (Forth Eorlingas!'s "Whenever one or more creatures you control deal combat damage to one
+    // or more players this turn, you become the monarch"). The named trigger SVar is parsed into
+    // a full TRIGGERED Ability and held here; the GrantCast handler registers a copy in
+    // cur_game.floating_triggers (controller bound) so the trigger scan fires it through the
+    // normal trigger system, then it lapses at cleanup. Empty subabilities vector = no floating
+    // trigger. General over any DB$ Effect that names a Triggers$ SVar.
+    std::vector<Ability> effect_floating_triggers;
 
     // Tapped$ True — searched card enters the battlefield tapped (Edge of Autumn)
     bool enters_tapped = false;

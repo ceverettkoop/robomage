@@ -19,19 +19,28 @@ static bool card_is_land(const CardData &cd) {
 
 std::vector<LegalAction> build_name_card_choices(const std::set<Entity> &entities,
                                                  Zone::Ownership owner, bool exclude_lands,
-                                                 std::vector<std::string> &out_names) {
-    // Distinct owner-owned vocab card names, each with a representative entity (so the
+                                                 std::vector<std::string> &out_names,
+                                                 bool only_lands, NameCardScope scope) {
+    // Distinct vocab card names in scope, each with a representative entity (so the
     // per-action card id encodes the candidate) and a copy count for ordering.
+    // CHOOSER_ONLY keeps only cards owned by `owner`; BOTH_PLAYERS accepts cards owned
+    // by either player (A or B), de-duped by name across both decks.
     std::vector<std::string> names;
     std::vector<Entity> reps;
     std::vector<int> copies;
     for (auto e : entities) {
         if (!global_coordinator.entity_has_component<CardData>(e)) continue;
         if (!global_coordinator.entity_has_component<Zone>(e)) continue;
-        if (global_coordinator.GetComponent<Zone>(e).owner != owner) continue;
+        Zone::Ownership card_owner = global_coordinator.GetComponent<Zone>(e).owner;
+        if (scope == NameCardScope::CHOOSER_ONLY) {
+            if (card_owner != owner) continue;
+        } else {  // BOTH_PLAYERS
+            if (card_owner != Zone::PLAYER_A && card_owner != Zone::PLAYER_B) continue;
+        }
         auto &cd = global_coordinator.GetComponent<CardData>(e);
         if (card_name_to_index(cd.name) < 0) continue;  // restrict to vocab cards
-        if (exclude_lands && card_is_land(cd)) continue;
+        if (only_lands && !card_is_land(cd)) continue;
+        else if (exclude_lands && card_is_land(cd)) continue;
         bool found = false;
         for (size_t i = 0; i < names.size(); i++)
             if (names[i] == cd.name) { copies[i]++; found = true; break; }

@@ -123,7 +123,17 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
                 if (global_coordinator.entity_has_component<Ability>(tgt))
                     global_coordinator.RemoveComponent<Ability>(tgt);
             }
+            // Targeted reanimation (Lorehold Charm: graveyard→battlefield). A permanent
+            // entering this way comes under the controller's control (CR 608.2; the spell's
+            // controller is the one returning it from their own graveyard). enters_tapped/
+            // enters_transformed honour the same flags the search/defined paths use.
+            if (ab.destination == Zone::BATTLEFIELD && ab.origin != Zone::BATTLEFIELD) {
+                if (ab.enters_tapped) cur_game.pending_enters_tapped.insert(tgt);
+                if (ab.enters_transformed) cur_game.pending_enters_transformed.insert(tgt);
+            }
             Zone::ZoneValue landed = change_zone_move(orderer, tgt, ab.destination);
+            if (landed == Zone::BATTLEFIELD && ab.origin != Zone::BATTLEFIELD)
+                global_coordinator.GetComponent<Zone>(tgt).controller = ab.controller;
             if (standalone_ability) {
                 global_coordinator.DestroyEntity(tgt);
                 game_log("%s is exiled from the stack\n", tname.c_str());

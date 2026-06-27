@@ -40,6 +40,7 @@ EffectHandler handler_for(EffectKind kind) {
         case EffectKind::AddMana:         return &add_mana;
         case EffectKind::Discard:         return &discard;
         case EffectKind::Pump:            return &pump;
+        case EffectKind::PumpAll:         return &pump_all;
         case EffectKind::PeekAndReveal:   return &peek_and_reveal;
         case EffectKind::Reveal:          return &reveal;
         case EffectKind::Dig:             return &dig;
@@ -62,6 +63,7 @@ EffectHandler handler_for(EffectKind kind) {
         case EffectKind::Earthbend:       return &earthbend;
         case EffectKind::Tap:             return &tap;
         case EffectKind::RevealHand:      return &reveal_hand;
+        case EffectKind::BecomeMonarch:   return &become_monarch;
         default:                          return nullptr;
     }
 }

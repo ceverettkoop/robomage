@@ -20,6 +20,7 @@
 #include "ecs/coordinator.h"
 #include "ecs/events.h"
 #include "error.h"
+#include "str_util.h"
 #include "type_constants.h"
 
 extern std::string RESOURCE_DIR;
@@ -43,6 +44,11 @@ static std::vector<Ability> parse_triggered_abilities(const std::string& script,
                                                       const std::map<std::string, std::string>& svars,
                                                       const std::string& card_name = "");
 static std::vector<StaticAbility> parse_static_abilities(const std::string& script, const std::map<std::string, std::string>& svars);
+// Parses one T:/trigger SVar line into a TRIGGERED Ability (trigger_on == 0 if unrecognised).
+// Forward-declared so parse_svar_ability can build a DB$ Effect | Triggers$ <SVar> floating
+// triggered ability from the named trigger SVar.
+static Ability parse_one_trigger(const std::string& line, const std::map<std::string, std::string>& svars,
+                                 const std::string& card_name);
 static std::vector<Effect::Replacement> parse_replacement_effects(const std::string& script,
                                                                    const std::map<std::string, std::string>& svars);
 static uint32_t parse_power(std::string value);
@@ -668,6 +674,30 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             card.abilities.push_back(tok);
             continue;
         }
+        // K:Kicker:<cost1>[:<cost2>...] — one or more OPTIONAL ADDITIONAL costs (CR 702.33).
+        // Forge encodes "Kicker [A] and/or [B]" as two colon-separated costs (CR 702.33b:
+        // it means "Kicker [A], kicker [B]" — two independent kickers). Each segment is a mana
+        // cost paid in addition to the spell's cost as it's cast; paying it makes the spell
+        // "kicked with its Nth kicker". Stored as a list so the model is multikicker-ready and
+        // the linked "if it was kicked with its [N] kicker" triggers index into it.
+        if (kw_line.rfind("Kicker:", 0) == 0) {
+            std::string rest = kw_line.substr(strlen("Kicker:"));
+            for (const std::string &seg : split(rest, ':', /*skip_empty=*/true))
+                card.kicker_costs.push_back(parse_mana_cost(seg));
+            card.keywords.push_back("Kicker");
+            continue;
+        }
+        // K:Replicate:<cost> — an OPTIONAL ADDITIONAL cost (CR 702.x) that may be paid any
+        // number of times as the spell is cast. Each payment copies the spell once on cast
+        // (the copies may choose new targets). Stored as a single per-instance mana cost; the
+        // count paid is decided at cast time (see action_processor) and recorded per-Spell.
+        if (kw_line.rfind("Replicate:", 0) == 0) {
+            std::string rest = kw_line.substr(strlen("Replicate:"));
+            card.replicate_cost = parse_mana_cost(rest);
+            card.has_replicate = true;
+            card.keywords.push_back("Replicate");
+            continue;
+        }
         // K:Devoid — the object is colorless (CR 702.114a). Forge cards with Devoid omit a
         // Colors: line and rely on the keyword for their colorlessness, so apply it here as a
         // general color override (e.g. an Eldrazi printed with colored mana symbols is still
@@ -1072,6 +1102,13 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         ability.activation_condition = value;
     } else if (key == "ActivationLimit") {
         ability.activation_limit = std::stoi(value);
+    } else if (key == "ReduceCost") {
+        // ReduceCost$ on an activated ability (Eiganjo Channel). Store the raw value
+        // verbatim: a literal integer ("1") is used as-is; a single SVar key ("X") is
+        // resolved to its Count$/dynamic expression in parse_abilities' post-pass. The
+        // generic mana portion of the activation cost is reduced by the resolved amount at
+        // activation time (CR 601.2f).
+        ability.reduce_cost_expr = value;
     } else if (key == "ChangeNum") {
         ability.amount = static_cast<size_t>(std::stoi(value));
     } else if (key == "RestrictValid") {
@@ -1123,6 +1160,12 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         ability.condition_on_triggered_card = (value == "TriggeredCard");
     } else if (key == "ConditionCompare") {
         ability.condition_compare = value;
+    } else if (key == "ValidCards" && ability.category == "NameCard") {
+        // DB$ NameCard ValidCards$ Land (Petrified Hamlet: "choose a land card name"): the
+        // filter restricting the nameable card set. Cabal Therapy's Card.nonLand is still
+        // handled by the name_card handler's hardcoded nonland candidate set (the non-You
+        // path), so only store it where the handler reads it (the Defined$ You land form).
+        ability.valid_cards_filter = value;
     } else if (key == "SacValid") {
         ability.sac_valid = value;            // DB$ Sacrifice — what may be sacrificed
     } else if (key == "RememberSacrificed") {
@@ -1261,6 +1304,19 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
             auto it = svars.find(value);
             if (it != svars.end())
                 sub.subabilities.push_back(parse_svar_ability(it->second, ability_type, svars, card_name));
+        } else if (key == "Triggers") {
+            // DB$ Effect | Triggers$ <SVar>[,<SVar>...] — a transient until-end-of-turn floating
+            // triggered ability (Forth Eorlingas!). Each named SVar holds a trigger line
+            // (Mode$ ... | Execute$ ...); parse it like a card's T: line so it carries the same
+            // trigger metadata and its Execute$ effect, and store it on the Effect to be
+            // registered (controller-bound) into cur_game.floating_triggers at resolution.
+            for (const std::string &svar_name : split(value, ',', /*skip_empty=*/true)) {
+                auto it = svars.find(svar_name);
+                if (it != svars.end()) {
+                    Ability trig = parse_one_trigger(it->second, svars, card_name);
+                    if (trig.trigger_on != 0) sub.effect_floating_triggers.push_back(trig);
+                }
+            }
         } else if (key == "ConditionCheckSVar") {
             // Resolve SVar reference to its expression (e.g. "X" → "Count$ResolvedThisTurn")
             auto it = svars.find(value);
@@ -1314,6 +1370,10 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
                        sv.find("Targeted$") != std::string::npos ||
                        sv.find("Count$InYourLibrary") != std::string::npos ||
                        sv.find("Count$YourLifeTotal") != std::string::npos ||
+                       // Remembered$Valid <filter> — count of remembered (e.g. just-moved by a
+                       // RememberChanged$ ChangeZoneAll) cards matching the filter (Canoptek
+                       // Scarab Swarm: TokenAmount$ X, X = Remembered$Valid Land,Artifact).
+                       sv.find("Remembered$") != std::string::npos ||
                        // Count$xPaid — amount equals the X paid at cast (Kozilek's Command:
                        // TokenAmount$/ScryNum$/TargetMax$ all = X = Count$xPaid).
                        sv.find("xPaid") != std::string::npos) {
@@ -1424,6 +1484,16 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
         }
     }
     return sub;
+}
+
+// Public entry: parse one activated/spell ability body (the resolved RHS of an SVar, e.g.
+// "AB$ Mana | Cost$ T | Produced$ C") into an Ability, honouring the full Forge ability
+// grammar via parse_svar_ability. Used to materialize an AddAbility$ static's granted
+// ability (Petrified Hamlet). No SVar table is available at the grant site, so an empty map
+// is passed; the granted bodies in use are self-contained (no SVar references).
+Ability parse_ability_body(const std::string &body, Ability::AbilityType type) {
+    static const std::map<std::string, std::string> kNoSvars;
+    return parse_svar_ability(body, type, kNoSvars, "");
 }
 
 // Resolves an additive SVar chain (e.g. "SVar$Z1/Plus.Z2") into the list of
@@ -1648,12 +1718,29 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
                            sv.find("Targeted$") != std::string::npos ||
                            sv.find("Count$InYourLibrary") != std::string::npos ||
                            sv.find("Count$YourLifeTotal") != std::string::npos ||
-                           sv.find("Count$Revolt") != std::string::npos) {
+                           sv.find("Count$Revolt") != std::string::npos ||
+                           // Count$xPaid — amount equals the X paid at cast (Forth Eorlingas!:
+                           // TokenAmount$ X, X = Count$xPaid → X 2/2 Human Knight tokens). Mirrors
+                           // the sub-ability path (parse_svar_ability) so a top-level SP$/AB$
+                           // ability scales by X too, instead of falling back to the count==1
+                           // single-token default.
+                           sv.find("xPaid") != std::string::npos) {
                     // Runtime expression — preserve for evaluation at activation/resolve time
                     ability.dynamic_amount_expr = sv;
                 }
             }
             ability.amount_svar = "";
+        }
+
+        // Resolve an activated-ability ReduceCost$ SVar reference (Eiganjo's Channel:
+        // ReduceCost$ X, X = Count$Valid Creature.Legendary+YouCtrl) into its runtime Count$
+        // expression. A literal integer (e.g. "1") is kept verbatim; a single SVar key is
+        // expanded to its Count$/dynamic expression for evaluation at activation time. The
+        // generic mana portion is reduced by the resolved amount (CR 601.2f).
+        if (!ability.reduce_cost_expr.empty() &&
+            !std::isdigit(static_cast<unsigned char>(ability.reduce_cost_expr[0]))) {
+            auto it = svars.find(ability.reduce_cost_expr);
+            if (it != svars.end()) ability.reduce_cost_expr = it->second;
         }
 
         // Resolve a dynamic PutCounter CounterNum$ SVar reference (Wrath of the Skies:
@@ -1721,6 +1808,8 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
     bool valid_player_is_you = false;
     bool mode_is_spell_cast = false;
     bool mode_is_damage_done = false;
+    bool mode_is_damage_all = false;
+    bool valid_source_creature_youctrl = false;
     bool damage_combat_only = false;
     bool valid_card_non_creature = false;
     bool valid_card_instant = false;
@@ -1735,6 +1824,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
     bool mode_is_attackers_declared = false;
     bool mode_is_taps_for_mana = false;
     bool mode_is_becomes_target = false;
+    bool mode_is_become_monstrous = false;
     bool source_is_spell = false;
     bool source_opp_ctrl = false;
     bool valid_target_self = false;
@@ -1745,6 +1835,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
     bool trigger_optional_local = false;
     std::string valid_card_subtype;
     size_t activator_this_turn_cast_eq = 0;
+    int kicked_index = 0;  // ValidCard$ ...+kicked N — fires only if the Nth kicker was paid
 
     // Walk pipe-delimited params
     size_t param_pos = 0;
@@ -1758,15 +1849,21 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
             else if (value == "Phase") mode_is_phase = true;
             else if (value == "SpellCast") mode_is_spell_cast = true;
             else if (value == "DamageDone") mode_is_damage_done = true;
+            else if (value == "DamageAll") mode_is_damage_all = true;
             else if (value == "Drawn") mode_is_drawn = true;
             else if (value == "AttackersDeclared") mode_is_attackers_declared = true;
             else if (value == "TapsForMana") mode_is_taps_for_mana = true;
             else if (value == "BecomesTarget") mode_is_becomes_target = true;
+            else if (value == "BecomeMonstrous") mode_is_become_monstrous = true;
         } else if (key == "ValidSource") {
             // Mode$ BecomesTarget | ValidSource$ Spell.OppCtrl — the targeting object must be a
             // SPELL (not an ability) controlled by an opponent of the source's controller.
             if (value.rfind("Spell", 0) == 0) source_is_spell = true;
             if (value.find("OppCtrl") != std::string::npos) source_opp_ctrl = true;
+            // Mode$ DamageAll | ValidSource$ Creature.YouCtrl — the damaging creature must be one
+            // this trigger's controller controls (Forth Eorlingas!'s floating monarch trigger).
+            if (value.find("Creature") != std::string::npos && value.find("YouCtrl") != std::string::npos)
+                valid_source_creature_youctrl = true;
         } else if (key == "ValidTarget") {
             // ValidTarget$ Card.Self — the permanent that became a target must be this source.
             if (value == "Card.Self") valid_target_self = true;
@@ -1806,7 +1903,21 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
             if (value.find("Creature")    != std::string::npos) valid_card_creature     = true;
             if (value.find("nonCreature") != std::string::npos) valid_card_non_creature = true;
             if (value.find(".Other")      != std::string::npos) ability.trigger_self_excluded = true;
-            if (value == "Card.Self")                            valid_card_self         = true;
+            if (value.rfind("Card.Self", 0) == 0)                valid_card_self         = true;
+            // Kicker-linked condition (CR 702.33f): "Card.Self+kicked N" — fires only when the
+            // Nth kicker was paid. Parse the 1-based index after "kicked " (a missing number
+            // defaults to the first kicker). General over any "+kicked N" SpellCast trigger.
+            {
+                size_t kp = value.find("kicked");
+                if (kp != std::string::npos) {
+                    size_t np = kp + strlen("kicked");
+                    while (np < value.size() && value[np] == ' ') np++;
+                    int n = 0;
+                    while (np < value.size() && isdigit((unsigned char)value[np]))
+                        n = n * 10 + (value[np++] - '0');
+                    kicked_index = (n > 0) ? n : 1;
+                }
+            }
             if (value.find("Instant")     != std::string::npos) valid_card_instant      = true;
             if (value.find("Sorcery")     != std::string::npos) valid_card_sorcery      = true;
             if (value.find(".YouOwn")     != std::string::npos) valid_card_owner_you    = true;
@@ -1969,10 +2080,31 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
         ability.trigger_valid_player_is_controller = valid_player_is_you;
     }
 
+    // "When you cast this spell, [if it was kicked with its [N] kicker,] ..." — Wastescape
+    // Battlemage (Mode$ SpellCast | ValidCard$ Card.Self[+kicked N]). A linked self-cast
+    // trigger that fires while the spell is on the stack (CR 702.33e/f). trigger_only_self
+    // restricts it to the source spell; trigger_kicked_index (>0) additionally gates on the
+    // Nth kicker having been paid. Handled by the dedicated self-cast SPELL_CAST scan.
+    if (mode_is_spell_cast && valid_card_self) {
+        ability.trigger_on = Events::SPELL_CAST;
+        ability.trigger_only_self = true;
+        ability.trigger_kicked_index = kicked_index;
+    }
+
     // "Whenever CARDNAME deals combat damage to a player" — Barrowgoyf
     if (mode_is_damage_done && damage_combat_only) {
         ability.trigger_on = Events::COMBAT_DAMAGE_TO_PLAYER;
         ability.trigger_only_self = true;  // ValidSource$ Card.Self
+    }
+
+    // "Whenever one or more creatures you control deal combat damage to one or more players" —
+    // Forth Eorlingas!'s floating monarch trigger (Mode$ DamageAll | ValidSource$ Creature.YouCtrl
+    // | ValidTarget$ Player | CombatDamage$ True). Fires on COMBAT_DAMAGE_TO_PLAYER when the
+    // damaging creature is controlled by this trigger's controller (matched at fire time, since
+    // the floating trigger has no source permanent to self-reference).
+    if (mode_is_damage_all && damage_combat_only) {
+        ability.trigger_on = Events::COMBAT_DAMAGE_TO_PLAYER;
+        ability.trigger_damage_source_youctrl = valid_source_creature_youctrl;
     }
 
     // "whenever a player draws a card" — Orcish Bowmasters (Mode$ Drawn)
@@ -2011,6 +2143,15 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
         if (valid_target_self) ability.trigger_only_self = true;
     }
 
+    // "When CARDNAME becomes monstrous, ..." — Mode$ BecomeMonstrous (CR 701.37). Fired by the
+    // resolving Monstrosity$ ability (effect_put_counter.cpp) with ENTITY = the permanent that
+    // became monstrous, so ValidCard$ Card.Self reuses the standard trigger_only_self ENTITY check.
+    // TriggerZones$ Battlefield is the default functioning zone; no extra handling needed.
+    if (mode_is_become_monstrous) {
+        ability.trigger_on = Events::BECAME_MONSTROUS;
+        if (valid_card_self) ability.trigger_only_self = true;
+    }
+
     // Resolve effect from Execute$ SVar
     if (!execute_svar.empty()) {
         auto it = svars.find(execute_svar);
@@ -2047,12 +2188,14 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
                 effect.trigger_only_self                        = ability.trigger_only_self;
                 effect.trigger_self_excluded                    = ability.trigger_self_excluded;
                 effect.trigger_spell_count_eq                   = ability.trigger_spell_count_eq;
+                effect.trigger_kicked_index                     = ability.trigger_kicked_index;
                 effect.trigger_cmc_expr                         = ability.trigger_cmc_expr;
                 effect.trigger_cmc_op                           = ability.trigger_cmc_op;
                 effect.trigger_from_graveyard                   = ability.trigger_from_graveyard;
                 effect.trigger_taps_for_mana_static             = ability.trigger_taps_for_mana_static;
                 effect.trigger_source_must_be_spell             = ability.trigger_source_must_be_spell;
                 effect.trigger_source_opp_ctrl                  = ability.trigger_source_opp_ctrl;
+                effect.trigger_damage_source_youctrl            = ability.trigger_damage_source_youctrl;
                 // 603.4 intervening-if lives on the trigger line, not the Execute SVar — carry
                 // it onto the resolved ability so it is re-checked at resolution.
                 effect.intervening_if                           = ability.intervening_if;
@@ -2111,6 +2254,13 @@ static std::vector<StaticAbility> parse_static_abilities(const std::string &scri
                 }
             } else if (key == "AddKeyword") {
                 sa.add_keyword = value;
+            } else if (key == "AddAbility") {
+                // AddAbility$ <SVarName> (Petrified Hamlet): a continuous static that grants
+                // a full activated ability to every Affected$ permanent (CR 613.1f, layer 6).
+                // Resolve the named SVar to its ability body now (e.g. "AB$ Mana | Cost$ T |
+                // Produced$ C"); the layer-6 grant pass parses it to an Ability per recipient.
+                auto it = svars.find(value);
+                sa.add_ability = (it != svars.end()) ? it->second : value;
             } else if (key == "Affected") {
                 sa.affected = value;
                 // Also store as affected_subtype for untap prevention (Choke: Affected$ Island)

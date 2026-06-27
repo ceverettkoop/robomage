@@ -1,6 +1,7 @@
 #ifndef GAME_QUERIES_H
 #define GAME_QUERIES_H
 
+#include <cctype>
 #include <set>
 #include <string>
 #include <vector>
@@ -16,6 +17,7 @@
 #include "components/zone.h"
 #include "classes/colors.h"
 #include "ecs/coordinator.h"
+#include "str_util.h"
 
 extern Coordinator global_coordinator;
 
@@ -138,6 +140,53 @@ struct MatchCtx {
 bool card_matches_filter(Entity e, const std::string &spec, const MatchCtx &ctx = MatchCtx{});
 bool card_matches_filter(const CardData &cd, const std::string &spec, const MatchCtx &ctx = MatchCtx{});
 bool permanent_matches_filter(Entity e, const std::string &spec, const MatchCtx &ctx = MatchCtx{});
+
+// ── Forge-style comma-OR filter matching (one convention, one place) ────────
+// A Forge `Valid$`/`ValidTgts$` spec lists its OR alternatives separated by ',' (e.g.
+// Mox Amber's "Creature.Legendary+YouCtrl,Planeswalker.Legendary+YouCtrl"), whereas the
+// single-clause matchers above use ';' as their internal OR delimiter. These wrappers split
+// the comma-joined spec into its alternatives and OR the per-clause matcher over them, so a
+// caller hands a Forge comma-OR spec straight through and gets correct OR semantics WITHOUT
+// hand-normalizing ',' → ';' (or hand-splitting) at the call site. ',' is not meaningful
+// inside a single clause (the clause grammar joins qualifiers with '.'/'+'), so splitting on
+// ',' is unambiguous. Empty alternatives are skipped; an all-empty/empty spec matches nothing.
+inline bool permanent_matches_any(Entity e, const std::string &comma_or_spec,
+                                  const MatchCtx &ctx = MatchCtx{}) {
+    for (const auto &alt : split(comma_or_spec, ',', /*skip_empty=*/true))
+        if (permanent_matches_filter(e, alt, ctx)) return true;
+    return false;
+}
+inline bool card_matches_any(Entity e, const std::string &comma_or_spec,
+                             const MatchCtx &ctx = MatchCtx{}) {
+    for (const auto &alt : split(comma_or_spec, ',', /*skip_empty=*/true))
+        if (card_matches_filter(e, alt, ctx)) return true;
+    return false;
+}
+
+// Pull a STATIC numeric mana-value qualifier out of a filter spec into a MatchCtx
+// (e.g. "Card.Colorless+cmcGE7" → ctx.cmc_op = "GE", ctx.cmc_bound = 7). The qualifier
+// evaluator defers `cmcLE3`/`cmcGE7`/… to ctx.cmc_bound (returning true for the bare token),
+// so a caller that matches a static cmc filter through card_matches_filter must seed the bound
+// here or the comparator is silently ignored. Non-numeric forms (cmcLEX / cmcEQX, keyed off X
+// paid) are left to the inline evaluator and not extracted. Mirrors the per-token extraction in
+// svar_eval.cpp; shared so static-cmc filter sites (ReduceCost, …) cannot drift on the parsing.
+inline void extract_static_cmc_bound(const std::string &spec, MatchCtx &ctx) {
+    size_t p = 0;
+    while (p < spec.size()) {
+        size_t pos = spec.find("cmc", p);
+        if (pos == std::string::npos) return;
+        // A numeric cmc qualifier is "cmc" + 2-letter op + at least one digit (cmcGE7).
+        if (pos + 5 < spec.size() &&
+            std::isdigit(static_cast<unsigned char>(spec[pos + 5]))) {
+            size_t e = pos + 5;
+            while (e < spec.size() && std::isdigit(static_cast<unsigned char>(spec[e]))) ++e;
+            ctx.cmc_op = spec.substr(pos + 3, 2);
+            ctx.cmc_bound = std::stoi(spec.substr(pos + 5, e - (pos + 5)));
+            return;
+        }
+        p = pos + 3;
+    }
+}
 
 // ── Defined$ player resolution (CR 109.5 / 608.2g) ──────────────────────────
 // Who controls an ability's SOURCE object: its live Permanent.controller while on the
@@ -481,13 +530,22 @@ inline bool controller_has_metalcraft(Zone::Ownership controller, const std::set
 }
 
 // True if `ab`'s Activation$ gate (if any) is satisfied for `controller`. An ability with
-// no activation_condition is always allowed (returns true). Unknown condition names fail
-// closed (return false) so a misparsed gate never silently permits activation.
+// no activation_condition is always allowed (returns true). `source` is the gated ability's
+// source permanent (needed by per-permanent gates like NotMonstrous; pass 0 if unknown).
+// Unknown condition names fail closed (return false) so a misparsed gate never silently
+// permits activation.
 inline bool activation_condition_met(const Ability &ab, Zone::Ownership controller,
-                                     const std::set<Entity> &entities) {
+                                     const std::set<Entity> &entities, Entity source = 0) {
     if (ab.activation_condition.empty()) return true;
     if (ab.activation_condition == "Metalcraft")
         return controller_has_metalcraft(controller, entities);
+    // NotMonstrous (CR 701.37a): a monstrosity ability is legal only while its source isn't
+    // already monstrous. Keyed on the source permanent's is_monstrous designation. Installed
+    // automatically by parse_put_counter for any Monstrosity$ ability.
+    if (ab.activation_condition == "NotMonstrous")
+        return source != 0 &&
+               global_coordinator.entity_has_component<Permanent>(source) &&
+               !global_coordinator.GetComponent<Permanent>(source).is_monstrous;
     return false;
 }
 

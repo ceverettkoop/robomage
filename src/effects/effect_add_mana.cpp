@@ -40,6 +40,24 @@ bool add_mana(Ability &ab, std::shared_ptr<Orderer> orderer) {
 }
 
 bool parse_add_mana(Ability &ab, const std::string &key, const std::string &value) {
+    // AB$ ManaReflected (Mox Amber): a mana ability that produces "one mana of any color among"
+    // the permanents its Valid$ filter matches (CR 605). Valid$ holds the (controller-scoped)
+    // permanent filter whose colors are reflected; ColorOrType$ Color / ReflectProperty$ Is are
+    // the only supported mode (reflect the colors the matching permanents actually are), so they
+    // are validated and consumed here rather than warned as unrecognized.
+    if (ab.category == "ManaReflected") {
+        if (key == "Valid") {
+            ab.reflected_mana_filter = value;
+            // ManaReflected adds exactly one mana of the chosen color ("Add one mana of any
+            // color among …"); set the amount here so the off-stack mana add and its narrative
+            // produce 1, not the default 0.
+            if (ab.amount == 0) ab.amount = 1;
+            return true;
+        }
+        if (key == "ColorOrType" || key == "ReflectProperty") {
+            return true;  // Color / Is — the implemented mode; consumed, no extra state needed
+        }
+    }
     if (key != "Produced") return false;
     // A mana ability may specify how much mana it makes via Amount$ (e.g. Ancient Tomb:
     // Produced$ C | Amount$ 2). Amount$ is consumed separately and sets ab.amount, but the

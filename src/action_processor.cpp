@@ -220,10 +220,11 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
         if (stack_ab.valid_tgts != "N_A") {
             select_target(stack_ab, orderer, ctrl);
         }
-        // Pay mana cost
-        if (!ability.activation_mana_cost.empty()) {
+        // Pay mana cost (after ReduceCost$, e.g. Eiganjo's Channel cheaper per legendary creature)
+        ManaValue from_hand_cost = effective_activation_mana_cost(ability, ctrl, orderer);
+        if (!from_hand_cost.empty()) {
             auto mana_snap = snapshot_mana_state(ctrl, orderer);
-            if (!prompt_mana_payment(ctrl, ability.activation_mana_cost, permanent_entity, orderer)) {
+            if (!prompt_mana_payment(ctrl, from_hand_cost, permanent_entity, orderer)) {
                 restore_mana_state(ctrl, mana_snap, orderer);
                 cur_game.payment_fail_counts[permanent_entity]++;
                 game_log("Payment cancelled.\n");
@@ -261,14 +262,14 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
 
     // Activation$ gate (CR 602.5): refuse to activate an ability whose "activate only if
     // <condition>" gate (e.g. Mox Opal's Metalcraft) isn't met, so it can't be forced illegally.
-    if (!activation_condition_met(ability, controller, orderer->mEntities)) {
+    if (!activation_condition_met(ability, controller, orderer->mEntities, permanent_entity)) {
         game_log("Activation condition not met.\n");
         return;
     }
 
     // InstantSpeed$ AddMana abilities (e.g. LED) are mana abilities too: they resolve off-stack.
     // The instant-speed timing restriction is enforced upstream (offered only at priority).
-    bool is_mana_ability = (ability.category == "AddMana");
+    bool is_mana_ability = ability_is_mana(ability);
     Ability stack_ab = ability;  // not used for mana ability
 
     // EQUIP: special activated ability — attach equipment to a creature
@@ -293,9 +294,10 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
         }
         // Pay equip cost
         if (ability.tap_cost) permanent.is_tapped = true;
-        if (!ability.activation_mana_cost.empty()) {
+        ManaValue equip_cost = effective_activation_mana_cost(ability, controller, orderer);
+        if (!equip_cost.empty()) {
             auto mana_snap = snapshot_mana_state(controller, orderer);
-            if (!prompt_mana_payment(controller, ability.activation_mana_cost, permanent_entity, orderer)) {
+            if (!prompt_mana_payment(controller, equip_cost, permanent_entity, orderer)) {
                 restore_mana_state(controller, mana_snap, orderer);
                 if (ability.tap_cost) permanent.is_tapped = false;
                 cur_game.payment_fail_counts[permanent_entity]++;
@@ -330,10 +332,11 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
     if (ability.tap_cost) {
         permanent.is_tapped = true;
     }
-    // Mana cost
-    if (!ability.activation_mana_cost.empty()) {
+    // Mana cost (after ReduceCost$ — CR 601.2f; reduces generic only)
+    ManaValue activate_cost = effective_activation_mana_cost(ability, controller, orderer);
+    if (!activate_cost.empty()) {
         auto mana_snap = snapshot_mana_state(controller, orderer);
-        if (!prompt_mana_payment(controller, ability.activation_mana_cost, permanent_entity, orderer)) {
+        if (!prompt_mana_payment(controller, activate_cost, permanent_entity, orderer)) {
             restore_mana_state(controller, mana_snap, orderer);
             if (ability.tap_cost) permanent.is_tapped = false;
             cur_game.payment_fail_counts[permanent_entity]++;
@@ -440,14 +443,15 @@ static std::vector<Entity> build_valid_targets(
     Zone::Ownership opp = (priority_player == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
 
     // Target cards in a graveyard (e.g. Faerie Macabre targeting any graveyard card,
-    // or Life from the Loam targeting Land.YouCtrl): opponent's graveyard first, then
-    // own. is_legal_target applies the type/owner filter, so YouCtrl effects only keep
-    // the caster's own cards.
+    // Life from the Loam targeting Land.YouCtrl, or targeted reanimation graveyard→
+    // battlefield like Lorehold Charm): opponent's graveyard first, then own.
+    // is_legal_target applies the type/owner/MV filter, so YouOwn effects only keep the
+    // caster's own cards. The destination is irrelevant to where the candidate sits, so
+    // a graveyard-origin ChangeZone enumerates the graveyard regardless of destination.
     // target_in_graveyard covers spells that target a graveyard card via a non-ChangeZone
     // vehicle (Surgical Extraction's SP$ Pump with TgtZone$ Graveyard).
     if (ability.target_in_graveyard ||
-        (ability.category == "ChangeZone" && ability.origin == Zone::GRAVEYARD &&
-         ability.destination != Zone::BATTLEFIELD)) {
+        (ability.category == "ChangeZone" && ability.origin == Zone::GRAVEYARD)) {
         for (int pass = 0; pass < 2; pass++) {
             Zone::Ownership slot_owner = (pass == 0) ? opp : priority_player;
             for (auto e : orderer->mEntities) {
@@ -1156,6 +1160,16 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             // Snapshot mana state for rewind on payment failure
             auto mana_snap = snapshot_mana_state(caster, orderer);
 
+            // Kicker (CR 702.33): per-kicker "paid?" flags, populated in the regular-cost
+            // branch below and copied onto the Spell so linked "if it was kicked with its [N]
+            // kicker" triggers can read them. Empty unless the card has K:Kicker.
+            std::vector<bool> kicked_flags;
+
+            // Replicate (CR 702.x): how many times the replicate additional cost was paid in
+            // the regular-cost branch below. Drives the on-cast copy effect. 0 unless the card
+            // has K:Replicate and the caster chose to pay it.
+            int replicate_count = 0;
+
             // FLASHBACK COST
             if (action.use_flashback) {
                 // Pay flashback mana cost
@@ -1238,6 +1252,55 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                 // Offspring (CR 702.171): additional cost paid on top of the spell's cost.
                 if (action.use_offspring)
                     for (Colors c : card_data.offspring_cost) cost_to_pay.insert(c);
+
+                // KICKER (CR 702.33 / 601.2b): each kicker is an OPTIONAL ADDITIONAL cost
+                // declared as the spell is cast. Offer one yes/no per kicker (only when its
+                // extra mana is still affordable on top of everything chosen so far); an
+                // accepted kicker's mana is folded into cost_to_pay and recorded in
+                // kicked_flags so the spell becomes "kicked with its Nth kicker". General over
+                // any number of independent kicker costs (multikicker-ready data model).
+                if (!card_data.kicker_costs.empty()) {
+                    kicked_flags.assign(card_data.kicker_costs.size(), false);
+                    for (size_t ki = 0; ki < card_data.kicker_costs.size(); ki++) {
+                        ManaValue with_kicker = cost_to_pay;
+                        for (Colors c : card_data.kicker_costs[ki]) with_kicker.insert(c);
+                        if (!can_pay_mana(caster, with_kicker, spell_entity, orderer,
+                                          card_data.has_delve, card_data.has_improvise))
+                            continue;
+                        std::string prompt = "pay kicker " + std::to_string(ki + 1) +
+                            " for " + card_data.name;
+                        if (request_optional_yesno(caster, prompt)) {
+                            cost_to_pay = with_kicker;
+                            kicked_flags[ki] = true;
+                            game_log("%s pays the kicker %zu cost for %s\n",
+                                     player_name(caster).c_str(), ki + 1, card_data.name.c_str());
+                        }
+                    }
+                }
+
+                // REPLICATE (CR 702.x / 601.2b): an OPTIONAL ADDITIONAL cost that may be paid
+                // ANY NUMBER OF TIMES as the spell is cast. Offer a repeated yes/no — each "yes"
+                // folds another replicate cost's mana into cost_to_pay and bumps the replicate
+                // count — stopping once the next payment is unaffordable or declined. The count
+                // drives the on-cast copy effect (Spell::replicate_count). Reuses the same
+                // request_optional_yesno / can_pay_mana infra the kicker loop uses.
+                if (card_data.has_replicate) {
+                    while (true) {
+                        ManaValue with_replicate = cost_to_pay;
+                        for (Colors c : card_data.replicate_cost) with_replicate.insert(c);
+                        if (!can_pay_mana(caster, with_replicate, spell_entity, orderer,
+                                          card_data.has_delve, card_data.has_improvise))
+                            break;
+                        std::string prompt = "pay replicate cost for " + card_data.name +
+                            " (paid " + std::to_string(replicate_count) + ")";
+                        if (!request_optional_yesno(caster, prompt)) break;
+                        cost_to_pay = with_replicate;
+                        replicate_count++;
+                        game_log("%s pays the replicate cost for %s (%d)\n",
+                                 player_name(caster).c_str(), card_data.name.c_str(),
+                                 replicate_count);
+                    }
+                }
 
                 // X-COST: prompt player to choose X value, add X generic to cost
                 if (card_data.has_x_cost) {
@@ -1352,6 +1415,8 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             spell.cast_with_flashback = action.use_flashback;
             spell.cast_with_evoke = action.use_alt_cost && card_data.alt_cost.is_evoke;
             spell.cast_with_offspring = action.use_offspring;
+            spell.kicked = kicked_flags;  // per-kicker "paid?" flags (empty for non-kicker spells)
+            spell.replicate_count = replicate_count;  // # of replicate payments (0 if none/no Replicate)
             // Record the X value paid so an "enters with X counters" replacement can read
             // it (Chalice of the Void: enters with X charge counters). cur_game.x_paid is
             // global and may be overwritten by a later cast before this spell resolves.
@@ -1427,6 +1492,16 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                     // becomes-target trigger matches fires it above this spell (CR 603.2c/603.3).
                     fire_became_target_events(spell_entity, caster, tgts);
                 }
+            }
+
+            // REPLICATE (CR 702.x): "When you cast this spell, copy it for each time you paid
+            // its replicate cost." The replicate count was recorded on the Spell as the cost
+            // was paid; create that many copies of this spell on top of the stack now (the
+            // copies resolve before the original and may choose new targets). General
+            // copy-spell-on-stack mechanism; a copy is not cast, so it replicates nothing.
+            if (global_coordinator.entity_has_component<Spell>(spell_entity)) {
+                int rc = global_coordinator.GetComponent<Spell>(spell_entity).replicate_count;
+                if (rc > 0) copy_spell_on_stack(spell_entity, rc, caster, orderer);
             }
 
             game.take_action();

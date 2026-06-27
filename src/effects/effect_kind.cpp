@@ -21,6 +21,7 @@ EffectKind effect_kind_from_string(const std::string &category) {
         {"Attach", EffectKind::Attach},
         {"Mill", EffectKind::Mill},
         {"Pump", EffectKind::Pump},
+        {"PumpAll", EffectKind::PumpAll},
         {"MultiplyCounter", EffectKind::MultiplyCounter},
         {"ChooseCard", EffectKind::ChooseCard},
         {"Cleanup", EffectKind::Cleanup},
@@ -90,6 +91,8 @@ EffectKind effect_kind_from_string(const std::string &category) {
         // those cards public knowledge so a chained chooser (Chooser$ You ChangeZone) can see and
         // select among them. See effect_reveal_hand.cpp.
         {"RevealHand", EffectKind::RevealHand},
+        // DB$ BecomeMonarch (CR 725) — the ability's controller becomes the monarch.
+        {"BecomeMonarch", EffectKind::BecomeMonarch},
     };
     auto it = table.find(category);
     return (it != table.end()) ? it->second : EffectKind::None;

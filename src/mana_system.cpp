@@ -17,6 +17,7 @@
 #include "components/types.h"
 #include "ecs/coordinator.h"
 #include "ecs/events.h"
+#include "effects/effects.h"
 #include "error.h"
 #include "game_queries.h"
 #include "input_logger.h"
@@ -110,6 +111,27 @@ void empty_mana_pool(Zone::Ownership player_owner) {
     player.mana.clear();
 }
 
+// The activation mana cost of `ab` after applying its ReduceCost$ (CR 601.2f). General over the
+// reduction source: a literal integer or a Count$/SVar expression resolved via the shared
+// dynamic-amount evaluator (the same Count$Valid machinery used for dynamic NumDmg/amounts).
+// Only the GENERIC portion is reduced (floored at 0); colored pips are untouched. Used by both
+// the affordability gate and the payment so the two never diverge.
+ManaValue effective_activation_mana_cost(const Ability &ab, Zone::Ownership controller,
+                                         std::shared_ptr<Orderer> orderer) {
+    if (ab.reduce_cost_expr.empty()) return ab.activation_mana_cost;
+    size_t reduction = evaluate_dynamic_amount(ab.reduce_cost_expr, controller, orderer, ab.target);
+    if (reduction == 0) return ab.activation_mana_cost;
+    ManaValue cost = ab.activation_mana_cost;
+    // Remove up to `reduction` generic ({1}) symbols; never below zero, never a colored pip.
+    auto it = cost.find(GENERIC);
+    while (reduction > 0 && it != cost.end()) {
+        it = cost.erase(it);
+        it = cost.find(GENERIC);
+        --reduction;
+    }
+    return cost;
+}
+
 // Check if a permanent's abilities are suppressed by a CantBeActivated static
 // Evaluate the mana amount a source produces (handles dynamic amounts like Gaea's Cradle)
 static size_t eval_mana_amount(const Ability &ab, Zone::Ownership controller,
@@ -188,6 +210,34 @@ static bool mana_source_usable_for(const Ability &ab, Entity source_entity, Enti
     return true;
 }
 
+bool ability_is_mana(const Ability &ab) {
+    if (ab.ability_type != Ability::ACTIVATED) return false;
+    return ab.category == "AddMana" || ab.category == "ManaReflected";
+}
+
+// The producible color set of an AB$ ManaReflected ability (Mox Amber): the UNION of the
+// effective colors of every battlefield permanent (controlled by `player`) that matches the
+// ability's Valid$ filter (ReflectProperty$ Is — reflect the colors those permanents are).
+// Colorless contributes no color (CR 105.2c), so a colorless-only board yields an empty set
+// and the source produces nothing. Returned in WUBRG order for a stable choice menu.
+static std::vector<Colors> reflected_color_set(const Ability &ab, Zone::Ownership player,
+                                               std::shared_ptr<Orderer> orderer) {
+    std::set<Colors> colors;
+    MatchCtx ctx;
+    ctx.controller = player;
+    // ManaReflected's Valid$ lists its alternatives comma-separated (Forge Valid$ convention).
+    // permanent_matches_any matches each alternative (legendary creature / legendary
+    // planeswalker) independently, so the comma-OR is handled in one shared place.
+    for (auto entity : battlefield_permanents(orderer->mEntities, player)) {
+        if (!permanent_matches_any(entity, ab.reflected_mana_filter, ctx)) continue;
+        for (Colors c : effective_colors(entity)) colors.insert(c);
+    }
+    std::vector<Colors> ordered;
+    for (Colors c : {WHITE, BLUE, BLACK, RED, GREEN})
+        if (colors.count(c)) ordered.push_back(c);
+    return ordered;
+}
+
 // Collect all mana abilities a player could activate.
 // Checks physical activation requirements (untapped, controller, phased out, CantBeActivated,
 // summoning sickness, activation limits) but NOT activation_mana_cost — callers handle that
@@ -201,15 +251,14 @@ static std::vector<std::pair<Entity, Ability>> collect_available_mana_sources(
         if (rules_mod::mana_activation_prohibited(entity)) continue;
 
         for (const auto &ab : permanent.abilities) {
-            if (ab.category != "AddMana") continue;
-            if (ab.ability_type != Ability::ACTIVATED) continue;
+            if (!ability_is_mana(ab)) continue;
             // InstantSpeed$ mana abilities (e.g. LED) may only be activated at priority, not
             // mid-cost-payment. Callers listing actions for a player who holds priority pass
             // include_instant_speed; the affordability/payment callers leave it false.
             if (ab.instant_speed && !include_instant_speed) continue;
             // Activation$ gate (CR 602.5): e.g. Mox Opal's Metalcraft — illegal unless the
             // controller meets the named condition (here, controls 3+ artifacts).
-            if (!activation_condition_met(ab, player, orderer->mEntities)) continue;
+            if (!activation_condition_met(ab, player, orderer->mEntities, entity)) continue;
             if (ab.tap_cost && permanent.is_tapped) continue;
             if (ab.activation_limit > 0 && ab.activations_this_turn >= ab.activation_limit) continue;
             // Summoning sickness check for creatures with tap cost
@@ -221,7 +270,17 @@ static std::vector<std::pair<Entity, Ability>> collect_available_mana_sources(
                     if (kw == "Haste") { has_haste = true; break; }
                 if (!has_haste) continue;
             }
-            if (!ab.mana_choices.empty()) {
+            // AB$ ManaReflected (Mox Amber): producible colors are the union of the colors of
+            // the Valid$-matching permanents you control, computed live. Expand into per-color
+            // choices like mana_choices. An empty set (no/colorless legendaries) makes the
+            // ability produce nothing, so it is not offered as a usable mana source.
+            if (!ab.reflected_mana_filter.empty()) {
+                for (Colors choice_color : reflected_color_set(ab, player, orderer)) {
+                    Ability choice_ab = ab;
+                    choice_ab.color = choice_color;
+                    sources.push_back({entity, choice_ab});
+                }
+            } else if (!ab.mana_choices.empty()) {
                 for (Colors choice_color : ab.mana_choices) {
                     Ability choice_ab = ab;
                     choice_ab.color = choice_color;
@@ -761,12 +820,19 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
                 if (!predicate(si)) continue;
                 activate_source(si);
                 tapped_entities.insert(si.entity);
+                // Only satisfy the pip with mana the source ACTUALLY produced. A source
+                // that produced no mana of `needed` (e.g. a 0-mana ManaReflected source
+                // with no qualifying permanent) erases nothing — the pip stays unpaid and
+                // we keep scanning. This mirrors the interactive payer, where the pip is
+                // only spent once can_afford_pool sees the color in the real pool.
                 if (pool.count(needed) > 0) {
                     auto pit = pool.find(needed);
                     pool.erase(pit);
+                    it = remaining.erase(it);
+                    return true;
                 }
-                it = remaining.erase(it);
-                return true;
+                // Source produced nothing usable; it is now tapped (tracked above) so it
+                // won't be retried, but the pip is still owed — try the next candidate.
             }
             return false;
         };
@@ -791,12 +857,14 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
                 if (!predicate(si)) continue;
                 activate_source(si);
                 tapped_entities.insert(si.entity);
+                // Only pay a generic pip with mana the source actually produced; a 0-mana
+                // source erases nothing (consistent with the colored loop above).
                 if (pool.size() > 0) {
                     pool.erase(pool.begin());
                     auto git = remaining.find(GENERIC);
                     remaining.erase(git);
+                    return true;
                 }
-                return true;
             }
             return false;
         };

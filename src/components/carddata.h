@@ -72,6 +72,22 @@ struct CardData{
     ManaValue equip_cost;                // parsed from K:Equip:cost
     bool has_offspring = false;          // K:Offspring:cost — optional additional cost (CR 702.171)
     ManaValue offspring_cost;            // mana paid in addition to the spell's cost for Offspring
+    // K:Kicker:<cost1>[:<cost2>...] — one or more OPTIONAL ADDITIONAL costs (CR 702.33).
+    // "Kicker [A] and/or [B]" is Forge-encoded as two colon-separated costs and means
+    // "Kicker [A], kicker [B]" (CR 702.33b): each may be paid independently as the spell is
+    // cast. kicker_costs[i] is the mana paid for the (i+1)th kicker; the spell is "kicked
+    // with its (i+1)th kicker" iff that cost was paid. The list is multikicker-ready (any
+    // count >= 1). Empty = the card has no kicker. Linked "if it was kicked with its [N]
+    // kicker" triggers read the per-Spell kicked flags by index (see Spell::kicked).
+    std::vector<ManaValue> kicker_costs;
+    // K:Replicate:<cost> — an OPTIONAL ADDITIONAL cost that may be paid ANY NUMBER OF TIMES as
+    // the spell is cast (CR 702.x / Consign to Memory). Each payment increments the spell's
+    // "replicate count"; when the spell is cast it is copied that many times, and the copies
+    // may choose new targets (the copy mechanism, not a recast). has_replicate gates it; the
+    // per-instance mana paid for each replication is replicate_cost. The chosen count is stored
+    // per-Spell (Spell::replicate_count) so the on-cast copy effect knows how many copies to make.
+    bool has_replicate = false;
+    ManaValue replicate_cost;
     std::set<Colors> explicit_colors;    // Colors: field override (e.g. Dryad Arbor)
 };
 

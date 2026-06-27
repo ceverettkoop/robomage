@@ -129,6 +129,16 @@ struct Game {
         // (per strike step) and in the END_OF_COMBAT cleanup.
         std::map<Entity, std::map<Entity, uint32_t>> combat_damage_assignment;
         std::vector<DelayedTrigger> delayed_triggers;
+        // Floating triggered abilities (CR 603.7e-style "this turn" triggers) created by a
+        // transient DB$ Effect | Triggers$ <SVar> (e.g. Forth Eorlingas!'s become-monarch-on-
+        // combat-damage). Each is a fully-parsed TRIGGERED Ability with its controller bound;
+        // the trigger scan (check_triggered_abilities) tests them against drained events just like
+        // a permanent's triggered ability. Cleared at the cleanup step so they last only their
+        // turn of creation. General over any until-end-of-turn floating triggered ability.
+        std::vector<Ability> floating_triggers;
+        // The monarch (CR 725). MAX_ENTITIES = no monarch (none until an effect makes a player
+        // the monarch). Internal game state only — deliberately NOT in the obs/state vector.
+        Entity monarch_entity = MAX_ENTITIES;
         std::vector<Entity> delve_exiled;   // entities exiled during current delve cast; cleared after ETB
         size_t x_paid = 0;                  // X value chosen at cast time for X-cost spells
         std::map<Entity, LastKnownInfo> last_known_info;  // effective characteristics captured as a
@@ -176,6 +186,11 @@ struct Game {
         // library or when a card is removed from the top; cleared to all -1 on shuffle.
         int known_top_library_a[KNOWN_TOP_LIBRARY_SIZE] = {-1, -1, -1, -1, -1};
         int known_top_library_b[KNOWN_TOP_LIBRARY_SIZE] = {-1, -1, -1, -1, -1};
+
+        // CR 725: make `player` the monarch. The previous monarch (if any) ceases to be the
+        // monarch (725.3). No-op if `player` is already the monarch. Sourceless inherent monarch
+        // triggers (end-step draw, steal-on-combat-damage) are fired by check_triggered_abilities.
+        void set_monarch(Entity player_entity);
 
         void record_action(int category, int card_vocab_idx, bool player_a);
         void clear_known_top_library(bool player_a_owner);

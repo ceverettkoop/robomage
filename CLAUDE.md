@@ -29,6 +29,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Robomage is a C++ implementation of a Magic: The Gathering game engine using an Entity Component System (ECS) architecture.
 
+**Scope: two-player games only.** The engine simulates exactly one 1-v-1 matchup (Player A vs Player B). Multiplayer rules (CR 800+) — more than two players, ranges of influence, the monarch passing among 3+ players, "each opponent" over multiple opponents, leaving-the-game cleanup for a third seat, etc. — are out of scope. Implement card effects against the two-player case; do not add multiplayer-only machinery.
+
 Every game decision logged as an integer. Games can be replayed deterministically when provided with the correct seed.
 
 The python side of the project enables machine learning of the game and analysis.
@@ -342,6 +344,17 @@ Ability categories resolved by `Ability::resolve()` in `src/components/ability.c
 - `"ExaltedBonus"` / `"ProwessBonus"` — grant combat bonuses based on keyword count
 
 Activated abilities with `valid_tgts != "N_A"` have their target selected before costs are paid and before the ability entity is pushed onto the stack. Target legality is re-verified at resolution.
+
+**Name-a-card candidate set (deviation from CR 201.4).** "Name a card" effects (Cabal
+Therapy's `SP$ NameCard`, Disruptor Flute's ETB, Petrified Hamlet's "name a land") do **not**
+offer every card in existence as CR 201.4 allows. The shared builder
+`build_name_card_choices()` (`src/name_card_choices.{h,cpp}`) returns a deliberately LIMITED,
+context-driven candidate set derived from the match and the card — the distinct vocab cards
+present in the relevant deck(s), filtered by the card's `ValidCards$` type. The `NameCardScope`
+argument selects whose deck supplies the candidates: `CHOOSER_ONLY` (one player's whole deck,
+used by Cabal Therapy / Disruptor Flute) or `BOTH_PLAYERS` (lands owned by **either** player A or
+B, de-duped by name). Land-naming cards (Petrified Hamlet / Alpine Moon-style "name a land")
+use `BOTH_PLAYERS`, so a land that exists only in the opponent's deck is still nameable.
 
 ### Card Parser (`src/parse.cpp`)
 

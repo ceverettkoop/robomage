@@ -19,6 +19,13 @@ struct Ability;
 // Get player entity from ownership
 Entity get_player_entity(Zone::Ownership player);
 
+// True if `ab` is a mana ability (CR 605): one that adds mana and resolves at activation
+// without using the stack. Covers the ordinary AddMana producers AND AB$ ManaReflected
+// (Mox Amber), whose producible colors are computed dynamically. Single source so every
+// "is this a mana ability?" gate (action processor, legal-action enumeration, mana-source
+// collection) classifies ManaReflected consistently and none push it onto the stack.
+bool ability_is_mana(const Ability &ab);
+
 // Bump the per-turn activation counter for the ability on `perm` that matches `ability`,
 // if that ability is activation-limited (no-op when activation_limit == 0). Mana abilities
 // (category "AddMana") are keyed by tap-cost + color, since one permanent can expose several
@@ -71,6 +78,16 @@ struct ManaPaymentSnapshot {
 ManaPaymentSnapshot snapshot_mana_state(Zone::Ownership player, std::shared_ptr<Orderer> orderer);
 void restore_mana_state(Zone::Ownership player, const ManaPaymentSnapshot& snap,
                         std::shared_ptr<Orderer> orderer);
+
+// The activation mana cost of `ab` AFTER applying its ReduceCost$ (CR 601.2f). When the
+// ability declares a ReduceCost$ (a literal integer or a Count$/SVar expression such as
+// Eiganjo's "Count$Valid Creature.Legendary+YouCtrl"), the resolved amount is subtracted from
+// the GENERIC portion of activation_mana_cost (floored at 0); colored pips are never reduced.
+// `controller` is the counting "you" for the dynamic reduction. Returns the unmodified cost
+// when no ReduceCost$ is set. The single source of truth used by BOTH the affordability check
+// and the actual payment so legality and payment can never diverge.
+ManaValue effective_activation_mana_cost(const Ability &ab, Zone::Ownership controller,
+                                         std::shared_ptr<Orderer> orderer);
 
 // Map a mana color to its ActionCategory (MANA_W, MANA_U, etc.)
 ActionCategory mana_action_category(Colors color);

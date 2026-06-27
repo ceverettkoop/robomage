@@ -121,6 +121,16 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Wrath of the Skies", 186},
     {"Skyclave Apparition", 188},
     {"Ba Sing Se", 197},
+    {"Lorehold Charm", 198},
+    {"It That Heralds the End", 199},
+    {"Petrified Hamlet", 200},
+    {"Eiganjo, Seat of the Empire", 201},
+    {"Canoptek Scarab Swarm", 202},
+    {"Mox Amber", 203},
+    {"Alpha Deathclaw", 204},
+    {"Wastescape Battlemage", 205},
+    {"Consign to Memory", 206},
+    {"Forth Eorlingas!", 207},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);
