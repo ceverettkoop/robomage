@@ -52,6 +52,8 @@ static void trigger_ward_for_targets(Entity targeting_entity, Zone::Ownership co
                                      std::shared_ptr<Orderer> orderer);
 static void pay_sacrifice_cost(Zone::Ownership caster, const std::string &spec, Entity spell_entity,
                                std::shared_ptr<Orderer> orderer);
+static void pay_exile_from_grave_cost(Zone::Ownership caster, int min_types, Entity spell_entity,
+                                      std::shared_ptr<Orderer> orderer);
 
 // entity_name() is shared from the StateManager TUs via state_manager_internal.h.
 // mana_symbol_str() is the canonical const-char* color symbol from classes/colors.h.
@@ -85,6 +87,45 @@ static void pay_sacrifice_cost(Zone::Ownership caster, const std::string &spec, 
     std::string sac_name = global_coordinator.GetComponent<Permanent>(to_sac).name;
     orderer->add_to_zone(false, to_sac, Zone::GRAVEYARD);
     game_log("%s sacrifices %s\n", player_name(caster).c_str(), sac_name.c_str());
+}
+
+// Pay an Escape ExileFromGrave additional cost (CR 702.139 / 601.2f): exile any number of
+// OTHER cards from the caster's graveyard until the exiled set collectively has at least
+// `min_types` distinct card types (CR 205.2). Presented as a choice loop over the caster's
+// other graveyard cards; the loop is mandatory (no "done" option) until the constraint is
+// met, after which casting proceeds. Cast legality already guaranteed enough types exist.
+static void pay_exile_from_grave_cost(Zone::Ownership caster, int min_types, Entity spell_entity,
+                                      std::shared_ptr<Orderer> orderer) {
+    if (min_types <= 0) return;
+    std::set<std::string> exiled_types;
+    while (static_cast<int>(exiled_types.size()) < min_types) {
+        // Gather the caster's remaining other graveyard cards as choices.
+        std::vector<Entity> choices;
+        for (auto e : orderer->mEntities) {
+            if (e == spell_entity) continue;
+            if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+            auto &z = global_coordinator.GetComponent<Zone>(e);
+            if (z.location != Zone::GRAVEYARD || z.owner != caster) continue;
+            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+            choices.push_back(e);
+        }
+        if (choices.empty()) break;  // defensive: legality guaranteed enough cards
+        std::vector<LegalAction> menu;
+        for (auto e : choices) {
+            std::string nm = global_coordinator.GetComponent<CardData>(e).name;
+            LegalAction la(PASS_PRIORITY, e, "Exile " + nm + " from graveyard");
+            la.category = ActionCategory::SACRIFICE_PERMANENT;
+            menu.push_back(la);
+        }
+        int choice = InputLogger::instance().get_input(menu);
+        Entity to_exile = menu[static_cast<size_t>(choice)].source_entity;
+        auto &cd = global_coordinator.GetComponent<CardData>(to_exile);
+        for (auto &t : cd.types)
+            if (t.kind == TYPE) exiled_types.insert(t.name);
+        std::string ename = cd.name;
+        orderer->add_to_zone(false, to_exile, Zone::EXILE);
+        game_log("%s exiles %s from their graveyard\n", player_name(caster).c_str(), ename.c_str());
+    }
 }
 
 // Pay the non-mana, non-tap activation costs shared by hand- and battlefield-
@@ -1103,6 +1144,27 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                     pay_sacrifice_cost(caster, card_data.flashback_alt_cost.sac_cost_spec,
                                        spell_entity, orderer);
                 }
+
+            // ESCAPE COST (CR 702.139): cast from the graveyard for the escape cost — the
+            // escape mana cost plus the ExileFromGrave additional cost (exile other graveyard
+            // cards covering ≥N card types). The exile is a cost, paid as the spell is cast.
+            } else if (action.use_escape) {
+                if (!card_data.escape_mana_cost.empty()) {
+                    if (!prompt_mana_payment(caster, card_data.escape_mana_cost, spell_entity, orderer, false)) {
+                        restore_mana_state(caster, mana_snap, orderer);
+                        cur_game.payment_fail_counts[spell_entity]++;
+                        game_log("Payment cancelled.\n");
+                        break;
+                    }
+                }
+                if (card_data.escape_alt_cost.life_cost > 0) {
+                    auto &player = global_coordinator.GetComponent<Player>(get_player_entity(caster));
+                    player.life_total -= card_data.escape_alt_cost.life_cost;
+                    game_log("%s pays %d life\n", player_name(caster).c_str(), card_data.escape_alt_cost.life_cost);
+                }
+                if (card_data.escape_alt_cost.exile_grave_min_types > 0)
+                    pay_exile_from_grave_cost(caster, card_data.escape_alt_cost.exile_grave_min_types,
+                                              spell_entity, orderer);
 
             // IMPULSE CAST (Amped Raptor's DB$ Play): cast from exile under a one-shot
             // permission, paying its alternative RESOURCE cost (energy or life) instead of any

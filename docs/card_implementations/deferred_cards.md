@@ -28,7 +28,6 @@ unblocks the others in that group.
 
 **Other missing subsystems:**
 - **Consign to Memory** — Replicate keyword + countering a triggered ability on the stack (Forge script: available)
-- **Nethergoyf** — Escape keyword (cast from graveyard, exile cards as cost, with X) + CDA P/T counting card types in graveyard (Forge script: available)
 - **Petrified Hamlet** — `DB$ NameCard` effect + Continuous `AddAbility$` granting a mana ability to other named lands (Forge script: available)
 - **Pinnacle Emissary** — Warp alternative cost (cast for warp cost, exile at end step, recast from exile) (Forge script: available)
 - **Reality Smasher** — general `T: Mode$ BecomesTarget` triggered ability + `UnlessCost$ Discard<1/Card>` / `UnlessPayer$` (Forge script: available)

@@ -516,6 +516,51 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         fb_la.use_flashback = true;
         actions.push_back(fb_la);
     }
+    // ESCAPE (CR 702.139): a card in its owner's graveyard may be cast from there for its
+    // escape cost (mana + additional cost). Same sorcery-speed timing flashback uses unless the
+    // card is an instant. Nethergoyf's additional cost is ExileFromGrave with a "≥N card types
+    // among the chosen cards" constraint, so the cast is only legal when OTHER cards in the
+    // caster's graveyard collectively cover those N types (otherwise the cost is unpayable).
+    for (auto gy_entity : orderer->mEntities) {
+        if (!global_coordinator.entity_has_component<Zone>(gy_entity)) continue;
+        auto &gz = global_coordinator.GetComponent<Zone>(gy_entity);
+        if (gz.location != Zone::GRAVEYARD || gz.owner != priority_player) continue;
+        if (!global_coordinator.entity_has_component<CardData>(gy_entity)) continue;
+        auto &gcd = global_coordinator.GetComponent<CardData>(gy_entity);
+        if (!gcd.has_escape) continue;
+
+        bool esc_is_creature = is_creature_card(gcd);
+        bool esc_is_instant = card_has_type(gcd, "Instant");
+        bool can_cast_now = esc_is_instant ||
+                            ((game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
+                             (game.player_a_turn == game.player_a_has_priority) && stack_empty);
+        if (!can_cast_now) continue;
+
+        // Spell-target legality (Nethergoyf has none, but keep general for future escape cards).
+        bool tgt_ok = true;
+        for (const auto &ab : gcd.abilities) {
+            if (ab.ability_type != Ability::SPELL) continue;
+            tgt_ok = has_legal_targets(ab, orderer);
+            break;
+        }
+        if (!tgt_ok) continue;
+
+        if (!can_pay_mana(priority_player, gcd.escape_mana_cost, gy_entity, orderer)) continue;
+
+        // ExileFromGrave group-type constraint: enough OTHER graveyard cards must be available
+        // to collectively reach the required number of distinct card types (CR 601.2f).
+        if (gcd.escape_alt_cost.exile_grave_min_types > 0 &&
+            graveyard_card_types(priority_player, orderer->mEntities, gy_entity) <
+                gcd.escape_alt_cost.exile_grave_min_types)
+            continue;
+
+        if (rules_mod::cast_prohibited(priority_player, esc_is_creature, Zone::GRAVEYARD)) continue;
+
+        LegalAction esc_la(CAST_SPELL, gy_entity, "Cast " + gcd.name + " (escape)");
+        esc_la.category = ActionCategory::CAST_SPELL;
+        esc_la.use_escape = true;
+        actions.push_back(esc_la);
+    }
     // CAST-FROM-GRAVEYARD PERMISSIONS (Emry's AB$ Effect): a card the priority player has
     // been granted permission to cast this turn (CR 601.3e). It is cast from the graveyard
     // for its normal cost, at the timing its type allows. Only the granting player may

@@ -138,15 +138,28 @@ int evaluate_sa_svar(const std::string &expr, Zone::Ownership controller, Entity
     }
 
     // Count$ValidGraveyard Card$CardTypes — count distinct card types (Creature, Instant, etc.)
-    // across both players' graveyards (Barrowgoyf)
+    // across both players' graveyards (Barrowgoyf). The Card.YouOwn variant (Nethergoyf) scopes
+    // the count to the controller's own graveyard only; we detect the YouOwn/YouCtrl restriction
+    // on the Card filter and, when present, skip cards owned by the other player. (CR 205.2 — the
+    // distinct card types among the matching cards.)
     if (expr == "Count$CardTypesInAllGraveyards" ||
-        expr == "Count$ValidGraveyard Card$CardTypes") {
+        expr == "Count$ValidGraveyard Card$CardTypes" ||
+        (expr.rfind("Count$ValidGraveyard Card", 0) == 0 &&
+         expr.find("$CardTypes") != std::string::npos)) {
+        // Restriction lives between "Card" and "$CardTypes" (e.g. ".YouOwn"); a YouOwn/YouCtrl
+        // restriction scopes the count to the controller's graveyard.
+        size_t card_pos = expr.find("Card");
+        size_t types_pos = expr.find("$CardTypes");
+        std::string restriction = expr.substr(card_pos + 4, types_pos - (card_pos + 4));
+        bool you_own = restriction.find("YouOwn") != std::string::npos ||
+                       restriction.find("YouCtrl") != std::string::npos;
         std::set<std::string> type_names;
         Entity max_e = global_coordinator.GetMaxIssuedEntity();
         for (Entity e = 0; e < max_e; ++e) {
             if (!global_coordinator.entity_has_component<Zone>(e)) continue;
             auto &z = global_coordinator.GetComponent<Zone>(e);
             if (z.location != Zone::GRAVEYARD) continue;
+            if (you_own && z.owner != controller) continue;
             if (!global_coordinator.entity_has_component<CardData>(e)) continue;
             auto &cd = global_coordinator.GetComponent<CardData>(e);
             for (auto &t : cd.types) {

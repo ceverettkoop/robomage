@@ -490,10 +490,14 @@ inline bool activation_condition_met(const Ability &ab, Zone::Ownership controll
     return false;
 }
 
-// Returns true when the given player has 4+ card types among cards in their graveyard.
-inline bool check_delirium(Zone::Ownership owner, const std::set<Entity> &entities) {
+// Distinct card types (CR 205.2) among cards in `owner`'s graveyard, excluding `except`
+// (pass 0 to count every card). Single source for delirium / Escape's ExileFromGrave
+// group-type constraint / any "card types in your graveyard" count over a live entity set.
+inline int graveyard_card_types(Zone::Ownership owner, const std::set<Entity> &entities,
+                                Entity except = 0) {
     std::set<std::string> type_names;
     for (auto entity : entities) {
+        if (entity == except) continue;
         if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
         auto &z = global_coordinator.GetComponent<Zone>(entity);
         if (z.location != Zone::GRAVEYARD || z.owner != owner) continue;
@@ -501,7 +505,12 @@ inline bool check_delirium(Zone::Ownership owner, const std::set<Entity> &entiti
         for (auto &t : global_coordinator.GetComponent<CardData>(entity).types)
             if (t.kind == TYPE) type_names.insert(t.name);
     }
-    return type_names.size() >= 4;
+    return static_cast<int>(type_names.size());
+}
+
+// Returns true when the given player has 4+ card types among cards in their graveyard.
+inline bool check_delirium(Zone::Ownership owner, const std::set<Entity> &entities) {
+    return graveyard_card_types(owner, entities) >= 4;
 }
 
 #endif /* GAME_QUERIES_H */

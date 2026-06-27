@@ -166,6 +166,23 @@ static void parse_alt_cost_tokens(const std::string& cost_str, AltCost& ac) {
         ac.return_to_hand_type = cost_str.substr(slash + 1, close - slash - 1);
         matched_special = true;
     }
+    // ExileFromGrave<X/<filter>/<label>> (Escape: Nethergoyf): exile any number of other
+    // cards from your graveyard, constrained so the chosen set collectively has at least N
+    // distinct card types. The "N" is encoded in the filter as "withTypesGE<N>" (CR 702.139).
+    size_t eg = cost_str.find("ExileFromGrave<");
+    if (eg != std::string::npos) {
+        size_t ge = cost_str.find("withTypesGE", eg);
+        if (ge != std::string::npos) {
+            size_t num_start = ge + strlen("withTypesGE");
+            size_t num_end = num_start;
+            while (num_end < cost_str.size() &&
+                   std::isdigit(static_cast<unsigned char>(cost_str[num_end])))
+                num_end++;
+            if (num_end > num_start)
+                ac.exile_grave_min_types = std::stoi(cost_str.substr(num_start, num_end - num_start));
+        }
+        matched_special = true;
+    }
     // No special cost token: the whole string is a mana cost (e.g. Evoke:R, Evoke:2 R)
     if (!matched_special && !cost_str.empty()) {
         ac.mana_cost = parse_mana_cost(cost_str);
@@ -571,6 +588,31 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             // flashback cost. Carry the sac filter so the cast path pays it.
             card.flashback_alt_cost.sac_cost_spec = fb.sac_cost_spec;
             card.keywords.push_back("Flashback");
+            continue;
+        }
+        // K:Escape:<mana> [<additional cost>] — cast this card from your graveyard for the
+        // escape cost (CR 702.139). The mana portion (e.g. "2 B") precedes any additional cost
+        // token (e.g. ExileFromGrave<.../withTypesGE4/...> for Nethergoyf). Mana is parsed from
+        // the leading mana symbols; the additional cost is parsed by the shared alt-cost grammar.
+        if (kw_line.rfind("Escape:", 0) == 0) {
+            std::string cost_str = kw_line.substr(strlen("Escape:"));
+            card.has_escape = true;
+            // The mana portion runs up to the first additional-cost keyword (ExileFromGrave/
+            // PayLife/Sac/Return...); take the substring before "ExileFromGrave" (the only
+            // additional cost currently in the vocab) as mana, the remainder as the alt cost.
+            std::string mana_part = cost_str;
+            std::string alt_part;
+            size_t eg = cost_str.find("ExileFromGrave");
+            if (eg != std::string::npos) {
+                mana_part = cost_str.substr(0, eg);
+                alt_part = cost_str.substr(eg);
+            }
+            // Trim trailing space from the mana part.
+            size_t mend = mana_part.find_last_not_of(' ');
+            mana_part = (mend == std::string::npos) ? "" : mana_part.substr(0, mend + 1);
+            if (!mana_part.empty()) card.escape_mana_cost = parse_mana_cost(mana_part);
+            if (!alt_part.empty()) parse_alt_cost_tokens(alt_part, card.escape_alt_cost);
+            card.keywords.push_back("Escape");
             continue;
         }
         // K:Evoke:<cost> — alternate cost; when paid, the creature sacrifices itself as it
