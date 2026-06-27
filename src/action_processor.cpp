@@ -50,8 +50,12 @@ static void assign_combat_damage(Game &game, std::shared_ptr<Orderer> orderer);
 static void trigger_ward_for_targets(Entity targeting_entity, Zone::Ownership controller,
                                      const std::vector<Entity> &targets,
                                      std::shared_ptr<Orderer> orderer);
+static void fire_became_target_events(Entity targeting_entity, Zone::Ownership controller,
+                                      const std::vector<Entity> &targets);
 static void pay_sacrifice_cost(Zone::Ownership caster, const std::string &spec, Entity spell_entity,
                                std::shared_ptr<Orderer> orderer);
+static void pay_exile_from_grave_cost(Zone::Ownership caster, int min_types, Entity spell_entity,
+                                      std::shared_ptr<Orderer> orderer);
 
 // entity_name() is shared from the StateManager TUs via state_manager_internal.h.
 // mana_symbol_str() is the canonical const-char* color symbol from classes/colors.h.
@@ -85,6 +89,45 @@ static void pay_sacrifice_cost(Zone::Ownership caster, const std::string &spec, 
     std::string sac_name = global_coordinator.GetComponent<Permanent>(to_sac).name;
     orderer->add_to_zone(false, to_sac, Zone::GRAVEYARD);
     game_log("%s sacrifices %s\n", player_name(caster).c_str(), sac_name.c_str());
+}
+
+// Pay an Escape ExileFromGrave additional cost (CR 702.139 / 601.2f): exile any number of
+// OTHER cards from the caster's graveyard until the exiled set collectively has at least
+// `min_types` distinct card types (CR 205.2). Presented as a choice loop over the caster's
+// other graveyard cards; the loop is mandatory (no "done" option) until the constraint is
+// met, after which casting proceeds. Cast legality already guaranteed enough types exist.
+static void pay_exile_from_grave_cost(Zone::Ownership caster, int min_types, Entity spell_entity,
+                                      std::shared_ptr<Orderer> orderer) {
+    if (min_types <= 0) return;
+    std::set<std::string> exiled_types;
+    while (static_cast<int>(exiled_types.size()) < min_types) {
+        // Gather the caster's remaining other graveyard cards as choices.
+        std::vector<Entity> choices;
+        for (auto e : orderer->mEntities) {
+            if (e == spell_entity) continue;
+            if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+            auto &z = global_coordinator.GetComponent<Zone>(e);
+            if (z.location != Zone::GRAVEYARD || z.owner != caster) continue;
+            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+            choices.push_back(e);
+        }
+        if (choices.empty()) break;  // defensive: legality guaranteed enough cards
+        std::vector<LegalAction> menu;
+        for (auto e : choices) {
+            std::string nm = global_coordinator.GetComponent<CardData>(e).name;
+            LegalAction la(PASS_PRIORITY, e, "Exile " + nm + " from graveyard");
+            la.category = ActionCategory::SACRIFICE_PERMANENT;
+            menu.push_back(la);
+        }
+        int choice = InputLogger::instance().get_input(menu);
+        Entity to_exile = menu[static_cast<size_t>(choice)].source_entity;
+        auto &cd = global_coordinator.GetComponent<CardData>(to_exile);
+        for (auto &t : cd.types)
+            if (t.kind == TYPE) exiled_types.insert(t.name);
+        std::string ename = cd.name;
+        orderer->add_to_zone(false, to_exile, Zone::EXILE);
+        game_log("%s exiles %s from their graveyard\n", player_name(caster).c_str(), ename.c_str());
+    }
 }
 
 // Pay the non-mana, non-tap activation costs shared by hand- and battlefield-
@@ -209,6 +252,13 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
     auto &permanent = global_coordinator.GetComponent<Permanent>(permanent_entity);
     Zone::Ownership controller = permanent.controller;
 
+    // Activation$ gate (CR 602.5): refuse to activate an ability whose "activate only if
+    // <condition>" gate (e.g. Mox Opal's Metalcraft) isn't met, so it can't be forced illegally.
+    if (!activation_condition_met(ability, controller, orderer->mEntities)) {
+        game_log("Activation condition not met.\n");
+        return;
+    }
+
     // InstantSpeed$ AddMana abilities (e.g. LED) are mana abilities too: they resolve off-stack.
     // The instant-speed timing restriction is enforced upstream (offered only at priority).
     bool is_mana_ability = (ability.category == "AddMana");
@@ -332,6 +382,9 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
             std::vector<Entity> tgts = stack_ab.targets.empty()
                 ? std::vector<Entity>{stack_ab.target} : stack_ab.targets;
             trigger_ward_for_targets(ability_stack_entity, controller, tgts, orderer);
+            // Mode$ BecomesTarget triggers (CR 603.2c) fire on abilities too; the per-trigger
+            // ValidSource$ filter (e.g. Reality Smasher's Spell.OppCtrl) gates out ability sources.
+            fire_became_target_events(ability_stack_entity, controller, tgts);
         }
 
         if (stack_ab.target != 0) {
@@ -640,6 +693,16 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
         }
     }
     if (!any) game_log("  (none)\n");
+
+    // "Whenever you attack" (Mode$ AttackersDeclared) — a player-level trigger that fires once
+    // when one or more attackers are declared (508.2), independent of how many. Guide of Souls.
+    if (any) {
+        Entity actrl_entity = (active_player == Zone::PLAYER_A)
+                              ? game.player_a_entity : game.player_b_entity;
+        Event declared_ev(Events::ATTACKERS_DECLARED);
+        declared_ev.SetParam(Params::PLAYER, actrl_entity);
+        global_coordinator.SendEvent(declared_ev);
+    }
 
     // Exalted: if exactly one creature is attacking, fire the event so triggers go on the stack
     int attacker_count = 0;
@@ -1007,6 +1070,32 @@ static void trigger_ward_for_targets(Entity targeting_entity, Zone::Ownership co
     }
 }
 
+// Mode$ BecomesTarget (CR 603.2c): a permanent's "Whenever ~ becomes the target of a spell ..."
+// triggered ability fires when a spell/ability with chosen targets is put on the stack. Called at
+// the same point as the Ward hook (right after the targeting object is placed on the stack). For
+// each target, emit a BECAME_TARGET event carrying the targeting object (ENTITY), its controller
+// (PLAYER), and the targeted permanent (TARGET). The trigger scan (state_manager_triggers) drains
+// these on the next SBA pass, matches each permanent's BecomesTarget trigger (ValidTarget$/
+// ValidSource$ filters), and places the resulting trigger ABOVE the still-resolving spell so it
+// resolves first. General: any becomes-target trigger reuses this; not special-cased to one card.
+// A permanent targeted multiple times by one spell fires its trigger once per time it became a
+// target (one event per (object, target) pair, matching the Ward "once per target" rule).
+static void fire_became_target_events(Entity targeting_entity, Zone::Ownership controller,
+                                      const std::vector<Entity> &targets) {
+    Entity ctrl_entity = get_player_entity(controller);
+    for (Entity tgt : targets) {
+        if (tgt == 0) continue;
+        // Only battlefield permanents can carry a BecomesTarget triggered ability (TriggerZones$
+        // Battlefield). A player or a stack object that was targeted never fires one.
+        if (!is_battlefield_permanent(tgt)) continue;
+        Event ev(Events::BECAME_TARGET);
+        ev.SetParam(Params::ENTITY, targeting_entity);
+        ev.SetParam(Params::PLAYER, ctrl_entity);
+        ev.SetParam(Params::TARGET, tgt);
+        global_coordinator.SendEvent(ev);
+    }
+}
+
 void process_action(const LegalAction &action, Game &game, std::shared_ptr<Orderer> orderer) {
     switch (action.type) {
         case PASS_PRIORITY:
@@ -1047,6 +1136,16 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             auto &card_data = global_coordinator.GetComponent<CardData>(spell_entity);
             Zone::Ownership caster = zone.owner;
 
+            // Record whether this spell is being cast from its caster's own hand (a normal
+            // CR 601 hand cast), so a permanent that later resolves onto the battlefield can
+            // tell it "was cast from your hand by you" (Amped Raptor's dig gate). One-shot:
+            // set here, consumed when the Permanent is created (state_manager_statics). Casts
+            // from graveyard/exile (flashback, impulse) clear it so they don't count.
+            if (zone.location == Zone::HAND && zone.owner == caster)
+                cur_game.cast_from_hand.insert(spell_entity);
+            else
+                cur_game.cast_from_hand.erase(spell_entity);
+
             // Snapshot mana state for rewind on payment failure
             auto mana_snap = snapshot_mana_state(caster, orderer);
 
@@ -1076,6 +1175,49 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                     pay_sacrifice_cost(caster, card_data.flashback_alt_cost.sac_cost_spec,
                                        spell_entity, orderer);
                 }
+
+            // ESCAPE COST (CR 702.139): cast from the graveyard for the escape cost — the
+            // escape mana cost plus the ExileFromGrave additional cost (exile other graveyard
+            // cards covering ≥N card types). The exile is a cost, paid as the spell is cast.
+            } else if (action.use_escape) {
+                if (!card_data.escape_mana_cost.empty()) {
+                    if (!prompt_mana_payment(caster, card_data.escape_mana_cost, spell_entity, orderer, false)) {
+                        restore_mana_state(caster, mana_snap, orderer);
+                        cur_game.payment_fail_counts[spell_entity]++;
+                        game_log("Payment cancelled.\n");
+                        break;
+                    }
+                }
+                if (card_data.escape_alt_cost.life_cost > 0) {
+                    auto &player = global_coordinator.GetComponent<Player>(get_player_entity(caster));
+                    player.life_total -= card_data.escape_alt_cost.life_cost;
+                    game_log("%s pays %d life\n", player_name(caster).c_str(), card_data.escape_alt_cost.life_cost);
+                }
+                if (card_data.escape_alt_cost.exile_grave_min_types > 0)
+                    pay_exile_from_grave_cost(caster, card_data.escape_alt_cost.exile_grave_min_types,
+                                              spell_entity, orderer);
+
+            // IMPULSE CAST (Amped Raptor's DB$ Play): cast from exile under a one-shot
+            // permission, paying its alternative RESOURCE cost (energy or life) instead of any
+            // mana (CR 707 / 118.9). The permission carries the resolved amount. Consumed here
+            // so it can't be reused. X spells cast this way count X = 0 (no X prompt).
+            } else if (action.impulse_cast) {
+                Entity caster_entity = (caster == Zone::PLAYER_A)
+                    ? cur_game.player_a_entity : cur_game.player_b_entity;
+                auto &player = global_coordinator.GetComponent<Player>(caster_entity);
+                auto it = cur_game.impulse_cast_permission.find(spell_entity);
+                if (it != cur_game.impulse_cast_permission.end()) {
+                    const auto &grant = it->second;
+                    if (grant.resource == Game::ImpulseCastPermission::ENERGY) {
+                        pay_energy(player, grant.amount);
+                        game_log("%s pays %d energy\n", player_name(caster).c_str(), grant.amount);
+                    } else {
+                        player.life_total -= grant.amount;
+                        game_log("%s pays %d life\n", player_name(caster).c_str(), grant.amount);
+                    }
+                    cur_game.impulse_cast_permission.erase(it);
+                }
+                if (card_data.has_x_cost) cur_game.x_paid = 0;
 
             // ALTERNATE COST
             } else if (action.use_alt_cost) {
@@ -1274,6 +1416,9 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                     std::vector<Entity> tgts = spell_ab.targets.empty()
                         ? std::vector<Entity>{spell_ab.target} : spell_ab.targets;
                     trigger_ward_for_targets(spell_entity, caster, tgts, orderer);
+                    // Mode$ BecomesTarget triggers (Reality Smasher): a targeted permanent whose
+                    // becomes-target trigger matches fires it above this spell (CR 603.2c/603.3).
+                    fire_became_target_events(spell_entity, caster, tgts);
                 }
             }
 

@@ -17,6 +17,9 @@ namespace Events {
     constexpr EventId COMBAT_DAMAGE_TO_PLAYER = 11; // creature dealt combat damage to a player; Params: ENTITY=source creature, PLAYER=damaged player entity, AMOUNT=damage
     constexpr EventId CREATURE_ATTACKED       = 12; // "whenever this creature attacks" — fired once per declared attacker; Params: ENTITY=attacker, PLAYER=controller
     constexpr EventId BEGIN_COMBAT_BEGAN      = 13; // "at the beginning of combat on your turn" / Phase$ BeginCombat; Params: PLAYER=active player
+    constexpr EventId ATTACKERS_DECLARED      = 14; // "whenever you attack" — fired once when one or more attackers are declared (Mode$ AttackersDeclared); Params: PLAYER=attacking (active) player
+    constexpr EventId TAPPED_FOR_MANA         = 15; // "whenever you tap a <permanent> for mana" (Mode$ TapsForMana). Static$ True triggers resolve immediately as a mana-additional effect (off-stack, CR 605.1a). Params: ENTITY=tapped source, PLAYER=controller who tapped it
+    constexpr EventId BECAME_TARGET           = 16; // "whenever ~ becomes the target of a spell" (Mode$ BecomesTarget). Fired once per (targeting object, targeted permanent) pair as a spell/ability with chosen targets is placed on the stack (CR 603.2c). Params: ENTITY=targeting spell/ability, PLAYER=its controller, TARGET=the permanent that became a target
 }
 
 // Param IDs used across events
@@ -27,6 +30,7 @@ namespace Params {
     constexpr ParamId DESTINATION = 4;  // Zone::ZoneValue after the move (CARD_CHANGED_ZONE)
     constexpr ParamId AMOUNT      = 5;  // Numeric amount (e.g. damage dealt)
     constexpr ParamId FIRST_IN_STEP = 6;  // 1 if a PLAYER_DREW_CARD is the first card drawn in the drawer's draw step, else 0
+    constexpr ParamId TARGET      = 7;  // The permanent that became a target (BECAME_TARGET), distinct from ENTITY (the targeting object)
 }
 
 #endif /* EVENTS_H */

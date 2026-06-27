@@ -196,6 +196,19 @@ inline bool is_colorless_entity(Entity e) {
     return false;
 }
 
+// True if a counter type names a keyword ability, so a counter of that type grants the
+// keyword to its permanent (CR 122.1d: keyword counters). The names match the keyword
+// strings the engine checks via creature_has_keyword (e.g. "Flying", "Trample"). Single
+// source so the keyword-counter rebuild and any future "remove keyword counter" share it.
+inline bool is_keyword_counter_type(const std::string &type) {
+    static const std::set<std::string> kKeywordCounters = {
+        "Flying", "First Strike", "Double Strike", "Deathtouch", "Haste", "Hexproof",
+        "Indestructible", "Lifelink", "Menace", "Reach", "Trample", "Vigilance",
+        "Shadow", "Skulk", "Fear", "Intimidate", "Horsemanship", "Infect", "Wither",
+        "Toxic", "Defender", "Flash", "Persist", "Undying", "Decayed"};
+    return kKeywordCounters.count(type) != 0;
+}
+
 // True if the type list (e.g. Permanent::types) carries the given top-level type.
 inline bool type_set_has(const std::set<Type> &types, const std::string &type_name) {
     for (const auto &t : types)
@@ -430,10 +443,61 @@ inline void player_gain_life(Entity player_entity, int32_t amount) {
     pl.life_gained_this_turn += amount;
 }
 
-// Returns true when the given player has 4+ card types among cards in their graveyard.
-inline bool check_delirium(Zone::Ownership owner, const std::set<Entity> &entities) {
+// ── Player energy ({E}, CR 122.1c) ──────────────────────────────────────────
+// Energy is stored as an "ENERGY" counter in Player::counters. These are the single
+// read/spend path so every energy producer/consumer (Guide of Souls, Wrath of the Skies,
+// Amped Raptor) agrees on the key and the "can't pay if insufficient" rule.
+
+// Amount of energy ({E}) the player currently has.
+inline int player_energy(const Player &pl) { return pl.counter_count("ENERGY"); }
+
+// Pay `n` energy from `pl` (CR 122.1c / 118.x — paying {E} is a cost). Returns false and
+// leaves the pool untouched if the player has fewer than `n`; otherwise deducts and returns
+// true. `n <= 0` is a trivially-payable no-op (returns true). Reusable by every "pay {E}"
+// cost / optional payment.
+inline bool pay_energy(Player &pl, int n) {
+    if (n <= 0) return true;
+    if (player_energy(pl) < n) return false;
+    pl.add_counters("ENERGY", -n);
+    return true;
+}
+
+// ── Activation conditions (CR 602.5 "activate only if …") ───────────────────
+// Named gates that make an activated ability illegal to activate unless the named
+// condition holds for its controller. Parsed from Activation$ <name>; evaluated at
+// activation-legality time (mana-source enumeration, non-mana activated enumeration,
+// and the action processor guard). Keep general: add a named condition + a case in
+// activation_condition_met() rather than special-casing one card.
+
+// Metalcraft (CR 702.46): the player controls three or more artifacts. The activating
+// permanent (e.g. Mox Opal itself, an artifact) is counted. Reusable by any Metalcraft card.
+inline bool controller_has_metalcraft(Zone::Ownership controller, const std::set<Entity> &entities) {
+    int artifacts = 0;
+    for (auto e : battlefield_permanents(entities, controller))
+        if (type_set_has(global_coordinator.GetComponent<Permanent>(e).types, "Artifact"))
+            if (++artifacts >= 3) return true;
+    return false;
+}
+
+// True if `ab`'s Activation$ gate (if any) is satisfied for `controller`. An ability with
+// no activation_condition is always allowed (returns true). Unknown condition names fail
+// closed (return false) so a misparsed gate never silently permits activation.
+inline bool activation_condition_met(const Ability &ab, Zone::Ownership controller,
+                                     const std::set<Entity> &entities) {
+    if (ab.activation_condition.empty()) return true;
+    if (ab.activation_condition == "Metalcraft")
+        return controller_has_metalcraft(controller, entities);
+    return false;
+}
+
+// Distinct card types (CR 205.2) among cards in `owner`'s graveyard, excluding `except`
+// (pass 0 to count every card). Single source for delirium / Escape's ExileFromGrave
+// group-type constraint / any "card types in your graveyard" count over a live entity set.
+inline int graveyard_card_types(Zone::Ownership owner, const std::set<Entity> &entities,
+                                Entity except = 0) {
     std::set<std::string> type_names;
     for (auto entity : entities) {
+        if (entity == except) continue;
         if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
         auto &z = global_coordinator.GetComponent<Zone>(entity);
         if (z.location != Zone::GRAVEYARD || z.owner != owner) continue;
@@ -441,7 +505,12 @@ inline bool check_delirium(Zone::Ownership owner, const std::set<Entity> &entiti
         for (auto &t : global_coordinator.GetComponent<CardData>(entity).types)
             if (t.kind == TYPE) type_names.insert(t.name);
     }
-    return type_names.size() >= 4;
+    return static_cast<int>(type_names.size());
+}
+
+// Returns true when the given player has 4+ card types among cards in their graveyard.
+inline bool check_delirium(Zone::Ownership owner, const std::set<Entity> &entities) {
+    return graveyard_card_types(owner, entities) >= 4;
 }
 
 #endif /* GAME_QUERIES_H */

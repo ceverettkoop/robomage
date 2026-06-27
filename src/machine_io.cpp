@@ -159,7 +159,7 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
     auto fill_player_stats = [&](PlayerState& ps, Entity ent) {
         auto& p = global_coordinator.GetComponent<Player>(ent);
         ps.life = p.life_total;
-        ps.poison_counters = static_cast<int>(p.poison_counters);
+        ps.poison_counters = p.counter_count("POISON");
         ps.lands_played_this_turn = static_cast<int>(p.lands_played_this_turn);
         int mana_counts[6] = {};
         for (Colors c : p.mana) {

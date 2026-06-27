@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include "classes/action.h"
+#include "components/zone.h"
 #include "gui_flags.h"
 
 class InputLogger {
@@ -33,5 +34,12 @@ class InputLogger {
     std::string log_path;
     int auto_pass_until_turn = -1;
 };
+
+// Ask `chooser` an optional yes/no question with a single decline (index 0) and accept
+// (index 1) action, both categorised OPTIONAL_YESNO. Returns true if they accept. Temporarily
+// points priority at the chooser so the decision is logged from their seat, then restores it.
+// Shared by every "you may ..." resolution-time confirmation (the OptionalDecider triggers,
+// the ImmediateTrigger optional cost, etc.) so the yes/no menu is built one way.
+bool request_optional_yesno(Zone::Ownership chooser, const std::string& prompt);
 
 #endif

@@ -32,7 +32,6 @@ Entity Game::gen_player(const Deck &deck) {
     Entity player_entity = global_coordinator.CreateEntity();
     Player player;
     player.life_total = 20;
-    player.poison_counters = 0;
     player.lands_played_this_turn = 0;
     global_coordinator.AddComponent(player_entity, player);
     return player_entity;
@@ -248,6 +247,8 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     revolt_player_b = false;
                     // "You may cast that card this turn" grants (Emry) expire at cleanup (601.3e).
                     may_cast_this_turn.clear();
+                    // Impulse-cast permissions (Amped Raptor) likewise last only "this turn".
+                    impulse_cast_permission.clear();
                     auto &player = global_coordinator.GetComponent<Player>(active_player_entity);
                     player.lands_played_this_turn = 0;
                     player.spells_cast_this_turn = 0;

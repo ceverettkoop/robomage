@@ -44,12 +44,31 @@ struct DamageParams {
 // DestroyAll (e.g. Meltdown). Filter spec like "Artifact.cmcLEX".
 struct DestroyAllParams {
     std::string filter = "";  // ValidCards$ — type/CMC filter for what to destroy
+    // Dynamic mana-value bound for a cmcLE<SVar> filter whose threshold is not the X paid at
+    // cast (the legacy cmcLEX path keys off cur_game.x_paid). Wrath of the Skies'
+    // "cmcLEY" (Y = Count$ChosenNumber) resolves here: cmc_expr is the runtime Count$
+    // expression and cmc_op the comparator ("LE"). Empty = no dynamic bound.
+    std::string cmc_expr = "";
+    std::string cmc_op = "";
+    // UnlessCost$ PayEnergy<N> | UnlessPayer$ You | UnlessSwitched$ True (Wrath of the Skies):
+    // the controller pays N energy ({E}); with UnlessSwitched the destroy happens ONLY IF the
+    // energy is paid. energy_unless_expr is the runtime Count$ expression for N (Count$ChosenNumber).
+    std::string energy_unless_expr = "";
+    bool energy_unless_switched = false;  // UnlessSwitched$ True — invert to "do only if paid"
 };
 
 // Token creation (e.g. Cori-Steel Cutter). TokenScript$ string parsed at resolve.
 struct TokenParams {
     std::string script = "";      // TokenScript$ e.g. "w_1_1_monk_prowess"
     bool owner_is_target = false;  // TokenOwner$ TargetedPlayer — tokens go to the targeted player
+    bool owner_is_remembered = false;  // TokenOwner$ RememberedOwner — the token is owned and
+                                       // controlled by the owner of the first remembered card
+                                       // (Skyclave Apparition: the exiled card's owner gets it)
+    // TokenPower$/TokenToughness$ as an SVar expression (e.g. Remembered$CardManaCost). Empty =
+    // use the token script's printed P/T; otherwise the created token enters as an X/X with X
+    // evaluated from this expression at creation time (Skyclave Apparition's MV-sized Illusion).
+    std::string power_expr = "";
+    std::string toughness_expr = "";
 };
 
 // PutCounter (e.g. Scythecat Cub landfall +1/+1). NOTE: this is the Ability
@@ -58,6 +77,15 @@ struct TokenParams {
 struct CounterParams {
     std::string type = "";          // CounterType$ — "P1P1" for +1/+1 counters
     int count = 0;                  // CounterNum$ — static count; 0 when dynamic
+    // CounterNum$ given as an SVar that resolves to a runtime Count$ expression (Wrath of the
+    // Skies: CounterNum$ X, X = Count$xPaid — the player gets X {E}). Empty = use the static
+    // count above; otherwise the count is evaluated at resolution from this Count$ expression.
+    std::string count_expr = "";
+    // Optional SECOND counter kind placed by the same effect (PutCounterAll on Guide of
+    // Souls: CounterType2$ Flying | CounterNum2$ 1 — also put a flying counter). Empty type2
+    // = no second counter.
+    std::string type2 = "";         // CounterType2$
+    int count2 = 0;                 // CounterNum2$
 };
 
 // Discard (e.g. Thoughtseize/Duress/Cabal Therapy).

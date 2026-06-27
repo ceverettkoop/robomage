@@ -56,6 +56,12 @@ struct DelayedTrigger {
     uint32_t fire_on;       // event ID (e.g. Events::UPKEEP_BEGAN)
     Entity owner_entity;    // player entity who controls it
     size_t fire_on_turn;    // game.turn value at which to fire (cur_game.turn + 1 at registration)
+    // "When THIS specific permanent leaves the battlefield" delayed trigger (CR 603.6e), set up
+    // by the earthbend resolution: fire_on is CARD_CHANGED_ZONE, and the trigger fires only when
+    // `watch_entity` is the card that left the battlefield (origin BATTLEFIELD). General over any
+    // "when X leaves, do Y" delayed trigger; 0 = not entity-watched (the phase-based default).
+    Entity watch_entity = 0;          // the specific permanent whose departure fires this trigger
+    bool fire_on_leave_battlefield = false;  // true: match watch_entity leaving the battlefield, not a phase
 };
 
 // Last-known information (CR 608.2h / 112.7a): a permanent's effective characteristics —
@@ -70,6 +76,10 @@ struct LastKnownInfo {
     std::vector<std::string> type_names;   // type/subtype/supertype names
     std::set<Colors> colors;               // effective colors
     Zone::Ownership controller = Zone::UNKNOWN;  // last controller (CR 608.2g): "that permanent's controller"
+    std::vector<Entity> exiled_with;       // Permanent::exiled_with snapshot — the cards this permanent
+                                           // had exiled, so a leaves-the-battlefield ability (Skyclave
+                                           // Apparition's TrigToken) can still find them after the
+                                           // Permanent component is stripped by the SBA pass.
 };
 
 enum MandatoryChoice {
@@ -134,12 +144,26 @@ struct Game {
         std::set<Entity> may_cast_this_turn;  // cards a permission effect (Emry's AB$ Effect) lets their owner cast from the graveyard this turn (CR 601.3e); cleared each cleanup
         std::set<Entity> chosen_cards;  // permanents chosen/kept by a ChooseCard effect (Ajani -4); read by SacrificeAll's nonChosenCard filter, cleared by Cleanup ClearChosenCard$
         std::string named_card = "";  // card name chosen by a resolving SP$/DB$ NameCard effect (CR 201.4, Cabal Therapy); read by a chained Card.NamedCard discard, cleared after the spell finishes resolving
+        int chosen_number = 0;  // integer chosen by a resolving DB$ ChooseNumber effect (Wrath of the Skies: "pay any amount of {E}"); read downstream via Count$ChosenNumber (e.g. the cmc bound and PayEnergy unless-cost of the chained DestroyAll)
         std::map<Entity, std::vector<std::string>> lk_battlefield_types;  // last-known type/subtype names of a permanent captured as it leaves the battlefield (603.10 look-back), so a "dies"/leaves trigger can match a token that has already ceased to exist by the time triggers are checked
         std::set<Entity> pending_enters_tapped;  // one-shot: a ChangeZone effect put this card onto the battlefield tapped; consumed when its Permanent is created
         std::set<Entity> pending_enters_transformed;  // one-shot: a ChangeZone effect (Transformed$ True) put this card onto the battlefield showing its DFC back face; consumed when its Permanent is created
         std::set<Entity> pending_evoked;  // one-shot: a spell cast for its evoke cost is resolving; consumed when its Permanent is created (sets Permanent::evoked)
         std::set<Entity> pending_offspring;  // one-shot: a spell cast with its Offspring additional cost is resolving; consumed when its Permanent is created (sets Permanent::entered_with_offspring)
         std::set<Entity> cast_to_battlefield;  // one-shot: a cast spell is resolving from the stack onto the battlefield (it "was cast", CR 614.12 / Containment Priest); consumed when its Permanent is created
+        std::set<Entity> cast_from_hand;  // one-shot: a spell now resolving onto the battlefield was cast from its controller's own hand (a normal CR 601 hand cast); consumed when its Permanent is created → Permanent::cast_from_hand_by_controller (Amped Raptor's Card.wasCastFromYourHandByYou gate)
+        // Impulse-cast permission (CR 707 "impulsive draw" / 118.9 alternative cost): a card a
+        // resolving DB$ Play effect (Amped Raptor) lets its controller cast from EXILE this turn,
+        // paying an alternative RESOURCE cost (energy or life) instead of its mana cost. Keyed by
+        // the card entity; cleared each cleanup. Generalizes the alt-cost-cast over the resource
+        // so the same path serves energy ({E}) and life (a future Bolas's Citadel "pay life =
+        // mana value"). The casting path reads this to compute the cost and skip mana payment.
+        struct ImpulseCastPermission {
+            enum Resource { ENERGY, LIFE } resource = ENERGY;
+            int amount = 0;            // resolved cost (e.g. the card's mana value)
+            Zone::Ownership caster = Zone::UNKNOWN;  // who may cast it (its controller)
+        };
+        std::map<Entity, ImpulseCastPermission> impulse_cast_permission;
         std::map<Entity, int> pending_etb_xpaid;  // one-shot: X paid for an X-cost permanent spell now resolving, used by an "enters with X counters" replacement (Chalice of the Void); consumed when its Permanent is created
 
         // Recent action history ring buffer for ML observation

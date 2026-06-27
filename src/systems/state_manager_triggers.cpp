@@ -19,6 +19,7 @@
 #include "../components/effect.h"
 #include "../components/permanent.h"
 #include "../components/player.h"
+#include "../components/spell.h"
 #include "../components/token.h"
 #include "../components/types.h"
 #include "../type_constants.h"
@@ -88,6 +89,18 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
             bool matched = false;
             for (const auto &ev : events) {
                 if (ev.GetType() != dt.fire_on) continue;
+                // Entity-watched "when THIS permanent leaves the battlefield" delayed trigger
+                // (CR 603.6e, the earthbend return-tapped trigger): match only the watched
+                // entity changing zone from the battlefield. Skip the phase/owner gating below,
+                // which is for the phase-based delayed triggers.
+                if (dt.fire_on_leave_battlefield) {
+                    if (ev.GetType() != Events::CARD_CHANGED_ZONE) continue;
+                    if (!ev.HasParam(Params::ENTITY)) continue;
+                    if (ev.GetParam<Entity>(Params::ENTITY) != dt.watch_entity) continue;
+                    if (ev.GetParam<Zone::ZoneValue>(Params::ORIGIN) != Zone::BATTLEFIELD) continue;
+                    matched = true;
+                    break;
+                }
                 if (dt.fire_on == Events::UPKEEP_BEGAN && game.turn < dt.fire_on_turn) continue;
                 // Owner check: only fire on the correct player's upkeep
                 if (ev.HasParam(Params::PLAYER) &&
@@ -137,6 +150,9 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
             for (const auto *src : ab_sources) {
             for (const auto &ab : *src) {
                 if (ab.ability_type != Ability::TRIGGERED) continue;
+                // Static$ True mana-additional triggers (Badgermole Cub's TapsForMana) never go
+                // on the stack — they resolve immediately inside the mana system (CR 605.1a).
+                if (ab.trigger_taps_for_mana_static) continue;
                 // A graveyard-functioning trigger (TriggerZones$ Graveyard, e.g. Arclight
                 // Phoenix's begin-combat return) functions ONLY while its source is in the
                 // graveyard — TriggerZones overrides the default battlefield functioning
@@ -147,8 +163,12 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                 // "another" check: skip if the event entity is the triggering permanent itself
                 if (ab.trigger_self_excluded && ev.HasParam(Params::ENTITY) &&
                     ev.GetParam<Entity>(Params::ENTITY) == entity) continue;
-                // Card.Self: only fire when the event entity is the triggering permanent itself
-                if (ab.trigger_only_self && ev.HasParam(Params::ENTITY) &&
+                // Card.Self: only fire when the event entity is the triggering permanent itself.
+                // BECAME_TARGET is exempt: there ENTITY is the targeting object (not the source),
+                // and ValidTarget$ Card.Self is matched against the TARGET param in the dedicated
+                // BECAME_TARGET block below instead.
+                if (ab.trigger_only_self && ev.GetType() != Events::BECAME_TARGET &&
+                    ev.HasParam(Params::ENTITY) &&
                     ev.GetParam<Entity>(Params::ENTITY) != entity) continue;
                 // Evoke self-sacrifice only fires when this permanent was cast via evoke
                 if (ab.is_evoke_sacrifice && !perm.evoked) continue;
@@ -309,11 +329,46 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                     if (!ok) continue;
                 }
 
+                // BECAME_TARGET filters (Reality Smasher): the trigger fires only for the
+                // permanent that became a target (TARGET == this source, i.e. ValidTarget$
+                // Card.Self, already enforced by trigger_only_self against ENTITY below is NOT
+                // applicable here because ENTITY is the targeting object, not the targeted
+                // permanent — so the self check is done explicitly against TARGET) and only when
+                // the targeting object is a spell controlled by an opponent (ValidSource$
+                // Spell.OppCtrl).
+                if (ev.GetType() == Events::BECAME_TARGET) {
+                    // ValidTarget$ Card.Self: the permanent that became a target must be this one.
+                    Entity targeted = ev.HasParam(Params::TARGET) ? ev.GetParam<Entity>(Params::TARGET) : 0;
+                    if (ab.trigger_only_self && targeted != entity) continue;
+                    Entity targeting = ev.HasParam(Params::ENTITY) ? ev.GetParam<Entity>(Params::ENTITY) : 0;
+                    // ValidSource$ Spell — the targeting object must be a spell on the stack.
+                    if (ab.trigger_source_must_be_spell &&
+                        !global_coordinator.entity_has_component<Spell>(targeting)) continue;
+                    // ValidSource$ ...OppCtrl — controlled by an opponent of this source's controller.
+                    if (ab.trigger_source_opp_ctrl && ev.HasParam(Params::PLAYER)) {
+                        Entity src_player = ev.GetParam<Entity>(Params::PLAYER);
+                        if (src_player == get_player_entity(perm.controller)) continue;
+                    }
+                }
+
                 // Prepare the triggered ability and queue it; APNAP placement (and any target
                 // selection) happens after the full scan, in place_triggers_apnap().
                 Ability trigger_ab = ab;
                 trigger_ab.source = entity;
                 trigger_ab.controller = perm.controller;
+                // Defined$ TriggeredSourceSA — the Counter effect acts on the spell that targeted
+                // this permanent. Bind it as the ability's target from the event's ENTITY (the
+                // targeting object). UnlessPayer$ TriggeredSourceSAController binds the payer of the
+                // unless-cost to that spell's controller (the opponent), captured from PLAYER.
+                if (ev.GetType() == Events::BECAME_TARGET) {
+                    if (trigger_ab.defined_triggered_source_sa && ev.HasParam(Params::ENTITY))
+                        trigger_ab.target = ev.GetParam<Entity>(Params::ENTITY);
+                    if (trigger_ab.unless_payer_is_triggered_source_sa_ctrl && ev.HasParam(Params::PLAYER)) {
+                        Entity src_player = ev.GetParam<Entity>(Params::PLAYER);
+                        trigger_ab.unless_payer = (src_player == get_player_entity(Zone::PLAYER_A))
+                                                  ? Zone::PLAYER_A : Zone::PLAYER_B;
+                    }
+                }
                 // Defined$ TriggeredSpellAbility — the effect (Counter) acts on the spell that
                 // fired this trigger. Capture it from the event as the ability's target.
                 if (trigger_ab.defined_triggered_spell && ev.HasParam(Params::ENTITY))
@@ -390,6 +445,17 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
             Ability trigger_ab = ab;
             trigger_ab.source = entity;
             trigger_ab.controller = ctrl;
+
+            // A leaves-the-battlefield ability that operates on the cards the source had exiled
+            // (Skyclave Apparition's TrigToken sizes/owns the Illusion by the exiled card, and
+            // gates on it still being exiled): the source has already left the battlefield, so its
+            // exiled_with list lives in the last-known-info snapshot captured at departure. Carry
+            // it onto the trigger so resolve() can restore the remembered set (CR 608.2h).
+            {
+                auto lki_it = game.last_known_info.find(entity);
+                if (lki_it != game.last_known_info.end() && !lki_it->second.exiled_with.empty())
+                    trigger_ab.restore_remembered_exiled_with = lki_it->second.exiled_with;
+            }
 
             PendingTrigger pt;
             pt.ab = trigger_ab;

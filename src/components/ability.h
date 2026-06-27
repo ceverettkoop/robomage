@@ -4,6 +4,7 @@
 #include "../classes/colors.h"
 #include "../ecs/entity.h"
 #include "ability_params.h"
+#include "types.h"
 #include "zone.h"
 #include <memory>
 #include <string>
@@ -47,6 +48,7 @@ struct Ability{
     bool tap_cost = false;              // {T} is part of the activation cost
     ManaValue activation_mana_cost;     // Mana that must be paid to activate
     int life_cost = 0;                  // PayLife<N> — life paid at activation
+    int energy_cost = 0;                // PayEnergy<N> — energy ({E}) paid as part of the cost (CR 122.1c)
     bool sac_self = false;              // Sac<1/CARDNAME> — sacrifice source permanent as cost
     std::string sac_cost_spec = "";     // Sac<1/Type;Type/> — type-based sac cost; empty = none
     // DB$ Sacrifice EFFECT (not a cost): sacrifice a chosen permanent you control matching
@@ -58,6 +60,14 @@ struct Ability{
     bool discard_hand_cost = false;     // Discard<0/Hand> — discard entire hand as activation cost (Lion's Eye Diamond)
     bool discard_self_cost = false;     // Discard<1/CARDNAME> — discard this card from hand as activation cost
     bool instant_speed = false;         // InstantSpeed$ True — activated ability that is NOT a mana ability; goes on stack
+    bool sorcery_speed_only = false;    // SorcerySpeed$ True — activated only as a sorcery (CR 605.x / earthbend); gated in the legal-action enumeration
+    // Activation$ <condition> — a named "activate only if <condition>" gate (CR 602.5). The
+    // ability is an illegal (not-offered, not-payable) activation unless the named condition
+    // holds for its controller at activation time. "Metalcraft" = you control 3+ artifacts
+    // (CR 702.46). General: future gated activations (Threshold, Delirium, …) add their name
+    // here and a case in activation_condition_met(). Empty = no activation gate.
+    std::string activation_condition = "";
+    bool tap_on_etb = false;            // ETB$ True on a DB$ Tap — taps Defined$ Self as it enters the battlefield
     int activation_limit = 0;           // ActivationLimit$ N — max activations per turn (0 = unlimited)
     // Loyalty abilities (planeswalkers). is_loyalty_ability is the load-bearing flag;
     // loyalty_cost == 0 is still a valid loyalty ability (e.g. Jace "0:" Brainstorm), so
@@ -95,6 +105,17 @@ struct Ability{
     bool may_shuffle = false;            // MayShuffle$ True — player may optionally shuffle after
     size_t unless_generic_cost = 0;      // UnlessCost$ N — target controller pays {N} to prevent counter
     bool unless_cost_is_life = false;    // when true, unless_generic_cost is paid as N life rather than {N} mana (Ward—Pay life, CR 702.21)
+    // UnlessCost$ Discard<N/Card> (Reality Smasher: "counter ... unless its controller discards a
+    // card"). The payer discards `unless_generic_cost` card(s) of their choice from hand to prevent
+    // the counter; if they can't (or decline) the spell is countered. General "counter unless
+    // discard" path (CR 701.8 discard); reuses the same run_unless_loop choice machinery.
+    bool unless_cost_is_discard = false;
+    // UnlessPayer$ TriggeredSourceSAController — the payer of the unless-cost is the controller of
+    // the triggering spell/ability (the opponent who targeted the permanent), NOT the trigger's own
+    // controller. Bound at trigger-fire time into unless_payer (UNKNOWN ⇒ default to the countered
+    // spell's controller, as Ward does). General for any "unless its controller pays/discards".
+    bool unless_payer_is_triggered_source_sa_ctrl = false;
+    Zone::Ownership unless_payer = Zone::UNKNOWN;  // resolved payer for the unless-cost; UNKNOWN ⇒ default
     std::string target_type = "";        // TargetType$ Spell — restricts targeting to stack spells
 
     // Delirium-conditional damage (Unholy Heat) now lives in DamageParams (params variant).
@@ -107,6 +128,13 @@ struct Ability{
     // N_A sentinel; the specific bools remain authoritative for their effects.
     std::string defined = "";
     bool defined_targeted_controller = false;  // Defined$ TargetedController — GainLife goes to target's controller
+    // Chooser$ You — for a search/move ChangeZone over a player's hidden zone, the SELECTION is
+    // made by the ability's controller, not the searched zone's owner. Thought-Knot Seer: the
+    // targeted opponent reveals their hand (DefinedPlayer$ Targeted routes the search to that
+    // opponent's hand) and YOU (the controller) choose which revealed nonland card to exile. The
+    // searched cards are already public (revealed), so the controller may see them when choosing.
+    // Default (false) = the zone's owner chooses (the normal tutor case).
+    bool chooser_is_controller = false;
     bool defined_self = false;                  // Defined$ Self — ability moves its own source
     bool defined_each_opponent = false;         // Defined$ Player.Opponent — effect applies to each opponent (no target)
     bool defined_you = false;                   // Defined$ You — effect's player is the source's controller (e.g. Ancient Tomb pain)
@@ -120,6 +148,14 @@ struct Ability{
     // The player who caused this triggered ability to fire (the triggering event's PLAYER).
     // Populated at trigger-fire time when defined_triggered_activator is set; UNKNOWN until then.
     Zone::Ownership triggered_activator = Zone::UNKNOWN;
+
+    // DB$ Animate (Guide of Souls): the Types$ list (classified into TYPE/SUBTYPE/SUPERTYPE
+    // at parse time) to add to the targeted permanent (e.g. "Angel"), and whether the grant
+    // is permanent (Duration$ Permanent). The Animate handler bakes these onto the target's
+    // Permanent so the layer system reapplies them. Only the type-add path is exercised today;
+    // base-P/T/keyword/creature extension points live on Permanent (see permanent.h).
+    std::vector<Type> animate_types;
+    bool animate_duration_permanent = false;
 
     // Filter naming which permanents a mass effect affects (DestroyAll / SacrificeAll /
     // PutCounterAll): the ValidCards$ spec, e.g. "Cat.YouCtrl" or
@@ -186,10 +222,25 @@ struct Ability{
     std::string trigger_cmc_expr = "";
     std::string trigger_cmc_op = "";
 
+    // Mode$ BecomesTarget | ValidSource$ Spell.OppCtrl (Reality Smasher): the trigger fires only
+    // when the targeting object is a SPELL controlled by an opponent of the source's controller
+    // ("a spell an opponent controls"). Matched at trigger-fire time against the targeting object
+    // (BECAME_TARGET event's ENTITY/PLAYER). ValidTarget$ Card.Self reuses trigger_only_self (the
+    // permanent that became a target must be this source). General over becomes-target triggers.
+    bool trigger_source_must_be_spell = false;    // ValidSource$ Spell — targeting object is a spell
+    bool trigger_source_opp_ctrl = false;         // ValidSource$ ...OppCtrl — controlled by an opponent of the source's controller
+
     // TriggerZones$ Graveyard (Arclight Phoenix): the triggered ability functions from
     // the graveyard, not the battlefield (CR 113.6 / 603.6). When set, the trigger scan
     // matches the source while it is in its owner's graveyard.
     bool trigger_from_graveyard = false;
+
+    // Mode$ TapsForMana | Static$ True (Badgermole Cub): "whenever you tap a creature for mana,
+    // add an additional {G}." A mana-additional triggered ability that resolves immediately as
+    // part of the mana tap (CR 605.1a) — it never uses the stack. Handled directly by the mana
+    // system, not the stack-trigger scan. The Execute$ SVar's AddMana effect lives in subabilities
+    // (the produced color/amount); ValidCard$ Creature gates which tapped source it watches.
+    bool trigger_taps_for_mana_static = false;
 
     // Token creation (Cori-Steel Cutter) now lives in TokenParams (params variant).
 
@@ -197,6 +248,12 @@ struct Ability{
     bool optional = false;           // Optional$ True — player may decline
     bool defined_remembered = false; // Defined$ Remembered — target is cur_game.remembered_entities[0]
     bool defined_triggered_spell = false; // Defined$ TriggeredSpellAbility — target is the spell that triggered this ability (Chalice of the Void counters it)
+    // Defined$ TriggeredSourceSA — target is the spell/ability that targeted the source (the
+    // "triggering source spell ability" of a Mode$ BecomesTarget trigger, Reality Smasher). Bound
+    // at trigger-fire time from the BECAME_TARGET event's ENTITY (the targeting object). The Counter
+    // effect counters that specific spell. Distinct from TriggeredSpellAbility (the spell whose cast
+    // fired a SpellCast trigger) — here the trigger is "became the target of", not "was cast".
+    bool defined_triggered_source_sa = false;
 
     // RepeatEach over players (Price of Progress): RepeatPlayers$ Player makes the effect
     // loop once per player, setting cur_game.remembered_entities to that player's entity
@@ -207,6 +264,14 @@ struct Ability{
     // Mill: remember milled cards in cur_game.remembered_entities
     bool remember_milled = false;    // RememberMilled$ True
     bool amount_from_damage = false; // NumCards$ DamageAmount — use trigger_damage_amount
+
+    // Leaves-the-battlefield ability that operates on the cards its source had exiled
+    // (Skyclave Apparition's TrigToken): the trigger-firing code snapshots the source's
+    // exiled_with here (from the live Permanent, or its last-known info if already stripped),
+    // and resolve() restores it into cur_game.remembered_entities so the body's
+    // Remembered$CardManaCost (token P/T), TokenOwner$ RememberedOwner, and
+    // ConditionPresent$ Card.ExiledWithSource gate all read the exiled card. Empty = no restore.
+    std::vector<Entity> restore_remembered_exiled_with;
 
     // Cleanup sub-ability
     bool clear_remembered = false;   // ClearRemembered$ True
@@ -250,6 +315,27 @@ struct Ability{
     int dig_library_position = -1;   // LibraryPosition$ — 0 = top, -1 = unset
     int dig_rest_library_position = -1;  // LibraryPosition2$ — where unchosen cards go: 0 = top, -1 = bottom (default)
 
+    // DB$ DigUntil (Amped Raptor): exile from the top of the library until a card matches
+    // change_valid (Valid$). dig_until_found_dest is where the matching card goes,
+    // dig_until_revealed_dest where the non-matching cards passed over go (both Exile for
+    // Amped Raptor). dig_until_remember_found stores the matching card in
+    // cur_game.remembered_entities (RememberFound$) for a chained DB$ Play.
+    int dig_until_found_dest = Zone::HAND;      // FoundDestination$ — zone the matching card goes to
+    int dig_until_revealed_dest = Zone::LIBRARY; // RevealedDestination$ — zone the skipped cards go to
+    bool dig_until_remember_found = false;       // RememberFound$ True
+
+    // DB$ Play (Amped Raptor): cast a Defined$ card from its current zone, paying an
+    // alternative RESOURCE cost (PlayCost$) instead of its mana cost. play_cost_resource is
+    // the resource paid (energy or life); play_cost_expr is the amount — either a literal int
+    // (as a string) or "ConvertedManaCost" (the cast card's mana value). play_valid_sa
+    // restricts to nonland spells (ValidSA$ Spell). The optionality is carried by
+    // optional_choice (Optional$ True). General over the resource so a future Bolas's Citadel
+    // ("pay life equal to mana value") reuses this path with play_cost_resource = LIFE.
+    enum PlayCostResource { PLAY_COST_ENERGY, PLAY_COST_LIFE };
+    PlayCostResource play_cost_resource = PLAY_COST_ENERGY;
+    std::string play_cost_expr = "";  // amount: "ConvertedManaCost" or a literal int string
+    bool play_valid_sa_spell = false; // ValidSA$ Spell — only a castable nonland spell
+
     // Conditional amount (Flow State): the effective count is `cond_amount_if_true`
     // when the summed runtime counts in `cond_amount_exprs` satisfy
     // `cond_amount_compare`, otherwise `amount` (the false/default value).
@@ -281,6 +367,12 @@ struct Ability{
     // permanents (Birthing Ritual: the dig only happens if a creature was sacrificed). Gated
     // at resolution in Ability::resolve(): on failure the body is skipped, subabilities chain.
     bool condition_on_remembered = false;
+    // ConditionDefined$ TriggeredCard — condition_present is a property check on the ability's
+    // SOURCE object (the card that triggered this ability), not a board-presence count. Used by
+    // ConditionPresent$ Card.wasCastFromYourHandByYou (Amped Raptor: the dig only happens if the
+    // creature that entered was cast from its controller's own hand). Gated at resolution in
+    // Ability::resolve(): on failure the body is skipped, subabilities still chain.
+    bool condition_on_triggered_card = false;
 
     // Intervening-if (rule 603.4) for a TRIGGERED ability: condition_present/condition_compare
     // are checked BOTH when the trigger would go on the stack (check_triggered_abilities) AND

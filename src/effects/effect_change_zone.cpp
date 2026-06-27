@@ -10,6 +10,7 @@
 #include "../components/ability.h"
 #include "../components/carddata.h"
 #include "../components/permanent.h"
+#include "../components/player.h"
 #include "../components/spell.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
@@ -74,6 +75,16 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
         if (tc != Zone::UNKNOWN) owner = tc;
     }
 
+    // DefinedPlayer$ Targeted with a chosen PLAYER target (Thought-Knot Seer: the sub-ability's
+    // target is the opponent the parent RevealHand targeted, bound by bind_sub_target). The
+    // searched/owning zone is that targeted player's, so a Hand search picks from THEIR hand. The
+    // targeted-move branch below is skipped because this sub-ability carries no target of its own
+    // (ValidTgts$ N_A); the bound ab.target is only used to name the searched player here.
+    if (ab.defined == "Targeted" && ab.target != 0 &&
+        global_coordinator.entity_has_component<Player>(ab.target)) {
+        owner = (ab.target == cur_game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
+    }
+
     const char *dest_str = ab.destination == Zone::BATTLEFIELD ? "the battlefield"
                            : ab.destination == Zone::LIBRARY   ? "top of library"
                            : ab.destination == Zone::GRAVEYARD ? "graveyard"
@@ -122,6 +133,10 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
                 global_coordinator.entity_has_component<Permanent>(ab.source)) {
                 global_coordinator.GetComponent<Permanent>(ab.source).exiled_with.push_back(tgt);
             }
+            // RememberChanged$ True (Skyclave Apparition's TrigExile): stash the moved card in
+            // the remembered set so a later SVar (Remembered$CardManaCost) and a paired
+            // leaves-the-battlefield ability (TrigToken sizing/owning the Illusion) can read it.
+            if (ab.remember_changed) cur_game.remembered_entities.push_back(tgt);
             if (landed == ab.destination)
                 game_log("%s is moved to %s\n", tname.c_str(), dest_str);
         }
@@ -133,6 +148,8 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
         std::string sname = global_coordinator.entity_has_component<CardData>(ab.source)
                                 ? global_coordinator.GetComponent<CardData>(ab.source).name
                                 : "<unknown>";
+        if (ab.enters_tapped && ab.destination == Zone::BATTLEFIELD)
+            cur_game.pending_enters_tapped.insert(ab.source);
         Zone::ZoneValue landed = change_zone_move(orderer, ab.source, ab.destination);
         if (landed == Zone::BATTLEFIELD)
             global_coordinator.GetComponent<Zone>(ab.source).controller = owner;
@@ -186,6 +203,18 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
     size_t num_to_move = (ab.amount > 0) ? ab.amount : 1;
     bool multi_zone = ab.origins.size() > 1;
     bool reveal = search_reveals_card(ab);
+
+    // Chooser$ You — the ability's controller makes the selection from `owner`'s zone (Thought-Knot
+    // Seer: you pick a nonland card from the targeted opponent's revealed hand to exile). Switch
+    // priority to the controller so the choice prompt is offered to them, not the searched player,
+    // and restore it after. The searched cards are public knowledge here (the hand was revealed by
+    // the parent RevealHand), so the picks carry card_is_public — flag reveal so the chosen card's
+    // identity is shown even into a hidden destination and recorded in the belief state.
+    bool prev_priority = cur_game.player_a_has_priority;
+    if (ab.chooser_is_controller) {
+        cur_game.player_a_has_priority = (ab.controller == Zone::PLAYER_A);
+        reveal = true;
+    }
 
     // Dynamic mana-value bound on the search filter (Aether Vial: "Creature.cmcEQX",
     // X = charge counters on this Aether Vial). Resolve against the ability's source so
@@ -245,6 +274,7 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
             break;
         }
     }
+    if (ab.chooser_is_controller) cur_game.player_a_has_priority = prev_priority;
     return true;
 }
 

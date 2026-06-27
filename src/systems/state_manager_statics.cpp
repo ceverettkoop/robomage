@@ -34,6 +34,7 @@
 #include "../systems/stack_manager.h"
 #include "replacement_effects.h"
 #include "continuous_effects.h"
+#include "../effects/effects.h"
 #include "orderer.h"
 
 int active_raise_cost_for(const CardData &card_data) {
@@ -241,6 +242,11 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                 // It was cast and is now becoming a real permanent — consume the one-shot
                 // "was cast" marker so a later non-cast re-entry isn't treated as a cast.
                 game.cast_to_battlefield.erase(entity);
+                // Likewise consume the "cast from your hand by you" marker and record it on
+                // the permanent (Amped Raptor's Card.wasCastFromYourHandByYou gate). Only a
+                // spell the controller cast from their own hand sets this; any other entry
+                // (reanimation, tokens, ChangeZone, impulse cast from exile) leaves it false.
+                if (game.cast_from_hand.erase(entity)) perm.cast_from_hand_by_controller = true;
                 if (perm.is_tapped) game_log("%s enters tapped.\n", perm.name.c_str());
                 // Spell was cast for its evoke cost — mark the permanent so its evoke
                 // self-sacrifice ETB trigger fires (consumed one-shot here).
@@ -318,6 +324,11 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
             if (is_land) {
                 apply_land_abilities(entity);
             }
+            // Earthbended land (DB$/AB$ Animate make_creature): an animated land is a creature
+            // even though is_creature_card(card) is false, so re-bootstrap its Creature/Damage
+            // components here if they were lost. Idempotent; honors the 0/0 base + Haste grant.
+            if (global_coordinator.GetComponent<Permanent>(entity).animate_make_creature)
+                effects::apply_animate_creature_bootstrap(entity);
             apply_keyword_abilities(entity);
 
             // A card moved here "transformed" (Ajani's exile-and-return) enters showing
@@ -579,6 +590,16 @@ static Ability keyword_triggered_ability(const std::string &keyword) {
 // sorted by timestamp (rule 613.7: later timestamp wins within the same layer).
 // Regenerates subtype-derived mana abilities after types are finalized.
 void StateManager::apply_type_changing_effects() {
+    // Layer 4 reapply of DB$ Animate "becomes ..." type grants (Guide of Souls). These are
+    // baked onto each permanent (animate_added_types) by the Animate effect rather than sourced
+    // from a battlefield static, so reassert them here every pass — survives any same-pass type
+    // reset (e.g. the land type-changer below) and the rest of the game.
+    for (auto entity : mEntities) {
+        if (!is_battlefield_permanent(entity)) continue;
+        auto &perm = global_coordinator.GetComponent<Permanent>(entity);
+        for (const auto &t : perm.animate_added_types) perm.types.insert(t);
+    }
+
     // Collect type-changing statics from the already-populated g_active_statics.
     struct TypeChanger {
         ActiveStatic *as;
@@ -707,6 +728,20 @@ void StateManager::gather_active_statics(Game &game) {
             for (const auto &kw : cr.eot_keywords) {
                 if (std::find(cr.keywords.begin(), cr.keywords.end(), kw) == cr.keywords.end())
                     cr.keywords.push_back(kw);
+            }
+            // Re-merge permanent keyword grants baked on by DB$ Animate (Duration$ Permanent),
+            // which also survive the per-pass base rebuild (these are NOT cleared at cleanup).
+            for (const auto &kw : perm.animate_added_keywords) {
+                if (std::find(cr.keywords.begin(), cr.keywords.end(), kw) == cr.keywords.end())
+                    cr.keywords.push_back(kw);
+            }
+            // Keyword counters (CR 122.1d / 702.x): a counter whose type names a keyword ability
+            // grants that keyword to the permanent for as long as the counter is present (Guide
+            // of Souls' flying counter ⇒ Flying). Reapplied each pass like other granted keywords.
+            for (const auto &kc : perm.counters) {
+                if (!is_keyword_counter_type(kc.first) || kc.second <= 0) continue;
+                if (std::find(cr.keywords.begin(), cr.keywords.end(), kc.first) == cr.keywords.end())
+                    cr.keywords.push_back(kc.first);
             }
         }
         if (perm.transformed) {

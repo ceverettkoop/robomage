@@ -239,3 +239,18 @@ int InputLogger::get_input(const std::vector<LegalAction> &actions) {
         return choice;
     }
 }
+
+bool request_optional_yesno(Zone::Ownership chooser, const std::string& prompt) {
+    std::vector<LegalAction> yn;
+    LegalAction decline(PASS_PRIORITY, std::string("Decline: ") + prompt);
+    decline.category = ActionCategory::OPTIONAL_YESNO;
+    yn.push_back(decline);
+    LegalAction accept(PASS_PRIORITY, std::string("Accept: ") + prompt);
+    accept.category = ActionCategory::OPTIONAL_YESNO;
+    yn.push_back(accept);
+    bool prev_priority = cur_game.player_a_has_priority;
+    cur_game.player_a_has_priority = (chooser == Zone::PLAYER_A);
+    int choice = InputLogger::instance().get_input(yn);
+    cur_game.player_a_has_priority = prev_priority;
+    return choice == 1;
+}

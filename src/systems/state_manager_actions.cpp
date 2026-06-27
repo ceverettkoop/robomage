@@ -175,8 +175,31 @@ bool evaluate_present_condition(const Ability &ab, Zone::Ownership caster, std::
 
     // ConditionDefined$ Remembered: count remembered cards, not battlefield permanents.
     if (ab.condition_on_remembered) {
+        // ConditionPresent$ Card.ExiledWithSource (Skyclave Apparition's TrigToken): only the
+        // remembered cards that are STILL exiled (currently in the exile zone) count. CR 707/the
+        // card's reminder text: when Skyclave leaves, the token is made only if the exiled card
+        // is still exiled — if it has already returned to another zone, no token (and a card that
+        // can't be found / is gone yields none either).
+        if (ab.condition_present == "Card.ExiledWithSource") {
+            size_t still_exiled = 0;
+            for (auto e : cur_game.remembered_entities) {
+                if (global_coordinator.entity_has_component<Zone>(e) &&
+                    global_coordinator.GetComponent<Zone>(e).location == Zone::EXILE)
+                    still_exiled++;
+            }
+            return compare_svar(static_cast<int>(still_exiled), compare);
+        }
         size_t count = cur_game.remembered_entities.size();
         return compare_svar(static_cast<int>(count), compare);
+    }
+
+    // ConditionPresent$ Card.wasCastFromYourHandByYou (Amped Raptor): the ability's source —
+    // the card that triggered it — must have entered the battlefield as a spell its controller
+    // cast from their own hand. Read the persisted flag off its Permanent (set when the
+    // permanent was created from a hand cast). A non-hand entry leaves the flag false.
+    if (ab.condition_present == "Card.wasCastFromYourHandByYou") {
+        return global_coordinator.entity_has_component<Permanent>(ab.source) &&
+               global_coordinator.GetComponent<Permanent>(ab.source).cast_from_hand_by_controller;
     }
 
     // IsPresent$ Card.Self: the source must itself be on the battlefield (Kappa Cannoneer's
@@ -507,6 +530,51 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         fb_la.use_flashback = true;
         actions.push_back(fb_la);
     }
+    // ESCAPE (CR 702.139): a card in its owner's graveyard may be cast from there for its
+    // escape cost (mana + additional cost). Same sorcery-speed timing flashback uses unless the
+    // card is an instant. Nethergoyf's additional cost is ExileFromGrave with a "≥N card types
+    // among the chosen cards" constraint, so the cast is only legal when OTHER cards in the
+    // caster's graveyard collectively cover those N types (otherwise the cost is unpayable).
+    for (auto gy_entity : orderer->mEntities) {
+        if (!global_coordinator.entity_has_component<Zone>(gy_entity)) continue;
+        auto &gz = global_coordinator.GetComponent<Zone>(gy_entity);
+        if (gz.location != Zone::GRAVEYARD || gz.owner != priority_player) continue;
+        if (!global_coordinator.entity_has_component<CardData>(gy_entity)) continue;
+        auto &gcd = global_coordinator.GetComponent<CardData>(gy_entity);
+        if (!gcd.has_escape) continue;
+
+        bool esc_is_creature = is_creature_card(gcd);
+        bool esc_is_instant = card_has_type(gcd, "Instant");
+        bool can_cast_now = esc_is_instant ||
+                            ((game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
+                             (game.player_a_turn == game.player_a_has_priority) && stack_empty);
+        if (!can_cast_now) continue;
+
+        // Spell-target legality (Nethergoyf has none, but keep general for future escape cards).
+        bool tgt_ok = true;
+        for (const auto &ab : gcd.abilities) {
+            if (ab.ability_type != Ability::SPELL) continue;
+            tgt_ok = has_legal_targets(ab, orderer);
+            break;
+        }
+        if (!tgt_ok) continue;
+
+        if (!can_pay_mana(priority_player, gcd.escape_mana_cost, gy_entity, orderer)) continue;
+
+        // ExileFromGrave group-type constraint: enough OTHER graveyard cards must be available
+        // to collectively reach the required number of distinct card types (CR 601.2f).
+        if (gcd.escape_alt_cost.exile_grave_min_types > 0 &&
+            graveyard_card_types(priority_player, orderer->mEntities, gy_entity) <
+                gcd.escape_alt_cost.exile_grave_min_types)
+            continue;
+
+        if (rules_mod::cast_prohibited(priority_player, esc_is_creature, Zone::GRAVEYARD)) continue;
+
+        LegalAction esc_la(CAST_SPELL, gy_entity, "Cast " + gcd.name + " (escape)");
+        esc_la.category = ActionCategory::CAST_SPELL;
+        esc_la.use_escape = true;
+        actions.push_back(esc_la);
+    }
     // CAST-FROM-GRAVEYARD PERMISSIONS (Emry's AB$ Effect): a card the priority player has
     // been granted permission to cast this turn (CR 601.3e). It is cast from the graveyard
     // for its normal cost, at the timing its type allows. Only the granting player may
@@ -547,6 +615,57 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         LegalAction gy_la(CAST_SPELL, gy_entity, "Cast " + gcd.name + " (from graveyard)");
         gy_la.category = ActionCategory::CAST_SPELL;
         actions.push_back(gy_la);
+    }
+    // IMPULSE-CAST PERMISSIONS (Amped Raptor's DB$ Play): a card exiled this turn that its
+    // controller may cast, paying an alternative RESOURCE cost (energy or life equal to its
+    // mana value) instead of its mana cost (CR 707 / 118.9). Cast from EXILE at the timing its
+    // type allows; only the granted player may cast it, and only if they can pay the resource.
+    for (const auto &[ex_entity, perm_grant] : cur_game.impulse_cast_permission) {
+        if (perm_grant.caster != priority_player) continue;
+        if (!global_coordinator.entity_has_component<Zone>(ex_entity)) continue;
+        auto &ez = global_coordinator.GetComponent<Zone>(ex_entity);
+        if (ez.location != Zone::EXILE) continue;  // must still be in exile
+        if (!global_coordinator.entity_has_component<CardData>(ex_entity)) continue;
+        auto &ecd = global_coordinator.GetComponent<CardData>(ex_entity);
+        if (is_land_card(ecd)) continue;  // lands aren't cast (601.1)
+
+        // Timing: instants / Flash cards anytime; everything else sorcery-speed.
+        bool can_cast_at_instant_speed = card_has_type(ecd, "Instant");
+        for (const auto &kw : ecd.keywords)
+            if (kw == "Flash") { can_cast_at_instant_speed = true; break; }
+        bool can_cast_now = can_cast_at_instant_speed ||
+            ((game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
+             (game.player_a_turn == game.player_a_has_priority) && stack_empty);
+        if (!can_cast_now) continue;
+
+        // Affordability of the alternative resource cost.
+        Entity pe = get_player_entity(priority_player);
+        if (!global_coordinator.entity_has_component<Player>(pe)) continue;
+        auto &ppl = global_coordinator.GetComponent<Player>(pe);
+        if (perm_grant.resource == Game::ImpulseCastPermission::ENERGY) {
+            if (player_energy(ppl) < perm_grant.amount) continue;
+        } else {  // LIFE — must be able to pay without the cost itself being lethal is not a
+                  // legality bar in MTG, but a player won't be forced; require enough life so
+                  // the optional cast is sensibly offered.
+            if (ppl.life_total < perm_grant.amount) continue;
+        }
+
+        // Any targeting requirement must have at least one legal target.
+        bool tgt_ok = true;
+        for (const auto &ab : ecd.abilities) {
+            if (ab.ability_type != Ability::SPELL) continue;
+            tgt_ok = has_legal_targets(ab, orderer);
+            break;
+        }
+        if (!tgt_ok) continue;
+
+        if (rules_mod::cast_prohibited(priority_player, is_creature_card(ecd), Zone::EXILE))
+            continue;
+
+        LegalAction imp_la(CAST_SPELL, ex_entity, "Cast " + ecd.name + " (impulse, alt cost)");
+        imp_la.category = ActionCategory::CAST_SPELL;
+        imp_la.impulse_cast = true;
+        actions.push_back(imp_la);
     }
     // checking permanents for activated abilities
     // mana abilities parsed last
@@ -608,6 +727,13 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 if (permanent.loyalty_ability_activated_this_turn) continue;
                 if (ab.loyalty_cost < 0 && get_counters(entity, "LOYALTY") < -ab.loyalty_cost) continue;
             }
+            // SorcerySpeed$ True (Ba Sing Se's earthbend): activatable only any time its
+            // controller could cast a sorcery (CR 605.x) — main phase, their turn, empty stack.
+            if (ab.sorcery_speed_only && !sorcery_speed) continue;
+            // Activation$ gate (CR 602.5): "activate only if <condition>" (e.g. Metalcraft) —
+            // illegal unless the controller meets the named condition. (Mana abilities take the
+            // same gate in collect_available_mana_sources; this covers non-mana gated activations.)
+            if (!activation_condition_met(ab, priority_player, orderer->mEntities)) continue;
             // todo handle this elswewhere, tapping check
             if (ab.tap_cost && permanent.is_tapped) continue;
             if (ab.tap_cost && permanent.has_summoning_sickness &&

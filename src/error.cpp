@@ -128,8 +128,8 @@ void dump_entity(Entity e) {
         auto &p = global_coordinator.GetComponent<Player>(e);
         fprintf(stderr, "  Player:\n");
         fprintf(stderr, "    life_total=%d\n", p.life_total);
-        fprintf(stderr, "    poison=%u  lands_played=%u\n",
-                p.poison_counters, p.lands_played_this_turn);
+        fprintf(stderr, "    poison=%d  lands_played=%u\n",
+                p.counter_count("POISON"), p.lands_played_this_turn);
         fprintf(stderr, "    spells_cast_turn=%zu  spells_cast_game=%zu\n",
                 p.spells_cast_this_turn, p.spells_cast_this_game);
         fprintf(stderr, "    mana_pool:");

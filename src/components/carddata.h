@@ -16,6 +16,7 @@
 struct AltCost {
     bool has_alt_cost = false;
     int life_cost = 0;
+    int energy_cost = 0;  // PayEnergy<N> — energy ({E}) paid as part of this cost (CR 122.1c)
     int exile_from_hand_count = 0;
     Colors exile_from_hand_color = NO_COLOR;  // color of card to exile (BLUE, GREEN, etc.)
     int return_to_hand_count = 0;
@@ -28,6 +29,10 @@ struct AltCost {
     bool condition_not_your_turn = false;  // Condition$ NotPlayerTurn
     bool is_evoke = false;              // K:Evoke — when paid, the permanent sacrifices itself on ETB
     std::string sac_cost_spec = "";     // Sac<N/Type> portion of an alt/flashback cost (e.g. "Creature" for Cabal Therapy's Flashback—Sacrifice a creature)
+    // ExileFromGrave<X/<filter>/<label>> — exile any number of OTHER cards from the caster's
+    // graveyard as an additional cost (CR 601.2f), constrained so the chosen set collectively
+    // has at least `exile_grave_min_types` distinct card types (Escape: Nethergoyf). 0 = no such cost.
+    int exile_grave_min_types = 0;
 };
 
 //this is the underlying card, not a permanent or spell
@@ -60,6 +65,9 @@ struct CardData{
     int dredge = 0;                      // K:Dredge:N — replace a draw by milling N and returning this from graveyard to hand
     ManaValue flashback_mana_cost;       // mana portion of flashback cost
     AltCost flashback_alt_cost;          // non-mana costs (e.g. PayLife<3> for Deep Analysis)
+    bool has_escape = false;             // K:Escape — cast from graveyard for the escape cost (CR 702.139)
+    ManaValue escape_mana_cost;          // mana portion of the escape cost (e.g. {2}{B})
+    AltCost escape_alt_cost;             // additional escape costs (e.g. ExileFromGrave group-type cost)
     bool is_equipment = false;           // has K:Equip line
     ManaValue equip_cost;                // parsed from K:Equip:cost
     bool has_offspring = false;          // K:Offspring:cost — optional additional cost (CR 702.171)

@@ -105,6 +105,10 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
         lki = LastKnownInfo{};
         lki.type_names = names;
         lki.controller = global_coordinator.GetComponent<Permanent>(target).controller;
+        // Snapshot the cards this permanent had exiled (CR 608.2h last-known info): a
+        // leaves-the-battlefield ability that creates a token sized/owned by an exiled card
+        // (Skyclave Apparition) still needs them after the Permanent component is stripped.
+        lki.exiled_with = global_coordinator.GetComponent<Permanent>(target).exiled_with;
         if (global_coordinator.entity_has_component<Creature>(target)) {
             auto &cr = global_coordinator.GetComponent<Creature>(target);
             lki.power = static_cast<int>(cr.power);

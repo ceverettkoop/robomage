@@ -38,9 +38,31 @@ struct Permanent {
     bool loyalty_ability_activated_this_turn = false;
     bool evoked = false;  // entered via its evoke alternate cost — fires the evoke sacrifice ETB trigger
     bool entered_with_offspring = false;  // cast with its Offspring additional cost paid — fires the offspring token-copy ETB trigger (CR 702.171)
+    // This permanent entered the battlefield as a spell its controller cast from their own
+    // hand (CR 601 — a normal hand cast). Read by the Card.wasCastFromYourHandByYou condition
+    // (Amped Raptor's dig-from-hand gate). Set when its Permanent is created from a spell that
+    // was cast from the hand; false for permanents put onto the battlefield any other way
+    // (reanimation, tokens, ChangeZone-to-battlefield, casts from exile/graveyard, etc.).
+    bool cast_from_hand_by_controller = false;
     std::string chosen_type = "";  // creature type chosen on ETB (Cavern of Souls)
     std::string chosen_name = "";  // card name chosen on ETB (Disruptor Flute) — keys Card.NamedCard statics
     std::vector<Entity> exiled_with;  // entities exiled by this permanent (for Keen-Eyed Curator)
+
+    // DB$ Animate | Duration$ Permanent (CR 613, the "becomes ..." continuous effects a
+    // resolved ability bakes onto a permanent for the rest of the game). Stored on the
+    // permanent itself (not as a battlefield-source static) because the source may leave;
+    // the layer pass reapplies them each SBE so they survive the per-pass rebuild:
+    //   * animate_added_types    — subtypes/types added in layer 4 (Guide of Souls: "Angel")
+    //   * animate_added_keywords — keywords granted in layer 6 (e.g. Haste, when a later card needs it)
+    // Extension points for the land-animation case (a later Earthbend card): set base P/T and
+    // add a Creature component to a noncreature permanent. animate_set_pt drives layer-7b base
+    // P/T; animate_make_creature requests the Creature-component bootstrap.
+    std::vector<Type> animate_added_types;
+    std::vector<std::string> animate_added_keywords;
+    bool animate_set_pt = false;   // (extension) an Animate set this permanent's base P/T
+    int animate_power = 0;         // (extension) base power Animate sets
+    int animate_toughness = 0;     // (extension) base toughness Animate sets
+    bool animate_make_creature = false;  // (extension) Animate turns a noncreature into a creature
 };
 
 #endif /* PERMANENT_H */
