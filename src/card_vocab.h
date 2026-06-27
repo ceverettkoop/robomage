@@ -127,6 +127,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Eiganjo, Seat of the Empire", 201},
     {"Canoptek Scarab Swarm", 202},
     {"Mox Amber", 203},
+    {"Alpha Deathclaw", 204},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);

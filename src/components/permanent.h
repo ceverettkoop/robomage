@@ -36,6 +36,13 @@ struct Permanent {
     // permanent has been activated this turn. The gate is per-permanent (across all its
     // loyalty abilities), not per-ability, so it can't reuse Ability::activations_this_turn.
     bool loyalty_ability_activated_this_turn = false;
+    // 701.37b: monstrous is a per-permanent designation with no rules meaning of its own — a
+    // marker the monstrosity action and "becomes monstrous" triggers identify. Once set it
+    // stays until the permanent leaves the battlefield (so it resets naturally when a new
+    // Permanent is created on re-entry). Internal state only — NOT exposed in the obs/state
+    // vector. Set by the Monstrosity$ resolution in effect_put_counter.cpp; read by the
+    // "NotMonstrous" activation gate (game_queries.h). Mutated nowhere else.
+    bool is_monstrous = false;
     bool evoked = false;  // entered via its evoke alternate cost — fires the evoke sacrifice ETB trigger
     bool entered_with_offspring = false;  // cast with its Offspring additional cost paid — fires the offspring token-copy ETB trigger (CR 702.171)
     // This permanent entered the battlefield as a spell its controller cast from their own

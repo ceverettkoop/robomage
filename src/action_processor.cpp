@@ -262,7 +262,7 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
 
     // Activation$ gate (CR 602.5): refuse to activate an ability whose "activate only if
     // <condition>" gate (e.g. Mox Opal's Metalcraft) isn't met, so it can't be forced illegally.
-    if (!activation_condition_met(ability, controller, orderer->mEntities)) {
+    if (!activation_condition_met(ability, controller, orderer->mEntities, permanent_entity)) {
         game_log("Activation condition not met.\n");
         return;
     }

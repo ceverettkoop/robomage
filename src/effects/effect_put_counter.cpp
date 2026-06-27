@@ -9,6 +9,7 @@
 #include "../components/permanent.h"
 #include "../components/player.h"
 #include "../ecs/coordinator.h"
+#include "../ecs/events.h"
 #include "../game_queries.h"
 
 extern Coordinator global_coordinator;
@@ -16,7 +17,31 @@ extern Game cur_game;
 
 namespace effects {
 
+// CR 701.37: a Monstrosity$ ability that resolves while its source isn't yet monstrous puts its
+// +1/+1 counters on the source, sets the monstrous designation, and fires BECAME_MONSTROUS (which
+// puts any "becomes monstrous" triggers on the stack). If the source is already monstrous (701.37a
+// — the activation gate normally prevents this), the whole ability does nothing. Returns true when
+// the counter placement should proceed, false when it must be skipped (already monstrous).
+static bool apply_monstrosity(Ability &ab) {
+    if (!global_coordinator.entity_has_component<Permanent>(ab.source)) return false;
+    auto &perm = global_coordinator.GetComponent<Permanent>(ab.source);
+    if (perm.is_monstrous) return false;  // 701.37a: monstrosity does nothing if already monstrous
+    perm.is_monstrous = true;
+    game_log("%s becomes monstrous.\n", perm.name.c_str());
+    Entity ctrl_entity =
+        (perm.controller == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
+    Event ev(Events::BECAME_MONSTROUS);
+    ev.SetParam(Params::ENTITY, ab.source);
+    ev.SetParam(Params::PLAYER, ctrl_entity);
+    global_coordinator.SendEvent(ev);
+    return true;
+}
+
 bool put_counter(Ability &ab, std::shared_ptr<Orderer> orderer) {
+    // Monstrosity$ (CR 701.37): set the monstrous designation + fire the event first, then fall
+    // through to place the N +1/+1 counters on the source via the normal counter path below. If
+    // already monstrous, the ability does nothing at all.
+    if (ab.is_monstrosity && !apply_monstrosity(ab)) return true;
     // Defined$ You — the counters go on the controlling PLAYER, not a permanent (CR 122.1c:
     // a player can have counters too, e.g. energy {E}, poison, experience). Guide of Souls'
     // "get {E}" puts an ENERGY counter on the source's controller.
@@ -108,6 +133,18 @@ bool parse_put_counter(Ability &ab, const std::string &key, const std::string &v
         return true;
     }
     if (key == "CounterNum2") { effect_params<CounterParams>(ab).count2 = std::stoi(value); return true; }
+    if (key == "Monstrosity") {
+        // Monstrosity$ N (CR 701.37): "Monstrosity N" = if this permanent isn't monstrous, put
+        // N +1/+1 counters on it and it becomes monstrous. Modeled as a self-targeting +1/+1
+        // PutCounter with a marker flag; the flag drives the became-monstrous side effects at
+        // resolution and installs the "activate only while not monstrous" gate (CR 701.37a).
+        auto &cp = effect_params<CounterParams>(ab);
+        cp.type = "P1P1";
+        cp.count = std::stoi(value);
+        ab.is_monstrosity = true;
+        ab.activation_condition = "NotMonstrous";
+        return true;
+    }
     return false;
 }
 

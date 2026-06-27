@@ -79,6 +79,13 @@ struct Ability{
     // (CR 702.46). General: future gated activations (Threshold, Delirium, …) add their name
     // here and a case in activation_condition_met(). Empty = no activation gate.
     std::string activation_condition = "";
+    // Monstrosity$ N on an AB$/DB$ PutCounter (CR 701.37): "Monstrosity N" = if this permanent
+    // isn't monstrous, put N +1/+1 counters on it and it becomes monstrous. Parsed by
+    // parse_put_counter into CounterParams (P1P1 / count N) plus this flag; the flag also installs
+    // the "NotMonstrous" activation gate so the ability is illegal once the source is monstrous.
+    // At resolution put_counter() places the counters, sets Permanent::is_monstrous, and fires the
+    // BECAME_MONSTROUS event (firing the BecomeMonstrous triggers). General over any Monstrosity card.
+    bool is_monstrosity = false;
     bool tap_on_etb = false;            // ETB$ True on a DB$ Tap — taps Defined$ Self as it enters the battlefield
     int activation_limit = 0;           // ActivationLimit$ N — max activations per turn (0 = unlimited)
     // Loyalty abilities (planeswalkers). is_loyalty_ability is the load-bearing flag;

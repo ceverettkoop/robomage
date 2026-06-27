@@ -261,7 +261,7 @@ static std::vector<std::pair<Entity, Ability>> collect_available_mana_sources(
             if (ab.instant_speed && !include_instant_speed) continue;
             // Activation$ gate (CR 602.5): e.g. Mox Opal's Metalcraft — illegal unless the
             // controller meets the named condition (here, controls 3+ artifacts).
-            if (!activation_condition_met(ab, player, orderer->mEntities)) continue;
+            if (!activation_condition_met(ab, player, orderer->mEntities, entity)) continue;
             if (ab.tap_cost && permanent.is_tapped) continue;
             if (ab.activation_limit > 0 && ab.activations_this_turn >= ab.activation_limit) continue;
             // Summoning sickness check for creatures with tap cost

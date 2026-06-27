@@ -1773,6 +1773,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
     bool mode_is_attackers_declared = false;
     bool mode_is_taps_for_mana = false;
     bool mode_is_becomes_target = false;
+    bool mode_is_become_monstrous = false;
     bool source_is_spell = false;
     bool source_opp_ctrl = false;
     bool valid_target_self = false;
@@ -1800,6 +1801,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
             else if (value == "AttackersDeclared") mode_is_attackers_declared = true;
             else if (value == "TapsForMana") mode_is_taps_for_mana = true;
             else if (value == "BecomesTarget") mode_is_becomes_target = true;
+            else if (value == "BecomeMonstrous") mode_is_become_monstrous = true;
         } else if (key == "ValidSource") {
             // Mode$ BecomesTarget | ValidSource$ Spell.OppCtrl — the targeting object must be a
             // SPELL (not an ability) controlled by an opponent of the source's controller.
@@ -2047,6 +2049,15 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
         ability.trigger_source_must_be_spell = source_is_spell;
         ability.trigger_source_opp_ctrl = source_opp_ctrl;
         if (valid_target_self) ability.trigger_only_self = true;
+    }
+
+    // "When CARDNAME becomes monstrous, ..." — Mode$ BecomeMonstrous (CR 701.37). Fired by the
+    // resolving Monstrosity$ ability (effect_put_counter.cpp) with ENTITY = the permanent that
+    // became monstrous, so ValidCard$ Card.Self reuses the standard trigger_only_self ENTITY check.
+    // TriggerZones$ Battlefield is the default functioning zone; no extra handling needed.
+    if (mode_is_become_monstrous) {
+        ability.trigger_on = Events::BECAME_MONSTROUS;
+        if (valid_card_self) ability.trigger_only_self = true;
     }
 
     // Resolve effect from Execute$ SVar

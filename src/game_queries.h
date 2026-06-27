@@ -507,13 +507,22 @@ inline bool controller_has_metalcraft(Zone::Ownership controller, const std::set
 }
 
 // True if `ab`'s Activation$ gate (if any) is satisfied for `controller`. An ability with
-// no activation_condition is always allowed (returns true). Unknown condition names fail
-// closed (return false) so a misparsed gate never silently permits activation.
+// no activation_condition is always allowed (returns true). `source` is the gated ability's
+// source permanent (needed by per-permanent gates like NotMonstrous; pass 0 if unknown).
+// Unknown condition names fail closed (return false) so a misparsed gate never silently
+// permits activation.
 inline bool activation_condition_met(const Ability &ab, Zone::Ownership controller,
-                                     const std::set<Entity> &entities) {
+                                     const std::set<Entity> &entities, Entity source = 0) {
     if (ab.activation_condition.empty()) return true;
     if (ab.activation_condition == "Metalcraft")
         return controller_has_metalcraft(controller, entities);
+    // NotMonstrous (CR 701.37a): a monstrosity ability is legal only while its source isn't
+    // already monstrous. Keyed on the source permanent's is_monstrous designation. Installed
+    // automatically by parse_put_counter for any Monstrosity$ ability.
+    if (ab.activation_condition == "NotMonstrous")
+        return source != 0 &&
+               global_coordinator.entity_has_component<Permanent>(source) &&
+               !global_coordinator.GetComponent<Permanent>(source).is_monstrous;
     return false;
 }
 

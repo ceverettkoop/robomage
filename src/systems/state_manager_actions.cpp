@@ -733,7 +733,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             // Activation$ gate (CR 602.5): "activate only if <condition>" (e.g. Metalcraft) —
             // illegal unless the controller meets the named condition. (Mana abilities take the
             // same gate in collect_available_mana_sources; this covers non-mana gated activations.)
-            if (!activation_condition_met(ab, priority_player, orderer->mEntities)) continue;
+            if (!activation_condition_met(ab, priority_player, orderer->mEntities, entity)) continue;
             // todo handle this elswewhere, tapping check
             if (ab.tap_cost && permanent.is_tapped) continue;
             if (ab.tap_cost && permanent.has_summoning_sickness &&
