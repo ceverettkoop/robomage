@@ -66,7 +66,9 @@ struct DiscardParams {
     // Mode$ — "RevealYouChoose" (default): target player reveals hand, the ability's
     // controller picks ONE matching card to discard (Thoughtseize/Duress). Empty is
     // treated as this default. "RevealDiscardAll": target player reveals hand and discards
-    // EVERY card matching `valid` (Cabal Therapy).
+    // EVERY card matching `valid` (Cabal Therapy). "Random": the target player discards
+    // NumCards$ cards chosen uniformly at random from their hand, no reveal, no choice by
+    // anyone (Hymn to Tourach); count clamped to hand size (CR 701.8e/f).
     std::string mode = "";
 };
 

@@ -1,5 +1,6 @@
 #include "effects.h"
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -58,6 +59,35 @@ bool discard(Ability &ab, std::shared_ptr<Orderer> orderer) {
         tgt_owner = (ab.target == cur_game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
     }
     std::vector<Entity> hand = orderer->get_hand(tgt_owner);
+
+    const DiscardParams *dp = std::get_if<DiscardParams>(&ab.params);
+    std::string discard_valid = dp ? dp->valid : std::string();
+    std::string mode = dp ? dp->mode : std::string();
+
+    // Random (Hymn to Tourach): the target player discards NumCards$ cards chosen uniformly at
+    // random from their hand — no reveal and no choice by any player (CR 701.8e/f). If the hand
+    // holds fewer cards than requested, discard them all. Uses the game's seeded RNG so replays
+    // are deterministic. This path runs before the hand is revealed because a random discard
+    // does not reveal the hand.
+    if (mode == "Random") {
+        size_t count = ab.amount;  // NumCards$ N (do not hardcode); 0 means none.
+        if (count > hand.size()) count = hand.size();
+        if (count == 0) {
+            game_log("No cards to discard at random.\n");
+            return true;
+        }
+        std::shuffle(hand.begin(), hand.end(), cur_game.gen);
+        for (size_t i = 0; i < count; ++i) {
+            Entity chosen = hand[i];
+            auto &cd = global_coordinator.GetComponent<CardData>(chosen);
+            game_log("%s discards %s at random\n", player_name(tgt_owner).c_str(), cd.name.c_str());
+            // The discarded card enters a public zone — record its identity in the belief state.
+            mark_card_revealed(chosen, tgt_owner);
+            orderer->add_to_zone(false, chosen, Zone::GRAVEYARD);
+        }
+        return true;
+    }
+
     game_log("%s reveals their hand:\n", player_name(tgt_owner).c_str());
     for (auto e : hand) {
         auto &cd = global_coordinator.GetComponent<CardData>(e);
@@ -68,9 +98,6 @@ bool discard(Ability &ab, std::shared_ptr<Orderer> orderer) {
     }
 
     // Filter by DiscardValid$ — "Card.nonLand", "Card.nonCreature+nonLand", "Card.NamedCard"
-    const DiscardParams *dp = std::get_if<DiscardParams>(&ab.params);
-    std::string discard_valid = dp ? dp->valid : std::string();
-    std::string mode = dp ? dp->mode : std::string();
     std::vector<Entity> valid;
     for (auto e : hand)
         if (discard_filter_matches(e, discard_valid)) valid.push_back(e);
@@ -116,7 +143,8 @@ bool parse_discard(Ability &ab, const std::string &key, const std::string &value
     if (key == "DiscardValid") { effect_params<DiscardParams>(ab).valid = value; return true; }
     // Discard Mode$ — only the discard modes are claimed here (other effects, e.g.
     // SetState's Mode$ Transform, use the same key with a different meaning).
-    if (key == "Mode" && (value == "RevealYouChoose" || value == "RevealDiscardAll")) {
+    if (key == "Mode" &&
+        (value == "RevealYouChoose" || value == "RevealDiscardAll" || value == "Random")) {
         effect_params<DiscardParams>(ab).mode = value;
         return true;
     }
