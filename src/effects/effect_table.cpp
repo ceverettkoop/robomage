@@ -24,6 +24,7 @@ EffectHandler handler_for(EffectKind kind) {
         case EffectKind::Attach:          return &attach;
         case EffectKind::ChooseCard:      return &choose_card;
         case EffectKind::DestroyAll:      return &destroy_all;
+        case EffectKind::DamageAll:       return &damage_all;
         case EffectKind::Destroy:         return &destroy;
         case EffectKind::Token:           return &token;
         case EffectKind::Surveil:         return &surveil;

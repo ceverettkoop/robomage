@@ -35,6 +35,7 @@ enum class EffectKind {
     Untap,
     Destroy,
     DestroyAll,
+    DamageAll,
     Counter,
     Surveil,
     Scry,

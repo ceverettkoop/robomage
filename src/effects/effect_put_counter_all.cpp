@@ -63,6 +63,12 @@ bool permanent_matches_cards_filter(Entity e, const std::string &spec,
         else if (q == "Black") { if (!perm_is_color(e, BLACK)) return false; }
         else if (q == "Red")   { if (!perm_is_color(e, RED))   return false; }
         else if (q == "Green") { if (!perm_is_color(e, GREEN)) return false; }
+        // Generic non<Type> negation (e.g. nonArtifact, nonCreature): exclude any
+        // permanent that carries that type/subtype. The specific "nonLand"/"nonToken"
+        // cases above keep their existing handling; this covers every other type name.
+        else if (q.size() > 3 && q.compare(0, 3, "non") == 0) {
+            if (permanent_has_type(perm, q.substr(3))) return false;
+        }
         else return false;  // unknown qualifier: fail closed so a mass effect never over-selects
     }
     return true;
