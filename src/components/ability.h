@@ -35,6 +35,12 @@ struct Ability{
     size_t amount = 0;
     Colors color = NO_COLOR; //for mana ability
     std::vector<Colors> mana_choices;   // Produced$ Combo or Any — ordered list of selectable mana colors
+    // AB$ ManaReflected (Mox Amber): a mana ability whose producible colors are the UNION of the
+    // colors of the permanents matching this filter (Valid$, controller-scoped). The set is
+    // computed dynamically at mana-source enumeration from the live board (each matching
+    // permanent's effective_colors), then expanded into per-color choices like mana_choices.
+    // Empty = not a reflected-mana ability. CR 605 / "mana of any color among …".
+    std::string reflected_mana_filter = "";
     bool restrict_to_chosen_type_creature = false;  // RestrictValid$ Spell.Creature+ChosenType
     bool restrict_to_creature = false;               // RestrictValid$ Spell.Creature (any creature spell)
     bool restrict_to_colorless_eldrazi = false;      // RestrictValid$ Spell.Eldrazi+Colorless (Eldrazi Temple)

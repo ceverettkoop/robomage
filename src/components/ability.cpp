@@ -57,6 +57,7 @@ bool Ability::identical_activated_ability(const Ability &other) {
     if (other.destination != this->destination) return false;
     if (other.color != this->color) return false;
     if (other.mana_choices != this->mana_choices) return false;
+    if (other.reflected_mana_filter != this->reflected_mana_filter) return false;
     if (other.restrict_to_chosen_type_creature != this->restrict_to_chosen_type_creature) return false;
     if (other.restrict_to_creature != this->restrict_to_creature) return false;
     if (other.adds_no_counter != this->adds_no_counter) return false;

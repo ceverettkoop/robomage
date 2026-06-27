@@ -19,6 +19,13 @@ struct Ability;
 // Get player entity from ownership
 Entity get_player_entity(Zone::Ownership player);
 
+// True if `ab` is a mana ability (CR 605): one that adds mana and resolves at activation
+// without using the stack. Covers the ordinary AddMana producers AND AB$ ManaReflected
+// (Mox Amber), whose producible colors are computed dynamically. Single source so every
+// "is this a mana ability?" gate (action processor, legal-action enumeration, mana-source
+// collection) classifies ManaReflected consistently and none push it onto the stack.
+bool ability_is_mana(const Ability &ab);
+
 // Bump the per-turn activation counter for the ability on `perm` that matches `ability`,
 // if that ability is activation-limited (no-op when activation_limit == 0). Mana abilities
 // (category "AddMana") are keyed by tap-cost + color, since one permanent can expose several

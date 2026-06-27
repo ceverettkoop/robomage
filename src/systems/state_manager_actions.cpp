@@ -756,9 +756,10 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             if (!ab.return_cost_type.empty() &&
                 controlled_permanents_matching(priority_player, ab.return_cost_type, orderer->mEntities).empty())
                 continue;
-            if (ab.category == "AddMana") {
-                // All mana abilities — including InstantSpeed$ ones (e.g. LED) — are collected
-                // via collect_mana_legal_actions above and resolve off-stack. None go on the stack.
+            if (ability_is_mana(ab)) {
+                // All mana abilities — including InstantSpeed$ ones (e.g. LED) and AB$
+                // ManaReflected (Mox Amber) — are collected via collect_mana_legal_actions above
+                // and resolve off-stack. None go on the stack.
                 continue;
             } else {
                 // Non-mana activated ability (e.g. ChangeZone for fetch lands, Destroy for Wasteland).

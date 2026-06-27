@@ -210,6 +210,37 @@ static bool mana_source_usable_for(const Ability &ab, Entity source_entity, Enti
     return true;
 }
 
+bool ability_is_mana(const Ability &ab) {
+    if (ab.ability_type != Ability::ACTIVATED) return false;
+    return ab.category == "AddMana" || ab.category == "ManaReflected";
+}
+
+// The producible color set of an AB$ ManaReflected ability (Mox Amber): the UNION of the
+// effective colors of every battlefield permanent (controlled by `player`) that matches the
+// ability's Valid$ filter (ReflectProperty$ Is — reflect the colors those permanents are).
+// Colorless contributes no color (CR 105.2c), so a colorless-only board yields an empty set
+// and the source produces nothing. Returned in WUBRG order for a stable choice menu.
+static std::vector<Colors> reflected_color_set(const Ability &ab, Zone::Ownership player,
+                                               std::shared_ptr<Orderer> orderer) {
+    std::set<Colors> colors;
+    MatchCtx ctx;
+    ctx.controller = player;
+    // ManaReflected's Valid$ lists its alternatives comma-separated (Forge Valid$ convention),
+    // whereas permanent_matches_filter ORs on ';'. Normalize commas to ';' so each alternative
+    // (legendary creature / legendary planeswalker) is matched independently.
+    std::string filter = ab.reflected_mana_filter;
+    for (char &ch : filter)
+        if (ch == ',') ch = ';';
+    for (auto entity : battlefield_permanents(orderer->mEntities, player)) {
+        if (!permanent_matches_filter(entity, filter, ctx)) continue;
+        for (Colors c : effective_colors(entity)) colors.insert(c);
+    }
+    std::vector<Colors> ordered;
+    for (Colors c : {WHITE, BLUE, BLACK, RED, GREEN})
+        if (colors.count(c)) ordered.push_back(c);
+    return ordered;
+}
+
 // Collect all mana abilities a player could activate.
 // Checks physical activation requirements (untapped, controller, phased out, CantBeActivated,
 // summoning sickness, activation limits) but NOT activation_mana_cost — callers handle that
@@ -223,8 +254,7 @@ static std::vector<std::pair<Entity, Ability>> collect_available_mana_sources(
         if (rules_mod::mana_activation_prohibited(entity)) continue;
 
         for (const auto &ab : permanent.abilities) {
-            if (ab.category != "AddMana") continue;
-            if (ab.ability_type != Ability::ACTIVATED) continue;
+            if (!ability_is_mana(ab)) continue;
             // InstantSpeed$ mana abilities (e.g. LED) may only be activated at priority, not
             // mid-cost-payment. Callers listing actions for a player who holds priority pass
             // include_instant_speed; the affordability/payment callers leave it false.
@@ -243,7 +273,17 @@ static std::vector<std::pair<Entity, Ability>> collect_available_mana_sources(
                     if (kw == "Haste") { has_haste = true; break; }
                 if (!has_haste) continue;
             }
-            if (!ab.mana_choices.empty()) {
+            // AB$ ManaReflected (Mox Amber): producible colors are the union of the colors of
+            // the Valid$-matching permanents you control, computed live. Expand into per-color
+            // choices like mana_choices. An empty set (no/colorless legendaries) makes the
+            // ability produce nothing, so it is not offered as a usable mana source.
+            if (!ab.reflected_mana_filter.empty()) {
+                for (Colors choice_color : reflected_color_set(ab, player, orderer)) {
+                    Ability choice_ab = ab;
+                    choice_ab.color = choice_color;
+                    sources.push_back({entity, choice_ab});
+                }
+            } else if (!ab.mana_choices.empty()) {
                 for (Colors choice_color : ab.mana_choices) {
                     Ability choice_ab = ab;
                     choice_ab.color = choice_color;
