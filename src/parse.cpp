@@ -1020,6 +1020,12 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         // this turn") — store the filter spec the same place ValidCards$ writes it, so the
         // effect can scan the battlefield for matches.
         else if (value.rfind("Valid ", 0) == 0) ability.valid_cards_filter = value.substr(6);
+    } else if (key == "Chooser") {
+        // Chooser$ You on a search/move ChangeZone over another player's hidden zone: the
+        // ABILITY'S CONTROLLER makes the selection, not the searched zone's owner (Thought-Knot
+        // Seer — you choose a nonland card from the targeted opponent's revealed hand to exile).
+        // Any other Chooser value (e.g. the sameName cosmetic) leaves the zone owner choosing.
+        ability.chooser_is_controller = (value == "You");
     } else if (key == "Condition" && value == "Blessing") {
         ability.condition_city_blessing = true;  // CopyPermanent gated on the city's blessing
     } else if (key == "RememberTargets") {
@@ -1146,9 +1152,10 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
             // sameName search/move (Surgical Extraction, Extirpate, ...): these refine who
             // chooses or how the search is hidden, but the change_zone_same_name handler
             // already derives the full behavior from ChangeType/Origin/Destination/Defined.
-            // Shuffle$ is inferred from a Library origin; Chooser/Hidden/ForgetOtherTargets
-            // are cosmetic given the "move the maximum" simplification.
-            "Chooser", "Hidden", "Shuffle", "ForgetOtherTargets", "RememberRevealed",
+            // Shuffle$ is inferred from a Library origin; Hidden/ForgetOtherTargets are cosmetic
+            // given the "move the maximum" simplification. (Chooser$ is parsed above into
+            // chooser_is_controller — the search-based ChangeZone honors Chooser$ You.)
+            "Hidden", "Shuffle", "ForgetOtherTargets", "RememberRevealed",
             // ChooseCard ChooseEach (Ajani -4): the per-type breakdown is the load-bearing
             // ChooseEach$; Choices$ (the umbrella pool), ControlledByPlayer$ Chooser, and
             // Reveal$ are captured by / cosmetic to the choose_each handler.

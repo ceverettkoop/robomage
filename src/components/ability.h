@@ -128,6 +128,13 @@ struct Ability{
     // N_A sentinel; the specific bools remain authoritative for their effects.
     std::string defined = "";
     bool defined_targeted_controller = false;  // Defined$ TargetedController — GainLife goes to target's controller
+    // Chooser$ You — for a search/move ChangeZone over a player's hidden zone, the SELECTION is
+    // made by the ability's controller, not the searched zone's owner. Thought-Knot Seer: the
+    // targeted opponent reveals their hand (DefinedPlayer$ Targeted routes the search to that
+    // opponent's hand) and YOU (the controller) choose which revealed nonland card to exile. The
+    // searched cards are already public (revealed), so the controller may see them when choosing.
+    // Default (false) = the zone's owner chooses (the normal tutor case).
+    bool chooser_is_controller = false;
     bool defined_self = false;                  // Defined$ Self — ability moves its own source
     bool defined_each_opponent = false;         // Defined$ Player.Opponent — effect applies to each opponent (no target)
     bool defined_you = false;                   // Defined$ You — effect's player is the source's controller (e.g. Ancient Tomb pain)

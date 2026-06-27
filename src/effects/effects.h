@@ -67,6 +67,10 @@ bool discard(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool pump(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool reveal(Ability &ab, std::shared_ptr<Orderer> orderer);
+// DB$ RevealHand (Thought-Knot Seer): the targeted player (ValidTgts$ Opponent) reveals their
+// hand to all players (CR 701.16) — logged and recorded in the belief state. General over
+// Duress/Thoughtseize-style "target player reveals their hand". See effect_reveal_hand.cpp.
+bool reveal_hand(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool dig(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool sylvan_library(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool amass(Ability &ab, std::shared_ptr<Orderer> orderer);

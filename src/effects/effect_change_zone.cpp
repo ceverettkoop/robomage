@@ -10,6 +10,7 @@
 #include "../components/ability.h"
 #include "../components/carddata.h"
 #include "../components/permanent.h"
+#include "../components/player.h"
 #include "../components/spell.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
@@ -72,6 +73,16 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
     if (ab.defined_targeted_controller && ab.target != 0) {
         Zone::Ownership tc = last_known_controller(ab.target);  // CR 608.2g/h, robust to post-move reads
         if (tc != Zone::UNKNOWN) owner = tc;
+    }
+
+    // DefinedPlayer$ Targeted with a chosen PLAYER target (Thought-Knot Seer: the sub-ability's
+    // target is the opponent the parent RevealHand targeted, bound by bind_sub_target). The
+    // searched/owning zone is that targeted player's, so a Hand search picks from THEIR hand. The
+    // targeted-move branch below is skipped because this sub-ability carries no target of its own
+    // (ValidTgts$ N_A); the bound ab.target is only used to name the searched player here.
+    if (ab.defined == "Targeted" && ab.target != 0 &&
+        global_coordinator.entity_has_component<Player>(ab.target)) {
+        owner = (ab.target == cur_game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
     }
 
     const char *dest_str = ab.destination == Zone::BATTLEFIELD ? "the battlefield"
@@ -189,6 +200,18 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
     bool multi_zone = ab.origins.size() > 1;
     bool reveal = search_reveals_card(ab);
 
+    // Chooser$ You — the ability's controller makes the selection from `owner`'s zone (Thought-Knot
+    // Seer: you pick a nonland card from the targeted opponent's revealed hand to exile). Switch
+    // priority to the controller so the choice prompt is offered to them, not the searched player,
+    // and restore it after. The searched cards are public knowledge here (the hand was revealed by
+    // the parent RevealHand), so the picks carry card_is_public — flag reveal so the chosen card's
+    // identity is shown even into a hidden destination and recorded in the belief state.
+    bool prev_priority = cur_game.player_a_has_priority;
+    if (ab.chooser_is_controller) {
+        cur_game.player_a_has_priority = (ab.controller == Zone::PLAYER_A);
+        reveal = true;
+    }
+
     // Dynamic mana-value bound on the search filter (Aether Vial: "Creature.cmcEQX",
     // X = charge counters on this Aether Vial). Resolve against the ability's source so
     // the hand search only offers creatures of the matching mana value (CR 122.1).
@@ -247,6 +270,7 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
             break;
         }
     }
+    if (ab.chooser_is_controller) cur_game.player_a_has_priority = prev_priority;
     return true;
 }
 

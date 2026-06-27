@@ -85,6 +85,11 @@ EffectKind effect_kind_from_string(const std::string &category) {
         // path is handled by the ENTERS_TAPPED replacement, so this resolve handler covers the
         // generic "tap target/Self" case. See effect_tap.cpp.
         {"Tap", EffectKind::Tap},
+        // DB$ RevealHand (Thought-Knot Seer, Duress/Thoughtseize-style): the targeted player
+        // (ValidTgts$ Opponent) reveals their hand to all players (CR 701.16). The reveal makes
+        // those cards public knowledge so a chained chooser (Chooser$ You ChangeZone) can see and
+        // select among them. See effect_reveal_hand.cpp.
+        {"RevealHand", EffectKind::RevealHand},
     };
     auto it = table.find(category);
     return (it != table.end()) ? it->second : EffectKind::None;

@@ -61,6 +61,7 @@ EffectHandler handler_for(EffectKind kind) {
         case EffectKind::Play:            return &play;
         case EffectKind::Earthbend:       return &earthbend;
         case EffectKind::Tap:             return &tap;
+        case EffectKind::RevealHand:      return &reveal_hand;
         default:                          return nullptr;
     }
 }
