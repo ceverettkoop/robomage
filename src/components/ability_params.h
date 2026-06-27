@@ -77,6 +77,10 @@ struct DiscardParams {
 struct PeekParams {
     bool no_reveal = false;  // NoReveal$ True
     int peek_amount = 1;     // PeekAmount$ N — how many top cards to look at (Birthing Ritual: 7)
+    // Random$ True (Urza's Bauble): the controller looks at ONE card chosen uniformly at
+    // random from the target/defined player's HAND. Used by the AB$/DB$ Reveal handler
+    // (effect_reveal.cpp), not the PeekAndReveal library-top path above.
+    bool random_from_hand = false;
 };
 
 // Amass (e.g. Orcish Bowmasters: "amass Orcs 1"). The counter count lives in the

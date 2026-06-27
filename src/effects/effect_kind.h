@@ -40,6 +40,7 @@ enum class EffectKind {
     Surveil,
     Scry,
     PeekAndReveal,
+    Reveal,
     Phases,
     Dig,
     SylvanLibrary,

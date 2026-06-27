@@ -33,6 +33,9 @@ EffectKind effect_kind_from_string(const std::string &category) {
         {"Surveil", EffectKind::Surveil},
         {"Scry", EffectKind::Scry},
         {"PeekAndReveal", EffectKind::PeekAndReveal},
+        // AB$/DB$ Reveal with Random$ True (Urza's Bauble): look at a random card in a
+        // player's hand. See effect_reveal.cpp.
+        {"Reveal", EffectKind::Reveal},
         {"Phases", EffectKind::Phases},
         {"Dig", EffectKind::Dig},
         {"SylvanLibrary", EffectKind::SylvanLibrary},
