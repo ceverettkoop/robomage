@@ -51,7 +51,36 @@ unblocks the others in that group.
 - **Damping Sphere** — `ProduceMana`/`ReplaceMana` replacement + dynamic per-spell-this-turn `RaiseCost` (`Relative$ True`) (Forge script: available)
 - **Forth Eorlingas!** — Monarch subsystem (`BecomeMonarch` + monarch tracking) + `DB$ Effect` with floating `Triggers$` (Forge script: available)
 
+### Deferred during implementation
+
+- **Phelia, Exuberant Shepherd** — triaged "covered" but misclassified: its exile→return chain
+  uses `RememberObjects$ RememberedLKI` / `Defined$ DelayTriggerRememberedLKI` / `Imprint$`, none
+  handled, and the `DB$ DelayedTrigger` path maps `Phase$ "End of Turn"` to the wrong step. Needs
+  real new mechanic code (remembered-LKI passing from a ChangeZone exile into a delayed trigger and
+  back, + an end-of-turn phase alias). Flickerwisp shares this template. (Forge script: available)
+
 ### Not reached (cap)
 
-Implementable this run but left for a future run because the N=30 cap was reached first
-(highest-frequency first). Finalized at end of run — see the run's final report.
+None. The N=30 cap was met exactly: 31 cards were triaged implementable; Phelia deferred during
+implementation (above), and the other 30 were all implemented — so no implementable card was left
+unstarted by the cap.
+
+### Review findings (post-implementation code review, for human follow-up)
+
+The Phase-3.5 `code-review` (medium) found no shipped-card bugs beyond two low-risk issues already
+fixed this run (ward `PayLife` `std::stoi` guard; `.Other` self-exclusion tokenization, commit
+`b6873c1`). The following are **latent fragilities / altitude items** left for a human — none
+breaks a currently-implemented card, but each is worth a deliberate fix:
+
+- **Four parallel permanent/card filter matchers** (`matches_filter_spec`,
+  `permanent_matches_cards_filter`, `permanent_matches_subtype_spec`, `card_matches_reduce_filter`)
+  now carry **diverging qualifier coverage** — qualifiers (Colorless, P/T comparisons, `non<Color>`,
+  `.Other`, main types) were added to whichever matcher each card needed. Consolidating to one
+  shared matcher is the right fix but a cross-cutting refactor (deliberately not done autonomously).
+- **Fail-closed on unknown qualifiers:** edict `SacValid$` (`effect_sacrifice.cpp`) and mass-effect
+  `ValidCards$` (`permanent_matches_cards_filter`) silently match nothing on a qualifier they don't
+  recognize (e.g. a future `non<Color>` mass filter). All *current* specs are handled.
+- **NameCard candidate set** (`effect_name_card.cpp`) is restricted to nonland vocab cards in the
+  named player's zones — a Cabal-Therapy-shaped approximation of CR 201.4's "name any card."
+- **`Defined$ TargetedController` / `TriggeredActivator` / last-known-controller** resolution is
+  open-coded across a few effects rather than centralized in one shared defined-player helper.
