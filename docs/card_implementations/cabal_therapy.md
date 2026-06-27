@@ -28,12 +28,21 @@ Two new general mechanics, both keyed on the script's real tags (no retagging):
    ability's controller chooses a card name (`ActionCategory::NAME_CARD`, value 34 — the same
    decision category Disruptor Flute's ETB name-a-card already uses). The candidate set is the
    distinct **nonland** vocab card names owned by the spell's target player (the player who
-   will discard), ordered by copy count then name for deterministic replay — mirroring the
-   Disruptor Flute candidate-building in `state_manager_statics.cpp`. The `ValidCards$
-   Card.nonLand` filter is honored by excluding lands. The chosen name is stored in
-   `cur_game.named_card` (new field in `src/classes/game.h`) so a chained `Card.NamedCard`
-   sub-ability can reference it; it is cleared at the end of the top-level `NameCard`
-   resolve (`src/components/ability.cpp`).
+   will discard) — that player's **whole deck** (every zone), not just their hand, so a card
+   only in their library is still nameable. The chosen name is stored in `cur_game.named_card`
+   (field in `src/classes/game.h`) so a chained `Card.NamedCard` sub-ability can reference it;
+   it is cleared at the end of the top-level `NameCard` resolve (`src/components/ability.cpp`).
+
+   **Shared `build_name_card_choices` helper** (`src/name_card_choices.{h,cpp}`, refinement):
+   the NAME_CARD candidate menu — distinct owner-owned vocab cards (`card_name_to_index >= 0`),
+   ordered copies-desc then name-asc, capped at `MAX_ACTIONS`, each `card_is_public = true` —
+   is now built by one shared function called by **both** Cabal Therapy's `name_card` and
+   Disruptor Flute's ETB name-a-card block in `state_manager_statics.cpp` (the two previously
+   carried duplicated loops). Cabal Therapy passes `exclude_lands = true` (honoring `ValidCards$
+   Card.nonLand`); Disruptor Flute passes `exclude_lands = false` so it still offers every
+   opponent vocab card including lands. Each call site keeps its own input handling and records
+   the chosen name in its own field (`cur_game.named_card` vs `Permanent::chosen_name`), so
+   Disruptor Flute's static-keying behavior is unchanged.
 
 2. **`RevealDiscardAll` discard mode** (`src/effects/effect_discard.cpp`). `DiscardParams`
    gains a `mode` field (`src/components/ability_params.h`); the discard parse hook claims
@@ -57,11 +66,17 @@ Two new general mechanics, both keyed on the script's real tags (no retagging):
    `AltCost::sac_cost_spec` (`src/components/carddata.h`); the Flashback keyword parser
    (`src/parse.cpp`) now carries the sac filter into `flashback_alt_cost.sac_cost_spec`. The
    flashback cast path (`src/action_processor.cpp`) pays it by prompting a
-   `SACRIFICE_PERMANENT` choice among matching controlled permanents (reusing
-   `controlled_permanents_matching` / `prompt_permanent_choice`), and the flashback cast
+   `SACRIFICE_PERMANENT` choice among matching controlled permanents, and the flashback cast
    legality check (`src/systems/state_manager_actions.cpp`) only offers the cast when a matching
    permanent exists to sacrifice (CR 601.2f/601.3a). The flashback exile-after-resolution was
    already handled.
+
+   **Shared `pay_sacrifice_cost` helper** (`src/action_processor.cpp`, refinement): the
+   "choose a matching controlled permanent and move it to the graveyard" body
+   (`controlled_permanents_matching` → `prompt_permanent_choice` → `add_to_zone(... GRAVEYARD)`
+   + log) was identical in the flashback alternate-cost branch (CR 702.34) and the spell's
+   additional-cost branch (Natural Order, CR 601.2f). It is now one forward-declared static
+   helper that both branches call, each from its own correct branch. Behavior is unchanged.
 
 ## Behavioral decisions (CR cites)
 - **Naming a card** happens at resolution and may be any card name (CR 201.4); the engine
@@ -76,19 +91,33 @@ Two new general mechanics, both keyed on the script's real tags (no retagging):
   creature; CR 601.2f cost payment), then the card is exiled as it leaves the stack.
 
 ## Tests (`train/test_harness.py`, seed 1)
-- **(a) Name a held duplicate, discard all copies.** A casts Cabal Therapy (from hand,
-  paying `{B}`), names Lightning Bolt; opponent B reveals a hand of 2 Lightning Bolt + 5 Island
-  and discards **both** Bolts and nothing else (B hand 7→5, GY = 2 Lightning Bolt). PASS.
-- **(b) Name a card not held.** B's hand is 7 Islands (Bolts are deeper in the deck, so still a
-  nameable candidate); A names Lightning Bolt; B reveals hand and "No matching cards to discard"
-  — hand stays 7. PASS.
-- **(c) Flashback.** Cabal Therapy in A's graveyard, Birds of Paradise on A's battlefield;
+- **(A) Regular, name a held duplicate → discard all copies.** A casts Cabal Therapy (from
+  hand, paying `{B}`), targets B, names Lightning Bolt; B reveals a hand of 3 Lightning Bolt +
+  Birds of Paradise + Islands and discards **all 3** Bolts and nothing else (Birds of Paradise
+  stays; B hand drops by exactly 3). PASS.
+- **(B) Regular, name a card only in the opponent's library (deck-wide).** B's hand is all
+  Islands; one Lightning Bolt sits only in B's library. The NAME_CARD menu still **offers
+  Lightning Bolt** (candidate set is the whole deck, not just the hand). A names it; B reveals
+  their hand and discards nothing (the only later discard is an unrelated cleanup discard). PASS.
+- **(C) Regular, nonland filter.** In every regular run the NAME_CARD menu offered only the
+  distinct nonland cards (e.g. Lightning Bolt, Birds of Paradise); the opponent's Islands/Swamps
+  were never offered — `ValidCards$ Card.nonLand` honored via `exclude_lands = true`. PASS.
+- **(D) Flashback.** Cabal Therapy in A's graveyard, Birds of Paradise on A's battlefield;
   A casts via flashback → prompted "Sacrifice Birds of Paradise" → sacrifices it, names
   Lightning Bolt, B reveals hand and discards both Bolts, then "Cabal Therapy is exiled
-  (flashback)" (A's GY contains only the sacrificed Birds, not Cabal Therapy). PASS.
-- **Regression:** scripted-vs-scripted full games (black deck with 4 Cabal Therapy + 4 Duress
-  vs a Lightning Bolt deck) over seeds 1/2/3 — each game produced a decisive winner (no draws),
-  no non-fatal errors or unrecognized-param warnings, and Cabal Therapy was cast and resolved.
+  (flashback)" (A's GY contains only the sacrificed Birds, not Cabal Therapy). With **no
+  creature** to sacrifice, the flashback cast is **not offered** at all (illegal). PASS.
+- **(E) Determinism / regression.** Scripted-vs-scripted full games (deck with 4 Cabal Therapy +
+  creatures vs a Lightning Bolt deck) over seeds 1/2/3 — each game produced a decisive winner
+  (Player A won by decking B; no draws), no non-fatal errors or non-cosmetic warnings.
+- **(F) Duress regression (single-pick path unchanged).** Duress (`Mode$ RevealYouChoose |
+  DiscardValid$ Card.nonCreature+nonLand | NumCards$ 1`) cast at B: B reveals hand, A is offered
+  only the eligible noncreature/nonland card (Lightning Bolt — the creature Birds of Paradise and
+  the Islands are correctly excluded), A picks one, B discards exactly that card. PASS.
+- **Disruptor Flute regression (refactored candidate code).** Disruptor Flute's ETB still offers
+  every distinct opponent vocab card **including lands** (Island, Lightning Bolt, Birds of
+  Paradise all offered — `exclude_lands = false`), names the chosen card, and records it into
+  `Permanent::chosen_name` for its statics. PASS.
 
 ## Result
 Implemented. Cabal Therapy casts from hand and via flashback (sacrificing a creature), names a

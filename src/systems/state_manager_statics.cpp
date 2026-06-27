@@ -29,6 +29,7 @@
 #include "../game_queries.h"
 #include "../input_logger.h"
 #include "../mana_system.h"
+#include "../name_card_choices.h"
 #include "../svar_eval.h"
 #include "../systems/stack_manager.h"
 #include "replacement_effects.h"
@@ -423,46 +424,18 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                 if (perm_ref.chosen_name.empty()) {
                     Zone::Ownership opp = (perm_ref.controller == Zone::PLAYER_A)
                         ? Zone::PLAYER_B : Zone::PLAYER_A;
-                    // Distinct opponent-owned vocab card names, each with a representative
-                    // entity (so the per-action card id encodes the candidate) and a copy
-                    // count for ordering.
+                    // Distinct opponent-owned vocab cards (whole deck, lands included), built
+                    // by the shared helper also used by Cabal Therapy's SP$ NameCard.
                     std::vector<std::string> names;
-                    std::vector<Entity> reps;
-                    std::vector<int> copies;
-                    for (auto e2 : mEntities) {
-                        if (!global_coordinator.entity_has_component<CardData>(e2)) continue;
-                        if (!global_coordinator.entity_has_component<Zone>(e2)) continue;
-                        if (global_coordinator.GetComponent<Zone>(e2).owner != opp) continue;
-                        auto &cd2 = global_coordinator.GetComponent<CardData>(e2);
-                        if (card_name_to_index(cd2.name) < 0) continue;  // restrict to vocab cards
-                        bool found = false;
-                        for (size_t i = 0; i < names.size(); i++)
-                            if (names[i] == cd2.name) { copies[i]++; found = true; break; }
-                        if (!found) { names.push_back(cd2.name); reps.push_back(e2); copies.push_back(1); }
-                    }
-                    if (!names.empty()) {
-                        // Order by copies desc, then name asc (deterministic for replay)
-                        std::vector<size_t> order(names.size());
-                        for (size_t i = 0; i < order.size(); i++) order[i] = i;
-                        std::sort(order.begin(), order.end(), [&](size_t a, size_t b) {
-                            if (copies[a] != copies[b]) return copies[a] > copies[b];
-                            return names[a] < names[b];
-                        });
-                        if (order.size() > static_cast<size_t>(MAX_ACTIONS))
-                            order.resize(MAX_ACTIONS);
-                        std::vector<LegalAction> name_choices;
-                        for (size_t idx : order) {
-                            LegalAction la(PASS_PRIORITY, reps[idx], "Name card: " + names[idx]);
-                            la.category = ActionCategory::NAME_CARD;
-                            la.card_is_public = true;
-                            name_choices.push_back(la);
-                        }
+                    std::vector<LegalAction> name_choices =
+                        build_name_card_choices(mEntities, opp, /*exclude_lands=*/false, names);
+                    if (!name_choices.empty()) {
                         bool prev_priority = cur_game.player_a_has_priority;
                         cur_game.player_a_has_priority = (perm_ref.controller == Zone::PLAYER_A);
                         game_log("Choose a card name for %s:\n", perm_ref.name.c_str());
                         int choice = InputLogger::instance().get_input(name_choices);
                         cur_game.player_a_has_priority = prev_priority;
-                        perm_ref.chosen_name = names[order[static_cast<size_t>(choice)]];
+                        perm_ref.chosen_name = names[static_cast<size_t>(choice)];
                         game_log("%s names card: %s\n",
                                  player_name(perm_ref.controller).c_str(), perm_ref.chosen_name.c_str());
                     }
