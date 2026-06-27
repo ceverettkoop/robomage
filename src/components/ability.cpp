@@ -38,6 +38,11 @@ extern Game cur_game;
 // effects.h (de-static'd so effect handlers in src/effects/ can share them);
 // their definitions remain below.
 
+// Bind a chained sub-ability's target before it resolves, reading the script's stated
+// Defined$ intent rather than blanket-inheriting the parent's target. See definition below
+// (CR 608.2c). Forward-declared per CLAUDE.md.
+static void bind_sub_target(const Ability &parent, Ability &sub);
+
 // edge case of two identical abilities being applied from two sources not handled
 bool Ability::identical_activated_ability(const Ability &other) {
     if (other.category != this->category) return false;
@@ -950,6 +955,30 @@ size_t evaluate_dynamic_amount(
     return sa_val > 0 ? static_cast<size_t>(sa_val) : 0;
 }
 
+// Bind a chained sub-ability's target before it resolves. CR 608.2c: as a spell/ability
+// resolves it follows its instructions in order, and each instruction references objects by
+// its own definition. The Forge scripts already encode that intent in the sub's Defined$:
+//   * The sub targets independently (its own ValidTgts$, a target was chosen for it at cast /
+//     activation time, e.g. Cabal Therapy's DB$ Discard ValidTgts$ Player) -> keep that
+//     target untouched.
+//   * The sub references the PARENT's chosen target: Defined$ {Targeted, ParentTarget, Parent},
+//     Defined$ TargetedController (Swords to Plowshares / Solitude GainLife and Smash to
+//     Smithereens DealDamage read ab.target to find the targeted permanent's controller / power),
+//     or no Defined$ at all (legacy implicit inherit) -> inherit parent.target.
+//   * Any other explicit Defined$ that names an INDEPENDENT reference (You / Opponent /
+//     Remembered / Self / TriggeredActivator / ...) -> leave sub.target alone; the effect
+//     resolves that reference from its own Defined flag and never reads ab.target. Not
+//     overwriting here is behavior-preserving (the old blanket sentinel set ab.target too, but
+//     those handlers return before touching it).
+static void bind_sub_target(const Ability &parent, Ability &sub) {
+    if (sub.valid_tgts != "N_A") return;  // independently targeted at cast/activation — keep it
+    const std::string &d = sub.defined;
+    if (d.empty() || d == "Targeted" || d == "ParentTarget" || d == "Parent" ||
+        d == "TargetedController")
+        sub.target = parent.target;  // inherit the parent's chosen target (or its controller)
+    // else: independent Defined$ reference — leave sub.target alone (effect resolves its own ref)
+}
+
 void Ability::resolve(std::shared_ptr<Orderer> orderer) {
     // OptionalDecider$ You ("you may ..."): the controller may decline the whole
     // triggered ability as it resolves (Ajani's exile-and-return-transformed).
@@ -1017,9 +1046,7 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
     if (!condition_passed) {
         for (auto sub_ab : this->subabilities) {
             sub_ab.source = this->source;
-            // A sub-ability that targets independently (its own ValidTgts$, target chosen at
-            // cast) keeps its own target; otherwise it inherits the parent's.
-            if (sub_ab.valid_tgts == "N_A") sub_ab.target = this->target;
+            bind_sub_target(*this, sub_ab);  // CR 608.2c — Defined$-driven (see helper)
             sub_ab.controller = this->controller;
             sub_ab.resolve(orderer);
         }
@@ -1038,10 +1065,7 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
     if (run_subs) {
         for (auto sub_ab : this->subabilities) {
             sub_ab.source = this->source;
-            // A sub-ability that targets independently (its own ValidTgts$, target chosen at
-            // cast — e.g. Cabal Therapy's DB$ Discard) keeps the target selected for it at
-            // cast; otherwise it inherits the parent's target so GainLife etc. can reference it.
-            if (sub_ab.valid_tgts == "N_A") sub_ab.target = this->target;
+            bind_sub_target(*this, sub_ab);  // CR 608.2c — Defined$-driven (see helper)
             sub_ab.controller = this->controller;
             sub_ab.resolve(orderer);
         }

@@ -100,6 +100,12 @@ struct Ability{
     // Delirium-conditional damage (Unholy Heat) now lives in DamageParams (params variant).
     std::string amount_svar = "";           // raw SVar key for non-numeric NumDmg$ (resolved at parse time)
     std::string dynamic_amount_expr = "";   // runtime SVar expression (e.g. "Count$Valid Creature.YouCtrl" or "Targeted$CardPower")
+    // Raw Defined$/DefinedPlayer$ token verbatim from the script (e.g. "Targeted", "ParentTarget",
+    // "You", "Opponent", "Remembered", "TargetedController", "Self", ...). Empty when the ability
+    // declared no Defined$. Kept alongside the specific bools above so sub-ability target
+    // resolution can read the script's stated intent (CR 608.2c) instead of relying on a blanket
+    // N_A sentinel; the specific bools remain authoritative for their effects.
+    std::string defined = "";
     bool defined_targeted_controller = false;  // Defined$ TargetedController — GainLife goes to target's controller
     bool defined_self = false;                  // Defined$ Self — ability moves its own source
     bool defined_each_opponent = false;         // Defined$ Player.Opponent — effect applies to each opponent (no target)

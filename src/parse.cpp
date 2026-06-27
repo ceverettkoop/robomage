@@ -903,6 +903,9 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
     } else if (key == "Optional") {
         ability.optional_choice = (value == "True");
     } else if (key == "Defined" || key == "DefinedPlayer") {
+        // Keep the raw token verbatim (CR 608.2c) so sub-ability target binding can read the
+        // script's stated intent; the specific bools below remain authoritative per effect.
+        ability.defined = value;
         if (value == "Remembered") ability.defined_remembered = true;
         // Defined$ TriggeredSpellAbility — the effect acts on the spell that fired this
         // trigger (Chalice of the Void: "counter that spell"). Set at trigger fire time.
