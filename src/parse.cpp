@@ -1810,9 +1810,18 @@ static std::vector<StaticAbility> parse_static_abilities(const std::string &scri
                     sa.affected_subtype = value;
                 }
             } else if (key == "Amount") {
-                // Used by RaiseCost
-                if (!value.empty() && std::isdigit(static_cast<unsigned char>(value[0])))
-                    sa.raise_cost = std::stoi(value);
+                // Used by RaiseCost / ReduceCost (generic mana added to / removed from cost)
+                if (!value.empty() && std::isdigit(static_cast<unsigned char>(value[0]))) {
+                    if (sa.category == "ReduceCost")
+                        sa.reduce_cost = std::stoi(value);
+                    else
+                        sa.raise_cost = std::stoi(value);
+                }
+            } else if (key == "Activator") {
+                // ReduceCost Activator$ You (Eye of Ugin): the reduction applies only to
+                // spells cast by the source's controller, not to everyone's spells.
+                if (sa.category == "ReduceCost" && value == "You")
+                    sa.reduce_cost_you_only = true;
             } else if (key == "ValidCard") {
                 // Card.NamedCard restricts the static to the source's chosen card name
                 // (RaiseCost / CantBeActivated on Disruptor Flute).
@@ -1821,6 +1830,10 @@ static std::vector<StaticAbility> parse_static_abilities(const std::string &scri
                 if (sa.category == "RaiseCost") {
                     if (value.find("nonCreature") != std::string::npos)
                         sa.raise_cost_filter = "nonCreature";
+                } else if (sa.category == "ReduceCost") {
+                    // Full ValidCard$ filter spec (e.g. "Eldrazi.Colorless"); matched against
+                    // each spell's card characteristics when computing its cast cost.
+                    sa.reduce_cost_filter = value;
                 } else if (sa.category == "CantBeActivated") {
                     // Store the full type list (e.g. "Artifact" for Null Rod, or
                     // "Artifact,Creature,Planeswalker" for Clarion Conqueror). The

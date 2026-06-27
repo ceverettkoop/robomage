@@ -23,6 +23,13 @@ struct StaticAbility {
     // RaiseCost fields (category = "RaiseCost"):
     int raise_cost = 0;               // generic mana added to cost of matching spells
     std::string raise_cost_filter = ""; // "nonCreature" = apply to non-creature spells
+    // ReduceCost fields (category = "ReduceCost"): the mirror of RaiseCost — a continuous
+    // static that reduces the generic portion of matching spells' cost by reduce_cost
+    // (CR 118.7 / 601.2f). reduce_cost_filter is the ValidCard$ spec (e.g. "Eldrazi.Colorless").
+    // reduce_cost_you_only gates the reduction to the source's controller (Activator$ You).
+    int reduce_cost = 0;
+    std::string reduce_cost_filter = "";
+    bool reduce_cost_you_only = false;
     // CantBeActivated fields (category = "CantBeActivated"):
     std::string cant_activate_card_filter = "";  // "Artifact" — card type whose activated abilities are suppressed
     // NamedCard fields (RaiseCost / CantBeActivated with ValidCard$ Card.NamedCard, e.g. Disruptor Flute):

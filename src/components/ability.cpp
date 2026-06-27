@@ -145,6 +145,9 @@ static bool matches_filter_spec(Entity entity, const std::string &spec, int cmc_
                 if (re == entity) { found = true; break; }
             }
             if (!found) return false;
+        } else if (color_qualifier == "Colorless") {
+            // Colorless qualifier (CR 105.2c), e.g. "Eldrazi.Colorless" / "Creature.Colorless".
+            if (!is_colorless_card(cd)) return false;
         } else if (color_qualifier == "Basic" || color_qualifier == "nonBasic") {
             // Basic/nonBasic supertype qualifier (e.g. "Land.Basic" for fetch ramp).
             bool is_basic = has_basic_supertype(cd.types);
