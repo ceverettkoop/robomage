@@ -50,6 +50,8 @@ static void assign_combat_damage(Game &game, std::shared_ptr<Orderer> orderer);
 static void trigger_ward_for_targets(Entity targeting_entity, Zone::Ownership controller,
                                      const std::vector<Entity> &targets,
                                      std::shared_ptr<Orderer> orderer);
+static void pay_sacrifice_cost(Zone::Ownership caster, const std::string &spec, Entity spell_entity,
+                               std::shared_ptr<Orderer> orderer);
 
 // entity_name() is shared from the StateManager TUs via state_manager_internal.h.
 // mana_symbol_str() is the canonical const-char* color symbol from classes/colors.h.
@@ -67,6 +69,22 @@ static Entity prompt_permanent_choice(const std::vector<Entity> &choices, const 
     }
     int choice = InputLogger::instance().get_input(menu);
     return menu[static_cast<size_t>(choice)].source_entity;
+}
+
+// Pay a "sacrifice a <spec>" cost: prompt the caster to choose one of their matching
+// permanents and move it to the graveyard. Shared by the flashback alternate cost
+// (CR 702.34, e.g. Cabal Therapy) and the spell's additional cast cost
+// (CR 601.2f, e.g. Natural Order). Cast legality already guaranteed a matching
+// permanent exists; the empty-choices guard is a defensive no-op.
+static void pay_sacrifice_cost(Zone::Ownership caster, const std::string &spec, Entity spell_entity,
+                               std::shared_ptr<Orderer> orderer) {
+    std::vector<Entity> choices =
+        controlled_permanents_matching(caster, spec, orderer->mEntities, spell_entity);
+    if (choices.empty()) return;
+    Entity to_sac = prompt_permanent_choice(choices, "Sacrifice ", "", ActionCategory::SACRIFICE_PERMANENT);
+    std::string sac_name = global_coordinator.GetComponent<Permanent>(to_sac).name;
+    orderer->add_to_zone(false, to_sac, Zone::GRAVEYARD);
+    game_log("%s sacrifices %s\n", player_name(caster).c_str(), sac_name.c_str());
 }
 
 // Pay the non-mana, non-tap activation costs shared by hand- and battlefield-
@@ -100,7 +118,7 @@ static void pay_secondary_activation_costs(
     // Type-based sacrifice cost (Cycling "Sac a land", Knight of the Reliquary)
     if (!ability.sac_cost_spec.empty()) {
         std::vector<Entity> choices =
-            controlled_permanents_matching(controller, ability.sac_cost_spec, orderer->mEntities);
+            controlled_permanents_matching(controller, ability.sac_cost_spec, orderer->mEntities, source);
         if (!choices.empty()) {
             Entity to_sac = prompt_permanent_choice(choices, "Sacrifice ", "", ActionCategory::SACRIFICE_PERMANENT);
             std::string sac_name = global_coordinator.GetComponent<Permanent>(to_sac).name;
@@ -967,8 +985,10 @@ static void trigger_ward_for_targets(Entity targeting_entity, Zone::Ownership co
         // The Ward permanent must be controlled by an opponent of the targeting player.
         if (!is_battlefield_permanent(tgt, opp)) continue;
         if (!global_coordinator.entity_has_component<CardData>(tgt)) continue;
-        int ward_cost = global_coordinator.GetComponent<CardData>(tgt).ward_cost;
+        auto &tgt_cd = global_coordinator.GetComponent<CardData>(tgt);
+        int ward_cost = tgt_cd.ward_cost;
         if (ward_cost <= 0) continue;
+        bool ward_is_life = tgt_cd.ward_is_life;
 
         Ability ward;
         ward.ability_type = Ability::TRIGGERED;
@@ -977,11 +997,13 @@ static void trigger_ward_for_targets(Entity targeting_entity, Zone::Ownership co
         ward.controller = opp;            // the Ward permanent's controller
         ward.target = targeting_entity;   // counter the spell/ability that targeted it
         ward.unless_generic_cost = static_cast<size_t>(ward_cost);
+        ward.unless_cost_is_life = ward_is_life;  // Ward—Pay N life pays life, not mana
 
         orderer->push_ability_onto_stack(ward, opp);
         std::string nm = entity_name(tgt);
-        game_log("Ward {%d}: %s's controller may pay to counter the spell or ability "
-                 "targeting %s\n", ward_cost, nm.c_str(), nm.c_str());
+        game_log("Ward %s%d%s: %s's controller may pay to counter the spell or ability "
+                 "targeting %s\n", ward_is_life ? "—Pay " : "{", ward_cost,
+                 ward_is_life ? " life" : "}", nm.c_str(), nm.c_str());
     }
 }
 
@@ -1047,6 +1069,13 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                     player.life_total -= card_data.flashback_alt_cost.life_cost;
                     game_log("%s pays %d life\n", player_name(caster).c_str(), card_data.flashback_alt_cost.life_cost);
                 }
+                // Pay flashback sacrifice cost (Cabal Therapy: Flashback—Sacrifice a creature).
+                // The cast is only offered when a matching permanent exists (cast legality),
+                // so there is always something to sacrifice here.
+                if (!card_data.flashback_alt_cost.sac_cost_spec.empty()) {
+                    pay_sacrifice_cost(caster, card_data.flashback_alt_cost.sac_cost_spec,
+                                       spell_entity, orderer);
+                }
 
             // ALTERNATE COST
             } else if (action.use_alt_cost) {
@@ -1111,6 +1140,18 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                     game_log("Payment cancelled.\n");
                     break;
                 }
+
+                // ADDITIONAL SACRIFICE COST on the spell itself (CR 601.2f / 118.x):
+                // Natural Order — "As an additional cost to cast this spell, sacrifice a
+                // green creature." Paid here as part of casting (before the spell is on the
+                // stack), using the same SACRIFICE_PERMANENT choice activated abilities use.
+                // Cast legality already guaranteed a matching permanent exists. General to
+                // any spell whose SPELL ability Cost$ carries a Sac<...> token; flashback /
+                // alternate casts pay their own sac cost in their own branch above.
+                std::string spell_sac_spec = spell_additional_sac_spec(card_data);
+                if (!spell_sac_spec.empty()) {
+                    pay_sacrifice_cost(caster, spell_sac_spec, spell_entity, orderer);
+                }
             }
 
             // Find the primary spell ability template and copy it onto the entity
@@ -1124,6 +1165,18 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                 // Handle targeting
                 if (ability.valid_tgts != "N_A") {
                     select_target(ability, orderer, caster);
+                }
+                // A spell whose top-level effect doesn't itself target, but whose chained
+                // sub-ability does, chooses that target as it's cast (CR 601.2c). Cabal
+                // Therapy: SP$ NameCard (Defined$ You, no target) + DB$ Discard (ValidTgts$
+                // Player). Select each targeting sub-ability's target now and store it on the
+                // sub-ability template; resolution preserves it (see Ability::resolve).
+                for (auto &sub : ability.subabilities) {
+                    if (sub.valid_tgts != "N_A") {
+                        sub.source = spell_entity;
+                        sub.controller = caster;
+                        select_target(sub, orderer, caster);
+                    }
                 }
 
                 global_coordinator.AddComponent(spell_entity, ability);

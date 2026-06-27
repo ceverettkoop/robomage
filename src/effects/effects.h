@@ -42,6 +42,7 @@ bool exalted_bonus(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool attach(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool choose_card(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool destroy_all(Ability &ab, std::shared_ptr<Orderer> orderer);
+bool damage_all(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool destroy(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool token(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool surveil(Ability &ab, std::shared_ptr<Orderer> orderer);
@@ -65,6 +66,7 @@ bool add_mana(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool discard(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool pump(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer);
+bool reveal(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool dig(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool sylvan_library(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool amass(Ability &ab, std::shared_ptr<Orderer> orderer);
@@ -85,6 +87,10 @@ bool repeat_each(Ability &ab, std::shared_ptr<Orderer> orderer);
 // AB$ Effect granting "you may cast that card this turn" (Emry): records the targeted
 // graveyard card in cur_game.may_cast_this_turn so the casting path offers it this turn.
 bool grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer);
+// SP$/DB$ NameCard (Cabal Therapy): the ability's controller names a card (CR 201.4); the
+// chosen name is stored in cur_game.named_card so a chained Card.NamedCard sub-ability
+// (here a RevealDiscardAll discard) can reference it.
+bool name_card(Ability &ab, std::shared_ptr<Orderer> orderer);
 
 // True if battlefield permanent `e` matches a Forge ValidCards$/ConditionPresent$
 // filter spec: a type/subtype head plus '+'-delimited qualifiers (YouCtrl, OppCtrl,
@@ -117,6 +123,7 @@ bool parse_delayed_trigger(Ability &ab, const std::string &key, const std::strin
 bool parse_discard(Ability &ab, const std::string &key, const std::string &value);
 bool parse_mill(Ability &ab, const std::string &key, const std::string &value);
 bool parse_peek_and_reveal(Ability &ab, const std::string &key, const std::string &value);
+bool parse_reveal(Ability &ab, const std::string &key, const std::string &value);
 bool parse_amass(Ability &ab, const std::string &key, const std::string &value);
 
 }  // namespace effects
@@ -130,6 +137,7 @@ size_t evaluate_dynamic_amount(
 Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner,
     const std::vector<Zone::ZoneValue> &zones, const std::string &change_type, bool mandatory,
     Zone::ZoneValue destination, bool reveal = false);
-bool run_unless_loop(size_t cost, Zone::Ownership controller, std::shared_ptr<Orderer> orderer, Entity paid_for);
+bool run_unless_loop(size_t cost, Zone::Ownership controller, std::shared_ptr<Orderer> orderer, Entity paid_for,
+                     bool pay_as_life = false);
 
 #endif /* EFFECTS_H */

@@ -15,6 +15,12 @@ namespace effects {
 
 bool lose_life(Ability &ab, std::shared_ptr<Orderer> orderer) {
     Zone::Ownership lose_controller = ab.controller;
+    // Defined$ TriggeredActivator — the player who caused the trigger (the caster of the
+    // triggering spell) loses the life, not the source's controller. Bound at trigger-fire
+    // time (CR 603.x). Mai, Scornful Striker: "Whenever a player casts a noncreature spell,
+    // they lose 2 life."
+    if (ab.defined_triggered_activator && ab.triggered_activator != Zone::UNKNOWN)
+        lose_controller = ab.triggered_activator;
     size_t lose_amount = ab.amount;
     if (!ab.dynamic_amount_expr.empty())
         lose_amount = evaluate_dynamic_amount(ab.dynamic_amount_expr, lose_controller, orderer, ab.target);

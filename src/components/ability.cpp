@@ -38,6 +38,11 @@ extern Game cur_game;
 // effects.h (de-static'd so effect handlers in src/effects/ can share them);
 // their definitions remain below.
 
+// Bind a chained sub-ability's target before it resolves, reading the script's stated
+// Defined$ intent rather than blanket-inheriting the parent's target. See definition below
+// (CR 608.2c). Forward-declared per CLAUDE.md.
+static void bind_sub_target(const Ability &parent, Ability &sub);
+
 // edge case of two identical abilities being applied from two sources not handled
 bool Ability::identical_activated_ability(const Ability &other) {
     if (other.category != this->category) return false;
@@ -70,6 +75,27 @@ static bool matches_filter_spec(Entity entity, const std::string &spec, int cmc_
     // "Creature.cmcEQX"); those are enforced via cmc_bound below, not as a color.
     auto is_cmc_qualifier = [](const std::string &q) {
         return q.rfind("cmc", 0) == 0;
+    };
+
+    // A power/toughness comparison qualifier: "power"/"toughness" followed by a two-letter
+    // comparator (LE/GE/EQ/LT/GT/NE) and an integer, e.g. "toughnessLE2" (Recruiter of the
+    // Guard) or "powerGE5". Static characteristic compared against the card's base P/T
+    // (CR 208.2 / 107.1). Returns true when `q` is such a qualifier and evaluates it into
+    // `ok`; returns false when `q` is not a P/T qualifier (so the caller can keep parsing).
+    auto try_pt_qualifier = [&cd](const std::string &q, bool &ok) -> bool {
+        const std::string lead = q.rfind("power", 0) == 0       ? "power"
+                                 : q.rfind("toughness", 0) == 0 ? "toughness"
+                                                                : "";
+        if (lead.empty()) return false;
+        std::string rest = q.substr(lead.size());  // e.g. "LE2"
+        if (rest.size() < 3) return false;
+        std::string op = rest.substr(0, 2);
+        std::string num = rest.substr(2);
+        for (char c : num)
+            if (!std::isdigit(static_cast<unsigned char>(c))) return false;
+        int lhs = (lead == "power") ? static_cast<int>(cd.power) : static_cast<int>(cd.toughness);
+        ok = apply_svar_op(lhs, op, std::stoi(num));
+        return true;
     };
 
     // Split on '+' for additional constraints (e.g. "Creature.Green+cmcLEX", or the
@@ -124,11 +150,17 @@ static bool matches_filter_spec(Entity entity, const std::string &spec, int cmc_
                 if (re == entity) { found = true; break; }
             }
             if (!found) return false;
+        } else if (color_qualifier == "Colorless") {
+            // Colorless qualifier (CR 105.2c), e.g. "Eldrazi.Colorless" / "Creature.Colorless".
+            if (!is_colorless_card(cd)) return false;
         } else if (color_qualifier == "Basic" || color_qualifier == "nonBasic") {
             // Basic/nonBasic supertype qualifier (e.g. "Land.Basic" for fetch ramp).
             bool is_basic = has_basic_supertype(cd.types);
             if (color_qualifier == "Basic" && !is_basic) return false;
             if (color_qualifier == "nonBasic" && is_basic) return false;
+        } else if (bool pt_ok = false; try_pt_qualifier(color_qualifier, pt_ok)) {
+            // power/toughness comparison qualifier (e.g. "toughnessLE2").
+            if (!pt_ok) return false;
         } else if (color_qualifier == "Green" || color_qualifier == "White" ||
                    color_qualifier == "Blue" || color_qualifier == "Black" ||
                    color_qualifier == "Red") {
@@ -425,14 +457,47 @@ Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner
 
 
 // Returns true if the spell should be countered (controller declined or couldn't pay).
+// pay_as_life: the unless-cost is paid as `cost` life rather than {cost} mana (Ward—Pay N
+// life, CR 702.21). A life payment is only offered when the payer's life total >= cost
+// (CR 119.4 — a player can't pay more life than they have).
 bool run_unless_loop(
-    size_t cost, Zone::Ownership controller, std::shared_ptr<Orderer> orderer, Entity paid_for) {
-    std::multiset<Colors> cond_cost;
-    for (size_t i = 0; i < cost; i++) cond_cost.insert(GENERIC);
-
+    size_t cost, Zone::Ownership controller, std::shared_ptr<Orderer> orderer, Entity paid_for,
+    bool pay_as_life) {
     // the target's controller decides whether to pay, not the Daze caster
     bool prev_priority = cur_game.player_a_has_priority;
     cur_game.player_a_has_priority = (controller == Zone::PLAYER_A);
+
+    if (pay_as_life) {
+        auto &payer = global_coordinator.GetComponent<Player>(get_player_entity(controller));
+        bool can_pay = payer.life_total >= static_cast<int>(cost);  // CR 119.4
+
+        std::vector<LegalAction> unless_actions;
+        size_t pay_idx = unless_actions.size();
+        if (can_pay) {
+            LegalAction pay(PASS_PRIORITY,
+                std::string("Pay ") + std::to_string(cost) + " life (spell is not countered)");
+            pay.category = ActionCategory::PAY_UNLESS;
+            unless_actions.push_back(pay);
+        }
+        size_t decline_idx = unless_actions.size();
+        LegalAction decline(PASS_PRIORITY, std::string("Don't pay (spell is countered)"));
+        decline.category = ActionCategory::PAY_UNLESS;
+        unless_actions.push_back(decline);
+
+        int choice = InputLogger::instance().get_input(unless_actions);
+        cur_game.player_a_has_priority = prev_priority;
+        if (can_pay && choice == static_cast<int>(pay_idx)) {
+            payer.life_total -= static_cast<int>(cost);
+            game_log("%s pays %zu life — spell is not countered\n",
+                player_name(controller).c_str(), cost);
+            return false;
+        }
+        (void)decline_idx;
+        return true;
+    }
+
+    std::multiset<Colors> cond_cost;
+    for (size_t i = 0; i < cost; i++) cond_cost.insert(GENERIC);
 
     while (true) {
         std::vector<LegalAction> unless_actions = collect_mana_legal_actions(controller, orderer);
@@ -490,6 +555,23 @@ void Ability::fizzle(std::shared_ptr<Orderer> orderer) {
 // prevents the enumeration and re-verification rules from drifting apart.
 bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
     if (cand == 0) return false;
+
+    // ValidTgts$ ...Other (e.g. Solitude/Flickerwisp "another"/"other" target): the source
+    // of the ability cannot be chosen as its own target (CR 115.1; "other" is a target
+    // restriction). Enforced uniformly here so it applies to every target type. Match
+    // "Other" only as a complete dot/plus-delimited qualifier token (Creature.Other,
+    // Permanent.Other+nonLand), never as a substring of a longer subtype/name (so a future
+    // "Brotherhood"/"Otherworldly" token can't spuriously forbid self-targeting).
+    if (cand == source) {
+        for (size_t p = valid_tgts.find("Other"); p != std::string::npos;
+             p = valid_tgts.find("Other", p + 1)) {
+            bool left_ok = (p > 0) && (valid_tgts[p - 1] == '.' || valid_tgts[p - 1] == '+');
+            size_t end = p + 5;  // length of "Other"
+            bool right_ok = (end == valid_tgts.size()) ||
+                            valid_tgts[end] == '.' || valid_tgts[end] == '+';
+            if (left_ok && right_ok) return false;
+        }
+    }
 
     // NOTE: Pyroblast/Hydroblast (ValidTgts$ Card + ConditionPresent$ <type>.<Color>)
     // intentionally do NOT restrict target legality by color — they may target any
@@ -623,6 +705,11 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
     // Battlefield permanent target (phased-out permanents can't be targeted, 702.26e)
     if (!is_battlefield_permanent(cand)) return false;
     auto &tperm = global_coordinator.GetComponent<Permanent>(cand);
+
+    // "non<CardType>" main-type negation (e.g. ValidTgts$ Permanent.nonLand+cmcLE3 on
+    // Abrupt Decay): reject a candidate whose type line carries the excluded card type.
+    // General over all card types, so it is not special-cased to any one card (CR 115.1).
+    if (!type_set_passes_nontype(vt, tperm.types)) return false;
 
     // Positive color restriction (e.g. ValidTgts$ Permanent.Blue on Red Elemental Blast:
     // "Destroy target blue permanent" — blue is a targeting restriction, CR 115.1).
@@ -868,6 +955,30 @@ size_t evaluate_dynamic_amount(
     return sa_val > 0 ? static_cast<size_t>(sa_val) : 0;
 }
 
+// Bind a chained sub-ability's target before it resolves. CR 608.2c: as a spell/ability
+// resolves it follows its instructions in order, and each instruction references objects by
+// its own definition. The Forge scripts already encode that intent in the sub's Defined$:
+//   * The sub targets independently (its own ValidTgts$, a target was chosen for it at cast /
+//     activation time, e.g. Cabal Therapy's DB$ Discard ValidTgts$ Player) -> keep that
+//     target untouched.
+//   * The sub references the PARENT's chosen target: Defined$ {Targeted, ParentTarget, Parent},
+//     Defined$ TargetedController (Swords to Plowshares / Solitude GainLife and Smash to
+//     Smithereens DealDamage read ab.target to find the targeted permanent's controller / power),
+//     or no Defined$ at all (legacy implicit inherit) -> inherit parent.target.
+//   * Any other explicit Defined$ that names an INDEPENDENT reference (You / Opponent /
+//     Remembered / Self / TriggeredActivator / ...) -> leave sub.target alone; the effect
+//     resolves that reference from its own Defined flag and never reads ab.target. Not
+//     overwriting here is behavior-preserving (the old blanket sentinel set ab.target too, but
+//     those handlers return before touching it).
+static void bind_sub_target(const Ability &parent, Ability &sub) {
+    if (sub.valid_tgts != "N_A") return;  // independently targeted at cast/activation — keep it
+    const std::string &d = sub.defined;
+    if (d.empty() || d == "Targeted" || d == "ParentTarget" || d == "Parent" ||
+        d == "TargetedController")
+        sub.target = parent.target;  // inherit the parent's chosen target (or its controller)
+    // else: independent Defined$ reference — leave sub.target alone (effect resolves its own ref)
+}
+
 void Ability::resolve(std::shared_ptr<Orderer> orderer) {
     // OptionalDecider$ You ("you may ..."): the controller may decline the whole
     // triggered ability as it resolves (Ajani's exile-and-return-transformed).
@@ -935,7 +1046,7 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
     if (!condition_passed) {
         for (auto sub_ab : this->subabilities) {
             sub_ab.source = this->source;
-            sub_ab.target = this->target;
+            bind_sub_target(*this, sub_ab);  // CR 608.2c — Defined$-driven (see helper)
             sub_ab.controller = this->controller;
             sub_ab.resolve(orderer);
         }
@@ -954,11 +1065,17 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
     if (run_subs) {
         for (auto sub_ab : this->subabilities) {
             sub_ab.source = this->source;
-            sub_ab.target = this->target;  // propagate target so GainLife etc. can reference it
+            bind_sub_target(*this, sub_ab);  // CR 608.2c — Defined$-driven (see helper)
             sub_ab.controller = this->controller;
             sub_ab.resolve(orderer);
         }
     }
+    // Clear the named card once the whole spell/ability has finished resolving, so it
+    // doesn't leak into an unrelated later Card.NamedCard check (CR 201.4 — the name is
+    // chosen for this effect only). Only the top-level resolve clears it; sub-abilities
+    // (ability_type SPELL parent vs. its DB$ children) are resolved within this call.
+    if (effect_kind_from_string(category) == EffectKind::NameCard)
+        cur_game.named_card.clear();
 }
 
 

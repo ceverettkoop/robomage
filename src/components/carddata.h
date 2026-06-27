@@ -27,6 +27,7 @@ struct AltCost {
     bool is_free = false;               // Cost$ 0 — no mana required
     bool condition_not_your_turn = false;  // Condition$ NotPlayerTurn
     bool is_evoke = false;              // K:Evoke — when paid, the permanent sacrifices itself on ETB
+    std::string sac_cost_spec = "";     // Sac<N/Type> portion of an alt/flashback cost (e.g. "Creature" for Cabal Therapy's Flashback—Sacrifice a creature)
 };
 
 //this is the underlying card, not a permanent or spell
@@ -49,6 +50,7 @@ struct CardData{
     bool has_delve = false;              // K:Delve — exile from graveyard to reduce generic cost
     bool has_improvise = false;          // K:Improvise — tap untapped artifacts you control to pay {1} each (CR 702.126)
     int ward_cost = 0;                   // K:Ward:N — opponent's spell/ability targeting this is countered unless they pay {N} (CR 702.21)
+    bool ward_is_life = false;           // K:Ward:PayLife<N> — the ward cost is paid as N life rather than {N} mana (CR 702.21)
     bool affinity_artifact = false;      // K:Affinity:Artifact — costs {1} less to cast per artifact you control (CR 702.41)
     bool has_x_cost = false;             // ManaCost contains X — variable generic cost chosen at cast time
     bool shuffle_into_library = false;   // card shuffles into library instead of going to graveyard on resolution

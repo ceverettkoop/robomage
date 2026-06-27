@@ -78,6 +78,28 @@ inline bool color_set_passes_noncolor(const std::string &vt, const std::set<Colo
     return true;
 }
 
+// Enforce any "non<CardType>" main-type negation in a filter/target spec (e.g.
+// ValidTgts$ Permanent.nonLand+cmcLE3 on Abrupt Decay, or "nonCreature"/"nonArtifact"
+// on other cards) against a permanent's live type list. Returns false when the type
+// list carries a card type the spec excludes (CR 115.1: target restrictions are checked
+// against the candidate's characteristics). General over the permanent card types
+// (CR 110.4a) plus the spell-only types, so it is not special-cased to any one card.
+// `types` is the permanent's (or card's) full Type list; only kind == TYPE entries are
+// considered for the negation. The substring scan keys on "non" + the exact type name,
+// so it is safe alongside other '.'/'+' qualifiers in the same spec string.
+inline bool type_set_passes_nontype(const std::string &spec, const std::set<Type> &types) {
+    static const char *kCardTypes[] = {
+        "Land", "Creature", "Artifact", "Enchantment", "Planeswalker",
+        "Battle", "Instant", "Sorcery", "Tribal"};
+    for (const char *ct : kCardTypes) {
+        std::string tok = std::string("non") + ct;
+        if (spec.find(tok) == std::string::npos) continue;
+        for (const auto &t : types)
+            if (t.kind == TYPE && t.name == ct) return false;
+    }
+    return true;
+}
+
 // Unified "characteristic at the time it is read" accessors (CR 608.2h). Each returns the
 // object's effective value: read live from its battlefield components while it is in play
 // (so all applied continuous effects/counters are reflected — and, because every effective-P/T
@@ -234,6 +256,31 @@ inline bool creature_has_keyword(const Creature &cr, const char *kw) {
     return false;
 }
 
+// True if the permanent `e` is indestructible (CR 702.12b: it can't be destroyed —
+// "destroy" effects don't destroy it, and it ignores the lethal-damage / deathtouch
+// state-based actions, CR 704.5g/h). Reads the keyword from the object's effective
+// keyword list: for a creature that is `Creature::keywords` (rebuilt each static pass
+// from the printed list plus any granted keywords), otherwise the printed keywords on
+// the CardData (or Token) — so a non-creature permanent like an artifact land with
+// `K:Indestructible` is covered too. Indestructible does NOT prevent sacrifice, exile,
+// "put into graveyard", or the 0-toughness SBA (CR 704.5f); those callers do not consult
+// this. Single source shared by the Destroy effects and the lethal-damage SBA.
+inline bool is_indestructible(Entity e) {
+    if (global_coordinator.entity_has_component<Creature>(e)) {
+        return creature_has_keyword(global_coordinator.GetComponent<Creature>(e), "Indestructible");
+    }
+    if (global_coordinator.entity_has_component<CardData>(e)) {
+        for (const auto &k : global_coordinator.GetComponent<CardData>(e).keywords)
+            if (k == "Indestructible") return true;
+        return false;
+    }
+    if (global_coordinator.entity_has_component<Token>(e)) {
+        for (const auto &k : global_coordinator.GetComponent<Token>(e).keywords)
+            if (k == "Indestructible") return true;
+    }
+    return false;
+}
+
 // True if the creature deals damage during the first-strike combat damage step
 // (it has First Strike or Double Strike). Single source for "does a first-strike
 // damage step matter": the step-skip scan and the per-creature damage gate both
@@ -285,17 +332,58 @@ inline bool is_basic_land_subtype(const std::string &name) {
            name == "Island" || name == "Swamp" || name == "Wastes";
 }
 
-// True if `perm` has a subtype/type named in the ';'-delimited `spec`
-// (e.g. a Sacrifice cost "Forest;Plains", or a single Return-cost subtype).
-inline bool permanent_matches_subtype_spec(const Permanent &perm, const std::string &spec) {
+// True if `perm` (the entity `perm_entity`) matches the ';'-delimited `spec` used by
+// Sacrifice-a-<type> / Return-a-<type> activation costs (e.g. "Forest;Plains",
+// "Creature", "Creature.Other"). Each ';'-delimited alternative is a type/subtype name
+// (a top-level card type like "Creature"/"Land" matches alongside subtype names, since
+// Permanent::types stores both) optionally followed by a '.'-joined qualifier:
+//   .Other  — self-exclusion (CR 700.5 / 109.3): the permanent must NOT be the cost's
+//             source (`exclude_entity`), i.e. "another <type>". An empty/0 exclude makes
+//             .Other a no-op match on type alone.
+//   .<Color> / .non<Color>  — a color restriction (e.g. "Creature.Green" on Natural Order's
+//             "sacrifice a green creature"): the permanent's effective color must satisfy the
+//             qualifier, evaluated via color_set_passes / color_set_passes_noncolor against the
+//             permanent's effective_colors (read live, so continuous color-changing effects
+//             count). Honoured only when `perm_entity` is supplied.
+inline bool permanent_matches_subtype_spec(const Permanent &perm, const std::string &spec,
+                                           Entity perm_entity = 0, Entity exclude_entity = 0) {
     size_t pp = 0;
     while (pp <= spec.size()) {
         size_t sc = spec.find(';', pp);
         if (sc == std::string::npos) sc = spec.size();
-        std::string sub = spec.substr(pp, sc - pp);
-        for (const auto &t : perm.types)
-            if (t.name == sub) return true;
+        std::string alt = spec.substr(pp, sc - pp);
         pp = sc + 1;
+
+        // Split off a '.'-joined qualifier (e.g. "Creature.Other" → "Creature" + "Other").
+        std::string type_name = alt;
+        std::string qual;
+        bool require_other = false;
+        size_t dot = alt.find('.');
+        if (dot != std::string::npos) {
+            type_name = alt.substr(0, dot);
+            qual = alt.substr(dot + 1);
+            if (qual == "Other") require_other = true;
+        }
+
+        // .Other: the matching permanent must not be the cost's source (self-exclusion).
+        if (require_other && perm_entity != 0 && exclude_entity != 0 && perm_entity == exclude_entity)
+            continue;
+
+        bool type_match = false;
+        for (const auto &t : perm.types)
+            if (t.name == type_name) { type_match = true; break; }
+        if (!type_match) continue;
+
+        // Color qualifier (e.g. ".Green" / ".nonGreen"): apply against the permanent's
+        // effective colors. The matchers key on the raw qualifier text (".Green",
+        // "nonGreen"), so feed them `alt` directly. A non-color qualifier (e.g. "Other")
+        // is ignored here — color_set_passes only reacts to color tokens.
+        if (!qual.empty() && qual != "Other" && perm_entity != 0) {
+            std::set<Colors> cols = effective_colors(perm_entity);
+            if (!color_set_passes(alt, cols)) continue;
+            if (!color_set_passes_noncolor(alt, cols)) continue;
+        }
+        return true;
     }
     return false;
 }
@@ -303,9 +391,11 @@ inline bool permanent_matches_subtype_spec(const Permanent &perm, const std::str
 // Battlefield permanents controlled by `player` matching the ';'-delimited subtype
 // `spec`. Drives both Sacrifice-a-<type> and Return-a-<type> activation costs:
 // non-empty == the cost is payable (legality), and the list itself is the player's
-// choice menu (payment).
+// choice menu (payment). `exclude_entity` is the cost's source, honoured by a `.Other`
+// qualifier in the spec (e.g. Wight of the Reliquary's "Sacrifice another creature").
 inline std::vector<Entity> controlled_permanents_matching(
-    Zone::Ownership player, const std::string &spec, const std::set<Entity> &entities) {
+    Zone::Ownership player, const std::string &spec, const std::set<Entity> &entities,
+    Entity exclude_entity = 0) {
     std::vector<Entity> out;
     for (auto e : entities) {
         if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
@@ -313,9 +403,23 @@ inline std::vector<Entity> controlled_permanents_matching(
         if (z.location != Zone::BATTLEFIELD) continue;
         auto &perm = global_coordinator.GetComponent<Permanent>(e);
         if (perm.controller != player) continue;
-        if (permanent_matches_subtype_spec(perm, spec)) out.push_back(e);
+        if (permanent_matches_subtype_spec(perm, spec, e, exclude_entity)) out.push_back(e);
     }
     return out;
+}
+
+// The additional Sacrifice-a-<type> cost a spell pays as it is cast, taken from the
+// card's SPELL ability `Cost$` (e.g. Natural Order's "Sac<1/Creature.Green>" →
+// "Creature.Green"). Empty when the spell has no additional sacrifice cost. Mirrors how
+// an activated ability stores its Sac cost on the Ability; reading it from the SPELL
+// ability keeps the parser's real Cost$ tag authoritative (no retag). The cast path pays
+// it with the same SACRIFICE_PERMANENT machinery activated abilities use, and cast
+// legality requires a matching permanent (CR 601.2f).
+inline std::string spell_additional_sac_spec(const CardData &cd) {
+    for (const auto &ab : cd.abilities)
+        if (ab.ability_type == Ability::SPELL && !ab.sac_cost_spec.empty())
+            return ab.sac_cost_spec;
+    return "";
 }
 
 // Single source for "a player gains life": raises their life total and accumulates

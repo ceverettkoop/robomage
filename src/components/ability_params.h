@@ -60,9 +60,16 @@ struct CounterParams {
     int count = 0;                  // CounterNum$ — static count; 0 when dynamic
 };
 
-// Discard (e.g. Thoughtseize/Duress).
+// Discard (e.g. Thoughtseize/Duress/Cabal Therapy).
 struct DiscardParams {
-    std::string valid = "";  // DiscardValid$ — filter (e.g. "Card.nonLand")
+    std::string valid = "";  // DiscardValid$ — filter (e.g. "Card.nonLand", "Card.NamedCard")
+    // Mode$ — "RevealYouChoose" (default): target player reveals hand, the ability's
+    // controller picks ONE matching card to discard (Thoughtseize/Duress). Empty is
+    // treated as this default. "RevealDiscardAll": target player reveals hand and discards
+    // EVERY card matching `valid` (Cabal Therapy). "Random": the target player discards
+    // NumCards$ cards chosen uniformly at random from their hand, no reveal, no choice by
+    // anyone (Hymn to Tourach); count clamped to hand size (CR 701.8e/f).
+    std::string mode = "";
 };
 
 // Peek-no-reveal variant (Mishra's Bauble): look at top card privately, no
@@ -70,6 +77,10 @@ struct DiscardParams {
 struct PeekParams {
     bool no_reveal = false;  // NoReveal$ True
     int peek_amount = 1;     // PeekAmount$ N — how many top cards to look at (Birthing Ritual: 7)
+    // Random$ True (Urza's Bauble): the controller looks at ONE card chosen uniformly at
+    // random from the target/defined player's HAND. Used by the AB$/DB$ Reveal handler
+    // (effect_reveal.cpp), not the PeekAndReveal library-top path above.
+    bool random_from_hand = false;
 };
 
 // Amass (e.g. Orcish Bowmasters: "amass Orcs 1"). The counter count lives in the

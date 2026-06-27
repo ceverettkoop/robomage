@@ -35,10 +35,12 @@ enum class EffectKind {
     Untap,
     Destroy,
     DestroyAll,
+    DamageAll,
     Counter,
     Surveil,
     Scry,
     PeekAndReveal,
+    Reveal,
     Phases,
     Dig,
     SylvanLibrary,
@@ -54,6 +56,7 @@ enum class EffectKind {
     SacrificeTokens,
     RepeatEach,
     GrantCast,
+    NameCard,
 };
 
 // Maps a normalized category string to its EffectKind. Unknown strings → None.

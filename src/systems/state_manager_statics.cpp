@@ -29,6 +29,7 @@
 #include "../game_queries.h"
 #include "../input_logger.h"
 #include "../mana_system.h"
+#include "../name_card_choices.h"
 #include "../svar_eval.h"
 #include "../systems/stack_manager.h"
 #include "replacement_effects.h"
@@ -63,10 +64,73 @@ static int artifacts_controlled_by(Zone::Ownership caster) {
     return count;
 }
 
+// True if `card_data` matches a ReduceCost ValidCard$ filter such as "Eldrazi.Colorless",
+// "Card.Colorless", "Creature", or "Card.nonCreature". A single optional ".Qualifier" is
+// supported (the heads/qualifiers a cost-reduction static realistically uses). The head is
+// a type or subtype name in the card's type line; "Card"/"Permanent"/"Spell" are wildcards.
+static bool card_matches_reduce_filter(const CardData &card_data, const std::string &filter) {
+    if (filter.empty()) return true;
+    std::string head = filter;
+    std::string qualifier;
+    size_t dot = filter.find('.');
+    if (dot != std::string::npos) {
+        head = filter.substr(0, dot);
+        qualifier = filter.substr(dot + 1);
+    }
+
+    bool head_ok = (head == "Card" || head == "Permanent" || head == "Spell");
+    if (!head_ok)
+        for (const auto &t : card_data.types)
+            if (t.name == head) { head_ok = true; break; }
+    if (!head_ok) return false;
+
+    if (qualifier.empty()) return true;
+    if (qualifier == "Colorless")    return is_colorless_card(card_data);
+    if (qualifier == "Creature")     return is_creature_card(card_data);
+    if (qualifier == "nonCreature")  return !is_creature_card(card_data);
+    // Single colored-qualifier (e.g. "Card.Red"): the card must include that color.
+    static const std::pair<const char *, Colors> kColors[] = {
+        {"White", WHITE}, {"Blue", BLUE}, {"Black", BLACK}, {"Red", RED}, {"Green", GREEN}};
+    for (const auto &kv : kColors)
+        if (qualifier == kv.first) return card_colors(card_data).count(kv.second) > 0;
+    // Otherwise treat the qualifier as a subtype name (e.g. "Eldrazi.Wizard").
+    for (const auto &t : card_data.types)
+        if (t.name == qualifier) return true;
+    return false;
+}
+
+// Total generic mana that active ReduceCost statics remove from the cost of casting
+// `card_data` for player `caster` (the mirror of active_raise_cost_for). Each ReduceCost
+// static reduces matching spells' generic cost by its Amount$ (CR 118.7 / 601.2f); an
+// Activator$ You static only reduces spells cast by its own controller. The caller clamps
+// the generic portion at zero and never reduces colored pips.
+int active_reduce_cost_for(const CardData &card_data, Zone::Ownership caster) {
+    int total = 0;
+    for (const auto &as : g_active_statics) {
+        if (as.suppressed) continue;  // 613.1f: source lost all abilities (Humility)
+        if (as.sa->category != "ReduceCost") continue;
+        if (as.sa->reduce_cost_you_only && as.controller != caster) continue;
+        if (!card_matches_reduce_filter(card_data, as.sa->reduce_cost_filter)) continue;
+        total += as.sa->reduce_cost;
+    }
+    return total;
+}
+
 ManaValue effective_base_cost(const CardData &card_data, Zone::Ownership caster) {
     ManaValue cost = card_data.mana_cost;
     int raise_total = active_raise_cost_for(card_data);
     for (int ri = 0; ri < raise_total; ri++) cost.insert(GENERIC);
+    // ReduceCost statics (Eye of Ugin): reduce the generic portion by Amount$ per matching
+    // static. Applied after additions (CR 601.2f); only generic pips removed (never a colored
+    // pip — CR 118.7), never below 0. Caster-gated for Activator$ You statics.
+    if (caster != Zone::UNKNOWN) {
+        int reduce_total = active_reduce_cost_for(card_data, caster);
+        while (reduce_total-- > 0) {
+            auto it = cost.find(GENERIC);
+            if (it == cost.end()) break;
+            cost.erase(it);
+        }
+    }
     // Affinity for artifacts (CR 702.41): reduce the generic portion by {1} per artifact
     // the caster controls. Cost reductions are applied after additions (601.2f) and only
     // the generic pips can be removed (a colored pip is never reduced); never go below 0.
@@ -360,46 +424,18 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                 if (perm_ref.chosen_name.empty()) {
                     Zone::Ownership opp = (perm_ref.controller == Zone::PLAYER_A)
                         ? Zone::PLAYER_B : Zone::PLAYER_A;
-                    // Distinct opponent-owned vocab card names, each with a representative
-                    // entity (so the per-action card id encodes the candidate) and a copy
-                    // count for ordering.
+                    // Distinct opponent-owned vocab cards (whole deck, lands included), built
+                    // by the shared helper also used by Cabal Therapy's SP$ NameCard.
                     std::vector<std::string> names;
-                    std::vector<Entity> reps;
-                    std::vector<int> copies;
-                    for (auto e2 : mEntities) {
-                        if (!global_coordinator.entity_has_component<CardData>(e2)) continue;
-                        if (!global_coordinator.entity_has_component<Zone>(e2)) continue;
-                        if (global_coordinator.GetComponent<Zone>(e2).owner != opp) continue;
-                        auto &cd2 = global_coordinator.GetComponent<CardData>(e2);
-                        if (card_name_to_index(cd2.name) < 0) continue;  // restrict to vocab cards
-                        bool found = false;
-                        for (size_t i = 0; i < names.size(); i++)
-                            if (names[i] == cd2.name) { copies[i]++; found = true; break; }
-                        if (!found) { names.push_back(cd2.name); reps.push_back(e2); copies.push_back(1); }
-                    }
-                    if (!names.empty()) {
-                        // Order by copies desc, then name asc (deterministic for replay)
-                        std::vector<size_t> order(names.size());
-                        for (size_t i = 0; i < order.size(); i++) order[i] = i;
-                        std::sort(order.begin(), order.end(), [&](size_t a, size_t b) {
-                            if (copies[a] != copies[b]) return copies[a] > copies[b];
-                            return names[a] < names[b];
-                        });
-                        if (order.size() > static_cast<size_t>(MAX_ACTIONS))
-                            order.resize(MAX_ACTIONS);
-                        std::vector<LegalAction> name_choices;
-                        for (size_t idx : order) {
-                            LegalAction la(PASS_PRIORITY, reps[idx], "Name card: " + names[idx]);
-                            la.category = ActionCategory::NAME_CARD;
-                            la.card_is_public = true;
-                            name_choices.push_back(la);
-                        }
+                    std::vector<LegalAction> name_choices =
+                        build_name_card_choices(mEntities, opp, /*exclude_lands=*/false, names);
+                    if (!name_choices.empty()) {
                         bool prev_priority = cur_game.player_a_has_priority;
                         cur_game.player_a_has_priority = (perm_ref.controller == Zone::PLAYER_A);
                         game_log("Choose a card name for %s:\n", perm_ref.name.c_str());
                         int choice = InputLogger::instance().get_input(name_choices);
                         cur_game.player_a_has_priority = prev_priority;
-                        perm_ref.chosen_name = names[order[static_cast<size_t>(choice)]];
+                        perm_ref.chosen_name = names[static_cast<size_t>(choice)];
                         game_log("%s names card: %s\n",
                                  player_name(perm_ref.controller).c_str(), perm_ref.chosen_name.c_str());
                     }

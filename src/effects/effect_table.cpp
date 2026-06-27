@@ -24,6 +24,7 @@ EffectHandler handler_for(EffectKind kind) {
         case EffectKind::Attach:          return &attach;
         case EffectKind::ChooseCard:      return &choose_card;
         case EffectKind::DestroyAll:      return &destroy_all;
+        case EffectKind::DamageAll:       return &damage_all;
         case EffectKind::Destroy:         return &destroy;
         case EffectKind::Token:           return &token;
         case EffectKind::Surveil:         return &surveil;
@@ -40,6 +41,7 @@ EffectHandler handler_for(EffectKind kind) {
         case EffectKind::Discard:         return &discard;
         case EffectKind::Pump:            return &pump;
         case EffectKind::PeekAndReveal:   return &peek_and_reveal;
+        case EffectKind::Reveal:          return &reveal;
         case EffectKind::Dig:             return &dig;
         case EffectKind::SylvanLibrary:   return &sylvan_library;
         case EffectKind::Amass:           return &amass;
@@ -52,6 +54,7 @@ EffectHandler handler_for(EffectKind kind) {
         case EffectKind::SacrificeTokens: return &sacrifice_tokens;
         case EffectKind::RepeatEach:      return &repeat_each;
         case EffectKind::GrantCast:       return &grant_cast;
+        case EffectKind::NameCard:        return &name_card;
         default:                          return nullptr;
     }
 }
@@ -72,6 +75,7 @@ bool apply_parse_hook(Ability &ab, const std::string &key, const std::string &va
         || parse_discard(ab, key, value)
         || parse_mill(ab, key, value)
         || parse_peek_and_reveal(ab, key, value)
+        || parse_reveal(ab, key, value)
         || parse_amass(ab, key, value);
 }
 

@@ -127,8 +127,14 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
 
             auto &creature = global_coordinator.GetComponent<Creature>(entity);
             if (creature.toughness == 0) {
+                // 704.5f: a creature with toughness 0 or less is put into its owner's
+                // graveyard. This is NOT a destroy — indestructible does not prevent it.
                 creatures_to_destroy.push_back(entity);
-            } else if (global_coordinator.entity_has_component<Damage>(entity)) {
+            } else if (global_coordinator.entity_has_component<Damage>(entity) &&
+                       !is_indestructible(entity)) {
+                // 704.5g/h: lethal-damage / deathtouch destruction. 702.12b: an
+                // indestructible creature ignores these state-based actions, so it is
+                // excluded above (it keeps its marked damage but is not destroyed).
                 auto &damage = global_coordinator.GetComponent<Damage>(entity);
                 // 702.2b: any nonzero damage from a deathtouch source is lethal.
                 bool deathtouched = damage.has_deathtouch_damage && damage.damage_counters > 0;

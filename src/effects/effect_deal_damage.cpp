@@ -53,6 +53,26 @@ bool deal_damage(Ability &ab, std::shared_ptr<Orderer> orderer) {
         game_log("Dealt %zu damage to player (now at %d life)\n", dmg, player.life_total);
         return true;
     }
+    // Defined$ TargetedController — "deals N damage to that <permanent>'s controller"
+    // (Smash to Smithereens: destroy target artifact, then deal 3 to the artifact's
+    // controller). The damaged player is the controller of the parent ability's target,
+    // which the sub-ability inherits as ab.target. The Destroy sub-ability runs in this
+    // same resolution before any SBA pass strips the Permanent, so the target's
+    // controller is still live; we read it via last-known information (CR 608.2g/h):
+    // Zone.controller while on the battlefield, else the Permanent.controller it last had.
+    if (ab.defined_targeted_controller && ab.target != 0 &&
+        global_coordinator.entity_has_component<Zone>(ab.target)) {
+        Zone::Ownership tgt_controller = global_coordinator.GetComponent<Zone>(ab.target).controller;
+        if (tgt_controller == Zone::UNKNOWN && global_coordinator.entity_has_component<Permanent>(ab.target))
+            tgt_controller = global_coordinator.GetComponent<Permanent>(ab.target).controller;
+        if (tgt_controller != Zone::UNKNOWN) {
+            Entity tgt_player = get_player_entity(tgt_controller);
+            deal_damage_to_player(ab.source, tgt_player, dmg);
+            auto &player = global_coordinator.GetComponent<Player>(tgt_player);
+            game_log("Dealt %zu damage to player (now at %d life)\n", dmg, player.life_total);
+            return true;
+        }
+    }
     // Defined$ You — "deals N damage to you" (Ancient Tomb's mana-ability pain rider).
     // The damaged player is the source's controller; no target was chosen. CR 109.5.
     if (ab.defined_you) {

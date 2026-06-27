@@ -58,6 +58,19 @@ static std::string trigger_label(const std::string &name, const Ability &ab);
 static void place_triggers_apnap(Game &game, std::shared_ptr<Orderer> orderer,
                                  std::vector<PendingTrigger> &pending);
 
+// Bind the triggering player (the event's PLAYER, e.g. the caster of the triggering spell)
+// onto any ability in the tree that uses Defined$ TriggeredActivator (CR 603.x). The
+// LoseLife/etc. effect lives in a DB$ subability under Execute$, so recurse into
+// subabilities/charm_choices. Only abilities flagged defined_triggered_activator are touched.
+static void bind_triggered_activator(Ability &ab, Entity activator_entity) {
+    Zone::Ownership activator = (activator_entity == get_player_entity(Zone::PLAYER_A)) ? Zone::PLAYER_A
+                              : (activator_entity == get_player_entity(Zone::PLAYER_B)) ? Zone::PLAYER_B
+                                                                                        : Zone::UNKNOWN;
+    if (ab.defined_triggered_activator) ab.triggered_activator = activator;
+    for (auto &sub : ab.subabilities) bind_triggered_activator(sub, activator_entity);
+    for (auto &c : ab.charm_choices) bind_triggered_activator(c, activator_entity);
+}
+
 // Drains all buffered events since the last call and puts any triggered abilities
 // from battlefield permanents whose trigger condition matches onto the stack.
 void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer> orderer) {
@@ -305,6 +318,11 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                 // fired this trigger. Capture it from the event as the ability's target.
                 if (trigger_ab.defined_triggered_spell && ev.HasParam(Params::ENTITY))
                     trigger_ab.target = ev.GetParam<Entity>(Params::ENTITY);
+                // Defined$ TriggeredActivator — bind the player who caused the trigger (the
+                // event's PLAYER, e.g. the caster of the noncreature spell) onto this ability
+                // and its subabilities, so the effect (LoseLife etc.) resolves against them.
+                if (ev.HasParam(Params::PLAYER))
+                    bind_triggered_activator(trigger_ab, ev.GetParam<Entity>(Params::PLAYER));
                 // For exalted, target the sole attacker from the event
                 if (trigger_ab.category == "ExaltedBonus" && ev.HasParam(Params::ENTITY))
                     trigger_ab.target = ev.GetParam<Entity>(Params::ENTITY);

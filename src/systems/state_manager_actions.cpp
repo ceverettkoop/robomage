@@ -417,6 +417,17 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             bool can_regular = can_pay_mana(priority_player, effective_cost, card_entity,
                                             orderer, card_data.has_delve, card_data.has_improvise);
 
+            // Additional Sacrifice-a-<type> cost on the spell itself (Natural Order:
+            // "As an additional cost to cast this spell, sacrifice a green creature").
+            // The spell can't be cast unless a matching permanent is available to
+            // sacrifice (CR 601.2f). General: any spell whose SPELL ability Cost$ carries
+            // a Sac<...> token, matched (incl. color qualifier) like an activation cost.
+            std::string spell_sac_spec = spell_additional_sac_spec(card_data);
+            if (!spell_sac_spec.empty() &&
+                controlled_permanents_matching(priority_player, spell_sac_spec,
+                                               orderer->mEntities, card_entity).empty())
+                can_regular = false;
+
             bool can_alt = can_afford_alt(card_data.alt_cost, priority_player, card_entity, orderer);
 
             if (can_regular) actions.push_back(la);
@@ -479,6 +490,13 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 can_afford_fb = false;
         }
         if (!can_afford_fb) continue;
+
+        // Flashback sacrifice cost (Cabal Therapy: Flashback—Sacrifice a creature): can't be
+        // cast unless a matching permanent is available to sacrifice (CR 601.2f / 601.3a).
+        if (!gcd.flashback_alt_cost.sac_cost_spec.empty() &&
+            controlled_permanents_matching(priority_player, gcd.flashback_alt_cost.sac_cost_spec,
+                                           orderer->mEntities, gy_entity).empty())
+            continue;
 
         // A graveyard-cast static (Grafdigger's Cage: Origin$ Graveyard) prohibits flashback.
         bool fb_is_creature = is_creature_card(gcd);
@@ -603,9 +621,10 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             }
             // Activation limit check
             if (ab.activation_limit > 0 && ab.activations_this_turn >= ab.activation_limit) continue;
-            // sac_cost_spec: require controller has a permanent matching type
+            // sac_cost_spec: require controller has a permanent matching type (honouring a
+            // .Other self-exclusion against the ability's source — "another creature").
             if (!ab.sac_cost_spec.empty() &&
-                controlled_permanents_matching(priority_player, ab.sac_cost_spec, orderer->mEntities).empty())
+                controlled_permanents_matching(priority_player, ab.sac_cost_spec, orderer->mEntities, ab.source).empty())
                 continue;
             // Return cost: require controller has a land of given subtype
             if (!ab.return_cost_type.empty() &&
@@ -639,9 +658,10 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             if (!ab.activation_mana_cost.empty() && !can_pay_mana(priority_player, ab.activation_mana_cost, card_entity, orderer)) continue;
             // Check target legality
             if (ab.valid_tgts != "N_A" && ab.target_min > 0 && !has_legal_targets(ab, orderer)) continue;
-            // sac_cost_spec: require controller has a permanent matching type
+            // sac_cost_spec: require controller has a permanent matching type (honouring a
+            // .Other self-exclusion against the activating card).
             if (!ab.sac_cost_spec.empty() &&
-                controlled_permanents_matching(priority_player, ab.sac_cost_spec, orderer->mEntities).empty())
+                controlled_permanents_matching(priority_player, ab.sac_cost_spec, orderer->mEntities, card_entity).empty())
                 continue;
             { auto it = cur_game.payment_fail_counts.find(card_entity);
               if (it != cur_game.payment_fail_counts.end() && it->second >= 2) continue; }

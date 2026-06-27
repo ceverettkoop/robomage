@@ -1,67 +1,78 @@
 ---
 name: autonomous-implement-missing-cards
-description: Autonomously implement many missing Magic cards inside a sandbox cloud container — triaged into parallel-safe and mechanic-shared tiers, each card fully implemented, tested in isolation and in a real game, documented in a committed design doc, and committed on its own. No user input is available, so behavior is resolved from the Comprehensive Rules and Oracle text (and documented) or the card is deferred with a written rationale; the integrated tree is never left broken. Cards with no shared engine work run in parallel git worktrees; cards that need the same new mechanic are batched so the mechanic is implemented exactly once. Use for unattended batch card implementation (e.g. draining the bin/resources/decks/meta worklist) when no human is in the loop.
+description: Autonomously implement a bounded batch of missing Magic cards inside a sandbox cloud container. The caller gives a maximum number of cards to implement; the system inspects roughly twice that many missing cards, triages them, and writes every triage-deferred card to a deferred-cards doc for user-directed implementation later. Cards are then implemented one at a time IN SEQUENCE — never in parallel — each (or each rationally-batched group sharing one new mechanic) fully implemented, built, tested, and committed on its own before the next begins. A covered card whose mechanics are all verifiably already implemented by cards that existed in the repo before this branch may skip the test step. Behavior is resolved from the Comprehensive Rules and Oracle text (no user is in the loop) or the card is cleanly deferred. The run branch is never left broken. Use for unattended, capped batch card implementation (e.g. draining the bin/resources/decks/meta worklist).
 ---
 
 # Autonomous implement missing cards
 
-Drains the missing-card worklist **unattended**, in a sandbox cloud container. Each card is
-fully implemented, tested in isolation **and** in a real game, documented in a committed design
-doc, and **committed on its own**. Work is split into tiers so it parallelizes without the merge
-hazards that naive one-worktree-per-card would create.
+Implements a **bounded** batch of missing cards **unattended**, in a sandbox cloud container.
+The caller supplies a **maximum card count `N`**; the run inspects roughly **`2N`** missing cards,
+triages them, and implements **up to `N`** of them — **one at a time, in sequence** — each fully
+implemented, built, tested, and **committed on its own** (or as a small rationally-batched group)
+before the next begins. Every card the triage step **defers** is written to a committed
+**deferred-cards doc** so a human can pick it up later.
 
 This is the autonomous sibling of `implement-missing-cards`. The engineering procedure for a
 single card is the same; the differences are operational:
 
-- **No user is available.** Every gate the interactive skill resolves by "STOP and ask the
-  user" is resolved here by the **Autonomous decision policy** below — decide-and-document, or
+- **The caller sets a cap.** `N` = the maximum number of cards to *implement* this run. The run
+  triages ~`2N` candidates so that, after deferrals, there are still enough implementable cards to
+  reach `N`. The cap is a hard maximum on cards committed, not a quota — landing fewer is fine.
+- **No user is available.** Every gate the interactive skill resolves by "STOP and ask the user"
+  is resolved here by the **Autonomous decision policy** below — decide-and-document, or
   defer-and-document. Never block waiting for input.
-- **Each card gets its own commit** plus a committed design doc under
-  `docs/card_implementations/`.
-- **Heavy context lives and dies in a per-task subagent**, so the orchestrator only ever holds
-  a tiny ledger between cards. Parallel-safe cards run in their own **git worktrees**.
-- **The integrated trunk is never left broken.** A card's commit is integrated onto the trunk
-  only after it builds clean and its tests pass *against the merged tree* — not just in
-  isolation. Anything else → the branch is quarantined for human review, trunk stays green.
+- **Implementation is strictly sequential.** Cards are *not* implemented in parallel. The run
+  works directly on one run branch; each card (or batch) runs the full
+  implement → build → test → commit cycle to completion before the next card starts. (Read-only
+  *triage* may still fan out — it makes no edits.)
+- **One commit per card or per batch.** Each card is its own commit, except a group of cards that
+  the triage step marks as rationally batchable (they share one new mechanic) — those are
+  implemented and tested together and may share the mechanic commit, but each card still lands its
+  own card commit where practical.
+- **Triage-deferred cards are listed in a doc.** `docs/card_implementations/deferred_cards.md`
+  gets a dated section naming every deferred card and why, for user-directed implementation.
+- **A covered card may skip verification when its mechanics are already proven.** If every tag a
+  card uses is **verifiably already implemented by a card that existed in the repo before this run
+  branch** (the handler is not just present in code but exercised by a shipping card), the test
+  and regression steps may be skipped for that card — registering it and confirming a clean build
+  is enough. Anything that introduces or first-exercises a mechanic is fully tested.
+- **The run branch is never left broken.** A card lands only after the build is clean and (unless
+  verification was legitimately skipped) its tests pass. A card that cannot finish cleanly is
+  reverted and deferred — the tree stays green between every commit.
 
 **The intent is always to implement the card with its full rules functionality** per the
-Comprehensive Rules. We do **not** stub, skip, or simplify a card's mechanics to save effort.
-The only acceptable non-implementation outcome is a **clean deferral** (card untouched on
-trunk, reason documented).
+Comprehensive Rules. We do **not** stub, skip, or simplify a card's mechanics to save effort. The
+only acceptable non-implementation outcome is a **clean deferral** (card untouched, reason
+recorded in the deferred-cards doc).
 
-## Why tiers (the design rationale)
+## Why this shape (the design rationale)
 
-The contention in batch card work is not the cards — it's three shared files:
+Sequential, single-tree implementation trades parallel throughput for **simplicity and safety**:
 
-1. **`src/card_vocab.h`** — every card appends `{"Name", N}` at the list tail. Solved by
-   **pre-assigning each card a distinct index** during triage; appends then never collide
-   semantically.
-2. **`train/card_costs.py`** — *fully derived* from the vocab by `gen_card_costs.py`. It must
-   **never be committed from a parallel worker**; it is regenerated once, serially, at
-   integration. A per-worktree copy conflicts on every single card for no reason.
-3. **The central dispatch files** — `src/effects/effect_kind.{h,cpp}`, `effect_table.cpp`,
-   `parse.cpp`, `action_processor.cpp`, `ability.{h,cpp}`, `state_manager_triggers.cpp`. Almost
-   every *nontrivial* card edits these. Two workers touching them independently risk (a)
-   append-only textual conflicts (resolvable) and, worse, (b) **two divergent implementations
-   of the same mechanic**, neither aware of the other — each tests green in isolation but the
-   merged build is wrong. This is the same failure mode as the retag rule, one level up.
-
-So we **triage first**, then run two tiers:
-
-- **Tier A — covered cards** (no engine change; existing handlers fully cover the script).
-  These touch only per-card files (`cardsfolder/<x>.txt`, the design doc) plus their
-  pre-assigned vocab line. **Embarrassingly parallel** — each in its own worktree, own commit.
-- **Tier B — mechanic cards** (need a new handler). **Batched by shared mechanic**: one
-  subagent owns mechanic X end-to-end and implements *every* card in X's group, committing each
-  card separately. The mechanic is implemented exactly once, so no divergent-duplicate risk.
-  Distinct mechanic groups may run in parallel worktrees (different handler files); their only
-  shared touchpoints are the append-only central enum/table, resolved at serial integration.
-
-Integration is **always serial** and **always rebuilds + smoke-tests against the merged tree**.
-That rebuild is the safety net the naive design lacks.
+1. **No divergent-duplicate mechanics.** The classic batch hazard is two workers independently
+   implementing the same mechanic in the central dispatch files (`effect_kind.{h,cpp}`,
+   `effect_table.cpp`, `parse.cpp`, `ability.{h,cpp}`, …) — each green in isolation, wrong when
+   merged. Working one card at a time on one tree means the second card *sees* the first card's
+   mechanic and reuses it. Triage batches cards that share a new mechanic so the mechanic is
+   written exactly once.
+2. **No merge/cherry-pick/quarantine machinery.** Because every card is committed onto the run
+   branch the moment it is green, there is no integration phase, no worktrees, and no quarantine
+   namespace. `train/card_vocab.h` and `train/card_costs.py` are edited and rebuilt inline per
+   card, so they never conflict.
+3. **`train/card_costs.py` stays in sync automatically.** A plain `make` runs `pygen`, which
+   regenerates `card_costs.py` whenever `src/card_vocab.h` changes. Each card's `make` rebuild
+   therefore refreshes the derived file, and it is committed alongside that card.
+4. **The cap bounds blast radius.** Inspecting `2N` and implementing `≤N` keeps each run small
+   enough to review as a single branch, while the `2N` triage buffer absorbs deferrals so the run
+   still reaches `N` implementable cards when it can.
 
 ## Background
 
+- **Build headless.** Every `make` invocation in this skill means `make HEADLESS=TRUE` unless the
+  user explicitly asks for the GUI. The GUI (raylib) front end is deprecated/unmaintained and
+  raylib is typically unavailable in the sandbox cloud container, so a plain `make` fails at link
+  time. `HEADLESS=TRUE` still runs `pygen` (regenerating `train/card_costs.py`) and produces the
+  same `bin/robomage` the test harness drives, so it satisfies every build/regen step below.
 - Cards are registered in `src/card_vocab.h` as `{"Card Name", N}` (next free index `N`).
   `N_CARD_TYPES = 1024`, so indices up to 1022 are free (1023 is the token sentinel). A card
   absent from this file is "unimplemented".
@@ -76,261 +87,219 @@ That rebuild is the safety net the naive design lacks.
   script available") and move on. Do not write, invent, or reconstruct a script by hand.
 - The authoritative rules for how a mechanic *should* behave are checked in at
   `docs/mtg_comprehensive_rules.txt` (navigation guide: `docs/mtg_comprehensive_rules.md`).
-  **When behavior, timing, or keyword semantics are in question, grep the relevant numbered
-  rule** (702 keyword abilities, 704 state-based actions, 5xx combat, 613 layers) rather than
-  relying on memory. This is the ground truth that replaces asking the user.
+  **When behavior, timing, or keyword semantics are in question, grep the relevant numbered rule**
+  (702 keyword abilities, 704 state-based actions, 5xx combat, 613 layers) rather than relying on
+  memory. This is the ground truth that replaces asking the user.
 
 ## Tools
 
 - `train/.venv/bin/python train/missing_cards.py [--json]` — the worklist: cards referenced by
-  decks (default `bin/resources/decks/meta/`) but missing from the vocab, sorted by cross-deck
-  frequency, each tagged `has_local_script` and a `suggested_index`.
+  decks (default `bin/resources/decks/meta/`) but missing from the vocab, **sorted by cross-deck
+  frequency**, each tagged `has_local_script` and a `suggested_index`. Take the **top `2N`** rows
+  (it has no `--limit`; slice the JSON yourself).
 - `python tools/forge_fetch/fetch_script.py "Card Name"` — fetch a card's Forge script into
   `cardsfolder/` (add-only; non-zero exit ⇒ not found ⇒ **defer the card; never hand-author**).
 - `train/.venv/bin/python train/gen_card_costs.py` — regenerate `train/card_costs.py` after the
-  vocab changes (orchestrator-only, at integration).
-- `train/test_harness.py` — exercise a card's behavior (full usage in `CLAUDE.md`).
+  vocab changes. Normally unnecessary to call directly: a plain `make` regenerates it via `pygen`.
+- `train/test_harness.py` — exercise a card's behavior (full usage in `CLAUDE.md`). Also the
+  torch-free way to run a **scripted full-game regression**: `--deck-a <a> --deck-b <b> --scripted
+  --seed N` across a few seeds drives the same C++ engine and the same rule-based agent as
+  `observe`.
 - `train/.venv/bin/python train/train.py observe --deck <a> --opponent <b> --games N` —
-  scripted in-game regression.
+  scripted in-game regression. **Requires torch** (`train.py` imports `stable_baselines3`/`sb3-contrib`
+  at load), so it is unavailable wherever torch isn't installed — e.g. the headless sandbox
+  container, where torch would also cost ~0.5–1 GB to re-install every session. **When `observe`
+  is unavailable, fall back to the test-harness scripted games above** — they give equivalent
+  engine/rules-correctness coverage (`observe` only adds model-driven play and the gym
+  env/extractor pipeline, which are RL-eval concerns, not card-behavior verification).
 
 ## Orchestration
 
-The orchestrator runs six phases. It does almost no engineering itself; it dispatches
-subagents and keeps a small ledger in the scratchpad dir
-(`…/scratchpad/card_worklist.json`, status ∈ `pending | done | deferred | quarantined`) so the
-ledger survives the orchestrator's own context summarization. The orchestrator must **never**
-open card scripts, build logs, or transcripts beyond what it needs to dispatch and tally —
-that defeats the context-clearing design.
+The orchestrator keeps a small ledger in the scratchpad dir
+(`…/scratchpad/card_worklist.json`, status ∈ `pending | done | deferred | not-reached`) so it
+survives the orchestrator's own context summarization, and dispatches one subagent per card/batch
+so the heavy per-card context lives and dies inside that subagent. The orchestrator must **never**
+open card scripts, build logs, or transcripts beyond what it needs to dispatch and tally.
 
-### Branch model (one deliverable branch off `main`; quarantine namespace for the rest)
+### Branch model (one deliverable branch)
 
-- **Run branch `autonomous-cards/<YYYY-MM-DD>`** (or a caller-supplied name), off `main`. The
-  **deliverable** — every card that passes all gates lands here as its own commit, and the PR is
-  opened from this branch. Always builds clean.
-- **Implementation branches `card/<uid>` / `mech/<key>`**, each off the run branch's *starting
-  point* (self-contained snapshots). Subagents commit here. **Kept alive until Phase 5 ends** —
-  this is how quarantined work is preserved without reconstruction.
-- **Quarantine branches `quarantine/<YYYY-MM-DD>/<uid>`.** A card that fails at integration *or*
-  at verification has its implementation branch **renamed into this namespace** and its commits
-  kept **off the run branch**: nothing is lost (each is a checkout-able, self-contained branch a
-  human can build and test), nothing broken rides in the PR. This namespace *is* the "needs a
-  human" queue. After the run a human can, per card, **fix it** (check out the branch, repair,
-  then re-integrate onto the run branch via the Phase 4 gate) or **abandon it** (delete the
-  branch) — see Phase 6.
+All work happens on a single **run branch `autonomous-cards/<YYYY-MM-DD>`** (or a caller-supplied
+name), branched from the current development branch. Each card or batch is **its own commit** on
+this branch, applied in sequence. There are **no worktrees, no cherry-pick integration, and no
+quarantine branches** — a card that fails simply never gets committed (its changes are reverted)
+and is recorded as deferred. The run branch is the deliverable and is always clean and building.
 
-Each implementation branch ends one of two ways: **passed → its commits are on the run branch,
-delete the redundant impl branch; quarantined → renamed to `quarantine/<date>/<uid>`, kept aside.**
+Record the run branch's **starting HEAD** at preflight: this is the **"prior to this branch"**
+reference that defines which cards/mechanics already existed before the run (used to decide
+verification-skip eligibility, below).
 
 ### Phase 0 — Preflight (once)
 
 Confirm a clean tree (`git status --short` empty; if not, commit/stash pre-existing work so
-per-card commits stay isolated). Confirm a plain `make` is green. **Create a dedicated run
-branch and check it out** — `autonomous-cards/<YYYY-MM-DD>` (or a caller-supplied name), branched
-from the current development branch. **All work in this run happens on that branch**: it is the
-**trunk** that integration cherry-picks onto, so the branch you started from is never touched and
-the whole batch is reviewable/revertable as one branch. Record its HEAD as the integration base.
-Create `docs/card_implementations/` if absent.
+per-card commits stay isolated). Confirm a plain `make` is green. **Create and check out the run
+branch** off the current development branch, and **record its starting HEAD** as the
+"prior-to-this-branch" reference. Ensure `docs/card_implementations/` exists.
 
-### Phase 1 — Worklist + triage
+### Phase 1 — Worklist + triage (inspect ~2× the cap)
 
-1. Run `train/missing_cards.py --json`. **Pre-assign each card a distinct vocab index** (use
-   `suggested_index`, de-duplicated; all must stay `< 1023` — drop overflow cards as
-   `deferred(vocab overflow)`). Persist the ordered list to the ledger.
-2. **Classify each card in parallel** (read-only — fan out freely). For each card a triage
-   subagent reads its script (fetch if needed; if fetch fails → `defer(no script)`), reads its
-   `A:`/`T:`/`S:`/`K:`/`R:` lines and their `AB$`/`SP$`/`DB$` categories, and checks each
-   against `src/parse.cpp`, `src/effects/effect_kind.cpp`, `effect_table.cpp`. It returns a
-   **class**:
-   - `covered` — every tag is already handled; **no engine change** needed → Tier A.
+1. Read the cap **`N`** from the caller (the maximum number of cards to implement). If the caller
+   gave no number, **stop and surface that the cap is required** — the run is defined by it.
+2. Run `train/missing_cards.py --json`. Take the **top `2N`** rows by frequency. **Pre-assign each
+   a distinct vocab index** (use `suggested_index`, de-duplicated; all must stay `< 1023` — drop
+   overflow as `defer(vocab overflow)`). Persist the ordered list to the ledger.
+3. **Classify each of the `2N` cards** (read-only — this step may fan out, since it makes no
+   edits). For each card a triage subagent fetches the script if needed (fetch fails →
+   `defer(no script)`), reads its `A:`/`T:`/`S:`/`K:`/`R:` lines and their `AB$`/`SP$`/`DB$`
+   categories, and checks each against `src/parse.cpp`, `src/effects/effect_kind.cpp`,
+   `effect_table.cpp`. It returns a **class**:
+   - `covered` — every tag is already handled; **no engine change** needed. Additionally flag
+     **`verify_skip: true`** when every tag is **already exercised by at least one card that was in
+     the vocab before this run branch** (cite an example card) — i.e. the mechanic is proven, not
+     merely present in code. A covered card relying on a handler that *no* shipping card uses is
+     `verify_skip: false` (test it).
    - `mechanic:<key>` — needs a new handler; `<key>` is a stable short name for the missing
      mechanic (e.g. `affinity`, `convoke`, `cant-attack-unless`, the unhandled `AB$`/`SP$`/`DB$`
-     category). Cards sharing a `<key>` will be batched → Tier B.
+     category). Cards sharing a `<key>` are **rationally batchable** → implemented together so the
+     mechanic is written once.
    - `defer:<reason>` — no script, vocab overflow, or genuinely irreducible ambiguity.
 
-   Triage is a *judgement aid*, not a contract: a Tier-A card that turns out to need engine
-   work, or a misgrouped mechanic, is handled by the implementing subagent (it implements the
-   mechanic or defers) and surfaced in its summary.
+   Triage is a *judgement aid*, not a contract: a card that turns out to need more (or less) work
+   than its class suggests is handled by the implementing subagent (it implements or defers) and
+   surfaced in its summary.
 
-### Phase 2 — Tier A: parallel covered cards
+### Phase 2 — Record deferrals (the deferred-cards doc)
 
-For each `covered` card, **dispatch one subagent in its own git worktree** (Agent tool,
-`general-purpose`, `isolation: "worktree"`) with the **Per-card subagent prompt**. It commits on
-its `card/<uid>` branch (off the run branch's start) and does the full single-card procedure
-(steps 1–8). Because covered cards touch no engine code, these run fully concurrently. Each
-returns its branch name + commit hash + test summary, or a defer reason. The worktree (and its
-heavy context) is discarded on return; the branch persists for integration.
+Write/append a dated section to **`docs/card_implementations/deferred_cards.md`** listing **every
+triage-deferred card** with its one-line reason and whether a Forge script is available, framed as
+a worklist **for user-directed implementation**. In the same doc, under a separate
+**"Not reached (cap)"** heading, list any *implementable* cards from the `2N` pool that the `N`
+cap leaves unimplemented this run, so nothing is silently dropped. Commit this doc (its own commit,
+`Record deferred cards (<date>)`). Use the **Deferred-cards doc format** below.
 
-### Phase 3 — Tier B: mechanic-grouped cards
+### Phase 3 — Sequential implementation (up to `N` cards)
 
-Group the `mechanic:<key>` cards by `<key>`. For each group, **dispatch one subagent in its own
-worktree** with the **Per-mechanic-group subagent prompt** (below), committing on its
-`mech/<key>` branch (off the run branch's start). It implements the mechanic **once** as a real,
-general handler, then implements **each card in the group**, **committing each card separately**
-(the mechanic edits fold into the first card's commit, or land as a leading `Implement <mechanic>`
-commit). Distinct groups run concurrently. Each returns its branch + an ordered list of
-`{card, commit}` + per-card status.
+Build the ordered list of **units**: each `covered` card is a singleton unit; each
+`mechanic:<key>` group is **one batch unit** (all its cards). Order units by worklist priority
+(highest cross-deck frequency first); a batch takes the priority of its highest-frequency member.
 
-### Phase 4 — Serial integration (the safety net)
+Then implement units **strictly one at a time, directly on the run branch**, until the count of
+**cards committed reaches `N`**:
 
-Working on **trunk**, integrate branches **one at a time**, in a deterministic order (Tier A
-first — least likely to conflict — then Tier B groups by ascending card count). For each
-branch, dispatch a single **integrator subagent** (no worktree — it operates on the real trunk
-working tree; the `await` serializes them so only one mutates trunk at a time):
+- Before starting a unit, if `committed >= N`, **stop** (the remaining implementable cards become
+  "Not reached (cap)" entries in the deferred doc). A batch is **atomic** — if started it runs to
+  completion, so the final unit may land the count slightly above `N`; that is acceptable.
+- For each unit, **dispatch one subagent** (no worktree — it operates on the real run-branch
+  working tree; the orchestrator `await`s it so only one mutates the tree at a time) with the
+  **Per-unit subagent prompt** below. The subagent runs the full cycle —
+  implement → build → test → commit — and returns before the next unit begins.
+- A unit that cannot finish cleanly **reverts its own changes** (`git checkout -- . &&
+  git clean -fd`) and returns `deferred`; the orchestrator adds those cards to the deferred doc and
+  moves on. A batch may ship its mechanic + passing cards and defer only the card(s) that failed.
 
-1. `git cherry-pick` the branch's per-card commits in order.
-2. On conflict, resolve **only** the known append-only files by keeping **both** sides:
-   `src/card_vocab.h` (both vocab lines), and the central enum/table tails
-   (`effect_kind.h`, `effect_table.cpp`, etc.). **Any other conflict, or any non-trivial
-   conflict, is a red flag → abort the cherry-pick (`git cherry-pick --abort`) and quarantine
-   the branch** rather than hand-merging blind.
-3. Regenerate `train/card_costs.py` (`gen_card_costs.py`) and amend it into the integrated
-   commit(s) so the derived file matches the merged vocab.
-4. Run a plain `make`. **It must be clean.**
-5. Run a smoke test of *this* card against the merged tree — the same isolation scenario the
-   implementing subagent used (or a quick `observe … --games 4` with a deck that casts it).
-6. **Green → keep** (the card is now on the run branch as its own commit; its impl branch is now
-   redundant and is deleted at the end). **Red →** reset the run branch to the pre-cherry-pick
-   HEAD (`git reset --hard`) so it stays green, then **quarantine**: rename the card's impl
-   branch to `quarantine/<date>/<uid>` (`git branch -m card/<uid> quarantine/<date>/<uid>`) so
-   its commits are preserved off the run branch, and mark the card `quarantined` with the failure.
+**Verification-skip:** a `covered` card flagged `verify_skip: true` may **skip the isolation test
+and regression** — register it, confirm a clean `make`, document it, and commit. Every other card
+(covered-unproven, and every card in a mechanic batch) is fully tested before its commit.
 
-A quarantined card is the integration-time equivalent of a deferral: its self-contained branch
-survives under `quarantine/<date>/` for a human to fix or abandon (Phase 6), but it does not ship.
+### Phase 3.5 — Post-implementation code review (when the run completes in-session)
 
-### Phase 5 — Whole-batch verification (capstone)
+If the run reaches its target — the `N`-card cap is hit, or the implementable queue is exhausted —
+**while the session is still live** (the user has not terminated it), run a self-review before the
+final report:
 
-Integration smoke-tests each card *as it lands*; this phase verifies the **fully integrated run
-branch** with every new card present at once. Run it only after Phase 4 finishes, on the run
-branch, by invoking the **`demonstrate-session-cards`** skill — that is the verification capstone
-for exactly this situation. It enumerates the run's new cards from the committed design docs,
-builds temp decks that contain them, runs the `engine-sanity-check` scripted games over real
-matches, **proves every new card is actually demonstrated** (cast + its defining clause resolved)
-— backfilling any gap with a targeted `test_harness.py` scenario — and reviews the verbose output
-for engine bugs. Prioritize cards returned `NEEDS_REVIEW: yes` (ambiguity resolved from rules,
-complex interactions, happy-path-only coverage, new-mechanic cards) for the deepest targeted
-scrutiny.
+1. Run the **`code-review`** skill at **medium** effort over the run branch's accumulated diff
+   (its changes vs. the run's starting HEAD).
+2. **Fix only LOW-RISK findings** — a clear, localized correctness or cleanup fix that is obviously
+   safe and that you can re-verify with a quick build (and a harness/regression check when it
+   touches card behavior). Anything risky, cross-cutting, or ambiguous is **left for the human**,
+   not patched autonomously — never destabilize the green run branch to chase a finding. Each fix
+   is its own commit (or folded into the relevant card's follow-up commit) with the usual trailers,
+   and the branch must still build clean afterward.
+3. **Emit a summary report** of the review: issues found (with severity and location) vs. issues
+   fixed (with the commit), and which were deliberately left for the user and why. This report goes
+   into the Phase 4 final report (and may be appended to the deferred-cards doc as a "Review
+   findings" section if any were deferred for the human).
 
-`demonstrate-session-cards` *flags* findings rather than fixing them. Because no human is in the
-loop here, the orchestrator resolves each finding per the Autonomous decision policy: a genuine
-engine bug whose fix is **clear and small** → fix it on the run branch (its own follow-up commit)
-and re-verify; otherwise **quarantine that card** — snapshot its commits onto
-`quarantine/<date>/<uid>` (`git branch quarantine/<date>/<uid> <run-branch>` *before* removing
-the commits), reset/revert it off the run branch so the branch stays green, and record the
-failure. A finding that is scripted-agent suboptimality, not an engine bug, is noted but not acted
-on. Never leave a known-broken card on the run branch.
+This step is best-effort and bounded: if the session is terminated before it runs, skip it; the
+per-card design docs and deferred-cards doc remain the durable handoff.
 
-### Phase 6 — Final report & handoff
+### Phase 4 — Final report & handoff
 
-Print a tally: implemented (on the run branch; note which passed Phase 5 clean vs. fixed-on-review),
-deferred (one-line reasons), quarantined (failure + `quarantine/<date>/<uid>` branch name).
-Confirm the run branch builds clean and `git status` is clean. **Push the run branch** (each card
-is its own commit; the whole batch is one reviewable branch off `main`). **Do not open the PR
-automatically** — leave that to the human, because the quarantine queue is theirs to resolve
-first.
+Print a tally: implemented (each its own commit on the run branch; note which skipped verification
+and why), deferred (with the path to `deferred_cards.md`), and not-reached-due-to-cap. Confirm the
+run branch builds clean and `git status` is clean. **Push the run branch.** **Do not open the PR
+automatically** — leave that to the human, who owns the deferred queue. The deferred-cards doc is
+the explicit, committed handoff of everything left to do.
 
-The handoff is explicitly two-pathed per quarantined card, and the report must spell this out so a
-human (or a follow-up Claude run they direct) can act on it:
+## Per-unit subagent prompt (a single card, or a shared-mechanic batch)
 
-- **Fix before PR:** `git checkout quarantine/<date>/<uid>`, repair the card, then re-integrate it
-  onto the run branch through the **Phase 4 gate** (cherry-pick → regen costs → `make` →
-  smoke-test); on green, delete the quarantine branch. Repeat per card, then open the PR from the
-  run branch.
-- **Abandon:** delete `quarantine/<date>/<uid>`. It was never on the run branch, so the PR is
-  unaffected.
+Give the subagent this prompt, filling in the unit. It has no memory of other cards, works on the
+**real run-branch tree** (not a worktree), and must finish with a **clean tree** — committed on
+success, fully reverted on defer.
 
-Delete the impl branches of cards that shipped (their commits are on the run branch); keep every
-`quarantine/<date>/*` branch until the human fixes or abandons it.
-
-**Fallback if subagents/worktrees are unavailable:** do cards linearly as the old skill did —
-per-card procedure unchanged — but **explicitly compact/clear context after each commit**, and
-still keep vocab + costs as the serial step (register, regen, build, test, commit one card at a
-time directly on trunk). The autonomous policy and invariants are identical.
-
-## Per-card subagent prompt (Tier A — covered cards)
-
-Give the subagent this verbatim, substituting `<NAME>` and `<INDEX>`. It has no memory of other
-cards and must finish with a clean worktree (committed on success, reverted on defer).
-
-> Implement the single Magic card **`<NAME>`** into the Robomage engine, fully and correctly,
-> then commit it on its own branch. You are running autonomously in a git worktree — **there is
-> no user to ask.** Finish with a **clean tree** (committed on success, reverted on defer).
+> Implement the following into the Robomage engine, fully and correctly, **in sequence on the
+> current branch** (you are NOT in a worktree; do not create one). You are autonomous — **there is
+> no user to ask.** Finish with a **clean tree**: commit on success, fully revert on defer
+> (`git checkout -- . && git clean -fd`). Never leave the tree dirty or broken.
 >
-> 1. **Get a script.** If no local `cardsfolder/` script exists, run
->    `python tools/forge_fetch/fetch_script.py "<NAME>"`. If NOT FOUND (non-zero exit),
->    **defer** (see Defer protocol) with reason "no Forge script available". **NEVER
->    hand-author or reconstruct a script.** Never modify an existing script.
-> 2. **Confirm covered.** Read the `A:`/`T:`/`S:`/`K:`/`R:` lines and their categories and
->    confirm each is already handled by `src/parse.cpp`, `effect_kind.cpp`, `effect_table.cpp`.
->    **If it turns out a new mechanic is needed after all**, you may implement it as a real,
->    general handler (look up exact behavior in `docs/mtg_comprehensive_rules.txt` by rule
->    number) — but **never retag** a category/Origin/Destination to shortcut this card, and if
->    the mechanic is large/cross-cutting, **defer** instead and note it was misclassified.
-> 3. **Register.** Append `{"<NAME>", <INDEX>}` to `src/card_vocab.h` (keep apostrophes; index
->    is `<INDEX>`, already `< 1023`). Do **not** run `gen_card_costs.py` and do **not** stage
->    `train/card_costs.py` — the orchestrator regenerates it at integration.
-> 4. **Build.** Run plain `make`. Clean build required; fix any new error. (You may regen costs
->    locally if the build needs it, but do not commit the regenerated file.)
-> 5. **Test in isolation.** With `train/test_harness.py`, build a focused scenario exercising
->    *this* card (inline `--hand-a/--library-a/--battlefield-a/...` or a `temp/` stacked deck,
->    driven by semantic `--play` specs; never `--interactive`). Verify narrative + decoded
->    state match the expected outcome across the card's real modes/triggers.
-> 6. **Regression in a real game.** Run a few scripted games with the card in a deck via
->    `train/train.py observe … --games 6` (existing deck that casts it, else a `temp/` copy with
->    4 copies swapped in). Expect **no non-fatal errors and no draws**; only pre-existing
->    cosmetic `WARNING: Unrecognized ability param` lines are acceptable. Clean up temp decks.
-> 7. **Document.** Write `docs/card_implementations/<uid>.md` (uid = lowercased name, spaces→`_`,
->    apostrophes dropped) using the **Design-doc template** — Oracle text, Forge tags, every
->    engine change and *why* (likely "none — fully covered"), every behavioral decision with its
->    CR rule citation, the test scenarios + observed results, the regression result.
-> 8. **Commit.** Stage exactly: any new/edited engine source, `src/card_vocab.h`, the new
->    `cardsfolder/` script (if freshly fetched), and the design doc — **NOT** `card_costs.py`.
->    Commit `Implement <NAME>` + a short body (mechanics, tests) and the required Co-Authored-By
->    / Claude-Session trailers. Do **not** push. Report branch + commit hash.
-> 9. **Defer protocol.** If you cannot finish with confidence (ambiguous, mechanic too large,
->    no script, vocab overflow), do **not** commit a partial/guessed implementation. Run
->    `git checkout -- . && git clean -fd` to fully restore a clean tree, then return a deferral
->    summary (card name + specific reason). A wrong guess is worse than a deferral.
+> **Unit:** either a single card `<NAME>=<INDEX>`, or a batch sharing one new mechanic `<KEY>`:
+> `<NAME1>=<INDEX1>`, `<NAME2>=<INDEX2>`, … Each card may carry a `verify_skip` flag.
 >
-> Return a single structured summary: `OUTCOME: done|deferred`, `INDEX`, `BRANCH`, `COMMIT`,
-> `FILES`, `TESTS` (one line per scenario + result), `NOTES/REASON`, and
-> `NEEDS_REVIEW: yes|no` + `REVIEW_REASON` — set `yes` whenever you are **not fully confident**
-> the card is correct: a behavior you resolved from the rules where a second reading was
-> plausible, a complex/conditional interaction you couldn't exhaustively test, a new mechanic you
-> added, or any happy-path-only coverage. These cards get a targeted re-test in Phase 5.
-
-## Per-mechanic-group subagent prompt (Tier B — shared mechanic)
-
-Give the subagent this verbatim, substituting `<KEY>` and the `<NAME>=<INDEX>` list for the
-group. It implements the mechanic **once**, then each card, **one commit per card**.
-
-> Several cards share one missing mechanic, **`<KEY>`**: `<NAME1>=<INDEX1>`, `<NAME2>=<INDEX2>`,
-> … Implement the mechanic **once** as a real, general handler, then implement **each card**,
-> committing **each card separately** on this branch. You are autonomous in a git worktree —
-> **no user to ask.** Finish with a clean tree.
+> 1. **Get every script.** For each card, if no local `cardsfolder/` script exists, run
+>    `python tools/forge_fetch/fetch_script.py "<NAME>"`. NOT FOUND (non-zero exit) → **defer that
+>    card** (reason "no Forge script available"); in a batch the others continue. **NEVER
+>    hand-author, reconstruct, or modify a script.**
+> 2. **Implement the mechanic (batch) or confirm coverage (covered card).**
+>    - *Batch:* implement the shared mechanic **once** as a real, general handler keyed on the
+>      tag's *intended meaning* — honor the script's actual `SP$`/`AB$`/`DB$` category and
+>      `Origin$`/`Destination$`/`ChangeType$`/etc. **NEVER retag** one category into another to
+>      shortcut a card; a retag corrupts every other card sharing that tag. Look up exact behavior
+>      in `docs/mtg_comprehensive_rules.txt` by rule number and cover the whole mechanic, not just
+>      these cards. If it is too large/cross-cutting to implement and verify safely → **defer the
+>      whole batch** (clean tree).
+>    - *Covered card:* confirm every `A:`/`T:`/`S:`/`K:`/`R:` tag is already handled by
+>      `parse.cpp` / `effect_kind.cpp` / `effect_table.cpp`. If a new mechanic is in fact needed
+>      and it is small, implement it as a real general handler (never retag); if it is
+>      large/cross-cutting, **defer** and note the misclassification.
+> 3. **For each card in the unit, in order:**
+>    a. **Register** `{"<NAME>", <INDEX>}` in `src/card_vocab.h` (keep apostrophes; index already
+>       `< 1023`).
+>    b. **Build** with plain `make` (this also regenerates `train/card_costs.py` via `pygen`). The
+>       build MUST be clean; fix any new error.
+>    c. **Test** — UNLESS this card is flagged `verify_skip` (its mechanics are already proven by a
+>       pre-existing shipping card), in which case the clean build in (b) is sufficient and you may
+>       skip to (d). Otherwise: **isolation test** with `train/test_harness.py` (inline
+>       `--hand-a/--library-a/--battlefield-a/...` or a `temp/` stacked deck, driven by semantic
+>       `--play` specs; **never `--interactive`**), covering every mode/trigger; then **real-game
+>       regression** with a deck that casts it (swap ~4 copies into a `temp/` deck if needed):
+>       prefer `train/.venv/bin/python train/train.py observe --games 6`, but **if `observe` is
+>       unavailable (no torch — e.g. the headless container) fall back to torch-free scripted full
+>       games through the harness across a few seeds**: `train/.venv/bin/python
+>       train/test_harness.py --deck-a temp/<deck> --deck-b temp/<opp> --scripted --seed N` for
+>       N=1,2,3 (same engine + same scripted agent). Expect **no non-fatal errors and no draws**;
+>       only pre-existing cosmetic `WARNING: Unrecognized ability param` lines are acceptable. Clean
+>       up temp decks.
+>    d. **Document** `docs/card_implementations/<uid>.md` (uid = lowercased name, spaces→`_`,
+>       apostrophes dropped) using the **Design-doc template** — note explicitly when verification
+>       was skipped and which pre-existing card proves each mechanic.
+>    e. **Commit** just that card: stage the new/edited engine source, `src/card_vocab.h`, the
+>       regenerated `train/card_costs.py`, the new `cardsfolder/` script (if freshly fetched), and
+>       the design doc. Message `Implement <NAME>` + a short body (mechanics, tests or
+>       "verification skipped — mechanics proven by <card>") and the required Co-Authored-By /
+>       Claude-Session trailers. Do **not** push. (For a batch, the shared mechanic's engine edits
+>       fold into the **first** card's commit, or land as a leading `Implement <KEY> mechanic`
+>       commit before the card commits.)
+> 4. **Defer protocol.** If a card cannot be finished with confidence (ambiguous, mechanic too
+>    large, no script, vocab overflow, build/test won't go clean and the fix is unclear), do **not**
+>    commit a partial/guessed implementation — revert its changes and report it deferred. A wrong
+>    guess is worse than a deferral. Never leave the tree dirty between cards.
 >
-> 1. **Get every script** (`fetch_script.py` per card; a card whose fetch fails is **deferred**,
->    not blocking the rest). Never hand-author or modify scripts.
-> 2. **Implement the mechanic generally**, keyed on the tag's *intended meaning* — honor the
->    script's actual `SP$`/`AB$`/`DB$` category and `Origin$`/`Destination$`/`ChangeType$`/etc.
->    **Never retag** one category into another to shortcut a card; a retag corrupts every other
->    card sharing that tag. Look up exact behavior in `docs/mtg_comprehensive_rules.txt` by rule
->    number and design the handler to cover the whole mechanic, not just these cards. If the
->    mechanic is too large/cross-cutting to implement and verify safely here, **defer the whole
->    group** with that reason (clean tree).
-> 3. **For each card, in order:** register `{"<NAME>", <INDEX>}` in `src/card_vocab.h` (do NOT
->    stage `card_costs.py`); plain `make` clean; **isolation test** (`test_harness.py`, semantic
->    `--play`, all modes/triggers); **real-game regression** (`observe … --games 6`, no
->    non-fatal errors, no draws); write `docs/card_implementations/<uid>.md`; then **commit just
->    that card** (`Implement <NAME>`, trailers). The mechanic's engine edits fold into the
->    **first** card's commit (or land as a leading `Implement <KEY> mechanic` commit). A card
->    that fails to verify is **reverted out of the staging** and reported deferred; the rest of
->    the group still ships.
-> 4. **Never** commit a card that isn't tested green. Never leave the tree dirty between cards.
->
-> Return: `KEY`, `MECHANIC` (one line on what was added + the CR rules), then per card
-> `OUTCOME: done|deferred`, `INDEX`, `COMMIT`, `TESTS`, `NOTES/REASON`, `NEEDS_REVIEW: yes|no` +
-> `REVIEW_REASON` (set `yes` when not fully confident — see the Tier A prompt; **every card in a
-> group that added a new mechanic defaults to `NEEDS_REVIEW: yes`**), plus `BRANCH`.
+> Return a structured summary: per card `{name, outcome: done|deferred, index, commit, tests
+> (one line per scenario + result, or "skipped — proven by <card>"), reason, verify_skipped:
+> true|false}`, plus the unit's branch (the run branch) and, for a batch, a one-line `mechanic`
+> note (what was added + the CR rules). Flag `needs_review: true` for any card you are **not fully
+> confident** is correct (a behavior resolved from the rules where a second reading was plausible,
+> a complex interaction not exhaustively tested, a freshly-added mechanic) so it can get a closer
+> look.
 
 ## Autonomous decision policy (replaces "ask the user")
 
@@ -341,33 +310,58 @@ Because no human is in the loop, each interactive stop-gate maps to a determinis
 | Interactive gate | Autonomous action |
 |---|---|
 | Behavior/timing/modal ambiguity | Resolve from `docs/mtg_comprehensive_rules.txt` (cite the rule number in the doc). If two readings remain genuinely defensible and would change game results → **defer**. |
-| Needed mechanic is unsupported | **Implement** a real, general handler (default). In Tier B, do it once for the whole group. Defer only if a safe, correct implementation can't be verified within scope. |
+| Needed mechanic is unsupported | **Implement** a real, general handler (default). In a batch, do it once for the whole group. Defer only if a safe, correct implementation can't be verified within scope. |
 | No Forge script | **Defer and move on** — never hand-author. |
-| Unclear test scope | Derive scope from the card's modes/triggers and rules; test each. If you can't state what a complete test covers → **defer**. |
+| Unclear test scope | Derive scope from the card's modes/triggers and rules; test each. If you can't state what a complete test covers → **defer**. (Does not apply to `verify_skip` cards.) |
 | Would overflow the vocab (`N_CARD_TYPES`) | **Defer** (never grow `N_CARD_TYPES` autonomously — it changes the observation size and breaks trained checkpoints). |
 | Build won't go clean / a test fails and the fix is unclear | Fix if clear; otherwise **revert and defer**. |
-| Merge conflict at integration beyond append-only vocab/table tails | **Quarantine** the branch (trunk stays green); never hand-merge blind. |
 
 **Invariants (non-negotiable):**
-- **Every draw is an engine failure — treat any drawn game as a bug, never as a pass.** A draw
-  in a scripted regression or verification game is a real defect (a game that can't resolve,
-  e.g. a loop, a stuck stack, an unkillable board) and must be investigated, root-caused, and
-  fixed — exactly like a non-fatal error. A card whose regression produces a draw does **not**
-  ship: fix the cause (its own follow-up commit) and re-verify, or revert/quarantine the card.
-  The **only** exception is a draw the **user has explicitly identified as acceptable**; since no
-  user is in the loop here, that exception never applies autonomously — so autonomously, a draw
+- **Implementation is sequential.** Cards are never implemented in parallel; each unit's full
+  implement → build → test → commit cycle completes before the next unit starts. (Read-only triage
+  may fan out.)
+- **The cap is a maximum.** Never commit more than `N` cards (a final atomic batch may land
+  slightly over); fewer is fine.
+- **Every draw is an engine failure — treat any drawn game as a bug, never as a pass.** A draw in a
+  scripted regression or verification game is a real defect (a loop, a stuck stack, an unkillable
+  board) and must be investigated, root-caused, and fixed — exactly like a non-fatal error. A card
+  whose regression produces a draw does **not** ship: fix the cause or revert/defer the card. Since
+  no user is in the loop, the "user explicitly accepted this draw" exception never applies — a draw
   always blocks the card.
-- Never commit a card that isn't fully implemented and passing both isolation and regression
-  tests — and at integration, passing against the **merged** tree.
-- Never leave trunk dirty or broken — defer means `git checkout -- . && git clean -fd`;
-  a failed integration means `git reset --hard` back to the pre-cherry-pick HEAD.
-- `train/card_costs.py` is **derived**: regenerated only by the orchestrator at integration,
-  never committed from a parallel worker.
+- Never commit a card that isn't fully implemented and (unless verification was legitimately
+  skipped per the `verify_skip` rule) passing both isolation and regression tests.
+- A card may **skip verification only** when every mechanic it uses is verifiably already
+  implemented by a card that existed in the repo **before this run branch**; the design doc must
+  name the proving card(s). Anything that introduces or first-exercises a mechanic is fully tested.
+- Never leave the run branch dirty or broken — defer means `git checkout -- . && git clean -fd`.
 - Never retag a script category/Origin/Destination to shortcut a card.
 - Never edit an existing card script. Never hand-author a card script.
 - Never guess behavior the rules don't support; defer instead.
-- Every committed card carries a design doc a human could audit later — that doc **is** the
-  record that would otherwise have been a conversation with the user.
+- Every committed card carries a design doc a human could audit later; every deferred card is named
+  in `deferred_cards.md`. Those docs **are** the record that would otherwise have been a
+  conversation with the user.
+
+## Deferred-cards doc format (`docs/card_implementations/deferred_cards.md`)
+
+```markdown
+# Deferred cards — for user-directed implementation
+
+Cards the autonomous runs triaged but did NOT implement. Each needs a human decision or a larger
+change than an unattended run should make. Pick one up by running the interactive
+`implement-missing-cards` skill (or directing a fresh autonomous run at it once unblocked).
+
+## Run <YYYY-MM-DD>  (cap N=<N>, inspected <2N> cards)
+
+### Deferred at triage
+- **<Card Name>** — <one-line reason> (Forge script: available | not found)
+- …
+
+### Not reached (cap)
+Implementable this run but left for a future run because the N=<N> cap was reached first
+(highest-frequency first):
+- **<Card Name>** — <covered | mechanic:<key>>, suggested index <N>
+- …
+```
 
 ## Design-doc template (`docs/card_implementations/<uid>.md`)
 
@@ -384,7 +378,7 @@ Because no human is in the loop, each interactive stop-gate maps to a determinis
 ## Engine work
 - <each parser/effect/handler change and the reason; "none — fully covered by existing
   handlers" if nothing new was needed>
-- Mechanics added (general, not card-specific): <…, with the shared mechanic key if Tier B>
+- Mechanics added (general, not card-specific): <…, with the shared mechanic key if batched>
 
 ## Behavioral decisions (made in lieu of asking a human)
 - <each ambiguity encountered, the reading chosen, and the CR rule number that justifies it>
@@ -392,17 +386,26 @@ Because no human is in the loop, each interactive stop-gate maps to a determinis
 
 ## Tests
 - Isolation (test_harness): <scenario → observed result> for each mode/trigger
-- Regression (observe, N games): <deck used, result: no non-fatal errors / no draws>
-- Integration smoke (merged tree): <result>
+  — OR "skipped: mechanics already proven by <pre-existing card(s)>"
+- Regression (observe, or torch-free harness scripted games, N games/seeds): <tool + deck used,
+  result: no non-fatal errors / no draws> — OR "skipped (verify_skip)"
 
 ## Result
-implemented | deferred(<reason>) | quarantined(<integration failure>)
+implemented | implemented (verification skipped — proven by <card>) | deferred(<reason>)
 ```
 
 ## Final report
 
-When the loop ends, print a tally: count implemented (on trunk), deferred, and quarantined;
-list each deferred card with its one-line reason and each quarantined card with its integration
-failure + branch name (these are the only items a human needs to revisit), and confirm trunk is
-clean and builds. Push the accumulated per-card commits to the designated development branch
-once at the end; each card remains its own commit in history.
+When the loop ends, print a tally: count implemented (each its own commit on the run branch; note
+which skipped verification), deferred (with reasons — and confirm they are recorded in
+`docs/card_implementations/deferred_cards.md`), and not-reached-due-to-cap. Confirm the run branch
+is clean and builds. Push the accumulated per-card commits to the run branch once at the end; each
+card remains its own commit in history. Do not open the PR — the deferred-cards doc is the handoff.
+
+## Fallback (no subagents available)
+
+If subagent dispatch is unavailable, the orchestrator does the same procedure inline: triage the
+top `2N`, write the deferred doc, then loop over the units doing register → `make` →
+test (unless `verify_skip`) → document → commit one unit at a time directly on the run branch,
+**explicitly compacting/clearing context after each commit**. The cap, the sequencing, and every
+invariant are identical.

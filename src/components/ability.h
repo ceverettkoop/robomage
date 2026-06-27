@@ -94,15 +94,32 @@ struct Ability{
     bool mandatory = false;              // Mandatory$ True — player must choose; suppresses fail-to-find when zone non-empty
     bool may_shuffle = false;            // MayShuffle$ True — player may optionally shuffle after
     size_t unless_generic_cost = 0;      // UnlessCost$ N — target controller pays {N} to prevent counter
+    bool unless_cost_is_life = false;    // when true, unless_generic_cost is paid as N life rather than {N} mana (Ward—Pay life, CR 702.21)
     std::string target_type = "";        // TargetType$ Spell — restricts targeting to stack spells
 
     // Delirium-conditional damage (Unholy Heat) now lives in DamageParams (params variant).
     std::string amount_svar = "";           // raw SVar key for non-numeric NumDmg$ (resolved at parse time)
     std::string dynamic_amount_expr = "";   // runtime SVar expression (e.g. "Count$Valid Creature.YouCtrl" or "Targeted$CardPower")
+    // Raw Defined$/DefinedPlayer$ token verbatim from the script (e.g. "Targeted", "ParentTarget",
+    // "You", "Opponent", "Remembered", "TargetedController", "Self", ...). Empty when the ability
+    // declared no Defined$. Kept alongside the specific bools above so sub-ability target
+    // resolution can read the script's stated intent (CR 608.2c) instead of relying on a blanket
+    // N_A sentinel; the specific bools remain authoritative for their effects.
+    std::string defined = "";
     bool defined_targeted_controller = false;  // Defined$ TargetedController — GainLife goes to target's controller
     bool defined_self = false;                  // Defined$ Self — ability moves its own source
     bool defined_each_opponent = false;         // Defined$ Player.Opponent — effect applies to each opponent (no target)
     bool defined_you = false;                   // Defined$ You — effect's player is the source's controller (e.g. Ancient Tomb pain)
+    // Defined$ TriggeredActivator — the effect's player is the player who caused the trigger
+    // (the caster of the triggering spell / the activator of the triggering event), CR 603.x.
+    // Set at parse time; the actual player is captured into `triggered_activator` when the
+    // trigger fires (from the event's PLAYER param). Used by Mai, Scornful Striker (the player
+    // who cast the noncreature spell loses 2 life), but general to any effect reading a
+    // Defined player.
+    bool defined_triggered_activator = false;
+    // The player who caused this triggered ability to fire (the triggering event's PLAYER).
+    // Populated at trigger-fire time when defined_triggered_activator is set; UNKNOWN until then.
+    Zone::Ownership triggered_activator = Zone::UNKNOWN;
 
     // Filter naming which permanents a mass effect affects (DestroyAll / SacrificeAll /
     // PutCounterAll): the ValidCards$ spec, e.g. "Cat.YouCtrl" or

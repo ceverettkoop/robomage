@@ -54,6 +54,13 @@ this version current if a newer Comprehensive Rules release supersedes it.
 - **Build for release**: `make BUILD=RELEASE`
 - **Disable GUI**: `make HEADLESS=TRUE`
 
+**Build headless by default.** Unless the user explicitly asks for the GUI, build with
+`make HEADLESS=TRUE` (and `make clean && make HEADLESS=TRUE` for a clean build). The GUI (raylib)
+front end is **deprecated** and no longer actively maintained — the text/CLI (TUI) interface is the
+actively maintained front end. The GUI code is retained in the tree in case it is revived in the
+future, but it requires raylib (often unavailable, e.g. in headless cloud containers), so prefer
+`HEADLESS=TRUE` everywhere it isn't specifically requested.
+
 The compiled binary is output to `bin/robomage`.
 
 **Codegen is part of the build.** The default `make` target runs `pygen` before compiling,
@@ -89,6 +96,16 @@ instead of `$PIPESTATUS`.
  Use `--games N` for a multi-game regression pass (per-game results + W/L/D summary),
  `--verbose` for the full per-decision transcript (board state + action menu + narrative),
  and supply `--deck`/`--opponent` to test cards/decks relevant to recently implemented features.
+-**`observe` requires torch.** `train/train.py` imports `stable_baselines3`/`sb3-contrib`
+ (hence torch) at module load, so `observe` is unavailable wherever torch isn't installed —
+ notably headless cloud containers, whose ephemeral filesystem would re-pay torch's ~0.5–1 GB
+ install every session. For a torch-free **regression** that exercises the *same* C++ engine and
+ the *same* rule-based `scripted_action`, run scripted full games through the test harness across
+ a few seeds instead: `train/.venv/bin/python train/test_harness.py --deck-a <a> --deck-b <b>
+ --scripted --seed N` (vary N). `observe`'s unique extra coverage is model-driven play (a trained
+ checkpoint) and the gym env/extractor observation pipeline — relevant to RL eval, not to
+ verifying a card's rules behavior. Prefer `observe` when torch is present; otherwise fall back to
+ harness scripted games.
 
 ### Test harness for card behavior verification
 

@@ -405,10 +405,32 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
         // is synthesized when a targeting spell/ability is put on the stack.
         if (kw_line.rfind("Ward", 0) == 0) {
             size_t colon = kw_line.find(':');
-            if (colon != std::string::npos)
-                card.ward_cost = std::stoi(kw_line.substr(colon + 1));
-            else
+            if (colon != std::string::npos) {
+                std::string ward_arg = kw_line.substr(colon + 1);
+                // Ward—Pay N life (K:Ward:PayLife<N>): the unless-cost is a life payment,
+                // not mana (CR 702.21). Any other arg is a numeric mana cost. Parse the
+                // amount defensively: with -fno-exceptions a std::stoi on a missing '>' or
+                // non-numeric body would abort, so validate digits first and degrade to a
+                // {1} mana ward on a malformed arg rather than crashing card load.
+                if (ward_arg.rfind("PayLife<", 0) == 0) {
+                    size_t close = ward_arg.find('>');
+                    std::string n = (close != std::string::npos && close > 8)
+                                        ? ward_arg.substr(8, close - 8) : std::string();
+                    if (!n.empty() && n.find_first_not_of("0123456789") == std::string::npos) {
+                        card.ward_cost = std::stoi(n);
+                        card.ward_is_life = true;
+                    } else {
+                        card.ward_cost = 1;
+                    }
+                } else if (!ward_arg.empty() &&
+                           ward_arg.find_first_not_of("0123456789") == std::string::npos) {
+                    card.ward_cost = std::stoi(ward_arg);
+                } else {
+                    card.ward_cost = 1;
+                }
+            } else {
                 card.ward_cost = 1;  // K:Ward without a cost defaults to {1}
+            }
             card.keywords.push_back("Ward");
             continue;
         }
@@ -532,6 +554,9 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             parse_activation_cost(cost_str, fb);
             card.flashback_mana_cost = fb.activation_mana_cost;
             card.flashback_alt_cost.life_cost = fb.life_cost;
+            // Flashback—Sacrifice a creature (Cabal Therapy): Sac<1/Creature> in the
+            // flashback cost. Carry the sac filter so the cast path pays it.
+            card.flashback_alt_cost.sac_cost_spec = fb.sac_cost_spec;
             card.keywords.push_back("Flashback");
             continue;
         }
@@ -878,12 +903,19 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
     } else if (key == "Optional") {
         ability.optional_choice = (value == "True");
     } else if (key == "Defined" || key == "DefinedPlayer") {
+        // Keep the raw token verbatim (CR 608.2c) so sub-ability target binding can read the
+        // script's stated intent; the specific bools below remain authoritative per effect.
+        ability.defined = value;
         if (value == "Remembered") ability.defined_remembered = true;
         // Defined$ TriggeredSpellAbility — the effect acts on the spell that fired this
         // trigger (Chalice of the Void: "counter that spell"). Set at trigger fire time.
         else if (value == "TriggeredSpellAbility" || value == "TriggeredSpell")
             ability.defined_triggered_spell = true;
         else if (value == "TargetedController") ability.defined_targeted_controller = true;
+        // Defined$ TriggeredActivator — the effect acts on the player who caused the trigger
+        // (the caster of the triggering spell). The actual player is bound at trigger-fire
+        // time from the event's PLAYER param. CR 603.x.
+        else if (value == "TriggeredActivator") ability.defined_triggered_activator = true;
         else if (value == "Self") ability.defined_self = true;
         // Defined$ You — the effect's player is the source's controller (CR 109.5). Used by
         // self-pain riders like Ancient Tomb's "deals 2 damage to you" sub-ability.
@@ -1005,7 +1037,11 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
             // Announce$ X (Kozilek's Command): declares the X to announce while casting. The
             // X cost is already auto-detected from a ManaCost containing X (has_x_cost), so
             // the announce is prompted regardless; the tag is informational here.
-            "Announce"
+            "Announce",
+            // SP$ NameCard ValidCards$ Card.nonLand / ValidDescription$ nonland (Cabal
+            // Therapy): the name_card handler already restricts the candidate set to nonland
+            // vocab cards, so the filter spec and its prose are informational here.
+            "ValidCards", "ValidDescription"
         };
         if (ignored_keys.find(key) == ignored_keys.end()) {
             std::string msg = "Unrecognized ability param: " + key + "$ " + value;
@@ -1803,9 +1839,18 @@ static std::vector<StaticAbility> parse_static_abilities(const std::string &scri
                     sa.affected_subtype = value;
                 }
             } else if (key == "Amount") {
-                // Used by RaiseCost
-                if (!value.empty() && std::isdigit(static_cast<unsigned char>(value[0])))
-                    sa.raise_cost = std::stoi(value);
+                // Used by RaiseCost / ReduceCost (generic mana added to / removed from cost)
+                if (!value.empty() && std::isdigit(static_cast<unsigned char>(value[0]))) {
+                    if (sa.category == "ReduceCost")
+                        sa.reduce_cost = std::stoi(value);
+                    else
+                        sa.raise_cost = std::stoi(value);
+                }
+            } else if (key == "Activator") {
+                // ReduceCost Activator$ You (Eye of Ugin): the reduction applies only to
+                // spells cast by the source's controller, not to everyone's spells.
+                if (sa.category == "ReduceCost" && value == "You")
+                    sa.reduce_cost_you_only = true;
             } else if (key == "ValidCard") {
                 // Card.NamedCard restricts the static to the source's chosen card name
                 // (RaiseCost / CantBeActivated on Disruptor Flute).
@@ -1814,6 +1859,10 @@ static std::vector<StaticAbility> parse_static_abilities(const std::string &scri
                 if (sa.category == "RaiseCost") {
                     if (value.find("nonCreature") != std::string::npos)
                         sa.raise_cost_filter = "nonCreature";
+                } else if (sa.category == "ReduceCost") {
+                    // Full ValidCard$ filter spec (e.g. "Eldrazi.Colorless"); matched against
+                    // each spell's card characteristics when computing its cast cost.
+                    sa.reduce_cost_filter = value;
                 } else if (sa.category == "CantBeActivated") {
                     // Store the full type list (e.g. "Artifact" for Null Rod, or
                     // "Artifact,Creature,Planeswalker" for Clarion Conqueror). The

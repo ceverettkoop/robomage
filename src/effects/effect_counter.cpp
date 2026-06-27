@@ -52,8 +52,12 @@ bool counter(Ability &ab, std::shared_ptr<Orderer> orderer) {
                 std::string tname = global_coordinator.entity_has_component<CardData>(ab.target)
                                         ? global_coordinator.GetComponent<CardData>(ab.target).name
                                         : "<unknown>";
-                game_log("%s's controller may pay {%zu} to save it:\n", tname.c_str(), ab.unless_generic_cost);
-                do_counter = run_unless_loop(ab.unless_generic_cost, target_controller, orderer, ab.target);
+                if (ab.unless_cost_is_life)
+                    game_log("%s's controller may pay %zu life to save it:\n", tname.c_str(), ab.unless_generic_cost);
+                else
+                    game_log("%s's controller may pay {%zu} to save it:\n", tname.c_str(), ab.unless_generic_cost);
+                do_counter = run_unless_loop(ab.unless_generic_cost, target_controller, orderer, ab.target,
+                                             ab.unless_cost_is_life);
             }
 
             // Can't be countered check (Cavern of Souls)

@@ -41,6 +41,12 @@ extern std::vector<ActiveStatic> g_active_statics;
 // determine_legal_actions (affordability) and action_processor (payment).
 int active_raise_cost_for(const CardData &card_data);
 
+// Total generic mana that active ReduceCost statics remove from `card_data`'s cost for
+// player `caster` (the mirror of active_raise_cost_for). An Activator$ You static (Eye of
+// Ugin) only reduces spells cast by its own controller. The generic portion is clamped at
+// zero and colored pips are never reduced (CR 118.7 / 601.2f); applied in effective_base_cost.
+int active_reduce_cost_for(const CardData &card_data, Zone::Ownership caster);
+
 // `card_data.mana_cost` with the active RaiseCost generic surcharge folded in (but
 // NOT the X-cost choice, which is resolved interactively at cast time). The single
 // effective-base-cost builder shared by determine_legal_actions (affordability) and
