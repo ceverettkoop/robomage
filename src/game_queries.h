@@ -78,6 +78,28 @@ inline bool color_set_passes_noncolor(const std::string &vt, const std::set<Colo
     return true;
 }
 
+// Enforce any "non<CardType>" main-type negation in a filter/target spec (e.g.
+// ValidTgts$ Permanent.nonLand+cmcLE3 on Abrupt Decay, or "nonCreature"/"nonArtifact"
+// on other cards) against a permanent's live type list. Returns false when the type
+// list carries a card type the spec excludes (CR 115.1: target restrictions are checked
+// against the candidate's characteristics). General over the permanent card types
+// (CR 110.4a) plus the spell-only types, so it is not special-cased to any one card.
+// `types` is the permanent's (or card's) full Type list; only kind == TYPE entries are
+// considered for the negation. The substring scan keys on "non" + the exact type name,
+// so it is safe alongside other '.'/'+' qualifiers in the same spec string.
+inline bool type_set_passes_nontype(const std::string &spec, const std::set<Type> &types) {
+    static const char *kCardTypes[] = {
+        "Land", "Creature", "Artifact", "Enchantment", "Planeswalker",
+        "Battle", "Instant", "Sorcery", "Tribal"};
+    for (const char *ct : kCardTypes) {
+        std::string tok = std::string("non") + ct;
+        if (spec.find(tok) == std::string::npos) continue;
+        for (const auto &t : types)
+            if (t.kind == TYPE && t.name == ct) return false;
+    }
+    return true;
+}
+
 // Unified "characteristic at the time it is read" accessors (CR 608.2h). Each returns the
 // object's effective value: read live from its battlefield components while it is in play
 // (so all applied continuous effects/counters are reflected — and, because every effective-P/T

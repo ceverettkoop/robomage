@@ -656,6 +656,11 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
     if (!is_battlefield_permanent(cand)) return false;
     auto &tperm = global_coordinator.GetComponent<Permanent>(cand);
 
+    // "non<CardType>" main-type negation (e.g. ValidTgts$ Permanent.nonLand+cmcLE3 on
+    // Abrupt Decay): reject a candidate whose type line carries the excluded card type.
+    // General over all card types, so it is not special-cased to any one card (CR 115.1).
+    if (!type_set_passes_nontype(vt, tperm.types)) return false;
+
     // Positive color restriction (e.g. ValidTgts$ Permanent.Blue on Red Elemental Blast:
     // "Destroy target blue permanent" — blue is a targeting restriction, CR 115.1).
     if (global_coordinator.entity_has_component<CardData>(cand) &&
