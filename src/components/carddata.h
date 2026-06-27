@@ -72,6 +72,14 @@ struct CardData{
     ManaValue equip_cost;                // parsed from K:Equip:cost
     bool has_offspring = false;          // K:Offspring:cost — optional additional cost (CR 702.171)
     ManaValue offspring_cost;            // mana paid in addition to the spell's cost for Offspring
+    // K:Kicker:<cost1>[:<cost2>...] — one or more OPTIONAL ADDITIONAL costs (CR 702.33).
+    // "Kicker [A] and/or [B]" is Forge-encoded as two colon-separated costs and means
+    // "Kicker [A], kicker [B]" (CR 702.33b): each may be paid independently as the spell is
+    // cast. kicker_costs[i] is the mana paid for the (i+1)th kicker; the spell is "kicked
+    // with its (i+1)th kicker" iff that cost was paid. The list is multikicker-ready (any
+    // count >= 1). Empty = the card has no kicker. Linked "if it was kicked with its [N]
+    // kicker" triggers read the per-Spell kicked flags by index (see Spell::kicked).
+    std::vector<ManaValue> kicker_costs;
     std::set<Colors> explicit_colors;    // Colors: field override (e.g. Dryad Arbor)
 };
 

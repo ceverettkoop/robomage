@@ -243,6 +243,14 @@ struct Ability{
     // Spell count trigger (Cori-Steel Cutter)
     size_t trigger_spell_count_eq = 0;  // ActivatorThisTurnCast$ EQN — fires on Nth spell
 
+    // Kicker-linked SpellCast trigger (CR 702.33e/f, Wastescape Battlemage): a
+    // "When you cast this spell, if it was kicked with its [N] kicker, ..." trigger.
+    // ValidCard$ Card.Self+kicked N — fires on SPELL_CAST of the source spell itself only
+    // when its (N)th kicker was paid. 0 = no kicker requirement; N >= 1 requires the spell's
+    // kicked[N-1] flag. Matched against the cast spell's Spell::kicked in the dedicated
+    // self-cast trigger scan (the spell is on the stack, not the battlefield, when it fires).
+    int trigger_kicked_index = 0;
+
     // SpellCast trigger with a dynamic mana-value filter on the cast spell
     // (Chalice of the Void: ValidCard$ Card.cmcEQY, Y = Count$CardCounters.CHARGE — fires
     // when a spell's mana value equals the source's charge-counter count). Empty expr = no

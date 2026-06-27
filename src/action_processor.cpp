@@ -1160,6 +1160,11 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             // Snapshot mana state for rewind on payment failure
             auto mana_snap = snapshot_mana_state(caster, orderer);
 
+            // Kicker (CR 702.33): per-kicker "paid?" flags, populated in the regular-cost
+            // branch below and copied onto the Spell so linked "if it was kicked with its [N]
+            // kicker" triggers can read them. Empty unless the card has K:Kicker.
+            std::vector<bool> kicked_flags;
+
             // FLASHBACK COST
             if (action.use_flashback) {
                 // Pay flashback mana cost
@@ -1242,6 +1247,31 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                 // Offspring (CR 702.171): additional cost paid on top of the spell's cost.
                 if (action.use_offspring)
                     for (Colors c : card_data.offspring_cost) cost_to_pay.insert(c);
+
+                // KICKER (CR 702.33 / 601.2b): each kicker is an OPTIONAL ADDITIONAL cost
+                // declared as the spell is cast. Offer one yes/no per kicker (only when its
+                // extra mana is still affordable on top of everything chosen so far); an
+                // accepted kicker's mana is folded into cost_to_pay and recorded in
+                // kicked_flags so the spell becomes "kicked with its Nth kicker". General over
+                // any number of independent kicker costs (multikicker-ready data model).
+                if (!card_data.kicker_costs.empty()) {
+                    kicked_flags.assign(card_data.kicker_costs.size(), false);
+                    for (size_t ki = 0; ki < card_data.kicker_costs.size(); ki++) {
+                        ManaValue with_kicker = cost_to_pay;
+                        for (Colors c : card_data.kicker_costs[ki]) with_kicker.insert(c);
+                        if (!can_pay_mana(caster, with_kicker, spell_entity, orderer,
+                                          card_data.has_delve, card_data.has_improvise))
+                            continue;
+                        std::string prompt = "pay kicker " + std::to_string(ki + 1) +
+                            " for " + card_data.name;
+                        if (request_optional_yesno(caster, prompt)) {
+                            cost_to_pay = with_kicker;
+                            kicked_flags[ki] = true;
+                            game_log("%s pays the kicker %zu cost for %s\n",
+                                     player_name(caster).c_str(), ki + 1, card_data.name.c_str());
+                        }
+                    }
+                }
 
                 // X-COST: prompt player to choose X value, add X generic to cost
                 if (card_data.has_x_cost) {
@@ -1356,6 +1386,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             spell.cast_with_flashback = action.use_flashback;
             spell.cast_with_evoke = action.use_alt_cost && card_data.alt_cost.is_evoke;
             spell.cast_with_offspring = action.use_offspring;
+            spell.kicked = kicked_flags;  // per-kicker "paid?" flags (empty for non-kicker spells)
             // Record the X value paid so an "enters with X counters" replacement can read
             // it (Chalice of the Void: enters with X charge counters). cur_game.x_paid is
             // global and may be overwritten by a later cast before this spell resolves.

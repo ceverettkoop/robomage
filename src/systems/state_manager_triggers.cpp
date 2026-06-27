@@ -474,6 +474,47 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
         }
     }
 
+    // Self-cast triggered abilities (CR 702.33e/f, Wastescape Battlemage): "When you cast this
+    // spell, [if it was kicked with its [N] kicker,] ..." fires on SPELL_CAST of the spell
+    // ITSELF, while it sits on the stack — not from the battlefield — so the battlefield scan
+    // above never sees it. The source is the cast spell entity (the event's ENTITY); read its
+    // own CardData abilities for a trigger_only_self SPELL_CAST trigger and, when the trigger
+    // names a kicker (trigger_kicked_index > 0), gate it on that kicker having been paid
+    // (Spell::kicked). General over any self-cast / kicked-N SpellCast trigger.
+    for (const auto &ev : events) {
+        if (ev.GetType() != Events::SPELL_CAST) continue;
+        if (!ev.HasParam(Params::ENTITY)) continue;
+        Entity spell_e = ev.GetParam<Entity>(Params::ENTITY);
+        if (!global_coordinator.entity_has_component<CardData>(spell_e)) continue;
+        if (!global_coordinator.entity_has_component<Spell>(spell_e)) continue;
+        const auto &spell = global_coordinator.GetComponent<Spell>(spell_e);
+        Zone::Ownership ctrl = spell.caster;
+        const std::string ent_name = entity_name(spell_e);
+        for (const auto &ab : global_coordinator.GetComponent<CardData>(spell_e).abilities) {
+            if (ab.ability_type != Ability::TRIGGERED) continue;
+            if (ab.trigger_on != Events::SPELL_CAST) continue;
+            if (!ab.trigger_only_self) continue;  // ValidCard$ Card.Self — only the cast spell itself
+            // Linked kicker condition (CR 702.33f): fires only if the named kicker was paid.
+            if (ab.trigger_kicked_index > 0) {
+                size_t idx = static_cast<size_t>(ab.trigger_kicked_index - 1);
+                if (idx >= spell.kicked.size() || !spell.kicked[idx]) continue;
+            }
+
+            Ability trigger_ab = ab;
+            trigger_ab.source = spell_e;
+            trigger_ab.controller = ctrl;
+
+            PendingTrigger pt;
+            pt.ab = trigger_ab;
+            pt.controller = ctrl;
+            pt.source = spell_e;
+            pt.label = trigger_label(ent_name, trigger_ab);
+            pt.log_line = ent_name + " triggered";
+            pt.needs_target = (trigger_ab.valid_tgts != "N_A" && trigger_ab.target == 0);
+            pending.push_back(pt);
+        }
+    }
+
     // Graveyard-functioning triggered abilities (CR 113.6 / 603.6): a card whose triggered
     // ability has TriggerZones$ Graveyard (e.g. Arclight Phoenix's "at the beginning of
     // combat on your turn, ... return ~ from your graveyard to the battlefield") functions

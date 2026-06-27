@@ -668,6 +668,27 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             card.abilities.push_back(tok);
             continue;
         }
+        // K:Kicker:<cost1>[:<cost2>...] — one or more OPTIONAL ADDITIONAL costs (CR 702.33).
+        // Forge encodes "Kicker [A] and/or [B]" as two colon-separated costs (CR 702.33b:
+        // it means "Kicker [A], kicker [B]" — two independent kickers). Each segment is a mana
+        // cost paid in addition to the spell's cost as it's cast; paying it makes the spell
+        // "kicked with its Nth kicker". Stored as a list so the model is multikicker-ready and
+        // the linked "if it was kicked with its [N] kicker" triggers index into it.
+        if (kw_line.rfind("Kicker:", 0) == 0) {
+            std::string rest = kw_line.substr(strlen("Kicker:"));
+            size_t seg_pos = 0;
+            while (seg_pos <= rest.size()) {
+                size_t colon = rest.find(':', seg_pos);
+                std::string seg = (colon == std::string::npos)
+                                      ? rest.substr(seg_pos)
+                                      : rest.substr(seg_pos, colon - seg_pos);
+                if (!seg.empty()) card.kicker_costs.push_back(parse_mana_cost(seg));
+                if (colon == std::string::npos) break;
+                seg_pos = colon + 1;
+            }
+            card.keywords.push_back("Kicker");
+            continue;
+        }
         // K:Devoid — the object is colorless (CR 702.114a). Forge cards with Devoid omit a
         // Colors: line and rely on the keyword for their colorlessness, so apply it here as a
         // general color override (e.g. an Eldrazi printed with colored mana symbols is still
@@ -1784,6 +1805,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
     bool trigger_optional_local = false;
     std::string valid_card_subtype;
     size_t activator_this_turn_cast_eq = 0;
+    int kicked_index = 0;  // ValidCard$ ...+kicked N — fires only if the Nth kicker was paid
 
     // Walk pipe-delimited params
     size_t param_pos = 0;
@@ -1846,7 +1868,21 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
             if (value.find("Creature")    != std::string::npos) valid_card_creature     = true;
             if (value.find("nonCreature") != std::string::npos) valid_card_non_creature = true;
             if (value.find(".Other")      != std::string::npos) ability.trigger_self_excluded = true;
-            if (value == "Card.Self")                            valid_card_self         = true;
+            if (value.rfind("Card.Self", 0) == 0)                valid_card_self         = true;
+            // Kicker-linked condition (CR 702.33f): "Card.Self+kicked N" — fires only when the
+            // Nth kicker was paid. Parse the 1-based index after "kicked " (a missing number
+            // defaults to the first kicker). General over any "+kicked N" SpellCast trigger.
+            {
+                size_t kp = value.find("kicked");
+                if (kp != std::string::npos) {
+                    size_t np = kp + strlen("kicked");
+                    while (np < value.size() && value[np] == ' ') np++;
+                    int n = 0;
+                    while (np < value.size() && isdigit((unsigned char)value[np]))
+                        n = n * 10 + (value[np++] - '0');
+                    kicked_index = (n > 0) ? n : 1;
+                }
+            }
             if (value.find("Instant")     != std::string::npos) valid_card_instant      = true;
             if (value.find("Sorcery")     != std::string::npos) valid_card_sorcery      = true;
             if (value.find(".YouOwn")     != std::string::npos) valid_card_owner_you    = true;
@@ -2009,6 +2045,17 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
         ability.trigger_valid_player_is_controller = valid_player_is_you;
     }
 
+    // "When you cast this spell, [if it was kicked with its [N] kicker,] ..." — Wastescape
+    // Battlemage (Mode$ SpellCast | ValidCard$ Card.Self[+kicked N]). A linked self-cast
+    // trigger that fires while the spell is on the stack (CR 702.33e/f). trigger_only_self
+    // restricts it to the source spell; trigger_kicked_index (>0) additionally gates on the
+    // Nth kicker having been paid. Handled by the dedicated self-cast SPELL_CAST scan.
+    if (mode_is_spell_cast && valid_card_self) {
+        ability.trigger_on = Events::SPELL_CAST;
+        ability.trigger_only_self = true;
+        ability.trigger_kicked_index = kicked_index;
+    }
+
     // "Whenever CARDNAME deals combat damage to a player" — Barrowgoyf
     if (mode_is_damage_done && damage_combat_only) {
         ability.trigger_on = Events::COMBAT_DAMAGE_TO_PLAYER;
@@ -2096,6 +2143,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
                 effect.trigger_only_self                        = ability.trigger_only_self;
                 effect.trigger_self_excluded                    = ability.trigger_self_excluded;
                 effect.trigger_spell_count_eq                   = ability.trigger_spell_count_eq;
+                effect.trigger_kicked_index                     = ability.trigger_kicked_index;
                 effect.trigger_cmc_expr                         = ability.trigger_cmc_expr;
                 effect.trigger_cmc_op                           = ability.trigger_cmc_op;
                 effect.trigger_from_graveyard                   = ability.trigger_from_graveyard;
