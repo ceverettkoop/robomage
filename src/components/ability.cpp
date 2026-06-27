@@ -50,10 +50,9 @@ static void bind_sub_target(const Ability &parent, Ability &sub);
 // (with optional color / type qualifiers), an "Activated"/"Triggered" alternative matches a
 // standalone ability of that kind (CR 113.7). Consign to Memory's
 // "Spell.Colorless,Triggered" is one such disjunction. Forward-declared per CLAUDE.md.
-static bool stack_spell_alt_matches(const std::string &alt, Entity cand, const std::string &vt);
+static bool stack_spell_alt_matches(const std::string &alt, Entity cand);
 static bool stack_ability_alt_matches(const std::string &alt, Entity cand);
-static bool target_type_matches_stack_object(const std::string &target_type, Entity cand,
-                                             const std::string &vt);
+static bool target_type_matches_stack_object(const std::string &target_type, Entity cand);
 
 // edge case of two identical abilities being applied from two sources not handled
 bool Ability::identical_activated_ability(const Ability &other) {
@@ -496,10 +495,9 @@ void Ability::fizzle(std::shared_ptr<Orderer> orderer) {
 // stack-spell preconditions plus the alternative's own qualifiers: type negations
 // (nonCreature / Instant|Sorcery-only), a positive color restriction (.Blue — Red Elemental
 // Blast, CR 115.1), and Colorless (Consign to Memory: a spell with no color). `alt` is the
-// single alternative (e.g. "Spell.Colorless"); `vt` is the full ValidTgts$ string used by the
-// shared color helpers. Returns false for a candidate that is not a spell on the stack.
-static bool stack_spell_alt_matches(const std::string &alt, Entity cand, const std::string &vt) {
-    (void)vt;
+// single alternative (e.g. "Spell.Colorless"). Returns false for a candidate that is not a
+// spell on the stack.
+static bool stack_spell_alt_matches(const std::string &alt, Entity cand) {
     if (!global_coordinator.entity_has_component<Zone>(cand)) return false;
     if (global_coordinator.GetComponent<Zone>(cand).location != Zone::STACK) return false;
     if (!global_coordinator.entity_has_component<Spell>(cand)) return false;
@@ -548,8 +546,7 @@ static bool stack_ability_alt_matches(const std::string &alt, Entity cand) {
 // candidate if ANY alternative matches it (CR 115.1 target restrictions are satisfied by any
 // one named kind). Drives counterspells (Spell), Stifle (Activated,Triggered) and Consign to
 // Memory (Spell.Colorless,Triggered) off one matcher.
-static bool target_type_matches_stack_object(const std::string &target_type, Entity cand,
-                                             const std::string &vt) {
+static bool target_type_matches_stack_object(const std::string &target_type, Entity cand) {
     size_t start = 0;
     while (start <= target_type.size()) {
         size_t comma = target_type.find(',', start);
@@ -560,7 +557,7 @@ static bool target_type_matches_stack_object(const std::string &target_type, Ent
                                    alt.find("Triggered") != std::string::npos);
             bool is_spell_alt = (alt.find("Spell") != std::string::npos);
             if (is_ability_alt && stack_ability_alt_matches(alt, cand)) return true;
-            if (is_spell_alt && stack_spell_alt_matches(alt, cand, vt)) return true;
+            if (is_spell_alt && stack_spell_alt_matches(alt, cand)) return true;
         }
         if (comma == std::string::npos) break;
         start = comma + 1;
@@ -609,7 +606,7 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
         (target_type.find("Spell") != std::string::npos ||
          target_type.find("Activated") != std::string::npos ||
          target_type.find("Triggered") != std::string::npos)) {
-        return target_type_matches_stack_object(target_type, cand, vt);
+        return target_type_matches_stack_object(target_type, cand);
     }
 
     // Card in a non-battlefield zone (e.g. Faerie Macabre targeting graveyard cards)
