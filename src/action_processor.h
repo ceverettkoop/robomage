@@ -33,6 +33,16 @@ bool has_legal_targets(const Ability& ability, std::shared_ptr<Orderer> orderer)
 // Caller must ensure has_legal_targets() is true before calling.
 void select_target(Ability& ability, std::shared_ptr<Orderer> orderer, Zone::Ownership priority_player);
 
+// General "copy a spell on the stack" routine (CR 707.10 / 707.12). Creates `count` independent
+// copies of the spell entity `original` (which must be a spell currently on the stack) on top of
+// the stack, controlled by `controller`. Each copy is a copy of the spell's characteristics
+// (CardData/color/Ability), is NOT cast (pays no costs, fires no cast triggers), and may CHOOSE
+// NEW TARGETS — each copy re-runs target selection (illegal-by-default copies with no legal
+// target are simply not created). The copies are marked Spell::is_copy so they cease to exist on
+// resolution. Reusable by any copy-spell effect (Replicate, storm, fork). No-op if count <= 0.
+void copy_spell_on_stack(Entity original, int count, Zone::Ownership controller,
+                         std::shared_ptr<Orderer> orderer);
+
 // Evaluates ability.condition_present against ability.condition_compare for `controller`.
 // Domain is battlefield permanents matching the filter's type and YouCtrl/OppCtrl qualifier,
 // unless ability.condition_on_remembered is set, in which case it counts the remembered

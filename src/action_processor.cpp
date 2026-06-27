@@ -1165,6 +1165,11 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             // kicker" triggers can read them. Empty unless the card has K:Kicker.
             std::vector<bool> kicked_flags;
 
+            // Replicate (CR 702.x): how many times the replicate additional cost was paid in
+            // the regular-cost branch below. Drives the on-cast copy effect. 0 unless the card
+            // has K:Replicate and the caster chose to pay it.
+            int replicate_count = 0;
+
             // FLASHBACK COST
             if (action.use_flashback) {
                 // Pay flashback mana cost
@@ -1270,6 +1275,30 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                             game_log("%s pays the kicker %zu cost for %s\n",
                                      player_name(caster).c_str(), ki + 1, card_data.name.c_str());
                         }
+                    }
+                }
+
+                // REPLICATE (CR 702.x / 601.2b): an OPTIONAL ADDITIONAL cost that may be paid
+                // ANY NUMBER OF TIMES as the spell is cast. Offer a repeated yes/no — each "yes"
+                // folds another replicate cost's mana into cost_to_pay and bumps the replicate
+                // count — stopping once the next payment is unaffordable or declined. The count
+                // drives the on-cast copy effect (Spell::replicate_count). Reuses the same
+                // request_optional_yesno / can_pay_mana infra the kicker loop uses.
+                if (card_data.has_replicate) {
+                    while (true) {
+                        ManaValue with_replicate = cost_to_pay;
+                        for (Colors c : card_data.replicate_cost) with_replicate.insert(c);
+                        if (!can_pay_mana(caster, with_replicate, spell_entity, orderer,
+                                          card_data.has_delve, card_data.has_improvise))
+                            break;
+                        std::string prompt = "pay replicate cost for " + card_data.name +
+                            " (paid " + std::to_string(replicate_count) + ")";
+                        if (!request_optional_yesno(caster, prompt)) break;
+                        cost_to_pay = with_replicate;
+                        replicate_count++;
+                        game_log("%s pays the replicate cost for %s (%d)\n",
+                                 player_name(caster).c_str(), card_data.name.c_str(),
+                                 replicate_count);
                     }
                 }
 
@@ -1387,6 +1416,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             spell.cast_with_evoke = action.use_alt_cost && card_data.alt_cost.is_evoke;
             spell.cast_with_offspring = action.use_offspring;
             spell.kicked = kicked_flags;  // per-kicker "paid?" flags (empty for non-kicker spells)
+            spell.replicate_count = replicate_count;  // # of replicate payments (0 if none/no Replicate)
             // Record the X value paid so an "enters with X counters" replacement can read
             // it (Chalice of the Void: enters with X charge counters). cur_game.x_paid is
             // global and may be overwritten by a later cast before this spell resolves.
@@ -1462,6 +1492,16 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                     // becomes-target trigger matches fires it above this spell (CR 603.2c/603.3).
                     fire_became_target_events(spell_entity, caster, tgts);
                 }
+            }
+
+            // REPLICATE (CR 702.x): "When you cast this spell, copy it for each time you paid
+            // its replicate cost." The replicate count was recorded on the Spell as the cost
+            // was paid; create that many copies of this spell on top of the stack now (the
+            // copies resolve before the original and may choose new targets). General
+            // copy-spell-on-stack mechanism; a copy is not cast, so it replicates nothing.
+            if (global_coordinator.entity_has_component<Spell>(spell_entity)) {
+                int rc = global_coordinator.GetComponent<Spell>(spell_entity).replicate_count;
+                if (rc > 0) copy_spell_on_stack(spell_entity, rc, caster, orderer);
             }
 
             game.take_action();

@@ -111,7 +111,16 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
                 cur_game.player_a_has_priority = prev_priority;
                 global_coordinator.RemoveComponent<Ability>(top_entity);
             }
+            // A COPY of a spell (CR 707.10c) is not a card: once it resolves it ceases to exist
+            // rather than going to any zone. Capture before the Spell component is removed.
+            bool was_copy = global_coordinator.entity_has_component<Spell>(top_entity) &&
+                            global_coordinator.GetComponent<Spell>(top_entity).is_copy;
             global_coordinator.RemoveComponent<Spell>(top_entity);
+            if (was_copy) {
+                game_log("%s (copy) ceases to exist\n", card_data.name.c_str());
+                global_coordinator.DestroyEntity(top_entity);
+                return;
+            }
             // Shuffle into library instead of graveyard (e.g. Green Sun's Zenith)
             if (card_data.shuffle_into_library) {
                 orderer->add_to_zone(false, top_entity, Zone::LIBRARY);

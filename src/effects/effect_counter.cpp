@@ -86,15 +86,20 @@ bool counter(Ability &ab, std::shared_ptr<Orderer> orderer) {
                                        : "<unknown>";
                 bool is_standalone_ability = !global_coordinator.entity_has_component<Spell>(ab.target) &&
                                             global_coordinator.entity_has_component<Ability>(ab.target);
+                // A COPY of a spell (CR 707.10c) is not a card: a countered copy ceases to exist
+                // rather than going to a graveyard. Capture before the Spell component is removed.
+                bool target_is_copy = global_coordinator.entity_has_component<Spell>(ab.target) &&
+                                      global_coordinator.GetComponent<Spell>(ab.target).is_copy;
                 // Capture flashback status before the Spell component (which carries it) is removed.
                 bool was_flashback = spell_cast_with_flashback(ab.target);
                 if (global_coordinator.entity_has_component<Ability>(ab.target))
                     global_coordinator.RemoveComponent<Ability>(ab.target);
                 if (global_coordinator.entity_has_component<Spell>(ab.target))
                     global_coordinator.RemoveComponent<Spell>(ab.target);
-                if (is_standalone_ability) {
-                    // Standalone ability entities (activated/triggered) have no card to send
-                    // to a zone — remove from stack and destroy (rule 701.5a)
+                if (is_standalone_ability || target_is_copy) {
+                    // Standalone ability entities (activated/triggered) and copies of spells
+                    // have no card to send to a zone — remove from stack and destroy
+                    // (rule 701.5a / 707.10c).
                     orderer->add_to_zone(false, ab.target, Zone::EXILE);
                     global_coordinator.DestroyEntity(ab.target);
                 } else {

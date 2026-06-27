@@ -44,6 +44,17 @@ extern Game cur_game;
 // (CR 608.2c). Forward-declared per CLAUDE.md.
 static void bind_sub_target(const Ability &parent, Ability &sub);
 
+// ── Stack-object target matching (TargetType$) ──────────────────────────────
+// TargetType$ is a comma-separated list of OR alternatives, each restricting the chosen
+// target to a kind of object ON THE STACK: a "Spell[.quals]" alternative matches a spell
+// (with optional color / type qualifiers), an "Activated"/"Triggered" alternative matches a
+// standalone ability of that kind (CR 113.7). Consign to Memory's
+// "Spell.Colorless,Triggered" is one such disjunction. Forward-declared per CLAUDE.md.
+static bool stack_spell_alt_matches(const std::string &alt, Entity cand, const std::string &vt);
+static bool stack_ability_alt_matches(const std::string &alt, Entity cand);
+static bool target_type_matches_stack_object(const std::string &target_type, Entity cand,
+                                             const std::string &vt);
+
 // edge case of two identical abilities being applied from two sources not handled
 bool Ability::identical_activated_ability(const Ability &other) {
     if (other.category != this->category) return false;
@@ -481,6 +492,82 @@ void Ability::fizzle(std::shared_ptr<Orderer> orderer) {
     return;
 }
 
+// Does one "Spell[.quals]" TargetType alternative match a spell on the stack? Checks the
+// stack-spell preconditions plus the alternative's own qualifiers: type negations
+// (nonCreature / Instant|Sorcery-only), a positive color restriction (.Blue — Red Elemental
+// Blast, CR 115.1), and Colorless (Consign to Memory: a spell with no color). `alt` is the
+// single alternative (e.g. "Spell.Colorless"); `vt` is the full ValidTgts$ string used by the
+// shared color helpers. Returns false for a candidate that is not a spell on the stack.
+static bool stack_spell_alt_matches(const std::string &alt, Entity cand, const std::string &vt) {
+    (void)vt;
+    if (!global_coordinator.entity_has_component<Zone>(cand)) return false;
+    if (global_coordinator.GetComponent<Zone>(cand).location != Zone::STACK) return false;
+    if (!global_coordinator.entity_has_component<Spell>(cand)) return false;
+    bool non_creature_only = alt.find("nonCreature") != std::string::npos;
+    bool instant_sorcery_only =
+        (alt.find("Instant") != std::string::npos || alt.find("Sorcery") != std::string::npos) &&
+        alt.find("Creature") == std::string::npos;
+    if ((non_creature_only || instant_sorcery_only) &&
+        global_coordinator.entity_has_component<CardData>(cand)) {
+        auto &cd = global_coordinator.GetComponent<CardData>(cand);
+        bool is_creature = false, is_instant = false, is_sorcery = false;
+        for (auto &t : cd.types) {
+            if (t.name == "Creature") is_creature = true;
+            if (t.name == "Instant") is_instant = true;
+            if (t.name == "Sorcery") is_sorcery = true;
+        }
+        if (non_creature_only && is_creature) return false;
+        if (instant_sorcery_only && !is_instant && !is_sorcery) return false;
+    }
+    // Positive color restriction (.Blue — Red Elemental Blast, CR 115.1).
+    if (global_coordinator.entity_has_component<CardData>(cand) &&
+        !color_set_passes(alt, effective_colors(cand)))
+        return false;
+    // Colorless restriction (Consign to Memory): the spell must have NO color (CR 105.2c).
+    if (alt.find("Colorless") != std::string::npos && !effective_colors(cand).empty())
+        return false;
+    return true;
+}
+
+// Does one "Activated"/"Triggered" TargetType alternative match a standalone ability on the
+// stack (Stifle, Consign to Memory)? Spells have a Spell component and are excluded.
+static bool stack_ability_alt_matches(const std::string &alt, Entity cand) {
+    if (!global_coordinator.entity_has_component<Zone>(cand)) return false;
+    if (global_coordinator.GetComponent<Zone>(cand).location != Zone::STACK) return false;
+    if (global_coordinator.entity_has_component<Spell>(cand)) return false;  // spells aren't abilities
+    if (!global_coordinator.entity_has_component<Ability>(cand)) return false;
+    auto &ab = global_coordinator.GetComponent<Ability>(cand);
+    if (alt.find("Activated") != std::string::npos && ab.ability_type == Ability::ACTIVATED)
+        return true;
+    if (alt.find("Triggered") != std::string::npos && ab.ability_type == Ability::TRIGGERED)
+        return true;
+    return false;
+}
+
+// TargetType$ is an OR list of stack-object alternatives — split on commas and accept the
+// candidate if ANY alternative matches it (CR 115.1 target restrictions are satisfied by any
+// one named kind). Drives counterspells (Spell), Stifle (Activated,Triggered) and Consign to
+// Memory (Spell.Colorless,Triggered) off one matcher.
+static bool target_type_matches_stack_object(const std::string &target_type, Entity cand,
+                                             const std::string &vt) {
+    size_t start = 0;
+    while (start <= target_type.size()) {
+        size_t comma = target_type.find(',', start);
+        std::string alt = target_type.substr(
+            start, comma == std::string::npos ? std::string::npos : comma - start);
+        if (!alt.empty()) {
+            bool is_ability_alt = (alt.find("Activated") != std::string::npos ||
+                                   alt.find("Triggered") != std::string::npos);
+            bool is_spell_alt = (alt.find("Spell") != std::string::npos);
+            if (is_ability_alt && stack_ability_alt_matches(alt, cand)) return true;
+            if (is_spell_alt && stack_spell_alt_matches(alt, cand, vt)) return true;
+        }
+        if (comma == std::string::npos) break;
+        start = comma + 1;
+    }
+    return false;
+}
+
 // Single source of truth for target legality (see header). build_valid_targets
 // enumerates candidates and filters them through this; is_target_valid re-runs the
 // chosen target(s) through it at resolution. Keeping both on one predicate is what
@@ -516,48 +603,13 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
 
     const std::string &vt = valid_tgts;
 
-    // Spell on the stack (counterspells etc.)
-    if (target_type == "Spell") {
-        if (!global_coordinator.entity_has_component<Zone>(cand)) return false;
-        if (global_coordinator.GetComponent<Zone>(cand).location != Zone::STACK) return false;
-        if (!global_coordinator.entity_has_component<Spell>(cand)) return false;
-        bool non_creature_only = vt.find("nonCreature") != std::string::npos;
-        bool instant_sorcery_only =
-            (vt.find("Instant") != std::string::npos || vt.find("Sorcery") != std::string::npos) &&
-            vt.find("Creature") == std::string::npos;
-        if ((non_creature_only || instant_sorcery_only) &&
-            global_coordinator.entity_has_component<CardData>(cand)) {
-            auto &cd = global_coordinator.GetComponent<CardData>(cand);
-            bool is_creature = false, is_instant = false, is_sorcery = false;
-            for (auto &t : cd.types) {
-                if (t.name == "Creature") is_creature = true;
-                if (t.name == "Instant") is_instant = true;
-                if (t.name == "Sorcery") is_sorcery = true;
-            }
-            if (non_creature_only && is_creature) return false;
-            if (instant_sorcery_only && !is_instant && !is_sorcery) return false;
-        }
-        // Positive color restriction (e.g. ValidTgts$ Card.Blue on Red Elemental Blast:
-        // "Counter target blue spell" — blue is a targeting restriction, CR 115.1).
-        if (global_coordinator.entity_has_component<CardData>(cand) &&
-            !color_set_passes(vt, effective_colors(cand)))
-            return false;
-        return true;
-    }
-
-    // Stifle: standalone activated/triggered ability on the stack
-    if (target_type.find("Activated") != std::string::npos ||
-        target_type.find("Triggered") != std::string::npos) {
-        if (!global_coordinator.entity_has_component<Zone>(cand)) return false;
-        if (global_coordinator.GetComponent<Zone>(cand).location != Zone::STACK) return false;
-        if (global_coordinator.entity_has_component<Spell>(cand)) return false;  // spells aren't abilities
-        if (!global_coordinator.entity_has_component<Ability>(cand)) return false;
-        auto &ab = global_coordinator.GetComponent<Ability>(cand);
-        bool want_activated = target_type.find("Activated") != std::string::npos;
-        bool want_triggered = target_type.find("Triggered") != std::string::npos;
-        if (want_activated && ab.ability_type == Ability::ACTIVATED) return true;
-        if (want_triggered && ab.ability_type == Ability::TRIGGERED) return true;
-        return false;
+    // Stack-object targets (counterspells, Stifle, Consign to Memory): TargetType$ names one or
+    // more kinds of stack object — "Spell[.quals]", "Activated", "Triggered" — as an OR list.
+    if (!target_type.empty() &&
+        (target_type.find("Spell") != std::string::npos ||
+         target_type.find("Activated") != std::string::npos ||
+         target_type.find("Triggered") != std::string::npos)) {
+        return target_type_matches_stack_object(target_type, cand, vt);
     }
 
     // Card in a non-battlefield zone (e.g. Faerie Macabre targeting graveyard cards)

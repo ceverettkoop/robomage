@@ -689,6 +689,17 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             card.keywords.push_back("Kicker");
             continue;
         }
+        // K:Replicate:<cost> — an OPTIONAL ADDITIONAL cost (CR 702.x) that may be paid any
+        // number of times as the spell is cast. Each payment copies the spell once on cast
+        // (the copies may choose new targets). Stored as a single per-instance mana cost; the
+        // count paid is decided at cast time (see action_processor) and recorded per-Spell.
+        if (kw_line.rfind("Replicate:", 0) == 0) {
+            std::string rest = kw_line.substr(strlen("Replicate:"));
+            card.replicate_cost = parse_mana_cost(rest);
+            card.has_replicate = true;
+            card.keywords.push_back("Replicate");
+            continue;
+        }
         // K:Devoid — the object is colorless (CR 702.114a). Forge cards with Devoid omit a
         // Colors: line and rely on the keyword for their colorlessness, so apply it here as a
         // general color override (e.g. an Eldrazi printed with colored mana symbols is still

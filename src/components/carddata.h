@@ -80,6 +80,14 @@ struct CardData{
     // count >= 1). Empty = the card has no kicker. Linked "if it was kicked with its [N]
     // kicker" triggers read the per-Spell kicked flags by index (see Spell::kicked).
     std::vector<ManaValue> kicker_costs;
+    // K:Replicate:<cost> — an OPTIONAL ADDITIONAL cost that may be paid ANY NUMBER OF TIMES as
+    // the spell is cast (CR 702.x / Consign to Memory). Each payment increments the spell's
+    // "replicate count"; when the spell is cast it is copied that many times, and the copies
+    // may choose new targets (the copy mechanism, not a recast). has_replicate gates it; the
+    // per-instance mana paid for each replication is replicate_cost. The chosen count is stored
+    // per-Spell (Spell::replicate_count) so the on-cast copy effect knows how many copies to make.
+    bool has_replicate = false;
+    ManaValue replicate_cost;
     std::set<Colors> explicit_colors;    // Colors: field override (e.g. Dryad Arbor)
 };
 
