@@ -982,11 +982,32 @@ static std::vector<Entity> ability_grant_targets(const ActiveStatic &as, const s
 // granting source enter/leave, and de-dupes per source static (one copy per recipient). It
 // runs unconditionally (even with no statics) so a grant left by a source that just left the
 // battlefield is cleaned up.
+// Per-pass runtime state of one static-granted ability, snapshotted before the grant is
+// stripped so it can be carried onto the freshly re-parsed copy in the same pass. Keyed by
+// (recipient permanent, granting static, ability identity) — mirroring restore_mana_state's
+// (entity, ability-identity) keying for normal mana abilities — so the ActivationLimit$
+// counter (Ability::activations_this_turn) survives the rebuild instead of resetting to 0
+// every continuous-effects pass. Without this a granted limited-activation ability could be
+// activated more than its ActivationLimit$ allows (CR 602.5). The ability is held by value so
+// identical_activated_ability can match it against the rebuilt copy regardless of vector index.
+struct GrantedAbilityRuntime {
+    Entity recipient = 0;
+    Entity granted_by_static = 0;
+    Ability ability;  // the pre-strip granted instance (carries activations_this_turn)
+};
+
 void StateManager::apply_layer6_ability_grants() {
-    // Phase 1: remove all previously static-granted abilities from every battlefield permanent.
+    // Phase 1: remove all previously static-granted abilities from every battlefield permanent,
+    // snapshotting their per-pass runtime counters first so Phase 2's rebuild doesn't clobber them.
+    std::vector<GrantedAbilityRuntime> saved_runtime;
     for (auto entity : mEntities) {
         if (!is_battlefield_permanent(entity)) continue;
         auto &abilities = global_coordinator.GetComponent<Permanent>(entity).abilities;
+        for (auto &ab : abilities) {
+            if (ab.granted_by_static == 0) continue;
+            if (ab.activations_this_turn == 0) continue;  // nothing to preserve
+            saved_runtime.push_back({entity, ab.granted_by_static, ab});
+        }
         abilities.erase(std::remove_if(abilities.begin(), abilities.end(),
                                        [](const Ability &ab) { return ab.granted_by_static != 0; }),
                         abilities.end());
@@ -1012,6 +1033,16 @@ void StateManager::apply_layer6_ability_grants() {
             auto &abilities = global_coordinator.GetComponent<Permanent>(e).abilities;
             Ability copy = granted;
             copy.source = e;
+            // Carry over this pass's runtime counter from the pre-strip instance of the same
+            // grant on the same recipient, so ActivationLimit$ is enforced across the whole turn
+            // even though continuous effects rebuild the ability every pass (CR 602.5).
+            for (auto &saved : saved_runtime) {
+                if (saved.recipient != e) continue;
+                if (saved.granted_by_static != a.entity) continue;
+                if (!saved.ability.identical_activated_ability(copy)) continue;
+                copy.activations_this_turn = saved.ability.activations_this_turn;
+                break;
+            }
             // De-dupe: skip if an identical ability (granted or intrinsic) already exists on
             // the recipient, so a land that already has "{T}: Add {C}" isn't given a duplicate.
             bool dup = false;
