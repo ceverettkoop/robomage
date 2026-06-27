@@ -41,10 +41,16 @@ bool name_card(Ability &ab, std::shared_ptr<Orderer> orderer) {
     bool only_lands = (ab.valid_cards_filter == "Land");
     if (defines_self_owner) {
         Zone::Ownership chooser = ab.controller;
+        // Land-naming (Petrified Hamlet / Alpine Moon-style "name a land") offers lands present
+        // in EITHER player's deck, not just the chooser's, so a land that exists only in the
+        // opponent's deck is still nameable (CR 201.4 lets you name any card; the engine uses a
+        // limited, context-driven set — see CLAUDE.md). Non-land self-named cards stay
+        // chooser-scoped.
+        NameCardScope scope = only_lands ? NameCardScope::BOTH_PLAYERS : NameCardScope::CHOOSER_ONLY;
         std::vector<std::string> names;
         std::vector<LegalAction> name_choices =
             build_name_card_choices(orderer->mEntities, chooser, /*exclude_lands=*/false, names,
-                                    /*only_lands=*/only_lands);
+                                    /*only_lands=*/only_lands, scope);
         std::string chosen;
         if (!name_choices.empty()) {
             bool prev_priority = cur_game.player_a_has_priority;

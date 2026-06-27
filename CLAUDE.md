@@ -345,6 +345,17 @@ Ability categories resolved by `Ability::resolve()` in `src/components/ability.c
 
 Activated abilities with `valid_tgts != "N_A"` have their target selected before costs are paid and before the ability entity is pushed onto the stack. Target legality is re-verified at resolution.
 
+**Name-a-card candidate set (deviation from CR 201.4).** "Name a card" effects (Cabal
+Therapy's `SP$ NameCard`, Disruptor Flute's ETB, Petrified Hamlet's "name a land") do **not**
+offer every card in existence as CR 201.4 allows. The shared builder
+`build_name_card_choices()` (`src/name_card_choices.{h,cpp}`) returns a deliberately LIMITED,
+context-driven candidate set derived from the match and the card — the distinct vocab cards
+present in the relevant deck(s), filtered by the card's `ValidCards$` type. The `NameCardScope`
+argument selects whose deck supplies the candidates: `CHOOSER_ONLY` (one player's whole deck,
+used by Cabal Therapy / Disruptor Flute) or `BOTH_PLAYERS` (lands owned by **either** player A or
+B, de-duped by name). Land-naming cards (Petrified Hamlet / Alpine Moon-style "name a land")
+use `BOTH_PLAYERS`, so a land that exists only in the opponent's deck is still nameable.
+
 ### Card Parser (`src/parse.cpp`)
 
 Parses `.txt` card scripts from `bin/resources/cardsfolder/`. Key script fields:
