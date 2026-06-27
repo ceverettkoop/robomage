@@ -1125,6 +1125,26 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                     game_log("Payment cancelled.\n");
                     break;
                 }
+
+                // ADDITIONAL SACRIFICE COST on the spell itself (CR 601.2f / 118.x):
+                // Natural Order — "As an additional cost to cast this spell, sacrifice a
+                // green creature." Paid here as part of casting (before the spell is on the
+                // stack), using the same SACRIFICE_PERMANENT choice activated abilities use.
+                // Cast legality already guaranteed a matching permanent exists. General to
+                // any spell whose SPELL ability Cost$ carries a Sac<...> token; flashback /
+                // alternate casts pay their own sac cost in their own branch above.
+                std::string spell_sac_spec = spell_additional_sac_spec(card_data);
+                if (!spell_sac_spec.empty()) {
+                    std::vector<Entity> choices = controlled_permanents_matching(
+                        caster, spell_sac_spec, orderer->mEntities, spell_entity);
+                    if (!choices.empty()) {
+                        Entity to_sac = prompt_permanent_choice(
+                            choices, "Sacrifice ", "", ActionCategory::SACRIFICE_PERMANENT);
+                        std::string sac_name = global_coordinator.GetComponent<Permanent>(to_sac).name;
+                        orderer->add_to_zone(false, to_sac, Zone::GRAVEYARD);
+                        game_log("%s sacrifices %s\n", player_name(caster).c_str(), sac_name.c_str());
+                    }
+                }
             }
 
             // Find the primary spell ability template and copy it onto the entity

@@ -293,6 +293,11 @@ inline bool is_basic_land_subtype(const std::string &name) {
 //   .Other  — self-exclusion (CR 700.5 / 109.3): the permanent must NOT be the cost's
 //             source (`exclude_entity`), i.e. "another <type>". An empty/0 exclude makes
 //             .Other a no-op match on type alone.
+//   .<Color> / .non<Color>  — a color restriction (e.g. "Creature.Green" on Natural Order's
+//             "sacrifice a green creature"): the permanent's effective color must satisfy the
+//             qualifier, evaluated via color_set_passes / color_set_passes_noncolor against the
+//             permanent's effective_colors (read live, so continuous color-changing effects
+//             count). Honoured only when `perm_entity` is supplied.
 inline bool permanent_matches_subtype_spec(const Permanent &perm, const std::string &spec,
                                            Entity perm_entity = 0, Entity exclude_entity = 0) {
     size_t pp = 0;
@@ -304,11 +309,12 @@ inline bool permanent_matches_subtype_spec(const Permanent &perm, const std::str
 
         // Split off a '.'-joined qualifier (e.g. "Creature.Other" → "Creature" + "Other").
         std::string type_name = alt;
+        std::string qual;
         bool require_other = false;
         size_t dot = alt.find('.');
         if (dot != std::string::npos) {
             type_name = alt.substr(0, dot);
-            std::string qual = alt.substr(dot + 1);
+            qual = alt.substr(dot + 1);
             if (qual == "Other") require_other = true;
         }
 
@@ -316,8 +322,21 @@ inline bool permanent_matches_subtype_spec(const Permanent &perm, const std::str
         if (require_other && perm_entity != 0 && exclude_entity != 0 && perm_entity == exclude_entity)
             continue;
 
+        bool type_match = false;
         for (const auto &t : perm.types)
-            if (t.name == type_name) return true;
+            if (t.name == type_name) { type_match = true; break; }
+        if (!type_match) continue;
+
+        // Color qualifier (e.g. ".Green" / ".nonGreen"): apply against the permanent's
+        // effective colors. The matchers key on the raw qualifier text (".Green",
+        // "nonGreen"), so feed them `alt` directly. A non-color qualifier (e.g. "Other")
+        // is ignored here — color_set_passes only reacts to color tokens.
+        if (!qual.empty() && qual != "Other" && perm_entity != 0) {
+            std::set<Colors> cols = effective_colors(perm_entity);
+            if (!color_set_passes(alt, cols)) continue;
+            if (!color_set_passes_noncolor(alt, cols)) continue;
+        }
+        return true;
     }
     return false;
 }
@@ -340,6 +359,20 @@ inline std::vector<Entity> controlled_permanents_matching(
         if (permanent_matches_subtype_spec(perm, spec, e, exclude_entity)) out.push_back(e);
     }
     return out;
+}
+
+// The additional Sacrifice-a-<type> cost a spell pays as it is cast, taken from the
+// card's SPELL ability `Cost$` (e.g. Natural Order's "Sac<1/Creature.Green>" →
+// "Creature.Green"). Empty when the spell has no additional sacrifice cost. Mirrors how
+// an activated ability stores its Sac cost on the Ability; reading it from the SPELL
+// ability keeps the parser's real Cost$ tag authoritative (no retag). The cast path pays
+// it with the same SACRIFICE_PERMANENT machinery activated abilities use, and cast
+// legality requires a matching permanent (CR 601.2f).
+inline std::string spell_additional_sac_spec(const CardData &cd) {
+    for (const auto &ab : cd.abilities)
+        if (ab.ability_type == Ability::SPELL && !ab.sac_cost_spec.empty())
+            return ab.sac_cost_spec;
+    return "";
 }
 
 // Single source for "a player gains life": raises their life total and accumulates

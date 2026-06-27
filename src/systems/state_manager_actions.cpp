@@ -417,6 +417,17 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             bool can_regular = can_pay_mana(priority_player, effective_cost, card_entity,
                                             orderer, card_data.has_delve, card_data.has_improvise);
 
+            // Additional Sacrifice-a-<type> cost on the spell itself (Natural Order:
+            // "As an additional cost to cast this spell, sacrifice a green creature").
+            // The spell can't be cast unless a matching permanent is available to
+            // sacrifice (CR 601.2f). General: any spell whose SPELL ability Cost$ carries
+            // a Sac<...> token, matched (incl. color qualifier) like an activation cost.
+            std::string spell_sac_spec = spell_additional_sac_spec(card_data);
+            if (!spell_sac_spec.empty() &&
+                controlled_permanents_matching(priority_player, spell_sac_spec,
+                                               orderer->mEntities, card_entity).empty())
+                can_regular = false;
+
             bool can_alt = can_afford_alt(card_data.alt_cost, priority_player, card_entity, orderer);
 
             if (can_regular) actions.push_back(la);
