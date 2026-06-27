@@ -96,6 +96,20 @@ bool name_card(Ability &ab, std::shared_ptr<Orderer> orderer);
 // base-P/T / keyword / creature grants) onto the permanent so the layer system reapplies
 // it each SBE pass. See effect_animate.cpp.
 bool animate(Ability &ab, std::shared_ptr<Orderer> orderer);
+// Bootstrap (or refresh) the Creature/Damage components on a permanent the Animate extension
+// points (animate_make_creature + animate_set_pt + animate_added_keywords) turned into a
+// creature — e.g. an earthbended land. Idempotent; safe to call each SBA pass. Defined in
+// effect_animate.cpp.
+void apply_animate_creature_bootstrap(Entity e);
+// DB$/AB$ Earthbend (Badgermole Cub, Ba Sing Se): the targeted land you control becomes a 0/0
+// creature with haste that's still a land (via the Animate extension), gets ab.amount +1/+1
+// counters, and a "when it leaves the battlefield, return it tapped" delayed trigger is
+// registered. See effect_earthbend.cpp.
+bool earthbend(Ability &ab, std::shared_ptr<Orderer> orderer);
+// DB$ Tap (Ba Sing Se LandTapped SVar / generic): tap Defined$ Self or the target. The
+// conditional "enters tapped" case is handled by the ENTERS_TAPPED replacement; this resolve
+// handler covers a tap that reaches the stack. See effect_tap.cpp.
+bool tap(Ability &ab, std::shared_ptr<Orderer> orderer);
 // DB$ ChooseNumber (Wrath of the Skies): the resolving controller chooses an integer in
 // [0, Max], where Max is the runtime Count$ expression in ab.dynamic_amount_expr (e.g.
 // Count$YourCountersEnergy = their current energy). The pick is recorded in

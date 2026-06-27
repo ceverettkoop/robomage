@@ -16,6 +16,7 @@
 #include "../ecs/coordinator.h"
 #include "../game_queries.h"
 #include "../input_logger.h"
+#include "../svar_eval.h"
 
 // Internal description of a single applicable replacement effect for one dispatch.
 namespace {
@@ -58,6 +59,43 @@ bool already_applied(const std::set<std::pair<Entity, int>> &applied, const Cand
     return applied.count({c.source, c.index}) != 0;
 }
 
+// Evaluate a conditional "enters tapped" gate (Ba Sing Se: "enters tapped unless you control a
+// basic land"). `filter` is a "<Type>[.<Supertype>]" spec evaluated controller-relative; the
+// count of `controller`'s matching battlefield permanents is compared via `compare` (e.g. EQ0).
+// An empty filter means unconditional (always tapped). The entering permanent (`entering`) is
+// excluded — it isn't a live battlefield permanent yet during the ENTERS_BATTLEFIELD dispatch.
+static bool tapped_condition_met(const std::string &filter, const std::string &compare,
+                                 Zone::Ownership controller, Entity entering) {
+    if (filter.empty()) return true;
+    // Split "Land.Basic" into a main type and an optional Basic/nonBasic supertype qualifier.
+    std::string type_filter = filter;
+    bool require_basic = false, require_nonbasic = false;
+    size_t dot = filter.find('.');
+    if (dot != std::string::npos) {
+        type_filter = filter.substr(0, dot);
+        std::string qual = filter.substr(dot + 1);
+        if (qual == "Basic") require_basic = true;
+        else if (qual == "nonBasic") require_nonbasic = true;
+    }
+    int count = 0;
+    Entity max_e = global_coordinator.GetMaxIssuedEntity();
+    for (Entity e = 0; e < max_e; e++) {
+        if (e == entering) continue;
+        if (!is_battlefield_permanent(e, controller)) continue;
+        auto &perm = global_coordinator.GetComponent<Permanent>(e);
+        bool type_ok = type_filter.empty() || type_filter == "Permanent";
+        if (!type_ok)
+            for (const auto &t : perm.types)
+                if (t.name == type_filter) { type_ok = true; break; }
+        if (!type_ok) continue;
+        if (require_basic && !has_basic_supertype(perm.types)) continue;
+        if (require_nonbasic && has_basic_supertype(perm.types)) continue;
+        count++;
+    }
+    std::string cmp = compare.empty() ? "GE1" : compare;
+    return compare_svar(count, cmp);
+}
+
 // Gather every replacement effect currently applicable to `ev`, excluding any that
 // have already been applied this dispatch (614.5 — one opportunity per event), and
 // re-checking applicability against the live event state (616.1f / 616.2).
@@ -70,7 +108,14 @@ std::vector<Candidate> collect(const ReplacementEvent &ev,
             auto &cd = global_coordinator.GetComponent<CardData>(ev.entity);
             // Self "enters tapped" replacement effect (614.1d / self-replacement 614.15).
             for (size_t i = 0; i < cd.replacement_effects.size(); i++) {
-                if (cd.replacement_effects[i].kind != Effect::Replacement::ENTERS_TAPPED) continue;
+                const Effect::Replacement &r = cd.replacement_effects[i];
+                if (r.kind != Effect::Replacement::ENTERS_TAPPED) continue;
+                // Conditional "enters tapped" (Ba Sing Se): apply only when the controller's
+                // board satisfies the gate (e.g. zero basic lands). The entering permanent's
+                // controller is ev.affected_player (616.1 chooser).
+                if (!tapped_condition_met(r.tapped_condition_filter, r.tapped_condition_compare,
+                                          ev.affected_player, ev.entity))
+                    continue;
                 Candidate c;
                 c.source = ev.entity;
                 c.kind = SELF_TAPPED;

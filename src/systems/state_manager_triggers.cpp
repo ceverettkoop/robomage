@@ -88,6 +88,18 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
             bool matched = false;
             for (const auto &ev : events) {
                 if (ev.GetType() != dt.fire_on) continue;
+                // Entity-watched "when THIS permanent leaves the battlefield" delayed trigger
+                // (CR 603.6e, the earthbend return-tapped trigger): match only the watched
+                // entity changing zone from the battlefield. Skip the phase/owner gating below,
+                // which is for the phase-based delayed triggers.
+                if (dt.fire_on_leave_battlefield) {
+                    if (ev.GetType() != Events::CARD_CHANGED_ZONE) continue;
+                    if (!ev.HasParam(Params::ENTITY)) continue;
+                    if (ev.GetParam<Entity>(Params::ENTITY) != dt.watch_entity) continue;
+                    if (ev.GetParam<Zone::ZoneValue>(Params::ORIGIN) != Zone::BATTLEFIELD) continue;
+                    matched = true;
+                    break;
+                }
                 if (dt.fire_on == Events::UPKEEP_BEGAN && game.turn < dt.fire_on_turn) continue;
                 // Owner check: only fire on the correct player's upkeep
                 if (ev.HasParam(Params::PLAYER) &&
@@ -137,6 +149,9 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
             for (const auto *src : ab_sources) {
             for (const auto &ab : *src) {
                 if (ab.ability_type != Ability::TRIGGERED) continue;
+                // Static$ True mana-additional triggers (Badgermole Cub's TapsForMana) never go
+                // on the stack — they resolve immediately inside the mana system (CR 605.1a).
+                if (ab.trigger_taps_for_mana_static) continue;
                 // A graveyard-functioning trigger (TriggerZones$ Graveyard, e.g. Arclight
                 // Phoenix's begin-combat return) functions ONLY while its source is in the
                 // graveyard — TriggerZones overrides the default battlefield functioning

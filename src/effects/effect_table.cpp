@@ -59,6 +59,8 @@ EffectHandler handler_for(EffectKind kind) {
         case EffectKind::ChooseNumber:    return &choose_number;
         case EffectKind::DigUntil:        return &dig_until;
         case EffectKind::Play:            return &play;
+        case EffectKind::Earthbend:       return &earthbend;
+        case EffectKind::Tap:             return &tap;
         default:                          return nullptr;
     }
 }

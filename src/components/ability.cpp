@@ -577,6 +577,16 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
     if (!is_battlefield_permanent(cand)) return false;
     auto &tperm = global_coordinator.GetComponent<Permanent>(cand);
 
+    // Controller restriction (YouCtrl/OppCtrl, e.g. ValidTgts$ Land.YouCtrl on the earthbend
+    // keyword action): the candidate must be controlled by the right player. Read off the
+    // permanent's controller (CR 109.4 / 115.1).
+    {
+        bool you_ctrl = vt.find("YouCtrl") != std::string::npos;
+        bool opp_ctrl = vt.find("OppCtrl") != std::string::npos;
+        if (you_ctrl && tperm.controller != caster) return false;
+        if (opp_ctrl && tperm.controller == caster) return false;
+    }
+
     // "non<CardType>" main-type negation (e.g. ValidTgts$ Permanent.nonLand+cmcLE3 on
     // Abrupt Decay): reject a candidate whose type line carries the excluded card type.
     // General over all card types, so it is not special-cased to any one card (CR 115.1).

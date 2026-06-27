@@ -133,6 +133,8 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
         std::string sname = global_coordinator.entity_has_component<CardData>(ab.source)
                                 ? global_coordinator.GetComponent<CardData>(ab.source).name
                                 : "<unknown>";
+        if (ab.enters_tapped && ab.destination == Zone::BATTLEFIELD)
+            cur_game.pending_enters_tapped.insert(ab.source);
         Zone::ZoneValue landed = change_zone_move(orderer, ab.source, ab.destination);
         if (landed == Zone::BATTLEFIELD)
             global_coordinator.GetComponent<Zone>(ab.source).controller = owner;

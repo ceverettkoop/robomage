@@ -75,6 +75,16 @@ EffectKind effect_kind_from_string(const std::string &category) {
         // RESOURCE cost (PlayCost$ PayEnergy<...> / PayLife<...>) instead of its mana cost. See
         // effect_play.cpp.
         {"Play", EffectKind::Play},
+        // DB$/AB$ Earthbend (Badgermole Cub, Ba Sing Se): target land you control becomes a
+        // 0/0 creature with haste that's still a land, gets Num$ +1/+1 counters, and is set up
+        // with a delayed "when it leaves the battlefield, return it tapped" trigger. The
+        // land-animation reuses the Animate extension points on Permanent. See effect_earthbend.cpp.
+        {"Earthbend", EffectKind::Earthbend},
+        // DB$ Tap (Ba Sing Se's LandTapped replacement SVar): tap Defined$ Self. When ETB$ True
+        // it taps the permanent as it enters (the conditional "enters tapped" replacement) — that
+        // path is handled by the ENTERS_TAPPED replacement, so this resolve handler covers the
+        // generic "tap target/Self" case. See effect_tap.cpp.
+        {"Tap", EffectKind::Tap},
     };
     auto it = table.find(category);
     return (it != table.end()) ? it->second : EffectKind::None;

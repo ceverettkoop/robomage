@@ -884,7 +884,7 @@ static std::map<std::string, std::string> parse_svars(const std::string& script)
 static void apply_param_to_ability(Ability& ability, const std::string& key, const std::string& value,
                                    const std::string& card_name) {
     if (key == "NumCards" || key == "ChangeNum" || key == "Amount" ||
-        key == "TokenAmount" || key == "ScryNum") {
+        key == "TokenAmount" || key == "ScryNum" || key == "Num") {
         if (value == "DamageAmount" || value == "TriggerCount$DamageAmount") {
             ability.amount_from_damage = true;
         } else if (key == "ChangeNum" && value == "Any") {
@@ -1020,6 +1020,16 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         ability.adds_no_counter = (value == "True");
     } else if (key == "InstantSpeed") {
         ability.instant_speed = (value == "True");
+    } else if (key == "SorcerySpeed") {
+        // SorcerySpeed$ True — this activated ability can be activated only any time its
+        // controller could cast a sorcery (main phase, their turn, empty stack). Used by the
+        // activated form of Earthbend (Ba Sing Se). Gated in the legal-action enumeration.
+        ability.sorcery_speed_only = (value == "True");
+    } else if (key == "ETB") {
+        // ETB$ True on a DB$ Tap (Ba Sing Se's LandTapped replacement SVar): the tap happens as
+        // the permanent enters the battlefield. The conditional "enters tapped" is realized via
+        // the ENTERS_TAPPED replacement; this flag marks the resolve-time Tap as an ETB tap.
+        ability.tap_on_etb = (value == "True");
     } else if (key == "Planeswalker") {
         ability.is_loyalty_ability = (value == "True");
     } else if (key == "Cost") {
@@ -1126,6 +1136,11 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
     if (cat_end == std::string::npos) cat_end = content.length();
     if (cat_end > p)
         sub.category = normalize_category(content.substr(p, cat_end - p));
+
+    // Earthbend (CR keyword action) inherently targets a land the controller controls; the
+    // Forge scripts carry no ValidTgts$, so default it here (overridden if the script ever
+    // states one explicitly).
+    if (sub.category == "Earthbend") sub.valid_tgts = "Land.YouCtrl";
 
     size_t param_pos = content.find("|", p);
     std::string key, value;
@@ -1386,6 +1401,10 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
 
         ability.category = normalize_category(line.substr(pos, category_end - pos));
 
+        // Earthbend (CR keyword action) inherently targets a land the controller controls; the
+        // activated form (Ba Sing Se) carries no ValidTgts$, so default it here.
+        if (ability.category == "Earthbend") ability.valid_tgts = "Land.YouCtrl";
+
         // Parse pipe-delimited parameters — applies to all ability categories
         size_t param_pos = line.find("|", pos);
         std::string key, value;
@@ -1625,6 +1644,8 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
     bool valid_card_permanent = false;
     bool mode_is_drawn = false;
     bool mode_is_attackers_declared = false;
+    bool mode_is_taps_for_mana = false;
+    bool trigger_static = false;
     bool attacking_player_is_you = false;
     bool valid_card_opp_own = false;
     bool exclude_first_draw_step = false;
@@ -1646,6 +1667,15 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
             else if (value == "DamageDone") mode_is_damage_done = true;
             else if (value == "Drawn") mode_is_drawn = true;
             else if (value == "AttackersDeclared") mode_is_attackers_declared = true;
+            else if (value == "TapsForMana") mode_is_taps_for_mana = true;
+        } else if (key == "Activator") {
+            // Mode$ TapsForMana | Activator$ You — only the source controller tapping a
+            // permanent for mana fires this ("whenever YOU tap ...").
+            if (value == "You") valid_player_is_you = true;
+        } else if (key == "Static") {
+            // Static$ True on a TapsForMana trigger: it is a mana-additional effect that does
+            // not use the stack (CR 605.1a) — resolved immediately by the mana system.
+            if (value == "True") trigger_static = true;
         } else if (key == "AttackingPlayer") {
             // Mode$ AttackersDeclared | AttackingPlayer$ You — the trigger fires only when
             // the player who declared attackers is this ability's controller ("whenever you attack").
@@ -1857,6 +1887,17 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
         ability.trigger_valid_player_is_controller = attacking_player_is_you;
     }
 
+    // "Whenever you tap a creature for mana, add an additional {G}." — Badgermole Cub
+    // (Mode$ TapsForMana | ValidCard$ Creature | Activator$ You | Static$ True). A
+    // mana-additional triggered ability resolved immediately by the mana system (off-stack,
+    // CR 605.1a) rather than placed on the stack.
+    if (mode_is_taps_for_mana) {
+        ability.trigger_on = Events::TAPPED_FOR_MANA;
+        ability.trigger_valid_card_is_creature = valid_card_creature;
+        ability.trigger_valid_player_is_controller = valid_player_is_you;
+        ability.trigger_taps_for_mana_static = trigger_static;
+    }
+
     // Resolve effect from Execute$ SVar
     if (!execute_svar.empty()) {
         auto it = svars.find(execute_svar);
@@ -1896,6 +1937,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
                 effect.trigger_cmc_expr                         = ability.trigger_cmc_expr;
                 effect.trigger_cmc_op                           = ability.trigger_cmc_op;
                 effect.trigger_from_graveyard                   = ability.trigger_from_graveyard;
+                effect.trigger_taps_for_mana_static             = ability.trigger_taps_for_mana_static;
                 // 603.4 intervening-if lives on the trigger line, not the Execute SVar — carry
                 // it onto the resolved ability so it is re-checked at resolution.
                 effect.intervening_if                           = ability.intervening_if;
@@ -2143,16 +2185,53 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
         // WithCountersType$ VOID)? Leyline of the Void omits it — a plain exile. We read this
         // off the SVar named by ReplaceWith$ rather than retagging the identical R: lines.
         bool replace_with_void_counter = false;
+        // Conditional "enters tapped" (Ba Sing Se): ReplaceWith$ <SVar> where the SVar is a
+        // DB$ Tap | ETB$ True with a ConditionPresent$/ConditionCompare$ gate ("enters tapped
+        // unless you control a basic land"). Detected here off the named SVar's body so the
+        // identical R: line isn't retagged. An ETBTapped token (above) is the unconditional form.
+        bool replace_with_etb_tapped_conditional = false;
+        std::string tapped_cond_filter, tapped_cond_compare;
         if (!replace_with_svar.empty()) {
             auto sv = svars.find(replace_with_svar);
-            if (sv != svars.end() && sv->second.find("VOID") != std::string::npos)
-                replace_with_void_counter = true;
+            if (sv != svars.end()) {
+                const std::string &body = sv->second;
+                if (body.find("VOID") != std::string::npos) replace_with_void_counter = true;
+                if (body.find("DB$ Tap") != std::string::npos &&
+                    body.find("ETB$ True") != std::string::npos) {
+                    replace_with_etb_tapped_conditional = true;
+                    // Pull ConditionPresent$ / ConditionCompare$ out of the SVar body.
+                    size_t pp = 0; std::string k, v;
+                    while (next_param(body, pp, k, v)) {
+                        if (k == "ConditionPresent") {
+                            // Drop a "+YouCtrl" qualifier — the condition is always evaluated
+                            // controller-relative (the permanent's controller as it enters).
+                            std::string f = v;
+                            size_t plus = f.find("+YouCtrl");
+                            if (plus != std::string::npos) f.erase(plus);
+                            tapped_cond_filter = f;
+                        } else if (k == "ConditionCompare") {
+                            tapped_cond_compare = v;
+                        }
+                    }
+                }
+            }
         }
 
         if (event_is_moved && valid_card_self && dest_is_battlefield && replace_with_etb_tapped) {
             Effect::Replacement r;
             r.kind = Effect::Replacement::ENTERS_TAPPED;
             r.applies_to_self_only = true;
+            result.push_back(r);
+        }
+        // Conditional "enters tapped" (Ba Sing Se): an ENTERS_TAPPED replacement whose
+        // application is gated on the controller's board (e.g. "unless you control a basic land").
+        if (event_is_moved && valid_card_self && dest_is_battlefield &&
+            replace_with_etb_tapped_conditional) {
+            Effect::Replacement r;
+            r.kind = Effect::Replacement::ENTERS_TAPPED;
+            r.applies_to_self_only = true;
+            r.tapped_condition_filter = tapped_cond_filter;
+            r.tapped_condition_compare = tapped_cond_compare;
             result.push_back(r);
         }
         if (event_is_counter && valid_card_self && layer_cant_happen) {

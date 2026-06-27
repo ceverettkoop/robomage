@@ -61,6 +61,8 @@ enum class EffectKind {
     ChooseNumber,
     DigUntil,
     Play,
+    Earthbend,
+    Tap,
 };
 
 // Maps a normalized category string to its EffectKind. Unknown strings → None.

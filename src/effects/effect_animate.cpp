@@ -5,7 +5,9 @@
 
 #include "../classes/game.h"
 #include "../cli_output.h"
+#include "../components/carddata.h"
 #include "../components/creature.h"
+#include "../components/damage.h"
 #include "../components/permanent.h"
 #include "../ecs/coordinator.h"
 #include "../game_queries.h"
@@ -13,6 +15,41 @@
 extern Coordinator global_coordinator;
 
 namespace effects {
+
+// Bootstrap a Creature (and Damage) component on a permanent that the Animate extension points
+// have turned into a creature (animate_make_creature). The base P/T come from animate_*; the
+// granted keywords (animate_added_keywords, e.g. Haste) are merged on. Idempotent: a permanent
+// that already has a Creature keeps it (its base P/T are re-asserted to the animate values so a
+// 0/0 land-creature stays 0/0 before counters). Reused by the SBA reapply pass so an animated
+// land that somehow lost its Creature regains it. Returns nothing; refreshes cached P/T.
+void apply_animate_creature_bootstrap(Entity e) {
+    if (!global_coordinator.entity_has_component<Permanent>(e)) return;
+    auto &perm = global_coordinator.GetComponent<Permanent>(e);
+    if (!perm.animate_make_creature) return;
+    if (!global_coordinator.entity_has_component<Creature>(e)) {
+        Creature cr;
+        cr.base_power = perm.animate_set_pt ? perm.animate_power : 0;
+        cr.base_toughness = perm.animate_set_pt ? perm.animate_toughness : 0;
+        global_coordinator.AddComponent(e, cr);
+        if (!global_coordinator.entity_has_component<Damage>(e)) {
+            Damage dmg;
+            dmg.damage_counters = 0;
+            global_coordinator.AddComponent(e, dmg);
+        }
+    } else if (perm.animate_set_pt) {
+        // Re-assert the animated base P/T (the SBA keyword/static rebuild leaves base_* alone,
+        // but a freshly added Creature from is_creature_card would carry the printed P/T).
+        auto &cr = global_coordinator.GetComponent<Creature>(e);
+        cr.base_power = perm.animate_power;
+        cr.base_toughness = perm.animate_toughness;
+    }
+    auto &cr = global_coordinator.GetComponent<Creature>(e);
+    for (const auto &kw : perm.animate_added_keywords)
+        if (std::find(cr.keywords.begin(), cr.keywords.end(), kw) == cr.keywords.end())
+            cr.keywords.push_back(kw);
+    // +1/+1 counters already on the permanent (earthbend's counters) sync the cached P/T.
+    refresh_counter_pt(e);
+}
 
 // DB$ Animate (CR 613 continuous effects). Today's only exercised path is the Guide of Souls
 // "it becomes an Angel in addition to its other types" rider: add the parsed Types$ subtypes
@@ -42,9 +79,14 @@ bool animate(Ability &ab, std::shared_ptr<Orderer> orderer) {
                  t.name.c_str());
     }
 
-    // Granted keywords (layer 6) — extension point; populated by future Animate cards via
-    // perm.animate_added_keywords (the layer-6 reapply pass merges them onto the rebuilt list).
-    if (global_coordinator.entity_has_component<Creature>(tgt)) {
+    // Land-animation extension (Earthbend): turn a noncreature permanent into a creature with
+    // the baked base P/T, then merge the granted keywords (Haste). For a permanent that is
+    // already a creature, just merge the keywords (the layer-6 reapply does the same each pass).
+    if (perm.animate_make_creature) {
+        apply_animate_creature_bootstrap(tgt);
+    } else if (global_coordinator.entity_has_component<Creature>(tgt)) {
+        // Granted keywords (layer 6) — extension point; populated by future Animate cards via
+        // perm.animate_added_keywords (the layer-6 reapply pass merges them onto the rebuilt list).
         auto &cr = global_coordinator.GetComponent<Creature>(tgt);
         for (const auto &kw : perm.animate_added_keywords)
             if (std::find(cr.keywords.begin(), cr.keywords.end(), kw) == cr.keywords.end())

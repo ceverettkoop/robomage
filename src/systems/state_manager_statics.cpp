@@ -34,6 +34,7 @@
 #include "../systems/stack_manager.h"
 #include "replacement_effects.h"
 #include "continuous_effects.h"
+#include "../effects/effects.h"
 #include "orderer.h"
 
 int active_raise_cost_for(const CardData &card_data) {
@@ -323,6 +324,11 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
             if (is_land) {
                 apply_land_abilities(entity);
             }
+            // Earthbended land (DB$/AB$ Animate make_creature): an animated land is a creature
+            // even though is_creature_card(card) is false, so re-bootstrap its Creature/Damage
+            // components here if they were lost. Idempotent; honors the 0/0 base + Haste grant.
+            if (global_coordinator.GetComponent<Permanent>(entity).animate_make_creature)
+                effects::apply_animate_creature_bootstrap(entity);
             apply_keyword_abilities(entity);
 
             // A card moved here "transformed" (Ajani's exile-and-return) enters showing

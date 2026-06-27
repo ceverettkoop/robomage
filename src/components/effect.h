@@ -23,6 +23,13 @@ struct Effect {
         Kind kind = ENTERS_TAPPED;
         bool applies_to_self_only = false;  // only fires when the affected entity is the source itself
         std::string valid_subtype = "";     // SKIP_UNTAP: the (sub)type the untap-prevention applies to (e.g. "Island")
+        // ENTERS_TAPPED conditional gating (Ba Sing Se: "enters tapped unless you control a
+        // basic land"). The replacement applies only when the count of the controller's
+        // permanents matching `tapped_condition_filter` satisfies `tapped_condition_compare`
+        // (e.g. filter "Land.Basic", compare "EQ0" — tapped only with zero basic lands).
+        // Empty filter = unconditional (the plain "enters tapped").
+        std::string tapped_condition_filter = "";   // e.g. "Land.Basic" (controller-relative)
+        std::string tapped_condition_compare = "";   // e.g. "EQ0", "GE1"
         bool with_void_counter = false;     // EXILE_INSTEAD_OF_GRAVEYARD: exile with a void counter (Dauthi Voidwalker) so the controller may later play it; plain exile (Leyline of the Void) leaves it false
         // PREVENT_ETB_FROM_ZONES: the set of origin zones whose creature cards can't enter the battlefield.
         bool prevent_from_graveyard = false;  // Origin$ includes Graveyard

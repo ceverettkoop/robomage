@@ -8,6 +8,7 @@
 #include "classes/action.h"
 #include "classes/game.h"
 #include "cli_output.h"
+#include "components/ability.h"
 #include "components/carddata.h"
 #include "components/creature.h"
 #include "components/permanent.h"
@@ -15,6 +16,7 @@
 #include "components/static_ability.h"
 #include "components/types.h"
 #include "ecs/coordinator.h"
+#include "ecs/events.h"
 #include "error.h"
 #include "game_queries.h"
 #include "input_logger.h"
@@ -43,6 +45,9 @@ static void improvise_tap_one(Entity e, Zone::Ownership controller, ManaValue &r
 static void activate_mana_source(Entity entity, const Ability &ab, Zone::Ownership controller,
                                  std::shared_ptr<Orderer> orderer, ManaValue &pool,
                                  Player &player, bool commit);
+static void fire_taps_for_mana_triggers(Entity tapped_source, Zone::Ownership controller,
+                                        std::shared_ptr<Orderer> orderer, ManaValue &pool,
+                                        bool log);
 
 Entity get_player_entity(Zone::Ownership player) {
     return (player == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
@@ -562,6 +567,12 @@ static void activate_mana_source(Entity entity, const Ability &ab, Zone::Ownersh
     }
     size_t amount = eval_mana_amount(ab, controller, orderer);
     for (size_t i = 0; i < amount; i++) pool.insert(ab.color);
+    // Mana-additional "whenever you tap a <permanent> for mana" triggers (Badgermole Cub's
+    // TapsForMana, CR 605.1a): resolve immediately as part of the tap, adding their extra mana
+    // to the working pool. Fired in BOTH commit and simulate modes so affordability/legality
+    // (can_pay_mana) and the real payment agree on the available mana; the narrative line is
+    // emitted only on the real activation (commit).
+    fire_taps_for_mana_triggers(entity, controller, orderer, pool, commit);
     if (commit && ab.adds_no_counter) cur_game.pending_cant_be_countered = true;
     if (commit)
         game_log("%s activated %s for %zu(%s)\n", player_name(controller).c_str(),
@@ -577,6 +588,48 @@ static void activate_mana_source(Entity entity, const Ability &ab, Zone::Ownersh
         }
     }
     if (commit) increment_activation_count(perm, ab);
+}
+
+// True if `e` is (currently) a creature on the battlefield — used to gate ValidCard$ Creature on
+// a TapsForMana trigger. An earthbended land that became a creature counts (it has a Creature
+// component while animated).
+static bool tapped_source_is_creature(Entity e) {
+    return global_coordinator.entity_has_component<Creature>(e) && on_battlefield(e);
+}
+
+// Resolve mana-additional "whenever you tap a <permanent> for mana" triggers (Mode$ TapsForMana
+// | Static$ True) the instant a permanent taps for mana (CR 605.1a — these never use the stack).
+// For each battlefield permanent the tapping player controls whose TapsForMana trigger matches
+// the tapped source (ValidCard$ Creature here) and whose Activator$ You is satisfied, add its
+// Execute$ AddMana (color/amount) directly to the working pool. General over the produced color.
+static void fire_taps_for_mana_triggers(Entity tapped_source, Zone::Ownership controller,
+                                        std::shared_ptr<Orderer> orderer, ManaValue &pool,
+                                        bool log) {
+    for (auto entity : orderer->mEntities) {
+        if (!is_battlefield_permanent(entity, controller)) continue;
+        if (!global_coordinator.entity_has_component<CardData>(entity)) continue;
+        auto &cd = global_coordinator.GetComponent<CardData>(entity);
+        for (const auto &ab : cd.abilities) {
+            if (ab.ability_type != Ability::TRIGGERED) continue;
+            if (!ab.trigger_taps_for_mana_static) continue;
+            if (ab.trigger_on != Events::TAPPED_FOR_MANA) continue;
+            // Activator$ You — only the source controller tapping their own permanent (we already
+            // restricted the scan and the tap to `controller`, so this always holds here).
+            // ValidCard$ Creature — the tapped source must be a creature (an animated
+            // land-creature counts while it has a Creature component).
+            if (ab.trigger_valid_card_is_creature && !tapped_source_is_creature(tapped_source))
+                continue;
+            // The Execute$ SVar's AddMana (Produced$/Amount$) is the resolved effect: the parser
+            // folds Execute$ into the trigger, so ab.category == "AddMana" with the produced
+            // color and amount. Add that mana directly to the pool.
+            Colors produced = ab.color;
+            size_t add_amt = ab.amount > 0 ? ab.amount : 1;
+            for (size_t i = 0; i < add_amt; i++) pool.insert(produced);
+            if (log)
+                game_log("%s adds an additional %zu(%s).\n",
+                         cd.name.c_str(), add_amt, mana_symbol_str(produced));
+        }
+    }
 }
 
 // Greedily tap sources to cover the remaining cost. This is the single mana-payment

@@ -60,6 +60,8 @@ struct Ability{
     bool discard_hand_cost = false;     // Discard<0/Hand> — discard entire hand as activation cost (Lion's Eye Diamond)
     bool discard_self_cost = false;     // Discard<1/CARDNAME> — discard this card from hand as activation cost
     bool instant_speed = false;         // InstantSpeed$ True — activated ability that is NOT a mana ability; goes on stack
+    bool sorcery_speed_only = false;    // SorcerySpeed$ True — activated only as a sorcery (CR 605.x / earthbend); gated in the legal-action enumeration
+    bool tap_on_etb = false;            // ETB$ True on a DB$ Tap — taps Defined$ Self as it enters the battlefield
     int activation_limit = 0;           // ActivationLimit$ N — max activations per turn (0 = unlimited)
     // Loyalty abilities (planeswalkers). is_loyalty_ability is the load-bearing flag;
     // loyalty_cost == 0 is still a valid loyalty ability (e.g. Jace "0:" Brainstorm), so
@@ -200,6 +202,13 @@ struct Ability{
     // the graveyard, not the battlefield (CR 113.6 / 603.6). When set, the trigger scan
     // matches the source while it is in its owner's graveyard.
     bool trigger_from_graveyard = false;
+
+    // Mode$ TapsForMana | Static$ True (Badgermole Cub): "whenever you tap a creature for mana,
+    // add an additional {G}." A mana-additional triggered ability that resolves immediately as
+    // part of the mana tap (CR 605.1a) — it never uses the stack. Handled directly by the mana
+    // system, not the stack-trigger scan. The Execute$ SVar's AddMana effect lives in subabilities
+    // (the produced color/amount); ValidCard$ Creature gates which tapped source it watches.
+    bool trigger_taps_for_mana_static = false;
 
     // Token creation (Cori-Steel Cutter) now lives in TokenParams (params variant).
 

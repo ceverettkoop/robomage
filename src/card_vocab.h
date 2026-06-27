@@ -113,7 +113,9 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Whipflare", 169},
     {"Amped Raptor", 170},
     {"Guide of Souls", 171},
+    {"Badgermole Cub", 175},
     {"Wrath of the Skies", 186},
+    {"Ba Sing Se", 197},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);

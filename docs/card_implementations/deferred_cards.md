@@ -28,8 +28,6 @@ unblocks the others in that group.
 
 **Other missing subsystems:**
 - **Consign to Memory** — Replicate keyword + countering a triggered ability on the stack (Forge script: available)
-- **Badgermole Cub** — Earthbend (animate land + counter + dies-return delayed trigger) + `TapsForMana` triggered mana (Forge script: available)
-- **Ba Sing Se** — Earthbend + conditional ETB-tapped (`ConditionPresent` gating on a land-tapped replacement) (Forge script: available)
 - **Mox Opal** — Metalcraft activation gating (control 3+ artifacts) on a mana ability (Forge script: available)
 - **Nethergoyf** — Escape keyword (cast from graveyard, exile cards as cost, with X) + CDA P/T counting card types in graveyard (Forge script: available)
 - **Petrified Hamlet** — `DB$ NameCard` effect + Continuous `AddAbility$` granting a mana ability to other named lands (Forge script: available)

@@ -668,6 +668,9 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 if (permanent.loyalty_ability_activated_this_turn) continue;
                 if (ab.loyalty_cost < 0 && get_counters(entity, "LOYALTY") < -ab.loyalty_cost) continue;
             }
+            // SorcerySpeed$ True (Ba Sing Se's earthbend): activatable only any time its
+            // controller could cast a sorcery (CR 605.x) — main phase, their turn, empty stack.
+            if (ab.sorcery_speed_only && !sorcery_speed) continue;
             // todo handle this elswewhere, tapping check
             if (ab.tap_cost && permanent.is_tapped) continue;
             if (ab.tap_cost && permanent.has_summoning_sickness &&

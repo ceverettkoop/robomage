@@ -56,6 +56,12 @@ struct DelayedTrigger {
     uint32_t fire_on;       // event ID (e.g. Events::UPKEEP_BEGAN)
     Entity owner_entity;    // player entity who controls it
     size_t fire_on_turn;    // game.turn value at which to fire (cur_game.turn + 1 at registration)
+    // "When THIS specific permanent leaves the battlefield" delayed trigger (CR 603.6e), set up
+    // by the earthbend resolution: fire_on is CARD_CHANGED_ZONE, and the trigger fires only when
+    // `watch_entity` is the card that left the battlefield (origin BATTLEFIELD). General over any
+    // "when X leaves, do Y" delayed trigger; 0 = not entity-watched (the phase-based default).
+    Entity watch_entity = 0;          // the specific permanent whose departure fires this trigger
+    bool fire_on_leave_battlefield = false;  // true: match watch_entity leaving the battlefield, not a phase
 };
 
 // Last-known information (CR 608.2h / 112.7a): a permanent's effective characteristics —
