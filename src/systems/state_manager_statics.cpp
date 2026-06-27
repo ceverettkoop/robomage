@@ -147,6 +147,18 @@ ManaValue effective_base_cost(const CardData &card_data, Zone::Ownership caster)
 static void add_keywords_from_spec(Creature &cr, const std::string &spec);
 static bool removal_affects(const ActiveStatic &r, Entity entity);
 
+// Is this Affected$ filter a *general* permanent filter (an anthem-style class like
+// "Creature.Colorless+Other+YouCtrl"), as opposed to the single-target EquippedBy / Self /
+// no-filter forms? The general forms are resolved through affected_permanents_for_static
+// (which buffs/grants to every matching permanent); the single-target forms keep the source/
+// equipped-creature path. Shared by the layer-6 keyword-grant pass and the layer-7 P/T pass so
+// both agree on which statics fan out across the affected set (CR 613 layers 6 / 7c).
+static bool affected_is_general_filter(const std::string &aff) {
+    return !aff.empty() &&
+           aff.find("EquippedBy") == std::string::npos &&
+           aff.find("Self") == std::string::npos;
+}
+
 // Lands whose subtype was set to a basic land type this SBE pass (Blood Moon / Magus of
 // the Moon). Rule 305.7: such a land loses all abilities generated from its rules text,
 // keeping only the regenerated intrinsic (subtype-derived) mana ability. Populated in
@@ -828,16 +840,40 @@ void StateManager::apply_layer6_ability_effects() {
             (!a.sa->set_power_svar.empty() || !a.sa->set_toughness_svar.empty()))
             continue;
 
-        // A pure-P/T anthem that affects a class of permanents via a general Affected$ filter
-        // (It That Heralds the End: "Creature.Colorless+Other+YouCtrl", no keyword) is applied
-        // entirely in layer 7's per-target loop. Skip it here so this single-target (source)
-        // path doesn't mis-log a +N/+N "grant" on the anthem source itself.
-        {
-            const std::string &aff = a.sa->affected;
-            bool general_filter = !aff.empty() &&
-                                  aff.find("EquippedBy") == std::string::npos &&
-                                  aff.find("Self") == std::string::npos;
-            if (general_filter && a.sa->add_keyword.empty()) continue;
+        // A general Affected$ filter (an anthem class like "Creature.Colorless+Other+YouCtrl")
+        // fans out across every matching permanent — never the single source. Its P/T delta is
+        // applied entirely in layer 7's per-target loop; here we apply its keyword grant (if any)
+        // to that same affected set (CR 613 layers 6 / 7c — "other creatures you control get
+        // +1/+1 and have trample" must give BOTH to all matching creatures). A general-filter
+        // static with no keyword has nothing to do in layer 6, so skip it (layer 7 buffs P/T).
+        if (affected_is_general_filter(a.sa->affected)) {
+            if (a.sa->add_keyword.empty()) continue;
+            // Keywords are rebuilt from each creature's printed base every SBE pass
+            // (gather_active_statics, rule 611.3a), so re-granting here each pass cannot stack.
+            std::vector<Entity> targets =
+                a.condition_met ? affected_permanents_for_static(a, mEntities)
+                                : std::vector<Entity>{};
+            bool granted_any = false;
+            for (Entity e : targets) {
+                if (!global_coordinator.entity_has_component<Creature>(e)) continue;
+                add_keywords_from_spec(global_coordinator.GetComponent<Creature>(e),
+                                       a.sa->add_keyword);
+                granted_any = true;
+            }
+            if (a.condition_met && granted_any) {
+                if (!a.sa->applied) {
+                    a.sa->applied = true;
+                    game_log("Creatures gain %s(%s)\n", (a.sa->add_keyword + " ").c_str(),
+                             a.sa->condition.empty() ? "always" : a.sa->condition.c_str());
+                }
+            } else if (a.sa->applied) {
+                // No affected creature this pass (or condition unmet): keywords already dropped
+                // by the per-pass base rebuild; just clear state and log.
+                a.sa->applied = false;
+                game_log("Creatures lose %s bonus\n",
+                         a.sa->condition.empty() ? "static" : a.sa->condition.c_str());
+            }
+            continue;
         }
 
         // Determine which entity receives the grant (source or equipped creature).
@@ -1176,9 +1212,7 @@ void StateManager::apply_layer7_pt_effects() {
         // self) and YouCtrl (controller scope). The EquippedBy / Self / no-Affected$ forms keep
         // the original single-target behaviour (source, or the equipped creature).
         const std::string &aff = a.sa->affected;
-        bool general_filter = !aff.empty() &&
-                              aff.find("EquippedBy") == std::string::npos &&
-                              aff.find("Self") == std::string::npos;
+        bool general_filter = affected_is_general_filter(aff);
         std::vector<Entity> targets;
         if (general_filter) {
             targets = affected_permanents_for_static(a, mEntities);
