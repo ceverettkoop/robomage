@@ -553,8 +553,20 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
 
     // ValidTgts$ ...Other (e.g. Solitude/Flickerwisp "another"/"other" target): the source
     // of the ability cannot be chosen as its own target (CR 115.1; "other" is a target
-    // restriction). Enforced uniformly here so it applies to every target type.
-    if (cand == source && valid_tgts.find("Other") != std::string::npos) return false;
+    // restriction). Enforced uniformly here so it applies to every target type. Match
+    // "Other" only as a complete dot/plus-delimited qualifier token (Creature.Other,
+    // Permanent.Other+nonLand), never as a substring of a longer subtype/name (so a future
+    // "Brotherhood"/"Otherworldly" token can't spuriously forbid self-targeting).
+    if (cand == source) {
+        for (size_t p = valid_tgts.find("Other"); p != std::string::npos;
+             p = valid_tgts.find("Other", p + 1)) {
+            bool left_ok = (p > 0) && (valid_tgts[p - 1] == '.' || valid_tgts[p - 1] == '+');
+            size_t end = p + 5;  // length of "Other"
+            bool right_ok = (end == valid_tgts.size()) ||
+                            valid_tgts[end] == '.' || valid_tgts[end] == '+';
+            if (left_ok && right_ok) return false;
+        }
+    }
 
     // NOTE: Pyroblast/Hydroblast (ValidTgts$ Card + ConditionPresent$ <type>.<Color>)
     // intentionally do NOT restrict target legality by color — they may target any

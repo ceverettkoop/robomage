@@ -408,13 +408,25 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             if (colon != std::string::npos) {
                 std::string ward_arg = kw_line.substr(colon + 1);
                 // Ward—Pay N life (K:Ward:PayLife<N>): the unless-cost is a life payment,
-                // not mana (CR 702.21). Any other arg is a numeric mana cost.
+                // not mana (CR 702.21). Any other arg is a numeric mana cost. Parse the
+                // amount defensively: with -fno-exceptions a std::stoi on a missing '>' or
+                // non-numeric body would abort, so validate digits first and degrade to a
+                // {1} mana ward on a malformed arg rather than crashing card load.
                 if (ward_arg.rfind("PayLife<", 0) == 0) {
                     size_t close = ward_arg.find('>');
-                    card.ward_cost = std::stoi(ward_arg.substr(8, close - 8));
-                    card.ward_is_life = true;
-                } else {
+                    std::string n = (close != std::string::npos && close > 8)
+                                        ? ward_arg.substr(8, close - 8) : std::string();
+                    if (!n.empty() && n.find_first_not_of("0123456789") == std::string::npos) {
+                        card.ward_cost = std::stoi(n);
+                        card.ward_is_life = true;
+                    } else {
+                        card.ward_cost = 1;
+                    }
+                } else if (!ward_arg.empty() &&
+                           ward_arg.find_first_not_of("0123456789") == std::string::npos) {
                     card.ward_cost = std::stoi(ward_arg);
+                } else {
+                    card.ward_cost = 1;
                 }
             } else {
                 card.ward_cost = 1;  // K:Ward without a cost defaults to {1}
