@@ -967,8 +967,10 @@ static void trigger_ward_for_targets(Entity targeting_entity, Zone::Ownership co
         // The Ward permanent must be controlled by an opponent of the targeting player.
         if (!is_battlefield_permanent(tgt, opp)) continue;
         if (!global_coordinator.entity_has_component<CardData>(tgt)) continue;
-        int ward_cost = global_coordinator.GetComponent<CardData>(tgt).ward_cost;
+        auto &tgt_cd = global_coordinator.GetComponent<CardData>(tgt);
+        int ward_cost = tgt_cd.ward_cost;
         if (ward_cost <= 0) continue;
+        bool ward_is_life = tgt_cd.ward_is_life;
 
         Ability ward;
         ward.ability_type = Ability::TRIGGERED;
@@ -977,11 +979,13 @@ static void trigger_ward_for_targets(Entity targeting_entity, Zone::Ownership co
         ward.controller = opp;            // the Ward permanent's controller
         ward.target = targeting_entity;   // counter the spell/ability that targeted it
         ward.unless_generic_cost = static_cast<size_t>(ward_cost);
+        ward.unless_cost_is_life = ward_is_life;  // Ward—Pay N life pays life, not mana
 
         orderer->push_ability_onto_stack(ward, opp);
         std::string nm = entity_name(tgt);
-        game_log("Ward {%d}: %s's controller may pay to counter the spell or ability "
-                 "targeting %s\n", ward_cost, nm.c_str(), nm.c_str());
+        game_log("Ward %s%d%s: %s's controller may pay to counter the spell or ability "
+                 "targeting %s\n", ward_is_life ? "—Pay " : "{", ward_cost,
+                 ward_is_life ? " life" : "}", nm.c_str(), nm.c_str());
     }
 }
 

@@ -405,10 +405,20 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
         // is synthesized when a targeting spell/ability is put on the stack.
         if (kw_line.rfind("Ward", 0) == 0) {
             size_t colon = kw_line.find(':');
-            if (colon != std::string::npos)
-                card.ward_cost = std::stoi(kw_line.substr(colon + 1));
-            else
+            if (colon != std::string::npos) {
+                std::string ward_arg = kw_line.substr(colon + 1);
+                // Ward—Pay N life (K:Ward:PayLife<N>): the unless-cost is a life payment,
+                // not mana (CR 702.21). Any other arg is a numeric mana cost.
+                if (ward_arg.rfind("PayLife<", 0) == 0) {
+                    size_t close = ward_arg.find('>');
+                    card.ward_cost = std::stoi(ward_arg.substr(8, close - 8));
+                    card.ward_is_life = true;
+                } else {
+                    card.ward_cost = std::stoi(ward_arg);
+                }
+            } else {
                 card.ward_cost = 1;  // K:Ward without a cost defaults to {1}
+            }
             card.keywords.push_back("Ward");
             continue;
         }

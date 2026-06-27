@@ -94,6 +94,7 @@ struct Ability{
     bool mandatory = false;              // Mandatory$ True — player must choose; suppresses fail-to-find when zone non-empty
     bool may_shuffle = false;            // MayShuffle$ True — player may optionally shuffle after
     size_t unless_generic_cost = 0;      // UnlessCost$ N — target controller pays {N} to prevent counter
+    bool unless_cost_is_life = false;    // when true, unless_generic_cost is paid as N life rather than {N} mana (Ward—Pay life, CR 702.21)
     std::string target_type = "";        // TargetType$ Spell — restricts targeting to stack spells
 
     // Delirium-conditional damage (Unholy Heat) now lives in DamageParams (params variant).

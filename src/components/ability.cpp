@@ -452,14 +452,47 @@ Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner
 
 
 // Returns true if the spell should be countered (controller declined or couldn't pay).
+// pay_as_life: the unless-cost is paid as `cost` life rather than {cost} mana (Ward—Pay N
+// life, CR 702.21). A life payment is only offered when the payer's life total >= cost
+// (CR 119.4 — a player can't pay more life than they have).
 bool run_unless_loop(
-    size_t cost, Zone::Ownership controller, std::shared_ptr<Orderer> orderer, Entity paid_for) {
-    std::multiset<Colors> cond_cost;
-    for (size_t i = 0; i < cost; i++) cond_cost.insert(GENERIC);
-
+    size_t cost, Zone::Ownership controller, std::shared_ptr<Orderer> orderer, Entity paid_for,
+    bool pay_as_life) {
     // the target's controller decides whether to pay, not the Daze caster
     bool prev_priority = cur_game.player_a_has_priority;
     cur_game.player_a_has_priority = (controller == Zone::PLAYER_A);
+
+    if (pay_as_life) {
+        auto &payer = global_coordinator.GetComponent<Player>(get_player_entity(controller));
+        bool can_pay = payer.life_total >= static_cast<int>(cost);  // CR 119.4
+
+        std::vector<LegalAction> unless_actions;
+        size_t pay_idx = unless_actions.size();
+        if (can_pay) {
+            LegalAction pay(PASS_PRIORITY,
+                std::string("Pay ") + std::to_string(cost) + " life (spell is not countered)");
+            pay.category = ActionCategory::PAY_UNLESS;
+            unless_actions.push_back(pay);
+        }
+        size_t decline_idx = unless_actions.size();
+        LegalAction decline(PASS_PRIORITY, std::string("Don't pay (spell is countered)"));
+        decline.category = ActionCategory::PAY_UNLESS;
+        unless_actions.push_back(decline);
+
+        int choice = InputLogger::instance().get_input(unless_actions);
+        cur_game.player_a_has_priority = prev_priority;
+        if (can_pay && choice == static_cast<int>(pay_idx)) {
+            payer.life_total -= static_cast<int>(cost);
+            game_log("%s pays %zu life — spell is not countered\n",
+                player_name(controller).c_str(), cost);
+            return false;
+        }
+        (void)decline_idx;
+        return true;
+    }
+
+    std::multiset<Colors> cond_cost;
+    for (size_t i = 0; i < cost; i++) cond_cost.insert(GENERIC);
 
     while (true) {
         std::vector<LegalAction> unless_actions = collect_mana_legal_actions(controller, orderer);
