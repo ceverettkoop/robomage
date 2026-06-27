@@ -61,6 +61,12 @@ struct Ability{
     bool discard_self_cost = false;     // Discard<1/CARDNAME> — discard this card from hand as activation cost
     bool instant_speed = false;         // InstantSpeed$ True — activated ability that is NOT a mana ability; goes on stack
     bool sorcery_speed_only = false;    // SorcerySpeed$ True — activated only as a sorcery (CR 605.x / earthbend); gated in the legal-action enumeration
+    // Activation$ <condition> — a named "activate only if <condition>" gate (CR 602.5). The
+    // ability is an illegal (not-offered, not-payable) activation unless the named condition
+    // holds for its controller at activation time. "Metalcraft" = you control 3+ artifacts
+    // (CR 702.46). General: future gated activations (Threshold, Delirium, …) add their name
+    // here and a case in activation_condition_met(). Empty = no activation gate.
+    std::string activation_condition = "";
     bool tap_on_etb = false;            // ETB$ True on a DB$ Tap — taps Defined$ Self as it enters the battlefield
     int activation_limit = 0;           // ActivationLimit$ N — max activations per turn (0 = unlimited)
     // Loyalty abilities (planeswalkers). is_loyalty_ability is the load-bearing flag;

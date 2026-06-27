@@ -209,6 +209,13 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
     auto &permanent = global_coordinator.GetComponent<Permanent>(permanent_entity);
     Zone::Ownership controller = permanent.controller;
 
+    // Activation$ gate (CR 602.5): refuse to activate an ability whose "activate only if
+    // <condition>" gate (e.g. Mox Opal's Metalcraft) isn't met, so it can't be forced illegally.
+    if (!activation_condition_met(ability, controller, orderer->mEntities)) {
+        game_log("Activation condition not met.\n");
+        return;
+    }
+
     // InstantSpeed$ AddMana abilities (e.g. LED) are mana abilities too: they resolve off-stack.
     // The instant-speed timing restriction is enforced upstream (offered only at priority).
     bool is_mana_ability = (ability.category == "AddMana");

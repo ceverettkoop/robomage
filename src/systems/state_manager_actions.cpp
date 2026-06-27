@@ -671,6 +671,10 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             // SorcerySpeed$ True (Ba Sing Se's earthbend): activatable only any time its
             // controller could cast a sorcery (CR 605.x) — main phase, their turn, empty stack.
             if (ab.sorcery_speed_only && !sorcery_speed) continue;
+            // Activation$ gate (CR 602.5): "activate only if <condition>" (e.g. Metalcraft) —
+            // illegal unless the controller meets the named condition. (Mana abilities take the
+            // same gate in collect_available_mana_sources; this covers non-mana gated activations.)
+            if (!activation_condition_met(ab, priority_player, orderer->mEntities)) continue;
             // todo handle this elswewhere, tapping check
             if (ab.tap_cost && permanent.is_tapped) continue;
             if (ab.tap_cost && permanent.has_summoning_sickness &&

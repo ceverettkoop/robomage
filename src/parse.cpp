@@ -996,6 +996,12 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
             ability.target_max = MAX_ENTITIES;
     } else if (key == "ActivationZone") {
         if (value == "Hand") ability.activation_zone = Zone::HAND;
+    } else if (key == "Activation") {
+        // Activation$ <condition> — "activate only if <condition>" gate (CR 602.5). The
+        // named condition (e.g. "Metalcraft") is evaluated against the activator at
+        // activation-legality time by activation_condition_met(); kept general so other
+        // gated activations name their condition here without retagging.
+        ability.activation_condition = value;
     } else if (key == "ActivationLimit") {
         ability.activation_limit = std::stoi(value);
     } else if (key == "ChangeNum") {
@@ -1068,6 +1074,10 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         static const std::set<std::string> ignored_keys = {
             "SpellDescription", "AILogic", "AINoRecursiveCheck", "TgtPrompt", "StackDescription",
             "ConditionDescription",
+            // PrecostDesc$ — the reminder-text prefix Forge prints before an activated
+            // ability's cost (e.g. "Metalcraft —" on Mox Opal). Purely cosmetic; the
+            // load-bearing gate is Activation$ (parsed above).
+            "PrecostDesc",
             // TriggerDescription$ — reminder/Oracle prose on an AB$ ImmediateTrigger's reflexive
             // ability (Guide of Souls). Purely cosmetic, like SpellDescription/StackDescription.
             "TriggerDescription",

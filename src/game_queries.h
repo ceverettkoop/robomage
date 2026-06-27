@@ -462,6 +462,34 @@ inline bool pay_energy(Player &pl, int n) {
     return true;
 }
 
+// ── Activation conditions (CR 602.5 "activate only if …") ───────────────────
+// Named gates that make an activated ability illegal to activate unless the named
+// condition holds for its controller. Parsed from Activation$ <name>; evaluated at
+// activation-legality time (mana-source enumeration, non-mana activated enumeration,
+// and the action processor guard). Keep general: add a named condition + a case in
+// activation_condition_met() rather than special-casing one card.
+
+// Metalcraft (CR 702.46): the player controls three or more artifacts. The activating
+// permanent (e.g. Mox Opal itself, an artifact) is counted. Reusable by any Metalcraft card.
+inline bool controller_has_metalcraft(Zone::Ownership controller, const std::set<Entity> &entities) {
+    int artifacts = 0;
+    for (auto e : battlefield_permanents(entities, controller))
+        if (type_set_has(global_coordinator.GetComponent<Permanent>(e).types, "Artifact"))
+            if (++artifacts >= 3) return true;
+    return false;
+}
+
+// True if `ab`'s Activation$ gate (if any) is satisfied for `controller`. An ability with
+// no activation_condition is always allowed (returns true). Unknown condition names fail
+// closed (return false) so a misparsed gate never silently permits activation.
+inline bool activation_condition_met(const Ability &ab, Zone::Ownership controller,
+                                     const std::set<Entity> &entities) {
+    if (ab.activation_condition.empty()) return true;
+    if (ab.activation_condition == "Metalcraft")
+        return controller_has_metalcraft(controller, entities);
+    return false;
+}
+
 // Returns true when the given player has 4+ card types among cards in their graveyard.
 inline bool check_delirium(Zone::Ownership owner, const std::set<Entity> &entities) {
     std::set<std::string> type_names;
