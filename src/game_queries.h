@@ -256,6 +256,31 @@ inline bool creature_has_keyword(const Creature &cr, const char *kw) {
     return false;
 }
 
+// True if the permanent `e` is indestructible (CR 702.12b: it can't be destroyed —
+// "destroy" effects don't destroy it, and it ignores the lethal-damage / deathtouch
+// state-based actions, CR 704.5g/h). Reads the keyword from the object's effective
+// keyword list: for a creature that is `Creature::keywords` (rebuilt each static pass
+// from the printed list plus any granted keywords), otherwise the printed keywords on
+// the CardData (or Token) — so a non-creature permanent like an artifact land with
+// `K:Indestructible` is covered too. Indestructible does NOT prevent sacrifice, exile,
+// "put into graveyard", or the 0-toughness SBA (CR 704.5f); those callers do not consult
+// this. Single source shared by the Destroy effects and the lethal-damage SBA.
+inline bool is_indestructible(Entity e) {
+    if (global_coordinator.entity_has_component<Creature>(e)) {
+        return creature_has_keyword(global_coordinator.GetComponent<Creature>(e), "Indestructible");
+    }
+    if (global_coordinator.entity_has_component<CardData>(e)) {
+        for (const auto &k : global_coordinator.GetComponent<CardData>(e).keywords)
+            if (k == "Indestructible") return true;
+        return false;
+    }
+    if (global_coordinator.entity_has_component<Token>(e)) {
+        for (const auto &k : global_coordinator.GetComponent<Token>(e).keywords)
+            if (k == "Indestructible") return true;
+    }
+    return false;
+}
+
 // True if the creature deals damage during the first-strike combat damage step
 // (it has First Strike or Double Strike). Single source for "does a first-strike
 // damage step matter": the step-skip scan and the per-creature damage gate both

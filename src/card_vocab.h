@@ -107,6 +107,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Sheoldred's Edict", 163},
     {"Abrupt Decay", 164},
     {"Hymn to Tourach", 165},
+    {"Silverbluff Bridge", 166},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);

@@ -7,6 +7,7 @@
 #include "../components/permanent.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
+#include "../game_queries.h"
 #include "../systems/orderer.h"
 
 extern Coordinator global_coordinator;
@@ -26,6 +27,12 @@ static void destroy_single(Entity tgt, std::shared_ptr<Orderer> orderer) {
     std::string name = global_coordinator.entity_has_component<Permanent>(tgt)
                            ? global_coordinator.GetComponent<Permanent>(tgt).name
                            : "<unknown>";
+    // CR 702.12b: a permanent with indestructible can't be destroyed. The effect still
+    // resolves; the permanent stays on the battlefield.
+    if (is_indestructible(tgt)) {
+        game_log("%s is indestructible — not destroyed\n", name.c_str());
+        return;
+    }
     orderer->add_to_zone(false, tgt, Zone::GRAVEYARD);
     game_log("%s is destroyed\n", name.c_str());
 }
