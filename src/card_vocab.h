@@ -104,6 +104,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Eye of Ugin", 160},
     {"Mai, Scornful Striker", 161},
     {"Natural Order", 162},
+    {"Sheoldred's Edict", 163},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);
