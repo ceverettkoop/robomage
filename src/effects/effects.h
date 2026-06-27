@@ -92,14 +92,6 @@ bool grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer);
 // (here a RevealDiscardAll discard) can reference it.
 bool name_card(Ability &ab, std::shared_ptr<Orderer> orderer);
 
-// True if battlefield permanent `e` matches a Forge ValidCards$/ConditionPresent$
-// filter spec: a type/subtype head plus '+'-delimited qualifiers (YouCtrl, OppCtrl,
-// Other, nonLand, nonToken, nonChosenCard, and the five colors). `controller` is the
-// effect's controller (resolves You/Opp), `source` resolves Other. Unknown qualifiers
-// fail closed so a mass effect never over-selects. Shared by PutCounterAll,
-// SacrificeAll, and the ImmediateTrigger condition gate.
-bool permanent_matches_cards_filter(Entity e, const std::string &spec,
-                                    Zone::Ownership controller, Entity source);
 
 // ── Effect-specific parse hooks ─────────────────────────────────────────────
 //

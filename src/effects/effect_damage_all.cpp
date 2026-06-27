@@ -24,7 +24,7 @@ bool damage_all(Ability &ab, std::shared_ptr<Orderer> orderer) {
     size_t dmg = ab.amount;
     std::vector<Entity> targets;
     for (auto e : orderer->mEntities)
-        if (permanent_matches_cards_filter(e, ab.valid_cards_filter, ab.controller, ab.source))
+        if (permanent_matches_filter(e, ab.valid_cards_filter, MatchCtx{ab.controller, ab.source}))
             targets.push_back(e);
 
     for (auto e : targets) {

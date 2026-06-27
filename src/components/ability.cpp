@@ -62,146 +62,17 @@ bool Ability::identical_activated_ability(const Ability &other) {
     return true;
 };
 
-// Checks if a card entity matches a single filter spec.
-// Supports: plain type name ("Forest"), dot-qualified color ("Creature.Green"),
-// +cmcLEX (CMC <= cur_game.x_paid), and a dynamic mana-value bound supplied by the
-// caller (cmc_bound >= 0 with cmc_op "EQ"/"LE"/... — Aether Vial's per-resolution
-// charge-counter MV gate). cmc_bound < 0 means no dynamic bound.
+// A zone-search candidate is a card object, matched by its PRINTED characteristics through the
+// shared filter matcher (game_queries.h). Thin local adapter so the search_zone call sites keep
+// their (entity, spec, cmc_bound, cmc_op) shape; the dynamic mana-value bound flows through the
+// MatchCtx. All qualifier grammar (colors, Colorless, Basic, P/T, subtypes, cmcLEX, …) now lives
+// in the one shared evaluator.
 static bool matches_filter_spec(Entity entity, const std::string &spec, int cmc_bound = -1,
     const std::string &cmc_op = "") {
-    auto &cd = global_coordinator.GetComponent<CardData>(entity);
-
-    // Strip any '.'-joined qualifiers that name a dynamic-cmc constraint (e.g.
-    // "Creature.cmcEQX"); those are enforced via cmc_bound below, not as a color.
-    auto is_cmc_qualifier = [](const std::string &q) {
-        return q.rfind("cmc", 0) == 0;
-    };
-
-    // A power/toughness comparison qualifier: "power"/"toughness" followed by a two-letter
-    // comparator (LE/GE/EQ/LT/GT/NE) and an integer, e.g. "toughnessLE2" (Recruiter of the
-    // Guard) or "powerGE5". Static characteristic compared against the card's base P/T
-    // (CR 208.2 / 107.1). Returns true when `q` is such a qualifier and evaluates it into
-    // `ok`; returns false when `q` is not a P/T qualifier (so the caller can keep parsing).
-    auto try_pt_qualifier = [&cd](const std::string &q, bool &ok) -> bool {
-        const std::string lead = q.rfind("power", 0) == 0       ? "power"
-                                 : q.rfind("toughness", 0) == 0 ? "toughness"
-                                                                : "";
-        if (lead.empty()) return false;
-        std::string rest = q.substr(lead.size());  // e.g. "LE2"
-        if (rest.size() < 3) return false;
-        std::string op = rest.substr(0, 2);
-        std::string num = rest.substr(2);
-        for (char c : num)
-            if (!std::isdigit(static_cast<unsigned char>(c))) return false;
-        int lhs = (lead == "power") ? static_cast<int>(cd.power) : static_cast<int>(cd.toughness);
-        ok = apply_svar_op(lhs, op, std::stoi(num));
-        return true;
-    };
-
-    // Split on '+' for additional constraints (e.g. "Creature.Green+cmcLEX", or the
-    // "+YouCtrl" controller qualifier on a own-zone search, which is trivially satisfied).
-    std::string type_part = spec;
-    bool has_cmc_le_x = false;
-    size_t plus_pos = spec.find('+');
-    if (plus_pos != std::string::npos) {
-        type_part = spec.substr(0, plus_pos);
-        std::string rest = spec.substr(plus_pos + 1);
-        // Each '+'-joined constraint; cmcLEX keys the legacy x_paid bound, YouCtrl/cmc*
-        // dynamic qualifiers are handled by cmc_bound or are no-ops for an own-zone search.
-        size_t cp = 0;
-        while (cp < rest.size()) {
-            size_t nxt = rest.find('+', cp);
-            std::string constraint = rest.substr(cp, nxt == std::string::npos ? std::string::npos : nxt - cp);
-            if (constraint == "cmcLEX") has_cmc_le_x = true;
-            cp = (nxt == std::string::npos) ? rest.size() : nxt + 1;
-        }
-    }
-
-    // Split type_part on '.' for color qualifier (e.g. "Creature.Green")
-    std::string type_name = type_part;
-    std::string color_qualifier;
-    size_t dot_pos = type_part.find('.');
-    if (dot_pos != std::string::npos) {
-        type_name = type_part.substr(0, dot_pos);
-        color_qualifier = type_part.substr(dot_pos + 1);
-        if (is_cmc_qualifier(color_qualifier)) color_qualifier.clear();  // enforced via cmc_bound
-    }
-
-    // Check type match. "Card" / "Permanent" are wildcard heads (Forge's "any card"
-    // filter, e.g. Flagstones of Trokair's "Card.Plains" = any card with subtype Plains);
-    // they match every card and leave the actual restriction to the dot qualifier.
-    bool type_matches = (type_name == "Card" || type_name == "Permanent");
-    if (!type_matches) {
-        for (auto &t : cd.types) {
-            if (t.name == type_name) {
-                type_matches = true;
-                break;
-            }
-        }
-    }
-    if (!type_matches) return false;
-
-    // Check color qualifier
-    if (!color_qualifier.empty()) {
-        // IsRemembered: entity must be in cur_game.remembered_entities
-        if (color_qualifier == "IsRemembered") {
-            bool found = false;
-            for (auto re : cur_game.remembered_entities) {
-                if (re == entity) { found = true; break; }
-            }
-            if (!found) return false;
-        } else if (color_qualifier == "Colorless") {
-            // Colorless qualifier (CR 105.2c), e.g. "Eldrazi.Colorless" / "Creature.Colorless".
-            if (!is_colorless_card(cd)) return false;
-        } else if (color_qualifier == "Basic" || color_qualifier == "nonBasic") {
-            // Basic/nonBasic supertype qualifier (e.g. "Land.Basic" for fetch ramp).
-            bool is_basic = has_basic_supertype(cd.types);
-            if (color_qualifier == "Basic" && !is_basic) return false;
-            if (color_qualifier == "nonBasic" && is_basic) return false;
-        } else if (bool pt_ok = false; try_pt_qualifier(color_qualifier, pt_ok)) {
-            // power/toughness comparison qualifier (e.g. "toughnessLE2").
-            if (!pt_ok) return false;
-        } else if (color_qualifier == "Green" || color_qualifier == "White" ||
-                   color_qualifier == "Blue" || color_qualifier == "Black" ||
-                   color_qualifier == "Red") {
-            Colors required_color = (color_qualifier == "Green")  ? GREEN
-                                  : (color_qualifier == "White")  ? WHITE
-                                  : (color_qualifier == "Blue")   ? BLUE
-                                  : (color_qualifier == "Black")  ? BLACK
-                                                                  : RED;
-            // Check explicit_colors first, then mana cost colors
-            bool has_color = false;
-            if (!cd.explicit_colors.empty()) {
-                has_color = cd.explicit_colors.count(required_color) > 0;
-            } else {
-                has_color = cd.mana_cost.count(required_color) > 0;
-            }
-            if (!has_color) return false;
-        } else {
-            // Any other qualifier is a subtype name (e.g. "Card.Plains" → subtype Plains,
-            // "Creature.Goblin" → subtype Goblin). Match it against the card's type list,
-            // where subtypes live alongside card types.
-            bool has_subtype = false;
-            for (auto &t : cd.types) {
-                if (t.name == color_qualifier) { has_subtype = true; break; }
-            }
-            if (!has_subtype) return false;
-        }
-    }
-
-    // Check CMC <= X constraint
-    if (has_cmc_le_x) {
-        size_t cmc = cd.mana_cost.size();
-        if (cmc > cur_game.x_paid) return false;
-    }
-
-    // Dynamic mana-value bound supplied by the caller (Aether Vial: MV == charge count).
-    if (cmc_bound >= 0) {
-        int cmc = static_cast<int>(cd.mana_cost.size());
-        if (!apply_svar_op(cmc, cmc_op, cmc_bound)) return false;
-    }
-
-    return true;
+    MatchCtx ctx;
+    ctx.cmc_bound = cmc_bound;
+    ctx.cmc_op = cmc_op;
+    return card_matches_filter(entity, spec, ctx);
 }
 
 // Searches a zone for cards whose types match any entry in the comma-separated

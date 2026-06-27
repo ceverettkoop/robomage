@@ -4,6 +4,7 @@
 #include "../classes/game.h"
 #include "../cli_output.h"
 #include "../ecs/coordinator.h"
+#include "../game_queries.h"
 #include "../systems/orderer.h"
 
 extern Coordinator global_coordinator;
@@ -21,7 +22,7 @@ bool immediate_trigger(Ability &ab, std::shared_ptr<Orderer> orderer) {
     bool fire = ab.condition_present.empty();
     if (!fire) {
         for (auto e : orderer->mEntities) {
-            if (permanent_matches_cards_filter(e, ab.condition_present, ab.controller, ab.source)) {
+            if (permanent_matches_filter(e, ab.condition_present, MatchCtx{ab.controller, ab.source})) {
                 fire = true;
                 break;
             }
