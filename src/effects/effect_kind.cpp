@@ -65,6 +65,16 @@ EffectKind effect_kind_from_string(const std::string &category) {
         // [0, Max$]; the pick is stored in cur_game.chosen_number so a chained sub-ability can
         // read it via Count$ChosenNumber. See effect_choose_number.cpp.
         {"ChooseNumber", EffectKind::ChooseNumber},
+        // DB$ DigUntil (Amped Raptor): exile cards from the top of the controller's library
+        // one at a time until one matches Valid$; revealed cards (and the found one) go to the
+        // FoundDestination$/RevealedDestination$ zone; RememberFound$ remembers the found card.
+        // See effect_dig_until.cpp.
+        {"DigUntil", EffectKind::DigUntil},
+        // DB$ Play (Amped Raptor): grant a one-shot permission to cast a Defined$ card (here the
+        // remembered nonland) from its current zone (Exile) this turn, paying an alternative
+        // RESOURCE cost (PlayCost$ PayEnergy<...> / PayLife<...>) instead of its mana cost. See
+        // effect_play.cpp.
+        {"Play", EffectKind::Play},
     };
     auto it = table.find(category);
     return (it != table.end()) ? it->second : EffectKind::None;

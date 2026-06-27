@@ -260,6 +260,27 @@ struct Ability{
     int dig_library_position = -1;   // LibraryPosition$ — 0 = top, -1 = unset
     int dig_rest_library_position = -1;  // LibraryPosition2$ — where unchosen cards go: 0 = top, -1 = bottom (default)
 
+    // DB$ DigUntil (Amped Raptor): exile from the top of the library until a card matches
+    // change_valid (Valid$). dig_until_found_dest is where the matching card goes,
+    // dig_until_revealed_dest where the non-matching cards passed over go (both Exile for
+    // Amped Raptor). dig_until_remember_found stores the matching card in
+    // cur_game.remembered_entities (RememberFound$) for a chained DB$ Play.
+    int dig_until_found_dest = Zone::HAND;      // FoundDestination$ — zone the matching card goes to
+    int dig_until_revealed_dest = Zone::LIBRARY; // RevealedDestination$ — zone the skipped cards go to
+    bool dig_until_remember_found = false;       // RememberFound$ True
+
+    // DB$ Play (Amped Raptor): cast a Defined$ card from its current zone, paying an
+    // alternative RESOURCE cost (PlayCost$) instead of its mana cost. play_cost_resource is
+    // the resource paid (energy or life); play_cost_expr is the amount — either a literal int
+    // (as a string) or "ConvertedManaCost" (the cast card's mana value). play_valid_sa
+    // restricts to nonland spells (ValidSA$ Spell). The optionality is carried by
+    // optional_choice (Optional$ True). General over the resource so a future Bolas's Citadel
+    // ("pay life equal to mana value") reuses this path with play_cost_resource = LIFE.
+    enum PlayCostResource { PLAY_COST_ENERGY, PLAY_COST_LIFE };
+    PlayCostResource play_cost_resource = PLAY_COST_ENERGY;
+    std::string play_cost_expr = "";  // amount: "ConvertedManaCost" or a literal int string
+    bool play_valid_sa_spell = false; // ValidSA$ Spell — only a castable nonland spell
+
     // Conditional amount (Flow State): the effective count is `cond_amount_if_true`
     // when the summed runtime counts in `cond_amount_exprs` satisfy
     // `cond_amount_compare`, otherwise `amount` (the false/default value).
@@ -291,6 +312,12 @@ struct Ability{
     // permanents (Birthing Ritual: the dig only happens if a creature was sacrificed). Gated
     // at resolution in Ability::resolve(): on failure the body is skipped, subabilities chain.
     bool condition_on_remembered = false;
+    // ConditionDefined$ TriggeredCard — condition_present is a property check on the ability's
+    // SOURCE object (the card that triggered this ability), not a board-presence count. Used by
+    // ConditionPresent$ Card.wasCastFromYourHandByYou (Amped Raptor: the dig only happens if the
+    // creature that entered was cast from its controller's own hand). Gated at resolution in
+    // Ability::resolve(): on failure the body is skipped, subabilities still chain.
+    bool condition_on_triggered_card = false;
 
     // Intervening-if (rule 603.4) for a TRIGGERED ability: condition_present/condition_compare
     // are checked BOTH when the trigger would go on the stack (check_triggered_abilities) AND

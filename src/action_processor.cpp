@@ -1057,6 +1057,16 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             auto &card_data = global_coordinator.GetComponent<CardData>(spell_entity);
             Zone::Ownership caster = zone.owner;
 
+            // Record whether this spell is being cast from its caster's own hand (a normal
+            // CR 601 hand cast), so a permanent that later resolves onto the battlefield can
+            // tell it "was cast from your hand by you" (Amped Raptor's dig gate). One-shot:
+            // set here, consumed when the Permanent is created (state_manager_statics). Casts
+            // from graveyard/exile (flashback, impulse) clear it so they don't count.
+            if (zone.location == Zone::HAND && zone.owner == caster)
+                cur_game.cast_from_hand.insert(spell_entity);
+            else
+                cur_game.cast_from_hand.erase(spell_entity);
+
             // Snapshot mana state for rewind on payment failure
             auto mana_snap = snapshot_mana_state(caster, orderer);
 
@@ -1086,6 +1096,28 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                     pay_sacrifice_cost(caster, card_data.flashback_alt_cost.sac_cost_spec,
                                        spell_entity, orderer);
                 }
+
+            // IMPULSE CAST (Amped Raptor's DB$ Play): cast from exile under a one-shot
+            // permission, paying its alternative RESOURCE cost (energy or life) instead of any
+            // mana (CR 707 / 118.9). The permission carries the resolved amount. Consumed here
+            // so it can't be reused. X spells cast this way count X = 0 (no X prompt).
+            } else if (action.impulse_cast) {
+                Entity caster_entity = (caster == Zone::PLAYER_A)
+                    ? cur_game.player_a_entity : cur_game.player_b_entity;
+                auto &player = global_coordinator.GetComponent<Player>(caster_entity);
+                auto it = cur_game.impulse_cast_permission.find(spell_entity);
+                if (it != cur_game.impulse_cast_permission.end()) {
+                    const auto &grant = it->second;
+                    if (grant.resource == Game::ImpulseCastPermission::ENERGY) {
+                        pay_energy(player, grant.amount);
+                        game_log("%s pays %d energy\n", player_name(caster).c_str(), grant.amount);
+                    } else {
+                        player.life_total -= grant.amount;
+                        game_log("%s pays %d life\n", player_name(caster).c_str(), grant.amount);
+                    }
+                    cur_game.impulse_cast_permission.erase(it);
+                }
+                if (card_data.has_x_cost) cur_game.x_paid = 0;
 
             // ALTERNATE COST
             } else if (action.use_alt_cost) {

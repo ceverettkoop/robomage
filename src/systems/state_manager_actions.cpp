@@ -179,6 +179,15 @@ bool evaluate_present_condition(const Ability &ab, Zone::Ownership caster, std::
         return compare_svar(static_cast<int>(count), compare);
     }
 
+    // ConditionPresent$ Card.wasCastFromYourHandByYou (Amped Raptor): the ability's source —
+    // the card that triggered it — must have entered the battlefield as a spell its controller
+    // cast from their own hand. Read the persisted flag off its Permanent (set when the
+    // permanent was created from a hand cast). A non-hand entry leaves the flag false.
+    if (ab.condition_present == "Card.wasCastFromYourHandByYou") {
+        return global_coordinator.entity_has_component<Permanent>(ab.source) &&
+               global_coordinator.GetComponent<Permanent>(ab.source).cast_from_hand_by_controller;
+    }
+
     // IsPresent$ Card.Self: the source must itself be on the battlefield (Kappa Cannoneer's
     // "Whenever another artifact you control enters" only functions while Kappa is in play).
     if (ab.condition_present == "Card.Self") {
@@ -547,6 +556,57 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         LegalAction gy_la(CAST_SPELL, gy_entity, "Cast " + gcd.name + " (from graveyard)");
         gy_la.category = ActionCategory::CAST_SPELL;
         actions.push_back(gy_la);
+    }
+    // IMPULSE-CAST PERMISSIONS (Amped Raptor's DB$ Play): a card exiled this turn that its
+    // controller may cast, paying an alternative RESOURCE cost (energy or life equal to its
+    // mana value) instead of its mana cost (CR 707 / 118.9). Cast from EXILE at the timing its
+    // type allows; only the granted player may cast it, and only if they can pay the resource.
+    for (const auto &[ex_entity, perm_grant] : cur_game.impulse_cast_permission) {
+        if (perm_grant.caster != priority_player) continue;
+        if (!global_coordinator.entity_has_component<Zone>(ex_entity)) continue;
+        auto &ez = global_coordinator.GetComponent<Zone>(ex_entity);
+        if (ez.location != Zone::EXILE) continue;  // must still be in exile
+        if (!global_coordinator.entity_has_component<CardData>(ex_entity)) continue;
+        auto &ecd = global_coordinator.GetComponent<CardData>(ex_entity);
+        if (is_land_card(ecd)) continue;  // lands aren't cast (601.1)
+
+        // Timing: instants / Flash cards anytime; everything else sorcery-speed.
+        bool can_cast_at_instant_speed = card_has_type(ecd, "Instant");
+        for (const auto &kw : ecd.keywords)
+            if (kw == "Flash") { can_cast_at_instant_speed = true; break; }
+        bool can_cast_now = can_cast_at_instant_speed ||
+            ((game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
+             (game.player_a_turn == game.player_a_has_priority) && stack_empty);
+        if (!can_cast_now) continue;
+
+        // Affordability of the alternative resource cost.
+        Entity pe = get_player_entity(priority_player);
+        if (!global_coordinator.entity_has_component<Player>(pe)) continue;
+        auto &ppl = global_coordinator.GetComponent<Player>(pe);
+        if (perm_grant.resource == Game::ImpulseCastPermission::ENERGY) {
+            if (player_energy(ppl) < perm_grant.amount) continue;
+        } else {  // LIFE — must be able to pay without the cost itself being lethal is not a
+                  // legality bar in MTG, but a player won't be forced; require enough life so
+                  // the optional cast is sensibly offered.
+            if (ppl.life_total < perm_grant.amount) continue;
+        }
+
+        // Any targeting requirement must have at least one legal target.
+        bool tgt_ok = true;
+        for (const auto &ab : ecd.abilities) {
+            if (ab.ability_type != Ability::SPELL) continue;
+            tgt_ok = has_legal_targets(ab, orderer);
+            break;
+        }
+        if (!tgt_ok) continue;
+
+        if (rules_mod::cast_prohibited(priority_player, is_creature_card(ecd), Zone::EXILE))
+            continue;
+
+        LegalAction imp_la(CAST_SPELL, ex_entity, "Cast " + ecd.name + " (impulse, alt cost)");
+        imp_la.category = ActionCategory::CAST_SPELL;
+        imp_la.impulse_cast = true;
+        actions.push_back(imp_la);
     }
     // checking permanents for activated abilities
     // mana abilities parsed last

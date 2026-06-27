@@ -79,6 +79,7 @@ struct LegalAction {
         bool use_alt_cost = false;
         bool use_flashback = false;
         bool use_offspring = false;  // cast paying the Offspring additional cost (CR 702.171)
+        bool impulse_cast = false;   // cast from exile under a cur_game.impulse_cast_permission, paying its alternative RESOURCE cost (energy/life) instead of mana (Amped Raptor)
         // True when this choice's card identity is public knowledge to all players
         // (e.g. a revealed tutor like Personal Tutor). Lets observers show the card
         // name even for an otherwise-private choice (search/top-of-library).

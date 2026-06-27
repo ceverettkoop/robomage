@@ -1033,6 +1033,10 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         // "Remembered" → condition_present is counted over the remembered cards at
         // resolution (Birthing Ritual: only dig if a creature was sacrificed).
         ability.condition_on_remembered = (value == "Remembered");
+        // "TriggeredCard" → condition_present is a property check on the ability's source/
+        // triggering card (Amped Raptor: Card.wasCastFromYourHandByYou), evaluated at
+        // resolution against that card's permanent state.
+        ability.condition_on_triggered_card = (value == "TriggeredCard");
     } else if (key == "ConditionCompare") {
         ability.condition_compare = value;
     } else if (key == "SacValid") {

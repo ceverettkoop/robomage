@@ -111,6 +111,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Sire of Seven Deaths", 167},
     {"Smash to Smithereens", 168},
     {"Whipflare", 169},
+    {"Amped Raptor", 170},
     {"Guide of Souls", 171},
     {"Wrath of the Skies", 186},
 };

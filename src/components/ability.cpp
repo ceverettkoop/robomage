@@ -907,6 +907,12 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
     // SVar gate, failure skips this body but still chains subabilities.
     if (condition_passed && condition_on_remembered)
         condition_passed = evaluate_present_condition(*this, controller, orderer);
+    // ConditionDefined$ TriggeredCard gate (Amped Raptor): the dig only happens if the card
+    // that triggered this ability was cast from its controller's hand. evaluate_present_condition
+    // reads the property off the source's permanent state. Failure skips this body but still
+    // chains subabilities.
+    if (condition_passed && condition_on_triggered_card)
+        condition_passed = evaluate_present_condition(*this, controller, orderer);
     // Condition$ Blessing (Ocelot Pride's CopyPermanent): the body runs only if the
     // controller has the city's blessing (702.131). Failure still chains subabilities.
     if (condition_passed && condition_city_blessing) {

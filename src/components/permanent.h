@@ -38,6 +38,12 @@ struct Permanent {
     bool loyalty_ability_activated_this_turn = false;
     bool evoked = false;  // entered via its evoke alternate cost — fires the evoke sacrifice ETB trigger
     bool entered_with_offspring = false;  // cast with its Offspring additional cost paid — fires the offspring token-copy ETB trigger (CR 702.171)
+    // This permanent entered the battlefield as a spell its controller cast from their own
+    // hand (CR 601 — a normal hand cast). Read by the Card.wasCastFromYourHandByYou condition
+    // (Amped Raptor's dig-from-hand gate). Set when its Permanent is created from a spell that
+    // was cast from the hand; false for permanents put onto the battlefield any other way
+    // (reanimation, tokens, ChangeZone-to-battlefield, casts from exile/graveyard, etc.).
+    bool cast_from_hand_by_controller = false;
     std::string chosen_type = "";  // creature type chosen on ETB (Cavern of Souls)
     std::string chosen_name = "";  // card name chosen on ETB (Disruptor Flute) — keys Card.NamedCard statics
     std::vector<Entity> exiled_with;  // entities exiled by this permanent (for Keen-Eyed Curator)

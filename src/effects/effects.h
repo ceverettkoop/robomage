@@ -102,6 +102,14 @@ bool animate(Ability &ab, std::shared_ptr<Orderer> orderer);
 // cur_game.chosen_number for a chained Count$ChosenNumber reference. General over "choose a
 // number up to N" cards. See effect_choose_number.cpp.
 bool choose_number(Ability &ab, std::shared_ptr<Orderer> orderer);
+// DB$ DigUntil (Amped Raptor): exile from the top of the library until a card matches Valid$;
+// skipped cards go to RevealedDestination$, the match to FoundDestination$ (both Exile here);
+// RememberFound$ remembers the match for a chained DB$ Play. See effect_dig_until.cpp.
+bool dig_until(Ability &ab, std::shared_ptr<Orderer> orderer);
+// DB$ Play (Amped Raptor): grant a one-shot permission to cast a Defined$ card from its
+// current zone this turn, paying an alternative RESOURCE cost (PlayCost$) instead of mana.
+// See effect_play.cpp.
+bool play(Ability &ab, std::shared_ptr<Orderer> orderer);
 
 
 // ── Effect-specific parse hooks ─────────────────────────────────────────────
@@ -129,6 +137,8 @@ bool parse_peek_and_reveal(Ability &ab, const std::string &key, const std::strin
 bool parse_reveal(Ability &ab, const std::string &key, const std::string &value);
 bool parse_amass(Ability &ab, const std::string &key, const std::string &value);
 bool parse_choose_number(Ability &ab, const std::string &key, const std::string &value);
+bool parse_dig_until(Ability &ab, const std::string &key, const std::string &value);
+bool parse_play(Ability &ab, const std::string &key, const std::string &value);
 
 }  // namespace effects
 

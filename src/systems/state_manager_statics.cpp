@@ -241,6 +241,11 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                 // It was cast and is now becoming a real permanent — consume the one-shot
                 // "was cast" marker so a later non-cast re-entry isn't treated as a cast.
                 game.cast_to_battlefield.erase(entity);
+                // Likewise consume the "cast from your hand by you" marker and record it on
+                // the permanent (Amped Raptor's Card.wasCastFromYourHandByYou gate). Only a
+                // spell the controller cast from their own hand sets this; any other entry
+                // (reanimation, tokens, ChangeZone, impulse cast from exile) leaves it false.
+                if (game.cast_from_hand.erase(entity)) perm.cast_from_hand_by_controller = true;
                 if (perm.is_tapped) game_log("%s enters tapped.\n", perm.name.c_str());
                 // Spell was cast for its evoke cost — mark the permanent so its evoke
                 // self-sacrifice ETB trigger fires (consumed one-shot here).

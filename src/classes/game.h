@@ -141,6 +141,19 @@ struct Game {
         std::set<Entity> pending_evoked;  // one-shot: a spell cast for its evoke cost is resolving; consumed when its Permanent is created (sets Permanent::evoked)
         std::set<Entity> pending_offspring;  // one-shot: a spell cast with its Offspring additional cost is resolving; consumed when its Permanent is created (sets Permanent::entered_with_offspring)
         std::set<Entity> cast_to_battlefield;  // one-shot: a cast spell is resolving from the stack onto the battlefield (it "was cast", CR 614.12 / Containment Priest); consumed when its Permanent is created
+        std::set<Entity> cast_from_hand;  // one-shot: a spell now resolving onto the battlefield was cast from its controller's own hand (a normal CR 601 hand cast); consumed when its Permanent is created → Permanent::cast_from_hand_by_controller (Amped Raptor's Card.wasCastFromYourHandByYou gate)
+        // Impulse-cast permission (CR 707 "impulsive draw" / 118.9 alternative cost): a card a
+        // resolving DB$ Play effect (Amped Raptor) lets its controller cast from EXILE this turn,
+        // paying an alternative RESOURCE cost (energy or life) instead of its mana cost. Keyed by
+        // the card entity; cleared each cleanup. Generalizes the alt-cost-cast over the resource
+        // so the same path serves energy ({E}) and life (a future Bolas's Citadel "pay life =
+        // mana value"). The casting path reads this to compute the cost and skip mana payment.
+        struct ImpulseCastPermission {
+            enum Resource { ENERGY, LIFE } resource = ENERGY;
+            int amount = 0;            // resolved cost (e.g. the card's mana value)
+            Zone::Ownership caster = Zone::UNKNOWN;  // who may cast it (its controller)
+        };
+        std::map<Entity, ImpulseCastPermission> impulse_cast_permission;
         std::map<Entity, int> pending_etb_xpaid;  // one-shot: X paid for an X-cost permanent spell now resolving, used by an "enters with X counters" replacement (Chalice of the Void); consumed when its Permanent is created
 
         // Recent action history ring buffer for ML observation
