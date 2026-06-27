@@ -79,6 +79,11 @@ subprocess.run([sys.executable, tool, *sorted(names)], check=False)
 # Scan the (now-fetched) card scripts for those stems and fetch them as tokens
 # so token-creating cards don't hit a missing-token-script error at runtime.
 tok_re = re.compile(r"TokenScript\$\s*([a-z0-9_]+)")
+# Amass (DB$ Amass | Type$ <subtype>, rule 701.46) creates/grows an Army token whose
+# script stem the engine SYNTHESIZES as "b_0_0_<subtype>_army" (src/effects/effect_amass.cpp)
+# — there is no TokenScript$ field to scan, so detect the Amass Type$ separately and fetch
+# the matching army token (e.g. Orcish Bowmasters' "Amass Orcs" -> b_0_0_orc_army).
+amass_re = re.compile(r"Amass\b.*?Type\$\s*([A-Za-z]+)")
 tokens = set()
 for nm in names:
     uid = name_to_uid(nm)
@@ -90,6 +95,8 @@ for nm in names:
     with open(cpath) as f:
         for line in f:
             tokens.update(tok_re.findall(line))
+            for sub in amass_re.findall(line):
+                tokens.add("b_0_0_" + sub.lower() + "_army")
 if tokens:
     subprocess.run([sys.executable, tool, "--token", *sorted(tokens)], check=False)
 PY
