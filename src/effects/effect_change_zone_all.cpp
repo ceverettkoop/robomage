@@ -107,6 +107,11 @@ bool change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer) {
             game_log("%s moves %s to %s\n", player_name(owner).c_str(), cd.name.c_str(), dest_str);
         }
         orderer->add_to_zone(on_bottom, entity, ab.destination);
+        // RememberChanged$ True: stash every moved card in the remembered set, mirroring the
+        // single-target ChangeZone path (effect_change_zone.cpp). A later SVar can then count
+        // these cards (Canoptek Scarab Swarm: X = Remembered$Valid Land,Artifact, "for each
+        // artifact or land card exiled this way"); cleared by the paired DBCleanup ClearRemembered$.
+        if (ab.remember_changed) cur_game.remembered_entities.push_back(entity);
         moved++;
     }
     game_log("%s moves %zu card(s) to %s\n", player_name(owner).c_str(), moved, dest_str);

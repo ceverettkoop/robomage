@@ -208,7 +208,7 @@ _CARD_COST_MATRIX = np.array([
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.1, 0.1],  # 199: It That Heralds the End
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 200: Petrified Hamlet
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 201: Eiganjo, Seat of the Empire
-    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 202: 
+    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.4],  # 202: Canoptek Scarab Swarm
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 203: 
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 204: 
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 205: 
@@ -1239,7 +1239,7 @@ _VOCAB_NAMES = [
     "It That Heralds the End",  # 199
     "Petrified Hamlet",  # 200
     "Eiganjo, Seat of the Empire",  # 201
-    "",  # 202
+    "Canoptek Scarab Swarm",  # 202
     "",  # 203
     "",  # 204
     "",  # 205

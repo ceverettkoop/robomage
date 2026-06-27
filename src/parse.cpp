@@ -1327,6 +1327,10 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
                        sv.find("Targeted$") != std::string::npos ||
                        sv.find("Count$InYourLibrary") != std::string::npos ||
                        sv.find("Count$YourLifeTotal") != std::string::npos ||
+                       // Remembered$Valid <filter> — count of remembered (e.g. just-moved by a
+                       // RememberChanged$ ChangeZoneAll) cards matching the filter (Canoptek
+                       // Scarab Swarm: TokenAmount$ X, X = Remembered$Valid Land,Artifact).
+                       sv.find("Remembered$") != std::string::npos ||
                        // Count$xPaid — amount equals the X paid at cast (Kozilek's Command:
                        // TokenAmount$/ScryNum$/TargetMax$ all = X = Count$xPaid).
                        sv.find("xPaid") != std::string::npos) {

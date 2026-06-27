@@ -821,6 +821,33 @@ size_t evaluate_dynamic_amount(
         int p = effective_power(target);
         return static_cast<size_t>(p < 0 ? 0 : p);
     }
+    // Remembered$Valid <comma-OR-filter> — number of remembered cards (e.g. cards just moved
+    // by a RememberChanged$ ChangeZoneAll) matching ANY of the comma-separated filters (Canoptek
+    // Scarab Swarm: X = Remembered$Valid Land,Artifact, "for each artifact or land card exiled
+    // this way"). These are now in their destination zone (e.g. exile), so match by printed
+    // characteristics via the shared card_matches_filter; control qualifiers resolve against ctrl.
+    if (expr.rfind("Remembered$Valid ", 0) == 0) {
+        std::string filters = expr.substr(std::string("Remembered$Valid ").size());
+        std::vector<std::string> specs;
+        size_t fp = 0;
+        while (fp <= filters.size()) {
+            size_t comma = filters.find(',', fp);
+            std::string one = filters.substr(fp, comma == std::string::npos ? std::string::npos : comma - fp);
+            if (!one.empty()) specs.push_back(one);
+            if (comma == std::string::npos) break;
+            fp = comma + 1;
+        }
+        MatchCtx mctx;
+        mctx.controller = ctrl;  // "you" reference for YouCtrl/OppCtrl in any filter
+        size_t count = 0;
+        for (auto e : cur_game.remembered_entities) {
+            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+            for (const auto &spec : specs) {
+                if (card_matches_filter(e, spec, mctx)) { count++; break; }
+            }
+        }
+        return count;
+    }
     // Remembered$CardManaCost[/Plus.N] — mana value of the first remembered card (Birthing
     // Ritual: X = 1 plus the sacrificed creature's mana value).
     if (expr.find("Remembered$CardManaCost") != std::string::npos) {

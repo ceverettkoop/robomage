@@ -35,7 +35,7 @@ implemented in the 2026-06-27 run below; the energy subsystem now exists.
 - ~~**Lorehold Charm** — `DB$ PumpAll` (no PumpAll handler) + targeted graveyard→battlefield reanimation (Forge script: available)~~ **IMPLEMENTED** (general `PumpAll` mass-pump handler + targeted graveyard→battlefield reanimation targeting/control; see `docs/card_implementations/lorehold_charm.md`)
 - **Mox Amber** — `ManaReflected` (produce one mana of any color found among legendary permanents you control) (Forge script: available)
 - **Alpha Deathclaw** — Monstrosity (`Monstrosity$` on PutCounter + `BecomeMonstrous` trigger) (Forge script: available)
-- **Canoptek Scarab Swarm** — `ChangeZoneAll RememberChanged` + `Remembered$Valid` count expr to size a token (Forge script: available)
+- ~~**Canoptek Scarab Swarm** — `ChangeZoneAll RememberChanged` + `Remembered$Valid` count expr to size a token (Forge script: available)~~ **IMPLEMENTED** (`ChangeZoneAll` now populates `remembered_entities` when `RememberChanged$ True`, mirroring single-target `ChangeZone`; new general `Remembered$Valid <comma-OR-filter>` dynamic-amount handler counts remembered cards via `card_matches_filter`; see `docs/card_implementations/canoptek_scarab_swarm.md`)
 - **Urza's Saga** — Saga/Chapter/lore-counter system + `DB$ Animate` (grant abilities to self) + `ManaCost0/1` search filter (three subsystems) (Forge script: available)
 - **Atraxa, Grand Unifier** — per-card-type reveal/tutor ETB (`RepeatTypesFrom`, `ImprintRevealed`, `ChosenType`) (Forge script: available)
 - **Council's Judgment** — Vote / will-of-the-council subsystem (Forge script: available)
