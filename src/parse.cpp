@@ -887,6 +887,10 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         else if (value == "TriggeredSpellAbility" || value == "TriggeredSpell")
             ability.defined_triggered_spell = true;
         else if (value == "TargetedController") ability.defined_targeted_controller = true;
+        // Defined$ TriggeredActivator — the effect acts on the player who caused the trigger
+        // (the caster of the triggering spell). The actual player is bound at trigger-fire
+        // time from the event's PLAYER param. CR 603.x.
+        else if (value == "TriggeredActivator") ability.defined_triggered_activator = true;
         else if (value == "Self") ability.defined_self = true;
         // Defined$ You — the effect's player is the source's controller (CR 109.5). Used by
         // self-pain riders like Ancient Tomb's "deals 2 damage to you" sub-ability.

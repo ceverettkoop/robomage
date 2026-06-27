@@ -103,6 +103,16 @@ struct Ability{
     bool defined_self = false;                  // Defined$ Self — ability moves its own source
     bool defined_each_opponent = false;         // Defined$ Player.Opponent — effect applies to each opponent (no target)
     bool defined_you = false;                   // Defined$ You — effect's player is the source's controller (e.g. Ancient Tomb pain)
+    // Defined$ TriggeredActivator — the effect's player is the player who caused the trigger
+    // (the caster of the triggering spell / the activator of the triggering event), CR 603.x.
+    // Set at parse time; the actual player is captured into `triggered_activator` when the
+    // trigger fires (from the event's PLAYER param). Used by Mai, Scornful Striker (the player
+    // who cast the noncreature spell loses 2 life), but general to any effect reading a
+    // Defined player.
+    bool defined_triggered_activator = false;
+    // The player who caused this triggered ability to fire (the triggering event's PLAYER).
+    // Populated at trigger-fire time when defined_triggered_activator is set; UNKNOWN until then.
+    Zone::Ownership triggered_activator = Zone::UNKNOWN;
 
     // Filter naming which permanents a mass effect affects (DestroyAll / SacrificeAll /
     // PutCounterAll): the ValidCards$ spec, e.g. "Cat.YouCtrl" or
