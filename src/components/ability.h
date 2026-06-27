@@ -265,6 +265,14 @@ struct Ability{
     bool remember_milled = false;    // RememberMilled$ True
     bool amount_from_damage = false; // NumCards$ DamageAmount — use trigger_damage_amount
 
+    // Leaves-the-battlefield ability that operates on the cards its source had exiled
+    // (Skyclave Apparition's TrigToken): the trigger-firing code snapshots the source's
+    // exiled_with here (from the live Permanent, or its last-known info if already stripped),
+    // and resolve() restores it into cur_game.remembered_entities so the body's
+    // Remembered$CardManaCost (token P/T), TokenOwner$ RememberedOwner, and
+    // ConditionPresent$ Card.ExiledWithSource gate all read the exiled card. Empty = no restore.
+    std::vector<Entity> restore_remembered_exiled_with;
+
     // Cleanup sub-ability
     bool clear_remembered = false;   // ClearRemembered$ True
     bool clear_chosen = false;       // ClearChosenCard$ True — clears cur_game.chosen_cards

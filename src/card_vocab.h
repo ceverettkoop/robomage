@@ -119,6 +119,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Reality Smasher", 181},
     {"Thought-Knot Seer", 182},
     {"Wrath of the Skies", 186},
+    {"Skyclave Apparition", 188},
     {"Ba Sing Se", 197},
 };
 

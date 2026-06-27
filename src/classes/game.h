@@ -76,6 +76,10 @@ struct LastKnownInfo {
     std::vector<std::string> type_names;   // type/subtype/supertype names
     std::set<Colors> colors;               // effective colors
     Zone::Ownership controller = Zone::UNKNOWN;  // last controller (CR 608.2g): "that permanent's controller"
+    std::vector<Entity> exiled_with;       // Permanent::exiled_with snapshot — the cards this permanent
+                                           // had exiled, so a leaves-the-battlefield ability (Skyclave
+                                           // Apparition's TrigToken) can still find them after the
+                                           // Permanent component is stripped by the SBA pass.
 };
 
 enum MandatoryChoice {

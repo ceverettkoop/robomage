@@ -33,6 +33,22 @@ bool token(Ability &ab, std::shared_ptr<Orderer> orderer) {
     if (tp && tp->owner_is_target && ab.target != 0 &&
         global_coordinator.entity_has_component<Player>(ab.target))
         ctrl = (ab.target == cur_game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
+    // TokenOwner$ RememberedOwner (Skyclave Apparition): the token is owned and controlled by
+    // the OWNER of the first remembered card — the exiled permanent's owner — so if Skyclave
+    // exiled your permanent, you get the Illusion when Skyclave dies (CR 707/the card text).
+    if (tp && tp->owner_is_remembered && !cur_game.remembered_entities.empty()) {
+        Entity r = cur_game.remembered_entities[0];
+        if (global_coordinator.entity_has_component<Zone>(r))
+            ctrl = global_coordinator.GetComponent<Zone>(r).owner;
+    }
+
+    // TokenPower$/TokenToughness$ from an SVar (Skyclave Apparition: X = Remembered$CardManaCost):
+    // override the token script's printed P/T so the created token enters as an X/X. Evaluated
+    // once here against the live remembered card; both default to the script's value when absent.
+    if (tp && !tp->power_expr.empty())
+        tok.power = static_cast<uint32_t>(evaluate_dynamic_amount(tp->power_expr, ctrl, orderer, ab.target));
+    if (tp && !tp->toughness_expr.empty())
+        tok.toughness = static_cast<uint32_t>(evaluate_dynamic_amount(tp->toughness_expr, ctrl, orderer, ab.target));
 
     // TokenAmount$ N (default 1): create N identical tokens. The count may be dynamic
     // (Count$xPaid → X). amount==0 with no dynamic expr means the single-token default.
@@ -64,9 +80,22 @@ bool parse_token(Ability &ab, const std::string &key, const std::string &value) 
         return true;
     }
     if (key == "TokenOwner") {
-        // TokenOwner$ TargetedPlayer routes the tokens to the spell's chosen target.
+        // TokenOwner$ TargetedPlayer routes the tokens to the spell's chosen target;
+        // TokenOwner$ RememberedOwner routes them to the owner of the first remembered card
+        // (Skyclave Apparition: the exiled card's owner gets the Illusion). Other values
+        // (You / the default) leave the token under the ability's controller.
         if (value.find("Targeted") != std::string::npos)
             effect_params<TokenParams>(ab).owner_is_target = true;
+        else if (value.find("Remembered") != std::string::npos)
+            effect_params<TokenParams>(ab).owner_is_remembered = true;
+        return true;
+    }
+    if (key == "TokenPower") {
+        effect_params<TokenParams>(ab).power_expr = value;
+        return true;
+    }
+    if (key == "TokenToughness") {
+        effect_params<TokenParams>(ab).toughness_expr = value;
         return true;
     }
     return false;

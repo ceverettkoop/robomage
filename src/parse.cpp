@@ -1353,6 +1353,16 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
             if (it != svars.end()) cp->count_expr = it->second;
         }
     }
+    // TokenPower$/TokenToughness$ given as an SVar token (Skyclave Apparition: "X" →
+    // Remembered$CardManaCost): resolve the reference to its runtime expression so the Token
+    // effect can size the created token's P/T at creation time.
+    if (auto *tkp = std::get_if<TokenParams>(&sub.params)) {
+        for (std::string *expr : {&tkp->power_expr, &tkp->toughness_expr}) {
+            if (expr->empty()) continue;
+            auto it = svars.find(*expr);
+            if (it != svars.end()) *expr = it->second;
+        }
+    }
     // DestroyAll with a dynamic mana-value bound and/or an energy unless-cost (Wrath of the
     // Skies): resolve the "cmcLE<SVar>" threshold from the ValidCards$ filter and the
     // PayEnergy<SVar> amount into their runtime Count$ expressions. The numeric/cmcLEX legacy

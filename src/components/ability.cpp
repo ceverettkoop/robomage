@@ -637,14 +637,27 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
     if (!is_battlefield_permanent(cand)) return false;
     auto &tperm = global_coordinator.GetComponent<Permanent>(cand);
 
-    // Controller restriction (YouCtrl/OppCtrl, e.g. ValidTgts$ Land.YouCtrl on the earthbend
-    // keyword action): the candidate must be controlled by the right player. Read off the
-    // permanent's controller (CR 109.4 / 115.1).
+    // Controller restriction (YouCtrl/OppCtrl/YouDontCtrl, e.g. ValidTgts$ Land.YouCtrl on the
+    // earthbend keyword action, or Permanent.YouDontCtrl on Skyclave Apparition): the candidate
+    // must be controlled by the right player. Read off the permanent's controller (CR 109.4 /
+    // 115.1). "YouDontCtrl" is the explicit Forge spelling of "a permanent you don't control" and
+    // restricts the same way as OppCtrl in a two-player game.
     {
         bool you_ctrl = vt.find("YouCtrl") != std::string::npos;
-        bool opp_ctrl = vt.find("OppCtrl") != std::string::npos;
+        bool opp_ctrl = vt.find("OppCtrl") != std::string::npos ||
+                        vt.find("YouDontCtrl") != std::string::npos;
         if (you_ctrl && tperm.controller != caster) return false;
         if (opp_ctrl && tperm.controller == caster) return false;
+    }
+
+    // Token restriction (e.g. ValidTgts$ Permanent.nonLand+!token on Skyclave Apparition:
+    // "nontoken permanent"). "!token"/"nonToken" reject a token permanent; "token" requires one.
+    {
+        bool nontoken_only = vt.find("!token") != std::string::npos ||
+                             vt.find("nonToken") != std::string::npos;
+        bool token_only = !nontoken_only && vt.find("token") != std::string::npos;
+        if (nontoken_only && tperm.is_token) return false;
+        if (token_only && !tperm.is_token) return false;
     }
 
     // "non<CardType>" main-type negation (e.g. ValidTgts$ Permanent.nonLand+cmcLE3 on
@@ -921,6 +934,15 @@ static void bind_sub_target(const Ability &parent, Ability &sub) {
 }
 
 void Ability::resolve(std::shared_ptr<Orderer> orderer) {
+    // Leaves-the-battlefield ability whose body references the cards its source had exiled
+    // (Skyclave Apparition's TrigToken): restore those entities into the remembered set before
+    // any gate or SVar runs, so ConditionPresent$ Card.ExiledWithSource, Remembered$CardManaCost
+    // (token P/T), and TokenOwner$ RememberedOwner all read the exiled card (CR 608.2h). The
+    // exiled_with snapshot was captured at the source's departure into last-known info.
+    if (!restore_remembered_exiled_with.empty()) {
+        cur_game.remembered_entities = restore_remembered_exiled_with;
+    }
+
     // OptionalDecider$ You ("you may ..."): the controller may decline the whole
     // triggered ability as it resolves (Ajani's exile-and-return-transformed).
     if (trigger_optional) {

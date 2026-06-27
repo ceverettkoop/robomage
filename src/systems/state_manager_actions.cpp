@@ -175,6 +175,20 @@ bool evaluate_present_condition(const Ability &ab, Zone::Ownership caster, std::
 
     // ConditionDefined$ Remembered: count remembered cards, not battlefield permanents.
     if (ab.condition_on_remembered) {
+        // ConditionPresent$ Card.ExiledWithSource (Skyclave Apparition's TrigToken): only the
+        // remembered cards that are STILL exiled (currently in the exile zone) count. CR 707/the
+        // card's reminder text: when Skyclave leaves, the token is made only if the exiled card
+        // is still exiled — if it has already returned to another zone, no token (and a card that
+        // can't be found / is gone yields none either).
+        if (ab.condition_present == "Card.ExiledWithSource") {
+            size_t still_exiled = 0;
+            for (auto e : cur_game.remembered_entities) {
+                if (global_coordinator.entity_has_component<Zone>(e) &&
+                    global_coordinator.GetComponent<Zone>(e).location == Zone::EXILE)
+                    still_exiled++;
+            }
+            return compare_svar(static_cast<int>(still_exiled), compare);
+        }
         size_t count = cur_game.remembered_entities.size();
         return compare_svar(static_cast<int>(count), compare);
     }

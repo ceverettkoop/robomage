@@ -446,6 +446,17 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
             trigger_ab.source = entity;
             trigger_ab.controller = ctrl;
 
+            // A leaves-the-battlefield ability that operates on the cards the source had exiled
+            // (Skyclave Apparition's TrigToken sizes/owns the Illusion by the exiled card, and
+            // gates on it still being exiled): the source has already left the battlefield, so its
+            // exiled_with list lives in the last-known-info snapshot captured at departure. Carry
+            // it onto the trigger so resolve() can restore the remembered set (CR 608.2h).
+            {
+                auto lki_it = game.last_known_info.find(entity);
+                if (lki_it != game.last_known_info.end() && !lki_it->second.exiled_with.empty())
+                    trigger_ab.restore_remembered_exiled_with = lki_it->second.exiled_with;
+            }
+
             PendingTrigger pt;
             pt.ab = trigger_ab;
             pt.controller = ctrl;
