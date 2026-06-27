@@ -38,6 +38,12 @@
 #include "../effects/effects.h"
 #include "orderer.h"
 
+// Forward declaration (defined below): is this Affected$ a general permanent filter
+// (anthem-style class) vs the single-target EquippedBy / Self / no-filter forms? Shared by
+// affected_permanents_for_static and the layer-6/7 appliers so they all agree which statics
+// fan out across the affected set.
+static bool affected_is_general_filter(const std::string &aff);
+
 int active_raise_cost_for(const CardData &card_data) {
     bool is_creature = is_creature_card(card_data);
     int total = 0;
@@ -103,9 +109,10 @@ std::vector<Entity> affected_permanents_for_static(const ActiveStatic &as,
                                                    const std::set<Entity> &entities) {
     std::vector<Entity> out;
     const std::string &aff = as.sa->affected;
-    if (aff.empty()) return out;
-    if (aff.find("EquippedBy") != std::string::npos) return out;
-    if (aff.find("Self") != std::string::npos) return out;
+    // EquippedBy / Self / no-filter forms are single-target (the layer appliers resolve them
+    // directly); only a general permanent filter fans out here. Shared predicate so this and
+    // the layer-6/7 appliers agree on which statics are general.
+    if (!affected_is_general_filter(aff)) return out;
     MatchCtx ctx;
     ctx.controller = as.controller;   // YouCtrl/OppCtrl reference (CR 109.5)
     ctx.source = as.entity;           // .Other self-exclusion
