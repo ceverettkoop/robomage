@@ -29,6 +29,22 @@ namespace effects {
 bool grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer) {
     (void)orderer;
 
+    // DB$ Effect | Triggers$ <SVar> — register a transient until-end-of-turn floating triggered
+    // ability (Forth Eorlingas!'s "Whenever one or more creatures you control deal combat damage
+    // to one or more players this turn, you become the monarch", CR 603.7e-style). Each parsed
+    // trigger is bound to this effect's controller and pushed into cur_game.floating_triggers,
+    // where the trigger scan fires it like any triggered ability; it lapses at cleanup. General
+    // over any DB$ Effect that names a Triggers$ SVar.
+    if (!ab.effect_floating_triggers.empty()) {
+        for (const auto &trig : ab.effect_floating_triggers) {
+            Ability ft = trig;
+            ft.controller = ab.controller;
+            cur_game.floating_triggers.push_back(ft);
+        }
+        game_log("A floating triggered ability is created until end of turn.\n");
+        return true;
+    }
+
     // DB$ Effect | StaticAbilities$ Unblockable | RememberObjects$ Self — a transient
     // continuous effect that makes the source unblockable until end of turn (Kappa
     // Cannoneer, CR 509.1b / 702.x). Modeled as a per-turn "can't be blocked" mark on the

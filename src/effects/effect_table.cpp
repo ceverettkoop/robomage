@@ -63,6 +63,7 @@ EffectHandler handler_for(EffectKind kind) {
         case EffectKind::Earthbend:       return &earthbend;
         case EffectKind::Tap:             return &tap;
         case EffectKind::RevealHand:      return &reveal_hand;
+        case EffectKind::BecomeMonarch:   return &become_monarch;
         default:                          return nullptr;
     }
 }

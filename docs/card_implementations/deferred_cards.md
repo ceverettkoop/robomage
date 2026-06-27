@@ -40,7 +40,7 @@ implemented in the 2026-06-27 run below; the energy subsystem now exists.
 - **Atraxa, Grand Unifier** — per-card-type reveal/tutor ETB (`RepeatTypesFrom`, `ImprintRevealed`, `ChosenType`) (Forge script: available)
 - **Council's Judgment** — Vote / will-of-the-council subsystem (Forge script: available)
 - **Damping Sphere** — `ProduceMana`/`ReplaceMana` replacement + dynamic per-spell-this-turn `RaiseCost` (`Relative$ True`) (Forge script: available)
-- **Forth Eorlingas!** — Monarch subsystem (`BecomeMonarch` + monarch tracking) + `DB$ Effect` with floating `Triggers$` (Forge script: available)
+- ~~**Forth Eorlingas!** — Monarch subsystem (`BecomeMonarch` + monarch tracking) + `DB$ Effect` with floating `Triggers$` (Forge script: available)~~ **IMPLEMENTED** (general Monarch subsystem: `Game::monarch_entity`/`set_monarch` + `DB$ BecomeMonarch` effect + sourceless inherent monarch triggers — end-step extra draw and steal-on-combat-damage — fired from `check_triggered_abilities` per CR 725.2; general until-end-of-turn floating triggered ability via `DB$ Effect | Triggers$ <SVar>` registered in `Game::floating_triggers`; new `Mode$ DamageAll | ValidSource$ Creature.YouCtrl` combat-damage trigger; see `docs/card_implementations/forth_eorlingas.md`)
 
 ### Deferred during implementation
 

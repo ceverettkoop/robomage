@@ -266,6 +266,13 @@ struct Ability{
     bool trigger_source_must_be_spell = false;    // ValidSource$ Spell — targeting object is a spell
     bool trigger_source_opp_ctrl = false;         // ValidSource$ ...OppCtrl — controlled by an opponent of the source's controller
 
+    // Mode$ DamageAll | ValidSource$ Creature.YouCtrl | ValidTarget$ Player | CombatDamage$ True —
+    // "Whenever one or more creatures you control deal combat damage to one or more players" (Forth
+    // Eorlingas!'s floating monarch trigger). Fires on COMBAT_DAMAGE_TO_PLAYER when the damaging
+    // creature (the event's ENTITY) is controlled by this ability's controller. Used by floating
+    // triggers (no source permanent), so it cannot rely on trigger_only_self/source scans.
+    bool trigger_damage_source_youctrl = false;   // ValidSource$ Creature.YouCtrl on a DamageAll combat-damage trigger
+
     // TriggerZones$ Graveyard (Arclight Phoenix): the triggered ability functions from
     // the graveyard, not the battlefield (CR 113.6 / 603.6). When set, the trigger scan
     // matches the source while it is in its owner's graveyard.
@@ -328,6 +335,15 @@ struct Ability{
     // until-end-of-turn "can't be blocked" mark on the source rather than a stack object.
     std::string effect_static_ability = "";  // StaticAbilities$ value (e.g. "Unblockable")
     bool effect_remember_self = false;        // RememberObjects$ Self
+
+    // DB$ Effect | Triggers$ <SVar> — a transient until-end-of-turn floating triggered ability
+    // (Forth Eorlingas!'s "Whenever one or more creatures you control deal combat damage to one
+    // or more players this turn, you become the monarch"). The named trigger SVar is parsed into
+    // a full TRIGGERED Ability and held here; the GrantCast handler registers a copy in
+    // cur_game.floating_triggers (controller bound) so the trigger scan fires it through the
+    // normal trigger system, then it lapses at cleanup. Empty subabilities vector = no floating
+    // trigger. General over any DB$ Effect that names a Triggers$ SVar.
+    std::vector<Ability> effect_floating_triggers;
 
     // Tapped$ True — searched card enters the battlefield tapped (Edge of Autumn)
     bool enters_tapped = false;

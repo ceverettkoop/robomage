@@ -37,6 +37,13 @@ Entity Game::gen_player(const Deck &deck) {
     return player_entity;
 }
 
+void Game::set_monarch(Entity player_entity) {
+    if (monarch_entity == player_entity) return;  // already the monarch — no change (725.3)
+    monarch_entity = player_entity;  // the previous monarch ceases to be the monarch (725.3)
+    game_log("%s becomes the monarch.\n",
+             player_name(player_entity == player_a_entity ? Zone::PLAYER_A : Zone::PLAYER_B).c_str());
+}
+
 void Game::record_action(int category, int card_vocab_idx, bool player_a) {
     action_history[action_history_write] = {category, card_vocab_idx, player_a, static_cast<int>(turn)};
     action_history_write = (action_history_write + 1) % ACTION_HISTORY_SIZE;
@@ -247,6 +254,9 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     revolt_player_b = false;
                     // "You may cast that card this turn" grants (Emry) expire at cleanup (601.3e).
                     may_cast_this_turn.clear();
+                    // Floating "this turn" triggered abilities (Forth Eorlingas!'s become-monarch
+                    // trigger, CR 603.7e) last only their turn of creation; drop them at cleanup.
+                    floating_triggers.clear();
                     // Impulse-cast permissions (Amped Raptor) likewise last only "this turn".
                     impulse_cast_permission.clear();
                     auto &player = global_coordinator.GetComponent<Player>(active_player_entity);

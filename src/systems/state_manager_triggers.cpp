@@ -129,6 +129,91 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
             game.delayed_triggers.erase(game.delayed_triggers.begin() + static_cast<ptrdiff_t>(*it));
     }
 
+    // Floating triggered abilities (CR 603.7e): transient until-end-of-turn triggers created by a
+    // DB$ Effect | Triggers$ SVar (Forth Eorlingas!). They have no source permanent, so they are
+    // scanned here against the drained events rather than by the battlefield loop. Currently the
+    // one supported floating trigger is "Mode$ DamageAll | ValidSource$ Creature.YouCtrl |
+    // ValidTarget$ Player | CombatDamage$ True" — fires once per combat-damage batch when one or
+    // more creatures the trigger's controller controls deal combat damage to one or more players.
+    for (const auto &ft : game.floating_triggers) {
+        if (ft.trigger_on != Events::COMBAT_DAMAGE_TO_PLAYER) continue;
+        bool matched = false;
+        for (const auto &ev : events) {
+            if (ev.GetType() != Events::COMBAT_DAMAGE_TO_PLAYER) continue;
+            if (ft.trigger_damage_source_youctrl) {
+                if (!ev.HasParam(Params::ENTITY)) continue;
+                Entity dmg_src = ev.GetParam<Entity>(Params::ENTITY);
+                if (source_controller(dmg_src) != ft.controller) continue;
+            }
+            matched = true;
+            break;
+        }
+        if (!matched) continue;
+        Ability trigger_ab = ft;
+        trigger_ab.controller = ft.controller;
+        PendingTrigger pt;
+        pt.ab = trigger_ab;
+        pt.controller = ft.controller;
+        pt.source = 0;
+        pt.label = "Floating trigger (" + trigger_ab.category + ")";
+        pt.log_line = "A floating triggered ability triggers.";
+        pt.needs_target = false;
+        pending.push_back(pt);
+    }
+
+    // The monarch's inherent sourceless triggered abilities (CR 725.2): "At the beginning of the
+    // monarch's end step, that player draws a card" and "Whenever a creature deals combat damage to
+    // the monarch, its controller becomes the monarch." These have no source object and are not
+    // card abilities, so they are produced here directly from the drained events against
+    // game.monarch_entity. General over any monarch card (Forth Eorlingas! and future ones).
+    if (game.monarch_entity != MAX_ENTITIES) {
+        Zone::Ownership monarch_ctrl = (game.monarch_entity == game.player_a_entity)
+                                       ? Zone::PLAYER_A : Zone::PLAYER_B;
+        for (const auto &ev : events) {
+            // End-step draw: the monarch draws an extra card at the beginning of their end step.
+            if (ev.GetType() == Events::END_STEP_BEGAN && ev.HasParam(Params::PLAYER) &&
+                ev.GetParam<Entity>(Params::PLAYER) == game.monarch_entity) {
+                Ability draw_ab;
+                draw_ab.ability_type = Ability::TRIGGERED;
+                draw_ab.category = "Draw";
+                draw_ab.amount = 1;
+                draw_ab.controller = monarch_ctrl;
+                draw_ab.target = game.monarch_entity;  // effect_draw reads target player when set
+                PendingTrigger pt;
+                pt.ab = draw_ab;
+                pt.controller = monarch_ctrl;
+                pt.source = 0;
+                pt.label = "Monarch (end-step draw)";
+                pt.log_line = "The monarch draws a card at the beginning of their end step.";
+                pt.needs_target = false;
+                pending.push_back(pt);
+            }
+            // Steal: a creature dealing combat damage to the monarch makes its controller the
+            // monarch. The damaged player is the event's PLAYER; the new monarch is the controller
+            // of the damaging creature (the event's ENTITY).
+            if (ev.GetType() == Events::COMBAT_DAMAGE_TO_PLAYER && ev.HasParam(Params::PLAYER) &&
+                ev.GetParam<Entity>(Params::PLAYER) == game.monarch_entity &&
+                ev.HasParam(Params::ENTITY)) {
+                Zone::Ownership attacker_ctrl = source_controller(ev.GetParam<Entity>(Params::ENTITY));
+                if (attacker_ctrl == Zone::UNKNOWN) continue;
+                Entity new_monarch = get_player_entity(attacker_ctrl);
+                if (new_monarch == game.monarch_entity) continue;  // already the monarch
+                Ability steal_ab;
+                steal_ab.ability_type = Ability::TRIGGERED;
+                steal_ab.category = "BecomeMonarch";
+                steal_ab.controller = attacker_ctrl;
+                PendingTrigger pt;
+                pt.ab = steal_ab;
+                pt.controller = attacker_ctrl;
+                pt.source = 0;
+                pt.label = "Monarch (steal on combat damage)";
+                pt.log_line = "A creature dealt combat damage to the monarch.";
+                pt.needs_target = false;
+                pending.push_back(pt);
+            }
+        }
+    }
+
     if (!events.empty()) {
     for (auto entity : mEntities) {
         if (!is_battlefield_permanent(entity)) continue;

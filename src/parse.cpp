@@ -43,6 +43,11 @@ static std::vector<Ability> parse_triggered_abilities(const std::string& script,
                                                       const std::map<std::string, std::string>& svars,
                                                       const std::string& card_name = "");
 static std::vector<StaticAbility> parse_static_abilities(const std::string& script, const std::map<std::string, std::string>& svars);
+// Parses one T:/trigger SVar line into a TRIGGERED Ability (trigger_on == 0 if unrecognised).
+// Forward-declared so parse_svar_ability can build a DB$ Effect | Triggers$ <SVar> floating
+// triggered ability from the named trigger SVar.
+static Ability parse_one_trigger(const std::string& line, const std::map<std::string, std::string>& svars,
+                                 const std::string& card_name);
 static std::vector<Effect::Replacement> parse_replacement_effects(const std::string& script,
                                                                    const std::map<std::string, std::string>& svars);
 static uint32_t parse_power(std::string value);
@@ -1306,6 +1311,24 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
             auto it = svars.find(value);
             if (it != svars.end())
                 sub.subabilities.push_back(parse_svar_ability(it->second, ability_type, svars, card_name));
+        } else if (key == "Triggers") {
+            // DB$ Effect | Triggers$ <SVar>[,<SVar>...] — a transient until-end-of-turn floating
+            // triggered ability (Forth Eorlingas!). Each named SVar holds a trigger line
+            // (Mode$ ... | Execute$ ...); parse it like a card's T: line so it carries the same
+            // trigger metadata and its Execute$ effect, and store it on the Effect to be
+            // registered (controller-bound) into cur_game.floating_triggers at resolution.
+            size_t tpos = 0;
+            while (tpos < value.size()) {
+                size_t comma = value.find(',', tpos);
+                if (comma == std::string::npos) comma = value.size();
+                std::string svar_name = value.substr(tpos, comma - tpos);
+                auto it = svars.find(svar_name);
+                if (it != svars.end()) {
+                    Ability trig = parse_one_trigger(it->second, svars, card_name);
+                    if (trig.trigger_on != 0) sub.effect_floating_triggers.push_back(trig);
+                }
+                tpos = comma + 1;
+            }
         } else if (key == "ConditionCheckSVar") {
             // Resolve SVar reference to its expression (e.g. "X" → "Count$ResolvedThisTurn")
             auto it = svars.find(value);
@@ -1707,7 +1730,13 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
                            sv.find("Targeted$") != std::string::npos ||
                            sv.find("Count$InYourLibrary") != std::string::npos ||
                            sv.find("Count$YourLifeTotal") != std::string::npos ||
-                           sv.find("Count$Revolt") != std::string::npos) {
+                           sv.find("Count$Revolt") != std::string::npos ||
+                           // Count$xPaid — amount equals the X paid at cast (Forth Eorlingas!:
+                           // TokenAmount$ X, X = Count$xPaid → X 2/2 Human Knight tokens). Mirrors
+                           // the sub-ability path (parse_svar_ability) so a top-level SP$/AB$
+                           // ability scales by X too, instead of falling back to the count==1
+                           // single-token default.
+                           sv.find("xPaid") != std::string::npos) {
                     // Runtime expression — preserve for evaluation at activation/resolve time
                     ability.dynamic_amount_expr = sv;
                 }
@@ -1791,6 +1820,8 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
     bool valid_player_is_you = false;
     bool mode_is_spell_cast = false;
     bool mode_is_damage_done = false;
+    bool mode_is_damage_all = false;
+    bool valid_source_creature_youctrl = false;
     bool damage_combat_only = false;
     bool valid_card_non_creature = false;
     bool valid_card_instant = false;
@@ -1830,6 +1861,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
             else if (value == "Phase") mode_is_phase = true;
             else if (value == "SpellCast") mode_is_spell_cast = true;
             else if (value == "DamageDone") mode_is_damage_done = true;
+            else if (value == "DamageAll") mode_is_damage_all = true;
             else if (value == "Drawn") mode_is_drawn = true;
             else if (value == "AttackersDeclared") mode_is_attackers_declared = true;
             else if (value == "TapsForMana") mode_is_taps_for_mana = true;
@@ -1840,6 +1872,10 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
             // SPELL (not an ability) controlled by an opponent of the source's controller.
             if (value.rfind("Spell", 0) == 0) source_is_spell = true;
             if (value.find("OppCtrl") != std::string::npos) source_opp_ctrl = true;
+            // Mode$ DamageAll | ValidSource$ Creature.YouCtrl — the damaging creature must be one
+            // this trigger's controller controls (Forth Eorlingas!'s floating monarch trigger).
+            if (value.find("Creature") != std::string::npos && value.find("YouCtrl") != std::string::npos)
+                valid_source_creature_youctrl = true;
         } else if (key == "ValidTarget") {
             // ValidTarget$ Card.Self — the permanent that became a target must be this source.
             if (value == "Card.Self") valid_target_self = true;
@@ -2073,6 +2109,16 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
         ability.trigger_only_self = true;  // ValidSource$ Card.Self
     }
 
+    // "Whenever one or more creatures you control deal combat damage to one or more players" —
+    // Forth Eorlingas!'s floating monarch trigger (Mode$ DamageAll | ValidSource$ Creature.YouCtrl
+    // | ValidTarget$ Player | CombatDamage$ True). Fires on COMBAT_DAMAGE_TO_PLAYER when the
+    // damaging creature is controlled by this trigger's controller (matched at fire time, since
+    // the floating trigger has no source permanent to self-reference).
+    if (mode_is_damage_all && damage_combat_only) {
+        ability.trigger_on = Events::COMBAT_DAMAGE_TO_PLAYER;
+        ability.trigger_damage_source_youctrl = valid_source_creature_youctrl;
+    }
+
     // "whenever a player draws a card" — Orcish Bowmasters (Mode$ Drawn)
     if (mode_is_drawn) {
         ability.trigger_on = Events::PLAYER_DREW_CARD;
@@ -2161,6 +2207,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
                 effect.trigger_taps_for_mana_static             = ability.trigger_taps_for_mana_static;
                 effect.trigger_source_must_be_spell             = ability.trigger_source_must_be_spell;
                 effect.trigger_source_opp_ctrl                  = ability.trigger_source_opp_ctrl;
+                effect.trigger_damage_source_youctrl            = ability.trigger_damage_source_youctrl;
                 // 603.4 intervening-if lives on the trigger line, not the Execute SVar — carry
                 // it onto the resolved ability so it is re-checked at resolution.
                 effect.intervening_if                           = ability.intervening_if;
