@@ -7,6 +7,7 @@
 #include "../components/token.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
+#include "../game_queries.h"
 #include "../parse.h"
 #include "../systems/orderer.h"
 
@@ -26,9 +27,7 @@ bool token(Ability &ab, std::shared_ptr<Orderer> orderer) {
         return true;
     }
 
-    Zone::Ownership ctrl = global_coordinator.entity_has_component<Permanent>(ab.source)
-                               ? global_coordinator.GetComponent<Permanent>(ab.source).controller
-                               : global_coordinator.GetComponent<Zone>(ab.source).owner;
+    Zone::Ownership ctrl = source_controller(ab.source);
     // TokenOwner$ TargetedPlayer (Kozilek's Command): the targeted player creates and
     // controls the tokens, not the spell's controller.
     if (tp && tp->owner_is_target && ab.target != 0 &&

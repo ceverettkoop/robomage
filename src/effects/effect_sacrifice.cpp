@@ -32,7 +32,7 @@ static Entity sacrifice_one(const Ability &ab, Zone::Ownership sacrificer,
         // SacValid$ filter, evaluated against the sacrificer's permanents (YouCtrl/token/!token,
         // colors, nonLand, …). Filter controller is `sacrificer` so YouCtrl-style qualifiers and
         // negations resolve relative to the player who is sacrificing.
-        if (!permanent_matches_cards_filter(e, ab.sac_valid, sacrificer, ab.source)) continue;
+        if (!permanent_matches_filter(e, ab.sac_valid, MatchCtx{sacrificer, ab.source})) continue;
         candidates.push_back(e);
     }
 

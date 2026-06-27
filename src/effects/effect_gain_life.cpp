@@ -19,17 +19,14 @@ namespace effects {
 
 bool gain_life(Ability &ab, std::shared_ptr<Orderer> orderer) {
     (void)orderer;
-    Zone::Ownership gain_controller;
-    if (ab.defined_targeted_controller && global_coordinator.entity_has_component<Zone>(ab.target)) {
-        // Swords to Plowshares: gain life goes to the exiled creature's controller
-        gain_controller = global_coordinator.GetComponent<Zone>(ab.target).controller;
-        if (gain_controller == Zone::UNKNOWN && global_coordinator.entity_has_component<Permanent>(ab.target))
-            gain_controller = global_coordinator.GetComponent<Permanent>(ab.target).controller;
-    } else if (global_coordinator.entity_has_component<Permanent>(ab.source)) {
-        gain_controller = global_coordinator.GetComponent<Permanent>(ab.source).controller;
-    } else {
-        gain_controller = global_coordinator.GetComponent<Zone>(ab.source).owner;
-    }
+    // Swords to Plowshares: gain life goes to the exiled creature's controller, read via
+    // last-known info since the creature was exiled earlier this resolution (CR 608.2g/h).
+    // Otherwise (and if that can't be resolved) the source's controller gains the life.
+    Zone::Ownership gain_controller = Zone::UNKNOWN;
+    if (ab.defined_targeted_controller && ab.target != 0)
+        gain_controller = last_known_controller(ab.target);
+    if (gain_controller == Zone::UNKNOWN)
+        gain_controller = source_controller(ab.source);
     // Evaluate dynamic amount if set (e.g. "Targeted$CardPower"). effective_power gives the
     // creature's EFFECTIVE power (counters / continuous buffs included) read live while it is
     // still in play, or its last-known value once it has left — Swords to Plowshares exiles

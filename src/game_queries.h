@@ -112,6 +112,52 @@ int effective_power(Entity e);
 int effective_toughness(Entity e);
 std::set<Colors> effective_colors(Entity e);
 
+// ── Unified filter matcher (CR 109/110/115 characteristic matching) ─────────
+// One grammar, one evaluator, two entry points. A Forge filter spec is a ';'-delimited
+// list of OR alternatives; each alternative is a head type/subtype name (or a "Card" /
+// "Permanent" / "Spell" wildcard) followed by '.'/'+'-joined qualifiers that are ANDed:
+// colors (White/nonGreen/Colorless), supertypes (Basic/nonBasic), main-type negations
+// (nonLand/nonCreature…), subtypes (Goblin, Plains), power/toughness comparators
+// (toughnessLE2), mana-value bounds (cmcLEX / the dynamic ctx bound), control (YouCtrl/
+// OppCtrl), token state (token/nonToken), timing (ThisTurnEntered) and identity
+// (IsRemembered/Other/nonChosenCard). Unrecognized qualifiers fail closed and warn once.
+//
+// `card_matches_filter` reads PRINTED characteristics (a card in hand/library/graveyard
+// or a spell on the stack). `permanent_matches_filter` reads a battlefield permanent's
+// LIVE characteristics — types and P/T from its components, but color and mana value from
+// the card (CR 105/112.7: the engine has no live color/MV layer; effective_colors is the
+// single seam). Both share one evaluator, so qualifier coverage can never drift again.
+struct MatchCtx {
+    Zone::Ownership controller = Zone::UNKNOWN;  // the "you" reference for YouCtrl/OppCtrl
+    Entity source = 0;                           // self-exclusion source for .Other
+    int cmc_bound = -1;                          // dynamic mana-value bound (Aether Vial); <0 = none
+    std::string cmc_op = "";                     // comparator for cmc_bound (EQ/LE/GE/…)
+};
+
+bool card_matches_filter(Entity e, const std::string &spec, const MatchCtx &ctx = MatchCtx{});
+bool card_matches_filter(const CardData &cd, const std::string &spec, const MatchCtx &ctx = MatchCtx{});
+bool permanent_matches_filter(Entity e, const std::string &spec, const MatchCtx &ctx = MatchCtx{});
+
+// ── Defined$ player resolution (CR 109.5 / 608.2g) ──────────────────────────
+// Who controls an ability's SOURCE object: its live Permanent.controller while on the
+// battlefield, else the owner of its current zone. The "source controller" idiom that
+// token/amass/mobilize/delayed-trigger/deal-damage/etc. otherwise repeat inline.
+Zone::Ownership source_controller(Entity source);
+
+// Last-known controller of an object for a "that permanent's controller" effect
+// (CR 608.2g/h): its Zone.controller while it still records one, else the live
+// Permanent.controller (mid-resolution before the SBA strips it), else the controller
+// captured in its last-known info as it left the battlefield. UNKNOWN if never controlled.
+Zone::Ownership last_known_controller(Entity e);
+
+// Resolve the Defined$ player an ability designates, or UNKNOWN when it names none (the
+// caller then falls back to its own chosen target):
+//   Defined$ You                -> the source's controller
+//   Defined$ Player.Opponent    -> that controller's single opponent (2-player; CR 109.5)
+//   Defined$ TargetedController -> the last-known controller of ab.target
+//   Defined$ TriggeredActivator -> the player bound when the trigger fired
+Zone::Ownership resolve_defined_player(const Ability &ab);
+
 // True if the card has a permanent card type (CR 110.4a: artifact, battle, creature,
 // enchantment, land, planeswalker). Used by ValidCard$ Permanent zone-change filters
 // (Moonshadow: "permanent cards put into your graveyard" excludes instants/sorceries).
@@ -332,78 +378,28 @@ inline bool is_basic_land_subtype(const std::string &name) {
            name == "Island" || name == "Swamp" || name == "Wastes";
 }
 
-// True if `perm` (the entity `perm_entity`) matches the ';'-delimited `spec` used by
-// Sacrifice-a-<type> / Return-a-<type> activation costs (e.g. "Forest;Plains",
-// "Creature", "Creature.Other"). Each ';'-delimited alternative is a type/subtype name
-// (a top-level card type like "Creature"/"Land" matches alongside subtype names, since
-// Permanent::types stores both) optionally followed by a '.'-joined qualifier:
-//   .Other  — self-exclusion (CR 700.5 / 109.3): the permanent must NOT be the cost's
-//             source (`exclude_entity`), i.e. "another <type>". An empty/0 exclude makes
-//             .Other a no-op match on type alone.
-//   .<Color> / .non<Color>  — a color restriction (e.g. "Creature.Green" on Natural Order's
-//             "sacrifice a green creature"): the permanent's effective color must satisfy the
-//             qualifier, evaluated via color_set_passes / color_set_passes_noncolor against the
-//             permanent's effective_colors (read live, so continuous color-changing effects
-//             count). Honoured only when `perm_entity` is supplied.
-inline bool permanent_matches_subtype_spec(const Permanent &perm, const std::string &spec,
-                                           Entity perm_entity = 0, Entity exclude_entity = 0) {
-    size_t pp = 0;
-    while (pp <= spec.size()) {
-        size_t sc = spec.find(';', pp);
-        if (sc == std::string::npos) sc = spec.size();
-        std::string alt = spec.substr(pp, sc - pp);
-        pp = sc + 1;
-
-        // Split off a '.'-joined qualifier (e.g. "Creature.Other" → "Creature" + "Other").
-        std::string type_name = alt;
-        std::string qual;
-        bool require_other = false;
-        size_t dot = alt.find('.');
-        if (dot != std::string::npos) {
-            type_name = alt.substr(0, dot);
-            qual = alt.substr(dot + 1);
-            if (qual == "Other") require_other = true;
-        }
-
-        // .Other: the matching permanent must not be the cost's source (self-exclusion).
-        if (require_other && perm_entity != 0 && exclude_entity != 0 && perm_entity == exclude_entity)
-            continue;
-
-        bool type_match = false;
-        for (const auto &t : perm.types)
-            if (t.name == type_name) { type_match = true; break; }
-        if (!type_match) continue;
-
-        // Color qualifier (e.g. ".Green" / ".nonGreen"): apply against the permanent's
-        // effective colors. The matchers key on the raw qualifier text (".Green",
-        // "nonGreen"), so feed them `alt` directly. A non-color qualifier (e.g. "Other")
-        // is ignored here — color_set_passes only reacts to color tokens.
-        if (!qual.empty() && qual != "Other" && perm_entity != 0) {
-            std::set<Colors> cols = effective_colors(perm_entity);
-            if (!color_set_passes(alt, cols)) continue;
-            if (!color_set_passes_noncolor(alt, cols)) continue;
-        }
-        return true;
-    }
-    return false;
-}
-
-// Battlefield permanents controlled by `player` matching the ';'-delimited subtype
-// `spec`. Drives both Sacrifice-a-<type> and Return-a-<type> activation costs:
-// non-empty == the cost is payable (legality), and the list itself is the player's
-// choice menu (payment). `exclude_entity` is the cost's source, honoured by a `.Other`
-// qualifier in the spec (e.g. Wight of the Reliquary's "Sacrifice another creature").
+// Battlefield permanents controlled by `player` matching the ';'-delimited `spec` used by
+// Sacrifice-a-<type> / Return-a-<type> activation costs (e.g. "Forest;Plains", "Creature",
+// "Creature.Other", "Creature.Green"). Drives both Sacrifice-a-<type> and Return-a-<type>
+// activation costs: non-empty == the cost is payable (legality), and the list itself is the
+// player's choice menu (payment). `exclude_entity` is the cost's source, honoured by a
+// `.Other` qualifier in the spec (e.g. Wight of the Reliquary's "Sacrifice another creature").
+// Matching runs through the shared permanent_matches_filter so the full qualifier grammar
+// (colors, P/T, subtypes, …) is available here too.
 inline std::vector<Entity> controlled_permanents_matching(
     Zone::Ownership player, const std::string &spec, const std::set<Entity> &entities,
     Entity exclude_entity = 0) {
     std::vector<Entity> out;
+    MatchCtx ctx;
+    ctx.controller = player;
+    ctx.source = exclude_entity;
     for (auto e : entities) {
         if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
         auto &z = global_coordinator.GetComponent<Zone>(e);
         if (z.location != Zone::BATTLEFIELD) continue;
         auto &perm = global_coordinator.GetComponent<Permanent>(e);
         if (perm.controller != player) continue;
-        if (permanent_matches_subtype_spec(perm, spec, e, exclude_entity)) out.push_back(e);
+        if (permanent_matches_filter(e, spec, ctx)) out.push_back(e);
     }
     return out;
 }

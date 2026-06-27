@@ -64,41 +64,6 @@ static int artifacts_controlled_by(Zone::Ownership caster) {
     return count;
 }
 
-// True if `card_data` matches a ReduceCost ValidCard$ filter such as "Eldrazi.Colorless",
-// "Card.Colorless", "Creature", or "Card.nonCreature". A single optional ".Qualifier" is
-// supported (the heads/qualifiers a cost-reduction static realistically uses). The head is
-// a type or subtype name in the card's type line; "Card"/"Permanent"/"Spell" are wildcards.
-static bool card_matches_reduce_filter(const CardData &card_data, const std::string &filter) {
-    if (filter.empty()) return true;
-    std::string head = filter;
-    std::string qualifier;
-    size_t dot = filter.find('.');
-    if (dot != std::string::npos) {
-        head = filter.substr(0, dot);
-        qualifier = filter.substr(dot + 1);
-    }
-
-    bool head_ok = (head == "Card" || head == "Permanent" || head == "Spell");
-    if (!head_ok)
-        for (const auto &t : card_data.types)
-            if (t.name == head) { head_ok = true; break; }
-    if (!head_ok) return false;
-
-    if (qualifier.empty()) return true;
-    if (qualifier == "Colorless")    return is_colorless_card(card_data);
-    if (qualifier == "Creature")     return is_creature_card(card_data);
-    if (qualifier == "nonCreature")  return !is_creature_card(card_data);
-    // Single colored-qualifier (e.g. "Card.Red"): the card must include that color.
-    static const std::pair<const char *, Colors> kColors[] = {
-        {"White", WHITE}, {"Blue", BLUE}, {"Black", BLACK}, {"Red", RED}, {"Green", GREEN}};
-    for (const auto &kv : kColors)
-        if (qualifier == kv.first) return card_colors(card_data).count(kv.second) > 0;
-    // Otherwise treat the qualifier as a subtype name (e.g. "Eldrazi.Wizard").
-    for (const auto &t : card_data.types)
-        if (t.name == qualifier) return true;
-    return false;
-}
-
 // Total generic mana that active ReduceCost statics remove from the cost of casting
 // `card_data` for player `caster` (the mirror of active_raise_cost_for). Each ReduceCost
 // static reduces matching spells' generic cost by its Amount$ (CR 118.7 / 601.2f); an
@@ -110,7 +75,10 @@ int active_reduce_cost_for(const CardData &card_data, Zone::Ownership caster) {
         if (as.suppressed) continue;  // 613.1f: source lost all abilities (Humility)
         if (as.sa->category != "ReduceCost") continue;
         if (as.sa->reduce_cost_you_only && as.controller != caster) continue;
-        if (!card_matches_reduce_filter(card_data, as.sa->reduce_cost_filter)) continue;
+        // An empty filter means the reduction applies to every spell (no characteristic gate).
+        if (!as.sa->reduce_cost_filter.empty() &&
+            !card_matches_filter(card_data, as.sa->reduce_cost_filter))
+            continue;
         total += as.sa->reduce_cost;
     }
     return total;

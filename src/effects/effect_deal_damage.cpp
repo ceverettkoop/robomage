@@ -27,62 +27,28 @@ bool deal_damage(Ability &ab, std::shared_ptr<Orderer> orderer) {
     // NumDmg$ X with X = Count$Valid Creature.YouCtrl). Mirrors lose_life/gain_life, which
     // evaluate their dynamic amount at resolution.
     if (!ab.dynamic_amount_expr.empty()) {
-        Zone::Ownership caster = global_coordinator.entity_has_component<Permanent>(ab.source)
-                                     ? global_coordinator.GetComponent<Permanent>(ab.source).controller
-                                     : global_coordinator.GetComponent<Zone>(ab.source).owner;
-        dmg = evaluate_dynamic_amount(ab.dynamic_amount_expr, caster, orderer, ab.target);
+        dmg = evaluate_dynamic_amount(ab.dynamic_amount_expr, source_controller(ab.source), orderer, ab.target);
     }
     const DamageParams *dp = std::get_if<DamageParams>(&ab.params);
     if (dp && dp->is_delirium_scale) {
-        Zone::Ownership caster = global_coordinator.entity_has_component<Permanent>(ab.source)
-                                     ? global_coordinator.GetComponent<Permanent>(ab.source).controller
-                                     : global_coordinator.GetComponent<Zone>(ab.source).owner;
-        if (check_delirium(caster, orderer->mEntities)) dmg = dp->delirium_amount;
+        if (check_delirium(source_controller(ab.source), orderer->mEntities)) dmg = dp->delirium_amount;
     }
-    // Defined$ Player.Opponent — "deals N damage to each opponent" (no chosen target).
-    // CR 109.5: in a two-player game, "each opponent" is the source controller's single
-    // opponent. Resolve the opponent from the source's controller at resolution time.
-    if (ab.defined_each_opponent) {
-        Zone::Ownership caster = global_coordinator.entity_has_component<Permanent>(ab.source)
-                                     ? global_coordinator.GetComponent<Permanent>(ab.source).controller
-                                     : global_coordinator.GetComponent<Zone>(ab.source).owner;
-        Zone::Ownership opp = (caster == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
-        Entity opp_entity = get_player_entity(opp);
-        deal_damage_to_player(ab.source, opp_entity, dmg);
-        auto &player = global_coordinator.GetComponent<Player>(opp_entity);
-        game_log("Dealt %zu damage to player (now at %d life)\n", dmg, player.life_total);
-        return true;
-    }
-    // Defined$ TargetedController — "deals N damage to that <permanent>'s controller"
-    // (Smash to Smithereens: destroy target artifact, then deal 3 to the artifact's
-    // controller). The damaged player is the controller of the parent ability's target,
-    // which the sub-ability inherits as ab.target. The Destroy sub-ability runs in this
-    // same resolution before any SBA pass strips the Permanent, so the target's
-    // controller is still live; we read it via last-known information (CR 608.2g/h):
-    // Zone.controller while on the battlefield, else the Permanent.controller it last had.
-    if (ab.defined_targeted_controller && ab.target != 0 &&
-        global_coordinator.entity_has_component<Zone>(ab.target)) {
-        Zone::Ownership tgt_controller = global_coordinator.GetComponent<Zone>(ab.target).controller;
-        if (tgt_controller == Zone::UNKNOWN && global_coordinator.entity_has_component<Permanent>(ab.target))
-            tgt_controller = global_coordinator.GetComponent<Permanent>(ab.target).controller;
-        if (tgt_controller != Zone::UNKNOWN) {
-            Entity tgt_player = get_player_entity(tgt_controller);
-            deal_damage_to_player(ab.source, tgt_player, dmg);
-            auto &player = global_coordinator.GetComponent<Player>(tgt_player);
+    // Defined$ player routes — "deals N damage to <that player>": You (the source's
+    // controller, e.g. Ancient Tomb's pain), Player.Opponent (each opponent — the single
+    // opponent in a two-player game, CR 109.5), or TargetedController (the target permanent's
+    // controller, e.g. Smash to Smithereens). For TargetedController the Destroy sub-ability
+    // may have already moved the permanent this same resolution, so the controller is read via
+    // last-known information (CR 608.2g/h) — Zone.controller, else the live Permanent.controller,
+    // else the controller captured as it left the battlefield. All three are centralized in
+    // resolve_defined_player; each resolves to one player we damage.
+    if (ab.defined_you || ab.defined_each_opponent || ab.defined_targeted_controller) {
+        Zone::Ownership who = resolve_defined_player(ab);
+        if (who != Zone::UNKNOWN) {
+            Entity pe = get_player_entity(who);
+            deal_damage_to_player(ab.source, pe, dmg);
+            auto &player = global_coordinator.GetComponent<Player>(pe);
             game_log("Dealt %zu damage to player (now at %d life)\n", dmg, player.life_total);
-            return true;
         }
-    }
-    // Defined$ You — "deals N damage to you" (Ancient Tomb's mana-ability pain rider).
-    // The damaged player is the source's controller; no target was chosen. CR 109.5.
-    if (ab.defined_you) {
-        Zone::Ownership caster = global_coordinator.entity_has_component<Permanent>(ab.source)
-                                     ? global_coordinator.GetComponent<Permanent>(ab.source).controller
-                                     : global_coordinator.GetComponent<Zone>(ab.source).owner;
-        Entity you_entity = get_player_entity(caster);
-        deal_damage_to_player(ab.source, you_entity, dmg);
-        auto &player = global_coordinator.GetComponent<Player>(you_entity);
-        game_log("Dealt %zu damage to player (now at %d life)\n", dmg, player.life_total);
         return true;
     }
     if (global_coordinator.entity_has_component<Player>(ab.target)) {

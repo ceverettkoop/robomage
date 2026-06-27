@@ -104,6 +104,7 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
         LastKnownInfo &lki = cur_game.last_known_info[target];
         lki = LastKnownInfo{};
         lki.type_names = names;
+        lki.controller = global_coordinator.GetComponent<Permanent>(target).controller;
         if (global_coordinator.entity_has_component<Creature>(target)) {
             auto &cr = global_coordinator.GetComponent<Creature>(target);
             lki.power = static_cast<int>(cr.power);

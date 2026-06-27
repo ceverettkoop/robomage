@@ -72,15 +72,22 @@ fixed this run (ward `PayLife` `std::stoi` guard; `.Other` self-exclusion tokeni
 `b6873c1`). The following are **latent fragilities / altitude items** left for a human — none
 breaks a currently-implemented card, but each is worth a deliberate fix:
 
-- **Four parallel permanent/card filter matchers** (`matches_filter_spec`,
-  `permanent_matches_cards_filter`, `permanent_matches_subtype_spec`, `card_matches_reduce_filter`)
-  now carry **diverging qualifier coverage** — qualifiers (Colorless, P/T comparisons, `non<Color>`,
-  `.Other`, main types) were added to whichever matcher each card needed. Consolidating to one
-  shared matcher is the right fix but a cross-cutting refactor (deliberately not done autonomously).
-- **Fail-closed on unknown qualifiers:** edict `SacValid$` (`effect_sacrifice.cpp`) and mass-effect
-  `ValidCards$` (`permanent_matches_cards_filter`) silently match nothing on a qualifier they don't
-  recognize (e.g. a future `non<Color>` mass filter). All *current* specs are handled.
+- ✅ **RESOLVED** (branch `claude/filter-matcher-unify`) — **Four parallel permanent/card filter
+  matchers** (`matches_filter_spec`, `permanent_matches_cards_filter`,
+  `permanent_matches_subtype_spec`, `card_matches_reduce_filter`) carried **diverging qualifier
+  coverage**. Consolidated onto one shared evaluator with two entry points
+  (`card_matches_filter` / `permanent_matches_filter`) in `game_queries`; coverage is now the union
+  across all sites, and the live `non<Color>` bug (e.g. `nonWhite` never excluding) is fixed.
+- ✅ **RESOLVED** (same branch) — **Fail-closed on unknown qualifiers:** the unified evaluator still
+  fails closed on a qualifier it can't interpret, but now **warns once** so unrecognized specs
+  surface during testing instead of silently matching nothing. (`non<Color>` mass filters are now
+  handled, not just failed-closed.)
 - **NameCard candidate set** (`effect_name_card.cpp`) is restricted to nonland vocab cards in the
   named player's zones — a Cabal-Therapy-shaped approximation of CR 201.4's "name any card."
-- **`Defined$ TargetedController` / `TriggeredActivator` / last-known-controller** resolution is
-  open-coded across a few effects rather than centralized in one shared defined-player helper.
+  *(Still open — unrelated to the filter-matcher refactor.)*
+- ✅ **RESOLVED** (same branch) — **`Defined$ TargetedController` / `TriggeredActivator` /
+  last-known-controller** resolution was open-coded across a few effects. Centralized into
+  `source_controller` / `last_known_controller` / `resolve_defined_player` in `game_queries`, and
+  the leaving permanent's controller is now captured in `LastKnownInfo` so "that permanent's
+  controller" resolves even after it has left the battlefield (fixed the previously-dead fallback
+  that could deal 0).

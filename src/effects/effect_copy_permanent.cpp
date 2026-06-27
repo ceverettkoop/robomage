@@ -74,7 +74,7 @@ bool copy_permanent(Ability &ab, std::shared_ptr<Orderer> orderer) {
     // Snapshot the matching permanents first (707.2 / "for each ... that entered this turn").
     std::vector<Entity> sources;
     for (auto e : orderer->mEntities)
-        if (permanent_matches_cards_filter(e, ab.valid_cards_filter, ctrl, ab.source))
+        if (permanent_matches_filter(e, ab.valid_cards_filter, MatchCtx{ctrl, ab.source}))
             sources.push_back(e);
 
     for (auto src : sources) {
