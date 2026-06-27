@@ -29,6 +29,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Robomage is a C++ implementation of a Magic: The Gathering game engine using an Entity Component System (ECS) architecture.
 
+**Scope: two-player games only.** The engine simulates exactly one 1-v-1 matchup (Player A vs Player B). Multiplayer rules (CR 800+) — more than two players, ranges of influence, the monarch passing among 3+ players, "each opponent" over multiple opponents, leaving-the-game cleanup for a third seat, etc. — are out of scope. Implement card effects against the two-player case; do not add multiplayer-only machinery.
+
 Every game decision logged as an integer. Games can be replayed deterministically when provided with the correct seed.
 
 The python side of the project enables machine learning of the game and analysis.
