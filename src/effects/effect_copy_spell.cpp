@@ -52,8 +52,12 @@ void copy_spell_on_stack(Entity original, int count, Zone::Ownership controller,
 
         // The copy is a spell on the stack controlled by `controller`. Owner tracks the
         // controller so any owner-relative bookkeeping has a sane value for this card-less
-        // copy; it never moves to a zone (it ceases to exist on resolution).
-        global_coordinator.AddComponent(copy, Zone(Zone::STACK, controller, controller));
+        // copy; it never moves to a zone (it ceases to exist on resolution). Initialize its
+        // Zone to a NON-stack zone (HAND) the way push_ability_onto_stack does, so the
+        // add_to_zone call below is a genuine transition onto the stack rather than a spurious
+        // STACK->STACK self-move (which would fire a bogus CARD_CHANGED_ZONE / MOVE_TO_ZONE
+        // replacement and mangle the stack ordering); add_to_zone then sets distance_from_top.
+        global_coordinator.AddComponent(copy, Zone(Zone::HAND, controller, controller));
 
         Spell copy_spell;
         copy_spell.caster = controller;

@@ -75,9 +75,11 @@ The count is copied onto the spell as `Spell::replicate_count`.
 `copy_spell_on_stack(Entity original, int count, Zone::Ownership controller, orderer)` (declared
 in `src/action_processor.h`) creates `count` independent copies of a spell on the stack:
 
-- copies the original's copiable characteristics (CardData + ColorIdentity), adds a `Zone(STACK)`
-  and a `Spell{is_copy=true}` (carrying the original's `x_paid`/`cant_be_countered`), and copies
-  the resolving `Ability`;
+- copies the original's copiable characteristics (CardData + ColorIdentity), adds a non-stack
+  `Zone(HAND)` and a `Spell{is_copy=true}` (carrying the original's `x_paid`/`cant_be_countered`),
+  and copies the resolving `Ability`; the copy is then moved onto the stack via `add_to_zone`
+  (the same way `push_ability_onto_stack` registers a new stack object), so the move is a genuine
+  HAND→STACK transition rather than a spurious STACK→STACK self-move;
 - a copy is **not cast** — it pays no costs, fires no cast triggers, and replicates nothing
   (its own `replicate_count` is 0);
 - each copy **chooses new targets** (CR 707.12) by re-running the shared `select_target` path; a
