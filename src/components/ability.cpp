@@ -571,14 +571,10 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
     bool inc_creatures = any || vt.find("Creature") != std::string::npos;
     bool inc_lands = vt.find("Land") != std::string::npos;
     bool nonbasic_only = vt.find("nonBasic") != std::string::npos;
-    bool legendary_only = vt.find("Legendary") != std::string::npos;
     // "Any" is "any target" (creature/player/planeswalker), NOT non-creature
     // artifacts/enchantments — those require the type named explicitly.
     bool inc_artifacts = vt.find("Artifact") != std::string::npos;
     bool inc_enchantments = vt.find("Enchantment") != std::string::npos;
-    bool inc_permanents = vt.find("Permanent") != std::string::npos;
-    // "Any" includes planeswalkers (a damage spell like Lightning Bolt can hit a walker, 306.7).
-    bool inc_planeswalkers = any || vt.find("Planeswalker") != std::string::npos;
     int cmc_le = -1;
     {
         size_t cmc_pos = vt.find("cmcLE");
@@ -635,80 +631,36 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
 
     // Battlefield permanent target (phased-out permanents can't be targeted, 702.26e)
     if (!is_battlefield_permanent(cand)) return false;
-    auto &tperm = global_coordinator.GetComponent<Permanent>(cand);
 
-    // Controller restriction (YouCtrl/OppCtrl/YouDontCtrl, e.g. ValidTgts$ Land.YouCtrl on the
-    // earthbend keyword action, or Permanent.YouDontCtrl on Skyclave Apparition): the candidate
-    // must be controlled by the right player. Read off the permanent's controller (CR 109.4 /
-    // 115.1). "YouDontCtrl" is the explicit Forge spelling of "a permanent you don't control" and
-    // restricts the same way as OppCtrl in a two-player game.
+    // Match the ValidTgts spec against the permanent through the shared filter evaluator
+    // (game_queries), per OR-clause. This replaces the old whole-string substring scans
+    // (a comma-joined "…YouCtrl,…OppCtrl" set both flags and rejected everything; any text
+    // containing "token" was read as token-only). Two normalizations bridge the ValidTgts
+    // grammar to the evaluator's: Forge separates OR alternatives with ',' while the evaluator
+    // uses ';'; and "YouDontCtrl" is Forge's spelling of OppCtrl (a permanent you don't control)
+    // — the evaluator only knows OppCtrl. "Any" as a permanent target is "any creature or
+    // planeswalker" (CR 115.4 / 306.7; players are handled in the branch above).
     {
-        bool you_ctrl = vt.find("YouCtrl") != std::string::npos;
-        bool opp_ctrl = vt.find("OppCtrl") != std::string::npos ||
-                        vt.find("YouDontCtrl") != std::string::npos;
-        if (you_ctrl && tperm.controller != caster) return false;
-        if (opp_ctrl && tperm.controller == caster) return false;
+        MatchCtx ctx;
+        ctx.controller = caster;
+        ctx.source = source;
+        // The dynamic mana-value bound (cmcLE<n>/cmcLEX, e.g. Abrupt Decay's cmcLE3) is parsed
+        // above into cmc_le; feed it to the evaluator so the bound is actually enforced.
+        if (cmc_le >= 0) { ctx.cmc_bound = cmc_le; ctx.cmc_op = "LE"; }
+        std::string spec = (vt == "Any") ? std::string("Creature;Planeswalker") : vt;
+        std::replace(spec.begin(), spec.end(), ',', ';');
+        for (size_t pos = spec.find("YouDontCtrl"); pos != std::string::npos;
+             pos = spec.find("YouDontCtrl", pos))
+            spec.replace(pos, std::string("YouDontCtrl").size(), "OppCtrl");
+        if (!permanent_matches_filter(cand, spec, ctx)) return false;
     }
 
-    // Token restriction (e.g. ValidTgts$ Permanent.nonLand+!token on Skyclave Apparition:
-    // "nontoken permanent"). "!token"/"nonToken" reject a token permanent; "token" requires one.
-    {
-        bool nontoken_only = vt.find("!token") != std::string::npos ||
-                             vt.find("nonToken") != std::string::npos;
-        bool token_only = !nontoken_only && vt.find("token") != std::string::npos;
-        if (nontoken_only && tperm.is_token) return false;
-        if (token_only && !tperm.is_token) return false;
-    }
-
-    // "non<CardType>" main-type negation (e.g. ValidTgts$ Permanent.nonLand+cmcLE3 on
-    // Abrupt Decay): reject a candidate whose type line carries the excluded card type.
-    // General over all card types, so it is not special-cased to any one card (CR 115.1).
-    if (!type_set_passes_nontype(vt, tperm.types)) return false;
-
-    // Positive color restriction (e.g. ValidTgts$ Permanent.Blue on Red Elemental Blast:
-    // "Destroy target blue permanent" — blue is a targeting restriction, CR 115.1).
-    if (global_coordinator.entity_has_component<CardData>(cand) &&
-        !color_set_passes(vt, effective_colors(cand)))
+    // Protection (CR 702.16e): a creature with protection from the source's color/quality can't
+    // be targeted by it. The filter evaluator doesn't model protection, so check it separately.
+    if (global_coordinator.entity_has_component<Creature>(cand) &&
+        has_protection_from(global_coordinator.GetComponent<Creature>(cand), source))
         return false;
-
-    if (cmc_le >= 0 && global_coordinator.entity_has_component<CardData>(cand)) {
-        int cmc = static_cast<int>(global_coordinator.GetComponent<CardData>(cand).mana_cost.size());
-        if (cmc > cmc_le) return false;
-    }
-
-    if (inc_creatures && global_coordinator.entity_has_component<Creature>(cand)) {
-        if (legendary_only) {
-            bool is_legendary = false;
-            for (auto &t : tperm.types)
-                if (t.kind == SUPERTYPE && t.name == "Legendary") { is_legendary = true; break; }
-            if (!is_legendary) return false;
-        }
-        if (global_coordinator.entity_has_component<CardData>(cand) &&
-            !color_set_passes_noncolor(vt, effective_colors(cand)))
-            return false;
-        if (has_protection_from(global_coordinator.GetComponent<Creature>(cand), source)) return false;
-        return true;
-    }
-    if (inc_lands) {
-        bool is_land = false;
-        for (auto &t : tperm.types)
-            if (t.kind == TYPE && t.name == "Land") { is_land = true; break; }
-        if (is_land && (!nonbasic_only || !has_basic_supertype(tperm.types))) return true;
-    }
-    if (inc_planeswalkers) {
-        for (auto &t : tperm.types)
-            if (t.kind == TYPE && t.name == "Planeswalker") return true;
-    }
-    if (inc_permanents) return true;
-    if (inc_artifacts || inc_enchantments) {
-        for (auto &t : tperm.types) {
-            if (t.kind == TYPE && ((inc_artifacts && t.name == "Artifact") ||
-                                   (inc_enchantments && t.name == "Enchantment")))
-                return true;
-        }
-    }
-
-    return false;
+    return true;
 }
 
 bool Ability::is_target_valid() const {

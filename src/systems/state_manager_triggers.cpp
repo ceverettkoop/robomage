@@ -176,8 +176,14 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                 if (ab.is_offspring_token && !perm.entered_with_offspring) continue;
                 // Don't fire front-face triggers on a transformed permanent
                 if (perm.transformed) continue;
-                // ValidPlayer$ You: only fire when the event's player matches the permanent's controller
-                if (ab.trigger_valid_player_is_controller && ev.HasParam(Params::PLAYER)) {
+                // ValidPlayer$ You: only fire when the event's player matches the permanent's
+                // controller. BECAME_TARGET is exempt, like trigger_only_self above: there the
+                // PLAYER param is the targeting spell's controller (the OPPONENT, typically), not
+                // a "you" reference, so gating on it would wrongly suppress a becomes-target
+                // trigger authored with ValidPlayer$ You. Such a trigger's own ValidSource$/
+                // ValidTarget$ clauses constrain it in the dedicated BECAME_TARGET block below.
+                if (ab.trigger_valid_player_is_controller && ev.GetType() != Events::BECAME_TARGET &&
+                    ev.HasParam(Params::PLAYER)) {
                     Entity event_player = ev.GetParam<Entity>(Params::PLAYER);
                     Entity ctrl_entity = get_player_entity(perm.controller);
                     if (event_player != ctrl_entity) continue;

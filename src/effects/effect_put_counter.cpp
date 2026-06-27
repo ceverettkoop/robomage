@@ -48,20 +48,34 @@ bool put_counter(Ability &ab, std::shared_ptr<Orderer> orderer) {
     if (!global_coordinator.entity_has_component<Permanent>(counter_tgt)) return true;
     const CounterParams *cp = std::get_if<CounterParams>(&ab.params);
     if (cp && !cp->type.empty()) {
+        // A dynamic CounterNum$ (count_expr, e.g. CounterNum$ X = Count$xPaid) is evaluated at
+        // resolution; otherwise the static count is used. Mirrors the Defined$ You / PutCounterAll
+        // paths so a targeted counter with a runtime count no longer places zero.
         int n = cp->count;
-        if (n <= 0) return true;
-        int total = add_counters(counter_tgt, cp->type, n);
-        if (global_coordinator.entity_has_component<Creature>(counter_tgt)) {
-            auto &cr = global_coordinator.GetComponent<Creature>(counter_tgt);
-            if (cp->type == "P1P1")
-                game_log("Put %d +1/+1 counter(s) on creature (now %u/%u).\n", n, cr.power, cr.toughness);
-            else
-                game_log("Put %d %s counter(s) on creature (now %u/%u).\n", n, cp->type.c_str(), cr.power, cr.toughness);
-        } else {
+        if (!cp->count_expr.empty())
+            n = static_cast<int>(evaluate_dynamic_amount(cp->count_expr, ab.controller, orderer, ab.target));
+        if (n > 0) {
+            int total = add_counters(counter_tgt, cp->type, n);
+            if (global_coordinator.entity_has_component<Creature>(counter_tgt)) {
+                auto &cr = global_coordinator.GetComponent<Creature>(counter_tgt);
+                if (cp->type == "P1P1")
+                    game_log("Put %d +1/+1 counter(s) on creature (now %u/%u).\n", n, cr.power, cr.toughness);
+                else
+                    game_log("Put %d %s counter(s) on creature (now %u/%u).\n", n, cp->type.c_str(), cr.power, cr.toughness);
+            } else {
+                const char *nm = global_coordinator.entity_has_component<CardData>(counter_tgt)
+                                     ? global_coordinator.GetComponent<CardData>(counter_tgt).name.c_str()
+                                     : "permanent";
+                game_log("Put %d %s counter(s) on %s (now %d).\n", n, cp->type.c_str(), nm, total);
+            }
+        }
+        // Optional second counter kind (CounterType2$/CounterNum2$), as in PutCounterAll.
+        if (!cp->type2.empty() && cp->count2 > 0) {
+            add_counters(counter_tgt, cp->type2, cp->count2);
             const char *nm = global_coordinator.entity_has_component<CardData>(counter_tgt)
                                  ? global_coordinator.GetComponent<CardData>(counter_tgt).name.c_str()
                                  : "permanent";
-            game_log("Put %d %s counter(s) on %s (now %d).\n", n, cp->type.c_str(), nm, total);
+            game_log("Put %d %s counter(s) on %s.\n", cp->count2, cp->type2.c_str(), nm);
         }
     }
     return true;

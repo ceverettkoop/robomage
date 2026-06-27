@@ -146,13 +146,49 @@ int evaluate_sa_svar(const std::string &expr, Zone::Ownership controller, Entity
         expr == "Count$ValidGraveyard Card$CardTypes" ||
         (expr.rfind("Count$ValidGraveyard Card", 0) == 0 &&
          expr.find("$CardTypes") != std::string::npos)) {
-        // Restriction lives between "Card" and "$CardTypes" (e.g. ".YouOwn"); a YouOwn/YouCtrl
-        // restriction scopes the count to the controller's graveyard.
+        // Restriction lives between "Card" and "$CardTypes" (e.g. ".YouOwn" or
+        // ".YouOwn+Creature"). Ownership (YouOwn/YouCtrl/OppOwn/OppCtrl) scopes the count to one
+        // player's graveyard and is applied here — a graveyard card has no live controller, so the
+        // shared evaluator can't read it. Any OTHER subfilter (type/CMC/color/supertype) in the
+        // Card clause is honored by routing the remaining qualifiers through card_matches_filter on
+        // the card's printed characteristics, instead of being silently ignored.
         size_t card_pos = expr.find("Card");
         size_t types_pos = expr.find("$CardTypes");
         std::string restriction = expr.substr(card_pos + 4, types_pos - (card_pos + 4));
         bool you_own = restriction.find("YouOwn") != std::string::npos ||
                        restriction.find("YouCtrl") != std::string::npos;
+        bool opp_own = restriction.find("OppOwn") != std::string::npos ||
+                       restriction.find("OppCtrl") != std::string::npos;
+        // Split the restriction into qualifier tokens; keep everything that is not an ownership
+        // token as a real card subfilter, and pull a numeric mana-value bound into the MatchCtx
+        // (the evaluator defers cmcLE<n>/cmcGE<n>/… to ctx.cmc_bound).
+        std::string sub;  // '+'-joined remaining qualifiers
+        MatchCtx sub_ctx;
+        sub_ctx.controller = controller;
+        {
+            std::string r = restriction;
+            if (!r.empty() && r[0] == '.') r.erase(0, 1);
+            size_t p = 0;
+            while (p <= r.size()) {
+                size_t nx = r.find_first_of(".+", p);
+                if (nx == std::string::npos) nx = r.size();
+                std::string tok = r.substr(p, nx - p);
+                p = nx + 1;
+                if (tok.empty()) continue;
+                if (tok == "YouOwn" || tok == "YouCtrl" || tok == "OppOwn" || tok == "OppCtrl")
+                    continue;
+                // cmc<OP><n> (e.g. cmcLE3): a numeric mana-value bound goes in the MatchCtx. A
+                // non-numeric form like cmcLEX falls through and is handled inline by the evaluator.
+                if (tok.rfind("cmc", 0) == 0 && tok.size() >= 6 &&
+                    std::isdigit(static_cast<unsigned char>(tok[5]))) {
+                    sub_ctx.cmc_op = tok.substr(3, 2);
+                    sub_ctx.cmc_bound = std::stoi(tok.substr(5));
+                    continue;
+                }
+                sub += (sub.empty() ? "" : "+") + tok;
+            }
+        }
+        std::string sub_spec = (sub.empty() && sub_ctx.cmc_bound < 0) ? "" : ("Card+" + sub);
         std::set<std::string> type_names;
         Entity max_e = global_coordinator.GetMaxIssuedEntity();
         for (Entity e = 0; e < max_e; ++e) {
@@ -160,7 +196,9 @@ int evaluate_sa_svar(const std::string &expr, Zone::Ownership controller, Entity
             auto &z = global_coordinator.GetComponent<Zone>(e);
             if (z.location != Zone::GRAVEYARD) continue;
             if (you_own && z.owner != controller) continue;
+            if (opp_own && z.owner == controller) continue;
             if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+            if (!sub_spec.empty() && !card_matches_filter(e, sub_spec, sub_ctx)) continue;
             auto &cd = global_coordinator.GetComponent<CardData>(e);
             for (auto &t : cd.types) {
                 if (t.kind == TYPE) type_names.insert(t.name);

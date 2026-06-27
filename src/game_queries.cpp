@@ -68,6 +68,9 @@ struct CharView {
     bool is_token = false;
     Zone::Ownership controller = Zone::UNKNOWN;
     long entered_on_turn = -1;               // -1 when not on the battlefield
+    bool is_attacking = false;               // live combat state (battlefield creatures only)
+    bool is_blocking = false;
+    bool is_tapped = false;
 };
 
 bool view_has_typeline(const CharView &v, const std::string &name) {
@@ -132,6 +135,12 @@ bool eval_qualifier(const CharView &v, const MatchCtx &ctx, const std::string &q
     if (q == "token")        return v.is_token;
     if (q == "nonToken" || q == "!token") return !v.is_token;
     if (q == "ThisTurnEntered") return v.on_battlefield && v.entered_on_turn == static_cast<long>(cur_game.turn);
+    // live combat / tap state (e.g. Guide of Souls' ValidTgts$ Creature.attacking) — only a
+    // battlefield permanent can be in these states; a card view leaves them false.
+    if (q == "attacking") return v.is_attacking;
+    if (q == "blocking")  return v.is_blocking;
+    if (q == "tapped")    return v.is_tapped;
+    if (q == "untapped")  return !v.is_tapped;
     if (q == "Basic")        return v.types && has_basic_supertype(*v.types);
     if (q == "nonBasic")     return v.types && !has_basic_supertype(*v.types);
     if (q == "Colorless")    return v.colors.empty();  // CR 105.2c
@@ -217,10 +226,14 @@ CharView permanent_view(Entity e, const Permanent &perm) {
     v.controller = perm.controller;
     v.entered_on_turn = static_cast<long>(perm.entered_on_turn);
     v.on_battlefield = true;
+    v.is_tapped = perm.is_tapped;
     if (global_coordinator.entity_has_component<Creature>(e)) {
         v.has_pt = true;
         v.power = effective_power(e);
         v.toughness = effective_toughness(e);
+        auto &cr = global_coordinator.GetComponent<Creature>(e);
+        v.is_attacking = cr.is_attacking;
+        v.is_blocking = cr.is_blocking;
     }
     if (global_coordinator.entity_has_component<CardData>(e))
         v.cmc = static_cast<int>(global_coordinator.GetComponent<CardData>(e).mana_cost.size());  // CR 112.7

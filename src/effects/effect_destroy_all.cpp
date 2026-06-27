@@ -1,5 +1,6 @@
 #include "effects.h"
 
+#include <cstdio>
 #include <string>
 #include <vector>
 
@@ -27,20 +28,37 @@ bool destroy_all(Ability &ab, std::shared_ptr<Orderer> orderer) {
 
     const DestroyAllParams *dp = std::get_if<DestroyAllParams>(&ab.params);
 
-    // UnlessCost$ PayEnergy<N> | UnlessSwitched$ True (Wrath of the Skies): the controller pays
-    // N energy ({E}); with UnlessSwitched the destroy proceeds ONLY IF the energy is paid (CR
-    // 122.1c). N (Count$ChosenNumber) is the amount of energy chosen earlier this resolution.
+    // UnlessCost$ PayEnergy<N> (Wrath of the Skies: with UnlessSwitched$ True). N
+    // (Count$ChosenNumber) is the amount of energy chosen earlier this resolution.
     if (dp && !dp->energy_unless_expr.empty()) {
         int n = static_cast<int>(
             evaluate_dynamic_amount(dp->energy_unless_expr, ab.controller, orderer, ab.target));
         Entity ctrl_entity =
             (ab.controller == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
         auto &pl = global_coordinator.GetComponent<Player>(ctrl_entity);
-        bool paid = pay_energy(pl, n);  // n <= 0 is a trivially-payable no-op (returns true)
-        if (n > 0)
-            game_log("%s pays %d energy.\n", player_name(ab.controller).c_str(), n);
-        // UnlessSwitched: "destroy only if paid". If the cost could not be paid, do nothing.
-        if (dp->energy_unless_switched && !paid) return true;
+        if (dp->energy_unless_switched) {
+            // Switched: the spell's controller pays N {E} as a single cost of resolution and the
+            // destroy proceeds ONLY IF it is paid (CR 122.1c). Wrath of the Skies: pay the chosen
+            // amount, then destroy each artifact/creature/enchantment with MV <= that amount.
+            bool paid = pay_energy(pl, n);  // n <= 0 is a trivially-payable no-op (returns true)
+            if (n > 0)
+                game_log("%s pays %d energy.\n", player_name(ab.controller).c_str(), n);
+            if (!paid) return true;  // couldn't pay -> nothing is destroyed
+        } else {
+            // Non-switched genuine "destroy each X unless its controller pays {E}": the payment is
+            // per-permanent by EACH affected permanent's controller, and paying PREVENTS that
+            // permanent's destruction — a shape this single-payment path can't model. No shipping
+            // card uses it. Fail closed (warn once) rather than incorrectly charge the spell's
+            // controller and destroy regardless; the destroy below then proceeds as the
+            // no-one-paid default.
+            static bool warned = false;
+            if (!warned) {
+                warned = true;
+                printf("WARNING: non-switched energy UnlessCost in DestroyAll is unsupported "
+                       "(per-permanent unless-payment not modeled); destroying without the "
+                       "optional cost\n");
+            }
+        }
     }
 
     // CMC filter bound. Legacy cmcLEX keys off the X paid at cast (Meltdown). A dynamic

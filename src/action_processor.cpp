@@ -152,6 +152,13 @@ static void pay_secondary_activation_costs(
         activating_player.life_total -= ability.life_cost;
         game_log("%s pays %d life\n", player_name(controller).c_str(), ability.life_cost);
     }
+    // Energy cost (PayEnergy<N>, CR 122.1c): affordability is gated in determine_legal_actions,
+    // so the {E} is available to spend here.
+    if (ability.energy_cost > 0) {
+        auto &activating_player = global_coordinator.GetComponent<Player>(get_player_entity(controller));
+        pay_energy(activating_player, ability.energy_cost);
+        game_log("%s pays %d energy\n", player_name(controller).c_str(), ability.energy_cost);
+    }
     // Sacrifice self: move to graveyard; apply_permanent_components SBA removes Permanent next pass
     if (ability.sac_self) {
         std::string sname = entity_name(source);

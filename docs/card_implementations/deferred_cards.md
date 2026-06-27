@@ -105,37 +105,51 @@ User-directed `implement-deferred-cards` run: 10 cards pulled from the deferred 
 
 A medium `code-review` over the full run diff (3 finder passes) found **no bug in any of the 10
 shipped cards** — each was verified behaving correctly and the scripted regression is green. The
-following are **latent fragilities in the *generalized* mechanisms** (they would bite a *future*
-card, not a current one); left for a human because each touches a hot/cross-cutting path with no
-shipping card to verify a fix against, and the run branch was kept green:
+following were **latent fragilities in the *generalized* mechanisms** (they would bite a *future*
+card, not a current one). **All seven were addressed on branch `claude/deferred-cards-review-3c5jsj`**
+(one commit each; each verified with the existing vocab cards that reach the path, with code review
+for the specific bug branches no shipping card can reach):
 
-- **`is_legal_target` controller/token filter matches substrings over the whole `ValidTgts$`
-  string, not per-clause** (`src/components/ability.cpp` ~640–660). (a) A comma-joined
-  `…YouCtrl,…OppCtrl` spec sets both flags and rejects every candidate; (b) a filter whose text
-  contains `token` without the `!token`/`nonToken` negation is wrongly treated as token-only. No
-  current card has such a spec. Fix: evaluate controller/token qualifiers per clause.
-- **Activated `Cost$ PayEnergy<N>` is parsed into `Ability::energy_cost` but never paid or gated**
-  on a normal `AB$` ability (`src/action_processor.cpp` activation-cost path; only
-  `effect_immediate_trigger` consumes `energy_cost`). An activated ability with a PayEnergy cost
-  would activate for free. Latent (Guide of Souls' PayEnergy is on an ImmediateTrigger).
-- **Single permanent-target `PutCounter` ignores dynamic `CounterNum$` (`count_expr`) and the
-  second counter (`CounterType2$`/`CounterNum2$`)** (`src/effects/effect_put_counter.cpp` ~51) —
-  only the `Defined$ You` branch and `put_counter_all` honor them. A targeted dynamic-count counter
-  would place zero. Latent (Wrath uses `Defined$ You`; Guide uses `PutCounterAll`).
-- **Non-switched energy `UnlessCost` in `DestroyAll` pays energy unconditionally and destroys
-  regardless of payment** (`src/effects/effect_destroy_all.cpp` ~39) — only `UnlessSwitched$ True`
-  consults the paid result. A normal "destroy … unless its controller pays {E}" would be inverted.
-  Latent (Wrath of the Skies is switched).
-- **The generic `ValidPlayer$ You` trigger gate is not exempted for `BECAME_TARGET`**
-  (`src/systems/state_manager_triggers.cpp` ~180), where the event's PLAYER param is the *targeting*
-  spell's controller. `trigger_only_self` was exempted but `ValidPlayer` was not, so a future
-  becomes-target trigger authored with `ValidPlayer$ You` would be mis-gated. Latent (Reality
-  Smasher uses `ValidSource$`).
-- **`Count$ValidGraveyard Card.YouOwn$CardTypes` honors only the ownership restriction; any extra
-  type/CMC subfilter in the Card clause is ignored** (`src/svar_eval.cpp` ~153). Correct for
-  Nethergoyf (plain `.YouOwn`); a future card with a real subfilter would mis-count.
-- **`can_afford_with_sources()` omits the `TapsForMana` additional-mana bonus**
-  (`src/mana_system.cpp` ~273), diverging from the real payment path for *nested* mana-source
-  activation costs (a mana source whose own activation cost could be covered by a creature's mana +
-  Badgermole's extra {G} is undercounted and not offered). Narrow and latent; spell-cast
-  affordability uses the correct `can_pay_mana` path.
+- ✅ **RESOLVED** — **`is_legal_target` controller/token filter matched substrings over the whole
+  `ValidTgts$` string, not per-clause** (`src/components/ability.cpp` ~640–660). (a) A comma-joined
+  `…YouCtrl,…OppCtrl` spec set both flags and rejected every candidate; (b) a filter whose text
+  contained `token` without the `!token`/`nonToken` negation was wrongly treated as token-only.
+  Fix: the battlefield-permanent branch now routes through the shared `permanent_matches_filter`
+  evaluator (`game_queries`) per OR-clause, bridging the `ValidTgts` grammar (',' OR, `YouDontCtrl`,
+  `Any`) to it; protection (CR 702.16e) stays a separate check. Verified: Abrupt Decay
+  (`nonLand+cmcLE3`), Skyclave Apparition (`nonLand+!token+YouDontCtrl+cmcLE4` — own permanents
+  correctly excluded).
+- ✅ **RESOLVED** — **Activated `Cost$ PayEnergy<N>` was parsed into `Ability::energy_cost` but
+  never paid or gated** (`src/systems/state_manager_actions.cpp` legality + `src/action_processor.cpp`
+  `pay_secondary_activation_costs`). Now gated for affordability (both battlefield- and hand-activated
+  paths) and paid alongside the life cost. Inert for all current cards (no activated ability carries
+  `energy_cost`; Guide of Souls' is on an ImmediateTrigger).
+- ✅ **RESOLVED** — **Single permanent-target `PutCounter` ignored dynamic `CounterNum$`
+  (`count_expr`) and the second counter (`CounterType2$`/`CounterNum2$`)**
+  (`src/effects/effect_put_counter.cpp` ~51). The targeted branch now evaluates `count_expr` (as the
+  `Defined$ You` branch does) and applies the second counter (as `put_counter_all` does); the
+  static-count path is unchanged. Latent (Wrath uses `Defined$ You`; Guide uses `PutCounterAll`).
+- ✅ **RESOLVED (guarded)** — **Non-switched energy `UnlessCost` in `DestroyAll` paid energy
+  unconditionally and destroyed regardless** (`src/effects/effect_destroy_all.cpp`). Investigation
+  confirmed **Wrath of the Skies is correct** — it is switched (`UnlessSwitched$ True`): you get X
+  {E}, choose/pay an amount, and destroy each artifact/creature/enchantment with MV ≤ the **energy
+  paid** (verified by board test: pay 2 → MV≤2 destroyed; gain 3/pay 1 → only MV≤1 destroyed). The
+  switched single-payment path is kept; the non-switched genuine "destroy each X unless **its**
+  controller pays {E}" (a per-permanent payment, paying *prevents* destruction) is unsupported and no
+  shipping card uses it, so it now fails closed with a one-time warning instead of charging the
+  spell's controller and destroying regardless.
+- ✅ **RESOLVED** — **The generic `ValidPlayer$ You` trigger gate was not exempted for
+  `BECAME_TARGET`** (`src/systems/state_manager_triggers.cpp` ~180), where the event's PLAYER param is
+  the *targeting* spell's controller. Added the same `BECAME_TARGET` exemption `trigger_only_self`
+  already had. Latent: Reality Smasher uses `ValidSource$` (verified still firing its
+  counter-unless-discard).
+- ✅ **RESOLVED** — **`Count$ValidGraveyard Card.YouOwn$CardTypes` honored only the ownership
+  restriction; any extra type/CMC subfilter was ignored** (`src/svar_eval.cpp` ~153). Ownership stays
+  manual (a graveyard card has no live controller); any remaining qualifiers now route through
+  `card_matches_filter`. Verified: Nethergoyf (unchanged 3/4 from a 3-type graveyard).
+- ✅ **RESOLVED** — **`can_afford_with_sources()` omitted the `TapsForMana` additional-mana bonus**
+  (`src/mana_system.cpp`), diverging from the real payment path for *nested* mana-source activation
+  costs. Now fires the same `fire_taps_for_mana_triggers` helper per counted source in both passes.
+  Narrow and latent (no shipping mana source has a mana activation cost); spell-cast affordability
+  already used the correct `can_pay_mana` path (Badgermole's bonus verified still letting a single
+  Birds of Paradise pay a `{1}{G}` cost).

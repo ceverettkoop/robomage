@@ -325,6 +325,11 @@ bool can_afford_with_sources(Zone::Ownership player_owner, const std::multiset<C
         } else {
             for (size_t i = 0; i < amount; i++) hypothetical.insert(ab.color);
         }
+        // A creature tapping for mana fires any TapsForMana bonus (Badgermole Cub's extra {G}).
+        // Mirror the real payment path (activate_mana_source) so nested mana-source affordability
+        // counts the same mana — the helper is internally gated to creature sources, so a
+        // non-creature source adds nothing.
+        fire_taps_for_mana_triggers(entity, player_owner, orderer, hypothetical, false);
         counted_entities.insert(entity);
     }
 
@@ -366,6 +371,9 @@ bool can_afford_with_sources(Zone::Ownership player_owner, const std::multiset<C
                 flexible_count--;
             }
         }
+        // TapsForMana bonus for this (cost-bearing) source's tap, added after its own activation
+        // cost is settled so the bonus is pure additional mana (see the first-pass note).
+        fire_taps_for_mana_triggers(entity, player_owner, orderer, hypothetical, false);
         counted_entities.insert(entity);
     }
 

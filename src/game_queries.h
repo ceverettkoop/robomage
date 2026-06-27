@@ -119,8 +119,9 @@ std::set<Colors> effective_colors(Entity e);
 // colors (White/nonGreen/Colorless), supertypes (Basic/nonBasic), main-type negations
 // (nonLand/nonCreature…), subtypes (Goblin, Plains), power/toughness comparators
 // (toughnessLE2), mana-value bounds (cmcLEX / the dynamic ctx bound), control (YouCtrl/
-// OppCtrl), token state (token/nonToken), timing (ThisTurnEntered) and identity
-// (IsRemembered/Other/nonChosenCard). Unrecognized qualifiers fail closed and warn once.
+// OppCtrl), token state (token/nonToken), combat/tap state (attacking/blocking/tapped/
+// untapped), timing (ThisTurnEntered) and identity (IsRemembered/Other/nonChosenCard).
+// Unrecognized qualifiers fail closed and warn once.
 //
 // `card_matches_filter` reads PRINTED characteristics (a card in hand/library/graveyard
 // or a spell on the stack). `permanent_matches_filter` reads a battlefield permanent's
