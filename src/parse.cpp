@@ -20,6 +20,7 @@
 #include "ecs/coordinator.h"
 #include "ecs/events.h"
 #include "error.h"
+#include "str_util.h"
 #include "type_constants.h"
 
 extern std::string RESOURCE_DIR;
@@ -681,16 +682,8 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
         // the linked "if it was kicked with its [N] kicker" triggers index into it.
         if (kw_line.rfind("Kicker:", 0) == 0) {
             std::string rest = kw_line.substr(strlen("Kicker:"));
-            size_t seg_pos = 0;
-            while (seg_pos <= rest.size()) {
-                size_t colon = rest.find(':', seg_pos);
-                std::string seg = (colon == std::string::npos)
-                                      ? rest.substr(seg_pos)
-                                      : rest.substr(seg_pos, colon - seg_pos);
-                if (!seg.empty()) card.kicker_costs.push_back(parse_mana_cost(seg));
-                if (colon == std::string::npos) break;
-                seg_pos = colon + 1;
-            }
+            for (const std::string &seg : split(rest, ':', /*skip_empty=*/true))
+                card.kicker_costs.push_back(parse_mana_cost(seg));
             card.keywords.push_back("Kicker");
             continue;
         }
@@ -1317,17 +1310,12 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
             // (Mode$ ... | Execute$ ...); parse it like a card's T: line so it carries the same
             // trigger metadata and its Execute$ effect, and store it on the Effect to be
             // registered (controller-bound) into cur_game.floating_triggers at resolution.
-            size_t tpos = 0;
-            while (tpos < value.size()) {
-                size_t comma = value.find(',', tpos);
-                if (comma == std::string::npos) comma = value.size();
-                std::string svar_name = value.substr(tpos, comma - tpos);
+            for (const std::string &svar_name : split(value, ',', /*skip_empty=*/true)) {
                 auto it = svars.find(svar_name);
                 if (it != svars.end()) {
                     Ability trig = parse_one_trigger(it->second, svars, card_name);
                     if (trig.trigger_on != 0) sub.effect_floating_triggers.push_back(trig);
                 }
-                tpos = comma + 1;
             }
         } else if (key == "ConditionCheckSVar") {
             // Resolve SVar reference to its expression (e.g. "X" → "Count$ResolvedThisTurn")

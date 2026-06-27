@@ -23,6 +23,7 @@
 #include "../input_logger.h"
 #include "../mana_system.h"
 #include "../parse.h"
+#include "../str_util.h"
 #include "../svar_eval.h"
 #include "../effects/effects.h"
 #include "../systems/orderer.h"
@@ -95,17 +96,7 @@ Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner, Zone
     const std::string &change_type, bool mandatory, Zone::ZoneValue destination, bool reveal,
     int cmc_bound, const std::string &cmc_op) {
     //  comma-separated subtypes
-    std::vector<std::string> subtypes;
-    size_t p = 0;
-    while (true) {
-        size_t comma = change_type.find(',', p);
-        if (comma == std::string::npos) {
-            subtypes.push_back(change_type.substr(p));
-            break;
-        }
-        subtypes.push_back(change_type.substr(p, comma - p));
-        p = comma + 1;
-    }
+    std::vector<std::string> subtypes = split(change_type, ',');
 
     // Collect zone contents
     std::vector<Entity> zone_contents;
@@ -260,17 +251,7 @@ Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner
         choices = zone_contents;
     } else {
         // Parse comma-separated subtypes
-        std::vector<std::string> subtypes;
-        size_t p = 0;
-        while (true) {
-            size_t comma = change_type.find(',', p);
-            if (comma == std::string::npos) {
-                subtypes.push_back(change_type.substr(p));
-                break;
-            }
-            subtypes.push_back(change_type.substr(p, comma - p));
-            p = comma + 1;
-        }
+        std::vector<std::string> subtypes = split(change_type, ',');
         bool has_extended = false;
         for (auto &st : subtypes) {
             if (st.find('.') != std::string::npos || st.find('+') != std::string::npos) {
@@ -547,20 +528,12 @@ static bool stack_ability_alt_matches(const std::string &alt, Entity cand) {
 // one named kind). Drives counterspells (Spell), Stifle (Activated,Triggered) and Consign to
 // Memory (Spell.Colorless,Triggered) off one matcher.
 static bool target_type_matches_stack_object(const std::string &target_type, Entity cand) {
-    size_t start = 0;
-    while (start <= target_type.size()) {
-        size_t comma = target_type.find(',', start);
-        std::string alt = target_type.substr(
-            start, comma == std::string::npos ? std::string::npos : comma - start);
-        if (!alt.empty()) {
-            bool is_ability_alt = (alt.find("Activated") != std::string::npos ||
-                                   alt.find("Triggered") != std::string::npos);
-            bool is_spell_alt = (alt.find("Spell") != std::string::npos);
-            if (is_ability_alt && stack_ability_alt_matches(alt, cand)) return true;
-            if (is_spell_alt && stack_spell_alt_matches(alt, cand)) return true;
-        }
-        if (comma == std::string::npos) break;
-        start = comma + 1;
+    for (const std::string &alt : split(target_type, ',', /*skip_empty=*/true)) {
+        bool is_ability_alt = (alt.find("Activated") != std::string::npos ||
+                               alt.find("Triggered") != std::string::npos);
+        bool is_spell_alt = (alt.find("Spell") != std::string::npos);
+        if (is_ability_alt && stack_ability_alt_matches(alt, cand)) return true;
+        if (is_spell_alt && stack_spell_alt_matches(alt, cand)) return true;
     }
     return false;
 }
@@ -881,15 +854,7 @@ size_t evaluate_dynamic_amount(
     // characteristics via the shared card_matches_filter; control qualifiers resolve against ctrl.
     if (expr.rfind("Remembered$Valid ", 0) == 0) {
         std::string filters = expr.substr(std::string("Remembered$Valid ").size());
-        std::vector<std::string> specs;
-        size_t fp = 0;
-        while (fp <= filters.size()) {
-            size_t comma = filters.find(',', fp);
-            std::string one = filters.substr(fp, comma == std::string::npos ? std::string::npos : comma - fp);
-            if (!one.empty()) specs.push_back(one);
-            if (comma == std::string::npos) break;
-            fp = comma + 1;
-        }
+        std::vector<std::string> specs = split(filters, ',', /*skip_empty=*/true);
         MatchCtx mctx;
         mctx.controller = ctrl;  // "you" reference for YouCtrl/OppCtrl in any filter
         size_t count = 0;
