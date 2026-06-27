@@ -89,7 +89,12 @@ void copy_spell_on_stack(Entity original, int count, Zone::Ownership controller,
                 select_target(ability, orderer, controller);
             }
             for (auto &sub : ability.subabilities) {
-                if (sub.valid_tgts != "N_A") select_target(sub, orderer, controller);
+                // Guard subability targeting the same way the main ability is guarded above:
+                // select_target on an empty candidate pool (target required, none legal) would
+                // index an empty action list. A copy whose subability has no legal target simply
+                // leaves it untargeted (it does nothing at resolution) rather than crashing.
+                if (sub.valid_tgts != "N_A" && has_legal_targets(sub, orderer))
+                    select_target(sub, orderer, controller);
             }
             global_coordinator.AddComponent(copy, ability);
         }

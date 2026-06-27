@@ -844,8 +844,11 @@ size_t evaluate_dynamic_amount(
     // The Creature-specific branch above is kept for its common case; this generic branch
     // routes the whole spec (head type + '.'/'+'-joined qualifiers like Legendary/YouCtrl/
     // colors) through the shared permanent_matches_filter so supertype/color/etc. qualifiers
-    // are honored, not just the head type.
-    if (expr.rfind("Count$Valid ", 0) == 0) {
+    // are honored, not just the head type. The RememberedPlayerCtrl form is excluded so it
+    // falls through to its dedicated handler below (it needs the remembered-player reference
+    // and the /Times multiplier, neither of which permanent_matches_filter understands).
+    if (expr.rfind("Count$Valid ", 0) == 0 &&
+        expr.find("RememberedPlayerCtrl") == std::string::npos) {
         std::string spec = expr.substr(std::string("Count$Valid ").size());  // full filter spec
         if (!spec.empty()) {
             MatchCtx mctx;
