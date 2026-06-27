@@ -17,6 +17,7 @@
 #include "components/types.h"
 #include "ecs/coordinator.h"
 #include "ecs/events.h"
+#include "effects/effects.h"
 #include "error.h"
 #include "game_queries.h"
 #include "input_logger.h"
@@ -108,6 +109,27 @@ void empty_mana_pool(Zone::Ownership player_owner) {
         fflush(stdout);
     }
     player.mana.clear();
+}
+
+// The activation mana cost of `ab` after applying its ReduceCost$ (CR 601.2f). General over the
+// reduction source: a literal integer or a Count$/SVar expression resolved via the shared
+// dynamic-amount evaluator (the same Count$Valid machinery used for dynamic NumDmg/amounts).
+// Only the GENERIC portion is reduced (floored at 0); colored pips are untouched. Used by both
+// the affordability gate and the payment so the two never diverge.
+ManaValue effective_activation_mana_cost(const Ability &ab, Zone::Ownership controller,
+                                         std::shared_ptr<Orderer> orderer) {
+    if (ab.reduce_cost_expr.empty()) return ab.activation_mana_cost;
+    size_t reduction = evaluate_dynamic_amount(ab.reduce_cost_expr, controller, orderer, ab.target);
+    if (reduction == 0) return ab.activation_mana_cost;
+    ManaValue cost = ab.activation_mana_cost;
+    // Remove up to `reduction` generic ({1}) symbols; never below zero, never a colored pip.
+    auto it = cost.find(GENERIC);
+    while (reduction > 0 && it != cost.end()) {
+        it = cost.erase(it);
+        it = cost.find(GENERIC);
+        --reduction;
+    }
+    return cost;
 }
 
 // Check if a permanent's abilities are suppressed by a CantBeActivated static

@@ -220,10 +220,11 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
         if (stack_ab.valid_tgts != "N_A") {
             select_target(stack_ab, orderer, ctrl);
         }
-        // Pay mana cost
-        if (!ability.activation_mana_cost.empty()) {
+        // Pay mana cost (after ReduceCost$, e.g. Eiganjo's Channel cheaper per legendary creature)
+        ManaValue from_hand_cost = effective_activation_mana_cost(ability, ctrl, orderer);
+        if (!from_hand_cost.empty()) {
             auto mana_snap = snapshot_mana_state(ctrl, orderer);
-            if (!prompt_mana_payment(ctrl, ability.activation_mana_cost, permanent_entity, orderer)) {
+            if (!prompt_mana_payment(ctrl, from_hand_cost, permanent_entity, orderer)) {
                 restore_mana_state(ctrl, mana_snap, orderer);
                 cur_game.payment_fail_counts[permanent_entity]++;
                 game_log("Payment cancelled.\n");
@@ -293,9 +294,10 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
         }
         // Pay equip cost
         if (ability.tap_cost) permanent.is_tapped = true;
-        if (!ability.activation_mana_cost.empty()) {
+        ManaValue equip_cost = effective_activation_mana_cost(ability, controller, orderer);
+        if (!equip_cost.empty()) {
             auto mana_snap = snapshot_mana_state(controller, orderer);
-            if (!prompt_mana_payment(controller, ability.activation_mana_cost, permanent_entity, orderer)) {
+            if (!prompt_mana_payment(controller, equip_cost, permanent_entity, orderer)) {
                 restore_mana_state(controller, mana_snap, orderer);
                 if (ability.tap_cost) permanent.is_tapped = false;
                 cur_game.payment_fail_counts[permanent_entity]++;
@@ -330,10 +332,11 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
     if (ability.tap_cost) {
         permanent.is_tapped = true;
     }
-    // Mana cost
-    if (!ability.activation_mana_cost.empty()) {
+    // Mana cost (after ReduceCost$ — CR 601.2f; reduces generic only)
+    ManaValue activate_cost = effective_activation_mana_cost(ability, controller, orderer);
+    if (!activate_cost.empty()) {
         auto mana_snap = snapshot_mana_state(controller, orderer);
-        if (!prompt_mana_payment(controller, ability.activation_mana_cost, permanent_entity, orderer)) {
+        if (!prompt_mana_payment(controller, activate_cost, permanent_entity, orderer)) {
             restore_mana_state(controller, mana_snap, orderer);
             if (ability.tap_cost) permanent.is_tapped = false;
             cur_game.payment_fail_counts[permanent_entity]++;

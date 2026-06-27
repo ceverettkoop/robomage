@@ -1072,6 +1072,13 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         ability.activation_condition = value;
     } else if (key == "ActivationLimit") {
         ability.activation_limit = std::stoi(value);
+    } else if (key == "ReduceCost") {
+        // ReduceCost$ on an activated ability (Eiganjo Channel). Store the raw value
+        // verbatim: a literal integer ("1") is used as-is; a single SVar key ("X") is
+        // resolved to its Count$/dynamic expression in parse_abilities' post-pass. The
+        // generic mana portion of the activation cost is reduced by the resolved amount at
+        // activation time (CR 601.2f).
+        ability.reduce_cost_expr = value;
     } else if (key == "ChangeNum") {
         ability.amount = static_cast<size_t>(std::stoi(value));
     } else if (key == "RestrictValid") {
@@ -1670,6 +1677,17 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
                 }
             }
             ability.amount_svar = "";
+        }
+
+        // Resolve an activated-ability ReduceCost$ SVar reference (Eiganjo's Channel:
+        // ReduceCost$ X, X = Count$Valid Creature.Legendary+YouCtrl) into its runtime Count$
+        // expression. A literal integer (e.g. "1") is kept verbatim; a single SVar key is
+        // expanded to its Count$/dynamic expression for evaluation at activation time. The
+        // generic mana portion is reduced by the resolved amount (CR 601.2f).
+        if (!ability.reduce_cost_expr.empty() &&
+            !std::isdigit(static_cast<unsigned char>(ability.reduce_cost_expr[0]))) {
+            auto it = svars.find(ability.reduce_cost_expr);
+            if (it != svars.end()) ability.reduce_cost_expr = it->second;
         }
 
         // Resolve a dynamic PutCounter CounterNum$ SVar reference (Wrath of the Skies:

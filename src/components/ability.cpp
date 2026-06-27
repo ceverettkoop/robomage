@@ -785,20 +785,22 @@ size_t evaluate_dynamic_amount(
         }
         return count;
     }
-    // Count$Valid <Filter>.YouCtrl — number of battlefield permanents you control that
-    // match <Filter>, where <Filter> is any top-level type, supertype, or subtype name
-    // (e.g. Eldrazi Linebreaker: "Count$Valid Eldrazi.YouCtrl" = Eldrazi you control).
-    // The Creature-specific branch above is kept for the common case; this generic branch
-    // handles arbitrary type/subtype filters via permanent_has_type.
-    if (expr.rfind("Count$Valid ", 0) == 0 && expr.find(".YouCtrl") != std::string::npos) {
-        std::string rest = expr.substr(std::string("Count$Valid ").size());
-        std::string filter = rest.substr(0, rest.find('.'));  // text before ".YouCtrl"
-        if (!filter.empty()) {
+    // Count$Valid <Filter> — number of battlefield permanents matching the full Forge filter
+    // spec (e.g. Eldrazi Linebreaker: "Count$Valid Eldrazi.YouCtrl"; Eiganjo's Channel
+    // ReduceCost: "Count$Valid Creature.Legendary+YouCtrl" = legendary creatures you control).
+    // The Creature-specific branch above is kept for its common case; this generic branch
+    // routes the whole spec (head type + '.'/'+'-joined qualifiers like Legendary/YouCtrl/
+    // colors) through the shared permanent_matches_filter so supertype/color/etc. qualifiers
+    // are honored, not just the head type.
+    if (expr.rfind("Count$Valid ", 0) == 0) {
+        std::string spec = expr.substr(std::string("Count$Valid ").size());  // full filter spec
+        if (!spec.empty()) {
+            MatchCtx mctx;
+            mctx.controller = ctrl;  // the "you" reference for YouCtrl/OppCtrl in the spec
             size_t count = 0;
             for (auto e : orderer->mEntities) {
-                if (!is_battlefield_permanent(e, ctrl)) continue;
-                if (permanent_has_type(global_coordinator.GetComponent<Permanent>(e), filter))
-                    count++;
+                if (!is_battlefield_permanent(e)) continue;  // control is enforced by the filter
+                if (permanent_matches_filter(e, spec, mctx)) count++;
             }
             return count;
         }

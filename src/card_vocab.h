@@ -124,6 +124,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Lorehold Charm", 198},
     {"It That Heralds the End", 199},
     {"Petrified Hamlet", 200},
+    {"Eiganjo, Seat of the Empire", 201},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);

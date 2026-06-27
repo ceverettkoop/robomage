@@ -83,6 +83,15 @@ struct Ability{
     int loyalty_cost = 0;               // +N (AddCounter) or -N (SubCounter); loyalty counters added/removed as the cost
     int activation_zone = -1;           // ActivationZone$ Hand → Zone::HAND; -1 = default (battlefield)
     int activations_this_turn = 0;      // runtime counter, reset at UNTAP
+    // ReduceCost$ on an ACTIVATED ability (Eiganjo's Channel: "ReduceCost$ X",
+    // X = Count$Valid Creature.Legendary+YouCtrl): the GENERIC portion of
+    // activation_mana_cost is reduced by this amount at activation time (CR 601.2f —
+    // cost reductions reduce only generic mana, colored pips are never reduced). Either a
+    // literal integer (stored verbatim, e.g. "1") or a runtime Count$/SVar expression
+    // resolved via evaluate_dynamic_amount with the activating controller as "you". Empty
+    // = no reduction. effective_activation_mana_cost() applies it for BOTH the affordability
+    // check and the actual payment so the two never diverge.
+    std::string reduce_cost_expr = "";
     std::string change_type = "";        // ChangeType$ — comma-separated subtypes to search
     // ChangeType filter with a dynamic mana-value bound (Aether Vial: "Creature.cmcEQX",
     // X = Count$CardCounters.CHARGE). Holds the resolved runtime Count$ expression and the
