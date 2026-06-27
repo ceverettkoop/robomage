@@ -61,6 +61,10 @@ EffectKind effect_kind_from_string(const std::string &category) {
         // types/subtypes (and, for later cards, base P/T / keywords / creature-ness) for
         // the effect's Duration (Permanent = rest of the game). See effect_animate.cpp.
         {"Animate", EffectKind::Animate},
+        // DB$ ChooseNumber (Wrath of the Skies): the resolving controller chooses an integer in
+        // [0, Max$]; the pick is stored in cur_game.chosen_number so a chained sub-ability can
+        // read it via Count$ChosenNumber. See effect_choose_number.cpp.
+        {"ChooseNumber", EffectKind::ChooseNumber},
     };
     auto it = table.find(category);
     return (it != table.end()) ? it->second : EffectKind::None;

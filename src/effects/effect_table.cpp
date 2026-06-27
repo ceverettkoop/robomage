@@ -56,6 +56,7 @@ EffectHandler handler_for(EffectKind kind) {
         case EffectKind::GrantCast:       return &grant_cast;
         case EffectKind::NameCard:        return &name_card;
         case EffectKind::Animate:         return &animate;
+        case EffectKind::ChooseNumber:    return &choose_number;
         default:                          return nullptr;
     }
 }
@@ -77,7 +78,8 @@ bool apply_parse_hook(Ability &ab, const std::string &key, const std::string &va
         || parse_mill(ab, key, value)
         || parse_peek_and_reveal(ab, key, value)
         || parse_reveal(ab, key, value)
-        || parse_amass(ab, key, value);
+        || parse_amass(ab, key, value)
+        || parse_choose_number(ab, key, value);
 }
 
 }  // namespace effects

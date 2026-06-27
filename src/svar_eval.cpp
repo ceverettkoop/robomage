@@ -74,6 +74,24 @@ int evaluate_sa_svar(const std::string &expr, Zone::Ownership controller, Entity
     if (expr == "Count$xPaid")
         return static_cast<int>(cur_game.x_paid);
 
+    // Count$ChosenNumber — the integer chosen by the most recent DB$ ChooseNumber effect this
+    // resolution (Wrath of the Skies: the amount of energy to pay). Stored in cur_game by the
+    // ChooseNumber handler so a chained sub-ability (the DestroyAll's cmc bound Y and its
+    // PayEnergy<Y> unless-cost) can reference the chosen value.
+    if (expr == "Count$ChosenNumber")
+        return cur_game.chosen_number;
+
+    // Count$YourCountersEnergy — the controller's current energy ({E}) total (CR 122.1c),
+    // stored as an "ENERGY" counter on the Player (Wrath of the Skies: the cap on the amount
+    // of energy you may choose to pay). Reads the same counter map every {E} producer/consumer
+    // uses (game_queries.h player_energy / pay_energy).
+    if (expr == "Count$YourCountersEnergy") {
+        Entity ctrl_entity =
+            (controller == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
+        if (!global_coordinator.entity_has_component<Player>(ctrl_entity)) return 0;
+        return player_energy(global_coordinator.GetComponent<Player>(ctrl_entity));
+    }
+
     // Count$ValidExile ... CardTypes — distinct card types among the cards exiled
     // with `source` (e.g. Keen-Eyed Curator's exiled-with pile). Scoped to the
     // source permanent, hence the `source` parameter.

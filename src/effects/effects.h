@@ -96,6 +96,12 @@ bool name_card(Ability &ab, std::shared_ptr<Orderer> orderer);
 // base-P/T / keyword / creature grants) onto the permanent so the layer system reapplies
 // it each SBE pass. See effect_animate.cpp.
 bool animate(Ability &ab, std::shared_ptr<Orderer> orderer);
+// DB$ ChooseNumber (Wrath of the Skies): the resolving controller chooses an integer in
+// [0, Max], where Max is the runtime Count$ expression in ab.dynamic_amount_expr (e.g.
+// Count$YourCountersEnergy = their current energy). The pick is recorded in
+// cur_game.chosen_number for a chained Count$ChosenNumber reference. General over "choose a
+// number up to N" cards. See effect_choose_number.cpp.
+bool choose_number(Ability &ab, std::shared_ptr<Orderer> orderer);
 
 
 // ── Effect-specific parse hooks ─────────────────────────────────────────────
@@ -122,6 +128,7 @@ bool parse_mill(Ability &ab, const std::string &key, const std::string &value);
 bool parse_peek_and_reveal(Ability &ab, const std::string &key, const std::string &value);
 bool parse_reveal(Ability &ab, const std::string &key, const std::string &value);
 bool parse_amass(Ability &ab, const std::string &key, const std::string &value);
+bool parse_choose_number(Ability &ab, const std::string &key, const std::string &value);
 
 }  // namespace effects
 

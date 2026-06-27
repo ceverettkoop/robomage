@@ -1,5 +1,7 @@
 #include "effects.h"
 
+#include <cctype>
+
 #include "../classes/game.h"
 #include "../cli_output.h"
 #include "../components/carddata.h"
@@ -15,21 +17,27 @@ extern Game cur_game;
 namespace effects {
 
 bool put_counter(Ability &ab, std::shared_ptr<Orderer> orderer) {
-    (void)orderer;
     // Defined$ You — the counters go on the controlling PLAYER, not a permanent (CR 122.1c:
     // a player can have counters too, e.g. energy {E}, poison, experience). Guide of Souls'
     // "get {E}" puts an ENERGY counter on the source's controller.
     if (ab.defined_you) {
         const CounterParams *cp = std::get_if<CounterParams>(&ab.params);
-        if (!cp || cp->type.empty() || cp->count <= 0) return true;
+        if (!cp || cp->type.empty()) return true;
+        // A dynamic CounterNum$ (Wrath of the Skies: CounterNum$ X, X = Count$xPaid → the
+        // player gets X {E}) is evaluated at resolution; otherwise use the static count.
+        int n = cp->count;
+        if (!cp->count_expr.empty())
+            n = static_cast<int>(evaluate_dynamic_amount(cp->count_expr, ab.controller, orderer, ab.target));
+        if (n <= 0) return true;
         Entity ctrl_entity =
             (ab.controller == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
         auto &pl = global_coordinator.GetComponent<Player>(ctrl_entity);
-        int total = pl.add_counters(cp->type, cp->count);
+        int total = pl.add_counters(cp->type, n);
         game_log("%s gets %d %s counter(s) (now %d).\n", player_name(ab.controller).c_str(),
-                 cp->count, cp->type.c_str(), total);
+                 n, cp->type.c_str(), total);
         return true;
     }
+    (void)orderer;
     // Use target if set (e.g. from a Pump parent), otherwise put counters on source
     // (Defined$ Self — e.g. Aether Vial's upkeep "put a charge counter on it"). Counters
     // can go on any permanent, not just creatures (CR 122.1), so gate on Permanent: a
@@ -68,7 +76,17 @@ bool parse_put_counter(Ability &ab, const std::string &key, const std::string &v
         if (cp.count == 0) cp.count = 1;
         return true;
     }
-    if (key == "CounterNum")  { effect_params<CounterParams>(ab).count = std::stoi(value); return true; }
+    if (key == "CounterNum")  {
+        // A numeric CounterNum$ is used directly. A non-numeric value is an SVar key (Wrath
+        // of the Skies: CounterNum$ X, X = Count$xPaid) — stash the raw token; parse_abilities
+        // resolves it through the SVar map into a runtime Count$ expression on count_expr.
+        auto &cp = effect_params<CounterParams>(ab);
+        if (!value.empty() && (std::isdigit(static_cast<unsigned char>(value[0])) || value[0] == '-'))
+            cp.count = std::stoi(value);
+        else
+            cp.count_expr = value;
+        return true;
+    }
     if (key == "CounterType2") {
         auto &cp = effect_params<CounterParams>(ab);
         cp.type2 = value;

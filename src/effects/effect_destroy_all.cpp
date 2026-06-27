@@ -24,9 +24,33 @@ bool destroy_all(Ability &ab, std::shared_ptr<Orderer> orderer) {
     bool filter_artifact = filter.find("Artifact") != std::string::npos;
     bool filter_creature = filter.find("Creature") != std::string::npos;
     bool filter_enchantment = filter.find("Enchantment") != std::string::npos;
-    // Parse CMC filter: cmcLEX means CMC <= X paid
+
+    const DestroyAllParams *dp = std::get_if<DestroyAllParams>(&ab.params);
+
+    // UnlessCost$ PayEnergy<N> | UnlessSwitched$ True (Wrath of the Skies): the controller pays
+    // N energy ({E}); with UnlessSwitched the destroy proceeds ONLY IF the energy is paid (CR
+    // 122.1c). N (Count$ChosenNumber) is the amount of energy chosen earlier this resolution.
+    if (dp && !dp->energy_unless_expr.empty()) {
+        int n = static_cast<int>(
+            evaluate_dynamic_amount(dp->energy_unless_expr, ab.controller, orderer, ab.target));
+        Entity ctrl_entity =
+            (ab.controller == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
+        auto &pl = global_coordinator.GetComponent<Player>(ctrl_entity);
+        bool paid = pay_energy(pl, n);  // n <= 0 is a trivially-payable no-op (returns true)
+        if (n > 0)
+            game_log("%s pays %d energy.\n", player_name(ab.controller).c_str(), n);
+        // UnlessSwitched: "destroy only if paid". If the cost could not be paid, do nothing.
+        if (dp->energy_unless_switched && !paid) return true;
+    }
+
+    // CMC filter bound. Legacy cmcLEX keys off the X paid at cast (Meltdown). A dynamic
+    // cmcLE<SVar> bound (Wrath of the Skies' cmcLEY, Y = Count$ChosenNumber = energy paid) is
+    // resolved from the parsed Count$ expression at resolution.
     int cmc_le = -1;
-    if (filter.find("cmcLEX") != std::string::npos) {
+    if (dp && !dp->cmc_expr.empty()) {
+        cmc_le = static_cast<int>(
+            evaluate_dynamic_amount(dp->cmc_expr, ab.controller, orderer, ab.target));
+    } else if (filter.find("cmcLEX") != std::string::npos) {
         cmc_le = static_cast<int>(cur_game.x_paid);
     }
     std::vector<Entity> to_destroy;

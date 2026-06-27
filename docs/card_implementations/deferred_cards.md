@@ -15,7 +15,7 @@ unblocks the others in that group.
 **Energy** (energy counters, `PayEnergy` cost, energy-gated effects):
 - **Amped Raptor** — energy counters + `DigUntil` + `DB$ Play` paying energy (Forge script: available)
 - **Guide of Souls** — energy counters + `PayEnergy<3>` immediate-trigger cost (Forge script: available)
-- **Wrath of the Skies** — `PutCounter ENERGY` on player + `ChooseNumber` + `DestroyAll` bounded by `PayEnergy<Y>` (Forge script: available)
+- ~~**Wrath of the Skies** — `PutCounter ENERGY` on player + `ChooseNumber` + `DestroyAll` bounded by `PayEnergy<Y>` (Forge script: available)~~ — implemented this run (see `wrath_of_the_skies.md`)
 
 **Adventure / split-mode cards** (cast one half, exile, recast other half later):
 - **Brazen Borrower Petty Theft** — Adventure (`AlternateMode:Adventure`) (Forge script: available)

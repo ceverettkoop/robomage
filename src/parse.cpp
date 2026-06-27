@@ -904,7 +904,25 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
     } else if (key == "Mandatory") {
         ability.mandatory = (value == "True");
     } else if (key == "UnlessCost") {
-        ability.unless_generic_cost = static_cast<size_t>(std::stoi(value));
+        // UnlessCost$ PayEnergy<N> (Wrath of the Skies' DestroyAll) is an energy unless-cost,
+        // not the generic {N} mana unless-cost: route the energy amount (an SVar) to the
+        // DestroyAll params. A numeric value is the legacy generic-mana unless-cost.
+        size_t pe = value.find("PayEnergy<");
+        if (pe != std::string::npos) {
+            size_t close = value.find('>', pe);
+            std::string n = (close != std::string::npos)
+                                ? value.substr(pe + 10, close - (pe + 10)) : "";
+            effect_params<DestroyAllParams>(ability).energy_unless_expr = n;  // SVar token; resolved post-parse
+        } else {
+            ability.unless_generic_cost = static_cast<size_t>(std::stoi(value));
+        }
+    } else if (key == "UnlessPayer") {
+        // UnlessPayer$ You — the controller is the payer of the unless-cost (the only payer we
+        // model for the energy unless-cost). Cosmetic given the energy is paid by the controller.
+    } else if (key == "UnlessSwitched") {
+        // UnlessSwitched$ True inverts the normal "do unless paid" into "do only if paid"
+        // (Wrath of the Skies: destroy only if the energy was paid).
+        effect_params<DestroyAllParams>(ability).energy_unless_switched = (value == "True");
     } else if (key == "LifeAmount") {
         if (!value.empty() && std::isdigit(static_cast<unsigned char>(value[0]))) {
             ability.amount = static_cast<size_t>(std::stoi(value));
@@ -1223,6 +1241,53 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
             sub.dig_num_expr = it->second;
         }
     }
+    // ChooseNumber Max$ and a dynamic CounterNum$ both stash a raw SVar token (Wrath of the
+    // Skies: Max$ Max → Count$YourCountersEnergy; CounterNum$ X → Count$xPaid). Resolve those
+    // SVar references to their runtime Count$ expressions so the effect can evaluate them at
+    // resolution.
+    if (sub.category == "ChooseNumber" && !sub.dynamic_amount_expr.empty()) {
+        auto it = svars.find(sub.dynamic_amount_expr);
+        if (it != svars.end()) sub.dynamic_amount_expr = it->second;
+    }
+    if (auto *cp = std::get_if<CounterParams>(&sub.params)) {
+        if (!cp->count_expr.empty()) {
+            auto it = svars.find(cp->count_expr);
+            if (it != svars.end()) cp->count_expr = it->second;
+        }
+    }
+    // DestroyAll with a dynamic mana-value bound and/or an energy unless-cost (Wrath of the
+    // Skies): resolve the "cmcLE<SVar>" threshold from the ValidCards$ filter and the
+    // PayEnergy<SVar> amount into their runtime Count$ expressions. The numeric/cmcLEX legacy
+    // paths are unchanged; this only fires when the SVar is non-numeric (e.g. cmcLEY, Y =
+    // Count$ChosenNumber).
+    if (sub.category == "DestroyAll") {
+        auto &dp = effect_params<DestroyAllParams>(sub);
+        if (dp.cmc_expr.empty() && !sub.valid_cards_filter.empty()) {
+            for (const char *op : {"cmcEQ", "cmcLE", "cmcGE", "cmcLT", "cmcGT", "cmcNE"}) {
+                size_t pos = sub.valid_cards_filter.find(op);
+                if (pos == std::string::npos) continue;
+                std::string svar_ref = sub.valid_cards_filter.substr(pos + 5);
+                size_t end = 0;
+                while (end < svar_ref.size() &&
+                       (std::isalnum(static_cast<unsigned char>(svar_ref[end])) || svar_ref[end] == '_'))
+                    end++;
+                svar_ref = svar_ref.substr(0, end);
+                // A pure-numeric or "X" bound stays on the legacy path (handled at resolution);
+                // only a named SVar resolving to a Count$ expression routes here.
+                if (svar_ref.empty() || svar_ref == "X") break;
+                auto it = svars.find(svar_ref);
+                if (it != svars.end()) {
+                    dp.cmc_expr = it->second;
+                    dp.cmc_op = std::string(op + 3);  // "cmcLE" → "LE"
+                }
+                break;
+            }
+        }
+        if (!dp.energy_unless_expr.empty()) {
+            auto it = svars.find(dp.energy_unless_expr);
+            if (it != svars.end()) dp.energy_unless_expr = it->second;
+        }
+    }
     // Resolve a cmcLE<SVar> threshold inside ChangeValid$ (Birthing Ritual: "Creature.cmcLEX")
     // into dynamic_amount_expr, evaluated by the Dig effect at resolution.
     if (sub.dynamic_amount_expr.empty() && !sub.change_valid.empty()) {
@@ -1477,6 +1542,16 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
                 }
             }
             ability.amount_svar = "";
+        }
+
+        // Resolve a dynamic PutCounter CounterNum$ SVar reference (Wrath of the Skies:
+        // CounterNum$ X, X = Count$xPaid) into its runtime Count$ expression so the
+        // put_counter effect can evaluate the count at resolution.
+        if (auto *cp = std::get_if<CounterParams>(&ability.params)) {
+            if (!cp->count_expr.empty()) {
+                auto it = svars.find(cp->count_expr);
+                if (it != svars.end()) cp->count_expr = it->second;
+            }
         }
 
         ret_val.push_back(ability);
