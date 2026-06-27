@@ -7,6 +7,7 @@
 #include "../classes/game.h"
 #include "../classes/gamestate.h"
 #include "../cli_output.h"
+#include "../components/permanent.h"
 #include "../components/player.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
@@ -31,6 +32,40 @@ namespace effects {
 // build_name_card_choices() helper (also used by Disruptor Flute in state_manager_statics.cpp)
 // builds that menu; the ValidCards$ Card.nonLand filter is honored by passing exclude_lands=true.
 bool name_card(Ability &ab, std::shared_ptr<Orderer> orderer) {
+    // Defined$ You + ValidCards$ Land (Petrified Hamlet's ETB "choose a land card name"):
+    // the SOURCE's controller names a land card. The choice persists for the source's
+    // continuous Card.NamedCard static, so it is recorded on the source permanent's
+    // chosen_name (the same per-source state match_named_card statics read) rather than the
+    // transient global cur_game.named_card (which is cleared after the ability resolves).
+    bool defines_self_owner = ab.defined_you;
+    bool only_lands = (ab.valid_cards_filter == "Land");
+    if (defines_self_owner) {
+        Zone::Ownership chooser = ab.controller;
+        std::vector<std::string> names;
+        std::vector<LegalAction> name_choices =
+            build_name_card_choices(orderer->mEntities, chooser, /*exclude_lands=*/false, names,
+                                    /*only_lands=*/only_lands);
+        std::string chosen;
+        if (!name_choices.empty()) {
+            bool prev_priority = cur_game.player_a_has_priority;
+            cur_game.player_a_has_priority = (chooser == Zone::PLAYER_A);
+            game_log("%s names a card:\n", player_name(chooser).c_str());
+            int choice = InputLogger::instance().get_input(name_choices);
+            cur_game.player_a_has_priority = prev_priority;
+            chosen = names[static_cast<size_t>(choice)];
+        }
+        // Record on the source permanent so its continuous static can read it; also set the
+        // global for any chained sub-ability resolving in the same call (cleared afterward).
+        if (ab.source != 0 && global_coordinator.entity_has_component<Permanent>(ab.source))
+            global_coordinator.GetComponent<Permanent>(ab.source).chosen_name = chosen;
+        cur_game.named_card = chosen;
+        if (chosen.empty())
+            game_log("%s names no card (no eligible card to name).\n", player_name(chooser).c_str());
+        else
+            game_log("%s names card: %s\n", player_name(chooser).c_str(), chosen.c_str());
+        return true;
+    }
+
     // The card name is being chosen for the benefit of the chained discard, which targets a
     // player. Offer names from that player's owned cards; fall back to the controller's
     // opponent if no target player is set.

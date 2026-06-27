@@ -80,6 +80,11 @@ void StateManager::apply_continuous_effects(Game &game) {
     // Layer 5: color-changing. Extension point.
     apply_layer5_color_effects();
 
+    // Layer 6 (613.1f) AddAbility$ activated-ability grants (Petrified Hamlet). Run before the
+    // no-statics early-out so a grant left behind by a source that just left the battlefield is
+    // stripped from its recipients even when no statics remain.
+    apply_layer6_ability_grants();
+
     if (g_active_statics.empty()) {
         // No statics, but gather may have dropped a stale bonus (e.g. an anthem just
         // left the battlefield). Flush the recompute and return — matches the old

@@ -30,6 +30,7 @@
 #include "../input_logger.h"
 #include "../mana_system.h"
 #include "../name_card_choices.h"
+#include "../parse.h"
 #include "../svar_eval.h"
 #include "../systems/stack_manager.h"
 #include "replacement_effects.h"
@@ -880,6 +881,109 @@ void StateManager::apply_layer6_ability_effects() {
             a.sa->applied = false;
             game_log("%s loses %s bonus\n", name_for_log.c_str(),
                      a.sa->condition.empty() ? "static" : a.sa->condition.c_str());
+        }
+    }
+}
+
+// Strip the ".NamedCard" qualifier from an Affected$ filter, returning the remaining filter
+// (e.g. "Land.NamedCard" -> "Land", "Land.NamedCard+YouCtrl" -> "Land.YouCtrl"). The NamedCard
+// match is handled out-of-band against the source permanent's chosen_name (mirroring
+// active_raise_cost_for), because the shared qualifier evaluator has no NamedCard token.
+static std::string strip_named_card_qualifier(const std::string &filter) {
+    // The head (before the first '.'/'+') is always kept; each subsequent '.'/'+' token is
+    // kept with its preceding separator unless it is the NamedCard qualifier being dropped.
+    size_t head_end = filter.find_first_of(".+");
+    std::string out = filter.substr(0, head_end);
+    size_t p = head_end;
+    while (p != std::string::npos && p < filter.size()) {
+        char sep = filter[p];                       // the '.' or '+' separator
+        size_t nx = filter.find_first_of(".+", p + 1);
+        size_t tok_end = (nx == std::string::npos) ? filter.size() : nx;
+        std::string tok = filter.substr(p + 1, tok_end - (p + 1));
+        if (tok != "NamedCard") out += sep + tok;
+        p = nx;
+    }
+    return out;
+}
+
+// Resolve the permanents an AddAbility$ static affects. Reuses affected_permanents_for_static
+// for the general Affected$ filter grammar, then — if the filter carried a NamedCard qualifier
+// — keeps only permanents whose name equals the source permanent's chosen_name (the same
+// per-source named-card state that match_named_card statics read). A source with no chosen
+// name yet (ETB name choice not made) grants nothing.
+static std::vector<Entity> ability_grant_targets(const ActiveStatic &as, const std::set<Entity> &entities) {
+    bool named = as.sa->affected.find("NamedCard") != std::string::npos;
+    std::string base_filter = named ? strip_named_card_qualifier(as.sa->affected) : as.sa->affected;
+    std::string chosen;
+    if (named) {
+        if (!global_coordinator.entity_has_component<Permanent>(as.entity)) return {};
+        chosen = global_coordinator.GetComponent<Permanent>(as.entity).chosen_name;
+        if (chosen.empty()) return {};
+    }
+    // Build a temporary ActiveStatic view with the NamedCard-stripped filter so the shared
+    // resolver evaluates the rest of the grammar (subtypes, YouCtrl, …) normally.
+    ActiveStatic view = as;
+    StaticAbility tmp = *as.sa;
+    tmp.affected = base_filter;
+    view.sa = &tmp;
+    std::vector<Entity> candidates = affected_permanents_for_static(view, entities);
+    if (!named) return candidates;
+    std::vector<Entity> out;
+    for (Entity e : candidates) {
+        if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
+        if (global_coordinator.GetComponent<Permanent>(e).name == chosen) out.push_back(e);
+    }
+    return out;
+}
+
+// Layer 6 (rule 613.1f): AddAbility$ continuous ability grants. A "Continuous" static with a
+// non-empty add_ability body (Petrified Hamlet's "Lands with the chosen name have '{T}: Add
+// {C}.'") attaches that activated ability to every permanent its Affected$ filter designates,
+// so the recipient's controller can use it through the normal Permanent-abilities activation
+// path. The grant is rebuilt from scratch every SBA pass: first strip every ability marked
+// granted_by_static from all battlefield permanents, then re-add for each active grant whose
+// condition is met. This makes the granted ability appear/disappear as named lands and the
+// granting source enter/leave, and de-dupes per source static (one copy per recipient). It
+// runs unconditionally (even with no statics) so a grant left by a source that just left the
+// battlefield is cleaned up.
+void StateManager::apply_layer6_ability_grants() {
+    // Phase 1: remove all previously static-granted abilities from every battlefield permanent.
+    for (auto entity : mEntities) {
+        if (!is_battlefield_permanent(entity)) continue;
+        auto &abilities = global_coordinator.GetComponent<Permanent>(entity).abilities;
+        abilities.erase(std::remove_if(abilities.begin(), abilities.end(),
+                                       [](const Ability &ab) { return ab.granted_by_static != 0; }),
+                        abilities.end());
+    }
+
+    // Phase 2: re-grant from each active AddAbility$ static whose condition is met.
+    for (auto &a : g_active_statics) {
+        if (a.suppressed) continue;  // source lost all abilities (Humility)
+        if (a.sa->category != "Continuous") continue;
+        if (a.sa->add_ability.empty()) continue;
+        if (!a.condition_met) continue;
+
+        std::vector<Entity> targets = ability_grant_targets(a, mEntities);
+        if (targets.empty()) continue;
+
+        // Materialize the granted ability once from the stored body (full Forge ability
+        // grammar via the parser), then attach a per-recipient copy tagged with the source.
+        Ability granted = parse_ability_body(a.sa->add_ability);
+        if (granted.category.empty()) continue;  // unparsable body — grant nothing
+        granted.granted_by_static = a.entity;
+
+        for (Entity e : targets) {
+            auto &abilities = global_coordinator.GetComponent<Permanent>(e).abilities;
+            Ability copy = granted;
+            copy.source = e;
+            // De-dupe: skip if an identical ability (granted or intrinsic) already exists on
+            // the recipient, so a land that already has "{T}: Add {C}" isn't given a duplicate.
+            bool dup = false;
+            for (auto &existing : abilities) {
+                if (existing.identical_activated_ability(copy)) { dup = true; break; }
+            }
+            if (dup) continue;
+            abilities.push_back(copy);
         }
     }
 }

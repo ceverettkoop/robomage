@@ -44,6 +44,12 @@ struct Ability{
     // cleared and regenerated each SBE pass when type-changing effects are active.
     bool subtype_derived = false;
 
+    // Layer-6 ability grant (CR 613.1f): a continuous AddAbility$ static (Petrified Hamlet)
+    // attached this activated ability to the permanent. Holds the granting static's SOURCE
+    // entity so the grant pass can de-dupe (one copy per source static) and remove the grant
+    // when the static stops applying / leaves the battlefield. 0 = an intrinsic ability.
+    Entity granted_by_static = 0;
+
     // Activated ability costs
     bool tap_cost = false;              // {T} is part of the activation cost
     ManaValue activation_mana_cost;     // Mana that must be paid to activate

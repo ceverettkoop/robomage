@@ -27,7 +27,7 @@ implemented in the 2026-06-27 run below; the energy subsystem now exists.
 
 **Other missing subsystems:**
 - **Consign to Memory** — Replicate keyword + countering a triggered ability on the stack (Forge script: available)
-- **Petrified Hamlet** — `DB$ NameCard` effect + Continuous `AddAbility$` granting a mana ability to other named lands (Forge script: available)
+- ~~**Petrified Hamlet** — `DB$ NameCard` effect + Continuous `AddAbility$` granting a mana ability to other named lands (Forge script: available)~~ **IMPLEMENTED** (general layer-6 `AddAbility$` continuous ability-grant static, reusing the `Affected$` resolver; per-source named-card via `Permanent::chosen_name`; see `docs/card_implementations/petrified_hamlet.md`)
 - **Pinnacle Emissary** — Warp alternative cost (cast for warp cost, exile at end step, recast from exile) (Forge script: available)
 - **Wastescape Battlemage** — Kicker (multi-kicker cost choice at cast + `kicked N` SpellCast condition) (Forge script: available)
 - **Eiganjo, Seat of the Empire** — Channel-from-hand works, but `ReduceCost$ X` on an activated ability (cost reduced per legendary creature) is unsupported (Forge script: available)

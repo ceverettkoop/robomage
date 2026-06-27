@@ -19,7 +19,8 @@ static bool card_is_land(const CardData &cd) {
 
 std::vector<LegalAction> build_name_card_choices(const std::set<Entity> &entities,
                                                  Zone::Ownership owner, bool exclude_lands,
-                                                 std::vector<std::string> &out_names) {
+                                                 std::vector<std::string> &out_names,
+                                                 bool only_lands) {
     // Distinct owner-owned vocab card names, each with a representative entity (so the
     // per-action card id encodes the candidate) and a copy count for ordering.
     std::vector<std::string> names;
@@ -31,7 +32,8 @@ std::vector<LegalAction> build_name_card_choices(const std::set<Entity> &entitie
         if (global_coordinator.GetComponent<Zone>(e).owner != owner) continue;
         auto &cd = global_coordinator.GetComponent<CardData>(e);
         if (card_name_to_index(cd.name) < 0) continue;  // restrict to vocab cards
-        if (exclude_lands && card_is_land(cd)) continue;
+        if (only_lands && !card_is_land(cd)) continue;
+        else if (exclude_lands && card_is_land(cd)) continue;
         bool found = false;
         for (size_t i = 0; i < names.size(); i++)
             if (names[i] == cd.name) { copies[i]++; found = true; break; }

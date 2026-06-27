@@ -1123,6 +1123,12 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         ability.condition_on_triggered_card = (value == "TriggeredCard");
     } else if (key == "ConditionCompare") {
         ability.condition_compare = value;
+    } else if (key == "ValidCards" && ability.category == "NameCard") {
+        // DB$ NameCard ValidCards$ Land (Petrified Hamlet: "choose a land card name"): the
+        // filter restricting the nameable card set. Cabal Therapy's Card.nonLand is still
+        // handled by the name_card handler's hardcoded nonland candidate set (the non-You
+        // path), so only store it where the handler reads it (the Defined$ You land form).
+        ability.valid_cards_filter = value;
     } else if (key == "SacValid") {
         ability.sac_valid = value;            // DB$ Sacrifice — what may be sacrificed
     } else if (key == "RememberSacrificed") {
@@ -1424,6 +1430,16 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
         }
     }
     return sub;
+}
+
+// Public entry: parse one activated/spell ability body (the resolved RHS of an SVar, e.g.
+// "AB$ Mana | Cost$ T | Produced$ C") into an Ability, honouring the full Forge ability
+// grammar via parse_svar_ability. Used to materialize an AddAbility$ static's granted
+// ability (Petrified Hamlet). No SVar table is available at the grant site, so an empty map
+// is passed; the granted bodies in use are self-contained (no SVar references).
+Ability parse_ability_body(const std::string &body, Ability::AbilityType type) {
+    static const std::map<std::string, std::string> kNoSvars;
+    return parse_svar_ability(body, type, kNoSvars, "");
 }
 
 // Resolves an additive SVar chain (e.g. "SVar$Z1/Plus.Z2") into the list of
@@ -2111,6 +2127,13 @@ static std::vector<StaticAbility> parse_static_abilities(const std::string &scri
                 }
             } else if (key == "AddKeyword") {
                 sa.add_keyword = value;
+            } else if (key == "AddAbility") {
+                // AddAbility$ <SVarName> (Petrified Hamlet): a continuous static that grants
+                // a full activated ability to every Affected$ permanent (CR 613.1f, layer 6).
+                // Resolve the named SVar to its ability body now (e.g. "AB$ Mana | Cost$ T |
+                // Produced$ C"); the layer-6 grant pass parses it to an Ability per recipient.
+                auto it = svars.find(value);
+                sa.add_ability = (it != svars.end()) ? it->second : value;
             } else if (key == "Affected") {
                 sa.affected = value;
                 // Also store as affected_subtype for untap prevention (Choke: Affected$ Island)

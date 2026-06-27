@@ -98,6 +98,7 @@ private:
     void suppress_removed_statics(Game& game);    // layer 6 (613.1f): mark statics on objects that lose all abilities (Humility) as suppressed
     void apply_type_changing_effects();           // layer 4 (613.1d)
     void apply_layer6_ability_effects();          // layer 6 (613.1f): keyword grant/removal
+    void apply_layer6_ability_grants();           // layer 6 (613.1f): AddAbility$ activated-ability grants (Petrified Hamlet)
     void recompute_abilities(Game& game);         // layer 6 (613.1f): erase activated/keyword abilities removed by an ability-removal effect
     void apply_layer7_pt_effects();               // layer 7 (613.4): CDA set + additive P/T
     void apply_rules_modifying_effects();         // 613.11: MustAttack and other rules-modifiers

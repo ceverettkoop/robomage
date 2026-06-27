@@ -15,6 +15,9 @@
 // `owner` across all zones — i.e. that player's whole deck, not just their hand.
 // When `exclude_lands` is true, land cards are filtered out (Cabal Therapy's
 // ValidCards$ Card.nonLand); Disruptor Flute passes false to offer everything.
+// When `only_lands` is true, ONLY land cards are offered (Petrified Hamlet's
+// ValidCards$ Land — "name a land card"); exclude_lands and only_lands are mutually
+// exclusive (only_lands wins if both are set).
 //
 // Each returned LegalAction carries a representative owner-owned entity for the
 // named card (so the per-action card id encodes the candidate), category
@@ -25,6 +28,7 @@
 // field (cur_game.named_card vs Permanent::chosen_name).
 std::vector<LegalAction> build_name_card_choices(const std::set<Entity> &entities,
                                                  Zone::Ownership owner, bool exclude_lands,
-                                                 std::vector<std::string> &out_names);
+                                                 std::vector<std::string> &out_names,
+                                                 bool only_lands = false);
 
 #endif /* NAME_CARD_CHOICES_H */
