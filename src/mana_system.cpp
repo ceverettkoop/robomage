@@ -823,12 +823,19 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
                 if (!predicate(si)) continue;
                 activate_source(si);
                 tapped_entities.insert(si.entity);
+                // Only satisfy the pip with mana the source ACTUALLY produced. A source
+                // that produced no mana of `needed` (e.g. a 0-mana ManaReflected source
+                // with no qualifying permanent) erases nothing — the pip stays unpaid and
+                // we keep scanning. This mirrors the interactive payer, where the pip is
+                // only spent once can_afford_pool sees the color in the real pool.
                 if (pool.count(needed) > 0) {
                     auto pit = pool.find(needed);
                     pool.erase(pit);
+                    it = remaining.erase(it);
+                    return true;
                 }
-                it = remaining.erase(it);
-                return true;
+                // Source produced nothing usable; it is now tapped (tracked above) so it
+                // won't be retried, but the pip is still owed — try the next candidate.
             }
             return false;
         };
@@ -853,12 +860,14 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
                 if (!predicate(si)) continue;
                 activate_source(si);
                 tapped_entities.insert(si.entity);
+                // Only pay a generic pip with mana the source actually produced; a 0-mana
+                // source erases nothing (consistent with the colored loop above).
                 if (pool.size() > 0) {
                     pool.erase(pool.begin());
                     auto git = remaining.find(GENERIC);
                     remaining.erase(git);
+                    return true;
                 }
-                return true;
             }
             return false;
         };
