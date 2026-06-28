@@ -41,6 +41,20 @@ static void register_exile_until_host_leaves(Entity host, Entity card, Zone::Zon
 // dispatcher has already logged the reason for the divert, so no generic line is emitted.
 static Zone::ZoneValue change_zone_move(const std::shared_ptr<Orderer> &orderer, Entity e,
                                         Zone::ZoneValue dest) {
+    // CR 110.4a / 712.10: only permanents exist on the battlefield. An effect that would put a
+    // non-permanent card onto the battlefield can't — the card stays in its current zone. The
+    // case that reaches here is a double-faced card returning from exile via a flicker (e.g.
+    // Flickerwisp/Phelia on a modal DFC like Fell the Profane // Fell Mire): a DFC returns with
+    // its FRONT face up (the card already shows its front face once off the battlefield), so the
+    // entity's current CardData decides. If that front face is an instant/sorcery it can't enter,
+    // and the card remains exiled. Permanent-faced cards and tokens (always permanents) are
+    // unaffected; like a Grafdigger's Cage divert, the caller's battlefield bookkeeping/log is
+    // gated on the returned zone, so nothing is logged as having entered.
+    if (dest == Zone::BATTLEFIELD &&
+        global_coordinator.entity_has_component<CardData>(e) &&
+        !is_permanent_card(global_coordinator.GetComponent<CardData>(e))) {
+        return global_coordinator.GetComponent<Zone>(e).location;
+    }
     orderer->add_to_zone(false, e, dest);
     return global_coordinator.GetComponent<Zone>(e).location;
 }
