@@ -162,6 +162,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Manifold Key", 251},
     {"Boomerang Basics", 252},
     {"Liquimetal Coating", 253},
+    {"Mole Man, Moloid Master", 254},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);
