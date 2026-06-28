@@ -2392,6 +2392,15 @@ static std::vector<StaticAbility> parse_static_abilities(const std::string &scri
                 sa.check_svar_expr = (it != svars.end()) ? it->second : value;
             } else if (key == "SVarCompare") {
                 sa.svar_compare = value;
+            } else if (key == "IsPresent") {
+                // General present-count gate for a continuous static (Elvish Reclaimer:
+                // +2/+2 while 3+ land cards are in your graveyard). Counted at SBA time in
+                // gather_active_statics against PresentZone$/PresentCompare$.
+                sa.present_filter = value;
+            } else if (key == "PresentZone") {
+                sa.present_zone = value;
+            } else if (key == "PresentCompare") {
+                sa.present_compare = value;
             }
         }
 
