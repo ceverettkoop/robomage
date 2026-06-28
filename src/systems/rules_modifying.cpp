@@ -6,6 +6,7 @@
 #include "../components/permanent.h"
 #include "../components/player.h"
 #include "../components/types.h"
+#include "../game_queries.h"  // card_matches_filter, extract_static_cmc_bound, is_creature_card
 #include "../mana_system.h"  // get_player_entity
 
 namespace rules_mod {
@@ -54,7 +55,8 @@ bool activation_prohibited(Entity permanent_entity) {
     return false;
 }
 
-bool cast_prohibited(Zone::Ownership caster, bool card_is_creature, Zone::ZoneValue cast_from) {
+bool cast_prohibited(Zone::Ownership caster, const CardData &card, Zone::ZoneValue cast_from) {
+    bool card_is_creature = is_creature_card(card);
     for (const auto &as : g_active_statics) {
         if (as.suppressed) continue;  // 613.1f: source lost all abilities (Humility)
         if (as.sa->category != "CantBeCast") continue;
@@ -79,10 +81,26 @@ bool cast_prohibited(Zone::Ownership caster, bool card_is_creature, Zone::ZoneVa
             if (caster != as.controller) return true;  // caster is an opponent of the source
             continue;
         }
-        auto &pp = global_coordinator.GetComponent<Player>(get_player_entity(caster));
-        if (as.sa->cant_cast_limit_per_turn > 0 &&
-            static_cast<int>(pp.noncreature_spells_cast_this_turn) >= as.sa->cant_cast_limit_per_turn)
-            return true;
+        if (as.sa->cant_cast_limit_per_turn > 0) {
+            auto &pp = global_coordinator.GetComponent<Player>(get_player_entity(caster));
+            if (static_cast<int>(pp.noncreature_spells_cast_this_turn) >=
+                as.sa->cant_cast_limit_per_turn)
+                return true;
+            continue;
+        }
+        // Characteristic-based prohibition (Gaddock Teeg: "Noncreature spells with mana value 4 or
+        // greater can't be cast", "…with {X} in their mana costs can't be cast"). The static's
+        // ValidCard$ filter is matched against the spell's PRINTED characteristics — including the
+        // numeric mana-value bound (cmcGE4) seeded via extract_static_cmc_bound and the {X}-cost
+        // qualifier (hasXCost). Reached only by statics that aren't one of the special-cased forms
+        // above, so it never double-applies to an origin/opponent/per-turn static. Applies to all
+        // casters (Gaddock Teeg's lock is symmetric, CR 614/611 continuous prohibition).
+        if (!as.sa->cant_cast_filter.empty()) {
+            MatchCtx ctx;
+            ctx.controller = caster;
+            extract_static_cmc_bound(as.sa->cant_cast_filter, ctx);
+            if (card_matches_filter(card, as.sa->cant_cast_filter, ctx)) return true;
+        }
     }
     return false;
 }

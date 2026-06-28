@@ -71,6 +71,7 @@ struct CharView {
     bool is_attacking = false;               // live combat state (battlefield creatures only)
     bool is_blocking = false;
     bool is_tapped = false;
+    bool has_x_cost = false;                 // printed mana cost contains {X} (Gaddock Teeg's hasXCost)
 };
 
 bool view_has_typeline(const CharView &v, const std::string &name) {
@@ -144,6 +145,7 @@ bool eval_qualifier(const CharView &v, const MatchCtx &ctx, const std::string &q
     if (q == "Basic")        return v.types && has_basic_supertype(*v.types);
     if (q == "nonBasic")     return v.types && !has_basic_supertype(*v.types);
     if (q == "Colorless")    return v.colors.empty();  // CR 105.2c
+    if (q == "hasXCost")     return v.has_x_cost;       // {X} in the printed mana cost (Gaddock Teeg)
     // mana-value family (dynamic bound applied once by the caller) --------------
     if (q.rfind("cmc", 0) == 0) {
         if (q == "cmcLEX") return v.cmc <= static_cast<int>(cur_game.x_paid);
@@ -214,6 +216,7 @@ CharView card_view(Entity e, const CardData &cd) {
     v.has_pt = true;  // printed P/T (a head type guard keeps P/T filters scoped to creatures)
     v.power = static_cast<int>(cd.power);
     v.toughness = static_cast<int>(cd.toughness);
+    v.has_x_cost = cd.has_x_cost;
     return v;
 }
 
@@ -235,8 +238,11 @@ CharView permanent_view(Entity e, const Permanent &perm) {
         v.is_attacking = cr.is_attacking;
         v.is_blocking = cr.is_blocking;
     }
-    if (global_coordinator.entity_has_component<CardData>(e))
-        v.cmc = static_cast<int>(global_coordinator.GetComponent<CardData>(e).mana_cost.size());  // CR 112.7
+    if (global_coordinator.entity_has_component<CardData>(e)) {
+        auto &cd = global_coordinator.GetComponent<CardData>(e);
+        v.cmc = static_cast<int>(cd.mana_cost.size());  // CR 112.7
+        v.has_x_cost = cd.has_x_cost;
+    }
     return v;
 }
 

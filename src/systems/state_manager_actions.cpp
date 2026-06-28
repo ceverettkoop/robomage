@@ -473,8 +473,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             la.category = ActionCategory::CAST_SPELL;
 
             // Check CantBeCast statics from cached active_statics
-            bool card_is_creature = is_creature_card(card_data);
-            if (rules_mod::cast_prohibited(priority_player, card_is_creature)) continue;
+            if (rules_mod::cast_prohibited(priority_player, card_data)) continue;
 
             ManaValue effective_cost = effective_base_cost(card_data, priority_player);
 
@@ -565,8 +564,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             continue;
 
         // A graveyard-cast static (Grafdigger's Cage: Origin$ Graveyard) prohibits flashback.
-        bool fb_is_creature = is_creature_card(gcd);
-        if (rules_mod::cast_prohibited(priority_player, fb_is_creature, Zone::GRAVEYARD)) continue;
+        if (rules_mod::cast_prohibited(priority_player, gcd, Zone::GRAVEYARD)) continue;
 
         LegalAction fb_la(CAST_SPELL, gy_entity, "Cast " + gcd.name + " (flashback)");
         fb_la.category = ActionCategory::CAST_SPELL;
@@ -586,7 +584,6 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         auto &gcd = global_coordinator.GetComponent<CardData>(gy_entity);
         if (!gcd.has_escape) continue;
 
-        bool esc_is_creature = is_creature_card(gcd);
         bool esc_is_instant = card_has_type(gcd, "Instant");
         bool can_cast_now = esc_is_instant ||
                             ((game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
@@ -611,7 +608,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 gcd.escape_alt_cost.exile_grave_min_types)
             continue;
 
-        if (rules_mod::cast_prohibited(priority_player, esc_is_creature, Zone::GRAVEYARD)) continue;
+        if (rules_mod::cast_prohibited(priority_player, gcd, Zone::GRAVEYARD)) continue;
 
         LegalAction esc_la(CAST_SPELL, gy_entity, "Cast " + gcd.name + " (escape)");
         esc_la.category = ActionCategory::CAST_SPELL;
@@ -648,7 +645,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         }
         if (!tgt_ok) continue;
 
-        if (rules_mod::cast_prohibited(priority_player, is_creature_card(gcd), Zone::GRAVEYARD))
+        if (rules_mod::cast_prohibited(priority_player, gcd, Zone::GRAVEYARD))
             continue;
 
         ManaValue gy_cost = effective_base_cost(gcd, priority_player);
@@ -702,7 +699,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         }
         if (!tgt_ok) continue;
 
-        if (rules_mod::cast_prohibited(priority_player, is_creature_card(ecd), Zone::EXILE))
+        if (rules_mod::cast_prohibited(priority_player, ecd, Zone::EXILE))
             continue;
 
         LegalAction imp_la(CAST_SPELL, ex_entity, "Cast " + ecd.name + " (impulse, alt cost)");
