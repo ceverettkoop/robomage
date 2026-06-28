@@ -595,6 +595,32 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             card.keywords.push_back("Cycling");
             continue;
         }
+        // K:TypeCycling:<Subtype>:<cost> — typecycling (CR 702.29f). Like Cycling, an
+        // activated ability usable from hand whose cost is the given mana plus discarding
+        // this card; but instead of drawing, it searches the library for a card of the
+        // named subtype, reveals it, puts it into hand, then shuffles. General over the
+        // subtype (Islandcycling/Swampcycling/Plainscycling/...). The discard-this-card
+        // cost is the auto-consume that fires for any hand-activated ability (the source
+        // goes to the graveyard at activation); the effect is a Library→Hand search.
+        if (kw_line.rfind("TypeCycling:", 0) == 0) {
+            std::string rest = kw_line.substr(strlen("TypeCycling:"));
+            size_t colon = rest.find(':');
+            std::string subtype = (colon != std::string::npos) ? rest.substr(0, colon) : rest;
+            std::string cost_str = (colon != std::string::npos) ? rest.substr(colon + 1) : "";
+            Ability ab;
+            ab.ability_type = Ability::ACTIVATED;
+            ab.category = "ChangeZone";
+            ab.activation_zone = Zone::HAND;
+            ab.origin = Zone::LIBRARY;
+            ab.destination = Zone::HAND;
+            ab.change_type = subtype;       // subtype filter (search_zone matches card subtypes)
+            ab.mandatory = false;           // searches may fail to find (CR 701.19c)
+            // Shared Cost$ token grammar (the mana portion of the cycling cost).
+            parse_activation_cost(cost_str, ab);
+            card.abilities.push_back(ab);
+            card.keywords.push_back(subtype + "cycling");
+            continue;
+        }
         // K:Flashback:<cost> — cast from graveyard for flashback cost, then exile
         if (kw_line.rfind("Flashback:", 0) == 0) {
             std::string cost_str = kw_line.substr(strlen("Flashback:"));
