@@ -213,7 +213,15 @@ bool evaluate_present_condition(const Ability &ab, Zone::Ownership caster, std::
                 // clause is checked against Zone.controller.
                 if (!global_coordinator.entity_has_component<Zone>(e)) continue;
                 const auto &z = global_coordinator.GetComponent<Zone>(e);
-                if (z.location != Zone::BATTLEFIELD) continue;
+                if (z.location != Zone::BATTLEFIELD) {
+                    // A remembered card in a non-battlefield zone (a revealed top-of-library
+                    // card, or a remembered card in hand/graveyard/exile) is matched by its
+                    // PRINTED characteristics — permanent_matches_filter is battlefield-only, so
+                    // fall back to card_matches_filter for the type/color portion of the filter
+                    // (a controller qualifier has no meaning off the battlefield and fails closed).
+                    if (card_matches_filter(e, ab.condition_present, ctx)) matching++;
+                    continue;
+                }
                 if (global_coordinator.entity_has_component<Permanent>(e)) continue;  // handled above
                 bool youctrl = ab.condition_present.find("YouCtrl") != std::string::npos;
                 bool oppctrl = ab.condition_present.find("OppCtrl") != std::string::npos;
