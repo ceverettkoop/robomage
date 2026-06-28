@@ -142,6 +142,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Prismari Charm", 231},
     {"Silent Clearing", 234},
     {"Snow-Covered Island", 235},
+    {"Sylvan Safekeeper", 238},
     {"Underground Mortuary", 239},
     {"Wastes", 240},
 };

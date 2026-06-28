@@ -390,6 +390,28 @@ inline bool is_indestructible(Entity e) {
     return false;
 }
 
+// True if the permanent `e` currently has the keyword `kw`, reading its EFFECTIVE
+// keyword list the same way is_indestructible does: a creature's `Creature::keywords`
+// (rebuilt each static pass from the printed list plus any granted keywords — Pump
+// grants, continuous effects, keyword counters), otherwise the printed CardData (or
+// Token) keywords. Single source for "does this permanent currently have keyword K";
+// targeting (Shroud/Hexproof, CR 702.18/702.11) and any future keyword query share it
+// so they cannot drift on how a granted keyword is stored.
+inline bool permanent_has_keyword(Entity e, const char *kw) {
+    if (global_coordinator.entity_has_component<Creature>(e))
+        return creature_has_keyword(global_coordinator.GetComponent<Creature>(e), kw);
+    if (global_coordinator.entity_has_component<CardData>(e)) {
+        for (const auto &k : global_coordinator.GetComponent<CardData>(e).keywords)
+            if (k == kw) return true;
+        return false;
+    }
+    if (global_coordinator.entity_has_component<Token>(e)) {
+        for (const auto &k : global_coordinator.GetComponent<Token>(e).keywords)
+            if (k == kw) return true;
+    }
+    return false;
+}
+
 // True if the creature deals damage during the first-strike combat damage step
 // (it has First Strike or Double Strike). Single source for "does a first-strike
 // damage step matter": the step-skip scan and the per-creature damage gate both
