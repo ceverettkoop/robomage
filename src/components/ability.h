@@ -432,6 +432,14 @@ struct Ability{
     // trigger. General over any DB$ Effect that names a Triggers$ SVar.
     std::vector<Ability> effect_floating_triggers;
 
+    // DB$ Effect | ReplacementEffects$ <SVar> where the named SVar is a CR 614.13/CantHappen
+    // "Event$ Counter | ValidSA$ Spell.YouCtrl | Layer$ CantHappen" (Veil of Summer:
+    // "Spells you control can't be countered this turn"). Set at parse time; the GrantCast
+    // handler records the effect's controller in cur_game.cant_counter_spells_of for the rest
+    // of the turn (a turn-long, sourceless can't-be-countered grant — distinct from Hexing
+    // Squelcher's battlefield static).
+    bool effect_spells_uncounterable_this_turn = false;
+
     // Tapped$ True — searched card enters the battlefield tapped (Edge of Autumn)
     bool enters_tapped = false;
 

@@ -2,8 +2,11 @@
 #define ABILITY_PARAMS_H
 
 #include <cstddef>
+#include <set>
 #include <string>
 #include <vector>
+
+#include "../classes/colors.h"
 
 // Per-effect parameter blocks held by Ability's `params` variant (see ability.h).
 //
@@ -32,6 +35,12 @@ struct PumpParams {
     int def_sign = 1;
     // KW$ — keyword(s) granted to the pumped creature until end of turn (e.g. Haste).
     std::vector<std::string> grant_keywords;
+    // KW$ Hexproof:Card.<Color>:<desc> — "hexproof from <color>" (Veil of Summer). Parsed out of
+    // the keyword list into this color set; the Pump handler turns it into a turn-long player-
+    // scoped grant (cur_game.hexproof_from_colors_this_turn) covering the controller and the
+    // permanents they control, rather than a per-creature keyword (which couldn't protect the
+    // player or non-creature permanents). Empty = no hexproof-from-color grant.
+    std::set<Colors> grant_hexproof_from_colors;
 };
 
 // Delirium-conditional damage (Unholy Heat). The base damage stays in the

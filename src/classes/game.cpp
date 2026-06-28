@@ -305,6 +305,7 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     player.spells_cast_this_turn = 0;
                     player.noncreature_spells_cast_this_turn = 0;
                     player.instant_sorcery_spells_cast_this_turn = 0;
+                    player.spell_colors_cast_this_turn.clear();
                     player.cards_drawn_this_turn.clear();
                     player.cards_drawn_this_draw_step = 0;
                     // Also clear opponent's drawn-this-turn tracking
@@ -313,7 +314,13 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                         auto &opp = global_coordinator.GetComponent<Player>(opp_entity);
                         opp.cards_drawn_this_turn.clear();
                         opp.cards_drawn_this_draw_step = 0;
+                        opp.spell_colors_cast_this_turn.clear();
                     }
+                    // Turn-long continuous effects created by an instant/sorcery (Veil of Summer:
+                    // "Spells you control can't be countered this turn" + "hexproof from blue and
+                    // from black until end of turn") lapse at cleanup (CR 514.2).
+                    cant_counter_spells_of.clear();
+                    hexproof_from_colors_this_turn.clear();
                     // "Life gained this turn" (Ocelot Pride) and "tokens entered this turn"
                     // reset for BOTH players each turn — life can be gained on either player's
                     // turn, and the end-step trigger above has already checked them. Done in

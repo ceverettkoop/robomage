@@ -2,6 +2,7 @@
 
 #include <string>
 
+#include "../classes/game.h"
 #include "../cli_output.h"
 #include "../components/carddata.h"
 #include "../components/color_identity.h"
@@ -13,6 +14,7 @@
 #include "../systems/orderer.h"
 
 extern Coordinator global_coordinator;
+extern Game cur_game;
 
 namespace effects {
 
@@ -76,7 +78,8 @@ bool counter(Ability &ab, std::shared_ptr<Orderer> orderer) {
             if (do_counter &&
                 ((global_coordinator.entity_has_component<Spell>(ab.target) &&
                   global_coordinator.GetComponent<Spell>(ab.target).cant_be_countered) ||
-                 spell_uncounterable_by_static(ab.target, orderer->mEntities))) {
+                 spell_uncounterable_by_static(ab.target, orderer->mEntities) ||
+                 cur_game.cant_counter_spells_of.count(target_controller) > 0)) {
                 std::string name = global_coordinator.entity_has_component<CardData>(ab.target)
                                        ? global_coordinator.GetComponent<CardData>(ab.target).name
                                        : "<unknown>";

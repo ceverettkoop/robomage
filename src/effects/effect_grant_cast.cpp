@@ -92,6 +92,17 @@ bool grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer) {
         return true;
     }
 
+    // DB$ Effect | ReplacementEffects$ <CantHappen Counter on Spell.YouCtrl> (Veil of Summer:
+    // "Spells you control can't be countered this turn"). Record the effect's controller in the
+    // turn-long can't-be-countered set; consulted by effects::counter and cleared at cleanup.
+    // A sourceless turn-long grant (the instant resolves to the graveyard), unlike Hexing
+    // Squelcher's battlefield static.
+    if (ab.effect_spells_uncounterable_this_turn) {
+        cur_game.cant_counter_spells_of.insert(ab.controller);
+        game_log("Spells %s controls can't be countered this turn.\n", player_name(ab.controller).c_str());
+        return true;
+    }
+
     Entity tgt = ab.target;
     if (tgt == 0 || !global_coordinator.entity_has_component<Zone>(tgt)) return true;
     if (global_coordinator.GetComponent<Zone>(tgt).location != Zone::GRAVEYARD) return true;

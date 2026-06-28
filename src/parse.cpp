@@ -1258,6 +1258,13 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         ability.is_loyalty_ability = (value == "True");
     } else if (key == "Cost") {
         parse_activation_cost(value, ability);
+    } else if (key == "ConditionCheckSVar") {
+        // ConditionCheckSVar$ <SVar> on a top-level A: ability (Veil of Summer's SP$ Draw gate).
+        // Store the raw SVar name; parse_abilities' post-pass resolves it to its Count$ expression
+        // and defaults the comparator (ConditionSVarCompare) to GE1 when none is given.
+        ability.condition_check_svar = value;
+    } else if (key == "ConditionSVarCompare") {
+        ability.condition_svar_compare = value;
     } else if (key == "ConditionPresent") {
         ability.condition_present = value;
     } else if (key == "ConditionNotPresent") {
@@ -1548,6 +1555,20 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
                     Ability trig = parse_one_trigger(it->second, svars, card_name);
                     if (trig.trigger_on != 0) sub.effect_floating_triggers.push_back(trig);
                 }
+            }
+        } else if (key == "ReplacementEffects") {
+            // DB$ Effect | ReplacementEffects$ <SVar> (Veil of Summer: AntiMagic =
+            // "Event$ Counter | ValidSA$ Spell.YouCtrl | Layer$ CantHappen"). A turn-long
+            // "spells you control can't be countered" grant. Detect the CantHappen counter
+            // replacement on the controller's spells and flag it; the GrantCast handler records
+            // the controller in cur_game.cant_counter_spells_of for the rest of the turn.
+            auto it = svars.find(value);
+            if (it != svars.end()) {
+                const std::string &body = it->second;
+                if (body.find("Event$ Counter") != std::string::npos &&
+                    body.find("CantHappen") != std::string::npos &&
+                    body.find("YouCtrl") != std::string::npos)
+                    sub.effect_spells_uncounterable_this_turn = true;
             }
         } else if (key == "StaticAbilities") {
             // DB$ Effect | StaticAbilities$ <name>. The value may be a literal keyword
@@ -1890,6 +1911,16 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
                 }
                 break;
             }
+        }
+        // Resolve a top-level ConditionCheckSVar$ reference (Veil of Summer's SP$ Draw: "X" →
+        // "Count$ThisTurnCast_Card.OppCtrl+Blue,Card.OppCtrl+Black") to its Count$ expression, and
+        // default the comparator to GE1 (Forge's default for a bare ConditionCheckSVar with no
+        // ConditionSVarCompare — the value must be >= 1). Sub-ability ConditionCheckSVars are
+        // resolved separately in parse_svar_ability and keep their existing behavior.
+        if (!ability.condition_check_svar.empty()) {
+            auto it = svars.find(ability.condition_check_svar);
+            if (it != svars.end()) ability.condition_check_svar = it->second;
+            if (ability.condition_svar_compare.empty()) ability.condition_svar_compare = "GE1";
         }
         // Resolve amount_svar for delirium-conditional damage (Unholy Heat pattern).
         // SVar:X:Count$Compare Y GE4.6.2 where Y resolves to a graveyard card-type count.

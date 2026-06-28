@@ -71,12 +71,38 @@ void resolve_pump_amounts(const PumpParams *pp, Zone::Ownership ctrl,
         out_def = pp->def_sign * static_cast<int>(evaluate_dynamic_amount(pp->def_expr, ctrl, orderer, target));
 }
 
+// Register a turn-long "hexproof from <color(s)>" grant for `ctrl` and the permanents they
+// control (Veil of Summer's "You and permanents you control gain hexproof from blue and from
+// black until end of turn"). Player-scoped so it protects the player object and every permanent
+// the player controls; lapses at cleanup (CR 514.2). Consulted in Ability::is_legal_target.
+static void grant_hexproof_from_colors(Zone::Ownership ctrl, const std::set<Colors> &colors) {
+    if (colors.empty()) return;
+    Game::HexproofFromColors h;
+    h.player = ctrl;
+    h.colors = colors;
+    cur_game.hexproof_from_colors_this_turn.push_back(h);
+    game_log("%s and the permanents they control gain hexproof from the chosen color(s) until end of turn.\n",
+             player_name(ctrl).c_str());
+}
+
 bool pump(Ability &ab, std::shared_ptr<Orderer> orderer) {
     (void)orderer;
     // Pump used purely as a targeting vehicle for a graveyard card (Surgical Extraction's
     // SP$ Pump | TgtZone$ Graveyard): the target was already chosen at cast and the
     // subabilities do the work — don't re-pick a battlefield creature here.
     if (ab.target_in_graveyard) return true;
+
+    // KW$ Hexproof:Card.<Color> (Veil of Summer): the Pump's job is to grant "hexproof from
+    // <color>" to the controller and their permanents (Defined$ You & Valid Permanent.YouCtrl) —
+    // a player-scoped turn-long grant, NOT a single-target creature pump. Register it and skip
+    // target selection.
+    {
+        const PumpParams *hp = std::get_if<PumpParams>(&ab.params);
+        if (hp && !hp->grant_hexproof_from_colors.empty()) {
+            grant_hexproof_from_colors(ab.controller, hp->grant_hexproof_from_colors);
+            return true;
+        }
+    }
 
     // Present target selection, then chain subabilities with that target
     Zone::Ownership ctrl = ab.controller;
@@ -190,7 +216,21 @@ bool parse_pump(Ability &ab, const std::string &key, const std::string &value) {
             // trim
             size_t b = kw.find_first_not_of(" \t");
             size_t e = kw.find_last_not_of(" \t");
-            if (b != std::string::npos) pp.grant_keywords.push_back(kw.substr(b, e - b + 1));
+            if (b != std::string::npos) {
+                std::string token = kw.substr(b, e - b + 1);
+                // "Hexproof:Card.<Color>:<desc>" (Veil of Summer) — a parameterized "hexproof
+                // from <color>" grant, not a plain keyword. Extract the color(s) into
+                // grant_hexproof_from_colors so the handler makes a player-scoped turn-long grant.
+                if (token.rfind("Hexproof:", 0) == 0) {
+                    if (token.find("Blue") != std::string::npos) pp.grant_hexproof_from_colors.insert(BLUE);
+                    if (token.find("Black") != std::string::npos) pp.grant_hexproof_from_colors.insert(BLACK);
+                    if (token.find("Red") != std::string::npos) pp.grant_hexproof_from_colors.insert(RED);
+                    if (token.find("Green") != std::string::npos) pp.grant_hexproof_from_colors.insert(GREEN);
+                    if (token.find("White") != std::string::npos) pp.grant_hexproof_from_colors.insert(WHITE);
+                } else {
+                    pp.grant_keywords.push_back(token);
+                }
+            }
             if (amp == std::string::npos) break;
             start = amp + 3;
         }

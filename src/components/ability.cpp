@@ -604,12 +604,42 @@ static bool target_type_matches_stack_object(const std::string &target_type, Ent
     return false;
 }
 
+// "Hexproof from <color>" (CR 702.11e): a candidate protected by a turn-long
+// cur_game.hexproof_from_colors_this_turn grant can't be targeted by a spell/ability an OPPONENT
+// of the protected player controls whose SOURCE is one of the granted colors. Covers both the
+// protected player (the player object) and any permanent that player controls. `source` is the
+// targeting object (a spell card on the stack, or an ability's source permanent) whose
+// ColorIdentity gives the color of the spell/ability for the comparison; `caster` is its
+// controller. Returns true when the candidate is protected (so the target is illegal).
+static bool target_has_color_hexproof(Entity cand, Entity source, Zone::Ownership caster) {
+    if (cur_game.hexproof_from_colors_this_turn.empty()) return false;
+    if (!global_coordinator.entity_has_component<ColorIdentity>(source)) return false;
+    const auto &src_colors = global_coordinator.GetComponent<ColorIdentity>(source).colors;
+    for (const auto &h : cur_game.hexproof_from_colors_this_turn) {
+        // Only protects against an opponent's spell/ability (two-player: caster != protected player).
+        if (caster == h.player) continue;
+        // The candidate must be the protected player, or a permanent that player controls.
+        bool is_protected_player = (cand == get_player_entity(h.player));
+        bool is_protected_perm = global_coordinator.entity_has_component<Permanent>(cand) &&
+                                 is_battlefield_permanent(cand, h.player);
+        if (!is_protected_player && !is_protected_perm) continue;
+        // The source must be one of the granted colors.
+        for (Colors c : h.colors)
+            if (src_colors.count(c)) return true;
+    }
+    return false;
+}
+
 // Single source of truth for target legality (see header). build_valid_targets
 // enumerates candidates and filters them through this; is_target_valid re-runs the
 // chosen target(s) through it at resolution. Keeping both on one predicate is what
 // prevents the enumeration and re-verification rules from drifting apart.
 bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
     if (cand == 0) return false;
+
+    // Hexproof from <color> (Veil of Summer) — applies to players and permanents alike, so it is
+    // checked up front before the type-specific branches below.
+    if (target_has_color_hexproof(cand, source, caster)) return false;
 
     // ValidTgts$ ...Other (e.g. Solitude/Flickerwisp "another"/"other" target): the source
     // of the ability cannot be chosen as its own target (CR 115.1; "other" is a target
@@ -1025,6 +1055,29 @@ size_t evaluate_dynamic_amount(
         if (times_pos != std::string::npos)
             mult = static_cast<size_t>(std::stoi(expr.substr(times_pos + 7)));
         return count * mult;
+    }
+    // Count$ThisTurnCast_Card.<Ctrl>+<Color>[,Card.<Ctrl>+<Color>...] — has a player (relative to
+    // ctrl) cast a spell of one of the named colors this turn? (Veil of Summer:
+    // Count$ThisTurnCast_Card.OppCtrl+Blue,Card.OppCtrl+Black, the gate for its conditional draw.)
+    // Reads Player::spell_colors_cast_this_turn (presence-tracked per color); returns 1 if any
+    // requested color was cast by the relevant player this turn, else 0 — sufficient for the GE1
+    // conditions that consume it.
+    if (expr.find("Count$ThisTurnCast_") != std::string::npos) {
+        Zone::Ownership opp = (ctrl == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+        // The clause controller token is read per-expression (Veil uses OppCtrl); YouCtrl (or no
+        // controller token) means the source's controller.
+        Zone::Ownership who = (expr.find("OppCtrl") != std::string::npos) ? opp : ctrl;
+        Entity pe = get_player_entity(who);
+        if (global_coordinator.entity_has_component<Player>(pe)) {
+            const auto &colors = global_coordinator.GetComponent<Player>(pe).spell_colors_cast_this_turn;
+            bool hit = (expr.find("Blue") != std::string::npos && colors.count(BLUE)) ||
+                       (expr.find("Black") != std::string::npos && colors.count(BLACK)) ||
+                       (expr.find("Red") != std::string::npos && colors.count(RED)) ||
+                       (expr.find("Green") != std::string::npos && colors.count(GREEN)) ||
+                       (expr.find("White") != std::string::npos && colors.count(WHITE));
+            return hit ? 1 : 0;
+        }
+        return 0;
     }
     // Fall back to the shared static-ability SVar evaluator for graveyard-count
     // expressions (Count$TypeInYourYard / Count$ValidGraveyard / CardTypes). It

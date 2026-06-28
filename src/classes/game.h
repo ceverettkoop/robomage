@@ -153,6 +153,25 @@ struct Game {
         std::map<Entity, int> ability_resolution_counts;  // Count$ResolvedThisTurn: incremented per triggered-ability resolve
         std::map<Entity, int> payment_fail_counts;  // machine mode: block casting after 2 failed payments
         bool pending_cant_be_countered = false;  // set during mana payment when Cavern restricted mana used
+        // Turn-long "spells you control can't be countered" grant created by a resolving spell/
+        // ability (Veil of Summer's DB$ Effect | ReplacementEffects$ AntiMagic, CR 614.13/
+        // CantHappen). A player here means every spell that player controls can't be countered
+        // this turn — unlike Hexing Squelcher's battlefield static, this form belongs to no
+        // permanent (the instant is in the graveyard), so it is recorded here and cleared at
+        // cleanup. Consulted at counter-resolution time (effects::counter).
+        std::set<Zone::Ownership> cant_counter_spells_of;
+        // Turn-long "hexproof from <color(s)>" grant for a player and the permanents they control
+        // (Veil of Summer: "You and permanents you control gain hexproof from blue and from black
+        // until end of turn", CR 702.11e). Each entry protects `player` (and any permanent they
+        // control) from being targeted by spells/abilities an opponent controls whose source is
+        // one of `colors`. Player-scoped (rather than a per-permanent keyword grant) so it can
+        // also protect the player object, and so every permanent the player controls is covered;
+        // cleared at cleanup. Consulted in Ability::is_legal_target.
+        struct HexproofFromColors {
+            Zone::Ownership player = Zone::UNKNOWN;
+            std::set<Colors> colors;
+        };
+        std::vector<HexproofFromColors> hexproof_from_colors_this_turn;
         bool revolt_player_a = false;  // a permanent Player A controlled left the battlefield this turn
         bool revolt_player_b = false;  // a permanent Player B controlled left the battlefield this turn
         std::set<Entity> void_countered;  // entities exiled with void counters (Dauthi Voidwalker)
