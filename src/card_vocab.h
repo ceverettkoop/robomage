@@ -136,6 +136,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Pithing Needle", 229},
     {"Prismari Charm", 231},
     {"Silent Clearing", 234},
+    {"Snow-Covered Island", 235},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);
