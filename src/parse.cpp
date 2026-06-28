@@ -212,8 +212,20 @@ static void parse_activation_cost(const std::string &cost_str, Ability &ability)
         } else if (tok.rfind("PayLife<", 0) == 0) {
             size_t angle = tok.find('<');
             size_t close = tok.find('>');
-            if (angle != std::string::npos && close != std::string::npos && close > angle + 1)
-                ability.life_cost = std::stoi(tok.substr(angle + 1, close - angle - 1));
+            if (angle != std::string::npos && close != std::string::npos && close > angle + 1) {
+                std::string arg = tok.substr(angle + 1, close - angle - 1);
+                if (!arg.empty() && std::isdigit(static_cast<unsigned char>(arg[0])))
+                    ability.life_cost = std::stoi(arg);
+                else
+                    // PayLife<X> — a VARIABLE life cost: the life paid is X (Count$xPaid),
+                    // chosen as an additional cost while casting (Toxic Deluge). Don't stoi("X").
+                    ability.life_cost_is_x = true;
+            }
+        } else if (tok == "X") {
+            // A bare {X} in an activation cost (Candelabra of Tawnos: Cost$ X T). parse_mana_cost
+            // drops X (it has no fixed value); record that the activator chooses X, so the cost
+            // path can prompt for it and add X generic mana. X = Count$xPaid.
+            ability.activation_has_x = true;
         } else if (tok.rfind("PayEnergy<", 0) == 0) {
             // PayEnergy<N> — pay N energy ({E}) as part of the cost (CR 122.1c). Used on
             // Guide of Souls' AttackersDeclared ImmediateTrigger ("you may pay {E}{E}{E}").
@@ -1090,18 +1102,27 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
     } else if (key == "ChooseEach") {
         ability.choose_each = value;
     } else if (key == "TargetMin") {
-        ability.target_min = std::stoi(value);
-    } else if (key == "TargetMax") {
-        // A numeric cap (TargetMax$ 3) is used directly. A count-SVar cap
-        // (TargetMax$ MaxTgts, where MaxTgts = Count$ValidStack Card) means "any
-        // number of targets" — there is no fixed upper bound, so treat it as
-        // effectively unlimited; the multi-target selection loop stops on its own
-        // once no further legal targets remain (Mindbreak Trap: exile any number of
-        // target spells).
+        // A numeric minimum (TargetMin$ 0 = optional, TargetMin$ 2 = at least 2) is used
+        // directly. A non-numeric value is an SVar key (TargetMin$ X, X = Count$xPaid →
+        // "exactly X targets"): stash the token; parse_abilities' post-pass resolves it and,
+        // when it is Count$xPaid, sets target_min_from_xpaid so select_target requires X targets.
         if (!value.empty() && std::isdigit(static_cast<unsigned char>(value[0])))
-            ability.target_max = std::stoi(value);
+            ability.target_min = std::stoi(value);
         else
+            ability.target_min_svar = value;
+    } else if (key == "TargetMax") {
+        // A numeric cap (TargetMax$ 3) is used directly. A count-SVar cap means there is no
+        // fixed upper bound, so fall back to "effectively unlimited" (MAX_ENTITIES); the
+        // multi-target selection loop stops on its own once no further legal targets remain
+        // (Mindbreak Trap). The post-pass resolves the stashed token: a Count$xPaid cap
+        // (TargetMax$ X) sets target_max_from_xpaid so the loop clamps to X (Kozilek's Command;
+        // with the matching TargetMin$ X this yields EXACTLY-X targeting).
+        if (!value.empty() && std::isdigit(static_cast<unsigned char>(value[0]))) {
+            ability.target_max = std::stoi(value);
+        } else {
+            ability.target_max_svar = value;
             ability.target_max = MAX_ENTITIES;
+        }
     } else if (key == "ActivationZone") {
         if (value == "Hand") ability.activation_zone = Zone::HAND;
     } else if (key == "Activation") {
@@ -1264,6 +1285,42 @@ static std::string normalize_category(std::string category) {
     return category;
 }
 
+// Resolves a TargetMin$/TargetMax$ that was given as an SVar key (stashed during param parsing)
+// to its runtime meaning. When the SVar resolves to Count$xPaid the bound equals the X paid at
+// cast/activation (CR 601.2b chooses X before targets, so x_paid is known when targets are
+// selected). Setting BOTH target_min_from_xpaid and target_max_from_xpaid yields EXACTLY-X
+// targeting (Candelabra of Tawnos, Hide on the Ceiling); a lone TargetMax$ X gives "up to X"
+// (Kozilek's Command). Other count-SVar caps keep the "effectively unlimited" fallback already
+// stored by apply_param_to_ability. Shared by the top-level and sub-ability parse paths.
+static void resolve_xpaid_target_counts(Ability& ability,
+                                        const std::map<std::string, std::string>& svars) {
+    if (!ability.target_min_svar.empty()) {
+        auto it = svars.find(ability.target_min_svar);
+        if (it != svars.end() && it->second.find("xPaid") != std::string::npos)
+            ability.target_min_from_xpaid = true;
+    }
+    if (!ability.target_max_svar.empty()) {
+        auto it = svars.find(ability.target_max_svar);
+        if (it != svars.end() && it->second.find("xPaid") != std::string::npos)
+            ability.target_max_from_xpaid = true;
+    }
+}
+
+// Resolves a Pump/PumpAll NumAtt$/NumDef$ count-SVar key (e.g. "X" or "-X" → att_expr/def_expr
+// "X") to its runtime Count$ expression (e.g. Count$xPaid), so the pump effect can evaluate the
+// signed magnitude at resolution (Toxic Deluge's -X/-X; Eldrazi Linebreaker's +X). The sign was
+// captured separately (att_sign/def_sign) by parse_pump_amount. Shared by both parse paths.
+static void resolve_pump_exprs(Ability& ability,
+                               const std::map<std::string, std::string>& svars) {
+    if (auto *pp = std::get_if<PumpParams>(&ability.params)) {
+        for (std::string *expr : {&pp->att_expr, &pp->def_expr}) {
+            if (expr->empty()) continue;
+            auto it = svars.find(*expr);
+            if (it != svars.end()) *expr = it->second;
+        }
+    }
+}
+
 // Forward declaration so parse_svar_ability can recurse via SubAbility$.
 static Ability parse_svar_ability(const std::string& content, Ability::AbilityType ability_type,
                                   const std::map<std::string, std::string>& svars,
@@ -1416,15 +1473,10 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
         sub.amount_svar = "";
     }
     // Resolve a Pump NumAtt$/NumDef$ given as a count-SVar (e.g. "+X", X = Count$Valid
-    // Eldrazi.YouCtrl): turn the stored SVar key into its runtime Count$ expression so the
-    // pump effect can evaluate the magnitude at resolution (Eldrazi Linebreaker).
-    if (auto *pp = std::get_if<PumpParams>(&sub.params)) {
-        for (std::string *expr : {&pp->att_expr, &pp->def_expr}) {
-            if (expr->empty()) continue;
-            auto it = svars.find(*expr);
-            if (it != svars.end()) *expr = it->second;
-        }
-    }
+    // Eldrazi.YouCtrl) to its runtime Count$ expression (Eldrazi Linebreaker), and a
+    // TargetMin$/TargetMax$ SVar to its exactly-X / up-to-X meaning.
+    resolve_pump_exprs(sub, svars);
+    resolve_xpaid_target_counts(sub, svars);
     // Resolve dig_num_expr SVar reference (e.g. "X" → "Count$Devotion.Blue")
     if (!sub.dig_num_expr.empty()) {
         auto it = svars.find(sub.dig_num_expr);
@@ -1788,6 +1840,13 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
                 if (it != svars.end()) cp->count_expr = it->second;
             }
         }
+
+        // Resolve a top-level Pump/PumpAll NumAtt$/NumDef$ count-SVar (Toxic Deluge: -X/-X →
+        // Count$xPaid) and a TargetMin$/TargetMax$ SVar (exactly-X / up-to-X targeting). The
+        // sub-ability path resolves these in parse_svar_ability; do the same for primary SP$/AB$
+        // abilities whose effect/targeting scales by X (Toxic Deluge, Candelabra, Hide on the Ceiling).
+        resolve_pump_exprs(ability, svars);
+        resolve_xpaid_target_counts(ability, svars);
 
         ret_val.push_back(ability);
     }

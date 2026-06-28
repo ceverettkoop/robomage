@@ -331,6 +331,27 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
         return;
     }
 
+    // X ACTIVATION COST (Candelabra of Tawnos: Cost$ X T): X is part of the activation cost,
+    // chosen during announcement BEFORE targets (CR 602.2b/601.2b) so an exactly-X / up-to-X
+    // target count can read it. Prompt for X (bounded by the mana available beyond the rest of
+    // the cost), record it as x_paid, and add X generic to the mana cost paid below.
+    size_t x_activation = 0;
+    if (!is_mana_ability && ability.activation_has_x) {
+        ManaValue base_cost = effective_activation_mana_cost(ability, controller, orderer);
+        size_t max_x = max_available_mana(controller, base_cost, orderer);
+        game_log("Choose X value (0-%zu):\n", max_x);
+        std::vector<LegalAction> x_actions;
+        for (size_t xv = 0; xv <= max_x; xv++) {
+            LegalAction la(PASS_PRIORITY, std::string("X = " + std::to_string(xv)));
+            la.category = ActionCategory::CHOOSE_X;
+            x_actions.push_back(la);
+        }
+        int x_choice = InputLogger::instance().get_input(x_actions);
+        x_activation = static_cast<size_t>(x_choice);
+        cur_game.x_paid = x_activation;
+        game_log("%s chooses X = %zu\n", player_name(controller).c_str(), x_activation);
+    }
+
     // SELECT TARGETS BEFORE PAYING COSTS
     if (!is_mana_ability) {
         if (stack_ab.valid_tgts != "N_A") {
@@ -341,8 +362,10 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
     if (ability.tap_cost) {
         permanent.is_tapped = true;
     }
-    // Mana cost (after ReduceCost$ — CR 601.2f; reduces generic only)
+    // Mana cost (after ReduceCost$ — CR 601.2f; reduces generic only). For an X-cost ability the
+    // chosen X is added as generic mana on top of the base cost.
     ManaValue activate_cost = effective_activation_mana_cost(ability, controller, orderer);
+    for (size_t i = 0; i < x_activation; i++) activate_cost.insert(GENERIC);
     if (!activate_cost.empty()) {
         auto mana_snap = snapshot_mana_state(controller, orderer);
         if (!prompt_mana_payment(controller, activate_cost, permanent_entity, orderer)) {
@@ -1032,13 +1055,20 @@ void select_target(Ability &ability, std::shared_ptr<Orderer> orderer, Zone::Own
 
     // Multi-target selection loop
     ability.targets.clear();
-    // "Up to X target ..." (Kozilek's Command): the cap is the X paid at cast time.
+    // "Up to X target ..." (Kozilek's Command): the cap is the X paid at cast time. When the
+    // minimum is ALSO X (TargetMin$ X = TargetMax$ X), this becomes "exactly X target ..."
+    // (Candelabra of Tawnos, Hide on the Ceiling): the loop neither offers "Done" nor stops
+    // before X targets have been chosen, and clamps at X. X (x_paid) was chosen before targets
+    // (CR 601.2b), so it is known here.
     int effective_max = ability.target_max;
     if (ability.target_max_from_xpaid)
         effective_max = static_cast<int>(cur_game.x_paid);
+    int effective_min = ability.target_min;
+    if (ability.target_min_from_xpaid)
+        effective_min = static_cast<int>(cur_game.x_paid);
     for (int i = 0; i < effective_max; i++) {
         if (valid_targets.empty()) break;
-        bool can_stop = (i >= ability.target_min);
+        bool can_stop = (i >= effective_min);
         select_single_target(ability, valid_targets, can_stop);
         if (ability.target == 0) break;  // chose "Done" or "No target"
         ability.targets.push_back(ability.target);
@@ -1409,6 +1439,30 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                     break;
                 }
 
+                // VARIABLE LIFE X-COST (Toxic Deluge: "As an additional cost, pay X life").
+                // The life paid IS the spell's X (Count$xPaid). Choose X (0..life — CR 119.4
+                // lets a player pay up to their whole life total), set x_paid, and pay it. Done
+                // after the mana payment commits so a cancelled mana payment doesn't lose life.
+                // X is still chosen before targets are selected below (CR 601.2b).
+                if (spell_has_variable_life_cost(card_data)) {
+                    Entity caster_entity = (caster == Zone::PLAYER_A)
+                        ? cur_game.player_a_entity : cur_game.player_b_entity;
+                    auto &life_player = global_coordinator.GetComponent<Player>(caster_entity);
+                    size_t max_x = static_cast<size_t>(std::max(0, life_player.life_total));
+                    game_log("Choose X value (0-%zu):\n", max_x);
+                    std::vector<LegalAction> x_actions;
+                    for (size_t xv = 0; xv <= max_x; xv++) {
+                        LegalAction la(PASS_PRIORITY, std::string("X = " + std::to_string(xv)));
+                        la.category = ActionCategory::CHOOSE_X;
+                        x_actions.push_back(la);
+                    }
+                    int x_choice = InputLogger::instance().get_input(x_actions);
+                    size_t x_val = static_cast<size_t>(x_choice);
+                    cur_game.x_paid = x_val;
+                    life_player.life_total -= static_cast<int>(x_val);
+                    game_log("%s pays %zu life (X = %zu)\n", player_name(caster).c_str(), x_val, x_val);
+                }
+
                 // ADDITIONAL SACRIFICE COST on the spell itself (CR 601.2f / 118.x):
                 // Natural Order — "As an additional cost to cast this spell, sacrifice a
                 // green creature." Paid here as part of casting (before the spell is on the
@@ -1474,9 +1528,13 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             spell.kicked = kicked_flags;  // per-kicker "paid?" flags (empty for non-kicker spells)
             spell.replicate_count = replicate_count;  // # of replicate payments (0 if none/no Replicate)
             // Record the X value paid so an "enters with X counters" replacement can read
-            // it (Chalice of the Void: enters with X charge counters). cur_game.x_paid is
-            // global and may be overwritten by a later cast before this spell resolves.
-            if (card_data.has_x_cost) spell.x_paid = static_cast<int>(cur_game.x_paid);
+            // it (Chalice of the Void: enters with X charge counters) and so the resolving
+            // spell's Count$xPaid amount reads the right X (StackManager restores x_paid from
+            // this). cur_game.x_paid is global and may be overwritten by a later cast before this
+            // spell resolves. A variable-life X spell (Toxic Deluge) has no mana X, so also key
+            // off its PayLife<X> cost.
+            if (card_data.has_x_cost || spell_has_variable_life_cost(card_data))
+                spell.x_paid = static_cast<int>(cur_game.x_paid);
             if (cur_game.pending_cant_be_countered) {
                 spell.cant_be_countered = true;
                 cur_game.pending_cant_be_countered = false;

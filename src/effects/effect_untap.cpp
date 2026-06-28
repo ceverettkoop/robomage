@@ -12,11 +12,14 @@ namespace effects {
 
 bool untap(Ability &ab, std::shared_ptr<Orderer> orderer) {
     (void)orderer;
-    if (global_coordinator.entity_has_component<Permanent>(ab.target)) {
-        auto &tperm = global_coordinator.GetComponent<Permanent>(ab.target);
+    // Untap every chosen target. A single-target Untap uses ab.target; a multi-target Untap
+    // (Candelabra of Tawnos: "Untap X target lands") populates ab.targets — untap each.
+    std::vector<Entity> targets = ab.targets.empty() ? std::vector<Entity>{ab.target} : ab.targets;
+    for (Entity t : targets) {
+        if (!global_coordinator.entity_has_component<Permanent>(t)) continue;
+        auto &tperm = global_coordinator.GetComponent<Permanent>(t);
         tperm.is_tapped = false;
-        std::string tname = tperm.name;
-        game_log("%s untaps\n", tname.c_str());
+        game_log("%s untaps\n", tperm.name.c_str());
     }
     return true;
 }

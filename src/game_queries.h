@@ -516,6 +516,18 @@ inline std::string spell_additional_sac_spec(const CardData &cd) {
     return "";
 }
 
+// True if the spell's SPELL ability carries a VARIABLE life cost (Cost$ ... PayLife<X>): the
+// amount of life paid IS the spell's X (Count$xPaid), chosen as an additional cost while casting
+// (Toxic Deluge). Distinct from a fixed PayLife<N>, which is paid as a flat life cost. Reading it
+// off the SPELL ability keeps the parser's real Cost$ tag authoritative (no retag); the cast path
+// prompts for X, sets cur_game.x_paid, and pays that much life.
+inline bool spell_has_variable_life_cost(const CardData &cd) {
+    for (const auto &ab : cd.abilities)
+        if (ab.ability_type == Ability::SPELL && ab.life_cost_is_x)
+            return true;
+    return false;
+}
+
 // Single source for "a player gains life": raises their life total and accumulates
 // life_gained_this_turn (118.9 / the "if you gained life this turn" check on cards like
 // Ocelot Pride). Every life-gain site (lifelink, GainLife effects, combat lifelink) routes

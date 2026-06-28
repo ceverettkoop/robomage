@@ -27,6 +27,10 @@ struct Ability{
     int target_min = 1;              // TargetMin$ 0 = optional targeting (can choose no target)
     int target_max = 1;             // TargetMax$ N — max number of targets (1 = single target)
     bool target_max_from_xpaid = false;  // TargetMax$ X (X = Count$xPaid): cap = X paid at cast (Kozilek's Command)
+    bool target_min_from_xpaid = false;  // TargetMin$ X (X = Count$xPaid): lower bound = X paid — with the
+                                         // matching max gives EXACTLY-X targeting (Candelabra, Hide on the Ceiling)
+    std::string target_min_svar = "";    // raw TargetMin$ token when non-numeric (an SVar key); resolved post-parse
+    std::string target_max_svar = "";    // raw TargetMax$ token when non-numeric (an SVar key); resolved post-parse
     Entity source = 0;
     Entity target = 0;
     std::vector<Entity> targets;    // used when target_max > 1
@@ -58,8 +62,12 @@ struct Ability{
 
     // Activated ability costs
     bool tap_cost = false;              // {T} is part of the activation cost
+    bool activation_has_x = false;      // Cost$ contains {X}: choose X at activation, add X generic to the
+                                        // activation mana cost; X = Count$xPaid (Candelabra of Tawnos)
     ManaValue activation_mana_cost;     // Mana that must be paid to activate
     int life_cost = 0;                  // PayLife<N> — life paid at activation
+    bool life_cost_is_x = false;        // PayLife<X> — variable life cost: the life paid IS X (Count$xPaid),
+                                        // chosen as an additional cost while casting (Toxic Deluge)
     int energy_cost = 0;                // PayEnergy<N> — energy ({E}) paid as part of the cost (CR 122.1c)
     bool sac_self = false;              // Sac<1/CARDNAME> — sacrifice source permanent as cost
     std::string sac_cost_spec = "";     // Sac<1/Type;Type/> — type-based sac cost; empty = none
