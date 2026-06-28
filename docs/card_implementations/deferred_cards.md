@@ -153,3 +153,38 @@ for the specific bug branches no shipping card can reach):
   Narrow and latent (no shipping mana source has a mana activation cost); spell-cast affordability
   already used the correct `can_pay_mana` path (Badgermole's bonus verified still letting a single
   Birds of Paradise pay a `{1}{G}` cost).
+
+## Run 2026-06-28  (cap N=30, inspected 34 cards — full remaining worklist)
+
+The full missing-card worklist held only 34 cards, all with local Forge scripts. Triage classified
+11 as already-covered, 13 as bounded new-mechanic work (implemented this run), and the 10 below as
+deferred — each needs a sizeable engine subsystem an unattended run should not build blind.
+
+### Deferred at triage
+- **Tamiyo, Inquisitive Student / Tamiyo, Seasoned Scholar** — front/back DFC where a *creature*
+  transforms into a *planeswalker*, plus `Investigate` (Clue tokens), a "third card drawn this turn"
+  draw-count threshold trigger, and an emblem; several new subsystems at once (Forge script: available)
+- **Brazen Borrower / Petty Theft** — Adventure (`AlternateMode:Adventure`): cast the instant half,
+  exile it, later cast the creature half from exile (Forge script: available)
+- **Pinnacle Emissary** — `K:Warp` (suspend-like alternative cast that exiles then recasts from
+  exile) + a missing Drone token script (Forge script: available)
+- **Urza's Saga** — Saga subsystem (`K:Chapter:N:...` lore counters / chapter abilities / final-chapter
+  sacrifice) + a missing Construct token + a `ManaCost0/1` library-search filter (Forge script: available)
+- **Kaito, Bane of Nightmares** — `Ninjutsu` keyword + `Stun` counters + a planeswalker that becomes a
+  creature on your turn (Forge script: available)
+- **Atraxa, Grand Unifier** — `RepeatEach` iterating over *card types* (`RepeatTypesFrom$`) with a
+  per-type `ChosenType` ChooseCard; a new repeat-over-types iterator (Forge script: available)
+- **Eladamri, Korvecdal** — casting creatures off the top of your library (`MayPlay$` top-of-library
+  + `MayLookAt$`), a tap-two-other-creatures activation cost, and a Hand+top-of-library ChooseCard
+  (Forge script: available)
+- **Grist, the Hunger Tide** — `AB$ Repeat` loop primitive (`RepeatCheckSVar`), a reflexive `Sac`
+  unless-cost, and an off-battlefield characteristic-defining "1/1 Insect everywhere but the
+  battlefield" static (Forge script: available)
+- **Springheart Nantuko** — `Bestow` keyword + a Landfall ("a land you control enters") triggered
+  ability + copy-the-enchanted-creature (Forge script: available)
+- **Yorion, Sky Nomad** — `Companion` deck-building keyword (cast from outside the game) + a
+  player-chosen "any number" mass self-blink with delayed end-of-turn return (Forge script: available)
+
+### Not reached (cap)
+None — the N=30 cap exceeded the 24 implementable cards in the worklist, so every covered and
+bounded-mechanic card was attempted this run.
