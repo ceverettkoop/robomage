@@ -14,7 +14,11 @@
 #include "../components/spell.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
+#include "../ecs/events.h"
+#include "../classes/action.h"
+#include "../input_logger.h"
 #include "../game_queries.h"
+#include "../mana_system.h"
 #include "../svar_eval.h"
 #include "../systems/orderer.h"
 
@@ -26,6 +30,7 @@ namespace effects {
 static bool search_reveals_card(const Ability &ab);
 static Zone::ZoneValue change_zone_move(const std::shared_ptr<Orderer> &orderer, Entity e,
                                         Zone::ZoneValue dest);
+static void register_exile_until_host_leaves(Entity host, Entity card, Zone::ZoneValue origin);
 
 // Move a card for a ChangeZone effect and report the zone it actually landed in. A
 // replacement effect can divert the move during add_to_zone — Containment Priest redirects an
@@ -38,6 +43,44 @@ static Zone::ZoneValue change_zone_move(const std::shared_ptr<Orderer> &orderer,
                                         Zone::ZoneValue dest) {
     orderer->add_to_zone(false, e, dest);
     return global_coordinator.GetComponent<Zone>(e).location;
+}
+
+// CR 603.6e linked exile-and-return ("exile ... until [host] leaves the battlefield"). Records
+// that `host` exiled `card` from `origin` under a Duration$ UntilHostLeavesPlay, and registers a
+// delayed trigger that RETURNS the card when the host leaves the battlefield. The return goes
+// back to `origin`: a HAND card to its owner's hand, a BATTLEFIELD permanent onto the battlefield
+// under its owner's control (a fresh object — re-entry triggers fire normally). Reused by Cloak
+// and Dagger (a revealed hand card or the chosen creature) and by the single-target-permanent
+// exilers Sheltered by Ghosts / Static Prison (origin BATTLEFIELD). One trigger is registered per
+// exiled card, so each card carries its own origin even when a host exiles several.
+static void register_exile_until_host_leaves(Entity host, Entity card, Zone::ZoneValue origin) {
+    if (host == 0 || card == 0) return;
+    // Track the exiled card on the host's Permanent (snapshotted into last-known info when the
+    // host leaves; also the channel Keen-Eyed Curator-style "cards exiled with this" effects read).
+    if (global_coordinator.entity_has_component<Permanent>(host))
+        global_coordinator.GetComponent<Permanent>(host).exiled_with.push_back(card);
+
+    // The fire ability returns this one card from exile to its origin zone. Seeding
+    // restore_remembered_exiled_with makes resolve() set the remembered set to exactly this card,
+    // and the Defined$ Remembered move (source = card) sends it to fire_ab.destination under its
+    // owner's control (owner = the card's Zone.owner).
+    Ability fire_ab;
+    fire_ab.ability_type = Ability::TRIGGERED;
+    fire_ab.category = "ChangeZone";
+    fire_ab.defined_remembered = true;
+    fire_ab.restore_remembered_exiled_with = {card};
+    fire_ab.source = card;
+    fire_ab.origin = Zone::EXILE;
+    fire_ab.destination = origin;
+
+    DelayedTrigger dt;
+    dt.ability = fire_ab;
+    dt.fire_on = Events::CARD_CHANGED_ZONE;
+    dt.owner_entity = get_player_entity(source_controller(host));
+    dt.fire_on_turn = cur_game.turn;
+    dt.watch_entity = host;
+    dt.fire_on_leave_battlefield = true;
+    cur_game.delayed_triggers.push_back(dt);
 }
 
 // A library search reveals the chosen card when it must satisfy a restriction
@@ -103,6 +146,10 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
         }
         for (auto tgt : to_move) {
             if (!global_coordinator.entity_has_component<Zone>(tgt)) continue;
+            // Pre-move origin zone — captured before the move for a Duration$ UntilHostLeavesPlay
+            // exile so the return knows where the card came from (Sheltered by Ghosts / Static
+            // Prison target a battlefield permanent: origin BATTLEFIELD).
+            Zone::ZoneValue tgt_origin = global_coordinator.GetComponent<Zone>(tgt).location;
             std::string tname = global_coordinator.entity_has_component<CardData>(tgt)
                                     ? global_coordinator.GetComponent<CardData>(tgt).name
                                     : (global_coordinator.entity_has_component<Permanent>(tgt)
@@ -141,7 +188,13 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
             }
             if (ab.destination == Zone::EXILE && ab.source != 0 &&
                 global_coordinator.entity_has_component<Permanent>(ab.source)) {
-                global_coordinator.GetComponent<Permanent>(ab.source).exiled_with.push_back(tgt);
+                // Duration$ UntilHostLeavesPlay: register the linked return (which also records
+                // exiled_with). Otherwise just record the exile for "cards exiled with this"
+                // readers (Skyclave Apparition / Keen-Eyed Curator).
+                if (ab.duration_until_host_leaves)
+                    register_exile_until_host_leaves(ab.source, tgt, tgt_origin);
+                else
+                    global_coordinator.GetComponent<Permanent>(ab.source).exiled_with.push_back(tgt);
             }
             // RememberChanged$ True (Skyclave Apparition's TrigExile): stash the moved card in
             // the remembered set so a later SVar (Remembered$CardManaCost) and a paired
@@ -165,6 +218,69 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
             global_coordinator.GetComponent<Zone>(ab.source).controller = owner;
         if (landed == ab.destination)
             game_log("%s is moved to %s\n", sname.c_str(), dest_str);
+        return true;
+    }
+
+    // Defined$ Remembered with a bounded/optional selection (Cloak and Dagger's DBChangeZone:
+    // "you MAY exile up to one of the remembered candidates"). Unlike the blanket defined_remembered
+    // move below (Ajani, which moves EVERY remembered object), this PRESENTS A CHOICE of which
+    // remembered object(s) to move: ChangeNum$ N caps the count and Optional$ True permits
+    // declining. Candidates are the remembered objects currently in an eligible Origin zone (Hand
+    // or Battlefield); nonland-only, honoring the oracle "exile a nonland card from their hand or
+    // the chosen creature" (the creature is itself nonland). Only reached with an explicit
+    // count/optionality, so the Ajani blanket path is unaffected.
+    if (ab.defined_remembered && (ab.optional_choice || ab.change_num >= 0)) {
+        int cap = (ab.change_num >= 0) ? ab.change_num
+                                       : (ab.amount > 0 ? static_cast<int>(ab.amount) : 1);
+        bool optional = ab.optional_choice;
+        bool prev_priority = cur_game.player_a_has_priority;
+        cur_game.player_a_has_priority = (ab.controller == Zone::PLAYER_A);
+        for (int picked = 0; picked < cap; picked++) {
+            // Rebuild the candidate list each pick (a card already moved leaves the eligible zones).
+            std::vector<Entity> cands;
+            for (auto e : cur_game.remembered_entities) {
+                if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+                if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+                Zone::ZoneValue loc = global_coordinator.GetComponent<Zone>(e).location;
+                bool zone_ok = false;
+                for (auto z : ab.origins) if (z == loc) zone_ok = true;
+                if (!zone_ok) continue;
+                if (is_land_card(global_coordinator.GetComponent<CardData>(e))) continue;  // nonland (oracle)
+                cands.push_back(e);
+            }
+            if (cands.empty()) break;
+            std::vector<LegalAction> picks;
+            for (auto e : cands) {
+                auto &cd = global_coordinator.GetComponent<CardData>(e);
+                Zone::ZoneValue loc = global_coordinator.GetComponent<Zone>(e).location;
+                const char *where = (loc == Zone::BATTLEFIELD) ? " (the chosen creature)" : " (from hand)";
+                LegalAction la(PASS_PRIORITY, e, std::string("Exile ") + cd.name + where);
+                la.category = ActionCategory::CHOOSE_CARD;
+                la.card_is_public = true;
+                picks.push_back(la);
+            }
+            if (optional) {
+                LegalAction none(PASS_PRIORITY, std::string("Exile nothing"));
+                none.category = ActionCategory::CHOOSE_CARD;
+                picks.push_back(none);
+            }
+            game_log("%s may exile a card until %s leaves the battlefield:\n",
+                player_name(ab.controller).c_str(),
+                global_coordinator.entity_has_component<CardData>(ab.source)
+                    ? global_coordinator.GetComponent<CardData>(ab.source).name.c_str() : "the source");
+            int choice = InputLogger::instance().get_input(picks);
+            if (choice < 0 || choice >= static_cast<int>(cands.size())) break;  // declined
+            Entity chosen = cands[static_cast<size_t>(choice)];
+            Zone::ZoneValue card_origin = global_coordinator.GetComponent<Zone>(chosen).location;
+            Zone::Ownership card_owner = global_coordinator.GetComponent<Zone>(chosen).owner;
+            std::string cname = global_coordinator.GetComponent<CardData>(chosen).name;
+            change_zone_move(orderer, chosen, ab.destination);
+            mark_card_revealed(chosen, card_owner);
+            game_log("%s exiles %s\n", player_name(ab.controller).c_str(), cname.c_str());
+            if (ab.duration_until_host_leaves)
+                register_exile_until_host_leaves(ab.source, chosen, card_origin);
+        }
+        cur_game.player_a_has_priority = prev_priority;
         return true;
     }
 

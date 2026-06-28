@@ -1095,6 +1095,14 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         ability.effect_static_ability = value;
     } else if (key == "TgtZone") {
         if (value == "Graveyard") ability.target_in_graveyard = true;
+    } else if (key == "RememberRevealed") {
+        // RememberRevealed$ True (Cloak and Dagger): the revealed hand becomes the remembered
+        // candidate set for a later Defined$ Remembered exile (handled in effect_reveal_hand).
+        ability.remember_revealed = (value == "True");
+    } else if (key == "RememberPumped") {
+        // RememberPumped$ True (Cloak and Dagger): the optionally-chosen creature is appended
+        // to the remembered candidate set (handled in effect_pump).
+        ability.remember_pumped = (value == "True");
     } else if (key == "ClearRemembered") {
         ability.clear_remembered = (value == "True");
     } else if (key == "ClearChosenCard") {
@@ -1232,12 +1240,21 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         for (const auto &t : parse_types(normalized)) ability.animate_types.push_back(t);
     } else if (key == "Duration" && ability.category == "Animate") {
         ability.animate_duration_permanent = (value == "Permanent");
+    } else if (key == "Duration" && value == "UntilHostLeavesPlay") {
+        // Duration$ UntilHostLeavesPlay on a ChangeZone | Destination$ Exile (CR 603.6e): the
+        // exiled card(s) return when the ability's host leaves the battlefield. See
+        // effects::register_exile_until_host_leaves.
+        ability.duration_until_host_leaves = true;
     } else if (effects::apply_parse_hook(ability, key, value)) {
         // Consumed by an effect-specific parse hook co-located with its handler.
     } else {
         static const std::set<std::string> ignored_keys = {
             "SpellDescription", "AILogic", "AINoRecursiveCheck", "TgtPrompt", "StackDescription",
             "ConditionDescription",
+            // ValidTgtsDesc$ — the prose name of a target restriction shown to the player (e.g.
+            // Cloak and Dagger's "creature controlled by the targeted opponent"). Purely cosmetic;
+            // the load-bearing restriction is ValidTgts$, parsed above.
+            "ValidTgtsDesc",
             // PrecostDesc$ — the reminder-text prefix Forge prints before an activated
             // ability's cost (e.g. "Metalcraft —" on Mox Opal). Purely cosmetic; the
             // load-bearing gate is Activation$ (parsed above).
@@ -1251,7 +1268,7 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
             // Shuffle$ is inferred from a Library origin; Hidden/ForgetOtherTargets are cosmetic
             // given the "move the maximum" simplification. (Chooser$ is parsed above into
             // chooser_is_controller — the search-based ChangeZone honors Chooser$ You.)
-            "Hidden", "Shuffle", "ForgetOtherTargets", "RememberRevealed",
+            "Hidden", "Shuffle", "ForgetOtherTargets",
             // ForgetOnMoved$ Exile (Ugin, Eye of the Storms' -11 Effect): tells Forge to drop a
             // remembered object from the effect once it leaves the named zone. Bookkeeping for the
             // transient free-cast grant only; the grant itself is a no-op here, so this is cosmetic.

@@ -6,6 +6,7 @@
 #include "../classes/game.h"
 #include "../classes/match_state.h"
 #include "../cli_output.h"
+#include "../components/ability.h"
 #include "../components/carddata.h"
 #include "../components/player.h"
 #include "../components/zone.h"
@@ -31,6 +32,13 @@ bool reveal_hand(Ability &ab, std::shared_ptr<Orderer> orderer) {
         (ab.target == cur_game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
 
     std::vector<Entity> hand = orderer->get_hand(hand_owner);
+
+    // RememberRevealed$ True (Cloak and Dagger): the revealed hand becomes the candidate set a
+    // later Defined$ Remembered exile picks from. This RevealHand is the first link of the chain,
+    // so start a FRESH remembered set (clear it) and fill it with the revealed cards. A later
+    // RememberPumped$ Pump appends the chosen creature to this same set (CR 608.2c chaining).
+    if (ab.remember_revealed) cur_game.remembered_entities.clear();
+
     if (hand.empty()) {
         game_log("%s reveals their hand: it is empty.\n", player_name(hand_owner).c_str());
         return true;
@@ -42,6 +50,7 @@ bool reveal_hand(Ability &ab, std::shared_ptr<Orderer> orderer) {
         game_log("  %s\n", cd.name.c_str());
         // The whole hand is now public — record each card's identity in the belief state.
         mark_card_revealed(e, hand_owner);
+        if (ab.remember_revealed) cur_game.remembered_entities.push_back(e);
     }
     return true;
 }

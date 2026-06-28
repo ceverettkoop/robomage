@@ -366,6 +366,25 @@ struct Ability{
     // it stashes the moved entity in cur_game.remembered_entities; the condition reads its LKI.
     bool remember_lki = false;
 
+    // RememberRevealed$ True (Cloak and Dagger's DBRevealHand): after a RevealHand resolves,
+    // stash every revealed card into cur_game.remembered_entities so a later Defined$ Remembered
+    // effect can act on them. Starts a fresh remembered set (clears it first) — it is the first
+    // link of the chain that records the candidates a subsequent exile picks from.
+    bool remember_revealed = false;
+
+    // RememberPumped$ True (Cloak and Dagger's DBPump): a Pump used purely as an (optional)
+    // target-selector — it applies no stat change, it just APPENDS its chosen creature to
+    // cur_game.remembered_entities so it joins the candidate pool of a later exile.
+    bool remember_pumped = false;
+
+    // Duration$ UntilHostLeavesPlay on a ChangeZone | Destination$ Exile (CR 603.6e linked
+    // exile-and-return: Cloak and Dagger, Sheltered by Ghosts, Static Prison). Each card moved
+    // to exile is recorded against the ability's host (source) so that WHEN THE HOST LEAVES THE
+    // BATTLEFIELD the card RETURNS to the zone it came from — a hand card to its owner's hand, a
+    // battlefield permanent onto the battlefield under its owner's control. Implemented as a
+    // per-card delayed trigger watching the host's departure (effects::register_exile_until_host_leaves).
+    bool duration_until_host_leaves = false;
+
     // DB$ Effect — a transient continuous effect created by an ability (CR 611). The
     // StaticAbilities$ list names the continuous static(s) it grants; RememberObjects$ Self
     // means the effect tracks its own source. Kappa Cannoneer's "it can't be blocked this

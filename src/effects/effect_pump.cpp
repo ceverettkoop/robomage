@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "../classes/action.h"
+#include "../classes/game.h"
 #include "../cli_output.h"
 #include "../components/creature.h"
 #include "../components/permanent.h"
@@ -16,6 +17,7 @@
 #include "../input_logger.h"
 
 extern Coordinator global_coordinator;
+extern Game cur_game;
 
 namespace effects {
 
@@ -78,18 +80,31 @@ bool pump(Ability &ab, std::shared_ptr<Orderer> orderer) {
 
     // Present target selection, then chain subabilities with that target
     Zone::Ownership ctrl = ab.controller;
+    Zone::Ownership opp = (ctrl == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+    // ValidTgts$ Creature.ControlledBy ParentTarget (Cloak and Dagger's DBPump): the creature
+    // must be controlled by the targeted opponent. In the two-player engine the parent's
+    // "target opponent" is always the source's single opponent, so filter to the opponent's
+    // creatures. YouCtrl restricts to the controller's own creatures (the common pump case).
+    bool want_youctrl = ab.valid_tgts.find("YouCtrl") != std::string::npos;
+    bool want_oppctrl = ab.valid_tgts.find("ParentTarget") != std::string::npos ||
+                        ab.valid_tgts.find("OppCtrl") != std::string::npos ||
+                        ab.valid_tgts.find("ControlledBy") != std::string::npos;
     std::vector<Entity> pump_targets;
     for (Entity e = 0; e < global_coordinator.GetMaxIssuedEntity(); ++e) {
         if (!is_battlefield_permanent(e)) continue;
         if (!global_coordinator.entity_has_component<Creature>(e)) continue;
         auto &p = global_coordinator.GetComponent<Permanent>(e);
-        if (ab.valid_tgts.find("YouCtrl") != std::string::npos && p.controller != ctrl) continue;
+        if (want_youctrl && p.controller != ctrl) continue;
+        if (want_oppctrl && p.controller != opp) continue;
         pump_targets.push_back(e);
     }
     if (pump_targets.empty()) {
         game_log("Pump: no valid targets.\n");
         // still chain subabilities with no target
     } else {
+        // TargetMin$ 0 (Cloak and Dagger: "up to one target creature"): the controller may
+        // choose no creature. Offer an explicit decline option in that case.
+        bool optional = (ab.target_min == 0);
         game_log("Choose a creature for Pump:\n");
         std::vector<LegalAction> tgt_actions;
         for (auto te : pump_targets) {
@@ -100,10 +115,24 @@ bool pump(Ability &ab, std::shared_ptr<Orderer> orderer) {
             la.category = ActionCategory::SELECT_TARGET;
             tgt_actions.push_back(la);
         }
+        if (optional) {
+            LegalAction none(PASS_PRIORITY, std::string("Choose no creature"));
+            none.category = ActionCategory::SELECT_TARGET;
+            tgt_actions.push_back(none);
+        }
+        bool prev_priority = cur_game.player_a_has_priority;
+        cur_game.player_a_has_priority = (ctrl == Zone::PLAYER_A);
         int choice = InputLogger::instance().get_input(tgt_actions);
+        cur_game.player_a_has_priority = prev_priority;
         if (choice >= 0 && choice < static_cast<int>(pump_targets.size()))
             ab.target = pump_targets[static_cast<size_t>(choice)];
     }
+
+    // RememberPumped$ True (Cloak and Dagger): this Pump is only a target-selector. Append the
+    // chosen creature to the remembered candidate set (joining the revealed hand cards) so the
+    // following Defined$ Remembered exile may pick it. No-op when no creature was chosen.
+    if (ab.remember_pumped && ab.target != 0)
+        cur_game.remembered_entities.push_back(ab.target);
     // Apply P/T modification if NumAtt$/NumDef$ were set. A count-SVar NumAtt$/NumDef$
     // (e.g. Eldrazi Linebreaker's "+X" where X = number of Eldrazi you control) is
     // evaluated now against the ability's controller.

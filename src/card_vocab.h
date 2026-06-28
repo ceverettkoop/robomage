@@ -176,6 +176,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Toxicrene", 265},
     {"Planar Nexus", 266},
     {"The Fantasticar", 267},
+    {"Cloak and Dagger, Entwined", 268},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);
