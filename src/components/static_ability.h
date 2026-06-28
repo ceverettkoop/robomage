@@ -37,6 +37,17 @@ struct StaticAbility {
     int reduce_cost = 0;
     std::string reduce_cost_filter = "";
     bool reduce_cost_you_only = false;
+    // SetCost / cost-floor fields (category = "SetCost"; Trinisphere): a continuous static that
+    // sets a MINIMUM total mana value on matching spells (RaiseTo$ True). When a spell's
+    // effective total mana value — after every other increase/reduction is applied (CR 601.2f) —
+    // is below set_cost_min, generic pips are added to bring the total up to set_cost_min.
+    // set_cost_filter is the ValidCard$ spec the floor applies to ("Card"/empty = every spell).
+    // Gated like any static through the IsPresent$ present-count condition (Trinisphere is active
+    // only while its source is untapped). set_cost_raise_to distinguishes the floor form (the only
+    // one implemented) from a hypothetical "set the cost to exactly N" form.
+    int set_cost_min = 0;
+    bool set_cost_raise_to = false;
+    std::string set_cost_filter = "";
     // CantBeActivated fields (category = "CantBeActivated"):
     std::string cant_activate_card_filter = "";  // "Artifact" — card type whose activated abilities are suppressed
     // NamedCard fields (RaiseCost / CantBeActivated with ValidCard$ Card.NamedCard, e.g. Disruptor Flute):

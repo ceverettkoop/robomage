@@ -55,7 +55,7 @@ static bool affected_is_general_filter(const std::string &aff);
 // (the "You" reference per CR 109.5). An empty filter means "no gate" → always met.
 static bool static_present_condition_met(const std::string &filter, const std::string &zone_str,
                                          const std::string &compare_in, Zone::Ownership controller,
-                                         const std::set<Entity> &entities) {
+                                         Entity source, const std::set<Entity> &entities) {
     if (filter.empty()) return true;
     std::string compare = compare_in.empty() ? "GE1" : compare_in;
 
@@ -70,6 +70,7 @@ static bool static_present_condition_met(const std::string &filter, const std::s
 
     MatchCtx ctx;
     ctx.controller = controller;
+    ctx.source = source;   // .Self / .Other self-reference (Trinisphere: Card.Self+untapped)
 
     int count = 0;
     if (zone == Zone::BATTLEFIELD) {
@@ -177,6 +178,23 @@ int active_reduce_cost_for(const CardData &card_data, Zone::Ownership caster) {
     return total;
 }
 
+int active_cost_floor_for(const CardData &card_data) {
+    int floor = 0;
+    for (const auto &as : g_active_statics) {
+        if (as.suppressed) continue;        // 613.1f: source lost all abilities (Humility)
+        if (!as.condition_met) continue;    // IsPresent$ gate (Trinisphere: source untapped)
+        if (as.sa->category != "SetCost" || !as.sa->set_cost_raise_to) continue;
+        // An empty filter means the floor applies to every spell (Trinisphere: ValidCard$ Card).
+        if (!as.sa->set_cost_filter.empty()) {
+            MatchCtx ctx;
+            extract_static_cmc_bound(as.sa->set_cost_filter, ctx);
+            if (!card_matches_filter(card_data, as.sa->set_cost_filter, ctx)) continue;
+        }
+        floor = std::max(floor, as.sa->set_cost_min);
+    }
+    return floor;
+}
+
 // Resolve the battlefield permanents a continuous static's Affected$ filter designates
 // (declared in state_manager.h). The EquippedBy / Self forms target a single creature that
 // the layer appliers resolve directly (equipped_to / the source), so this returns empty for
@@ -228,6 +246,12 @@ ManaValue effective_base_cost(const CardData &card_data, Zone::Ownership caster)
             cost.erase(it);
         }
     }
+    // SetCost cost floor (Trinisphere): applied LAST — after every other increase/reduction
+    // (CR 601.2f) — so the floor is checked against the spell's already-adjusted cost. If the
+    // total mana value is below the floor, add generic pips up to the floor; a cost already at
+    // or above it (or a spell no floor applies to) is untouched. Colored pips are never removed.
+    int floor = active_cost_floor_for(card_data);
+    while (static_cast<int>(cost.size()) < floor) cost.insert(GENERIC);
     return cost;
 }
 
@@ -976,7 +1000,7 @@ void StateManager::gather_active_statics(Game &game) {
         if (a.condition_met && !a.sa->present_filter.empty()) {
             a.condition_met = static_present_condition_met(
                 a.sa->present_filter, a.sa->present_zone, a.sa->present_compare,
-                a.controller, mEntities);
+                a.controller, a.entity, mEntities);
         }
     }
 }

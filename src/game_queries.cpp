@@ -130,6 +130,7 @@ bool eval_qualifier(const CharView &v, const MatchCtx &ctx, const std::string &q
         return false;
     }
     if (q == "Other")        return ctx.source == 0 || v.entity != ctx.source;
+    if (q == "Self")         return ctx.source != 0 && v.entity == ctx.source;
     if (q == "nonChosenCard") return !cur_game.chosen_cards.count(v.entity);
     if (q == "YouCtrl")      return !v.on_battlefield || v.controller == ctx.controller;
     if (q == "OppCtrl")      return !v.on_battlefield || v.controller != ctx.controller;

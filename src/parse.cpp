@@ -2452,12 +2452,19 @@ static std::vector<StaticAbility> parse_static_abilities(const std::string &scri
                 }
             } else if (key == "Amount") {
                 // Used by RaiseCost / ReduceCost (generic mana added to / removed from cost)
+                // and SetCost (the minimum total mana value a cost floor raises spells up to).
                 if (!value.empty() && std::isdigit(static_cast<unsigned char>(value[0]))) {
                     if (sa.category == "ReduceCost")
                         sa.reduce_cost = std::stoi(value);
+                    else if (sa.category == "SetCost")
+                        sa.set_cost_min = std::stoi(value);
                     else
                         sa.raise_cost = std::stoi(value);
                 }
+            } else if (key == "RaiseTo") {
+                // SetCost RaiseTo$ True (Trinisphere): the Amount$ is a FLOOR — raise a sub-Amount
+                // total up to Amount, never lower a cost that is already at/above it.
+                if (sa.category == "SetCost") sa.set_cost_raise_to = (value == "True");
             } else if (key == "Activator") {
                 // ReduceCost Activator$ You (Eye of Ugin): the reduction applies only to
                 // spells cast by the source's controller, not to everyone's spells.
@@ -2484,6 +2491,10 @@ static std::vector<StaticAbility> parse_static_abilities(const std::string &scri
                         sa.cant_activate_card_filter = value;
                 } else if (sa.category == "CantBeCast") {
                     sa.cant_cast_filter = value;
+                } else if (sa.category == "SetCost") {
+                    // The spells the cost floor applies to (Trinisphere: ValidCard$ Card = every
+                    // spell). A bare "Card" is left empty (matches all) to skip a useless filter run.
+                    if (value != "Card") sa.set_cost_filter = value;
                 }
             } else if (key == "NumLimitEachTurn") {
                 sa.cant_cast_limit_per_turn = std::stoi(value);

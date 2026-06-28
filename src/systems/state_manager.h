@@ -60,6 +60,13 @@ int active_raise_cost_for(const CardData &card_data);
 // zero and colored pips are never reduced (CR 118.7 / 601.2f); applied in effective_base_cost.
 int active_reduce_cost_for(const CardData &card_data, Zone::Ownership caster);
 
+// Minimum total mana value an active SetCost cost-floor static (Trinisphere) imposes on
+// `card_data` when cast — the largest set_cost_min among the active (condition-met) RaiseTo
+// floors whose ValidCard$ filter matches the spell, or 0 if none apply. effective_base_cost
+// raises a sub-floor total up to this value by adding generic pips, AFTER every other cost
+// increase/reduction (CR 601.2f — Trinisphere checks the spell's already-adjusted cost).
+int active_cost_floor_for(const CardData &card_data);
+
 // `card_data.mana_cost` with the active RaiseCost generic surcharge folded in (but
 // NOT the X-cost choice, which is resolved interactively at cast time). The single
 // effective-base-cost builder shared by determine_legal_actions (affordability) and
