@@ -131,6 +131,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Wastescape Battlemage", 205},
     {"Consign to Memory", 206},
     {"Forth Eorlingas!", 207},
+    {"Meteor Sword", 226},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);
