@@ -69,10 +69,11 @@ int action_card_vocab_idx(Entity e) {
 }
 
 int action_card_vocab_idx(const LegalAction& la) {
-    // A modal-DFC back-face play (e.g. Witch-Blessed Meadow) uses the combined card
-    // as its source, whose CardData is the FRONT face — resolve the back face's name
-    // so the emitted/logged id matches the face actually being played.
-    if (la.play_back_face && la.source_entity != 0 &&
+    // A modal-DFC back-face play/cast (e.g. Witch-Blessed Meadow land, or a nonland back
+    // like Tergrid's Lantern) uses the combined card as its source, whose CardData is the
+    // FRONT face — resolve the back face's name so the emitted/logged id matches the face
+    // actually being played or cast.
+    if ((la.play_back_face || la.cast_back_face) && la.source_entity != 0 &&
         global_coordinator.entity_has_component<CardData>(la.source_entity)) {
         const auto& cd = global_coordinator.GetComponent<CardData>(la.source_entity);
         if (cd.backside) return card_name_to_index(cd.backside->name);

@@ -64,6 +64,63 @@ on its front script (and, if the back is a land, no further work).
    suppressed (`perm.transformed` gate in `state_manager_triggers.cpp`). As a modal card it never
    flips again (nothing grants it a transform ability).
 
+## Modal-DFC NONLAND back face — cast the back (general mechanic — IMPLEMENTED)
+The original support above only handled an MDFC whose **back face is a land** (a `PLAY_LAND`).
+This was generalized so an MDFC whose **back face is a NONLAND spell** (creature / artifact /
+enchantment / instant / sorcery / planeswalker) can be **cast as its back face** from hand,
+paying the back face's mana cost and using only the back face's characteristics (CR 712.8 — a
+modal DFC's spell/permanent has only the characteristics of the face being cast; CR 601 casting,
+CR 608 resolution). The front face is still offered as a normal cast in the spell loop; the two
+faces are independent choices from the one hand card.
+
+Mechanism — a single new flag `LegalAction::cast_back_face` (`src/classes/action.h`), parallel
+to `play_back_face`:
+
+1. **Offer the back-face cast** — `offer_modal_back_face_casts()`
+   (`src/systems/state_manager_actions.cpp`, called from `determine_legal_actions` right after the
+   hand-cast loop). For each hand card with `is_modal_dfc && backside` whose back is **not** a
+   land, it evaluates castability **against the back face** (`*front.backside`): timing
+   (instant/Flash anytime, else sorcery-speed), spell-target legality + `ConditionPresent$` gate,
+   `CantBeCast` statics, the payment-fail mask, and affordability of the back's
+   `effective_base_cost`. It pushes a `CAST_SPELL` with `cast_back_face = true` and description
+   "Cast <back name>". Kept in its own hand pass (not folded into the front-face loop) so a
+   prohibition/`continue` on the front face cannot suppress the back-face option.
+2. **Cast paying the back's cost + abilities** (`src/action_processor.cpp`, `CAST_SPELL`). The
+   entity's `CardData` component is the front face; when `cast_back_face` is set, the whole cast
+   path rebinds its local `card_data` to `*front_data.backside` (a `const CardData&`), so every
+   read — mana cost paid (`effective_base_cost`/`prompt_mana_payment`), `SP$` spell ability put on
+   the stack, target selection, type-driven cast events (NONCREATURE_SPELL_CAST / creature-spell
+   tracking), and the cast log — comes from the back face. (Artifacts/enchantments like Sword of
+   the Realms carry no `SP$` ability, so they simply resolve to the battlefield as a permanent;
+   an instant/sorcery back puts its `SP$` effect on the stack.)
+3. **Enter as the back face if it is a permanent.** When the back is a permanent
+   (`is_permanent_card`), the cast marks `cur_game.pending_enters_transformed` on the spell entity
+   — reusing the exact transform machinery the land case uses: on resolution
+   `apply_permanent_components` calls `set_permanent_face(entity, true)`, so the permanent enters
+   showing the back face (its name, types, statics, triggered/activated abilities) and the
+   front-face ETBs are suppressed. Per the user's decision this deliberately reuses
+   `pending_enters_transformed`/`set_permanent_face` rather than introducing a separate modal-face
+   state, and adds no anti-transform guard. An instant/sorcery back is **not** marked (it leaves
+   the stack on resolution, so no flip is needed and a stale marker can't mis-fire on a later ETB).
+4. **Action card-id** (`src/machine_io.cpp`, `action_card_vocab_idx(const LegalAction&)`). The
+   shared overload now resolves the **back** face's name for both `play_back_face` and
+   `cast_back_face`, so the cast-back action encodes the back face's vocab id (mirroring the land
+   case). Same single overload feeds BQUERY emission and the input-logger action log.
+
+### Test card (not registered in vocab — test-only)
+Verified with **Halvar, God of Battle // Sword of the Realms** (`AlternateMode:Modal`; front
+`{2}{W}{W}` Legendary Creature God 4/4, back `{1}{W}` Legendary Artifact Equipment). Both faces
+are offered from hand; casting the back pays `{1}{W}` (two Plains tapped) and resolves to the
+battlefield **as Sword of the Realms** — the engine logs "casts Sword of the Realms" then
+"transforms into Sword of the Realms", and the permanent is an Equipment (no creature is eligible
+to attack), i.e. NOT the Halvar creature front. Casting the front still enters as the Halvar
+creature (no transform; eligible to attack on a later turn). The Witch Enchanter land-back +
+front-creature regression both still pass, and a scripted delver-vs-mav game finishes decisively
+with no errors. (Tergrid, God of Fright // Tergrid's Lantern was tried first but its back face's
+`UnlessCost$ Sac<...>` GenericChoice ability hits a *pre-existing* `std::stoi` parse crash at
+`parse.cpp:1016` — unrelated to MDFC casting — so Halvar was used instead.) The test card was
+**not** added to `src/card_vocab.h`; it encodes as vocab id -1, which is fine.
+
 ## "Enters tapped unless you pay N life" replacement (general mechanic — IMPLEMENTED)
 The back's `R:Event$ Moved ... ReplaceWith$ DBTap` names an SVar
 `DB$ Tap | ETB$ True | UnlessCost$ PayLife<3> | UnlessPayer$ You` — the shock-land pattern.

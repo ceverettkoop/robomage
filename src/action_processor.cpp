@@ -1240,8 +1240,23 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
         case CAST_SPELL: {
             Entity spell_entity = action.source_entity;
             auto &zone = global_coordinator.GetComponent<Zone>(spell_entity);
-            auto &card_data = global_coordinator.GetComponent<CardData>(spell_entity);
+            auto &front_data = global_coordinator.GetComponent<CardData>(spell_entity);
+            // Modal DFC cast as its NONLAND back face (CR 712.8): the entity's CardData is the
+            // front face, but the spell has only the BACK face's characteristics — pay the back's
+            // mana cost, put the back's spell ability on the stack, and (if the back is a
+            // permanent) enter as the back face. Source every cast-path read of card_data from the
+            // back face for this cast. The land-back case is handled in the SPECIAL_ACTION path.
+            const CardData &card_data = (action.cast_back_face && front_data.backside)
+                                            ? *front_data.backside : front_data;
             Zone::Ownership caster = zone.owner;
+
+            // If the chosen back face is a permanent, reuse the transform machinery so it enters
+            // showing the back face (apply_permanent_components flips it at entry, suppressing the
+            // front-face ETBs). Instant/sorcery backs resolve and leave the stack, so no flip is
+            // needed and none is marked.
+            if (action.cast_back_face && front_data.backside &&
+                is_permanent_card(*front_data.backside))
+                cur_game.pending_enters_transformed.insert(spell_entity);
 
             // Record whether this spell is being cast from its caster's own hand (a normal
             // CR 601 hand cast), so a permanent that later resolves onto the battlefield can

@@ -34,6 +34,9 @@
 #include "orderer.h"
 
 static bool count_intervening_condition(const std::string &expr, Zone::Ownership caster, int &out);
+static void offer_modal_back_face_casts(std::vector<LegalAction> &actions, const Game &game,
+                                        Zone::Ownership priority_player,
+                                        std::shared_ptr<Orderer> orderer, bool stack_empty);
 
 static bool can_afford_alt(const AltCost& alt_cost, Zone::Ownership priority_player,
                            Entity card_entity, std::shared_ptr<Orderer> orderer) {
@@ -341,6 +344,61 @@ bool evaluate_present_condition(const Ability &ab, Zone::Ownership caster, std::
 }
 
 
+// Modal DFC whose BACK face is a NONLAND spell (Tergrid, God of Fright // Tergrid's Lantern):
+// offer a CAST_SPELL that casts the BACK face — paying the back's mana cost and using the back
+// face's characteristics/abilities (CR 712.8). The front face is offered as a normal cast by the
+// main hand loop, and the LAND-back case is offered there as a PLAY_LAND; only the nonland-back
+// CAST is added here. Kept in its own hand pass so a prohibition/`continue` on the front face
+// doesn't suppress the back-face option (the two faces are cast independently).
+static void offer_modal_back_face_casts(std::vector<LegalAction> &actions, const Game &game,
+                                        Zone::Ownership priority_player,
+                                        std::shared_ptr<Orderer> orderer, bool stack_empty) {
+    auto hand = orderer->get_hand(priority_player);
+    for (auto card_entity : hand) {
+        auto &front = global_coordinator.GetComponent<CardData>(card_entity);
+        if (!front.is_modal_dfc || !front.backside) continue;
+        const CardData &back = *front.backside;
+        if (is_land_card(back)) continue;  // land back is a PLAY_LAND, handled in the main loop
+
+        // Timing: an instant (or Flash) back may be cast anytime the player has priority; any
+        // other back face is sorcery-speed (your main phase, empty stack).
+        bool is_instant = card_has_type(back, "Instant");
+        if (!is_instant)
+            for (const auto &kw : back.keywords)
+                if (kw == "Flash") { is_instant = true; break; }
+        bool can_cast_now = is_instant ||
+            ((game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
+             (game.player_a_turn == game.player_a_has_priority) && stack_empty);
+        if (!can_cast_now) continue;
+
+        // Spell-target legality + ConditionPresent castability gate (mirrors the front-face checks).
+        bool tgt_ok = true, condition_ok = true;
+        for (const auto &ab : back.abilities) {
+            if (ab.ability_type != Ability::SPELL) continue;
+            tgt_ok = has_legal_targets(ab, orderer);
+            if (!ab.condition_present.empty() && !ab.condition_on_target)
+                condition_ok = evaluate_present_condition(ab, priority_player, orderer);
+            break;
+        }
+        if (!tgt_ok || !condition_ok) continue;
+
+        if (rules_mod::cast_prohibited(priority_player, back)) continue;
+
+        auto pf_it = cur_game.payment_fail_counts.find(card_entity);
+        if (pf_it != cur_game.payment_fail_counts.end() && pf_it->second >= 2) continue;
+
+        ManaValue cost = effective_base_cost(back, priority_player);
+        if (!can_pay_mana(priority_player, cost, card_entity, orderer,
+                          back.has_delve, back.has_improvise))
+            continue;
+
+        LegalAction la(CAST_SPELL, card_entity, "Cast " + back.name);
+        la.category = ActionCategory::CAST_SPELL;
+        la.cast_back_face = true;
+        actions.push_back(la);
+    }
+}
+
 std::vector<LegalAction> StateManager::determine_legal_actions(
     const Game &game, std::shared_ptr<Orderer> orderer, std::shared_ptr<StackManager> stack_manager) {
     std::vector<LegalAction> actions;          // return value
@@ -544,6 +602,9 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             }
         }
     }
+    // Modal DFC nonland back faces: offer the BACK face as a CAST_SPELL (the front face's normal
+    // cast and the land-back PLAY_LAND were handled in the hand loop above).
+    offer_modal_back_face_casts(actions, game, priority_player, orderer, stack_empty);
     // checking graveyard for flashback spells
     for (auto gy_entity : orderer->mEntities) {
         if (!global_coordinator.entity_has_component<Zone>(gy_entity)) continue;

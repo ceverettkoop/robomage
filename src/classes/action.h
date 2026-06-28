@@ -85,6 +85,13 @@ struct LegalAction {
         // CardData is the front face), but it is being played as its back face (a land). The
         // processor marks it pending_enters_transformed so it enters showing the back face.
         bool play_back_face = false;
+        // CAST_SPELL of a modal DFC's BACK face when that back face is a NONLAND spell
+        // (Tergrid, God of Fright // Tergrid's Lantern). The source entity is the combined
+        // card (whose CardData is the front face); it is cast paying the BACK face's mana cost
+        // and using the back face's characteristics/abilities (CR 712.8). If the back is a
+        // permanent the processor marks it pending_enters_transformed so it enters showing the
+        // back face (reusing the transform machinery, parallel to play_back_face for lands).
+        bool cast_back_face = false;
         // True when this choice's card identity is public knowledge to all players
         // (e.g. a revealed tutor like Personal Tutor). Lets observers show the card
         // name even for an otherwise-private choice (search/top-of-library).
