@@ -133,6 +133,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Forth Eorlingas!", 207},
     {"Craterhoof Behemoth", 218},
     {"Mystical Dispute", 227},
+    {"Pre-War Formalwear", 230},
     {"Meteor Sword", 226},
     {"Otawara, Soaring City", 228},
     {"Pithing Needle", 229},

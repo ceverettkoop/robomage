@@ -236,7 +236,7 @@ _CARD_COST_MATRIX = np.array([
     [0.0, 0.1, 0.0, 0.0, 0.0, 0.0, 0.2],  # 227: Mystical Dispute
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 228: Otawara, Soaring City
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1],  # 229: Pithing Needle
-    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 230: 
+    [0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.2],  # 230: Pre-War Formalwear
     [0.0, 0.1, 0.0, 0.1, 0.0, 0.0, 0.0],  # 231: Prismari Charm
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 232: 
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 233: 
@@ -1267,7 +1267,7 @@ _VOCAB_NAMES = [
     "Mystical Dispute",  # 227
     "Otawara, Soaring City",  # 228
     "Pithing Needle",  # 229
-    "",  # 230
+    "Pre-War Formalwear",  # 230
     "Prismari Charm",  # 231
     "",  # 232
     "",  # 233

@@ -175,6 +175,7 @@ struct Game {
         };
         std::map<Entity, ImpulseCastPermission> impulse_cast_permission;
         std::map<Entity, int> pending_etb_xpaid;  // one-shot: X paid for an X-cost permanent spell now resolving, used by an "enters with X counters" replacement (Chalice of the Void); consumed when its Permanent is created
+        std::map<Entity, Entity> pending_attach;  // one-shot: {creature -> equipment} a DB$ Attach resolved onto a creature whose Permanent did not exist yet (reanimate-then-attach, Pre-War Formalwear); the equip link is finalized when the creature's Permanent is created
 
         // Recent action history ring buffer for ML observation
         ActionHistoryEntry action_history[ACTION_HISTORY_SIZE] = {};

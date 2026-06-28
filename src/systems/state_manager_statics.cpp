@@ -307,6 +307,25 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                 if (is_planeswalker_card(card_data)) perm.counters["LOYALTY"] = card_data.starting_loyalty;
                 perm.timestamp_entered_battlefield = game.timestamp++;
                 perm.entered_on_turn = game.turn;
+                // A DB$ Attach resolved onto this creature before its Permanent existed
+                // (reanimate-then-attach, Pre-War Formalwear): finalize the equip link now
+                // that the Permanent is being created. The equipment kept its own Permanent.
+                {
+                    auto pa = game.pending_attach.find(entity);
+                    if (pa != game.pending_attach.end()) {
+                        Entity equip = pa->second;
+                        if (global_coordinator.entity_has_component<Permanent>(equip)) {
+                            auto &eq_perm = global_coordinator.GetComponent<Permanent>(equip);
+                            if (eq_perm.equipped_to != 0 &&
+                                global_coordinator.entity_has_component<Permanent>(eq_perm.equipped_to))
+                                global_coordinator.GetComponent<Permanent>(eq_perm.equipped_to).equipped_by = 0;
+                            eq_perm.equipped_to = entity;
+                            perm.equipped_by = equip;
+                            game_log("Equipment attached.\n");
+                        }
+                        game.pending_attach.erase(pa);
+                    }
+                }
                 global_coordinator.AddComponent(entity, perm);
                 // Non-P1P1 "enters with" counters (614.1c) attach to any permanent, not just
                 // creatures — Chalice of the Void enters with X CHARGE counters. P1P1 counters
