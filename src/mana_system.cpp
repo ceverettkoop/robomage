@@ -151,6 +151,11 @@ static size_t eval_mana_amount(const Ability &ab, Zone::Ownership controller,
             if (is_battlefield_permanent(e) && permanent_matches_filter(e, filter, ctx)) count++;
         return count;
     }
+    // Any other dynamic mana amount (e.g. Cabal Ritual's Count$Threshold.5.3) routes through the
+    // shared runtime-amount evaluator, so mana production scales by the same Count$/Targeted$
+    // grammar used for dynamic damage/draw/token counts rather than re-implementing each form here.
+    if (!ab.dynamic_amount_expr.empty())
+        return evaluate_dynamic_amount(ab.dynamic_amount_expr, controller, orderer, ab.target);
     return ab.amount;
 }
 

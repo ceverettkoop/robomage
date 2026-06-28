@@ -1870,6 +1870,11 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
                            sv.find("Count$InYourLibrary") != std::string::npos ||
                            sv.find("Count$YourLifeTotal") != std::string::npos ||
                            sv.find("Count$Revolt") != std::string::npos ||
+                           // Count$Threshold.<hi>.<lo> — graveyard-threshold ritual scaling
+                           // (Cabal Ritual: Amount$ X, X = Count$Threshold.5.3 → BBBBB if the
+                           // caster has 7+ cards in their graveyard, else BBB). Preserved here
+                           // and evaluated at activation by evaluate_dynamic_amount.
+                           sv.find("Count$Threshold") != std::string::npos ||
                            // Count$xPaid — amount equals the X paid at cast (Forth Eorlingas!:
                            // TokenAmount$ X, X = Count$xPaid → X 2/2 Human Knight tokens). Mirrors
                            // the sub-ability path (parse_svar_ability) so a top-level SP$/AB$

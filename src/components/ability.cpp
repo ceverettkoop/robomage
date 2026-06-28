@@ -860,6 +860,18 @@ size_t evaluate_dynamic_amount(
         bool revolt = (ctrl == Zone::PLAYER_A) ? cur_game.revolt_player_a : cur_game.revolt_player_b;
         return static_cast<size_t>(revolt ? high_val : low_val);
     }
+    // Count$Threshold.high.low — Threshold (CR 702.27 historical keyword action; modern cards
+    // spell the condition out): returns high if the controller has seven or more cards in their
+    // graveyard, low otherwise (Cabal Ritual: Count$Threshold.5.3 → 5 black mana with threshold,
+    // else 3). General for any card scaling a dynamic amount by the threshold condition.
+    if (expr.find("Count$Threshold.") != std::string::npos) {
+        size_t dot1 = expr.find("Threshold.") + std::string("Threshold.").size();
+        size_t dot2 = expr.find('.', dot1);
+        int high_val = std::stoi(expr.substr(dot1, dot2 - dot1));
+        int low_val = std::stoi(expr.substr(dot2 + 1));
+        bool threshold = orderer->get_graveyard(ctrl).size() >= 7;
+        return static_cast<size_t>(threshold ? high_val : low_val);
+    }
     if (expr.find("Targeted$CardPower") != std::string::npos) {
         // CR 608.2h: effective power, read live while the creature is in play (counters/buffs
         // included), else its last-known value once it has left (e.g. Swords to Plowshares
