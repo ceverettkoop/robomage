@@ -1025,6 +1025,11 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         // script's stated intent; the specific bools below remain authoritative per effect.
         ability.defined = value;
         if (value == "Remembered") ability.defined_remembered = true;
+        // Defined$ DelayTriggerRememberedLKI — the objects a DB$ DelayedTrigger captured at
+        // registration (RememberObjects$ RememberedLKI). delayed_trigger() restores them into
+        // cur_game.remembered_entities before the fire ability resolves, so this resolves
+        // exactly like Defined$ Remembered (Flickerwisp / Phelia return the exiled card).
+        else if (value == "DelayTriggerRememberedLKI") ability.defined_remembered = true;
         // Defined$ TriggeredSpellAbility — the effect acts on the spell that fired this
         // trigger (Chalice of the Void: "counter that spell"). Set at trigger fire time.
         else if (value == "TriggeredSpellAbility" || value == "TriggeredSpell")
@@ -1067,6 +1072,11 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         // RememberObjects$ Self — a DB$ Effect that tracks its own source (Kappa Cannoneer's
         // can't-be-blocked effect remembers the creature it applies to).
         if (value.find("Self") != std::string::npos) ability.effect_remember_self = true;
+        // RememberObjects$ RememberedLKI — a DB$ DelayedTrigger snapshots the objects the
+        // preceding RememberChanged$ ChangeZone just moved, so its Execute$ ability can act on
+        // those same objects when it fires later (Flickerwisp / Phelia exile-and-return).
+        if (value.find("RememberedLKI") != std::string::npos)
+            effect_params<DelayedTriggerParams>(ability).remember_objects_lki = true;
     } else if (key == "StaticAbilities") {
         // DB$ Effect | StaticAbilities$ <name> — names the continuous static the transient
         // effect grants (e.g. Unblockable). Stored for the Effect handler to interpret.
@@ -1302,8 +1312,11 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
             // Execute$ references an SVar containing the ability to fire (delayed triggers)
             effect_params<DelayedTriggerParams>(sub).execute_svar = value;
             auto it = svars.find(value);
-            if (it != svars.end())
-                sub.subabilities.push_back(parse_svar_ability(it->second, ability_type, svars, card_name));
+            if (it != svars.end()) {
+                Ability exec = parse_svar_ability(it->second, ability_type, svars, card_name);
+                exec.from_delayed_execute = true;  // delayed_trigger() fires this one
+                sub.subabilities.push_back(exec);
+            }
         } else if (key == "Triggers") {
             // DB$ Effect | Triggers$ <SVar>[,<SVar>...] — a transient until-end-of-turn floating
             // triggered ability (Forth Eorlingas!). Each named SVar holds a trigger line

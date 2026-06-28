@@ -62,6 +62,11 @@ struct DelayedTrigger {
     // "when X leaves, do Y" delayed trigger; 0 = not entity-watched (the phase-based default).
     Entity watch_entity = 0;          // the specific permanent whose departure fires this trigger
     bool fire_on_leave_battlefield = false;  // true: match watch_entity leaving the battlefield, not a phase
+    // RememberObjects$ RememberedLKI (CR 603.7a): objects this delayed trigger captured when it
+    // was set up (the cards the preceding RememberChanged$ ChangeZone moved, e.g. the permanent
+    // Flickerwisp/Phelia exiled). Restored into cur_game.remembered_entities before the fire
+    // ability resolves so its Defined$ DelayTriggerRememberedLKI acts on those same objects.
+    std::vector<Entity> remembered_objects;
 };
 
 // Last-known information (CR 608.2h / 112.7a): a permanent's effective characteristics —

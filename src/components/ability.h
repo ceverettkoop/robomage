@@ -290,6 +290,9 @@ struct Ability{
     // Attach / Equip sub-ability
     bool optional = false;           // Optional$ True — player may decline
     bool defined_remembered = false; // Defined$ Remembered — target is cur_game.remembered_entities[0]
+    // True for the sub-ability a DB$ DelayedTrigger named in its Execute$ (vs. a trailing
+    // SubAbility$ cleanup). delayed_trigger() fires this one and chains the rest after it.
+    bool from_delayed_execute = false;
     bool defined_triggered_spell = false; // Defined$ TriggeredSpellAbility — target is the spell that triggered this ability (Chalice of the Void counters it)
     // Defined$ TriggeredSourceSA — target is the spell/ability that targeted the source (the
     // "triggering source spell ability" of a Mode$ BecomesTarget trigger, Reality Smasher). Bound

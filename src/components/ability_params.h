@@ -125,6 +125,12 @@ struct DelayedTriggerParams {
     std::string phase = "";       // Phase$ — "Upkeep"/"Draw"/"EndStep" (empty = upkeep)
     std::string execute_svar = "";  // Execute$ — SVar name of the ability to fire
     std::string valid_player = "";  // ValidPlayer$ — "Player"/"You"/"Opponent"
+    // RememberObjects$ RememberedLKI — at registration, snapshot the objects the immediately
+    // preceding RememberChanged$ ChangeZone moved (cur_game.remembered_entities) and carry them
+    // with the delayed trigger, so its Execute$ ability can act on those same objects when it
+    // fires later (CR 603.7a — the delayed trigger references the objects as they were when it
+    // was set up). Used by exile-and-return-at-end-of-turn cards (Flickerwisp, Phelia).
+    bool remember_objects_lki = false;
 };
 
 #endif /* ABILITY_PARAMS_H */
