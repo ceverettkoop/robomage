@@ -56,10 +56,17 @@ These are NOT silently dropped. Track them here until done:
 
 | Card | State | What it needs | Target wave |
 |---|---|---|---|
-| Cloak and Dagger, Entwined | NOT registered, NOT committed (cleanly blocked) | mechanic:DurationUntilHostLeavesPlay (continuous Pump until source leaves + exile-until-source-leaves) | Wave 2/3 — implement WITH Sheltered by Ghosts + Static Prison |
-| The Fantasticar | NOT registered, NOT committed (cleanly blocked) | mechanic:AnimateUntilEOT (DB$ Animate self→artifact creature until end of turn WITH cleanup revert; current Animate only permanent type-add/land-animate). Also script has `Types$ Creature,Artifact` comma-subtype parse quirk to handle | Wave 2/3 |
-| Witch-Blessed Meadow (idx 264) | REGISTERED in vocab but BACK FACE NON-FUNCTIONAL | mechanic:ModalDFC (play either face from hand; engine only supports transform DFCs) + enters-tapped-unless-pay-N-life replacement. (Front face Witch Enchanter 263 works.) | Wave 2/3 |
-| Ugin, Eye of the Storms (idx 262) | COMMITTED & playable, but PARTIAL | −11 ultimate's free-cast-from-exile grant is a documented NO-OP (doesn't crash). Revisit for full fidelity per decision #3 | follow-up |
+| Cloak and Dagger, Entwined | ✅ FIXED — idx 268 (fb5ff06) | Built GENERAL `Duration$ UntilHostLeavesPlay` exile-return (register_exile_until_host_leaves, effect_change_zone.cpp:78). Sheltered/Static Prison reuse this. | DONE |
+| The Fantasticar | ✅ FIXED — idx 267 (9e151b6) | Built until-EOT Animate (animate_added_types_eot, revert at CLEANUP game.cpp). | DONE |
+| Witch-Blessed Meadow (idx 264) | ✅ FIXED — back face functional (14e2e2f) | Built general MODAL-DFC play-from-hand (CardData::is_modal_dfc; LegalAction::play_back_face) + pay-life-or-enter-tapped replacement (Effect::Replacement::tapped_unless_life). | DONE |
+| Ugin, Eye of the Storms (idx 262) | ✅ FIXED — ultimate complete (93844c1) | Built FREE cast-from-exile grant (Game::ImpulseCastPermission::FREE; ability.effect_grant_free_cast_from_exile). Verified driving real Ugin to 11 loyalty. | DONE |
+
+### Mechanics now available from the fix-four sub-task (reuse these):
+- `Duration$ UntilHostLeavesPlay` exile-return — DONE. **Sheltered by Ghosts / Static Prison** now only need their scripts' `ChangeZone|Destination$ Exile|Duration$ UntilHostLeavesPlay` targeting a permanent (origin battlefield); the targeted ChangeZone path auto-registers the return. No new engine code.
+- until-EOT Animate (Permanent.animate_added_types_eot/animate_make_creature_eot) — DONE.
+- MODAL-DFC play-from-hand + pay-life-or-tapped replacement — DONE (future MDFCs: just `AlternateMode:Modal` on front script; land back needs no extra work).
+- FREE cast-from-exile grant via Effect (MayPlayWithoutManaCost on remembered exiled cards until EOT) — DONE.
+- KNOWN MINOR: Witch-Blessed Meadow's back-face PLAY_LAND action's machine-mode card-id one-hot resolves to the FRONT vocab idx 263 (RL side-channel only; human description correct). Revisit only if MDFC back-face identity matters to the policy.
 
 DFC back-face registration convention: existing engine registers BOTH faces (Ajani 100/101, Delver 16/17). So when implementing the remaining DFCs, register the back face too: Outland Liberator → back "Frenzied Trapbreaker"; Tamiyo Inquisitive Student → back "Tamiyo, Seasoned Scholar"; (Witch-Blessed Meadow already at 264).
 
