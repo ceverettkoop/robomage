@@ -748,6 +748,22 @@ void StateManager::apply_type_changing_effects() {
         for (const auto &t : perm.animate_added_types) perm.types.insert(t);
     }
 
+    // Self-CDA "is every nonbasic land type" (Planar Nexus: AddType$ AllNonBasicLandType,
+    // CharacteristicDefining$ True, Affected$ Card.Self). Add the full set of nonbasic land
+    // subtypes to the source permanent itself. Idempotent (a set), reasserted every pass; a
+    // later Land.nonBasic type-setter (Blood Moon) still wins because its reset/insert runs
+    // below. General for any AllNonBasicLandType source.
+    static const char *kNonBasicLandTypes[] = {"Desert", "Gate",        "Lair",  "Locus",
+                                               "Mine",   "Power-Plant", "Sphere", "Tower",
+                                               "Urza's", "Cave"};
+    for (auto &a : g_active_statics) {
+        if (a.suppressed) continue;
+        if (a.sa->add_type != "AllNonBasicLandType") continue;
+        if (!global_coordinator.entity_has_component<Permanent>(a.entity)) continue;
+        auto &perm = global_coordinator.GetComponent<Permanent>(a.entity);
+        for (const char *t : kNonBasicLandTypes) perm.types.insert({SUBTYPE, t});
+    }
+
     // Collect type-changing statics from the already-populated g_active_statics.
     struct TypeChanger {
         ActiveStatic *as;
@@ -757,6 +773,8 @@ void StateManager::apply_type_changing_effects() {
     for (auto &a : g_active_statics) {
         if (a.suppressed) continue;
         if (a.sa->add_type.empty()) continue;
+        // AllNonBasicLandType is the self-CDA handled above, not a Land.nonBasic affector.
+        if (a.sa->add_type == "AllNonBasicLandType") continue;
         if (!global_coordinator.entity_has_component<Permanent>(a.entity)) continue;
         auto &src_perm = global_coordinator.GetComponent<Permanent>(a.entity);
         changers.push_back({&a, src_perm.timestamp_entered_battlefield});
