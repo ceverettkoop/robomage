@@ -463,6 +463,17 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             card.keywords.push_back("Improvise");
             continue;
         }
+        // K:Enchant:<ValidTgts>[:<prompt>] — an Aura's enchant restriction (CR 303.4). The
+        // middle field is a target filter (e.g. "Creature.YouCtrl") for the object this Aura can
+        // be attached to. Stored on the card so the cast path targets a matching object and the
+        // resolved Aura attaches to it (sets equipped_to). The trailing human prompt is ignored.
+        if (kw_line.rfind("Enchant:", 0) == 0) {
+            std::string rest = kw_line.substr(8);  // strip "Enchant:"
+            size_t colon = rest.find(':');
+            card.enchant_filter = (colon != std::string::npos) ? rest.substr(0, colon) : rest;
+            card.keywords.push_back("Enchant");
+            continue;
+        }
         // K:Ward:N — "Whenever this permanent becomes the target of a spell or ability an
         // opponent controls, counter that spell or ability unless that player pays {N}."
         // (CR 702.21). Stored as the keyword + a numeric cost; the becomes-targeted trigger

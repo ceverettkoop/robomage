@@ -276,9 +276,18 @@ static bool removal_affects(const ActiveStatic &r, Entity entity);
 // (which buffs/grants to every matching permanent); the single-target forms keep the source/
 // equipped-creature path. Shared by the layer-6 keyword-grant pass and the layer-7 P/T pass so
 // both agree on which statics fan out across the affected set (CR 613 layers 6 / 7c).
+// An attached-permanent static buffs the single object it is attached to: equipment uses the
+// "EquippedBy" filter and Auras use "EnchantedBy" (CR 303). Both resolve to the source
+// permanent's equipped_to link (auras reuse the same attachment field), so the layer appliers
+// treat them identically — single-target, not a general fan-out filter.
+static bool affected_is_attached_target(const std::string &aff) {
+    return aff.find("EquippedBy") != std::string::npos ||
+           aff.find("EnchantedBy") != std::string::npos;
+}
+
 static bool affected_is_general_filter(const std::string &aff) {
     return !aff.empty() &&
-           aff.find("EquippedBy") == std::string::npos &&
+           !affected_is_attached_target(aff) &&
            aff.find("Self") == std::string::npos;
 }
 
@@ -443,6 +452,23 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                             game_log("Equipment attached.\n");
                         }
                         game.pending_attach.erase(pa);
+                    }
+                }
+                // An Aura that resolved onto the battlefield (CR 303.4f) attaches to the object it
+                // was cast targeting. The aura is the entity whose Permanent is being created;
+                // its enchanted object was recorded at cast (pending_aura_target). Reuse the
+                // equipped_to/equipped_by attachment link so the aura's static buffs (Affected$
+                // Creature.EnchantedBy) and the aura state-based check find the enchanted object.
+                {
+                    auto pat = game.pending_aura_target.find(entity);
+                    if (pat != game.pending_aura_target.end()) {
+                        Entity enchanted = pat->second;
+                        if (enchanted != 0 && global_coordinator.entity_has_component<Permanent>(enchanted)) {
+                            perm.equipped_to = enchanted;
+                            game_log("%s is attached to %s.\n", perm.name.c_str(),
+                                     entity_name(enchanted).c_str());
+                        }
+                        game.pending_aura_target.erase(pat);
                     }
                 }
                 global_coordinator.AddComponent(entity, perm);
@@ -1070,10 +1096,11 @@ void StateManager::apply_layer6_ability_effects() {
             continue;
         }
 
-        // Determine which entity receives the grant (source or equipped creature).
-        // Affected$ is stored verbatim (e.g. "Creature.EquippedBy"), so match by substring.
+        // Determine which entity receives the grant (source or attached creature).
+        // Affected$ is stored verbatim (e.g. "Creature.EquippedBy" / "Creature.EnchantedBy"),
+        // so match by substring; both attachment forms resolve to equipped_to.
         Entity target_entity = a.entity;
-        if (a.sa->affected.find("EquippedBy") != std::string::npos) {
+        if (affected_is_attached_target(a.sa->affected)) {
             if (!global_coordinator.entity_has_component<Permanent>(a.entity)) continue;
             target_entity = global_coordinator.GetComponent<Permanent>(a.entity).equipped_to;
         }
@@ -1404,7 +1431,7 @@ void StateManager::apply_layer7_pt_effects() {
                 for (auto &s : setters) {
                     const std::string &aff = s.a->sa->affected;
                     bool match;
-                    if (aff.find("EquippedBy") != std::string::npos) {
+                    if (affected_is_attached_target(aff)) {
                         match = global_coordinator.entity_has_component<Permanent>(s.a->entity) &&
                                 global_coordinator.GetComponent<Permanent>(s.a->entity).equipped_to == entity;
                     } else if (aff.find("Self") != std::string::npos) {
@@ -1460,7 +1487,7 @@ void StateManager::apply_layer7_pt_effects() {
             targets = affected_permanents_for_static(a, mEntities);
         } else {
             Entity target_entity = a.entity;
-            if (aff.find("EquippedBy") != std::string::npos) {
+            if (affected_is_attached_target(aff)) {
                 if (!global_coordinator.entity_has_component<Permanent>(a.entity)) continue;
                 target_entity = global_coordinator.GetComponent<Permanent>(a.entity).equipped_to;
             }

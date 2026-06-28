@@ -167,6 +167,31 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
             }
         }
 
+        // 704.5n - an Aura attached to an illegal object, or not attached to anything, is put
+        // into its owner's graveyard. Auras carry an enchant restriction (CardData::enchant_filter)
+        // and track their attachment via Permanent::equipped_to (shared with equipment). We check
+        // the structural part of "illegal": no attachment, or the enchanted object has left the
+        // battlefield / is no longer a creature (the common fall-off when the enchanted creature
+        // dies or is bounced).
+        for (auto entity : mEntities) {
+            if (!is_battlefield_permanent(entity)) continue;
+            if (!global_coordinator.entity_has_component<CardData>(entity)) continue;
+            const auto &cd = global_coordinator.GetComponent<CardData>(entity);
+            if (cd.enchant_filter.empty()) continue;  // not an Aura
+            auto &perm = global_coordinator.GetComponent<Permanent>(entity);
+            Entity enchanted = perm.equipped_to;
+            bool illegal = (enchanted == 0) || !is_battlefield_permanent(enchanted);
+            if (!illegal && cd.enchant_filter.find("Creature") != std::string::npos &&
+                !global_coordinator.entity_has_component<Creature>(enchanted))
+                illegal = true;
+            if (illegal) {
+                game_log("%s is put into the graveyard (Aura not attached to a legal object)\n",
+                         entity_name(entity).c_str());
+                orderer->add_to_zone(false, entity, Zone::GRAVEYARD);
+                any_applied = true;
+            }
+        }
+
         // 704.5q - if a permanent has both a +1/+1 and a -1/-1 counter, N of each are
         // removed, where N is the smaller of the two counts (122.3 annihilation).
         for (auto entity : mEntities) {

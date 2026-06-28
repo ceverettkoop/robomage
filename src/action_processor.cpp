@@ -1581,6 +1581,25 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                 break;  // TODO: support spells with multiple abilities
             }
 
+            // AURA cast (CR 303.4 / 601.2c): an Aura with no spell ability of its own still
+            // targets the object it will enchant. Build a transient targeting ability from the
+            // Enchant filter, choose the target now, and remember it so the resolved permanent
+            // attaches to it (its equipped_to is set when its Permanent is created).
+            if (!card_data.enchant_filter.empty() &&
+                !global_coordinator.entity_has_component<Ability>(spell_entity)) {
+                Ability enchant_ab;
+                enchant_ab.source = spell_entity;
+                enchant_ab.controller = caster;
+                enchant_ab.valid_tgts = card_data.enchant_filter;
+                select_target(enchant_ab, orderer, caster);
+                if (enchant_ab.target != 0) {
+                    cur_game.pending_aura_target[spell_entity] = enchant_ab.target;
+                    game_log("%s casts %s enchanting %s\n", player_name(caster).c_str(),
+                             card_data.name.c_str(),
+                             target_display_name(cur_game, enchant_ab.target).c_str());
+                }
+            }
+
             // Log cast with target if applicable
             if (global_coordinator.entity_has_component<Ability>(spell_entity)) {
                 Entity tgt = global_coordinator.GetComponent<Ability>(spell_entity).target;

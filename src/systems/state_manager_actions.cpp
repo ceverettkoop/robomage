@@ -533,6 +533,14 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 condition_ok = evaluate_present_condition(ab, priority_player, orderer);
             break;
         }
+        // An Aura (CR 303.4 / 601.2c) targets the object it will enchant as it is cast, so it
+        // can only be cast if a legal object matching its Enchant restriction exists. Build a
+        // transient targeting ability from the enchant filter and reuse the standard check.
+        if (tgt_ok && !card_data.enchant_filter.empty()) {
+            Ability enchant_ab;
+            enchant_ab.valid_tgts = card_data.enchant_filter;
+            tgt_ok = has_legal_targets(enchant_ab, orderer);
+        }
         // Machine mode only: action-masking optimization — don't offer a conditional-destroy
         // spell to the RL agent when no target on the board would currently pass the
         // condition (e.g. Fatal Push: only show if a creature with mana value <= the current
