@@ -204,9 +204,10 @@ Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner
     const std::vector<Zone::ZoneValue> &zones, const std::string &change_type, bool mandatory,
     Zone::ZoneValue destination, bool reveal = false);
 // The unless-cost payment kind for run_unless_loop: pay {N} generic mana (default), pay N life
-// (Ward—Pay life, CR 702.21), or discard N card(s) from hand (Reality Smasher, CR 701.8). Returns
-// true if the spell should be countered (payer declined or couldn't pay).
-enum class UnlessPayKind { MANA, LIFE, DISCARD };
+// (Ward—Pay life, CR 702.21), discard N card(s) from hand (Reality Smasher, CR 701.8), or pay N
+// energy ({E}, CR 122.1c — Static Prison's "unless you pay {E}"). Returns true if the prevented
+// effect should still happen (payer declined or couldn't pay).
+enum class UnlessPayKind { MANA, LIFE, DISCARD, ENERGY };
 bool run_unless_loop(size_t cost, Zone::Ownership controller, std::shared_ptr<Orderer> orderer, Entity paid_for,
                      UnlessPayKind kind = UnlessPayKind::MANA);
 

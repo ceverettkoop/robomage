@@ -288,7 +288,7 @@ _CARD_COST_MATRIX = np.array([
     [0.0, 0.1, 0.0, 0.0, 0.1, 0.0, 0.1],  # 279: Uro, Titan of Nature's Wrath
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.4],  # 280: Karn, the Great Creator
     [0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1],  # 281: Sheltered by Ghosts
-    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 282: 
+    [0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 282: Static Prison
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 283: 
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 284: 
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 285: 
@@ -1319,7 +1319,7 @@ _VOCAB_NAMES = [
     "Uro, Titan of Nature's Wrath",  # 279
     "Karn, the Great Creator",  # 280
     "Sheltered by Ghosts",  # 281
-    "",  # 282
+    "Static Prison",  # 282
     "",  # 283
     "",  # 284
     "",  # 285

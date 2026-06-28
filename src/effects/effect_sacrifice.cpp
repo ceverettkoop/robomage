@@ -71,10 +71,40 @@ static Entity sacrifice_one(const Ability &ab, Zone::Ownership sacrificer,
 // sacrificer decline. RememberSacrificed$ True records the sacrificed entity in
 // cur_game.remembered_entities so a later sub-ability can read its mana value / identity (and a
 // ConditionDefined$ Remembered gate can tell whether anything was sacrificed).
+// Self-sacrifice (CR 701.16): the source object's controller sacrifices it. Used for a bare
+// DB$ Sacrifice (no SacValid$ / Defined$) — "sacrifice CARDNAME". No choice is involved. Returns
+// the sacrificed entity, or 0 if the source was no longer on the battlefield.
+static Entity sacrifice_self(const Ability &ab, std::shared_ptr<Orderer> orderer) {
+    Entity src = ab.source;
+    if (src == 0 || !is_battlefield_permanent(src)) return 0;
+    std::string name = global_coordinator.GetComponent<Permanent>(src).name;
+    orderer->add_to_zone(false, src, Zone::GRAVEYARD);
+    game_log("%s sacrifices %s.\n", player_name(ab.controller).c_str(), name.c_str());
+    return src;
+}
+
 bool sacrifice(Ability &ab, std::shared_ptr<Orderer> orderer) {
     // RememberSacrificed resets the remembered set to exactly what is sacrificed here, so a
     // downstream ConditionDefined$ Remembered gate sees 0 (declined) or 1 (sacrificed).
     if (ab.remember_sacrificed) cur_game.remembered_entities.clear();
+
+    // UnlessCost$ PayEnergy<N> (Static Prison: "sacrifice CARDNAME unless you pay {E}"). The payer
+    // (UnlessPayer$ You ⇒ the controller) may pay N energy to prevent the sacrifice; run_unless_loop
+    // returns false when paid (don't sacrifice) and true when declined / unaffordable (sacrifice).
+    if (ab.unless_cost_is_energy) {
+        Zone::Ownership payer = (ab.unless_payer != Zone::UNKNOWN) ? ab.unless_payer : ab.controller;
+        game_log("%s may pay %zu energy to avoid sacrificing:\n", player_name(payer).c_str(),
+                 ab.unless_generic_cost);
+        if (!run_unless_loop(ab.unless_generic_cost, payer, orderer, ab.source, UnlessPayKind::ENERGY))
+            return true;  // paid — nothing is sacrificed
+    }
+
+    // No SacValid$ filter and not an edict ⇒ self-sacrifice (sacrifice CARDNAME), CR 701.16.
+    if (ab.sac_valid.empty() && !ab.defined_each_opponent) {
+        Entity sacked = sacrifice_self(ab, orderer);
+        if (ab.remember_sacrificed && sacked) cur_game.remembered_entities.push_back(sacked);
+        return true;
+    }
 
     // Defined$ Opponent — edict: each opponent sacrifices on their own. CR 109.5 / 102.1: in a
     // two-player game "each opponent" is the controller's single opponent. The edict is mandatory

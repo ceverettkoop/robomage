@@ -157,6 +157,11 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     break;
                 case DRAW:
                     cur_step = FIRST_MAIN;
+                    {
+                        Event first_main_event(Events::FIRST_MAIN_BEGAN);
+                        first_main_event.SetParam(Params::PLAYER, active_player_entity);
+                        global_coordinator.SendEvent(first_main_event);
+                    }
                     break;
                 case FIRST_MAIN:
                     cur_step = BEGIN_COMBAT;

@@ -1061,7 +1061,17 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
             size_t close = value.find('>', pe);
             std::string n = (close != std::string::npos)
                                 ? value.substr(pe + 10, close - (pe + 10)) : "";
-            effect_params<DestroyAllParams>(ability).energy_unless_expr = n;  // SVar token; resolved post-parse
+            if (ability.category == "DestroyAll") {
+                effect_params<DestroyAllParams>(ability).energy_unless_expr = n;  // SVar token; resolved post-parse
+            } else {
+                // UnlessCost$ PayEnergy<N> on any other effect (Static Prison's DB$ Sacrifice):
+                // pay N energy ({E}) to prevent the effect. The count is a literal here; route it
+                // through the generic unless-cost count + an energy flag so run_unless_loop pays it.
+                ability.unless_cost_is_energy = true;
+                bool numeric = !n.empty() &&
+                               n.find_first_not_of("0123456789") == std::string::npos;
+                ability.unless_generic_cost = numeric ? static_cast<size_t>(std::stoi(n)) : 1;
+            }
         } else if (pd != std::string::npos) {
             // UnlessCost$ Discard<N/Card> (Reality Smasher): the payer discards N card(s) from
             // hand to prevent the counter. The N count rides on unless_generic_cost; the discard
@@ -2067,6 +2077,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
     bool phase_is_end_step = false;
     bool phase_is_draw = false;
     bool phase_is_begin_combat = false;
+    bool phase_is_first_main = false;
     bool trigger_zone_is_graveyard = false;
     bool valid_player_is_you = false;
     bool mode_is_spell_cast = false;
@@ -2150,6 +2161,8 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
             if (value == "EndStep" || value == "End of Turn")  phase_is_end_step = true;
             if (value == "Draw")     phase_is_draw     = true;
             if (value == "BeginCombat") phase_is_begin_combat = true;
+            // Forge writes the (pre-combat) first main phase as "Main1".
+            if (value == "Main1")    phase_is_first_main = true;
         } else if (key == "TriggerZones") {
             // The zone(s) the source must be in for this triggered ability to function
             // (CR 113.6 / 603.6). Arclight Phoenix's combat trigger functions from the
@@ -2309,6 +2322,11 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
 
     if (mode_is_phase && phase_is_begin_combat) {
         ability.trigger_on = Events::BEGIN_COMBAT_BEGAN;
+        ability.trigger_valid_player_is_controller = valid_player_is_you;
+    }
+
+    if (mode_is_phase && phase_is_first_main) {
+        ability.trigger_on = Events::FIRST_MAIN_BEGAN;
         ability.trigger_valid_player_is_controller = valid_player_is_you;
     }
 

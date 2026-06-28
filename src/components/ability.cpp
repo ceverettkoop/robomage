@@ -432,6 +432,37 @@ bool run_unless_loop(
         return true;
     }
 
+    if (kind == UnlessPayKind::ENERGY) {
+        // Pay N energy ({E}, CR 122.1c) or the prevented effect happens (Static Prison's
+        // "sacrifice CARDNAME unless you pay {E}"). Energy lives as an "ENERGY" counter on the
+        // payer; pay_energy gates on having enough (CR 119.4-analogue for a resource cost).
+        auto &payer = global_coordinator.GetComponent<Player>(get_player_entity(controller));
+        bool can_pay = player_energy(payer) >= static_cast<int>(cost);
+
+        std::vector<LegalAction> unless_actions;
+        size_t pay_idx = unless_actions.size();
+        if (can_pay) {
+            LegalAction pay(PASS_PRIORITY,
+                std::string("Pay {E} x") + std::to_string(cost));
+            pay.category = ActionCategory::PAY_UNLESS;
+            unless_actions.push_back(pay);
+        }
+        size_t decline_idx = unless_actions.size();
+        LegalAction decline(PASS_PRIORITY, std::string("Don't pay"));
+        decline.category = ActionCategory::PAY_UNLESS;
+        unless_actions.push_back(decline);
+
+        int choice = InputLogger::instance().get_input(unless_actions);
+        cur_game.player_a_has_priority = prev_priority;
+        if (can_pay && choice == static_cast<int>(pay_idx)) {
+            pay_energy(payer, static_cast<int>(cost));
+            game_log("%s pays %zu energy.\n", player_name(controller).c_str(), cost);
+            return false;
+        }
+        (void)decline_idx;
+        return true;
+    }
+
     std::multiset<Colors> cond_cost;
     for (size_t i = 0; i < cost; i++) cond_cost.insert(GENERIC);
 

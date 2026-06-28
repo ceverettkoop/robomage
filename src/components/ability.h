@@ -146,6 +146,11 @@ struct Ability{
     // the counter; if they can't (or decline) the spell is countered. General "counter unless
     // discard" path (CR 701.8 discard); reuses the same run_unless_loop choice machinery.
     bool unless_cost_is_discard = false;
+    // UnlessCost$ PayEnergy<N> on a non-DestroyAll effect (Static Prison: "sacrifice CARDNAME
+    // unless you pay {E}"). The payer may pay `unless_generic_cost` energy ({E}, CR 122.1c) to
+    // prevent the effect; if they can't or decline, the effect happens. (DestroyAll's energy
+    // unless-cost rides on DestroyAllParams::energy_unless_expr instead — see parse.cpp.)
+    bool unless_cost_is_energy = false;
     // UnlessPayer$ TriggeredSourceSAController — the payer of the unless-cost is the controller of
     // the triggering spell/ability (the opponent who targeted the permanent), NOT the trigger's own
     // controller. Bound at trigger-fire time into unless_payer (UNKNOWN ⇒ default to the countered
