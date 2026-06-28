@@ -62,6 +62,10 @@ EffectKind effect_kind_from_string(const std::string &category) {
         // types/subtypes (and, for later cards, base P/T / keywords / creature-ness) for
         // the effect's Duration (Permanent = rest of the game). See effect_animate.cpp.
         {"Animate", EffectKind::Animate},
+        // AB$ AnimateAll (Shadowspear): a mass until-end-of-turn continuous effect that removes
+        // (RemoveKeywords$) or grants keyword(s) on every permanent matching ValidCards$. See
+        // effect_animate_all.cpp.
+        {"AnimateAll", EffectKind::AnimateAll},
         // DB$ ChooseNumber (Wrath of the Skies): the resolving controller chooses an integer in
         // [0, Max$]; the pick is stored in cur_game.chosen_number so a chained sub-ability can
         // read it via Count$ChosenNumber. See effect_choose_number.cpp.

@@ -70,6 +70,17 @@ struct Permanent {
     int animate_power = 0;         // (extension) base power Animate sets
     int animate_toughness = 0;     // (extension) base toughness Animate sets
     bool animate_make_creature = false;  // (extension) Animate turns a noncreature into a creature
+
+    // AB$ AnimateAll | RemoveKeywords$ ... (Shadowspear: "Permanents your opponents control lose
+    // hexproof and indestructible until end of turn"). Keyword(s) this permanent currently has
+    // SUPPRESSED until end of turn by a mass continuous effect (CR 613, layer 6 keyword removal).
+    // The effective-keyword accessors (permanent_has_keyword / is_indestructible in game_queries.h)
+    // treat a keyword in this set as absent, so the loss has a real gameplay consequence — a
+    // hexproof creature becomes targetable by opponents again, an indestructible one can be
+    // destroyed / die to lethal damage — for the rest of the turn. Cleared at the cleanup step
+    // (514.2). General: works for creatures (whose cr.keywords also drop it in gather_active_statics)
+    // and for noncreature permanents (whose keywords the accessors read off CardData/Token).
+    std::set<std::string> removed_keywords_eot;
 };
 
 #endif /* PERMANENT_H */

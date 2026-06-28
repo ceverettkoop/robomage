@@ -142,6 +142,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Otawara, Soaring City", 228},
     {"Pithing Needle", 229},
     {"Prismari Charm", 231},
+    {"Shadowspear", 233},
     {"Silent Clearing", 234},
     {"Snow-Covered Island", 235},
     {"Sylvan Safekeeper", 238},

@@ -882,6 +882,18 @@ void StateManager::gather_active_statics(Game &game) {
                 if (std::find(cr.keywords.begin(), cr.keywords.end(), kc.first) == cr.keywords.end())
                     cr.keywords.push_back(kc.first);
             }
+            // Layer-6 keyword REMOVAL (CR 613, AB$ AnimateAll | RemoveKeywords$ — Shadowspear).
+            // A keyword suppressed until end of turn by a "loses <keyword>" effect is stripped
+            // from the rebuilt list after every grant is merged, so a direct reader of cr.keywords
+            // agrees with the effective-keyword accessors (which also gate on removed_keywords_eot).
+            if (!perm.removed_keywords_eot.empty()) {
+                cr.keywords.erase(
+                    std::remove_if(cr.keywords.begin(), cr.keywords.end(),
+                                   [&](const std::string &k) {
+                                       return perm.removed_keywords_eot.count(k) != 0;
+                                   }),
+                    cr.keywords.end());
+            }
         }
         if (perm.transformed) {
             for (auto &sa : perm.static_abilities) sa.applied = false;

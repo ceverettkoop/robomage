@@ -191,6 +191,13 @@ struct Ability{
     // variant) so PutCounterAll can carry it alongside CounterParams.
     std::string valid_cards_filter = "";
 
+    // AB$ AnimateAll | RemoveKeywords$ Hexproof & Indestructible (Shadowspear): the keyword(s)
+    // a mass continuous effect REMOVES from every permanent matching valid_cards_filter, until
+    // end of turn (CR 613 layer 6 keyword removal). Empty for effects that grant rather than
+    // remove. The add direction (AddKeyword$/Keywords$) reuses the same effect via add_keywords.
+    std::vector<std::string> remove_keywords;
+    std::vector<std::string> add_keywords;  // AnimateAll grant direction (until end of turn)
+
     // Condition$ Blessing (CopyPermanent on Ocelot Pride): the effect body runs only if the
     // ability's controller has the city's blessing (702.131). Like other condition gates, a
     // false condition skips the body but still chains subabilities.

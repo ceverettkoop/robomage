@@ -239,7 +239,7 @@ _CARD_COST_MATRIX = np.array([
     [0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.2],  # 230: Pre-War Formalwear
     [0.0, 0.1, 0.0, 0.1, 0.0, 0.0, 0.0],  # 231: Prismari Charm
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 232: 
-    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 233: 
+    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1],  # 233: Shadowspear
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 234: Silent Clearing
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 235: Snow-Covered Island
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 236: 
@@ -1270,7 +1270,7 @@ _VOCAB_NAMES = [
     "Pre-War Formalwear",  # 230
     "Prismari Charm",  # 231
     "",  # 232
-    "",  # 233
+    "Shadowspear",  # 233
     "Silent Clearing",  # 234
     "Snow-Covered Island",  # 235
     "",  # 236

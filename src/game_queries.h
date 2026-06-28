@@ -365,6 +365,17 @@ inline bool creature_has_keyword(const Creature &cr, const char *kw) {
     return false;
 }
 
+// True if keyword `kw` is currently SUPPRESSED on permanent `e` by an until-end-of-turn
+// "loses <keyword>" effect (AB$ AnimateAll | RemoveKeywords$, Shadowspear — CR 613 layer 6).
+// While suppressed the keyword is treated as absent regardless of how it was granted (printed,
+// counter, continuous). Single gate consulted by every effective-keyword accessor below so the
+// removal applies uniformly to creatures and noncreature permanents. Cleared at cleanup (514.2).
+inline bool keyword_removed_eot(Entity e, const char *kw) {
+    if (!global_coordinator.entity_has_component<Permanent>(e)) return false;
+    const auto &removed = global_coordinator.GetComponent<Permanent>(e).removed_keywords_eot;
+    return removed.find(kw) != removed.end();
+}
+
 // True if the permanent `e` is indestructible (CR 702.12b: it can't be destroyed —
 // "destroy" effects don't destroy it, and it ignores the lethal-damage / deathtouch
 // state-based actions, CR 704.5g/h). Reads the keyword from the object's effective
@@ -375,6 +386,7 @@ inline bool creature_has_keyword(const Creature &cr, const char *kw) {
 // "put into graveyard", or the 0-toughness SBA (CR 704.5f); those callers do not consult
 // this. Single source shared by the Destroy effects and the lethal-damage SBA.
 inline bool is_indestructible(Entity e) {
+    if (keyword_removed_eot(e, "Indestructible")) return false;
     if (global_coordinator.entity_has_component<Creature>(e)) {
         return creature_has_keyword(global_coordinator.GetComponent<Creature>(e), "Indestructible");
     }
@@ -398,6 +410,7 @@ inline bool is_indestructible(Entity e) {
 // targeting (Shroud/Hexproof, CR 702.18/702.11) and any future keyword query share it
 // so they cannot drift on how a granted keyword is stored.
 inline bool permanent_has_keyword(Entity e, const char *kw) {
+    if (keyword_removed_eot(e, kw)) return false;
     if (global_coordinator.entity_has_component<Creature>(e))
         return creature_has_keyword(global_coordinator.GetComponent<Creature>(e), kw);
     if (global_coordinator.entity_has_component<CardData>(e)) {

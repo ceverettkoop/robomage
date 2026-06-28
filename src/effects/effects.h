@@ -115,6 +115,11 @@ bool name_card(Ability &ab, std::shared_ptr<Orderer> orderer);
 // base-P/T / keyword / creature grants) onto the permanent so the layer system reapplies
 // it each SBE pass. See effect_animate.cpp.
 bool animate(Ability &ab, std::shared_ptr<Orderer> orderer);
+// AB$ AnimateAll (Shadowspear): a mass until-end-of-turn continuous effect that removes
+// (RemoveKeywords$) or grants keyword(s) on every battlefield permanent matching ValidCards$.
+// General over "permanents matching <filter> lose/gain <keyword> until end of turn" (CR 613
+// layer 6). See effect_animate_all.cpp.
+bool animate_all(Ability &ab, std::shared_ptr<Orderer> orderer);
 // Bootstrap (or refresh) the Creature/Damage components on a permanent the Animate extension
 // points (animate_make_creature + animate_set_pt + animate_added_keywords) turned into a
 // creature — e.g. an earthbended land. Idempotent; safe to call each SBA pass. Defined in
@@ -172,6 +177,8 @@ bool parse_amass(Ability &ab, const std::string &key, const std::string &value);
 bool parse_choose_number(Ability &ab, const std::string &key, const std::string &value);
 bool parse_dig_until(Ability &ab, const std::string &key, const std::string &value);
 bool parse_play(Ability &ab, const std::string &key, const std::string &value);
+// AB$ AnimateAll RemoveKeywords$/AddKeyword$/ValidCards$ (Shadowspear). See effect_animate_all.cpp.
+bool parse_animate_all(Ability &ab, const std::string &key, const std::string &value);
 
 }  // namespace effects
 

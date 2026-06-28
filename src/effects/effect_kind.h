@@ -59,6 +59,7 @@ enum class EffectKind {
     GrantCast,
     NameCard,
     Animate,
+    AnimateAll,
     ChooseNumber,
     DigUntil,
     Play,
