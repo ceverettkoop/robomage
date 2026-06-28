@@ -134,6 +134,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Meteor Sword", 226},
     {"Otawara, Soaring City", 228},
     {"Pithing Needle", 229},
+    {"Prismari Charm", 231},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);
