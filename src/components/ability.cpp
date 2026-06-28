@@ -986,6 +986,35 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
             return;
         }
     }
+    // Reflexive "you may sacrifice CARDNAME. If you do, ..." cost on a TRIGGERED ability (The
+    // Fantasticar's fourth-noncreature-spell trigger: Execute AB$ Token | Cost$ Sac<1/CARDNAME>).
+    // Unlike an activated ability — whose sac cost is paid up front at activation — a triggered
+    // ability pays its cost as it resolves (CR 603.2), and the Sac<.../CARDNAME> cost makes the
+    // whole effect optional: prompt the controller, sacrifice the source on accept, and do nothing
+    // (skip the effect and its subabilities) on decline. Activated abilities never reach here with
+    // ability_type == TRIGGERED, so their already-paid sac is not double-charged.
+    if (ability_type == TRIGGERED && sac_self) {
+        std::string sname = global_coordinator.entity_has_component<Permanent>(source)
+                                ? global_coordinator.GetComponent<Permanent>(source).name
+                                : std::string("it");
+        std::vector<LegalAction> yn;
+        LegalAction decline(PASS_PRIORITY, std::string("Decline"));
+        decline.category = ActionCategory::OPTIONAL_YESNO;
+        yn.push_back(decline);
+        LegalAction accept(PASS_PRIORITY, std::string("Sacrifice ") + sname);
+        accept.category = ActionCategory::OPTIONAL_YESNO;
+        yn.push_back(accept);
+        bool prev_priority = cur_game.player_a_has_priority;
+        cur_game.player_a_has_priority = (controller == Zone::PLAYER_A);
+        int yc = InputLogger::instance().get_input(yn);
+        cur_game.player_a_has_priority = prev_priority;
+        if (yc == 0) {
+            game_log("%s declines to sacrifice %s.\n", player_name(controller).c_str(), sname.c_str());
+            return;
+        }
+        orderer->add_to_zone(false, source, Zone::GRAVEYARD);
+        game_log("%s sacrifices %s.\n", player_name(controller).c_str(), sname.c_str());
+    }
     // 603.4 intervening-if: re-check the trigger's "if" condition on resolution. If it is no
     // longer true the ability is removed from the stack and does nothing — not even its
     // subabilities fire (unlike a ConditionCheckSVar gate).

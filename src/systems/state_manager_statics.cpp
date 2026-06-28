@@ -475,8 +475,11 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
             // Earthbended land (DB$/AB$ Animate make_creature): an animated land is a creature
             // even though is_creature_card(card) is false, so re-bootstrap its Creature/Damage
             // components here if they were lost. Idempotent; honors the 0/0 base + Haste grant.
-            if (global_coordinator.GetComponent<Permanent>(entity).animate_make_creature)
-                effects::apply_animate_creature_bootstrap(entity);
+            {
+                const auto &perm_anim = global_coordinator.GetComponent<Permanent>(entity);
+                if (perm_anim.animate_make_creature || perm_anim.animate_make_creature_eot)
+                    effects::apply_animate_creature_bootstrap(entity);
+            }
             apply_keyword_abilities(entity);
 
             // A card moved here "transformed" (Ajani's exile-and-return) enters showing
@@ -746,6 +749,9 @@ void StateManager::apply_type_changing_effects() {
         if (!is_battlefield_permanent(entity)) continue;
         auto &perm = global_coordinator.GetComponent<Permanent>(entity);
         for (const auto &t : perm.animate_added_types) perm.types.insert(t);
+        // "Until end of turn" Animate type grants (CR 514.2) — reasserted each pass while live;
+        // the CLEANUP step erases the bucket so they lapse at end of turn.
+        for (const auto &t : perm.animate_added_types_eot) perm.types.insert(t);
     }
 
     // Self-CDA "is every nonbasic land type" (Planar Nexus: AddType$ AllNonBasicLandType,

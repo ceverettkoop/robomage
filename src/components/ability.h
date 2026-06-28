@@ -231,6 +231,11 @@ struct Ability{
     bool trigger_valid_card_is_instant_or_sorcery = false;  // ValidCard$ Instant/Sorcery
     bool trigger_valid_card_is_land = false;            // ValidCard$ Land.*
     bool trigger_valid_card_is_artifact = false;        // ValidCard$ Artifact.* (Kappa Cannoneer)
+    // ValidCard$ Card.nonCreature combined with an ActivatorThisTurnCast$ count (The Fantasticar's
+    // "your fourth noncreature spell each turn"): the cast spell must be NONCREATURE. Bound to the
+    // SPELL_CAST event (fired after the per-cast counters are bumped) rather than the dedicated
+    // NONCREATURE_SPELL_CAST event (fired before), so a count gate sees the current cast counted.
+    bool trigger_valid_card_non_creature = false;
     // ValidCard$ ...+!token — the changing card must be a real card, not a token (CR 110.1 /
     // 111.7). Moonshadow's "permanent cards put into your graveyard" excludes tokens.
     bool trigger_valid_card_non_token = false;
@@ -257,6 +262,9 @@ struct Ability{
 
     // Spell count trigger (Cori-Steel Cutter)
     size_t trigger_spell_count_eq = 0;  // ActivatorThisTurnCast$ EQN — fires on Nth spell
+    // The Nth-spell count above counts only NONCREATURE spells (The Fantasticar) rather than all
+    // spells cast this turn — compare against Player::noncreature_spells_cast_this_turn.
+    bool trigger_spell_count_noncreature = false;
 
     // Kicker-linked SpellCast trigger (CR 702.33e/f, Wastescape Battlemage): a
     // "When you cast this spell, if it was kicked with its [N] kicker, ..." trigger.

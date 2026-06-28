@@ -71,6 +71,23 @@ struct Permanent {
     int animate_toughness = 0;     // (extension) base toughness Animate sets
     bool animate_make_creature = false;  // (extension) Animate turns a noncreature into a creature
 
+    // DB$/AB$ Animate with the default "until end of turn" Duration (CR 613 continuous effect that
+    // ends during the cleanup step, CR 514.2). Same role as the animate_* fields above but the
+    // grant LAPSES at cleanup instead of persisting for the rest of the game. Reapplied each
+    // static pass (so it survives the per-pass rebuild for the turn it is live) and then cleared
+    // by the CLEANUP step in classes/game.cpp:
+    //   * animate_added_types_eot   — types/subtypes added in layer 4 only for the rest of THIS
+    //                                 turn. Only types NOT already on the permanent are recorded
+    //                                 here, so the cleanup revert erases exactly what was granted
+    //                                 (never a printed type — e.g. The Fantasticar keeps Artifact).
+    //   * animate_make_creature_eot — this EOT Animate turned a noncreature permanent (a Vehicle)
+    //                                 into a creature; cleanup strips the bootstrapped Creature/
+    //                                 Damage components unless the permanent is a creature by some
+    //                                 permanent means (printed creature face, or animate_make_creature).
+    // A card opts in by giving its Animate ability no Duration$ (or Duration$ other than Permanent).
+    std::vector<Type> animate_added_types_eot;
+    bool animate_make_creature_eot = false;
+
     // AB$ AnimateAll | RemoveKeywords$ ... (Shadowspear: "Permanents your opponents control lose
     // hexproof and indestructible until end of turn"). Keyword(s) this permanent currently has
     // SUPPRESSED until end of turn by a mass continuous effect (CR 613, layer 6 keyword removal).

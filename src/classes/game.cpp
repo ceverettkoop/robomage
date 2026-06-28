@@ -253,6 +253,31 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                         if (global_coordinator.entity_has_component<Permanent>(entity)) {
                             auto &perm = global_coordinator.GetComponent<Permanent>(entity);
                             perm.removed_keywords_eot.clear();
+                            // "Until end of turn" Animate (CR 514.2) lapses now: erase the
+                            // EOT-added types, and if this EOT animate is what made a noncreature
+                            // permanent a creature (a crewed-by-trigger Vehicle like The
+                            // Fantasticar), strip its bootstrapped Creature/Damage components so it
+                            // stops being a creature — unless it is a creature by a permanent means.
+                            if (!perm.animate_added_types_eot.empty() ||
+                                perm.animate_make_creature_eot) {
+                                for (const auto &t : perm.animate_added_types_eot)
+                                    perm.types.erase(t);
+                                perm.animate_added_types_eot.clear();
+                                if (perm.animate_make_creature_eot) {
+                                    perm.animate_make_creature_eot = false;
+                                    bool still_creature = perm.animate_make_creature;
+                                    if (!still_creature &&
+                                        global_coordinator.entity_has_component<CardData>(entity))
+                                        still_creature = is_creature_card(
+                                            global_coordinator.GetComponent<CardData>(entity));
+                                    if (!still_creature) {
+                                        if (global_coordinator.entity_has_component<Creature>(entity))
+                                            global_coordinator.RemoveComponent<Creature>(entity);
+                                        if (global_coordinator.entity_has_component<Damage>(entity))
+                                            global_coordinator.RemoveComponent<Damage>(entity);
+                                    }
+                                }
+                            }
                         }
                     }
 

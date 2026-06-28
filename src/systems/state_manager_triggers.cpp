@@ -296,6 +296,15 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                             is_creature = is_creature_card(global_coordinator.GetComponent<CardData>(ev_card));
                         if (!is_creature) continue;
                     }
+                    // ValidCard$ Card.nonCreature filter on a counted SpellCast (The Fantasticar):
+                    // the triggering spell must NOT be a creature.
+                    if (ab.trigger_valid_card_non_creature && ev.HasParam(Params::ENTITY)) {
+                        Entity ev_card = ev.GetParam<Entity>(Params::ENTITY);
+                        bool is_creature = global_coordinator.entity_has_component<Token>(ev_card);
+                        if (!is_creature && global_coordinator.entity_has_component<CardData>(ev_card))
+                            is_creature = is_creature_card(global_coordinator.GetComponent<CardData>(ev_card));
+                        if (is_creature) continue;
+                    }
                     // ValidCard$ Instant/Sorcery filter (Murktide Regent)
                     if (ab.trigger_valid_card_is_instant_or_sorcery && ev.HasParam(Params::ENTITY)) {
                         Entity ev_card = ev.GetParam<Entity>(Params::ENTITY);
@@ -396,7 +405,11 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                     Entity ev_player = ev.GetParam<Entity>(Params::PLAYER);
                     if (!global_coordinator.entity_has_component<Player>(ev_player)) continue;
                     auto &pl = global_coordinator.GetComponent<Player>(ev_player);
-                    if (pl.spells_cast_this_turn != ab.trigger_spell_count_eq) continue;
+                    // The Fantasticar counts only noncreature spells; Cori-Steel Cutter counts all.
+                    size_t cast_count = ab.trigger_spell_count_noncreature
+                                            ? pl.noncreature_spells_cast_this_turn
+                                            : pl.spells_cast_this_turn;
+                    if (cast_count != ab.trigger_spell_count_eq) continue;
                 }
 
                 // Dynamic mana-value filter on the cast spell (Chalice of the Void:

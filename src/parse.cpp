@@ -1222,10 +1222,14 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
     } else if (key == "RepeatPlayers") {
         ability.repeat_players = value;       // RepeatEach over players (Price of Progress)
     } else if (key == "Types" && ability.category == "Animate") {
-        // DB$ Animate | Types$ Angel [Cleric ...] — the space-separated type/subtype list the
-        // animated permanent gains "in addition to its other types" (Guide of Souls). Classify
-        // each token (TYPE/SUBTYPE/SUPERTYPE) the same way the printed Types: line is parsed.
-        for (const auto &t : parse_types(value)) ability.animate_types.push_back(t);
+        // DB$ Animate | Types$ Angel [Cleric ...] — the type/subtype list the animated permanent
+        // gains "in addition to its other types" (Guide of Souls: "Angel"; The Fantasticar:
+        // "Creature,Artifact"). Forge separates this list with COMMAS (unlike the printed Types:
+        // line, which is space-separated), so normalize commas to spaces before classifying each
+        // token (TYPE/SUBTYPE/SUPERTYPE) the same way the printed Types: line is parsed.
+        std::string normalized = value;
+        std::replace(normalized.begin(), normalized.end(), ',', ' ');
+        for (const auto &t : parse_types(normalized)) ability.animate_types.push_back(t);
     } else if (key == "Duration" && ability.category == "Animate") {
         ability.animate_duration_permanent = (value == "Permanent");
     } else if (effects::apply_parse_hook(ability, key, value)) {
@@ -2187,11 +2191,19 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
         ability.trigger_valid_player_is_controller = valid_player_is_you;
     }
 
-    // "whenever you cast your Nth spell" — Cori-Steel Cutter
+    // "whenever you cast your Nth spell" — Cori-Steel Cutter; or "your Nth NONCREATURE spell each
+    // turn" — The Fantasticar. Bind to SPELL_CAST (fired AFTER the per-cast spell counters bump,
+    // unlike NONCREATURE_SPELL_CAST which fires before) so the count gate sees the current cast.
     if (mode_is_spell_cast && activator_this_turn_cast_eq > 0) {
         ability.trigger_on = Events::SPELL_CAST;
         ability.trigger_valid_player_is_controller = valid_player_is_you;
         ability.trigger_spell_count_eq = activator_this_turn_cast_eq;
+        if (valid_card_non_creature) {
+            // Count only noncreature spells, and only fire on a noncreature cast (the SPELL_CAST
+            // event carries every spell, so filter the triggering card to noncreature too).
+            ability.trigger_valid_card_non_creature = true;
+            ability.trigger_spell_count_noncreature = true;
+        }
     }
 
     // "Whenever a player casts a spell with mana value equal to ..." — Chalice of the Void
@@ -2318,6 +2330,8 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
                 effect.trigger_only_self                        = ability.trigger_only_self;
                 effect.trigger_self_excluded                    = ability.trigger_self_excluded;
                 effect.trigger_spell_count_eq                   = ability.trigger_spell_count_eq;
+                effect.trigger_spell_count_noncreature          = ability.trigger_spell_count_noncreature;
+                effect.trigger_valid_card_non_creature          = ability.trigger_valid_card_non_creature;
                 effect.trigger_kicked_index                     = ability.trigger_kicked_index;
                 effect.trigger_cmc_expr                         = ability.trigger_cmc_expr;
                 effect.trigger_cmc_op                           = ability.trigger_cmc_op;
