@@ -15,8 +15,11 @@ Usage:
     # Override binary path:
     python train.py --binary ../bin/robomage
 
-    # Resume from checkpoint:
-    python train.py --load checkpoints/robomage_100000_steps.zip
+    # Models are per-deck generalists ({deck}__final.zip / {deck}__v{steps}.zip):
+    # a training session auto-resumes and continues the deck's one model, so
+    # training vs a single opponent just generalizes it further.
+    python train.py --deck delver --opponent mav    # continue delver's generalist
+    python train.py --deck delver --opponent mav --fresh    # start it over
 """
 
 import argparse
@@ -52,7 +55,7 @@ except ImportError:
     print("Install with: pip install sb3-contrib")
 
 from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv
-from stable_baselines3.common.callbacks import CheckpointCallback, EvalCallback, BaseCallback
+from stable_baselines3.common.callbacks import BaseCallback
 from stable_baselines3.common.monitor import Monitor
 
 import numpy as np
@@ -531,15 +534,24 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
           model_deck: str = "delver", opp_deck: str = "delver",
           n_envs_override: int | None = None, no_shaping: bool = False,
           opponent_pool: str | None = None, opp_ckpt_ratio: float = 1.0,
-          embed_dim: int = EMBED_DIM, **env_kwargs):
-    """Train the model.
+          embed_dim: int = EMBED_DIM, fresh: bool = False, **env_kwargs):
+    """Train the per-deck generalist model that pilots ``model_deck``.
+
+    Models are **per-deck generalists**, not matchup-specific: one model plays
+    ``model_deck`` against any opponent, saved as ``{model_deck}__final.zip`` with
+    periodic ``{model_deck}__v{steps}.zip`` snapshots (the deck-pilot naming the
+    league and self-play pools sample from). Training against a single opponent
+    in a session just continues that one generalist, so unless ``--load`` or
+    ``fresh`` is given the deck's existing ``__final`` (or newest snapshot) is
+    auto-resumed and this session's steps accumulate onto it.
 
     Two opponent modes (mutually exclusive):
       * default (``self_play=False``) — every env trains against the rule-based
-        scripted agent (``ModelVsScriptedEnv``).
-      * ``self_play=True`` — every env trains against a frozen saved checkpoint
-        of the mirror matchup (``SelfPlayEnv``); if no compatible checkpoint
-        exists yet, that env's opponent falls back to the scripted agent.
+        scripted agent (``ModelVsScriptedEnv``), piloting ``opp_deck``.
+      * ``self_play=True`` — every env trains against a frozen deck-pilot snapshot
+        of ``opp_deck`` (``SelfPlayEnv`` samples ``{opp_deck}__v*.zip`` /
+        ``{opp_deck}__final.zip``); if none exists yet, that env's opponent falls
+        back to the scripted agent.
 
     Extra keyword arguments (``bo3``, ``auto_sideboard``, etc.) are forwarded
     to the underlying ``RoboMageEnv`` via the env factory helpers.
@@ -574,12 +586,15 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
             net_arch=[256, 256],
         )
 
-        model_prefix = f"{model_deck}_{opp_deck}"
-        if not load_path and self_play:
-            candidate = os.path.join(checkpoint_dir, f"{model_prefix}_final.zip")
-            if os.path.exists(candidate):
-                load_path = candidate
-                print(f"Auto-loading self-play checkpoint: {candidate}")
+        # Per-deck generalist: auto-resume this deck's own latest checkpoint so a
+        # single-opponent session accumulates onto the one model (unless --load
+        # gave an explicit path or --fresh forced a scratch start).
+        if not load_path and not fresh:
+            auto = _resolve_model(model_deck)
+            if auto != model_deck and os.path.exists(auto):
+                load_path = auto
+                print(f"Auto-resuming deck generalist: {auto} "
+                      f"(use --fresh to start from scratch)")
 
         if load_path:
             print(f"Resuming from {load_path}")
@@ -605,12 +620,10 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
         if no_shaping:
             vec_env.env_method("set_shaping_scale", 0.0)
             print("[shaping] disabled for this session (--no-shaping)")
+        # Periodic deck-pilot snapshots ('{deck}__v{steps}.zip') feed the shared
+        # self-play / league pools; the '{deck}__final.zip' is saved at the end.
         callbacks = [
-            CheckpointCallback(
-                save_freq=250_000 // actual_n_envs,
-                save_path=checkpoint_dir,
-                name_prefix=model_prefix,
-            ),
+            SnapshotCallback(checkpoint_dir, model_deck, LEAGUE_SNAPSHOT_EVERY),
         ]
         if not no_shaping:
             callbacks.append(ShapingScaleCallback(vec_env))
@@ -622,8 +635,8 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
 
         print(f"Training for {total_timesteps:,} timesteps across {actual_n_envs} envs...")
         model.learn(total_timesteps=total_timesteps, callback=callbacks, reset_num_timesteps=load_path is None)
-        model.save(os.path.join(checkpoint_dir, f"{model_prefix}_final"))
-        print(f"Saved final model as {model_prefix}_final.")
+        model.save(os.path.join(checkpoint_dir, f"{model_deck}__final"))
+        print(f"Saved final model as {model_deck}__final.")
     finally:
         vec_env.close()
 
@@ -762,11 +775,11 @@ def train_fixed_model(binary_path: str, model_deck: str, opp_deck: str,
                       tally: bool = False,
                       n_envs_override: int | None = None,
                       no_shaping: bool = False, **env_kwargs):
-    """Train model_deck against a fixed opponent model for opp_deck.
+    """Train ``model_deck``'s generalist against ``opp_deck``'s fixed generalist.
 
-    Loads ``{model_deck}_{opp_deck}_final.zip`` as the training model (or
-    ``load_path`` if given) and ``{opp_deck}_{model_deck}_final.zip`` as the
-    fixed opponent for every game.
+    Both sides are per-deck generalists: resumes ``{model_deck}__final.zip`` (or
+    ``load_path``) as the training model and freezes ``{opp_deck}__final.zip``
+    (or its newest snapshot) as the opponent for every game.
 
     Extra keyword arguments (``bo3``, ``auto_sideboard``, etc.) are forwarded
     to the underlying ``RoboMageEnv`` via the env factory helpers.
@@ -776,21 +789,20 @@ def train_fixed_model(binary_path: str, model_deck: str, opp_deck: str,
     os.makedirs(checkpoint_dir, exist_ok=True)
     os.makedirs(LOG_DIR, exist_ok=True)
 
-    model_prefix = f"{model_deck}_{opp_deck}"
-    opp_prefix = f"{opp_deck}_{model_deck}"
-
     if not load_path:
-        candidate = os.path.join(checkpoint_dir, f"{model_prefix}_final.zip")
-        if os.path.exists(candidate):
+        candidate = _resolve_model(model_deck)
+        if candidate != model_deck and os.path.exists(candidate):
             load_path = candidate
     if not load_path:
-        raise FileNotFoundError(f"No training model found: {model_prefix}_final.zip")
+        raise FileNotFoundError(f"No training model found piloting {model_deck} "
+                                f"({model_deck}__final.zip or {model_deck}__v*.zip)")
 
-    opp_model_path = os.path.join(checkpoint_dir, f"{opp_prefix}_final.zip")
-    if not os.path.exists(opp_model_path):
-        raise FileNotFoundError(f"No opponent model found: {opp_model_path}")
+    opp_model_path = _resolve_model(opp_deck)
+    if opp_model_path == opp_deck or not os.path.exists(opp_model_path):
+        raise FileNotFoundError(f"No opponent model found piloting {opp_deck} "
+                                f"({opp_deck}__final.zip or {opp_deck}__v*.zip)")
 
-    print(f"Training {model_prefix} against fixed opponent {opp_prefix}")
+    print(f"Training {model_deck} generalist against fixed {opp_deck} generalist")
     print(f"  training model: {load_path}")
     print(f"  opponent model: {opp_model_path}")
 
@@ -813,11 +825,7 @@ def train_fixed_model(binary_path: str, model_deck: str, opp_deck: str,
             vec_env.env_method("set_shaping_scale", 0.0)
             print("[shaping] disabled for this session (--no-shaping)")
         callbacks = [
-            CheckpointCallback(
-                save_freq=250_000 // n_envs,
-                save_path=checkpoint_dir,
-                name_prefix=model_prefix,
-            ),
+            SnapshotCallback(checkpoint_dir, model_deck, LEAGUE_SNAPSHOT_EVERY),
         ]
         if not no_shaping:
             callbacks.append(ShapingScaleCallback(vec_env))
@@ -829,8 +837,8 @@ def train_fixed_model(binary_path: str, model_deck: str, opp_deck: str,
 
         print(f"Training for {total_timesteps:,} timesteps across {n_envs} envs...")
         model.learn(total_timesteps=total_timesteps, callback=callbacks, reset_num_timesteps=False)
-        model.save(os.path.join(checkpoint_dir, f"{model_prefix}_final"))
-        print(f"Saved final model as {model_prefix}_final.")
+        model.save(os.path.join(checkpoint_dir, f"{model_deck}__final"))
+        print(f"Saved final model as {model_deck}__final.")
     finally:
         vec_env.close()
 
@@ -840,9 +848,9 @@ def train_alternate(binary_path: str, deck_a: str, deck_b: str,
                     tally: bool = False,
                     n_envs_override: int | None = None,
                     no_shaping: bool = False, **env_kwargs):
-    """Alternate training between two decks every ``alternate_steps`` timesteps.
+    """Alternate training between two decks' generalists every ``alternate_steps``.
 
-    Each round trains one side against the other's latest final checkpoint,
+    Each round trains one deck's generalist against the other's frozen generalist,
     then saves and swaps roles.
 
     Extra keyword arguments (``bo3``, ``auto_sideboard``, etc.) are forwarded
@@ -851,11 +859,12 @@ def train_alternate(binary_path: str, deck_a: str, deck_b: str,
     checkpoint_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), CHECKPOINT_DIR)
     os.makedirs(checkpoint_dir, exist_ok=True)
 
-    # Verify both models exist
-    for d, o in [(deck_a, deck_b), (deck_b, deck_a)]:
-        path = os.path.join(checkpoint_dir, f"{d}_{o}_final.zip")
-        if not os.path.exists(path):
-            raise FileNotFoundError(f"Missing model: {path}")
+    # Verify both decks have a generalist checkpoint to alternate between.
+    for d in (deck_a, deck_b):
+        resolved = _resolve_model(d)
+        if resolved == d or not os.path.exists(resolved):
+            raise FileNotFoundError(f"Missing model piloting {d} "
+                                    f"({d}__final.zip or {d}__v*.zip)")
 
     steps_done = 0
     round_num = 0
@@ -1010,19 +1019,22 @@ def _run_sweep(args, parser, decks_filter):
     print(f"Training {len(matchups)} matchups ({label}) for {args.total_timesteps:,} timesteps each:")
     for d, o in matchups:
         print(f"  {d} vs {o}")
-    checkpoint_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), CHECKPOINT_DIR)
+    # Each matchup session continues the trained deck's one generalist ({d}__final),
+    # so a deck trained across several opponents in a sweep accumulates onto a
+    # single model. train() auto-resumes it; we only force-fresh the very first
+    # session of each deck so a re-run keeps building rather than wiping.
+    seen_decks = set()
     for i, (d, o) in enumerate(matchups):
         print(f"\n{'='*60}")
         print(f"[{i+1}/{len(matchups)}] {d} vs {o}")
         print(f"{'='*60}")
-        candidate = os.path.join(checkpoint_dir, f"{d}_{o}_final.zip")
-        resume_path = candidate if os.path.exists(candidate) else None
-        train(args.binary, load_path=resume_path, total_timesteps=args.total_timesteps,
+        train(args.binary, load_path=None, total_timesteps=args.total_timesteps,
               tally=args.tally, self_play=args.self_play,
-              model_deck=d, opp_deck=o,
+              model_deck=d, opp_deck=o, fresh=(args.fresh and d not in seen_decks),
               n_envs_override=args.n_envs, no_shaping=args.no_shaping,
               opponent_pool=args.opponent_pool, opp_ckpt_ratio=args.opponent_ckpt_ratio,
               embed_dim=args.embed_dim, **env_kwargs)
+        seen_decks.add(d)
     print(f"\nAll {len(matchups)} matchups complete.")
 
 
@@ -1066,7 +1078,7 @@ if __name__ == "__main__":
               model_deck=args.deck, opp_deck=args.opponent,
               n_envs_override=args.n_envs, no_shaping=args.no_shaping,
               opponent_pool=args.opponent_pool, opp_ckpt_ratio=args.opponent_ckpt_ratio,
-              embed_dim=args.embed_dim, **env_kwargs)
+              embed_dim=args.embed_dim, fresh=args.fresh, **env_kwargs)
     elif args.command == "sweep":
         _run_sweep(args, parser, args.deck)
     elif args.command == "fixed-model":

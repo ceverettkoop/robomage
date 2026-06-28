@@ -110,6 +110,9 @@ def train_opts():
         Arg("--total-timesteps", "int", default=TOTAL_TIMESTEPS,
             help="Total training timesteps"),
         Arg("--tally", "flag", help="Print A/B win tally after each rollout"),
+        Arg("--fresh", "flag",
+            help="Start the deck's generalist from scratch instead of auto-resuming "
+                 "its existing {deck}__final.zip / newest {deck}__v*.zip (overwrites it)"),
         Arg("--n-envs", "int", default=None,
             help="Number of parallel environments (default: %d, self-play: %d)"
                  % (N_ENVS, N_ENVS_SELF_PLAY)),
@@ -128,8 +131,9 @@ def _opponent_mode():
     """The --self-play | --scripted mutually-exclusive pair (train/sweep)."""
     return MutexGroup([
         Arg("--self-play", "flag",
-            help="Train against a frozen saved checkpoint of the mirror matchup "
-                 "(falls back to the scripted agent if none exists yet)"),
+            help="Train against a frozen deck-pilot snapshot of the opponent deck "
+                 "({opp}__v*.zip / {opp}__final.zip; falls back to the scripted "
+                 "agent if none exists yet)"),
         Arg("--scripted", "flag",
             help="Train against the rule-based scripted agent (the default; "
                  "mutually exclusive with --self-play)"),
@@ -141,10 +145,10 @@ def opponent_pool_opts():
     return [
         Arg("--opponent-pool", "str", default=None,
             help="Comma-separated mix of opponent controllers to randomize per "
-                 "episode, e.g. 'scripted:easy,scripted:hard=2,delver_mav_final'. "
-                 "The token 'random-model' expands to a random checkpoint "
-                 "compatible with the matchup (a model trained to pilot the "
-                 "opponent's deck, i.e. {opp_deck}_{deck}_*.zip). Each item may "
+                 "episode, e.g. 'scripted:easy,scripted:hard=2,mav'. "
+                 "The token 'random-model' expands to a random generalist piloting "
+                 "the opponent's deck (its deck-pilot snapshots {opp_deck}__v*.zip "
+                 "/ {opp_deck}__final.zip). Each item may "
                  "carry an optional '=<weight>'. Overrides the plain scripted "
                  "opponent (ignored with --self-play). In a sweep the same pool "
                  "is applied to every matchup, resolving 'random-model' per matchup."),
@@ -182,12 +186,17 @@ def sim_args():
 # ── Tool definitions ──────────────────────────────────────────────────────────
 
 TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
-    Sub("train", "Train a model (default command)", items=[
+    Sub("train", "Train a deck's generalist model (default command)", items=[
         Arg("--deck", "str", default="delver", suggest="deck",
-            help="Deck the model plays (.dk stem, default: delver)"),
-        Arg("--opponent", "str", required=True, suggest="deck", help="Opponent deck (.dk stem)"),
+            help="Deck the generalist plays (.dk stem, default: delver). Saved as "
+                 "{deck}__final.zip; sessions against any opponent accumulate onto it."),
+        Arg("--opponent", "str", required=True, suggest="deck",
+            help="Opponent deck this session trains against (.dk stem). The model "
+                 "stays a generalist — training vs one opponent continues the same "
+                 "{deck}__final.zip rather than forging a matchup-specific model."),
         Arg("--load", "str", default=None, suggest="checkpoint",
-            help="Resume from checkpoint .zip (or shorthand)"),
+            help="Resume from a specific checkpoint .zip (or shorthand), overriding "
+                 "the default auto-resume of the deck's own generalist"),
         _opponent_mode(),
         *opponent_pool_opts(),
         *train_opts(),

@@ -65,9 +65,9 @@ def latest_snapshot(deck: Optional[str], checkpoint_dir: Optional[str]) -> Optio
     return snaps[-1] if snaps else None
 
 # Pool token standing for a random checkpoint compatible with the current
-# matchup — a model trained to pilot the opponent's deck. OpponentPool expands
-# it into the matching '{opp_deck}_{model_deck}_*.zip' checkpoints (the same
-# mirror-matchup convention SelfPlayEnv uses).
+# matchup — a generalist trained to pilot the opponent's deck. OpponentPool
+# expands it into the opponent deck's pilots ('{opp_deck}__v*.zip' /
+# '{opp_deck}__final.zip'), the same deck-pilot snapshots SelfPlayEnv samples.
 MATCHUP_MODEL_TOKEN = "random-model"
 
 
@@ -79,18 +79,16 @@ def is_scripted_spec(spec: str) -> bool:
 
 def matchup_checkpoints(model_deck: Optional[str], opp_deck: Optional[str],
                         checkpoint_dir: Optional[str]) -> list[str]:
-    """Checkpoints trained to pilot the opponent's deck in this matchup.
+    """Generalist checkpoints that pilot the opponent's deck.
 
-    The opponent plays ``opp_deck``, so a compatible model is one saved for the
-    mirror matchup ``{opp_deck}_{model_deck}_*.zip`` (same convention as
-    SelfPlayEnv._reload_opponent). Returns absolute paths sorted by name; empty
-    when the decks/dir are unknown or nothing matches.
+    Models are per-deck generalists, so any pilot of ``opp_deck`` is a valid
+    opponent — the deck-pilot snapshots ``{opp_deck}__v*.zip`` /
+    ``{opp_deck}__final.zip`` (same set SelfPlayEnv._reload_opponent samples).
+    ``model_deck`` is unused (kept for signature compatibility). Returns absolute
+    paths sorted by training step; empty when the deck/dir is unknown or nothing
+    matches.
     """
-    if not (model_deck and opp_deck and checkpoint_dir):
-        return []
-    import glob
-    pattern = os.path.join(checkpoint_dir, f"{opp_deck}_{model_deck}_*.zip")
-    return sorted(glob.glob(pattern))
+    return deck_snapshots(opp_deck, checkpoint_dir)
 
 
 class Controller(Protocol):
@@ -395,7 +393,7 @@ class OpponentPool:
                 if not files:
                     if not cls._matchup_warned:
                         print(f"[opponent-pool] WARNING: '{MATCHUP_MODEL_TOKEN}' matched no "
-                              f"checkpoint for matchup {opp_deck}_{model_deck} in "
+                              f"generalist piloting {opp_deck} ({opp_deck}__*.zip) in "
                               f"{checkpoint_dir}; ignoring it.")
                         cls._matchup_warned = True
                     continue

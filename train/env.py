@@ -955,10 +955,11 @@ class SelfPlayEnv(gym.Env):
     receive a perspective-normalised view without any mirroring.
 
     The training model always pilots ``model_deck`` and the frozen opponent always
-    pilots ``opp_deck``.  Because the opponent plays ``opp_deck``, its checkpoint is
-    sampled from the *mirror* matchup ``{opp_deck}_{model_deck}_*.zip`` — a model
-    actually trained to pilot that deck (for a mirror match this is simply this
-    run's own past selves).  The checkpoint is resampled every ``RELOAD_EVERY``
+    pilots ``opp_deck``.  Because models are per-deck generalists, the opponent's
+    checkpoint is sampled from that deck's pilots ``{opp_deck}__v*.zip`` /
+    ``{opp_deck}__final.zip`` — a generalist actually trained to play that deck
+    (for a mirror match this is simply this run's own past selves).  The
+    checkpoint is resampled every ``RELOAD_EVERY``
     episodes so it tracks the improving policy.  If no compatible checkpoint
     exists yet, the opponent falls back to the scripted agent (with a warning).
     """
