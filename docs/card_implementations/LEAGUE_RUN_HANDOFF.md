@@ -23,7 +23,12 @@ A fresh session can resume from THIS file (the original was in the ephemeral ses
    Claude-Session: https://claude.ai/code/session_01M7847mUsvXYw7YLCWY32xL
    ```
    No model id in the commit subject. Do NOT push (unless the user asks).
-6. **Next free vocab index = 267** (N_CARD_TYPES=1024 — NEVER change it, nor STATE_SIZE/OBS_SIZE).
+6. **Next free vocab index = 269** (N_CARD_TYPES=1024 — NEVER change it, nor STATE_SIZE/OBS_SIZE).
+   (241–266 = Wave 1; 267 The Fantasticar; 268 Cloak and Dagger, Entwined.)
+
+## CURRENT STATUS (most recent first)
+- 27 league cards implemented + committed (idx 241–268), all the originally-incomplete/broken cards fixed, plus 3 follow-up engine fixes. Tree clean, build GREEN. HEAD ≈ `329bfca`.
+- NEXT: Wave 2 (small mechanics) — see "REMAINING TO IMPLEMENT" below. Sheltered by Ghosts / Static Prison are cheap now (reuse the UntilHostLeavesPlay mechanic).
 
 ## LOCKED USER DECISIONS (Phase 2)
 1. Sequencing = WAVES, easiest-first, CHECK IN with the user between waves (let context reset).
@@ -51,8 +56,8 @@ Commits d1e5e7e..3587bd2 (25 "Implement" commits). Reusable mechanics added are 
   * state_manager_statics.cpp: removal_affects generalized to any Affected$ filter (RemoveAllAbilities on Land); self-CDA AddType$ AllNonBasicLandType.
   * parse.cpp: ForgetOnMoved ignored.
 
-## ====== INCOMPLETE / NEEDS-FOLLOW-UP (clearly marked) ======
-These are NOT silently dropped. Track them here until done:
+## ====== FORMERLY-INCOMPLETE CARDS — ALL FIXED ======
+These four were triaged-covered but turned out to need mechanics (or were partial); all now DONE:
 
 | Card | State | What it needs | Target wave |
 |---|---|---|---|
@@ -66,7 +71,12 @@ These are NOT silently dropped. Track them here until done:
 - until-EOT Animate (Permanent.animate_added_types_eot/animate_make_creature_eot) — DONE.
 - MODAL-DFC play-from-hand + pay-life-or-tapped replacement — DONE (future MDFCs: just `AlternateMode:Modal` on front script; land back needs no extra work).
 - FREE cast-from-exile grant via Effect (MayPlayWithoutManaCost on remembered exiled cards until EOT) — DONE.
-- KNOWN MINOR: Witch-Blessed Meadow's back-face PLAY_LAND action's machine-mode card-id one-hot resolves to the FRONT vocab idx 263 (RL side-channel only; human description correct). Revisit only if MDFC back-face identity matters to the policy.
+
+## ====== POST-WAVE-1 ENGINE FIXES (modal-DFC follow-ups, no new vocab) ======
+- **Back-face action card-id (fdd9368):** `action_card_vocab_idx(const LegalAction&)` overload (machine_io.cpp:71) resolves the BACK face's vocab id for a `play_back_face`/`cast_back_face` action (front-face source entity would mis-report it). BQUERY + action log both route through it. Verified: Play Witch-Blessed Meadow → 264; Cast Witch Enchanter → 263. (Supersedes the old "KNOWN MINOR" note.)
+- **Modal-DFC nonland back faces (a0e66b7):** generalized MDFC play-from-hand to NONLAND backs — `LegalAction::cast_back_face` (action.h:88); `offer_modal_back_face_casts()` (state_manager_actions.cpp ~344); CAST_SPELL path (action_processor.cpp ~1244) rebinds card_data to `*backside` so cost/SP$/targeting/events/log source from the back; a permanent back enters via `pending_enters_transformed`. Verified with Halvar // Sword of the Realms (creature // equipment). USER ARCH DECISIONS: face model LEFT AS-IS (transform-flag reuse, no anti-transform guard); scope GENERALIZED to nonland backs.
+- **DFC flicker — non-permanent front stays exiled (329bfca):** CR 110.4a/712.10. `change_zone_move` (effect_change_zone.cpp:42) refuses to move a non-permanent-front card onto the battlefield; it stays in its current zone (like a Grafdigger's Cage divert). Fixes flicker (Flickerwisp/Phelia) of a modal DFC in play on its back face whose FRONT is instant/sorcery (e.g. Fell the Profane // Fell Mire) — now stays in EXILE instead of limbo-on-battlefield. A permanent-front DFC (Witch Enchanter // Witch-Blessed Meadow) still returns as its untransformed front face with ETBs intact. General (covers Phelia, reanimation, etc.).
+- KNOWN PRE-EXISTING (not in worklist, flag for later): parser std::stoi crash on `UnlessCost$ Sac<...>` at parse.cpp:1016 (surfaced via Tergrid's Lantern back face).
 
 DFC back-face registration convention: existing engine registers BOTH faces (Ajani 100/101, Delver 16/17). So when implementing the remaining DFCs, register the back face too: Outland Liberator → back "Frenzied Trapbreaker"; Tamiyo Inquisitive Student → back "Tamiyo, Seasoned Scholar"; (Witch-Blessed Meadow already at 264).
 
