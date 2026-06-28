@@ -67,6 +67,7 @@ struct CharView {
     bool on_battlefield = false;
     bool is_token = false;
     Zone::Ownership controller = Zone::UNKNOWN;
+    Zone::Ownership owner = Zone::UNKNOWN;     // card's owner (YouOwn/OppOwn), from its Zone
     long entered_on_turn = -1;               // -1 when not on the battlefield
     bool is_attacking = false;               // live combat state (battlefield creatures only)
     bool is_blocking = false;
@@ -134,6 +135,14 @@ bool eval_qualifier(const CharView &v, const MatchCtx &ctx, const std::string &q
     if (q == "nonChosenCard") return !cur_game.chosen_cards.count(v.entity);
     if (q == "YouCtrl")      return !v.on_battlefield || v.controller == ctx.controller;
     if (q == "OppCtrl")      return !v.on_battlefield || v.controller != ctx.controller;
+    // Ownership (CR 108.3) — distinct from control; meaningful for cards in any zone
+    // (e.g. Karn's -2 "an artifact card you own from outside the game or in exile").
+    // Lenient when either side is unknown (bare CardData / no "you" supplied), mirroring
+    // the YouCtrl off-battlefield convention.
+    if (q == "YouOwn")  return ctx.controller == Zone::UNKNOWN || v.owner == Zone::UNKNOWN
+                                || v.owner == ctx.controller;
+    if (q == "OppOwn")  return ctx.controller == Zone::UNKNOWN || v.owner == Zone::UNKNOWN
+                                || v.owner != ctx.controller;
     if (q == "token")        return v.is_token;
     if (q == "nonToken" || q == "!token") return !v.is_token;
     if (q == "ThisTurnEntered") return v.on_battlefield && v.entered_on_turn == static_cast<long>(cur_game.turn);
@@ -256,6 +265,8 @@ CharView card_view(Entity e, const CardData &cd) {
     v.power = static_cast<int>(cd.power);
     v.toughness = static_cast<int>(cd.toughness);
     v.has_x_cost = cd.has_x_cost;
+    if (e != 0 && global_coordinator.entity_has_component<Zone>(e))
+        v.owner = global_coordinator.GetComponent<Zone>(e).owner;
     return v;
 }
 
@@ -266,6 +277,8 @@ CharView permanent_view(Entity e, const Permanent &perm) {
     v.colors = effective_colors(e);        // CR 105: color from the card (no live color layer)
     v.is_token = perm.is_token;
     v.controller = perm.controller;
+    if (global_coordinator.entity_has_component<Zone>(e))
+        v.owner = global_coordinator.GetComponent<Zone>(e).owner;
     v.entered_on_turn = static_cast<long>(perm.entered_on_turn);
     v.on_battlefield = true;
     v.is_tapped = perm.is_tapped;

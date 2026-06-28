@@ -81,6 +81,11 @@ These four were triaged-covered but turned out to need mechanics (or were partia
 
 DFC back-face registration convention: existing engine registers BOTH faces (Ajani 100/101, Delver 16/17). So when implementing the remaining DFCs, register the back face too: Outland Liberator → back "Frenzied Trapbreaker"; Tamiyo Inquisitive Student → back "Tamiyo, Seasoned Scholar"; (Witch-Blessed Meadow already at 264).
 
+## ====== POST-WAVE-2 (harness + Karn -2 fix) ======
+- Test harness gained `--exile-a/-b` and `--sideboard-a/-b` presets (engine `--exile-*`/`--sideboard-*` flags; Orderer::place_in_zone orderer.cpp; env.py/runner.py/test_harness.py plumbing). action_spec.py: `desc:` now matches the description even on card-bearing actions (picks one of a planeswalker's same-named loyalty abilities, e.g. `desc:ChangeZone`); `search:` verb extended to CHOOSE_CARD (44).
+- Karn -2 was GENUINELY BROKEN (only ever saw "Fail to find" vs empty zones): the `Artifact.YouOwn` filter's `YouOwn` qualifier was UNIMPLEMENTED → matched nothing. Fixed generally: added YouOwn/OppOwn qualifiers + `owner` on the filter card-view (game_queries.cpp); threaded searching player into the search filter via MatchCtx::controller (matches_filter_spec, ability.cpp). search_multi_zone now reports actual zones + emits CHOOSE_CARD for an all-non-library pick. Verified: -2 fetches an Artifact from exile AND sideboard to hand; creature in exile correctly excluded; scripted delver/mav seeds 1-3 clean.
+- The semantic category for an exile/sideboard pick = **CHOOSE_CARD (44)** (action.h:66) — confirmed appropriate; no "WISH" category needed.
+
 ## ====== WAVE 2 COMPLETE — 14 cards committed (idx 269–282), build GREEN, tree clean ======
 Next free vocab index = **283**. Commits 2170b6d..80cff7c. ENERGY resource already existed on Player (confirmed — reused, not rebuilt). Reusable mechanics per unit below.
 - [x] 269 Cabal Ritual (2170b6d) — `Count$Threshold.<hi>.<lo>` in evaluate_dynamic_amount (ability.cpp:863); add_mana/eval_mana_amount now scale by dynamic_amount_expr (effect_add_mana.cpp:21, mana_system.cpp:148); parser preserves Count$Threshold into dynamic_amount_expr (parse.cpp:1869).

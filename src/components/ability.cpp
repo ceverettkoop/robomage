@@ -87,10 +87,11 @@ bool Ability::identical_activated_ability(const Ability &other) {
 // MatchCtx. All qualifier grammar (colors, Colorless, Basic, P/T, subtypes, cmcLEX, …) now lives
 // in the one shared evaluator.
 static bool matches_filter_spec(Entity entity, const std::string &spec, int cmc_bound = -1,
-    const std::string &cmc_op = "") {
+    const std::string &cmc_op = "", Zone::Ownership you = Zone::UNKNOWN) {
     MatchCtx ctx;
     ctx.cmc_bound = cmc_bound;
     ctx.cmc_op = cmc_op;
+    ctx.controller = you;  // the "you" reference for YouOwn/YouCtrl/OppOwn/OppCtrl in the filter
     return card_matches_filter(entity, spec, ctx);
 }
 
@@ -143,7 +144,7 @@ Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner, Zone
             bool matches = false;
             if (has_extended) {
                 for (auto &st : subtypes) {
-                    if (matches_filter_spec(entity, st, cmc_bound, cmc_op)) {
+                    if (matches_filter_spec(entity, st, cmc_bound, cmc_op, owner)) {
                         matches = true;
                         break;
                     }
@@ -276,7 +277,7 @@ Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner
             bool matches = false;
             if (has_extended) {
                 for (auto &st : subtypes) {
-                    if (matches_filter_spec(entity, st)) {
+                    if (matches_filter_spec(entity, st, -1, "", owner)) {
                         matches = true;
                         break;
                     }
@@ -300,9 +301,26 @@ Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner
     bool show_fail_to_find = !mandatory || choices.empty();
     if (mandatory && choices.empty()) return 0;
 
-    game_log("Searching %s's library and graveyard:\n", player_name(owner).c_str());
+    bool searches_library = false;
+    std::string zone_list;
+    for (auto zone : zones) {
+        if (zone == Zone::LIBRARY) searches_library = true;
+        const char *zn = (zone == Zone::LIBRARY)     ? "library"
+                         : (zone == Zone::GRAVEYARD)  ? "graveyard"
+                         : (zone == Zone::HAND)       ? "hand"
+                         : (zone == Zone::EXILE)      ? "exile"
+                         : (zone == Zone::SIDEBOARD)  ? "sideboard"
+                                                      : "zone";
+        if (!zone_list.empty()) zone_list += " and ";
+        zone_list += zn;
+    }
+    game_log("Searching %s's %s:\n", player_name(owner).c_str(), zone_list.c_str());
 
-    ActionCategory cat = (destination == Zone::LIBRARY) ? ActionCategory::TOP_LIBRARY : ActionCategory::SEARCH_LIBRARY;
+    // A library search uses SEARCH_LIBRARY/TOP_LIBRARY; a pick from only non-library
+    // zones (e.g. Karn's -2 over Sideboard,Exile) is a CHOOSE_CARD decision.
+    ActionCategory cat = (destination == Zone::LIBRARY) ? ActionCategory::TOP_LIBRARY
+                         : searches_library             ? ActionCategory::SEARCH_LIBRARY
+                                                        : ActionCategory::CHOOSE_CARD;
 
     std::vector<LegalAction> search_actions;
     if (show_fail_to_find) {
@@ -313,7 +331,11 @@ Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner
     for (auto entity : choices) {
         auto &cd = global_coordinator.GetComponent<CardData>(entity);
         auto &z = global_coordinator.GetComponent<Zone>(entity);
-        const char *zone_label = (z.location == Zone::GRAVEYARD) ? " (graveyard)" : " (library)";
+        const char *zone_label = (z.location == Zone::GRAVEYARD)  ? " (graveyard)"
+                                 : (z.location == Zone::EXILE)     ? " (exile)"
+                                 : (z.location == Zone::SIDEBOARD) ? " (sideboard)"
+                                 : (z.location == Zone::HAND)      ? " (hand)"
+                                                                   : " (library)";
         LegalAction la(PASS_PRIORITY, entity, cd.name + zone_label);
         la.category = cat;
         la.card_is_public = reveal;

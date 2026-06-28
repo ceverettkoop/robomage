@@ -104,10 +104,15 @@ verified existing decks still parse and play.
   in practice, and this matches how the existing animate effect stores base P/T. Documented and
   general (`animate_power_expr` is evaluated once at resolution).
 - **−2 from the sideboard ("outside the game").** Exile and Sideboard origins are both wired into
-  the search. In a single game the engine does not instantiate sideboard cards as entities (only
-  the bo3 sideboard phase manipulates the `Deck` struct), and exile cannot be pre-populated by
-  the test harness, so a *positive* fetch is not demonstrable here — see Tests. The engine path
-  is correct and reuses the shared search machinery.
+  the search. A *positive* fetch is now demonstrable: the test harness gained `--exile-a/-b` and
+  `--sideboard-a/-b` presets (see Tests). Verifying it exposed a real bug — the `Artifact.YouOwn`
+  filter's **`YouOwn` qualifier was unimplemented** in the shared matcher (`card_matches_filter`),
+  so the −2 matched *nothing* and could never fetch a card (the prior "Fail to find" against empty
+  zones masked this). Fixed generally: added `YouOwn`/`OppOwn` qualifiers (CR 108.3) + an `owner`
+  field on the filter card-view (`src/game_queries.cpp`), and threaded the searching player into the
+  search filter (`matches_filter_spec` → `MatchCtx::controller`, `src/components/ability.cpp`). The
+  multi-zone search also now reports the actual zones searched and emits **`CHOOSE_CARD`** (not
+  `SEARCH_LIBRARY`) for an all-non-library pick.
 
 ## Tests
 Isolation (`train/test_harness.py`, scenario JSON, seed 1; Karn cast from hand because the
@@ -123,11 +128,12 @@ comma in its name blocks `--battlefield`/`--hand` preset):
   of Turn 2 (the opponent's whole turn) — i.e. it does **not** revert at end-of-turn like the
   Fantasticar EOT path — then "Expedition Map is no longer a creature" fires exactly at the start
   of **Turn 3 (the animating player's next turn)**. **PASS.**
-- **(−2 ChangeZone).** −2 activated: "activates a loyalty ability (−2, loyalty now 3)",
-  "Resolving ability (category: ChangeZone, amount: 1)", the Exile/Sideboard→Hand search runs and
-  (with empty exile/sideboard) offers "Fail to find" and resolves cleanly. The activation, the −2
-  loyalty cost, and the search path are verified; a positive fetch needs an exile/sideboard entity
-  the single-game harness can't provide (see Behavioral decisions). **PASS (path).**
+- **(−2 ChangeZone, positive fetch).** With `--exile-a "Expedition Map"`: −2 activated
+  ("activates a loyalty ability (−2, loyalty now 3)"), "Searching Player A's sideboard and exile:"
+  offers "Expedition Map (exile)", and choosing it: "Player A puts Expedition Map to hand" — the
+  card is now in hand. Same with `--sideboard-a "Liquimetal Coating"` → "(sideboard)" → to hand.
+  **Negative filter:** a creature (`Grizzly Bears`) preset alongside the artifact in exile is **not**
+  offered — only the Artifact is. The pick emits **`CHOOSE_CARD`**. **PASS.**
 - **(Static).** With Karn in play, an opponent's Voltaic Key's activated ability is **not offered**
   on any of the opponent's subsequent turns (turns 2/4/6), while the controller's own Grim
   Monolith remains activatable throughout — confirming the lock is controller-scoped to the
