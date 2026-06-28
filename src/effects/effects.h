@@ -33,6 +33,9 @@ bool gain_life(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool lose_life(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool mill(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool untap(Ability &ab, std::shared_ptr<Orderer> orderer);
+// DB$/AB$ UntapAll (Paradox Engine): untap every battlefield permanent matching ValidCards$
+// (controller-scoped). Mass counterpart of single-target Untap. See effect_untap_all.cpp.
+bool untap_all(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool cleanup(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool multiply_counter(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool phases(Ability &ab, std::shared_ptr<Orderer> orderer);

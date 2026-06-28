@@ -2264,6 +2264,18 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
         ability.trigger_kicked_index = kicked_index;
     }
 
+    // General "whenever you cast a spell, ..." — Paradox Engine
+    // (Mode$ SpellCast | ValidCard$ Card | ValidActivatingPlayer$ You). A plain, unfiltered
+    // SpellCast trigger that fires on EVERY spell the source's controller casts. None of the
+    // specialized SpellCast bindings above (noncreature/colorless/count/cmc/self) applied, so
+    // bind to SPELL_CAST and gate on the caster being this source's controller. The general
+    // battlefield trigger scan fires it (no extra ValidCard$ filter ⇒ any spell). Keyed on the
+    // bare SpellCast mode, not this card.
+    if (mode_is_spell_cast && ability.trigger_on == 0) {
+        ability.trigger_on = Events::SPELL_CAST;
+        ability.trigger_valid_player_is_controller = valid_player_is_you;
+    }
+
     // "Whenever CARDNAME deals combat damage to a player" — Barrowgoyf
     if (mode_is_damage_done && damage_combat_only) {
         ability.trigger_on = Events::COMBAT_DAMAGE_TO_PLAYER;

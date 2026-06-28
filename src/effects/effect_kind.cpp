@@ -27,6 +27,9 @@ EffectKind effect_kind_from_string(const std::string &category) {
         {"Cleanup", EffectKind::Cleanup},
         {"DelayedTrigger", EffectKind::DelayedTrigger},
         {"Untap", EffectKind::Untap},
+        // DB$/AB$ UntapAll (Paradox Engine): untap every battlefield permanent matching
+        // ValidCards$ (controller-scoped by YouCtrl/OppCtrl). See effect_untap_all.cpp.
+        {"UntapAll", EffectKind::UntapAll},
         {"Destroy", EffectKind::Destroy},
         {"DestroyAll", EffectKind::DestroyAll},
         {"DamageAll", EffectKind::DamageAll},

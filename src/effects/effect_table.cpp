@@ -15,6 +15,7 @@ EffectHandler handler_for(EffectKind kind) {
         case EffectKind::LoseLife:        return &lose_life;
         case EffectKind::Mill:            return &mill;
         case EffectKind::Untap:           return &untap;
+        case EffectKind::UntapAll:        return &untap_all;
         case EffectKind::Cleanup:         return &cleanup;
         case EffectKind::MultiplyCounter: return &multiply_counter;
         case EffectKind::Phases:          return &phases;

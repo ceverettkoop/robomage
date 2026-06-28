@@ -34,6 +34,7 @@ enum class EffectKind {
     Cleanup,
     DelayedTrigger,
     Untap,
+    UntapAll,
     Destroy,
     DestroyAll,
     DamageAll,
