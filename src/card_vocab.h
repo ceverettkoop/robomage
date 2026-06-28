@@ -158,6 +158,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Gaddock Teeg", 247},
     {"Grim Monolith", 248},
     {"Stony Silence", 249},
+    {"Voltaic Key", 250},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);
