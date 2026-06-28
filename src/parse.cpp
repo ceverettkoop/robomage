@@ -1277,7 +1277,11 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
             // SP$/AB$ Vote VoteMessage$ <text> (Council's Judgment): the prose shown to voters
             // ("for a nonland permanent you don't control"). Purely cosmetic — the load-bearing
             // VoteCard$ filter and VoteSubAbility$ are parsed above.
-            "VoteMessage"
+            "VoteMessage",
+            // DB$ Sacrifice SacMessage$ <text> (Pick Your Poison): the prose naming what is
+            // sacrificed ("creature with flying"). Purely cosmetic — the load-bearing SacValid$
+            // filter is parsed above.
+            "SacMessage"
         };
         if (ignored_keys.find(key) == ignored_keys.end()) {
             std::string msg = "Unrecognized ability param: " + key + "$ " + value;

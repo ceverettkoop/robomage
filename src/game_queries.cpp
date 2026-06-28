@@ -164,6 +164,21 @@ bool eval_qualifier(const CharView &v, const MatchCtx &ctx, const std::string &q
             if (rest == ct) return !view_has_typeline(v, ct);          // non<CardType>
         return !view_has_typeline(v, rest);                           // non<subtype>
     }
+    // with<Keyword> — the object currently has the named keyword ability (Pick Your Poison's
+    // SacValid$ Creature.withFlying). Forge writes multi-word keywords without spaces
+    // (withFirstStrike), so re-insert a space before each interior capital to recover the stored
+    // keyword string ("FirstStrike" → "First Strike"). permanent_has_keyword reads the effective
+    // keyword list for a battlefield permanent and falls back to the printed CardData keywords
+    // for an off-battlefield card view, so this is correct in either zone.
+    if (q.rfind("with", 0) == 0 && q.size() > 4 &&
+        std::isupper(static_cast<unsigned char>(q[4]))) {
+        std::string kw;
+        for (size_t i = 4; i < q.size(); i++) {
+            if (i > 4 && std::isupper(static_cast<unsigned char>(q[i]))) kw += ' ';
+            kw += q[i];
+        }
+        return v.entity != 0 && permanent_has_keyword(v.entity, kw.c_str());
+    }
     // leftover: a PascalCase token is a type-line (type/supertype/subtype) name to require;
     // anything else is a qualifier we don't implement → fail closed and warn once.
     if (std::isupper(static_cast<unsigned char>(q[0]))) return view_has_typeline(v, q);
