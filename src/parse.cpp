@@ -2660,6 +2660,16 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
             r.valid_subtype = untap_valid_subtype;
             result.push_back(r);
         }
+        // Grim Monolith: "This artifact doesn't untap during your untap step." (614.1d) — a
+        // self-referential untap-prevention (ValidCard$ Card.Self). ValidStepTurnToController$ You
+        // is implicit in a 2-player game (a permanent only untaps during its controller's untap
+        // step), so it needs no extra gating here.
+        if (event_is_untap && layer_cant_happen && valid_card_self && untap_valid_subtype.empty()) {
+            Effect::Replacement r;
+            r.kind = Effect::Replacement::SKIP_UNTAP;
+            r.applies_to_self_only = true;
+            result.push_back(r);
+        }
     }
 
     return result;

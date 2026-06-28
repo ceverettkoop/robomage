@@ -13,8 +13,11 @@ namespace effects {
 bool untap(Ability &ab, std::shared_ptr<Orderer> orderer) {
     (void)orderer;
     // Untap every chosen target. A single-target Untap uses ab.target; a multi-target Untap
-    // (Candelabra of Tawnos: "Untap X target lands") populates ab.targets — untap each.
-    std::vector<Entity> targets = ab.targets.empty() ? std::vector<Entity>{ab.target} : ab.targets;
+    // (Candelabra of Tawnos: "Untap X target lands") populates ab.targets — untap each. An
+    // UNtargeted Untap (Grim Monolith: "{4}: Untap this artifact.", no ValidTgts$) untaps its
+    // own source.
+    std::vector<Entity> targets = ab.targets;
+    if (targets.empty()) targets.push_back(ab.target != 0 ? ab.target : ab.source);
     for (Entity t : targets) {
         if (!global_coordinator.entity_has_component<Permanent>(t)) continue;
         auto &tperm = global_coordinator.GetComponent<Permanent>(t);

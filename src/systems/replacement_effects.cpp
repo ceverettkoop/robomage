@@ -280,9 +280,17 @@ std::vector<Candidate> collect(const ReplacementEvent &ev,
             for (size_t i = 0; i < cd.replacement_effects.size(); i++) {
                 const Effect::Replacement &r = cd.replacement_effects[i];
                 if (r.kind != Effect::Replacement::SKIP_UNTAP) continue;
-                bool matches = false;
-                for (const auto &t : subject.types)
-                    if (t.name == r.valid_subtype) { matches = true; break; }
+                bool matches;
+                if (r.applies_to_self_only) {
+                    // Grim Monolith: "this artifact doesn't untap" — only when the source IS the
+                    // permanent being untapped.
+                    matches = (e == ev.entity);
+                } else {
+                    // Choke: subtype-filtered — the subject must have the named (sub)type.
+                    matches = false;
+                    for (const auto &t : subject.types)
+                        if (t.name == r.valid_subtype) { matches = true; break; }
+                }
                 if (!matches) continue;
                 Candidate c;
                 c.source = e;
