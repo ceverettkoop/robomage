@@ -9,6 +9,7 @@
 #include "../ecs/coordinator.h"
 #include "../ecs/entity.h"
 #include "../ecs/events.h"
+#include "../effects/effects.h"
 #include "../game_queries.h"
 #include "../mana_system.h"
 #include "../systems/orderer.h"
@@ -100,6 +101,9 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
 
             switch (cur_step) {
                 case UNTAP: {
+                    // Lapse any "until your next turn" Animate (Karn +1) this player created —
+                    // its longer continuous-effect duration ends as their next turn begins.
+                    effects::revert_until_turn_animates(active_player);
                     // Phase in phased-out permanents controlled by active player
                     for (Entity entity = 0; entity < global_coordinator.GetMaxIssuedEntity(); ++entity) {
                         if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;

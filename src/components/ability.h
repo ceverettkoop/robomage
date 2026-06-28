@@ -192,6 +192,22 @@ struct Ability{
     // base-P/T/keyword/creature extension points live on Permanent (see permanent.h).
     std::vector<Type> animate_types;
     bool animate_duration_permanent = false;
+    // Duration$ UntilYourNextTurn (Karn, the Great Creator +1): the grant lasts until the start
+    // of the animating player's NEXT turn — longer than the Forge default (until end of turn)
+    // but not the rest of the game (Duration$ Permanent). Reverted at that player's untap step.
+    bool animate_duration_until_your_next_turn = false;
+    // AB$ Animate | Power$/Toughness$ (Karn +1: "power and toughness each equal to its mana
+    // value"). A numeric value sets the base P/T directly; an SVar token (e.g. Power$ X with
+    // SVar:X:Targeted$CardManaCost) is resolved post-parse into animate_power_expr /
+    // animate_toughness_expr — a runtime dynamic_amount expr evaluated against the animate TARGET
+    // (a snapshot of its mana value taken at resolution). animate_has_pt gates the whole path.
+    bool animate_has_pt = false;
+    int animate_base_power = 0;
+    int animate_base_toughness = 0;
+    std::string animate_power_token;       // raw Power$ token, pre-SVar-resolution
+    std::string animate_toughness_token;   // raw Toughness$ token, pre-SVar-resolution
+    std::string animate_power_expr;        // resolved runtime expr (empty when numeric)
+    std::string animate_toughness_expr;
 
     // Filter naming which permanents a mass effect affects (DestroyAll / SacrificeAll /
     // PutCounterAll): the ValidCards$ spec, e.g. "Cat.YouCtrl" or

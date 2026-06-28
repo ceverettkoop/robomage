@@ -286,7 +286,7 @@ _CARD_COST_MATRIX = np.array([
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.2],  # 277: Damping Sphere
     [0.0, 0.0, 0.0, 0.1, 0.0, 0.0, 0.1],  # 278: Hexing Squelcher
     [0.0, 0.1, 0.0, 0.0, 0.1, 0.0, 0.1],  # 279: Uro, Titan of Nature's Wrath
-    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 280: 
+    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.4],  # 280: Karn, the Great Creator
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 281: 
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 282: 
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 283: 
@@ -1317,7 +1317,7 @@ _VOCAB_NAMES = [
     "Damping Sphere",  # 277
     "Hexing Squelcher",  # 278
     "Uro, Titan of Nature's Wrath",  # 279
-    "",  # 280
+    "Karn, the Great Creator",  # 280
     "",  # 281
     "",  # 282
     "",  # 283

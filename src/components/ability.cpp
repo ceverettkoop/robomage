@@ -110,11 +110,15 @@ Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner, Zone
         zone_contents = orderer->get_library_contents(owner);
     } else if (zone == Zone::HAND) {
         zone_contents = orderer->get_hand(owner);
-    } else if (zone == Zone::GRAVEYARD) {
+    } else if (zone == Zone::GRAVEYARD || zone == Zone::EXILE || zone == Zone::SIDEBOARD) {
+        // Graveyard / face-up exile / sideboard ("outside the game") picks (Karn, the Great
+        // Creator -2: choose an artifact card you own in exile or your sideboard). These zones
+        // hold their cards as entities tagged by Zone owner, so enumerate by owner like the
+        // graveyard. (The sideboard is only populated with entities in the bo3 sideboard phase.)
         for (auto e : orderer->mEntities) {
             if (!global_coordinator.entity_has_component<Zone>(e)) continue;
             auto &z = global_coordinator.GetComponent<Zone>(e);
-            if (z.location == Zone::GRAVEYARD && z.owner == owner) zone_contents.push_back(e);
+            if (z.location == zone && z.owner == owner) zone_contents.push_back(e);
         }
     }
 
@@ -164,6 +168,7 @@ Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner, Zone
                             : (zone == Zone::HAND)      ? "hand"
                             : (zone == Zone::GRAVEYARD) ? "graveyard"
                             : (zone == Zone::EXILE)     ? "exile"
+                            : (zone == Zone::SIDEBOARD) ? "sideboard"
                                                         : "zone";
     // Determine category: library searches going to top of library use TOP_LIBRARY,
     // other library searches use SEARCH_LIBRARY, non-library zone picks use CHOOSE_CARD
@@ -226,11 +231,13 @@ Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner
         } else if (zone == Zone::HAND) {
             auto hand = orderer->get_hand(owner);
             zone_contents.insert(zone_contents.end(), hand.begin(), hand.end());
-        } else if (zone == Zone::GRAVEYARD) {
+        } else if (zone == Zone::GRAVEYARD || zone == Zone::EXILE || zone == Zone::SIDEBOARD) {
+            // Graveyard / face-up exile / sideboard ("outside the game"), enumerated by Zone
+            // owner — Karn, the Great Creator -2 searches Origin$ Sideboard,Exile.
             for (auto e : orderer->mEntities) {
                 if (!global_coordinator.entity_has_component<Zone>(e)) continue;
                 auto &z = global_coordinator.GetComponent<Zone>(e);
-                if (z.location == Zone::GRAVEYARD && z.owner == owner) zone_contents.push_back(e);
+                if (z.location == zone && z.owner == owner) zone_contents.push_back(e);
             }
         }
     }
@@ -898,6 +905,15 @@ size_t evaluate_dynamic_amount(
         // reads the power of the creature it just exiled). Single unified accessor.
         int p = effective_power(target);
         return static_cast<size_t>(p < 0 ? 0 : p);
+    }
+    if (expr.find("Targeted$CardManaCost") != std::string::npos) {
+        // The target's mana value (CR 202.3 / 107.14). Used by Karn, the Great Creator's +1
+        // Animate (Power$/Toughness$ X, X = Targeted$CardManaCost): the animated permanent
+        // becomes a creature whose P/T equal its own mana value, snapshotted at resolution.
+        int mv = 0;
+        if (target != 0 && global_coordinator.entity_has_component<CardData>(target))
+            mv = static_cast<int>(global_coordinator.GetComponent<CardData>(target).mana_cost.size());
+        return static_cast<size_t>(mv < 0 ? 0 : mv);
     }
     // Remembered$Valid <comma-OR-filter> — number of remembered cards (e.g. cards just moved
     // by a RememberChanged$ ChangeZoneAll) matching ANY of the comma-separated filters (Canoptek

@@ -188,6 +188,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Damping Sphere", 277},
     {"Hexing Squelcher", 278},
     {"Uro, Titan of Nature's Wrath", 279},
+    {"Karn, the Great Creator", 280},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);

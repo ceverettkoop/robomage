@@ -813,14 +813,25 @@ Token parse_token_script(const std::string &script_name) {
 
 // private util functions
 static std::string value_from_script(std::string script, std::string key) {
-    auto pos = script.find(key);
-    if (pos == std::string::npos) {
-        return "";
+    // Match the key only as a line-start field header ("Key:value"), never as a substring inside
+    // a later line. Top-level fields are one per line, so the key must begin the script or follow
+    // a '\n' AND be immediately followed by ':'. Without this, a short key like "PT" would match
+    // inside an ability line (e.g. Karn's "AILogic$ PTByCMC"), returning garbage that downstream
+    // numeric parsers (parse_power) then crash on.
+    size_t search = 0;
+    while (true) {
+        auto pos = script.find(key, search);
+        if (pos == std::string::npos) return "";
+        bool at_line_start = (pos == 0 || script[pos - 1] == '\n');
+        size_t after = pos + key.length();
+        bool followed_by_colon = (after < script.size() && script[after] == ':');
+        if (at_line_start && followed_by_colon) {
+            size_t valstart = after + 1;  // skip the ':'
+            auto end_pos = script.find("\n", valstart);
+            return script.substr(valstart, (end_pos - valstart));  // omit linebreak at end
+        }
+        search = pos + 1;
     }
-    // advance for key itself and ':'
-    pos += key.length() + 1;
-    auto end_pos = script.find("\n", pos);
-    return script.substr(pos, (end_pos - pos));  // omit linebreak at end
 }
 
 static std::vector<std::string> multi_values_from_script(std::string script, std::string key) {
@@ -1290,6 +1301,20 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         for (const auto &t : parse_types(normalized)) ability.animate_types.push_back(t);
     } else if (key == "Duration" && ability.category == "Animate") {
         ability.animate_duration_permanent = (value == "Permanent");
+        // Duration$ UntilYourNextTurn (Karn +1): a longer-than-EOT continuous effect that
+        // reverts at the start of the animating player's next turn (see effect_animate.cpp).
+        ability.animate_duration_until_your_next_turn = (value == "UntilYourNextTurn");
+    } else if ((key == "Power" || key == "Toughness") && ability.category == "Animate") {
+        // AB$ Animate | Power$/Toughness$ — the animated creature's base P/T. A bare integer is
+        // the literal base; any other token is an SVar key resolved post-parse (Karn: Power$ X,
+        // X = Targeted$CardManaCost → the target's mana value).
+        ability.animate_has_pt = true;
+        int *base = (key == "Power") ? &ability.animate_base_power : &ability.animate_base_toughness;
+        std::string *tok = (key == "Power") ? &ability.animate_power_token : &ability.animate_toughness_token;
+        if (!value.empty() && std::isdigit(static_cast<unsigned char>(value[0])))
+            *base = std::stoi(value);
+        else
+            *tok = value;
     } else if (key == "Duration" && value == "UntilHostLeavesPlay") {
         // Duration$ UntilHostLeavesPlay on a ChangeZone | Destination$ Exile (CR 603.6e): the
         // exiled card(s) return when the ability's host leaves the battlefield. See
@@ -1966,6 +1991,19 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
         // abilities whose effect/targeting scales by X (Toxic Deluge, Candelabra, Hide on the Ceiling).
         resolve_pump_exprs(ability, svars);
         resolve_xpaid_target_counts(ability, svars);
+
+        // Resolve AB$ Animate Power$/Toughness$ SVar tokens (Karn: Power$ X, X =
+        // Targeted$CardManaCost) into their runtime dynamic_amount expression, evaluated against
+        // the animate target at resolution. A token that is not an SVar key is left as no dynamic
+        // expr (the numeric base, parsed above, stands).
+        for (int which = 0; which < 2; which++) {
+            std::string &tok = which == 0 ? ability.animate_power_token : ability.animate_toughness_token;
+            std::string &expr = which == 0 ? ability.animate_power_expr : ability.animate_toughness_expr;
+            if (tok.empty()) continue;
+            auto it = svars.find(tok);
+            if (it != svars.end()) expr = it->second;
+            tok.clear();
+        }
 
         ret_val.push_back(ability);
     }

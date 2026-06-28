@@ -445,6 +445,7 @@ bool parse_change_zone(Ability &ab, const std::string &key, const std::string &v
             if (s == "Hand")           return Zone::HAND;
             if (s == "Graveyard")      return Zone::GRAVEYARD;
             if (s == "Exile")          return Zone::EXILE;
+            if (s == "Sideboard")      return Zone::SIDEBOARD;
             if (s == "Stack")          return Zone::STACK;
             if (s == "Battlefield")    return Zone::BATTLEFIELD;
             return Zone::LIBRARY;

@@ -94,6 +94,22 @@ struct Permanent {
     std::vector<Type> animate_added_types_eot;
     bool animate_make_creature_eot = false;
 
+    // DB$/AB$ Animate with Duration$ UntilYourNextTurn (Karn, the Great Creator +1: "Until your
+    // next turn, ... becomes an artifact creature with power and toughness each equal to its mana
+    // value"). A LONGER continuous-effect duration (CR 613/514) than the EOT bucket above: the
+    // grant must persist past THIS turn's cleanup and lapse only at the start of the animating
+    // player's next turn (their untap step). The persistent pieces (set base P/T, make_creature)
+    // reuse the rest-of-game animate_* fields above so the layer/SBA reapply keeps them alive each
+    // pass; these fields only record that the grant is the until-your-next-turn variant so the
+    // untap-step revert (effects::revert_until_turn_animates) can erase exactly what was granted
+    // on the right player's turn:
+    //   * animate_added_types_until_turn — types/subtypes added (only genuinely-new ones, so the
+    //                                      revert never strips a printed type, e.g. keeps Artifact)
+    //   * animate_until_turn_controller  — the animating player; the revert fires on THEIR untap
+    std::vector<Type> animate_added_types_until_turn;
+    bool animate_until_my_turn = false;
+    Zone::Ownership animate_until_turn_controller = Zone::UNKNOWN;
+
     // AB$ AnimateAll | RemoveKeywords$ ... (Shadowspear: "Permanents your opponents control lose
     // hexproof and indestructible until end of turn"). Keyword(s) this permanent currently has
     // SUPPRESSED until end of turn by a mass continuous effect (CR 613, layer 6 keyword removal).

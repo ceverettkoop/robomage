@@ -134,6 +134,9 @@ bool animate_all(Ability &ab, std::shared_ptr<Orderer> orderer);
 // creature — e.g. an earthbended land. Idempotent; safe to call each SBA pass. Defined in
 // effect_animate.cpp.
 void apply_animate_creature_bootstrap(Entity e);
+// Lapse every Duration$ UntilYourNextTurn Animate (Karn, the Great Creator +1) created by
+// `active_player`; call from that player's untap step. Defined in effect_animate.cpp.
+void revert_until_turn_animates(Zone::Ownership active_player);
 // DB$/AB$ Earthbend (Badgermole Cub, Ba Sing Se): the targeted land you control becomes a 0/0
 // creature with haste that's still a land (via the Animate extension), gets ab.amount +1/+1
 // counters, and a "when it leaves the battlefield, return it tapped" delayed trigger is
