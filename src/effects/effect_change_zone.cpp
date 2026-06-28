@@ -228,8 +228,12 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
         if (ab.enters_tapped && ab.destination == Zone::BATTLEFIELD)
             cur_game.pending_enters_tapped.insert(ab.source);
         Zone::ZoneValue landed = change_zone_move(orderer, ab.source, ab.destination);
-        if (landed == Zone::BATTLEFIELD)
+        if (landed == Zone::BATTLEFIELD) {
             global_coordinator.GetComponent<Zone>(ab.source).controller = owner;
+            // Unearth (CR 702.84): flag the returning permanent so its Permanent is created
+            // unearthed (haste + delayed end-step exile + leaves-the-battlefield exile).
+            if (ab.is_unearth) cur_game.pending_unearthed.insert(ab.source);
+        }
         if (landed == ab.destination)
             game_log("%s is moved to %s\n", sname.c_str(), dest_str);
         return true;

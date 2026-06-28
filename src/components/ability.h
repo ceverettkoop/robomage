@@ -188,6 +188,11 @@ struct Ability{
     // Default (false) = the zone's owner chooses (the normal tutor case).
     bool chooser_is_controller = false;
     bool defined_self = false;                  // Defined$ Self — ability moves its own source
+    // K:Unearth (CR 702.84): this ChangeZone is the unearth return (Graveyard -> Battlefield).
+    // When it resolves and the source enters the battlefield, the permanent is marked "unearthed"
+    // (gains haste, is exiled at the next end step, and is exiled instead of leaving the
+    // battlefield). General over any unearth card.
+    bool is_unearth = false;
     bool defined_each_opponent = false;         // Defined$ Player.Opponent — effect applies to each opponent (no target)
     bool defined_you = false;                   // Defined$ You — effect's player is the source's controller (e.g. Ancient Tomb pain)
     // Defined$ TriggeredActivator — the effect's player is the player who caused the trigger

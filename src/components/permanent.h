@@ -51,6 +51,13 @@ struct Permanent {
     // reusable by any escape card with an "if it escaped" clause.
     bool cast_with_escape = false;
     bool entered_with_offspring = false;  // cast with its Offspring additional cost paid — fires the offspring token-copy ETB trigger (CR 702.171)
+    // This permanent was returned to the battlefield by its Unearth ability (CR 702.84). While
+    // set: it gained haste on entry, a delayed triggered ability exiles it at the beginning of the
+    // next end step (CR 603.7b), and a leaves-the-battlefield replacement exiles it instead of
+    // letting it go anywhere else (the redirect in Orderer::add_to_zone). Set when the Permanent is
+    // created from a card whose unearth ChangeZone resolved (game.pending_unearthed); a fresh
+    // re-entry by any other means leaves it false.
+    bool unearthed = false;
     // This permanent entered the battlefield as a spell its controller cast from their own
     // hand (CR 601 — a normal hand cast). Read by the Card.wasCastFromYourHandByYou condition
     // (Amped Raptor's dig-from-hand gate). Set when its Permanent is created from a spell that

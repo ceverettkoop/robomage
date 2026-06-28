@@ -86,6 +86,11 @@ struct TokenParams {
     // TokenOwner$ Promised (Gift keyword, CR 702.176): the token is created under the control of
     // the opponent who was promised the gift — i.e. the opponent of the ability's controller.
     bool owner_is_promised = false;
+    // TokenOwner$ TargetedController (Cityscape Leveler: "destroy ... its controller creates a
+    // tapped Powerstone token"): the token is owned/controlled by the controller of the ability's
+    // target permanent (read via last-known info, since the target was just destroyed). With no
+    // target chosen, no token is created — this implements the "if you do" gating.
+    bool owner_is_targeted_controller = false;
     // TokenTapped$ True: the token enters the battlefield tapped (Into the Flood Maw's Fish).
     bool tapped = false;
 };

@@ -994,6 +994,31 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         }
     }
 
+    // Check the graveyard for cards with ActivationZone$ Graveyard abilities (Unearth, CR 702.84).
+    // Such abilities are activated from the graveyard at sorcery speed (controller's main phase,
+    // empty stack, holding priority) and return the card to the battlefield.
+    {
+        bool gy_sorcery_speed = (game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
+                                (game.player_a_turn == game.player_a_has_priority) && stack_empty;
+        for (auto card_entity : orderer->get_graveyard(priority_player)) {
+            if (!global_coordinator.entity_has_component<CardData>(card_entity)) continue;
+            auto &card_data = global_coordinator.GetComponent<CardData>(card_entity);
+            for (const auto &ab : card_data.abilities) {
+                if (ab.ability_type != Ability::ACTIVATED) continue;
+                if (ab.activation_zone != Zone::GRAVEYARD) continue;
+                if (ab.sorcery_speed_only && !gy_sorcery_speed) continue;
+                ManaValue gy_cost = effective_activation_mana_cost(ab, priority_player, orderer);
+                if (!gy_cost.empty() && !can_pay_mana(priority_player, gy_cost, card_entity, orderer)) continue;
+                { auto it = cur_game.payment_fail_counts.find(card_entity);
+                  if (it != cur_game.payment_fail_counts.end() && it->second >= 2) continue; }
+                std::string desc = "Unearth " + card_data.name;
+                LegalAction la(ACTIVATE_ABILITY, card_entity, ab, desc);
+                la.category = ActionCategory::ACTIVATE_ABILITY;
+                actions.push_back(la);
+            }
+        }
+    }
+
     // not filtering mana abilities based on if they contribute to a spell- will revisit this if it makes ML harder
     bool machine = InputLogger::instance().is_machine_mode();
     for (auto &ma : legal_mana_abilities) {

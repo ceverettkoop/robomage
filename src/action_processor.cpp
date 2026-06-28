@@ -259,8 +259,11 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
     Entity permanent_entity = action.source_entity;
     const Ability &ability = action.ability;
 
-    // ActivationZone$ Hand: card in hand, no Permanent component
-    if (ability.activation_zone == Zone::HAND &&
+    // ActivationZone$ Hand / Graveyard: card activated from a non-battlefield zone (no Permanent
+    // component) — e.g. Cycling/Talon Gates from hand, or Unearth (CR 702.84) from the graveyard.
+    // Same flow: select targets, pay the cost, push the ability onto the stack. A Defined$ Self
+    // ability (Unearth's ChangeZone) relocates the card itself, so the auto-consume below is skipped.
+    if ((ability.activation_zone == Zone::HAND || ability.activation_zone == Zone::GRAVEYARD) &&
         !global_coordinator.entity_has_component<Permanent>(permanent_entity)) {
         auto &card_zone = global_coordinator.GetComponent<Zone>(permanent_entity);
         Zone::Ownership ctrl = card_zone.owner;
@@ -296,12 +299,13 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
         orderer->push_ability_onto_stack(stack_ab, ctrl);
 
         auto &cd = global_coordinator.GetComponent<CardData>(permanent_entity);
+        const char *from_zone = (ability.activation_zone == Zone::GRAVEYARD) ? "graveyard" : "hand";
         if (stack_ab.target != 0) {
             std::string tgt_name = target_display_name(cur_game, stack_ab.target);
-            game_log("%s activates %s from hand targeting %s\n",
-                player_name(ctrl).c_str(), cd.name.c_str(), tgt_name.c_str());
+            game_log("%s activates %s from %s targeting %s\n",
+                player_name(ctrl).c_str(), cd.name.c_str(), from_zone, tgt_name.c_str());
         } else {
-            game_log("%s activates %s from hand\n", player_name(ctrl).c_str(), cd.name.c_str());
+            game_log("%s activates %s from %s\n", player_name(ctrl).c_str(), cd.name.c_str(), from_zone);
         }
         game.take_action();
         return;

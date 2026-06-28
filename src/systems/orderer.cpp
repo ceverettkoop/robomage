@@ -86,6 +86,16 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
         destination = rev.destination;
     }
 
+    // Unearth (CR 702.84): a permanent returned to the battlefield with its unearth ability is
+    // exiled instead of going anywhere else if it would leave the battlefield. Redirect any move
+    // off the battlefield (to graveyard/hand/library) to exile. A move already headed to exile is
+    // unchanged (so the end-step delayed exile is a no-op redirect, not a loop).
+    if (target_zone.location == Zone::BATTLEFIELD && destination != Zone::EXILE &&
+        global_coordinator.entity_has_component<Permanent>(target) &&
+        global_coordinator.GetComponent<Permanent>(target).unearthed) {
+        destination = Zone::EXILE;
+    }
+
     // Fire CARD_CHANGED_ZONE on every zone transition so any parsed ChangesZone trigger can match.
     {
         Entity owner_entity = target_zone.owner == Zone::PLAYER_A

@@ -33,6 +33,16 @@ bool token(Ability &ab, std::shared_ptr<Orderer> orderer) {
     if (tp && tp->owner_is_target && ab.target != 0 &&
         global_coordinator.entity_has_component<Player>(ab.target))
         ctrl = (ab.target == cur_game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
+    // TokenOwner$ TargetedController (Cityscape Leveler): the token is owned/controlled by the
+    // controller of the targeted permanent. The target was just destroyed by the preceding
+    // sub-ability, so read its last-known controller. With no target chosen (the "up to one"
+    // destroy hit nothing), no token is created — the "if you do" gate.
+    if (tp && tp->owner_is_targeted_controller) {
+        if (ab.target == 0) return true;  // no permanent destroyed → no token
+        Zone::Ownership tc = last_known_controller(ab.target);
+        if (tc == Zone::UNKNOWN) return true;
+        ctrl = tc;
+    }
     // TokenOwner$ RememberedOwner (Skyclave Apparition): the token is owned and controlled by
     // the OWNER of the first remembered card — the exiled permanent's owner — so if Skyclave
     // exiled your permanent, you get the Illusion when Skyclave dies (CR 707/the card text).
@@ -92,7 +102,9 @@ bool parse_token(Ability &ab, const std::string &key, const std::string &value) 
         // TokenOwner$ RememberedOwner routes them to the owner of the first remembered card
         // (Skyclave Apparition: the exiled card's owner gets the Illusion). Other values
         // (You / the default) leave the token under the ability's controller.
-        if (value.find("Targeted") != std::string::npos)
+        if (value == "TargetedController")
+            effect_params<TokenParams>(ab).owner_is_targeted_controller = true;
+        else if (value.find("Targeted") != std::string::npos)
             effect_params<TokenParams>(ab).owner_is_target = true;
         else if (value.find("Remembered") != std::string::npos)
             effect_params<TokenParams>(ab).owner_is_remembered = true;

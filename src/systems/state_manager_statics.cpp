@@ -43,6 +43,41 @@
 // affected_permanents_for_static and the layer-6/7 appliers so they all agree which statics
 // fan out across the affected set.
 static bool affected_is_general_filter(const std::string &aff);
+static void mark_unearthed_permanent(Entity entity, Permanent &perm);
+
+// Unearth (CR 702.84): finalize an Unearth-returned permanent the instant its Permanent is
+// created. The permanent gains haste (it enters with summoning sickness cleared and the keyword
+// granted so the layer pass keeps it through end of turn — mirrors the earthbend-haste path), is
+// flagged `unearthed` (the leaves-the-battlefield → exile redirect in Orderer::add_to_zone reads
+// it), and registers a one-shot delayed triggered ability (CR 603.7b) that exiles it at the
+// beginning of the next end step. The delayed trigger fires on the controller's end step (the next
+// one, since unearth is sorcery-speed on the controller's turn); its ChangeZone moves this exact
+// permanent from the battlefield to exile.
+static void mark_unearthed_permanent(Entity entity, Permanent &perm) {
+    perm.unearthed = true;
+    perm.has_summoning_sickness = false;  // gains haste
+    bool has_haste = false;
+    for (const auto &kw : perm.animate_added_keywords)
+        if (kw == "Haste") { has_haste = true; break; }
+    if (!has_haste) perm.animate_added_keywords.push_back("Haste");
+
+    Ability fire_ab;
+    fire_ab.ability_type = Ability::TRIGGERED;
+    fire_ab.category = "ChangeZone";
+    fire_ab.defined_remembered = true;
+    fire_ab.restore_remembered_exiled_with = {entity};  // resolve() seeds the remembered set to this card
+    fire_ab.source = entity;
+    fire_ab.origin = Zone::BATTLEFIELD;
+    fire_ab.destination = Zone::EXILE;
+
+    DelayedTrigger dt;
+    dt.ability = fire_ab;
+    dt.fire_on = Events::END_STEP_BEGAN;
+    dt.owner_entity = get_player_entity(perm.controller);
+    dt.fire_on_turn = cur_game.turn;
+    cur_game.delayed_triggers.push_back(dt);
+    game_log("%s is unearthed (haste; exiled at the next end step).\n", perm.name.c_str());
+}
 
 // Evaluate a continuous static's IsPresent$/PresentZone$/PresentCompare$ gate (CR 604.3 /
 // 611): count the cards/permanents matching `filter` in `zone` and compare against
@@ -441,6 +476,9 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                 // Spell was cast with its Offspring additional cost — mark the permanent so
                 // its offspring token-copy ETB trigger fires (consumed one-shot here).
                 if (game.pending_offspring.erase(entity)) perm.entered_with_offspring = true;
+                // Unearth (CR 702.84): returned to the battlefield by its unearth ability — gains
+                // haste, gets the delayed end-step exile, and the leaves→exile redirect.
+                if (game.pending_unearthed.erase(entity)) mark_unearthed_permanent(entity, perm);
                 // Planeswalkers enter with loyalty counters equal to printed loyalty (306.5b).
                 if (is_planeswalker_card(card_data)) perm.counters["LOYALTY"] = card_data.starting_loyalty;
                 perm.timestamp_entered_battlefield = game.timestamp++;

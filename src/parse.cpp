@@ -680,6 +680,30 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             card.keywords.push_back("Flashback");
             continue;
         }
+        // K:Unearth:<cost> — Unearth (CR 702.84): an activated ability usable only from the
+        // graveyard, at sorcery speed, that returns this card to the battlefield. The returned
+        // permanent gains haste, is exiled at the beginning of the next end step (a delayed
+        // triggered ability, CR 603.7b), and is exiled instead if it would leave the battlefield.
+        // Modeled as a synthetic graveyard-activated ChangeZone (Graveyard -> Battlefield, Defined$
+        // Self); is_unearth flags it so the resolution marks the permanent unearthed (haste +
+        // delayed exile + leaves-the-battlefield replacement). General over any K:Unearth:<cost>.
+        if (kw_line.rfind("Unearth:", 0) == 0) {
+            std::string cost_str = kw_line.substr(strlen("Unearth:"));
+            Ability ab;
+            ab.ability_type = Ability::ACTIVATED;
+            ab.category = "ChangeZone";
+            ab.activation_zone = Zone::GRAVEYARD;
+            ab.origin = Zone::GRAVEYARD;
+            ab.destination = Zone::BATTLEFIELD;
+            ab.defined_self = true;        // returns its own source from the graveyard
+            ab.sorcery_speed_only = true;  // "Unearth only as a sorcery." (CR 702.84a)
+            ab.is_unearth = true;
+            // Shared Cost$ token grammar (the mana portion of the unearth cost).
+            parse_activation_cost(cost_str, ab);
+            card.abilities.push_back(ab);
+            card.keywords.push_back("Unearth");
+            continue;
+        }
         // K:Escape:<mana> [<additional cost>] — cast this card from your graveyard for the
         // escape cost (CR 702.139). The mana portion (e.g. "2 B") precedes any additional cost
         // token (e.g. ExileFromGrave<.../withTypesGE4/...> for Nethergoyf). Mana is parsed from

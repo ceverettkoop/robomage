@@ -33,7 +33,14 @@ void bootstrap_token_components(Entity tok_entity, const Token &tok,
         }
         global_coordinator.AddComponent(tok_entity, perm);
     }
-    if (!global_coordinator.entity_has_component<Creature>(tok_entity)) {
+    // Only creature tokens get Creature/Damage components and P/T. A noncreature token
+    // (Powerstone, Treasure, Clue, Food, ...) has no power/toughness and must NOT acquire a
+    // Creature component, or the zero-toughness state-based action (CR 704.5f) would destroy it
+    // the instant it enters.
+    bool is_creature_token = false;
+    for (const auto &t : tok.types)
+        if (t.name == "Creature") { is_creature_token = true; break; }
+    if (is_creature_token && !global_coordinator.entity_has_component<Creature>(tok_entity)) {
         Creature creature;
         creature.base_power = static_cast<int>(tok.power);
         creature.base_toughness = static_cast<int>(tok.toughness);
