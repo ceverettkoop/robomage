@@ -30,6 +30,11 @@ struct Effect {
         // Empty filter = unconditional (the plain "enters tapped").
         std::string tapped_condition_filter = "";   // e.g. "Land.Basic" (controller-relative)
         std::string tapped_condition_compare = "";   // e.g. "EQ0", "GE1"
+        // ENTERS_TAPPED "unless you pay N life" (the shock-land / Witch-Blessed Meadow pattern:
+        // DB$ Tap | ETB$ True | UnlessCost$ PayLife<N>). When > 0, the controller may pay this
+        // much life as the permanent enters to have it enter UNTAPPED instead; declining (or
+        // being unable to pay) leaves it entering tapped (CR 614.1d self-replacement + 118.8).
+        int tapped_unless_life = 0;
         bool with_void_counter = false;     // EXILE_INSTEAD_OF_GRAVEYARD: exile with a void counter (Dauthi Voidwalker) so the controller may later play it; plain exile (Leyline of the Void) leaves it false
         // PREVENT_ETB_FROM_ZONES: the set of origin zones whose creature cards can't enter the battlefield.
         bool prevent_from_graveyard = false;  // Origin$ includes Graveyard

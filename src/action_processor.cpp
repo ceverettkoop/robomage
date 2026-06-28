@@ -1205,6 +1205,16 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             auto &zone = global_coordinator.GetComponent<Zone>(land_entity);
             auto &card_data = global_coordinator.GetComponent<CardData>(land_entity);
 
+            // Modal DFC played as its back face (a land): the entity's CardData is the front
+            // face, but it enters showing its back face. Reuse the transform machinery — mark it
+            // pending_enters_transformed so apply_permanent_components flips it to the back face
+            // at entry (suppressing the front-face ETBs). As a modal card it doesn't flip again.
+            const CardData *played_face = &card_data;
+            if (action.play_back_face && card_data.backside) {
+                played_face = card_data.backside.get();
+                cur_game.pending_enters_transformed.insert(land_entity);
+            }
+
             // Move to battlefield
             orderer->add_to_zone(false, land_entity, Zone::BATTLEFIELD);
             zone.controller = zone.owner;
@@ -1216,7 +1226,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             auto &player = global_coordinator.GetComponent<Player>(player_entity);
             player.lands_played_this_turn++;
 
-            game_log("%s played %s\n", player_name(zone.owner).c_str(), card_data.name.c_str());
+            game_log("%s played %s\n", player_name(zone.owner).c_str(), played_face->name.c_str());
 
             // Playing a land uses take_action() (resets pass tracking)
             game.take_action();

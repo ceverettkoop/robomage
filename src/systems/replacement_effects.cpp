@@ -40,6 +40,7 @@ struct Candidate {
     int amount = 0;               // ETB_COUNTERS: counter count
     std::string counter_type = "P1P1"; // ETB_COUNTERS: kind of counter
     bool with_void_counter = false; // EXILE_INSTEAD: tag the exiled card with a void counter (Dauthi), else plain exile (Leyline)
+    int tapped_unless_life = 0;     // SELF_TAPPED: "enters tapped unless you pay N life" — pay N to enter untapped instead
 };
 
 // Number of cards in a player's library / graveyard scan helpers mirror the
@@ -106,9 +107,21 @@ std::vector<Candidate> collect(const ReplacementEvent &ev,
     if (ev.type == ReplacementEvent::ENTERS_BATTLEFIELD) {
         if (global_coordinator.entity_has_component<CardData>(ev.entity)) {
             auto &cd = global_coordinator.GetComponent<CardData>(ev.entity);
+            // A permanent entering as its DFC back face (a transform DFC's transformed entry, or
+            // a modal DFC's back face played from hand) carries the BACK face's self-replacement
+            // effects, not the front's. Detect via the live Permanent's transformed flag (set
+            // before this dispatch on a later pass) or the one-shot pending_enters_transformed
+            // marker (set when the back face is put onto the battlefield, consumed at perm
+            // creation). Otherwise the front face's effects apply.
+            const std::vector<Effect::Replacement> *reps = &cd.replacement_effects;
+            if (cd.backside &&
+                ((global_coordinator.entity_has_component<Permanent>(ev.entity) &&
+                  global_coordinator.GetComponent<Permanent>(ev.entity).transformed) ||
+                 cur_game.pending_enters_transformed.count(ev.entity)))
+                reps = &cd.backside->replacement_effects;
             // Self "enters tapped" replacement effect (614.1d / self-replacement 614.15).
-            for (size_t i = 0; i < cd.replacement_effects.size(); i++) {
-                const Effect::Replacement &r = cd.replacement_effects[i];
+            for (size_t i = 0; i < reps->size(); i++) {
+                const Effect::Replacement &r = (*reps)[i];
                 if (r.kind != Effect::Replacement::ENTERS_TAPPED) continue;
                 // Conditional "enters tapped" (Ba Sing Se): apply only when the controller's
                 // board satisfies the gate (e.g. zero basic lands). The entering permanent's
@@ -121,6 +134,7 @@ std::vector<Candidate> collect(const ReplacementEvent &ev,
                 c.kind = SELF_TAPPED;
                 c.index = static_cast<int>(i);
                 c.self_replacement = true;
+                c.tapped_unless_life = r.tapped_unless_life;
                 c.label = "enters tapped";
                 if (!already_applied(applied, c)) out.push_back(c);
             }
@@ -312,6 +326,24 @@ std::vector<Candidate> collect(const ReplacementEvent &ev,
 void apply_one(ReplacementEvent &ev, const Candidate &c) {
     switch (c.kind) {
         case SELF_TAPPED:
+            // "Enters tapped unless you pay N life" (Witch-Blessed Meadow / shock lands): give
+            // the controller the choice to pay the life and enter untapped instead. A player can
+            // pay life only if they have at least that much (CR 119.4 / 118.8); declining or being
+            // unable to pay leaves it entering tapped.
+            if (c.tapped_unless_life > 0) {
+                Entity pe = (ev.affected_player == Zone::PLAYER_A)
+                                ? cur_game.player_a_entity : cur_game.player_b_entity;
+                auto &pl = global_coordinator.GetComponent<Player>(pe);
+                std::string prompt = "pay " + std::to_string(c.tapped_unless_life) +
+                                     " life so it enters untapped";
+                if (pl.life_total >= c.tapped_unless_life &&
+                    request_optional_yesno(ev.affected_player, prompt)) {
+                    pl.life_total -= c.tapped_unless_life;
+                    game_log("%s pays %d life.\n", player_name(ev.affected_player).c_str(),
+                             c.tapped_unless_life);
+                    break;  // enters untapped
+                }
+            }
             ev.enters_tapped = true;
             break;
         case PENDING_TAPPED:

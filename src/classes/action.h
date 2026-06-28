@@ -81,6 +81,10 @@ struct LegalAction {
         bool use_offspring = false;  // cast paying the Offspring additional cost (CR 702.171)
         bool use_escape = false;     // cast from graveyard paying the Escape cost (CR 702.139)
         bool impulse_cast = false;   // cast from exile under a cur_game.impulse_cast_permission, paying its alternative RESOURCE cost (energy/life) instead of mana (Amped Raptor)
+        // PLAY_LAND of a modal DFC's BACK face: the source entity is the combined card (whose
+        // CardData is the front face), but it is being played as its back face (a land). The
+        // processor marks it pending_enters_transformed so it enters showing the back face.
+        bool play_back_face = false;
         // True when this choice's card identity is public knowledge to all players
         // (e.g. a revealed tutor like Personal Tutor). Lets observers show the card
         // name even for an otherwise-private choice (search/top-of-library).

@@ -374,6 +374,18 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                     LegalAction la(SPECIAL_ACTION, card_entity, desc);
                     la.category = ActionCategory::PLAY_LAND;
                     actions.push_back(la);
+                } else if (card_data.is_modal_dfc && card_data.backside &&
+                           is_land_card(*card_data.backside)) {
+                    // Modal DFC whose BACK face is a land (Witch Enchanter // Witch-Blessed
+                    // Meadow): playing the back face is a land play, subject to the same one-
+                    // land-per-turn drop (CR 712.x / 305.2). The front face is still offered as a
+                    // cast in the spell loop below. (A modal DFC whose back is a nonland spell
+                    // would instead be a cast — keyed on the back face's card type.)
+                    std::string desc = "Play " + card_data.backside->name;
+                    LegalAction la(SPECIAL_ACTION, card_entity, desc);
+                    la.category = ActionCategory::PLAY_LAND;
+                    la.play_back_face = true;
+                    actions.push_back(la);
                 }
             }
             // Check graveyard for lands if MayPlay from graveyard is active

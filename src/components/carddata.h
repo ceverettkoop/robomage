@@ -52,6 +52,12 @@ struct CardData{
     std::vector<StaticAbility> static_abilities;
     std::vector<Effect::Replacement> replacement_effects;  // parsed from R: lines TODO expand this to parse SVAR below
     std::shared_ptr<CardData> backside;  // populated for DFCs; nullptr for normal cards
+    // AlternateMode:Modal — a MODAL double-faced card (MDFC, CR 712.x): the player chooses,
+    // when playing it from hand, which face to cast/play (front spell OR back face). Unlike a
+    // transform DFC (Delver/Ajani), an MDFC is not a transforming permanent — the chosen face
+    // is what enters and it does not flip in play. The back face is its own complete CardData in
+    // `backside`. False for single-faced cards and for transform DFCs.
+    bool is_modal_dfc = false;
     bool has_delve = false;              // K:Delve — exile from graveyard to reduce generic cost
     bool has_improvise = false;          // K:Improvise — tap untapped artifacts you control to pay {1} each (CR 702.126)
     int ward_cost = 0;                   // K:Ward:N — opponent's spell/ability targeting this is countered unless they pay {N} (CR 702.21)

@@ -344,6 +344,10 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
     card.mana_cost = parse_mana_cost(mana_cost_str, &card.phyrexian_mana);
     card.has_x_cost = (mana_cost_str.find('X') != std::string::npos);
     card.types = parse_types(value_from_script(front_script, "Types"));
+    // AlternateMode:Modal marks a MODAL double-faced card (MDFC, CR 712.x) — both faces are
+    // playable from hand (front spell OR back face). Only the front face carries this line; the
+    // back face (parsed from the ALTERNATE block) leaves it false. Distinct from a transform DFC.
+    card.is_modal_dfc = (value_from_script(front_script, "AlternateMode") == "Modal");
     // Parse explicit Colors: override (e.g. Dryad Arbor which is a land/creature with green identity)
     card.explicit_colors = parse_colors_field(value_from_script(front_script, "Colors"));
     card.oracle_text = value_from_script(front_script, "Oracle");
@@ -2639,6 +2643,7 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
         // identical R: line isn't retagged. An ETBTapped token (above) is the unconditional form.
         bool replace_with_etb_tapped_conditional = false;
         std::string tapped_cond_filter, tapped_cond_compare;
+        int tapped_unless_life = 0;  // UnlessCost$ PayLife<N> — pay N life to enter untapped instead
         if (!replace_with_svar.empty()) {
             auto sv = svars.find(replace_with_svar);
             if (sv != svars.end()) {
@@ -2647,7 +2652,7 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
                 if (body.find("DB$ Tap") != std::string::npos &&
                     body.find("ETB$ True") != std::string::npos) {
                     replace_with_etb_tapped_conditional = true;
-                    // Pull ConditionPresent$ / ConditionCompare$ out of the SVar body.
+                    // Pull ConditionPresent$ / ConditionCompare$ / UnlessCost$ out of the SVar body.
                     size_t pp = 0; std::string k, v;
                     while (next_param(body, pp, k, v)) {
                         if (k == "ConditionPresent") {
@@ -2659,6 +2664,13 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
                             tapped_cond_filter = f;
                         } else if (k == "ConditionCompare") {
                             tapped_cond_compare = v;
+                        } else if (k == "UnlessCost" && v.rfind("PayLife<", 0) == 0) {
+                            // "...unless you pay N life" — the controller may pay N life as the
+                            // permanent enters to have it enter untapped (Witch-Blessed Meadow,
+                            // shock lands). Parse the N out of PayLife<N>.
+                            size_t lt = v.find('<'), gt = v.find('>');
+                            if (lt != std::string::npos && gt != std::string::npos && gt > lt + 1)
+                                tapped_unless_life = std::stoi(v.substr(lt + 1, gt - lt - 1));
                         }
                     }
                 }
@@ -2680,6 +2692,7 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
             r.applies_to_self_only = true;
             r.tapped_condition_filter = tapped_cond_filter;
             r.tapped_condition_compare = tapped_cond_compare;
+            r.tapped_unless_life = tapped_unless_life;
             result.push_back(r);
         }
         if (event_is_counter && valid_card_self && layer_cant_happen) {
