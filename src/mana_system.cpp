@@ -22,6 +22,7 @@
 #include "game_queries.h"
 #include "input_logger.h"
 #include "systems/orderer.h"
+#include "systems/replacement_effects.h"
 #include "systems/rules_modifying.h"
 #include "systems/state_manager.h"
 
@@ -644,7 +645,22 @@ static void activate_mana_source(Entity entity, const Ability &ab, Zone::Ownersh
         game_log("%s pays %d life\n", player_name(controller).c_str(), ab.life_cost);
     }
     size_t amount = eval_mana_amount(ab, controller, orderer);
-    for (size_t i = 0; i < amount; i++) pool.insert(ab.color);
+    // ProduceMana replacement effects (CR 614.1, Damping Sphere): a land tapped for 2+ mana
+    // produces that much {C} instead. Consult active replacements before the produced mana enters
+    // the pool, so a colored producer can be rewritten to colorless. Runs in both commit and
+    // simulate mode so affordability (can_pay_mana) and the real payment agree on the colors.
+    Colors produced_color = ab.color;
+    if (amount >= 2) {
+        ReplacementEvent ev;
+        ev.type = ReplacementEvent::PRODUCE_MANA;
+        ev.entity = entity;
+        ev.affected_player = controller;
+        ev.produced_color = ab.color;
+        ev.produced_amount = amount;
+        replacement::dispatch(ev);
+        produced_color = ev.produced_color;
+    }
+    for (size_t i = 0; i < amount; i++) pool.insert(produced_color);
     // Mana-additional "whenever you tap a <permanent> for mana" triggers (Badgermole Cub's
     // TapsForMana, CR 605.1a): resolve immediately as part of the tap, adding their extra mana
     // to the working pool. Fired in BOTH commit and simulate modes so affordability/legality
@@ -654,7 +670,7 @@ static void activate_mana_source(Entity entity, const Ability &ab, Zone::Ownersh
     if (commit && ab.adds_no_counter) cur_game.pending_cant_be_countered = true;
     if (commit)
         game_log("%s activated %s for %zu(%s)\n", player_name(controller).c_str(),
-                 perm.name.c_str(), amount, mana_symbol_str(ab.color));
+                 perm.name.c_str(), amount, mana_symbol_str(produced_color));
     // A mana ability may carry a SubAbility$ rider that is part of the mana ability and
     // resolves off-stack with it — e.g. Ancient Tomb's "deals 2 damage to you" (CR 605.1a,
     // 606.3). Only fire it when committing the activation (not during legality simulation).

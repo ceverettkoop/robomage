@@ -2504,6 +2504,15 @@ static std::vector<StaticAbility> parse_static_abilities(const std::string &scri
                         sa.set_cost_min = std::stoi(value);
                     else
                         sa.raise_cost = std::stoi(value);
+                } else if (sa.category == "RaiseCost" && !value.empty()) {
+                    // Non-numeric Amount$ — an SVar reference (Damping Sphere: Amount$ X with
+                    // X = Count$ThisTurnCast_Card.YouCtrl). A "spells you cast this turn" count is
+                    // the per-cast relative surcharge; resolve the SVar and flag it so the cost
+                    // computation adds the caster's spells-cast-this-turn count (CR 601.2f).
+                    auto it = svars.find(value);
+                    const std::string body = (it != svars.end()) ? it->second : value;
+                    if (body.find("ThisTurnCast") != std::string::npos)
+                        sa.raise_cost_per_spell_cast = true;
                 }
             } else if (key == "RaiseTo") {
                 // SetCost RaiseTo$ True (Trinisphere): the Amount$ is a FLOOR — raise a sub-Amount
@@ -2664,6 +2673,9 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
         bool event_is_moved       = false;
         bool event_is_counter     = false;
         bool event_is_untap       = false;
+        bool event_is_produce_mana = false;       // Event$ ProduceMana (Damping Sphere)
+        std::string produce_valid_type;           // ValidCard$ <type> for a ProduceMana replacement ("Land")
+        int produce_min_amount    = 1;            // ManaAmount$ GEN — minimum produced amount
         std::string untap_valid_subtype;  // ValidCard$ <subtype> for an Untap-prevention (Choke: Island)
         bool valid_card_self      = false;
         bool dest_is_battlefield  = false;
@@ -2686,9 +2698,17 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
             if      (key == "Event"       && value == "Moved")       event_is_moved          = true;
             else if (key == "Event"       && value == "Counter")    event_is_counter        = true;
             else if (key == "Event"       && value == "Untap")      event_is_untap          = true;
+            else if (key == "Event"       && value == "ProduceMana") event_is_produce_mana  = true;
+            else if (key == "ManaAmount"  && value.rfind("GE", 0) == 0) {
+                // ManaAmount$ GEN — applies when a source is tapped for >= N mana (Damping Sphere: GE2).
+                std::string n = value.substr(2);
+                produce_min_amount = n.empty() ? 1 : std::stoi(n);
+            }
             else if (key == "ValidCard"   && value == "Card.Self")   valid_card_self         = true;
-            else if (key == "ValidCard"   && value.find('.') == std::string::npos)
+            else if (key == "ValidCard"   && value.find('.') == std::string::npos) {
                 untap_valid_subtype = value;  // a bare subtype filter (Choke: ValidCard$ Island)
+                produce_valid_type  = value;  // a bare type filter (Damping Sphere: ValidCard$ Land)
+            }
             else if (key == "ValidCard"   && value.find("OppOwn") != std::string::npos &&
                      (value.find("!token") != std::string::npos ||
                       value.find("nonToken") != std::string::npos)) valid_card_opp_non_token = true;
@@ -2723,11 +2743,30 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
         bool replace_with_etb_tapped_conditional = false;
         std::string tapped_cond_filter, tapped_cond_compare;
         int tapped_unless_life = 0;  // UnlessCost$ PayLife<N> — pay N life to enter untapped instead
+        // ProduceMana replacement (Damping Sphere): the ReplaceWith$ SVar is a DB$ ReplaceMana
+        // whose ReplaceMana$ names the single color all the produced mana is converted to.
+        bool replace_with_produce_mana = false;
+        Colors produce_replacement_color = COLORLESS;
         if (!replace_with_svar.empty()) {
             auto sv = svars.find(replace_with_svar);
             if (sv != svars.end()) {
                 const std::string &body = sv->second;
                 if (body.find("VOID") != std::string::npos) replace_with_void_counter = true;
+                if (body.find("DB$ ReplaceMana") != std::string::npos) {
+                    replace_with_produce_mana = true;
+                    size_t pp = 0; std::string k, v;
+                    while (next_param(body, pp, k, v)) {
+                        if (k != "ReplaceMana" || v.empty()) continue;
+                        switch (v[0]) {
+                            case 'W': produce_replacement_color = WHITE;     break;
+                            case 'U': produce_replacement_color = BLUE;      break;
+                            case 'B': produce_replacement_color = BLACK;     break;
+                            case 'R': produce_replacement_color = RED;       break;
+                            case 'G': produce_replacement_color = GREEN;     break;
+                            default:  produce_replacement_color = COLORLESS; break;
+                        }
+                    }
+                }
                 if (body.find("DB$ Tap") != std::string::npos &&
                     body.find("ETB$ True") != std::string::npos) {
                     replace_with_etb_tapped_conditional = true;
@@ -2819,6 +2858,20 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
             r.kind = Effect::Replacement::SKIP_UNTAP;
             r.applies_to_self_only = false;
             r.valid_subtype = untap_valid_subtype;
+            result.push_back(r);
+        }
+        // Damping Sphere: "If a land is tapped for two or more mana, it produces {C} instead of
+        // any other type and amount." A ProduceMana replacement (614.1) — when a permanent of the
+        // named type is tapped for >= ManaAmount mana, replace its production with that much of the
+        // ReplaceMana color.
+        if (event_is_produce_mana && replace_with_produce_mana && active_zones_battlefield &&
+            !produce_valid_type.empty()) {
+            Effect::Replacement r;
+            r.kind = Effect::Replacement::PRODUCE_MANA;
+            r.applies_to_self_only = false;
+            r.produce_valid_type = produce_valid_type;
+            r.produce_min_amount = produce_min_amount;
+            r.produce_replacement_color = produce_replacement_color;
             result.push_back(r);
         }
         // Grim Monolith: "This artifact doesn't untap during your untap step." (614.1d) — a

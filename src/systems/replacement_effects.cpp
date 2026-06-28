@@ -29,6 +29,7 @@ enum CandidateKind {
     EXILE_INSTEAD_OF_ETB, // 614.1a — a non-token creature that wasn't cast is exiled instead of entering (Containment Priest)
     SKIP_UNTAP,     // 614.1d — this permanent doesn't untap during its controller's untap step (Choke)
     PREVENT_ETB,    // 614.13 — a creature card from a restricted origin zone is prevented from entering (Grafdigger's Cage)
+    PRODUCE_MANA,   // 614.1 — replaces the mana a tapped permanent produces (Damping Sphere)
 };
 
 struct Candidate {
@@ -41,6 +42,7 @@ struct Candidate {
     std::string counter_type = "P1P1"; // ETB_COUNTERS: kind of counter
     bool with_void_counter = false; // EXILE_INSTEAD: tag the exiled card with a void counter (Dauthi), else plain exile (Leyline)
     int tapped_unless_life = 0;     // SELF_TAPPED: "enters tapped unless you pay N life" — pay N to enter untapped instead
+    Colors produce_color = COLORLESS; // PRODUCE_MANA: color the production is converted to
 };
 
 // Number of cards in a player's library / graveyard scan helpers mirror the
@@ -318,6 +320,48 @@ std::vector<Candidate> collect(const ReplacementEvent &ev,
         return out;
     }
 
+    if (ev.type == ReplacementEvent::PRODUCE_MANA) {
+        // Damping Sphere: a land (ValidCard$ type) tapped for >= ManaAmount mana produces that
+        // much of the replacement color instead. Once one replacement has rewritten the
+        // production the event is fully replaced — the result is the same regardless of how many
+        // identical effects are present (idempotent), so further passes add nothing and we never
+        // prompt for a choice (avoids an input read during mana-payment simulation).
+        if (ev.mana_replaced) return out;
+        if (!global_coordinator.entity_has_component<Permanent>(ev.entity)) return out;
+        auto &src = global_coordinator.GetComponent<Permanent>(ev.entity);
+        Entity max_e = global_coordinator.GetMaxIssuedEntity();
+        for (Entity e = 0; e < max_e; e++) {
+            if (!is_battlefield_permanent(e)) continue;
+            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+            auto &cd = global_coordinator.GetComponent<CardData>(e);
+            for (size_t i = 0; i < cd.replacement_effects.size(); i++) {
+                const Effect::Replacement &r = cd.replacement_effects[i];
+                if (r.kind != Effect::Replacement::PRODUCE_MANA) continue;
+                if (ev.produced_amount < static_cast<size_t>(r.produce_min_amount)) continue;
+                // The producing permanent must match the ValidCard$ type filter (e.g. "Land").
+                bool type_ok = false;
+                for (const auto &t : src.types)
+                    if (t.name == r.produce_valid_type) { type_ok = true; break; }
+                if (!type_ok) continue;
+                Candidate c;
+                c.source = e;
+                c.kind = PRODUCE_MANA;
+                c.index = static_cast<int>(i);
+                c.self_replacement = false;
+                c.produce_color = r.produce_replacement_color;
+                c.label = global_coordinator.GetComponent<Permanent>(e).name + ": produces colorless";
+                if (!already_applied(applied, c)) {
+                    // Several identical ProduceMana replacements yield the same {C} production, so
+                    // return just one — applying it sets mana_replaced and the next pass collects
+                    // none. This keeps the dispatch choice-free (no input read in mana simulation).
+                    out.push_back(c);
+                    return out;
+                }
+            }
+        }
+        return out;
+    }
+
     return out;
 }
 
@@ -375,6 +419,10 @@ void apply_one(ReplacementEvent &ev, const Candidate &c) {
         }
         case SKIP_UNTAP:
             ev.skip_untap = true;
+            break;
+        case PRODUCE_MANA:
+            ev.produced_color = c.produce_color;
+            ev.mana_replaced = true;
             break;
         case PREVENT_ETB: {
             ev.prevented = true;

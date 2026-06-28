@@ -30,6 +30,12 @@ struct StaticAbility {
     // RaiseCost fields (category = "RaiseCost"):
     int raise_cost = 0;               // generic mana added to cost of matching spells
     std::string raise_cost_filter = ""; // "nonCreature" = apply to non-creature spells
+    // Damping Sphere: "Each spell a player casts costs {1} more for each other spell that player
+    // has cast this turn." A RELATIVE surcharge (Amount$ X | Relative$ True, X =
+    // Count$ThisTurnCast_Card.YouCtrl) — the added generic is the spell's caster's count of
+    // spells already cast this turn (the "other" spells), so it is computed per-cast against the
+    // caster rather than as a fixed raise_cost.
+    bool raise_cost_per_spell_cast = false;
     // ReduceCost fields (category = "ReduceCost"): the mirror of RaiseCost — a continuous
     // static that reduces the generic portion of matching spells' cost by reduce_cost
     // (CR 118.7 / 601.2f). reduce_cost_filter is the ValidCard$ spec (e.g. "Eldrazi.Colorless").

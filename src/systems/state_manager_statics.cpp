@@ -125,8 +125,17 @@ static bool static_present_condition_met(const std::string &filter, const std::s
     return compare_svar(count, compare);
 }
 
-int active_raise_cost_for(const CardData &card_data) {
+int active_raise_cost_for(const CardData &card_data, Zone::Ownership caster) {
     bool is_creature = is_creature_card(card_data);
+    // Caster's spells already cast this turn — the "other spells" the relative surcharge counts
+    // (Damping Sphere). Evaluated once; 0 when the caster is unknown or has no Player component.
+    int spells_cast_this_turn = 0;
+    if (caster != Zone::UNKNOWN) {
+        Entity pe = get_player_entity(caster);
+        if (global_coordinator.entity_has_component<Player>(pe))
+            spells_cast_this_turn =
+                static_cast<int>(global_coordinator.GetComponent<Player>(pe).spells_cast_this_turn);
+    }
     int total = 0;
     for (const auto &as : g_active_statics) {
         if (as.suppressed) continue;  // 613.1f: source lost all abilities (Humility)
@@ -138,6 +147,9 @@ int active_raise_cost_for(const CardData &card_data) {
             if (src.chosen_name.empty() || src.chosen_name != card_data.name) continue;
         }
         total += as.sa->raise_cost;
+        // Relative per-spell surcharge (Damping Sphere): {1} more for each other spell the
+        // caster has cast this turn (CR 601.2f). Applies to every spell that player casts.
+        if (as.sa->raise_cost_per_spell_cast) total += spells_cast_this_turn;
     }
     return total;
 }
@@ -222,7 +234,7 @@ std::vector<Entity> affected_permanents_for_static(const ActiveStatic &as,
 
 ManaValue effective_base_cost(const CardData &card_data, Zone::Ownership caster) {
     ManaValue cost = card_data.mana_cost;
-    int raise_total = active_raise_cost_for(card_data);
+    int raise_total = active_raise_cost_for(card_data, caster);
     for (int ri = 0; ri < raise_total; ri++) cost.insert(GENERIC);
     // ReduceCost statics (Eye of Ugin): reduce the generic portion by Amount$ per matching
     // static. Applied after additions (CR 601.2f); only generic pips removed (never a colored

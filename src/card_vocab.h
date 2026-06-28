@@ -185,6 +185,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Urza's Mine", 274},
     {"Urza's Power Plant", 275},
     {"Urza's Tower", 276},
+    {"Damping Sphere", 277},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);

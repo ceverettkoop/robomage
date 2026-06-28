@@ -50,9 +50,12 @@ std::vector<Entity> affected_permanents_for_static(const ActiveStatic &as,
 
 // Total generic mana that active RaiseCost statics add to the cost of casting `card_data`.
 // Honours the nonCreature filter and the NamedCard filter (Disruptor Flute): a NamedCard
-// RaiseCost applies only when the spell's name equals its source's chosen_name. Shared by
-// determine_legal_actions (affordability) and action_processor (payment).
-int active_raise_cost_for(const CardData &card_data);
+// RaiseCost applies only when the spell's name equals its source's chosen_name. The relative
+// per-spell surcharge (Damping Sphere: "{1} more for each other spell that player has cast this
+// turn") adds `caster`'s spells-cast-this-turn count; pass the casting player so it can be
+// evaluated (Zone::UNKNOWN omits it). Shared by determine_legal_actions (affordability) and
+// action_processor (payment).
+int active_raise_cost_for(const CardData &card_data, Zone::Ownership caster = Zone::UNKNOWN);
 
 // Total generic mana that active ReduceCost statics remove from `card_data`'s cost for
 // player `caster` (the mirror of active_raise_cost_for). An Activator$ You static (Eye of
