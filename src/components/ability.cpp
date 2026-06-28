@@ -691,6 +691,20 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
     if (global_coordinator.entity_has_component<Creature>(cand) &&
         has_protection_from(global_coordinator.GetComponent<Creature>(cand), source))
         return false;
+
+    // Shroud (CR 702.18e) and Hexproof (CR 702.11b): targeting restrictions read off the
+    // candidate's EFFECTIVE keyword set (printed + granted via Pump/effects/keyword counter,
+    // through permanent_has_keyword), so a creature granted Shroud (Sylvan Safekeeper) is
+    // untargetable while the grant lasts.
+    //   • Shroud: can't be the target of ANY spell or ability (yours OR opponents').
+    //   • Hexproof: can't be the target of spells/abilities an OPPONENT controls — legal for
+    //     the controller of the targeting spell/ability, illegal for the other player. `caster`
+    //     is the controller of this ability/spell; the candidate's controller is its Permanent.
+    if (permanent_has_keyword(cand, "Shroud")) return false;
+    if (permanent_has_keyword(cand, "Hexproof") &&
+        global_coordinator.entity_has_component<Permanent>(cand) &&
+        global_coordinator.GetComponent<Permanent>(cand).controller != caster)
+        return false;
     return true;
 }
 

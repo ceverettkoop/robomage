@@ -191,6 +191,13 @@ struct Ability{
     // variant) so PutCounterAll can carry it alongside CounterParams.
     std::string valid_cards_filter = "";
 
+    // AB$ AnimateAll | RemoveKeywords$ Hexproof & Indestructible (Shadowspear): the keyword(s)
+    // a mass continuous effect REMOVES from every permanent matching valid_cards_filter, until
+    // end of turn (CR 613 layer 6 keyword removal). Empty for effects that grant rather than
+    // remove. The add direction (AddKeyword$/Keywords$) reuses the same effect via add_keywords.
+    std::vector<std::string> remove_keywords;
+    std::vector<std::string> add_keywords;  // AnimateAll grant direction (until end of turn)
+
     // Condition$ Blessing (CopyPermanent on Ocelot Pride): the effect body runs only if the
     // ability's controller has the city's blessing (702.131). Like other condition gates, a
     // false condition skips the body but still chains subabilities.
@@ -290,6 +297,9 @@ struct Ability{
     // Attach / Equip sub-ability
     bool optional = false;           // Optional$ True — player may decline
     bool defined_remembered = false; // Defined$ Remembered — target is cur_game.remembered_entities[0]
+    // True for the sub-ability a DB$ DelayedTrigger named in its Execute$ (vs. a trailing
+    // SubAbility$ cleanup). delayed_trigger() fires this one and chains the rest after it.
+    bool from_delayed_execute = false;
     bool defined_triggered_spell = false; // Defined$ TriggeredSpellAbility — target is the spell that triggered this ability (Chalice of the Void counters it)
     // Defined$ TriggeredSourceSA — target is the spell/ability that targeted the source (the
     // "triggering source spell ability" of a Mode$ BecomesTarget trigger, Reality Smasher). Bound
@@ -324,6 +334,12 @@ struct Ability{
     // one permanent of each listed type from among their matching permanents to keep
     // (recorded in cur_game.chosen_cards). Empty = the legacy single-pick ChooseCard.
     std::string choose_each = "";
+
+    // SP$/AB$ Vote VoteCard$ <filter> (Council's Judgment): the permanent filter the vote
+    // chooses among (e.g. "Permanent.nonLand+YouDontCtrl"). In the two-player engine the vote
+    // reduces to the controller choosing one matching permanent; the winner is fed to the
+    // VoteSubAbility (parsed into subabilities) via the remembered set. See effect_vote.cpp.
+    std::string vote_card_filter = "";
 
     // RememberChanged$ — remember entities moved by this ChangeZone (for Doomsday)
     bool remember_changed = false;

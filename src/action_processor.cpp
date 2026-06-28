@@ -47,6 +47,15 @@ static void declare_blockers(Game &game, std::shared_ptr<Orderer> orderer);
 static std::vector<Entity> collect_live_blockers(Entity attacker, std::shared_ptr<Orderer> orderer);
 static bool attacker_needs_assignment(Entity attacker, std::shared_ptr<Orderer> orderer, bool first_strike_only);
 static void assign_combat_damage(Game &game, std::shared_ptr<Orderer> orderer);
+// One Ward ability a permanent currently has (CR 702.21): an unless-cost (generic mana
+// amount, or a life amount when is_life) the targeting player must pay or have the spell/
+// ability countered. Collected from the printed ward (CardData::ward_cost) and from any
+// granted "Ward:N" in the effective keyword list.
+struct WardInstance {
+    int cost;
+    bool is_life;
+};
+static std::vector<WardInstance> collect_ward_instances(Entity e);
 static void trigger_ward_for_targets(Entity targeting_entity, Zone::Ownership controller,
                                      const std::vector<Entity> &targets,
                                      std::shared_ptr<Orderer> orderer);
@@ -1050,6 +1059,53 @@ void select_target(Ability &ability, std::shared_ptr<Orderer> orderer, Zone::Own
 // first). The Ward trigger is a Counter ability whose unless_generic_cost is the ward cost —
 // reusing the existing "counter unless pay {N}" resolution. A permanent targeted multiple
 // times (one spell, several targets) fires Ward once per time it became a target.
+// Collect every Ward ability a permanent currently HAS (CR 702.21), honoring ward that is
+// granted by a continuous effect (equipment/aura statics, Pump grants, keyword counters), not
+// just the printed ward. Two storage forms, kept distinct so they are not double-counted:
+//   - Printed ward: parse.cpp stores the numeric cost in CardData::ward_cost (with
+//     ward_is_life) and pushes the BARE string "Ward" onto CardData::keywords.
+//   - Granted ward: add_keywords_from_spec pushes the raw spec part "Ward:N" (with a colon
+//     and number) onto the effective keyword list — never the bare "Ward".
+// We therefore take the printed instance from ward_cost, and every granted instance from a
+// "Ward:N" keyword string, deduping identical granted copies so a single granted Ward:1 fires
+// exactly once. Distinct ward costs (e.g. printed Ward 2 plus granted Ward 1) each yield their
+// own instance and each trigger, per CR 702.21h.
+static std::vector<WardInstance> collect_ward_instances(Entity e) {
+    std::vector<WardInstance> wards;
+    // Printed ward.
+    if (global_coordinator.entity_has_component<CardData>(e)) {
+        const auto &cd = global_coordinator.GetComponent<CardData>(e);
+        if (cd.ward_cost > 0) wards.push_back({cd.ward_cost, cd.ward_is_life});
+    }
+    // Granted ward(s) from the effective keyword list. Use the same effective-keyword view as
+    // permanent_has_keyword: a creature's rebuilt Creature::keywords, else printed keywords.
+    const std::vector<std::string> *kw_list = nullptr;
+    if (global_coordinator.entity_has_component<Creature>(e))
+        kw_list = &global_coordinator.GetComponent<Creature>(e).keywords;
+    else if (global_coordinator.entity_has_component<CardData>(e))
+        kw_list = &global_coordinator.GetComponent<CardData>(e).keywords;
+    else if (global_coordinator.entity_has_component<Token>(e))
+        kw_list = &global_coordinator.GetComponent<Token>(e).keywords;
+    if (kw_list) {
+        for (const std::string &kw : *kw_list) {
+            // Only "Ward:N" (granted form). Bare "Ward" is the printed marker, already counted
+            // via ward_cost above; skip it to avoid double-firing the printed ward.
+            if (kw.rfind("Ward:", 0) != 0) continue;
+            std::string arg = kw.substr(5);
+            int cost = 1;
+            if (!arg.empty() && arg.find_first_not_of("0123456789") == std::string::npos)
+                cost = std::stoi(arg);
+            WardInstance inst{cost, false};  // granted "Ward:N" is a generic-mana cost
+            // Dedupe identical granted copies (same source granting Ward:1 once must fire once).
+            bool dup = false;
+            for (const auto &w : wards)
+                if (w.cost == inst.cost && w.is_life == inst.is_life) { dup = true; break; }
+            if (!dup) wards.push_back(inst);
+        }
+    }
+    return wards;
+}
+
 static void trigger_ward_for_targets(Entity targeting_entity, Zone::Ownership controller,
                                      const std::vector<Entity> &targets,
                                      std::shared_ptr<Orderer> orderer) {
@@ -1059,25 +1115,25 @@ static void trigger_ward_for_targets(Entity targeting_entity, Zone::Ownership co
         // The Ward permanent must be controlled by an opponent of the targeting player.
         if (!is_battlefield_permanent(tgt, opp)) continue;
         if (!global_coordinator.entity_has_component<CardData>(tgt)) continue;
-        auto &tgt_cd = global_coordinator.GetComponent<CardData>(tgt);
-        int ward_cost = tgt_cd.ward_cost;
-        if (ward_cost <= 0) continue;
-        bool ward_is_life = tgt_cd.ward_is_life;
 
-        Ability ward;
-        ward.ability_type = Ability::TRIGGERED;
-        ward.category = "Counter";
-        ward.source = tgt;
-        ward.controller = opp;            // the Ward permanent's controller
-        ward.target = targeting_entity;   // counter the spell/ability that targeted it
-        ward.unless_generic_cost = static_cast<size_t>(ward_cost);
-        ward.unless_cost_is_life = ward_is_life;  // Ward—Pay N life pays life, not mana
-
-        orderer->push_ability_onto_stack(ward, opp);
+        std::vector<WardInstance> wards = collect_ward_instances(tgt);
         std::string nm = entity_name(tgt);
-        game_log("Ward %s%d%s: %s's controller may pay to counter the spell or ability "
-                 "targeting %s\n", ward_is_life ? "—Pay " : "{", ward_cost,
-                 ward_is_life ? " life" : "}", nm.c_str(), nm.c_str());
+        for (const WardInstance &w : wards) {
+            if (w.cost <= 0) continue;
+            Ability ward;
+            ward.ability_type = Ability::TRIGGERED;
+            ward.category = "Counter";
+            ward.source = tgt;
+            ward.controller = opp;            // the Ward permanent's controller
+            ward.target = targeting_entity;   // counter the spell/ability that targeted it
+            ward.unless_generic_cost = static_cast<size_t>(w.cost);
+            ward.unless_cost_is_life = w.is_life;  // Ward—Pay N life pays life, not mana
+
+            orderer->push_ability_onto_stack(ward, opp);
+            game_log("Ward %s%d%s: %s's controller may pay to counter the spell or ability "
+                     "targeting %s\n", w.is_life ? "—Pay " : "{", w.cost,
+                     w.is_life ? " life" : "}", nm.c_str(), nm.c_str());
+        }
     }
 }
 

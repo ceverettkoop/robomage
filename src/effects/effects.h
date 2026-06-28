@@ -106,6 +106,12 @@ bool repeat_each(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer);
 // DB$ BecomeMonarch (CR 725, Forth Eorlingas!): the ability's controller becomes the monarch.
 bool become_monarch(Ability &ab, std::shared_ptr<Orderer> orderer);
+// SP$/AB$ Vote (Council's Judgment, CR 701.32 will-of-the-council): voters choose among the
+// VoteCard$ permanents and the VoteSubAbility$ effect (a DB$ ChangeZone Battlefield→Exile) is
+// applied to the winner(s). The engine is two-player only (CLAUDE.md scope), so the vote
+// reduces to the spell/ability's controller CHOOSING one permanent matching VoteCard$ — a
+// choice, not a target, so it ignores shroud/hexproof. See effect_vote.cpp.
+bool vote(Ability &ab, std::shared_ptr<Orderer> orderer);
 // SP$/DB$ NameCard (Cabal Therapy): the ability's controller names a card (CR 201.4); the
 // chosen name is stored in cur_game.named_card so a chained Card.NamedCard sub-ability
 // (here a RevealDiscardAll discard) can reference it.
@@ -115,6 +121,11 @@ bool name_card(Ability &ab, std::shared_ptr<Orderer> orderer);
 // base-P/T / keyword / creature grants) onto the permanent so the layer system reapplies
 // it each SBE pass. See effect_animate.cpp.
 bool animate(Ability &ab, std::shared_ptr<Orderer> orderer);
+// AB$ AnimateAll (Shadowspear): a mass until-end-of-turn continuous effect that removes
+// (RemoveKeywords$) or grants keyword(s) on every battlefield permanent matching ValidCards$.
+// General over "permanents matching <filter> lose/gain <keyword> until end of turn" (CR 613
+// layer 6). See effect_animate_all.cpp.
+bool animate_all(Ability &ab, std::shared_ptr<Orderer> orderer);
 // Bootstrap (or refresh) the Creature/Damage components on a permanent the Animate extension
 // points (animate_make_creature + animate_set_pt + animate_added_keywords) turned into a
 // creature — e.g. an earthbended land. Idempotent; safe to call each SBA pass. Defined in
@@ -172,6 +183,8 @@ bool parse_amass(Ability &ab, const std::string &key, const std::string &value);
 bool parse_choose_number(Ability &ab, const std::string &key, const std::string &value);
 bool parse_dig_until(Ability &ab, const std::string &key, const std::string &value);
 bool parse_play(Ability &ab, const std::string &key, const std::string &value);
+// AB$ AnimateAll RemoveKeywords$/AddKeyword$/ValidCards$ (Shadowspear). See effect_animate_all.cpp.
+bool parse_animate_all(Ability &ab, const std::string &key, const std::string &value);
 
 }  // namespace effects
 

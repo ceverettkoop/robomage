@@ -189,6 +189,49 @@ bool evaluate_present_condition(const Ability &ab, Zone::Ownership caster, std::
             }
             return compare_svar(static_cast<int>(still_exiled), compare);
         }
+        // A specific filter (other than the bare "Card") counts only the remembered cards that
+        // match it as battlefield permanents. Phelia's "If it entered under your control, put a
+        // +1/+1 counter on it" is ConditionDefined$ Imprinted | ConditionPresent$
+        // Card.YouCtrl+ThisTurnEntered — count the returned card iff it is now a permanent the
+        // ability's controller controls that entered this turn (CR 122 / the card text). Phelia's
+        // counter gate checks the card the delayed trigger just put back onto the battlefield.
+        if (!ab.condition_present.empty() && ab.condition_present != "Card") {
+            MatchCtx ctx;
+            ctx.controller = caster;
+            ctx.source = ab.source;
+            size_t matching = 0;
+            for (auto e : cur_game.remembered_entities) {
+                if (permanent_matches_filter(e, ab.condition_present, ctx)) {
+                    matching++;
+                    continue;
+                }
+                // A card returned to the battlefield earlier in THIS resolution (Phelia's
+                // exile-and-return) has its Zone set to BATTLEFIELD with its controller assigned,
+                // but its Permanent component is created by the deferred SBA pass — so it is not
+                // yet a battlefield permanent for permanent_matches_filter. Fall back to Zone data:
+                // it entered this turn by definition (it just returned), so the YouCtrl/OppCtrl
+                // clause is checked against Zone.controller.
+                if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+                const auto &z = global_coordinator.GetComponent<Zone>(e);
+                if (z.location != Zone::BATTLEFIELD) {
+                    // A remembered card in a non-battlefield zone (a revealed top-of-library
+                    // card, or a remembered card in hand/graveyard/exile) is matched by its
+                    // PRINTED characteristics — permanent_matches_filter is battlefield-only, so
+                    // fall back to card_matches_filter for the type/color portion of the filter
+                    // (a controller qualifier has no meaning off the battlefield and fails closed).
+                    if (card_matches_filter(e, ab.condition_present, ctx)) matching++;
+                    continue;
+                }
+                if (global_coordinator.entity_has_component<Permanent>(e)) continue;  // handled above
+                bool youctrl = ab.condition_present.find("YouCtrl") != std::string::npos;
+                bool oppctrl = ab.condition_present.find("OppCtrl") != std::string::npos;
+                bool ctrl_ok = youctrl ? (z.controller == caster)
+                             : oppctrl ? (z.controller != caster)
+                                       : true;
+                if (ctrl_ok) matching++;
+            }
+            return compare_svar(static_cast<int>(matching), compare);
+        }
         size_t count = cur_game.remembered_entities.size();
         return compare_svar(static_cast<int>(count), compare);
     }

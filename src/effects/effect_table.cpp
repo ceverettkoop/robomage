@@ -57,6 +57,7 @@ EffectHandler handler_for(EffectKind kind) {
         case EffectKind::GrantCast:       return &grant_cast;
         case EffectKind::NameCard:        return &name_card;
         case EffectKind::Animate:         return &animate;
+        case EffectKind::AnimateAll:      return &animate_all;
         case EffectKind::ChooseNumber:    return &choose_number;
         case EffectKind::DigUntil:        return &dig_until;
         case EffectKind::Play:            return &play;
@@ -64,6 +65,7 @@ EffectHandler handler_for(EffectKind kind) {
         case EffectKind::Tap:             return &tap;
         case EffectKind::RevealHand:      return &reveal_hand;
         case EffectKind::BecomeMonarch:   return &become_monarch;
+        case EffectKind::Vote:            return &vote;
         default:                          return nullptr;
     }
 }
@@ -88,7 +90,8 @@ bool apply_parse_hook(Ability &ab, const std::string &key, const std::string &va
         || parse_amass(ab, key, value)
         || parse_choose_number(ab, key, value)
         || parse_dig_until(ab, key, value)
-        || parse_play(ab, key, value);
+        || parse_play(ab, key, value)
+        || parse_animate_all(ab, key, value);
 }
 
 }  // namespace effects

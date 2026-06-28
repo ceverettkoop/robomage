@@ -49,6 +49,17 @@ struct StaticAbility {
     std::string check_svar_expr = "";   // resolved CheckSVar$ expression (e.g. "Count$ValidExile Card.ExiledWithSource$CardTypes")
     std::string svar_compare = "";      // SVarCompare$ value (e.g. "GE4")
 
+    // Present-count condition (CR 604.3 / 611 continuous static gated on a zone count) —
+    // the general IsPresent$/PresentZone$/PresentCompare$ gate (Elvish Reclaimer's +2/+2 when
+    // there are 3+ land cards in your graveyard). When present_filter is non-empty the static is
+    // active only while the count of cards/permanents matching present_filter in present_zone
+    // satisfies present_compare. Re-evaluated every SBA pass so the static turns on/off as the
+    // zone count changes. present_zone defaults to "Battlefield" (Forge convention) when the
+    // script omits PresentZone$. present_compare defaults to "GE1" when omitted.
+    std::string present_filter  = "";   // IsPresent$ filter (e.g. "Land.YouOwn")
+    std::string present_zone    = "";   // PresentZone$ (Battlefield/Graveyard/Hand/Exile/Library)
+    std::string present_compare = "";   // PresentCompare$ (e.g. "GE3", "EQ0", "LT2")
+
     // CantBeCast fields (category = "CantBeCast"):
     std::string cant_cast_filter = "";      // "Card.nonCreature" — card type filter
     int cant_cast_limit_per_turn = 0;       // NumLimitEachTurn$ N — limit per player per turn

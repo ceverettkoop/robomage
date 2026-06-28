@@ -44,6 +44,86 @@
 // fan out across the affected set.
 static bool affected_is_general_filter(const std::string &aff);
 
+// Evaluate a continuous static's IsPresent$/PresentZone$/PresentCompare$ gate (CR 604.3 /
+// 611): count the cards/permanents matching `filter` in `zone` and compare against
+// `compare`. General over any zone, any compare op, and any filter — Elvish Reclaimer's
+// "+2/+2 as long as there are 3+ land cards in your graveyard" is the lands-in-graveyard
+// case. Ownership qualifiers (YouOwn/YouCtrl/OppOwn/OppCtrl) are honoured against the
+// containing zone's owner (a card off the battlefield has no controller, so .YouOwn is
+// scoped via Zone::owner here and stripped before the type/characteristic match), mirroring
+// evaluate_present_condition's owner handling. `controller` is the static source's controller
+// (the "You" reference per CR 109.5). An empty filter means "no gate" → always met.
+static bool static_present_condition_met(const std::string &filter, const std::string &zone_str,
+                                         const std::string &compare_in, Zone::Ownership controller,
+                                         const std::set<Entity> &entities) {
+    if (filter.empty()) return true;
+    std::string compare = compare_in.empty() ? "GE1" : compare_in;
+
+    // Default zone is the battlefield (Forge convention when PresentZone$ is omitted).
+    Zone::ZoneValue zone = Zone::BATTLEFIELD;
+    if      (zone_str == "Graveyard") zone = Zone::GRAVEYARD;
+    else if (zone_str == "Hand")      zone = Zone::HAND;
+    else if (zone_str == "Exile")     zone = Zone::EXILE;
+    else if (zone_str == "Library")   zone = Zone::LIBRARY;
+    else if (zone_str == "Stack")     zone = Zone::STACK;
+    // empty / "Battlefield" → BATTLEFIELD
+
+    MatchCtx ctx;
+    ctx.controller = controller;
+
+    int count = 0;
+    if (zone == Zone::BATTLEFIELD) {
+        // permanent_matches_filter understands the full YouCtrl/YouOwn/OppCtrl/OppOwn grammar
+        // against a permanent's live controller/owner, so the original filter is passed through
+        // unchanged — a controller qualifier (YouCtrl) must test the controller, not Zone::owner
+        // (which would mishandle a permanent you control but don't own, e.g. a stolen creature).
+        for (auto e : entities) {
+            if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+            const auto &z = global_coordinator.GetComponent<Zone>(e);
+            if (z.location != zone) continue;
+            if (!is_battlefield_permanent(e)) continue;
+            if (!permanent_matches_filter(e, filter, ctx)) continue;
+            count++;
+        }
+    } else {
+        // Off-battlefield zones have no controller, so a YouCtrl/YouOwn (or OppCtrl/OppOwn)
+        // qualifier collapses to ownership (a card in your graveyard/hand/exile is "yours").
+        // card_matches_filter has no owner/controller token, so split those off and check them
+        // against Zone::owner here, passing only the characteristic portion to the matcher.
+        bool you = false, opp = false;
+        std::string type_filter;
+        {
+            bool first = true;
+            size_t i = 0;
+            while (i <= filter.size()) {
+                size_t nx = filter.find_first_of(".+", i);
+                size_t end = (nx == std::string::npos) ? filter.size() : nx;
+                std::string tok = filter.substr(i, end - i);
+                char sep = (i == 0) ? '\0' : filter[i - 1];
+                if (first) { type_filter = tok; first = false; }
+                else if (tok == "YouOwn" || tok == "YouCtrl") you = true;
+                else if (tok == "OppOwn" || tok == "OppCtrl") opp = true;
+                else { type_filter += sep; type_filter += tok; }  // keep other qualifiers
+                if (nx == std::string::npos) break;
+                i = nx + 1;
+            }
+        }
+        Zone::Ownership owner_req = you ? controller
+                                 : opp ? (controller == Zone::PLAYER_A ? Zone::PLAYER_B : Zone::PLAYER_A)
+                                       : Zone::UNKNOWN;
+        for (auto e : entities) {
+            if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+            const auto &z = global_coordinator.GetComponent<Zone>(e);
+            if (z.location != zone) continue;
+            if (owner_req != Zone::UNKNOWN && z.owner != owner_req) continue;
+            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+            if (!card_matches_filter(e, type_filter, ctx)) continue;
+            count++;
+        }
+    }
+    return compare_svar(count, compare);
+}
+
 int active_raise_cost_for(const CardData &card_data) {
     bool is_creature = is_creature_card(card_data);
     int total = 0;
@@ -307,6 +387,25 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                 if (is_planeswalker_card(card_data)) perm.counters["LOYALTY"] = card_data.starting_loyalty;
                 perm.timestamp_entered_battlefield = game.timestamp++;
                 perm.entered_on_turn = game.turn;
+                // A DB$ Attach resolved onto this creature before its Permanent existed
+                // (reanimate-then-attach, Pre-War Formalwear): finalize the equip link now
+                // that the Permanent is being created. The equipment kept its own Permanent.
+                {
+                    auto pa = game.pending_attach.find(entity);
+                    if (pa != game.pending_attach.end()) {
+                        Entity equip = pa->second;
+                        if (global_coordinator.entity_has_component<Permanent>(equip)) {
+                            auto &eq_perm = global_coordinator.GetComponent<Permanent>(equip);
+                            if (eq_perm.equipped_to != 0 &&
+                                global_coordinator.entity_has_component<Permanent>(eq_perm.equipped_to))
+                                global_coordinator.GetComponent<Permanent>(eq_perm.equipped_to).equipped_by = 0;
+                            eq_perm.equipped_to = entity;
+                            perm.equipped_by = equip;
+                            game_log("Equipment attached.\n");
+                        }
+                        game.pending_attach.erase(pa);
+                    }
+                }
                 global_coordinator.AddComponent(entity, perm);
                 // Non-P1P1 "enters with" counters (614.1c) attach to any permanent, not just
                 // creatures — Chalice of the Void enters with X CHARGE counters. P1P1 counters
@@ -792,6 +891,18 @@ void StateManager::gather_active_statics(Game &game) {
                 if (std::find(cr.keywords.begin(), cr.keywords.end(), kc.first) == cr.keywords.end())
                     cr.keywords.push_back(kc.first);
             }
+            // Layer-6 keyword REMOVAL (CR 613, AB$ AnimateAll | RemoveKeywords$ — Shadowspear).
+            // A keyword suppressed until end of turn by a "loses <keyword>" effect is stripped
+            // from the rebuilt list after every grant is merged, so a direct reader of cr.keywords
+            // agrees with the effective-keyword accessors (which also gate on removed_keywords_eot).
+            if (!perm.removed_keywords_eot.empty()) {
+                cr.keywords.erase(
+                    std::remove_if(cr.keywords.begin(), cr.keywords.end(),
+                                   [&](const std::string &k) {
+                                       return perm.removed_keywords_eot.count(k) != 0;
+                                   }),
+                    cr.keywords.end());
+            }
         }
         if (perm.transformed) {
             for (auto &sa : perm.static_abilities) sa.applied = false;
@@ -815,6 +926,9 @@ void StateManager::gather_active_statics(Game &game) {
 
     for (auto &a : g_active_statics) {
         if (a.sa->condition.empty() && a.sa->check_svar_expr.empty()) {
+            // No Condition$/CheckSVar$ — provisionally true (a present-only IsPresent$ static
+            // lands here and is gated by the present-count AND below); an unconditional static
+            // stays true.
             a.condition_met = true;
         } else if (a.sa->condition == "Delirium") {
             a.condition_met = (a.controller == Zone::PLAYER_A) ? delirium_a : delirium_b;
@@ -829,6 +943,16 @@ void StateManager::gather_active_statics(Game &game) {
             a.condition_met = compare_svar(svar_val, a.sa->svar_compare);
         } else {
             a.condition_met = false;  // unrecognised condition — treat as unmet
+        }
+
+        // AND in the present-count gate (IsPresent$/PresentZone$/PresentCompare$), if any.
+        // It composes with any Condition$/CheckSVar$ above: the static is active only when
+        // every gate it declares is satisfied (CR 604.3 — a continuous static functions only
+        // while its conditions hold). Re-evaluated each SBA pass so it turns on/off live.
+        if (a.condition_met && !a.sa->present_filter.empty()) {
+            a.condition_met = static_present_condition_met(
+                a.sa->present_filter, a.sa->present_zone, a.sa->present_compare,
+                a.controller, mEntities);
         }
     }
 }

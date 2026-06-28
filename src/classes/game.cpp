@@ -247,6 +247,13 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                             // "Can't be blocked this turn" (Kappa Cannoneer) lapses at cleanup.
                             cr.cant_be_blocked_this_turn = false;
                         }
+                        // "Loses <keyword> until end of turn" (Shadowspear's AB$ AnimateAll |
+                        // RemoveKeywords$) lapses at cleanup (514.2). On a permanent (any type),
+                        // so cleared outside the Creature branch above.
+                        if (global_coordinator.entity_has_component<Permanent>(entity)) {
+                            auto &perm = global_coordinator.GetComponent<Permanent>(entity);
+                            perm.removed_keywords_eot.clear();
+                        }
                     }
 
                     // Reset per-turn state

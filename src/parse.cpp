@@ -1025,6 +1025,11 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         // script's stated intent; the specific bools below remain authoritative per effect.
         ability.defined = value;
         if (value == "Remembered") ability.defined_remembered = true;
+        // Defined$ DelayTriggerRememberedLKI — the objects a DB$ DelayedTrigger captured at
+        // registration (RememberObjects$ RememberedLKI). delayed_trigger() restores them into
+        // cur_game.remembered_entities before the fire ability resolves, so this resolves
+        // exactly like Defined$ Remembered (Flickerwisp / Phelia return the exiled card).
+        else if (value == "DelayTriggerRememberedLKI") ability.defined_remembered = true;
         // Defined$ TriggeredSpellAbility — the effect acts on the spell that fired this
         // trigger (Chalice of the Void: "counter that spell"). Set at trigger fire time.
         else if (value == "TriggeredSpellAbility" || value == "TriggeredSpell")
@@ -1067,6 +1072,11 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         // RememberObjects$ Self — a DB$ Effect that tracks its own source (Kappa Cannoneer's
         // can't-be-blocked effect remembers the creature it applies to).
         if (value.find("Self") != std::string::npos) ability.effect_remember_self = true;
+        // RememberObjects$ RememberedLKI — a DB$ DelayedTrigger snapshots the objects the
+        // preceding RememberChanged$ ChangeZone just moved, so its Execute$ ability can act on
+        // those same objects when it fires later (Flickerwisp / Phelia exile-and-return).
+        if (value.find("RememberedLKI") != std::string::npos)
+            effect_params<DelayedTriggerParams>(ability).remember_objects_lki = true;
     } else if (key == "StaticAbilities") {
         // DB$ Effect | StaticAbilities$ <name> — names the continuous static the transient
         // effect grants (e.g. Unblockable). Stored for the Effect handler to interpret.
@@ -1153,7 +1163,12 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         ability.condition_on_target = (value == "Targeted");
         // "Remembered" → condition_present is counted over the remembered cards at
         // resolution (Birthing Ritual: only dig if a creature was sacrificed).
-        ability.condition_on_remembered = (value == "Remembered");
+        // "Imprinted" → the same evaluation, over the imprinted card. For the exile-and-return
+        // cards (Phelia) the imprinted card IS the returned card already held in
+        // cur_game.remembered_entities (RememberObjects$ RememberedLKI / Defined$
+        // DelayTriggerRememberedLKI), so it reuses the remembered-set condition path; the
+        // redundant Imprint$ True on the preceding ChangeZone is ignored.
+        ability.condition_on_remembered = (value == "Remembered" || value == "Imprinted");
         // "TriggeredCard" → condition_present is a property check on the ability's source/
         // triggering card (Amped Raptor: Card.wasCastFromYourHandByYou), evaluated at
         // resolution against that card's permanent state.
@@ -1166,6 +1181,11 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         // handled by the name_card handler's hardcoded nonland candidate set (the non-You
         // path), so only store it where the handler reads it (the Defined$ You land form).
         ability.valid_cards_filter = value;
+    } else if (key == "VoteCard") {
+        // SP$/AB$ Vote VoteCard$ <filter> (Council's Judgment): the permanent filter the vote
+        // chooses among. In the two-player engine the vote handler offers the controller every
+        // battlefield permanent matching this filter to choose one. See effect_vote.cpp.
+        ability.vote_card_filter = value;
     } else if (key == "SacValid") {
         ability.sac_valid = value;            // DB$ Sacrifice — what may be sacrificed
     } else if (key == "RememberSacrificed") {
@@ -1218,7 +1238,17 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
             // SP$ NameCard ValidCards$ Card.nonLand / ValidDescription$ nonland (Cabal
             // Therapy): the name_card handler already restricts the candidate set to nonland
             // vocab cards, so the filter spec and its prose are informational here.
-            "ValidCards", "ValidDescription"
+            "ValidCards", "ValidDescription",
+            // Imprint$ True on an exile-and-return ChangeZone (Phelia): the returned card is
+            // already tracked in cur_game.remembered_entities (RememberObjects$ RememberedLKI),
+            // which the paired ConditionDefined$ Imprinted gate reads, so the imprint is redundant.
+            // ClearImprinted$ True on the paired DB$ Cleanup is likewise redundant — the imprint
+            // set is the remembered set, cleared by the same Cleanup's ClearRemembered$ True.
+            "Imprint", "ClearImprinted",
+            // SP$/AB$ Vote VoteMessage$ <text> (Council's Judgment): the prose shown to voters
+            // ("for a nonland permanent you don't control"). Purely cosmetic — the load-bearing
+            // VoteCard$ filter and VoteSubAbility$ are parsed above.
+            "VoteMessage"
         };
         if (ignored_keys.find(key) == ignored_keys.end()) {
             std::string msg = "Unrecognized ability param: " + key + "$ " + value;
@@ -1302,8 +1332,11 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
             // Execute$ references an SVar containing the ability to fire (delayed triggers)
             effect_params<DelayedTriggerParams>(sub).execute_svar = value;
             auto it = svars.find(value);
-            if (it != svars.end())
-                sub.subabilities.push_back(parse_svar_ability(it->second, ability_type, svars, card_name));
+            if (it != svars.end()) {
+                Ability exec = parse_svar_ability(it->second, ability_type, svars, card_name);
+                exec.from_delayed_execute = true;  // delayed_trigger() fires this one
+                sub.subabilities.push_back(exec);
+            }
         } else if (key == "Triggers") {
             // DB$ Effect | Triggers$ <SVar>[,<SVar>...] — a transient until-end-of-turn floating
             // triggered ability (Forth Eorlingas!). Each named SVar holds a trigger line
@@ -1568,10 +1601,13 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
         size_t param_pos = line.find("|", pos);
         std::string key, value;
         while (next_param(line, param_pos, key, value)) {
-            if (key == "SubAbility" || key == "RepeatSubAbility") {
+            if (key == "SubAbility" || key == "RepeatSubAbility" || key == "VoteSubAbility") {
                 // RepeatSubAbility$ (RepeatEach) resolves the same way as SubAbility$: the
                 // value names an SVar holding a DB$ ability. For RepeatEach the parsed
                 // sub-ability is the per-iteration body the handler resolves once per player.
+                // VoteSubAbility$ (Vote, Council's Judgment) likewise names an SVar holding the
+                // DB$ ChangeZone applied to the voted-for permanent; the vote handler remembers
+                // the chosen permanent so this Defined$ Remembered sub-ability exiles it.
                 auto it = svars.find(value);
                 if (it != svars.end())
                     ability.subabilities.push_back(parse_svar_ability(it->second, ability.ability_type, svars, card_name));
@@ -1821,6 +1857,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
     bool valid_card_non_token = false;
     bool valid_card_permanent = false;
     bool mode_is_drawn = false;
+    bool mode_is_attacks = false;
     bool mode_is_attackers_declared = false;
     bool mode_is_taps_for_mana = false;
     bool mode_is_becomes_target = false;
@@ -1851,6 +1888,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
             else if (value == "DamageDone") mode_is_damage_done = true;
             else if (value == "DamageAll") mode_is_damage_all = true;
             else if (value == "Drawn") mode_is_drawn = true;
+            else if (value == "Attacks") mode_is_attacks = true;
             else if (value == "AttackersDeclared") mode_is_attackers_declared = true;
             else if (value == "TapsForMana") mode_is_taps_for_mana = true;
             else if (value == "BecomesTarget") mode_is_becomes_target = true;
@@ -2114,6 +2152,14 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
         ability.trigger_exclude_first_draw_step = exclude_first_draw_step;
     }
 
+    // "Whenever CARDNAME attacks, ..." — Phelia (Mode$ Attacks | ValidCard$ Card.Self). Fires
+    // once for this creature each time it is declared as an attacker (CR 508.2). ValidCard$
+    // Card.Self → trigger_only_self matches the attacking ENTITY against the source.
+    if (mode_is_attacks) {
+        ability.trigger_on = Events::CREATURE_ATTACKED;
+        if (valid_card_self) ability.trigger_only_self = true;
+    }
+
     // "Whenever you attack" — Guide of Souls (Mode$ AttackersDeclared | AttackingPlayer$ You).
     // Fires once per combat when the source's controller declares one or more attackers.
     if (mode_is_attackers_declared) {
@@ -2358,6 +2404,15 @@ static std::vector<StaticAbility> parse_static_abilities(const std::string &scri
                 sa.check_svar_expr = (it != svars.end()) ? it->second : value;
             } else if (key == "SVarCompare") {
                 sa.svar_compare = value;
+            } else if (key == "IsPresent") {
+                // General present-count gate for a continuous static (Elvish Reclaimer:
+                // +2/+2 while 3+ land cards are in your graveyard). Counted at SBA time in
+                // gather_active_statics against PresentZone$/PresentCompare$.
+                sa.present_filter = value;
+            } else if (key == "PresentZone") {
+                sa.present_zone = value;
+            } else if (key == "PresentCompare") {
+                sa.present_compare = value;
             }
         }
 
