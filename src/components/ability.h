@@ -352,6 +352,12 @@ struct Ability{
     // RememberChanged$ — remember entities moved by this ChangeZone (for Doomsday)
     bool remember_changed = false;
 
+    // RememberLKI$ — remember the moved object's last-known information (Boomerang Basics:
+    // remember the bounced permanent so a paired ConditionDefined$ RememberedLKI gate can
+    // read the controller it had as it left the battlefield, CR 608.2g). Like remember_changed
+    // it stashes the moved entity in cur_game.remembered_entities; the condition reads its LKI.
+    bool remember_lki = false;
+
     // DB$ Effect — a transient continuous effect created by an ability (CR 611). The
     // StaticAbilities$ list names the continuous static(s) it grants; RememberObjects$ Self
     // means the effect tracks its own source. Kappa Cannoneer's "it can't be blocked this

@@ -1189,7 +1189,11 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         // cur_game.remembered_entities (RememberObjects$ RememberedLKI / Defined$
         // DelayTriggerRememberedLKI), so it reuses the remembered-set condition path; the
         // redundant Imprint$ True on the preceding ChangeZone is ignored.
-        ability.condition_on_remembered = (value == "Remembered" || value == "Imprinted");
+        // "RememberedLKI" → the same remembered-set condition path, but the remembered card is
+        // now off the battlefield (Boomerang Basics bounced it to hand); its controller qualifier
+        // is resolved from last-known information at resolution. See evaluate_present_condition.
+        ability.condition_on_remembered = (value == "Remembered" || value == "Imprinted" ||
+                                           value == "RememberedLKI");
         // "TriggeredCard" → condition_present is a property check on the ability's source/
         // triggering card (Amped Raptor: Card.wasCastFromYourHandByYou), evaluated at
         // resolution against that card's permanent state.
@@ -1209,6 +1213,10 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         ability.vote_card_filter = value;
     } else if (key == "SacValid") {
         ability.sac_valid = value;            // DB$ Sacrifice — what may be sacrificed
+    } else if (key == "RememberLKI") {
+        // RememberLKI$ True on a ChangeZone (Boomerang Basics) — stash the moved object so a
+        // paired ConditionDefined$ RememberedLKI gate can read its last-known controller.
+        ability.remember_lki = (value == "True");
     } else if (key == "RememberSacrificed") {
         ability.remember_sacrificed = (value == "True");
     } else if (key == "RepeatPlayers") {

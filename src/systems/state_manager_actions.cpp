@@ -218,8 +218,23 @@ bool evaluate_present_condition(const Ability &ab, Zone::Ownership caster, std::
                     // card, or a remembered card in hand/graveyard/exile) is matched by its
                     // PRINTED characteristics — permanent_matches_filter is battlefield-only, so
                     // fall back to card_matches_filter for the type/color portion of the filter
-                    // (a controller qualifier has no meaning off the battlefield and fails closed).
-                    if (card_matches_filter(e, ab.condition_present, ctx)) matching++;
+                    // (a YouCtrl/OppCtrl qualifier is a no-op off the battlefield there).
+                    if (!card_matches_filter(e, ab.condition_present, ctx)) continue;
+                    // A controller qualifier on a card that LEFT the battlefield (Boomerang
+                    // Basics: "If you controlled that permanent" against the bounced permanent) is
+                    // resolved from last-known information — the controller it had as it left
+                    // (CR 608.2g) — captured in cur_game.last_known_info when it left play.
+                    bool youctrl = ab.condition_present.find("YouCtrl") != std::string::npos;
+                    bool oppctrl = ab.condition_present.find("OppCtrl") != std::string::npos;
+                    if (youctrl || oppctrl) {
+                        auto lit = cur_game.last_known_info.find(e);
+                        Zone::Ownership lc = lit != cur_game.last_known_info.end()
+                                                 ? lit->second.controller : Zone::UNKNOWN;
+                        bool ctrl_ok = youctrl ? (lc == caster)
+                                               : (lc != caster && lc != Zone::UNKNOWN);
+                        if (!ctrl_ok) continue;
+                    }
+                    matching++;
                     continue;
                 }
                 if (global_coordinator.entity_has_component<Permanent>(e)) continue;  // handled above

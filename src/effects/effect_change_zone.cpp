@@ -146,7 +146,7 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
             // RememberChanged$ True (Skyclave Apparition's TrigExile): stash the moved card in
             // the remembered set so a later SVar (Remembered$CardManaCost) and a paired
             // leaves-the-battlefield ability (TrigToken sizing/owning the Illusion) can read it.
-            if (ab.remember_changed) cur_game.remembered_entities.push_back(tgt);
+            if (ab.remember_changed || ab.remember_lki) cur_game.remembered_entities.push_back(tgt);
             if (landed == ab.destination)
                 game_log("%s is moved to %s\n", tname.c_str(), dest_str);
         }
