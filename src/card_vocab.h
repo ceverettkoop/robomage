@@ -131,6 +131,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Wastescape Battlemage", 205},
     {"Consign to Memory", 206},
     {"Forth Eorlingas!", 207},
+    {"Craterhoof Behemoth", 218},
     {"Meteor Sword", 226},
     {"Otawara, Soaring City", 228},
     {"Pithing Needle", 229},
