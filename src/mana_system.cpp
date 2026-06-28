@@ -136,16 +136,19 @@ ManaValue effective_activation_mana_cost(const Ability &ab, Zone::Ownership cont
 // Evaluate the mana amount a source produces (handles dynamic amounts like Gaea's Cradle)
 static size_t eval_mana_amount(const Ability &ab, Zone::Ownership controller,
                                std::shared_ptr<Orderer> orderer) {
-    if (!ab.dynamic_amount_expr.empty() &&
-        ab.dynamic_amount_expr.find("Count$Valid Creature.YouCtrl") != std::string::npos) {
+    // Dynamic mana amount of the form "Count$Valid <filter>" — count the controller's
+    // battlefield permanents matching the Forge filter (Gaea's Cradle: Creature.YouCtrl;
+    // Urza's Workshop: Urza's.Land+YouCtrl). Routed through the shared permanent filter so
+    // the full qualifier grammar (subtype head, type/ownership qualifiers) is honored.
+    const std::string kPrefix = "Count$Valid ";
+    if (!ab.dynamic_amount_expr.empty() && ab.dynamic_amount_expr.rfind(kPrefix, 0) == 0) {
+        std::string filter = ab.dynamic_amount_expr.substr(kPrefix.size());
+        MatchCtx ctx;
+        ctx.controller = controller;
+        ctx.source = ab.source;
         size_t count = 0;
-        for (auto e : orderer->mEntities) {
-            if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
-            if (!global_coordinator.entity_has_component<Creature>(e)) continue;
-            auto &sz = global_coordinator.GetComponent<Zone>(e);
-            if (sz.location != Zone::BATTLEFIELD) continue;
-            if (global_coordinator.GetComponent<Permanent>(e).controller == controller) count++;
-        }
+        for (auto e : orderer->mEntities)
+            if (is_battlefield_permanent(e) && permanent_matches_filter(e, filter, ctx)) count++;
         return count;
     }
     return ab.amount;

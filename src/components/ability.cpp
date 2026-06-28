@@ -60,6 +60,12 @@ bool Ability::identical_activated_ability(const Ability &other) {
     if (other.category != this->category) return false;
     if (other.valid_tgts != this->valid_tgts) return false;
     if (other.amount != this->amount) return false;
+    // A Metalcraft-/condition-gated ability and an otherwise-identical ungated one are
+    // distinct abilities (Urza's Workshop: plain "{T}: Add {C}" vs the Metalcraft
+    // "{T}: Add {C} for each Urza's land"). Likewise two mana abilities that produce
+    // different dynamic amounts are distinct. Without these the second is wrongly deduped.
+    if (other.activation_condition != this->activation_condition) return false;
+    if (other.dynamic_amount_expr != this->dynamic_amount_expr) return false;
     if (other.tap_cost != this->tap_cost) return false;
     if (other.activation_mana_cost != this->activation_mana_cost) return false;
     if (other.sac_self != this->sac_self) return false;

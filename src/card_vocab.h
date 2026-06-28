@@ -169,6 +169,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Prismatic Vista", 258},
     {"Price of Freedom", 259},
     {"Witherbloom Command", 260},
+    {"Urza's Workshop", 261},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);
