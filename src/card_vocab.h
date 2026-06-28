@@ -152,6 +152,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Toxic Deluge", 241},
     {"Candelabra of Tawnos", 242},
     {"Hide on the Ceiling", 243},
+    {"Baleful Strix", 244},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);
