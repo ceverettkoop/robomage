@@ -1248,6 +1248,10 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
             // given the "move the maximum" simplification. (Chooser$ is parsed above into
             // chooser_is_controller — the search-based ChangeZone honors Chooser$ You.)
             "Hidden", "Shuffle", "ForgetOtherTargets", "RememberRevealed",
+            // ForgetOnMoved$ Exile (Ugin, Eye of the Storms' -11 Effect): tells Forge to drop a
+            // remembered object from the effect once it leaves the named zone. Bookkeeping for the
+            // transient free-cast grant only; the grant itself is a no-op here, so this is cosmetic.
+            "ForgetOnMoved",
             // ChooseCard ChooseEach (Ajani -4): the per-type breakdown is the load-bearing
             // ChooseEach$; Choices$ (the umbrella pool), ControlledByPlayer$ Chooser, and
             // Reveal$ are captured by / cosmetic to the choose_each handler.
