@@ -475,6 +475,12 @@ struct Ability{
     // Castability condition (Edge of Autumn): count permanents matching filter, compare to threshold
     std::string condition_present = "";   // ConditionPresent$ — e.g. "Land.YouCtrl"
     std::string condition_compare = "";   // ConditionCompare$ — e.g. "LE4", "GE3"
+    // ConditionNotPresent$ — the condition is INVERTED: the gated body runs only when the
+    // condition_present check is FALSE (Uro: "sacrifice it unless it escaped" →
+    // ConditionNotPresent$ Card.Self+escaped sacrifices unless the permanent escaped). Applied
+    // by evaluate_present_condition, which negates its result when this is set. General — works
+    // with any condition_present filter.
+    bool condition_negate = false;
     // ConditionDefined$ Targeted — the condition applies to the chosen target at
     // resolution (e.g. Fatal Push "destroy if its mana value <= X"), NOT to board state
     // at cast time. Such abilities can target anything legal; the conditional effect is

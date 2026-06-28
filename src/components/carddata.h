@@ -33,6 +33,10 @@ struct AltCost {
     // graveyard as an additional cost (CR 601.2f), constrained so the chosen set collectively
     // has at least `exile_grave_min_types` distinct card types (Escape: Nethergoyf). 0 = no such cost.
     int exile_grave_min_types = 0;
+    // ExileFromGrave<N/<filter>/<label>> with a literal count N (no withTypesGE constraint):
+    // exile exactly N OTHER cards from the caster's graveyard as an additional cost (CR 601.2f),
+    // e.g. Escape: Uro "Exile five other cards from your graveyard" → 5. 0 = no such cost.
+    int exile_grave_count = 0;
 };
 
 //this is the underlying card, not a permanent or spell

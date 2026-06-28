@@ -416,6 +416,9 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                 // Spell was cast for its evoke cost — mark the permanent so its evoke
                 // self-sacrifice ETB trigger fires (consumed one-shot here).
                 if (game.pending_evoked.erase(entity)) perm.evoked = true;
+                // Spell was cast from the graveyard for its Escape cost — mark the permanent as
+                // having "escaped" so an "if it escaped" clause (Uro's sacrifice-unless) reads it.
+                if (game.pending_escaped.erase(entity)) perm.cast_with_escape = true;
                 // Spell was cast with its Offspring additional cost — mark the permanent so
                 // its offspring token-copy ETB trigger fires (consumed one-shot here).
                 if (game.pending_offspring.erase(entity)) perm.entered_with_offspring = true;

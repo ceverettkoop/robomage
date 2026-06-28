@@ -44,6 +44,12 @@ struct Permanent {
     // "NotMonstrous" activation gate (game_queries.h). Mutated nowhere else.
     bool is_monstrous = false;
     bool evoked = false;  // entered via its evoke alternate cost — fires the evoke sacrifice ETB trigger
+    // This permanent entered because its spell was cast from the graveyard for its Escape cost
+    // (CR 702.139): the permanent "escaped". Read by the Card.Self+escaped present condition
+    // (Uro's "sacrifice it unless it escaped" ETB). Set when the Permanent is created from a
+    // spell cast with escape; false for a normal hand cast or any non-escape entry. General —
+    // reusable by any escape card with an "if it escaped" clause.
+    bool cast_with_escape = false;
     bool entered_with_offspring = false;  // cast with its Offspring additional cost paid — fires the offspring token-copy ETB trigger (CR 702.171)
     // This permanent entered the battlefield as a spell its controller cast from their own
     // hand (CR 601 — a normal hand cast). Read by the Card.wasCastFromYourHandByYou condition

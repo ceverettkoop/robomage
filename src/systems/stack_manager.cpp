@@ -73,6 +73,12 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
             if (global_coordinator.entity_has_component<Spell>(top_entity) &&
                 global_coordinator.GetComponent<Spell>(top_entity).cast_with_offspring)
                 cur_game.pending_offspring.insert(top_entity);
+            // Spell was cast from the graveyard for its Escape cost: carry the "escaped" bit onto
+            // the permanent (apply_permanent_components consumes pending_escaped → Permanent::
+            // cast_with_escape) so Uro's "sacrifice it unless it escaped" reads it.
+            if (global_coordinator.entity_has_component<Spell>(top_entity) &&
+                global_coordinator.GetComponent<Spell>(top_entity).cast_with_escape)
+                cur_game.pending_escaped.insert(top_entity);
             // Carry the X paid for an X-cost permanent into the ETB so an "enters with X
             // counters" replacement can read it (Chalice of the Void).
             if (global_coordinator.entity_has_component<Spell>(top_entity) &&

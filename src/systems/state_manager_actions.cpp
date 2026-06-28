@@ -34,6 +34,7 @@
 #include "orderer.h"
 
 static bool count_intervening_condition(const std::string &expr, Zone::Ownership caster, int &out);
+static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std::shared_ptr<Orderer> orderer);
 static void offer_modal_back_face_casts(std::vector<LegalAction> &actions, const Game &game,
                                         Zone::Ownership priority_player,
                                         std::shared_ptr<Orderer> orderer, bool stack_empty);
@@ -171,7 +172,7 @@ static bool count_intervening_condition(const std::string &expr, Zone::Ownership
     return false;
 }
 
-bool evaluate_present_condition(const Ability &ab, Zone::Ownership caster, std::shared_ptr<Orderer> orderer) {
+static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std::shared_ptr<Orderer> orderer) {
     if (ab.condition_present.empty()) return true;
     // Empty compare means the bare "if you control a <thing>" form → at least one.
     std::string compare = ab.condition_compare.empty() ? "GE1" : ab.condition_compare;
@@ -269,6 +270,16 @@ bool evaluate_present_condition(const Ability &ab, Zone::Ownership caster, std::
         return is_battlefield_permanent(ab.source);
     }
 
+    // Card.Self+escaped: the source permanent entered because its spell was cast from the
+    // graveyard for its Escape cost (CR 702.139). Read the persisted flag off its Permanent.
+    // Uro's TrigSac uses ConditionNotPresent$ Card.Self+escaped ("sacrifice it unless it
+    // escaped"), so condition_negate inverts this in the wrapper below. General — any escape
+    // card with an "if it escaped" clause reuses it.
+    if (ab.condition_present == "Card.Self+escaped") {
+        return global_coordinator.entity_has_component<Permanent>(ab.source) &&
+               global_coordinator.GetComponent<Permanent>(ab.source).cast_with_escape;
+    }
+
     // IsPresent$ Card.Self+counters_GE<N>_<TYPE>: the source must be on the battlefield AND
     // carry at least N counters of the given type (Moonshadow: "while this creature has a
     // -1/-1 counter on it" → Card.Self+counters_GE1_M1M1). CR 122.1/603.4 — the counter
@@ -341,6 +352,15 @@ bool evaluate_present_condition(const Ability &ab, Zone::Ownership caster, std::
     }
 
     return compare_svar(static_cast<int>(count), compare);
+}
+
+// Public entry point: evaluate the present condition, applying ConditionNotPresent$ negation.
+// An empty condition_present is "no condition" → always satisfied (the negate flag is never set
+// in that case, since ConditionNotPresent always carries a filter). CR 603.4-style gate used for
+// spell castability and intervening-if trigger checks alike.
+bool evaluate_present_condition(const Ability &ab, Zone::Ownership caster, std::shared_ptr<Orderer> orderer) {
+    bool raw = present_condition_raw(ab, caster, orderer);
+    return ab.condition_negate ? !raw : raw;
 }
 
 
@@ -694,6 +714,13 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         if (gcd.escape_alt_cost.exile_grave_min_types > 0 &&
             graveyard_card_types(priority_player, orderer->mEntities, gy_entity) <
                 gcd.escape_alt_cost.exile_grave_min_types)
+            continue;
+
+        // ExileFromGrave literal-count constraint (Uro: exile FIVE other cards): enough OTHER
+        // graveyard cards must exist to pay the cost (CR 601.2f).
+        if (gcd.escape_alt_cost.exile_grave_count > 0 &&
+            graveyard_card_count(priority_player, orderer->mEntities, gy_entity) <
+                gcd.escape_alt_cost.exile_grave_count)
             continue;
 
         if (rules_mod::cast_prohibited(priority_player, gcd, Zone::GRAVEYARD)) continue;

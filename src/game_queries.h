@@ -660,4 +660,21 @@ inline bool check_delirium(Zone::Ownership owner, const std::set<Entity> &entiti
     return graveyard_card_types(owner, entities) >= 4;
 }
 
+// Number of cards in `owner`'s graveyard, excluding `except` (pass 0 to count every card).
+// Single source for the literal-count Escape ExileFromGrave cost (Uro: "exile five other
+// cards") legality check and payment loop.
+inline int graveyard_card_count(Zone::Ownership owner, const std::set<Entity> &entities,
+                                Entity except = 0) {
+    int n = 0;
+    for (auto entity : entities) {
+        if (entity == except) continue;
+        if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
+        auto &z = global_coordinator.GetComponent<Zone>(entity);
+        if (z.location != Zone::GRAVEYARD || z.owner != owner) continue;
+        if (!global_coordinator.entity_has_component<CardData>(entity)) continue;
+        n++;
+    }
+    return n;
+}
+
 #endif /* GAME_QUERIES_H */

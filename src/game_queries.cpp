@@ -208,8 +208,14 @@ bool eval_qualifier(const CharView &v, const MatchCtx &ctx, const std::string &q
 bool eval_alternative(const CharView &v, const MatchCtx &ctx, const std::string &alt) {
     size_t sep = alt.find_first_of(".+");
     std::string head = alt.substr(0, sep);
-    if (!(head.empty() || head == "Card" || head == "Permanent" || head == "Spell") &&
+    // "Self"/"Other" as a BARE head are identity qualifiers, not type-line names — Forge writes
+    // SacValid$ Self (Uro: "sacrifice it") and "Other" the same way. Treat them like Card.<head>:
+    // no type-line requirement; the identity check is evaluated as a qualifier just below.
+    bool head_is_identity = (head == "Self" || head == "Other");
+    if (!(head.empty() || head == "Card" || head == "Permanent" || head == "Spell" || head_is_identity) &&
         !view_has_typeline(v, head))
+        return false;
+    if (head_is_identity && !eval_qualifier(v, ctx, head))
         return false;
     if (sep != std::string::npos) {
         std::string rest = alt.substr(sep + 1);

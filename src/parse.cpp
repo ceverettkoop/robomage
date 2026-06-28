@@ -186,6 +186,18 @@ static void parse_alt_cost_tokens(const std::string& cost_str, AltCost& ac) {
                 num_end++;
             if (num_end > num_start)
                 ac.exile_grave_min_types = std::stoi(cost_str.substr(num_start, num_end - num_start));
+        } else {
+            // Literal-count form ExileFromGrave<N/<filter>/<label>> (Escape: Uro — "Exile five
+            // other cards from your graveyard"): the leading token before the first '/' is the
+            // fixed number of OTHER graveyard cards to exile. Only digits qualify; a non-numeric
+            // leading token (e.g. Nethergoyf's "X") is handled by the withTypesGE branch above.
+            size_t num_start = eg + strlen("ExileFromGrave<");
+            size_t num_end = num_start;
+            while (num_end < cost_str.size() &&
+                   std::isdigit(static_cast<unsigned char>(cost_str[num_end])))
+                num_end++;
+            if (num_end > num_start)
+                ac.exile_grave_count = std::stoi(cost_str.substr(num_start, num_end - num_start));
         }
         matched_special = true;
     }
@@ -1216,6 +1228,14 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         parse_activation_cost(value, ability);
     } else if (key == "ConditionPresent") {
         ability.condition_present = value;
+    } else if (key == "ConditionNotPresent") {
+        // Inverted intervening-if (CR 603.4-style): the gated body runs only when the filter is
+        // NOT present (Uro's TrigSac: DB$ Sacrifice | ConditionNotPresent$ Card.Self+escaped —
+        // sacrifice unless the permanent escaped). Mark it as an intervening-if so it is
+        // re-checked when the trigger goes on the stack AND at resolution, and negate the result.
+        ability.condition_present = value;
+        ability.condition_negate = true;
+        ability.intervening_if = true;
     } else if (key == "ConditionDefined") {
         // "Targeted" → the condition is evaluated against the chosen target at
         // resolution, so it must not gate cast-time legality.
@@ -2423,8 +2443,11 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
                 effect.trigger_source_opp_ctrl                  = ability.trigger_source_opp_ctrl;
                 effect.trigger_damage_source_youctrl            = ability.trigger_damage_source_youctrl;
                 // 603.4 intervening-if lives on the trigger line, not the Execute SVar — carry
-                // it onto the resolved ability so it is re-checked at resolution.
-                effect.intervening_if                           = ability.intervening_if;
+                // it onto the resolved ability so it is re-checked at resolution. OR (don't
+                // clobber) any intervening-if the Execute SVar itself declared, e.g. Uro's
+                // TrigSac ConditionNotPresent$ Card.Self+escaped, which sets effect.intervening_if
+                // (and condition_present/condition_negate) during SVar parse.
+                effect.intervening_if                           = effect.intervening_if || ability.intervening_if;
                 if (ability.intervening_if) {
                     effect.condition_present = ability.condition_present;
                     effect.condition_compare = ability.condition_compare;

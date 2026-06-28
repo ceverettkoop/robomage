@@ -66,6 +66,8 @@ static void pay_sacrifice_cost(Zone::Ownership caster, const std::string &spec, 
                                std::shared_ptr<Orderer> orderer);
 static void pay_exile_from_grave_cost(Zone::Ownership caster, int min_types, Entity spell_entity,
                                       std::shared_ptr<Orderer> orderer);
+static void pay_exile_from_grave_count_cost(Zone::Ownership caster, int count, Entity spell_entity,
+                                            std::shared_ptr<Orderer> orderer);
 
 // entity_name() is shared from the StateManager TUs via state_manager_internal.h.
 // mana_symbol_str() is the canonical const-char* color symbol from classes/colors.h.
@@ -137,6 +139,43 @@ static void pay_exile_from_grave_cost(Zone::Ownership caster, int min_types, Ent
         std::string ename = cd.name;
         orderer->add_to_zone(false, to_exile, Zone::EXILE);
         game_log("%s exiles %s from their graveyard\n", player_name(caster).c_str(), ename.c_str());
+    }
+}
+
+// Pay an Escape ExileFromGrave additional cost in its literal-count form (CR 702.139 / 601.2f):
+// exile exactly `count` OTHER cards from the caster's graveyard (Uro: "Exile five other cards
+// from your graveyard"). Presented as a mandatory choice loop over the caster's other graveyard
+// cards; no "done" option until `count` cards are exiled. Cast legality already guaranteed
+// enough cards exist.
+static void pay_exile_from_grave_count_cost(Zone::Ownership caster, int count, Entity spell_entity,
+                                            std::shared_ptr<Orderer> orderer) {
+    if (count <= 0) return;
+    int exiled = 0;
+    while (exiled < count) {
+        // Gather the caster's remaining other graveyard cards as choices.
+        std::vector<Entity> choices;
+        for (auto e : orderer->mEntities) {
+            if (e == spell_entity) continue;
+            if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+            auto &z = global_coordinator.GetComponent<Zone>(e);
+            if (z.location != Zone::GRAVEYARD || z.owner != caster) continue;
+            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+            choices.push_back(e);
+        }
+        if (choices.empty()) break;  // defensive: legality guaranteed enough cards
+        std::vector<LegalAction> menu;
+        for (auto e : choices) {
+            std::string nm = global_coordinator.GetComponent<CardData>(e).name;
+            LegalAction la(PASS_PRIORITY, e, "Exile " + nm + " from graveyard");
+            la.category = ActionCategory::SACRIFICE_PERMANENT;
+            menu.push_back(la);
+        }
+        int choice = InputLogger::instance().get_input(menu);
+        Entity to_exile = menu[static_cast<size_t>(choice)].source_entity;
+        std::string ename = global_coordinator.GetComponent<CardData>(to_exile).name;
+        orderer->add_to_zone(false, to_exile, Zone::EXILE);
+        game_log("%s exiles %s from their graveyard\n", player_name(caster).c_str(), ename.c_str());
+        exiled++;
     }
 }
 
@@ -1333,6 +1372,9 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                 if (card_data.escape_alt_cost.exile_grave_min_types > 0)
                     pay_exile_from_grave_cost(caster, card_data.escape_alt_cost.exile_grave_min_types,
                                               spell_entity, orderer);
+                if (card_data.escape_alt_cost.exile_grave_count > 0)
+                    pay_exile_from_grave_count_cost(caster, card_data.escape_alt_cost.exile_grave_count,
+                                                    spell_entity, orderer);
 
             // IMPULSE CAST (Amped Raptor's DB$ Play): cast from exile under a one-shot
             // permission, paying its alternative RESOURCE cost (energy or life) instead of any
@@ -1558,6 +1600,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             spell.caster = caster;
             spell.cast_with_flashback = action.use_flashback;
             spell.cast_with_evoke = action.use_alt_cost && card_data.alt_cost.is_evoke;
+            spell.cast_with_escape = action.use_escape;
             spell.cast_with_offspring = action.use_offspring;
             spell.kicked = kicked_flags;  // per-kicker "paid?" flags (empty for non-kicker spells)
             spell.replicate_count = replicate_count;  // # of replicate payments (0 if none/no Replicate)
