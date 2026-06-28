@@ -1181,6 +1181,11 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         // handled by the name_card handler's hardcoded nonland candidate set (the non-You
         // path), so only store it where the handler reads it (the Defined$ You land form).
         ability.valid_cards_filter = value;
+    } else if (key == "VoteCard") {
+        // SP$/AB$ Vote VoteCard$ <filter> (Council's Judgment): the permanent filter the vote
+        // chooses among. In the two-player engine the vote handler offers the controller every
+        // battlefield permanent matching this filter to choose one. See effect_vote.cpp.
+        ability.vote_card_filter = value;
     } else if (key == "SacValid") {
         ability.sac_valid = value;            // DB$ Sacrifice — what may be sacrificed
     } else if (key == "RememberSacrificed") {
@@ -1239,7 +1244,11 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
             // which the paired ConditionDefined$ Imprinted gate reads, so the imprint is redundant.
             // ClearImprinted$ True on the paired DB$ Cleanup is likewise redundant — the imprint
             // set is the remembered set, cleared by the same Cleanup's ClearRemembered$ True.
-            "Imprint", "ClearImprinted"
+            "Imprint", "ClearImprinted",
+            // SP$/AB$ Vote VoteMessage$ <text> (Council's Judgment): the prose shown to voters
+            // ("for a nonland permanent you don't control"). Purely cosmetic — the load-bearing
+            // VoteCard$ filter and VoteSubAbility$ are parsed above.
+            "VoteMessage"
         };
         if (ignored_keys.find(key) == ignored_keys.end()) {
             std::string msg = "Unrecognized ability param: " + key + "$ " + value;
@@ -1592,10 +1601,13 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
         size_t param_pos = line.find("|", pos);
         std::string key, value;
         while (next_param(line, param_pos, key, value)) {
-            if (key == "SubAbility" || key == "RepeatSubAbility") {
+            if (key == "SubAbility" || key == "RepeatSubAbility" || key == "VoteSubAbility") {
                 // RepeatSubAbility$ (RepeatEach) resolves the same way as SubAbility$: the
                 // value names an SVar holding a DB$ ability. For RepeatEach the parsed
                 // sub-ability is the per-iteration body the handler resolves once per player.
+                // VoteSubAbility$ (Vote, Council's Judgment) likewise names an SVar holding the
+                // DB$ ChangeZone applied to the voted-for permanent; the vote handler remembers
+                // the chosen permanent so this Defined$ Remembered sub-ability exiles it.
                 auto it = svars.find(value);
                 if (it != svars.end())
                     ability.subabilities.push_back(parse_svar_ability(it->second, ability.ability_type, svars, card_name));

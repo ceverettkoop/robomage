@@ -65,6 +65,7 @@ EffectHandler handler_for(EffectKind kind) {
         case EffectKind::Tap:             return &tap;
         case EffectKind::RevealHand:      return &reveal_hand;
         case EffectKind::BecomeMonarch:   return &become_monarch;
+        case EffectKind::Vote:            return &vote;
         default:                          return nullptr;
     }
 }

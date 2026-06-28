@@ -335,6 +335,12 @@ struct Ability{
     // (recorded in cur_game.chosen_cards). Empty = the legacy single-pick ChooseCard.
     std::string choose_each = "";
 
+    // SP$/AB$ Vote VoteCard$ <filter> (Council's Judgment): the permanent filter the vote
+    // chooses among (e.g. "Permanent.nonLand+YouDontCtrl"). In the two-player engine the vote
+    // reduces to the controller choosing one matching permanent; the winner is fed to the
+    // VoteSubAbility (parsed into subabilities) via the remembered set. See effect_vote.cpp.
+    std::string vote_card_filter = "";
+
     // RememberChanged$ — remember entities moved by this ChangeZone (for Doomsday)
     bool remember_changed = false;
 

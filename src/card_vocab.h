@@ -136,6 +136,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Elvish Reclaimer", 220},
     {"Lavaspur Boots", 224},
     {"Craterhoof Behemoth", 218},
+    {"Council's Judgment", 217},
     {"Mystical Dispute", 227},
     {"Pre-War Formalwear", 230},
     {"Meteor Sword", 226},

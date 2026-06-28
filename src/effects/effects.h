@@ -106,6 +106,12 @@ bool repeat_each(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer);
 // DB$ BecomeMonarch (CR 725, Forth Eorlingas!): the ability's controller becomes the monarch.
 bool become_monarch(Ability &ab, std::shared_ptr<Orderer> orderer);
+// SP$/AB$ Vote (Council's Judgment, CR 701.32 will-of-the-council): voters choose among the
+// VoteCard$ permanents and the VoteSubAbility$ effect (a DB$ ChangeZone Battlefield→Exile) is
+// applied to the winner(s). The engine is two-player only (CLAUDE.md scope), so the vote
+// reduces to the spell/ability's controller CHOOSING one permanent matching VoteCard$ — a
+// choice, not a target, so it ignores shroud/hexproof. See effect_vote.cpp.
+bool vote(Ability &ab, std::shared_ptr<Orderer> orderer);
 // SP$/DB$ NameCard (Cabal Therapy): the ability's controller names a card (CR 201.4); the
 // chosen name is stored in cur_game.named_card so a chained Card.NamedCard sub-ability
 // (here a RevealDiscardAll discard) can reference it.

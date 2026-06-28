@@ -97,6 +97,11 @@ EffectKind effect_kind_from_string(const std::string &category) {
         {"RevealHand", EffectKind::RevealHand},
         // DB$ BecomeMonarch (CR 725) — the ability's controller becomes the monarch.
         {"BecomeMonarch", EffectKind::BecomeMonarch},
+        // SP$/AB$ Vote (Council's Judgment, will-of-the-council): each player votes for an
+        // object and the most-voted object(s) get the VoteSubAbility applied. In the
+        // two-player engine (CLAUDE.md scope) this reduces to the controller choosing one
+        // permanent matching VoteCard$. See effect_vote.cpp.
+        {"Vote", EffectKind::Vote},
     };
     auto it = table.find(category);
     return (it != table.end()) ? it->second : EffectKind::None;
