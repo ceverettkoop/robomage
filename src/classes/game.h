@@ -153,6 +153,8 @@ struct Game {
         std::map<Entity, int> ability_resolution_counts;  // Count$ResolvedThisTurn: incremented per triggered-ability resolve
         std::map<Entity, int> payment_fail_counts;  // machine mode: block casting after 2 failed payments
         bool pending_cant_be_countered = false;  // set during mana payment when Cavern restricted mana used
+        bool pending_gift_promised = false;  // Gift (CR 702.176): the spell currently being cast promised its gift; read by Count$PromisedGift while its targets are chosen
+
         // Turn-long "spells you control can't be countered" grant created by a resolving spell/
         // ability (Veil of Summer's DB$ Effect | ReplacementEffects$ AntiMagic, CR 614.13/
         // CantHappen). A player here means every spell that player controls can't be countered

@@ -950,6 +950,19 @@ size_t evaluate_dynamic_amount(
         bool revolt = (ctrl == Zone::PLAYER_A) ? cur_game.revolt_player_a : cur_game.revolt_player_b;
         return static_cast<size_t>(revolt ? high_val : low_val);
     }
+    // Count$PromisedGift.high.low — Gift (CR 702.176): returns high if the spell currently being
+    // cast/resolved promised its gift to an opponent, low otherwise. Into the Flood Maw drives its
+    // two ChangeZone abilities' TargetMin$/TargetMax$ off this (X = .0.1, Y = .1.0): not promised →
+    // the creature-bounce targets 1 and the nonland-bounce targets 0; promised → the reverse, so
+    // the spell instead bounces any nonland permanent. Read from the cast-time pending flag (the
+    // target counts are evaluated as targets are chosen, before the Spell component exists).
+    if (expr.find("Count$PromisedGift.") != std::string::npos) {
+        size_t dot1 = expr.find("PromisedGift.") + std::string("PromisedGift.").size();
+        size_t dot2 = expr.find('.', dot1);
+        int high_val = std::stoi(expr.substr(dot1, dot2 - dot1));
+        int low_val = std::stoi(expr.substr(dot2 + 1));
+        return static_cast<size_t>(cur_game.pending_gift_promised ? high_val : low_val);
+    }
     // Count$Threshold.high.low — Threshold (CR 702.27 historical keyword action; modern cards
     // spell the condition out): returns high if the controller has seven or more cards in their
     // graveyard, low otherwise (Cabal Ritual: Count$Threshold.5.3 → 5 black mana with threshold,
@@ -1193,6 +1206,20 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
             cur_game.remembered_entities.push_back(target);
     }
     game_log("Resolving ability (category: %s, amount: %zu)\n", category.c_str(), amount);
+
+    // Gift (CR 702.176c): if this spell promised its gift, the promised opponent receives the gift
+    // BEFORE the spell's other effects. The gift effect(s) are carried on the primary (spell)
+    // ability; run them first when Spell::gift_promised is set on the source spell. The token's
+    // TokenOwner$ Promised routes it to the opponent of this ability's controller (effects::token).
+    if (!gift_abilities.empty() && source != 0 &&
+        global_coordinator.entity_has_component<Spell>(source) &&
+        global_coordinator.GetComponent<Spell>(source).gift_promised) {
+        for (Ability gift : gift_abilities) {
+            gift.source = source;
+            gift.controller = controller;
+            gift.resolve(orderer);
+        }
+    }
 
     // Conditional execution: if condition fails, skip this ability's body but still chain subabilities
     bool condition_passed = true;

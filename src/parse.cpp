@@ -59,6 +59,11 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
 static void split_keywords(const std::string& kw_line, std::vector<std::string>& out);
 static bool next_param(const std::string& line, size_t& pos, std::string& key, std::string& value);
 static void parse_card_face(const std::string& front_script, CardData& card);
+// Forward-declared so the K: keyword pass can parse a Gift keyword's GiftAbility SVar into the
+// card's gift effect (Into the Flood Maw's tapped-Fish token).
+static Ability parse_svar_ability(const std::string& content, Ability::AbilityType ability_type,
+                                  const std::map<std::string, std::string>& svars,
+                                  const std::string& card_name);
 
 // Split a comma-separated K: keyword list into trimmed keywords appended to out.
 static void split_keywords(const std::string& kw_line, std::vector<std::string>& out) {
@@ -773,6 +778,32 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             card.keywords.push_back("Devoid");
             continue;
         }
+        // K:Gift — the Gift keyword (CR 702.176). As the spell is cast its controller MAY promise
+        // the gift to an opponent (an optional choice, not a cost); if promised, the opponent
+        // receives the gift as the spell resolves, before its other effects. The gift effect is
+        // held in the card's GiftAbility SVar (a DB$ Token making the gift token). Parse it into
+        // card.gift_abilities; the cast path (action_processor) offers the promise choice and the
+        // resolving spell runs these when Spell::gift_promised is set (Ability::resolve).
+        if (kw_line == "Gift" || kw_line.rfind("Gift", 0) == 0) {
+            card.has_gift = true;
+            card.keywords.push_back("Gift");
+            auto git = svars.find("GiftAbility");
+            if (git != svars.end()) {
+                card.gift_abilities.push_back(
+                    parse_svar_ability(git->second, Ability::SPELL, svars, card.name));
+                size_t gd = git->second.find("GiftDescription$");
+                if (gd != std::string::npos) {
+                    gd += strlen("GiftDescription$");
+                    while (gd < git->second.size() && git->second[gd] == ' ') gd++;
+                    size_t ge = git->second.find('|', gd);
+                    if (ge == std::string::npos) ge = git->second.size();
+                    card.gift_description = git->second.substr(gd, ge - gd);
+                    while (!card.gift_description.empty() && card.gift_description.back() == ' ')
+                        card.gift_description.pop_back();
+                }
+            }
+            continue;
+        }
         split_keywords(kw_line, card.keywords);
     }
 }
@@ -1445,13 +1476,26 @@ static void resolve_xpaid_target_counts(Ability& ability,
                                         const std::map<std::string, std::string>& svars) {
     if (!ability.target_min_svar.empty()) {
         auto it = svars.find(ability.target_min_svar);
-        if (it != svars.end() && it->second.find("xPaid") != std::string::npos)
-            ability.target_min_from_xpaid = true;
+        if (it != svars.end()) {
+            if (it->second.find("xPaid") != std::string::npos)
+                ability.target_min_from_xpaid = true;
+            else if (it->second.find("Count$") != std::string::npos)
+                // A non-xPaid count-SVar minimum (Into the Flood Maw: X = Count$PromisedGift.0.1).
+                // select_target evaluates it at cast and stamps target_min; default it to 0 now so
+                // cast-time legality treats it as optional rather than over-requiring a target.
+                { ability.target_min_count_expr = it->second; ability.target_min = 0; }
+        }
     }
     if (!ability.target_max_svar.empty()) {
         auto it = svars.find(ability.target_max_svar);
-        if (it != svars.end() && it->second.find("xPaid") != std::string::npos)
-            ability.target_max_from_xpaid = true;
+        if (it != svars.end()) {
+            if (it->second.find("xPaid") != std::string::npos)
+                ability.target_max_from_xpaid = true;
+            else if (it->second.find("Count$") != std::string::npos)
+                // A non-xPaid count-SVar cap; select_target evaluates it at cast and stamps the
+                // real max (0 → the ability targets nothing and does nothing).
+                ability.target_max_count_expr = it->second;
+        }
     }
 }
 
@@ -1599,6 +1643,10 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
             if (it != svars.end() && it->second.find("xPaid") != std::string::npos)
                 sub.target_max_from_xpaid = true;
             sub.target_max = MAX_ENTITIES;
+            // Stash the SVar key so resolve_xpaid_target_counts can also resolve a non-xPaid
+            // count-SVar cap (Into the Flood Maw's DBChangeZone: TargetMax$ Y = Count$PromisedGift)
+            // into target_max_count_expr, evaluated at cast (0 → targets nothing).
+            sub.target_max_svar = value;
         } else {
             apply_param_to_ability(sub, key, value, card_name);
         }

@@ -16,6 +16,7 @@
 #include "ecs/coordinator.h"
 #include "ecs/entity.h"
 #include "ecs/events.h"
+#include "effects/effects.h"
 #include "error.h"
 #include "game_queries.h"
 #include "input_logger.h"
@@ -1090,9 +1091,36 @@ static void select_single_target(Ability &ability, const std::vector<Entity> &va
 }
 
 void select_target(Ability &ability, std::shared_ptr<Orderer> orderer, Zone::Ownership priority_player) {
+    // Resolve dynamic target counts up front (CR 601.2b: anything they depend on — X, the gift
+    // promise — is already decided). Count$xPaid reads the X paid; a non-xPaid count-SVar
+    // (Into the Flood Maw: Count$PromisedGift) is evaluated here. Stamp the results onto
+    // target_min/target_max so resolution (is_target_valid) sees the same bounds.
+    int effective_max = ability.target_max;
+    if (ability.target_max_from_xpaid)
+        effective_max = static_cast<int>(cur_game.x_paid);
+    else if (!ability.target_max_count_expr.empty())
+        effective_max = static_cast<int>(evaluate_dynamic_amount(
+            ability.target_max_count_expr, priority_player, orderer, 0));
+    int effective_min = ability.target_min;
+    if (ability.target_min_from_xpaid)
+        effective_min = static_cast<int>(cur_game.x_paid);
+    else if (!ability.target_min_count_expr.empty())
+        effective_min = static_cast<int>(evaluate_dynamic_amount(
+            ability.target_min_count_expr, priority_player, orderer, 0));
+    ability.target_min = effective_min;
+    ability.target_max = effective_max;
+
+    // Zero targets (Into the Flood Maw's unused mode when the gift promise switched the count to
+    // 0): the ability targets nothing and does nothing on resolution. Choose no target.
+    if (effective_max <= 0) {
+        ability.target = 0;
+        ability.targets.clear();
+        return;
+    }
+
     std::vector<Entity> valid_targets = build_valid_targets(ability, orderer, priority_player);
 
-    if (ability.target_max <= 1) {
+    if (effective_max <= 1) {
         select_single_target(ability, valid_targets, false);
         return;
     }
@@ -1104,12 +1132,6 @@ void select_target(Ability &ability, std::shared_ptr<Orderer> orderer, Zone::Own
     // (Candelabra of Tawnos, Hide on the Ceiling): the loop neither offers "Done" nor stops
     // before X targets have been chosen, and clamps at X. X (x_paid) was chosen before targets
     // (CR 601.2b), so it is known here.
-    int effective_max = ability.target_max;
-    if (ability.target_max_from_xpaid)
-        effective_max = static_cast<int>(cur_game.x_paid);
-    int effective_min = ability.target_min;
-    if (ability.target_min_from_xpaid)
-        effective_min = static_cast<int>(cur_game.x_paid);
     for (int i = 0; i < effective_max; i++) {
         if (valid_targets.empty()) break;
         bool can_stop = (i >= effective_min);
@@ -1552,6 +1574,24 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                 }
             }
 
+            // GIFT (CR 702.176b): as the spell is cast, its controller MAY promise the gift to an
+            // opponent. The promise is not a cost — it is decided here (before targets are chosen,
+            // CR 601.2c) and it both (a) switches a Count$PromisedGift-driven effect via the
+            // pending flag while targets are selected and (b) makes the opponent receive the gift
+            // on resolution (see Spell::gift_promised / Ability::resolve). Optional yes/no.
+            bool gift_promised = false;
+            if (card_data.has_gift) {
+                std::string gname = card_data.gift_description.empty()
+                                        ? std::string("the gift") : card_data.gift_description;
+                if (request_optional_yesno(caster, "promise " + gname + " to your opponent")) {
+                    gift_promised = true;
+                    game_log("%s promises the gift to %s\n", player_name(caster).c_str(),
+                             player_name(caster == Zone::PLAYER_A ? Zone::PLAYER_B
+                                                                  : Zone::PLAYER_A).c_str());
+                }
+            }
+            cur_game.pending_gift_promised = gift_promised;
+
             // Find the primary spell ability template and copy it onto the entity
             for (const auto &ability_template : card_data.abilities) {
                 if (ability_template.ability_type != Ability::SPELL) continue;
@@ -1559,6 +1599,9 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                 Ability ability = ability_template;
                 ability.source = spell_entity;
                 ability.controller = caster;
+                // Carry the Gift keyword's gift effect onto the resolving spell's primary ability;
+                // it fires at resolution only if the gift was promised (Ability::resolve).
+                if (card_data.has_gift) ability.gift_abilities = card_data.gift_abilities;
 
                 // Handle targeting
                 if (ability.valid_tgts != "N_A") {
@@ -1623,6 +1666,8 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             spell.cast_with_offspring = action.use_offspring;
             spell.kicked = kicked_flags;  // per-kicker "paid?" flags (empty for non-kicker spells)
             spell.replicate_count = replicate_count;  // # of replicate payments (0 if none/no Replicate)
+            spell.gift_promised = gift_promised;  // Gift (CR 702.176): opponent gets the gift on resolution
+            cur_game.pending_gift_promised = false;  // consume the cast-time pending flag (targets chosen)
             // Record the X value paid so an "enters with X counters" replacement can read
             // it (Chalice of the Void: enters with X charge counters) and so the resolving
             // spell's Count$xPaid amount reads the right X (StackManager restores x_paid from

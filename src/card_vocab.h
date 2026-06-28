@@ -192,6 +192,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Sheltered by Ghosts", 281},
     {"Static Prison", 282},
     {"Veil of Summer", 283},
+    {"Into the Flood Maw", 284},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);

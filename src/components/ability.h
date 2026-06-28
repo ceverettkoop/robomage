@@ -31,6 +31,13 @@ struct Ability{
                                          // matching max gives EXACTLY-X targeting (Candelabra, Hide on the Ceiling)
     std::string target_min_svar = "";    // raw TargetMin$ token when non-numeric (an SVar key); resolved post-parse
     std::string target_max_svar = "";    // raw TargetMax$ token when non-numeric (an SVar key); resolved post-parse
+    // TargetMin$/TargetMax$ given as a count-SVar that resolves to a runtime Count$ expression
+    // OTHER than Count$xPaid (e.g. Into the Flood Maw: TargetMin$ X = TargetMax$ X, X =
+    // Count$PromisedGift.0.1). Evaluated by select_target at cast time (when the count's inputs —
+    // e.g. the gift promise — are already decided), then stamped onto target_min/target_max. A
+    // resolved count of 0 makes the ability target nothing and do nothing (CR: zero targets).
+    std::string target_min_count_expr = "";
+    std::string target_max_count_expr = "";
     Entity source = 0;
     Entity target = 0;
     std::vector<Entity> targets;    // used when target_max > 1
@@ -538,6 +545,13 @@ struct Ability{
 
     //for each AB on a card script there may be multiple SubAbility$, would get parsed into vector below
     std::vector<Ability> subabilities; // additional abilities resolved at same time this resolves, stored in order
+
+    // Gift (CR 702.176): the gift effect(s) of a spell cast with the Gift keyword (Into the
+    // Flood Maw: DB$ Token making a tapped 1/1 Fish for the promised opponent). Copied onto the
+    // resolving spell's primary ability at cast; if the gift was promised (Spell::gift_promised),
+    // these resolve at the START of resolution — the opponent gets the gift "before its other
+    // effects" (CR 702.176c) — and are skipped otherwise. Empty for a non-gift ability.
+    std::vector<Ability> gift_abilities;
 
     // Charm/modal spell choices — each entry is a fully-parsed sub-ability
     std::vector<Ability> charm_choices;

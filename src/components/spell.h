@@ -25,6 +25,11 @@ struct Spell {
     // on the stack (each may choose new targets). 0 (or no Replicate) = no copies. A COPY of the
     // spell is not "cast", so it carries replicate_count = 0 and replicates nothing further.
     int replicate_count = 0;
+    // Gift (CR 702.176): true iff the spell's controller PROMISED the gift to the opponent as
+    // this spell was cast (an optional choice, not a cost — CR 702.176b). Read at resolution to
+    // give the opponent the gift, and (via cur_game.pending_gift_promised at cast time) to switch
+    // a Count$PromisedGift-driven effect (e.g. Into the Flood Maw widening its bounce target).
+    bool gift_promised = false;
     // A COPY of a spell on the stack (CR 707.10): a copy is not a card. When it resolves (or is
     // countered) it ceases to exist rather than moving to a graveyard/library — the stack
     // manager destroys it instead of sending it to a zone. Set by copy_spell_on_stack.

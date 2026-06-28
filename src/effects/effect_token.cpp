@@ -41,6 +41,10 @@ bool token(Ability &ab, std::shared_ptr<Orderer> orderer) {
         if (global_coordinator.entity_has_component<Zone>(r))
             ctrl = global_coordinator.GetComponent<Zone>(r).owner;
     }
+    // TokenOwner$ Promised (Gift, CR 702.176): the gift token is created under the control of the
+    // opponent who was promised the gift — the opponent of the ability's controller (two-player).
+    if (tp && tp->owner_is_promised)
+        ctrl = (ab.controller == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
 
     // TokenPower$/TokenToughness$ from an SVar (Skyclave Apparition: X = Remembered$CardManaCost):
     // override the token script's printed P/T so the created token enters as an X/X. Evaluated
@@ -68,6 +72,10 @@ bool token(Ability &ab, std::shared_ptr<Orderer> orderer) {
         // Add Permanent + Creature + Damage immediately so subabilities (e.g. Attach) can see them
         // before the next apply_permanent_components pass.
         bootstrap_token_components(tok_entity, tok, ctrl, cur_game.timestamp);
+        // TokenTapped$ True: the token enters the battlefield tapped (the gift Fish, so it can't
+        // block the turn it is given). Stamp the Permanent the bootstrap just created.
+        if (tp && tp->tapped && global_coordinator.entity_has_component<Permanent>(tok_entity))
+            global_coordinator.GetComponent<Permanent>(tok_entity).is_tapped = true;
         cur_game.remembered_entities.push_back(tok_entity);
         game_log("Token created: %u/%u %s\n", tok.power, tok.toughness, tok.name.c_str());
     }
@@ -88,6 +96,12 @@ bool parse_token(Ability &ab, const std::string &key, const std::string &value) 
             effect_params<TokenParams>(ab).owner_is_target = true;
         else if (value.find("Remembered") != std::string::npos)
             effect_params<TokenParams>(ab).owner_is_remembered = true;
+        else if (value.find("Promised") != std::string::npos)
+            effect_params<TokenParams>(ab).owner_is_promised = true;
+        return true;
+    }
+    if (key == "TokenTapped") {
+        effect_params<TokenParams>(ab).tapped = (value == "True");
         return true;
     }
     if (key == "TokenPower") {

@@ -83,6 +83,14 @@ struct CardData{
     ManaValue equip_cost;                // parsed from K:Equip:cost
     bool has_offspring = false;          // K:Offspring:cost — optional additional cost (CR 702.171)
     ManaValue offspring_cost;            // mana paid in addition to the spell's cost for Offspring
+    // K:Gift — the Gift keyword (CR 702.176). As the spell is cast its controller MAY promise the
+    // gift to an opponent (an optional choice, not a cost); if promised, the opponent receives the
+    // gift as the spell resolves, before its other effects. gift_abilities holds the parsed gift
+    // effect (Into the Flood Maw: a DB$ Token making a tapped 1/1 Fish for the promised opponent),
+    // from the card's GiftAbility SVar. gift_description is the printed name of the gift (display).
+    bool has_gift = false;
+    std::vector<Ability> gift_abilities;
+    std::string gift_description = "";
     // K:Kicker:<cost1>[:<cost2>...] — one or more OPTIONAL ADDITIONAL costs (CR 702.33).
     // "Kicker [A] and/or [B]" is Forge-encoded as two colon-separated costs and means
     // "Kicker [A], kicker [B]" (CR 702.33b): each may be paid independently as the spell is

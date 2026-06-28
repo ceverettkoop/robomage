@@ -78,6 +78,11 @@ struct TokenParams {
     // evaluated from this expression at creation time (Skyclave Apparition's MV-sized Illusion).
     std::string power_expr = "";
     std::string toughness_expr = "";
+    // TokenOwner$ Promised (Gift keyword, CR 702.176): the token is created under the control of
+    // the opponent who was promised the gift — i.e. the opponent of the ability's controller.
+    bool owner_is_promised = false;
+    // TokenTapped$ True: the token enters the battlefield tapped (Into the Flood Maw's Fish).
+    bool tapped = false;
 };
 
 // PutCounter (e.g. Scythecat Cub landfall +1/+1). NOTE: this is the Ability
