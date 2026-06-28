@@ -1285,7 +1285,12 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
             // ChangeTypeDesc$ <text> (Prismatic Vista / Price of Freedom): the prose name of the
             // searched-for type ("basic land"). Purely cosmetic — the load-bearing ChangeType$
             // filter is parsed above.
-            "ChangeTypeDesc"
+            "ChangeTypeDesc",
+            // ShuffleNonMandatory$ True (Price of Freedom): marks the post-search shuffle as
+            // optional on a fail-to-find. The search-based ChangeZone already shuffles after a
+            // library fetch (the found case, which is all this card does in practice), so the
+            // flag adds nothing the handler doesn't already do.
+            "ShuffleNonMandatory"
         };
         if (ignored_keys.find(key) == ignored_keys.end()) {
             std::string msg = "Unrecognized ability param: " + key + "$ " + value;
