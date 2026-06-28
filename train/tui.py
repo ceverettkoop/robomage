@@ -31,7 +31,6 @@ from cli_spec import (ALL_TOOLS, REPO_ROOT, MutexGroup)
 VENV_PY = sys.executable
 _DECKS_DIR = os.path.join(REPO_ROOT, "bin", "resources", "decks")
 _CKPT_DIR = os.path.join(REPO_ROOT, "train", "checkpoints")
-_REC_DIRS = [os.path.join(REPO_ROOT, "recordings"), REPO_ROOT]
 
 # Rolling per-command output logs: one file per run, newest 50 kept.
 _CMD_LOG_DIR = os.path.join(REPO_ROOT, "train", "logs", "tui_commands")
@@ -91,15 +90,8 @@ def _expand_checkpoint(val):
     return val   # already a path, a shorthand, or 'scripted' — leave it alone
 
 
-def _scan_recordings():
-    out = []
-    for d in _REC_DIRS:
-        out += glob.glob(os.path.join(d, "*.rmrec"))
-    return sorted(os.path.relpath(p, REPO_ROOT) for p in out)
-
-
 # Suggestion source tagged on each Arg in cli_spec (arg.suggest) → scanner.
-_SCANNERS = {"deck": _scan_decks, "checkpoint": _scan_checkpoints, "recording": _scan_recordings}
+_SCANNERS = {"deck": _scan_decks, "checkpoint": _scan_checkpoints}
 
 
 def _suggestions_for(arg):
@@ -193,7 +185,7 @@ class LauncherApp(App):
         return Horizontal(label, widget, classes=classes)
 
     def _options_for(self, a):
-        """Dropdown options for a suggest-tagged arg (decks/checkpoints/recordings)."""
+        """Dropdown options for a suggest-tagged arg (decks/checkpoints)."""
         # --load resumes training the {deck}_{opponent} matchup, so it only
         # offers checkpoints saved for that matchup (see _matchup_checkpoints).
         if a.name == "--load" and a.suggest == "checkpoint":
@@ -267,7 +259,7 @@ class LauncherApp(App):
             self._help_by_widget[w] = a.help
             return self._row(a.name, w, a.required, extra="tall")
         elif a.suggest:
-            # deck / checkpoint / recording → dropdown of repo contents
+            # deck / checkpoint → dropdown of repo contents
             vals = self._options_for(a)
             kwargs = {"allow_blank": True, "compact": True}
             if a.default in vals:
@@ -334,7 +326,7 @@ class LauncherApp(App):
                     argv += [a.name, ",".join(vals)]
                 elif a.required:
                     missing.append(a.name)
-            elif f["kind"] == "pick":   # dropdown of decks/checkpoints/recordings
+            elif f["kind"] == "pick":   # dropdown of decks/checkpoints
                 a = f["arg"]
                 v = f["widget"].value
                 if isinstance(v, str) and v:
