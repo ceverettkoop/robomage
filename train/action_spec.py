@@ -37,7 +37,8 @@ Grammar (case-insensitive; one spec resolves to exactly one action):
     block:<card>              declare one blocker               (SELECT_BLOCKER)
     block:done                confirm blockers                  (CONFIRM_BLOCKERS)
     mana:<color> | tap:<land> tap for mana (color w/u/b/r/g/c)  (MANA_*)
-    search:<card> | search:fail   library search / fail to find (SEARCH_LIBRARY)
+    search:<card> | search:fail   library/exile/sideboard search or fail to find
+                                  (SEARCH_LIBRARY or CHOOSE_CARD, e.g. Karn's -2)
     top:<card>                put a card on top of library      (TOP_LIBRARY)
     bottom:<card>             put a card on library bottom      (BOTTOM_DECK_CARD)
     dig:<card>                pick from the dug cards            (DIG_CHOICE)
@@ -95,7 +96,7 @@ _VERB_CATS = {
     "target": {8},
     "attack": {2, 3}, "block": {4, 5},
     "mana": {13, 14, 15, 16, 17, 18}, "tap": {13, 14, 15, 16, 17, 18},
-    "search": {19}, "top": {20}, "bottom": {12}, "dig": {23},
+    "search": {19, 44}, "top": {20}, "bottom": {12}, "dig": {23},
     "mulligan": {11}, "keep": {11},
     "pay": {22}, "choice": set(_OTHER_CATS), "shuffle": {21},
     "sb-in": {24}, "sb-out": {25}, "sb-done": {26},
@@ -269,6 +270,13 @@ def _matches(intent, action, exact):
         return action.get("card") is None
     if intent.keyword in ("keep", "mulligan"):
         return intent.keyword in _norm(action.get("description"))
+
+    # `desc:` is a pure description-substring match — match the engine-authored
+    # description text directly even when the action also carries a card name
+    # (e.g. picking one of a planeswalker's several same-named loyalty abilities:
+    # "Activate Karn, the Great Creator (ChangeZone)" vs "(Animate)").
+    if intent.verb == "desc" and intent.card:
+        return intent.card in _norm(action.get("description"))
 
     if intent.card:
         return _card_matches(intent.card, action, exact)

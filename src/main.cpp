@@ -73,6 +73,10 @@ std::vector<std::string> battlefield_a_cards;
 std::vector<std::string> battlefield_b_cards;
 std::vector<std::string> graveyard_a_cards;
 std::vector<std::string> graveyard_b_cards;
+std::vector<std::string> exile_a_cards;
+std::vector<std::string> exile_b_cards;
+std::vector<std::string> sideboard_a_cards;
+std::vector<std::string> sideboard_b_cards;
 
 // match state (accessible for state serialization)
 int match_game_number = -1;  // -1 = single game, 0-2 = bo3 game index
@@ -143,6 +147,16 @@ static int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &dec
         sys.orderer->place_in_graveyard(graveyard_a_cards, Zone::PLAYER_A);
     if (!graveyard_b_cards.empty())
         sys.orderer->place_in_graveyard(graveyard_b_cards, Zone::PLAYER_B);
+    // pre-set exile / sideboard ("outside the game") cards so zone-change effects
+    // that pull from those zones (e.g. Karn's -2) can be exercised in isolation.
+    if (!exile_a_cards.empty())
+        sys.orderer->place_in_zone(exile_a_cards, Zone::PLAYER_A, Zone::EXILE);
+    if (!exile_b_cards.empty())
+        sys.orderer->place_in_zone(exile_b_cards, Zone::PLAYER_B, Zone::EXILE);
+    if (!sideboard_a_cards.empty())
+        sys.orderer->place_in_zone(sideboard_a_cards, Zone::PLAYER_A, Zone::SIDEBOARD);
+    if (!sideboard_b_cards.empty())
+        sys.orderer->place_in_zone(sideboard_b_cards, Zone::PLAYER_B, Zone::SIDEBOARD);
     // run SBE once to attach Permanent/Creature components, then clear summoning sickness
     if (!preplaced.empty()) {
         sys.state_manager->state_based_effects(cur_game, sys.orderer);
@@ -474,6 +488,18 @@ int main(int argc, char const *argv[]) {
             i++;
         } else if (std::string(argv[i]) == "--graveyard-b" && i + 1 < argc) {
             graveyard_b_cards = split_card_list(argv[i + 1]);
+            i++;
+        } else if (std::string(argv[i]) == "--exile-a" && i + 1 < argc) {
+            exile_a_cards = split_card_list(argv[i + 1]);
+            i++;
+        } else if (std::string(argv[i]) == "--exile-b" && i + 1 < argc) {
+            exile_b_cards = split_card_list(argv[i + 1]);
+            i++;
+        } else if (std::string(argv[i]) == "--sideboard-a" && i + 1 < argc) {
+            sideboard_a_cards = split_card_list(argv[i + 1]);
+            i++;
+        } else if (std::string(argv[i]) == "--sideboard-b" && i + 1 < argc) {
+            sideboard_b_cards = split_card_list(argv[i + 1]);
             i++;
         } else if (std::string(argv[i]) == "--narrative") {
             narrative_mode = true;

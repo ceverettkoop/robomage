@@ -615,6 +615,11 @@ std::vector<Entity> Orderer::place_on_battlefield(const std::vector<std::string>
 
 std::vector<Entity> Orderer::place_in_graveyard(const std::vector<std::string> &card_names,
                                                 Zone::Ownership owner) {
+    return place_in_zone(card_names, owner, Zone::GRAVEYARD);
+}
+
+std::vector<Entity> Orderer::place_in_zone(const std::vector<std::string> &card_names,
+                                           Zone::Ownership owner, Zone::ZoneValue zone) {
     Coordinator &coordinator = Coordinator::global();
     std::vector<Entity> placed;
 
@@ -622,7 +627,7 @@ std::vector<Entity> Orderer::place_in_graveyard(const std::vector<std::string> &
         Entity card_id = coordinator.CreateEntity();
         auto card_data_id = load_card(name);
         coordinator.AddComponent(card_id, coordinator.GetComponent<CardData>(card_data_id));
-        coordinator.AddComponent(card_id, Zone(Zone::GRAVEYARD, owner, owner));
+        coordinator.AddComponent(card_id, Zone(zone, owner, owner));
         auto &cd = coordinator.GetComponent<CardData>(card_id);
         coordinator.AddComponent(card_id, color_identity_from(cd));
         placed.push_back(card_id);

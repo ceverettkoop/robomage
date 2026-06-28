@@ -202,6 +202,8 @@ class RoboMageEnv(gym.Env):
                  narrative: bool = False, no_shuffle: bool = False,
                  battlefield_a: str | None = None, battlefield_b: str | None = None,
                  graveyard_a: str | None = None, graveyard_b: str | None = None,
+                 exile_a: str | None = None, exile_b: str | None = None,
+                 sideboard_a: str | None = None, sideboard_b: str | None = None,
                  log_viewer: str | None = None):
         super().__init__()
         self.binary_path = os.path.realpath(binary_path)
@@ -221,6 +223,13 @@ class RoboMageEnv(gym.Env):
         self._battlefield_b = battlefield_b
         self._graveyard_a = graveyard_a
         self._graveyard_b = graveyard_b
+        # --exile-a/-b and --sideboard-a/-b pre-place cards in those non-battlefield
+        # zones so zone-change effects that pull from exile / "outside the game"
+        # (e.g. Karn, the Great Creator's -2) can be exercised in isolation.
+        self._exile_a = exile_a
+        self._exile_b = exile_b
+        self._sideboard_a = sideboard_a
+        self._sideboard_b = sideboard_b
         # When set ("A"/"B"), the engine redacts game_log_private narrative to
         # that seat's view (hidden draws, tutored/top-of-library cards) without
         # rerouting input — both seats still respond over the machine protocol.
@@ -271,6 +280,14 @@ class RoboMageEnv(gym.Env):
             cmd += ["--graveyard-a", self._graveyard_a]
         if self._graveyard_b:
             cmd += ["--graveyard-b", self._graveyard_b]
+        if self._exile_a:
+            cmd += ["--exile-a", self._exile_a]
+        if self._exile_b:
+            cmd += ["--exile-b", self._exile_b]
+        if self._sideboard_a:
+            cmd += ["--sideboard-a", self._sideboard_a]
+        if self._sideboard_b:
+            cmd += ["--sideboard-b", self._sideboard_b]
         if self._log_viewer:
             cmd += ["--log-viewer", self._log_viewer]
         self._proc = subprocess.Popen(
