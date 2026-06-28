@@ -49,7 +49,7 @@ class Arg:
     required: bool = False
     help: str = ""
     metavar: str = None
-    suggest: str = None   # autocomplete source: "deck" | "checkpoint" | "recording" | None
+    suggest: str = None   # autocomplete source: "deck" | "league_deck" | "checkpoint" | "recording" | None
     multi: bool = False   # TUI: render a suggest-tagged arg as a multi-select (comma-joined)
 
     @property
@@ -189,9 +189,10 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         *common_args(),
     ]),
     Sub("league", "PFSP league: train one generalist model per deck vs the whole field", items=[
-        Arg("--decks", "str", default=None, suggest="deck", multi=True,
+        Arg("--decks", "str", default=None, suggest="league_deck", multi=True,
             help="Comma-separated deck roster to train + sample opponents from "
-                 "(default: every .dk deck). In the TUI, pick multiple with space."),
+                 "(default: every deck in decks/league/, referenced as "
+                 "'league/<stem>'). In the TUI, pick multiple with space."),
         Arg("--self-play-frac", "float", default=LEAGUE_SELF_PLAY_FRAC,
             help="Probability of facing the latest snapshot of the learner's own "
                  "deck (OpenAI-Five 'play the latest self' slot; default %.2f). "

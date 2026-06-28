@@ -46,10 +46,14 @@ def deck_snapshots(deck: Optional[str], checkpoint_dir: Optional[str]) -> list[s
     """
     if not (deck and checkpoint_dir):
         return []
+    # A deck name may be a path relative to decks/ (e.g. league-folder decks are
+    # 'league/<stem>'); the glob is already scoped to that subdir, so compare the
+    # parsed snapshot's deck against the name's basename rather than the full path.
+    deck_stem = os.path.basename(deck)
     versioned: list[tuple[int, str]] = []
     for path in _glob.glob(os.path.join(checkpoint_dir, f"{deck}__v*.zip")):
         m = _SNAPSHOT_RE.match(os.path.basename(path))
-        if m and m.group("deck") == deck:
+        if m and m.group("deck") == deck_stem:
             versioned.append((int(m.group("steps")), path))
     versioned.sort()
     out = [p for _, p in versioned]
