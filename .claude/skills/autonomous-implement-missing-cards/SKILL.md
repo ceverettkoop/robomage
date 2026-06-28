@@ -81,6 +81,10 @@ Sequential, single-tree implementation trades parallel throughput for **simplici
   script; others download from the upstream Forge repo.
 - **Never edit an existing card script** (project rule: DO NOT MODIFY CARD SCRIPTS). The
   downloader only *adds* new files.
+- **Never add a duplicate script for a card that already exists.** A double-faced card is stored
+  under ONE combined `<front>_<back>.txt` file; a second front-name `<front>.txt` adds the card to
+  the engine twice and shadows the combined script. The downloader is DFC-aware and handles this —
+  rely on it rather than creating a `<front>.txt` yourself.
 - **NEVER hand-author a card script.** A card's script must come from a pre-existing local file
   or the upstream Forge repo via the downloader. If `fetch_script.py` cannot find the card
   (non-zero exit) and no local script exists, **defer the card** (clean tree, reason "no Forge
@@ -99,6 +103,10 @@ Sequential, single-tree implementation trades parallel throughput for **simplici
   (it has no `--limit`; slice the JSON yourself).
 - `python tools/forge_fetch/fetch_script.py "Card Name"` — fetch a card's Forge script into
   `cardsfolder/` (add-only; non-zero exit ⇒ not found ⇒ **defer the card; never hand-author**).
+  DFC-aware: a double-faced card lives under ONE combined `<front>_<back>.txt` script, so the tool
+  skips a card already present in that form and resolves the combined filename on a front-name
+  miss. **Never write a front-name `<front>.txt` for a DFC — it double-adds the card** (shadows
+  the combined script; see CLAUDE.md "Card Loading System").
 - `train/.venv/bin/python train/gen_card_costs.py` — regenerate `train/card_costs.py` after the
   vocab changes. Normally unnecessary to call directly: a plain `make` regenerates it via `pygen`.
 - `train/test_harness.py` — exercise a card's behavior (full usage in `CLAUDE.md`). Also the

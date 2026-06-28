@@ -43,7 +43,12 @@ shortcut.
   by decks (default `bin/resources/decks/meta/`) but missing from the vocab, sorted by
   cross-deck frequency, each tagged `has_local_script` and a `suggested_index`.
 - `python tools/forge_fetch/fetch_script.py "Card Name"` — fetch a card's Forge script into
-  `cardsfolder/` (add-only; exit code = cards not found, so non-zero ⇒ hand-author needed).
+  `cardsfolder/` (add-only; exit code = cards not found, so non-zero ⇒ hand-author needed). It is
+  DFC-aware: double-faced cards live under ONE combined `<front>_<back>.txt` script, so the tool
+  skips a card already present in that form and, on a front-name miss, fetches the combined file
+  Forge serves under its combined name — **never hand-create a front-name `<front>.txt` for a DFC,
+  that double-adds the card** (the front-name file shadows the combined one; see CLAUDE.md "Card
+  Loading System").
 - `train/.venv/bin/python train/gen_card_costs.py` — regenerate `train/card_costs.py` after
   editing the vocab (required).
 - `train/test_harness.py` — exercise a card's behavior (see `CLAUDE.md` for full usage).
@@ -58,9 +63,11 @@ shortcut.
    a. **Get a script.** If `has_local_script` is false, run
       `tools/forge_fetch/fetch_script.py "<name>"`.
       - On success, read the fetched script.
-      - On NOT FOUND (e.g. double-faced/adventure cards whose Forge filename differs, or
-        a card Forge doesn't have), **STOP and ask the user** to confirm the card's intended
-        behavior before hand-authoring a script. Do not invent behavior.
+      - On NOT FOUND (a card Forge doesn't have, or an accented name the tool can't normalize —
+        it mirrors the engine's ASCII-stripping `name_to_uid`, so e.g. "Lórien Revealed" must be
+        named by its `lorien_revealed` stem by hand), **STOP and ask the user** to confirm the
+        card's intended behavior before hand-authoring a script. Do not invent behavior. (DFCs no
+        longer hit this — the tool resolves their combined `<front>_<back>.txt` filename for you.)
 
    b. **Check feasibility against the engine.** Read the script's `A:` / `T:` / `S:` / `K:` /
       `R:` lines and their `AB$` / `SP$` / `DB$` categories. Confirm each is supported by the
