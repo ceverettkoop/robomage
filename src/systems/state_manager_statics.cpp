@@ -68,49 +68,58 @@ static bool static_present_condition_met(const std::string &filter, const std::s
     else if (zone_str == "Stack")     zone = Zone::STACK;
     // empty / "Battlefield" → BATTLEFIELD
 
-    // Split off the ownership qualifier (YouOwn/YouCtrl/OppOwn/OppCtrl): for off-battlefield
-    // zones it is checked against Zone::owner here, and removed from the spec passed to
-    // card_matches_filter (which has no .YouOwn token and would otherwise fail-closed). On the
-    // battlefield, controller-based qualifiers are left in the spec for permanent_matches_filter.
-    bool you = false, opp = false;
-    std::string type_filter;
-    {
-        bool first = true;
-        size_t i = 0;
-        while (i <= filter.size()) {
-            size_t nx = filter.find_first_of(".+", i);
-            size_t end = (nx == std::string::npos) ? filter.size() : nx;
-            std::string tok = filter.substr(i, end - i);
-            char sep = (i == 0) ? '\0' : filter[i - 1];
-            if (first) { type_filter = tok; first = false; }
-            else if (tok == "YouOwn" || tok == "YouCtrl") you = true;
-            else if (tok == "OppOwn" || tok == "OppCtrl") opp = true;
-            else { type_filter += sep; type_filter += tok; }  // keep other qualifiers
-            if (nx == std::string::npos) break;
-            i = nx + 1;
-        }
-    }
-    Zone::Ownership owner_req = you ? controller
-                             : opp ? (controller == Zone::PLAYER_A ? Zone::PLAYER_B : Zone::PLAYER_A)
-                                   : Zone::UNKNOWN;
-
     MatchCtx ctx;
     ctx.controller = controller;
 
     int count = 0;
-    for (auto e : entities) {
-        if (!global_coordinator.entity_has_component<Zone>(e)) continue;
-        const auto &z = global_coordinator.GetComponent<Zone>(e);
-        if (z.location != zone) continue;
-        if (owner_req != Zone::UNKNOWN && z.owner != owner_req) continue;
-        if (zone == Zone::BATTLEFIELD) {
+    if (zone == Zone::BATTLEFIELD) {
+        // permanent_matches_filter understands the full YouCtrl/YouOwn/OppCtrl/OppOwn grammar
+        // against a permanent's live controller/owner, so the original filter is passed through
+        // unchanged — a controller qualifier (YouCtrl) must test the controller, not Zone::owner
+        // (which would mishandle a permanent you control but don't own, e.g. a stolen creature).
+        for (auto e : entities) {
+            if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+            const auto &z = global_coordinator.GetComponent<Zone>(e);
+            if (z.location != zone) continue;
             if (!is_battlefield_permanent(e)) continue;
-            if (!permanent_matches_filter(e, type_filter, ctx)) continue;
-        } else {
+            if (!permanent_matches_filter(e, filter, ctx)) continue;
+            count++;
+        }
+    } else {
+        // Off-battlefield zones have no controller, so a YouCtrl/YouOwn (or OppCtrl/OppOwn)
+        // qualifier collapses to ownership (a card in your graveyard/hand/exile is "yours").
+        // card_matches_filter has no owner/controller token, so split those off and check them
+        // against Zone::owner here, passing only the characteristic portion to the matcher.
+        bool you = false, opp = false;
+        std::string type_filter;
+        {
+            bool first = true;
+            size_t i = 0;
+            while (i <= filter.size()) {
+                size_t nx = filter.find_first_of(".+", i);
+                size_t end = (nx == std::string::npos) ? filter.size() : nx;
+                std::string tok = filter.substr(i, end - i);
+                char sep = (i == 0) ? '\0' : filter[i - 1];
+                if (first) { type_filter = tok; first = false; }
+                else if (tok == "YouOwn" || tok == "YouCtrl") you = true;
+                else if (tok == "OppOwn" || tok == "OppCtrl") opp = true;
+                else { type_filter += sep; type_filter += tok; }  // keep other qualifiers
+                if (nx == std::string::npos) break;
+                i = nx + 1;
+            }
+        }
+        Zone::Ownership owner_req = you ? controller
+                                 : opp ? (controller == Zone::PLAYER_A ? Zone::PLAYER_B : Zone::PLAYER_A)
+                                       : Zone::UNKNOWN;
+        for (auto e : entities) {
+            if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+            const auto &z = global_coordinator.GetComponent<Zone>(e);
+            if (z.location != zone) continue;
+            if (owner_req != Zone::UNKNOWN && z.owner != owner_req) continue;
             if (!global_coordinator.entity_has_component<CardData>(e)) continue;
             if (!card_matches_filter(e, type_filter, ctx)) continue;
+            count++;
         }
-        count++;
     }
     return compare_svar(count, compare);
 }
@@ -917,11 +926,9 @@ void StateManager::gather_active_statics(Game &game) {
 
     for (auto &a : g_active_statics) {
         if (a.sa->condition.empty() && a.sa->check_svar_expr.empty()) {
-            a.condition_met = true;
-        } else if (!a.sa->present_filter.empty()) {
-            // Present-count gate handled below (after this if/else chain). Provisionally
-            // true here so a static that ONLY has an IsPresent$ gate isn't marked unmet by
-            // the trailing "unrecognised condition" branch; the gate is ANDed in afterwards.
+            // No Condition$/CheckSVar$ — provisionally true (a present-only IsPresent$ static
+            // lands here and is gated by the present-count AND below); an unconditional static
+            // stays true.
             a.condition_met = true;
         } else if (a.sa->condition == "Delirium") {
             a.condition_met = (a.controller == Zone::PLAYER_A) ? delirium_a : delirium_b;
