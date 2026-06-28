@@ -171,6 +171,8 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Witherbloom Command", 260},
     {"Urza's Workshop", 261},
     {"Ugin, Eye of the Storms", 262},
+    {"Witch Enchanter", 263},
+    {"Witch-Blessed Meadow", 264},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);
