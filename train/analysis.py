@@ -49,6 +49,8 @@ Interactive session commands (available after shap, value-swings, or via 'intera
 """
 
 import argparse
+import glob
+import re
 import sys
 import os
 
@@ -293,25 +295,60 @@ def _extract_interpretable(obs):
 
 
 def _infer_deck(model_path):
-    """Try to extract deck name from model filename like 'delver_delver_final.zip'."""
+    """Infer the deck a checkpoint pilots from its filename.
+
+    Checkpoints are per-deck (the deck-pilot convention): one model plays one
+    deck against any opponent, saved as ``{deck}__final.zip`` or
+    ``{deck}__v{steps}.zip`` — the deck is the part before the ``__``. A
+    checkpoint therefore encodes only its OWN deck, never its opponent, so this
+    returns the model's deck; the opponent deck must be supplied (``--deck-b``)
+    or, when the opponent is itself a model, inferred from that model's own
+    filename. A legacy matchup name (``{deck}_{opp}_final.zip``) still yields the
+    leading deck token.
+    """
     basename = os.path.splitext(os.path.basename(model_path))[0]
-    # Pattern: {model_deck}_{opp_deck}_{suffix}
+    # Deck-pilot: '{deck}__final' / '{deck}__v{steps}' — split on the '__'.
+    if "__" in basename:
+        deck = basename.split("__", 1)[0]
+        return deck or None
+    # Legacy matchup '{deck}_{opp}_{suffix}' or '{deck}_final' → leading token.
     parts = basename.split("_")
-    if len(parts) >= 2:
+    if parts and parts[0]:
         return parts[0]
     return None
 
 
 _CHECKPOINTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "checkpoints")
+_SNAPSHOT_VER_RE = re.compile(r"__v(\d+)\.zip$")
 
 
 def _resolve_model_path(path):
-    """Return path as-is if it exists, else try train/checkpoints/<path>."""
-    if os.path.exists(path):
+    """Resolve a model argument to a checkpoint path.
+
+    Accepts an explicit path, the literal ``scripted``, or a deck-pilot
+    shorthand (``delver`` → ``checkpoints/delver__final.zip``, else the newest
+    ``checkpoints/delver__v{steps}.zip`` snapshot). Falls back to legacy
+    ``checkpoints/<name>.zip`` / ``checkpoints/<name>_final.zip`` for older
+    matchup checkpoints. Mirrors train.py's ``_resolve_model``.
+    """
+    if path == "scripted" or os.path.exists(path):
         return path
-    candidate = os.path.join(_CHECKPOINTS_DIR, path)
-    if os.path.exists(candidate):
-        return candidate
+    # Deck-pilot shorthand → '{deck}__final.zip' or newest '{deck}__v*.zip'.
+    final = os.path.join(_CHECKPOINTS_DIR, f"{path}__final.zip")
+    if os.path.exists(final):
+        return final
+    snaps = glob.glob(os.path.join(_CHECKPOINTS_DIR, f"{path}__v*.zip"))
+    if snaps:
+        def _ver(p):
+            m = _SNAPSHOT_VER_RE.search(p)
+            return int(m.group(1)) if m else -1
+        return max(snaps, key=_ver)
+    # Legacy fallbacks.
+    for cand in (os.path.join(_CHECKPOINTS_DIR, path),
+                 os.path.join(_CHECKPOINTS_DIR, f"{path}.zip"),
+                 os.path.join(_CHECKPOINTS_DIR, f"{path}_final.zip")):
+        if os.path.exists(cand):
+            return cand
     return path  # let the loader raise a meaningful error
 
 
@@ -326,29 +363,41 @@ def _load_model_and_env(args):
 
     model_path = _resolve_model_path(args.model)
 
-    # Deck inference
+    # Deck resolution. Checkpoints are per-deck (deck-pilot naming), so a model
+    # filename encodes only the deck it pilots — never its opponent. We infer the
+    # model's own deck (deck_a) from its filename; the opponent deck (deck_b)
+    # must be given via --deck-b, or, when the opponent is itself a model, is
+    # taken from that model's own filename. A scripted opponent has no filename,
+    # so it defaults to a mirror match unless --deck-b is supplied.
     deck_a = getattr(args, "deck_a", None)
     deck_b = getattr(args, "deck_b", None)
     if not deck_a:
         inferred = _infer_deck(model_path)
         if inferred:
             deck_a = inferred
-            print(f"Inferred model deck from filename: {deck_a}")
+            print(f"Inferred model deck (the deck it pilots) from filename: {deck_a}")
         else:
             print("Could not infer model deck from filename; use --deck-a", file=sys.stderr)
             sys.exit(1)
     if not deck_b:
         if args.opponent == "scripted":
-            deck_b = deck_a  # mirror match by default
+            deck_b = deck_a  # opponent deck isn't encoded anywhere; mirror by default
+            print(f"No --deck-b given for scripted opponent; defaulting to a mirror "
+                  f"match (opponent plays {deck_b}). Pass --deck-b for a different matchup.")
         else:
             opp_path = _resolve_model_path(args.opponent)
             inferred = _infer_deck(opp_path)
             if inferred:
                 deck_b = inferred
-                print(f"Inferred opponent deck from filename: {deck_b}")
+                print(f"Inferred opponent deck from the opponent model's filename: {deck_b}")
             else:
-                print("Could not infer opponent deck from filename; use --deck-b", file=sys.stderr)
+                print("Could not infer opponent deck from the opponent model's filename; "
+                      "use --deck-b", file=sys.stderr)
                 sys.exit(1)
+
+    # Write the resolved decks back so downstream consumers (e.g. the report
+    # title) see the actual decks even when they were inferred, not just given.
+    args.deck_a, args.deck_b = deck_a, deck_b
 
     model = MaskablePPO.load(model_path)
     opp_model = None

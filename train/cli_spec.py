@@ -162,10 +162,13 @@ def sim_args():
         Arg("--opponent", "str", required=True, suggest="checkpoint",
             help="Opponent model .zip path, or 'scripted' for rule-based agent"),
         Arg("--deck-a", "str", default=None, suggest="deck",
-            help="Model's deck (.dk stem). Inferred from model filename if omitted."),
+            help="Model's deck (.dk stem) — the deck it pilots. Inferred from the "
+                 "model's deck-pilot filename ({deck}__final.zip) if omitted."),
         Arg("--deck-b", "str", default=None, suggest="deck",
-            help="Opponent's deck (.dk stem). Inferred from opponent filename if omitted; "
-                 "defaults to --deck-a for scripted opponent."),
+            help="Opponent's deck (.dk stem). Per-deck checkpoints don't encode "
+                 "their opponent, so supply this explicitly; for a model opponent "
+                 "it is inferred from that model's own filename, and a scripted "
+                 "opponent defaults to a mirror match (--deck-a)."),
         Arg("--binary", "str", default=BINARY, help="Path to robomage binary"),
         Arg("--bo3", "flag",
             help="Run best-of-three matches (decks must include SIDEBOARD entries)"),
@@ -334,11 +337,12 @@ PLAY_TOOL = Tool("play", "train/play.py", flat=True, subs=[
         Arg("--human-deck", "str", required=True, suggest="deck",
             help="Deck the human plays (stem of .dk file)"),
         Arg("--model-deck", "str", required=True, suggest="deck",
-            help="Deck the model plays (stem of .dk file). "
-                 "Automatically loads checkpoints/<model-deck>_<human-deck>_final.zip"),
+            help="Deck the model plays (stem of .dk file). Per-deck checkpoints "
+                 "are keyed on this alone: auto-loads checkpoints/<model-deck>__final.zip "
+                 "(else the newest <model-deck>__v*.zip, else a legacy matchup file)."),
         Arg("--model", "str", default=None, suggest="checkpoint",
             help="Override: explicit path to trained model .zip "
-                 "(default: checkpoints/<model-deck>_<human-deck>_final.zip)"),
+                 "(default: checkpoints/<model-deck>__final.zip)"),
         Arg("--gui", "flag", help="Launch raylib GUI window for human input"),
         Arg("--tui", "flag", default=True, help="Launch the TUI game board (train/tui_game.py)"),
         Arg("--scripted", "flag",
