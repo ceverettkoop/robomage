@@ -255,6 +255,10 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                 if (ab.trigger_only_self && ev.GetType() != Events::BECAME_TARGET &&
                     ev.HasParam(Params::ENTITY) &&
                     ev.GetParam<Entity>(Params::ENTITY) != entity) continue;
+                // "If you cast it" (ValidCard$ Card.wasCastByYou): a self ETB trigger that only
+                // fires when its source permanent entered the battlefield by being cast (CR
+                // 614.12; The One Ring's protection grant). perm is the source (trigger_only_self).
+                if (ab.trigger_requires_entered_by_cast && !perm.entered_by_cast) continue;
                 // Evoke self-sacrifice only fires when this permanent was cast via evoke
                 if (ab.is_evoke_sacrifice && !perm.evoked) continue;
                 // Offspring token copy only fires when this permanent was cast with offspring

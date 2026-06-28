@@ -57,6 +57,13 @@ struct Permanent {
     // was cast from the hand; false for permanents put onto the battlefield any other way
     // (reanimation, tokens, ChangeZone-to-battlefield, casts from exile/graveyard, etc.).
     bool cast_from_hand_by_controller = false;
+    // This permanent entered the battlefield because its spell was cast (from any zone), CR
+    // 614.12. Read by the Card.wasCastByYou cast-condition on an "enters, if you cast it" ETB
+    // trigger (The One Ring's protection grant). True only for a permanent that resolved onto the
+    // battlefield from the stack as a cast spell; false for tokens, reanimation, ChangeZone-to-
+    // battlefield, and any other non-cast entry. Set one-shot from cur_game.cast_to_battlefield
+    // when the Permanent is created.
+    bool entered_by_cast = false;
     std::string chosen_type = "";  // creature type chosen on ETB (Cavern of Souls)
     std::string chosen_name = "";  // card name chosen on ETB (Disruptor Flute) — keys Card.NamedCard statics
     std::vector<Entity> exiled_with;  // entities exiled by this permanent (for Keen-Eyed Curator)

@@ -174,6 +174,18 @@ struct Game {
             std::set<Colors> colors;
         };
         std::vector<HexproofFromColors> hexproof_from_colors_this_turn;
+        // Player-scoped "protection from everything" grant (CR 702.16; The One Ring's ETB: "you
+        // gain protection from everything until your next turn"). While active the protected
+        // `player` can't be the target of a spell/ability an opponent controls, and isn't dealt
+        // damage by any source an opponent controls. `until_your_next_turn` selects the duration:
+        // when true the grant is reverted at the start of the protected player's next turn (their
+        // untap step); when false it lapses at cleanup (end of turn). Consulted in
+        // Ability::is_legal_target and deal_damage_to_player.
+        struct PlayerProtectionFromEverything {
+            Zone::Ownership player = Zone::UNKNOWN;
+            bool until_your_next_turn = false;
+        };
+        std::vector<PlayerProtectionFromEverything> player_protection_from_everything;
         bool revolt_player_a = false;  // a permanent Player A controlled left the battlefield this turn
         bool revolt_player_b = false;  // a permanent Player B controlled left the battlefield this turn
         std::set<Entity> void_countered;  // entities exiled with void counters (Dauthi Voidwalker)

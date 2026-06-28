@@ -323,6 +323,18 @@ Zone::Ownership source_controller(Entity source) {
     return Zone::UNKNOWN;
 }
 
+bool player_protected_from_source(Entity player_entity, Entity source) {
+    if (cur_game.player_protection_from_everything.empty()) return false;
+    Zone::Ownership prot =
+        (player_entity == cur_game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
+    Zone::Ownership src_ctrl = source_controller(source);
+    for (const auto &p : cur_game.player_protection_from_everything) {
+        if (p.player != prot) continue;
+        if (src_ctrl != Zone::UNKNOWN && src_ctrl != prot) return true;
+    }
+    return false;
+}
+
 Zone::Ownership last_known_controller(Entity e) {
     if (global_coordinator.entity_has_component<Zone>(e)) {
         Zone::Ownership c = global_coordinator.GetComponent<Zone>(e).controller;

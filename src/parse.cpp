@@ -1379,6 +1379,10 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         // exiled card(s) return when the ability's host leaves the battlefield. See
         // effects::register_exile_until_host_leaves.
         ability.duration_until_host_leaves = true;
+    } else if (key == "Duration" && value == "UntilYourNextTurn") {
+        // Generic "until your next turn" duration on a non-Animate effect (The One Ring's ETB Pump
+        // granting the controller protection from everything). Reverted at the controller's untap.
+        ability.duration_until_your_next_turn = true;
     } else if (effects::apply_parse_hook(ability, key, value)) {
         // Consumed by an effect-specific parse hook co-located with its handler.
     } else {
@@ -1690,7 +1694,11 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
                        sv.find("Remembered$") != std::string::npos ||
                        // Count$xPaid — amount equals the X paid at cast (Kozilek's Command:
                        // TokenAmount$/ScryNum$/TargetMax$ all = X = Count$xPaid).
-                       sv.find("xPaid") != std::string::npos) {
+                       sv.find("xPaid") != std::string::npos ||
+                       // Count$CardCounters.<TYPE> — counters on the source permanent (The One
+                       // Ring: NumCards$/LifeAmount$ X = Count$CardCounters.BURDEN). Evaluated at
+                       // resolution against the source by evaluate_dynamic_amount.
+                       sv.find("Count$CardCounters") != std::string::npos) {
                 sub.dynamic_amount_expr = sv;
             }
         }
@@ -2051,6 +2059,10 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
                            // set of all three, else lo. Preserved here and evaluated at activation
                            // by evaluate_dynamic_amount (mana-ability path via eval_mana_amount).
                            sv.find("Count$UrzaLands") != std::string::npos ||
+                           // Count$CardCounters.<TYPE> — counters on the source permanent (The One
+                           // Ring's burden-counter scaling). Evaluated at resolution by
+                           // evaluate_dynamic_amount against the ability's source.
+                           sv.find("Count$CardCounters") != std::string::npos ||
                            // Count$xPaid — amount equals the X paid at cast (Forth Eorlingas!:
                            // TokenAmount$ X, X = Count$xPaid → X 2/2 Human Knight tokens). Mirrors
                            // the sub-ability path (parse_svar_ability) so a top-level SP$/AB$
@@ -2261,6 +2273,14 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
             if (value.find("nonCreature") != std::string::npos) valid_card_non_creature = true;
             if (value.find(".Other")      != std::string::npos) ability.trigger_self_excluded = true;
             if (value.rfind("Card.Self", 0) == 0)                valid_card_self         = true;
+            // The Self qualifier may also be a trailing token (e.g. "Card.wasCastByYou+Self",
+            // The One Ring) rather than the head — match the delimited ".Self"/"+Self" form.
+            if (value.find(".Self") != std::string::npos ||
+                value.find("+Self") != std::string::npos)        valid_card_self         = true;
+            // wasCastByYou — "if you cast it" cast-condition on an ETB trigger (The One Ring): the
+            // source must have entered by being cast (Permanent::entered_by_cast).
+            if (value.find("wasCastByYou") != std::string::npos)
+                ability.trigger_requires_entered_by_cast = true;
             // Kicker-linked condition (CR 702.33f): "Card.Self+kicked N" — fires only when the
             // Nth kicker was paid. Parse the 1-based index after "kicked " (a missing number
             // defaults to the first kicker). General over any "+kicked N" SpellCast trigger.

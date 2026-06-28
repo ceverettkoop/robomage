@@ -85,6 +85,19 @@ static void grant_hexproof_from_colors(Zone::Ownership ctrl, const std::set<Colo
              player_name(ctrl).c_str());
 }
 
+// Register a "protection from everything" grant for `ctrl` (CR 702.16; The One Ring's ETB: "you
+// gain protection from everything until your next turn"). Player-scoped: the player can't be the
+// target of an opponent's spell/ability and isn't dealt damage by any opponent source. The
+// duration is until the controller's next turn when `until_next_turn`, else until end of turn.
+static void grant_player_protection_from_everything(Zone::Ownership ctrl, bool until_next_turn) {
+    Game::PlayerProtectionFromEverything p;
+    p.player = ctrl;
+    p.until_your_next_turn = until_next_turn;
+    cur_game.player_protection_from_everything.push_back(p);
+    game_log("%s gains protection from everything%s.\n", player_name(ctrl).c_str(),
+             until_next_turn ? " until their next turn" : " until end of turn");
+}
+
 bool pump(Ability &ab, std::shared_ptr<Orderer> orderer) {
     (void)orderer;
     // Pump used purely as a targeting vehicle for a graveyard card (Surgical Extraction's
@@ -100,6 +113,12 @@ bool pump(Ability &ab, std::shared_ptr<Orderer> orderer) {
         const PumpParams *hp = std::get_if<PumpParams>(&ab.params);
         if (hp && !hp->grant_hexproof_from_colors.empty()) {
             grant_hexproof_from_colors(ab.controller, hp->grant_hexproof_from_colors);
+            return true;
+        }
+        // KW$ Protection from everything | Defined$ You (The One Ring): a player-scoped grant for
+        // the controller, NOT a single-target creature pump. Register it and skip target selection.
+        if (hp && hp->grant_protection_from_everything) {
+            grant_player_protection_from_everything(ab.controller, ab.duration_until_your_next_turn);
             return true;
         }
     }
@@ -227,6 +246,11 @@ bool parse_pump(Ability &ab, const std::string &key, const std::string &value) {
                     if (token.find("Red") != std::string::npos) pp.grant_hexproof_from_colors.insert(RED);
                     if (token.find("Green") != std::string::npos) pp.grant_hexproof_from_colors.insert(GREEN);
                     if (token.find("White") != std::string::npos) pp.grant_hexproof_from_colors.insert(WHITE);
+                } else if (token.rfind("Protection from everything", 0) == 0) {
+                    // "Protection from everything" granted to a player (Defined$ You) — The One
+                    // Ring's ETB. Not a per-creature keyword: the Pump handler makes a player-
+                    // scoped grant (cur_game.player_protection_from_everything) for the controller.
+                    pp.grant_protection_from_everything = true;
                 } else {
                     pp.grant_keywords.push_back(token);
                 }

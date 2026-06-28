@@ -41,6 +41,11 @@ struct PumpParams {
     // permanents they control, rather than a per-creature keyword (which couldn't protect the
     // player or non-creature permanents). Empty = no hexproof-from-color grant.
     std::set<Colors> grant_hexproof_from_colors;
+    // KW$ Protection from everything with Defined$ You (The One Ring's ETB Pump) — "you gain
+    // protection from everything". Parsed out of the keyword list into this flag; the Pump handler
+    // turns it into a player-scoped grant (cur_game.player_protection_from_everything) for the
+    // controller rather than a per-creature keyword. False = no player-protection grant.
+    bool grant_protection_from_everything = false;
 };
 
 // Delirium-conditional damage (Unholy Heat). The base damage stays in the

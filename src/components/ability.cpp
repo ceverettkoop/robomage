@@ -630,6 +630,19 @@ static bool target_has_color_hexproof(Entity cand, Entity source, Zone::Ownershi
     return false;
 }
 
+// "Protection from everything" for a player (CR 702.16; The One Ring). A player covered by a
+// cur_game.player_protection_from_everything grant can't be the target of a spell/ability an
+// OPPONENT controls. `caster` is the targeting object's controller. Returns true when the
+// candidate is the protected player and the targeting object belongs to their opponent.
+static bool player_has_protection_from_everything(Entity cand, Zone::Ownership caster) {
+    if (cur_game.player_protection_from_everything.empty()) return false;
+    for (const auto &p : cur_game.player_protection_from_everything) {
+        if (caster == p.player) continue;  // own spells/abilities can still target the player
+        if (cand == get_player_entity(p.player)) return true;
+    }
+    return false;
+}
+
 // Single source of truth for target legality (see header). build_valid_targets
 // enumerates candidates and filters them through this; is_target_valid re-runs the
 // chosen target(s) through it at resolution. Keeping both on one predicate is what
@@ -640,6 +653,10 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
     // Hexproof from <color> (Veil of Summer) — applies to players and permanents alike, so it is
     // checked up front before the type-specific branches below.
     if (target_has_color_hexproof(cand, source, caster)) return false;
+
+    // Protection from everything for a player (The One Ring) — the protected player can't be
+    // targeted by an opponent's spell/ability (CR 702.16e). Checked up front like hexproof.
+    if (player_has_protection_from_everything(cand, caster)) return false;
 
     // ValidTgts$ ...Other (e.g. Solitude/Flickerwisp "another"/"other" target): the source
     // of the ability cannot be chosen as its own target (CR 115.1; "other" is a target
@@ -857,7 +874,20 @@ static bool compare_svar(int val, const std::string &spec, const std::string &sv
 // Supports: Count$InYourLibrary, Count$YourLifeTotal, Count$YourLifeTotal/HalfUp,
 //           Count$Valid Creature.YouCtrl, Targeted$CardPower.
 size_t evaluate_dynamic_amount(
-    const std::string &expr, Zone::Ownership ctrl, std::shared_ptr<Orderer> orderer, Entity target) {
+    const std::string &expr, Zone::Ownership ctrl, std::shared_ptr<Orderer> orderer, Entity target,
+    Entity source) {
+    // Count$CardCounters.<TYPE> — the number of <TYPE> counters on the ability's SOURCE permanent
+    // (The One Ring: X = Count$CardCounters.BURDEN, read by its upkeep life-loss and its draw).
+    // The counter type is the substring after the dot, up to any further qualifier delimiter.
+    if (expr.rfind("Count$CardCounters.", 0) == 0 && source != 0 &&
+        global_coordinator.entity_has_component<Permanent>(source)) {
+        std::string ctype = expr.substr(std::string("Count$CardCounters.").size());
+        size_t end = ctype.find_first_of(".+ ");
+        if (end != std::string::npos) ctype = ctype.substr(0, end);
+        const auto &counters = global_coordinator.GetComponent<Permanent>(source).counters;
+        auto it = counters.find(ctype);
+        return (it != counters.end() && it->second > 0) ? static_cast<size_t>(it->second) : 0;
+    }
     if (expr.find("Count$Devotion.") != std::string::npos) {
         // Count mana symbols of a given color in mana costs of permanents you control
         Colors devotion_color = NO_COLOR;

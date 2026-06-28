@@ -414,8 +414,9 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                     etb_counter_type = rev.etb_counter_type;
                 }
                 // It was cast and is now becoming a real permanent — consume the one-shot
-                // "was cast" marker so a later non-cast re-entry isn't treated as a cast.
-                game.cast_to_battlefield.erase(entity);
+                // "was cast" marker so a later non-cast re-entry isn't treated as a cast, and
+                // record it on the permanent (The One Ring's Card.wasCastByYou ETB gate).
+                if (game.cast_to_battlefield.erase(entity)) perm.entered_by_cast = true;
                 // Likewise consume the "cast from your hand by you" marker and record it on
                 // the permanent (Amped Raptor's Card.wasCastFromYourHandByYou gate). Only a
                 // spell the controller cast from their own hand sets this; any other entry

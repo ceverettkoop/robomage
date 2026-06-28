@@ -199,6 +199,13 @@ inline void extract_static_cmc_bound(const std::string &spec, MatchCtx &ctx) {
 // token/amass/mobilize/delayed-trigger/deal-damage/etc. otherwise repeat inline.
 Zone::Ownership source_controller(Entity source);
 
+// CR 702.16d: is `player_entity` currently under a "protection from everything" grant
+// (cur_game.player_protection_from_everything) against `source` — i.e. is the source controlled
+// by an opponent of the protected player? True means damage from `source` to that player is
+// prevented. Shared by the effect-damage chokepoint (deal_damage_to_player) and the combat-damage
+// path so the prevention rule lives in one place.
+bool player_protected_from_source(Entity player_entity, Entity source);
+
 // Last-known controller of an object for a "that permanent's controller" effect
 // (CR 608.2g/h): its Zone.controller while it still records one, else the live
 // Permanent.controller (mid-resolution before the SBA strips it), else the controller

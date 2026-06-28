@@ -141,6 +141,10 @@ struct Ability{
     uint32_t trigger_on = 0;             // EventId that fires this ability; 0 = not event-triggered
     bool trigger_self_excluded = false;  // true when ValidCard$ has .Other — won't trigger for the source itself
     bool trigger_only_self = false;      // true when ValidCard$ Card.Self — only fires when the entering entity is the source itself
+    // true when ValidCard$ has the wasCastByYou qualifier (The One Ring's "enters, if you cast
+    // it" ETB) — an intervening cast-condition: the trigger fires only when its source permanent
+    // entered the battlefield by being cast (Permanent::entered_by_cast).
+    bool trigger_requires_entered_by_cast = false;
     bool is_evoke_sacrifice = false;     // synthetic ETB self-trigger from K:Evoke — only fires when the permanent was evoked
     bool is_offspring_token = false;     // synthetic ETB self-trigger from K:Offspring — only fires when the permanent was cast with offspring; creates a 1/1 token copy
     bool trigger_valid_player_is_controller = false;  // true when ValidPlayer$ You
@@ -208,6 +212,10 @@ struct Ability{
     // of the animating player's NEXT turn — longer than the Forge default (until end of turn)
     // but not the rest of the game (Duration$ Permanent). Reverted at that player's untap step.
     bool animate_duration_until_your_next_turn = false;
+    // Duration$ UntilYourNextTurn on a non-Animate effect (The One Ring's ETB Pump that grants the
+    // controller protection from everything): the effect lasts until the start of the controller's
+    // next turn rather than the Forge default (until end of turn). Reverted at that player's untap.
+    bool duration_until_your_next_turn = false;
     // AB$ Animate | Power$/Toughness$ (Karn +1: "power and toughness each equal to its mana
     // value"). A numeric value sets the base P/T directly; an SVar token (e.g. Power$ X with
     // SVar:X:Targeted$CardManaCost) is resolved post-parse into animate_power_expr /

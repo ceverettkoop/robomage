@@ -1,5 +1,7 @@
 #include "game.h"
 
+#include <algorithm>
+
 #include "../cli_output.h"
 #include "../components/creature.h"
 #include "../components/damage.h"
@@ -104,6 +106,16 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     // Lapse any "until your next turn" Animate (Karn +1) this player created —
                     // its longer continuous-effect duration ends as their next turn begins.
                     effects::revert_until_turn_animates(active_player);
+                    // Lapse any "until your next turn" player protection-from-everything grant
+                    // protecting this player (The One Ring) — its duration ends as the protected
+                    // player's next turn begins.
+                    player_protection_from_everything.erase(
+                        std::remove_if(player_protection_from_everything.begin(),
+                                       player_protection_from_everything.end(),
+                                       [active_player](const PlayerProtectionFromEverything &p) {
+                                           return p.until_your_next_turn && p.player == active_player;
+                                       }),
+                        player_protection_from_everything.end());
                     // Phase in phased-out permanents controlled by active player
                     for (Entity entity = 0; entity < global_coordinator.GetMaxIssuedEntity(); ++entity) {
                         if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
@@ -321,6 +333,16 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     // from black until end of turn") lapse at cleanup (CR 514.2).
                     cant_counter_spells_of.clear();
                     hexproof_from_colors_this_turn.clear();
+                    // An "until end of turn" player protection-from-everything grant lapses at
+                    // cleanup; an "until your next turn" grant persists (reverted at that player's
+                    // untap step instead — see the UNTAP case above).
+                    player_protection_from_everything.erase(
+                        std::remove_if(player_protection_from_everything.begin(),
+                                       player_protection_from_everything.end(),
+                                       [](const PlayerProtectionFromEverything &p) {
+                                           return !p.until_your_next_turn;
+                                       }),
+                        player_protection_from_everything.end());
                     // "Life gained this turn" (Ocelot Pride) and "tokens entered this turn"
                     // reset for BOTH players each turn — life can be gained on either player's
                     // turn, and the end-step trigger above has already checked them. Done in
