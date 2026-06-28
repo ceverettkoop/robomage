@@ -970,6 +970,12 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         for (const auto &ab : card_data.abilities) {
             if (ab.ability_type != Ability::ACTIVATED) continue;
             if (ab.activation_zone != Zone::HAND) continue;
+            // Ninjutsu (CR 702.49e): activatable only during the declare-blockers step, after
+            // blockers are declared, while the activator controls an unblocked attacker.
+            if (ab.is_ninjutsu) {
+                if (game.cur_step != DECLARE_BLOCKERS) continue;
+                if (unblocked_attackers(orderer->mEntities, priority_player).empty()) continue;
+            }
             // Check mana affordability against the post-ReduceCost$ cost (Eiganjo's Channel is
             // cheaper per legendary creature you control), so legality matches payment.
             ManaValue from_hand_cost = effective_activation_mana_cost(ab, priority_player, orderer);
@@ -987,7 +993,9 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 continue;
             { auto it = cur_game.payment_fail_counts.find(card_entity);
               if (it != cur_game.payment_fail_counts.end() && it->second >= 2) continue; }
-            std::string desc = "Activate " + card_data.name + " from hand (" + ab.category + ")";
+            std::string desc = ab.is_ninjutsu
+                ? ("Ninjutsu " + card_data.name)
+                : ("Activate " + card_data.name + " from hand (" + ab.category + ")");
             LegalAction la(ACTIVATE_ABILITY, card_entity, ab, desc);
             la.category = ActionCategory::ACTIVATE_ABILITY;
             actions.push_back(la);

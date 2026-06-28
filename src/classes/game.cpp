@@ -139,7 +139,21 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                             rev.entity = entity;
                             rev.affected_player = active_player;
                             replacement::dispatch(rev);
-                            if (!rev.skip_untap) permanent.is_tapped = false;
+                            // Stun counters (CR 122.1d): "If a permanent with a stun counter would
+                            // become untapped, instead remove a stun counter from it." A tapped
+                            // permanent with one or more STUN counters stays tapped and sheds one
+                            // counter rather than untapping; otherwise it untaps normally.
+                            if (!rev.skip_untap) {
+                                // Counter type is stored verbatim from the script's CounterType$
+                                // (Forge writes "Stun", CR 122.1d), so match that exact key.
+                                if (permanent.is_tapped && get_counters(entity, "Stun") > 0) {
+                                    add_counters(entity, "Stun", -1);
+                                    game_log("%s has a stun counter removed instead of untapping.\n",
+                                             permanent.name.c_str());
+                                } else {
+                                    permanent.is_tapped = false;
+                                }
+                            }
                             permanent.has_summoning_sickness = false;  // Clear summoning sickness
                             for (auto &ab : permanent.abilities) ab.activations_this_turn = 0;
                             permanent.loyalty_ability_activated_this_turn = false;  // 606.3 resets each of the controller's turns

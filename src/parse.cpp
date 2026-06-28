@@ -637,6 +637,26 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             card.keywords.push_back("Cycling");
             continue;
         }
+        // K:Ninjutsu:<cost> (CR 702.49) — a hand-activated ability usable only during the
+        // declare-blockers step, after blockers are declared, while you control an unblocked
+        // attacker. Pay <cost> and return that unblocked attacker to its owner's hand, then put
+        // this card from your hand onto the battlefield tapped and attacking. Modeled as a
+        // hand-activated ability flagged is_ninjutsu; process_ninjutsu handles the bespoke cost
+        // (return attacker) and effect (enter tapped + attacking). General over any K:Ninjutsu.
+        if (kw_line.rfind("Ninjutsu:", 0) == 0) {
+            std::string cost_str = kw_line.substr(strlen("Ninjutsu:"));
+            Ability ab;
+            ab.ability_type = Ability::ACTIVATED;
+            ab.category = "Ninjutsu";
+            ab.is_ninjutsu = true;
+            ab.activation_zone = Zone::HAND;
+            // Only the mana portion of the cost is parsed here; the return-an-unblocked-attacker
+            // cost is intrinsic to ninjutsu and paid by process_ninjutsu.
+            parse_activation_cost(cost_str, ab);
+            card.abilities.push_back(ab);
+            card.keywords.push_back("Ninjutsu");
+            continue;
+        }
         // K:TypeCycling:<Subtype>:<cost> — typecycling (CR 702.29f). Like Cycling, an
         // activated ability usable from hand whose cost is the given mana plus discarding
         // this card; but instead of drawing, it searches the library for a card of the

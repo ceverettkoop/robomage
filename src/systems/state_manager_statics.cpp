@@ -610,6 +610,25 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
             // triggers (a permanent entering as its back face fires only that face's ETBs).
             if (game.pending_enters_transformed.erase(entity)) set_permanent_face(entity, true);
 
+            // Ninjutsu (CR 702.49e): a card put onto the battlefield "tapped and attacking" by a
+            // ninjutsu ability. Its components exist now, so mark the creature as attacking the
+            // defender the returned attacker had been attacking (it already entered tapped via
+            // pending_enters_tapped). A non-creature ninja — e.g. a planeswalker entering via
+            // ninjutsu — cannot be a combatant; drop the mark (it still entered tapped).
+            {
+                auto pea = game.pending_enters_attacking.find(entity);
+                if (pea != game.pending_enters_attacking.end()) {
+                    if (global_coordinator.entity_has_component<Creature>(entity)) {
+                        auto &ncr = global_coordinator.GetComponent<Creature>(entity);
+                        ncr.is_attacking = true;
+                        ncr.attack_target = pea->second;
+                        ncr.is_blocked = false;
+                        game_log("%s is attacking (ninjutsu).\n", entity_name(entity).c_str());
+                    }
+                    game.pending_enters_attacking.erase(pea);
+                }
+            }
+
             // ETBReplacement: choose creature type (Cavern of Souls)
             if (card_data.has_etb_choose_creature_type) {
                 auto &perm_ref = global_coordinator.GetComponent<Permanent>(entity);

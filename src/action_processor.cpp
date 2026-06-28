@@ -35,6 +35,7 @@ static void pay_secondary_activation_costs(
     const Ability &ability, Entity source, Zone::Ownership controller, std::shared_ptr<Orderer> orderer);
 static void select_single_target(Ability &ability, const std::vector<Entity> &valid_targets, bool allow_done);
 static void process_activate_ability(const LegalAction &action, Game &game, std::shared_ptr<Orderer> orderer);
+static void process_ninjutsu(const LegalAction &action, Game &game, std::shared_ptr<Orderer> orderer);
 static std::vector<Entity> build_valid_targets(
     const Ability &ability, std::shared_ptr<Orderer> orderer, Zone::Ownership priority_player);
 static void pay_alternate_cost(const LegalAction &action, Game &game, std::shared_ptr<Orderer> orderer,
@@ -255,9 +256,64 @@ static void pay_secondary_activation_costs(
     }
 }
 
+// Ninjutsu (CR 702.49e): the bespoke cost-and-effect of a K:Ninjutsu activation. The source
+// card is in its owner's hand. Pay the ninjutsu mana cost and return one unblocked attacker the
+// activator controls to its owner's hand, then put the source card onto the battlefield tapped
+// and attacking the defender that returned attacker had been attacking. Legality (declare-blockers
+// step + an unblocked attacker exists + mana affordable) is gated in determine_legal_actions.
+static void process_ninjutsu(const LegalAction &action, Game &game, std::shared_ptr<Orderer> orderer) {
+    Entity ninja = action.source_entity;
+    const Ability &ability = action.ability;
+    if (!global_coordinator.entity_has_component<Zone>(ninja)) return;
+    Zone::Ownership ctrl = global_coordinator.GetComponent<Zone>(ninja).owner;
+
+    std::vector<Entity> choices = unblocked_attackers(orderer->mEntities, ctrl);
+    if (choices.empty()) {
+        game_log("No unblocked attacker to return for ninjutsu.\n");
+        return;
+    }
+
+    // Pay the ninjutsu mana cost first (cancellable). The return-an-attacker cost cannot fail
+    // once an unblocked attacker exists, so it is paid after the mana commit.
+    ManaValue cost = effective_activation_mana_cost(ability, ctrl, orderer);
+    if (!cost.empty()) {
+        auto mana_snap = snapshot_mana_state(ctrl, orderer);
+        if (!prompt_mana_payment(ctrl, cost, ninja, orderer)) {
+            restore_mana_state(ctrl, mana_snap, orderer);
+            cur_game.payment_fail_counts[ninja]++;
+            game_log("Payment cancelled.\n");
+            return;
+        }
+    }
+
+    // Return the chosen unblocked attacker to its owner's hand (the ninjutsu cost).
+    Entity returned = prompt_permanent_choice(choices, "Return ", " to hand (ninjutsu)",
+                                              ActionCategory::RETURN_PERMANENT);
+    Entity attack_target = global_coordinator.GetComponent<Creature>(returned).attack_target;
+    std::string ret_name = entity_name(returned);
+    orderer->add_to_zone(false, returned, Zone::HAND);
+    game_log("%s returns %s to hand (ninjutsu)\n", player_name(ctrl).c_str(), ret_name.c_str());
+
+    // Put the ninja onto the battlefield from hand, tapped and attacking the same defender.
+    cur_game.pending_enters_tapped.insert(ninja);
+    if (attack_target != 0) cur_game.pending_enters_attacking[ninja] = attack_target;
+    std::string ninja_name = entity_name(ninja);
+    orderer->add_to_zone(false, ninja, Zone::BATTLEFIELD);
+    game_log("%s puts %s onto the battlefield tapped and attacking (ninjutsu)\n",
+             player_name(ctrl).c_str(), ninja_name.c_str());
+    game.take_action();
+}
+
 static void process_activate_ability(const LegalAction &action, Game &game, std::shared_ptr<Orderer> orderer) {
     Entity permanent_entity = action.source_entity;
     const Ability &ability = action.ability;
+
+    // Ninjutsu (CR 702.49): bespoke cost (return an unblocked attacker) and effect (enter tapped
+    // and attacking) — handled separately from the generic hand-activated-ability path.
+    if (ability.is_ninjutsu) {
+        process_ninjutsu(action, game, orderer);
+        return;
+    }
 
     // ActivationZone$ Hand / Graveyard: card activated from a non-battlefield zone (no Permanent
     // component) — e.g. Cycling/Talon Gates from hand, or Unearth (CR 702.84) from the graveyard.

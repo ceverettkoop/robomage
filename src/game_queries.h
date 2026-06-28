@@ -370,6 +370,21 @@ inline std::vector<Entity> battlefield_permanents(
     return out;
 }
 
+// Unblocked attackers controlled by `ctrl` (CR 509.1h): battlefield creatures that are
+// attacking and were not blocked at declare-blockers. Used to gate and pay Ninjutsu
+// (CR 702.49e) — the offer requires one, and activating returns one to hand.
+inline std::vector<Entity> unblocked_attackers(
+    const std::set<Entity> &entities, Zone::Ownership ctrl) {
+    std::vector<Entity> out;
+    for (auto e : entities) {
+        if (!is_battlefield_permanent(e, ctrl)) continue;
+        if (!global_coordinator.entity_has_component<Creature>(e)) continue;
+        auto &cr = global_coordinator.GetComponent<Creature>(e);
+        if (cr.is_attacking && !cr.is_blocked) out.push_back(e);
+    }
+    return out;
+}
+
 // True if the creature carries the given keyword string (exact match).
 inline bool creature_has_keyword(const Creature &cr, const char *kw) {
     for (const auto &k : cr.keywords)
