@@ -1163,7 +1163,12 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         ability.condition_on_target = (value == "Targeted");
         // "Remembered" → condition_present is counted over the remembered cards at
         // resolution (Birthing Ritual: only dig if a creature was sacrificed).
-        ability.condition_on_remembered = (value == "Remembered");
+        // "Imprinted" → the same evaluation, over the imprinted card. For the exile-and-return
+        // cards (Phelia) the imprinted card IS the returned card already held in
+        // cur_game.remembered_entities (RememberObjects$ RememberedLKI / Defined$
+        // DelayTriggerRememberedLKI), so it reuses the remembered-set condition path; the
+        // redundant Imprint$ True on the preceding ChangeZone is ignored.
+        ability.condition_on_remembered = (value == "Remembered" || value == "Imprinted");
         // "TriggeredCard" → condition_present is a property check on the ability's source/
         // triggering card (Amped Raptor: Card.wasCastFromYourHandByYou), evaluated at
         // resolution against that card's permanent state.
@@ -1228,7 +1233,13 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
             // SP$ NameCard ValidCards$ Card.nonLand / ValidDescription$ nonland (Cabal
             // Therapy): the name_card handler already restricts the candidate set to nonland
             // vocab cards, so the filter spec and its prose are informational here.
-            "ValidCards", "ValidDescription"
+            "ValidCards", "ValidDescription",
+            // Imprint$ True on an exile-and-return ChangeZone (Phelia): the returned card is
+            // already tracked in cur_game.remembered_entities (RememberObjects$ RememberedLKI),
+            // which the paired ConditionDefined$ Imprinted gate reads, so the imprint is redundant.
+            // ClearImprinted$ True on the paired DB$ Cleanup is likewise redundant — the imprint
+            // set is the remembered set, cleared by the same Cleanup's ClearRemembered$ True.
+            "Imprint", "ClearImprinted"
         };
         if (ignored_keys.find(key) == ignored_keys.end()) {
             std::string msg = "Unrecognized ability param: " + key + "$ " + value;
@@ -1834,6 +1845,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
     bool valid_card_non_token = false;
     bool valid_card_permanent = false;
     bool mode_is_drawn = false;
+    bool mode_is_attacks = false;
     bool mode_is_attackers_declared = false;
     bool mode_is_taps_for_mana = false;
     bool mode_is_becomes_target = false;
@@ -1864,6 +1876,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
             else if (value == "DamageDone") mode_is_damage_done = true;
             else if (value == "DamageAll") mode_is_damage_all = true;
             else if (value == "Drawn") mode_is_drawn = true;
+            else if (value == "Attacks") mode_is_attacks = true;
             else if (value == "AttackersDeclared") mode_is_attackers_declared = true;
             else if (value == "TapsForMana") mode_is_taps_for_mana = true;
             else if (value == "BecomesTarget") mode_is_becomes_target = true;
@@ -2125,6 +2138,14 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
         ability.trigger_on = Events::PLAYER_DREW_CARD;
         ability.trigger_valid_card_opp_own = valid_card_opp_own;
         ability.trigger_exclude_first_draw_step = exclude_first_draw_step;
+    }
+
+    // "Whenever CARDNAME attacks, ..." — Phelia (Mode$ Attacks | ValidCard$ Card.Self). Fires
+    // once for this creature each time it is declared as an attacker (CR 508.2). ValidCard$
+    // Card.Self → trigger_only_self matches the attacking ENTITY against the source.
+    if (mode_is_attacks) {
+        ability.trigger_on = Events::CREATURE_ATTACKED;
+        if (valid_card_self) ability.trigger_only_self = true;
     }
 
     // "Whenever you attack" — Guide of Souls (Mode$ AttackersDeclared | AttackingPlayer$ You).
