@@ -48,6 +48,17 @@ struct StaticAbility {
     int set_cost_min = 0;
     bool set_cost_raise_to = false;
     std::string set_cost_filter = "";
+    // CantAttack fields (category = "CantAttack"; Ensnaring Bridge): a continuous combat
+    // restriction — creatures matching cant_attack_filter can't be declared as attackers
+    // (CR 509.1a). cant_attack_filter is the ValidCard$ spec (e.g. "Creature.powerGTX"); it is
+    // populated only for the blanket "can't attack" form (no Target$ player restriction), so a
+    // Target$-scoped "can't attack you" variant leaves it empty and is skipped. cant_attack_x_svar
+    // holds the resolved SVar expression for a dynamic X referenced by a powerGTX/-style qualifier
+    // (Ensnaring Bridge: "Count$ValidHand Card.YouOwn"), evaluated against the static SOURCE's
+    // controller at declare-attackers time ("your hand" = the source controller's hand, applied to
+    // every creature). Empty x_svar = the filter has no dynamic X.
+    std::string cant_attack_filter = "";
+    std::string cant_attack_x_svar = "";
     // CantBeActivated fields (category = "CantBeActivated"):
     std::string cant_activate_card_filter = "";  // "Artifact" — card type whose activated abilities are suppressed
     // NamedCard fields (RaiseCost / CantBeActivated with ValidCard$ Card.NamedCard, e.g. Disruptor Flute):

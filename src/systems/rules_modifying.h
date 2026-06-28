@@ -33,6 +33,15 @@ bool mana_activation_prohibited(Entity permanent);
 bool cast_prohibited(Zone::Ownership caster, const CardData &card,
                      Zone::ZoneValue cast_from = Zone::HAND);
 
+// CantAttack (Ensnaring Bridge): may the creature `creature` NOT be declared as an attacker
+// right now (CR 509.1a)? True when any active CantAttack static's ValidCard$ filter matches it.
+// A dynamic power/toughness-vs-X qualifier (Ensnaring Bridge's Creature.powerGTX, "power greater
+// than the number of cards in your hand") is evaluated with X = the static SOURCE's controller's
+// hand size — so "your hand" is the Bridge controller's hand, applied to every creature. Only the
+// blanket form (no Target$ player restriction) is honoured. Queried in declare_attackers so a
+// prohibited creature is never offered as a legal attacker.
+bool attack_prohibited(Entity creature);
+
 // AdjustLandPlays / MayPlay (Icetill Explorer), evaluated for `player`.
 int  land_play_bonus(Zone::Ownership player);
 bool may_play_lands_from_graveyard(Zone::Ownership player);

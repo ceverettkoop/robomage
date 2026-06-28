@@ -2414,6 +2414,7 @@ static std::vector<StaticAbility> parse_static_abilities(const std::string &scri
         if (line.find("Mode$") == std::string::npos) continue;
 
         StaticAbility sa;
+        bool cant_attack_targeted = false;  // CantAttack with a Target$ player restriction (handled below)
         size_t param_pos = 0;
         std::string key, value;
         while (next_param(line, param_pos, key, value)) {
@@ -2482,6 +2483,15 @@ static std::vector<StaticAbility> parse_static_abilities(const std::string &scri
                     // Full ValidCard$ filter spec (e.g. "Eldrazi.Colorless"); matched against
                     // each spell's card characteristics when computing its cast cost.
                     sa.reduce_cost_filter = value;
+                } else if (sa.category == "CantAttack") {
+                    // The creatures the can't-attack restriction applies to (Ensnaring Bridge:
+                    // "Creature.powerGTX"). A dynamic 'X' in a power/toughness qualifier references
+                    // SVar X; resolve and store it for evaluation against the source's controller.
+                    sa.cant_attack_filter = value;
+                    if (value.find('X') != std::string::npos) {
+                        auto it = svars.find("X");
+                        if (it != svars.end()) sa.cant_attack_x_svar = it->second;
+                    }
                 } else if (sa.category == "CantBeActivated") {
                     // Store the full type list (e.g. "Artifact" for Null Rod, or
                     // "Artifact,Creature,Planeswalker" for Clarion Conqueror). The
@@ -2561,8 +2571,18 @@ static std::vector<StaticAbility> parse_static_abilities(const std::string &scri
                 sa.present_zone = value;
             } else if (key == "PresentCompare") {
                 sa.present_compare = value;
+            } else if (key == "Target") {
+                // A CantAttack with Target$ (e.g. "Target$ You" — "can't attack you") restricts
+                // WHICH player can't be attacked rather than forbidding attacking outright. Only
+                // the blanket form (no Target$) is implemented; flag the targeted form so it is
+                // not mistaken for a global can't-attack below.
+                if (sa.category == "CantAttack") cant_attack_targeted = true;
             }
         }
+
+        // The CantAttack query treats a non-empty cant_attack_filter as a blanket "can't attack"
+        // restriction; drop it for the targeted ("can't attack you") variant that isn't handled.
+        if (sa.category == "CantAttack" && cant_attack_targeted) sa.cant_attack_filter.clear();
 
         if (!sa.category.empty()) result.push_back(sa);
     }

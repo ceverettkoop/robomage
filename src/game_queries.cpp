@@ -152,6 +152,23 @@ bool eval_qualifier(const CharView &v, const MatchCtx &ctx, const std::string &q
         if (q == "cmcLEX") return v.cmc <= static_cast<int>(cur_game.x_paid);
         return true;  // cmcEQX / cmcLE3 / … enforced via ctx.cmc_bound
     }
+    // dynamic power/toughness vs SVar X (Ensnaring Bridge: Creature.powerGTX — "power greater
+    // than the number of cards in your hand"). The X value is supplied by the caller in
+    // ctx.x_bound (the static source's controller's hand size). A P/T-less object never matches,
+    // and with no X provided the qualifier can't be evaluated, so it fails closed.
+    {
+        const std::string lead = q.rfind("power", 0) == 0       ? "power"
+                                 : q.rfind("toughness", 0) == 0 ? "toughness"
+                                                                : "";
+        if (!lead.empty()) {
+            std::string rest = q.substr(lead.size());
+            if (rest.size() == 3 && rest[2] == 'X') {  // <attr> + 2-letter op + "X"
+                if (!v.has_pt || ctx.x_bound == INT_MIN) return false;
+                int lhs = (lead == "power") ? v.power : v.toughness;
+                return apply_svar_op(lhs, rest.substr(0, 2), ctx.x_bound);
+            }
+        }
+    }
     // power/toughness comparator ----------------------------------------------
     { bool ok = false; if (try_pt_qualifier(v, q, ok)) return ok; }
     // positive color ----------------------------------------------------------

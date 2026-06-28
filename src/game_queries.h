@@ -2,6 +2,7 @@
 #define GAME_QUERIES_H
 
 #include <cctype>
+#include <climits>
 #include <set>
 #include <string>
 #include <vector>
@@ -135,6 +136,10 @@ struct MatchCtx {
     Entity source = 0;                           // self-exclusion source for .Other
     int cmc_bound = -1;                          // dynamic mana-value bound (Aether Vial); <0 = none
     std::string cmc_op = "";                     // comparator for cmc_bound (EQ/LE/GE/…)
+    // Dynamic value of SVar X for a power/toughness-vs-X qualifier (Ensnaring Bridge's
+    // Creature.powerGTX): the caller resolves X (e.g. the controller's hand size) and supplies
+    // it here. INT_MIN = "no X provided", in which case a powerGTX/-style qualifier fails closed.
+    int x_bound = INT_MIN;
 };
 
 bool card_matches_filter(Entity e, const std::string &spec, const MatchCtx &ctx = MatchCtx{});

@@ -21,6 +21,7 @@
 #include "input_logger.h"
 #include "mana_system.h"
 #include "systems/orderer.h"
+#include "systems/rules_modifying.h"
 #include "systems/state_manager.h"
 #include "systems/state_manager_internal.h"
 
@@ -610,6 +611,10 @@ static void declare_attackers(Game &game, std::shared_ptr<Orderer> orderer) {
             }
             if (!has_haste) continue;
         }
+        // A creature a CantAttack static forbids from attacking (Ensnaring Bridge: power greater
+        // than the controller's hand size) is never eligible (CR 509.1a) — not offered and not
+        // forced by a "must attack" effect, since it isn't able to attack.
+        if (rules_mod::attack_prohibited(entity)) continue;
         eligible.push_back(entity);
     }
 

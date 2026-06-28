@@ -8,6 +8,7 @@
 #include "../components/types.h"
 #include "../game_queries.h"  // card_matches_filter, extract_static_cmc_bound, is_creature_card
 #include "../mana_system.h"  // get_player_entity
+#include "../svar_eval.h"  // evaluate_sa_svar (CantAttack dynamic-X hand count)
 
 namespace rules_mod {
 
@@ -101,6 +102,25 @@ bool cast_prohibited(Zone::Ownership caster, const CardData &card, Zone::ZoneVal
             extract_static_cmc_bound(as.sa->cant_cast_filter, ctx);
             if (card_matches_filter(card, as.sa->cant_cast_filter, ctx)) return true;
         }
+    }
+    return false;
+}
+
+bool attack_prohibited(Entity creature_entity) {
+    for (const auto &as : g_active_statics) {
+        if (as.suppressed) continue;  // 613.1f: source lost all abilities (Humility)
+        if (as.sa->category != "CantAttack") continue;
+        if (as.sa->cant_attack_filter.empty()) continue;  // targeted / unhandled "can't attack you" form
+        if (!as.condition_met) continue;                  // gated statics (IsPresent$, etc.)
+        MatchCtx ctx;
+        ctx.controller = as.controller;  // "you" reference for any YouCtrl/OppCtrl in the filter
+        ctx.source = as.entity;
+        // Resolve a dynamic X (Ensnaring Bridge: hand size) against the static's controller, so
+        // "your hand" is the source controller's hand — the threshold is the same for every
+        // creature, matching the card (it affects all creatures vs. its controller's hand).
+        if (!as.sa->cant_attack_x_svar.empty())
+            ctx.x_bound = evaluate_sa_svar(as.sa->cant_attack_x_svar, as.controller, as.entity);
+        if (permanent_matches_filter(creature_entity, as.sa->cant_attack_filter, ctx)) return true;
     }
     return false;
 }

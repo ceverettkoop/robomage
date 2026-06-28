@@ -207,6 +207,55 @@ int evaluate_sa_svar(const std::string &expr, Zone::Ownership controller, Entity
         return static_cast<int>(type_names.size());
     }
 
+    // Count$ValidHand <filter> — number of cards in hand matching <filter> (Ensnaring Bridge:
+    // "Count$ValidHand Card.YouOwn" = the number of cards in your hand). A card in hand has no
+    // controller, so an ownership qualifier (YouOwn/YouCtrl / OppOwn/OppCtrl) scopes the count to
+    // one player's hand via Zone::owner; any remaining characteristic qualifiers (the head type and
+    // '.'/'+' tokens) are matched against the card's printed characteristics by the shared matcher.
+    if (expr.rfind("Count$ValidHand", 0) == 0) {
+        std::string spec = expr.substr(std::string("Count$ValidHand").size());
+        if (!spec.empty() && spec[0] == ' ') spec.erase(0, 1);
+        bool you_own = spec.find("YouOwn") != std::string::npos ||
+                       spec.find("YouCtrl") != std::string::npos;
+        bool opp_own = spec.find("OppOwn") != std::string::npos ||
+                       spec.find("OppCtrl") != std::string::npos;
+        // Rebuild the characteristic filter with the ownership tokens removed; keep the head type
+        // and every other qualifier so a typed/colored hand filter still works.
+        std::string head, sub;  // head type + '+'-joined remaining qualifiers
+        {
+            size_t i = 0;
+            bool first = true;
+            while (i <= spec.size()) {
+                size_t nx = spec.find_first_of(".+", i);
+                size_t end = (nx == std::string::npos) ? spec.size() : nx;
+                std::string tok = spec.substr(i, end - i);
+                if (first) { head = tok; first = false; }
+                else if (!tok.empty() && tok != "YouOwn" && tok != "YouCtrl" &&
+                         tok != "OppOwn" && tok != "OppCtrl")
+                    sub += (sub.empty() ? "" : "+") + tok;
+                if (nx == std::string::npos) break;
+                i = nx + 1;
+            }
+        }
+        if (head.empty()) head = "Card";
+        std::string sub_spec = sub.empty() ? head : (head + "+" + sub);
+        MatchCtx ctx;
+        ctx.controller = controller;
+        int count = 0;
+        Entity max_e = global_coordinator.GetMaxIssuedEntity();
+        for (Entity e = 0; e < max_e; ++e) {
+            if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+            auto &z = global_coordinator.GetComponent<Zone>(e);
+            if (z.location != Zone::HAND) continue;
+            if (you_own && z.owner != controller) continue;
+            if (opp_own && z.owner == controller) continue;
+            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+            if (!card_matches_filter(e, sub_spec, ctx)) continue;
+            count++;
+        }
+        return count;
+    }
+
     // Count$ValidGraveyard <Type>[.<Restriction>...] — count cards of the given
     // type in graveyards, optionally restricted to the controller's own cards
     // (YouOwn/YouCtrl). E.g. "Land.YouOwn" for Knight of the Reliquary.
