@@ -154,6 +154,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Hide on the Ceiling", 243},
     {"Baleful Strix", 244},
     {"Blue Elemental Blast", 245},
+    {"Expedition Map", 246},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);
