@@ -166,6 +166,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Mystic Sanctuary", 255},
     {"Pernicious Deed", 256},
     {"Pick Your Poison", 257},
+    {"Prismatic Vista", 258},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);

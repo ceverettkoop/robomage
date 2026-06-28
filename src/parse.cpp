@@ -1281,7 +1281,11 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
             // DB$ Sacrifice SacMessage$ <text> (Pick Your Poison): the prose naming what is
             // sacrificed ("creature with flying"). Purely cosmetic — the load-bearing SacValid$
             // filter is parsed above.
-            "SacMessage"
+            "SacMessage",
+            // ChangeTypeDesc$ <text> (Prismatic Vista / Price of Freedom): the prose name of the
+            // searched-for type ("basic land"). Purely cosmetic — the load-bearing ChangeType$
+            // filter is parsed above.
+            "ChangeTypeDesc"
         };
         if (ignored_keys.find(key) == ignored_keys.end()) {
             std::string msg = "Unrecognized ability param: " + key + "$ " + value;
