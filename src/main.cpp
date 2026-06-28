@@ -7,6 +7,7 @@
 
 #include "action_processor.h"
 #include "card_db.h"
+#include "companion.h"
 #include "classes/deck.h"
 #include "classes/game.h"
 #include "classes/match_state.h"
@@ -157,6 +158,9 @@ static int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &dec
         sys.orderer->place_in_zone(sideboard_a_cards, Zone::PLAYER_A, Zone::SIDEBOARD);
     if (!sideboard_b_cards.empty())
         sys.orderer->place_in_zone(sideboard_b_cards, Zone::PLAYER_B, Zone::SIDEBOARD);
+    // Companion (CR 702.139): instantiate each player's chosen companion as a sideboard entity (if
+    // not already one) and record it, gated on the starting deck meeting the companion's restriction.
+    setup_companions(deck_a, deck_b, sys.orderer);
     // run SBE once to attach Permanent/Creature components, then clear summoning sickness
     if (!preplaced.empty()) {
         sys.state_manager->state_based_effects(cur_game, sys.orderer);

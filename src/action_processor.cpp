@@ -1354,6 +1354,30 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             break;
 
         case SPECIAL_ACTION: {
+            // COMPANION (CR 702.139): pay {3} and put the chosen companion from the sideboard into
+            // its owner's hand, once per game. The legal-action gate already verified the companion
+            // is in the sideboard, unused this game, and that {3} is affordable.
+            if (action.companion_to_hand) {
+                Entity comp = action.source_entity;
+                auto &zone = global_coordinator.GetComponent<Zone>(comp);
+                Zone::Ownership owner = zone.owner;
+                auto mana_snap = snapshot_mana_state(owner, orderer);
+                ManaValue three = {GENERIC, GENERIC, GENERIC};
+                if (!prompt_mana_payment(owner, three, comp, orderer)) {
+                    restore_mana_state(owner, mana_snap, orderer);
+                    game_log("Payment cancelled.\n");
+                    break;
+                }
+                std::string cname = global_coordinator.GetComponent<CardData>(comp).name;
+                orderer->add_to_zone(false, comp, Zone::HAND);
+                auto &player = global_coordinator.GetComponent<Player>(get_player_entity(owner));
+                player.companion_brought_to_hand = true;
+                game_log("%s pays {3} and puts %s into their hand from outside the game\n",
+                         player_name(owner).c_str(), cname.c_str());
+                game.take_action();
+                break;
+            }
+
             // Play land
             Entity land_entity = action.source_entity;
             auto &zone = global_coordinator.GetComponent<Zone>(land_entity);

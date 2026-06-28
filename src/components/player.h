@@ -35,6 +35,15 @@ struct Player {
     // creature subtypes in this player's deck: pair<list_index, all_subtypes_index>
     std::vector<std::pair<int, int>> creature_subtypes;
 
+    // Companion (CR 702.139): the player's chosen companion entity living in the SIDEBOARD zone
+    // (0 = no eligible companion). Set at game start by setup_companions when a sideboard card has
+    // the Companion keyword and the starting deck satisfies its deckbuilding restriction.
+    // companion_brought_to_hand records the once-per-game special action ("pay {3}: put it into
+    // your hand from outside the game") having been used. Reset implicitly by the per-game ECS
+    // rebuild (gen_player recreates the Player each game).
+    Entity chosen_companion = 0;
+    bool companion_brought_to_hand = false;
+
     // Number of counters of `type` on this player (0 if none). Single read path for the
     // counter map so every counter kind (POISON, ENERGY, …) is queried the same way.
     int counter_count(const std::string &type) const {

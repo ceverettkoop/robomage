@@ -485,6 +485,33 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             }
         }
     }
+    // COMPANION (CR 702.139) — at sorcery speed, the player may pay {3} ONCE per game to put their
+    // chosen companion from the sideboard ("outside the game") into their hand. The chosen companion
+    // and the deckbuilding-restriction gate were resolved at game start (setup_companions); here we
+    // only offer the special action while the companion is still in the sideboard, it hasn't been
+    // used yet, and {3} is affordable. Mirrors the play-land special action's timing gate.
+    if ((game.cur_step == FIRST_MAIN || game.cur_step == SECOND_MAIN) &&
+        game.player_a_turn == game.player_a_has_priority && stack_manager->is_empty() &&
+        global_coordinator.entity_has_component<Player>(priority_player_entity)) {
+        auto &player = global_coordinator.GetComponent<Player>(priority_player_entity);
+        Entity comp = player.chosen_companion;
+        if (comp != 0 && !player.companion_brought_to_hand &&
+            global_coordinator.entity_has_component<Zone>(comp) &&
+            global_coordinator.GetComponent<Zone>(comp).location == Zone::SIDEBOARD &&
+            global_coordinator.entity_has_component<CardData>(comp)) {
+            ManaValue three = {GENERIC, GENERIC, GENERIC};
+            if (can_pay_mana(priority_player, three, comp, orderer)) {
+                auto &cd = global_coordinator.GetComponent<CardData>(comp);
+                LegalAction la(SPECIAL_ACTION, comp,
+                               "Companion: pay {3}, put " + cd.name + " into your hand");
+                la.category = ActionCategory::PLAY_FREE;
+                la.companion_to_hand = true;
+                la.card_is_public = true;
+                actions.push_back(la);
+            }
+        }
+    }
+
     // checking for spells to cast from hand
     // TODO spells cast from elsewhere
     bool stack_empty = stack_manager->is_empty();

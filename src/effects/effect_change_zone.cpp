@@ -343,6 +343,50 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
         return true;
     }
 
+    // Non-targeted player-driven battlefield multi-select (Yorion, Sky Nomad's blink: "exile any
+    // number of OTHER nonland permanents you own and control"). The ability has no ValidTgts$
+    // (selection is not targeting, CR 701.x) — it filters the battlefield by ChangeType$ and lets
+    // the controller pick how many to move. ChangeNum$ X here is just Count$ of the matching set
+    // ("any number"), so the cap is effectively "all matching": re-derive candidates after each
+    // pick and offer a "done" to stop early. RememberChanged$ records the moved cards for a paired
+    // delayed-return SubAbility (DelTrig → return at the next end step). Distinct from the
+    // empty-filter self-move branch above and from ChangeZoneAll (which moves the whole set with no
+    // choice).
+    if (ab.origin == Zone::BATTLEFIELD && !ab.change_type.empty()) {
+        MatchCtx ctx;
+        ctx.controller = owner;
+        ctx.source = ab.source;
+        bool prev_priority = cur_game.player_a_has_priority;
+        cur_game.player_a_has_priority = (owner == Zone::PLAYER_A);
+        while (true) {
+            std::vector<Entity> cands;
+            for (auto e : battlefield_permanents(orderer->mEntities)) {
+                if (permanent_matches_any(e, ab.change_type, ctx)) cands.push_back(e);
+            }
+            if (cands.empty()) break;
+            std::vector<LegalAction> picks;
+            for (auto e : cands) {
+                auto &cd = global_coordinator.GetComponent<CardData>(e);
+                LegalAction la(PASS_PRIORITY, e, std::string("Exile ") + cd.name);
+                la.category = ActionCategory::CHOOSE_CARD;
+                la.card_is_public = true;
+                picks.push_back(la);
+            }
+            LegalAction done(PASS_PRIORITY, "Done (exile no more)");
+            done.category = ActionCategory::CHOOSE_CARD;
+            picks.push_back(done);
+            int choice = InputLogger::instance().get_input(picks);
+            if (choice < 0 || choice >= static_cast<int>(cands.size())) break;  // declined / done
+            Entity chosen = cands[static_cast<size_t>(choice)];
+            std::string cname = global_coordinator.GetComponent<CardData>(chosen).name;
+            change_zone_move(orderer, chosen, ab.destination);
+            if (ab.remember_changed) cur_game.remembered_entities.push_back(chosen);
+            game_log("%s exiles %s\n", player_name(owner).c_str(), cname.c_str());
+        }
+        cur_game.player_a_has_priority = prev_priority;
+        return true;
+    }
+
     // Search-based ChangeZone (e.g. fetch lands, Green Sun's Zenith). The number to move is
     // normally a fixed numeric ChangeNum$. A dynamic count-SVar ChangeNum (Ugin, Eye of the
     // Storms' -11: "Search ... for any number of colorless nonland cards", ChangeNum$ X, X =

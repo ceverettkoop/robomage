@@ -113,6 +113,14 @@ struct CardData{
     bool has_replicate = false;
     ManaValue replicate_cost;
     std::set<Colors> explicit_colors;    // Colors: field override (e.g. Dryad Arbor)
+    // K:Companion:<grouping>:<restriction>:<desc> — the Companion keyword (CR 702.139). A card
+    // with this keyword may begin the game in the sideboard ("outside the game"); if the chosen
+    // companion's deckbuilding restriction is met by the starting deck, its controller may pay
+    // {3} once per game, at sorcery speed, to put it from the sideboard into their hand.
+    // companion_restriction is the Forge restriction token (e.g. "DeckSizePlus20") evaluated by
+    // deck_meets_companion_restriction in companion.cpp. False/empty for non-companion cards.
+    bool is_companion = false;
+    std::string companion_restriction;
 };
 
 #endif /* CARD_H */

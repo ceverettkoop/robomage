@@ -92,6 +92,10 @@ struct LegalAction {
         // permanent the processor marks it pending_enters_transformed so it enters showing the
         // back face (reusing the transform machinery, parallel to play_back_face for lands).
         bool cast_back_face = false;
+        // SPECIAL_ACTION that puts the player's chosen Companion (CR 702.139) from the sideboard
+        // into their hand for {3}. Disambiguates the companion special action from the play-land
+        // special action; the processor pays {3} and moves the source entity Sideboard -> Hand.
+        bool companion_to_hand = false;
         // True when this choice's card identity is public knowledge to all players
         // (e.g. a revealed tutor like Personal Tutor). Lets observers show the card
         // name even for an otherwise-private choice (search/top-of-library).

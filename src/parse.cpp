@@ -468,6 +468,17 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             card.keywords.push_back("Improvise");
             continue;
         }
+        // K:Companion:<grouping>:<restriction>:<desc> — the Companion keyword (CR 702.139). Forge
+        // encodes the deckbuilding restriction as a token in the 3rd colon field (Yorion:
+        // "Companion:Special:DeckSizePlus20:..."). Store the restriction token structured so
+        // setup_companions can evaluate it against the starting deck; the trailing prose is display.
+        if (kw_line.rfind("Companion:", 0) == 0) {
+            card.is_companion = true;
+            std::vector<std::string> parts = split(kw_line, ':');
+            if (parts.size() >= 3) card.companion_restriction = parts[2];
+            card.keywords.push_back("Companion");
+            continue;
+        }
         // K:Enchant:<ValidTgts>[:<prompt>] — an Aura's enchant restriction (CR 303.4). The
         // middle field is a target filter (e.g. "Creature.YouCtrl") for the object this Aura can
         // be attached to. Stored on the card so the cast path targets a matching object and the
@@ -1447,6 +1458,11 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         static const std::set<std::string> ignored_keys = {
             "SpellDescription", "AILogic", "AINoRecursiveCheck", "TgtPrompt", "StackDescription",
             "ConditionDescription",
+            // SelectPrompt$ — the prose prompt shown when a ChangeZone effect asks the player to
+            // pick which permanents to move (Yorion: "Select any number of other nonland
+            // permanents..."). Purely cosmetic, like TgtPrompt; the selection is driven by
+            // ChangeType$/Origin$/Destination$.
+            "SelectPrompt",
             // ValidTgtsDesc$ — the prose name of a target restriction shown to the player (e.g.
             // Cloak and Dagger's "creature controlled by the targeted opponent"). Purely cosmetic;
             // the load-bearing restriction is ValidTgts$, parsed above.
