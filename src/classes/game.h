@@ -174,8 +174,11 @@ struct Game {
         // so the same path serves energy ({E}) and life (a future Bolas's Citadel "pay life =
         // mana value"). The casting path reads this to compute the cost and skip mana payment.
         struct ImpulseCastPermission {
-            enum Resource { ENERGY, LIFE } resource = ENERGY;
-            int amount = 0;            // resolved cost (e.g. the card's mana value)
+            // FREE = cast without paying any cost (Ugin, Eye of the Storms' -11: "cast those
+            // cards without paying their mana costs", CR 118.9 / 601.2f). ENERGY/LIFE pay an
+            // alternative resource cost equal to `amount` (Amped Raptor's DB$ Play).
+            enum Resource { ENERGY, LIFE, FREE } resource = ENERGY;
+            int amount = 0;            // resolved cost (e.g. the card's mana value); 0 when FREE
             Zone::Ownership caster = Zone::UNKNOWN;  // who may cast it (its controller)
         };
         std::map<Entity, ImpulseCastPermission> impulse_cast_permission;

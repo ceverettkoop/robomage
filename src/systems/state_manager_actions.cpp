@@ -697,7 +697,9 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         Entity pe = get_player_entity(priority_player);
         if (!global_coordinator.entity_has_component<Player>(pe)) continue;
         auto &ppl = global_coordinator.GetComponent<Player>(pe);
-        if (perm_grant.resource == Game::ImpulseCastPermission::ENERGY) {
+        if (perm_grant.resource == Game::ImpulseCastPermission::FREE) {
+            // No cost to pay (Ugin -11 grant) — always affordable.
+        } else if (perm_grant.resource == Game::ImpulseCastPermission::ENERGY) {
             if (player_energy(ppl) < perm_grant.amount) continue;
         } else {  // LIFE — must be able to pay without the cost itself being lethal is not a
                   // legality bar in MTG, but a player won't be forced; require enough life so
@@ -717,7 +719,10 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         if (rules_mod::cast_prohibited(priority_player, ecd, Zone::EXILE))
             continue;
 
-        LegalAction imp_la(CAST_SPELL, ex_entity, "Cast " + ecd.name + " (impulse, alt cost)");
+        const char *imp_suffix = (perm_grant.resource == Game::ImpulseCastPermission::FREE)
+                                     ? " (from exile, no cost)"
+                                     : " (impulse, alt cost)";
+        LegalAction imp_la(CAST_SPELL, ex_entity, "Cast " + ecd.name + imp_suffix);
         imp_la.category = ActionCategory::CAST_SPELL;
         imp_la.impulse_cast = true;
         actions.push_back(imp_la);

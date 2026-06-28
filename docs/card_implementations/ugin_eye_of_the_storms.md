@@ -40,13 +40,27 @@ No retagging; no card-script edits.
   rules a loyalty ability is *not* a mana ability (CR 605.1a), so the printed Ugin "0" should use
   the stack; honoring the `AB$ Mana` tag means it is usable only while paying a cost, not as a
   free stack action at priority. It produces the correct mana and is once-per-payment.
-- **-11 ultimate**: gated by the 11-loyalty cost (correctly hidden below loyalty 11). Searches the
-  library for colorless nonland cards, exiles them, shuffles (standard `ChangeZone` Library→Exile),
-  then a `DBEffect` would grant "cast those from exile without paying mana costs." The free-cast
-  grant is **a no-op** in the engine today (`grant_cast` only grants casting from the *graveyard*;
-  cast-from-exile-without-cost is unimplemented), so the ultimate exiles the cards and resolves
-  cleanly but does not (yet) let you cast them for free. This matches the brief's allowance to
-  ship the rest provided the ultimate resolves without error.
+- **-11 ultimate**: gated by the 11-loyalty cost (correctly hidden below loyalty 11). Two parts,
+  both now fully implemented:
+  - **Search/exile any number + shuffle** (CR 701.19 / 401.6): `ChangeZone` Library→Exile,
+    `ChangeType$ Card.nonLand+Colorless`, `ChangeNum$ X` where `X = Count$ValidLibrary
+    Card.YouOwn+nonLand+Colorless`. "Any number" is the dynamic count-SVar resolved into the
+    search loop's `num_to_move` cap (`effect_change_zone.cpp`, via `dynamic_amount_expr` /
+    `evaluate_dynamic_amount`); the player exiles colorless nonland cards one at a time and a
+    fail-to-find stops early (the loop already breaks on a 0 pick). Previously the count-SVar was
+    ignored and only **one** card could be exiled — fixed. The library is shuffled after the
+    search.
+  - **Free cast from exile until end of turn** (CR 113.3 / 118.9 / 601.2f): the `DBEffect`
+    (`DB$ Effect | StaticAbilities$ STPlay | RememberObjects$ Remembered | ForgetOnMoved$ Exile`,
+    where `STPlay` grants `MayPlay$ True + MayPlayWithoutManaCost$ True | AffectedZone$ Exile`)
+    grants, for each just-exiled (remembered) card, permission to cast it **from exile without
+    paying its mana cost** this turn. Implemented by recording a `FREE` cast-from-exile permission
+    per remembered exiled card in `cur_game.impulse_cast_permission` (the same per-turn map the
+    alt-cost impulse cast uses, extended with a `FREE` resource), good until cleanup. The casting
+    path offers each as `Cast <card> (from exile, no cost)` while it remains in exile
+    (`ForgetOnMoved$ Exile` = the permission lapses once a card leaves exile), funnels it onto the
+    stack like any cast, and pays nothing. The map is cleared each cleanup, so the permission ends
+    at end of turn.
 
 ## Tests (`train/test_harness.py`)
 - **Cast trigger**: cast Ugin `{7}`, target opponent's Grizzly Bears → "Grizzly Bears is moved to
@@ -56,14 +70,23 @@ No retagging; no card-script edits.
 - **0**: with no lands, cast a {3} artifact paying only with Ugin → "activated Ugin, Eye of the
   Storms for 3(C)"; loyalty unchanged.
 - **-11 gating**: appears in the menu as "Activate Ugin (ChangeZone)" only once loyalty ≥ 11.
-  (Full resolution couldn't be driven through the `--play` harness due to multi-turn cleanup-discard
-  timing + the action label being the category; in scripted games loyalty climbed to 19 with the
-  ultimate available every turn and **no** crash/error.)
+- **-11 full resolution (real Ugin)**: drove Ugin on the battlefield to loyalty 11 (two `+2`
+  activations across turns), put two Expedition Maps deep in Player A's library, then activated the
+  ultimate. Transcript: `Player A puts Expedition Map to exile` ×2 then `fails to find` (the
+  "any number" search), library shuffled, then `Player A may cast Expedition Map from exile without
+  paying its mana cost this turn.` ×2. The menu offered `Cast Expedition Map (from exile, no cost)`
+  for both; choosing it: `Player A casts Expedition Map without paying its mana cost` →
+  `Expedition Map enters the battlefield` (no mana paid). On a follow-up line the permission was
+  **gone the next turn** (no `(from exile, no cost)` action after the turn ended), confirming the
+  until-end-of-turn expiry.
 
-Regression: scripted full games, `temp/ugin_a` (Ugin + Lightning Bolt + Expedition Map + Mountain)
-vs `temp/wbc_a`, seeds 1 and 4 — decisive (A wins / B wins), no draws, no non-fatal errors.
+Regression: scripted full games, `temp/ugin_reg_a` (4 Ugin + 4 Expedition Map + 32 Wastes) vs
+`temp/ugin_reg_b` (Grizzly Bears aggro), seeds 1 and 2 — decisive (B wins both), no draws, no
+non-fatal errors.
 
 ## Result
-Implemented. Cast triggers, +2, and 0 verified; -11 correctly gated and resolves via standard
-ChangeZone (its free-cast-from-exile grant is a documented no-op). Build clean; regression
-decisive with no errors.
+Fully implemented. Cast triggers, +2, and 0 verified; **-11 ultimate now complete** — it searches
+and exiles any number of colorless nonland cards (count-SVar `ChangeNum` resolution fixed),
+shuffles, and grants free cast-from-exile of those cards until end of turn (new `FREE` resource on
+the impulse cast-from-exile permission). A real Ugin game cast an exiled Expedition Map for free.
+Build clean; regression decisive with no errors.

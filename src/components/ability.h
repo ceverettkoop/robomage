@@ -393,6 +393,15 @@ struct Ability{
     std::string effect_static_ability = "";  // StaticAbilities$ value (e.g. "Unblockable")
     bool effect_remember_self = false;        // RememberObjects$ Self
 
+    // DB$ Effect | StaticAbilities$ <SVar> where the named static grants MayPlay$ True +
+    // MayPlayWithoutManaCost$ True with AffectedZone$ Exile (Ugin, Eye of the Storms' -11:
+    // "Until end of turn, you may cast those cards without paying their mana costs"). The
+    // StaticAbilities$ SVar is resolved at parse time; when it carries that grant this flag is
+    // set, and the GrantCast handler records a free (no-mana-cost) cast-from-exile permission
+    // for each currently-remembered exiled card (cur_game.remembered_entities), good until end
+    // of turn. CR 113.3 / 601.3e / 118.9 (cast without paying mana cost).
+    bool effect_grant_free_cast_from_exile = false;
+
     // DB$ Effect | Triggers$ <SVar> — a transient until-end-of-turn floating triggered ability
     // (Forth Eorlingas!'s "Whenever one or more creatures you control deal combat damage to one
     // or more players this turn, you become the monarch"). The named trigger SVar is parsed into

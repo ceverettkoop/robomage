@@ -45,6 +45,34 @@ bool grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer) {
         return true;
     }
 
+    // DB$ Effect | StaticAbilities$ <SVar(MayPlay+MayPlayWithoutManaCost, AffectedZone$ Exile)>
+    // | RememberObjects$ Remembered (Ugin, Eye of the Storms' -11): "Until end of turn, you may
+    // cast those cards without paying their mana costs." The "those cards" are the colorless
+    // nonland cards the preceding RememberChanged$ ChangeZone just exiled — still sitting in
+    // cur_game.remembered_entities (DBCleanup clears them only AFTER this sub-ability). Rather
+    // than instantiate a continuous-effect object, record a FREE cast-from-exile permission for
+    // each remembered exiled card in cur_game.impulse_cast_permission (the same per-turn map the
+    // alt-cost impulse cast uses), good until cleanup (CR 118.9 / 601.2f). The casting path
+    // offers these from EXILE while they remain there (ForgetOnMoved$ Exile = the permission
+    // lapses once a card leaves exile), pays no cost, and clears the map each cleanup.
+    if (ab.effect_grant_free_cast_from_exile) {
+        for (Entity card : cur_game.remembered_entities) {
+            if (!global_coordinator.entity_has_component<Zone>(card)) continue;
+            auto &cz = global_coordinator.GetComponent<Zone>(card);
+            if (cz.location != Zone::EXILE) continue;
+            if (!global_coordinator.entity_has_component<CardData>(card)) continue;
+            Game::ImpulseCastPermission perm;
+            perm.resource = Game::ImpulseCastPermission::FREE;
+            perm.amount = 0;
+            perm.caster = ab.controller;
+            cur_game.impulse_cast_permission[card] = perm;
+            game_log("%s may cast %s from exile without paying its mana cost this turn.\n",
+                     player_name(ab.controller).c_str(),
+                     global_coordinator.GetComponent<CardData>(card).name.c_str());
+        }
+        return true;
+    }
+
     // DB$ Effect | StaticAbilities$ Unblockable | RememberObjects$ Self — a transient
     // continuous effect that makes the source unblockable until end of turn (Kappa
     // Cannoneer, CR 509.1b / 702.x). Modeled as a per-turn "can't be blocked" mark on the

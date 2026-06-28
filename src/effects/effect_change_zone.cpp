@@ -325,8 +325,19 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
         return true;
     }
 
-    // Search-based ChangeZone (e.g. fetch lands, Green Sun's Zenith)
-    size_t num_to_move = (ab.amount > 0) ? ab.amount : 1;
+    // Search-based ChangeZone (e.g. fetch lands, Green Sun's Zenith). The number to move is
+    // normally a fixed numeric ChangeNum$. A dynamic count-SVar ChangeNum (Ugin, Eye of the
+    // Storms' -11: "Search ... for any number of colorless nonland cards", ChangeNum$ X, X =
+    // Count of those cards you own) means "any number up to all": resolve the cap from the
+    // count expression and let a fail-to-find stop the search early (CR 701.19, a "search for
+    // any number" lets the player choose fewer). dynamic_amount_expr is only set when ChangeNum$
+    // itself is a count-SVar, so fixed-count fetches (and Green Sun's Zenith, whose X bounds the
+    // filter, not the count) are unaffected.
+    size_t num_to_move;
+    if (!ab.dynamic_amount_expr.empty())
+        num_to_move = evaluate_dynamic_amount(ab.dynamic_amount_expr, owner, orderer, 0);
+    else
+        num_to_move = (ab.amount > 0) ? ab.amount : 1;
     bool multi_zone = ab.origins.size() > 1;
     bool reveal = search_reveals_card(ab);
 

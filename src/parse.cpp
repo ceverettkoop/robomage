@@ -1453,6 +1453,19 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
                     if (trig.trigger_on != 0) sub.effect_floating_triggers.push_back(trig);
                 }
             }
+        } else if (key == "StaticAbilities") {
+            // DB$ Effect | StaticAbilities$ <name>. The value may be a literal keyword
+            // (Unblockable) or a named SVar holding a continuous static-ability line. Keep the
+            // raw value (the Unblockable path reads it), and additionally resolve a named SVar to
+            // detect the "may cast those exiled cards without paying their mana costs" grant
+            // (Ugin -11: MayPlay$ True + MayPlayWithoutManaCost$ True + AffectedZone$ Exile),
+            // which the GrantCast handler turns into free cast-from-exile permissions.
+            sub.effect_static_ability = value;
+            auto it = svars.find(value);
+            if (it != svars.end() &&
+                it->second.find("MayPlayWithoutManaCost$ True") != std::string::npos &&
+                it->second.find("AffectedZone$ Exile") != std::string::npos)
+                sub.effect_grant_free_cast_from_exile = true;
         } else if (key == "ConditionCheckSVar") {
             // Resolve SVar reference to its expression (e.g. "X" → "Count$ResolvedThisTurn")
             auto it = svars.find(value);

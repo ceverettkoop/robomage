@@ -1315,7 +1315,11 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                 auto it = cur_game.impulse_cast_permission.find(spell_entity);
                 if (it != cur_game.impulse_cast_permission.end()) {
                     const auto &grant = it->second;
-                    if (grant.resource == Game::ImpulseCastPermission::ENERGY) {
+                    if (grant.resource == Game::ImpulseCastPermission::FREE) {
+                        // Ugin -11: cast without paying its mana cost (CR 118.9). No cost paid.
+                        game_log("%s casts %s without paying its mana cost\n",
+                                 player_name(caster).c_str(), card_data.name.c_str());
+                    } else if (grant.resource == Game::ImpulseCastPermission::ENERGY) {
                         pay_energy(player, grant.amount);
                         game_log("%s pays %d energy\n", player_name(caster).c_str(), grant.amount);
                     } else {
