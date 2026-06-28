@@ -1203,13 +1203,16 @@ void StateManager::apply_layer6_ability_grants() {
 // the grant pass). Timestamp ordering between a grant and a removal within layer 6 (the
 // Humility + anthem interaction, rule 613.7) is deferred to the dependency work (§5).
 
-// Does ability-removal static `r` apply to `entity`? Honours the Affected$ filter; today
-// only "Creature" is exercised (Humility). An unfiltered remover applies to all permanents.
+// Does ability-removal static `r` apply to `entity`? Honours the Affected$ filter through the
+// shared permanent matcher, so "Creature" (Humility), "Land" (Toxicrene), and any other filter
+// grammar all work. An unfiltered remover applies to all permanents.
 static bool removal_affects(const ActiveStatic &r, Entity entity) {
     const std::string &aff = r.sa->affected;
-    if (aff.find("Creature") != std::string::npos)
-        return global_coordinator.entity_has_component<Creature>(entity);
-    return aff.empty();
+    if (aff.empty()) return true;
+    MatchCtx ctx;
+    ctx.controller = r.controller;
+    ctx.source = r.entity;
+    return permanent_matches_filter(entity, aff, ctx);
 }
 
 // Gather every active static that removes all abilities and whose condition is met
@@ -1243,9 +1246,14 @@ void StateManager::recompute_abilities(Game &game) {
         auto &perm = global_coordinator.GetComponent<Permanent>(entity);
 
         // (a) "Loses all abilities" (Humility) — a full clear, intrinsic mana included.
-        bool full_removal = false;
+        // Collect which removers affect this entity so a grant from a remover that ALSO grants
+        // an ability (Toxicrene: "all lands have '{T}: Add any color' and lose all OTHER
+        // abilities" — one static) survives its own removal. A pure remover (Humility) grants
+        // nothing, so nothing is preserved and the clear is total, as before.
+        std::vector<Entity> affecting_removers;
         for (auto *r : removers)
-            if (removal_affects(*r, entity)) { full_removal = true; break; }
+            if (removal_affects(*r, entity)) affecting_removers.push_back(r->entity);
+        bool full_removal = !affecting_removers.empty();
 
         // (b) 305.7 land set to a basic type — loses its rules-text abilities but keeps
         //     the regenerated intrinsic (subtype-derived) mana ability.
@@ -1258,7 +1266,16 @@ void StateManager::recompute_abilities(Game &game) {
         // / the keyword rebuild in gather, so removal is reversible once the effect leaves.
         auto &abilities = perm.abilities;
         if (full_removal) {
-            abilities.clear();
+            // Drop every ability except one granted by a remover that affects this entity
+            // (the remover's own "and gains ..." clause, e.g. Toxicrene's any-color mana).
+            abilities.erase(std::remove_if(abilities.begin(), abilities.end(),
+                                           [&](const Ability &ab) {
+                                               return std::find(affecting_removers.begin(),
+                                                                affecting_removers.end(),
+                                                                ab.granted_by_static) ==
+                                                      affecting_removers.end();
+                                           }),
+                            abilities.end());
         } else {  // type_set only — keep subtype-derived mana, drop printed rules-text abilities
             abilities.erase(std::remove_if(abilities.begin(), abilities.end(),
                                            [](const Ability &ab) { return !ab.subtype_derived; }),
