@@ -194,6 +194,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Veil of Summer", 283},
     {"Into the Flood Maw", 284},
     {"The One Ring", 285},
+    {"Lion Sash", 286},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);

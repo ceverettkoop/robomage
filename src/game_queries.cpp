@@ -82,6 +82,16 @@ bool view_has_typeline(const CharView &v, const std::string &name) {
     return false;
 }
 
+// True when the object has a permanent card type (CR 110.4a). The "Permanent" filter head must
+// require this so an off-battlefield card filter (e.g. Lion Sash's "if it was a permanent card",
+// matched against a card now in exile) excludes instants/sorceries. Battlefield objects always
+// carry a permanent type in their live type line, so this stays a no-op for permanent_view.
+bool view_is_permanent(const CharView &v) {
+    return view_has_typeline(v, "Artifact") || view_has_typeline(v, "Battle") ||
+           view_has_typeline(v, "Creature") || view_has_typeline(v, "Enchantment") ||
+           view_has_typeline(v, "Land") || view_has_typeline(v, "Planeswalker");
+}
+
 bool color_token(const std::string &q, Colors &c) {
     if (q == "White") { c = WHITE; return true; }
     if (q == "Blue")  { c = BLUE;  return true; }
@@ -224,6 +234,9 @@ bool eval_alternative(const CharView &v, const MatchCtx &ctx, const std::string 
     if (!(head.empty() || head == "Card" || head == "Permanent" || head == "Spell" || head_is_identity) &&
         !view_has_typeline(v, head))
         return false;
+    // "Permanent" head (CR 110.4a): require an actual permanent card type. No-op for battlefield
+    // objects (always permanents); excludes instants/sorceries when matching a card in another zone.
+    if (head == "Permanent" && !view_is_permanent(v)) return false;
     if (head_is_identity && !eval_qualifier(v, ctx, head))
         return false;
     if (sep != std::string::npos) {

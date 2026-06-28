@@ -590,6 +590,20 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             card.keywords.push_back("Equip");
             continue;
         }
+        // K:Reconfigure:2  (CR 702.151) — an Equipment keyword on a creature card. Parsed like
+        // Equip (the cost grants an attach ability and shares the equip-attach machinery), plus the
+        // reconfigure-specific behaviour flagged by is_reconfigure: attach only to a creature you
+        // control, an unattach ability while attached, and "while attached this isn't a creature".
+        if (kw_line.rfind("Reconfigure", 0) == 0) {
+            card.is_equipment = true;
+            card.is_reconfigure = true;
+            size_t colon = kw_line.find(':');
+            if (colon != std::string::npos) {
+                card.equip_cost = parse_mana_cost(kw_line.substr(colon + 1));
+            }
+            card.keywords.push_back("Reconfigure");
+            continue;
+        }
         // K:Prowess — keyword stored; triggered ability applied by apply_keyword_abilities
         if (kw_line == "Prowess" || kw_line.rfind("Prowess", 0) == 0) {
             card.keywords.push_back("Prowess");

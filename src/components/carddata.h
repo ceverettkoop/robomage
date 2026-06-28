@@ -81,6 +81,11 @@ struct CardData{
     AltCost escape_alt_cost;             // additional escape costs (e.g. ExileFromGrave group-type cost)
     bool is_equipment = false;           // has K:Equip line
     ManaValue equip_cost;                // parsed from K:Equip:cost
+    // Reconfigure (CR 702.151): an Equipment keyword on a creature card. It is parsed like
+    // Equip (is_equipment + equip_cost both set), but is_reconfigure additionally (a) lets the
+    // attach ability target only a creature you control, (b) offers an "unattach" ability while
+    // attached, and (c) makes the permanent stop being a creature while it is attached.
+    bool is_reconfigure = false;         // has K:Reconfigure:<cost> line
     bool has_offspring = false;          // K:Offspring:cost — optional additional cost (CR 702.171)
     ManaValue offspring_cost;            // mana paid in addition to the spell's cost for Offspring
     // K:Gift — the Gift keyword (CR 702.176). As the spell is cast its controller MAY promise the

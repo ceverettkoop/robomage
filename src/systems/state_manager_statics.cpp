@@ -384,6 +384,15 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                 face = card_data.backside.get();
             bool is_creature = is_creature_card(*face);  // can be creature and land
             bool is_land = is_land_card(*face);
+            // Reconfigure (CR 702.151b): while a reconfigure equipment is attached, it is an
+            // Equipment and is NOT a creature. Suppress its creature-ness (and strip its
+            // Creature/Damage components below) for as long as equipped_to is set; unattaching
+            // restores them on the next state-based pass.
+            bool reconfigured_attached =
+                card_data.is_reconfigure &&
+                global_coordinator.entity_has_component<Permanent>(entity) &&
+                global_coordinator.GetComponent<Permanent>(entity).equipped_to != 0;
+            if (reconfigured_attached) is_creature = false;
             int etb_p1p1 = 0;  // counters this permanent enters with (614.1c), applied once the Permanent exists
             std::string etb_counter_type = "P1P1";  // kind of "enters with" counter (P1P1, CHARGE, ...)
             // providing permanent component if doesn't have
@@ -534,6 +543,15 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                         card_data.name.c_str(), etb_p1p1,
                         pt_type == "M1M1" ? "-1/-1" : "+1/+1", cr.power, cr.toughness);
                 }
+            }
+            // Reconfigure (CR 702.151b): strip the Creature/Damage components while attached so the
+            // permanent isn't a creature for combat, targeting, and state-based actions. They are
+            // re-added by the block above on the next pass once it unattaches (equipped_to == 0).
+            if (reconfigured_attached) {
+                if (global_coordinator.entity_has_component<Creature>(entity))
+                    global_coordinator.RemoveComponent<Creature>(entity);
+                if (global_coordinator.entity_has_component<Damage>(entity))
+                    global_coordinator.RemoveComponent<Damage>(entity);
             }
             if (is_land) {
                 apply_land_abilities(entity);

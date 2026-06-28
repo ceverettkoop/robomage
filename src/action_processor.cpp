@@ -327,6 +327,7 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
         // Present list of creatures controlled by the equipment owner
         std::vector<LegalAction> equip_targets;
         for (auto e : orderer->mEntities) {
+            if (e == permanent_entity) continue;  // can't attach to itself (CR 301.5c / reconfigure)
             if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
             if (!global_coordinator.entity_has_component<Creature>(e)) continue;
             auto &ep = global_coordinator.GetComponent<Permanent>(e);
@@ -368,6 +369,33 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
         global_coordinator.GetComponent<Permanent>(target_creature).equipped_by = permanent_entity;
         std::string tname = global_coordinator.GetComponent<Permanent>(target_creature).name;
         game_log("%s equipped to %s.\n", permanent.name.c_str(), tname.c_str());
+        game.take_action();
+        return;
+    }
+
+    // UNATTACH: Reconfigure (CR 702.151) — pay the cost to detach this equipment from the creature
+    // it is attached to. Clears the attach link; the continuous-effects pass restores its
+    // creature-ness (a reconfigured permanent isn't a creature only while attached).
+    if (ability.category == "Unattach") {
+        if (permanent.equipped_to == 0) {
+            game_log("%s is not attached.\n", permanent.name.c_str());
+            return;
+        }
+        ManaValue unattach_cost = effective_activation_mana_cost(ability, controller, orderer);
+        if (!unattach_cost.empty()) {
+            auto mana_snap = snapshot_mana_state(controller, orderer);
+            if (!prompt_mana_payment(controller, unattach_cost, permanent_entity, orderer)) {
+                restore_mana_state(controller, mana_snap, orderer);
+                cur_game.payment_fail_counts[permanent_entity]++;
+                game_log("Payment cancelled.\n");
+                return;
+            }
+        }
+        if (global_coordinator.entity_has_component<Permanent>(permanent.equipped_to)) {
+            global_coordinator.GetComponent<Permanent>(permanent.equipped_to).equipped_by = 0;
+        }
+        game_log("%s unattaches.\n", permanent.name.c_str());
+        permanent.equipped_to = 0;
         game.take_action();
         return;
     }

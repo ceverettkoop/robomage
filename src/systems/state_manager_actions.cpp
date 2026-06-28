@@ -863,6 +863,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             if (cd.is_equipment && sorcery_speed) {
                 bool has_creature = false;
                 for (auto e2 : orderer->mEntities) {
+                    if (e2 == entity) continue;  // can't attach to itself (CR 301.5c / reconfigure)
                     if (!global_coordinator.entity_has_component<Permanent>(e2)) continue;
                     if (!global_coordinator.entity_has_component<Creature>(e2)) continue;
                     if (global_coordinator.GetComponent<Zone>(e2).location != Zone::BATTLEFIELD) continue;
@@ -876,10 +877,24 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                     equip_ab.category = "Equip";
                     equip_ab.source = entity;
                     equip_ab.activation_mana_cost = cd.equip_cost;
-                    std::string desc = "Equip " + entity_name(entity);
+                    std::string desc = (cd.is_reconfigure ? "Reconfigure " : "Equip ") + entity_name(entity);
                     LegalAction equip_la(ACTIVATE_ABILITY, entity, equip_ab, desc);
                     equip_la.category = ActionCategory::ACTIVATE_ABILITY;
                     actions.push_back(equip_la);
+                }
+                // Reconfigure (CR 702.151): while attached, pay the cost to unattach. Sorcery-speed,
+                // same cost as the attach. The unattach makes the permanent a creature again.
+                if (cd.is_reconfigure && permanent.equipped_to != 0 &&
+                    can_pay_mana(priority_player, cd.equip_cost, entity, orderer)) {
+                    Ability unattach_ab;
+                    unattach_ab.ability_type = Ability::ACTIVATED;
+                    unattach_ab.category = "Unattach";
+                    unattach_ab.source = entity;
+                    unattach_ab.activation_mana_cost = cd.equip_cost;
+                    std::string desc = "Unattach " + entity_name(entity);
+                    LegalAction unattach_la(ACTIVATE_ABILITY, entity, unattach_ab, desc);
+                    unattach_la.category = ActionCategory::ACTIVATE_ABILITY;
+                    actions.push_back(unattach_la);
                 }
             }
         }
