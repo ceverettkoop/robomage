@@ -1573,9 +1573,12 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                 spell.cant_be_countered = true;
                 cur_game.pending_cant_be_countered = false;
             }
-            // Check card's own replacement effects for "can't be countered" (Long Goodbye)
+            // Check card's own replacement effects for "can't be countered" (Long Goodbye).
+            // Only the SELF form ("This spell can't be countered") stamps the spell at cast;
+            // the battlefield form (Hexing Squelcher's "Spells you control can't be countered")
+            // is a continuous static consulted at counter-resolution time, not a cast-time stamp.
             for (const auto &r : card_data.replacement_effects) {
-                if (r.kind == Effect::Replacement::CANT_BE_COUNTERED) {
+                if (r.kind == Effect::Replacement::CANT_BE_COUNTERED && !r.from_battlefield) {
                     spell.cant_be_countered = true;
                     break;
                 }

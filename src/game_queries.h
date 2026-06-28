@@ -458,6 +458,42 @@ inline uint32_t lethal_needed_for_blocker(Entity attacker, Entity blocker) {
     return (bcr.toughness > marked) ? bcr.toughness - marked : 0u;
 }
 
+// True if the spell `spell` (an entity on the stack) can't be countered because some live
+// battlefield permanent has a continuous "spells … can't be countered" replacement that covers
+// it (CR 614.13/CantHappen) — e.g. Hexing Squelcher's "Spells you control can't be countered."
+// Scans battlefield permanents for a battlefield-scoped CANT_BE_COUNTERED replacement and tests
+// the spell against its ValidSA$ filter. The controller scope (YouCtrl/OppCtrl) is read from the
+// spell's caster relative to the replacement source's controller, because a stack spell has no
+// Permanent controller for the generic filter matcher to read (its YouCtrl token is a no-op off
+// the battlefield). Consulted at counter-resolution time; reusable by any future can't-be-countered
+// permanent. `entities` is the iterating system's mEntities (e.g. orderer->mEntities).
+inline bool spell_uncounterable_by_static(Entity spell, const std::set<Entity> &entities) {
+    if (!global_coordinator.entity_has_component<CardData>(spell)) return false;
+    Zone::Ownership spell_ctrl = global_coordinator.entity_has_component<Spell>(spell)
+                                     ? global_coordinator.GetComponent<Spell>(spell).caster
+                                     : Zone::UNKNOWN;
+    for (auto e : battlefield_permanents(entities)) {
+        if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+        Zone::Ownership perm_ctrl = global_coordinator.GetComponent<Permanent>(e).controller;
+        for (const auto &r : global_coordinator.GetComponent<CardData>(e).replacement_effects) {
+            if (r.kind != Effect::Replacement::CANT_BE_COUNTERED || !r.from_battlefield) continue;
+            // Controller scope is read from the spell's caster (the matcher can't read it for a
+            // stack object). YouCtrl → caster is the source's controller; OppCtrl → it isn't.
+            if (r.valid_sa_filter.find("YouCtrl") != std::string::npos) {
+                if (spell_ctrl != perm_ctrl) continue;
+            } else if (r.valid_sa_filter.find("OppCtrl") != std::string::npos) {
+                if (spell_ctrl == perm_ctrl || spell_ctrl == Zone::UNKNOWN) continue;
+            }
+            // Any remaining type/characteristic qualifiers on the filter (head "Spell", color,
+            // type) are checked against the spell's printed characteristics.
+            MatchCtx ctx;
+            ctx.controller = perm_ctrl;
+            if (card_matches_filter(spell, r.valid_sa_filter, ctx)) return true;
+        }
+    }
+    return false;
+}
+
 // True if `e` is a spell that was cast via flashback. Such a spell is exiled
 // (rather than sent to the graveyard) when it leaves the stack — whether it
 // resolves or is countered. Single source for that "leaves-stack → exile" rule.

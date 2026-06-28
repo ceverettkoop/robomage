@@ -24,6 +24,16 @@ struct Effect {
         };
         Kind kind = ENTERS_TAPPED;
         bool applies_to_self_only = false;  // only fires when the affected entity is the source itself
+        // CANT_BE_COUNTERED battlefield form (Hexing Squelcher: "Spells you control can't be
+        // countered"). The self form ("This spell can't be countered", applies_to_self_only) is
+        // resolved at cast time by stamping Spell::cant_be_countered; this continuous form is a
+        // battlefield-active replacement (ActiveZones$ Battlefield) consulted at counter-resolution
+        // time against every spell on the stack. valid_sa_filter is the ValidSA$ spec it protects
+        // (e.g. "Spell.YouCtrl") — the controller scope (YouCtrl/OppCtrl) is read from the spell's
+        // caster relative to this permanent's controller, since a stack spell has no Permanent
+        // controller for the filter matcher to read.
+        bool from_battlefield = false;      // ActiveZones$ Battlefield — a continuous battlefield static
+        std::string valid_sa_filter = "";   // ValidSA$ spec the replacement protects from being countered
         std::string valid_subtype = "";     // SKIP_UNTAP: the (sub)type the untap-prevention applies to (e.g. "Island")
         // ENTERS_TAPPED conditional gating (Ba Sing Se: "enters tapped unless you control a
         // basic land"). The replacement applies only when the count of the controller's

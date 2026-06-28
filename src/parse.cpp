@@ -2678,6 +2678,7 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
         int produce_min_amount    = 1;            // ManaAmount$ GEN — minimum produced amount
         std::string untap_valid_subtype;  // ValidCard$ <subtype> for an Untap-prevention (Choke: Island)
         bool valid_card_self      = false;
+        std::string valid_sa_filter;  // ValidSA$ spec on an R: line (e.g. "Spell.YouCtrl")
         bool dest_is_battlefield  = false;
         bool dest_is_graveyard_r  = false;
         bool replace_with_etb_tapped = false;
@@ -2704,6 +2705,7 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
                 std::string n = value.substr(2);
                 produce_min_amount = n.empty() ? 1 : std::stoi(n);
             }
+            else if (key == "ValidSA")    valid_sa_filter          = value;
             else if (key == "ValidCard"   && value == "Card.Self")   valid_card_self         = true;
             else if (key == "ValidCard"   && value.find('.') == std::string::npos) {
                 untap_valid_subtype = value;  // a bare subtype filter (Choke: ValidCard$ Island)
@@ -2817,6 +2819,19 @@ static std::vector<Effect::Replacement> parse_replacement_effects(const std::str
             Effect::Replacement r;
             r.kind = Effect::Replacement::CANT_BE_COUNTERED;
             r.applies_to_self_only = true;
+            result.push_back(r);
+        }
+        // Hexing Squelcher: "Spells you control can't be countered." A continuous, battlefield-active
+        // (ActiveZones$ Battlefield) can't-be-countered replacement scoped by a ValidSA$ filter
+        // (e.g. Spell.YouCtrl) rather than the source spell itself. Consulted at counter-resolution
+        // time against every spell on the stack (614.13/CantHappen).
+        if (event_is_counter && layer_cant_happen && active_zones_battlefield && !valid_card_self &&
+            !valid_sa_filter.empty()) {
+            Effect::Replacement r;
+            r.kind = Effect::Replacement::CANT_BE_COUNTERED;
+            r.applies_to_self_only = false;
+            r.from_battlefield = true;
+            r.valid_sa_filter = valid_sa_filter;
             result.push_back(r);
         }
         // Opponent's non-token cards go to exile instead of graveyard (Dauthi Voidwalker exiles

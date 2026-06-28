@@ -70,9 +70,13 @@ bool counter(Ability &ab, std::shared_ptr<Orderer> orderer) {
                 do_counter = run_unless_loop(ab.unless_generic_cost, payer, orderer, ab.target, kind);
             }
 
-            // Can't be countered check (Cavern of Souls)
-            if (do_counter && global_coordinator.entity_has_component<Spell>(ab.target) &&
-                global_coordinator.GetComponent<Spell>(ab.target).cant_be_countered) {
+            // Can't be countered check — either a cast-time stamp (Cavern of Souls / a "this spell
+            // can't be countered" self replacement) or a continuous battlefield static covering the
+            // spell (Hexing Squelcher: "Spells you control can't be countered", CR 614.13).
+            if (do_counter &&
+                ((global_coordinator.entity_has_component<Spell>(ab.target) &&
+                  global_coordinator.GetComponent<Spell>(ab.target).cant_be_countered) ||
+                 spell_uncounterable_by_static(ab.target, orderer->mEntities))) {
                 std::string name = global_coordinator.entity_has_component<CardData>(ab.target)
                                        ? global_coordinator.GetComponent<CardData>(ab.target).name
                                        : "<unknown>";
