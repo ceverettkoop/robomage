@@ -182,6 +182,9 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Ensnaring Bridge", 271},
     {"Paradox Engine", 272},
     {"Lórien Revealed", 273},
+    {"Urza's Mine", 274},
+    {"Urza's Power Plant", 275},
+    {"Urza's Tower", 276},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);
