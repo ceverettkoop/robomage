@@ -1150,6 +1150,58 @@ bool has_legal_targets(const Ability &ability, std::shared_ptr<Orderer> orderer)
     return !build_valid_targets(ability, orderer, ability_perspective_player(ability)).empty();
 }
 
+// Effective minimum target count of an ability at cast/activation-legality time. A static
+// TargetMin$ uses its literal value. An xPaid-driven min (Kozilek's Command "up to X target")
+// is treated as 0 here — X is chosen later and may legally be 0, so it must not gate castability.
+// A non-xPaid count-SVar min (Into the Flood Maw: TargetMin$ X = Count$PromisedGift.0.1) is
+// evaluated now against the current game state (which reads the pending gift-promise flag, set by
+// the caller for each reachable mode).
+static int effective_target_min(const Ability &ab, Zone::Ownership perspective,
+                                std::shared_ptr<Orderer> orderer) {
+    if (ab.target_min_from_xpaid) return 0;
+    if (!ab.target_min_count_expr.empty())
+        return static_cast<int>(evaluate_dynamic_amount(ab.target_min_count_expr, perspective, orderer, 0));
+    return ab.target_min;
+}
+
+// CR 601.2c: a spell can only be cast if a legal target can be chosen for every required target,
+// for at least one reachable set of mode/cost choices. Most spells have a single targeting
+// ability and this reduces to has_legal_targets. A Gift spell (Into the Flood Maw) switches which
+// of its abilities actually requires a target on the gift promise — without the gift it bounces a
+// creature (primary ability), with the gift it bounces a nonland permanent (sub-ability) — so it
+// is castable iff a legal target exists for the not-promised OR the promised mode. General over
+// any spell whose required-target counts depend on the Count$PromisedGift switch: we evaluate each
+// reachable promise state and the spell is castable if any one is fully satisfiable.
+bool spell_has_castable_targets(const Ability &primary, std::shared_ptr<Orderer> orderer,
+                                Zone::Ownership caster, bool has_gift) {
+    // Gather the spell's targeting abilities: the primary spell ability plus any chained
+    // sub-ability that targets (each picks its own target as the spell is cast — CR 601.2c).
+    std::vector<const Ability *> targeting;
+    if (primary.valid_tgts != "N_A") targeting.push_back(&primary);
+    for (const Ability &sub : primary.subabilities)
+        if (sub.valid_tgts != "N_A") targeting.push_back(&sub);
+    if (targeting.empty()) return true;  // no targets required
+
+    auto mode_satisfiable = [&](bool promised) {
+        bool saved = cur_game.pending_gift_promised;
+        cur_game.pending_gift_promised = promised;
+        bool ok = true;
+        for (const Ability *ab : targeting) {
+            if (effective_target_min(*ab, caster, orderer) > 0 &&
+                build_valid_targets(*ab, orderer, caster).empty()) {
+                ok = false;
+                break;
+            }
+        }
+        cur_game.pending_gift_promised = saved;
+        return ok;
+    };
+
+    if (mode_satisfiable(false)) return true;       // not-promised (default) mode
+    if (has_gift && mode_satisfiable(true)) return true;  // promised-gift mode
+    return false;
+}
+
 static void select_single_target(Ability &ability, const std::vector<Entity> &valid_targets,
                                   bool allow_done) {
     game_log("Choose target:\n");
@@ -1172,6 +1224,18 @@ static void select_single_target(Ability &ability, const std::vector<Entity> &va
         LegalAction la(PASS_PRIORITY, target, desc);
         la.category = ActionCategory::SELECT_TARGET;
         tgt_actions.push_back(la);
+    }
+    // INVARIANT (CR 601.2c): the engine must never generate a "choose target" decision with zero
+    // options. A mandatory single/multi target (no "No target"/"Done" escape was added above) with
+    // an empty candidate list means an upstream cast/activation-legality bug let a spell or ability
+    // begin even though it has no legal target. Abort loudly with a diagnostic rather than spinning
+    // on an empty menu. (A spell already on the stack whose targets become illegal by RESOLUTION is
+    // handled separately — countered by game rules per CR 608.2b — and never reaches this path.)
+    if (tgt_actions.empty()) {
+        std::string src_name = ability.source != 0 ? entity_name(ability.source) : std::string("(unknown source)");
+        fatal_error("Zero legal targets when choosing a required target for " + src_name +
+                    " (ValidTgts$ " + ability.valid_tgts + ") — a targeted spell/ability with no "
+                    "legal target was offered/forced (CR 601.2c violated upstream).");
     }
     int choice = InputLogger::instance().get_input(tgt_actions);
     ability.target = tgt_actions[static_cast<size_t>(choice)].source_entity;

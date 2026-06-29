@@ -552,7 +552,11 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         bool condition_ok = true;
         for (const auto &ab : card_data.abilities) {
             if (ab.ability_type != Ability::SPELL) continue;
-            tgt_ok = has_legal_targets(ab, orderer);
+            // Mode-aware target legality (CR 601.2c): for a Gift spell the required target type
+            // switches on the gift promise (Into the Flood Maw: a creature without the gift, a
+            // nonland permanent with it), so the spell is castable iff a legal target exists for
+            // at least one reachable mode. Reduces to has_legal_targets for ordinary spells.
+            tgt_ok = spell_has_castable_targets(ab, orderer, priority_player, card_data.has_gift);
             // Target-conditional abilities (ConditionDefined$ Targeted, e.g. Fatal Push)
             // may target anything legal; the condition is checked on the target at
             // resolution, so it must not gate cast-time legality.

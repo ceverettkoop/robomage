@@ -27,6 +27,13 @@ bool any_attacker_needs_damage_assignment(Game& game, std::shared_ptr<Orderer> o
 // Returns true if the ability has no targeting requirement or at least one legal target exists.
 bool has_legal_targets(const Ability& ability, std::shared_ptr<Orderer> orderer);
 
+// CR 601.2c cast-legality target check across a spell's reachable modes. Returns true if every
+// required target (of the primary spell ability and any targeting sub-ability) can be legally
+// chosen for at least one reachable set of choices — in particular, for a Gift spell, the
+// not-promised OR the promised mode (which switch which ability actually requires a target).
+bool spell_has_castable_targets(const Ability& primary, std::shared_ptr<Orderer> orderer,
+                                Zone::Ownership caster, bool has_gift);
+
 // Prompts the active player to choose a target and sets ability.target.
 // Targets are presented opponent-first so action index 0 always refers to an
 // opponent entity (player or permanent), regardless of which player is casting.
