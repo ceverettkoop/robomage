@@ -196,10 +196,16 @@ static void pay_secondary_activation_costs(
     // goes on the stack and resolves later; the loyalty change is the cost, paid now.
     if (ability.is_loyalty_ability && global_coordinator.entity_has_component<Permanent>(source)) {
         auto &perm = global_coordinator.GetComponent<Permanent>(source);
-        int loyalty = add_counters(source, "LOYALTY", ability.loyalty_cost);
+        // An X loyalty cost (Chandra, Flamecaller's [-X]) removes/adds the X chosen at activation
+        // (cur_game.x_paid); loyalty_cost carries only the sign. A fixed cost uses loyalty_cost as-is.
+        int loyalty_delta = ability.loyalty_cost_is_x
+            ? (ability.loyalty_cost < 0 ? -static_cast<int>(cur_game.x_paid)
+                                        :  static_cast<int>(cur_game.x_paid))
+            : ability.loyalty_cost;
+        int loyalty = add_counters(source, "LOYALTY", loyalty_delta);
         perm.loyalty_ability_activated_this_turn = true;
         game_log("%s activates a loyalty ability (%+d, loyalty now %d)\n",
-                 entity_name(source).c_str(), ability.loyalty_cost, loyalty);
+                 entity_name(source).c_str(), loyalty_delta, loyalty);
     }
     // Life cost
     if (ability.life_cost > 0) {
@@ -483,6 +489,25 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
         x_activation = static_cast<size_t>(x_choice);
         cur_game.x_paid = x_activation;
         game_log("%s chooses X = %zu\n", player_name(controller).c_str(), x_activation);
+    }
+
+    // X LOYALTY COST (Chandra, Flamecaller's [-X]): choose X at announcement, bounded by the
+    // planeswalker's current loyalty for a minus cost (you can't remove more than it has, 606.5).
+    // Recorded as x_paid so the cost (pay_secondary_activation_costs) and the effect's Count$xPaid
+    // (NumDmg$ X) both read it. This is a loyalty cost, not mana — it never touches activate_cost.
+    if (ability.loyalty_cost_is_x) {
+        int max_x = (ability.loyalty_cost < 0) ? get_counters(permanent_entity, "LOYALTY") : 99;
+        if (max_x < 0) max_x = 0;
+        game_log("Choose X value (0-%d):\n", max_x);
+        std::vector<LegalAction> x_actions;
+        for (int xv = 0; xv <= max_x; xv++) {
+            LegalAction la(PASS_PRIORITY, std::string("X = " + std::to_string(xv)));
+            la.category = ActionCategory::CHOOSE_X;
+            x_actions.push_back(la);
+        }
+        int x_choice = InputLogger::instance().get_input(x_actions);
+        cur_game.x_paid = static_cast<size_t>(x_choice);
+        game_log("%s chooses X = %d\n", player_name(controller).c_str(), x_choice);
     }
 
     // SELECT TARGETS BEFORE PAYING COSTS

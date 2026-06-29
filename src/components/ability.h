@@ -118,6 +118,11 @@ struct Ability{
     // SubCounter<N/LOYALTY> → -N. Paid by modifying the source's own loyalty at activation.
     bool is_loyalty_ability = false;    // Planeswalker$ True
     int loyalty_cost = 0;               // +N (AddCounter) or -N (SubCounter); loyalty counters added/removed as the cost
+    // X loyalty cost (Cost$ SubCounter<X/LOYALTY> — Chandra, Flamecaller's [-X] ultimate). The
+    // magnitude is chosen at activation (X, bounded by current loyalty for a minus ability) and
+    // recorded as cur_game.x_paid so the effect's Count$xPaid (e.g. NumDmg$ X) reads it; loyalty_cost
+    // then carries only the SIGN (-1 minus / +1 plus). Never stoi("X") at parse time.
+    bool loyalty_cost_is_x = false;
     int activation_zone = -1;           // ActivationZone$ Hand → Zone::HAND; -1 = default (battlefield)
     int activations_this_turn = 0;      // runtime counter, reset at UNTAP
     // ReduceCost$ on an ACTIVATED ability (Eiganjo's Channel: "ReduceCost$ X",

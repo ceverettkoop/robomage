@@ -293,8 +293,18 @@ static void parse_activation_cost(const std::string &cost_str, Ability &ability)
             // Loyalty ability cost (606.4): AddCounter<N/LOYALTY> adds, SubCounter<N/LOYALTY> removes.
             size_t angle = tok.find('<');
             size_t slash = tok.find('/');
-            int n = std::stoi(tok.substr(angle + 1, slash - angle - 1));
-            ability.loyalty_cost = (tok[0] == 'S') ? -n : n;
+            std::string amt = tok.substr(angle + 1, slash - angle - 1);
+            bool is_sub = (tok[0] == 'S');
+            if (!amt.empty() && std::isdigit(static_cast<unsigned char>(amt[0]))) {
+                int n = std::stoi(amt);
+                ability.loyalty_cost = is_sub ? -n : n;
+            } else {
+                // SubCounter<X/LOYALTY> — a VARIABLE loyalty cost (Chandra, Flamecaller's [-X]
+                // ultimate). The amount X is chosen at activation; loyalty_cost holds only the sign.
+                // Don't stoi("X") (it would throw/abort — see PayLife<X> above).
+                ability.loyalty_cost_is_x = true;
+                ability.loyalty_cost = is_sub ? -1 : 1;
+            }
         } else {
             // Remaining tokens are mana symbols (e.g. "4", "1", "W", "2 B")
             auto mana = parse_mana_cost(tok);

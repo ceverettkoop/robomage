@@ -944,7 +944,10 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             if (ab.is_loyalty_ability) {
                 if (!sorcery_speed) continue;
                 if (permanent.loyalty_ability_activated_this_turn) continue;
-                if (ab.loyalty_cost < 0 && get_counters(entity, "LOYALTY") < -ab.loyalty_cost) continue;
+                // A fixed minus cost needs enough loyalty (606.6). An X minus cost (Chandra,
+                // Flamecaller's [-X]) is legal at any loyalty — X is chosen 0..current loyalty.
+                if (!ab.loyalty_cost_is_x && ab.loyalty_cost < 0 &&
+                    get_counters(entity, "LOYALTY") < -ab.loyalty_cost) continue;
             }
             // SorcerySpeed$ True (Ba Sing Se's earthbend): activatable only any time its
             // controller could cast a sorcery (CR 605.x) — main phase, their turn, empty stack.
