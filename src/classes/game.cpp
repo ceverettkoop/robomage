@@ -290,6 +290,11 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     }
                     combat_damage_assignment.clear();  // T3.10: drop any per-attacker assignments
                     cur_step = SECOND_MAIN;
+                    {
+                        Event second_main_event(Events::SECOND_MAIN_BEGAN);
+                        second_main_event.SetParam(Params::PLAYER, active_player_entity);
+                        global_coordinator.SendEvent(second_main_event);
+                    }
                     break;
                 case SECOND_MAIN:
                     cur_step = END_STEP;
@@ -304,6 +309,11 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     break;
                 case END_STEP:
                     cur_step = CLEANUP;
+                    {
+                        Event cleanup_event(Events::CLEANUP_BEGAN);
+                        cleanup_event.SetParam(Params::PLAYER, active_player_entity);
+                        global_coordinator.SendEvent(cleanup_event);
+                    }
                     break;
                 case CLEANUP:
                     // Clear damage from all creatures; reset prowess bonus

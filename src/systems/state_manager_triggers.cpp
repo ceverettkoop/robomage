@@ -31,6 +31,7 @@
 #include "../input_logger.h"
 #include "../mana_system.h"
 #include "../svar_eval.h"
+#include "../svar_eval.h"
 #include "../systems/stack_manager.h"
 #include "orderer.h"
 
@@ -328,7 +329,15 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                 // (CR 113.6). It is handled by the dedicated graveyard scan below; firing it
                 // from the battlefield would place a spurious (no-op) trigger on the stack.
                 if (ab.trigger_from_graveyard) continue;
-                if (ab.trigger_on == 0 || ab.trigger_on != ev.GetType()) continue;
+                // Match the primary trigger event OR any additional event in trigger_on_extra (a
+                // phase trigger listing several phases, e.g. Carpet of Flowers' Phase$ Main1,Main2).
+                {
+                    bool fires = (ab.trigger_on != 0) &&
+                                 (ab.trigger_on == ev.GetType() ||
+                                  std::find(ab.trigger_on_extra.begin(), ab.trigger_on_extra.end(),
+                                            ev.GetType()) != ab.trigger_on_extra.end());
+                    if (!fires) continue;
+                }
                 // "another" check: skip if the event entity is the triggering permanent itself
                 if (ab.trigger_self_excluded && ev.HasParam(Params::ENTITY) &&
                     ev.GetParam<Entity>(Params::ENTITY) == entity) continue;
@@ -590,6 +599,20 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                 if (trigger_ab.intervening_if &&
                     !evaluate_present_condition(trigger_ab, perm.controller, orderer))
                     continue;
+                // Per-permanent stored-SVar gate (Carpet of Flowers' once-per-turn CheckSVar latch,
+                // "if you haven't added mana with this ability this turn"): the trigger does not go
+                // on the stack unless the source's latched scratch int satisfies the comparison.
+                if (!stored_svar_gate_passes(entity, trigger_ab.stored_svar_gate_name,
+                                             trigger_ab.stored_svar_gate_compare))
+                    continue;
+
+                // Static$ True bookkeeping trigger (Carpet of Flowers' cleanup reset): resolve its
+                // effect immediately, off the stack (CR 605.1a-style), rather than queueing a
+                // PendingTrigger. A trivial StoreSVar latch write — safe to run inline mid-scan.
+                if (trigger_ab.trigger_static_offstack) {
+                    trigger_ab.resolve(orderer);
+                    continue;
+                }
 
                 PendingTrigger pt;
                 pt.ab = trigger_ab;
@@ -661,6 +684,16 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                 auto lki_it = game.last_known_info.find(entity);
                 if (lki_it != game.last_known_info.end() && !lki_it->second.exiled_with.empty())
                     trigger_ab.restore_remembered_exiled_with = lki_it->second.exiled_with;
+            }
+
+            // Static$ True leave-battlefield reset (Carpet of Flowers' ChangesZone Battlefield→Any
+            // Self): resolve off the stack. The source's Permanent has already been destroyed, so
+            // the StoreSVar latch write is a graceful no-op (the per-permanent store reset naturally
+            // when the permanent left) — but routing it here keeps Static$ True triggers off the
+            // stack as the rules require, rather than queueing a spurious StoreSVar trigger.
+            if (trigger_ab.trigger_static_offstack) {
+                trigger_ab.resolve(orderer);
+                continue;
             }
 
             PendingTrigger pt;

@@ -105,6 +105,12 @@ bool pump(Ability &ab, std::shared_ptr<Orderer> orderer) {
     // subabilities do the work — don't re-pick a battlefield creature here.
     if (ab.target_in_graveyard) return true;
 
+    // IsCurse$ True (Carpet of Flowers): the Pump targets a PLAYER (ValidTgts$ Opponent), chosen
+    // as the trigger went on the stack, and applies no P/T. Keep ab.target = that opponent so the
+    // chained DB$ Mana sub-ability's Count$Valid Island.TargetedPlayerCtrl reads the opponent's
+    // Islands; do NOT re-enter the creature-target menu below.
+    if (ab.is_curse) return true;
+
     // Defined$ TriggeredAttacker(LKICopy) (Tamiyo, Seasoned Scholar): the pump's target is the
     // attacking creature, already bound at trigger-fire time (no ValidTgts$ menu to present).
     // Apply the P/T change directly to it. A target of 0 (attacker gone) is a harmless no-op.
@@ -224,6 +230,13 @@ static void parse_pump_amount(const std::string &value, int &out_static, std::st
 }
 
 bool parse_pump(Ability &ab, const std::string &key, const std::string &value) {
+    if (key == "IsCurse") {
+        // IsCurse$ True (Carpet of Flowers): the Pump is a targeting vehicle only (it establishes
+        // "target opponent" for a chained sub-ability) and applies no P/T. The handler keeps
+        // ab.target = the chosen opponent player and short-circuits.
+        if (value == "True") ab.is_curse = true;
+        return true;
+    }
     if (key == "NumAtt") {
         PumpParams &pp = effect_params<PumpParams>(ab);
         parse_pump_amount(value, pp.att, pp.att_expr, pp.att_sign);

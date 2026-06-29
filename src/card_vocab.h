@@ -206,6 +206,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Urza's Saga", 296}, {"Summon: Bahamut", 297},
     {"Tamiyo, Inquisitive Student", 298}, {"Tamiyo, Seasoned Scholar", 299},
     {"Tropical Island", 300},
+    {"Carpet of Flowers", 301},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);

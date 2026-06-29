@@ -171,6 +171,11 @@ bool play(Ability &ab, std::shared_ptr<Orderer> orderer);
 // cur_game.extra_turns and consulted at turn hand-off (CR 500.7 / 720). General over any "take
 // an extra turn" effect. See effect_add_turn.cpp.
 bool add_turn(Ability &ab, std::shared_ptr<Orderer> orderer);
+// DB$ StoreSVar (Carpet of Flowers): latch ab.stored_svar_set_value into the SOURCE permanent's
+// Permanent::stored_svars[ab.stored_svar_set_name] — the per-permanent named-integer scratch store
+// read back by a CheckSVar trigger gate. No-op if the source is not a battlefield permanent (e.g.
+// the leave-battlefield reset, whose Permanent is already gone). See effect_store_svar.cpp.
+bool store_svar(Ability &ab, std::shared_ptr<Orderer> orderer);
 
 
 // ── Effect-specific parse hooks ─────────────────────────────────────────────
@@ -202,6 +207,8 @@ bool parse_dig_until(Ability &ab, const std::string &key, const std::string &val
 bool parse_play(Ability &ab, const std::string &key, const std::string &value);
 // AB$ AnimateAll RemoveKeywords$/AddKeyword$/ValidCards$ (Shadowspear). See effect_animate_all.cpp.
 bool parse_animate_all(Ability &ab, const std::string &key, const std::string &value);
+// DB$ StoreSVar SVar$/Expression$/Type$ (Carpet of Flowers). See effect_store_svar.cpp.
+bool parse_store_svar(Ability &ab, const std::string &key, const std::string &value);
 
 }  // namespace effects
 

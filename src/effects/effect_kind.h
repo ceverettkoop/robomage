@@ -72,6 +72,7 @@ enum class EffectKind {
     Vote,
     Storm,
     AddTurn,
+    StoreSVar,
 };
 
 // Maps a normalized category string to its EffectKind. Unknown strings → None.

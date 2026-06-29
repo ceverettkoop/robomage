@@ -35,6 +35,19 @@ bool compare_svar(int value, const std::string &compare) {
     return apply_svar_op(value, op, std::stoi(compare.substr(2)));
 }
 
+// Per-permanent stored-SVar trigger gate (Carpet of Flowers). Read the latched scratch int off the
+// SOURCE permanent and compare it; absent reads as 0. An empty name = no gate (passes).
+bool stored_svar_gate_passes(Entity source, const std::string &name, const std::string &compare) {
+    if (name.empty()) return true;
+    int val = 0;
+    if (source != 0 && global_coordinator.entity_has_component<Permanent>(source)) {
+        const auto &perm = global_coordinator.GetComponent<Permanent>(source);
+        auto it = perm.stored_svars.find(name);
+        if (it != perm.stored_svars.end()) val = it->second;
+    }
+    return compare_svar(val, compare);
+}
+
 // Evaluate a StaticAbility SVar expression such as "Count$TypeInYourYard.Land".
 // Returns the computed integer value.
 int evaluate_sa_svar(const std::string &expr, Zone::Ownership controller, Entity source) {

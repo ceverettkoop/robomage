@@ -70,6 +70,7 @@ EffectHandler handler_for(EffectKind kind) {
         case EffectKind::Vote:            return &vote;
         case EffectKind::Storm:           return &storm;
         case EffectKind::AddTurn:         return &add_turn;
+        case EffectKind::StoreSVar:       return &store_svar;
         default:                          return nullptr;
     }
 }
@@ -95,7 +96,8 @@ bool apply_parse_hook(Ability &ab, const std::string &key, const std::string &va
         || parse_choose_number(ab, key, value)
         || parse_dig_until(ab, key, value)
         || parse_play(ab, key, value)
-        || parse_animate_all(ab, key, value);
+        || parse_animate_all(ab, key, value)
+        || parse_store_svar(ab, key, value);
 }
 
 }  // namespace effects

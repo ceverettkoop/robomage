@@ -2529,6 +2529,8 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
     bool phase_is_draw = false;
     bool phase_is_begin_combat = false;
     bool phase_is_first_main = false;
+    bool phase_is_second_main = false;
+    bool phase_is_cleanup = false;
     bool trigger_zone_is_graveyard = false;
     bool valid_player_is_you = false;
     bool mode_is_spell_cast = false;
@@ -2610,13 +2612,26 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
             // the player who declared attackers is this ability's controller ("whenever you attack").
             if (value == "You") attacking_player_is_you = true;
         } else if (key == "Phase") {
-            if (value == "Upkeep")   phase_is_upkeep   = true;
-            // Forge writes the end step as either "EndStep" or "End of Turn".
-            if (value == "EndStep" || value == "End of Turn")  phase_is_end_step = true;
-            if (value == "Draw")     phase_is_draw     = true;
-            if (value == "BeginCombat") phase_is_begin_combat = true;
-            // Forge writes the (pre-combat) first main phase as "Main1".
-            if (value == "Main1")    phase_is_first_main = true;
+            // A Phase trigger may list several phases comma-separated (Carpet of Flowers:
+            // Phase$ Main1,Main2 — "at the beginning of each of your main phases"). Split and set
+            // each phase flag so the trigger can bind to every listed phase's event.
+            size_t tok_pos = 0;
+            while (tok_pos <= value.size()) {
+                size_t comma = value.find(',', tok_pos);
+                std::string tok = value.substr(tok_pos, comma == std::string::npos
+                                                            ? std::string::npos : comma - tok_pos);
+                if (tok == "Upkeep")   phase_is_upkeep   = true;
+                // Forge writes the end step as either "EndStep" or "End of Turn".
+                if (tok == "EndStep" || tok == "End of Turn")  phase_is_end_step = true;
+                if (tok == "Draw")     phase_is_draw     = true;
+                if (tok == "BeginCombat") phase_is_begin_combat = true;
+                // Forge writes the (pre-combat) first main phase as "Main1", the post-combat one as "Main2".
+                if (tok == "Main1")    phase_is_first_main = true;
+                if (tok == "Main2")    phase_is_second_main = true;
+                if (tok == "Cleanup")  phase_is_cleanup = true;
+                if (comma == std::string::npos) break;
+                tok_pos = comma + 1;
+            }
         } else if (key == "TriggerZones") {
             // The zone(s) the source must be in for this triggered ability to function
             // (CR 113.6 / 603.6). Arclight Phoenix's combat trigger functions from the
@@ -2731,15 +2746,28 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
         } else if (key == "PresentCompare") {
             ability.condition_compare = value;  // e.g. "GE2"; empty defaults to ">= 1"
         } else if (key == "CheckSVar") {
-            // Intervening-if (603.4) gated on an SVar count rather than a board presence,
-            // e.g. Ocelot Pride's "if you gained life this turn" (CheckSVar$ YouLifeGained →
-            // Count$LifeYouGainedThisTurn). Resolve the SVar to its Count$ expression and store
-            // it as the intervening-if condition so the whole trigger fizzles when false.
             auto it = svars.find(value);
-            ability.condition_present = (it != svars.end()) ? it->second : value;
-            ability.intervening_if = true;
+            const std::string svdef = (it != svars.end()) ? it->second : std::string();
+            if (svdef.rfind("Number$", 0) == 0) {
+                // Per-permanent stored-SVar gate (Carpet of Flowers: CheckSVar$ CarpetX, where
+                // SVar:CarpetX:Number$0 is a scratch int latched by DB$ StoreSVar — "if you
+                // haven't added mana with this ability this turn"). Read the SOURCE permanent's
+                // stored_svars[name] at trigger time AND resolution, NOT a board-presence count.
+                ability.stored_svar_gate_name = value;
+            } else {
+                // Intervening-if (603.4) gated on an SVar count rather than a board presence,
+                // e.g. Ocelot Pride's "if you gained life this turn" (CheckSVar$ YouLifeGained →
+                // Count$LifeYouGainedThisTurn). Resolve the SVar to its Count$ expression and store
+                // it as the intervening-if condition so the whole trigger fizzles when false.
+                ability.condition_present = (it != svars.end()) ? it->second : value;
+                ability.intervening_if = true;
+            }
         } else if (key == "SVarCompare") {
-            ability.condition_compare = value;  // explicit compare for the CheckSVar gate
+            // SVarCompare follows CheckSVar on the line; route it to whichever gate CheckSVar set up.
+            if (!ability.stored_svar_gate_name.empty())
+                ability.stored_svar_gate_compare = value;  // per-permanent stored-SVar latch compare
+            else
+                ability.condition_compare = value;  // explicit compare for the CheckSVar count gate
         } else if (key == "Execute") {
             execute_svar = value;
         }
@@ -2801,6 +2829,30 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
         ability.trigger_on = Events::FIRST_MAIN_BEGAN;
         ability.trigger_valid_player_is_controller = valid_player_is_you;
     }
+
+    if (mode_is_phase && phase_is_second_main) {
+        // "at the beginning of [your] second/postcombat main phase" / Phase$ Main2. If Main1 already
+        // claimed trigger_on (Phase$ Main1,Main2 — "each of your main phases", Carpet of Flowers),
+        // bind SECOND_MAIN_BEGAN as an additional event so the one trigger fires on both phases.
+        if (ability.trigger_on == 0) ability.trigger_on = Events::SECOND_MAIN_BEGAN;
+        else                         ability.trigger_on_extra.push_back(Events::SECOND_MAIN_BEGAN);
+        ability.trigger_valid_player_is_controller = valid_player_is_you;
+    }
+
+    if (mode_is_phase && phase_is_cleanup) {
+        // "at the beginning of the cleanup step" / Phase$ Cleanup (Carpet of Flowers' Static$ True
+        // reset). With no ValidPlayer$ You it fires at every cleanup (re-arming the latch).
+        ability.trigger_on = Events::CLEANUP_BEGAN;
+        ability.trigger_valid_player_is_controller = valid_player_is_you;
+    }
+
+    // Static$ True on a phase or zone-change trigger (Carpet of Flowers' cleanup / leave-battlefield
+    // resets) is a bookkeeping trigger that resolves immediately off the stack — it never uses the
+    // stack like a normal triggered ability (CR 605.1a-style). The TapsForMana static path has its
+    // own dedicated flag (trigger_taps_for_mana_static) and inline mana-system handling, so it is
+    // excluded here. General over any Static$ True phase/ChangesZone trigger.
+    if (trigger_static && !mode_is_taps_for_mana)
+        ability.trigger_static_offstack = true;
 
     // TriggerZones$ Graveyard — the ability functions while its source is in the graveyard.
     ability.trigger_from_graveyard = trigger_zone_is_graveyard;
@@ -2964,6 +3016,10 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
                 // landfall trigger storm.
                 effect.ability_type                             = ability.ability_type;
                 effect.trigger_on                               = ability.trigger_on;
+                effect.trigger_on_extra                         = ability.trigger_on_extra;
+                effect.trigger_static_offstack                  = ability.trigger_static_offstack;
+                effect.stored_svar_gate_name                    = ability.stored_svar_gate_name;
+                effect.stored_svar_gate_compare                 = ability.stored_svar_gate_compare;
                 effect.trigger_zone_origin                      = ability.trigger_zone_origin;
                 effect.trigger_zone_destination                 = ability.trigger_zone_destination;
                 effect.trigger_valid_card_is_creature           = ability.trigger_valid_card_is_creature;

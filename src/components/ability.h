@@ -148,6 +148,26 @@ struct Ability{
     // target enumeration offer graveyard cards.
     bool target_in_graveyard = false;
     uint32_t trigger_on = 0;             // EventId that fires this ability; 0 = not event-triggered
+    // Additional EventIds this ability also fires on (a phase trigger listing multiple phases,
+    // e.g. Carpet of Flowers' Phase$ Main1,Main2 binds FIRST_MAIN_BEGAN here-plus SECOND_MAIN_BEGAN).
+    // The general battlefield trigger scan matches trigger_on OR any entry here.
+    std::vector<uint32_t> trigger_on_extra;
+    // Static$ True bookkeeping trigger (Carpet of Flowers' cleanup / leave-battlefield resets):
+    // Forge's internal "static" triggers do not use the stack — they resolve immediately and
+    // off-stack (CR 605.1a-style) the instant their event fires. The trigger scan resolves the
+    // Execute effect inline instead of placing a PendingTrigger. Distinct from
+    // trigger_taps_for_mana_static (which the mana system resolves) — this covers phase/zone-change
+    // static triggers. General over any Static$ True phase/ChangesZone trigger.
+    bool trigger_static_offstack = false;
+    // Per-permanent stored-SVar trigger gate (Carpet of Flowers' CheckSVar$ CarpetX | SVarCompare$
+    // EQ0 — "if you haven't added mana with this ability this turn"). When set, the trigger fires
+    // only if the SOURCE permanent's stored_svars[gate_name] (default 0) satisfies gate_compare
+    // (e.g. "EQ0"). Like an intervening-if (CR 603.4) it is re-checked at resolution. Distinct
+    // from the existing CheckSVar path (which resolves the SVar to a Count$ board expression);
+    // this reads a Number$ scratch int latched by DB$ StoreSVar. General over the StoreSVar/
+    // CheckSVar latch idiom.
+    std::string stored_svar_gate_name = "";
+    std::string stored_svar_gate_compare = "";
     bool trigger_self_excluded = false;  // true when ValidCard$ has .Other — won't trigger for the source itself
     bool trigger_only_self = false;      // true when ValidCard$ Card.Self — only fires when the entering entity is the source itself
     // true when ValidCard$ has the wasCastByYou qualifier (The One Ring's "enters, if you cast
@@ -605,6 +625,19 @@ struct Ability{
     // Set from a trigger line's IsPresent$/PresentCompare$. Distinct from condition_present used
     // for spell castability, which is checked only at cast time.
     bool intervening_if = false;
+
+    // IsCurse$ True (Carpet of Flowers' DB$ Pump): a Pump used purely as a targeting vehicle to
+    // establish "target opponent" for a chained sub-ability — it applies no P/T and grants no
+    // keyword. The Pump effect short-circuits (keeping ab.target = the chosen opponent player so
+    // a sub-ability's TargetedPlayerCtrl count can read it) instead of re-entering creature target
+    // selection. General over any IsCurse$ targeting-only Pump.
+    bool is_curse = false;
+
+    // DB$ StoreSVar (Carpet of Flowers): write `stored_svar_set_value` into the SOURCE permanent's
+    // stored_svars[stored_svar_set_name]. The general per-permanent named-integer scratch store
+    // (see Permanent::stored_svars). Parsed from SVar$ NAME / Expression$ N (Type$ Number).
+    std::string stored_svar_set_name = "";
+    int stored_svar_set_value = 0;
 
     // (delayed-trigger Phase$/Execute$/ValidPlayer$ moved to DelayedTriggerParams)
 

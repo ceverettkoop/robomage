@@ -32,6 +32,15 @@ struct Permanent {
     // game_queries.h so +1/+1 and -1/-1 changes stay in sync with the creature's cached P/T
     // contribution (layer 7c, 613.4c). An entry is absent (not 0) when it has no counters.
     std::map<std::string, int> counters;
+    // Per-permanent named integer SVars written by a DB$ StoreSVar effect (Forge's
+    // "SVar:NAME:Number$N" scratch values) and read by a CheckSVar$ NAME | SVarCompare$ ...
+    // trigger gate. Carpet of Flowers uses one ("CarpetX") as a once-per-turn latch: the
+    // beginning-of-main-phase mana trigger is gated EQ0, its CheckPlus sub-ability stores 1
+    // after adding mana, and a Static$ True cleanup reset stores 0 to re-arm next turn. An
+    // absent entry reads as 0. Lives on the Permanent so it resets naturally when the source
+    // leaves the battlefield (a fresh Permanent on re-entry starts empty). General — any future
+    // card using the StoreSVar/CheckSVar scratch-int idiom reuses this map.
+    std::map<std::string, int> stored_svars;
     // 606.3: a loyalty ability can be activated only if no loyalty ability of THIS
     // permanent has been activated this turn. The gate is per-permanent (across all its
     // loyalty abilities), not per-ability, so it can't reuse Ability::activations_this_turn.

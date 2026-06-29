@@ -1001,6 +1001,23 @@ size_t evaluate_dynamic_amount(
             return total;
         }
     }
+    // Count$Valid <filter>.TargetedPlayerCtrl — number of battlefield permanents matching the
+    // filter controlled by the PLAYER this ability targets (Carpet of Flowers: Islands the target
+    // opponent controls, via the curse-Pump's ValidTgts$ Opponent inherited by the Mana sub).
+    // `target` is that Player entity; evaluate the filter from its perspective by rewriting
+    // TargetedPlayerCtrl → YouCtrl and counting with the target player's ownership. Handled before
+    // the generic Count$Valid branch (which would treat TargetedPlayerCtrl as an unknown qualifier).
+    if (expr.rfind("Count$Valid ", 0) == 0 &&
+        expr.find("TargetedPlayerCtrl") != std::string::npos) {
+        std::string spec = expr.substr(std::string("Count$Valid ").size());
+        size_t pos = spec.find("TargetedPlayerCtrl");
+        spec.replace(pos, std::string("TargetedPlayerCtrl").size(), "YouCtrl");
+        Zone::Ownership tgt_ctrl = Zone::UNKNOWN;
+        if (target == cur_game.player_a_entity)      tgt_ctrl = Zone::PLAYER_A;
+        else if (target == cur_game.player_b_entity) tgt_ctrl = Zone::PLAYER_B;
+        if (tgt_ctrl == Zone::UNKNOWN) return 0;
+        return static_cast<size_t>(count_battlefield_matching(spec, tgt_ctrl, source));
+    }
     // Count$Valid <Filter> — number of battlefield permanents matching the full Forge filter
     // spec (e.g. Eldrazi Linebreaker: "Count$Valid Eldrazi.YouCtrl"; Eiganjo's Channel
     // ReduceCost: "Count$Valid Creature.Legendary+YouCtrl" = legendary creatures you control).
@@ -1263,6 +1280,16 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
     // subabilities fire (unlike a ConditionCheckSVar gate).
     if (intervening_if && !evaluate_present_condition(*this, controller, orderer)) {
         game_log("Triggered ability's intervening-if condition is no longer true; it does nothing.\n");
+        return;
+    }
+    // Per-permanent stored-SVar gate (Carpet of Flowers' "if you haven't added mana with this
+    // ability this turn", CheckSVar$ CarpetX | SVarCompare$ EQ0). Like the intervening-if it is
+    // re-checked at resolution (CR 603.4): if the source permanent's latched scratch int no longer
+    // satisfies the comparison, the ability does nothing (CheckPlus sets the latch to 1 only after
+    // the mana resolves, so the gate still reads 0 here for a legitimate fire).
+    if (!stored_svar_gate_name.empty() &&
+        !stored_svar_gate_passes(source, stored_svar_gate_name, stored_svar_gate_compare)) {
+        game_log("Triggered ability's stored-SVar gate is no longer satisfied; it does nothing.\n");
         return;
     }
     // Pre-resolve target validity check — skipped for categories that select their own target internally

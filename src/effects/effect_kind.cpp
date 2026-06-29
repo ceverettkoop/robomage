@@ -114,6 +114,10 @@ EffectKind effect_kind_from_string(const std::string &category) {
         // DB$ AddTurn (Emrakul, the Aeons Torn's self-cast trigger): the Defined$ player takes
         // NumTurns$ extra turns after the current one (CR 500.7 / 720). See effect_add_turn.cpp.
         {"AddTurn", EffectKind::AddTurn},
+        // DB$ StoreSVar (Carpet of Flowers): latch a named integer onto the source permanent's
+        // per-permanent scratch store (Permanent::stored_svars), read back by a CheckSVar trigger
+        // gate. See effect_store_svar.cpp.
+        {"StoreSVar", EffectKind::StoreSVar},
     };
     auto it = table.find(category);
     return (it != table.end()) ? it->second : EffectKind::None;
