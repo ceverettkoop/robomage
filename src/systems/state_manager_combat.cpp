@@ -128,6 +128,7 @@ void StateManager::deal_combat_damage(Game &game, bool first_strike_only) {
             // (the T3.11 fix) and treats deathtouch as lethal-1 (702.2c) — see lethal_needed_for_blocker.
             auto assign_it = game.combat_damage_assignment.find(entity);
             bool have_assignment = (assign_it != game.combat_damage_assignment.end());
+            bool has_trample = creature_has_keyword(cr, "Trample");
             uint32_t remaining = cr.power;
             for (auto blocker : blockers) {
                 auto &bcr = global_coordinator.GetComponent<Creature>(blocker);
@@ -147,8 +148,18 @@ void StateManager::deal_combat_damage(Game &game, bool first_strike_only) {
                     assigned = (bit != assign_it->second.end()) ? bit->second : 0u;
                     if (assigned > remaining) assigned = remaining;
                 } else if (remaining > 0) {
+                    // CR 510.1c: a blocked creature must assign ALL its combat damage. Auto-assign
+                    // lethal to each blocker in order; the LAST blocker absorbs any leftover
+                    // (harmless overkill) unless the attacker has trample, in which case the excess
+                    // tramples over to the attack target below. So a single blocker receives the
+                    // attacker's full power (Solitude [3/2] blocked by a [1/1] deals 3, lifelinking
+                    // 3) — not just the blocker's lethal amount.
                     uint32_t needed = lethal_needed_for_blocker(entity, blocker);
-                    assigned = (remaining >= needed) ? needed : remaining;
+                    bool is_last_blocker = (blocker == blockers.back());
+                    if (is_last_blocker && !has_trample)
+                        assigned = remaining;
+                    else
+                        assigned = (remaining >= needed) ? needed : remaining;
                 }
                 if (assigned > 0) {
                     deal_damage(entity, blocker, assigned);
@@ -159,7 +170,6 @@ void StateManager::deal_combat_damage(Game &game, bool first_strike_only) {
             }
             // Trample: excess damage goes to attack target
             if (remaining > 0) {
-                bool has_trample = creature_has_keyword(cr, "Trample");
                 if (has_trample && global_coordinator.entity_has_component<Player>(cr.attack_target) &&
                     player_protected_from_source(cr.attack_target, entity)) {
                     // Protection from everything (The One Ring) also prevents trampled-over combat
