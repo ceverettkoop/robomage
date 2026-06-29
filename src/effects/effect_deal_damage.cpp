@@ -27,7 +27,11 @@ bool deal_damage(Ability &ab, std::shared_ptr<Orderer> orderer) {
     // NumDmg$ X with X = Count$Valid Creature.YouCtrl). Mirrors lose_life/gain_life, which
     // evaluate their dynamic amount at resolution.
     if (!ab.dynamic_amount_expr.empty()) {
-        dmg = evaluate_dynamic_amount(ab.dynamic_amount_expr, source_controller(ab.source), orderer, ab.target);
+        // Thread the source through so a source-relative count (Summon: Bahamut's Mega Flare,
+        // X = Count$Valid Permanent.YouCtrl+Other$CardManaCost — total MV of OTHER permanents you
+        // control) can exclude the source itself via the +Other qualifier.
+        dmg = evaluate_dynamic_amount(ab.dynamic_amount_expr, source_controller(ab.source), orderer,
+                                      ab.target, ab.source);
     }
     const DamageParams *dp = std::get_if<DamageParams>(&ab.params);
     if (dp && dp->is_delirium_scale) {

@@ -972,6 +972,31 @@ size_t evaluate_dynamic_amount(
         }
         return count;
     }
+    // Count$Valid <filter>$CardManaCost — the SUM of mana values of battlefield permanents matching
+    // the filter, rather than their count (Summon: Bahamut's Mega Flare: X = Count$Valid
+    // Permanent.YouCtrl+Other$CardManaCost = the total mana value of OTHER permanents you control).
+    // The "+Other" qualifier excludes the ability's own source (the Bahamut); `source` is threaded
+    // into the match context for it. A token / costless permanent contributes mana value 0.
+    if (expr.rfind("Count$Valid ", 0) == 0 &&
+        expr.find("$CardManaCost") != std::string::npos) {
+        std::string rest = expr.substr(std::string("Count$Valid ").size());
+        size_t dollar = rest.rfind("$CardManaCost");
+        std::string spec = rest.substr(0, dollar);  // the filter, e.g. "Permanent.YouCtrl+Other"
+        if (!spec.empty()) {
+            MatchCtx mctx;
+            mctx.controller = ctrl;  // "you" reference for YouCtrl/OppCtrl
+            mctx.source = source;    // for the +Other qualifier (exclude the source)
+            size_t total = 0;
+            for (auto e : orderer->mEntities) {
+                if (!is_battlefield_permanent(e)) continue;
+                if (!permanent_matches_filter(e, spec, mctx)) continue;
+                if (global_coordinator.entity_has_component<CardData>(e))
+                    total += static_cast<size_t>(
+                        card_mana_value(global_coordinator.GetComponent<CardData>(e)));
+            }
+            return total;
+        }
+    }
     // Count$Valid <Filter> — number of battlefield permanents matching the full Forge filter
     // spec (e.g. Eldrazi Linebreaker: "Count$Valid Eldrazi.YouCtrl"; Eiganjo's Channel
     // ReduceCost: "Count$Valid Creature.Legendary+YouCtrl" = legendary creatures you control).
