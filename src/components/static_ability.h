@@ -103,6 +103,20 @@ struct StaticAbility {
     std::string add_type = "";              // AddType$ Mountain — land subtype to set
     bool remove_land_types = false;         // RemoveLandTypes$ True — strip existing land subtypes first
 
+    // Color-changing fields (category = "Continuous", layer 5; CR 613.1e / 612). SetColor$ names
+    // the color(s) the affected objects become — "Colorless" (CR 105.2c) or a White/Blue/Black/
+    // Red/Green list. affected_zone is AffectedZone$ ("All" = every zone; otherwise a specific
+    // zone). General: Mycosynth Lattice ("All cards ... are colorless", Affected$ Card |
+    // SetColor$ Colorless | AffectedZone$ All) is the global-colorless case; an explicit color
+    // list reuses the same field. Consumed by setcolor_override_for (state_manager_statics.cpp).
+    std::string set_color = "";             // SetColor$ Colorless | White | "White Blue" | ...
+    std::string affected_zone = "";         // AffectedZone$ All | Battlefield | Graveyard | ...
+
+    // Mana-spending conversion (category = "ManaConvert"; CR 609.4 / 106.6). ManaConversion$
+    // AnyType->AnyColor (Mycosynth Lattice's "Players may spend mana as though it were mana of
+    // any color.") lets any mana pay any colored pip. Consumed by any_mana_as_any_color_active.
+    std::string mana_conversion = "";       // ManaConversion$ AnyType->AnyColor
+
     // Self card-type animate static (Kaito, Bane of Nightmares' "During your turn ... he's a 3/4
     // Ninja creature with hexproof that's still a planeswalker"). When Affected$ references the
     // source itself (Permanent.Self) and add_type holds CARD types (e.g. "Creature & Ninja"), this

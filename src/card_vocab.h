@@ -198,6 +198,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Cityscape Leveler", 287},
     {"Kaito, Bane of Nightmares", 288},
     {"Yorion, Sky Nomad", 289},
+    {"Mycosynth Lattice", 290},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);

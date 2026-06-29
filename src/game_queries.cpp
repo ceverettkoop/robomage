@@ -39,9 +39,13 @@ int effective_toughness(Entity e) {
 }
 
 std::set<Colors> effective_colors(Entity e) {
-    // On the battlefield, effective color is the layer-5 (613.1e) result. No current-vocab card
-    // changes color, so this reads the printed colors today; this is the single seam a future
-    // layer-5 color-changing effect plugs into without touching any consumer.
+    // Layer-5 (613.1e) global color-changing override (Mycosynth Lattice: every card colorless).
+    // Checked first so it wins over the printed/last-known color in every zone the static reaches.
+    std::set<Colors> override_colors;
+    if (setcolor_override_for(e, override_colors)) return override_colors;
+    // On the battlefield, effective color is the layer-5 (613.1e) result. With no active color-
+    // changing static this reads the printed colors; the override above is the single seam such a
+    // static plugs into without touching any consumer.
     if (is_battlefield_permanent(e) && global_coordinator.entity_has_component<CardData>(e))
         return card_colors(global_coordinator.GetComponent<CardData>(e));
     if (const LastKnownInfo *lki = lki_for(e)) return lki->colors;

@@ -44,6 +44,7 @@
 // fan out across the affected set.
 static bool affected_is_general_filter(const std::string &aff);
 static void mark_unearthed_permanent(Entity entity, Permanent &perm);
+static void apply_global_addtype_statics(const std::set<Entity> &entities);
 
 // Unearth (CR 702.84): finalize an Unearth-returned permanent the instant its Permanent is
 // created. The permanent gains haste (it enters with summoning sickness cleared and the keyword
@@ -265,6 +266,85 @@ std::vector<Entity> affected_permanents_for_static(const ActiveStatic &as,
     for (auto e : entities)
         if (permanent_matches_filter(e, aff, ctx)) out.push_back(e);
     return out;
+}
+
+// Parse a SetColor$ spec into a color set (CR 105.2/202.2). "Colorless" — or an empty/unrecognized
+// token — contributes no color (CR 105.2c → empty set). Color words are space- or comma-delimited
+// so an explicit multi-color set (e.g. "White Blue") is handled the same way.
+static std::set<Colors> parse_setcolor_spec(const std::string &spec) {
+    std::set<Colors> out;
+    size_t p = 0;
+    while (p < spec.size()) {
+        size_t e = spec.find_first_of(" ,", p);
+        if (e == std::string::npos) e = spec.size();
+        std::string tok = spec.substr(p, e - p);
+        if      (tok == "White") out.insert(WHITE);
+        else if (tok == "Blue")  out.insert(BLUE);
+        else if (tok == "Black") out.insert(BLACK);
+        else if (tok == "Red")   out.insert(RED);
+        else if (tok == "Green") out.insert(GREEN);
+        // "Colorless" / unrecognized → no color contributed
+        p = e + 1;
+    }
+    return out;
+}
+
+// Does a SetColor$ static's AffectedZone$ reach a card currently in `zone`? "All" = every zone;
+// empty = the Forge default (battlefield only); otherwise a space-/comma-delimited zone list.
+static bool setcolor_zone_matches(const std::string &az, Zone::ZoneValue zone, bool has_zone) {
+    if (az == "All") return true;
+    if (az.empty()) return has_zone && zone == Zone::BATTLEFIELD;  // Forge default for a continuous static
+    if (!has_zone) return false;
+    size_t p = 0;
+    while (p < az.size()) {
+        size_t e = az.find_first_of(" ,", p);
+        if (e == std::string::npos) e = az.size();
+        std::string tok = az.substr(p, e - p);
+        if ((tok == "Battlefield" && zone == Zone::BATTLEFIELD) ||
+            (tok == "Graveyard"   && zone == Zone::GRAVEYARD)   ||
+            (tok == "Hand"        && zone == Zone::HAND)        ||
+            (tok == "Library"     && zone == Zone::LIBRARY)     ||
+            (tok == "Exile"       && zone == Zone::EXILE)       ||
+            (tok == "Stack"       && zone == Zone::STACK))
+            return true;
+        p = e + 1;
+    }
+    return false;
+}
+
+// Layer-5 (CR 613.1e / 612) global color-changing override — see game_queries.h. Scans the active-
+// statics cache for a SetColor$ continuous static whose AffectedZone$ + Affected$ filter designate
+// `e`; the FIRST match wins (no current vocab stacks two global SetColor statics). Matching is done
+// against the card's PRINTED characteristics (card_matches_filter) so this never recurses back into
+// effective_colors. Tokens (no CardData) and a static whose zone/filter excludes `e` yield no override.
+bool setcolor_override_for(Entity e, std::set<Colors> &out) {
+    if (g_active_statics.empty()) return false;
+    if (!global_coordinator.entity_has_component<CardData>(e)) return false;
+    Zone::ZoneValue zone = Zone::LIBRARY;
+    bool has_zone = global_coordinator.entity_has_component<Zone>(e);
+    if (has_zone) zone = global_coordinator.GetComponent<Zone>(e).location;
+    for (const auto &as : g_active_statics) {
+        if (as.suppressed || !as.condition_met) continue;
+        if (as.sa->category != "Continuous" || as.sa->set_color.empty()) continue;
+        if (!setcolor_zone_matches(as.sa->affected_zone, zone, has_zone)) continue;
+        MatchCtx ctx;
+        ctx.controller = as.controller;
+        ctx.source = as.entity;
+        extract_static_cmc_bound(as.sa->affected, ctx);
+        if (!card_matches_filter(e, as.sa->affected, ctx)) continue;
+        out = parse_setcolor_spec(as.sa->set_color);
+        return true;
+    }
+    return false;
+}
+
+bool any_mana_as_any_color_active() {
+    for (const auto &as : g_active_statics) {
+        if (as.suppressed || !as.condition_met) continue;
+        if (as.sa->category != "ManaConvert") continue;
+        if (as.sa->mana_conversion == "AnyType->AnyColor") return true;
+    }
+    return false;
 }
 
 ManaValue effective_base_cost(const CardData &card_data, Zone::Ownership caster) {
@@ -994,6 +1074,47 @@ static void apply_self_animate_statics() {
     }
 }
 
+// Layer 4 (CR 613.1d) — general additive card-type statics over an Affected$ permanent filter
+// (Mycosynth Lattice: "All permanents are artifacts in addition to their other types."). For each
+// active "Continuous" static whose AddType$ names types and whose Affected$ is a general permanent
+// filter — NOT the Self self-animate (apply_self_animate_statics), NOT the Land.nonBasic land-
+// subtype setter (Blood Moon, which strips/sets land subtypes via RemoveLandTypes$), NOT the
+// AllNonBasicLandType self-CDA — add those types to EVERY matching battlefield permanent in
+// addition to its existing types. Self-cleaning: each pass first strips the types this subsystem
+// recorded on each permanent (static_added_types), then re-adds for the currently-active statics,
+// so the grant lapses the instant the source leaves the battlefield. Only genuinely-new types are
+// recorded (a type the permanent already has is left untracked and never erased).
+static void apply_global_addtype_statics(const std::set<Entity> &entities) {
+    // Strip last pass's globally-added types from every permanent before re-deriving.
+    for (auto entity : entities) {
+        if (!is_battlefield_permanent(entity)) continue;
+        auto &perm = global_coordinator.GetComponent<Permanent>(entity);
+        if (perm.static_added_types.empty()) continue;
+        for (const auto &t : perm.static_added_types) perm.types.erase(t);
+        perm.static_added_types.clear();
+    }
+    for (auto &a : g_active_statics) {
+        if (a.suppressed) continue;
+        if (a.sa->category != "Continuous") continue;
+        if (a.sa->add_type.empty() || a.sa->add_type == "AllNonBasicLandType") continue;
+        if (a.sa->remove_land_types) continue;                  // Blood Moon land-subtype setter
+        if (a.sa->affected == "Land.nonBasic") continue;        // pure land type-changer form
+        if (!affected_is_general_filter(a.sa->affected)) continue;  // excludes Self/EquippedBy/empty
+        std::vector<Type> added = parse_self_added_types(a.sa->add_type);
+        MatchCtx ctx;
+        ctx.controller = a.controller;   // YouCtrl/OppCtrl reference (CR 109.5)
+        ctx.source = a.entity;           // .Other self-exclusion
+        extract_static_cmc_bound(a.sa->affected, ctx);
+        for (auto entity : entities) {
+            if (!is_battlefield_permanent(entity)) continue;
+            if (!permanent_matches_filter(entity, a.sa->affected, ctx)) continue;
+            auto &perm = global_coordinator.GetComponent<Permanent>(entity);
+            for (const auto &t : added)
+                if (perm.types.insert(t).second) perm.static_added_types.insert(t);
+        }
+    }
+}
+
 void StateManager::apply_type_changing_effects() {
     // Layer 4 reapply of DB$ Animate "becomes ..." type grants (Guide of Souls). These are
     // baked onto each permanent (animate_added_types) by the Animate effect rather than sourced
@@ -1050,7 +1171,12 @@ void StateManager::apply_type_changing_effects() {
         changers.push_back({&a, src_perm.timestamp_entered_battlefield});
     }
 
-    if (changers.empty()) return;
+    if (changers.empty()) {
+        // No land-subtype changers, but a general AddType static (Mycosynth Lattice) may still
+        // apply card types to every permanent. Run it and return.
+        apply_global_addtype_statics(mEntities);
+        return;
+    }
 
     // Sort by timestamp ascending — later entries override earlier ones on the same permanent.
     std::sort(changers.begin(), changers.end(),
@@ -1119,6 +1245,10 @@ void StateManager::apply_type_changing_effects() {
                         abilities.end());
         apply_land_abilities(entity);
     }
+
+    // General additive AddType statics run AFTER the land-subtype changer so a permanent whose
+    // land subtypes were just reset (Blood Moon) still gains its global type (Mycosynth's Artifact).
+    apply_global_addtype_statics(mEntities);
 }
 
 // Preamble for the continuous-effects engine: rebuild the g_active_statics cache from

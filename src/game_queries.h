@@ -131,6 +131,17 @@ int effective_power(Entity e);
 int effective_toughness(Entity e);
 std::set<Colors> effective_colors(Entity e);
 
+// Layer-5 (CR 613.1e / 612) global color-changing override. If an active SetColor$ continuous
+// static (Mycosynth Lattice) designates `e` — via its Affected$ filter and AffectedZone$ — write
+// the override color set into `out` and return true; otherwise return false (no override).
+// "Colorless" yields an empty set (CR 105.2c); an explicit color list yields those colors.
+// Defined in state_manager_statics.cpp (where g_active_statics lives). Consulted by
+// effective_colors and the colorless queries so every color-dependent check (protection-from-
+// color targeting, is_colorless) sees the affected object's effective color. Matches against the
+// object's PRINTED characteristics (card_matches_filter) to avoid recursing back into
+// effective_colors; tokens (no CardData) are not matched here.
+bool setcolor_override_for(Entity e, std::set<Colors> &out);
+
 // ── Unified filter matcher (CR 109/110/115 characteristic matching) ─────────
 // One grammar, one evaluator, two entry points. A Forge filter spec is a ';'-delimited
 // list of OR alternatives; each alternative is a head type/subtype name (or a "Card" /
@@ -269,6 +280,9 @@ inline bool is_colorless_card(const CardData &cd) {
 // True if the entity is colorless (CR 105.2c), handling both real cards (CardData) and
 // tokens (Token, which have no mana cost — their color is the token's color indicator).
 inline bool is_colorless_entity(Entity e) {
+    // A global SetColor$ override (Mycosynth Lattice) decides colorlessness first (CR 613.1e).
+    std::set<Colors> override_colors;
+    if (setcolor_override_for(e, override_colors)) return override_colors.empty();
     if (global_coordinator.entity_has_component<CardData>(e))
         return is_colorless_card(global_coordinator.GetComponent<CardData>(e));
     if (global_coordinator.entity_has_component<Token>(e)) {

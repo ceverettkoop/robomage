@@ -445,22 +445,26 @@ bool can_afford_with_sources(Zone::Ownership player_owner, const std::multiset<C
         counted_entities.insert(entity);
     }
 
-    // Try to pay colored costs from the hypothetical pool
+    // Try to pay colored costs from the hypothetical pool. Under ManaConvert (Mycosynth Lattice)
+    // any mana pays any colored pip, so every pip is treated as generic against the total pool.
+    bool any_color = any_mana_as_any_color_active();
     auto remaining = hypothetical;
     size_t flexible_used = 0;
-    for (auto color : cost) {
-        if (color == GENERIC) continue;
-        auto it = remaining.find(color);
-        if (it != remaining.end()) {
-            remaining.erase(it);
-        } else if (flexible_used < flexible_count) {
-            flexible_used++;
-        } else {
-            return false;
+    if (!any_color) {
+        for (auto color : cost) {
+            if (color == GENERIC) continue;
+            auto it = remaining.find(color);
+            if (it != remaining.end()) {
+                remaining.erase(it);
+            } else if (flexible_used < flexible_count) {
+                flexible_used++;
+            } else {
+                return false;
+            }
         }
     }
 
-    size_t generic_needed = cost.count(GENERIC);
+    size_t generic_needed = any_color ? cost.size() : cost.count(GENERIC);
     size_t available_for_generic = remaining.size() + (flexible_count - flexible_used);
     return available_for_generic >= generic_needed;
 }
@@ -545,10 +549,20 @@ void restore_mana_state(Zone::Ownership player, const ManaPaymentSnapshot &snap,
 // so the spend rule (including generic color preference) lives in exactly one place.
 static ManaValue pay_from_pool(ManaValue &pool, const ManaValue &cost) {
     ManaValue remaining;
+    // Mycosynth Lattice (ManaConvert AnyType->AnyColor, CR 609.4 / 106.6): while active, a colored
+    // pip may be paid with mana of ANY type. Pay exact-color matches first (so on-color mana is
+    // preferred and never wasted), then satisfy any still-unpaid colored pip from any remaining
+    // mana — exactly the generic-pip rule applied to colored pips.
+    bool any_color = any_mana_as_any_color_active();
+    std::vector<Colors> unpaid_colored;
     for (auto color : cost) {
         if (color == GENERIC) continue;
         auto it = pool.find(color);
         if (it != pool.end()) pool.erase(it);
+        else unpaid_colored.push_back(color);
+    }
+    for (Colors color : unpaid_colored) {
+        if (any_color && !pool.empty()) pool.erase(pool.begin());
         else remaining.insert(color);
     }
     size_t generic_needed = cost.count(GENERIC);
@@ -751,6 +765,11 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
     ManaValue pool_copy = player.mana;
     ManaValue &pool = commit ? player.mana : pool_copy;
 
+    // Mycosynth Lattice (ManaConvert AnyType->AnyColor, CR 609.4 / 106.6): while active, any mana
+    // can pay any colored pip. We keep the colored pips colored (so Delve/Improvise, which reduce
+    // only generic costs, never touch them) and instead relax the colored source-matching below.
+    bool any_color = any_mana_as_any_color_active();
+
     // Delve: exile graveyard instants/sorceries to reduce generic portion
     if (has_delve) {
         for (auto e : orderer->mEntities) {
@@ -828,19 +847,25 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
         if (*it == GENERIC) { ++it; continue; }
         Colors needed = *it;
 
-        // Check pool first
+        // Check pool first: exact color, or — under ManaConvert — any mana already floating.
         if (pool.count(needed) > 0) {
             auto pit = pool.find(needed);
             pool.erase(pit);
             it = remaining.erase(it);
             continue;
         }
+        if (any_color && !pool.empty()) {
+            pool.erase(pool.begin());
+            it = remaining.erase(it);
+            continue;
+        }
 
-        // Try sources in priority order: adds_no_counter > single-color > multi-color
+        // Try sources in priority order: adds_no_counter > single-color > multi-color. Under
+        // ManaConvert any source's mana can pay the pip, so the exact-color gate is dropped.
         auto try_source = [&](auto predicate) -> bool {
             for (auto &si : valid_sources) {
                 if (tapped_entities.count(si.entity)) continue;
-                if (si.color != needed) continue;
+                if (!any_color && si.color != needed) continue;
                 if (!predicate(si)) continue;
                 activate_source(si);
                 tapped_entities.insert(si.entity);
@@ -848,8 +873,14 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
                 // that produced no mana of `needed` (e.g. a 0-mana ManaReflected source
                 // with no qualifying permanent) erases nothing — the pip stays unpaid and
                 // we keep scanning. This mirrors the interactive payer, where the pip is
-                // only spent once can_afford_pool sees the color in the real pool.
-                if (pool.count(needed) > 0) {
+                // only spent once can_afford_pool sees the color in the real pool. Under
+                // ManaConvert any produced mana counts, so spend the first available pip.
+                if (any_color && !pool.empty()) {
+                    pool.erase(pool.begin());
+                    it = remaining.erase(it);
+                    return true;
+                }
+                if (!any_color && pool.count(needed) > 0) {
                     auto pit = pool.find(needed);
                     pool.erase(pit);
                     it = remaining.erase(it);

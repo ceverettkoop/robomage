@@ -134,6 +134,15 @@ struct Permanent {
     // (514.2). General: works for creatures (whose cr.keywords also drop it in gather_active_statics)
     // and for noncreature permanents (whose keywords the accessors read off CardData/Token).
     std::set<std::string> removed_keywords_eot;
+
+    // Card types added to this permanent by a GLOBAL additive type-changing static this SBA pass
+    // (Mycosynth Lattice's "All permanents are artifacts in addition to their other types.",
+    // CR 613.1d layer 4). Distinct from animate_added_types (baked on by a resolved DB$ Animate):
+    // these come from a battlefield static and are stripped-then-rebuilt every pass by
+    // apply_global_addtype_statics, so the grant lapses the instant the source leaves the
+    // battlefield. Only genuinely-new types are recorded (a type the permanent already had is not
+    // tracked here and so is never erased), and only TYPE/SUBTYPE/SUPERTYPE not already present.
+    std::set<Type> static_added_types;
 };
 
 #endif /* PERMANENT_H */

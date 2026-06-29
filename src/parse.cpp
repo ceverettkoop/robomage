@@ -2989,6 +2989,16 @@ static StaticAbility parse_one_static_ability(const std::string &line,
                 sa.set_toughness_svar = resolved;
             } else if (key == "AddType") {
                 sa.add_type = value;
+            } else if (key == "SetColor") {
+                // Layer-5 color-changing static (Mycosynth Lattice). The colorset spec ("Colorless"
+                // or a White/Blue/... list) is resolved in setcolor_override_for.
+                sa.set_color = value;
+            } else if (key == "AffectedZone") {
+                sa.affected_zone = value;
+            } else if (key == "ManaConversion") {
+                // ManaConvert static (Mycosynth Lattice): AnyType->AnyColor lets any mana pay any
+                // colored pip. Read by any_mana_as_any_color_active during mana payment.
+                sa.mana_conversion = value;
             } else if (key == "RemoveLandTypes") {
                 sa.remove_land_types = (value == "True");
             } else if (key == "RemoveCardTypes") {

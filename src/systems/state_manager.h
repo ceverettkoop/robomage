@@ -48,6 +48,14 @@ extern std::vector<ActiveStatic> g_active_statics;
 std::vector<Entity> affected_permanents_for_static(const ActiveStatic &as,
                                                    const std::set<Entity> &entities);
 
+// True while an active ManaConvert continuous static lets players spend mana as though it were
+// mana of any color (Mycosynth Lattice: ManaConversion$ AnyType->AnyColor, CR 609.4 / 106.6).
+// When set, any one mana pays any single colored pip — i.e. colored pips behave like generic for
+// payment matching. Read by the mana-payment path (mana_system.cpp) so affordability and the
+// actual spend agree. Scans g_active_statics (rebuilt each SBA pass), so callers must run after
+// gather_active_statics — true of every cast/pay path.
+bool any_mana_as_any_color_active();
+
 // Total generic mana that active RaiseCost statics add to the cost of casting `card_data`.
 // Honours the nonCreature filter and the NamedCard filter (Disruptor Flute): a NamedCard
 // RaiseCost applies only when the spell's name equals its source's chosen_name. The relative
