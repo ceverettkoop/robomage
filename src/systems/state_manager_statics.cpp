@@ -636,6 +636,7 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                 // them and strips the Creature component — it enters as a noncreature.
                 if (game.pending_impending.erase(entity) && card_data.alt_cost.impending_count > 0) {
                     perm.counters["TIME"] = card_data.alt_cost.impending_count;
+                    perm.entered_via_impending = true;  // marks these TIME counters as impending
                     game_log("%s enters with %d time counter(s) (impending).\n",
                              card_data.name.c_str(), card_data.alt_cost.impending_count);
                 }
@@ -757,6 +758,7 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
             // so it "becomes a creature" via the normal state-based recompute.
             bool impending_suppressed =
                 global_coordinator.entity_has_component<Permanent>(entity) &&
+                global_coordinator.GetComponent<Permanent>(entity).entered_via_impending &&
                 get_counters(entity, "TIME") > 0;
             // Reconfigure (CR 702.151b): strip the Creature/Damage components while attached so the
             // permanent isn't a creature for combat, targeting, and state-based actions. They are

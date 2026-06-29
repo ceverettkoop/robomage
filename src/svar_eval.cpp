@@ -74,20 +74,10 @@ int evaluate_sa_svar(const std::string &expr, Zone::Ownership controller, Entity
     // static-buff path (gather_active_statics → evaluate_sa_svar); the spell/ability path keeps
     // its own copy in evaluate_dynamic_amount. The "$CardManaCost" sum form is handled there.
     if (expr.rfind("Count$Valid ", 0) == 0 &&
+        expr.find("RememberedPlayerCtrl") == std::string::npos &&
         expr.find("$CardManaCost") == std::string::npos) {
         std::string spec = expr.substr(std::string("Count$Valid ").size());
-        if (!spec.empty()) {
-            MatchCtx mctx;
-            mctx.controller = controller;
-            mctx.source = source;
-            int count = 0;
-            Entity max_e = global_coordinator.GetMaxIssuedEntity();
-            for (Entity e = 0; e < max_e; ++e) {
-                if (!is_battlefield_permanent(e)) continue;
-                if (permanent_matches_filter(e, spec, mctx)) count++;
-            }
-            return count;
-        }
+        if (!spec.empty()) return count_battlefield_matching(spec, controller, source);
     }
 
     // Count$xPaid — the X value paid at cast time for the X-cost spell currently resolving

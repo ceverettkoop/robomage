@@ -143,6 +143,14 @@ struct Permanent {
     // a non-Saga permanent.
     int saga_chapters_in_flight = 0;
 
+    // CR 702.175: this permanent entered the battlefield for its Impending alternate cost, so its
+    // TIME counters are *impending* time counters — it is a noncreature until they all shed, and it
+    // sheds one at the controller's end step. Set when the impending TIME counters are applied (the
+    // same place pending_impending is consumed). Required (in addition to TIME > 0) by both the
+    // impending creature-suppression strip and the end-step shed, so a future Vanishing/Suspend card
+    // that also uses generic TIME counters does NOT get treated as an impending permanent.
+    bool entered_via_impending = false;
+
     // Card types added to this permanent by a GLOBAL additive type-changing static this SBA pass
     // (Mycosynth Lattice's "All permanents are artifacts in addition to their other types.",
     // CR 613.1d layer 4). Distinct from animate_added_types (baked on by a resolved DB$ Animate):

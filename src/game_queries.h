@@ -173,6 +173,15 @@ bool card_matches_filter(Entity e, const std::string &spec, const MatchCtx &ctx 
 bool card_matches_filter(const CardData &cd, const std::string &spec, const MatchCtx &ctx = MatchCtx{});
 bool permanent_matches_filter(Entity e, const std::string &spec, const MatchCtx &ctx = MatchCtx{});
 
+// Count the battlefield permanents matching a Forge `Count$Valid <filter>` spec — the single
+// shared implementation behind both the spell/ability dynamic-amount path (evaluate_dynamic_amount)
+// and the static-buff svar path (evaluate_sa_svar), so the `controller` ("you") reference, the
+// `source` reference (for source-relative qualifiers like +Other / sameName), and the
+// battlefield/phasing guard are identical on both. `filter_spec` is the bare filter (the text after
+// "Count$Valid "); control/type/etc. qualifiers in it are enforced by permanent_matches_filter.
+int count_battlefield_matching(const std::string &filter_spec, Zone::Ownership controller,
+                               Entity source);
+
 // ── Forge-style comma-OR filter matching (one convention, one place) ────────
 // A Forge `Valid$`/`ValidTgts$` spec lists its OR alternatives separated by ',' (e.g.
 // Mox Amber's "Creature.Legendary+YouCtrl,Planeswalker.Legendary+YouCtrl"), whereas the
@@ -226,11 +235,12 @@ inline void extract_static_cmc_bound(const std::string &spec, MatchCtx &ctx) {
 // token/amass/mobilize/delayed-trigger/deal-damage/etc. otherwise repeat inline.
 Zone::Ownership source_controller(Entity source);
 
-// CR 702.16d: is `player_entity` currently under a "protection from everything" grant
-// (cur_game.player_protection_from_everything) against `source` — i.e. is the source controlled
-// by an opponent of the protected player? True means damage from `source` to that player is
-// prevented. Shared by the effect-damage chokepoint (deal_damage_to_player) and the combat-damage
-// path so the prevention rule lives in one place.
+// CR 702.16: is `player_entity` currently under a "protection from everything" grant
+// (cur_game.player_protection_from_everything)? Protection from everything is protection from ALL
+// sources — including the protected player's OWN sources — so this returns true whenever the grant
+// is active for that player, regardless of who controls `source`. True means damage from `source`
+// to that player is prevented. Shared by the effect-damage chokepoint (deal_damage_to_player) and
+// the combat-damage path so the prevention rule lives in one place.
 bool player_protected_from_source(Entity player_entity, Entity source);
 
 // CR 702.16d (damage facet): is `perm_target` a permanent with "protection from colored spells"

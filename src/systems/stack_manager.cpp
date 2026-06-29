@@ -15,6 +15,7 @@
 #include "../ecs/coordinator.h"
 #include "../game_queries.h"
 #include "../input_logger.h"
+#include "../saga.h"
 #include "orderer.h"
 
 extern Game cur_game;
@@ -160,11 +161,7 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
 
         // CR 714.4: a Saga chapter ability has now left the stack — release the sacrifice gate so a
         // completed Saga can be sacrificed on the next state-based check.
-        if (ability.is_saga_chapter && ability.source != 0 &&
-            global_coordinator.entity_has_component<Permanent>(ability.source)) {
-            auto &saga_perm = global_coordinator.GetComponent<Permanent>(ability.source);
-            if (saga_perm.saga_chapters_in_flight > 0) saga_perm.saga_chapters_in_flight--;
-        }
+        decrement_saga_in_flight(ability);
 
         // Destroy the standalone ability entity — it has no card zone to return to
         global_coordinator.DestroyEntity(top_entity);

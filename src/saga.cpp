@@ -3,6 +3,7 @@
 #include <cstdint>
 
 #include "cli_output.h"
+#include "components/ability.h"
 #include "components/carddata.h"
 #include "components/permanent.h"
 #include "components/zone.h"
@@ -39,6 +40,13 @@ void saga_add_lore_counters(Entity saga, int n) {
         ev.SetParam(Params::AMOUNT, static_cast<uint32_t>(chapter));
         global_coordinator.SendEvent(ev);
     }
+}
+
+void decrement_saga_in_flight(const Ability &ab) {
+    if (!ab.is_saga_chapter || ab.source == 0) return;
+    if (!global_coordinator.entity_has_component<Permanent>(ab.source)) return;
+    auto &saga_perm = global_coordinator.GetComponent<Permanent>(ab.source);
+    if (saga_perm.saga_chapters_in_flight > 0) saga_perm.saga_chapters_in_flight--;
 }
 
 void saga_put_precombat_lore_counters(Zone::Ownership active) {

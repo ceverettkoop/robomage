@@ -10,7 +10,9 @@
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../error.h"
+#include "../components/ability.h"
 #include "../game_queries.h"
+#include "../saga.h"
 #include "../systems/orderer.h"
 
 extern Coordinator global_coordinator;
@@ -99,6 +101,12 @@ bool counter(Ability &ab, std::shared_ptr<Orderer> orderer) {
                                       global_coordinator.GetComponent<Spell>(ab.target).is_copy;
                 // Capture flashback status before the Spell component (which carries it) is removed.
                 bool was_flashback = spell_cast_with_flashback(ab.target);
+                // CR 714.4: if the countered object is a Saga chapter ability, it is leaving the
+                // stack WITHOUT resolving — release the same sacrifice gate the resolve path
+                // releases, so a completed Saga isn't stranded on the battlefield forever. Read it
+                // before the Ability component (which carries is_saga_chapter/source) is removed.
+                if (global_coordinator.entity_has_component<Ability>(ab.target))
+                    decrement_saga_in_flight(global_coordinator.GetComponent<Ability>(ab.target));
                 if (global_coordinator.entity_has_component<Ability>(ab.target))
                     global_coordinator.RemoveComponent<Ability>(ab.target);
                 if (global_coordinator.entity_has_component<Spell>(ab.target))

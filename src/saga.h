@@ -5,6 +5,7 @@
 #include "ecs/entity.h"
 
 struct CardData;
+struct Ability;
 
 // CR 714 — Saga support. A Saga uses lore counters (CR 714.2) to track its progress: it enters
 // with one lore counter (714.3a) and gains one more as its controller's precombat main phase
@@ -27,5 +28,12 @@ void saga_add_lore_counters(Entity saga, int n);
 // CR 714.3c turn-based action: as `active`'s precombat main phase begins, put one lore counter on
 // each Saga they control. Called from the draw→first-main step transition.
 void saga_put_precombat_lore_counters(Zone::Ownership active);
+
+// CR 714.4 sacrifice-gate release: when a Saga chapter ability leaves the stack — whether it
+// finished resolving OR was removed without resolving (countered by Stifle, fizzled on an illegal
+// target, etc.) — decrement its source Saga's saga_chapters_in_flight (clamped at 0) so the
+// completed Saga can be sacrificed on the next state-based check. No-op if `ab` isn't a saga
+// chapter ability or its source is no longer a permanent.
+void decrement_saga_in_flight(const Ability &ab);
 
 #endif /* SAGA_H */

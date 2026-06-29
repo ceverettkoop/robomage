@@ -126,14 +126,12 @@ struct Game {
         enum DayNight { DN_NEITHER, DN_DAY, DN_NIGHT };
         DayNight day_night = DN_NEITHER;
         // Spells cast by the previous turn's active player DURING that turn (CR 502.2 / 731.2),
-        // read by the untap-step day/night turn-based check on the following turn. Player::
-        // spells_cast_this_turn is reset only at its own player's cleanup, so a player's instants
-        // cast on the opponent's turn would otherwise leak into their own-turn count. To isolate
-        // "spells the active player cast during their own turn", we snapshot the active player's
-        // counter at the start of their turn (active_spells_at_turn_start) and store the difference
-        // at cleanup — without disturbing the shared counter's "this turn" semantics other cards use.
+        // read by the untap-step day/night turn-based check on the following turn. Snapshotted at
+        // cleanup from Player::spells_cast_this_turn before that per-turn counter is reset. Because
+        // cleanup resets BOTH players' spells_cast_this_turn to 0 (so a player's instants cast on
+        // the opponent's turn never leak into their own-turn count), the snapshot is just the active
+        // player's spells_cast_this_turn at cleanup.
         int prev_turn_active_spell_count = 0;
-        size_t active_spells_at_turn_start = 0;
         size_t seed;
         size_t timestamp = 0;
         size_t turn = 0;

@@ -360,6 +360,20 @@ bool permanent_matches_filter(Entity e, const std::string &spec, const MatchCtx 
     return match_filter_core(permanent_view(e, global_coordinator.GetComponent<Permanent>(e)), spec, ctx);
 }
 
+int count_battlefield_matching(const std::string &filter_spec, Zone::Ownership controller,
+                               Entity source) {
+    MatchCtx mctx;
+    mctx.controller = controller;  // the "you" reference for YouCtrl/OppCtrl in the spec
+    mctx.source = source;          // for source-relative qualifiers (e.g. +Other, sameName)
+    int count = 0;
+    Entity max_e = global_coordinator.GetMaxIssuedEntity();
+    for (Entity e = 0; e < max_e; ++e) {
+        if (!is_battlefield_permanent(e)) continue;  // control is enforced by the filter
+        if (permanent_matches_filter(e, filter_spec, mctx)) count++;
+    }
+    return count;
+}
+
 // ── Defined$ player resolution (declared in game_queries.h) ─────────────────
 Zone::Ownership source_controller(Entity source) {
     if (global_coordinator.entity_has_component<Permanent>(source))
@@ -369,14 +383,16 @@ Zone::Ownership source_controller(Entity source) {
     return Zone::UNKNOWN;
 }
 
-bool player_protected_from_source(Entity player_entity, Entity source) {
+bool player_protected_from_source(Entity player_entity, Entity /*source*/) {
     if (cur_game.player_protection_from_everything.empty()) return false;
     Zone::Ownership prot =
         (player_entity == cur_game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
-    Zone::Ownership src_ctrl = source_controller(source);
     for (const auto &p : cur_game.player_protection_from_everything) {
         if (p.player != prot) continue;
-        if (src_ctrl != Zone::UNKNOWN && src_ctrl != prot) return true;
+        // CR 702.16: "protection from everything" is protection from ALL sources, including the
+        // protected player's OWN sources — not only an opponent's. So the grant prevents the
+        // damage/targeting regardless of who controls the source.
+        return true;
     }
     return false;
 }

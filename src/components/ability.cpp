@@ -1011,18 +1011,11 @@ size_t evaluate_dynamic_amount(
     // falls through to its dedicated handler below (it needs the remembered-player reference
     // and the /Times multiplier, neither of which permanent_matches_filter understands).
     if (expr.rfind("Count$Valid ", 0) == 0 &&
-        expr.find("RememberedPlayerCtrl") == std::string::npos) {
+        expr.find("RememberedPlayerCtrl") == std::string::npos &&
+        expr.find("$CardManaCost") == std::string::npos) {
         std::string spec = expr.substr(std::string("Count$Valid ").size());  // full filter spec
-        if (!spec.empty()) {
-            MatchCtx mctx;
-            mctx.controller = ctrl;  // the "you" reference for YouCtrl/OppCtrl in the spec
-            size_t count = 0;
-            for (auto e : orderer->mEntities) {
-                if (!is_battlefield_permanent(e)) continue;  // control is enforced by the filter
-                if (permanent_matches_filter(e, spec, mctx)) count++;
-            }
-            return count;
-        }
+        if (!spec.empty())
+            return static_cast<size_t>(count_battlefield_matching(spec, ctrl, source));
     }
     // Count$Revolt.high.low — returns high if revolt active for controller, low otherwise
     if (expr.find("Count$Revolt.") != std::string::npos) {
