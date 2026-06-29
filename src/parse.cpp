@@ -875,6 +875,24 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             }
             continue;
         }
+        // K:Storm — Storm (CR 702.40). A triggered ability that functions on the stack: "When
+        // you cast this spell, copy it for each spell cast before it this turn. You may choose new
+        // targets for the copies." Synthesize the self-cast SPELL_CAST trigger here (general over
+        // any Storm card); the copy count is locked in when the trigger fires
+        // (state_manager_triggers) and the copies are put on the stack at resolution
+        // (effects::storm). The trigger itself takes no target — each copy chooses its own.
+        if (kw_line == "Storm") {
+            card.keywords.push_back("Storm");
+            Ability st;
+            st.ability_type = Ability::TRIGGERED;
+            st.category = "Storm";
+            st.trigger_on = Events::SPELL_CAST;
+            st.trigger_only_self = true;  // ValidCard$ Card.Self — fires for the cast spell itself
+            st.valid_tgts = "N_A";
+            st.mandatory = true;
+            card.abilities.push_back(st);
+            continue;
+        }
         split_keywords(kw_line, card.keywords);
     }
 }

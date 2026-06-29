@@ -69,6 +69,7 @@ enum class EffectKind {
     RevealHand,
     BecomeMonarch,
     Vote,
+    Storm,
 };
 
 // Maps a normalized category string to its EffectKind. Unknown strings → None.

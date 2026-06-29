@@ -105,6 +105,11 @@ EffectKind effect_kind_from_string(const std::string &category) {
         // two-player engine (CLAUDE.md scope) this reduces to the controller choosing one
         // permanent matching VoteCard$. See effect_vote.cpp.
         {"Vote", EffectKind::Vote},
+        // K:Storm (CR 702.40) synthesizes a self-cast triggered ability with this category:
+        // "When you cast this spell, copy it for each spell cast before it this turn." The copy
+        // count is locked in when the trigger fires (state_manager_triggers) and the copies are
+        // put on the stack at resolution. See effect_storm.cpp.
+        {"Storm", EffectKind::Storm},
     };
     auto it = table.find(category);
     return (it != table.end()) ? it->second : EffectKind::None;

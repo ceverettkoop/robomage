@@ -53,6 +53,17 @@ struct PendingTrigger {
 // apart (e.g. Endurance's evoke-sacrifice trigger vs. its enters-the-battlefield trigger).
 static std::string trigger_label(const std::string &name, const Ability &ab);
 
+// Storm count (CR 702.40a): the number of OTHER spells cast before the storm spell this turn,
+// counting spells cast by EITHER player. The per-player spells_cast_this_turn counters already
+// include the storm spell itself (the cast is recorded before SPELL_CAST fires), so subtract one.
+static size_t storm_count_this_turn(const Game &game) {
+    size_t total = 0;
+    for (Entity pe : {game.player_a_entity, game.player_b_entity})
+        if (global_coordinator.entity_has_component<Player>(pe))
+            total += global_coordinator.GetComponent<Player>(pe).spells_cast_this_turn;
+    return total > 0 ? total - 1 : 0;
+}
+
 // 603.3b: place all simultaneously-triggered abilities on the stack in APNAP order — the active
 // player's triggers first (so they resolve last), then the non-active player's. Each player
 // orders their own group via a mandatory choice when more than one trigger is theirs.
@@ -605,6 +616,15 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
             Ability trigger_ab = ab;
             trigger_ab.source = spell_e;
             trigger_ab.controller = ctrl;
+
+            // Storm (CR 702.40a): lock in the copy count = number of OTHER spells cast before
+            // this one this turn, by EITHER player. The per-player cast counters were already
+            // bumped for this storm spell before SPELL_CAST fired (action_processor records the
+            // cast first), so the both-player total minus this spell is the storm count. Snapshot
+            // it now, at trigger-fire time — spells cast in RESPONSE to the storm trigger come
+            // after this spell and must not inflate the count.
+            if (trigger_ab.category == "Storm")
+                trigger_ab.amount = storm_count_this_turn(game);
 
             PendingTrigger pt;
             pt.ab = trigger_ab;

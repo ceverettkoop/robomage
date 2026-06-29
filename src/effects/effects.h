@@ -115,6 +115,11 @@ bool become_monarch(Ability &ab, std::shared_ptr<Orderer> orderer);
 // reduces to the spell/ability's controller CHOOSING one permanent matching VoteCard$ — a
 // choice, not a target, so it ignores shroud/hexproof. See effect_vote.cpp.
 bool vote(Ability &ab, std::shared_ptr<Orderer> orderer);
+// K:Storm (CR 702.40): the synthesized self-cast triggered ability resolves here. ab.amount holds
+// the storm count (spells cast before the storm spell this turn, by either player), locked in when
+// the trigger fired. Puts that many copies of the source spell on the stack (each may choose new
+// targets) via the shared copy_spell_on_stack mechanism. See effect_storm.cpp.
+bool storm(Ability &ab, std::shared_ptr<Orderer> orderer);
 // SP$/DB$ NameCard (Cabal Therapy): the ability's controller names a card (CR 201.4); the
 // chosen name is stored in cur_game.named_card so a chained Card.NamedCard sub-ability
 // (here a RevealDiscardAll discard) can reference it.
