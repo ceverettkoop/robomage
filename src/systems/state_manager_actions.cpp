@@ -642,7 +642,8 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             if (can_alt) {
                 LegalAction alt_la = la;
                 alt_la.use_alt_cost = true;
-                alt_la.description = "Cast " + card_data.name + " (alternate cost)";
+                alt_la.description = "Cast " + card_data.name +
+                    (card_data.alt_cost.is_impending ? " (impending)" : " (alternate cost)");
                 actions.push_back(alt_la);
             }
             // Offspring (CR 702.171): optional ADDITIONAL cost. Offer a separate cast option

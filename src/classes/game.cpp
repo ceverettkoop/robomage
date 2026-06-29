@@ -22,6 +22,26 @@
 
 extern Coordinator global_coordinator;
 
+// CR 702.175e: "At the beginning of your end step, remove a time counter from [an impending
+// permanent]." Built-in end-step shed, mirroring the Stun untap-step shed (CR 122.1d) above:
+// remove one TIME counter from each permanent the active player controls that still has one.
+// When the last is removed the permanent stops being a noncreature impending object and becomes
+// a creature on the next state-based pass (apply_permanent_components re-adds its Creature
+// component). General — works for any current/future Impending card.
+static void shed_impending_time_counters(Zone::Ownership active_player) {
+    for (Entity e = 0; e < global_coordinator.GetMaxIssuedEntity(); ++e) {
+        if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
+        auto &perm = global_coordinator.GetComponent<Permanent>(e);
+        if (perm.controller != active_player) continue;
+        if (get_counters(e, "TIME") <= 0) continue;
+        int remaining = add_counters(e, "TIME", -1);
+        if (remaining > 0)
+            game_log("%s has a time counter removed (%d remaining).\n", perm.name.c_str(), remaining);
+        else
+            game_log("%s loses its last time counter (it is now a creature).\n", perm.name.c_str());
+    }
+}
+
 bool Game::ready_to_resolve() {
     return a_has_passed && b_has_passed;
 }
@@ -254,6 +274,9 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                         end_step_event.SetParam(Params::PLAYER, active_player_entity);
                         global_coordinator.SendEvent(end_step_event);
                     }
+                    // CR 702.175e: remove a time counter from each impending permanent the active
+                    // player controls at the beginning of their end step.
+                    shed_impending_time_counters(active_player);
                     break;
                 case END_STEP:
                     cur_step = CLEANUP;

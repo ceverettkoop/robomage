@@ -617,6 +617,27 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             card.keywords.push_back("Reconfigure");
             continue;
         }
+        // K:Impending:<N>:<mana> — Impending (CR 702.175). An alternative casting cost: the spell
+        // may be cast for <mana> instead of its normal mana cost; if so the permanent enters with N
+        // time counters and isn't a creature until the last is removed (CR 702.175d-e). Encoded on
+        // the shared AltCost (mana portion = parse_mana_cost(<mana>), is_impending + impending_count
+        // flag the impending-specific entry/shed behaviour). The format mirrors Reconfigure's
+        // colon-split (Equip/Reconfigure), with an extra leading count field: "Impending:5:1 B".
+        if (kw_line.rfind("Impending", 0) == 0) {
+            std::string rest = kw_line.substr(strlen("Impending"));
+            if (!rest.empty() && rest[0] == ':') rest = rest.substr(1);  // "5:1 B"
+            size_t colon = rest.find(':');
+            if (colon != std::string::npos) {
+                AltCost ac;
+                ac.has_alt_cost = true;
+                ac.is_impending = true;
+                ac.impending_count = std::stoi(rest.substr(0, colon));
+                ac.mana_cost = parse_mana_cost(rest.substr(colon + 1));
+                card.alt_cost = ac;
+            }
+            card.keywords.push_back("Impending");
+            continue;
+        }
         // K:Prowess — keyword stored; triggered ability applied by apply_keyword_abilities
         if (kw_line == "Prowess" || kw_line.rfind("Prowess", 0) == 0) {
             card.keywords.push_back("Prowess");

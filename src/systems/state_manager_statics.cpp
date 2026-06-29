@@ -556,6 +556,15 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                 // Spell was cast with its Offspring additional cost — mark the permanent so
                 // its offspring token-copy ETB trigger fires (consumed one-shot here).
                 if (game.pending_offspring.erase(entity)) perm.entered_with_offspring = true;
+                // Spell was cast for its Impending alternate cost (CR 702.175d): the permanent
+                // enters with N time counters. Set them on the Permanent being built (before it
+                // is added below) so this same pass's creature-suppression check already sees
+                // them and strips the Creature component — it enters as a noncreature.
+                if (game.pending_impending.erase(entity) && card_data.alt_cost.impending_count > 0) {
+                    perm.counters["TIME"] = card_data.alt_cost.impending_count;
+                    game_log("%s enters with %d time counter(s) (impending).\n",
+                             card_data.name.c_str(), card_data.alt_cost.impending_count);
+                }
                 // Unearth (CR 702.84): returned to the battlefield by its unearth ability — gains
                 // haste, gets the delayed end-step exile, and the leaves→exile redirect.
                 if (game.pending_unearthed.erase(entity)) mark_unearthed_permanent(entity, perm);
@@ -662,10 +671,19 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                         pt_type == "M1M1" ? "-1/-1" : "+1/+1", cr.power, cr.toughness);
                 }
             }
+            // Impending (CR 702.175d-e): a permanent that entered for its impending cost ISN'T a
+            // creature while it still has time counters (it is on the battlefield only as its other
+            // types). The same Creature/Damage strip the reconfigure suppression uses applies here,
+            // gated on a remaining TIME counter; the creature block above re-adds the components on
+            // the pass after the last time counter sheds at the controller's end step (game.cpp),
+            // so it "becomes a creature" via the normal state-based recompute.
+            bool impending_suppressed =
+                global_coordinator.entity_has_component<Permanent>(entity) &&
+                get_counters(entity, "TIME") > 0;
             // Reconfigure (CR 702.151b): strip the Creature/Damage components while attached so the
             // permanent isn't a creature for combat, targeting, and state-based actions. They are
             // re-added by the block above on the next pass once it unattaches (equipped_to == 0).
-            if (reconfigured_attached) {
+            if (reconfigured_attached || impending_suppressed) {
                 if (global_coordinator.entity_has_component<Creature>(entity))
                     global_coordinator.RemoveComponent<Creature>(entity);
                 if (global_coordinator.entity_has_component<Damage>(entity))

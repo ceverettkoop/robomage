@@ -28,6 +28,14 @@ struct AltCost {
     bool is_free = false;               // Cost$ 0 — no mana required
     bool condition_not_your_turn = false;  // Condition$ NotPlayerTurn
     bool is_evoke = false;              // K:Evoke — when paid, the permanent sacrifices itself on ETB
+    // K:Impending:N:cost — Impending (CR 702.175, Duskmourn). An ALTERNATIVE casting cost: the
+    // spell may be cast for `mana_cost` instead of its normal mana cost. When cast this way the
+    // permanent enters with `impending_count` time counters and ISN'T A CREATURE until the last
+    // time counter is removed (it is on the battlefield only as its other types). At the
+    // beginning of its controller's end step one time counter is removed (CR 702.175e); it
+    // becomes a creature when the last is gone. Cast for the NORMAL cost, none of this applies.
+    bool is_impending = false;
+    int impending_count = 0;            // N time counters the permanent enters with
     std::string sac_cost_spec = "";     // Sac<N/Type> portion of an alt/flashback cost (e.g. "Creature" for Cabal Therapy's Flashback—Sacrifice a creature)
     // ExileFromGrave<X/<filter>/<label>> — exile any number of OTHER cards from the caster's
     // graveyard as an additional cost (CR 601.2f), constrained so the chosen set collectively

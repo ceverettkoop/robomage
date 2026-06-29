@@ -79,6 +79,12 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
             if (global_coordinator.entity_has_component<Spell>(top_entity) &&
                 global_coordinator.GetComponent<Spell>(top_entity).cast_with_escape)
                 cur_game.pending_escaped.insert(top_entity);
+            // Spell was cast for its Impending alternate cost (CR 702.175): carry the impending
+            // bit onto the permanent so apply_permanent_components puts its time counters on it
+            // (consumes pending_impending) — it enters as a noncreature until they shed.
+            if (global_coordinator.entity_has_component<Spell>(top_entity) &&
+                global_coordinator.GetComponent<Spell>(top_entity).cast_with_impending)
+                cur_game.pending_impending.insert(top_entity);
             // Carry the X paid for an X-cost permanent into the ETB so an "enters with X
             // counters" replacement can read it (Chalice of the Void).
             if (global_coordinator.entity_has_component<Spell>(top_entity) &&

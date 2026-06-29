@@ -1825,6 +1825,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             spell.cast_with_evoke = action.use_alt_cost && card_data.alt_cost.is_evoke;
             spell.cast_with_escape = action.use_escape;
             spell.cast_with_offspring = action.use_offspring;
+            spell.cast_with_impending = action.use_alt_cost && card_data.alt_cost.is_impending;
             spell.kicked = kicked_flags;  // per-kicker "paid?" flags (empty for non-kicker spells)
             spell.replicate_count = replicate_count;  // # of replicate payments (0 if none/no Replicate)
             spell.gift_promised = gift_promised;  // Gift (CR 702.176): opponent gets the gift on resolution

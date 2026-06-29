@@ -13,6 +13,7 @@ struct Spell {
     bool cast_with_evoke = false;  // cast for its evoke cost — sacrifice itself when it enters
     bool cast_with_escape = false;  // cast from the graveyard for its escape cost — the resulting permanent "escaped" (CR 702.139), read by an "if it escaped" clause (Uro)
     bool cast_with_offspring = false;  // Offspring additional cost paid — make a 1/1 token copy on ETB
+    bool cast_with_impending = false;  // cast for its Impending alternate cost (CR 702.175) — the resulting permanent enters with time counters and isn't a creature until they're gone
     bool cant_be_countered = false;
     int x_paid = 0;  // value chosen for {X} at cast time (Chalice of the Void enters with X charge counters)
     // Kicker (CR 702.33): one flag per CardData::kicker_costs entry — kicked[i] is true iff the

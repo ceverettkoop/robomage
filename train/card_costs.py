@@ -299,7 +299,7 @@ _CARD_COST_MATRIX = np.array([
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.6],  # 290: Mycosynth Lattice
     [0.0, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0],  # 291: Flusterstorm
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.6],  # 292: Emrakul, the Aeons Torn
-    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 293: 
+    [0.0, 0.0, 0.2, 0.0, 0.0, 0.0, 0.3],  # 293: Overlord of the Balemurk
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 294: 
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 295: 
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 296: 
@@ -1330,7 +1330,7 @@ _VOCAB_NAMES = [
     "Mycosynth Lattice",  # 290
     "Flusterstorm",  # 291
     "Emrakul, the Aeons Torn",  # 292
-    "",  # 293
+    "Overlord of the Balemurk",  # 293
     "",  # 294
     "",  # 295
     "",  # 296
