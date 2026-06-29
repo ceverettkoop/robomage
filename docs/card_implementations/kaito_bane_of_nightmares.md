@@ -64,24 +64,83 @@
 - **[0] Surveil 2 + draw:** `AB$ Surveil` (existing) chained to `DB$ Draw` whose count is
   "each opponent who lost life this turn." In the two-player engine this resolves to 0/1; it
   resolves cleanly (drew 0 when the lone opponent had not lost life).
-- **[+1] Emblem:** `AB$ Effect` resolves via the existing Effect handler and pays the loyalty cost,
-  but the engine has no persistent **emblem** entity, so the "Ninjas you control get +1/+1"
-  continuous buff is **not** applied (see Simplifications).
+- **[+1] Emblem:** `AB$ Effect | StaticAbilities$ STNinjaBoost | Duration$ Permanent` creates a
+  player-owned **emblem** carrying the continuous static "Ninjas you control get +1/+1." (now a
+  general subsystem, below).
+
+### Mechanic 3 — Conditional creature-static (general, reusable)
+The `S:Mode$ Continuous | Affected$ Permanent.Self+counters_GE1_LOYALTY | Condition$ PlayerTurn |
+AddType$ Creature & Ninja | RemoveCardTypes$ True | SetPower$ 3 | SetToughness$ 4 | AddKeyword$
+Hexproof` line is honoured exactly as written, gated and re-evaluated every state-based-effects
+pass through the existing CR 613 layer engine:
+
+- **Parse (`src/parse.cpp`, `parse_one_static_ability`).** New tags: `RemoveCardTypes$ True` →
+  `StaticAbility::remove_card_types`; the `counters_<CMP><N>_<TYPE>` qualifier on the `Affected$`
+  filter (`counters_GE1_LOYALTY`) is split into `self_counter_compare` ("GE1") / `self_counter_type`
+  ("LOYALTY"). `SetPower$ 3` / `SetToughness$ 4` / `AddKeyword$ Hexproof` reuse the existing
+  `set_power_svar` / `set_toughness_svar` / `add_keyword` fields.
+- **Condition (`gather_active_statics`, `src/systems/state_manager_statics.cpp`).** `Condition$
+  PlayerTurn` (already present for Voice of Victory) ANDs with a new per-source counter gate: the
+  static is active only while the source has ≥1 LOYALTY counter. Re-evaluated each pass, so Kaito
+  stops being a creature the instant his loyalty hits 0 or the turn passes to the opponent.
+- **Layer 4 — type add + creature bootstrap (`apply_self_animate_statics`).** When the gate holds,
+  the `AddType$` CARD types (`Creature` + the `Ninja` subtype) are added to the source's live type
+  set **additively** and, because `Creature` is among them, a `Creature`/`Damage` component is
+  bootstrapped (base 0/0; summoning sickness = "entered this turn"). `RemoveCardTypes$ True` drops
+  the source's printed CARD types **other than Planeswalker** — the Oracle's "that's still a
+  planeswalker" (CR 306): a planeswalker that becomes a creature stays a planeswalker, so it can
+  still be attacked as a planeswalker and keeps its loyalty abilities. When the gate lapses the
+  added types and the bootstrapped `Creature`/`Damage` are stripped (unless the source is a creature
+  by a permanent means).
+- **Layer 7b — set P/T.** The existing non-CDA "set P/T" setter (Humility's machinery) matches the
+  `Affected$ ...Self` form and sets Kaito to 3/4 while the gate holds.
+- **Layer 6 — keyword grant.** The existing keyword-grant applier grants `Hexproof` to the (now
+  creature) source. Hexproof is already enforced in `Ability::is_legal_target`
+  (`permanent_has_keyword`), so an opponent's targeted removal/burn cannot target Kaito during your
+  turn.
+- **Emblem composition.** Because Kaito is a *Ninja creature* during your turn, the [+1] emblem's
+  "Ninjas you control get +1/+1." (layer 7c) stacks on top of the 3/4 — Kaito is 4/5 with one
+  emblem, 5/6 with two, etc.
+
+### Mechanic 4 — Emblem subsystem (general, reusable)
+- **Data model (`src/classes/game.h`).** `struct Emblem { Zone::Ownership controller;
+  std::vector<StaticAbility> statics; };` stored in `Game::emblems` — a zoneless, unremovable
+  continuous-effect source owned by a player (CR 114). Persists for the rest of the game; a fresh
+  `Game` (next game of a match) starts with none.
+- **Parse (`src/parse.cpp`).** An `AB$ Effect` with `StaticAbilities$ <SVar>` **and** `Duration$
+  Permanent` resolves the named continuous-static SVar (`STNinjaBoost`) into a `StaticAbility` via
+  `parse_one_static_ability` and stores it on `Ability::effect_emblem_statics`. The permanent
+  duration distinguishes an emblem from the transient `StaticAbilities$` Effects (Unblockable,
+  Ugin's MayPlay), which keep their own EOT handling.
+- **Create (`effects::grant_cast`, `src/effects/effect_grant_cast.cpp`).** At resolution the handler
+  pushes an `Emblem{controller, statics}` into `cur_game.emblems`.
+- **Apply (`gather_active_statics`).** Each emblem's statics are gathered into `g_active_statics`
+  every SBA pass with entity 0 (no Permanent) and the owner as their controller, so the layer
+  appliers fan them out through the same path as a battlefield anthem — no emblem is ever a
+  targetable / counted / destructible permanent. All `g_active_statics` consumers were audited to
+  guard `as.entity` deref behind the relevant category, so the entity-0 sentinel is safe.
+
+### Mechanic 5 — Attacking planeswalker (resolved)
+With the creature-static done, Kaito is a real creature during your turn, so combat just works:
+- He is **eligible to attack** (the declare-attackers scan keys off the live `Creature` component);
+  verified declared as an attacker and dealing 3 combat damage.
+- **Ninjutsu enters-attacking now applies to Kaito.** `apply_permanent_components` runs before the
+  layer-4 bootstrap, so a planeswalker entering via ninjutsu has no `Creature` component yet; the
+  `pending_enters_attacking` mark is now **left pending** there (instead of dropped) and consumed by
+  the layer-4 self-animate bootstrap once the `Creature` exists — so a ninjutsu'd Kaito enters
+  tapped **and attacking** as a 3/4 Ninja creature.
 
 ## Simplifications / follow-ups (documented)
-- **Conditional creature-static deferred.** The `S:` line that makes Kaito "a 3/4 Ninja creature
-  with hexproof during your turn while he has a loyalty counter" is **not** applied. It needs three
-  static-layer features the engine lacks: `AddType$` for creatures (only lands today), a
-  `counters_GE1_LOYALTY` qualifier in static `Affected$` filters, and `RemoveCardTypes$`. Kaito
-  therefore remains a planeswalker (never becomes a creature) in the engine. Consequence below.
-- **Attacking planeswalker is a no-op for combat.** Because Kaito is not a creature in the engine,
-  the ninjutsu "enters attacking" half does nothing for Kaito specifically — he enters **tapped**
-  (verified) but, lacking a `Creature` component, cannot be a combatant (the
-  `pending_enters_attacking` mark is dropped). The ninjutsu path *does* fully set up attacking for a
-  **creature** ninja (the general case). This matches CR only loosely for Kaito (a planeswalker
-  that is also a creature would attack), but is consistent given the deferred creature-static.
-- **[+1] emblem buff not applied** — no emblem subsystem (the ability still resolves and pays
-  loyalty).
+- **`RemoveCardTypes$ True` preserves Planeswalker.** The script tag literally says "remove the
+  source's card types", but the Oracle ("that's still a planeswalker") requires Kaito to remain a
+  planeswalker. The self-animate applier therefore removes the printed CARD types **except
+  Planeswalker**. This is the only correct reading for this card; no other vocab card uses
+  `RemoveCardTypes$` on a self-animate static.
+- **Summoning sickness is approximate.** A permanent that becomes a creature is treated as sick iff
+  it entered this turn (`entered_on_turn == turn`), rather than tracking continuous control since
+  the controller's most recent turn began. Correct for every normal case (cast/ninjutsu'd Kaito is
+  sick the turn he enters, able to attack thereafter); only a control-change corner case would
+  differ, which is out of two-player scope here.
 - **Ninjutsu resolves immediately** at activation rather than using the stack. In a two-player
   engine this only loses the narrow opponent-response window during the declare-blockers step.
 
@@ -95,4 +154,16 @@
   ("…stun counter removed instead of untapping"); on the third untap (counters gone) it untapped
   normally and attacked.
 - **[0] Surveil:** resolved Surveil 2 then Draw 0 (no opponent had lost life), loyalty unchanged.
-- **[+1] Effect:** resolved, loyalty 4→5, no error (emblem buff not applied — documented).
+- **Conditional creature-static:** with Kaito preset (loyalty 4), on **your** turn the board shows
+  `Kaito, Bane of Nightmares [3/4] [loy 4]` — a 3/4 creature that is still a planeswalker (loyalty
+  abilities still offered) — and he is declared as an attacker `(ATK)`. On the **opponent's** turn
+  the same permanent shows `[loy 4]` with no P/T (not a creature). An opponent's Lightning Bolt cast
+  during your turn offers only the two players as targets, never Kaito (hexproof).
+- **[+1] emblem:** activating [+1] creates an emblem; Kaito (a Ninja creature on your turn) grows
+  3/4 → 4/5 → 5/6 → 6/7 as successive emblems stack "Ninjas you control get +1/+1." (effect fires,
+  not a no-op).
+- **Ninjutsu + creature:** attacking with an unblocked Grizzly Bears then activating "Ninjutsu
+  Kaito" returned the Bears, auto-paid {1}{U}{B}, and put Kaito onto the battlefield
+  `[3/4] [loy 4] (T,SICK)` **tapped and attacking** — he dealt 3 combat damage to the opponent.
+- **Regression:** scripted delver-vs-mav, seeds 1–3, each finished decisively (Player A wins; no
+  draws, no Kaito parse warnings or non-fatal errors) — the layer/static hot-path changes are clean.

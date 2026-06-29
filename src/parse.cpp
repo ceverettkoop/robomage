@@ -45,6 +45,7 @@ static std::vector<Ability> parse_triggered_abilities(const std::string& script,
                                                       const std::map<std::string, std::string>& svars,
                                                       const std::string& card_name = "");
 static std::vector<StaticAbility> parse_static_abilities(const std::string& script, const std::map<std::string, std::string>& svars);
+static StaticAbility parse_one_static_ability(const std::string& line, const std::map<std::string, std::string>& svars);
 // Parses one T:/trigger SVar line into a TRIGGERED Ability (trigger_on == 0 if unrecognised).
 // Forward-declared so parse_svar_ability can build a DB$ Effect | Triggers$ <SVar> floating
 // triggered ability from the named trigger SVar.
@@ -1541,6 +1542,12 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         static const std::set<std::string> ignored_keys = {
             "SpellDescription", "AILogic", "AINoRecursiveCheck", "TgtPrompt", "StackDescription",
             "ConditionDescription",
+            // AB$ Effect emblem (Kaito's [+1]): Name$ is the emblem's display name and Image$ its
+            // art — both cosmetic. Duration$ is read load-bearingly from the raw line in
+            // parse_abilities (Duration$ Permanent ⇒ the Effect makes a permanent emblem); the
+            // Animate/UntilHostLeavesPlay/UntilYourNextTurn Duration forms are consumed by their
+            // own branches above, so any Duration reaching here is already handled or cosmetic.
+            "Name", "Image", "Duration",
             // SelectPrompt$ — the prose prompt shown when a ChangeZone effect asks the player to
             // pick which permanents to move (Yorion: "Select any number of other nonland
             // permanents..."). Purely cosmetic, like TgtPrompt; the selection is driven by
@@ -2274,6 +2281,23 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
             tok.clear();
         }
 
+        // Emblem (CR 114): an AB$ Effect that grants a permanent continuous static to its
+        // controller — Kaito's "[+1]: You get an emblem with 'Ninjas you control get +1/+1.'"
+        // (StaticAbilities$ <SVar> + Duration$ Permanent). Resolve the named continuous static
+        // SVar into a StaticAbility and store it on the ability; the Effect handler creates a
+        // player-owned emblem carrying it at resolution. Distinguished from the transient
+        // StaticAbilities$ Effects (Unblockable, Ugin's MayPlay) by Duration$ Permanent — those
+        // are EOT/until-leaves and handled by their own flags. General over any emblem-making
+        // Effect that names a permanent-duration continuous-static SVar.
+        if (ability.category == "Effect" && !ability.effect_static_ability.empty() &&
+            line.find("Duration$ Permanent") != std::string::npos) {
+            auto it = svars.find(ability.effect_static_ability);
+            if (it != svars.end() && it->second.find("Mode$ Continuous") != std::string::npos) {
+                StaticAbility est = parse_one_static_ability(it->second, svars);
+                if (!est.category.empty()) ability.effect_emblem_statics.push_back(est);
+            }
+        }
+
         ret_val.push_back(ability);
     }
 
@@ -2795,18 +2819,20 @@ static std::vector<Ability> parse_triggered_abilities(const std::string &script,
     return result;
 }
 
-static std::vector<StaticAbility> parse_static_abilities(const std::string &script, const std::map<std::string, std::string> &svars) {
-    std::vector<StaticAbility> result;
-    for (const auto &line : multi_values_from_script(script, "S")) {
-        // Skip alt cost lines (handled separately) and garbage matches
-        if (line.find("AlternativeCost") != std::string::npos) continue;
-        if (line.find("Mode$") == std::string::npos) continue;
+// Parse a single static-ability line (the "Mode$ ... | ..." body of an S: line or a continuous
+// static SVar) into a StaticAbility. Factored out of parse_static_abilities so a named continuous
+// static referenced elsewhere — e.g. an AB$ Effect emblem's StaticAbilities$ SVar — can be parsed
+// with the same grammar. Returns a StaticAbility with an empty category if the line is not a Mode$
+// static (the caller skips it).
+static StaticAbility parse_one_static_ability(const std::string &line,
+                                              const std::map<std::string, std::string> &svars) {
+    StaticAbility sa;
+    if (line.find("Mode$") == std::string::npos) return sa;
 
-        StaticAbility sa;
-        bool cant_attack_targeted = false;  // CantAttack with a Target$ player restriction (handled below)
-        size_t param_pos = 0;
-        std::string key, value;
-        while (next_param(line, param_pos, key, value)) {
+    bool cant_attack_targeted = false;  // CantAttack with a Target$ player restriction (handled below)
+    size_t param_pos = 0;
+    std::string key, value;
+    while (next_param(line, param_pos, key, value)) {
             if (key == "Mode") {
                 sa.category = value;
             } else if (key == "Condition") {
@@ -2839,6 +2865,23 @@ static std::vector<StaticAbility> parse_static_abilities(const std::string &scri
                 // Also store as affected_subtype for untap prevention (Choke: Affected$ Island)
                 if (sa.category == "Continuous" && value.find("EquippedBy") == std::string::npos) {
                     sa.affected_subtype = value;
+                }
+                // Per-source counter gate (Kaito: Affected$ Permanent.Self+counters_GE1_LOYALTY).
+                // Forge spells the qualifier "counters_<CMP><N>_<TYPE>" (e.g. counters_GE1_LOYALTY =
+                // "the source has 1 or more LOYALTY counters"). Extract compare ("GE1") and counter
+                // type ("LOYALTY") so gather_active_statics can AND it into the static's condition.
+                {
+                    size_t cp = value.find("counters_");
+                    if (cp != std::string::npos) {
+                        std::string rest = value.substr(cp + 9);  // after "counters_"
+                        size_t end = rest.find_first_of(".+");    // stop at the next qualifier
+                        if (end != std::string::npos) rest = rest.substr(0, end);
+                        size_t us = rest.find('_');               // split "<CMP><N>_<TYPE>"
+                        if (us != std::string::npos) {
+                            sa.self_counter_compare = rest.substr(0, us);
+                            sa.self_counter_type = rest.substr(us + 1);
+                        }
+                    }
                 }
             } else if (key == "Amount") {
                 // Used by RaiseCost / ReduceCost (generic mana added to / removed from cost)
@@ -2948,6 +2991,11 @@ static std::vector<StaticAbility> parse_static_abilities(const std::string &scri
                 sa.add_type = value;
             } else if (key == "RemoveLandTypes") {
                 sa.remove_land_types = (value == "True");
+            } else if (key == "RemoveCardTypes") {
+                // RemoveCardTypes$ True (Kaito's self type-add): drop the source's original printed
+                // card types when the static turns it into a creature. The layer-4 self-animate
+                // applier preserves Planeswalker (CR 306 — "that's still a planeswalker").
+                sa.remove_card_types = (value == "True");
             } else if (key == "RemoveAllAbilities") {
                 sa.remove_all_abilities = (value == "True");
             } else if (key == "AdjustLandPlays") {
@@ -2978,10 +3026,19 @@ static std::vector<StaticAbility> parse_static_abilities(const std::string &scri
             }
         }
 
-        // The CantAttack query treats a non-empty cant_attack_filter as a blanket "can't attack"
-        // restriction; drop it for the targeted ("can't attack you") variant that isn't handled.
-        if (sa.category == "CantAttack" && cant_attack_targeted) sa.cant_attack_filter.clear();
+    // The CantAttack query treats a non-empty cant_attack_filter as a blanket "can't attack"
+    // restriction; drop it for the targeted ("can't attack you") variant that isn't handled.
+    if (sa.category == "CantAttack" && cant_attack_targeted) sa.cant_attack_filter.clear();
 
+    return sa;
+}
+
+static std::vector<StaticAbility> parse_static_abilities(const std::string &script, const std::map<std::string, std::string> &svars) {
+    std::vector<StaticAbility> result;
+    for (const auto &line : multi_values_from_script(script, "S")) {
+        // Skip alt cost lines (handled separately) and garbage matches
+        if (line.find("AlternativeCost") != std::string::npos) continue;
+        StaticAbility sa = parse_one_static_ability(line, svars);
         if (!sa.category.empty()) result.push_back(sa);
     }
     return result;

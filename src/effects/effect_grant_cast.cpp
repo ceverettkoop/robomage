@@ -29,6 +29,21 @@ namespace effects {
 bool grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer) {
     (void)orderer;
 
+    // Emblem (CR 114): an AB$ Effect | StaticAbilities$ <SVar> | Duration$ Permanent creates a
+    // player-owned emblem carrying the named permanent continuous static(s) — Kaito's [+1] "You
+    // get an emblem with 'Ninjas you control get +1/+1.'" The emblem is an unremovable, zoneless
+    // source; its statics are gathered into g_active_statics every SBA pass with the controller as
+    // their owner (see gather_active_statics), so they apply through the normal layer engine. The
+    // statics were parsed onto the ability at parse time. General over any emblem-making Effect.
+    if (!ab.effect_emblem_statics.empty()) {
+        Emblem emblem;
+        emblem.controller = ab.controller;
+        emblem.statics = ab.effect_emblem_statics;
+        cur_game.emblems.push_back(std::move(emblem));
+        game_log("%s gets an emblem.\n", player_name(ab.controller).c_str());
+        return true;
+    }
+
     // DB$ Effect | Triggers$ <SVar> — register a transient until-end-of-turn floating triggered
     // ability (Forth Eorlingas!'s "Whenever one or more creatures you control deal combat damage
     // to one or more players this turn, you become the monarch", CR 603.7e-style). Each parsed

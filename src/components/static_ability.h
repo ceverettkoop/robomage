@@ -103,6 +103,22 @@ struct StaticAbility {
     std::string add_type = "";              // AddType$ Mountain — land subtype to set
     bool remove_land_types = false;         // RemoveLandTypes$ True — strip existing land subtypes first
 
+    // Self card-type animate static (Kaito, Bane of Nightmares' "During your turn ... he's a 3/4
+    // Ninja creature with hexproof that's still a planeswalker"). When Affected$ references the
+    // source itself (Permanent.Self) and add_type holds CARD types (e.g. "Creature & Ninja"), this
+    // is a conditionally-active layer-4 effect that ADDS those types to the source while the
+    // static's condition holds (CR 613 layer 4). If "Creature" is among them the source becomes a
+    // creature: a Creature/Damage component is bootstrapped, its base P/T set by the 7b SetPower/
+    // SetToughness setter, and any AddKeyword$ granted in layer 6 — all gated on condition_met.
+    // remove_card_types mirrors RemoveCardTypes$ True: the original printed CARD types are dropped
+    // EXCEPT Planeswalker (the Oracle's "that's still a planeswalker" — a planeswalker becoming a
+    // creature keeps being a planeswalker, CR 306). self_counter_compare/self_counter_type carry the
+    // per-source counter gate parsed off the Affected$ filter (counters_GE1_LOYALTY → "GE1"/"LOYALTY")
+    // and AND into condition_met so the static is active only while the source has that many counters.
+    bool remove_card_types = false;         // RemoveCardTypes$ True
+    std::string self_counter_compare = "";  // e.g. "GE1" from Affected$ ...+counters_GE1_LOYALTY
+    std::string self_counter_type    = "";  // e.g. "LOYALTY"
+
     // Ability-removal field (category = "Continuous", layer 6; Humility):
     bool remove_all_abilities = false;      // RemoveAllAbilities$ True — affected objects lose all abilities
 

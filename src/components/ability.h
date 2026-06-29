@@ -4,6 +4,7 @@
 #include "../classes/colors.h"
 #include "../ecs/entity.h"
 #include "ability_params.h"
+#include "static_ability.h"
 #include "types.h"
 #include "zone.h"
 #include <memory>
@@ -440,6 +441,13 @@ struct Ability{
     // until-end-of-turn "can't be blocked" mark on the source rather than a stack object.
     std::string effect_static_ability = "";  // StaticAbilities$ value (e.g. "Unblockable")
     bool effect_remember_self = false;        // RememberObjects$ Self
+
+    // Emblem (CR 114): an AB$ Effect with StaticAbilities$ <SVar> + Duration$ Permanent that gives
+    // its controller an emblem carrying the named continuous static ("Ninjas you control get
+    // +1/+1." on Kaito's [+1]). The resolved permanent static(s) are stored here at parse time; the
+    // GrantCast handler creates a player-owned Emblem (cur_game.emblems) carrying them — an
+    // unremovable, zoneless source whose statics are gathered into g_active_statics each SBA pass.
+    std::vector<StaticAbility> effect_emblem_statics;
 
     // DB$ Effect | StaticAbilities$ <SVar> where the named static grants MayPlay$ True +
     // MayPlayWithoutManaCost$ True with AffectedZone$ Exile (Ugin, Eye of the Storms' -11:

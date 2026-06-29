@@ -103,6 +103,17 @@ struct ActionHistoryEntry {
     int turn;            // cur_game.turn when the action was taken
 };
 
+// An emblem (CR 114): a continuous-effect source owned by a player that exists outside any zone
+// and can't be removed. Created by an AB$ Effect with StaticAbilities$ + Duration$ Permanent
+// (Kaito's [+1] "Ninjas you control get +1/+1."). Its statics are gathered into g_active_statics
+// every SBA pass with the owner as their controller, so they apply through the normal layer
+// engine without the emblem being a real (targetable, counted, destructible) permanent. Persists
+// for the rest of the game; a fresh Game (new game of a match) starts with none.
+struct Emblem {
+    Zone::Ownership controller = Zone::PLAYER_A;
+    std::vector<StaticAbility> statics;
+};
+
 struct Game {
         Game() {};
         Game(size_t _seed) {
@@ -141,6 +152,9 @@ struct Game {
         // a permanent's triggered ability. Cleared at the cleanup step so they last only their
         // turn of creation. General over any until-end-of-turn floating triggered ability.
         std::vector<Ability> floating_triggers;
+        // Emblems the players have (CR 114). Each carries permanent continuous statics gathered
+        // into g_active_statics every SBA pass (see gather_active_statics). Persists for the game.
+        std::vector<Emblem> emblems;
         // The monarch (CR 725). MAX_ENTITIES = no monarch (none until an effect makes a player
         // the monarch). Internal game state only — deliberately NOT in the obs/state vector.
         Entity monarch_entity = MAX_ENTITIES;

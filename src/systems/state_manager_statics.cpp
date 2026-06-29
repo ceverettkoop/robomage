@@ -611,20 +611,22 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
             if (game.pending_enters_transformed.erase(entity)) set_permanent_face(entity, true);
 
             // Ninjutsu (CR 702.49e): a card put onto the battlefield "tapped and attacking" by a
-            // ninjutsu ability. Its components exist now, so mark the creature as attacking the
-            // defender the returned attacker had been attacking (it already entered tapped via
-            // pending_enters_tapped). A non-creature ninja — e.g. a planeswalker entering via
-            // ninjutsu — cannot be a combatant; drop the mark (it still entered tapped).
+            // ninjutsu ability. A normal creature ninja has its Creature component now, so mark it
+            // attacking the defender the returned attacker had been attacking (it already entered
+            // tapped via pending_enters_tapped). A ninja that becomes a creature only via a
+            // conditional static — Kaito, a planeswalker that's a 3/4 Ninja creature during your
+            // turn — has no Creature component yet (it is bootstrapped later this pass in layer 4),
+            // so LEAVE the mark pending; the layer-4 self-animate bootstrap consumes it and sets the
+            // attacking state once the Creature exists.
             {
                 auto pea = game.pending_enters_attacking.find(entity);
-                if (pea != game.pending_enters_attacking.end()) {
-                    if (global_coordinator.entity_has_component<Creature>(entity)) {
-                        auto &ncr = global_coordinator.GetComponent<Creature>(entity);
-                        ncr.is_attacking = true;
-                        ncr.attack_target = pea->second;
-                        ncr.is_blocked = false;
-                        game_log("%s is attacking (ninjutsu).\n", entity_name(entity).c_str());
-                    }
+                if (pea != game.pending_enters_attacking.end() &&
+                    global_coordinator.entity_has_component<Creature>(entity)) {
+                    auto &ncr = global_coordinator.GetComponent<Creature>(entity);
+                    ncr.is_attacking = true;
+                    ncr.attack_target = pea->second;
+                    ncr.is_blocked = false;
+                    game_log("%s is attacking (ninjutsu).\n", entity_name(entity).c_str());
                     game.pending_enters_attacking.erase(pea);
                 }
             }
@@ -881,6 +883,117 @@ static Ability keyword_triggered_ability(const std::string &keyword) {
 // Resets land types to CardData originals, then applies type-changing effects
 // sorted by timestamp (rule 613.7: later timestamp wins within the same layer).
 // Regenerates subtype-derived mana abilities after types are finalized.
+// Parse a " & "-delimited AddType$ card-type list (Kaito: "Creature & Ninja") into Type objects,
+// classifying each token as TYPE / SUBTYPE / SUPERTYPE the same way the printed Types: line is
+// (all_types / all_subtypes / all_supertypes). Used by the self card-type animate applier.
+static std::vector<Type> parse_self_added_types(const std::string &spec) {
+    std::vector<Type> out;
+    size_t p = 0;
+    while (p < spec.size()) {
+        size_t sep = spec.find(" & ", p);
+        if (sep == std::string::npos) sep = spec.size();
+        std::string name = spec.substr(p, sep - p);
+        if (!name.empty()) {
+            Type t;
+            t.name = name;
+            if      (all_subtypes.find(name) != all_subtypes.end())   t.kind = SUBTYPE;
+            else if (all_types.find(name) != all_types.end())         t.kind = TYPE;
+            else if (all_supertypes.find(name) != all_supertypes.end()) t.kind = SUPERTYPE;
+            else t.kind = SUBTYPE;
+            out.push_back(t);
+        }
+        p = (sep < spec.size()) ? sep + 3 : sep;
+    }
+    return out;
+}
+
+// Layer 4 (CR 613.1d) — conditionally-active self card-type animate statics (Kaito, Bane of
+// Nightmares). For each active "Continuous" static whose AddType$ names CARD types and whose
+// Affected$ references the source itself, add those types to the source while the static's
+// condition holds and remove them when it lapses. If the added types include "Creature", the
+// source becomes a real creature: a Creature/Damage component is bootstrapped (so layers 6/7 set
+// its P/T and grant its keyword this same pass) when active, and stripped when inactive — unless
+// the source is a creature by a permanent means (printed face or an Animate). RemoveCardTypes$
+// drops the source's printed CARD types other than Planeswalker ("that's still a planeswalker").
+static void apply_self_animate_statics() {
+    for (auto &a : g_active_statics) {
+        if (a.suppressed) continue;
+        if (a.sa->category != "Continuous") continue;
+        if (a.sa->add_type.empty() || a.sa->add_type == "AllNonBasicLandType") continue;
+        if (a.sa->affected.find("Self") == std::string::npos) continue;
+        if (!global_coordinator.entity_has_component<Permanent>(a.entity)) continue;
+        auto &perm = global_coordinator.GetComponent<Permanent>(a.entity);
+
+        std::vector<Type> added = parse_self_added_types(a.sa->add_type);
+        bool adds_creature = false;
+        for (const auto &t : added)
+            if (t.kind == TYPE && t.name == "Creature") { adds_creature = true; break; }
+
+        // Strip this static's added types first so the grant is idempotent across passes and lapses
+        // cleanly when the condition turns off (re-added below only while the gate holds).
+        for (const auto &t : added) perm.types.erase(t);
+
+        if (a.condition_met) {
+            // RemoveCardTypes$ True: drop the printed CARD types other than Planeswalker before
+            // adding the new ones (a planeswalker becoming a creature stays a planeswalker, CR 306).
+            if (a.sa->remove_card_types) {
+                for (auto it = perm.types.begin(); it != perm.types.end();) {
+                    if (it->kind == TYPE && it->name != "Planeswalker")
+                        it = perm.types.erase(it);
+                    else
+                        ++it;
+                }
+            }
+            for (const auto &t : added) perm.types.insert(t);
+
+            if (adds_creature && !global_coordinator.entity_has_component<Creature>(a.entity)) {
+                Creature cr;
+                cr.base_power = 0;      // layer 7b's SetPower$/SetToughness$ override this to 3/4
+                cr.base_toughness = 0;
+                if (global_coordinator.entity_has_component<CardData>(a.entity))
+                    cr.keywords = global_coordinator.GetComponent<CardData>(a.entity).keywords;
+                global_coordinator.AddComponent(a.entity, cr);
+                if (!global_coordinator.entity_has_component<Damage>(a.entity)) {
+                    Damage dmg;
+                    dmg.damage_counters = 0;
+                    global_coordinator.AddComponent(a.entity, dmg);
+                }
+                // Summoning sickness (CR 302.6 / 508.1a): a permanent that becomes a creature can
+                // attack only if its controller has controlled it continuously since their most
+                // recent turn began. Approximate with "entered this turn" — sick the turn it enters,
+                // able to attack thereafter (untap clears it for permanents that keep their Creature).
+                perm.has_summoning_sickness = (perm.entered_on_turn == cur_game.turn);
+
+                // Ninjutsu (CR 702.49e): a planeswalker put onto the battlefield "tapped and
+                // attacking" had its enters-attacking mark left pending by apply_permanent_components
+                // (it had no Creature yet). Consume it now that the Creature exists.
+                auto pea = cur_game.pending_enters_attacking.find(a.entity);
+                if (pea != cur_game.pending_enters_attacking.end()) {
+                    auto &ncr = global_coordinator.GetComponent<Creature>(a.entity);
+                    ncr.is_attacking = true;
+                    ncr.attack_target = pea->second;
+                    ncr.is_blocked = false;
+                    game_log("%s is attacking (ninjutsu).\n", entity_name(a.entity).c_str());
+                    cur_game.pending_enters_attacking.erase(pea);
+                }
+            }
+        } else if (adds_creature) {
+            // Gate off: strip a Creature/Damage that exists ONLY because of this static (the source
+            // is not a creature by its printed face and isn't animated by another effect).
+            bool printed_creature =
+                global_coordinator.entity_has_component<CardData>(a.entity) &&
+                is_creature_card(global_coordinator.GetComponent<CardData>(a.entity));
+            bool animated = perm.animate_make_creature || perm.animate_make_creature_eot;
+            if (!printed_creature && !animated) {
+                if (global_coordinator.entity_has_component<Creature>(a.entity))
+                    global_coordinator.RemoveComponent<Creature>(a.entity);
+                if (global_coordinator.entity_has_component<Damage>(a.entity))
+                    global_coordinator.RemoveComponent<Damage>(a.entity);
+            }
+        }
+    }
+}
+
 void StateManager::apply_type_changing_effects() {
     // Layer 4 reapply of DB$ Animate "becomes ..." type grants (Guide of Souls). These are
     // baked onto each permanent (animate_added_types) by the Animate effect rather than sourced
@@ -894,6 +1007,16 @@ void StateManager::apply_type_changing_effects() {
         // the CLEANUP step erases the bucket so they lapse at end of turn.
         for (const auto &t : perm.animate_added_types_eot) perm.types.insert(t);
     }
+
+    // Self card-type animate statics (Kaito's "During your turn ... he's a 3/4 Ninja creature with
+    // hexproof that's still a planeswalker"). A "Continuous" static whose AddType$ names CARD types
+    // and whose Affected$ references the source itself (Permanent.Self) conditionally adds those
+    // types to the source (CR 613 layer 4). When the gate (condition_met) holds the types are added
+    // and, if "Creature" is among them, a Creature/Damage component is bootstrapped so the source is
+    // a real creature this pass (its P/T set in 7b, AddKeyword$ granted in 6); when the gate lapses
+    // the added types and the bootstrapped Creature are stripped. Runs before the land type-changer
+    // (a distinct Land.nonBasic Affected$ form) and its early-out below.
+    apply_self_animate_statics();
 
     // Self-CDA "is every nonbasic land type" (Planar Nexus: AddType$ AllNonBasicLandType,
     // CharacteristicDefining$ True, Affected$ Card.Self). Add the full set of nonbasic land
@@ -1077,6 +1200,14 @@ void StateManager::gather_active_statics(Game &game) {
             g_active_statics.push_back({entity, &sa, perm.controller, false});
     }
 
+    // Emblems (CR 114): zoneless, unremovable continuous-effect sources owned by a player. Their
+    // statics are gathered with entity 0 (no Permanent) and the emblem owner as controller, so the
+    // layer appliers fan them out (e.g. Kaito's "Ninjas you control get +1/+1.") through the same
+    // path as a battlefield anthem. Pointers into game.emblems[*].statics are stable for this pass.
+    for (auto &emb : game.emblems)
+        for (auto &sa : emb.statics)
+            g_active_statics.push_back({0, &sa, emb.controller, false});
+
     // Evaluate only the conditions actually referenced; compute each at most once per
     // player rather than once per permanent.
     bool need_delirium_a = false, need_delirium_b = false;
@@ -1118,6 +1249,19 @@ void StateManager::gather_active_statics(Game &game) {
             a.condition_met = static_present_condition_met(
                 a.sa->present_filter, a.sa->present_zone, a.sa->present_compare,
                 a.controller, a.entity, mEntities);
+        }
+
+        // AND in the per-source counter gate (Kaito: Affected$ ...+counters_GE1_LOYALTY — the static
+        // is active only while the SOURCE has the required number of counters of the named type).
+        // Re-evaluated each pass so Kaito stops being a creature the instant his loyalty hits 0.
+        if (a.condition_met && !a.sa->self_counter_type.empty()) {
+            int ct = 0;
+            if (global_coordinator.entity_has_component<Permanent>(a.entity)) {
+                auto &perm = global_coordinator.GetComponent<Permanent>(a.entity);
+                auto it = perm.counters.find(a.sa->self_counter_type);
+                if (it != perm.counters.end()) ct = it->second;
+            }
+            a.condition_met = compare_svar(ct, a.sa->self_counter_compare);
         }
     }
 }
