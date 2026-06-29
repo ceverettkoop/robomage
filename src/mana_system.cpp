@@ -221,6 +221,13 @@ static bool mana_source_usable_for(const Ability &ab, Entity source_entity, Enti
 
 bool ability_is_mana(const Ability &ab) {
     if (ab.ability_type != Ability::ACTIVATED) return false;
+    // CR 605.1a / 606.3: a loyalty ability (a planeswalker's activated ability with a loyalty
+    // cost) is NEVER a mana ability, even when it produces mana — it uses the stack and is a
+    // sorcery-speed, once-per-turn activation, not a repeatable off-stack mana source. Ugin, Eye
+    // of the Storms [0]: "Add {C}{C}{C}". Excluding it here routes it through the normal loyalty-
+    // gated activated-ability path (state_manager_actions / process_activate_ability), where it
+    // resolves off the stack via the AddMana effect handler.
+    if (ab.is_loyalty_ability) return false;
     return ab.category == "AddMana" || ab.category == "ManaReflected";
 }
 
