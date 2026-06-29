@@ -58,6 +58,16 @@ std::set<Colors> get_protection_colors(const Creature &cr) {
     return result;
 }
 
+// True if this creature has "protection from colored spells" (Emrakul: K:Protection:
+// Spell.nonColorless). CR 702.16a: the quality is "colored spell". The caller (is_legal_target)
+// applies the spell-ness and color of the source, since whether the targeting object is a SPELL
+// (vs an ability) is known there from the Ability's type, not from the candidate's Creature.
+bool has_protection_from_colored_spells(const Creature &cr) {
+    for (const auto &kw : cr.keywords)
+        if (kw == "Protection from colored spells") return true;
+    return false;
+}
+
 bool has_protection_from(const Creature &cr, Entity source) {
     Coordinator &coordinator = Coordinator::global();
     if (!coordinator.entity_has_component<ColorIdentity>(source)) return false;

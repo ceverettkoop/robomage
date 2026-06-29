@@ -110,6 +110,9 @@ EffectKind effect_kind_from_string(const std::string &category) {
         // count is locked in when the trigger fires (state_manager_triggers) and the copies are
         // put on the stack at resolution. See effect_storm.cpp.
         {"Storm", EffectKind::Storm},
+        // DB$ AddTurn (Emrakul, the Aeons Torn's self-cast trigger): the Defined$ player takes
+        // NumTurns$ extra turns after the current one (CR 500.7 / 720). See effect_add_turn.cpp.
+        {"AddTurn", EffectKind::AddTurn},
     };
     auto it = table.find(category);
     return (it != table.end()) ? it->second : EffectKind::None;

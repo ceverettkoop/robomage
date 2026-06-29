@@ -54,5 +54,10 @@ void recompute_pt(Creature &cr);
 
 std::set<Colors> get_protection_colors(const Creature &cr);
 bool has_protection_from(const Creature &cr, Entity source);
+// True if the creature has "protection from colored spells" (Emrakul: K:Protection:
+// Spell.nonColorless, CR 702.16). Only the keyword presence is reported here; the caller applies
+// it only when the targeting object is itself a colored SPELL (it can't be the target of such a
+// spell, CR 702.16b/e).
+bool has_protection_from_colored_spells(const Creature &cr);
 
 #endif /* CREATURE_H */

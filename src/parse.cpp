@@ -893,6 +893,49 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             card.abilities.push_back(st);
             continue;
         }
+        // K:Annihilator:N — Annihilator N (CR 702.85). "Whenever this creature attacks, defending
+        // player sacrifices N permanents." Synthesize the self-attack trigger here (general over any
+        // Annihilator card): a TRIGGERED Sacrifice that fires once per declared attack of this
+        // creature (CREATURE_ATTACKED). defined_each_opponent routes the edict to the defending
+        // player (the controller's opponent in the two-player engine), who chooses and sacrifices N
+        // of their own permanents one at a time (sac_count). It resolves like any triggered ability,
+        // i.e. before blockers are declared. SacValid$ Permanent = any permanent they control.
+        if (kw_line.rfind("Annihilator", 0) == 0) {
+            size_t colon = kw_line.find(':');
+            int n = (colon != std::string::npos) ? std::stoi(kw_line.substr(colon + 1)) : 1;
+            card.keywords.push_back(kw_line);
+            Ability ab;
+            ab.ability_type = Ability::TRIGGERED;
+            ab.category = "Sacrifice";
+            ab.trigger_on = Events::CREATURE_ATTACKED;
+            ab.trigger_only_self = true;  // ValidCard$ Card.Self — only this creature's own attack
+            ab.valid_tgts = "N_A";
+            ab.mandatory = true;
+            ab.defined_each_opponent = true;  // the defending player sacrifices (CR 702.85b)
+            ab.sac_valid = "Permanent";       // any permanent the defending player controls
+            ab.sac_count = static_cast<size_t>(n);
+            card.abilities.push_back(ab);
+            continue;
+        }
+        // K:Protection:<quality>:<desc> — structured Protection keyword (CR 702.16). The middle
+        // field is the quality. Emrakul uses Protection:Spell.nonColorless ("protection from
+        // colored spells"): a one-or-more-colors SPELL can't target it (702.16b/e). Modeled as a
+        // creature keyword consulted in has_protection_from. A structured single-color quality is
+        // normalized to the literal "Protection from <color>" form the color-protection path
+        // already understands (the common color-protection cards spell that form out directly).
+        if (kw_line.rfind("Protection:", 0) == 0) {
+            std::vector<std::string> parts = split(kw_line, ':');
+            std::string spec = parts.size() > 1 ? parts[1] : "";
+            if (spec.rfind("Spell", 0) == 0 && spec.find("nonColorless") != std::string::npos) {
+                card.keywords.push_back("Protection from colored spells");
+            } else {
+                std::string color = spec;
+                std::transform(color.begin(), color.end(), color.begin(),
+                               [](unsigned char c) { return std::tolower(c); });
+                card.keywords.push_back("Protection from " + color);
+            }
+            continue;
+        }
         split_keywords(kw_line, card.keywords);
     }
 }
@@ -1234,7 +1277,7 @@ static std::map<std::string, std::string> parse_svars(const std::string& script)
 static void apply_param_to_ability(Ability& ability, const std::string& key, const std::string& value,
                                    const std::string& card_name) {
     if (key == "NumCards" || key == "ChangeNum" || key == "Amount" ||
-        key == "TokenAmount" || key == "ScryNum" || key == "Num") {
+        key == "TokenAmount" || key == "ScryNum" || key == "Num" || key == "NumTurns") {
         if (value == "DamageAmount" || value == "TriggerCount$DamageAmount") {
             ability.amount_from_damage = true;
         } else if (key == "ChangeNum" && value == "Any") {
@@ -1304,6 +1347,12 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         } else if (!value.empty()) {
             ability.amount_svar = value;
         }
+    } else if (key == "Shuffle") {
+        // Shuffle$ True on a ChangeZoneAll into Library (Emrakul's death trigger: "shuffle their
+        // graveyard into their library"): shuffle the destination library after the move. For the
+        // sameName search/move path (Extirpate/Surgical) the destination is Exile, so this flag is
+        // inert there — the change_zone_same_name handler doesn't consult it.
+        ability.shuffle_after = (value == "True");
     } else if (key == "TargetType") {
         ability.target_type = value;  // "Spell", "Activated,Triggered", etc.
     } else if (key == "Optional") {
@@ -1585,10 +1634,10 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
             // sameName search/move (Surgical Extraction, Extirpate, ...): these refine who
             // chooses or how the search is hidden, but the change_zone_same_name handler
             // already derives the full behavior from ChangeType/Origin/Destination/Defined.
-            // Shuffle$ is inferred from a Library origin; Hidden/ForgetOtherTargets are cosmetic
-            // given the "move the maximum" simplification. (Chooser$ is parsed above into
-            // chooser_is_controller — the search-based ChangeZone honors Chooser$ You.)
-            "Hidden", "Shuffle", "ForgetOtherTargets",
+            // Hidden/ForgetOtherTargets are cosmetic given the "move the maximum" simplification.
+            // (Chooser$ is parsed above into chooser_is_controller — the search-based ChangeZone
+            // honors Chooser$ You. Shuffle$ is handled in apply_param_to_ability above.)
+            "Hidden", "ForgetOtherTargets",
             // ForgetOnMoved$ Exile (Ugin, Eye of the Storms' -11 Effect): tells Forge to drop a
             // remembered object from the effect once it leaves the named zone. Bookkeeping for the
             // transient free-cast grant only; the grant itself is a no-op here, so this is cosmetic.

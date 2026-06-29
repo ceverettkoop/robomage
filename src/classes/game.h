@@ -144,6 +144,14 @@ struct Game {
         // reads it and auto-assigns any attacker absent from the map. Cleared at handler entry
         // (per strike step) and in the END_OF_COMBAT cleanup.
         std::map<Entity, std::map<Entity, uint32_t>> combat_damage_assignment;
+        // Pending extra turns (CR 500.7 / 720). Each entry is the player who will take an extra
+        // turn, treated as a LIFO stack: the most recently added extra turn is taken first (CR
+        // 500.7, "The most recently created turn will be taken first"). Consulted at turn hand-off
+        // (advance_step's cleanup → next turn) before flipping the active player; a non-empty stack
+        // makes the player on top take the next turn instead of passing to the opponent. General
+        // over any "take an extra turn" effect (effects::add_turn pushes onto it). Persists across
+        // turns; empty in a fresh Game.
+        std::vector<Zone::Ownership> extra_turns;
         std::vector<DelayedTrigger> delayed_triggers;
         // Floating triggered abilities (CR 603.7e-style "this turn" triggers) created by a
         // transient DB$ Effect | Triggers$ <SVar> (e.g. Forth Eorlingas!'s become-monarch-on-

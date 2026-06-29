@@ -112,13 +112,23 @@ bool sacrifice(Ability &ab, std::shared_ptr<Orderer> orderer) {
     // optional regardless of Optional$.
     if (ab.defined_each_opponent) {
         Zone::Ownership opp = (ab.controller == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
-        Entity sacked = sacrifice_one(ab, opp, /*optional=*/false, orderer);
-        if (ab.remember_sacrificed && sacked) cur_game.remembered_entities.push_back(sacked);
+        // sac_count > 1: the sacrificer chooses and sacrifices that many permanents, one at a
+        // time (Annihilator N, CR 702.85b). Each iteration re-gathers candidates, so the choices
+        // shrink as permanents leave; sacrifice_one returns 0 when none remain, so a player who
+        // controls fewer than sac_count permanents simply sacrifices all they have.
+        for (size_t i = 0; i < ab.sac_count; ++i) {
+            Entity sacked = sacrifice_one(ab, opp, /*optional=*/false, orderer);
+            if (ab.remember_sacrificed && sacked) cur_game.remembered_entities.push_back(sacked);
+            if (sacked == 0) break;
+        }
         return true;
     }
 
-    Entity sacked = sacrifice_one(ab, ab.controller, ab.optional_choice, orderer);
-    if (ab.remember_sacrificed && sacked) cur_game.remembered_entities.push_back(sacked);
+    for (size_t i = 0; i < ab.sac_count; ++i) {
+        Entity sacked = sacrifice_one(ab, ab.controller, ab.optional_choice, orderer);
+        if (ab.remember_sacrificed && sacked) cur_game.remembered_entities.push_back(sacked);
+        if (sacked == 0) break;
+    }
     return true;
 }
 

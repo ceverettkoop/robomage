@@ -200,6 +200,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Yorion, Sky Nomad", 289},
     {"Mycosynth Lattice", 290},
     {"Flusterstorm", 291},
+    {"Emrakul, the Aeons Torn", 292},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);

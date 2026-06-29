@@ -68,6 +68,7 @@ EffectHandler handler_for(EffectKind kind) {
         case EffectKind::BecomeMonarch:   return &become_monarch;
         case EffectKind::Vote:            return &vote;
         case EffectKind::Storm:           return &storm;
+        case EffectKind::AddTurn:         return &add_turn;
         default:                          return nullptr;
     }
 }

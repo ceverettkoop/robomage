@@ -371,10 +371,19 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     empty_mana_pool(Zone::PLAYER_A);
                     empty_mana_pool(Zone::PLAYER_B);
 
-                    // End of turn, move to next turn
+                    // End of turn, move to next turn. An extra turn (CR 500.7 / 720) takes
+                    // priority over the normal active-player flip: if a player is owed an extra
+                    // turn, that player (the most recently added — extra_turns is a LIFO stack)
+                    // takes the next turn instead of passing to the opponent.
                     cur_step = UNTAP;
                     turn++;
-                    player_a_turn = !player_a_turn;
+                    if (!extra_turns.empty()) {
+                        Zone::Ownership next_active = extra_turns.back();
+                        extra_turns.pop_back();
+                        player_a_turn = (next_active == Zone::PLAYER_A);
+                    } else {
+                        player_a_turn = !player_a_turn;
+                    }
                     break;
             }
             // if the new step is untap or cleanup, we pretend both players passed

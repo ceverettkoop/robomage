@@ -82,6 +82,7 @@ struct Ability{
     // DB$ Sacrifice EFFECT (not a cost): sacrifice a chosen permanent you control matching
     // sac_valid (Birthing Ritual). Distinct from sac_self/sac_cost_spec which are activation costs.
     std::string sac_valid = "";         // SacValid$ — filter for the creature/permanent to sacrifice (e.g. "Creature")
+    size_t sac_count = 1;               // number of permanents to sacrifice (Annihilator N: each sac is a separate choice; default 1)
     bool remember_sacrificed = false;   // RememberSacrificed$ True — push the sacrificed entity to remembered_entities
     std::string return_cost_type = "";  // Return<N/Type> — bounce a land of this subtype as cost
     int return_cost_count = 0;          // number of lands to return
@@ -157,6 +158,7 @@ struct Ability{
     bool is_offspring_token = false;     // synthetic ETB self-trigger from K:Offspring — only fires when the permanent was cast with offspring; creates a 1/1 token copy
     bool trigger_valid_player_is_controller = false;  // true when ValidPlayer$ You
     bool mandatory = false;              // Mandatory$ True — player must choose; suppresses fail-to-find when zone non-empty
+    bool shuffle_after = false;          // Shuffle$ True — shuffle the destination library after a ChangeZoneAll move (Emrakul death trigger: shuffle graveyard into library)
     bool may_shuffle = false;            // MayShuffle$ True — player may optionally shuffle after
     size_t unless_generic_cost = 0;      // UnlessCost$ N — target controller pays {N} to prevent counter
     bool unless_cost_is_life = false;    // when true, unless_generic_cost is paid as N life rather than {N} mana (Ward—Pay life, CR 702.21)

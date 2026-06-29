@@ -526,23 +526,29 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
         }
     }
 
-    // Leaves-the-battlefield self-triggers (CR 603.6b / 603.10): a triggered ability that
-    // watches its own source being put into the graveyard from the battlefield (Flagstones
-    // of Trokair: "When CARDNAME is put into a graveyard from the battlefield, ...") cannot be
-    // caught by the battlefield scan above — by the time triggers are checked the source has
-    // already left the battlefield and lost its Permanent component. The game instead looks
-    // back at the moment just before the event (603.10) to decide whether the ability
-    // triggered. We do that here: for each CARD_CHANGED_ZONE event leaving the battlefield,
-    // re-scan the changing card's own CardData abilities for a Card.Self trigger whose
-    // origin/destination filter matches, and queue it. CardData (and thus the ability list and
-    // the card's persisted last controller in its Zone) survives the move, so the source is
-    // fully recoverable.
+    // Self zone-change triggers that fire as the source itself moves (CR 603.6b / 603.10): a
+    // triggered ability that watches its own source change zones (Flagstones of Trokair: "When
+    // CARDNAME is put into a graveyard from the battlefield, ..."; Emrakul, the Aeons Torn: "When
+    // CARDNAME is put into a graveyard from ANYWHERE, ...") cannot be caught by the battlefield
+    // scan above — the moved card is no longer a battlefield permanent (and for a non-battlefield
+    // origin, e.g. a discard from hand or a mill from library, it never was). The game instead
+    // looks back at the moment just before the event (603.10) to decide whether the ability
+    // triggered. We do that here: for each CARD_CHANGED_ZONE event, re-scan the changing card's
+    // own CardData abilities for a Card.Self trigger whose origin/destination filter matches, and
+    // queue it. The per-ability origin filter (below) keeps an Origin$ Battlefield "dies" trigger
+    // from firing on a hand/library departure, while an Origin$ Any trigger (filter unset) fires
+    // from any zone. CardData (and the card's persisted last controller / owner in its Zone)
+    // survives the move, so the source is fully recoverable.
     for (const auto &ev : events) {
         if (ev.GetType() != Events::CARD_CHANGED_ZONE) continue;
         if (!ev.HasParam(Params::ENTITY)) continue;
         Zone::ZoneValue ev_origin = ev.GetParam<Zone::ZoneValue>(Params::ORIGIN);
-        if (ev_origin != Zone::BATTLEFIELD) continue;
         Zone::ZoneValue ev_dest = ev.GetParam<Zone::ZoneValue>(Params::DESTINATION);
+        // Enters-the-battlefield self-triggers (destination battlefield) are handled by the
+        // battlefield scan above (the source IS a battlefield permanent once it arrives), so
+        // exclude them here to avoid double-firing. This block covers self moves to any OTHER
+        // zone (graveyard, exile, hand, library) from any origin.
+        if (ev_dest == Zone::BATTLEFIELD) continue;
         Entity entity = ev.GetParam<Entity>(Params::ENTITY);
         if (!global_coordinator.entity_has_component<CardData>(entity)) continue;
         if (!global_coordinator.entity_has_component<Zone>(entity)) continue;

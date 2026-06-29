@@ -801,9 +801,18 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
 
     // Protection (CR 702.16e): a creature with protection from the source's color/quality can't
     // be targeted by it. The filter evaluator doesn't model protection, so check it separately.
-    if (global_coordinator.entity_has_component<Creature>(cand) &&
-        has_protection_from(global_coordinator.GetComponent<Creature>(cand), source))
-        return false;
+    if (global_coordinator.entity_has_component<Creature>(cand)) {
+        const Creature &cand_cr = global_coordinator.GetComponent<Creature>(cand);
+        if (has_protection_from(cand_cr, source)) return false;
+        // Protection from colored spells (Emrakul: K:Protection:Spell.nonColorless, CR 702.16b/e):
+        // a creature with this protection can't be the target of a SPELL that is one or more
+        // colors. The "is a spell" half is known here from this Ability's type (a SPELL ability,
+        // not an activated/triggered ability), and the "is colored" half from the source's
+        // effective colors — so a colorless spell, or any ability, may still target it.
+        if (ability_type == Ability::SPELL && has_protection_from_colored_spells(cand_cr) &&
+            !effective_colors(source).empty())
+            return false;
+    }
 
     // Shroud (CR 702.18e) and Hexproof (CR 702.11b): targeting restrictions read off the
     // candidate's EFFECTIVE keyword set (printed + granted via Pump/effects/keyword counter,

@@ -35,6 +35,15 @@ bool change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer) {
     if (ab.target != 0 && global_coordinator.entity_has_component<Player>(ab.target)) {
         owner = (ab.target == cur_game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
     }
+    // Defined$ TriggeredCardOwner (Emrakul's death trigger: "its owner shuffles their graveyard
+    // into their library"): operate on the OWNER of the card that triggered this ability (the
+    // source), not the last controller. Read the owner off the source's Zone (it is in the
+    // graveyard by now). CR 608.2g/400.3: ownership is fixed regardless of who controlled it.
+    if (ab.defined == "TriggeredCardOwner" && ab.source != 0 &&
+        global_coordinator.entity_has_component<Zone>(ab.source)) {
+        Zone::Ownership src_owner = global_coordinator.GetComponent<Zone>(ab.source).owner;
+        if (src_owner != Zone::UNKNOWN) owner = src_owner;
+    }
 
     // Determine which zones to search
     std::vector<Zone::ZoneValue> search_zones;
@@ -115,6 +124,14 @@ bool change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer) {
         moved++;
     }
     game_log("%s moves %zu card(s) to %s\n", player_name(owner).c_str(), moved, dest_str);
+
+    // Shuffle$ True (Emrakul's death trigger: "shuffle their graveyard into their library"): after
+    // moving the cards into the library, shuffle it. shuffle_library also clears the known-top-of-
+    // library tracking for that player (CR 701.20).
+    if (ab.shuffle_after && ab.destination == Zone::LIBRARY) {
+        orderer->shuffle_library(owner);
+        game_log("%s shuffles their library.\n", player_name(owner).c_str());
+    }
     return true;
 }
 

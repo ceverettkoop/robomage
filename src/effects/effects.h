@@ -165,6 +165,11 @@ bool dig_until(Ability &ab, std::shared_ptr<Orderer> orderer);
 // current zone this turn, paying an alternative RESOURCE cost (PlayCost$) instead of mana.
 // See effect_play.cpp.
 bool play(Ability &ab, std::shared_ptr<Orderer> orderer);
+// DB$ AddTurn (Emrakul, the Aeons Torn): the Defined$ player (You = the ability's controller)
+// takes ab.amount (NumTurns$, default 1) extra turns after the current one, queued onto
+// cur_game.extra_turns and consulted at turn hand-off (CR 500.7 / 720). General over any "take
+// an extra turn" effect. See effect_add_turn.cpp.
+bool add_turn(Ability &ab, std::shared_ptr<Orderer> orderer);
 
 
 // ── Effect-specific parse hooks ─────────────────────────────────────────────
