@@ -425,9 +425,12 @@ correct way to provision a missing script:
   exists, and on a front-name miss it discovers the combined DFC filename Forge serves (via the
   GitHub contents API) and fetches THAT under the combined name — so DFCs are never duplicated.
 - Token scripts: add `--token` and pass the script stem (e.g. `--token b_0_0_orc_army`).
-- Known gap: accented names aren't transliterated (`name_to_uid` mirrors the C++ engine, which
-  strips non-ASCII), so e.g. "Lórien Revealed" → `lrien_revealed` ≠ Forge's `lorien_revealed`;
-  fetch/name such cards by their ASCII stem by hand.
+- Known gap: accented names aren't transliterated for the **filename/uid** — `name_to_uid`
+  mirrors the C++ engine, which drops non-ASCII bytes rather than mapping them to a base letter
+  (an accented "o" becomes nothing, not `o`), so it won't match Forge's transliterated filename;
+  fetch/name such a card by its ASCII stem by hand. (The ML **vocab** match is separately
+  accent-insensitive — `card_name_to_index` folds via `ascii_fold_card_name`, transliterating
+  e.g. ó→o — so an accented `CardData::name` still resolves to its ASCII vocab entry.)
 - The SessionStart hook (`.claude/hooks/session-start.sh`) calls this tool for the top-level and
   `meta/` decks so a fresh clone gets their scripts automatically. It does **not** yet scan
   `decks/league/`, so after adding/altering a league deck, provision its scripts by running the

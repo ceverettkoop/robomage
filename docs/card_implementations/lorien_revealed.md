@@ -1,4 +1,4 @@
-# Lórien Revealed  (vocab index 273)
+# Lorien Revealed  (vocab index 273)
 
 ## Oracle text
 Draw three cards.
@@ -15,12 +15,13 @@ put it into your hand, then shuffle.)
   - `K:TypeCycling:Island:1` — typecycling keyword (CR 702.29f). The NEW mechanic.
 
 ## Name / accent note
-The display name "Lórien Revealed" contains a non-ASCII "ó". The engine's `name_to_uid`
-strips non-ASCII → `lrien_revealed`, but Forge's script file is `lorien_revealed.txt`. So the
-card can only be loaded by its ASCII spelling ("Lorien Revealed" → uid `lorien_revealed`), and
-`load_card` then keys it under the script's accented `Name`. The vocab entry uses the exact
-accented name (`{"Lórien Revealed", 273}`) so it matches the `CardData::name` the engine reads.
-Decks/tests must reference the card by its ASCII spelling.
+Forge's script `Name:` is "Lorien Revealed" (a non-ASCII "ó"), so the parsed `CardData::name`
+is accented (the script .txt is gitignored and re-fetched accented, so it isn't edited). The
+deck file and the script filename are ASCII: "Lorien Revealed" → uid `lorien_revealed` via
+`name_to_uid` (which strips non-ASCII), matching `lorien_revealed.txt`. The vocab entry is ASCII
+(`{"Lorien Revealed", 273}`); `card_name_to_index` ASCII-folds both its keys and the query via
+`ascii_fold_card_name` (transliterating ó→o), so the accented `CardData::name` still resolves to
+the ASCII vocab index. Decks/tests reference the card by its ASCII spelling.
 
 ## Engine work
 - **General `TypeCycling:<Subtype>:<cost>` parser** — `src/parse.cpp` (the new keyword branch,
@@ -54,14 +55,14 @@ Decks/tests must reference the card by its ASCII spelling.
   auto-consume; the search may fail to find.
 
 ## Tests (test_harness)
-- **Main spell**: cast Lórien Revealed with {3}{U}{U} available → "Resolving ability
-  (category: Draw, amount: 3)", drew three cards, Lórien Revealed to graveyard. PASS.
-- **Islandcycling**: with {1} available (one Island in play) and Lórien Revealed in hand,
-  activated its typecycling ability. The {1} cost was paid, Lórien Revealed went to the
+- **Main spell**: cast Lorien Revealed with {3}{U}{U} available → "Resolving ability
+  (category: Draw, amount: 3)", drew three cards, Lorien Revealed to graveyard. PASS.
+- **Islandcycling**: with {1} available (one Island in play) and Lorien Revealed in hand,
+  activated its typecycling ability. The {1} cost was paid, Lorien Revealed went to the
   graveyard (discard cost), then the library search menu offered only `Fail to find` and the
   single `Island` — the **Mountains in library were correctly NOT offered** (subtype filter).
   Chose Island → "Player A shuffles their library", "Player A reveals Island and puts it to
-  hand"; Island in hand, Lórien Revealed in graveyard. PASS.
+  hand"; Island in hand, Lorien Revealed in graveyard. PASS.
 
 ## Result
 implemented

@@ -52,9 +52,10 @@ def find_card_file(name):
     so we also try a prefix match when an exact match isn't found.
     """
     stem = re.sub(r'[^a-z0-9_]', '', name.lower().replace(' ', '_').replace('-', '_'))
-    # Accented names: the C++ name_to_uid strips non-ASCII bytes (so "Lórien" → "lrien"),
-    # but Forge's filename transliterates the accent ("lorien"). Try an NFKD-decomposed
-    # ASCII stem as well so accented card names resolve to their on-disk script.
+    # Accented names: the C++ name_to_uid strips non-ASCII bytes (an accented letter is
+    # dropped, not transliterated), but Forge's filename transliterates the accent (e.g. to
+    # "lorien_revealed"). Try an NFKD-decomposed ASCII stem as well so an accented card name
+    # resolves to its on-disk script.
     translit = unicodedata.normalize('NFKD', name).encode('ascii', 'ignore').decode('ascii')
     translit_stem = re.sub(r'[^a-z0-9_]', '', translit.lower().replace(' ', '_').replace('-', '_'))
     stems = [stem] if translit_stem == stem else [stem, translit_stem]

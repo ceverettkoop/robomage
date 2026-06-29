@@ -279,7 +279,7 @@ _CARD_COST_MATRIX = np.array([
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3],  # 270: Trinisphere
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3],  # 271: Ensnaring Bridge
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5],  # 272: Paradox Engine
-    [0.0, 0.2, 0.0, 0.0, 0.0, 0.0, 0.3],  # 273: Lórien Revealed
+    [0.0, 0.2, 0.0, 0.0, 0.0, 0.0, 0.3],  # 273: Lorien Revealed
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 274: Urza's Mine
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 275: Urza's Power Plant
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 276: Urza's Tower
@@ -1310,7 +1310,7 @@ _VOCAB_NAMES = [
     "Trinisphere",  # 270
     "Ensnaring Bridge",  # 271
     "Paradox Engine",  # 272
-    "Lórien Revealed",  # 273
+    "Lorien Revealed",  # 273
     "Urza's Mine",  # 274
     "Urza's Power Plant",  # 275
     "Urza's Tower",  # 276

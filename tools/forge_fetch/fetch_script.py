@@ -32,10 +32,12 @@ correct combined script. To honour that, the tool:
 Exit code is the number of requested scripts that could NOT be obtained (0 = all
 present/fetched), so a caller can branch on "needs hand-authoring".
 
-Known gap (not handled): accented card names. name_to_uid mirrors the C++ engine,
-which strips non-ASCII bytes rather than transliterating them, so "Lórien
-Revealed" normalizes to "lrien_revealed" while Forge's file is "lorien_revealed".
-Such cards must be fetched/named by their ASCII-transliterated stem by hand.
+Known gap (not handled): accented card names in the FILENAME/uid. name_to_uid
+mirrors the C++ engine, which drops non-ASCII bytes rather than transliterating
+them (an accented "o" becomes nothing, not "o"), so an accented name won't match
+Forge's transliterated filename. Such cards must be fetched/named by their
+ASCII-transliterated stem by hand. (The engine's ML vocab match is separately
+accent-insensitive, so an accented CardData::name still maps to its ASCII entry.)
 """
 
 import argparse
