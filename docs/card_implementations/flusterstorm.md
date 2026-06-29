@@ -69,7 +69,25 @@ reusable by any future Storm card — no Flusterstorm-specific behavior.
   reachable by this card in a single turn. No simplification of the rule was made — the count is
   computed correctly for the 0 case, there is just no board on which Flusterstorm casts with it.
 
+### Per-turn spell-count reset (CR 702.40a "before it **this turn**")
+- The storm count sums **both** players' `Player::spells_cast_this_turn`, so both counters must be
+  zeroed at every turn boundary or a spell one player cast on the *previous* turn inflates the next
+  turn's count. The cleanup block (`src/classes/game.cpp`) resets the **active** player's per-turn
+  spell counts; it now **also** resets the **opponent's** numeric counts
+  (`spells_cast_this_turn` / `noncreature_spells_cast_this_turn` /
+  `instant_sorcery_spells_cast_this_turn`) next to the existing `spell_colors_cast_this_turn.clear()`.
+  Previously only the opponent's color set was cleared, so an instant the opponent cast during the
+  active player's turn persisted into the opponent's own next turn and over-counted the storm
+  count there. The active player's own-turn count is snapshotted into
+  `prev_turn_active_spell_count` *before* this reset (for the day/night untap check, CR 502.2 /
+  731.2), so the Outland Liberator day↔night transitions are unaffected.
+
 ## Tests (test_harness, seed 1)
+- **(staleness fix, CR 702.40a):** on turn 1 (A's turn) B casts a Lightning Bolt in response
+  (B's `spells_cast_this_turn` = 1); on turn 2 (B's turn) B casts a Lightning Bolt then, with it on
+  the stack, casts Flusterstorm targeting it → "Resolving ability (category: **Storm, amount: 1**)"
+  / one "Player B copies Flusterstorm". The count reflects ONLY turn-2 spells (Bolt + Flusterstorm
+  − 1); the stale turn-1 Bolt does not inflate it (pre-fix it would have been amount 2). PASS.
 - **(a) Storm count 1:** A casts Lightning Bolt, then (in response) Flusterstorm targeting that
   Bolt → "Resolving ability (category: Storm, amount: 1)"; exactly **1** copy ("Player A copies
   Flusterstorm"); the copy counters Lightning Bolt (controller declined to pay {1} → "Lightning

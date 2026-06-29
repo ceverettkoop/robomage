@@ -52,6 +52,18 @@ std::set<Colors> effective_colors(Entity e) {
     if (const LastKnownInfo *lki = lki_for(e)) return lki->colors;
     if (global_coordinator.entity_has_component<CardData>(e))
         return card_colors(global_coordinator.GetComponent<CardData>(e));
+    // A token (no CardData) is colored by its color indicator (Token::explicit_colors, CR 111.4),
+    // not a mana cost. With no active SetColor override (checked first, above) this is its
+    // effective color — so a colored token reads correctly to the .Red/.Blue filter qualifiers
+    // (e.g. Blue Elemental Blast's "target red permanent" can see a red Warrior token). Filtered
+    // to the five real colors so a stray COLORLESS/GENERIC sentinel never leaks in.
+    if (global_coordinator.entity_has_component<Token>(e)) {
+        std::set<Colors> cols;
+        const auto &tk = global_coordinator.GetComponent<Token>(e).explicit_colors;
+        for (Colors c : {WHITE, BLUE, BLACK, RED, GREEN})
+            if (tk.count(c)) cols.insert(c);
+        return cols;
+    }
     return {};
 }
 
@@ -367,6 +379,17 @@ bool player_protected_from_source(Entity player_entity, Entity source) {
         if (src_ctrl != Zone::UNKNOWN && src_ctrl != prot) return true;
     }
     return false;
+}
+
+bool permanent_protected_from_colored_spell_source(Entity perm_target, Entity source) {
+    if (!global_coordinator.entity_has_component<Creature>(perm_target)) return false;
+    if (!has_protection_from_colored_spells(global_coordinator.GetComponent<Creature>(perm_target)))
+        return false;
+    // The source must be a spell on the stack (not a creature dealing combat damage, nor an
+    // activated/triggered ability) and one or more colors (CR 702.16a: the quality is a colored
+    // spell). A colorless spell's damage is not prevented.
+    if (!global_coordinator.entity_has_component<Spell>(source)) return false;
+    return !effective_colors(source).empty();
 }
 
 Zone::Ownership last_known_controller(Entity e) {

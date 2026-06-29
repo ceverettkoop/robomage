@@ -70,10 +70,15 @@ handler is general, not Colorless-only). `setcolor_zone_matches` honours `Affect
   targeting, the `.Blue`/`Colorless` filter qualifiers) — now consults the override first, in
   every zone. `is_colorless_entity(e)` (`src/game_queries.h`) likewise consults it. So a global
   `SetColor$ Colorless` makes every color-dependent query see the affected card as colorless.
-- **Recursion-safe.** The filter is matched against the object's **printed** characteristics
-  (`card_matches_filter`), never `permanent_matches_filter` (which would recurse
-  `effective_colors → setcolor_override_for → effective_colors`). Tokens (no `CardData`) are not
-  matched by an `Affected$ Card` static and are skipped (documented limitation below).
+- **Recursion-safe.** For a real card the filter is matched against the object's **printed**
+  characteristics (`card_matches_filter`), never `permanent_matches_filter` (which would recurse
+  `effective_colors → setcolor_override_for → effective_colors`). A battlefield **token** permanent
+  (no `CardData`) is matched by `setcolor_filter_matches_token` — a deliberately color-free
+  type/controller test — for the same recursion-safety reason, so tokens are **also** made
+  colorless by an `Affected$ Card`/`Permanent` SetColor static. `effective_colors(e)` reads a
+  token's printed color from its `Token::explicit_colors` indicator when no override is active, so
+  a colored token reports its real color to the `.Red`/`.Blue` qualifiers; under Mycosynth the
+  override wins and it reads colorless.
 
 ### Mechanic 3 — spend-mana-as-any-color (general, reusable)
 **`any_mana_as_any_color_active()` — `src/systems/state_manager_statics.cpp`** (declared in
@@ -95,10 +100,16 @@ pip* changes, exactly as CR 609.4 / 106.6 describes.
 
 ## Behavioral decisions / limitations (documented)
 - **Color override scope.** The override applies to real cards (`CardData`) in any zone the static
-  reaches, including spells on the stack and battlefield permanents. **Tokens** are not made
-  colorless by the `Affected$ Card` SetColor clause (a token is not a card, CR 111.1, and the
-  recursion-safe matcher needs `CardData`). Mycosynth's other clause still makes tokens artifacts.
-  No current-vocab interaction depends on a token's color under Mycosynth.
+  reaches, including spells on the stack and battlefield permanents, **and** to battlefield token
+  permanents (CR 105: "all permanents are colorless"). A token (CR 111.1: not a card) has no
+  `CardData`, so `setcolor_override_for` matches it through the recursion-safe
+  `setcolor_filter_matches_token` instead. That token matcher evaluates only the filter's head
+  type + a color-free qualifier subset (`Card`/`Permanent`/type heads; `YouCtrl`/`OppCtrl`/
+  `token`/`nonToken`/type qualifiers); a **color-qualified** filter (`White`/…/`Colorless`/
+  `non<Color>`) can't be evaluated against a token without re-reading its color (which would
+  recurse), so such a filter is treated as not matching the token. The only in-vocab global
+  SetColor static (Mycosynth's `Affected$ Card`) carries no color qualifier, so this limitation is
+  not currently reachable. Mycosynth's other clause still makes tokens artifacts.
 - **CardData-only color overloads unchanged.** `card_colors(cd)` / `is_colorless_card(cd)` take a
   bare `CardData` with no entity, so they cannot consult an entity-keyed static and continue to
   report printed color. All entity-aware seams (`effective_colors`, `is_colorless_entity`) honour
@@ -117,6 +128,12 @@ pip* changes, exactly as CR 609.4 / 106.6 describes.
   Men is now colorless, so the "destroy target blue permanent" mode has no legal target and there
   is no blue spell to counter). **Control (no Mycosynth):** REB's destroy mode targets Flying Men
   and destroys it.
+- **SetColor on a TOKEN (positive):** `Voice of Victory` attacks and its Mobilize 2 makes two red
+  `Warrior` tokens; with `Mycosynth Lattice` on A's battlefield, casting **Blue Elemental Blast**
+  ("destroy target red permanent") on those tokens yields "No valid modes — charm fizzles" (the
+  tokens are now colorless). **Control (no Mycosynth):** BEB's destroy mode lists the red Warrior
+  tokens as legal targets and "Warrior Token is destroyed". Confirms tokens are covered by the
+  global SetColor override and that a colored token reads its real color when no override is active.
 - **ManaConvert (positive):** A controls only Mountains plus `Mycosynth Lattice`; **Flying Men**
   ({U}) is offered as "Cast Flying Men" and is cast by tapping a Mountain for {R}. **Control (no
   Mycosynth):** "Cast Flying Men" is never offered (0 occurrences) — {U} is unpayable with red.

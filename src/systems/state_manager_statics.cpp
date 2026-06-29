@@ -314,14 +314,74 @@ static bool setcolor_zone_matches(const std::string &az, Zone::ZoneValue zone, b
     return false;
 }
 
+// Non-recursive test of a SetColor$ static's Affected$ filter against a battlefield TOKEN
+// permanent (CR 111.1: a token is not a card, so it has no CardData and the card_matches_filter
+// path can't read it). permanent_matches_filter WOULD read it, but it reads effective_colors,
+// which is exactly the caller of setcolor_override_for — so using it here would recurse
+// (effective_colors → setcolor_override_for → permanent_matches_filter → effective_colors). So a
+// token is matched WITHOUT consulting its color:
+//   • head "Card" / "Permanent" matches any battlefield permanent; a type name matches if the
+//     token carries that type/subtype (Permanent::types).
+//   • YouCtrl / OppCtrl are honoured against the token's live controller; token is honoured
+//     (this is a token); nonToken can't be satisfied by a token.
+//   • Any other type/subtype qualifier matches if the token's type line carries it.
+// A COLOR qualifier (White/Blue/…/Colorless or non<Color>) can't be evaluated without reading the
+// token's color (which would recurse), so a filter carrying one is treated as NOT matching the
+// token — documented limitation. The only in-vocab global SetColor static, Mycosynth Lattice, uses
+// a bare "Card" filter, which matches every battlefield permanent (tokens included), so this
+// limitation is not currently reachable.
+static bool setcolor_filter_matches_token(const std::string &aff, const Permanent &perm,
+                                          Zone::Ownership static_controller) {
+    if (aff.empty()) return false;
+    Zone::Ownership opp =
+        (static_controller == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+    bool first = true;
+    size_t i = 0;
+    while (i <= aff.size()) {
+        size_t nx = aff.find_first_of(".+", i);
+        size_t end = (nx == std::string::npos) ? aff.size() : nx;
+        std::string tok = aff.substr(i, end - i);
+        if (first) {
+            // Head: a permanent wildcard or a type the token carries.
+            if (tok != "Card" && tok != "Permanent" && !permanent_has_type(perm, tok))
+                return false;
+            first = false;
+        } else if (tok == "YouCtrl") {
+            if (perm.controller != static_controller) return false;
+        } else if (tok == "OppCtrl") {
+            if (perm.controller != opp) return false;
+        } else if (tok == "token" || tok == "Token") {
+            // a token satisfies this
+        } else if (tok == "nonToken") {
+            return false;  // this IS a token
+        } else if (tok == "White" || tok == "Blue" || tok == "Black" || tok == "Red" ||
+                   tok == "Green" || tok == "Colorless" || tok.rfind("non", 0) == 0) {
+            // A color (or non-color) qualifier would require reading the token's color — skip
+            // to stay recursion-safe (documented limitation; not reachable in current vocab).
+            return false;
+        } else if (!permanent_has_type(perm, tok)) {
+            return false;  // any remaining type/subtype qualifier must be on the token's type line
+        }
+        if (nx == std::string::npos) break;
+        i = nx + 1;
+    }
+    return true;
+}
+
 // Layer-5 (CR 613.1e / 612) global color-changing override — see game_queries.h. Scans the active-
 // statics cache for a SetColor$ continuous static whose AffectedZone$ + Affected$ filter designate
-// `e`; the FIRST match wins (no current vocab stacks two global SetColor statics). Matching is done
-// against the card's PRINTED characteristics (card_matches_filter) so this never recurses back into
-// effective_colors. Tokens (no CardData) and a static whose zone/filter excludes `e` yield no override.
+// `e`; the FIRST match wins (no current vocab stacks two global SetColor statics). For a real card
+// the match is done against the card's PRINTED characteristics (card_matches_filter) so this never
+// recurses back into effective_colors; a battlefield TOKEN permanent (no CardData) is matched by
+// setcolor_filter_matches_token, a deliberately color-free type/controller test, for the same
+// recursion-safety reason. A static whose zone/filter excludes `e` yields no override.
 bool setcolor_override_for(Entity e, std::set<Colors> &out) {
     if (g_active_statics.empty()) return false;
-    if (!global_coordinator.entity_has_component<CardData>(e)) return false;
+    bool has_card = global_coordinator.entity_has_component<CardData>(e);
+    bool is_token_perm = !has_card &&
+                         global_coordinator.entity_has_component<Token>(e) &&
+                         is_battlefield_permanent(e);
+    if (!has_card && !is_token_perm) return false;
     Zone::ZoneValue zone = Zone::LIBRARY;
     bool has_zone = global_coordinator.entity_has_component<Zone>(e);
     if (has_zone) zone = global_coordinator.GetComponent<Zone>(e).location;
@@ -329,11 +389,17 @@ bool setcolor_override_for(Entity e, std::set<Colors> &out) {
         if (as.suppressed || !as.condition_met) continue;
         if (as.sa->category != "Continuous" || as.sa->set_color.empty()) continue;
         if (!setcolor_zone_matches(as.sa->affected_zone, zone, has_zone)) continue;
-        MatchCtx ctx;
-        ctx.controller = as.controller;
-        ctx.source = as.entity;
-        extract_static_cmc_bound(as.sa->affected, ctx);
-        if (!card_matches_filter(e, as.sa->affected, ctx)) continue;
+        if (has_card) {
+            MatchCtx ctx;
+            ctx.controller = as.controller;
+            ctx.source = as.entity;
+            extract_static_cmc_bound(as.sa->affected, ctx);
+            if (!card_matches_filter(e, as.sa->affected, ctx)) continue;
+        } else {
+            // Battlefield token permanent: recursion-safe type/controller filter match.
+            const auto &perm = global_coordinator.GetComponent<Permanent>(e);
+            if (!setcolor_filter_matches_token(as.sa->affected, perm, as.controller)) continue;
+        }
         out = parse_setcolor_spec(as.sa->set_color);
         return true;
     }

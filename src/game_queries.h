@@ -233,6 +233,14 @@ Zone::Ownership source_controller(Entity source);
 // path so the prevention rule lives in one place.
 bool player_protected_from_source(Entity player_entity, Entity source);
 
+// CR 702.16d (damage facet): is `perm_target` a permanent with "protection from colored spells"
+// (Emrakul) being dealt damage by a SOURCE that is a colored spell? True means that damage is
+// prevented. Tightly gated: the source must be a spell object (entity_has_component<Spell>) — so
+// combat damage (creature source) and ability damage are never prevented — and one or more colors
+// (a colorless spell's damage is not prevented). Reuses has_protection_from_colored_spells and
+// effective_colors so the targeting block and the damage block share one definition of the rule.
+bool permanent_protected_from_colored_spell_source(Entity perm_target, Entity source);
+
 // Last-known controller of an object for a "that permanent's controller" effect
 // (CR 608.2g/h): its Zone.controller while it still records one, else the live
 // Permanent.controller (mid-resolution before the SBA strips it), else the controller

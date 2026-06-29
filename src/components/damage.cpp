@@ -33,6 +33,12 @@ bool deal_damage(Entity source, Entity target, size_t amount) {
     if (coordinator.entity_has_component<Creature>(target)) {
         if (has_protection_from(coordinator.GetComponent<Creature>(target), source))
             return false;
+        // Protection from colored spells, damage facet (Emrakul, CR 702.16d): a permanent with
+        // this protection isn't dealt damage by a colored spell source. Backstop at the damage
+        // chokepoint — the targeted DealDamage effect short-circuits this before calling here, so
+        // this covers any other path (a future non-targeted "deal damage to each creature" spell).
+        // Combat damage has a creature source (not a spell), so it is never prevented here.
+        if (permanent_protected_from_colored_spell_source(target, source)) return false;
     }
 
     auto &dmg = coordinator.GetComponent<Damage>(target);

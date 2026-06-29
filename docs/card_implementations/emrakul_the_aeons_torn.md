@@ -83,11 +83,23 @@ Squelcher). No new work — verified.
 ## Behavioral decisions / scope
 - **Protection from colored spells** is implemented for its **targeting** consequence (CR
   702.16b/e): a one-or-more-colors spell can't target Emrakul; a colorless spell, or any
-  ability (colored or not), still can. The other protection consequences (CR 702.16c–f — Auras,
-  Equipment, damage prevention, blocking) have **no in-vocab interaction** for a "colored spells"
-  quality (no colored Aura/Equipment targets a creature in vocab, and damage from a colored spell
-  to a 15/15 with this protection has no relevant case), so they are not wired. The targeting
-  path is the load-bearing one.
+  ability (colored or not), still can. The **damage-prevention** facet (CR 702.16d) is now also
+  **wired generally**: `permanent_protected_from_colored_spell_source(target, source)`
+  (`src/game_queries.cpp`, declared in `game_queries.h`) prevents damage to a permanent with this
+  protection when the damage **source is a colored spell** — checked in the targeted DealDamage
+  effect (`effects::deal_damage`, before the apply call so the "should have fizzled" guard isn't
+  tripped) and as a backstop in the damage chokepoint `::deal_damage` (`src/components/damage.cpp`).
+  It is tightly gated — the source must carry a `Spell` component (so **combat** damage, whose
+  source is a creature, and **ability** damage are never prevented) and have a non-empty
+  `effective_colors` (a **colorless** spell's damage is not prevented) — and it only protects the
+  damaged permanent, so Emrakul *dealing* damage is unaffected. **No reachable in-vocab trigger:**
+  there is no colored non-targeted damage spell in vocab (Toxic Deluge is −X/−X, Pernicious Deed
+  destroys), and a colored *targeted* damage spell can't target Emrakul in the first place — so the
+  facet is correct-by-construction and **verified by non-regression** (Emrakul still takes normal
+  combat damage; Lightning Bolt still can't target it). The remaining 702.16c/e/f consequences
+  (Auras, Equipment, blocking) have no in-vocab "colored spells" interaction and are subsumed by the
+  targeting block (a colored Aura/Equipment spell can't target Emrakul); blocking is not a spell-
+  color interaction.
 - **Extra turns** are modeled as a per-player LIFO queue consulted at turn hand-off (two-player
   scope per CLAUDE.md). Emrakul grants exactly one extra turn on cast and does not re-trigger, so
   no infinite loop. `NumTurns$ N` queues N.

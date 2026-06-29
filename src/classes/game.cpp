@@ -398,6 +398,17 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                         opp.cards_drawn_this_turn.clear();
                         opp.cards_drawn_this_draw_step = 0;
                         opp.spell_colors_cast_this_turn.clear();
+                        // Reset the opponent's per-turn spell COUNTS too (CR 702.40a "cast before
+                        // it this turn"): an instant the opponent cast during the active player's
+                        // turn must not persist into the opponent's own next turn, or
+                        // storm_count_this_turn (sum of both players' spells_cast_this_turn − 1)
+                        // overcounts. "This turn" is the current turn for both players, so both
+                        // counters are zero at the start of each new turn. The active player's
+                        // own-turn count was already snapshotted into prev_turn_active_spell_count
+                        // above for the day/night check before its reset, so that is unaffected.
+                        opp.spells_cast_this_turn = 0;
+                        opp.noncreature_spells_cast_this_turn = 0;
+                        opp.instant_sorcery_spells_cast_this_turn = 0;
                     }
                     // Turn-long continuous effects created by an instant/sorcery (Veil of Summer:
                     // "Spells you control can't be countered this turn" + "hexproof from blue and

@@ -64,6 +64,12 @@ bool deal_damage(Ability &ab, std::shared_ptr<Orderer> orderer) {
         damage_planeswalker(ab.target, dmg);
         auto &pw = global_coordinator.GetComponent<Permanent>(ab.target);
         game_log("Dealt %zu damage to %s (loyalty now %d)\n", dmg, pw.name.c_str(), get_counters(ab.target, "LOYALTY"));
+    } else if (permanent_protected_from_colored_spell_source(ab.target, ab.source)) {
+        // Protection from colored spells, damage facet (Emrakul, CR 702.16d): a colored spell
+        // source can't deal damage to this permanent. Prevented here (mirroring the player
+        // protection-from-everything check above) so the targeted path skips the damage cleanly
+        // instead of tripping the "should have fizzled" guard below.
+        game_log("Permanent has protection from colored spells — %zu damage prevented\n", dmg);
     } else {
         if (::deal_damage(ab.source, ab.target, dmg)) {
             game_log("Dealt %zu damage to creature\n", dmg);
