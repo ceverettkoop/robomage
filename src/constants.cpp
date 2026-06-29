@@ -49,7 +49,7 @@ const std::set<std::string> all_subtypes = {"Abian", "Adventure", "Advisor", "Ae
     "Samurai", "Samut", "Sarkhan", "Satyr", "Scarecrow", "Scientist", "Scorpion", "Scout", "Segovia", "Serpent",
     "Serra", "Serra’s Realm", "Shade", "Shadowmoor", "Shaman", "Shandalar", "Shapeshifter", "Shark", "Sheep",
     "Shenmeng", "Ship", "Shrine", "Siege", "Siren", "Sivitri", "Skaro", "Skeleton", "Slith", "Sliver", "Sloth", "Slug",
-    "Snail", "Snake", "Soldier", "Soltari", "Sorin", "Spacecraft", "Spawn", "Specter", "Spellshaper", "Sphere",
+    "Snail", "Snake", "Soldier", "Soltari", "Sorcerer", "Sorin", "Spacecraft", "Spawn", "Specter", "Spellshaper", "Sphere",
     "Sphinx", "Spider", "Spike", "Spirit", "Sponge", "Spy", "Squid", "Squirrel", "Starfish", "Surrakar", "Svega",
     "Swamp", "Synth", "Szat", "Tamiyo", "Tarkir", "Tasha", "Teferi", "Teyo", "Tezzeret", "Thalakos", "The", "The Abyss",
     "The Dalek Asylum", "The Library", "Theros", "Thopter", "Thrull", "Tibalt", "Tiefling", "Time", "Time Lord",
