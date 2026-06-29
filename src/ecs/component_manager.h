@@ -1,29 +1,48 @@
 #ifndef COMPONENT_MANAGER_H
 #define COMPONENT_MANAGER_H
-#include <any>
+#include <array>
+#include <cassert>
 #include <memory>
-#include <unordered_map>
 #include "component.h"
 #include "component_array.h"
 #include "entity.h"
 
 // credit https://austinmorlan.com/posts/entity_component_system/
+//
+// Component types are identified by a process-global integer id assigned on first
+// use (component_type_id<T>()), NOT by a per-call typeid()+hash-map lookup. The id
+// is a function-local static, so it is computed once and reused for the lifetime of
+// the process — across every per-game Coordinator::Init() (init_ecs registers the
+// same component set in the same order each game, so the ids are stable). This
+// removes the unordered_map<const char*> lookup that previously dominated every
+// entity_has_component / GetComponent call (it was the hottest engine symbol), and
+// lets GetComponentArray return a raw pointer instead of copying a shared_ptr
+// (atomic refcount churn) on the hot path.
+
+// Monotonic counter assigning the next component type id. The first
+// component_type_id<T>() call for each T claims the next slot.
+inline ComponentType &component_type_counter() {
+    static ComponentType next = 0;
+    return next;
+}
+template <typename T>
+inline ComponentType component_type_id() {
+    static const ComponentType id = component_type_counter()++;
+    return id;
+}
+
 class ComponentManager {
     public:
         template <typename T>
         void RegisterComponent() {
-            const char *typeName = typeid(T).name();
-            assert(mComponentTypes.find(typeName) == mComponentTypes.end() &&
-                   "Registering component type more than once.");
-            mComponentTypes.insert({typeName, mNextComponentType});
-            mComponentArrays.insert({typeName, std::make_shared<ComponentArray<T>>()});
-            ++mNextComponentType;
+            ComponentType type = component_type_id<T>();
+            assert(type < MAX_COMPONENTS && "More component types than MAX_COMPONENTS.");
+            assert(!mComponentArrays[type] && "Registering component type more than once.");
+            mComponentArrays[type] = std::make_shared<ComponentArray<T>>();
         }
         template <typename T>
         ComponentType GetComponentType() {
-            const char *typeName = typeid(T).name();
-            assert(mComponentTypes.find(typeName) != mComponentTypes.end() && "Component not registered before use.");
-            return mComponentTypes[typeName];
+            return component_type_id<T>();
         }
         template <typename T>
         void AddComponent(Entity entity, T component) {
@@ -38,20 +57,21 @@ class ComponentManager {
             return GetComponentArray<T>()->GetData(entity);
         }
         void EntityDestroyed(Entity entity) {
-            for (auto const &pair : mComponentArrays) {
-                auto const &component = pair.second;
-                component->EntityDestroyed(entity);
+            for (auto const &component : mComponentArrays) {
+                if (component) component->EntityDestroyed(entity);
             }
         }
     private:
-        std::unordered_map<const char *, ComponentType> mComponentTypes{};
-        std::unordered_map<const char *, std::shared_ptr<IComponentArray>> mComponentArrays{};
-        ComponentType mNextComponentType{};
+        // Component arrays indexed by component type id (dense, no hashing).
+        std::array<std::shared_ptr<IComponentArray>, MAX_COMPONENTS> mComponentArrays{};
         template <typename T>
-        std::shared_ptr<ComponentArray<T>> GetComponentArray() {
-            const char *typeName = typeid(T).name();
-            assert(mComponentTypes.find(typeName) != mComponentTypes.end() && "Component not registered before use.");
-            return std::static_pointer_cast<ComponentArray<T>>(mComponentArrays[typeName]);
+        ComponentArray<T> *GetComponentArray() {
+            ComponentType type = component_type_id<T>();
+            assert(mComponentArrays[type] && "Component not registered before use.");
+            // Raw pointer: the array outlives every call within a game, and is
+            // re-fetched from the live manager each call (so it stays valid across
+            // the per-game Init() that recreates the manager). No shared_ptr copy.
+            return static_cast<ComponentArray<T> *>(mComponentArrays[type].get());
         }
 };
 #endif /* COMPONENT_MANAGER_H */

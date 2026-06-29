@@ -68,9 +68,9 @@ class Coordinator {
 
         template <typename T>
         bool entity_has_component(Entity entity){
-            ComponentType type = mComponentManager->GetComponentType<T>();
-            auto signature = mEntityManager->GetSignature(entity);
-            return signature.test(type);
+            // component_type_id<T>() is a memoized integer (no typeid/hash lookup);
+            // read the signature bitset by reference and test the bit directly.
+            return mEntityManager->GetSignatureRef(entity).test(component_type_id<T>());
         }
 
         // System methods
