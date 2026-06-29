@@ -70,6 +70,10 @@ static void pay_exile_from_grave_cost(Zone::Ownership caster, int min_types, Ent
                                       std::shared_ptr<Orderer> orderer);
 static void pay_exile_from_grave_count_cost(Zone::Ownership caster, int count, Entity spell_entity,
                                             std::shared_ptr<Orderer> orderer);
+static std::vector<const Ability *> spell_targeting_abilities(const Ability &primary);
+static bool gift_mode_satisfiable(const std::vector<const Ability *> &targeting,
+                                  std::shared_ptr<Orderer> orderer, Zone::Ownership caster,
+                                  bool promised);
 
 // entity_name() is shared from the StateManager TUs via state_manager_internal.h.
 // mana_symbol_str() is the canonical const-char* color symbol from classes/colors.h.
@@ -1164,6 +1168,37 @@ static int effective_target_min(const Ability &ab, Zone::Ownership perspective,
     return ab.target_min;
 }
 
+// Gather a spell's targeting abilities: the primary spell ability plus any chained sub-ability
+// that targets (each picks its own target as the spell is cast — CR 601.2c).
+static std::vector<const Ability *> spell_targeting_abilities(const Ability &primary) {
+    std::vector<const Ability *> targeting;
+    if (primary.valid_tgts != "N_A") targeting.push_back(&primary);
+    for (const Ability &sub : primary.subabilities)
+        if (sub.valid_tgts != "N_A") targeting.push_back(&sub);
+    return targeting;
+}
+
+// Is a Gift spell's <promised> mode satisfiable — does a legal target exist for every required
+// target of its targeting abilities under that gift-promise state? (CR 601.2c). Toggles the
+// pending gift-promise flag (which a Count$PromisedGift-driven target count reads) around the
+// check and restores it.
+static bool gift_mode_satisfiable(const std::vector<const Ability *> &targeting,
+                                  std::shared_ptr<Orderer> orderer, Zone::Ownership caster,
+                                  bool promised) {
+    bool saved = cur_game.pending_gift_promised;
+    cur_game.pending_gift_promised = promised;
+    bool ok = true;
+    for (const Ability *ab : targeting) {
+        if (effective_target_min(*ab, caster, orderer) > 0 &&
+            build_valid_targets(*ab, orderer, caster).empty()) {
+            ok = false;
+            break;
+        }
+    }
+    cur_game.pending_gift_promised = saved;
+    return ok;
+}
+
 // CR 601.2c: a spell can only be cast if a legal target can be chosen for every required target,
 // for at least one reachable set of mode/cost choices. Most spells have a single targeting
 // ability and this reduces to has_legal_targets. A Gift spell (Into the Flood Maw) switches which
@@ -1174,31 +1209,11 @@ static int effective_target_min(const Ability &ab, Zone::Ownership perspective,
 // reachable promise state and the spell is castable if any one is fully satisfiable.
 bool spell_has_castable_targets(const Ability &primary, std::shared_ptr<Orderer> orderer,
                                 Zone::Ownership caster, bool has_gift) {
-    // Gather the spell's targeting abilities: the primary spell ability plus any chained
-    // sub-ability that targets (each picks its own target as the spell is cast — CR 601.2c).
-    std::vector<const Ability *> targeting;
-    if (primary.valid_tgts != "N_A") targeting.push_back(&primary);
-    for (const Ability &sub : primary.subabilities)
-        if (sub.valid_tgts != "N_A") targeting.push_back(&sub);
+    std::vector<const Ability *> targeting = spell_targeting_abilities(primary);
     if (targeting.empty()) return true;  // no targets required
 
-    auto mode_satisfiable = [&](bool promised) {
-        bool saved = cur_game.pending_gift_promised;
-        cur_game.pending_gift_promised = promised;
-        bool ok = true;
-        for (const Ability *ab : targeting) {
-            if (effective_target_min(*ab, caster, orderer) > 0 &&
-                build_valid_targets(*ab, orderer, caster).empty()) {
-                ok = false;
-                break;
-            }
-        }
-        cur_game.pending_gift_promised = saved;
-        return ok;
-    };
-
-    if (mode_satisfiable(false)) return true;       // not-promised (default) mode
-    if (has_gift && mode_satisfiable(true)) return true;  // promised-gift mode
+    if (gift_mode_satisfiable(targeting, orderer, caster, false)) return true;  // not-promised mode
+    if (has_gift && gift_mode_satisfiable(targeting, orderer, caster, true)) return true;  // promised
     return false;
 }
 
@@ -1808,7 +1823,22 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             if (card_data.has_gift) {
                 std::string gname = card_data.gift_description.empty()
                                         ? std::string("the gift") : card_data.gift_description;
-                if (request_optional_yesno(caster, "promise " + gname + " to your opponent")) {
+                // CR 601.2c / 702.176b: the gift promise switches which target the spell requires
+                // (Into the Flood Maw: a creature when declined, a nonland permanent when promised).
+                // If the not-promised mode has no legal target — e.g. the opponent controls no
+                // (targetable) creature — declining is not a legal way to cast the spell, so don't
+                // offer the yes/no: force the promise rather than dropping into a zero-target mode
+                // that fizzles. The cast was only legal because the promised mode is satisfiable.
+                bool must_promise = false;
+                for (const auto &t : card_data.abilities) {
+                    if (t.ability_type != Ability::SPELL) continue;
+                    std::vector<const Ability *> targeting = spell_targeting_abilities(t);
+                    must_promise = !targeting.empty() &&
+                                   !gift_mode_satisfiable(targeting, orderer, caster, false);
+                    break;
+                }
+                if (must_promise ||
+                    request_optional_yesno(caster, "promise " + gname + " to your opponent")) {
                     gift_promised = true;
                     game_log("%s promises the gift to %s\n", player_name(caster).c_str(),
                              player_name(caster == Zone::PLAYER_A ? Zone::PLAYER_B

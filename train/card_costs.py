@@ -260,7 +260,7 @@ _CARD_COST_MATRIX = np.array([
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1],  # 251: Manifold Key
     [0.0, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0],  # 252: Boomerang Basics
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.2],  # 253: Liquimetal Coating
-    [0.0, 0.0, 0.0, 0.0, 0.1, 0.0, 0.2],  # 254: Mole Man, Moloid Master
+    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 254: Mole Man, Moloid Master
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 255: Mystic Sanctuary
     [0.0, 0.0, 0.1, 0.0, 0.1, 0.0, 0.1],  # 256: Pernicious Deed
     [0.0, 0.0, 0.0, 0.0, 0.1, 0.0, 0.0],  # 257: Pick Your Poison
@@ -273,8 +273,8 @@ _CARD_COST_MATRIX = np.array([
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 264: Witch-Blessed Meadow
     [0.0, 0.0, 0.0, 0.0, 0.1, 0.0, 0.3],  # 265: Toxicrene
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 266: Planar Nexus
-    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3],  # 267: The Fantasticar
-    [0.1, 0.0, 0.1, 0.0, 0.0, 0.0, 0.1],  # 268: Cloak and Dagger, Entwined
+    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 267: The Fantasticar
+    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 268: Cloak and Dagger, Entwined
     [0.0, 0.0, 0.1, 0.0, 0.0, 0.0, 0.1],  # 269: Cabal Ritual
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3],  # 270: Trinisphere
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3],  # 271: Ensnaring Bridge
