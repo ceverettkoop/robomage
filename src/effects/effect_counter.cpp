@@ -9,7 +9,6 @@
 #include "../components/spell.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
-#include "../error.h"
 #include "../components/ability.h"
 #include "../game_queries.h"
 #include "../saga.h"
@@ -127,10 +126,15 @@ bool counter(Ability &ab, std::shared_ptr<Orderer> orderer) {
                 game_log("%s is countered\n", name.c_str());
             }
         } else {
-            non_fatal_error("Counter should have fizzled prior to this");
+            // Target still exists but has left the stack (e.g. it was already countered by an
+            // earlier counter that resolved first). Its only target is illegal, so the counter
+            // does nothing and is put into its graveyard (CR 608.2b). The pre-resolve target check
+            // (Ability::resolve / is_target_valid) normally fizzles this first; this is a defensive
+            // clean fizzle for any path that reaches the effect with a stale target.
+            game_log("Counter fizzles (target no longer on the stack)\n");
         }
     } else {
-        non_fatal_error("Counter should have fizzled prior to this");
+        game_log("Counter fizzles (target no longer on the stack)\n");
     }
     return true;
 }
