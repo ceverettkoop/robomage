@@ -10,8 +10,9 @@ performance — game logic and decision trajectories are unchanged (verified, be
 | Build | wall (40 games) | decisions/s | ms/decision |
 |---|---|---|---|
 | Release, baseline | ~1.47 s | ~2,850 | 0.348 |
-| Release, after this pass | ~1.07 s | ~3,900 | 0.256 |
-| **Delta** | **−27% wall** | **+36%** | **−26%** |
+| + ECS hot-path commit | ~1.07 s | ~3,900 | 0.256 |
+| + counter/ability follow-up | ~1.00 s | ~4,190 | 0.239 |
+| **Total delta** | **−32% wall** | **+47%** | **−31%** |
 
 Determinism fingerprint: the delver-mirror benchmark plays **4,186 decisions / 40
 games** before *and* after every change — identical, i.e. trajectories are byte-for-byte
@@ -141,6 +142,39 @@ from the profile. New top engine symbol is `state_based_effects` (12% self), who
    persistent C++ process does **not** remove, since each decision still crosses the pipe
    and rebuilds the obs array. Higher-leverage non-engine wins live on the Python side
    (e.g. shrink/skip per-decision obs work, vectorize envs), not in process lifetime.
+
+## Follow-up pass (counters + ability copies) — what the trio actually measured
+
+Pursued the ranked opportunities above in order #1 (counters) → #3 (copies) → #2
+(`shared_ptr`). Profiling each as it landed corrected two of the three estimates:
+
+- **#1 — `Permanent`/`Player::counters` `std::map` → flat `CounterMap` (DONE, committed).**
+  Removes the `_Rb_tree_increment` from counter iteration. **Measured ~0% on the delver
+  mirror** (that deck has essentially no counters — the 3.4% tree-walk was mostly
+  `std::set<Type>`/legend-map iteration, not counters), so the real benefit is confined to
+  boards with planeswalkers / +1+1 / poison / energy. Zero risk, determinism preserved.
+- **#3 — the win was *Ability* copies, not the string churn (DONE, committed, ~7%).** The
+  `basic_string::_M_construct` cost turned out **diffuse** (spread across
+  `determine_legal_actions`, `apply_type_changing_effects`, `apply_keyword_abilities`) —
+  rooted in pervasive `std::string` keyword/type/filter comparisons, whose real fix is
+  interning to enums (a large refactor, deferred). But `Ability(const&)`/`~Ability`/
+  `Ability()` ≈ 4% was concrete and contained: three `for (auto ab : …)` loops copying heavy
+  `Ability` objects by value every SBA pass / every decision. Switching them to `const auto&`
+  (and copying only the ability actually pushed) gave **~1.075 s → ~1.00 s (~7%)**.
+- **#2 — `shared_ptr<Orderer>` by value: NOT worth it (skipped).** The big `shared_ptr`
+  refcount cost was the `GetComponentArray`-returns-`shared_ptr` churn, already removed in
+  the first commit. The residual by-value-param churn measured **~0.7%** (`_M_release` 0.38%
+  + Orderer inplace dtor 0.35%) and is gone from the top of the post-#3 profile. A
+  ~40-signature `const&` sweep for ~0.7%, with the regression surface that implies, is not a
+  good trade — **recommend skipping** unless a future change makes it cheap to bundle.
+
+Updated remaining ranking after this pass: **(1)** the continuous-effects/SBA rebuild
+(`state_based_effects`, still the #1 engine symbol — dirty-flag is the high-impact/high-risk
+lever); **(2)** string interning for keywords/types/filters (the diffuse `_M_construct` ~8%,
+a larger refactor); **(3)** `serialize_state` buffer reuse (cheap, machine-path only);
+**(4)** Python-side per-decision obs cost (~25% of wall, biggest absolute but outside the
+engine). Process-persistence and the `shared_ptr` sweep are both deprioritized as measured
+low-value.
 
 ## Reproduce
 
