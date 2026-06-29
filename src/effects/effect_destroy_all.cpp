@@ -85,7 +85,7 @@ bool destroy_all(Ability &ab, std::shared_ptr<Orderer> orderer) {
         if (!type_match) continue;
         // CMC filter
         if (cmc_le >= 0 && global_coordinator.entity_has_component<CardData>(e)) {
-            int cmc = static_cast<int>(global_coordinator.GetComponent<CardData>(e).mana_cost.size());
+            int cmc = card_mana_value(global_coordinator.GetComponent<CardData>(e));
             if (cmc > cmc_le) continue;
         }
         to_destroy.push_back(e);

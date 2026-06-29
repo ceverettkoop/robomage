@@ -1,8 +1,8 @@
 # Yorion, Sky Nomad  (vocab index 289)
 
 ## Oracle text (per the in-repo Forge script)
-Legendary Creature — Bird Serpent, mana cost `{3}{W/U}{W/U}` (see the hybrid-cost caveat below),
-4/5, Flying.
+Legendary Creature — Bird Serpent, mana cost `{3}{W/U}{W/U}` (mana value 5; hybrid mana is now
+supported — see `_hybrid_mana.md`), 4/5, Flying.
 
 Companion — Your starting deck contains at least twenty cards more than the minimum deck size. (If
 this card is your chosen companion, you may put it into your hand from outside the game for `{3}`
@@ -102,13 +102,14 @@ A `--scripted` regression (real `delver` deck) ran without crashes/asserts. (`tr
 used — `torch` absent — so scripted regression ran directly through the harness, per CLAUDE.md.)
 
 ## Caveats / follow-ups
-- **Hybrid mana cost (pre-existing engine gap, out of scope).** Forge writes the hybrid symbol
-  `{W/U}` as `WU`, so Yorion's script cost is `3 WU WU` = `{3}{W/U}{W/U}` (CMC 5). The engine's
-  `parse_mana_cost` (`src/parse.cpp`) has **no hybrid support** — it reads each letter separately, so
-  Yorion is currently costed as `{3}{W}{U}{W}{U}` (CMC 7, requiring 2 W + 2 U + 3 generic). This is
-  a cross-cutting limitation affecting *every* hybrid card in the folder (`UR UR`, `WB WB`, …), not
-  specific to Yorion, and implementing general color/color hybrid mana is well beyond this card's
-  scope. Yorion is still castable; only its mana cost / CMC is affected. Left as a follow-up.
+- **Hybrid mana cost — CLOSED.** Forge writes the hybrid symbol `{W/U}` as `WU`, so Yorion's script
+  cost is `3 WU WU` = `{3}{W/U}{W/U}`. The engine now parses hybrid pips generally (see
+  `docs/card_implementations/_hybrid_mana.md`): Yorion's **mana value is 5** (each `{W/U}` counts 1,
+  CR 202.3f), each hybrid pip is payable with **either** white or blue mana, and Yorion's color
+  identity is **both white and blue** (verified: Red Elemental Blast's "destroy target blue
+  permanent" legally targets and destroys Yorion). Verified castable off `{3}` + 2 W, off `{3}` + 2 U,
+  and off `{3}` + W + U (5 mana total, not 7), and correctly *not* castable off 5 red sources (no
+  W/U) or 4 lands (mana value 5).
 - **Companion game-start reveal (CR 702.139c) simplified.** This 2-player engine has no formal
   "reveal your companion from outside the game" pre-game step; the load-bearing, playable behavior —
   the deck-restriction gate plus the once-per-game pay-{3}-to-hand special action — is implemented

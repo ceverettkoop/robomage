@@ -273,7 +273,7 @@ CharView card_view(Entity e, const CardData &cd) {
     v.entity = e;
     v.types = &cd.types;
     v.colors = card_colors(cd);
-    v.cmc = static_cast<int>(cd.mana_cost.size());
+    v.cmc = card_mana_value(cd);
     v.has_pt = true;  // printed P/T (a head type guard keeps P/T filters scoped to creatures)
     v.power = static_cast<int>(cd.power);
     v.toughness = static_cast<int>(cd.toughness);
@@ -305,7 +305,7 @@ CharView permanent_view(Entity e, const Permanent &perm) {
     }
     if (global_coordinator.entity_has_component<CardData>(e)) {
         auto &cd = global_coordinator.GetComponent<CardData>(e);
-        v.cmc = static_cast<int>(cd.mana_cost.size());  // CR 112.7
+        v.cmc = card_mana_value(cd);  // CR 112.7
         v.has_x_cost = cd.has_x_cost;
     }
     return v;

@@ -1560,8 +1560,9 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                     for (size_t ki = 0; ki < card_data.kicker_costs.size(); ki++) {
                         ManaValue with_kicker = cost_to_pay;
                         for (Colors c : card_data.kicker_costs[ki]) with_kicker.insert(c);
-                        if (!can_pay_mana(caster, with_kicker, spell_entity, orderer,
-                                          card_data.has_delve, card_data.has_improvise))
+                        if (!resolve_hybrid_cost(caster, with_kicker, card_data.hybrid_mana,
+                                                 spell_entity, orderer, card_data.has_delve,
+                                                 card_data.has_improvise))
                             continue;
                         std::string prompt = "pay kicker " + std::to_string(ki + 1) +
                             " for " + card_data.name;
@@ -1584,8 +1585,9 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                     while (true) {
                         ManaValue with_replicate = cost_to_pay;
                         for (Colors c : card_data.replicate_cost) with_replicate.insert(c);
-                        if (!can_pay_mana(caster, with_replicate, spell_entity, orderer,
-                                          card_data.has_delve, card_data.has_improvise))
+                        if (!resolve_hybrid_cost(caster, with_replicate, card_data.hybrid_mana,
+                                                 spell_entity, orderer, card_data.has_delve,
+                                                 card_data.has_improvise))
                             break;
                         std::string prompt = "pay replicate cost for " + card_data.name +
                             " (paid " + std::to_string(replicate_count) + ")";
@@ -1614,6 +1616,53 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                     cur_game.x_paid = x_val;
                     for (size_t i = 0; i < x_val; i++) cost_to_pay.insert(GENERIC);
                     game_log("%s chooses X = %zu\n", player_name(caster).c_str(), x_val);
+                }
+
+                // HYBRID mana (CR 107.4): resolve each {W/U} / {2/W} pip to one concrete payment
+                // before the colored/generic payment runs below. Machine/auto mode picks the first
+                // payable assignment (shared with the cast-legality gate via resolve_hybrid_cost);
+                // interactive mode prompts the player per pip, like the Phyrexian block below.
+                if (!card_data.hybrid_mana.empty()) {
+                    if (InputLogger::instance().is_machine_mode()) {
+                        ManaValue resolved;
+                        if (resolve_hybrid_cost(caster, cost_to_pay, card_data.hybrid_mana,
+                                                spell_entity, orderer, card_data.has_delve,
+                                                card_data.has_improvise, &resolved)) {
+                            cost_to_pay = resolved;
+                        } else {
+                            // No payable assignment: add the colored option (else the generic
+                            // alternative) so payment fails cleanly through the normal path.
+                            for (const auto &pip : card_data.hybrid_mana) {
+                                if (!pip.colors.empty()) cost_to_pay.insert(pip.colors.front());
+                                else for (int i = 0; i < pip.generic_alt; i++)
+                                    cost_to_pay.insert(GENERIC);
+                            }
+                        }
+                    } else {
+                        for (const auto &pip : card_data.hybrid_mana) {
+                            std::vector<LegalAction> hybrid_actions;
+                            for (Colors c : pip.colors) {
+                                LegalAction a(PASS_PRIORITY,
+                                    std::string("Pay {") + mana_symbol_str(c) + "}");
+                                a.category = ActionCategory::PAYING_COSTS;
+                                hybrid_actions.push_back(a);
+                            }
+                            if (pip.generic_alt > 0) {
+                                LegalAction a(PASS_PRIORITY,
+                                    "Pay {" + std::to_string(pip.generic_alt) + "} generic");
+                                a.category = ActionCategory::PAYING_COSTS;
+                                hybrid_actions.push_back(a);
+                            }
+                            int hc = InputLogger::instance().get_input(hybrid_actions);
+                            size_t uc = static_cast<size_t>(hc);
+                            if (uc < pip.colors.size()) {
+                                cost_to_pay.insert(pip.colors[uc]);
+                            } else {
+                                for (int i = 0; i < pip.generic_alt; i++)
+                                    cost_to_pay.insert(GENERIC);
+                            }
+                        }
+                    }
                 }
 
                 // Phyrexian mana: for each symbol, choose to pay colored mana or 2 life

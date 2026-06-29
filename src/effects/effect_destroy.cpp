@@ -57,7 +57,7 @@ bool destroy(Ability &ab, std::shared_ptr<Orderer> orderer) {
         }
         Entity tgt = ab.target;
         if (global_coordinator.entity_has_component<CardData>(tgt)) {
-            int tgt_cmc = static_cast<int>(global_coordinator.GetComponent<CardData>(tgt).mana_cost.size());
+            int tgt_cmc = card_mana_value(global_coordinator.GetComponent<CardData>(tgt));
             if (tgt_cmc > threshold) {
                 std::string tname = global_coordinator.entity_has_component<Permanent>(tgt)
                     ? global_coordinator.GetComponent<Permanent>(tgt).name : "<unknown>";

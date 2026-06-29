@@ -39,6 +39,20 @@ struct AltCost {
     int exile_grave_count = 0;
 };
 
+// A hybrid mana pip (CR 107.4b/107.4e, 202.3f). Stored parallel to mana_cost (which holds only
+// the NON-hybrid pips), the same way phyrexian_mana is kept separate. Two forms:
+//   - Color hybrid {W/U}: `colors` holds the two color options (one mana of either); generic_alt
+//     is 0. Mana value contribution = 1 (CR 202.3f: greatest component MV).
+//   - Monocolored hybrid / "twobrid" {2/W}: `colors` holds the single color option (one mana of
+//     that color) and generic_alt is the generic alternative (2). Mana value contribution = 2.
+// `mana_value` caches the CMC contribution so consumers don't re-derive it (Phyrexian {W/P} is
+// NOT modeled here — it stays in phyrexian_mana — so this is purely color-hybrid / twobrid).
+struct HybridPip {
+    std::vector<Colors> colors;  // color alternatives (color-hybrid: 2; twobrid: 1)
+    int generic_alt = 0;         // generic-mana alternative count (twobrid: 2; color-hybrid: 0)
+    int mana_value = 1;          // contribution to mana value (CMC)
+};
+
 //this is the underlying card, not a permanent or spell
 struct CardData{
     std::string uid;
@@ -47,6 +61,7 @@ struct CardData{
     std::set<Type> types;
     std::multiset<Colors> mana_cost;
     std::vector<Colors> phyrexian_mana;  // Phyrexian mana symbols: each can be paid with color OR 2 life
+    std::vector<HybridPip> hybrid_mana;  // hybrid pips ({W/U}, {2/W}); kept out of mana_cost like phyrexian
     uint32_t power = 0;
     uint32_t toughness = 0;
     int starting_loyalty = 0;  // Loyalty: line — printed loyalty a planeswalker enters with (306.5b)

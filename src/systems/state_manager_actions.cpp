@@ -618,9 +618,12 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             ManaValue effective_cost = effective_base_cost(card_data, priority_player);
 
             // X-cost spells: base cost (without X) is enough to be castable;
-            // X value is chosen at cast time in action_processor
-            bool can_regular = can_pay_mana(priority_player, effective_cost, card_entity,
-                                            orderer, card_data.has_delve, card_data.has_improvise);
+            // X value is chosen at cast time in action_processor. Hybrid pips ({W/U}, {2/W})
+            // are folded in via resolve_hybrid_cost (castable iff SOME hybrid assignment is
+            // payable); with no hybrids this is exactly can_pay_mana.
+            bool can_regular = resolve_hybrid_cost(priority_player, effective_cost,
+                                                   card_data.hybrid_mana, card_entity, orderer,
+                                                   card_data.has_delve, card_data.has_improvise);
 
             // Additional Sacrifice-a-<type> cost on the spell itself (Natural Order:
             // "As an additional cost to cast this spell, sacrifice a green creature").
@@ -647,8 +650,9 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             if (card_data.has_offspring) {
                 ManaValue offspring_total = effective_cost;
                 for (Colors c : card_data.offspring_cost) offspring_total.insert(c);
-                if (can_pay_mana(priority_player, offspring_total, card_entity, orderer,
-                                 card_data.has_delve, card_data.has_improvise)) {
+                if (resolve_hybrid_cost(priority_player, offspring_total, card_data.hybrid_mana,
+                                        card_entity, orderer, card_data.has_delve,
+                                        card_data.has_improvise)) {
                     LegalAction off_la = la;
                     off_la.use_offspring = true;
                     off_la.description = "Cast " + card_data.name + " (offspring)";

@@ -934,6 +934,45 @@ bool can_pay_mana(Zone::Ownership controller, const ManaValue &cost,
                          has_improvise);
 }
 
+// Depth-first enumeration of hybrid-pip assignments (see resolve_hybrid_cost). `cur` carries the
+// concrete cost so far; at the leaf it is tested via can_pay_mana. Colored options are tried
+// before a twobrid's generic alternative so the cheapest/most-flexible payable assignment wins.
+static bool resolve_hybrid_recurse(Zone::Ownership caster, ManaValue &cur,
+                                   const std::vector<HybridPip> &hybrids, size_t idx,
+                                   Entity paid_for, std::shared_ptr<Orderer> orderer,
+                                   bool has_delve, bool has_improvise, ManaValue *out) {
+    if (idx == hybrids.size()) {
+        if (!can_pay_mana(caster, cur, paid_for, orderer, has_delve, has_improvise)) return false;
+        if (out) *out = cur;
+        return true;
+    }
+    const HybridPip &pip = hybrids[idx];
+    for (Colors c : pip.colors) {
+        cur.insert(c);
+        if (resolve_hybrid_recurse(caster, cur, hybrids, idx + 1, paid_for, orderer,
+                                   has_delve, has_improvise, out))
+            return true;
+        cur.erase(cur.find(c));
+    }
+    if (pip.generic_alt > 0) {
+        for (int i = 0; i < pip.generic_alt; i++) cur.insert(GENERIC);
+        if (resolve_hybrid_recurse(caster, cur, hybrids, idx + 1, paid_for, orderer,
+                                   has_delve, has_improvise, out))
+            return true;
+        for (int i = 0; i < pip.generic_alt; i++) cur.erase(cur.find(GENERIC));
+    }
+    return false;
+}
+
+bool resolve_hybrid_cost(Zone::Ownership caster, const ManaValue &base_flat_cost,
+                         const std::vector<HybridPip> &hybrids, Entity paid_for,
+                         std::shared_ptr<Orderer> orderer, bool has_delve, bool has_improvise,
+                         ManaValue *out_resolved) {
+    ManaValue cur = base_flat_cost;
+    return resolve_hybrid_recurse(caster, cur, hybrids, 0, paid_for, orderer, has_delve,
+                                  has_improvise, out_resolved);
+}
+
 bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,
                          Entity paid_for, std::shared_ptr<Orderer> orderer,
                          bool has_delve, bool has_improvise) {

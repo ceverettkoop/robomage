@@ -29,7 +29,8 @@ const size_t SCRIPT_MAX_LEN = 10000;
 
 static std::string value_from_script(std::string script, std::string key);
 static std::vector<std::string> multi_values_from_script(std::string script, std::string key);
-static std::multiset<Colors> parse_mana_cost(std::string value, std::vector<Colors> *phyrexian_out = nullptr);
+static std::multiset<Colors> parse_mana_cost(std::string value, std::vector<Colors> *phyrexian_out = nullptr,
+                                             std::vector<HybridPip> *hybrid_out = nullptr);
 static void parse_alt_cost_tokens(const std::string& cost_str, AltCost& ac);
 static std::set<Type> parse_types(std::string value);
 static std::set<Colors> parse_colors_field(const std::string &colors_field);
@@ -358,7 +359,7 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
     card.name = value_from_script(front_script, "Name");
     card.uid = name_to_uid(card.name);
     std::string mana_cost_str = value_from_script(front_script, "ManaCost");
-    card.mana_cost = parse_mana_cost(mana_cost_str, &card.phyrexian_mana);
+    card.mana_cost = parse_mana_cost(mana_cost_str, &card.phyrexian_mana, &card.hybrid_mana);
     card.has_x_cost = (mana_cost_str.find('X') != std::string::npos);
     card.types = parse_types(value_from_script(front_script, "Types"));
     // AlternateMode:Modal marks a MODAL double-faced card (MDFC, CR 712.x) — both faces are
@@ -960,10 +961,92 @@ static std::vector<std::string> multi_values_from_script(std::string script, std
     return ret_val;
 }
 
-static std::multiset<Colors> parse_mana_cost(std::string value, std::vector<Colors> *phyrexian_out) {
-    auto len = value.length();
+// Map a single mana-cost color letter to its color, or NO_COLOR for a non-color char.
+static Colors mana_letter_color(char c) {
+    switch (c) {
+        case 'W': return WHITE;
+        case 'U': return BLUE;
+        case 'B': return BLACK;
+        case 'R': return RED;
+        case 'G': return GREEN;
+        case 'C': return COLORLESS;
+        default:  return NO_COLOR;
+    }
+}
+
+// Recognize a HYBRID mana token (CR 107.4b/107.4e) within a single space-separated ManaCost
+// token and, if matched, append the pip to *hybrid_out and return true. Two Forge encodings:
+//   - color hybrid: two adjacent color letters ("WU") or a slashed pair ("W/U") → one pip
+//     payable by either color, MV 1.
+//   - monocolored hybrid / "twobrid": "<N>/<color>" (e.g. "2/W") → one pip payable by N generic
+//     OR one mana of the color, MV N.
+// Phyrexian ("WP"/"W/P") is NOT handled here — it is left to the phyrexian path. A token that is
+// not a hybrid (single color, generic number, X, phyrexian) returns false so the caller can fall
+// back to the per-character parse. Color letters here exclude COLORLESS ('C') for color hybrids,
+// as Forge has no {C/x} color-hybrid pip.
+static bool parse_hybrid_token(const std::string &tok, std::vector<HybridPip> *hybrid_out) {
+    if (!hybrid_out) return false;
+    auto is_color_letter = [](char c) {
+        return c == 'W' || c == 'U' || c == 'B' || c == 'R' || c == 'G';
+    };
+    // Two adjacent color letters: "WU" (color hybrid, no slash).
+    if (tok.size() == 2 && is_color_letter(tok[0]) && is_color_letter(tok[1])) {
+        HybridPip pip;
+        pip.colors = {mana_letter_color(tok[0]), mana_letter_color(tok[1])};
+        pip.generic_alt = 0;
+        pip.mana_value = 1;
+        hybrid_out->push_back(pip);
+        return true;
+    }
+    // Slashed forms: "<A>/<B>".
+    size_t slash = tok.find('/');
+    if (slash != std::string::npos && slash > 0 && slash + 1 < tok.size()) {
+        std::string lhs = tok.substr(0, slash);
+        std::string rhs = tok.substr(slash + 1);
+        // Phyrexian ("W/P") is handled elsewhere — not a hybrid pip.
+        if (rhs == "P") return false;
+        // Twobrid "<N>/<color>": generic alternative N, single color option.
+        bool lhs_num = !lhs.empty() &&
+                       std::all_of(lhs.begin(), lhs.end(),
+                                   [](char c) { return std::isdigit(static_cast<unsigned char>(c)); });
+        if (lhs_num && rhs.size() == 1 && is_color_letter(rhs[0])) {
+            HybridPip pip;
+            pip.colors = {mana_letter_color(rhs[0])};
+            pip.generic_alt = std::stoi(lhs);
+            pip.mana_value = pip.generic_alt;
+            hybrid_out->push_back(pip);
+            return true;
+        }
+        // Slashed color hybrid "W/U".
+        if (lhs.size() == 1 && rhs.size() == 1 && is_color_letter(lhs[0]) && is_color_letter(rhs[0])) {
+            HybridPip pip;
+            pip.colors = {mana_letter_color(lhs[0]), mana_letter_color(rhs[0])};
+            pip.generic_alt = 0;
+            pip.mana_value = 1;
+            hybrid_out->push_back(pip);
+            return true;
+        }
+    }
+    return false;
+}
+
+static std::multiset<Colors> parse_mana_cost(std::string value, std::vector<Colors> *phyrexian_out,
+                                             std::vector<HybridPip> *hybrid_out) {
     std::multiset<Colors> ret_val;
     if (value == "no cost") return ret_val;
+    // Hybrid pips are space-separated tokens in Forge's ManaCost encoding ("3 WU WU", "2/B 2/R").
+    // Pull those out first so a two-color token isn't mis-read as two separate colored pips by the
+    // per-character scan below; everything else falls through to the original char-by-char parse.
+    if (hybrid_out) {
+        std::string rest;
+        for (const auto &tok : split(value, ' ', /*skip_empty=*/true)) {
+            if (parse_hybrid_token(tok, hybrid_out)) continue;
+            if (!rest.empty()) rest += ' ';
+            rest += tok;
+        }
+        value = rest;
+    }
+    auto len = value.length();
     for (size_t i = 0; i < len; i++) {
         // Check for Phyrexian mana: XP where X is a color letter
         bool is_phyrexian = false;

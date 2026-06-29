@@ -55,7 +55,23 @@ inline std::set<Colors> card_colors(const CardData &cd) {
     std::set<Colors> result;
     for (Colors c : {WHITE, BLUE, BLACK, RED, GREEN})
         if (cd.mana_cost.count(c)) result.insert(c);
+    // Hybrid pips carry color too (CR 105.2/202.3f): {W/U} makes the card both white and blue,
+    // {2/W} makes it white. hybrid_mana is kept out of mana_cost, so fold its colors in here.
+    for (const auto &pip : cd.hybrid_mana)
+        for (Colors c : pip.colors)
+            if (c != COLORLESS && c != GENERIC) result.insert(c);
     return result;
+}
+
+// Mana value (converted mana cost, CR 202.3) of a card: one per non-hybrid pip in mana_cost
+// plus each hybrid pip's contribution (1 for a color hybrid, N for an {N/color} twobrid —
+// CR 202.3f: a hybrid symbol's MV is the greatest of its component symbols' MVs). X counts 0
+// outside the stack/cast (CR 202.3b). Phyrexian pips are not modeled in mana_value (they live
+// in phyrexian_mana, mirroring the engine's existing treatment). Single source for "card CMC".
+inline int card_mana_value(const CardData &cd) {
+    int mv = static_cast<int>(cd.mana_cost.size());
+    for (const auto &pip : cd.hybrid_mana) mv += pip.mana_value;
+    return mv;
 }
 
 // Enforce a positive color target restriction (e.g. ValidTgts$ Permanent.Blue on Red Elemental
@@ -241,6 +257,12 @@ inline bool is_colorless_card(const CardData &cd) {
             return false;
         }
     }
+    // A hybrid pip ({W/U}, {2/W}) carries color, so a card with one is not colorless (unless a
+    // Colors: override said so, handled above). Only consulted when there is no explicit override.
+    if (cd.explicit_colors.empty())
+        for (const auto &pip : cd.hybrid_mana)
+            for (Colors c : pip.colors)
+                if (c != COLORLESS && c != GENERIC) return false;
     return true;
 }
 
