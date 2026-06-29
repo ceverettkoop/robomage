@@ -32,6 +32,17 @@ static Zone::ZoneValue change_zone_move(const std::shared_ptr<Orderer> &orderer,
                                         Zone::ZoneValue dest);
 static void register_exile_until_host_leaves(Entity host, Entity card, Zone::ZoneValue origin);
 
+// Name an object for a log line / action label without assuming it is a card: a token has a
+// Permanent (and Token) but no CardData, so reading CardData on it crashes. Prefer the card's
+// printed name, fall back to the permanent's name (tokens), then to a placeholder.
+static std::string object_display_name(Entity e) {
+    if (global_coordinator.entity_has_component<CardData>(e))
+        return global_coordinator.GetComponent<CardData>(e).name;
+    if (global_coordinator.entity_has_component<Permanent>(e))
+        return global_coordinator.GetComponent<Permanent>(e).name;
+    return "<unknown>";
+}
+
 // Move a card for a ChangeZone effect and report the zone it actually landed in. A
 // replacement effect can divert the move during add_to_zone — Containment Priest redirects an
 // uncast creature to exile (614.1a), Grafdigger's Cage prevents the entry so the card stays in
@@ -117,7 +128,15 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
     if (ab.change_type.find("sameName") != std::string::npos)
         return change_zone_same_name(ab, orderer, /*force_all=*/false);
 
-    Zone::Ownership owner = global_coordinator.GetComponent<Zone>(ab.source).owner;
+    // The owning/searching player for this ChangeZone. Normally the source's Zone.owner, but
+    // the source may have ceased to exist by the time the ability resolves (CR 608.2g/h): a
+    // token that created an ability still on the stack is DestroyEntity'd the instant it leaves
+    // the battlefield, taking its Zone with it. Fall back to the last-known controller (== owner
+    // for a token, which is always owned by its controller), the same last-known-information the
+    // target reads below already rely on.
+    Zone::Ownership owner = global_coordinator.entity_has_component<Zone>(ab.source)
+                                ? global_coordinator.GetComponent<Zone>(ab.source).owner
+                                : last_known_controller(ab.source);
 
     // DefinedPlayer$ TargetedController (Erode: "Its controller may search their library
     // for a basic land card, put it onto the battlefield tapped, then shuffle."): the
@@ -366,8 +385,9 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
             if (cands.empty()) break;
             std::vector<LegalAction> picks;
             for (auto e : cands) {
-                auto &cd = global_coordinator.GetComponent<CardData>(e);
-                LegalAction la(PASS_PRIORITY, e, std::string("Exile ") + cd.name);
+                // A token among the candidates (e.g. an Orc Army you control when Yorion blinks)
+                // has no CardData — name it from its Permanent instead of crashing.
+                LegalAction la(PASS_PRIORITY, e, std::string("Exile ") + object_display_name(e));
                 la.category = ActionCategory::CHOOSE_CARD;
                 la.card_is_public = true;
                 picks.push_back(la);
@@ -378,7 +398,7 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
             int choice = InputLogger::instance().get_input(picks);
             if (choice < 0 || choice >= static_cast<int>(cands.size())) break;  // declined / done
             Entity chosen = cands[static_cast<size_t>(choice)];
-            std::string cname = global_coordinator.GetComponent<CardData>(chosen).name;
+            std::string cname = object_display_name(chosen);
             change_zone_move(orderer, chosen, ab.destination);
             if (ab.remember_changed) cur_game.remembered_entities.push_back(chosen);
             game_log("%s exiles %s\n", player_name(owner).c_str(), cname.c_str());
