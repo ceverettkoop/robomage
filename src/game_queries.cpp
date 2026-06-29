@@ -90,10 +90,19 @@ struct CharView {
     bool is_blocking = false;
     bool is_tapped = false;
     bool has_x_cost = false;                 // printed mana cost contains {X} (Gaddock Teeg's hasXCost)
+    bool creature_suppressed = false;        // on battlefield, has "Creature" in its type line but
+                                             // is NOT currently a creature (no live Creature component)
 };
 
 bool view_has_typeline(const CharView &v, const std::string &name) {
     if (!v.types) return false;
+    // CR 702.151b / 702.175d: some battlefield permanents keep "Creature" in their printed type
+    // line yet are not currently creatures — a Reconfigure equipment while attached, an Impending
+    // permanent that still has time counters. The live Creature component is the source of truth
+    // for creature-ness on the battlefield (it is what the static pass strips in those cases), so a
+    // "Creature" type query consults it rather than the stale type line. Other type names, and
+    // off-battlefield card views, read the type line unchanged.
+    if (name == "Creature" && v.creature_suppressed) return false;
     for (const auto &t : *v.types)
         if (t.name == name) return true;
     return false;
@@ -104,6 +113,7 @@ bool view_has_typeline(const CharView &v, const std::string &name) {
 // matched against a card now in exile) excludes instants/sorceries. Battlefield objects always
 // carry a permanent type in their live type line, so this stays a no-op for permanent_view.
 bool view_is_permanent(const CharView &v) {
+    if (v.on_battlefield) return true;  // a battlefield object is by definition a permanent (CR 110.4a)
     return view_has_typeline(v, "Artifact") || view_has_typeline(v, "Battle") ||
            view_has_typeline(v, "Creature") || view_has_typeline(v, "Enchantment") ||
            view_has_typeline(v, "Land") || view_has_typeline(v, "Planeswalker");
@@ -335,6 +345,11 @@ CharView permanent_view(Entity e, const Permanent &perm) {
         auto &cr = global_coordinator.GetComponent<Creature>(e);
         v.is_attacking = cr.is_attacking;
         v.is_blocking = cr.is_blocking;
+    } else {
+        // On the battlefield with no live Creature component: any "Creature" still in the type line
+        // is suppressed (CR 702.151b reconfigure-while-attached / 702.175d impending). See
+        // view_has_typeline — a "Creature" type query must read the component, not the stale line.
+        v.creature_suppressed = true;
     }
     if (global_coordinator.entity_has_component<CardData>(e)) {
         auto &cd = global_coordinator.GetComponent<CardData>(e);
