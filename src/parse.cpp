@@ -638,6 +638,28 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             card.keywords.push_back("Impending");
             continue;
         }
+        // K:Chapter:<final>:<svar1>,<svar2>,...,<svarN> — a Saga's chapter abilities (CR 714). The
+        // first field is the Saga's final chapter number (= the number of chapter slots, CR 714.2d);
+        // each subsequent comma-separated entry is an SVar naming the DB$ ability run when the Saga's
+        // lore counters reach that chapter (CR 714.2b/714.3). Multiple chapters may name the SAME
+        // SVar (Summon: Bahamut I & II both DBDestroy) — each becomes its own chapter slot, so two
+        // independent triggers fire at lore 1 and lore 2. Parsed 1-indexed into card.saga_chapters;
+        // the Saga lifecycle (lore counters, chapter triggers, sacrifice SBA) lives in src/saga.cpp.
+        if (kw_line.rfind("Chapter:", 0) == 0) {
+            std::vector<std::string> parts = split(kw_line, ':');
+            if (parts.size() >= 3) {
+                for (const std::string &name : split(parts[2], ',', /*skip_empty=*/true)) {
+                    auto it = svars.find(name);
+                    if (it != svars.end())
+                        card.saga_chapters.push_back(
+                            parse_svar_ability(it->second, Ability::TRIGGERED, svars, card.name));
+                    else
+                        card.saga_chapters.push_back(Ability{});  // keep chapter indexing aligned
+                }
+            }
+            card.keywords.push_back("Chapter");
+            continue;
+        }
         // K:Prowess — keyword stored; triggered ability applied by apply_keyword_abilities
         if (kw_line == "Prowess" || kw_line.rfind("Prowess", 0) == 0) {
             card.keywords.push_back("Prowess");
@@ -1002,6 +1024,9 @@ Token parse_token_script(const std::string &script_name) {
     for (auto &ab : parse_abilities(multi_values_from_script(script_data, "A"), tok.types,
                                     svars, tok.name))
         tok.abilities.push_back(ab);
+    // S: lines — continuous static abilities (e.g. the Construct token's "+1/+1 for each
+    // artifact you control" self-buff). Applied via the Permanent once bootstrapped.
+    tok.static_abilities = parse_static_abilities(script_data, svars);
 
     return tok;
 }
@@ -1834,6 +1859,17 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
             }
         } else if (key == "CharmNum") {
             sub.charm_num = std::stoi(value);
+        } else if (key == "Abilities" && sub.category == "Animate") {
+            // DB$ Animate | Abilities$ <svar>[,<svar>...] — the activated ability(ies) the Animate
+            // grants to the target permanent (Urza's Saga: ABMana "{T}: Add {C}." / ABToken
+            // "{2},{T}: Create a Construct"). Each named SVar is a self-contained AB$ ability;
+            // parse it as an ACTIVATED ability and store it for the Animate handler to attach.
+            for (const std::string &svar_name : split(value, ',', /*skip_empty=*/true)) {
+                auto it = svars.find(svar_name);
+                if (it != svars.end())
+                    sub.animate_granted_abilities.push_back(
+                        parse_svar_ability(it->second, Ability::ACTIVATED, svars, card_name));
+            }
         } else if (key == "Execute") {
             // Execute$ references an SVar containing the ability to fire (delayed triggers)
             effect_params<DelayedTriggerParams>(sub).execute_svar = value;

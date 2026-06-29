@@ -32,6 +32,7 @@
 #include "../mana_system.h"
 #include "../name_card_choices.h"
 #include "../parse.h"
+#include "../saga.h"
 #include "../svar_eval.h"
 #include "../systems/stack_manager.h"
 #include "replacement_effects.h"
@@ -626,6 +627,10 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                     game_log("%s enters with %d %s counter(s).\n",
                         card_data.name.c_str(), etb_p1p1, etb_counter_type.c_str());
                 }
+                // CR 714.3a/714.2b: a Saga enters with one lore counter; reaching chapter 1 fires
+                // its first chapter ability. Done once here in the newly-entered block (the
+                // Permanent now exists). Saga lifecycle lives in src/saga.cpp.
+                if (card_is_saga(card_data)) saga_add_lore_counters(entity, 1);
             }
             // copy activated abilities from card_data to permanent; incl mana abilities although mana abilities innate to basic land types
             // added elsewhere

@@ -1,5 +1,6 @@
 #include "game_queries.h"
 
+#include <algorithm>
 #include <cctype>
 #include <cstdio>
 
@@ -225,6 +226,16 @@ bool eval_qualifier(const CharView &v, const MatchCtx &ctx, const std::string &q
             kw += q[i];
         }
         return v.entity != 0 && permanent_has_keyword(v.entity, kw.c_str());
+    }
+    // "ManaCostN" — the object's mana value equals exactly N (Urza's Saga's chapter III tutor:
+    // Artifact.ManaCost0 / Artifact.ManaCost1 = an artifact with mana cost {0} or {1}). Distinct
+    // from the cmc family above (which carries a comparator); ManaCostN is the equality form Forge
+    // emits as a bare property. A P/T-less / costless object reads mana value 0.
+    if (q.rfind("ManaCost", 0) == 0 && q.size() > 8) {
+        const std::string num = q.substr(8);
+        if (std::all_of(num.begin(), num.end(),
+                        [](unsigned char ch) { return std::isdigit(ch); }))
+            return v.cmc == std::stoi(num);
     }
     // leftover: a PascalCase token is a type-line (type/supertype/subtype) name to require;
     // anything else is a qualifier we don't implement → fail closed and warn once.

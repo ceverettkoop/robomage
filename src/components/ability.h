@@ -154,6 +154,11 @@ struct Ability{
     // it" ETB) — an intervening cast-condition: the trigger fires only when its source permanent
     // entered the battlefield by being cast (Permanent::entered_by_cast).
     bool trigger_requires_entered_by_cast = false;
+    // This triggered ability is a Saga chapter ability (CR 714.3). When it finishes resolving and
+    // leaves the stack, StackManager::resolve_top decrements its source Saga's
+    // saga_chapters_in_flight so the 714.4 sacrifice SBA can fire. Set when the chapter ability is
+    // built from CardData::saga_chapters in the trigger system.
+    bool is_saga_chapter = false;
     bool is_evoke_sacrifice = false;     // synthetic ETB self-trigger from K:Evoke — only fires when the permanent was evoked
     bool is_offspring_token = false;     // synthetic ETB self-trigger from K:Offspring — only fires when the permanent was cast with offspring; creates a 1/1 token copy
     bool trigger_valid_player_is_controller = false;  // true when ValidPlayer$ You
@@ -222,6 +227,13 @@ struct Ability{
     // Permanent so the layer system reapplies them. Only the type-add path is exercised today;
     // base-P/T/keyword/creature extension points live on Permanent (see permanent.h).
     std::vector<Type> animate_types;
+    // DB$ Animate | Abilities$ <svar>[,<svar>...] (Urza's Saga chapters I & II): activated
+    // ability(ies) the Animate GRANTS to the target permanent for the effect's Duration (CR
+    // 613.1f — a lasting "gains [activated ability]"). Each entry is a fully-parsed AB$ ability
+    // (e.g. "{T}: Add {C}." or "{2}, {T}: Create a Construct token"). The Animate handler pushes
+    // them onto the permanent's activated-ability list for a Duration$ Permanent grant. Empty when
+    // the Animate grants no abilities (Guide of Souls' type-only animate).
+    std::vector<Ability> animate_granted_abilities;
     bool animate_duration_permanent = false;
     // Duration$ UntilYourNextTurn (Karn, the Great Creator +1): the grant lasts until the start
     // of the animating player's NEXT turn — longer than the Forge default (until end of turn)

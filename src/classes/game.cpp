@@ -15,6 +15,7 @@
 #include "../effects/effects.h"
 #include "../game_queries.h"
 #include "../mana_system.h"
+#include "../saga.h"
 #include "../systems/orderer.h"
 #include "../systems/replacement_effects.h"
 #include "../systems/stack_manager.h"
@@ -217,6 +218,10 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                         first_main_event.SetParam(Params::PLAYER, active_player_entity);
                         global_coordinator.SendEvent(first_main_event);
                     }
+                    // CR 714.3c turn-based action: as the active player's precombat main phase
+                    // begins, put a lore counter on each Saga they control (firing the next
+                    // chapter). Mirrors shed_impending_time_counters' built-in step hook.
+                    saga_put_precombat_lore_counters(active_player);
                     break;
                 case FIRST_MAIN:
                     cur_step = BEGIN_COMBAT;

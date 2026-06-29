@@ -225,6 +225,39 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
         }
     }
 
+    // Saga chapter abilities (CR 714.3): a SAGA_CHAPTER event is emitted by the lore-counter
+    // machinery (saga.cpp) when a Saga's lore counters reach chapter N. The chapter ability lives on
+    // the Saga's CardData::saga_chapters (parsed from K:Chapter), not as a T: trigger, so it is
+    // produced here directly and queued for APNAP placement / target selection like any other
+    // triggered ability. The chapter ability is marked is_saga_chapter so the 714.4 sacrifice gate
+    // (Permanent::saga_chapters_in_flight) is released when it leaves the stack.
+    for (const auto &ev : events) {
+        if (ev.GetType() != Events::SAGA_CHAPTER) continue;
+        if (!ev.HasParam(Params::ENTITY) || !ev.HasParam(Params::AMOUNT)) continue;
+        Entity saga = ev.GetParam<Entity>(Params::ENTITY);
+        int chapter = static_cast<int>(ev.GetParam<uint32_t>(Params::AMOUNT));
+        if (!global_coordinator.entity_has_component<CardData>(saga)) continue;
+        if (!global_coordinator.entity_has_component<Permanent>(saga)) continue;
+        const auto &cd = global_coordinator.GetComponent<CardData>(saga);
+        if (chapter < 1 || chapter > static_cast<int>(cd.saga_chapters.size())) continue;
+        Zone::Ownership ctrl = global_coordinator.GetComponent<Permanent>(saga).controller;
+
+        Ability trigger_ab = cd.saga_chapters[static_cast<size_t>(chapter - 1)];
+        trigger_ab.ability_type = Ability::TRIGGERED;
+        trigger_ab.source = saga;
+        trigger_ab.controller = ctrl;
+        trigger_ab.is_saga_chapter = true;
+
+        PendingTrigger pt;
+        pt.ab = trigger_ab;
+        pt.controller = ctrl;
+        pt.source = saga;
+        pt.label = entity_name(saga) + " (chapter " + std::to_string(chapter) + ")";
+        pt.log_line = entity_name(saga) + " chapter " + std::to_string(chapter) + " triggers.";
+        pt.needs_target = (trigger_ab.valid_tgts != "N_A" && trigger_ab.target == 0);
+        pending.push_back(pt);
+    }
+
     if (!events.empty()) {
     for (auto entity : mEntities) {
         if (!is_battlefield_permanent(entity)) continue;

@@ -22,6 +22,7 @@ namespace Events {
     constexpr EventId BECAME_TARGET           = 16; // "whenever ~ becomes the target of a spell" (Mode$ BecomesTarget). Fired once per (targeting object, targeted permanent) pair as a spell/ability with chosen targets is placed on the stack (CR 603.2c). Params: ENTITY=targeting spell/ability, PLAYER=its controller, TARGET=the permanent that became a target
     constexpr EventId BECAME_MONSTROUS        = 17; // "when ~ becomes monstrous" (Mode$ BecomeMonstrous, CR 701.37). Fired by a resolving Monstrosity$ ability that turns a not-yet-monstrous permanent monstrous. Params: ENTITY=the permanent that became monstrous, PLAYER=its controller
     constexpr EventId FIRST_MAIN_BEGAN        = 18; // "at the beginning of [your] first main phase" / Phase$ Main1; Params: PLAYER=active player
+    constexpr EventId SAGA_CHAPTER            = 19; // a Saga's lore counters reached chapter N (CR 714.3) — fires the chapter ability. Params: ENTITY=Saga permanent, AMOUNT=chapter number N
 }
 
 // Param IDs used across events

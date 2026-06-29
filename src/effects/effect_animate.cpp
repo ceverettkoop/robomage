@@ -167,6 +167,23 @@ bool animate(Ability &ab, std::shared_ptr<Orderer> orderer) {
             if (std::find(cr.keywords.begin(), cr.keywords.end(), kw) == cr.keywords.end())
                 cr.keywords.push_back(kw);
     }
+
+    // DB$ Animate | Abilities$ <svar> (Urza's Saga chapters I & II): grant the parsed activated
+    // ability(ies) to the permanent (CR 613.1f — a lasting "gains [activated ability]"). Only a
+    // Duration$ Permanent grant attaches a rest-of-game ability here; the permanent's activated-
+    // ability list isn't cleared between SBA passes (only subtype-derived mana abilities are), so a
+    // once-added grant persists. Deduped against existing abilities so re-resolving is idempotent.
+    if (!ab.animate_granted_abilities.empty() && permanent_dur) {
+        for (Ability granted : ab.animate_granted_abilities) {
+            granted.source = tgt;
+            bool dup = false;
+            for (auto &existing : perm.abilities)
+                if (existing.identical_activated_ability(granted)) { dup = true; break; }
+            if (dup) continue;
+            perm.abilities.push_back(granted);
+            game_log("%s gains an activated ability.\n", perm.name.c_str());
+        }
+    }
     return true;
 }
 

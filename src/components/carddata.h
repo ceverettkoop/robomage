@@ -144,6 +144,13 @@ struct CardData{
     // deck_meets_companion_restriction in companion.cpp. False/empty for non-companion cards.
     bool is_companion = false;
     std::string companion_restriction;
+    // K:Chapter:<final>:<svar1>,<svar2>,... — a Saga's chapter abilities (CR 714). saga_chapters[i]
+    // is the triggered ability (a DB$ ability body) run when this Saga's lore counters reach chapter
+    // (i+1) (CR 714.2b/714.3); the vector size is the Saga's final chapter number (CR 714.2d).
+    // Multiple chapters may share the same ability (Summon: Bahamut I & II both destroy). Empty for
+    // a non-Saga card. The Saga lifecycle (lore counters, chapter triggers, sacrifice SBA) lives in
+    // src/saga.{h,cpp}.
+    std::vector<Ability> saga_chapters;
 };
 
 #endif /* CARD_H */

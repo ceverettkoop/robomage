@@ -135,6 +135,14 @@ struct Permanent {
     // and for noncreature permanents (whose keywords the accessors read off CardData/Token).
     std::set<std::string> removed_keywords_eot;
 
+    // CR 714.4 Saga sacrifice gate: the number of this Saga's chapter abilities that have
+    // TRIGGERED (lore counters reached the chapter) but not yet LEFT THE STACK. Incremented when a
+    // lore counter reaches a chapter (saga.cpp), decremented when the chapter ability finishes
+    // resolving (StackManager::resolve_top). The sacrifice state-based action holds off while this
+    // is > 0 so a completed Saga isn't sacrificed before its final chapter ability resolves. 0 for
+    // a non-Saga permanent.
+    int saga_chapters_in_flight = 0;
+
     // Card types added to this permanent by a GLOBAL additive type-changing static this SBA pass
     // (Mycosynth Lattice's "All permanents are artifacts in addition to their other types.",
     // CR 613.1d layer 4). Distinct from animate_added_types (baked on by a resolved DB$ Animate):

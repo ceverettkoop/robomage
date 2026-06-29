@@ -31,6 +31,10 @@ void bootstrap_token_components(Entity tok_entity, const Token &tok,
             copy.source = tok_entity;
             perm.abilities.push_back(copy);
         }
+        // Carry the token's continuous static abilities onto the permanent so the SBE static
+        // pass (gather_active_statics) applies them — e.g. the Urza's Saga Construct token's
+        // "+1/+1 for each artifact you control" self-buff (Affected$ Card.Self, AddPower$ X).
+        perm.static_abilities = tok.static_abilities;
         global_coordinator.AddComponent(tok_entity, perm);
     }
     // Only creature tokens get Creature/Damage components and P/T. A noncreature token
