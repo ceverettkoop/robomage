@@ -187,7 +187,7 @@ const char* gui_query_get_line(int idx) {
 // ── Machine query emitter ─────────────────────────────────────────────────────
 
 void cli_emit_machine_query(const Query* q, const GameState* gs) {
-    auto state_vec = serialize_state(gs);
+    const auto& state_vec = serialize_state(gs);
 
     // Text header line: "BQUERY: N\n"
     // Followed immediately by binary payload (no text parsing needed on Python side).

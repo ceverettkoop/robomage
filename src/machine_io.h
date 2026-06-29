@@ -134,6 +134,9 @@ int action_card_vocab_idx(Entity e);
 // face's name instead. Use this for action emission/logging so the emitted id
 // matches the face actually being played.
 int action_card_vocab_idx(const LegalAction& la);
-std::vector<float> serialize_state(const GameState* gs);
+// Returns a reference to a reused internal scratch buffer (valid until the next
+// serialize_state call) to avoid a ~135 KB heap allocation on every machine-mode
+// decision. Consume it (e.g. fwrite) before calling serialize_state again.
+const std::vector<float>& serialize_state(const GameState* gs);
 
 #endif /* MACHINE_IO_H */
