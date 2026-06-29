@@ -231,10 +231,20 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
         auto &perm = global_coordinator.GetComponent<Permanent>(entity);
 
         // Gather triggered abilities from all sources:
-        // CardData/Token for innate abilities, Permanent for keyword-granted abilities
+        // CardData/Token for innate abilities, Permanent for keyword-granted abilities.
+        // A transformed DFC functions with its ACTIVE (back) face's abilities (CR 712.4): its
+        // triggered abilities are the back face's, and the front face's are suppressed. So pull the
+        // innate abilities from whichever face is up — this is the single place front/back trigger
+        // selection happens (the per-ability "if (perm.transformed) continue" front-face skip is
+        // therefore unnecessary, and would wrongly suppress the back face's own triggers).
         std::vector<const std::vector<Ability>*> ab_sources;
-        if (global_coordinator.entity_has_component<CardData>(entity))
-            ab_sources.push_back(&global_coordinator.GetComponent<CardData>(entity).abilities);
+        if (global_coordinator.entity_has_component<CardData>(entity)) {
+            const CardData &cd = global_coordinator.GetComponent<CardData>(entity);
+            if (perm.transformed && cd.backside)
+                ab_sources.push_back(&cd.backside->abilities);
+            else
+                ab_sources.push_back(&cd.abilities);
+        }
         if (global_coordinator.entity_has_component<Token>(entity))
             ab_sources.push_back(&global_coordinator.GetComponent<Token>(entity).abilities);
         ab_sources.push_back(&perm.abilities);
@@ -274,8 +284,8 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                 if (ab.is_evoke_sacrifice && !perm.evoked) continue;
                 // Offspring token copy only fires when this permanent was cast with offspring
                 if (ab.is_offspring_token && !perm.entered_with_offspring) continue;
-                // Don't fire front-face triggers on a transformed permanent
-                if (perm.transformed) continue;
+                // (Front/back face selection is done once when ab_sources is built above, so a
+                // transformed permanent already only sees its active face's triggers here.)
                 // ValidPlayer$ You: only fire when the event's player matches the permanent's
                 // controller. BECAME_TARGET is exempt, like trigger_only_self above: there the
                 // PLAYER param is the targeting spell's controller (the OPPONENT, typically), not

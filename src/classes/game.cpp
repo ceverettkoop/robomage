@@ -3,6 +3,7 @@
 #include <algorithm>
 
 #include "../cli_output.h"
+#include "../day_night.h"
 #include "../components/creature.h"
 #include "../components/damage.h"
 #include "../components/permanent.h"
@@ -145,6 +146,14 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                             game_log("%s phases in\n", perm_phase.name.c_str());
                         }
                     }
+                    // Second part of the untap step (CR 502.2 / 731.2): the day/night turn-based
+                    // check, based on the turn that just ended. Runs after phasing, before untap.
+                    day_night_untap_transition();
+                    // Snapshot the (new) active player's spell counter at the start of their turn so
+                    // the cleanup capture below counts only spells they cast during THIS turn (their
+                    // instants cast on the opponent's preceding turn are excluded from the delta).
+                    active_spells_at_turn_start =
+                        global_coordinator.GetComponent<Player>(active_player_entity).spells_cast_this_turn;
                     // Untap all permanents controlled by active player; reset per-turn counters
                     for (Entity entity = 0; entity < global_coordinator.GetMaxIssuedEntity(); ++entity) {
                         if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
@@ -351,6 +360,11 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     impulse_cast_permission.clear();
                     auto &player = global_coordinator.GetComponent<Player>(active_player_entity);
                     player.lands_played_this_turn = 0;
+                    // Snapshot this (the ending) turn's active player's OWN-TURN spell count (total
+                    // since their turn began, see active_spells_at_turn_start) before the per-turn
+                    // reset, for the next turn's untap day/night check (CR 502.2 / 731.2).
+                    prev_turn_active_spell_count = static_cast<int>(
+                        player.spells_cast_this_turn - active_spells_at_turn_start);
                     player.spells_cast_this_turn = 0;
                     player.noncreature_spells_cast_this_turn = 0;
                     player.instant_sorcery_spells_cast_this_turn = 0;

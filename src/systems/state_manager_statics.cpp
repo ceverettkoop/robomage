@@ -21,6 +21,7 @@
 #include "../components/token.h"
 #include "../components/types.h"
 #include "../transform.h"
+#include "../day_night.h"
 #include "../type_constants.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
@@ -546,6 +547,12 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                 // spell the controller cast from their own hand sets this; any other entry
                 // (reanimation, tokens, ChangeZone, impulse cast from exile) leaves it false.
                 if (game.cast_from_hand.erase(entity)) perm.cast_from_hand_by_controller = true;
+                // Daybound (CR 702.145b): "If it is night and this permanent is represented by a
+                // double-faced card, it enters transformed." Mark a daybound DFC entering while
+                // it's night to flip to its back (night) face once its components exist — reusing
+                // the same pending_enters_transformed path Ajani-style transformed entries use.
+                if (card_has_daybound(card_data) && game.day_night == Game::DN_NIGHT)
+                    game.pending_enters_transformed.insert(entity);
                 if (perm.is_tapped) game_log("%s enters tapped.\n", perm.name.c_str());
                 // Spell was cast for its evoke cost — mark the permanent so its evoke
                 // self-sacrifice ETB trigger fires (consumed one-shot here).
@@ -707,6 +714,16 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
             // face before triggers are checked — this also suppresses the front-face ETB
             // triggers (a permanent entering as its back face fires only that face's ETBs).
             if (game.pending_enters_transformed.erase(entity)) set_permanent_face(entity, true);
+
+            // Daybound (CR 702.145d): any time a player controls a front-face-up permanent with
+            // daybound and it's neither day nor night, it becomes day. This continuous check fires
+            // the first time such a permanent is on the battlefield while it's still neither; once
+            // it becomes day the guard stops it re-firing. (If it was night, it entered transformed
+            // above; if already day, nothing happens.)
+            if (game.day_night == Game::DN_NEITHER && card_has_daybound(card_data) &&
+                global_coordinator.entity_has_component<Permanent>(entity) &&
+                !global_coordinator.GetComponent<Permanent>(entity).transformed)
+                become_day();
 
             // Ninjutsu (CR 702.49e): a card put onto the battlefield "tapped and attacking" by a
             // ninjutsu ability. A normal creature ninja has its Creature component now, so mark it

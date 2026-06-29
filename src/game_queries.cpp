@@ -149,6 +149,12 @@ bool eval_qualifier(const CharView &v, const MatchCtx &ctx, const std::string &q
     if (q == "nonChosenCard") return !cur_game.chosen_cards.count(v.entity);
     if (q == "YouCtrl")      return !v.on_battlefield || v.controller == ctx.controller;
     if (q == "OppCtrl")      return !v.on_battlefield || v.controller != ctx.controller;
+    // "ControlledBy TriggeredDefendingPlayer" (Forge): the object is controlled by the defending
+    // player of the attack that fired this trigger (Frenzied Trapbreaker's attack-trigger Destroy).
+    // The trigger is controlled by the attacking player (ctx.controller); in the two-player engine
+    // the defending player is that controller's sole opponent, so this is OppCtrl semantics.
+    if (q == "ControlledBy TriggeredDefendingPlayer")
+        return !v.on_battlefield || v.controller != ctx.controller;
     // Ownership (CR 108.3) — distinct from control; meaningful for cards in any zone
     // (e.g. Karn's -2 "an artifact card you own from outside the game or in exile").
     // Lenient when either side is unknown (bare CardData / no "you" supplied), mirroring

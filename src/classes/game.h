@@ -120,6 +120,20 @@ struct Game {
             seed = _seed;
             gen = std::mt19937(seed);
         };
+        // Day/Night designation the game itself can have (CR 731.1). Starts at "neither" and, once
+        // set, is always exactly one of day/night. Driven by the daybound/nightbound subsystem
+        // (src/day_night.*); read by day-/night-conditional effects. A fresh Game starts neither.
+        enum DayNight { DN_NEITHER, DN_DAY, DN_NIGHT };
+        DayNight day_night = DN_NEITHER;
+        // Spells cast by the previous turn's active player DURING that turn (CR 502.2 / 731.2),
+        // read by the untap-step day/night turn-based check on the following turn. Player::
+        // spells_cast_this_turn is reset only at its own player's cleanup, so a player's instants
+        // cast on the opponent's turn would otherwise leak into their own-turn count. To isolate
+        // "spells the active player cast during their own turn", we snapshot the active player's
+        // counter at the start of their turn (active_spells_at_turn_start) and store the difference
+        // at cleanup — without disturbing the shared counter's "this turn" semantics other cards use.
+        int prev_turn_active_spell_count = 0;
+        size_t active_spells_at_turn_start = 0;
         size_t seed;
         size_t timestamp = 0;
         size_t turn = 0;

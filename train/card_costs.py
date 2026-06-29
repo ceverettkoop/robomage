@@ -300,8 +300,8 @@ _CARD_COST_MATRIX = np.array([
     [0.0, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0],  # 291: Flusterstorm
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.6],  # 292: Emrakul, the Aeons Torn
     [0.0, 0.0, 0.2, 0.0, 0.0, 0.0, 0.3],  # 293: Overlord of the Balemurk
-    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 294: 
-    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 295: 
+    [0.0, 0.0, 0.0, 0.0, 0.1, 0.0, 0.1],  # 294: Outland Liberator
+    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 295: Frenzied Trapbreaker
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 296: 
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 297: 
     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  # 298: 
@@ -1331,8 +1331,8 @@ _VOCAB_NAMES = [
     "Flusterstorm",  # 291
     "Emrakul, the Aeons Torn",  # 292
     "Overlord of the Balemurk",  # 293
-    "",  # 294
-    "",  # 295
+    "Outland Liberator",  # 294
+    "Frenzied Trapbreaker",  # 295
     "",  # 296
     "",  # 297
     "",  # 298

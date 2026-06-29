@@ -202,6 +202,7 @@ inline constexpr CardVocabEntry card_vocab_entries[] = {
     {"Flusterstorm", 291},
     {"Emrakul, the Aeons Torn", 292},
     {"Overlord of the Balemurk", 293},
+    {"Outland Liberator", 294}, {"Frenzied Trapbreaker", 295},
 };
 
 inline constexpr int CARD_VOCAB_SIZE = sizeof(card_vocab_entries) / sizeof(card_vocab_entries[0]);
