@@ -475,13 +475,26 @@ if __name__ == "__main__":
         # Scripted opponent: no checkpoint required (sentinel passed to tui_game.run).
         model_path = "scripted"
     elif model_path is None:
-        # Try matchup-specific checkpoint first, then model-deck-only fallback
-        matchup_path = _os.path.join(_CHECKPOINT_DIR, f"{args.model_deck}_{args.human_deck}_final.zip")
-        if _os.path.exists(matchup_path):
-            model_path = matchup_path
+        # Checkpoints are per-deck (deck-pilot naming): one model pilots one deck
+        # against any opponent, so the model the human faces is keyed on
+        # --model-deck only, not the matchup. Prefer '{model_deck}__final.zip',
+        # then the newest '{model_deck}__v{steps}.zip'; fall back to the legacy
+        # matchup name for older checkpoints.
+        import glob as _glob, re as _re
+        deck_final = _os.path.join(_CHECKPOINT_DIR, f"{args.model_deck}__final.zip")
+        legacy = _os.path.join(_CHECKPOINT_DIR, f"{args.model_deck}_{args.human_deck}_final.zip")
+        snaps = _glob.glob(_os.path.join(_CHECKPOINT_DIR, f"{args.model_deck}__v*.zip"))
+        if _os.path.exists(deck_final):
+            model_path = deck_final
+        elif snaps:
+            model_path = max(snaps, key=lambda p: int(m.group(1))
+                             if (m := _re.search(r"__v(\d+)\.zip$", p)) else -1)
+        elif _os.path.exists(legacy):
+            model_path = legacy
         else:
-            parser.error(f"No checkpoint found at {matchup_path}. "
-                         f"Train with --deck {args.model_deck} --opponent {args.human_deck} first, "
+            parser.error(f"No checkpoint found for deck '{args.model_deck}' "
+                         f"(looked for {deck_final}, {args.model_deck}__v*.zip, and {legacy}). "
+                         f"Train a model piloting {args.model_deck} first, "
                          f"or use --model to specify a path, or --scripted for a rule-based opponent (TUI).")
 
     if args.tui:

@@ -458,6 +458,27 @@ Python venv: `train/.venv/` — activate with `source train/.venv/bin/activate` 
 
 Dependencies: `gymnasium`, `stable-baselines3`, `sb3-contrib` (for `MaskablePPO` with action masking).
 
+### Checkpoint naming: per-deck generalists
+
+Models are **per-deck generalists**, not matchup-specific: one model pilots one
+deck against *any* opponent. A deck's model is stored under the deck-pilot
+naming `{deck}__final.zip` (the current generalist) plus periodic
+`{deck}__v{steps}.zip` snapshots (note the **double** underscore — it
+distinguishes these from legacy `{a}_{b}_*.zip` matchup files). The self-play
+and league pools, the `random-model` opponent-pool token, `play`, and
+`analysis` all resolve opponents/models by **deck** (`{deck}__final.zip`, else
+the newest `{deck}__v*.zip`), and a bare deck stem (`delver`) works as a
+shorthand everywhere a checkpoint is expected.
+
+Training against a single opponent in a session **continues that one
+generalist** rather than forging a matchup-specific model: every training
+subcommand auto-resumes the deck's existing `{deck}__final.zip` (or newest
+snapshot) and accumulates the session's steps onto it. Pass `--fresh` to start a
+deck's generalist over from scratch, or `--load <path>` to resume a specific
+checkpoint. A filename therefore encodes only the deck a model pilots, never its
+opponent — so the opponent deck must always be given explicitly (e.g. analysis's
+`--deck-b`).
+
 ### Training commands (run from repo root)
 
 `train.py` uses subcommands (`train -h` for any subcommand's options). The
@@ -466,16 +487,18 @@ works without typing `train`.
 
 ```bash
 # Training (the 'train' subcommand is implied when omitted)
-train/.venv/bin/python train/train.py --deck delver --opponent mav                 # train from scratch
-train/.venv/bin/python train/train.py train --opponent mav --load checkpoints/robomage_final.zip  # resume
-train/.venv/bin/python train/train.py --self-play --deck delver --opponent mav     # self-play training
+train/.venv/bin/python train/train.py --deck delver --opponent mav                 # continue delver's generalist vs mav
+train/.venv/bin/python train/train.py --deck delver --opponent burn                # same delver__final.zip, now also vs burn
+train/.venv/bin/python train/train.py --deck delver --opponent mav --fresh         # start delver__final.zip from scratch
+train/.venv/bin/python train/train.py train --deck delver --opponent mav --load checkpoints/delver__v500000.zip  # resume a specific snapshot
+train/.venv/bin/python train/train.py --self-play --deck delver --opponent mav     # self-play vs delver's frozen snapshots
 
 # Evaluation / inspection
-train/.venv/bin/python train/train.py baseline checkpoints/robomage_final.zip         # win rate vs scripted
+train/.venv/bin/python train/train.py baseline delver                                 # win rate vs scripted (deck shorthand → delver__final.zip)
 # observe: one command for any {scripted|model} vs {scripted|model} matchup
 # (replaces the old diag/watch/observe). --games N for a multi-game pass + summary,
 # --verbose for the full per-decision transcript, --seed for reproducibility, --bo3 for matches.
-train/.venv/bin/python train/train.py observe --player-a checkpoints/robomage_final.zip --player-b scripted --deck delver --opponent mav  # watch one game (per-side controller + deck)
+train/.venv/bin/python train/train.py observe --player-a delver --player-b scripted --deck delver --opponent mav  # watch one game (per-side controller + deck)
 train/.venv/bin/python train/train.py observe --deck delver --opponent mav                          # scripted vs scripted, one game (compact)
 train/.venv/bin/python train/train.py observe --deck delver --opponent mav --games 10               # verify env: 10 games + W/L/D summary
 train/.venv/bin/python train/train.py observe --deck delver --opponent mav --verbose                # full transcript (state + action menu + narrative)
@@ -615,7 +638,8 @@ State vector layout is documented in `src/machine_io.h`. Key indices: `obs[31]` 
 - `train/env.py` — `RoboMageEnv` gymnasium wrapper; `ModelVsScriptedEnv` scripted-opponent wrapper; `SelfPlayEnv` self-play wrapper; `scripted_action` rule-based agent
 - `train/extractor.py` — `CardGameExtractor` per-entity feature extractor for the policy network
 - `train/train.py` — `MaskablePPO` training, baseline evaluation, observe mode, self-play
-- `train/analysis.py` — post-game analysis tool (win rates, action frequencies, SHAP, replay from `.rmrec` recordings)
+- `train/analysis.py` — model-analysis tool: loads a checkpoint, simulates games for a matchup, and inspects play (card importance, SHAP, value swings, regret, entropy, calibration, an interactive REPL). Charts save to PNG under `train/analysis_out/` (headless-safe; `--show` for a GUI window) with terminal sparkline/bar fallbacks. Checkpoints are **per-deck** (deck-pilot naming `{deck}__final.zip` / `{deck}__v{steps}.zip`): a model encodes only the deck it pilots, not its opponent, so the model arg accepts a deck shorthand (`delver`) and the model's own deck is inferred from the filename — but the **opponent deck must be given with `--deck-b`** (a model opponent's deck is inferred from *its* filename; a scripted opponent defaults to a mirror match). (The older offline `.rmrec` recording subsystem and `train.py --record` were removed.)
+- `train/viz.py` — headless-friendly chart helpers for analysis.py (Agg-by-default matplotlib save-or-show, plus terminal sparklines and diverging bars)
 - `train/play.py` — interactive human-vs-model play
 - `train/gen_card_costs.py` — regenerates `train/card_costs.py` from `src/card_vocab.h`
 - `train/test_harness.py` — LLM test harness for card behavior verification (see Testing guidelines)

@@ -1,17 +1,15 @@
 """
-Analyze .rmrec recording files produced by train.py --record.
+Analyze a trained RoboMage model by simulating games and inspecting its play.
+
+Every command loads a checkpoint, plays N games against a chosen opponent
+(another checkpoint or the scripted agent) for a specific matchup, and analyzes
+the resulting per-decision traces (full observations, value estimates V(s), and
+policy probabilities). The older offline .rmrec recording-file commands were
+removed; this live model-sim path is now the single source.
 
 Usage:
-    python analysis.py summary <file.rmrec>
-    python analysis.py winrate <file.rmrec>
-    python analysis.py actions <file.rmrec>
-    python analysis.py cards <file.rmrec>
-    python analysis.py replay <file.rmrec> --game <N>
-    python analysis.py compare <file1.rmrec> <file2.rmrec>
-    python analysis.py wl-split <file.rmrec>
-    python analysis.py cast-timing <file.rmrec>
-    python analysis.py choice-rates <file.rmrec>
-    python analysis.py targeting <file.rmrec>
+    python analysis.py cardvalue <model.zip> --opponent scripted [--n-games 50 --top 30]
+    python analysis.py report <model.zip> --opponent scripted [--n-games 50]
     python analysis.py shap <model.zip> --opponent scripted [--n-games 50 --n-samples 200 --n-background 50]
     python analysis.py value-swings <model.zip> --opponent scripted [--n-games 50 --top 10]
     python analysis.py regret <model.zip> --opponent scripted [--n-games 50 --top 20]
@@ -19,22 +17,29 @@ Usage:
     python analysis.py consistency <model.zip> --opponent scripted [--n-games 50 --top 20]
     python analysis.py interactive <model.zip> --opponent scripted [--n-games 20]
 
+Charts save as PNGs under --out (default train/analysis_out/) so the tool works
+headless; pass --show to also open a GUI window. The REPL also prints terminal
+sparklines/bars so the common views need no display at all.
+
 Interactive session commands (available after shap, value-swings, or via 'interactive'):
     list                  list all games
     replay <N>            board-state trace for game N
     boardstate <N> [step] full board + decision detail; enters GDB-style stepping mode
     summary               win/loss/draw stats
+    cardvalue [N]         rank cards by importance (ΔV, priority, win-rate)
     swings [N]            top N value-function swings
     shap                  run SHAP analysis on collected data
     regret [N]            policy regret analysis (top N high-regret decisions)
     entropy               policy entropy by game phase and board state
     consistency [N]       decision consistency for similar states (top N pairs)
+    targeting             self vs opp targeting, hold vs cast analysis
     sideboard             sideboard decisions by each agent (bo3)
     calibration           V(s) at game start vs actual win rate
     turning               find the permanent zero-crossing ('point of no return')
     clusters              classify games by V(s) curve shape (archetypes)
     chart <N>             value curve plot for game N
     chart swings [N]      value curve plots for top N swing games
+    chart cardvalue [N]   diverging bar chart of per-card ΔV
     chart shap            SHAP summary plot
     chart calibration     calibration curve plot
     chart turning         turning point distribution plot
@@ -44,962 +49,37 @@ Interactive session commands (available after shap, value-swings, or via 'intera
 """
 
 import argparse
-import struct
+import glob
+import re
 import sys
 import os
-from dataclasses import dataclass, field
-from datetime import datetime
 
 import numpy as np
 
-# Import format constants from train.py
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from train import (
-    REC_MAGIC, REC_VERSION, REC_GAME_START, REC_DECISION, REC_GAME_END,
-    REC_CARD_ID_NULL,
-    _SESSION_HDR_FMT, _GAME_START_FMT, _DECISION_FMT, _GAME_END_FMT,
-    _write_length_prefixed, _read_length_prefixed,
-)
-# Action-category / step display names come from the generated C++ enum tables
+# Action-category display names come from the generated C++ enum tables
 # (train/gen_enums.py), the single source of truth.
-from _enums import _CAT_NAMES, _STEP_NAMES
+from _enums import _CAT_NAMES
 from card_costs import _VOCAB_NAMES, N_CARD_TYPES
 import decode
+import viz
 # CLI definitions come from cli_spec.py (single source shared with the TUI).
 from cli_spec import ANALYSIS_TOOL, apply_to_parser
 from env import (ACTION_CATEGORY_MAX, RoboMageEnv, scripted_action,
-                 OBS_SIZE, STATE_SIZE, MAX_ACTIONS, BINARY,
+                 STATE_SIZE, MAX_ACTIONS, BINARY,
                  _HAND_START, _MATCH_CTX_START, _LIBRARY_CTX_START,
-                 _CUR_TURN_IDX, _KNOWN_TOP_LIB_START,
                  _SELF_PERM_START, _PERM_SLOTS as _ENV_PERM_SLOTS, _PERM_SLOT_SIZE,
                  _GY_START, _GY_SLOTS_TOTAL, _GY_SLOT_SIZE,
                  _STACK_START as _ENV_STACK_START, _STACK_SLOTS as _ENV_STACK_SLOTS,
                  _STACK_SLOT_SIZE, _HAND_SLOT_SIZE, _slot_card_idx)
 
 
-# ── Data classes for parsed records ──────────────────────────────────────────
-
-@dataclass
-class SessionHeader:
-    version: int
-    timestamp: int
-    n_envs: int
-    model_path: str
-    model_deck: str
-    self_play: bool
-
-
-@dataclass
-class GameStart:
-    env_id: int
-    game_id: int
-    model_is_a: bool
-    opp_deck: str
-    opp_type: str
-
-
-@dataclass
-class Decision:
-    env_id: int
-    game_id: int
-    decision_idx: int
-    step_idx: int
-    priority_is_a: bool
-    active_is_a: bool
-    num_choices: int
-    action_chosen: int
-    self_life: int
-    opp_life: int
-    self_mana: bytes
-    categories: bytes
-    card_ids: tuple  # 64 × u16 card ids (REC_CARD_ID_NULL = no card)
-    ctrl_flags: bytes
-    self_creatures: int
-    self_lands: int
-    opp_creatures: int
-    opp_lands: int
-
-
-@dataclass
-class GameEnd:
-    env_id: int
-    game_id: int
-    result: int  # +1 win, -1 loss, 0 draw
-    n_decisions: int
-    total_reward: float
-    timestep: int
-
-
-# ── Record reader ────────────────────────────────────────────────────────────
-
-class RecordReader:
-    """Iterator over a .rmrec file, yielding typed records."""
-
-    def __init__(self, path: str):
-        self.path = path
-        self._f = open(path, "rb")
-        self.header = self._read_header()
-
-    def _read_header(self) -> SessionHeader:
-        hdr_size = struct.calcsize(_SESSION_HDR_FMT)
-        data = self._f.read(hdr_size)
-        if len(data) < hdr_size:
-            raise ValueError("File too short for session header")
-        magic, version, timestamp, n_envs = struct.unpack(_SESSION_HDR_FMT, data)
-        if magic != REC_MAGIC:
-            raise ValueError(f"Bad magic: {magic!r}, expected {REC_MAGIC!r}")
-        model_path = _read_length_prefixed(self._f)
-        model_deck = _read_length_prefixed(self._f)
-        (self_play_byte,) = struct.unpack("B", self._f.read(1))
-        return SessionHeader(version, timestamp, n_envs, model_path, model_deck,
-                             bool(self_play_byte))
-
-    def __iter__(self):
-        return self
-
-    def __next__(self):
-        tag_byte = self._f.read(1)
-        if not tag_byte:
-            raise StopIteration
-        tag = tag_byte[0]
-
-        if tag == REC_GAME_START:
-            # We already consumed the type byte; read the rest
-            rest_size = struct.calcsize(_GAME_START_FMT) - 1
-            data = tag_byte + self._f.read(rest_size)
-            _, env_id, game_id, model_is_a = struct.unpack(_GAME_START_FMT, data)
-            opp_deck = _read_length_prefixed(self._f)
-            opp_type = _read_length_prefixed(self._f)
-            return GameStart(env_id, game_id, bool(model_is_a), opp_deck, opp_type)
-
-        elif tag == REC_DECISION:
-            rest_size = struct.calcsize(_DECISION_FMT) - 1
-            data = tag_byte + self._f.read(rest_size)
-            (_, env_id, game_id, decision_idx, step_idx, priority_is_a, active_is_a,
-             num_choices, action_chosen, self_life, opp_life, self_mana,
-             categories, card_ids, ctrl_flags,
-             self_creatures, self_lands, opp_creatures, opp_lands) = struct.unpack(
-                _DECISION_FMT, data)
-            # card_ids is a 64×u16 blob (vocab can exceed 255); unpack to ints.
-            card_ids = struct.unpack(f"<{len(card_ids) // 2}H", card_ids)
-            return Decision(env_id, game_id, decision_idx, step_idx,
-                            bool(priority_is_a), bool(active_is_a),
-                            num_choices, action_chosen, self_life, opp_life,
-                            self_mana, categories, card_ids, ctrl_flags,
-                            self_creatures, self_lands, opp_creatures, opp_lands)
-
-        elif tag == REC_GAME_END:
-            rest_size = struct.calcsize(_GAME_END_FMT) - 1
-            data = tag_byte + self._f.read(rest_size)
-            _, env_id, game_id, result, n_decisions, total_reward, timestep = struct.unpack(
-                _GAME_END_FMT, data)
-            return GameEnd(env_id, game_id, result, n_decisions, total_reward, timestep)
-
-        else:
-            raise ValueError(f"Unknown record tag: 0x{tag:02x} at offset {self._f.tell()}")
-
-    def close(self):
-        self._f.close()
-
-
-# ── Session data loader ─────────────────────────────────────────────────────
-
-@dataclass
-class SessionData:
-    header: SessionHeader
-    game_starts: list = field(default_factory=list)
-    decisions: list = field(default_factory=list)
-    game_ends: list = field(default_factory=list)
-
-    @classmethod
-    def load(cls, path: str) -> "SessionData":
-        reader = RecordReader(path)
-        sd = cls(header=reader.header)
-        for rec in reader:
-            if isinstance(rec, GameStart):
-                sd.game_starts.append(rec)
-            elif isinstance(rec, Decision):
-                sd.decisions.append(rec)
-            elif isinstance(rec, GameEnd):
-                sd.game_ends.append(rec)
-        reader.close()
-        return sd
-
-
-# ── CLI subcommands ──────────────────────────────────────────────────────────
-
-def cmd_summary(args):
-    sd = SessionData.load(args.file)
-    h = sd.header
-    ts = datetime.fromtimestamp(h.timestamp).strftime("%Y-%m-%d %H:%M:%S")
-
-    print(f"Session: {os.path.basename(args.file)}")
-    print(f"  Recorded:   {ts}")
-    print(f"  Model:      {h.model_path}")
-    print(f"  Deck:       {h.model_deck}")
-    print(f"  Self-play:  {h.self_play}")
-    print(f"  Envs:       {h.n_envs}")
-    print(f"  Games:      {len(sd.game_ends)}")
-    print(f"  Decisions:  {len(sd.decisions)}")
-
-    if not sd.game_ends:
-        return
-
-    # Win rate
-    wins = sum(1 for g in sd.game_ends if g.result > 0)
-    losses = sum(1 for g in sd.game_ends if g.result < 0)
-    draws = sum(1 for g in sd.game_ends if g.result == 0)
-    total = len(sd.game_ends)
-    print(f"\n  Win rate:   {wins}W / {losses}L / {draws}D ({100 * wins / total:.1f}%)")
-
-    # By opponent deck
-    deck_map = {g.game_id: g.opp_deck for g in sd.game_starts}
-    side_map = {g.game_id: g.model_is_a for g in sd.game_starts}
-    by_deck = {}
-    by_side = {"A": [0, 0], "B": [0, 0]}
-    for g in sd.game_ends:
-        deck = deck_map.get(g.game_id, "unknown")
-        if deck not in by_deck:
-            by_deck[deck] = [0, 0, 0]
-        if g.result > 0:
-            by_deck[deck][0] += 1
-        elif g.result < 0:
-            by_deck[deck][1] += 1
-        else:
-            by_deck[deck][2] += 1
-        side = "A" if side_map.get(g.game_id, True) else "B"
-        if g.result > 0:
-            by_side[side][0] += 1
-        else:
-            by_side[side][1] += 1
-
-    if len(by_deck) > 1:
-        print("\n  By opponent deck:")
-        for deck in sorted(by_deck):
-            w, l, d = by_deck[deck]
-            t = w + l + d
-            print(f"    vs {deck}: {w}W {l}L {d}D ({100 * w / t:.1f}%)")
-
-    for side in ("A", "B"):
-        w, l = by_side[side]
-        t = w + l
-        if t > 0:
-            print(f"  As Player {side}: {w}W {l}L ({100 * w / t:.1f}%)")
-
-    # Game length stats
-    lengths = [g.n_decisions for g in sd.game_ends if g.n_decisions > 0]
-    if lengths:
-        arr = np.array(lengths)
-        print(f"\n  Game length: mean={arr.mean():.1f}  median={np.median(arr):.0f}"
-              f"  min={arr.min()}  max={arr.max()}")
-
-    # Top 10 most-cast cards
-    cast_counts = {}
-    for d in sd.decisions:
-        cat = d.categories[d.action_chosen] if d.action_chosen < len(d.categories) else 255
-        if cat == 7:  # CAST
-            cid = d.card_ids[d.action_chosen] if d.action_chosen < len(d.card_ids) else REC_CARD_ID_NULL
-            if cid < len(_VOCAB_NAMES):
-                name = decode.card_index_to_name(cid)
-                cast_counts[name] = cast_counts.get(name, 0) + 1
-    if cast_counts:
-        print("\n  Top cast cards:")
-        for name, count in sorted(cast_counts.items(), key=lambda x: -x[1])[:10]:
-            print(f"    {count:5d}  {name}")
-
-    # Action category distribution
-    cat_counts = {}
-    for d in sd.decisions:
-        cat = d.categories[d.action_chosen] if d.action_chosen < len(d.categories) else 255
-        if cat != 255:
-            cat_counts[cat] = cat_counts.get(cat, 0) + 1
-    if cat_counts:
-        total_d = sum(cat_counts.values())
-        print("\n  Action distribution:")
-        for cat in sorted(cat_counts):
-            name = _CAT_NAMES.get(cat, str(cat))
-            pct = 100 * cat_counts[cat] / total_d
-            print(f"    {name:<14} {cat_counts[cat]:6d} ({pct:5.1f}%)")
-
-
-def cmd_winrate(args):
-    try:
-        import matplotlib.pyplot as plt
-    except ImportError:
-        print("matplotlib not installed; skipping plot.", file=sys.stderr)
-        return
-
-    sd = SessionData.load(args.file)
-    if not sd.game_ends:
-        print("No completed games.")
-        return
-
-    deck_map = {g.game_id: g.opp_deck for g in sd.game_starts}
-    # Group results by deck, ordered by game sequence
-    by_deck = {}
-    for g in sd.game_ends:
-        deck = deck_map.get(g.game_id, "unknown")
-        by_deck.setdefault(deck, []).append(1 if g.result > 0 else 0)
-
-    window = min(100, max(10, len(sd.game_ends) // 20))
-    fig, ax = plt.subplots(figsize=(10, 5))
-    for deck, results in sorted(by_deck.items()):
-        arr = np.array(results, dtype=float)
-        if len(arr) < window:
-            continue
-        rolling = np.convolve(arr, np.ones(window) / window, mode="valid")
-        ax.plot(range(window - 1, len(arr)), rolling * 100, label=f"vs {deck}")
-
-    ax.set_xlabel("Game #")
-    ax.set_ylabel(f"Win rate (%) (rolling {window})")
-    ax.set_title(f"Win Rate — {os.path.basename(args.file)}")
-    ax.legend()
-    ax.grid(True, alpha=0.3)
-    plt.tight_layout()
-    plt.show()
-
-
-def cmd_actions(args):
-    try:
-        import matplotlib.pyplot as plt
-    except ImportError:
-        print("matplotlib not installed; skipping plot.", file=sys.stderr)
-        return
-
-    sd = SessionData.load(args.file)
-    if not sd.decisions:
-        print("No decisions recorded.")
-        return
-
-    n_steps = len(_STEP_NAMES)
-    n_cats = max(_CAT_NAMES.keys()) + 1
-    heatmap = np.zeros((n_cats, n_steps), dtype=float)
-
-    for d in sd.decisions:
-        cat = d.categories[d.action_chosen] if d.action_chosen < len(d.categories) else 255
-        if cat < n_cats and d.step_idx < n_steps:
-            heatmap[cat, d.step_idx] += 1
-
-    # Normalize columns (per step)
-    col_sums = heatmap.sum(axis=0, keepdims=True)
-    col_sums[col_sums == 0] = 1
-    heatmap_pct = heatmap / col_sums * 100
-
-    fig, ax = plt.subplots(figsize=(12, 6))
-    cat_labels = [_CAT_NAMES.get(i, str(i)) for i in range(n_cats)]
-    im = ax.imshow(heatmap_pct, aspect="auto", cmap="YlOrRd")
-    ax.set_xticks(range(n_steps))
-    ax.set_xticklabels(_STEP_NAMES, rotation=45, ha="right", fontsize=8)
-    ax.set_yticks(range(n_cats))
-    ax.set_yticklabels(cat_labels, fontsize=8)
-    ax.set_xlabel("Game Step")
-    ax.set_ylabel("Action Category")
-    ax.set_title(f"Action Distribution by Step — {os.path.basename(args.file)}")
-    plt.colorbar(im, ax=ax, label="% of decisions at step")
-    plt.tight_layout()
-    plt.show()
-
-
-def cmd_cards(args):
-    try:
-        import matplotlib.pyplot as plt
-    except ImportError:
-        print("matplotlib not installed; skipping plot.", file=sys.stderr)
-        return
-
-    sd = SessionData.load(args.file)
-
-    cast_counts = {}
-    land_counts = {}
-    for d in sd.decisions:
-        cat = d.categories[d.action_chosen] if d.action_chosen < len(d.categories) else 255
-        cid = d.card_ids[d.action_chosen] if d.action_chosen < len(d.card_ids) else REC_CARD_ID_NULL
-        if cid >= len(_VOCAB_NAMES):
-            continue
-        name = decode.card_index_to_name(cid)
-        if cat == 7:  # CAST
-            cast_counts[name] = cast_counts.get(name, 0) + 1
-        elif cat == 9:  # LAND
-            land_counts[name] = land_counts.get(name, 0) + 1
-
-    all_names = sorted(set(list(cast_counts.keys()) + list(land_counts.keys())))
-    if not all_names:
-        print("No cast/land actions found.")
-        return
-
-    y = np.arange(len(all_names))
-    cast_vals = [cast_counts.get(n, 0) for n in all_names]
-    land_vals = [land_counts.get(n, 0) for n in all_names]
-
-    fig, ax = plt.subplots(figsize=(10, max(4, len(all_names) * 0.35)))
-    ax.barh(y - 0.2, cast_vals, 0.4, label="Cast", color="steelblue")
-    ax.barh(y + 0.2, land_vals, 0.4, label="Play Land", color="forestgreen")
-    ax.set_yticks(y)
-    ax.set_yticklabels(all_names, fontsize=8)
-    ax.set_xlabel("Count")
-    ax.set_title(f"Cards Played — {os.path.basename(args.file)}")
-    ax.legend()
-    plt.tight_layout()
-    plt.show()
-
-
-def cmd_replay(args):
-    sd = SessionData.load(args.file)
-    target_gid = args.game
-
-    # Find matching game
-    start = None
-    for gs in sd.game_starts:
-        if gs.game_id == target_gid:
-            start = gs
-            break
-    if start is None:
-        print(f"Game {target_gid} not found. Available: "
-              f"{min(g.game_id for g in sd.game_starts)}-{max(g.game_id for g in sd.game_starts)}")
-        return
-
-    end = None
-    for ge in sd.game_ends:
-        if ge.game_id == target_gid:
-            end = ge
-            break
-
-    model_side = "A" if start.model_is_a else "B"
-    print(f"Game {target_gid}: Model ({model_side}) vs {start.opp_type} [{start.opp_deck}]")
-    if end:
-        result_str = {1: "Model wins", -1: "Model loses", 0: "Draw"}.get(end.result, "?")
-        print(f"Result: {result_str}  ({end.n_decisions} decisions, timestep {end.timestep})")
-    print()
-
-    decs = [d for d in sd.decisions if d.game_id == target_gid]
-    decs.sort(key=lambda d: d.decision_idx)
-
-    for d in decs:
-        step_name = _STEP_NAMES[d.step_idx] if d.step_idx < len(_STEP_NAMES) else f"?{d.step_idx}"
-        cat = d.categories[d.action_chosen] if d.action_chosen < len(d.categories) else 255
-        cat_name = _CAT_NAMES.get(cat, str(cat)) if cat != 255 else "?"
-        cid = d.card_ids[d.action_chosen] if d.action_chosen < len(d.card_ids) else REC_CARD_ID_NULL
-        card_name = ""
-        if cid < len(_VOCAB_NAMES):
-            card_name = f" ({_VOCAB_NAMES[cid]})"
-
-        mana_str = "/".join(str(b) for b in d.self_mana)
-        print(f"[{d.decision_idx:3d}] {step_name:<14} "
-              f"Life {d.self_life}/{d.opp_life}  "
-              f"Board {d.self_creatures}c+{d.self_lands}l / {d.opp_creatures}c+{d.opp_lands}l  "
-              f"Mana {mana_str}  "
-              f"choices={d.num_choices}  "
-              f"-> {d.action_chosen} {cat_name}{card_name}")
-
-
-def cmd_compare(args):
-    try:
-        import matplotlib.pyplot as plt
-    except ImportError:
-        print("matplotlib not installed; skipping plot.", file=sys.stderr)
-        return
-
-    sds = []
-    for path in [args.file, args.file2]:
-        sds.append(SessionData.load(path))
-
-    window = 100
-    fig, ax = plt.subplots(figsize=(10, 5))
-    for sd, path in zip(sds, [args.file, args.file2]):
-        results = [1 if g.result > 0 else 0 for g in sd.game_ends]
-        if len(results) < window:
-            continue
-        arr = np.array(results, dtype=float)
-        rolling = np.convolve(arr, np.ones(window) / window, mode="valid")
-        label = f"{os.path.basename(path)} ({sd.header.model_path})"
-        ax.plot(range(window - 1, len(arr)), rolling * 100, label=label)
-
-    ax.set_xlabel("Game #")
-    ax.set_ylabel(f"Win rate (%) (rolling {window})")
-    ax.set_title("Win Rate Comparison")
-    ax.legend()
-    ax.grid(True, alpha=0.3)
-    plt.tight_layout()
-    plt.show()
-
-
-def _game_results(sd):
-    """Return dict mapping game_id -> result (+1 win, -1 loss, 0 draw)."""
-    return {g.game_id: g.result for g in sd.game_ends}
-
-
-def _available_cats(d):
-    """Return set of action categories available in a decision."""
-    cats = set()
-    for i in range(d.num_choices):
-        if i < len(d.categories):
-            cats.add(d.categories[i])
-    return cats
-
-
-def cmd_wl_split(args):
-    """Action category distribution split by game outcome (win vs loss)."""
-    sd = SessionData.load(args.file)
-    results = _game_results(sd)
-    if not results:
-        print("No completed games.")
-        return
-
-    n_cats = max(_CAT_NAMES.keys()) + 1
-    win_counts = np.zeros(n_cats, dtype=float)
-    loss_counts = np.zeros(n_cats, dtype=float)
-
-    for d in sd.decisions:
-        r = results.get(d.game_id)
-        if r is None or r == 0:
-            continue
-        cat = d.categories[d.action_chosen] if d.action_chosen < len(d.categories) else 255
-        if cat >= n_cats:
-            continue
-        if r > 0:
-            win_counts[cat] += 1
-        else:
-            loss_counts[cat] += 1
-
-    # Normalize to percentages
-    win_total = win_counts.sum()
-    loss_total = loss_counts.sum()
-    if win_total == 0 or loss_total == 0:
-        print("Need both wins and losses to compare.")
-        return
-    win_pct = win_counts / win_total * 100
-    loss_pct = loss_counts / loss_total * 100
-
-    print(f"Action distribution: wins vs losses — {os.path.basename(args.file)}")
-    print(f"  ({int(win_total)} win decisions, {int(loss_total)} loss decisions)\n")
-    print(f"  {'Category':<14} {'Win%':>6}  {'Loss%':>6}  {'Delta':>6}")
-    print(f"  {'-' * 14} {'-' * 6}  {'-' * 6}  {'-' * 6}")
-    for i in range(n_cats):
-        if win_counts[i] == 0 and loss_counts[i] == 0:
-            continue
-        name = _CAT_NAMES.get(i, str(i))
-        delta = win_pct[i] - loss_pct[i]
-        marker = " *" if abs(delta) > 2.0 else ""
-        print(f"  {name:<14} {win_pct[i]:5.1f}%  {loss_pct[i]:5.1f}%  {delta:+5.1f}%{marker}")
-
-    # Per-step breakdown for categories with large deltas
-    n_steps = len(_STEP_NAMES)
-    interesting_cats = [i for i in range(n_cats) if abs(win_pct[i] - loss_pct[i]) > 2.0]
-    if interesting_cats:
-        print(f"\n  Per-step breakdown for categories with >2% delta:\n")
-        for cat_idx in interesting_cats:
-            cat_name = _CAT_NAMES.get(cat_idx, str(cat_idx))
-            win_by_step = np.zeros(n_steps)
-            loss_by_step = np.zeros(n_steps)
-            for d in sd.decisions:
-                r = results.get(d.game_id)
-                if r is None or r == 0:
-                    continue
-                c = d.categories[d.action_chosen] if d.action_chosen < len(d.categories) else 255
-                if c != cat_idx or d.step_idx >= n_steps:
-                    continue
-                if r > 0:
-                    win_by_step[d.step_idx] += 1
-                else:
-                    loss_by_step[d.step_idx] += 1
-            w_tot = win_by_step.sum()
-            l_tot = loss_by_step.sum()
-            if w_tot == 0 or l_tot == 0:
-                continue
-            print(f"  {cat_name}:")
-            for s in range(n_steps):
-                if win_by_step[s] == 0 and loss_by_step[s] == 0:
-                    continue
-                wp = win_by_step[s] / w_tot * 100
-                lp = loss_by_step[s] / l_tot * 100
-                print(f"    {_STEP_NAMES[s]:<14} win {wp:5.1f}%  loss {lp:5.1f}%")
-            print()
-
-
-def cmd_cast_timing(args):
-    """Per-card cast timing and board state, split by game outcome."""
-    sd = SessionData.load(args.file)
-    results = _game_results(sd)
-    if not results:
-        print("No completed games.")
-        return
-
-    # Collect cast decisions per card
-    # Each entry: (game_result, step_idx, decision_idx_in_game, life_diff, creature_diff)
-    card_casts = {}
-    # Track per-game decision count for relative timing
-    game_decision_counts = {}
-    for d in sd.decisions:
-        game_decision_counts[d.game_id] = max(
-            game_decision_counts.get(d.game_id, 0), d.decision_idx + 1)
-
-    for d in sd.decisions:
-        r = results.get(d.game_id)
-        if r is None or r == 0:
-            continue
-        cat = d.categories[d.action_chosen] if d.action_chosen < len(d.categories) else 255
-        if cat != 7:  # CAST only
-            continue
-        cid = d.card_ids[d.action_chosen] if d.action_chosen < len(d.card_ids) else REC_CARD_ID_NULL
-        if cid >= len(_VOCAB_NAMES):
-            continue
-        name = decode.card_index_to_name(cid)
-        life_diff = d.self_life - d.opp_life
-        creature_diff = d.self_creatures - d.opp_creatures
-        card_casts.setdefault(name, []).append((
-            r, d.step_idx, d.decision_idx, life_diff, creature_diff,
-            game_decision_counts.get(d.game_id, 1)))
-
-    if not card_casts:
-        print("No cast actions found.")
-        return
-
-    print(f"Cast timing by card — {os.path.basename(args.file)}\n")
-
-    for name in sorted(card_casts, key=lambda n: -len(card_casts[n])):
-        entries = card_casts[name]
-        if len(entries) < 5:
-            continue
-        wins = [e for e in entries if e[0] > 0]
-        losses = [e for e in entries if e[0] < 0]
-
-        print(f"  {name} ({len(wins)}W / {len(losses)}L casts)")
-
-        for label, subset in [("win", wins), ("loss", losses)]:
-            if len(subset) < 2:
-                continue
-            steps = np.array([e[1] for e in subset])
-            # Relative timing: decision_idx / total_decisions_in_game
-            rel_timing = np.array([e[2] / e[5] for e in subset])
-            life_diffs = np.array([e[3] for e in subset])
-            creature_diffs = np.array([e[4] for e in subset])
-
-            # Most common step
-            step_counts = np.bincount(steps, minlength=len(_STEP_NAMES))
-            top_step = _STEP_NAMES[np.argmax(step_counts)]
-
-            print(f"    {label}: timing {rel_timing.mean():.0%} thru game"
-                  f"  life_diff {life_diffs.mean():+.1f}"
-                  f"  creature_diff {creature_diffs.mean():+.1f}"
-                  f"  step: {top_step}")
-        print()
-
-
-def cmd_choice_rates(args):
-    """P(chose X | X was legal) conditioned on board state."""
-    sd = SessionData.load(args.file)
-    results = _game_results(sd)
-
-    # For each action category, track: times available, times chosen,
-    # bucketed by board state
-    def _board_bucket(d):
-        """Categorize board state as a simple label."""
-        life_diff = d.self_life - d.opp_life
-        creature_diff = d.self_creatures - d.opp_creatures
-        if life_diff <= -5:
-            life_label = "life--"
-        elif life_diff < 0:
-            life_label = "life-"
-        elif life_diff == 0:
-            life_label = "life="
-        elif life_diff < 5:
-            life_label = "life+"
-        else:
-            life_label = "life++"
-
-        if creature_diff < -1:
-            board_label = "behind"
-        elif creature_diff > 1:
-            board_label = "ahead"
-        else:
-            board_label = "even"
-        return life_label, board_label
-
-    # cats we care about for choice-rate analysis
-    interesting = {0, 2, 6, 7, 9}  # PASS, SEL_ATK, ACTIVATE, CAST, LAND
-    n_cats = max(_CAT_NAMES.keys()) + 1
-
-    # Nested: cat -> (life_bucket, board_bucket) -> [available, chosen]
-    rates = {}
-    for cat in interesting:
-        rates[cat] = {}
-
-    for d in sd.decisions:
-        available = _available_cats(d)
-        chosen_cat = d.categories[d.action_chosen] if d.action_chosen < len(d.categories) else 255
-        lb, bb = _board_bucket(d)
-        bucket = (lb, bb)
-        for cat in interesting:
-            if cat not in available:
-                continue
-            if bucket not in rates[cat]:
-                rates[cat][bucket] = [0, 0]
-            rates[cat][bucket][0] += 1
-            if chosen_cat == cat:
-                rates[cat][bucket][1] += 1
-
-    print(f"Choice rates (P(chose | legal)) by board state — {os.path.basename(args.file)}\n")
-
-    for cat in sorted(interesting):
-        cat_name = _CAT_NAMES.get(cat, str(cat))
-        buckets = rates[cat]
-        if not buckets:
-            continue
-        total_avail = sum(v[0] for v in buckets.values())
-        total_chosen = sum(v[1] for v in buckets.values())
-        if total_avail == 0:
-            continue
-        overall = total_chosen / total_avail * 100
-        print(f"  {cat_name} (overall {overall:.1f}% when legal):")
-
-        # Sort buckets by life order then board order
-        life_order = {"life--": 0, "life-": 1, "life=": 2, "life+": 3, "life++": 4}
-        board_order = {"behind": 0, "even": 1, "ahead": 2}
-        sorted_buckets = sorted(buckets.keys(),
-                                key=lambda b: (life_order.get(b[0], 5), board_order.get(b[1], 5)))
-        for bucket in sorted_buckets:
-            avail, chosen = buckets[bucket]
-            if avail < 10:
-                continue
-            rate = chosen / avail * 100
-            lb, bb = bucket
-            print(f"    {lb:<7} {bb:<7}  {rate:5.1f}%  (n={avail})")
-        print()
-
-    # Win/loss split for choice rates
-    if not results:
-        return
-
-    print(f"  Choice rates split by game outcome:\n")
-    for cat in sorted(interesting):
-        cat_name = _CAT_NAMES.get(cat, str(cat))
-        win_avail = 0
-        win_chosen = 0
-        loss_avail = 0
-        loss_chosen = 0
-        for d in sd.decisions:
-            r = results.get(d.game_id)
-            if r is None or r == 0:
-                continue
-            available = _available_cats(d)
-            if cat not in available:
-                continue
-            chosen_cat = d.categories[d.action_chosen] if d.action_chosen < len(d.categories) else 255
-            if r > 0:
-                win_avail += 1
-                if chosen_cat == cat:
-                    win_chosen += 1
-            else:
-                loss_avail += 1
-                if chosen_cat == cat:
-                    loss_chosen += 1
-        if win_avail < 10 or loss_avail < 10:
-            continue
-        win_rate = win_chosen / win_avail * 100
-        loss_rate = loss_chosen / loss_avail * 100
-        delta = win_rate - loss_rate
-        marker = " *" if abs(delta) > 2.0 else ""
-        print(f"  {cat_name:<14} win {win_rate:5.1f}%  loss {loss_rate:5.1f}%  delta {delta:+5.1f}%{marker}")
-
-
 def _resolve_card_name(cid):
-    """Resolve a card vocab index to a display name, handling special cases."""
-    if cid < 0 or cid == REC_CARD_ID_NULL:
+    """Resolve a card vocab index to a display name. Negative/null → 'Player'
+    (a player target carries no card id)."""
+    if cid < 0:
         return "Player"
-    # Token sentinel / vocab / bounds handling lives in decode.
-    # (Out-of-vocab in-range slots render as "?(cid)" rather than the old
-    # "?{cid}"; those indices never appear in real recordings.)
     return decode.card_index_to_name(cid)
-
-
-def cmd_targeting(args):
-    """Analyze targeting decisions: self vs opponent, hold vs cast, by card and outcome."""
-    sd = SessionData.load(args.file)
-    results = _game_results(sd)
-    if not results:
-        print("No completed games.")
-        return
-
-    # Group decisions by game for sequential analysis
-    by_game = {}
-    for d in sd.decisions:
-        by_game.setdefault(d.game_id, []).append(d)
-    for gid in by_game:
-        by_game[gid].sort(key=lambda d: d.decision_idx)
-
-    # ── 1. Targeting breakdown (SELECT_TARGET decisions) ─────────────────────
-    # Per card that was cast: how often does the subsequent target hit self vs opp
-    # We link CAST (cat 7) -> next TARGET (cat 8) in the same game sequence
-    #
-    # Structure: card_name -> list of (target_card, target_is_self, game_result,
-    #                                  step_idx, life_diff, creature_diff)
-    cast_targets = {}
-
-    for gid, decs in by_game.items():
-        r = results.get(gid)
-        if r is None:
-            continue
-        i = 0
-        while i < len(decs):
-            d = decs[i]
-            cat = d.categories[d.action_chosen] if d.action_chosen < len(d.categories) else 255
-            if cat == 7:  # CAST
-                cid = d.card_ids[d.action_chosen] if d.action_chosen < len(d.card_ids) else REC_CARD_ID_NULL
-                if cid < len(_VOCAB_NAMES):
-                    cast_name = decode.card_index_to_name(cid)
-                    # Look ahead for the next TARGET decision in this game
-                    j = i + 1
-                    while j < len(decs):
-                        d2 = decs[j]
-                        cat2 = d2.categories[d2.action_chosen] if d2.action_chosen < len(d2.categories) else 255
-                        if cat2 == 8:  # TARGET
-                            tgt_cid = d2.card_ids[d2.action_chosen] if d2.action_chosen < len(d2.card_ids) else REC_CARD_ID_NULL
-                            tgt_ctrl = d2.ctrl_flags[d2.action_chosen] if d2.action_chosen < len(d2.ctrl_flags) else 255
-                            tgt_name = _resolve_card_name(tgt_cid)
-                            tgt_is_self = (tgt_ctrl == 1)
-
-                            # Also record what other targets were available
-                            alt_self = 0
-                            alt_opp = 0
-                            for k in range(d2.num_choices):
-                                if k < len(d2.categories) and d2.categories[k] == 8:
-                                    cf = d2.ctrl_flags[k] if k < len(d2.ctrl_flags) else 255
-                                    if cf == 1:
-                                        alt_self += 1
-                                    elif cf == 0:
-                                        alt_opp += 1
-
-                            cast_targets.setdefault(cast_name, []).append((
-                                tgt_name, tgt_is_self, r,
-                                d.step_idx, d.self_life - d.opp_life,
-                                d.self_creatures - d.opp_creatures,
-                                alt_self, alt_opp,
-                            ))
-                            break
-                        elif cat2 != 0:  # non-PASS non-TARGET means no target for this cast
-                            break
-                        j += 1
-            i += 1
-
-    # ── 2. Hold analysis: when CAST was available but PASS was chosen ────────
-    # Per card: how often the model passes when it could cast, by board state
-    # hold_stats: card_name -> list of (game_result, step_idx, life_diff, creature_diff)
-    hold_stats = {}
-    cast_stats = {}
-
-    for d in sd.decisions:
-        r = results.get(d.game_id)
-        if r is None:
-            continue
-        chosen_cat = d.categories[d.action_chosen] if d.action_chosen < len(d.categories) else 255
-        # Find all castable cards in this decision
-        castable = set()
-        for k in range(d.num_choices):
-            if k < len(d.categories) and d.categories[k] == 7:  # CAST
-                cid = d.card_ids[k] if k < len(d.card_ids) else REC_CARD_ID_NULL
-                if cid < len(_VOCAB_NAMES):
-                    castable.add(decode.card_index_to_name(cid))
-        if not castable:
-            continue
-
-        entry = (r, d.step_idx, d.self_life - d.opp_life,
-                 d.self_creatures - d.opp_creatures)
-        if chosen_cat == 0:  # PASS when could have cast
-            for name in castable:
-                hold_stats.setdefault(name, []).append(entry)
-        elif chosen_cat == 7:  # actually cast
-            cid = d.card_ids[d.action_chosen] if d.action_chosen < len(d.card_ids) else REC_CARD_ID_NULL
-            if cid < len(_VOCAB_NAMES):
-                cast_stats.setdefault(decode.card_index_to_name(cid), []).append(entry)
-
-    # ── Print results ────────────────────────────────────────────────────────
-
-    print(f"Targeting analysis — {os.path.basename(args.file)}")
-
-    # Section 1: Per-card targeting self vs opponent
-    if cast_targets:
-        print(f"\n{'=' * 60}")
-        print("TARGETING: self vs opponent (linked CAST -> TARGET)")
-        print(f"{'=' * 60}\n")
-
-        for name in sorted(cast_targets, key=lambda n: -len(cast_targets[n])):
-            entries = cast_targets[name]
-            if len(entries) < 3:
-                continue
-            self_tgt = [e for e in entries if e[1]]
-            opp_tgt = [e for e in entries if not e[1]]
-            total = len(entries)
-            self_pct = len(self_tgt) / total * 100
-            opp_pct = len(opp_tgt) / total * 100
-
-            print(f"  {name} ({total} targeting decisions)")
-            print(f"    targets self: {len(self_tgt):4d} ({self_pct:5.1f}%)")
-            print(f"    targets opp:  {len(opp_tgt):4d} ({opp_pct:5.1f}%)")
-
-            # Break down by target card
-            tgt_counts = {}
-            for e in entries:
-                key = (e[0], e[1])  # (tgt_name, is_self)
-                label = f"{'own' if e[1] else 'opp'} {e[0]}"
-                tgt_counts[label] = tgt_counts.get(label, 0) + 1
-            if tgt_counts:
-                print("    target breakdown:")
-                for label, count in sorted(tgt_counts.items(), key=lambda x: -x[1])[:10]:
-                    print(f"      {count:4d}  {label}")
-
-            # Win rate when targeting self vs opponent
-            for label, subset in [("self", self_tgt), ("opp", opp_tgt)]:
-                if len(subset) < 2:
-                    continue
-                wins = sum(1 for e in subset if e[2] > 0)
-                losses = sum(1 for e in subset if e[2] < 0)
-                wr = wins / len(subset) * 100 if subset else 0
-                life_diffs = np.array([e[4] for e in subset])
-                creature_diffs = np.array([e[5] for e in subset])
-                # How many alternatives were available
-                alt_self_avg = np.mean([e[6] for e in subset])
-                alt_opp_avg = np.mean([e[7] for e in subset])
-                print(f"    when targeting {label}: {wins}W/{losses}L ({wr:.0f}% WR)"
-                      f"  avg life_diff={life_diffs.mean():+.1f}"
-                      f"  creature_diff={creature_diffs.mean():+.1f}"
-                      f"  avg avail: {alt_self_avg:.1f} self / {alt_opp_avg:.1f} opp targets")
-            print()
-
-    # Section 2: Hold vs cast
-    all_cards = sorted(set(list(hold_stats.keys()) + list(cast_stats.keys())))
-    has_hold_data = any(len(hold_stats.get(n, [])) >= 5 for n in all_cards)
-    if has_hold_data:
-        print(f"{'=' * 60}")
-        print("HOLD vs CAST: how often each card is held when castable")
-        print(f"{'=' * 60}\n")
-
-        for name in all_cards:
-            holds = hold_stats.get(name, [])
-            casts = cast_stats.get(name, [])
-            total = len(holds) + len(casts)
-            if total < 5:
-                continue
-            hold_pct = len(holds) / total * 100
-
-            print(f"  {name}: held {len(holds)}/{total} ({hold_pct:.0f}%) when castable")
-
-            # Win rate when holding vs casting
-            for label, subset in [("hold", holds), ("cast", casts)]:
-                if len(subset) < 2:
-                    continue
-                wins = sum(1 for e in subset if e[0] > 0)
-                losses = sum(1 for e in subset if e[0] < 0)
-                wr = wins / len(subset) * 100 if subset else 0
-                life_diffs = np.array([e[2] for e in subset])
-                creature_diffs = np.array([e[3] for e in subset])
-                steps = np.array([e[1] for e in subset])
-                step_counts = np.bincount(steps, minlength=len(_STEP_NAMES))
-                top_step = _STEP_NAMES[np.argmax(step_counts)]
-                print(f"    {label}: {wins}W/{losses}L ({wr:.0f}% WR)"
-                      f"  life_diff={life_diffs.mean():+.1f}"
-                      f"  creature_diff={creature_diffs.mean():+.1f}"
-                      f"  common step: {top_step}")
-            print()
 
 
 # ── SHAP / value-function analysis ────────────────────────────────────────────
@@ -1215,25 +295,60 @@ def _extract_interpretable(obs):
 
 
 def _infer_deck(model_path):
-    """Try to extract deck name from model filename like 'delver_delver_final.zip'."""
+    """Infer the deck a checkpoint pilots from its filename.
+
+    Checkpoints are per-deck (the deck-pilot convention): one model plays one
+    deck against any opponent, saved as ``{deck}__final.zip`` or
+    ``{deck}__v{steps}.zip`` — the deck is the part before the ``__``. A
+    checkpoint therefore encodes only its OWN deck, never its opponent, so this
+    returns the model's deck; the opponent deck must be supplied (``--deck-b``)
+    or, when the opponent is itself a model, inferred from that model's own
+    filename. A legacy matchup name (``{deck}_{opp}_final.zip``) still yields the
+    leading deck token.
+    """
     basename = os.path.splitext(os.path.basename(model_path))[0]
-    # Pattern: {model_deck}_{opp_deck}_{suffix}
+    # Deck-pilot: '{deck}__final' / '{deck}__v{steps}' — split on the '__'.
+    if "__" in basename:
+        deck = basename.split("__", 1)[0]
+        return deck or None
+    # Legacy matchup '{deck}_{opp}_{suffix}' or '{deck}_final' → leading token.
     parts = basename.split("_")
-    if len(parts) >= 2:
+    if parts and parts[0]:
         return parts[0]
     return None
 
 
 _CHECKPOINTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "checkpoints")
+_SNAPSHOT_VER_RE = re.compile(r"__v(\d+)\.zip$")
 
 
 def _resolve_model_path(path):
-    """Return path as-is if it exists, else try train/checkpoints/<path>."""
-    if os.path.exists(path):
+    """Resolve a model argument to a checkpoint path.
+
+    Accepts an explicit path, the literal ``scripted``, or a deck-pilot
+    shorthand (``delver`` → ``checkpoints/delver__final.zip``, else the newest
+    ``checkpoints/delver__v{steps}.zip`` snapshot). Falls back to legacy
+    ``checkpoints/<name>.zip`` / ``checkpoints/<name>_final.zip`` for older
+    matchup checkpoints. Mirrors train.py's ``_resolve_model``.
+    """
+    if path == "scripted" or os.path.exists(path):
         return path
-    candidate = os.path.join(_CHECKPOINTS_DIR, path)
-    if os.path.exists(candidate):
-        return candidate
+    # Deck-pilot shorthand → '{deck}__final.zip' or newest '{deck}__v*.zip'.
+    final = os.path.join(_CHECKPOINTS_DIR, f"{path}__final.zip")
+    if os.path.exists(final):
+        return final
+    snaps = glob.glob(os.path.join(_CHECKPOINTS_DIR, f"{path}__v*.zip"))
+    if snaps:
+        def _ver(p):
+            m = _SNAPSHOT_VER_RE.search(p)
+            return int(m.group(1)) if m else -1
+        return max(snaps, key=_ver)
+    # Legacy fallbacks.
+    for cand in (os.path.join(_CHECKPOINTS_DIR, path),
+                 os.path.join(_CHECKPOINTS_DIR, f"{path}.zip"),
+                 os.path.join(_CHECKPOINTS_DIR, f"{path}_final.zip")):
+        if os.path.exists(cand):
+            return cand
     return path  # let the loader raise a meaningful error
 
 
@@ -1248,29 +363,41 @@ def _load_model_and_env(args):
 
     model_path = _resolve_model_path(args.model)
 
-    # Deck inference
+    # Deck resolution. Checkpoints are per-deck (deck-pilot naming), so a model
+    # filename encodes only the deck it pilots — never its opponent. We infer the
+    # model's own deck (deck_a) from its filename; the opponent deck (deck_b)
+    # must be given via --deck-b, or, when the opponent is itself a model, is
+    # taken from that model's own filename. A scripted opponent has no filename,
+    # so it defaults to a mirror match unless --deck-b is supplied.
     deck_a = getattr(args, "deck_a", None)
     deck_b = getattr(args, "deck_b", None)
     if not deck_a:
         inferred = _infer_deck(model_path)
         if inferred:
             deck_a = inferred
-            print(f"Inferred model deck from filename: {deck_a}")
+            print(f"Inferred model deck (the deck it pilots) from filename: {deck_a}")
         else:
             print("Could not infer model deck from filename; use --deck-a", file=sys.stderr)
             sys.exit(1)
     if not deck_b:
         if args.opponent == "scripted":
-            deck_b = deck_a  # mirror match by default
+            deck_b = deck_a  # opponent deck isn't encoded anywhere; mirror by default
+            print(f"No --deck-b given for scripted opponent; defaulting to a mirror "
+                  f"match (opponent plays {deck_b}). Pass --deck-b for a different matchup.")
         else:
             opp_path = _resolve_model_path(args.opponent)
             inferred = _infer_deck(opp_path)
             if inferred:
                 deck_b = inferred
-                print(f"Inferred opponent deck from filename: {deck_b}")
+                print(f"Inferred opponent deck from the opponent model's filename: {deck_b}")
             else:
-                print("Could not infer opponent deck from filename; use --deck-b", file=sys.stderr)
+                print("Could not infer opponent deck from the opponent model's filename; "
+                      "use --deck-b", file=sys.stderr)
                 sys.exit(1)
+
+    # Write the resolved decks back so downstream consumers (e.g. the report
+    # title) see the actual decks even when they were inferred, not just given.
+    args.deck_a, args.deck_b = deck_a, deck_b
 
     model = MaskablePPO.load(model_path)
     opp_model = None
@@ -1491,13 +618,12 @@ def cmd_shap(args):
 
     # Try to plot
     try:
-        import matplotlib
-        matplotlib.use("TkAgg")
-        import matplotlib.pyplot as plt
-        shap.summary_plot(shap_values, samples, feature_names=_INTERP_FEATURE_NAMES,
-                          show=False)
-        plt.tight_layout()
-        plt.show()
+        plt = viz.pyplot(show=viz.want_show(args))
+        if plt is not None:
+            shap.summary_plot(shap_values, samples, feature_names=_INTERP_FEATURE_NAMES,
+                              show=False)
+            plt.tight_layout()
+            viz.save_or_show(plt, plt.gcf(), "shap_summary", args)
     except Exception as e:
         print(f"\nCould not display SHAP plot: {e}", file=sys.stderr)
         print("SHAP values printed above.", file=sys.stderr)
@@ -2077,10 +1203,10 @@ def _interactive_session(ctx):
         print("\n" + "=" * 60)
         print(f"Interactive session — {len(games)} games in memory.")
         cmds = ["list", "replay <N>", "boardstate <N> <step>", "summary",
-                "targeting", "sideboard",
+                "cardvalue [N]", "targeting", "sideboard",
                 "swings [N]", "shap", "regret [N]", "entropy", "consistency [N]",
                 "calibration", "turning", "clusters",
-                "chart <N>", "chart swings [N]", "chart shap",
+                "chart <N>", "chart swings [N]", "chart cardvalue [N]", "chart shap",
                 "chart calibration", "chart turning", "chart clusters"]
         if can_run:
             cmds.append("run <N>")
@@ -2117,6 +1243,7 @@ def _interactive_session(ctx):
             print("  regret [N]                — policy regret analysis (top N high-regret decisions)")
             print("  entropy                   — policy entropy by phase and board state")
             print("  consistency [N]           — find similar states with different actions (top N pairs)")
+            print("  cardvalue [N]             — rank cards by importance (ΔV, priority, win-rate lift)")
             print("  targeting                 — self vs opp targeting, hold vs cast analysis")
             print("  sideboard                 — sideboard decisions by each agent (bo3)")
             print("  calibration               — V(s) at game start vs actual win rate (is model biased?)")
@@ -2124,6 +1251,7 @@ def _interactive_session(ctx):
             print("  clusters                  — classify games by V(s) curve shape (archetypes)")
             print("  chart <N>                 — value curve plot for game N")
             print("  chart swings [N]          — value curve plots for top N swing games")
+            print("  chart cardvalue [N]       — diverging bar chart of per-card ΔV")
             print("  chart shap                — SHAP summary plot (requires shap run first)")
             print("  chart calibration         — calibration curve plot")
             print("  chart turning             — turning point distribution plot")
@@ -2303,15 +1431,23 @@ def _interactive_session(ctx):
 
         elif cmd == "chart":
             sub = parts[1].lower() if len(parts) >= 2 else ""
-            try:
-                import matplotlib
-                matplotlib.use("TkAgg")
-                import matplotlib.pyplot as plt
-            except Exception as e:
-                print(f"  matplotlib unavailable: {e}")
+            plt = viz.pyplot(show=viz.want_show(args))
+            if plt is None:
+                print("  matplotlib unavailable.")
                 continue
 
-            if sub == "shap":
+            if sub == "cardvalue":
+                top_n = 20
+                if len(parts) >= 3:
+                    try: top_n = int(parts[2])
+                    except ValueError: pass
+                rows = ctx.get("cardvalue_rows")
+                if rows is None:
+                    rows = _analyze_cardvalue(games, verbose=False)
+                    ctx["cardvalue_rows"] = rows
+                _chart_cardvalue(rows, args=args, top_n=top_n)
+
+            elif sub == "shap":
                 if ctx["shap_values"] is None or ctx["shap_samples"] is None:
                     print("  Run 'shap' first to generate SHAP values.")
                     continue
@@ -2320,7 +1456,7 @@ def _interactive_session(ctx):
                     shap.summary_plot(ctx["shap_values"], ctx["shap_samples"],
                                       feature_names=_INTERP_FEATURE_NAMES, show=False)
                     plt.tight_layout()
-                    plt.show()
+                    viz.save_or_show(plt, plt.gcf(), "shap_summary", args)
                 except Exception as e:
                     print(f"  SHAP plot error: {e}")
 
@@ -2350,8 +1486,7 @@ def _interactive_session(ctx):
                     a.legend(loc="upper right", fontsize=8)
                     a.grid(True, alpha=0.3)
                 axes[-1, 0].set_xlabel("Decision step")
-                plt.tight_layout()
-                plt.show()
+                viz.save_or_show(plt, fig, "swings", args)
 
             elif sub == "calibration":
                 cal = ctx.get("calibration_data")
@@ -2387,8 +1522,7 @@ def _interactive_session(ctx):
                 ax.grid(True, alpha=0.3)
                 ax.set_xlim(-1.1, 1.1)
                 ax.set_ylim(-0.05, 1.05)
-                plt.tight_layout()
-                plt.show()
+                viz.save_or_show(plt, fig, "calibration", args)
 
             elif sub == "turning":
                 tp_data = ctx.get("turning_data")
@@ -2445,8 +1579,7 @@ def _interactive_session(ctx):
                 ax.set_title(f"V(s) Curves with Turning Points ({n_show} games)")
                 ax.grid(True, alpha=0.3)
 
-                plt.tight_layout()
-                plt.show()
+                viz.save_or_show(plt, fig, "turning", args)
 
             elif sub == "clusters":
                 clust = ctx.get("cluster_data")
@@ -2500,16 +1633,15 @@ def _interactive_session(ctx):
                     ax.set_ylabel("V(s)")
                     ax.grid(True, alpha=0.3)
                     ax.set_ylim(-1.1, 1.1)
-                plt.tight_layout()
-                plt.show()
+                viz.save_or_show(plt, fig, "clusters", args)
 
             else:
                 # chart <N> — value curve for a single game
                 try:
                     gn = int(sub)
                 except ValueError:
-                    print("  Usage: chart <game_index> | chart swings [N] | chart shap "
-                          "| chart calibration | chart turning | chart clusters")
+                    print("  Usage: chart <game_index> | chart swings [N] | chart cardvalue [N] "
+                          "| chart shap | chart calibration | chart turning | chart clusters")
                     continue
                 if gn < 0 or gn >= len(games):
                     print(f"  Game index out of range. Valid range: 0–{len(games) - 1}")
@@ -2525,8 +1657,7 @@ def _interactive_session(ctx):
                 ax.set_ylabel("V(s)")
                 ax.set_title(f"Game {gn} — Model={side}, {result_str}")
                 ax.grid(True, alpha=0.3)
-                plt.tight_layout()
-                plt.show()
+                viz.save_or_show(plt, fig, f"game{gn}", args)
 
         elif cmd == "regret":
             top_n = 20
@@ -2561,6 +1692,17 @@ def _interactive_session(ctx):
 
         elif cmd == "clusters":
             ctx["cluster_data"] = _analyze_clusters(games)
+
+        elif cmd == "cardvalue":
+            top_n = 30
+            if len(parts) >= 2:
+                try: top_n = int(parts[1])
+                except ValueError: pass
+            has_probs = any(g.get("action_probs") for g in games)
+            if not has_probs:
+                print("  Note: no policy probabilities in these traces — "
+                      "'prio' column will be blank.")
+            ctx["cardvalue_rows"] = _analyze_cardvalue(games, top_n=top_n)
 
         elif cmd == "targeting":
             _sim_targeting(games)
@@ -2675,27 +1817,25 @@ def cmd_value_swings(args):
 
     # Try to plot value curves for top swing games
     try:
-        import matplotlib
-        matplotlib.use("TkAgg")
-        import matplotlib.pyplot as plt
-        n_plot = min(5, len(top_swings))
-        fig, axes = plt.subplots(n_plot, 1, figsize=(10, 3 * n_plot), squeeze=False)
-        for i, s in enumerate(top_swings[:n_plot]):
-            ax = axes[i, 0]
-            g = games[s["game_idx"]]
-            vals = g["values"]
-            result_str = "WIN" if g["result"] > 0 else ("LOSS" if g["result"] < 0 else "DRAW")
-            ax.plot(vals, color="steelblue", linewidth=1.2)
-            ax.axhline(0, color="gray", linewidth=0.5, linestyle="--")
-            ax.axvline(s["swing_step"], color="red", linewidth=1, linestyle="--",
-                       label=f"swing ({s['swing_to'] - s['swing_from']:+.2f})")
-            ax.set_ylabel("V(s)")
-            ax.set_title(f"Game {s['game_idx']} ({result_str})")
-            ax.legend(loc="upper right", fontsize=8)
-            ax.grid(True, alpha=0.3)
-        axes[-1, 0].set_xlabel("Decision step")
-        plt.tight_layout()
-        plt.show()
+        plt = viz.pyplot(show=viz.want_show(args))
+        if plt is not None:
+            n_plot = min(5, len(top_swings))
+            fig, axes = plt.subplots(n_plot, 1, figsize=(10, 3 * n_plot), squeeze=False)
+            for i, s in enumerate(top_swings[:n_plot]):
+                ax = axes[i, 0]
+                g = games[s["game_idx"]]
+                vals = g["values"]
+                result_str = "WIN" if g["result"] > 0 else ("LOSS" if g["result"] < 0 else "DRAW")
+                ax.plot(vals, color="steelblue", linewidth=1.2)
+                ax.axhline(0, color="gray", linewidth=0.5, linestyle="--")
+                ax.axvline(s["swing_step"], color="red", linewidth=1, linestyle="--",
+                           label=f"swing ({s['swing_to'] - s['swing_from']:+.2f})")
+                ax.set_ylabel("V(s)")
+                ax.set_title(f"Game {s['game_idx']} ({result_str})")
+                ax.legend(loc="upper right", fontsize=8)
+                ax.grid(True, alpha=0.3)
+            axes[-1, 0].set_xlabel("Decision step")
+            viz.save_or_show(plt, fig, "value_swings", args)
     except Exception as e:
         print(f"\nCould not display plot: {e}", file=sys.stderr)
 
@@ -3467,6 +2607,272 @@ def _analyze_clusters(games, verbose=True):
     return archetypes
 
 
+# ── Card importance (value attribution per card) ─────────────────────────────
+
+# Action categories used for per-card attribution.
+_CAT_ACTIVATE, _CAT_CAST, _CAT_LAND = 6, 7, 9
+
+
+def _analyze_cardvalue(games, top_n=30, verbose=True):
+    """Rank cards by how much the model's play values them in this matchup.
+
+    For every spell cast / ability activated, three independent signals are
+    aggregated per card:
+
+      * mean ΔV — change in the value estimate across the move
+        (vals[i+1]-vals[i]); how much deploying the card moves the model's own
+        win-probability estimate. The most direct "importance" signal.
+      * priority — mean policy probability the masked policy puts on casting the
+        card whenever it is a legal choice (how much the model "wants" it).
+      * win-rate lift — win rate in games where the model deployed the card minus
+        games where it did not (ΔWR). Confounded by draw luck; shown for colour.
+
+    Needs model traces (values + action_probs). Returns per-card dict rows sorted
+    by mean ΔV; cards below a small sample gate sink to the bottom (ordered by
+    usage). The matchup is fixed by the caller's deck-a / deck-b, so the ranking
+    is matchup-specific by construction.
+    """
+    dv = {}          # card -> list of ΔV across casts/activations
+    prio_mass = {}   # card -> [sum prob when legal, times legal]
+    present = {}     # card -> set of game indices where the model deployed it
+    cast_ct = {}     # card -> number of cast/activate actions
+    n_games = len(games)
+
+    for gi, g in enumerate(games):
+        obs_list = g["observations"]
+        actions = g["actions"]
+        vals = g.get("values", [])
+        probs_list = g.get("action_probs", [])
+        ncs = g["num_choices"]
+        for si in range(len(obs_list)):
+            obs = obs_list[si]
+            nc = ncs[si]
+            # Priority: probability mass on each castable card this decision.
+            if si < len(probs_list) and probs_list[si] is not None:
+                probs = probs_list[si]
+                for k in range(nc):
+                    if _obs_action_cat(obs, k) == _CAT_CAST:
+                        cid = _obs_card_id(obs, k)
+                        if 0 <= cid < len(_VOCAB_NAMES):
+                            name = decode.card_index_to_name(cid)
+                            slot = prio_mass.setdefault(name, [0.0, 0])
+                            slot[0] += float(probs[k]) if k < len(probs) else 0.0
+                            slot[1] += 1
+            # Chosen-action attribution.
+            action = actions[si]
+            cat = _obs_action_cat(obs, action)
+            if cat in (_CAT_CAST, _CAT_ACTIVATE):
+                cid = _obs_card_id(obs, action)
+                if 0 <= cid < len(_VOCAB_NAMES):
+                    name = decode.card_index_to_name(cid)
+                    cast_ct[name] = cast_ct.get(name, 0) + 1
+                    present.setdefault(name, set()).add(gi)
+                    if si + 1 < len(vals):
+                        dv.setdefault(name, []).append(vals[si + 1] - vals[si])
+            elif cat == _CAT_LAND:
+                cid = _obs_card_id(obs, action)
+                if 0 <= cid < len(_VOCAB_NAMES):
+                    # Lands count toward presence (win-rate lift) but carry no
+                    # meaningful ΔV, so they are not added to dv/cast_ct.
+                    present.setdefault(decode.card_index_to_name(cid), set()).add(gi)
+
+    rows = []
+    for name in set(cast_ct) | set(present) | set(prio_mass):
+        deltas = dv.get(name, [])
+        pm = prio_mass.get(name, [0.0, 0])
+        pres = present.get(name, set())
+        n_present = len(pres)
+        n_absent = n_games - n_present
+        wr_present = (sum(1 for i in pres if games[i]["result"] > 0) / n_present
+                      if n_present else None)
+        wr_absent = (sum(1 for i in range(n_games)
+                         if i not in pres and games[i]["result"] > 0) / n_absent
+                     if n_absent else None)
+        rows.append({
+            "card": name,
+            "n_cast": cast_ct.get(name, 0),
+            "mean_dv": (float(np.mean(deltas)) if deltas else None),
+            "n_dv": len(deltas),
+            "priority": (pm[0] / pm[1] if pm[1] else None),
+            "n_present": n_present,
+            "wr_present": wr_present,
+            "wr_absent": wr_absent,
+            "wr_lift": (wr_present - wr_absent
+                        if (wr_present is not None and wr_absent is not None) else None),
+        })
+
+    # Graded cards (enough ΔV samples) sort by mean ΔV desc; the rest by usage.
+    _MIN_DV = 3
+
+    def _key(r):
+        graded = r["mean_dv"] is not None and r["n_dv"] >= _MIN_DV
+        return (0 if graded else 1,
+                -(r["mean_dv"] if graded else -1e9),
+                -r["n_cast"])
+    rows.sort(key=_key)
+
+    if not verbose:
+        return rows
+
+    n_win = sum(1 for g in games if g["result"] > 0)
+    base_wr = n_win / n_games if n_games else 0.0
+    print(f"\nCard importance — {n_games} games, base win rate {base_wr:.0%}")
+    print(f"  ΔV = mean change in V(s) when the card is cast/activated "
+          f"(>0 raises the model's win-prob estimate).")
+    print(f"  prio = mean policy probability on casting it when legal.  "
+          f"ΔWR = win-rate with minus without.\n")
+
+    graded = [r for r in rows if r["mean_dv"] is not None and r["n_dv"] >= _MIN_DV]
+    maxabs = max((abs(r["mean_dv"]) for r in graded), default=0.0)
+
+    print(f"  {'Card':<26} {'n':>4} {'ΔV':>7} {'prio':>6} {'ΔWR':>6}  value")
+    print(f"  {'-'*26} {'-'*4} {'-'*7} {'-'*6} {'-'*6}  {'-'*37}")
+    for r in rows[:top_n]:
+        dvv = r["mean_dv"]
+        dv_str = f"{dvv:+7.3f}" if dvv is not None else "    —  "
+        prio = r["priority"]
+        prio_str = f"{prio*100:5.0f}%" if prio is not None else "    —"
+        lift = r["wr_lift"]
+        lift_str = f"{lift*100:+5.0f}%" if lift is not None else "    —"
+        bar = viz.diverging_bar(dvv, maxabs) if (dvv is not None and maxabs > 0) else ""
+        print(f"  {r['card'][:26]:<26} {r['n_cast']:>4} {dv_str} "
+              f"{prio_str} {lift_str}  {bar}")
+    return rows
+
+
+def _chart_cardvalue(rows, args=None, top_n=20):
+    """Diverging horizontal bar chart of mean ΔV per card (helps vs hurts)."""
+    graded = [r for r in rows if r["mean_dv"] is not None and r["n_dv"] >= 3][:top_n]
+    if not graded:
+        print("  No cards with enough cast samples to chart.")
+        return None
+    plt = viz.pyplot(show=viz.want_show(args))
+    if plt is None:
+        print("  matplotlib unavailable; skipping chart.")
+        return None
+    graded = list(reversed(graded))  # barh plots bottom-up
+    names = [r["card"][:28] for r in graded]
+    vals = [r["mean_dv"] for r in graded]
+    colors = ["seagreen" if v >= 0 else "firebrick" for v in vals]
+    fig, ax = plt.subplots(figsize=(9, max(3, len(names) * 0.35)))
+    ax.barh(range(len(names)), vals, color=colors)
+    ax.axvline(0, color="gray", linewidth=0.8)
+    ax.set_yticks(range(len(names)))
+    ax.set_yticklabels(names, fontsize=8)
+    ax.set_xlabel("Mean ΔV(s) when cast / activated")
+    ax.set_title("Card importance (value contribution)")
+    ax.grid(True, axis="x", alpha=0.3)
+    return viz.save_or_show(plt, fig, "cardvalue", args)
+
+
+def _chart_value_overview(games, args=None):
+    """Faint V(s) curve per game plus the mean curve, on a shared 0–1 x-axis."""
+    curves = [g["values"] for g in games if len(g.get("values", [])) >= 2]
+    if not curves:
+        return None
+    plt = viz.pyplot(show=viz.want_show(args))
+    if plt is None:
+        return None
+    fig, ax = plt.subplots(figsize=(10, 4))
+    max_len = max(len(v) for v in curves)
+    resampled = []
+    for g in games:
+        v = g.get("values", [])
+        if len(v) < 2:
+            continue
+        xs = np.linspace(0, 1, len(v))
+        color = "seagreen" if g["result"] > 0 else ("firebrick" if g["result"] < 0 else "gray")
+        ax.plot(xs, v, color=color, alpha=0.18, linewidth=0.8)
+        resampled.append(np.interp(np.linspace(0, 1, max_len), xs, v))
+    if resampled:
+        ax.plot(np.linspace(0, 1, max_len), np.mean(resampled, axis=0),
+                color="navy", linewidth=2.0, label="mean")
+        ax.legend(loc="upper left", fontsize=8)
+    ax.axhline(0, color="gray", linewidth=0.5, linestyle="--")
+    ax.set_xlabel("Fraction of game elapsed")
+    ax.set_ylabel("V(s)")
+    ax.set_title("Value trajectories (green=win, red=loss)")
+    ax.grid(True, alpha=0.3)
+    return viz.save_or_show(plt, fig, "value_overview", args)
+
+
+def cmd_cardvalue(args):
+    """Rank cards by importance for the loaded matchup, then enter the REPL."""
+    model, env, opp_model = _load_model_and_env(args)
+
+    print(f"\nCollecting {args.n_games} game traces...")
+    games = _collect_game_traces(model, env, opp_model, args.n_games)
+    env.close()
+
+    rows = _analyze_cardvalue(games, top_n=args.top)
+    _chart_cardvalue(rows, args=args, top_n=min(args.top, 25))
+
+    _interactive_session({
+        "games": games, "swing_data": None,
+        "shap_values": None, "shap_samples": None,
+        "model": None, "env": None, "opp_model": None, "args": args,
+    })
+
+
+def _capture(fn, *a, **k):
+    """Run a verbose analyzer, returning its printed text instead of stdout."""
+    import io
+    from contextlib import redirect_stdout
+    buf = io.StringIO()
+    with redirect_stdout(buf):
+        fn(*a, **k)
+    return buf.getvalue()
+
+
+def cmd_report(args):
+    """Run the standard battery once and emit a single self-contained HTML report."""
+    import html as _html
+
+    model, env, opp_model = _load_model_and_env(args)
+    print(f"\nCollecting {args.n_games} game traces...")
+    games = _collect_game_traces(model, env, opp_model, args.n_games)
+    env.close()
+
+    out = viz.out_dir(args)
+    deck_a = getattr(args, "deck_a", None) or "?"
+    deck_b = getattr(args, "deck_b", None) or args.opponent
+
+    # Text sections (captured from the verbose analyzers).
+    sections = [
+        ("Summary", _capture(_sim_summary, games)),
+        ("Card importance", _capture(_analyze_cardvalue, games, args.top if hasattr(args, "top") else 30)),
+        ("Value calibration", _capture(_analyze_calibration, games)),
+        ("Turning points", _capture(_analyze_turning_points, games)),
+        ("Trajectory archetypes", _capture(_analyze_clusters, games)),
+        ("Targeting / hold-vs-cast", _capture(_sim_targeting, games)),
+    ]
+
+    # Charts (saved as PNGs alongside the report; referenced by basename).
+    rows = _analyze_cardvalue(games, verbose=False)
+    imgs = []
+    for path in (_chart_cardvalue(rows, args=args), _chart_value_overview(games, args=args)):
+        if path:
+            imgs.append(os.path.basename(path))
+
+    parts = ["<!doctype html><meta charset='utf-8'>",
+             "<style>body{font-family:system-ui,sans-serif;margin:2rem;max-width:1000px}"
+             "pre{background:#f5f5f5;padding:1rem;overflow-x:auto;font-size:12px;line-height:1.3}"
+             "img{max-width:100%;border:1px solid #ddd;margin:0.5rem 0}h1{font-size:1.4rem}"
+             "h2{font-size:1.1rem;border-bottom:1px solid #ccc;padding-bottom:0.2rem}</style>",
+             f"<h1>RoboMage analysis — {_html.escape(deck_a)} vs {_html.escape(deck_b)}</h1>",
+             f"<p>{len(games)} simulated games · model "
+             f"<code>{_html.escape(os.path.basename(args.model))}</code></p>"]
+    for name in imgs:
+        parts.append(f"<img src='{_html.escape(name)}' alt='{_html.escape(name)}'>")
+    for title, text in sections:
+        parts.append(f"<h2>{_html.escape(title)}</h2><pre>{_html.escape(text)}</pre>")
+
+    report_path = os.path.join(out, "report.html")
+    with open(report_path, "w") as f:
+        f.write("\n".join(parts))
+    print(f"\n[report] wrote {report_path}")
+
+
 def cmd_regret(args):
     """Action regret / counterfactual analysis using policy distribution."""
     model, env, opp_model = _load_model_and_env(args)
@@ -3496,9 +2902,7 @@ def cmd_entropy(args):
 
     # Try to plot
     try:
-        import matplotlib
-        matplotlib.use("TkAgg")
-        import matplotlib.pyplot as plt
+        plt = viz.pyplot(show=viz.want_show(args))
 
         # Entropy by phase
         phase_data = {}
@@ -3507,7 +2911,7 @@ def cmd_entropy(args):
             phase_data.setdefault(step_name, []).append(r["norm_entropy"])
 
         phases_present = [p for p in _INTERP_STEP_NAMES if p in phase_data]
-        if phases_present:
+        if plt is not None and phases_present:
             fig, axes = plt.subplots(1, 2, figsize=(14, 5))
 
             # Box plot by phase
@@ -3548,8 +2952,7 @@ def cmd_entropy(args):
             ax.legend()
             ax.grid(True, alpha=0.3)
 
-            plt.tight_layout()
-            plt.show()
+            viz.save_or_show(plt, fig, "entropy", args)
     except Exception as e:
         print(f"\nCould not display plot: {e}", file=sys.stderr)
 
@@ -3609,7 +3012,8 @@ def cmd_interactive(args):
 # ── Main ─────────────────────────────────────────────────────────────────────
 
 def main():
-    parser = argparse.ArgumentParser(description="Analyze .rmrec recording files")
+    parser = argparse.ArgumentParser(
+        description="Analyze a trained RoboMage model by simulating games")
     sub = parser.add_subparsers(dest="command", required=True)
 
     # All subcommands and their flags come from cli_spec.ANALYSIS_TOOL (single
@@ -3620,16 +3024,8 @@ def main():
 
     args = parser.parse_args()
     {
-        "summary": cmd_summary,
-        "winrate": cmd_winrate,
-        "actions": cmd_actions,
-        "cards": cmd_cards,
-        "replay": cmd_replay,
-        "compare": cmd_compare,
-        "wl-split": cmd_wl_split,
-        "cast-timing": cmd_cast_timing,
-        "choice-rates": cmd_choice_rates,
-        "targeting": cmd_targeting,
+        "cardvalue": cmd_cardvalue,
+        "report": cmd_report,
         "shap": cmd_shap,
         "value-swings": cmd_value_swings,
         "regret": cmd_regret,

@@ -49,7 +49,7 @@ class Arg:
     required: bool = False
     help: str = ""
     metavar: str = None
-    suggest: str = None   # autocomplete source: "deck" | "checkpoint" | "recording" | None
+    suggest: str = None   # autocomplete source: "deck" | "checkpoint" | None
     multi: bool = False   # TUI: render a suggest-tagged arg as a multi-select (comma-joined)
 
     @property
@@ -110,8 +110,9 @@ def train_opts():
         Arg("--total-timesteps", "int", default=TOTAL_TIMESTEPS,
             help="Total training timesteps"),
         Arg("--tally", "flag", help="Print A/B win tally after each rollout"),
-        Arg("--record", "flag",
-            help="Record all game decisions to a .rmrec binary file in recordings/"),
+        Arg("--fresh", "flag",
+            help="Start the deck's generalist from scratch instead of auto-resuming "
+                 "its existing {deck}__final.zip / newest {deck}__v*.zip (overwrites it)"),
         Arg("--n-envs", "int", default=None,
             help="Number of parallel environments (default: %d, self-play: %d)"
                  % (N_ENVS, N_ENVS_SELF_PLAY)),
@@ -130,8 +131,9 @@ def _opponent_mode():
     """The --self-play | --scripted mutually-exclusive pair (train/sweep)."""
     return MutexGroup([
         Arg("--self-play", "flag",
-            help="Train against a frozen saved checkpoint of the mirror matchup "
-                 "(falls back to the scripted agent if none exists yet)"),
+            help="Train against a frozen deck-pilot snapshot of the opponent deck "
+                 "({opp}__v*.zip / {opp}__final.zip; falls back to the scripted "
+                 "agent if none exists yet)"),
         Arg("--scripted", "flag",
             help="Train against the rule-based scripted agent (the default; "
                  "mutually exclusive with --self-play)"),
@@ -143,10 +145,10 @@ def opponent_pool_opts():
     return [
         Arg("--opponent-pool", "str", default=None,
             help="Comma-separated mix of opponent controllers to randomize per "
-                 "episode, e.g. 'scripted:easy,scripted:hard=2,delver_mav_final'. "
-                 "The token 'random-model' expands to a random checkpoint "
-                 "compatible with the matchup (a model trained to pilot the "
-                 "opponent's deck, i.e. {opp_deck}_{deck}_*.zip). Each item may "
+                 "episode, e.g. 'scripted:easy,scripted:hard=2,mav'. "
+                 "The token 'random-model' expands to a random generalist piloting "
+                 "the opponent's deck (its deck-pilot snapshots {opp_deck}__v*.zip "
+                 "/ {opp_deck}__final.zip). Each item may "
                  "carry an optional '=<weight>'. Overrides the plain scripted "
                  "opponent (ignored with --self-play). In a sweep the same pool "
                  "is applied to every matchup, resolving 'random-model' per matchup."),
@@ -164,25 +166,37 @@ def sim_args():
         Arg("--opponent", "str", required=True, suggest="checkpoint",
             help="Opponent model .zip path, or 'scripted' for rule-based agent"),
         Arg("--deck-a", "str", default=None, suggest="deck",
-            help="Model's deck (.dk stem). Inferred from model filename if omitted."),
+            help="Model's deck (.dk stem) — the deck it pilots. Inferred from the "
+                 "model's deck-pilot filename ({deck}__final.zip) if omitted."),
         Arg("--deck-b", "str", default=None, suggest="deck",
-            help="Opponent's deck (.dk stem). Inferred from opponent filename if omitted; "
-                 "defaults to --deck-a for scripted opponent."),
+            help="Opponent's deck (.dk stem). Per-deck checkpoints don't encode "
+                 "their opponent, so supply this explicitly; for a model opponent "
+                 "it is inferred from that model's own filename, and a scripted "
+                 "opponent defaults to a mirror match (--deck-a)."),
         Arg("--binary", "str", default=BINARY, help="Path to robomage binary"),
         Arg("--bo3", "flag",
             help="Run best-of-three matches (decks must include SIDEBOARD entries)"),
+        Arg("--out", "str", default=None,
+            help="Directory for saved charts/reports (default: train/analysis_out/)"),
+        Arg("--show", "flag",
+            help="Also open charts in a GUI window (needs a local display)"),
     ]
 
 
 # ── Tool definitions ──────────────────────────────────────────────────────────
 
 TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
-    Sub("train", "Train a model (default command)", items=[
+    Sub("train", "Train a deck's generalist model (default command)", items=[
         Arg("--deck", "str", default="delver", suggest="deck",
-            help="Deck the model plays (.dk stem, default: delver)"),
-        Arg("--opponent", "str", required=True, suggest="deck", help="Opponent deck (.dk stem)"),
+            help="Deck the generalist plays (.dk stem, default: delver). Saved as "
+                 "{deck}__final.zip; sessions against any opponent accumulate onto it."),
+        Arg("--opponent", "str", required=True, suggest="deck",
+            help="Opponent deck this session trains against (.dk stem). The model "
+                 "stays a generalist — training vs one opponent continues the same "
+                 "{deck}__final.zip rather than forging a matchup-specific model."),
         Arg("--load", "str", default=None, suggest="checkpoint",
-            help="Resume from checkpoint .zip (or shorthand)"),
+            help="Resume from a specific checkpoint .zip (or shorthand), overriding "
+                 "the default auto-resume of the deck's own generalist"),
         _opponent_mode(),
         *opponent_pool_opts(),
         *train_opts(),
@@ -276,33 +290,20 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
     ]),
 ])
 
-# analysis.py — .rmrec commands are non-interactive (capture); the simulation
-# commands enter a REPL afterwards (interactive → TUI hands over the terminal).
+# analysis.py — every command loads a trained model and simulates games (the
+# .rmrec recording-file commands were removed; the live model-sim path is the
+# single source). 'cardvalue' / 'report' are capture-mode (print/emit files);
+# the rest enter a REPL afterwards (interactive → TUI hands over the terminal).
 ANALYSIS_TOOL = Tool("analysis", "train/analysis.py", subs=[
-    Sub("summary", "Session summary and statistics",
-        items=[Arg("file", "str", required=True, suggest="recording", help="Path to .rmrec recording file")]),
-    Sub("winrate", "Win rate plot over time",
-        items=[Arg("file", "str", required=True, suggest="recording", help="Path to .rmrec recording file")]),
-    Sub("actions", "Action category heatmap by game step",
-        items=[Arg("file", "str", required=True, suggest="recording", help="Path to .rmrec recording file")]),
-    Sub("cards", "Card usage bar chart",
-        items=[Arg("file", "str", required=True, suggest="recording", help="Path to .rmrec recording file")]),
-    Sub("replay", "Replay a single game", items=[
-        Arg("file", "str", required=True, suggest="recording", help="Path to .rmrec recording file"),
-        Arg("--game", "int", required=True, help="Game ID to replay"),
+    Sub("cardvalue", "Rank cards by importance in a matchup (ΔV, policy priority, win-rate)", items=[
+        *sim_args(),
+        Arg("--n-games", "int", default=50, help="Number of games to simulate (default: 50)"),
+        Arg("--top", "int", default=30, help="Show top N cards (default: 30)"),
     ]),
-    Sub("compare", "Compare win rates from two sessions", items=[
-        Arg("file", "str", required=True, suggest="recording", help="First .rmrec recording file"),
-        Arg("file2", "str", required=True, suggest="recording", help="Second .rmrec recording file"),
+    Sub("report", "Run the standard battery and emit a single HTML report", items=[
+        *sim_args(),
+        Arg("--n-games", "int", default=50, help="Number of games to simulate (default: 50)"),
     ]),
-    Sub("wl-split", "Action distribution split by win/loss",
-        items=[Arg("file", "str", required=True, suggest="recording", help="Path to .rmrec recording file")]),
-    Sub("cast-timing", "Per-card cast timing and state by outcome",
-        items=[Arg("file", "str", required=True, suggest="recording", help="Path to .rmrec recording file")]),
-    Sub("choice-rates", "P(chose X | X legal) by board state",
-        items=[Arg("file", "str", required=True, suggest="recording", help="Path to .rmrec recording file")]),
-    Sub("targeting", "Targeting self vs opp, hold vs cast analysis",
-        items=[Arg("file", "str", required=True, suggest="recording", help="Path to .rmrec recording file")]),
     Sub("shap", "SHAP analysis of value function over simulated games", mode="interactive", items=[
         *sim_args(),
         Arg("--n-games", "int", default=50, help="Number of games to simulate (default: 50)"),
@@ -345,11 +346,12 @@ PLAY_TOOL = Tool("play", "train/play.py", flat=True, subs=[
         Arg("--human-deck", "str", required=True, suggest="deck",
             help="Deck the human plays (stem of .dk file)"),
         Arg("--model-deck", "str", required=True, suggest="deck",
-            help="Deck the model plays (stem of .dk file). "
-                 "Automatically loads checkpoints/<model-deck>_<human-deck>_final.zip"),
+            help="Deck the model plays (stem of .dk file). Per-deck checkpoints "
+                 "are keyed on this alone: auto-loads checkpoints/<model-deck>__final.zip "
+                 "(else the newest <model-deck>__v*.zip, else a legacy matchup file)."),
         Arg("--model", "str", default=None, suggest="checkpoint",
             help="Override: explicit path to trained model .zip "
-                 "(default: checkpoints/<model-deck>_<human-deck>_final.zip)"),
+                 "(default: checkpoints/<model-deck>__final.zip)"),
         Arg("--gui", "flag", help="Launch raylib GUI window for human input"),
         Arg("--tui", "flag", default=True, help="Launch the TUI game board (train/tui_game.py)"),
         Arg("--scripted", "flag",

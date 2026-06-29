@@ -31,7 +31,6 @@ from cli_spec import (ALL_TOOLS, REPO_ROOT, MutexGroup)
 VENV_PY = sys.executable
 _DECKS_DIR = os.path.join(REPO_ROOT, "bin", "resources", "decks")
 _CKPT_DIR = os.path.join(REPO_ROOT, "train", "checkpoints")
-_REC_DIRS = [os.path.join(REPO_ROOT, "recordings"), REPO_ROOT]
 
 # Rolling per-command output logs: one file per run, newest 50 kept.
 _CMD_LOG_DIR = os.path.join(REPO_ROOT, "train", "logs", "tui_commands")
@@ -91,15 +90,8 @@ def _expand_checkpoint(val):
     return val   # already a path, a shorthand, or 'scripted' — leave it alone
 
 
-def _scan_recordings():
-    out = []
-    for d in _REC_DIRS:
-        out += glob.glob(os.path.join(d, "*.rmrec"))
-    return sorted(os.path.relpath(p, REPO_ROOT) for p in out)
-
-
 # Suggestion source tagged on each Arg in cli_spec (arg.suggest) → scanner.
-_SCANNERS = {"deck": _scan_decks, "checkpoint": _scan_checkpoints, "recording": _scan_recordings}
+_SCANNERS = {"deck": _scan_decks, "checkpoint": _scan_checkpoints}
 
 
 def _suggestions_for(arg):
@@ -193,11 +185,11 @@ class LauncherApp(App):
         return Horizontal(label, widget, classes=classes)
 
     def _options_for(self, a):
-        """Dropdown options for a suggest-tagged arg (decks/checkpoints/recordings)."""
-        # --load resumes training the {deck}_{opponent} matchup, so it only
-        # offers checkpoints saved for that matchup (see _matchup_checkpoints).
+        """Dropdown options for a suggest-tagged arg (decks/checkpoints)."""
+        # --load resumes a specific checkpoint of the selected deck's generalist,
+        # so it offers that deck's own pilots (see _deck_checkpoints).
         if a.name == "--load" and a.suggest == "checkpoint":
-            return self._matchup_checkpoints()
+            return self._deck_checkpoints()
         opts = list(_suggestions_for(a))
         # Fields that also accept the rule-based agent get a 'scripted' option.
         if a.suggest == "checkpoint" and (a.default == "scripted" or a.name == "--opponent"):
@@ -213,17 +205,16 @@ class LauncherApp(App):
         v = f["widget"].value
         return v if isinstance(v, str) and v else None
 
-    def _matchup_checkpoints(self):
-        """Checkpoints compatible with the currently selected matchup.
+    def _deck_checkpoints(self):
+        """Checkpoints piloting the currently selected deck.
 
-        Training checkpoints are named '{model_deck}_{opp_deck}_final.zip' (and
-        '..._{N}_steps.zip'); resuming requires a checkpoint of the same
-        matchup, so only filenames prefixed with the chosen '{deck}_{opponent}_'
-        are offered. Empty until both deck and opponent are chosen."""
-        deck, opp = self._field_value("--deck"), self._field_value("--opponent")
-        if not deck or not opp:
+        Models are per-deck generalists named '{deck}__final.zip' /
+        '{deck}__v{steps}.zip', so the --load dropdown offers the chosen deck's
+        own pilots (the opponent is irrelevant). Empty until a deck is chosen."""
+        deck = self._field_value("--deck")
+        if not deck:
             return []
-        prefix = f"{deck}_{opp}_"
+        prefix = f"{deck}__"
         return [c for c in _scan_checkpoints() if c.startswith(prefix)]
 
     def _refresh_load_options(self):
@@ -233,7 +224,7 @@ class LauncherApp(App):
         if field is None:
             return
         sel = field["widget"]
-        opts = self._matchup_checkpoints()
+        opts = self._deck_checkpoints()
         keep = sel.value if (isinstance(sel.value, str) and sel.value in opts) else None
         sel.set_options([(v, v) for v in opts])
         if keep is not None:
@@ -267,7 +258,7 @@ class LauncherApp(App):
             self._help_by_widget[w] = a.help
             return self._row(a.name, w, a.required, extra="tall")
         elif a.suggest:
-            # deck / checkpoint / recording → dropdown of repo contents
+            # deck / checkpoint → dropdown of repo contents
             vals = self._options_for(a)
             kwargs = {"allow_blank": True, "compact": True}
             if a.default in vals:
@@ -334,7 +325,7 @@ class LauncherApp(App):
                     argv += [a.name, ",".join(vals)]
                 elif a.required:
                     missing.append(a.name)
-            elif f["kind"] == "pick":   # dropdown of decks/checkpoints/recordings
+            elif f["kind"] == "pick":   # dropdown of decks/checkpoints
                 a = f["arg"]
                 v = f["widget"].value
                 if isinstance(v, str) and v:

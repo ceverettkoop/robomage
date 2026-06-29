@@ -19,7 +19,7 @@ train/checkpoints/*
 .cache/*
 bin/resources/tokenscripts/*.txt
 resources/logs/*
-train/recordings/*.rmrec
+train/analysis_out/*
 bin/resources/decks/temp/*
 .claude/settings.local.json
 diag_draw_*.txt

@@ -15,15 +15,16 @@ Usage:
     # Override binary path:
     python train.py --binary ../bin/robomage
 
-    # Resume from checkpoint:
-    python train.py --load checkpoints/robomage_100000_steps.zip
+    # Models are per-deck generalists ({deck}__final.zip / {deck}__v{steps}.zip):
+    # a training session auto-resumes and continues the deck's one model, so
+    # training vs a single opponent just generalizes it further.
+    python train.py --deck delver --opponent mav    # continue delver's generalist
+    python train.py --deck delver --opponent mav --fresh    # start it over
 """
 
 import argparse
 import os
-import struct
 import sys
-import time
 from collections import deque
 
 from env import (RoboMageEnv, ModelVsScriptedEnv, SelfPlayEnv, FixedModelEnv, NarrativeEnv,
@@ -54,198 +55,10 @@ except ImportError:
     print("Install with: pip install sb3-contrib")
 
 from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv
-from stable_baselines3.common.callbacks import CheckpointCallback, EvalCallback, BaseCallback
+from stable_baselines3.common.callbacks import BaseCallback
 from stable_baselines3.common.monitor import Monitor
 
 import numpy as np
-
-# ── Recording format constants (.rmrec) ──────────────────────────────────────
-RECORD_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "recordings")
-REC_MAGIC = b"RMRC"
-REC_VERSION = 2  # v2: card_ids widened from u8 to u16 (vocab > 255)
-REC_GAME_START = 0x01
-REC_DECISION   = 0x02
-REC_GAME_END   = 0x03
-REC_CARD_ID_NULL = 0xFFFF  # u16 null sentinel for a per-action card id
-
-# struct formats (all little-endian)
-_SESSION_HDR_FMT = "<4sHqH"   # magic(4) + version(u16) + timestamp(i64) + n_envs(u16)
-_GAME_START_FMT  = "<BHIb"    # type(u8) + env_id(u16) + game_id(u32) + model_is_a(i8)
-_DECISION_FMT    = "<BHIHbbbBBBB6s64s128s64sBBBB"
-# type(u8) + env_id(u16) + game_id(u32) + decision_idx(u16) + step_idx(i8)
-# + priority_is_a(i8) + active_is_a(i8) + num_choices(u8) + action_chosen(u8)
-# + self_life(u8) + opp_life(u8) + self_mana(6B)
-# + categories(64B) + card_ids(64×u16 = 128B) + ctrl_flags(64B)
-# + self_creatures(u8) + self_lands(u8) + opp_creatures(u8) + opp_lands(u8)
-_GAME_END_FMT    = "<BHIbHfI"
-# type(u8) + env_id(u16) + game_id(u32) + result(i8) + n_decisions(u16)
-# + total_reward(f32) + timestep(u32)
-
-
-def _write_length_prefixed(f, s: str):
-    """Write a u16-length-prefixed UTF-8 string."""
-    encoded = s.encode("utf-8")
-    f.write(struct.pack("<H", len(encoded)))
-    f.write(encoded)
-
-
-def _read_length_prefixed(f) -> str:
-    """Read a u16-length-prefixed UTF-8 string."""
-    (length,) = struct.unpack("<H", f.read(2))
-    return f.read(length).decode("utf-8")
-
-
-class RecordCallback(BaseCallback):
-    """Records every game decision to a binary .rmrec file during training."""
-
-    def __init__(self, path: str, n_envs: int, model_path: str, model_deck: str,
-                 self_play: bool):
-        super().__init__()
-        self._path = path
-        self._n_envs = n_envs
-        self._model_path = model_path or "scratch"
-        self._model_deck = model_deck
-        self._self_play = self_play
-        self._file = None
-        self._game_id_counter = 0
-        self._env_game_ids = {}      # env_id -> current game_id
-        self._env_seen_game = set()  # env_ids that have had their Game Start written
-        self._env_decisions = {}     # env_id -> count of decisions this game
-        self._env_rewards = {}       # env_id -> accumulated reward this game
-        self._step_counter = 0
-
-    def _on_training_start(self) -> None:
-        os.makedirs(os.path.dirname(self._path), exist_ok=True)
-        self._file = open(self._path, "wb")
-        # Write session header
-        self._file.write(struct.pack(_SESSION_HDR_FMT, REC_MAGIC, REC_VERSION,
-                                     int(time.time()), self._n_envs))
-        _write_length_prefixed(self._file, self._model_path)
-        _write_length_prefixed(self._file, self._model_deck)
-        self._file.write(struct.pack("B", 1 if self._self_play else 0))
-        self._file.flush()
-
-    def _on_step(self) -> bool:
-        self._step_counter += 1
-        infos = self.locals["infos"]
-        obs = self.locals.get("obs_tensor")
-        if obs is not None:
-            obs = obs.cpu().numpy() if hasattr(obs, "cpu") else np.asarray(obs)
-        actions = self.locals.get("actions")
-        if actions is not None:
-            actions = np.asarray(actions).flatten()
-
-        for i, info in enumerate(infos):
-            meta = info.get("game_meta")
-            if meta is None:
-                continue
-
-            # New game detection: write Game Start if not seen yet
-            if i not in self._env_seen_game:
-                self._game_id_counter += 1
-                gid = self._game_id_counter
-                self._env_game_ids[i] = gid
-                self._env_seen_game.add(i)
-                self._env_decisions[i] = 0
-                self._env_rewards[i] = 0.0
-                self._file.write(struct.pack(_GAME_START_FMT, REC_GAME_START,
-                                             i, gid, 1 if meta["model_is_a"] else 0))
-                _write_length_prefixed(self._file, meta.get("opp_deck", "unknown"))
-                _write_length_prefixed(self._file, meta.get("opp_type", "scripted"))
-
-            gid = self._env_game_ids.get(i, 0)
-            dec_idx = info.get("decision_idx", self._env_decisions.get(i, 0))
-            self._env_decisions[i] = dec_idx
-
-            # Write Decision record
-            if obs is not None and i < len(obs):
-                o = obs[i]
-                step_idx = int(np.argmax(o[18:31]))
-                priority_is_a = 1 if o[32] > 0.5 else 0
-                active_is_a = 1 if ((o[31] > 0.5) == (priority_is_a == 1)) else 0
-                self_life = min(255, max(0, int(round(o[0] * 20))))
-                opp_life = min(255, max(0, int(round(o[9] * 20))))
-                self_mana = bytes([min(255, max(0, int(round(o[3 + j] * 10)))) for j in range(6)])
-
-                cats_raw = np.round(o[STATE_SIZE:STATE_SIZE + MAX_ACTIONS] * ACTION_CATEGORY_MAX).astype(int)
-                ids_raw = o[STATE_SIZE + MAX_ACTIONS:STATE_SIZE + 2 * MAX_ACTIONS]
-                ctrl_raw = o[STATE_SIZE + 2 * MAX_ACTIONS:STATE_SIZE + 3 * MAX_ACTIONS]
-
-                # Authoritative choice count from the env (BQUERY header N).
-                # The padded action slots are content-indistinguishable from a
-                # real PASS (cat 0, id null sentinel), so they cannot be inferred
-                # from the obs alone — rely on the env-supplied count, defaulting
-                # to MAX_ACTIONS only if it is somehow absent.
-                num_choices = min(int(info.get("num_choices", MAX_ACTIONS)), MAX_ACTIONS)
-
-                cats_bytes = bytes([max(0, min(127, int(c))) if j < num_choices else 255
-                                    for j, c in enumerate(cats_raw[:MAX_ACTIONS])])
-                # Card ids are u16 (vocab can exceed 255); null/out-of-range → 0xFFFF.
-                ids_list = []
-                for v in ids_raw[:MAX_ACTIONS]:
-                    idx = int(round(float(v) * N_CARD_TYPES))
-                    ids_list.append(idx if 0 <= idx < N_CARD_TYPES else REC_CARD_ID_NULL)
-                ids_bytes = struct.pack(f"<{MAX_ACTIONS}H", *ids_list)
-                ctrl_bytes = bytes([1 if v > 0.5 else (0 if v > -0.01 else 255)
-                                    for v in ctrl_raw[:MAX_ACTIONS]])
-
-                action_chosen = int(actions[i]) if actions is not None and i < len(actions) else 0
-
-                # Count creatures and lands on each side
-                from env import _BF_START, _BF_SLOT_SIZE, _PERM_A_SLOTS, _OFF_IS_CREATURE, _OFF_IS_LAND
-                self_creatures = self_lands = opp_creatures = opp_lands = 0
-                for s in range(_PERM_A_SLOTS):
-                    base = _BF_START + s * _BF_SLOT_SIZE
-                    if o[base + _OFF_IS_CREATURE] > 0.5:
-                        self_creatures += 1
-                    if o[base + _OFF_IS_LAND] > 0.5:
-                        self_lands += 1
-                    base_opp = _BF_START + (s + _PERM_A_SLOTS) * _BF_SLOT_SIZE
-                    if o[base_opp + _OFF_IS_CREATURE] > 0.5:
-                        opp_creatures += 1
-                    if o[base_opp + _OFF_IS_LAND] > 0.5:
-                        opp_lands += 1
-
-                self._file.write(struct.pack(
-                    _DECISION_FMT, REC_DECISION, i, gid, dec_idx,
-                    step_idx, priority_is_a, active_is_a,
-                    min(255, num_choices), min(255, action_chosen),
-                    self_life, opp_life, self_mana,
-                    cats_bytes, ids_bytes, ctrl_bytes,
-                    min(255, self_creatures), min(255, self_lands),
-                    min(255, opp_creatures), min(255, opp_lands),
-                ))
-
-            # Track reward
-            reward = self.locals.get("rewards")
-            if reward is not None:
-                self._env_rewards[i] = self._env_rewards.get(i, 0.0) + float(reward[i])
-
-            # Game End
-            if "episode" in info:
-                ep_reward = info["episode"]["r"]
-                result = 1 if ep_reward > 0 else (-1 if ep_reward < 0 else 0)
-                self._file.write(struct.pack(
-                    _GAME_END_FMT, REC_GAME_END, i, gid, result,
-                    self._env_decisions.get(i, 0),
-                    float(self._env_rewards.get(i, 0.0)),
-                    self.num_timesteps,
-                ))
-                # Reset for next game on this env
-                self._env_seen_game.discard(i)
-
-        # Periodic flush
-        if self._step_counter % 1000 == 0:
-            self._file.flush()
-
-        return True
-
-    def _on_training_end(self) -> None:
-        if self._file is not None:
-            self._file.flush()
-            self._file.close()
-            self._file = None
-            print(f"[record] Saved recording to {self._path}")
 
 
 class WinTallyCallback(BaseCallback):
@@ -718,18 +531,27 @@ def make_league_env(rank: int, learner_deck: str, roster: list[str], checkpoint_
 
 def train(binary_path: str, load_path: str | None = None, total_timesteps: int = TOTAL_TIMESTEPS,
           tally: bool = False, self_play: bool = False,
-          model_deck: str = "delver", opp_deck: str = "delver", record: bool = False,
+          model_deck: str = "delver", opp_deck: str = "delver",
           n_envs_override: int | None = None, no_shaping: bool = False,
           opponent_pool: str | None = None, opp_ckpt_ratio: float = 1.0,
-          embed_dim: int = EMBED_DIM, **env_kwargs):
-    """Train the model.
+          embed_dim: int = EMBED_DIM, fresh: bool = False, **env_kwargs):
+    """Train the per-deck generalist model that pilots ``model_deck``.
+
+    Models are **per-deck generalists**, not matchup-specific: one model plays
+    ``model_deck`` against any opponent, saved as ``{model_deck}__final.zip`` with
+    periodic ``{model_deck}__v{steps}.zip`` snapshots (the deck-pilot naming the
+    league and self-play pools sample from). Training against a single opponent
+    in a session just continues that one generalist, so unless ``--load`` or
+    ``fresh`` is given the deck's existing ``__final`` (or newest snapshot) is
+    auto-resumed and this session's steps accumulate onto it.
 
     Two opponent modes (mutually exclusive):
       * default (``self_play=False``) — every env trains against the rule-based
-        scripted agent (``ModelVsScriptedEnv``).
-      * ``self_play=True`` — every env trains against a frozen saved checkpoint
-        of the mirror matchup (``SelfPlayEnv``); if no compatible checkpoint
-        exists yet, that env's opponent falls back to the scripted agent.
+        scripted agent (``ModelVsScriptedEnv``), piloting ``opp_deck``.
+      * ``self_play=True`` — every env trains against a frozen deck-pilot snapshot
+        of ``opp_deck`` (``SelfPlayEnv`` samples ``{opp_deck}__v*.zip`` /
+        ``{opp_deck}__final.zip``); if none exists yet, that env's opponent falls
+        back to the scripted agent.
 
     Extra keyword arguments (``bo3``, ``auto_sideboard``, etc.) are forwarded
     to the underlying ``RoboMageEnv`` via the env factory helpers.
@@ -764,12 +586,15 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
             net_arch=[256, 256],
         )
 
-        model_prefix = f"{model_deck}_{opp_deck}"
-        if not load_path and self_play:
-            candidate = os.path.join(checkpoint_dir, f"{model_prefix}_final.zip")
-            if os.path.exists(candidate):
-                load_path = candidate
-                print(f"Auto-loading self-play checkpoint: {candidate}")
+        # Per-deck generalist: auto-resume this deck's own latest checkpoint so a
+        # single-opponent session accumulates onto the one model (unless --load
+        # gave an explicit path or --fresh forced a scratch start).
+        if not load_path and not fresh:
+            auto = _resolve_model(model_deck)
+            if auto != model_deck and os.path.exists(auto):
+                load_path = auto
+                print(f"Auto-resuming deck generalist: {auto} "
+                      f"(use --fresh to start from scratch)")
 
         if load_path:
             print(f"Resuming from {load_path}")
@@ -795,12 +620,10 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
         if no_shaping:
             vec_env.env_method("set_shaping_scale", 0.0)
             print("[shaping] disabled for this session (--no-shaping)")
+        # Periodic deck-pilot snapshots ('{deck}__v{steps}.zip') feed the shared
+        # self-play / league pools; the '{deck}__final.zip' is saved at the end.
         callbacks = [
-            CheckpointCallback(
-                save_freq=250_000 // actual_n_envs,
-                save_path=checkpoint_dir,
-                name_prefix=model_prefix,
-            ),
+            SnapshotCallback(checkpoint_dir, model_deck, LEAGUE_SNAPSHOT_EVERY),
         ]
         if not no_shaping:
             callbacks.append(ShapingScaleCallback(vec_env))
@@ -809,17 +632,11 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
         callbacks.append(ReplayLogCallback(binary_path=binary_path,
                                            model_deck=model_deck, opp_deck=opp_deck,
                                            bo3=env_kwargs.get("bo3", False)))
-        if record:
-            rec_path = os.path.join(RECORD_DIR, f"{model_prefix}_{int(time.time())}.rmrec")
-            callbacks.append(RecordCallback(
-                path=rec_path, n_envs=actual_n_envs, model_path=load_path,
-                model_deck=model_deck, self_play=self_play,
-            ))
 
         print(f"Training for {total_timesteps:,} timesteps across {actual_n_envs} envs...")
         model.learn(total_timesteps=total_timesteps, callback=callbacks, reset_num_timesteps=load_path is None)
-        model.save(os.path.join(checkpoint_dir, f"{model_prefix}_final"))
-        print(f"Saved final model as {model_prefix}_final.")
+        model.save(os.path.join(checkpoint_dir, f"{model_deck}__final"))
+        print(f"Saved final model as {model_deck}__final.")
     finally:
         vec_env.close()
 
@@ -829,7 +646,7 @@ def _league_chunk(binary_path: str, learner_deck: str, roster: list[str],
                   n_envs: int, opp_ckpt_ratio: float, self_play_frac: float,
                   scripted_anchor_frac: float, pfsp_mode: str, pfsp_p: float,
                   softmax_eta: float, snapshot_every: int, promote_margin: float,
-                  embed_dim: int, no_shaping: bool, record: bool, **env_kwargs):
+                  embed_dim: int, no_shaping: bool, **env_kwargs):
     """Train one learner deck for ``chunk_steps`` against the shared league pool.
 
     Resumes the learner's own latest checkpoint (``{deck}__final`` or newest
@@ -876,11 +693,6 @@ def _league_chunk(binary_path: str, learner_deck: str, roster: list[str],
         ]
         if not no_shaping:
             callbacks.append(ShapingScaleCallback(vec_env))
-        if record:
-            rec_path = os.path.join(RECORD_DIR, f"{learner_deck}__league_{int(time.time())}.rmrec")
-            callbacks.append(RecordCallback(
-                path=rec_path, n_envs=n_envs, model_path=resume,
-                model_deck=learner_deck, self_play=True))
 
         start_steps = model.num_timesteps
         model.learn(total_timesteps=chunk_steps, callback=callbacks,
@@ -905,7 +717,7 @@ def league(binary_path: str, decks: str | None = None,
            promote_margin: float = LEAGUE_PROMOTE_MARGIN,
            embed_dim: int = EMBED_DIM, n_envs_override: int | None = None,
            opp_ckpt_ratio: float = 1.0, no_shaping: bool = False,
-           record: bool = False, tally: bool = False, **env_kwargs):
+           tally: bool = False, **env_kwargs):
     """PFSP league driver: rotating single learner over a shared snapshot pool.
 
     One learner deck at a time trains for ``rotate_every`` steps against a frozen
@@ -950,7 +762,7 @@ def league(binary_path: str, decks: str | None = None,
             self_play_frac=self_play_frac, scripted_anchor_frac=scripted_anchor_frac,
             pfsp_mode=pfsp_mode, pfsp_p=pfsp_p, softmax_eta=softmax_eta,
             snapshot_every=snapshot_every, promote_margin=promote_margin,
-            embed_dim=embed_dim, no_shaping=no_shaping, record=record, **env_kwargs)
+            embed_dim=embed_dim, no_shaping=no_shaping, **env_kwargs)
         steps_done += ran if ran else chunk
         rotation += 1
 
@@ -960,14 +772,14 @@ def league(binary_path: str, decks: str | None = None,
 def train_fixed_model(binary_path: str, model_deck: str, opp_deck: str,
                       load_path: str | None = None,
                       total_timesteps: int = TOTAL_TIMESTEPS,
-                      tally: bool = False, record: bool = False,
+                      tally: bool = False,
                       n_envs_override: int | None = None,
                       no_shaping: bool = False, **env_kwargs):
-    """Train model_deck against a fixed opponent model for opp_deck.
+    """Train ``model_deck``'s generalist against ``opp_deck``'s fixed generalist.
 
-    Loads ``{model_deck}_{opp_deck}_final.zip`` as the training model (or
-    ``load_path`` if given) and ``{opp_deck}_{model_deck}_final.zip`` as the
-    fixed opponent for every game.
+    Both sides are per-deck generalists: resumes ``{model_deck}__final.zip`` (or
+    ``load_path``) as the training model and freezes ``{opp_deck}__final.zip``
+    (or its newest snapshot) as the opponent for every game.
 
     Extra keyword arguments (``bo3``, ``auto_sideboard``, etc.) are forwarded
     to the underlying ``RoboMageEnv`` via the env factory helpers.
@@ -977,21 +789,20 @@ def train_fixed_model(binary_path: str, model_deck: str, opp_deck: str,
     os.makedirs(checkpoint_dir, exist_ok=True)
     os.makedirs(LOG_DIR, exist_ok=True)
 
-    model_prefix = f"{model_deck}_{opp_deck}"
-    opp_prefix = f"{opp_deck}_{model_deck}"
-
     if not load_path:
-        candidate = os.path.join(checkpoint_dir, f"{model_prefix}_final.zip")
-        if os.path.exists(candidate):
+        candidate = _resolve_model(model_deck)
+        if candidate != model_deck and os.path.exists(candidate):
             load_path = candidate
     if not load_path:
-        raise FileNotFoundError(f"No training model found: {model_prefix}_final.zip")
+        raise FileNotFoundError(f"No training model found piloting {model_deck} "
+                                f"({model_deck}__final.zip or {model_deck}__v*.zip)")
 
-    opp_model_path = os.path.join(checkpoint_dir, f"{opp_prefix}_final.zip")
-    if not os.path.exists(opp_model_path):
-        raise FileNotFoundError(f"No opponent model found: {opp_model_path}")
+    opp_model_path = _resolve_model(opp_deck)
+    if opp_model_path == opp_deck or not os.path.exists(opp_model_path):
+        raise FileNotFoundError(f"No opponent model found piloting {opp_deck} "
+                                f"({opp_deck}__final.zip or {opp_deck}__v*.zip)")
 
-    print(f"Training {model_prefix} against fixed opponent {opp_prefix}")
+    print(f"Training {model_deck} generalist against fixed {opp_deck} generalist")
     print(f"  training model: {load_path}")
     print(f"  opponent model: {opp_model_path}")
 
@@ -1014,11 +825,7 @@ def train_fixed_model(binary_path: str, model_deck: str, opp_deck: str,
             vec_env.env_method("set_shaping_scale", 0.0)
             print("[shaping] disabled for this session (--no-shaping)")
         callbacks = [
-            CheckpointCallback(
-                save_freq=250_000 // n_envs,
-                save_path=checkpoint_dir,
-                name_prefix=model_prefix,
-            ),
+            SnapshotCallback(checkpoint_dir, model_deck, LEAGUE_SNAPSHOT_EVERY),
         ]
         if not no_shaping:
             callbacks.append(ShapingScaleCallback(vec_env))
@@ -1027,29 +834,23 @@ def train_fixed_model(binary_path: str, model_deck: str, opp_deck: str,
         callbacks.append(ReplayLogCallback(binary_path=binary_path,
                                            model_deck=model_deck, opp_deck=opp_deck,
                                            bo3=env_kwargs.get("bo3", False)))
-        if record:
-            rec_path = os.path.join(RECORD_DIR, f"{model_prefix}_fixed_{int(time.time())}.rmrec")
-            callbacks.append(RecordCallback(
-                path=rec_path, n_envs=n_envs, model_path=load_path,
-                model_deck=model_deck, self_play=False,
-            ))
 
         print(f"Training for {total_timesteps:,} timesteps across {n_envs} envs...")
         model.learn(total_timesteps=total_timesteps, callback=callbacks, reset_num_timesteps=False)
-        model.save(os.path.join(checkpoint_dir, f"{model_prefix}_final"))
-        print(f"Saved final model as {model_prefix}_final.")
+        model.save(os.path.join(checkpoint_dir, f"{model_deck}__final"))
+        print(f"Saved final model as {model_deck}__final.")
     finally:
         vec_env.close()
 
 
 def train_alternate(binary_path: str, deck_a: str, deck_b: str,
                     alternate_steps: int, total_timesteps: int = TOTAL_TIMESTEPS,
-                    tally: bool = False, record: bool = False,
+                    tally: bool = False,
                     n_envs_override: int | None = None,
                     no_shaping: bool = False, **env_kwargs):
-    """Alternate training between two decks every ``alternate_steps`` timesteps.
+    """Alternate training between two decks' generalists every ``alternate_steps``.
 
-    Each round trains one side against the other's latest final checkpoint,
+    Each round trains one deck's generalist against the other's frozen generalist,
     then saves and swaps roles.
 
     Extra keyword arguments (``bo3``, ``auto_sideboard``, etc.) are forwarded
@@ -1058,11 +859,12 @@ def train_alternate(binary_path: str, deck_a: str, deck_b: str,
     checkpoint_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), CHECKPOINT_DIR)
     os.makedirs(checkpoint_dir, exist_ok=True)
 
-    # Verify both models exist
-    for d, o in [(deck_a, deck_b), (deck_b, deck_a)]:
-        path = os.path.join(checkpoint_dir, f"{d}_{o}_final.zip")
-        if not os.path.exists(path):
-            raise FileNotFoundError(f"Missing model: {path}")
+    # Verify both decks have a generalist checkpoint to alternate between.
+    for d in (deck_a, deck_b):
+        resolved = _resolve_model(d)
+        if resolved == d or not os.path.exists(resolved):
+            raise FileNotFoundError(f"Missing model piloting {d} "
+                                    f"({d}__final.zip or {d}__v*.zip)")
 
     steps_done = 0
     round_num = 0
@@ -1080,7 +882,7 @@ def train_alternate(binary_path: str, deck_a: str, deck_b: str,
         print(f"{'='*60}")
 
         train_fixed_model(binary_path, training_deck, opp_deck,
-                          total_timesteps=round_steps, tally=tally, record=record,
+                          total_timesteps=round_steps, tally=tally,
                           n_envs_override=n_envs_override,
                           no_shaping=no_shaping, **env_kwargs)
 
@@ -1217,19 +1019,22 @@ def _run_sweep(args, parser, decks_filter):
     print(f"Training {len(matchups)} matchups ({label}) for {args.total_timesteps:,} timesteps each:")
     for d, o in matchups:
         print(f"  {d} vs {o}")
-    checkpoint_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), CHECKPOINT_DIR)
+    # Each matchup session continues the trained deck's one generalist ({d}__final),
+    # so a deck trained across several opponents in a sweep accumulates onto a
+    # single model. train() auto-resumes it; we only force-fresh the very first
+    # session of each deck so a re-run keeps building rather than wiping.
+    seen_decks = set()
     for i, (d, o) in enumerate(matchups):
         print(f"\n{'='*60}")
         print(f"[{i+1}/{len(matchups)}] {d} vs {o}")
         print(f"{'='*60}")
-        candidate = os.path.join(checkpoint_dir, f"{d}_{o}_final.zip")
-        resume_path = candidate if os.path.exists(candidate) else None
-        train(args.binary, load_path=resume_path, total_timesteps=args.total_timesteps,
+        train(args.binary, load_path=None, total_timesteps=args.total_timesteps,
               tally=args.tally, self_play=args.self_play,
-              model_deck=d, opp_deck=o, record=args.record,
+              model_deck=d, opp_deck=o, fresh=(args.fresh and d not in seen_decks),
               n_envs_override=args.n_envs, no_shaping=args.no_shaping,
               opponent_pool=args.opponent_pool, opp_ckpt_ratio=args.opponent_ckpt_ratio,
               embed_dim=args.embed_dim, **env_kwargs)
+        seen_decks.add(d)
     print(f"\nAll {len(matchups)} matchups complete.")
 
 
@@ -1266,28 +1071,28 @@ if __name__ == "__main__":
                snapshot_every=args.snapshot_every, promote_margin=args.promote_margin,
                embed_dim=args.embed_dim, n_envs_override=args.n_envs,
                opp_ckpt_ratio=args.opponent_ckpt_ratio, no_shaping=args.no_shaping,
-               record=args.record, tally=args.tally, **env_kwargs)
+               tally=args.tally, **env_kwargs)
     elif args.command == "train":
         train(args.binary, _resolve_model(args.load), args.total_timesteps,
               tally=args.tally, self_play=args.self_play,
-              model_deck=args.deck, opp_deck=args.opponent, record=args.record,
+              model_deck=args.deck, opp_deck=args.opponent,
               n_envs_override=args.n_envs, no_shaping=args.no_shaping,
               opponent_pool=args.opponent_pool, opp_ckpt_ratio=args.opponent_ckpt_ratio,
-              embed_dim=args.embed_dim, **env_kwargs)
+              embed_dim=args.embed_dim, fresh=args.fresh, **env_kwargs)
     elif args.command == "sweep":
         _run_sweep(args, parser, args.deck)
     elif args.command == "fixed-model":
         train_fixed_model(args.binary, args.deck, args.opponent,
                           load_path=_resolve_model(args.load),
                           total_timesteps=args.total_timesteps,
-                          tally=args.tally, record=args.record,
+                          tally=args.tally,
                           n_envs_override=args.n_envs,
                           no_shaping=args.no_shaping, **env_kwargs)
     elif args.command == "alternate":
         train_alternate(args.binary, args.deck, args.opponent,
                         alternate_steps=args.every,
                         total_timesteps=args.total_timesteps,
-                        tally=args.tally, record=args.record,
+                        tally=args.tally,
                         n_envs_override=args.n_envs,
                         no_shaping=args.no_shaping, **env_kwargs)
     elif args.command == "observe":
