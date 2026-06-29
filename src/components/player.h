@@ -8,6 +8,7 @@
 #include <vector>
 #include "../classes/colors.h"
 #include "../ecs/entity.h"
+#include "counter_map.h"
 
 struct Player {
     int32_t life_total = 20;
@@ -17,7 +18,7 @@ struct Player {
     // here under "POISON" (replacing the old dedicated poison_counters field); energy ({E})
     // lives under "ENERGY" (CR 122.1c). Mutate via the get/add helpers below so all counter
     // kinds share one store. An entry is absent (not 0) when the player has none of that type.
-    std::map<std::string, int> counters;
+    CounterMap counters;
     std::multiset<Colors> mana;
     uint8_t lands_played_this_turn = 0;
     size_t spells_cast_this_turn = 0;
