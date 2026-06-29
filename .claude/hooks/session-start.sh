@@ -8,8 +8,10 @@
 #      bin/resources/cardsfolder/ but are .gitignored and fetched on demand
 #      from Card-Forge/forge, so a fresh clone has none and the engine asserts
 #      the moment it tries to load a card.
-#   3. A headless build of the engine (bin/robomage). The GUI build needs raylib
-#      which isn't vendored in the cloud env, so we build with HEADLESS=TRUE.
+#
+# It does NOT build the engine — building is left to the user (`make HEADLESS=TRUE`)
+# so the hook can't clobber a bin/robomage that a running training/league job is
+# exec'ing (a mid-session rebuild races the workers and fails them with EACCES).
 set -euo pipefail
 
 ROOT="${CLAUDE_PROJECT_DIR:-$(cd "$(dirname "$0")/../.." && pwd)}"
@@ -100,8 +102,5 @@ for nm in names:
 if tokens:
     subprocess.run([sys.executable, tool, "--token", *sorted(tokens)], check=False)
 PY
-
-echo "[session-start] Building the engine (headless)..."
-make HEADLESS=TRUE
 
 echo "[session-start] Done."
