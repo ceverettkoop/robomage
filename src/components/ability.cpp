@@ -947,7 +947,11 @@ size_t evaluate_dynamic_amount(
     }
     if (expr.find("Count$InYourLibrary") != std::string::npos ||
         expr.find("Count$ValidLibrary Card.YouOwn") != std::string::npos) {
-        return orderer->get_library_contents(ctrl).size();
+        size_t lib = orderer->get_library_contents(ctrl).size();
+        // /HalfUp — half the count, rounded up (Tamiyo, Seasoned Scholar's -7: "draw cards
+        // equal to half the number of cards in your library, rounded up"). ceil(N/2).
+        if (expr.find("/HalfUp") != std::string::npos) return (lib + 1) / 2;
+        return lib;
     }
     if (expr.find("Count$YourLifeTotal") != std::string::npos) {
         Entity ctrl_entity = (ctrl == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;

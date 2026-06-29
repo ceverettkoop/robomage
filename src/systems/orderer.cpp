@@ -448,6 +448,12 @@ void Orderer::draw_one(Zone::Ownership player, bool fire_draw_event) {
     draw_event.SetParam(Params::PLAYER, player_entity);
     draw_event.SetParam(Params::ENTITY, top);
     draw_event.SetParam(Params::FIRST_IN_STEP, first_in_draw_step ? 1 : 0);
+    // Running 1-based count of cards this player has drawn this turn (cards_drawn_this_turn was
+    // just pushed above, so its size includes this card). Read by a Mode$ Drawn | Number$ N
+    // trigger (Tamiyo, Inquisitive Student's "your third card in a turn") to fire on exactly the
+    // Nth draw — robust even when several cards are drawn in one batch (each event carries its own
+    // ordinal), unlike reading the live counter at trigger-scan time.
+    draw_event.SetParam(Params::AMOUNT, static_cast<uint32_t>(pl.cards_drawn_this_turn.size()));
     global_coordinator.SendEvent(draw_event);
 }
 

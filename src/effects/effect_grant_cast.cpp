@@ -51,12 +51,18 @@ bool grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer) {
     // where the trigger scan fires it like any triggered ability; it lapses at cleanup. General
     // over any DB$ Effect that names a Triggers$ SVar.
     if (!ab.effect_floating_triggers.empty()) {
+        // Duration$ UntilYourNextTurn (Tamiyo, Seasoned Scholar's +2 Effect) extends the floating
+        // trigger past the end of this turn — it persists until the start of the controller's next
+        // turn (removed at their untap, see game.cpp). The Forge default (no flag) lapses at cleanup.
+        bool until_next_turn = ab.duration_until_your_next_turn;
         for (const auto &trig : ab.effect_floating_triggers) {
             Ability ft = trig;
             ft.controller = ab.controller;
+            ft.duration_until_your_next_turn = until_next_turn;
             cur_game.floating_triggers.push_back(ft);
         }
-        game_log("A floating triggered ability is created until end of turn.\n");
+        game_log("A floating triggered ability is created%s.\n",
+                 until_next_turn ? " until your next turn" : " until end of turn");
         return true;
     }
 

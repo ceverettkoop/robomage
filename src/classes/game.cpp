@@ -138,6 +138,16 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                                            return p.until_your_next_turn && p.player == active_player;
                                        }),
                         player_protection_from_everything.end());
+                    // Lapse any "until your next turn" floating triggered ability this player
+                    // created (Tamiyo, Seasoned Scholar's +2 "until your next turn, whenever ...")
+                    // — its duration ends as the controller's next turn begins (CR 611.2).
+                    floating_triggers.erase(
+                        std::remove_if(floating_triggers.begin(), floating_triggers.end(),
+                                       [active_player](const Ability &ft) {
+                                           return ft.duration_until_your_next_turn &&
+                                                  ft.controller == active_player;
+                                       }),
+                        floating_triggers.end());
                     // Phase in phased-out permanents controlled by active player
                     for (Entity entity = 0; entity < global_coordinator.GetMaxIssuedEntity(); ++entity) {
                         if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
@@ -360,7 +370,12 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     may_cast_this_turn.clear();
                     // Floating "this turn" triggered abilities (Forth Eorlingas!'s become-monarch
                     // trigger, CR 603.7e) last only their turn of creation; drop them at cleanup.
-                    floating_triggers.clear();
+                    // A Duration$ UntilYourNextTurn floating trigger (Tamiyo, Seasoned Scholar's +2)
+                    // survives cleanup — it is removed at its controller's next untap step instead.
+                    floating_triggers.erase(
+                        std::remove_if(floating_triggers.begin(), floating_triggers.end(),
+                                       [](const Ability &ft) { return !ft.duration_until_your_next_turn; }),
+                        floating_triggers.end());
                     // Impulse-cast permissions (Amped Raptor) likewise last only "this turn".
                     impulse_cast_permission.clear();
                     auto &player = global_coordinator.GetComponent<Player>(active_player_entity);

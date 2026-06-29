@@ -136,6 +136,13 @@ struct StaticAbility {
     // Ability-removal field (category = "Continuous", layer 6; Humility):
     bool remove_all_abilities = false;      // RemoveAllAbilities$ True — affected objects lose all abilities
 
+    // Maximum-hand-size field (category = "Continuous"; CR 402.2 / 614 hand-size modifier). The
+    // Tamiyo, Seasoned Scholar ultimate emblem grants "You have no maximum hand size."
+    // (SetMaxHandSize$ Unlimited). 0 = the static does not touch max hand size; -1 = no maximum
+    // (Unlimited); a positive N sets the maximum to N. Affected$ You scopes it to the static's
+    // controller; read by the cleanup-step discard check (state_manager.cpp).
+    int set_max_hand_size = 0;
+
     // Untap prevention fields (category = "Continuous" with AddHiddenKeyword):
     std::string hidden_keyword = "";        // "CARDNAME doesn't untap during your untap step."
     std::string affected_subtype = "";      // Affected$ Island — land subtype affected

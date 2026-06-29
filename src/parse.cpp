@@ -1422,6 +1422,11 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
         // BECAME_TARGET event's ENTITY (the targeting object).
         else if (value == "TriggeredSourceSA")
             ability.defined_triggered_source_sa = true;
+        // Defined$ TriggeredAttacker(LKICopy) — the effect acts on the creature whose attack
+        // fired this trigger (Tamiyo, Seasoned Scholar: the attacking creature gets -1/-0).
+        // Bound as the ability's target at trigger-fire time from the CREATURE_ATTACKED event.
+        else if (value == "TriggeredAttacker" || value == "TriggeredAttackerLKICopy")
+            ability.defined_triggered_attacker_lki = true;
         else if (value == "TargetedController") ability.defined_targeted_controller = true;
         // Defined$ TriggeredActivator — the effect acts on the player who caused the trigger
         // (the caster of the triggering spell). The actual player is bound at trigger-fire
@@ -1695,6 +1700,17 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
             // Ultimate$ True is informational: ultimate legality is already covered by the
             // minus-loyalty cost check, so the flag is unused.
             "Ultimate",
+            // AB$ Effect | Triggers$ <SVar> (Tamiyo, Seasoned Scholar's +2): the floating triggered
+            // ability is resolved in the parse_abilities post-loop (where svars are in scope), not
+            // in apply_param_to_ability — so suppress the spurious "unrecognized" warning here.
+            "Triggers",
+            // Stackable$ False on an emblem-making Effect (Tamiyo's ultimate): tells Forge not to
+            // create a second identical emblem. We don't model emblem de-duplication; cosmetic.
+            "Stackable",
+            // ForgetOtherRemembered$ True on a Defined$ Remembered ChangeZone (Tamiyo's front
+            // exile-and-return-transformed): drops the OTHER remembered objects. Only the single
+            // returned card is ever remembered here, so this is a no-op — cosmetic.
+            "ForgetOtherRemembered",
             // DamageMap$ True (RepeatEach DealDamage, e.g. Price of Progress): a Forge
             // bookkeeping flag that the per-iteration damage is collected into one
             // simultaneous damage event. Our resolution deals each player's damage in the
@@ -1941,6 +1957,19 @@ static Ability parse_svar_ability(const std::string& content, Ability::AbilityTy
             sub.target_max_svar = value;
         } else {
             apply_param_to_ability(sub, key, value, card_name);
+        }
+    }
+    // DB$ Effect | StaticAbilities$ <SVar> | Duration$ Permanent — an emblem-making SUB-ability
+    // (Tamiyo, Seasoned Scholar's ultimate DBEmblem: "You get an emblem with 'You have no maximum
+    // hand size.'"). Mirror the top-level emblem resolution in parse_abilities so a sub-ability
+    // Effect also carries its permanent continuous static into effect_emblem_statics, which the
+    // GrantCast handler turns into a player-owned emblem. General over any emblem-making sub-Effect.
+    if (sub.category == "Effect" && !sub.effect_static_ability.empty() &&
+        content.find("Duration$ Permanent") != std::string::npos) {
+        auto it = svars.find(sub.effect_static_ability);
+        if (it != svars.end() && it->second.find("Mode$ Continuous") != std::string::npos) {
+            StaticAbility est = parse_one_static_ability(it->second, svars);
+            if (!est.category.empty()) sub.effect_emblem_statics.push_back(est);
         }
     }
     // Resolve amount_svar through SVars map (same logic as parse_abilities)
@@ -2422,6 +2451,32 @@ static std::vector<Ability> parse_abilities(std::vector<std::string> lines, cons
             }
         }
 
+        // AB$ Effect | Triggers$ <SVar>[,<SVar>...] — a transient floating triggered ability
+        // hosted on a command-zone Effect (Tamiyo, Seasoned Scholar's +2: "until your next turn,
+        // whenever a creature an opponent controls attacks you or a planeswalker you control, it
+        // gets -1/-0"). The sub-ability path (parse_svar_ability) resolves Triggers$ for DB$
+        // Effects; do the same here for a TOP-LEVEL AB$ Effect, where svars are in scope. The
+        // Duration$ (UntilYourNextTurn, parsed onto the ability above) is applied to the registered
+        // floating trigger by the GrantCast handler. General over any AB$ Effect naming a Triggers$.
+        if (ability.category == "Effect" && ability.effect_floating_triggers.empty()) {
+            size_t tp = line.find("Triggers$");
+            if (tp != std::string::npos) {
+                size_t vstart = tp + strlen("Triggers$");
+                while (vstart < line.size() && line[vstart] == ' ') vstart++;
+                size_t vend = line.find('|', vstart);
+                std::string tval = line.substr(vstart,
+                    (vend == std::string::npos ? line.size() : vend) - vstart);
+                while (!tval.empty() && (tval.back() == ' ' || tval.back() == '\r')) tval.pop_back();
+                for (const std::string &svar_name : split(tval, ',', /*skip_empty=*/true)) {
+                    auto it = svars.find(svar_name);
+                    if (it != svars.end()) {
+                        Ability trig = parse_one_trigger(it->second, svars, card_name);
+                        if (trig.trigger_on != 0) ability.effect_floating_triggers.push_back(trig);
+                    }
+                }
+            }
+        }
+
         ret_val.push_back(ability);
     }
 
@@ -2502,8 +2557,11 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
     bool trigger_static = false;
     bool attacking_player_is_you = false;
     bool valid_card_opp_own = false;
+    bool valid_card_opp_ctrl = false;
     bool exclude_first_draw_step = false;
     bool trigger_optional_local = false;
+    size_t draw_number_eq = 0;          // Number$ N on a Mode$ Drawn trigger (Nth-draw gate)
+    bool attacked_defender_you = false; // Attacked$ You,Planeswalker.YouCtrl (the attack hits you/your PW)
     std::string valid_card_subtype;
     size_t activator_this_turn_cast_eq = 0;
     int kicked_index = 0;  // ValidCard$ ...+kicked N — fires only if the Nth kicker was paid
@@ -2604,6 +2662,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
             if (value.find("Sorcery")     != std::string::npos) valid_card_sorcery      = true;
             if (value.find(".YouOwn")     != std::string::npos) valid_card_owner_you    = true;
             if (value.find(".OppOwn")     != std::string::npos) valid_card_opp_own      = true;
+            if (value.find("OppCtrl")     != std::string::npos) valid_card_opp_ctrl     = true;
             if (value.find("Land")        != std::string::npos) valid_card_land         = true;
             if (value.find("Artifact")    != std::string::npos) valid_card_artifact     = true;
             if (value.find("Colorless")   != std::string::npos) valid_card_colorless    = true;
@@ -2649,6 +2708,15 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
                 trigger_optional_local = true;
         } else if (key == "FirstCardInDrawStep") {
             if (value == "False") exclude_first_draw_step = true;
+        } else if (key == "Number") {
+            // Number$ N on a Mode$ Drawn trigger (Tamiyo, Inquisitive Student: "your THIRD card
+            // in a turn"). Fire only on the Nth card the player draws this turn.
+            if (!value.empty() && isdigit((unsigned char)value[0]))
+                draw_number_eq = static_cast<size_t>(std::stoi(value));
+        } else if (key == "Attacked") {
+            // Attacked$ You,Planeswalker.YouCtrl — the attack must be against the trigger's
+            // controller or a planeswalker they control (Tamiyo, Seasoned Scholar's +2 trigger).
+            if (value.find("You") != std::string::npos) attacked_defender_you = true;
         } else if (key == "CombatDamage") {
             if (value == "True") damage_combat_only = true;
         } else if (key == "ActivatorThisTurnCast") {
@@ -2819,6 +2887,11 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
         ability.trigger_on = Events::PLAYER_DREW_CARD;
         ability.trigger_valid_card_opp_own = valid_card_opp_own;
         ability.trigger_exclude_first_draw_step = exclude_first_draw_step;
+        ability.trigger_draw_number_eq = draw_number_eq;
+        // ValidCard$ Card.YouCtrl on a Drawn trigger ("whenever YOU draw ...", Tamiyo): the drawer
+        // must be the source's controller. Reuse the controller-is-event-player gate (the
+        // PLAYER_DREW_CARD event's PLAYER is the drawer), set by YouCtrl in the ValidCard parse.
+        ability.trigger_valid_player_is_controller = valid_player_is_you;
     }
 
     // "Whenever CARDNAME attacks, ..." — Phelia (Mode$ Attacks | ValidCard$ Card.Self). Fires
@@ -2827,6 +2900,11 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
     if (mode_is_attacks) {
         ability.trigger_on = Events::CREATURE_ATTACKED;
         if (valid_card_self) ability.trigger_only_self = true;
+        // ValidCard$ Creature.OppCtrl | Attacked$ You,Planeswalker.YouCtrl (Tamiyo, Seasoned
+        // Scholar's +2 hosted trigger): an opponent's creature attacking you/your planeswalker.
+        // Matched at fire time against the attacker's controller (the trigger has no source perm).
+        ability.trigger_attacker_opp_ctrl = valid_card_opp_ctrl;
+        ability.trigger_attacked_defender_you = attacked_defender_you;
     }
 
     // "Whenever you attack" — Guide of Souls (Mode$ AttackersDeclared | AttackingPlayer$ You).
@@ -2899,6 +2977,9 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
                 effect.trigger_optional                         = ability.trigger_optional;
                 effect.trigger_valid_card_opp_own               = ability.trigger_valid_card_opp_own;
                 effect.trigger_exclude_first_draw_step          = ability.trigger_exclude_first_draw_step;
+                effect.trigger_draw_number_eq                   = ability.trigger_draw_number_eq;
+                effect.trigger_attacker_opp_ctrl                = ability.trigger_attacker_opp_ctrl;
+                effect.trigger_attacked_defender_you            = ability.trigger_attacked_defender_you;
                 effect.trigger_valid_player_is_controller       = ability.trigger_valid_player_is_controller;
                 effect.trigger_only_self                        = ability.trigger_only_self;
                 effect.trigger_self_excluded                    = ability.trigger_self_excluded;
@@ -2977,6 +3058,12 @@ static StaticAbility parse_one_static_ability(const std::string &line,
                 }
             } else if (key == "AddKeyword") {
                 sa.add_keyword = value;
+            } else if (key == "SetMaxHandSize") {
+                // SetMaxHandSize$ Unlimited (Tamiyo, Seasoned Scholar's emblem: "You have no
+                // maximum hand size.") → -1 (no maximum); a numeric value sets the maximum to N.
+                if (value == "Unlimited") sa.set_max_hand_size = -1;
+                else if (!value.empty() && isdigit((unsigned char)value[0]))
+                    sa.set_max_hand_size = std::stoi(value);
             } else if (key == "AddAbility") {
                 // AddAbility$ <SVarName> (Petrified Hamlet): a continuous static that grants
                 // a full activated ability to every Affected$ permanent (CR 613.1f, layer 6).

@@ -83,7 +83,20 @@ void StateManager::process_turn_based_actions(Game &game, std::shared_ptr<Ordere
             auto &zone = global_coordinator.GetComponent<Zone>(entity);
             if (zone.location == Zone::HAND && zone.owner == active_player) hand_size++;
         }
-        if (hand_size > 7) {
+        // Maximum hand size is 7 by default (CR 402.2), but a SetMaxHandSize continuous static
+        // affecting the active player overrides it — Tamiyo, Seasoned Scholar's emblem grants
+        // "no maximum hand size" (Unlimited → no cleanup discard). g_active_statics holds emblem
+        // statics (gathered each SBA pass with the controller as owner); the most permissive
+        // applicable override wins (Unlimited beats any finite cap).
+        int max_hand_size = 7;
+        bool unlimited = false;
+        for (const auto &as : g_active_statics) {
+            if (as.suppressed || !as.condition_met || !as.sa) continue;
+            if (as.controller != active_player || as.sa->set_max_hand_size == 0) continue;
+            if (as.sa->set_max_hand_size < 0) { unlimited = true; break; }
+            if (as.sa->set_max_hand_size > max_hand_size) max_hand_size = as.sa->set_max_hand_size;
+        }
+        if (!unlimited && hand_size > static_cast<size_t>(max_hand_size)) {
             game.pending_choice = CLEANUP_DISCARD;
             return;
         }

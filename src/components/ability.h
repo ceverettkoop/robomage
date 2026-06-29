@@ -203,6 +203,13 @@ struct Ability{
     // Default (false) = the zone's owner chooses (the normal tutor case).
     bool chooser_is_controller = false;
     bool defined_self = false;                  // Defined$ Self — ability moves its own source
+    // Defined$ TriggeredAttacker / TriggeredAttackerLKICopy — the effect (a Pump) acts on the
+    // creature that triggered this ability by attacking (Tamiyo, Seasoned Scholar: the attacking
+    // creature "gets -1/-0"). Bound as this ability's target at trigger-fire time from the
+    // CREATURE_ATTACKED event's ENTITY. The LKICopy form would use the attacker's last-known
+    // info if it has since left combat/play; the trigger resolves during the same declare-
+    // attackers step (the attacker is still on the battlefield), so the live entity is used.
+    bool defined_triggered_attacker_lki = false;
     // K:Unearth (CR 702.84): this ChangeZone is the unearth return (Graveyard -> Battlefield).
     // When it resolves and the source enters the battlefield, the permanent is marked "unearthed"
     // (gains haste, is exiled at the next end step, and is exiled instead of leaving the
@@ -319,6 +326,11 @@ struct Ability{
     // Drawn trigger (Orcish Bowmasters): Mode$ Drawn fires on PLAYER_DREW_CARD.
     bool trigger_valid_card_opp_own = false;       // ValidCard$ Card.OppOwn — the drawn card is owned by an opponent of the source's controller
     bool trigger_exclude_first_draw_step = false;  // FirstCardInDrawStep$ False — ignore the first card the player draws in each of their draw steps
+    // Number$ N on a Mode$ Drawn trigger (CR 603.2, Tamiyo, Inquisitive Student: "whenever you
+    // draw your THIRD card in a turn"): fire only when the firing draw is the Nth card that player
+    // has drawn this turn. Matched against the per-draw running count carried on the
+    // PLAYER_DREW_CARD event (Params::AMOUNT, 1-based). 0 = no Nth-draw gate (every draw fires).
+    size_t trigger_draw_number_eq = 0;
 
     // Combat damage trigger (Barrowgoyf): damage amount stored at trigger fire time
     size_t trigger_damage_amount = 0;
@@ -358,6 +370,17 @@ struct Ability{
     // creature (the event's ENTITY) is controlled by this ability's controller. Used by floating
     // triggers (no source permanent), so it cannot rely on trigger_only_self/source scans.
     bool trigger_damage_source_youctrl = false;   // ValidSource$ Creature.YouCtrl on a DamageAll combat-damage trigger
+
+    // Mode$ Attacks | ValidCard$ Creature.OppCtrl (Tamiyo, Seasoned Scholar's +2 hosted trigger):
+    // the attacking creature (CREATURE_ATTACKED's ENTITY) must be controlled by an opponent of
+    // this trigger's controller. Matched at fire time (the trigger is hosted on a command-zone
+    // Effect with no source permanent to self-reference).
+    bool trigger_attacker_opp_ctrl = false;
+    // Attacked$ You,Planeswalker.YouCtrl — the attack must be against the trigger's controller or a
+    // planeswalker they control. In the two-player engine the only defender an opponent's attacker
+    // can have IS this controller (or their planeswalker), so this is satisfied whenever an
+    // opponent's creature attacks; the flag records the script's stated intent (CR 508.1).
+    bool trigger_attacked_defender_you = false;
 
     // TriggerZones$ Graveyard (Arclight Phoenix): the triggered ability functions from
     // the graveyard, not the battlefield (CR 113.6 / 603.6). When set, the trigger scan

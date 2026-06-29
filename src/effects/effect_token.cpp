@@ -92,6 +92,20 @@ bool token(Ability &ab, std::shared_ptr<Orderer> orderer) {
     return true;
 }
 
+// DB$ Investigate (CR 701.x / 122): "investigate" = create a Clue token — a colorless
+// artifact named "Clue" with "{2}, Sacrifice this artifact: Draw a card." A general
+// handler over any Investigate effect: it creates `amount` Clue tokens (default 1; a count
+// SVar via dynamic_amount_expr makes it N) by delegating to the shared token() machinery
+// with the Clue token script. Reuses token() so the Clue's activated draw ability,
+// artifact type, and permanent bootstrap all flow through the one token-creation path.
+bool investigate(Ability &ab, std::shared_ptr<Orderer> orderer) {
+    // Clue tokens default to a single token; an explicit Amount$/Num$ (or a dynamic count
+    // expr) makes more. Route the count through token() unchanged (it reads ab.amount /
+    // ab.dynamic_amount_expr), only ensuring the Clue script is set.
+    effect_params<TokenParams>(ab).script = "c_a_clue_draw";
+    return token(ab, orderer);
+}
+
 bool parse_token(Ability &ab, const std::string &key, const std::string &value) {
     if (key == "TokenScript") {
         effect_params<TokenParams>(ab).script = value;

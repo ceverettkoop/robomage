@@ -105,6 +105,17 @@ bool pump(Ability &ab, std::shared_ptr<Orderer> orderer) {
     // subabilities do the work — don't re-pick a battlefield creature here.
     if (ab.target_in_graveyard) return true;
 
+    // Defined$ TriggeredAttacker(LKICopy) (Tamiyo, Seasoned Scholar): the pump's target is the
+    // attacking creature, already bound at trigger-fire time (no ValidTgts$ menu to present).
+    // Apply the P/T change directly to it. A target of 0 (attacker gone) is a harmless no-op.
+    if (ab.defined_triggered_attacker_lki) {
+        const PumpParams *pp = std::get_if<PumpParams>(&ab.params);
+        int pump_att = 0, pump_def = 0;
+        resolve_pump_amounts(pp, ab.controller, orderer, ab.target, pump_att, pump_def);
+        apply_pump_to_creature(ab.target, pump_att, pump_def, pp);
+        return true;
+    }
+
     // KW$ Hexproof:Card.<Color> (Veil of Summer): the Pump's job is to grant "hexproof from
     // <color>" to the controller and their permanents (Defined$ You & Valid Permanent.YouCtrl) —
     // a player-scoped turn-long grant, NOT a single-target creature pump. Register it and skip

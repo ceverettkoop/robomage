@@ -25,6 +25,7 @@ enum class EffectKind {
     ProwessBonus,
     ExaltedBonus,
     Token,
+    Investigate,
     Attach,
     Mill,
     Pump,

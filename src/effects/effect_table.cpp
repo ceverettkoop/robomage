@@ -28,6 +28,7 @@ EffectHandler handler_for(EffectKind kind) {
         case EffectKind::DamageAll:       return &damage_all;
         case EffectKind::Destroy:         return &destroy;
         case EffectKind::Token:           return &token;
+        case EffectKind::Investigate:     return &investigate;
         case EffectKind::Surveil:         return &surveil;
         case EffectKind::Scry:            return &scry;
         case EffectKind::DelayedTrigger:  return &delayed_trigger;

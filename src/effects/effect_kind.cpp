@@ -18,6 +18,7 @@ EffectKind effect_kind_from_string(const std::string &category) {
         {"ProwessBonus", EffectKind::ProwessBonus},
         {"ExaltedBonus", EffectKind::ExaltedBonus},
         {"Token", EffectKind::Token},
+        {"Investigate", EffectKind::Investigate},
         {"Attach", EffectKind::Attach},
         {"Mill", EffectKind::Mill},
         {"Pump", EffectKind::Pump},

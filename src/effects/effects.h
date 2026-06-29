@@ -48,6 +48,7 @@ bool destroy_all(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool damage_all(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool destroy(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool token(Ability &ab, std::shared_ptr<Orderer> orderer);
+bool investigate(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool surveil(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool scry(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer);
