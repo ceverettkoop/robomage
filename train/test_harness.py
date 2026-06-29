@@ -173,6 +173,10 @@ def main():
     parser.add_argument("--battlefield-b", help="Cards starting on Player B's battlefield (comma-separated)")
     parser.add_argument("--graveyard-a", help="Cards starting in Player A's graveyard (comma-separated)")
     parser.add_argument("--graveyard-b", help="Cards starting in Player B's graveyard (comma-separated)")
+    parser.add_argument("--exile-a", help="Cards starting in Player A's exile (comma-separated)")
+    parser.add_argument("--exile-b", help="Cards starting in Player B's exile (comma-separated)")
+    parser.add_argument("--sideboard-a", help="Cards starting in Player A's sideboard / 'outside the game' (comma-separated)")
+    parser.add_argument("--sideboard-b", help="Cards starting in Player B's sideboard / 'outside the game' (comma-separated)")
     parser.add_argument("--actions", help="Comma-separated action indices to play")
     parser.add_argument("--play",
                         help="Comma-separated semantic action specs resolved against the "
@@ -216,6 +220,10 @@ def main():
     battlefield_b = _parse_card_list(args.battlefield_b) or scenario.get("battlefield_b", [])
     graveyard_a = _parse_card_list(args.graveyard_a) or scenario.get("graveyard_a", [])
     graveyard_b = _parse_card_list(args.graveyard_b) or scenario.get("graveyard_b", [])
+    exile_a = _parse_card_list(args.exile_a) or scenario.get("exile_a", [])
+    exile_b = _parse_card_list(args.exile_b) or scenario.get("exile_b", [])
+    sideboard_a = _parse_card_list(args.sideboard_a) or scenario.get("sideboard_a", [])
+    sideboard_b = _parse_card_list(args.sideboard_b) or scenario.get("sideboard_b", [])
     seed = args.seed if args.seed is not None else scenario.get("seed", 1)
     # Stacked-deck mode: deck-file order == draw order. Implied by hand sculpting
     # (--hand-a/--hand-b build a stacked temp deck whose first 7 cards must be the
@@ -277,6 +285,14 @@ def main():
             print(f"Player A graveyard: {', '.join(graveyard_a)}")
         if graveyard_b:
             print(f"Player B graveyard: {', '.join(graveyard_b)}")
+        if exile_a:
+            print(f"Player A exile: {', '.join(exile_a)}")
+        if exile_b:
+            print(f"Player B exile: {', '.join(exile_b)}")
+        if sideboard_a:
+            print(f"Player A sideboard: {', '.join(sideboard_a)}")
+        if sideboard_b:
+            print(f"Player B sideboard: {', '.join(sideboard_b)}")
         print(f"Seed: {seed}")
         if actions:
             print(f"Actions: {actions}")
@@ -309,6 +325,10 @@ def main():
         bf_b = ",".join(_card_to_deck_name(c) for c in battlefield_b) if battlefield_b else None
         gy_a = ",".join(_card_to_deck_name(c) for c in graveyard_a) if graveyard_a else None
         gy_b = ",".join(_card_to_deck_name(c) for c in graveyard_b) if graveyard_b else None
+        ex_a = ",".join(_card_to_deck_name(c) for c in exile_a) if exile_a else None
+        ex_b = ",".join(_card_to_deck_name(c) for c in exile_b) if exile_b else None
+        sb_a = ",".join(_card_to_deck_name(c) for c in sideboard_a) if sideboard_a else None
+        sb_b = ",".join(_card_to_deck_name(c) for c in sideboard_b) if sideboard_b else None
 
         # The observation/decision loop lives in runner.run_games (shared with
         # train.py observe). test_harness only seeds the state above.
@@ -317,7 +337,9 @@ def main():
             binary_path=args.binary, deck_a=deck_a_name, deck_b=deck_b_name,
             n_games=1, seed=seed, verbose=True,
             battlefield_a=bf_a, battlefield_b=bf_b,
-            graveyard_a=gy_a, graveyard_b=gy_b, no_shuffle=no_shuffle,
+            graveyard_a=gy_a, graveyard_b=gy_b,
+            exile_a=ex_a, exile_b=ex_b,
+            sideboard_a=sb_a, sideboard_b=sb_b, no_shuffle=no_shuffle,
             max_decisions=max_decisions)
         winner = bool(wins or losses)
         # A --play run resolves specs to concrete indices; print them so the line

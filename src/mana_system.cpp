@@ -22,6 +22,7 @@
 #include "game_queries.h"
 #include "input_logger.h"
 #include "systems/orderer.h"
+#include "systems/replacement_effects.h"
 #include "systems/rules_modifying.h"
 #include "systems/state_manager.h"
 
@@ -136,18 +137,26 @@ ManaValue effective_activation_mana_cost(const Ability &ab, Zone::Ownership cont
 // Evaluate the mana amount a source produces (handles dynamic amounts like Gaea's Cradle)
 static size_t eval_mana_amount(const Ability &ab, Zone::Ownership controller,
                                std::shared_ptr<Orderer> orderer) {
-    if (!ab.dynamic_amount_expr.empty() &&
-        ab.dynamic_amount_expr.find("Count$Valid Creature.YouCtrl") != std::string::npos) {
+    // Dynamic mana amount of the form "Count$Valid <filter>" — count the controller's
+    // battlefield permanents matching the Forge filter (Gaea's Cradle: Creature.YouCtrl;
+    // Urza's Workshop: Urza's.Land+YouCtrl). Routed through the shared permanent filter so
+    // the full qualifier grammar (subtype head, type/ownership qualifiers) is honored.
+    const std::string kPrefix = "Count$Valid ";
+    if (!ab.dynamic_amount_expr.empty() && ab.dynamic_amount_expr.rfind(kPrefix, 0) == 0) {
+        std::string filter = ab.dynamic_amount_expr.substr(kPrefix.size());
+        MatchCtx ctx;
+        ctx.controller = controller;
+        ctx.source = ab.source;
         size_t count = 0;
-        for (auto e : orderer->mEntities) {
-            if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
-            if (!global_coordinator.entity_has_component<Creature>(e)) continue;
-            auto &sz = global_coordinator.GetComponent<Zone>(e);
-            if (sz.location != Zone::BATTLEFIELD) continue;
-            if (global_coordinator.GetComponent<Permanent>(e).controller == controller) count++;
-        }
+        for (auto e : orderer->mEntities)
+            if (is_battlefield_permanent(e) && permanent_matches_filter(e, filter, ctx)) count++;
         return count;
     }
+    // Any other dynamic mana amount (e.g. Cabal Ritual's Count$Threshold.5.3) routes through the
+    // shared runtime-amount evaluator, so mana production scales by the same Count$/Targeted$
+    // grammar used for dynamic damage/draw/token counts rather than re-implementing each form here.
+    if (!ab.dynamic_amount_expr.empty())
+        return evaluate_dynamic_amount(ab.dynamic_amount_expr, controller, orderer, ab.target);
     return ab.amount;
 }
 
@@ -212,6 +221,13 @@ static bool mana_source_usable_for(const Ability &ab, Entity source_entity, Enti
 
 bool ability_is_mana(const Ability &ab) {
     if (ab.ability_type != Ability::ACTIVATED) return false;
+    // CR 605.1a / 606.3: a loyalty ability (a planeswalker's activated ability with a loyalty
+    // cost) is NEVER a mana ability, even when it produces mana — it uses the stack and is a
+    // sorcery-speed, once-per-turn activation, not a repeatable off-stack mana source. Ugin, Eye
+    // of the Storms [0]: "Add {C}{C}{C}". Excluding it here routes it through the normal loyalty-
+    // gated activated-ability path (state_manager_actions / process_activate_ability), where it
+    // resolves off the stack via the AddMana effect handler.
+    if (ab.is_loyalty_ability) return false;
     return ab.category == "AddMana" || ab.category == "ManaReflected";
 }
 
@@ -436,22 +452,26 @@ bool can_afford_with_sources(Zone::Ownership player_owner, const std::multiset<C
         counted_entities.insert(entity);
     }
 
-    // Try to pay colored costs from the hypothetical pool
+    // Try to pay colored costs from the hypothetical pool. Under ManaConvert (Mycosynth Lattice)
+    // any mana pays any colored pip, so every pip is treated as generic against the total pool.
+    bool any_color = any_mana_as_any_color_active();
     auto remaining = hypothetical;
     size_t flexible_used = 0;
-    for (auto color : cost) {
-        if (color == GENERIC) continue;
-        auto it = remaining.find(color);
-        if (it != remaining.end()) {
-            remaining.erase(it);
-        } else if (flexible_used < flexible_count) {
-            flexible_used++;
-        } else {
-            return false;
+    if (!any_color) {
+        for (auto color : cost) {
+            if (color == GENERIC) continue;
+            auto it = remaining.find(color);
+            if (it != remaining.end()) {
+                remaining.erase(it);
+            } else if (flexible_used < flexible_count) {
+                flexible_used++;
+            } else {
+                return false;
+            }
         }
     }
 
-    size_t generic_needed = cost.count(GENERIC);
+    size_t generic_needed = any_color ? cost.size() : cost.count(GENERIC);
     size_t available_for_generic = remaining.size() + (flexible_count - flexible_used);
     return available_for_generic >= generic_needed;
 }
@@ -536,10 +556,20 @@ void restore_mana_state(Zone::Ownership player, const ManaPaymentSnapshot &snap,
 // so the spend rule (including generic color preference) lives in exactly one place.
 static ManaValue pay_from_pool(ManaValue &pool, const ManaValue &cost) {
     ManaValue remaining;
+    // Mycosynth Lattice (ManaConvert AnyType->AnyColor, CR 609.4 / 106.6): while active, a colored
+    // pip may be paid with mana of ANY type. Pay exact-color matches first (so on-color mana is
+    // preferred and never wasted), then satisfy any still-unpaid colored pip from any remaining
+    // mana — exactly the generic-pip rule applied to colored pips.
+    bool any_color = any_mana_as_any_color_active();
+    std::vector<Colors> unpaid_colored;
     for (auto color : cost) {
         if (color == GENERIC) continue;
         auto it = pool.find(color);
         if (it != pool.end()) pool.erase(it);
+        else unpaid_colored.push_back(color);
+    }
+    for (Colors color : unpaid_colored) {
+        if (any_color && !pool.empty()) pool.erase(pool.begin());
         else remaining.insert(color);
     }
     size_t generic_needed = cost.count(GENERIC);
@@ -636,7 +666,22 @@ static void activate_mana_source(Entity entity, const Ability &ab, Zone::Ownersh
         game_log("%s pays %d life\n", player_name(controller).c_str(), ab.life_cost);
     }
     size_t amount = eval_mana_amount(ab, controller, orderer);
-    for (size_t i = 0; i < amount; i++) pool.insert(ab.color);
+    // ProduceMana replacement effects (CR 614.1, Damping Sphere): a land tapped for 2+ mana
+    // produces that much {C} instead. Consult active replacements before the produced mana enters
+    // the pool, so a colored producer can be rewritten to colorless. Runs in both commit and
+    // simulate mode so affordability (can_pay_mana) and the real payment agree on the colors.
+    Colors produced_color = ab.color;
+    if (amount >= 2) {
+        ReplacementEvent ev;
+        ev.type = ReplacementEvent::PRODUCE_MANA;
+        ev.entity = entity;
+        ev.affected_player = controller;
+        ev.produced_color = ab.color;
+        ev.produced_amount = amount;
+        replacement::dispatch(ev);
+        produced_color = ev.produced_color;
+    }
+    for (size_t i = 0; i < amount; i++) pool.insert(produced_color);
     // Mana-additional "whenever you tap a <permanent> for mana" triggers (Badgermole Cub's
     // TapsForMana, CR 605.1a): resolve immediately as part of the tap, adding their extra mana
     // to the working pool. Fired in BOTH commit and simulate modes so affordability/legality
@@ -646,7 +691,7 @@ static void activate_mana_source(Entity entity, const Ability &ab, Zone::Ownersh
     if (commit && ab.adds_no_counter) cur_game.pending_cant_be_countered = true;
     if (commit)
         game_log("%s activated %s for %zu(%s)\n", player_name(controller).c_str(),
-                 perm.name.c_str(), amount, mana_symbol_str(ab.color));
+                 perm.name.c_str(), amount, mana_symbol_str(produced_color));
     // A mana ability may carry a SubAbility$ rider that is part of the mana ability and
     // resolves off-stack with it — e.g. Ancient Tomb's "deals 2 damage to you" (CR 605.1a,
     // 606.3). Only fire it when committing the activation (not during legality simulation).
@@ -727,6 +772,11 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
     ManaValue pool_copy = player.mana;
     ManaValue &pool = commit ? player.mana : pool_copy;
 
+    // Mycosynth Lattice (ManaConvert AnyType->AnyColor, CR 609.4 / 106.6): while active, any mana
+    // can pay any colored pip. We keep the colored pips colored (so Delve/Improvise, which reduce
+    // only generic costs, never touch them) and instead relax the colored source-matching below.
+    bool any_color = any_mana_as_any_color_active();
+
     // Delve: exile graveyard instants/sorceries to reduce generic portion
     if (has_delve) {
         for (auto e : orderer->mEntities) {
@@ -804,19 +854,25 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
         if (*it == GENERIC) { ++it; continue; }
         Colors needed = *it;
 
-        // Check pool first
+        // Check pool first: exact color, or — under ManaConvert — any mana already floating.
         if (pool.count(needed) > 0) {
             auto pit = pool.find(needed);
             pool.erase(pit);
             it = remaining.erase(it);
             continue;
         }
+        if (any_color && !pool.empty()) {
+            pool.erase(pool.begin());
+            it = remaining.erase(it);
+            continue;
+        }
 
-        // Try sources in priority order: adds_no_counter > single-color > multi-color
+        // Try sources in priority order: adds_no_counter > single-color > multi-color. Under
+        // ManaConvert any source's mana can pay the pip, so the exact-color gate is dropped.
         auto try_source = [&](auto predicate) -> bool {
             for (auto &si : valid_sources) {
                 if (tapped_entities.count(si.entity)) continue;
-                if (si.color != needed) continue;
+                if (!any_color && si.color != needed) continue;
                 if (!predicate(si)) continue;
                 activate_source(si);
                 tapped_entities.insert(si.entity);
@@ -824,8 +880,14 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
                 // that produced no mana of `needed` (e.g. a 0-mana ManaReflected source
                 // with no qualifying permanent) erases nothing — the pip stays unpaid and
                 // we keep scanning. This mirrors the interactive payer, where the pip is
-                // only spent once can_afford_pool sees the color in the real pool.
-                if (pool.count(needed) > 0) {
+                // only spent once can_afford_pool sees the color in the real pool. Under
+                // ManaConvert any produced mana counts, so spend the first available pip.
+                if (any_color && !pool.empty()) {
+                    pool.erase(pool.begin());
+                    it = remaining.erase(it);
+                    return true;
+                }
+                if (!any_color && pool.count(needed) > 0) {
                     auto pit = pool.find(needed);
                     pool.erase(pit);
                     it = remaining.erase(it);
@@ -908,6 +970,45 @@ bool can_pay_mana(Zone::Ownership controller, const ManaValue &cost,
     ManaValue remaining = cost;
     return auto_pay_mana(controller, remaining, paid_for, orderer, has_delve, /*commit=*/false,
                          has_improvise);
+}
+
+// Depth-first enumeration of hybrid-pip assignments (see resolve_hybrid_cost). `cur` carries the
+// concrete cost so far; at the leaf it is tested via can_pay_mana. Colored options are tried
+// before a twobrid's generic alternative so the cheapest/most-flexible payable assignment wins.
+static bool resolve_hybrid_recurse(Zone::Ownership caster, ManaValue &cur,
+                                   const std::vector<HybridPip> &hybrids, size_t idx,
+                                   Entity paid_for, std::shared_ptr<Orderer> orderer,
+                                   bool has_delve, bool has_improvise, ManaValue *out) {
+    if (idx == hybrids.size()) {
+        if (!can_pay_mana(caster, cur, paid_for, orderer, has_delve, has_improvise)) return false;
+        if (out) *out = cur;
+        return true;
+    }
+    const HybridPip &pip = hybrids[idx];
+    for (Colors c : pip.colors) {
+        cur.insert(c);
+        if (resolve_hybrid_recurse(caster, cur, hybrids, idx + 1, paid_for, orderer,
+                                   has_delve, has_improvise, out))
+            return true;
+        cur.erase(cur.find(c));
+    }
+    if (pip.generic_alt > 0) {
+        for (int i = 0; i < pip.generic_alt; i++) cur.insert(GENERIC);
+        if (resolve_hybrid_recurse(caster, cur, hybrids, idx + 1, paid_for, orderer,
+                                   has_delve, has_improvise, out))
+            return true;
+        for (int i = 0; i < pip.generic_alt; i++) cur.erase(cur.find(GENERIC));
+    }
+    return false;
+}
+
+bool resolve_hybrid_cost(Zone::Ownership caster, const ManaValue &base_flat_cost,
+                         const std::vector<HybridPip> &hybrids, Entity paid_for,
+                         std::shared_ptr<Orderer> orderer, bool has_delve, bool has_improvise,
+                         ManaValue *out_resolved) {
+    ManaValue cur = base_flat_cost;
+    return resolve_hybrid_recurse(caster, cur, hybrids, 0, paid_for, orderer, has_delve,
+                                  has_improvise, out_resolved);
 }
 
 bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,

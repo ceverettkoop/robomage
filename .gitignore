@@ -27,3 +27,6 @@ obj/*/*.d
 obj/*.d
 train/replays/*
 corpus/
+
+# Game recordings (.rmrec) — recording subsystem removed; never commit these
+train/recordings/

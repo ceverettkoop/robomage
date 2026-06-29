@@ -35,6 +35,20 @@ bool attach(Ability &ab, std::shared_ptr<Orderer> orderer) {
         int choice = InputLogger::instance().get_input(attach_actions);
         if (choice == 0) goto attach_done;
     }
+    // A reanimation-then-attach chain (Pre-War Formalwear: ChangeZone Graveyard→Battlefield then
+    // DB$ Attach Defined$ Remembered) resolves before the next state-based pass adds the moved
+    // creature's Permanent component, so the target is on the battlefield (Zone) but has no
+    // Permanent yet. Defer the attach: record it as a pending link consumed by
+    // apply_permanent_components once the creature's Permanent is created (mirroring
+    // pending_enters_tapped). The equipment already has its Permanent (it entered earlier).
+    if (target_creature != 0 && global_coordinator.entity_has_component<Permanent>(equip_entity) &&
+        !global_coordinator.entity_has_component<Permanent>(target_creature) &&
+        global_coordinator.entity_has_component<Zone>(target_creature) &&
+        global_coordinator.GetComponent<Zone>(target_creature).location == Zone::BATTLEFIELD) {
+        cur_game.pending_attach[target_creature] = equip_entity;
+        game_log("Equipment will attach once the creature finishes entering.\n");
+        goto attach_done;
+    }
     if (target_creature != 0 && global_coordinator.entity_has_component<Permanent>(equip_entity) &&
         global_coordinator.entity_has_component<Permanent>(target_creature)) {
         auto &eq_perm = global_coordinator.GetComponent<Permanent>(equip_entity);

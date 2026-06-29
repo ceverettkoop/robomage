@@ -8,12 +8,14 @@
 #include "../components/ability.h"
 #include "../components/carddata.h"
 #include "../components/damage.h"
+#include "../components/permanent.h"
 #include "../components/spell.h"
 #include "../components/zone.h"
 #include "../cli_output.h"
 #include "../ecs/coordinator.h"
 #include "../game_queries.h"
 #include "../input_logger.h"
+#include "../saga.h"
 #include "orderer.h"
 
 extern Game cur_game;
@@ -73,6 +75,18 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
             if (global_coordinator.entity_has_component<Spell>(top_entity) &&
                 global_coordinator.GetComponent<Spell>(top_entity).cast_with_offspring)
                 cur_game.pending_offspring.insert(top_entity);
+            // Spell was cast from the graveyard for its Escape cost: carry the "escaped" bit onto
+            // the permanent (apply_permanent_components consumes pending_escaped → Permanent::
+            // cast_with_escape) so Uro's "sacrifice it unless it escaped" reads it.
+            if (global_coordinator.entity_has_component<Spell>(top_entity) &&
+                global_coordinator.GetComponent<Spell>(top_entity).cast_with_escape)
+                cur_game.pending_escaped.insert(top_entity);
+            // Spell was cast for its Impending alternate cost (CR 702.175): carry the impending
+            // bit onto the permanent so apply_permanent_components puts its time counters on it
+            // (consumes pending_impending) — it enters as a noncreature until they shed.
+            if (global_coordinator.entity_has_component<Spell>(top_entity) &&
+                global_coordinator.GetComponent<Spell>(top_entity).cast_with_impending)
+                cur_game.pending_impending.insert(top_entity);
             // Carry the X paid for an X-cost permanent into the ETB so an "enters with X
             // counters" replacement can read it (Chalice of the Void).
             if (global_coordinator.entity_has_component<Spell>(top_entity) &&
@@ -144,6 +158,10 @@ void StackManager::resolve_top(std::shared_ptr<Orderer> orderer) {
         cur_game.player_a_has_priority = (ability.controller == Zone::PLAYER_A);
         ability.resolve(orderer);
         cur_game.player_a_has_priority = prev_priority;
+
+        // CR 714.4: a Saga chapter ability has now left the stack — release the sacrifice gate so a
+        // completed Saga can be sacrificed on the next state-based check.
+        decrement_saga_in_flight(ability);
 
         // Destroy the standalone ability entity — it has no card zone to return to
         global_coordinator.DestroyEntity(top_entity);

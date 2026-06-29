@@ -103,7 +103,8 @@ const triaged = (await parallel(worklist.map((c) => () =>
   agent(
     `TRIAGE one Magic card for the Robomage engine — READ ONLY, make NO edits.\n` +
     `Card: "${c.name}" (pre-assigned vocab index ${c.index}, worklist frequency ${c.deckCount != null ? c.deckCount : '?'}).\n` +
-    `1. If no local script exists in bin/resources/cardsfolder/, run \`python tools/forge_fetch/fetch_script.py "${c.name}"\`. ` +
+    `1. If no local script exists in bin/resources/cardsfolder/, run \`python tools/forge_fetch/fetch_script.py "${c.name}"\` ` +
+    `(DFC-aware: it skips a card already present as a combined <front>_<back>.txt and resolves that combined name on a front-name miss — never create a duplicate <front>.txt by hand). ` +
     `If it exits non-zero (NOT FOUND), return klass="defer", reason="no Forge script available".\n` +
     `2. Read the script's A:/T:/S:/K:/R: lines and their AB$/SP$/DB$ categories. Check each against ` +
     `src/parse.cpp, src/effects/effect_kind.cpp, src/effects/effect_table.cpp.\n` +

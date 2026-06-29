@@ -68,6 +68,19 @@ int action_card_vocab_idx(Entity e) {
     return -1;
 }
 
+int action_card_vocab_idx(const LegalAction& la) {
+    // A modal-DFC back-face play/cast (e.g. Witch-Blessed Meadow land, or a nonland back
+    // like Tergrid's Lantern) uses the combined card as its source, whose CardData is the
+    // FRONT face — resolve the back face's name so the emitted/logged id matches the face
+    // actually being played or cast.
+    if ((la.play_back_face || la.cast_back_face) && la.source_entity != 0 &&
+        global_coordinator.entity_has_component<CardData>(la.source_entity)) {
+        const auto& cd = global_coordinator.GetComponent<CardData>(la.source_entity);
+        if (cd.backside) return card_name_to_index(cd.backside->name);
+    }
+    return action_card_vocab_idx(la.source_entity);
+}
+
 
 static void push_player_block(std::vector<float>& out, const PlayerState& ps) {
     out.push_back(static_cast<float>(ps.life) / 20.0f);
@@ -350,7 +363,9 @@ void populate_query(Query* q, const std::vector<LegalAction>& actions) {
 
         // Card vocab index from source entity (or ability source). Shared with the
         // action log (input_logger) so the logged and emitted ids cannot diverge.
-        ac.card_vocab_idx = action_card_vocab_idx(src);
+        // The LegalAction overload also resolves a modal-DFC back-face play to the
+        // back face's id (front-face source entity would otherwise mis-report it).
+        ac.card_vocab_idx = action_card_vocab_idx(la);
 
         // Controller is self
         ac.controller_is_self = false;

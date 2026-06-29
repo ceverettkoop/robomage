@@ -14,10 +14,21 @@ extern Game cur_game;
 namespace effects {
 
 bool add_mana(Ability &ab, std::shared_ptr<Orderer> orderer) {
-    (void)orderer;
     // Non-mana-ability that adds mana on resolution (Dark Ritual, Lion's Eye Diamond)
     Zone::Ownership mana_controller = ab.controller;
     size_t mana_amount = (ab.amount > 0) ? ab.amount : 1;
+    // Dynamic amount (Cabal Ritual: Amount$ X, X = Count$Threshold.5.3 → BBBBB with threshold,
+    // else BBB). Routed through the shared runtime-amount evaluator so a mana-adding spell scales
+    // by the same Count$/Targeted$ grammar as dynamic damage/draw/token counts.
+    if (!ab.dynamic_amount_expr.empty())
+        mana_amount = evaluate_dynamic_amount(ab.dynamic_amount_expr, mana_controller, orderer, ab.target);
+    // A dynamic amount can resolve to 0 (Carpet of Flowers when the opponent controls no Islands):
+    // adding 0 mana is a legal no-op. Skip the color choice (don't prompt to pick a color for no
+    // mana) and add nothing.
+    if (mana_amount == 0) {
+        game_log("%s adds no mana.\n", player_name(mana_controller).c_str());
+        return true;
+    }
     Colors mana_color = ab.color;
     if (!ab.mana_choices.empty()) {
         // Prompt player to choose a color (e.g. LED: "Any" → 3 mana of one chosen color)

@@ -76,6 +76,13 @@ def _scan_decks():
                   for p in glob.glob(os.path.join(_DECKS_DIR, "*.dk")))
 
 
+def _scan_league_decks():
+    # League roster decks live in decks/league/; reference them as 'league/<stem>'
+    # so the engine loads decks/league/<stem>.dk (matches train.league() default).
+    return sorted("league/" + os.path.splitext(os.path.basename(p))[0]
+                  for p in glob.glob(os.path.join(_DECKS_DIR, "league", "*.dk")))
+
+
 def _scan_checkpoints():
     # Basenames make the inline autocomplete nice (type "delver" → completes the
     # filename). They are expanded to a repo-relative path at argv time so the
@@ -91,7 +98,8 @@ def _expand_checkpoint(val):
 
 
 # Suggestion source tagged on each Arg in cli_spec (arg.suggest) → scanner.
-_SCANNERS = {"deck": _scan_decks, "checkpoint": _scan_checkpoints}
+_SCANNERS = {"deck": _scan_decks, "league_deck": _scan_league_decks,
+             "checkpoint": _scan_checkpoints}
 
 
 def _suggestions_for(arg):

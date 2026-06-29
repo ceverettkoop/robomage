@@ -18,6 +18,7 @@ EffectKind effect_kind_from_string(const std::string &category) {
         {"ProwessBonus", EffectKind::ProwessBonus},
         {"ExaltedBonus", EffectKind::ExaltedBonus},
         {"Token", EffectKind::Token},
+        {"Investigate", EffectKind::Investigate},
         {"Attach", EffectKind::Attach},
         {"Mill", EffectKind::Mill},
         {"Pump", EffectKind::Pump},
@@ -27,6 +28,9 @@ EffectKind effect_kind_from_string(const std::string &category) {
         {"Cleanup", EffectKind::Cleanup},
         {"DelayedTrigger", EffectKind::DelayedTrigger},
         {"Untap", EffectKind::Untap},
+        // DB$/AB$ UntapAll (Paradox Engine): untap every battlefield permanent matching
+        // ValidCards$ (controller-scoped by YouCtrl/OppCtrl). See effect_untap_all.cpp.
+        {"UntapAll", EffectKind::UntapAll},
         {"Destroy", EffectKind::Destroy},
         {"DestroyAll", EffectKind::DestroyAll},
         {"DamageAll", EffectKind::DamageAll},
@@ -62,6 +66,10 @@ EffectKind effect_kind_from_string(const std::string &category) {
         // types/subtypes (and, for later cards, base P/T / keywords / creature-ness) for
         // the effect's Duration (Permanent = rest of the game). See effect_animate.cpp.
         {"Animate", EffectKind::Animate},
+        // AB$ AnimateAll (Shadowspear): a mass until-end-of-turn continuous effect that removes
+        // (RemoveKeywords$) or grants keyword(s) on every permanent matching ValidCards$. See
+        // effect_animate_all.cpp.
+        {"AnimateAll", EffectKind::AnimateAll},
         // DB$ ChooseNumber (Wrath of the Skies): the resolving controller chooses an integer in
         // [0, Max$]; the pick is stored in cur_game.chosen_number so a chained sub-ability can
         // read it via Count$ChosenNumber. See effect_choose_number.cpp.
@@ -93,6 +101,23 @@ EffectKind effect_kind_from_string(const std::string &category) {
         {"RevealHand", EffectKind::RevealHand},
         // DB$ BecomeMonarch (CR 725) — the ability's controller becomes the monarch.
         {"BecomeMonarch", EffectKind::BecomeMonarch},
+        // SP$/AB$ Vote (Council's Judgment, will-of-the-council): each player votes for an
+        // object and the most-voted object(s) get the VoteSubAbility applied. In the
+        // two-player engine (CLAUDE.md scope) this reduces to the controller choosing one
+        // permanent matching VoteCard$. See effect_vote.cpp.
+        {"Vote", EffectKind::Vote},
+        // K:Storm (CR 702.40) synthesizes a self-cast triggered ability with this category:
+        // "When you cast this spell, copy it for each spell cast before it this turn." The copy
+        // count is locked in when the trigger fires (state_manager_triggers) and the copies are
+        // put on the stack at resolution. See effect_storm.cpp.
+        {"Storm", EffectKind::Storm},
+        // DB$ AddTurn (Emrakul, the Aeons Torn's self-cast trigger): the Defined$ player takes
+        // NumTurns$ extra turns after the current one (CR 500.7 / 720). See effect_add_turn.cpp.
+        {"AddTurn", EffectKind::AddTurn},
+        // DB$ StoreSVar (Carpet of Flowers): latch a named integer onto the source permanent's
+        // per-permanent scratch store (Permanent::stored_svars), read back by a CheckSVar trigger
+        // gate. See effect_store_svar.cpp.
+        {"StoreSVar", EffectKind::StoreSVar},
     };
     auto it = table.find(category);
     return (it != table.end()) ? it->second : EffectKind::None;

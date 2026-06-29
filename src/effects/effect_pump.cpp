@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "../classes/action.h"
+#include "../classes/game.h"
 #include "../cli_output.h"
 #include "../components/creature.h"
 #include "../components/permanent.h"
@@ -16,6 +17,7 @@
 #include "../input_logger.h"
 
 extern Coordinator global_coordinator;
+extern Game cur_game;
 
 namespace effects {
 
@@ -69,6 +71,33 @@ void resolve_pump_amounts(const PumpParams *pp, Zone::Ownership ctrl,
         out_def = pp->def_sign * static_cast<int>(evaluate_dynamic_amount(pp->def_expr, ctrl, orderer, target));
 }
 
+// Register a turn-long "hexproof from <color(s)>" grant for `ctrl` and the permanents they
+// control (Veil of Summer's "You and permanents you control gain hexproof from blue and from
+// black until end of turn"). Player-scoped so it protects the player object and every permanent
+// the player controls; lapses at cleanup (CR 514.2). Consulted in Ability::is_legal_target.
+static void grant_hexproof_from_colors(Zone::Ownership ctrl, const std::set<Colors> &colors) {
+    if (colors.empty()) return;
+    Game::HexproofFromColors h;
+    h.player = ctrl;
+    h.colors = colors;
+    cur_game.hexproof_from_colors_this_turn.push_back(h);
+    game_log("%s and the permanents they control gain hexproof from the chosen color(s) until end of turn.\n",
+             player_name(ctrl).c_str());
+}
+
+// Register a "protection from everything" grant for `ctrl` (CR 702.16; The One Ring's ETB: "you
+// gain protection from everything until your next turn"). Player-scoped: the player can't be the
+// target of an opponent's spell/ability and isn't dealt damage by any opponent source. The
+// duration is until the controller's next turn when `until_next_turn`, else until end of turn.
+static void grant_player_protection_from_everything(Zone::Ownership ctrl, bool until_next_turn) {
+    Game::PlayerProtectionFromEverything p;
+    p.player = ctrl;
+    p.until_your_next_turn = until_next_turn;
+    cur_game.player_protection_from_everything.push_back(p);
+    game_log("%s gains protection from everything%s.\n", player_name(ctrl).c_str(),
+             until_next_turn ? " until their next turn" : " until end of turn");
+}
+
 bool pump(Ability &ab, std::shared_ptr<Orderer> orderer) {
     (void)orderer;
     // Pump used purely as a targeting vehicle for a graveyard card (Surgical Extraction's
@@ -76,20 +105,68 @@ bool pump(Ability &ab, std::shared_ptr<Orderer> orderer) {
     // subabilities do the work — don't re-pick a battlefield creature here.
     if (ab.target_in_graveyard) return true;
 
+    // IsCurse$ True (Carpet of Flowers): the Pump targets a PLAYER (ValidTgts$ Opponent), chosen
+    // as the trigger went on the stack, and applies no P/T. Keep ab.target = that opponent so the
+    // chained DB$ Mana sub-ability's Count$Valid Island.TargetedPlayerCtrl reads the opponent's
+    // Islands; do NOT re-enter the creature-target menu below.
+    if (ab.is_curse) return true;
+
+    // Defined$ TriggeredAttacker(LKICopy) (Tamiyo, Seasoned Scholar): the pump's target is the
+    // attacking creature, already bound at trigger-fire time (no ValidTgts$ menu to present).
+    // Apply the P/T change directly to it. A target of 0 (attacker gone) is a harmless no-op.
+    if (ab.defined_triggered_attacker_lki) {
+        const PumpParams *pp = std::get_if<PumpParams>(&ab.params);
+        int pump_att = 0, pump_def = 0;
+        resolve_pump_amounts(pp, ab.controller, orderer, ab.target, pump_att, pump_def);
+        apply_pump_to_creature(ab.target, pump_att, pump_def, pp);
+        return true;
+    }
+
+    // KW$ Hexproof:Card.<Color> (Veil of Summer): the Pump's job is to grant "hexproof from
+    // <color>" to the controller and their permanents (Defined$ You & Valid Permanent.YouCtrl) —
+    // a player-scoped turn-long grant, NOT a single-target creature pump. Register it and skip
+    // target selection.
+    {
+        const PumpParams *hp = std::get_if<PumpParams>(&ab.params);
+        if (hp && !hp->grant_hexproof_from_colors.empty()) {
+            grant_hexproof_from_colors(ab.controller, hp->grant_hexproof_from_colors);
+            return true;
+        }
+        // KW$ Protection from everything | Defined$ You (The One Ring): a player-scoped grant for
+        // the controller, NOT a single-target creature pump. Register it and skip target selection.
+        if (hp && hp->grant_protection_from_everything) {
+            grant_player_protection_from_everything(ab.controller, ab.duration_until_your_next_turn);
+            return true;
+        }
+    }
+
     // Present target selection, then chain subabilities with that target
     Zone::Ownership ctrl = ab.controller;
+    Zone::Ownership opp = (ctrl == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+    // ValidTgts$ Creature.ControlledBy ParentTarget (Cloak and Dagger's DBPump): the creature
+    // must be controlled by the targeted opponent. In the two-player engine the parent's
+    // "target opponent" is always the source's single opponent, so filter to the opponent's
+    // creatures. YouCtrl restricts to the controller's own creatures (the common pump case).
+    bool want_youctrl = ab.valid_tgts.find("YouCtrl") != std::string::npos;
+    bool want_oppctrl = ab.valid_tgts.find("ParentTarget") != std::string::npos ||
+                        ab.valid_tgts.find("OppCtrl") != std::string::npos ||
+                        ab.valid_tgts.find("ControlledBy") != std::string::npos;
     std::vector<Entity> pump_targets;
     for (Entity e = 0; e < global_coordinator.GetMaxIssuedEntity(); ++e) {
         if (!is_battlefield_permanent(e)) continue;
         if (!global_coordinator.entity_has_component<Creature>(e)) continue;
         auto &p = global_coordinator.GetComponent<Permanent>(e);
-        if (ab.valid_tgts.find("YouCtrl") != std::string::npos && p.controller != ctrl) continue;
+        if (want_youctrl && p.controller != ctrl) continue;
+        if (want_oppctrl && p.controller != opp) continue;
         pump_targets.push_back(e);
     }
     if (pump_targets.empty()) {
         game_log("Pump: no valid targets.\n");
         // still chain subabilities with no target
     } else {
+        // TargetMin$ 0 (Cloak and Dagger: "up to one target creature"): the controller may
+        // choose no creature. Offer an explicit decline option in that case.
+        bool optional = (ab.target_min == 0);
         game_log("Choose a creature for Pump:\n");
         std::vector<LegalAction> tgt_actions;
         for (auto te : pump_targets) {
@@ -100,10 +177,24 @@ bool pump(Ability &ab, std::shared_ptr<Orderer> orderer) {
             la.category = ActionCategory::SELECT_TARGET;
             tgt_actions.push_back(la);
         }
+        if (optional) {
+            LegalAction none(PASS_PRIORITY, std::string("Choose no creature"));
+            none.category = ActionCategory::SELECT_TARGET;
+            tgt_actions.push_back(none);
+        }
+        bool prev_priority = cur_game.player_a_has_priority;
+        cur_game.player_a_has_priority = (ctrl == Zone::PLAYER_A);
         int choice = InputLogger::instance().get_input(tgt_actions);
+        cur_game.player_a_has_priority = prev_priority;
         if (choice >= 0 && choice < static_cast<int>(pump_targets.size()))
             ab.target = pump_targets[static_cast<size_t>(choice)];
     }
+
+    // RememberPumped$ True (Cloak and Dagger): this Pump is only a target-selector. Append the
+    // chosen creature to the remembered candidate set (joining the revealed hand cards) so the
+    // following Defined$ Remembered exile may pick it. No-op when no creature was chosen.
+    if (ab.remember_pumped && ab.target != 0)
+        cur_game.remembered_entities.push_back(ab.target);
     // Apply P/T modification if NumAtt$/NumDef$ were set. A count-SVar NumAtt$/NumDef$
     // (e.g. Eldrazi Linebreaker's "+X" where X = number of Eldrazi you control) is
     // evaluated now against the ability's controller.
@@ -139,6 +230,13 @@ static void parse_pump_amount(const std::string &value, int &out_static, std::st
 }
 
 bool parse_pump(Ability &ab, const std::string &key, const std::string &value) {
+    if (key == "IsCurse") {
+        // IsCurse$ True (Carpet of Flowers): the Pump is a targeting vehicle only (it establishes
+        // "target opponent" for a chained sub-ability) and applies no P/T. The handler keeps
+        // ab.target = the chosen opponent player and short-circuits.
+        if (value == "True") ab.is_curse = true;
+        return true;
+    }
     if (key == "NumAtt") {
         PumpParams &pp = effect_params<PumpParams>(ab);
         parse_pump_amount(value, pp.att, pp.att_expr, pp.att_sign);
@@ -161,7 +259,26 @@ bool parse_pump(Ability &ab, const std::string &key, const std::string &value) {
             // trim
             size_t b = kw.find_first_not_of(" \t");
             size_t e = kw.find_last_not_of(" \t");
-            if (b != std::string::npos) pp.grant_keywords.push_back(kw.substr(b, e - b + 1));
+            if (b != std::string::npos) {
+                std::string token = kw.substr(b, e - b + 1);
+                // "Hexproof:Card.<Color>:<desc>" (Veil of Summer) — a parameterized "hexproof
+                // from <color>" grant, not a plain keyword. Extract the color(s) into
+                // grant_hexproof_from_colors so the handler makes a player-scoped turn-long grant.
+                if (token.rfind("Hexproof:", 0) == 0) {
+                    if (token.find("Blue") != std::string::npos) pp.grant_hexproof_from_colors.insert(BLUE);
+                    if (token.find("Black") != std::string::npos) pp.grant_hexproof_from_colors.insert(BLACK);
+                    if (token.find("Red") != std::string::npos) pp.grant_hexproof_from_colors.insert(RED);
+                    if (token.find("Green") != std::string::npos) pp.grant_hexproof_from_colors.insert(GREEN);
+                    if (token.find("White") != std::string::npos) pp.grant_hexproof_from_colors.insert(WHITE);
+                } else if (token.rfind("Protection from everything", 0) == 0) {
+                    // "Protection from everything" granted to a player (Defined$ You) — The One
+                    // Ring's ETB. Not a per-creature keyword: the Pump handler makes a player-
+                    // scoped grant (cur_game.player_protection_from_everything) for the controller.
+                    pp.grant_protection_from_everything = true;
+                } else {
+                    pp.grant_keywords.push_back(token);
+                }
+            }
             if (amp == std::string::npos) break;
             start = amp + 3;
         }

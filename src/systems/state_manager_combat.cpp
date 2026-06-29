@@ -91,7 +91,16 @@ void StateManager::deal_combat_damage(Game &game, bool first_strike_only) {
             uint32_t dmg = cr.power;
             if (dmg > 0) {
                 deal_damage(entity, cr.attack_target, dmg);
-                if (global_coordinator.entity_has_component<Player>(cr.attack_target)) {
+                // CR 702.16d: a player with protection from everything (The One Ring) isn't dealt
+                // combat damage by an opponent's attacker — prevent the life loss, the
+                // damage-to-player trigger, and the attacker's lifelink (prevented damage isn't
+                // dealt, so no life is gained).
+                bool prevented = global_coordinator.entity_has_component<Player>(cr.attack_target) &&
+                                 player_protected_from_source(cr.attack_target, entity);
+                if (prevented) {
+                    game_log("  %s has protection from everything — %u combat damage prevented\n",
+                             target_display_name(game, cr.attack_target).c_str(), dmg);
+                } else if (global_coordinator.entity_has_component<Player>(cr.attack_target)) {
                     auto &target_player = global_coordinator.GetComponent<Player>(cr.attack_target);
                     target_player.life_total -= static_cast<int>(dmg);
                     std::string tname = target_display_name(game, cr.attack_target);
@@ -109,7 +118,7 @@ void StateManager::deal_combat_damage(Game &game, bool first_strike_only) {
                              entity_name(cr.attack_target).c_str(),
                              get_counters(cr.attack_target, "LOYALTY"));
                 }
-                apply_lifelink_if_any(entity, dmg, life_delta_a, life_delta_b);
+                if (!prevented) apply_lifelink_if_any(entity, dmg, life_delta_a, life_delta_b);
             }
         } else {
             // Blocked — assign damage to blockers, blockers deal damage back.
@@ -119,6 +128,7 @@ void StateManager::deal_combat_damage(Game &game, bool first_strike_only) {
             // (the T3.11 fix) and treats deathtouch as lethal-1 (702.2c) — see lethal_needed_for_blocker.
             auto assign_it = game.combat_damage_assignment.find(entity);
             bool have_assignment = (assign_it != game.combat_damage_assignment.end());
+            bool has_trample = creature_has_keyword(cr, "Trample");
             uint32_t remaining = cr.power;
             for (auto blocker : blockers) {
                 auto &bcr = global_coordinator.GetComponent<Creature>(blocker);
@@ -138,8 +148,18 @@ void StateManager::deal_combat_damage(Game &game, bool first_strike_only) {
                     assigned = (bit != assign_it->second.end()) ? bit->second : 0u;
                     if (assigned > remaining) assigned = remaining;
                 } else if (remaining > 0) {
+                    // CR 510.1c: a blocked creature must assign ALL its combat damage. Auto-assign
+                    // lethal to each blocker in order; the LAST blocker absorbs any leftover
+                    // (harmless overkill) unless the attacker has trample, in which case the excess
+                    // tramples over to the attack target below. So a single blocker receives the
+                    // attacker's full power (Solitude [3/2] blocked by a [1/1] deals 3, lifelinking
+                    // 3) — not just the blocker's lethal amount.
                     uint32_t needed = lethal_needed_for_blocker(entity, blocker);
-                    assigned = (remaining >= needed) ? needed : remaining;
+                    bool is_last_blocker = (blocker == blockers.back());
+                    if (is_last_blocker && !has_trample)
+                        assigned = remaining;
+                    else
+                        assigned = (remaining >= needed) ? needed : remaining;
                 }
                 if (assigned > 0) {
                     deal_damage(entity, blocker, assigned);
@@ -150,8 +170,14 @@ void StateManager::deal_combat_damage(Game &game, bool first_strike_only) {
             }
             // Trample: excess damage goes to attack target
             if (remaining > 0) {
-                bool has_trample = creature_has_keyword(cr, "Trample");
-                if (has_trample && global_coordinator.entity_has_component<Player>(cr.attack_target)) {
+                if (has_trample && global_coordinator.entity_has_component<Player>(cr.attack_target) &&
+                    player_protected_from_source(cr.attack_target, entity)) {
+                    // Protection from everything (The One Ring) also prevents trampled-over combat
+                    // damage to the protected player (CR 702.16d) — no life loss, trigger, or
+                    // lifelink.
+                    game_log("  %s has protection from everything — %u trample damage prevented\n",
+                             target_display_name(game, cr.attack_target).c_str(), remaining);
+                } else if (has_trample && global_coordinator.entity_has_component<Player>(cr.attack_target)) {
                     deal_damage(entity, cr.attack_target, remaining);
                     auto &target_player = global_coordinator.GetComponent<Player>(cr.attack_target);
                     target_player.life_total -= static_cast<int>(remaining);

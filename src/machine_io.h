@@ -128,6 +128,12 @@ void populate_query(Query* q, const std::vector<LegalAction>& actions);
 // Single source so the index logged for a chosen action (input_logger) matches the
 // index emitted for that same action in the BQUERY (populate_query).
 int action_card_vocab_idx(Entity e);
+// Same, but honoring a modal-DFC back-face play: such an action's source entity
+// carries the FRONT face's CardData, so the entity overload above would report
+// the front face. When the action plays the back face, this resolves the back
+// face's name instead. Use this for action emission/logging so the emitted id
+// matches the face actually being played.
+int action_card_vocab_idx(const LegalAction& la);
 std::vector<float> serialize_state(const GameState* gs);
 
 #endif /* MACHINE_IO_H */

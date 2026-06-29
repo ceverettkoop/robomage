@@ -62,6 +62,11 @@ struct DelayedTrigger {
     // "when X leaves, do Y" delayed trigger; 0 = not entity-watched (the phase-based default).
     Entity watch_entity = 0;          // the specific permanent whose departure fires this trigger
     bool fire_on_leave_battlefield = false;  // true: match watch_entity leaving the battlefield, not a phase
+    // RememberObjects$ RememberedLKI (CR 603.7a): objects this delayed trigger captured when it
+    // was set up (the cards the preceding RememberChanged$ ChangeZone moved, e.g. the permanent
+    // Flickerwisp/Phelia exiled). Restored into cur_game.remembered_entities before the fire
+    // ability resolves so its Defined$ DelayTriggerRememberedLKI acts on those same objects.
+    std::vector<Entity> remembered_objects;
 };
 
 // Last-known information (CR 608.2h / 112.7a): a permanent's effective characteristics —
@@ -98,12 +103,35 @@ struct ActionHistoryEntry {
     int turn;            // cur_game.turn when the action was taken
 };
 
+// An emblem (CR 114): a continuous-effect source owned by a player that exists outside any zone
+// and can't be removed. Created by an AB$ Effect with StaticAbilities$ + Duration$ Permanent
+// (Kaito's [+1] "Ninjas you control get +1/+1."). Its statics are gathered into g_active_statics
+// every SBA pass with the owner as their controller, so they apply through the normal layer
+// engine without the emblem being a real (targetable, counted, destructible) permanent. Persists
+// for the rest of the game; a fresh Game (new game of a match) starts with none.
+struct Emblem {
+    Zone::Ownership controller = Zone::PLAYER_A;
+    std::vector<StaticAbility> statics;
+};
+
 struct Game {
         Game() {};
         Game(size_t _seed) {
             seed = _seed;
             gen = std::mt19937(seed);
         };
+        // Day/Night designation the game itself can have (CR 731.1). Starts at "neither" and, once
+        // set, is always exactly one of day/night. Driven by the daybound/nightbound subsystem
+        // (src/day_night.*); read by day-/night-conditional effects. A fresh Game starts neither.
+        enum DayNight { DN_NEITHER, DN_DAY, DN_NIGHT };
+        DayNight day_night = DN_NEITHER;
+        // Spells cast by the previous turn's active player DURING that turn (CR 502.2 / 731.2),
+        // read by the untap-step day/night turn-based check on the following turn. Snapshotted at
+        // cleanup from Player::spells_cast_this_turn before that per-turn counter is reset. Because
+        // cleanup resets BOTH players' spells_cast_this_turn to 0 (so a player's instants cast on
+        // the opponent's turn never leak into their own-turn count), the snapshot is just the active
+        // player's spells_cast_this_turn at cleanup.
+        int prev_turn_active_spell_count = 0;
         size_t seed;
         size_t timestamp = 0;
         size_t turn = 0;
@@ -128,6 +156,14 @@ struct Game {
         // reads it and auto-assigns any attacker absent from the map. Cleared at handler entry
         // (per strike step) and in the END_OF_COMBAT cleanup.
         std::map<Entity, std::map<Entity, uint32_t>> combat_damage_assignment;
+        // Pending extra turns (CR 500.7 / 720). Each entry is the player who will take an extra
+        // turn, treated as a LIFO stack: the most recently added extra turn is taken first (CR
+        // 500.7, "The most recently created turn will be taken first"). Consulted at turn hand-off
+        // (advance_step's cleanup → next turn) before flipping the active player; a non-empty stack
+        // makes the player on top take the next turn instead of passing to the opponent. General
+        // over any "take an extra turn" effect (effects::add_turn pushes onto it). Persists across
+        // turns; empty in a fresh Game.
+        std::vector<Zone::Ownership> extra_turns;
         std::vector<DelayedTrigger> delayed_triggers;
         // Floating triggered abilities (CR 603.7e-style "this turn" triggers) created by a
         // transient DB$ Effect | Triggers$ <SVar> (e.g. Forth Eorlingas!'s become-monarch-on-
@@ -136,6 +172,9 @@ struct Game {
         // a permanent's triggered ability. Cleared at the cleanup step so they last only their
         // turn of creation. General over any until-end-of-turn floating triggered ability.
         std::vector<Ability> floating_triggers;
+        // Emblems the players have (CR 114). Each carries permanent continuous statics gathered
+        // into g_active_statics every SBA pass (see gather_active_statics). Persists for the game.
+        std::vector<Emblem> emblems;
         // The monarch (CR 725). MAX_ENTITIES = no monarch (none until an effect makes a player
         // the monarch). Internal game state only — deliberately NOT in the obs/state vector.
         Entity monarch_entity = MAX_ENTITIES;
@@ -148,6 +187,39 @@ struct Game {
         std::map<Entity, int> ability_resolution_counts;  // Count$ResolvedThisTurn: incremented per triggered-ability resolve
         std::map<Entity, int> payment_fail_counts;  // machine mode: block casting after 2 failed payments
         bool pending_cant_be_countered = false;  // set during mana payment when Cavern restricted mana used
+        bool pending_gift_promised = false;  // Gift (CR 702.176): the spell currently being cast promised its gift; read by Count$PromisedGift while its targets are chosen
+
+        // Turn-long "spells you control can't be countered" grant created by a resolving spell/
+        // ability (Veil of Summer's DB$ Effect | ReplacementEffects$ AntiMagic, CR 614.13/
+        // CantHappen). A player here means every spell that player controls can't be countered
+        // this turn — unlike Hexing Squelcher's battlefield static, this form belongs to no
+        // permanent (the instant is in the graveyard), so it is recorded here and cleared at
+        // cleanup. Consulted at counter-resolution time (effects::counter).
+        std::set<Zone::Ownership> cant_counter_spells_of;
+        // Turn-long "hexproof from <color(s)>" grant for a player and the permanents they control
+        // (Veil of Summer: "You and permanents you control gain hexproof from blue and from black
+        // until end of turn", CR 702.11e). Each entry protects `player` (and any permanent they
+        // control) from being targeted by spells/abilities an opponent controls whose source is
+        // one of `colors`. Player-scoped (rather than a per-permanent keyword grant) so it can
+        // also protect the player object, and so every permanent the player controls is covered;
+        // cleared at cleanup. Consulted in Ability::is_legal_target.
+        struct HexproofFromColors {
+            Zone::Ownership player = Zone::UNKNOWN;
+            std::set<Colors> colors;
+        };
+        std::vector<HexproofFromColors> hexproof_from_colors_this_turn;
+        // Player-scoped "protection from everything" grant (CR 702.16; The One Ring's ETB: "you
+        // gain protection from everything until your next turn"). While active the protected
+        // `player` can't be the target of a spell/ability an opponent controls, and isn't dealt
+        // damage by any source an opponent controls. `until_your_next_turn` selects the duration:
+        // when true the grant is reverted at the start of the protected player's next turn (their
+        // untap step); when false it lapses at cleanup (end of turn). Consulted in
+        // Ability::is_legal_target and deal_damage_to_player.
+        struct PlayerProtectionFromEverything {
+            Zone::Ownership player = Zone::UNKNOWN;
+            bool until_your_next_turn = false;
+        };
+        std::vector<PlayerProtectionFromEverything> player_protection_from_everything;
         bool revolt_player_a = false;  // a permanent Player A controlled left the battlefield this turn
         bool revolt_player_b = false;  // a permanent Player B controlled left the battlefield this turn
         std::set<Entity> void_countered;  // entities exiled with void counters (Dauthi Voidwalker)
@@ -157,9 +229,13 @@ struct Game {
         int chosen_number = 0;  // integer chosen by a resolving DB$ ChooseNumber effect (Wrath of the Skies: "pay any amount of {E}"); read downstream via Count$ChosenNumber (e.g. the cmc bound and PayEnergy unless-cost of the chained DestroyAll)
         std::map<Entity, std::vector<std::string>> lk_battlefield_types;  // last-known type/subtype names of a permanent captured as it leaves the battlefield (603.10 look-back), so a "dies"/leaves trigger can match a token that has already ceased to exist by the time triggers are checked
         std::set<Entity> pending_enters_tapped;  // one-shot: a ChangeZone effect put this card onto the battlefield tapped; consumed when its Permanent is created
+        std::map<Entity, Entity> pending_enters_attacking;  // one-shot: {ninja -> attack target} a K:Ninjutsu (CR 702.49e) put this card onto the battlefield attacking; consumed when its Creature component is created (a non-creature ninja, e.g. a planeswalker, drops the mark — it can't be a combatant)
         std::set<Entity> pending_enters_transformed;  // one-shot: a ChangeZone effect (Transformed$ True) put this card onto the battlefield showing its DFC back face; consumed when its Permanent is created
         std::set<Entity> pending_evoked;  // one-shot: a spell cast for its evoke cost is resolving; consumed when its Permanent is created (sets Permanent::evoked)
         std::set<Entity> pending_offspring;  // one-shot: a spell cast with its Offspring additional cost is resolving; consumed when its Permanent is created (sets Permanent::entered_with_offspring)
+        std::set<Entity> pending_escaped;  // one-shot: a spell cast from the graveyard for its Escape cost is resolving; consumed when its Permanent is created (sets Permanent::cast_with_escape) — Uro's "sacrifice it unless it escaped"
+        std::set<Entity> pending_unearthed;  // one-shot: an Unearth ChangeZone (CR 702.84) returned this card to the battlefield; consumed when its Permanent is created (sets Permanent::unearthed → haste + delayed end-step exile + leaves→exile replacement)
+        std::set<Entity> pending_impending;  // one-shot: a spell cast for its Impending alternate cost (CR 702.175) is resolving; consumed when its Permanent is created (puts impending_count TIME counters on it → not a creature until they shed)
         std::set<Entity> cast_to_battlefield;  // one-shot: a cast spell is resolving from the stack onto the battlefield (it "was cast", CR 614.12 / Containment Priest); consumed when its Permanent is created
         std::set<Entity> cast_from_hand;  // one-shot: a spell now resolving onto the battlefield was cast from its controller's own hand (a normal CR 601 hand cast); consumed when its Permanent is created → Permanent::cast_from_hand_by_controller (Amped Raptor's Card.wasCastFromYourHandByYou gate)
         // Impulse-cast permission (CR 707 "impulsive draw" / 118.9 alternative cost): a card a
@@ -169,12 +245,17 @@ struct Game {
         // so the same path serves energy ({E}) and life (a future Bolas's Citadel "pay life =
         // mana value"). The casting path reads this to compute the cost and skip mana payment.
         struct ImpulseCastPermission {
-            enum Resource { ENERGY, LIFE } resource = ENERGY;
-            int amount = 0;            // resolved cost (e.g. the card's mana value)
+            // FREE = cast without paying any cost (Ugin, Eye of the Storms' -11: "cast those
+            // cards without paying their mana costs", CR 118.9 / 601.2f). ENERGY/LIFE pay an
+            // alternative resource cost equal to `amount` (Amped Raptor's DB$ Play).
+            enum Resource { ENERGY, LIFE, FREE } resource = ENERGY;
+            int amount = 0;            // resolved cost (e.g. the card's mana value); 0 when FREE
             Zone::Ownership caster = Zone::UNKNOWN;  // who may cast it (its controller)
         };
         std::map<Entity, ImpulseCastPermission> impulse_cast_permission;
         std::map<Entity, int> pending_etb_xpaid;  // one-shot: X paid for an X-cost permanent spell now resolving, used by an "enters with X counters" replacement (Chalice of the Void); consumed when its Permanent is created
+        std::map<Entity, Entity> pending_attach;  // one-shot: {creature -> equipment} a DB$ Attach resolved onto a creature whose Permanent did not exist yet (reanimate-then-attach, Pre-War Formalwear); the equip link is finalized when the creature's Permanent is created
+        std::map<Entity, Entity> pending_aura_target;  // one-shot: {aura -> enchanted object} an Aura spell chose its enchant target at cast (CR 303.4); the attach link (aura.equipped_to) is finalized when the aura's Permanent is created
 
         // Recent action history ring buffer for ML observation
         ActionHistoryEntry action_history[ACTION_HISTORY_SIZE] = {};

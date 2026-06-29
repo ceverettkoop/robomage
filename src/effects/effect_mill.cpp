@@ -7,6 +7,7 @@
 #include "../classes/game.h"
 #include "../cli_output.h"
 #include "../components/carddata.h"
+#include "../components/player.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../systems/orderer.h"
@@ -17,8 +18,12 @@ extern Game cur_game;
 namespace effects {
 
 bool mill(Ability &ab, std::shared_ptr<Orderer> orderer) {
-    // Move top N cards from target player's library to graveyard
+    // Move top N cards from target player's library to graveyard. A targeted mill
+    // ("Target player mills three cards" — Witherbloom Command) mills the chosen
+    // player; otherwise the effect's controller mills (Defined$ You / self-mill).
     Zone::Ownership mill_owner = ab.controller;
+    if (ab.target != 0 && global_coordinator.entity_has_component<Player>(ab.target))
+        mill_owner = (ab.target == cur_game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
     size_t mill_count = ab.amount_from_damage ? ab.trigger_damage_amount : ((ab.amount > 0) ? ab.amount : 1);
     std::vector<Entity> milled = orderer->mill(mill_owner, mill_count);
     if (ab.remember_milled) {

@@ -25,6 +25,7 @@ enum class EffectKind {
     ProwessBonus,
     ExaltedBonus,
     Token,
+    Investigate,
     Attach,
     Mill,
     Pump,
@@ -34,6 +35,7 @@ enum class EffectKind {
     Cleanup,
     DelayedTrigger,
     Untap,
+    UntapAll,
     Destroy,
     DestroyAll,
     DamageAll,
@@ -59,6 +61,7 @@ enum class EffectKind {
     GrantCast,
     NameCard,
     Animate,
+    AnimateAll,
     ChooseNumber,
     DigUntil,
     Play,
@@ -66,6 +69,10 @@ enum class EffectKind {
     Tap,
     RevealHand,
     BecomeMonarch,
+    Vote,
+    Storm,
+    AddTurn,
+    StoreSVar,
 };
 
 // Maps a normalized category string to its EffectKind. Unknown strings → None.

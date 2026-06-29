@@ -407,6 +407,35 @@ Cards are loaded on-demand from `bin/resources/cardsfolder/`:
 - Parser (`src/parse.h` / `src/parse.cpp`): Parses card scripts into ECS entities with components
 - Name to UID conversion: lowercase, spaces to underscores, other characters removed
 
+**Double-faced cards are stored under ONE combined `<front>_<back>.txt` script — never
+fetch/author a front-name-only duplicate.** Forge stores a DFC/MDFC/transform/Room card
+under a single combined filename (e.g. `tamiyo_inquisitive_student_tamiyo_seasoned_scholar.txt`),
+and the engine mirrors that: `load_card` (`src/card_db.cpp`) resolves the exact `<uid>.txt`
+first and only falls back to scanning for a combined `<uid>_*.txt` when no exact file exists.
+So writing a front-name `<uid>.txt` alongside an existing combined script adds the card to the
+engine **twice** — the front-name file shadows the (correct) combined one. When provisioning
+scripts, use the fetch tool below, which is DFC-aware; do not hand-create a `<front>.txt` for a
+card whose combined script already exists.
+
+**Fetching missing scripts — `tools/forge_fetch/fetch_script.py`** pulls card/token scripts from
+the Card-Forge/forge repo (add-only; never overwrites without `--force`). It is the single
+correct way to provision a missing script:
+- Pass card names: `train/.venv/bin/python tools/forge_fetch/fetch_script.py "Brainstorm" "Tamiyo, Inquisitive Student"`.
+  It treats a card as already-present if EITHER `<uid>.txt` OR a verified combined `<uid>_*.txt`
+  exists, and on a front-name miss it discovers the combined DFC filename Forge serves (via the
+  GitHub contents API) and fetches THAT under the combined name — so DFCs are never duplicated.
+- Token scripts: add `--token` and pass the script stem (e.g. `--token b_0_0_orc_army`).
+- Known gap: accented names aren't transliterated for the **filename/uid** — `name_to_uid`
+  mirrors the C++ engine, which drops non-ASCII bytes rather than mapping them to a base letter
+  (an accented "o" becomes nothing, not `o`), so it won't match Forge's transliterated filename;
+  fetch/name such a card by its ASCII stem by hand. (The ML **vocab** match is separately
+  accent-insensitive — `card_name_to_index` folds via `ascii_fold_card_name`, transliterating
+  e.g. ó→o — so an accented `CardData::name` still resolves to its ASCII vocab entry.)
+- The SessionStart hook (`.claude/hooks/session-start.sh`) calls this tool for the top-level and
+  `meta/` decks so a fresh clone gets their scripts automatically. It does **not** yet scan
+  `decks/league/`, so after adding/altering a league deck, provision its scripts by running the
+  fetch tool over those deck files (or extend the hook to include the `league/` subdir).
+
 ### Adding a New Card
 
 When implementing a new card, **both** of the following steps are required:
@@ -615,6 +644,7 @@ BQUERY: <N>\n
 | 43 | SYLVAN_CHOICE | Sylvan Library card pick / pay-4-life-or-top choice |
 | 44 | CHOOSE_CARD | Choose a card from a (non-library) zone for a zone-change effect |
 | 45 | ASSIGN_DAMAGE | Attacker assigns lethal combat damage to a chosen blocker (T3.10; only when 2+ blockers and power ≤ total lethal) |
+| 46 | COMPANION | Pay {3} to put your chosen companion (CR 702.139) from the sideboard into your hand (once per game) |
 
 **Confirm slot convention:** mandatory attacker/blocker queries end with a confirm action. The Python env remaps `action = num_choices - 1` to `-1` before sending to the game.
 
@@ -625,7 +655,7 @@ Total: **34392 floats** (OBS_SIZE in `train/env.py`)
 | Range | Size | Content |
 |---|---|---|
 | `[0:33794]` | 33794 | State vector (see `src/machine_io.h`) |
-| `[33794:33858]` | 64 | Action categories, padded to MAX_ACTIONS (64), normalised by ACTION_CATEGORY_MAX (45) |
+| `[33794:33858]` | 64 | Action categories, padded to MAX_ACTIONS (64), normalised by ACTION_CATEGORY_MAX (46) |
 | `[33858:33922]` | 64 | Action card IDs, padded to MAX_ACTIONS |
 | `[33922:33986]` | 64 | Action controller_is_self flags, padded to MAX_ACTIONS |
 | `[33986:34056]` | 70 | Hand cast costs (10 slots × 7 cost features) |

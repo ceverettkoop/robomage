@@ -52,6 +52,12 @@ public:
     // place_on_battlefield) so graveyard-functioning cards can be exercised in isolation.
     std::vector<Entity> place_in_graveyard(const std::vector<std::string> &card_names,
                                            Zone::Ownership owner);
+    // Test-harness helper: start cards already in a non-battlefield zone owned by a
+    // player (graveyard/exile/sideboard) so zone-change effects that pull from those
+    // zones (e.g. Karn's "from exile or outside the game") can be exercised in isolation.
+    // No Permanent/Creature components are attached.
+    std::vector<Entity> place_in_zone(const std::vector<std::string> &card_names,
+                                      Zone::Ownership owner, Zone::ZoneValue zone);
 
 private:
     // Draw a single card for `player`, first offering any available dredge

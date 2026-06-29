@@ -2,8 +2,11 @@
 #define ABILITY_PARAMS_H
 
 #include <cstddef>
+#include <set>
 #include <string>
 #include <vector>
+
+#include "../classes/colors.h"
 
 // Per-effect parameter blocks held by Ability's `params` variant (see ability.h).
 //
@@ -32,6 +35,17 @@ struct PumpParams {
     int def_sign = 1;
     // KW$ — keyword(s) granted to the pumped creature until end of turn (e.g. Haste).
     std::vector<std::string> grant_keywords;
+    // KW$ Hexproof:Card.<Color>:<desc> — "hexproof from <color>" (Veil of Summer). Parsed out of
+    // the keyword list into this color set; the Pump handler turns it into a turn-long player-
+    // scoped grant (cur_game.hexproof_from_colors_this_turn) covering the controller and the
+    // permanents they control, rather than a per-creature keyword (which couldn't protect the
+    // player or non-creature permanents). Empty = no hexproof-from-color grant.
+    std::set<Colors> grant_hexproof_from_colors;
+    // KW$ Protection from everything with Defined$ You (The One Ring's ETB Pump) — "you gain
+    // protection from everything". Parsed out of the keyword list into this flag; the Pump handler
+    // turns it into a player-scoped grant (cur_game.player_protection_from_everything) for the
+    // controller rather than a per-creature keyword. False = no player-protection grant.
+    bool grant_protection_from_everything = false;
 };
 
 // Delirium-conditional damage (Unholy Heat). The base damage stays in the
@@ -69,6 +83,16 @@ struct TokenParams {
     // evaluated from this expression at creation time (Skyclave Apparition's MV-sized Illusion).
     std::string power_expr = "";
     std::string toughness_expr = "";
+    // TokenOwner$ Promised (Gift keyword, CR 702.176): the token is created under the control of
+    // the opponent who was promised the gift — i.e. the opponent of the ability's controller.
+    bool owner_is_promised = false;
+    // TokenOwner$ TargetedController (Cityscape Leveler: "destroy ... its controller creates a
+    // tapped Powerstone token"): the token is owned/controlled by the controller of the ability's
+    // target permanent (read via last-known info, since the target was just destroyed). With no
+    // target chosen, no token is created — this implements the "if you do" gating.
+    bool owner_is_targeted_controller = false;
+    // TokenTapped$ True: the token enters the battlefield tapped (Into the Flood Maw's Fish).
+    bool tapped = false;
 };
 
 // PutCounter (e.g. Scythecat Cub landfall +1/+1). NOTE: this is the Ability
@@ -125,6 +149,12 @@ struct DelayedTriggerParams {
     std::string phase = "";       // Phase$ — "Upkeep"/"Draw"/"EndStep" (empty = upkeep)
     std::string execute_svar = "";  // Execute$ — SVar name of the ability to fire
     std::string valid_player = "";  // ValidPlayer$ — "Player"/"You"/"Opponent"
+    // RememberObjects$ RememberedLKI — at registration, snapshot the objects the immediately
+    // preceding RememberChanged$ ChangeZone moved (cur_game.remembered_entities) and carry them
+    // with the delayed trigger, so its Execute$ ability can act on those same objects when it
+    // fires later (CR 603.7a — the delayed trigger references the objects as they were when it
+    // was set up). Used by exile-and-return-at-end-of-turn cards (Flickerwisp, Phelia).
+    bool remember_objects_lki = false;
 };
 
 #endif /* ABILITY_PARAMS_H */

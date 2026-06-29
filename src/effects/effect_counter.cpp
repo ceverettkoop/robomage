@@ -2,17 +2,20 @@
 
 #include <string>
 
+#include "../classes/game.h"
 #include "../cli_output.h"
 #include "../components/carddata.h"
 #include "../components/color_identity.h"
 #include "../components/spell.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
-#include "../error.h"
+#include "../components/ability.h"
 #include "../game_queries.h"
+#include "../saga.h"
 #include "../systems/orderer.h"
 
 extern Coordinator global_coordinator;
+extern Game cur_game;
 
 namespace effects {
 
@@ -70,9 +73,14 @@ bool counter(Ability &ab, std::shared_ptr<Orderer> orderer) {
                 do_counter = run_unless_loop(ab.unless_generic_cost, payer, orderer, ab.target, kind);
             }
 
-            // Can't be countered check (Cavern of Souls)
-            if (do_counter && global_coordinator.entity_has_component<Spell>(ab.target) &&
-                global_coordinator.GetComponent<Spell>(ab.target).cant_be_countered) {
+            // Can't be countered check — either a cast-time stamp (Cavern of Souls / a "this spell
+            // can't be countered" self replacement) or a continuous battlefield static covering the
+            // spell (Hexing Squelcher: "Spells you control can't be countered", CR 614.13).
+            if (do_counter &&
+                ((global_coordinator.entity_has_component<Spell>(ab.target) &&
+                  global_coordinator.GetComponent<Spell>(ab.target).cant_be_countered) ||
+                 spell_uncounterable_by_static(ab.target, orderer->mEntities) ||
+                 cur_game.cant_counter_spells_of.count(target_controller) > 0)) {
                 std::string name = global_coordinator.entity_has_component<CardData>(ab.target)
                                        ? global_coordinator.GetComponent<CardData>(ab.target).name
                                        : "<unknown>";
@@ -92,6 +100,12 @@ bool counter(Ability &ab, std::shared_ptr<Orderer> orderer) {
                                       global_coordinator.GetComponent<Spell>(ab.target).is_copy;
                 // Capture flashback status before the Spell component (which carries it) is removed.
                 bool was_flashback = spell_cast_with_flashback(ab.target);
+                // CR 714.4: if the countered object is a Saga chapter ability, it is leaving the
+                // stack WITHOUT resolving — release the same sacrifice gate the resolve path
+                // releases, so a completed Saga isn't stranded on the battlefield forever. Read it
+                // before the Ability component (which carries is_saga_chapter/source) is removed.
+                if (global_coordinator.entity_has_component<Ability>(ab.target))
+                    decrement_saga_in_flight(global_coordinator.GetComponent<Ability>(ab.target));
                 if (global_coordinator.entity_has_component<Ability>(ab.target))
                     global_coordinator.RemoveComponent<Ability>(ab.target);
                 if (global_coordinator.entity_has_component<Spell>(ab.target))
@@ -112,10 +126,15 @@ bool counter(Ability &ab, std::shared_ptr<Orderer> orderer) {
                 game_log("%s is countered\n", name.c_str());
             }
         } else {
-            non_fatal_error("Counter should have fizzled prior to this");
+            // Target still exists but has left the stack (e.g. it was already countered by an
+            // earlier counter that resolved first). Its only target is illegal, so the counter
+            // does nothing and is put into its graveyard (CR 608.2b). The pre-resolve target check
+            // (Ability::resolve / is_target_valid) normally fizzles this first; this is a defensive
+            // clean fizzle for any path that reaches the effect with a stale target.
+            game_log("Counter fizzles (target no longer on the stack)\n");
         }
     } else {
-        non_fatal_error("Counter should have fizzled prior to this");
+        game_log("Counter fizzles (target no longer on the stack)\n");
     }
     return true;
 }

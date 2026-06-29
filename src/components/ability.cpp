@@ -60,6 +60,12 @@ bool Ability::identical_activated_ability(const Ability &other) {
     if (other.category != this->category) return false;
     if (other.valid_tgts != this->valid_tgts) return false;
     if (other.amount != this->amount) return false;
+    // A Metalcraft-/condition-gated ability and an otherwise-identical ungated one are
+    // distinct abilities (Urza's Workshop: plain "{T}: Add {C}" vs the Metalcraft
+    // "{T}: Add {C} for each Urza's land"). Likewise two mana abilities that produce
+    // different dynamic amounts are distinct. Without these the second is wrongly deduped.
+    if (other.activation_condition != this->activation_condition) return false;
+    if (other.dynamic_amount_expr != this->dynamic_amount_expr) return false;
     if (other.tap_cost != this->tap_cost) return false;
     if (other.activation_mana_cost != this->activation_mana_cost) return false;
     if (other.sac_self != this->sac_self) return false;
@@ -81,10 +87,11 @@ bool Ability::identical_activated_ability(const Ability &other) {
 // MatchCtx. All qualifier grammar (colors, Colorless, Basic, P/T, subtypes, cmcLEX, …) now lives
 // in the one shared evaluator.
 static bool matches_filter_spec(Entity entity, const std::string &spec, int cmc_bound = -1,
-    const std::string &cmc_op = "") {
+    const std::string &cmc_op = "", Zone::Ownership you = Zone::UNKNOWN) {
     MatchCtx ctx;
     ctx.cmc_bound = cmc_bound;
     ctx.cmc_op = cmc_op;
+    ctx.controller = you;  // the "you" reference for YouOwn/YouCtrl/OppOwn/OppCtrl in the filter
     return card_matches_filter(entity, spec, ctx);
 }
 
@@ -104,11 +111,15 @@ Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner, Zone
         zone_contents = orderer->get_library_contents(owner);
     } else if (zone == Zone::HAND) {
         zone_contents = orderer->get_hand(owner);
-    } else if (zone == Zone::GRAVEYARD) {
+    } else if (zone == Zone::GRAVEYARD || zone == Zone::EXILE || zone == Zone::SIDEBOARD) {
+        // Graveyard / face-up exile / sideboard ("outside the game") picks (Karn, the Great
+        // Creator -2: choose an artifact card you own in exile or your sideboard). These zones
+        // hold their cards as entities tagged by Zone owner, so enumerate by owner like the
+        // graveyard. (The sideboard is only populated with entities in the bo3 sideboard phase.)
         for (auto e : orderer->mEntities) {
             if (!global_coordinator.entity_has_component<Zone>(e)) continue;
             auto &z = global_coordinator.GetComponent<Zone>(e);
-            if (z.location == Zone::GRAVEYARD && z.owner == owner) zone_contents.push_back(e);
+            if (z.location == zone && z.owner == owner) zone_contents.push_back(e);
         }
     }
 
@@ -133,7 +144,7 @@ Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner, Zone
             bool matches = false;
             if (has_extended) {
                 for (auto &st : subtypes) {
-                    if (matches_filter_spec(entity, st, cmc_bound, cmc_op)) {
+                    if (matches_filter_spec(entity, st, cmc_bound, cmc_op, owner)) {
                         matches = true;
                         break;
                     }
@@ -158,6 +169,7 @@ Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner, Zone
                             : (zone == Zone::HAND)      ? "hand"
                             : (zone == Zone::GRAVEYARD) ? "graveyard"
                             : (zone == Zone::EXILE)     ? "exile"
+                            : (zone == Zone::SIDEBOARD) ? "sideboard"
                                                         : "zone";
     // Determine category: library searches going to top of library use TOP_LIBRARY,
     // other library searches use SEARCH_LIBRARY, non-library zone picks use CHOOSE_CARD
@@ -220,11 +232,13 @@ Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner
         } else if (zone == Zone::HAND) {
             auto hand = orderer->get_hand(owner);
             zone_contents.insert(zone_contents.end(), hand.begin(), hand.end());
-        } else if (zone == Zone::GRAVEYARD) {
+        } else if (zone == Zone::GRAVEYARD || zone == Zone::EXILE || zone == Zone::SIDEBOARD) {
+            // Graveyard / face-up exile / sideboard ("outside the game"), enumerated by Zone
+            // owner — Karn, the Great Creator -2 searches Origin$ Sideboard,Exile.
             for (auto e : orderer->mEntities) {
                 if (!global_coordinator.entity_has_component<Zone>(e)) continue;
                 auto &z = global_coordinator.GetComponent<Zone>(e);
-                if (z.location == Zone::GRAVEYARD && z.owner == owner) zone_contents.push_back(e);
+                if (z.location == zone && z.owner == owner) zone_contents.push_back(e);
             }
         }
     }
@@ -263,7 +277,7 @@ Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner
             bool matches = false;
             if (has_extended) {
                 for (auto &st : subtypes) {
-                    if (matches_filter_spec(entity, st)) {
+                    if (matches_filter_spec(entity, st, -1, "", owner)) {
                         matches = true;
                         break;
                     }
@@ -287,9 +301,26 @@ Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner
     bool show_fail_to_find = !mandatory || choices.empty();
     if (mandatory && choices.empty()) return 0;
 
-    game_log("Searching %s's library and graveyard:\n", player_name(owner).c_str());
+    bool searches_library = false;
+    std::string zone_list;
+    for (auto zone : zones) {
+        if (zone == Zone::LIBRARY) searches_library = true;
+        const char *zn = (zone == Zone::LIBRARY)     ? "library"
+                         : (zone == Zone::GRAVEYARD)  ? "graveyard"
+                         : (zone == Zone::HAND)       ? "hand"
+                         : (zone == Zone::EXILE)      ? "exile"
+                         : (zone == Zone::SIDEBOARD)  ? "sideboard"
+                                                      : "zone";
+        if (!zone_list.empty()) zone_list += " and ";
+        zone_list += zn;
+    }
+    game_log("Searching %s's %s:\n", player_name(owner).c_str(), zone_list.c_str());
 
-    ActionCategory cat = (destination == Zone::LIBRARY) ? ActionCategory::TOP_LIBRARY : ActionCategory::SEARCH_LIBRARY;
+    // A library search uses SEARCH_LIBRARY/TOP_LIBRARY; a pick from only non-library
+    // zones (e.g. Karn's -2 over Sideboard,Exile) is a CHOOSE_CARD decision.
+    ActionCategory cat = (destination == Zone::LIBRARY) ? ActionCategory::TOP_LIBRARY
+                         : searches_library             ? ActionCategory::SEARCH_LIBRARY
+                                                        : ActionCategory::CHOOSE_CARD;
 
     std::vector<LegalAction> search_actions;
     if (show_fail_to_find) {
@@ -300,7 +331,11 @@ Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner
     for (auto entity : choices) {
         auto &cd = global_coordinator.GetComponent<CardData>(entity);
         auto &z = global_coordinator.GetComponent<Zone>(entity);
-        const char *zone_label = (z.location == Zone::GRAVEYARD) ? " (graveyard)" : " (library)";
+        const char *zone_label = (z.location == Zone::GRAVEYARD)  ? " (graveyard)"
+                                 : (z.location == Zone::EXILE)     ? " (exile)"
+                                 : (z.location == Zone::SIDEBOARD) ? " (sideboard)"
+                                 : (z.location == Zone::HAND)      ? " (hand)"
+                                                                   : " (library)";
         LegalAction la(PASS_PRIORITY, entity, cd.name + zone_label);
         la.category = cat;
         la.card_is_public = reveal;
@@ -413,6 +448,37 @@ bool run_unless_loop(
             payer.life_total -= static_cast<int>(cost);
             game_log("%s pays %zu life — spell is not countered\n",
                 player_name(controller).c_str(), cost);
+            return false;
+        }
+        (void)decline_idx;
+        return true;
+    }
+
+    if (kind == UnlessPayKind::ENERGY) {
+        // Pay N energy ({E}, CR 122.1c) or the prevented effect happens (Static Prison's
+        // "sacrifice CARDNAME unless you pay {E}"). Energy lives as an "ENERGY" counter on the
+        // payer; pay_energy gates on having enough (CR 119.4-analogue for a resource cost).
+        auto &payer = global_coordinator.GetComponent<Player>(get_player_entity(controller));
+        bool can_pay = player_energy(payer) >= static_cast<int>(cost);
+
+        std::vector<LegalAction> unless_actions;
+        size_t pay_idx = unless_actions.size();
+        if (can_pay) {
+            LegalAction pay(PASS_PRIORITY,
+                std::string("Pay {E} x") + std::to_string(cost));
+            pay.category = ActionCategory::PAY_UNLESS;
+            unless_actions.push_back(pay);
+        }
+        size_t decline_idx = unless_actions.size();
+        LegalAction decline(PASS_PRIORITY, std::string("Don't pay"));
+        decline.category = ActionCategory::PAY_UNLESS;
+        unless_actions.push_back(decline);
+
+        int choice = InputLogger::instance().get_input(unless_actions);
+        cur_game.player_a_has_priority = prev_priority;
+        if (can_pay && choice == static_cast<int>(pay_idx)) {
+            pay_energy(payer, static_cast<int>(cost));
+            game_log("%s pays %zu energy.\n", player_name(controller).c_str(), cost);
             return false;
         }
         (void)decline_idx;
@@ -538,12 +604,74 @@ static bool target_type_matches_stack_object(const std::string &target_type, Ent
     return false;
 }
 
+// "Hexproof from <color>" (CR 702.11e): a candidate protected by a turn-long
+// cur_game.hexproof_from_colors_this_turn grant can't be targeted by a spell/ability an OPPONENT
+// of the protected player controls whose SOURCE is one of the granted colors. Covers both the
+// protected player (the player object) and any permanent that player controls. `source` is the
+// targeting object (a spell card on the stack, or an ability's source permanent) whose
+// ColorIdentity gives the color of the spell/ability for the comparison; `caster` is its
+// controller. Returns true when the candidate is protected (so the target is illegal).
+static bool target_has_color_hexproof(Entity cand, Entity source, Zone::Ownership caster) {
+    if (cur_game.hexproof_from_colors_this_turn.empty()) return false;
+    if (!global_coordinator.entity_has_component<ColorIdentity>(source)) return false;
+    const auto &src_colors = global_coordinator.GetComponent<ColorIdentity>(source).colors;
+    for (const auto &h : cur_game.hexproof_from_colors_this_turn) {
+        // Only protects against an opponent's spell/ability (two-player: caster != protected player).
+        if (caster == h.player) continue;
+        // The candidate must be the protected player, or a permanent that player controls.
+        bool is_protected_player = (cand == get_player_entity(h.player));
+        bool is_protected_perm = global_coordinator.entity_has_component<Permanent>(cand) &&
+                                 is_battlefield_permanent(cand, h.player);
+        if (!is_protected_player && !is_protected_perm) continue;
+        // The source must be one of the granted colors.
+        for (Colors c : h.colors)
+            if (src_colors.count(c)) return true;
+    }
+    return false;
+}
+
+// "Protection from everything" for a player (CR 702.16; The One Ring). A player covered by a
+// cur_game.player_protection_from_everything grant can't be the target of a spell/ability an
+// OPPONENT controls. `caster` is the targeting object's controller. Returns true when the
+// candidate is the protected player and the targeting object belongs to their opponent.
+static bool player_has_protection_from_everything(Entity cand, Zone::Ownership caster) {
+    if (cur_game.player_protection_from_everything.empty()) return false;
+    for (const auto &p : cur_game.player_protection_from_everything) {
+        if (caster == p.player) continue;  // own spells/abilities can still target the player
+        if (cand == get_player_entity(p.player)) return true;
+    }
+    return false;
+}
+
+// True if `needle` occurs in `hay` as a WHOLE word — not as a substring of a longer alphabetic
+// token. A ValidTgts spec names a player target with the head type "Player", but control
+// qualifiers embed it inside longer words (e.g. "ControlledBy TriggeredDefendingPlayer" on
+// Frenzied Trapbreaker), where a raw substring scan would wrongly read it as a player target.
+static bool valid_tgts_names_word(const std::string &hay, const char *needle) {
+    const size_t nlen = std::char_traits<char>::length(needle);
+    for (size_t p = hay.find(needle); p != std::string::npos; p = hay.find(needle, p + 1)) {
+        const bool left_ok = (p == 0) || !std::isalpha(static_cast<unsigned char>(hay[p - 1]));
+        const size_t end = p + nlen;
+        const bool right_ok = (end == hay.size()) || !std::isalpha(static_cast<unsigned char>(hay[end]));
+        if (left_ok && right_ok) return true;
+    }
+    return false;
+}
+
 // Single source of truth for target legality (see header). build_valid_targets
 // enumerates candidates and filters them through this; is_target_valid re-runs the
 // chosen target(s) through it at resolution. Keeping both on one predicate is what
 // prevents the enumeration and re-verification rules from drifting apart.
 bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
     if (cand == 0) return false;
+
+    // Hexproof from <color> (Veil of Summer) — applies to players and permanents alike, so it is
+    // checked up front before the type-specific branches below.
+    if (target_has_color_hexproof(cand, source, caster)) return false;
+
+    // Protection from everything for a player (The One Ring) — the protected player can't be
+    // targeted by an opponent's spell/ability (CR 702.16e). Checked up front like hexproof.
+    if (player_has_protection_from_everything(cand, caster)) return false;
 
     // ValidTgts$ ...Other (e.g. Solitude/Flickerwisp "another"/"other" target): the source
     // of the ability cannot be chosen as its own target (CR 115.1; "other" is a target
@@ -590,7 +718,7 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
 
     bool any = (vt == "Any");
     bool opp_only = (vt == "Opponent");
-    bool inc_players = any || opp_only || vt.find("Player") != std::string::npos;
+    bool inc_players = any || opp_only || valid_tgts_names_word(vt, "Player");
     bool inc_creatures = any || vt.find("Creature") != std::string::npos;
     bool inc_lands = vt.find("Land") != std::string::npos;
     bool nonbasic_only = vt.find("nonBasic") != std::string::npos;
@@ -688,8 +816,31 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
 
     // Protection (CR 702.16e): a creature with protection from the source's color/quality can't
     // be targeted by it. The filter evaluator doesn't model protection, so check it separately.
-    if (global_coordinator.entity_has_component<Creature>(cand) &&
-        has_protection_from(global_coordinator.GetComponent<Creature>(cand), source))
+    if (global_coordinator.entity_has_component<Creature>(cand)) {
+        const Creature &cand_cr = global_coordinator.GetComponent<Creature>(cand);
+        if (has_protection_from(cand_cr, source)) return false;
+        // Protection from colored spells (Emrakul: K:Protection:Spell.nonColorless, CR 702.16b/e):
+        // a creature with this protection can't be the target of a SPELL that is one or more
+        // colors. The "is a spell" half is known here from this Ability's type (a SPELL ability,
+        // not an activated/triggered ability), and the "is colored" half from the source's
+        // effective colors — so a colorless spell, or any ability, may still target it.
+        if (ability_type == Ability::SPELL && has_protection_from_colored_spells(cand_cr) &&
+            !effective_colors(source).empty())
+            return false;
+    }
+
+    // Shroud (CR 702.18e) and Hexproof (CR 702.11b): targeting restrictions read off the
+    // candidate's EFFECTIVE keyword set (printed + granted via Pump/effects/keyword counter,
+    // through permanent_has_keyword), so a creature granted Shroud (Sylvan Safekeeper) is
+    // untargetable while the grant lasts.
+    //   • Shroud: can't be the target of ANY spell or ability (yours OR opponents').
+    //   • Hexproof: can't be the target of spells/abilities an OPPONENT controls — legal for
+    //     the controller of the targeting spell/ability, illegal for the other player. `caster`
+    //     is the controller of this ability/spell; the candidate's controller is its Permanent.
+    if (permanent_has_keyword(cand, "Shroud")) return false;
+    if (permanent_has_keyword(cand, "Hexproof") &&
+        global_coordinator.entity_has_component<Permanent>(cand) &&
+        global_coordinator.GetComponent<Permanent>(cand).controller != caster)
         return false;
     return true;
 }
@@ -747,7 +898,20 @@ static bool compare_svar(int val, const std::string &spec, const std::string &sv
 // Supports: Count$InYourLibrary, Count$YourLifeTotal, Count$YourLifeTotal/HalfUp,
 //           Count$Valid Creature.YouCtrl, Targeted$CardPower.
 size_t evaluate_dynamic_amount(
-    const std::string &expr, Zone::Ownership ctrl, std::shared_ptr<Orderer> orderer, Entity target) {
+    const std::string &expr, Zone::Ownership ctrl, std::shared_ptr<Orderer> orderer, Entity target,
+    Entity source) {
+    // Count$CardCounters.<TYPE> — the number of <TYPE> counters on the ability's SOURCE permanent
+    // (The One Ring: X = Count$CardCounters.BURDEN, read by its upkeep life-loss and its draw).
+    // The counter type is the substring after the dot, up to any further qualifier delimiter.
+    if (expr.rfind("Count$CardCounters.", 0) == 0 && source != 0 &&
+        global_coordinator.entity_has_component<Permanent>(source)) {
+        std::string ctype = expr.substr(std::string("Count$CardCounters.").size());
+        size_t end = ctype.find_first_of(".+ ");
+        if (end != std::string::npos) ctype = ctype.substr(0, end);
+        const auto &counters = global_coordinator.GetComponent<Permanent>(source).counters;
+        auto it = counters.find(ctype);
+        return (it != counters.end() && it->second > 0) ? static_cast<size_t>(it->second) : 0;
+    }
     if (expr.find("Count$Devotion.") != std::string::npos) {
         // Count mana symbols of a given color in mana costs of permanents you control
         Colors devotion_color = NO_COLOR;
@@ -783,7 +947,11 @@ size_t evaluate_dynamic_amount(
     }
     if (expr.find("Count$InYourLibrary") != std::string::npos ||
         expr.find("Count$ValidLibrary Card.YouOwn") != std::string::npos) {
-        return orderer->get_library_contents(ctrl).size();
+        size_t lib = orderer->get_library_contents(ctrl).size();
+        // /HalfUp — half the count, rounded up (Tamiyo, Seasoned Scholar's -7: "draw cards
+        // equal to half the number of cards in your library, rounded up"). ceil(N/2).
+        if (expr.find("/HalfUp") != std::string::npos) return (lib + 1) / 2;
+        return lib;
     }
     if (expr.find("Count$YourLifeTotal") != std::string::npos) {
         Entity ctrl_entity = (ctrl == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
@@ -808,6 +976,48 @@ size_t evaluate_dynamic_amount(
         }
         return count;
     }
+    // Count$Valid <filter>$CardManaCost — the SUM of mana values of battlefield permanents matching
+    // the filter, rather than their count (Summon: Bahamut's Mega Flare: X = Count$Valid
+    // Permanent.YouCtrl+Other$CardManaCost = the total mana value of OTHER permanents you control).
+    // The "+Other" qualifier excludes the ability's own source (the Bahamut); `source` is threaded
+    // into the match context for it. A token / costless permanent contributes mana value 0.
+    if (expr.rfind("Count$Valid ", 0) == 0 &&
+        expr.find("$CardManaCost") != std::string::npos) {
+        std::string rest = expr.substr(std::string("Count$Valid ").size());
+        size_t dollar = rest.rfind("$CardManaCost");
+        std::string spec = rest.substr(0, dollar);  // the filter, e.g. "Permanent.YouCtrl+Other"
+        if (!spec.empty()) {
+            MatchCtx mctx;
+            mctx.controller = ctrl;  // "you" reference for YouCtrl/OppCtrl
+            mctx.source = source;    // for the +Other qualifier (exclude the source)
+            size_t total = 0;
+            for (auto e : orderer->mEntities) {
+                if (!is_battlefield_permanent(e)) continue;
+                if (!permanent_matches_filter(e, spec, mctx)) continue;
+                if (global_coordinator.entity_has_component<CardData>(e))
+                    total += static_cast<size_t>(
+                        card_mana_value(global_coordinator.GetComponent<CardData>(e)));
+            }
+            return total;
+        }
+    }
+    // Count$Valid <filter>.TargetedPlayerCtrl — number of battlefield permanents matching the
+    // filter controlled by the PLAYER this ability targets (Carpet of Flowers: Islands the target
+    // opponent controls, via the curse-Pump's ValidTgts$ Opponent inherited by the Mana sub).
+    // `target` is that Player entity; evaluate the filter from its perspective by rewriting
+    // TargetedPlayerCtrl → YouCtrl and counting with the target player's ownership. Handled before
+    // the generic Count$Valid branch (which would treat TargetedPlayerCtrl as an unknown qualifier).
+    if (expr.rfind("Count$Valid ", 0) == 0 &&
+        expr.find("TargetedPlayerCtrl") != std::string::npos) {
+        std::string spec = expr.substr(std::string("Count$Valid ").size());
+        size_t pos = spec.find("TargetedPlayerCtrl");
+        spec.replace(pos, std::string("TargetedPlayerCtrl").size(), "YouCtrl");
+        Zone::Ownership tgt_ctrl = Zone::UNKNOWN;
+        if (target == cur_game.player_a_entity)      tgt_ctrl = Zone::PLAYER_A;
+        else if (target == cur_game.player_b_entity) tgt_ctrl = Zone::PLAYER_B;
+        if (tgt_ctrl == Zone::UNKNOWN) return 0;
+        return static_cast<size_t>(count_battlefield_matching(spec, tgt_ctrl, source));
+    }
     // Count$Valid <Filter> — number of battlefield permanents matching the full Forge filter
     // spec (e.g. Eldrazi Linebreaker: "Count$Valid Eldrazi.YouCtrl"; Eiganjo's Channel
     // ReduceCost: "Count$Valid Creature.Legendary+YouCtrl" = legendary creatures you control).
@@ -818,18 +1028,11 @@ size_t evaluate_dynamic_amount(
     // falls through to its dedicated handler below (it needs the remembered-player reference
     // and the /Times multiplier, neither of which permanent_matches_filter understands).
     if (expr.rfind("Count$Valid ", 0) == 0 &&
-        expr.find("RememberedPlayerCtrl") == std::string::npos) {
+        expr.find("RememberedPlayerCtrl") == std::string::npos &&
+        expr.find("$CardManaCost") == std::string::npos) {
         std::string spec = expr.substr(std::string("Count$Valid ").size());  // full filter spec
-        if (!spec.empty()) {
-            MatchCtx mctx;
-            mctx.controller = ctrl;  // the "you" reference for YouCtrl/OppCtrl in the spec
-            size_t count = 0;
-            for (auto e : orderer->mEntities) {
-                if (!is_battlefield_permanent(e)) continue;  // control is enforced by the filter
-                if (permanent_matches_filter(e, spec, mctx)) count++;
-            }
-            return count;
-        }
+        if (!spec.empty())
+            return static_cast<size_t>(count_battlefield_matching(spec, ctrl, source));
     }
     // Count$Revolt.high.low — returns high if revolt active for controller, low otherwise
     if (expr.find("Count$Revolt.") != std::string::npos) {
@@ -840,12 +1043,66 @@ size_t evaluate_dynamic_amount(
         bool revolt = (ctrl == Zone::PLAYER_A) ? cur_game.revolt_player_a : cur_game.revolt_player_b;
         return static_cast<size_t>(revolt ? high_val : low_val);
     }
+    // Count$PromisedGift.high.low — Gift (CR 702.176): returns high if the spell currently being
+    // cast/resolved promised its gift to an opponent, low otherwise. Into the Flood Maw drives its
+    // two ChangeZone abilities' TargetMin$/TargetMax$ off this (X = .0.1, Y = .1.0): not promised →
+    // the creature-bounce targets 1 and the nonland-bounce targets 0; promised → the reverse, so
+    // the spell instead bounces any nonland permanent. Read from the cast-time pending flag (the
+    // target counts are evaluated as targets are chosen, before the Spell component exists).
+    if (expr.find("Count$PromisedGift.") != std::string::npos) {
+        size_t dot1 = expr.find("PromisedGift.") + std::string("PromisedGift.").size();
+        size_t dot2 = expr.find('.', dot1);
+        int high_val = std::stoi(expr.substr(dot1, dot2 - dot1));
+        int low_val = std::stoi(expr.substr(dot2 + 1));
+        return static_cast<size_t>(cur_game.pending_gift_promised ? high_val : low_val);
+    }
+    // Count$Threshold.high.low — Threshold (CR 702.27 historical keyword action; modern cards
+    // spell the condition out): returns high if the controller has seven or more cards in their
+    // graveyard, low otherwise (Cabal Ritual: Count$Threshold.5.3 → 5 black mana with threshold,
+    // else 3). General for any card scaling a dynamic amount by the threshold condition.
+    if (expr.find("Count$Threshold.") != std::string::npos) {
+        size_t dot1 = expr.find("Threshold.") + std::string("Threshold.").size();
+        size_t dot2 = expr.find('.', dot1);
+        int high_val = std::stoi(expr.substr(dot1, dot2 - dot1));
+        int low_val = std::stoi(expr.substr(dot2 + 1));
+        bool threshold = orderer->get_graveyard(ctrl).size() >= 7;
+        return static_cast<size_t>(threshold ? high_val : low_val);
+    }
+    // Count$UrzaLands.high.low — the "Tron" mana lands (Urza's Mine/Power Plant/Tower): returns
+    // high if the controller controls at least one Urza's Mine AND one Urza's Power Plant AND one
+    // Urza's Tower (a complete set, by card NAME), low otherwise. Each land's own ability scales
+    // its colorless output (Mine/Power Plant: .2.1 → {C}{C} assembled / {C} alone; Tower: .3.1 →
+    // {C}{C}{C} / {C}). General over any card scaling a dynamic amount by Tron assembly.
+    if (expr.find("Count$UrzaLands.") != std::string::npos) {
+        size_t dot1 = expr.find("UrzaLands.") + std::string("UrzaLands.").size();
+        size_t dot2 = expr.find('.', dot1);
+        int high_val = std::stoi(expr.substr(dot1, dot2 - dot1));
+        int low_val = std::stoi(expr.substr(dot2 + 1));
+        bool mine = false, plant = false, tower = false;
+        for (auto e : battlefield_permanents(orderer->mEntities, ctrl)) {
+            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+            const std::string &nm = global_coordinator.GetComponent<CardData>(e).name;
+            if (nm == "Urza's Mine") mine = true;
+            else if (nm == "Urza's Power Plant") plant = true;
+            else if (nm == "Urza's Tower") tower = true;
+        }
+        return static_cast<size_t>((mine && plant && tower) ? high_val : low_val);
+    }
     if (expr.find("Targeted$CardPower") != std::string::npos) {
         // CR 608.2h: effective power, read live while the creature is in play (counters/buffs
         // included), else its last-known value once it has left (e.g. Swords to Plowshares
         // reads the power of the creature it just exiled). Single unified accessor.
         int p = effective_power(target);
         return static_cast<size_t>(p < 0 ? 0 : p);
+    }
+    if (expr.find("Targeted$CardManaCost") != std::string::npos) {
+        // The target's mana value (CR 202.3 / 107.14). Used by Karn, the Great Creator's +1
+        // Animate (Power$/Toughness$ X, X = Targeted$CardManaCost): the animated permanent
+        // becomes a creature whose P/T equal its own mana value, snapshotted at resolution.
+        int mv = 0;
+        if (target != 0 && global_coordinator.entity_has_component<CardData>(target))
+            mv = static_cast<int>(global_coordinator.GetComponent<CardData>(target).mana_cost.size());
+        return static_cast<size_t>(mv < 0 ? 0 : mv);
     }
     // Remembered$Valid <comma-OR-filter> — number of remembered cards (e.g. cards just moved
     // by a RememberChanged$ ChangeZoneAll) matching ANY of the comma-separated filters (Canoptek
@@ -904,6 +1161,29 @@ size_t evaluate_dynamic_amount(
         if (times_pos != std::string::npos)
             mult = static_cast<size_t>(std::stoi(expr.substr(times_pos + 7)));
         return count * mult;
+    }
+    // Count$ThisTurnCast_Card.<Ctrl>+<Color>[,Card.<Ctrl>+<Color>...] — has a player (relative to
+    // ctrl) cast a spell of one of the named colors this turn? (Veil of Summer:
+    // Count$ThisTurnCast_Card.OppCtrl+Blue,Card.OppCtrl+Black, the gate for its conditional draw.)
+    // Reads Player::spell_colors_cast_this_turn (presence-tracked per color); returns 1 if any
+    // requested color was cast by the relevant player this turn, else 0 — sufficient for the GE1
+    // conditions that consume it.
+    if (expr.find("Count$ThisTurnCast_") != std::string::npos) {
+        Zone::Ownership opp = (ctrl == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+        // The clause controller token is read per-expression (Veil uses OppCtrl); YouCtrl (or no
+        // controller token) means the source's controller.
+        Zone::Ownership who = (expr.find("OppCtrl") != std::string::npos) ? opp : ctrl;
+        Entity pe = get_player_entity(who);
+        if (global_coordinator.entity_has_component<Player>(pe)) {
+            const auto &colors = global_coordinator.GetComponent<Player>(pe).spell_colors_cast_this_turn;
+            bool hit = (expr.find("Blue") != std::string::npos && colors.count(BLUE)) ||
+                       (expr.find("Black") != std::string::npos && colors.count(BLACK)) ||
+                       (expr.find("Red") != std::string::npos && colors.count(RED)) ||
+                       (expr.find("Green") != std::string::npos && colors.count(GREEN)) ||
+                       (expr.find("White") != std::string::npos && colors.count(WHITE));
+            return hit ? 1 : 0;
+        }
+        return 0;
     }
     // Fall back to the shared static-ability SVar evaluator for graveyard-count
     // expressions (Count$TypeInYourYard / Count$ValidGraveyard / CardTypes). It
@@ -966,11 +1246,50 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
             return;
         }
     }
+    // Reflexive "you may sacrifice CARDNAME. If you do, ..." cost on a TRIGGERED ability (The
+    // Fantasticar's fourth-noncreature-spell trigger: Execute AB$ Token | Cost$ Sac<1/CARDNAME>).
+    // Unlike an activated ability — whose sac cost is paid up front at activation — a triggered
+    // ability pays its cost as it resolves (CR 603.2), and the Sac<.../CARDNAME> cost makes the
+    // whole effect optional: prompt the controller, sacrifice the source on accept, and do nothing
+    // (skip the effect and its subabilities) on decline. Activated abilities never reach here with
+    // ability_type == TRIGGERED, so their already-paid sac is not double-charged.
+    if (ability_type == TRIGGERED && sac_self) {
+        std::string sname = global_coordinator.entity_has_component<Permanent>(source)
+                                ? global_coordinator.GetComponent<Permanent>(source).name
+                                : std::string("it");
+        std::vector<LegalAction> yn;
+        LegalAction decline(PASS_PRIORITY, std::string("Decline"));
+        decline.category = ActionCategory::OPTIONAL_YESNO;
+        yn.push_back(decline);
+        LegalAction accept(PASS_PRIORITY, std::string("Sacrifice ") + sname);
+        accept.category = ActionCategory::OPTIONAL_YESNO;
+        yn.push_back(accept);
+        bool prev_priority = cur_game.player_a_has_priority;
+        cur_game.player_a_has_priority = (controller == Zone::PLAYER_A);
+        int yc = InputLogger::instance().get_input(yn);
+        cur_game.player_a_has_priority = prev_priority;
+        if (yc == 0) {
+            game_log("%s declines to sacrifice %s.\n", player_name(controller).c_str(), sname.c_str());
+            return;
+        }
+        orderer->add_to_zone(false, source, Zone::GRAVEYARD);
+        game_log("%s sacrifices %s.\n", player_name(controller).c_str(), sname.c_str());
+    }
     // 603.4 intervening-if: re-check the trigger's "if" condition on resolution. If it is no
     // longer true the ability is removed from the stack and does nothing — not even its
     // subabilities fire (unlike a ConditionCheckSVar gate).
     if (intervening_if && !evaluate_present_condition(*this, controller, orderer)) {
         game_log("Triggered ability's intervening-if condition is no longer true; it does nothing.\n");
+        return;
+    }
+    // Per-permanent stored-SVar gate (Carpet of Flowers' "if you haven't added mana with this
+    // ability this turn", CheckSVar$ CarpetX | SVarCompare$ EQ0). Like the intervening-if it is
+    // re-checked at resolution (CR 603.4): if the source permanent's latched scratch int no longer
+    // satisfies the comparison, the ability does nothing (CheckPlus sets the latch to 1 only after
+    // the mana resolves, so the gate still reads 0 here for a legitimate fire).
+    if (!stored_svar_gate_name.empty() &&
+        !stored_svar_gate_passes(source, stored_svar_gate_name, stored_svar_gate_compare)) {
+        game_log("Triggered ability's stored-SVar gate is no longer satisfied; it does nothing.\n");
         return;
     }
     // Pre-resolve target validity check — skipped for categories that select their own target internally
@@ -990,6 +1309,20 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
             cur_game.remembered_entities.push_back(target);
     }
     game_log("Resolving ability (category: %s, amount: %zu)\n", category.c_str(), amount);
+
+    // Gift (CR 702.176c): if this spell promised its gift, the promised opponent receives the gift
+    // BEFORE the spell's other effects. The gift effect(s) are carried on the primary (spell)
+    // ability; run them first when Spell::gift_promised is set on the source spell. The token's
+    // TokenOwner$ Promised routes it to the opponent of this ability's controller (effects::token).
+    if (!gift_abilities.empty() && source != 0 &&
+        global_coordinator.entity_has_component<Spell>(source) &&
+        global_coordinator.GetComponent<Spell>(source).gift_promised) {
+        for (Ability gift : gift_abilities) {
+            gift.source = source;
+            gift.controller = controller;
+            gift.resolve(orderer);
+        }
+    }
 
     // Conditional execution: if condition fails, skip this ability's body but still chain subabilities
     bool condition_passed = true;

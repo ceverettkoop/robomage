@@ -48,17 +48,35 @@ extern std::vector<ActiveStatic> g_active_statics;
 std::vector<Entity> affected_permanents_for_static(const ActiveStatic &as,
                                                    const std::set<Entity> &entities);
 
+// True while an active ManaConvert continuous static lets players spend mana as though it were
+// mana of any color (Mycosynth Lattice: ManaConversion$ AnyType->AnyColor, CR 609.4 / 106.6).
+// When set, any one mana pays any single colored pip — i.e. colored pips behave like generic for
+// payment matching. Read by the mana-payment path (mana_system.cpp) so affordability and the
+// actual spend agree. Scans g_active_statics (rebuilt each SBA pass), so callers must run after
+// gather_active_statics — true of every cast/pay path.
+bool any_mana_as_any_color_active();
+
 // Total generic mana that active RaiseCost statics add to the cost of casting `card_data`.
 // Honours the nonCreature filter and the NamedCard filter (Disruptor Flute): a NamedCard
-// RaiseCost applies only when the spell's name equals its source's chosen_name. Shared by
-// determine_legal_actions (affordability) and action_processor (payment).
-int active_raise_cost_for(const CardData &card_data);
+// RaiseCost applies only when the spell's name equals its source's chosen_name. The relative
+// per-spell surcharge (Damping Sphere: "{1} more for each other spell that player has cast this
+// turn") adds `caster`'s spells-cast-this-turn count; pass the casting player so it can be
+// evaluated (Zone::UNKNOWN omits it). Shared by determine_legal_actions (affordability) and
+// action_processor (payment).
+int active_raise_cost_for(const CardData &card_data, Zone::Ownership caster = Zone::UNKNOWN);
 
 // Total generic mana that active ReduceCost statics remove from `card_data`'s cost for
 // player `caster` (the mirror of active_raise_cost_for). An Activator$ You static (Eye of
 // Ugin) only reduces spells cast by its own controller. The generic portion is clamped at
 // zero and colored pips are never reduced (CR 118.7 / 601.2f); applied in effective_base_cost.
 int active_reduce_cost_for(const CardData &card_data, Zone::Ownership caster);
+
+// Minimum total mana value an active SetCost cost-floor static (Trinisphere) imposes on
+// `card_data` when cast — the largest set_cost_min among the active (condition-met) RaiseTo
+// floors whose ValidCard$ filter matches the spell, or 0 if none apply. effective_base_cost
+// raises a sub-floor total up to this value by adding generic pips, AFTER every other cost
+// increase/reduction (CR 601.2f — Trinisphere checks the spell's already-adjusted cost).
+int active_cost_floor_for(const CardData &card_data);
 
 // `card_data.mana_cost` with the active RaiseCost generic surcharge folded in (but
 // NOT the X-cost choice, which is resolved interactively at cast time). The single

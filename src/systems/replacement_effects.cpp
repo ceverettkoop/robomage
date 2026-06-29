@@ -29,6 +29,7 @@ enum CandidateKind {
     EXILE_INSTEAD_OF_ETB, // 614.1a — a non-token creature that wasn't cast is exiled instead of entering (Containment Priest)
     SKIP_UNTAP,     // 614.1d — this permanent doesn't untap during its controller's untap step (Choke)
     PREVENT_ETB,    // 614.13 — a creature card from a restricted origin zone is prevented from entering (Grafdigger's Cage)
+    PRODUCE_MANA,   // 614.1 — replaces the mana a tapped permanent produces (Damping Sphere)
 };
 
 struct Candidate {
@@ -40,6 +41,8 @@ struct Candidate {
     int amount = 0;               // ETB_COUNTERS: counter count
     std::string counter_type = "P1P1"; // ETB_COUNTERS: kind of counter
     bool with_void_counter = false; // EXILE_INSTEAD: tag the exiled card with a void counter (Dauthi), else plain exile (Leyline)
+    int tapped_unless_life = 0;     // SELF_TAPPED: "enters tapped unless you pay N life" — pay N to enter untapped instead
+    Colors produce_color = COLORLESS; // PRODUCE_MANA: color the production is converted to
 };
 
 // Number of cards in a player's library / graveyard scan helpers mirror the
@@ -106,9 +109,21 @@ std::vector<Candidate> collect(const ReplacementEvent &ev,
     if (ev.type == ReplacementEvent::ENTERS_BATTLEFIELD) {
         if (global_coordinator.entity_has_component<CardData>(ev.entity)) {
             auto &cd = global_coordinator.GetComponent<CardData>(ev.entity);
+            // A permanent entering as its DFC back face (a transform DFC's transformed entry, or
+            // a modal DFC's back face played from hand) carries the BACK face's self-replacement
+            // effects, not the front's. Detect via the live Permanent's transformed flag (set
+            // before this dispatch on a later pass) or the one-shot pending_enters_transformed
+            // marker (set when the back face is put onto the battlefield, consumed at perm
+            // creation). Otherwise the front face's effects apply.
+            const std::vector<Effect::Replacement> *reps = &cd.replacement_effects;
+            if (cd.backside &&
+                ((global_coordinator.entity_has_component<Permanent>(ev.entity) &&
+                  global_coordinator.GetComponent<Permanent>(ev.entity).transformed) ||
+                 cur_game.pending_enters_transformed.count(ev.entity)))
+                reps = &cd.backside->replacement_effects;
             // Self "enters tapped" replacement effect (614.1d / self-replacement 614.15).
-            for (size_t i = 0; i < cd.replacement_effects.size(); i++) {
-                const Effect::Replacement &r = cd.replacement_effects[i];
+            for (size_t i = 0; i < reps->size(); i++) {
+                const Effect::Replacement &r = (*reps)[i];
                 if (r.kind != Effect::Replacement::ENTERS_TAPPED) continue;
                 // Conditional "enters tapped" (Ba Sing Se): apply only when the controller's
                 // board satisfies the gate (e.g. zero basic lands). The entering permanent's
@@ -121,6 +136,7 @@ std::vector<Candidate> collect(const ReplacementEvent &ev,
                 c.kind = SELF_TAPPED;
                 c.index = static_cast<int>(i);
                 c.self_replacement = true;
+                c.tapped_unless_life = r.tapped_unless_life;
                 c.label = "enters tapped";
                 if (!already_applied(applied, c)) out.push_back(c);
             }
@@ -280,9 +296,17 @@ std::vector<Candidate> collect(const ReplacementEvent &ev,
             for (size_t i = 0; i < cd.replacement_effects.size(); i++) {
                 const Effect::Replacement &r = cd.replacement_effects[i];
                 if (r.kind != Effect::Replacement::SKIP_UNTAP) continue;
-                bool matches = false;
-                for (const auto &t : subject.types)
-                    if (t.name == r.valid_subtype) { matches = true; break; }
+                bool matches;
+                if (r.applies_to_self_only) {
+                    // Grim Monolith: "this artifact doesn't untap" — only when the source IS the
+                    // permanent being untapped.
+                    matches = (e == ev.entity);
+                } else {
+                    // Choke: subtype-filtered — the subject must have the named (sub)type.
+                    matches = false;
+                    for (const auto &t : subject.types)
+                        if (t.name == r.valid_subtype) { matches = true; break; }
+                }
                 if (!matches) continue;
                 Candidate c;
                 c.source = e;
@@ -296,6 +320,48 @@ std::vector<Candidate> collect(const ReplacementEvent &ev,
         return out;
     }
 
+    if (ev.type == ReplacementEvent::PRODUCE_MANA) {
+        // Damping Sphere: a land (ValidCard$ type) tapped for >= ManaAmount mana produces that
+        // much of the replacement color instead. Once one replacement has rewritten the
+        // production the event is fully replaced — the result is the same regardless of how many
+        // identical effects are present (idempotent), so further passes add nothing and we never
+        // prompt for a choice (avoids an input read during mana-payment simulation).
+        if (ev.mana_replaced) return out;
+        if (!global_coordinator.entity_has_component<Permanent>(ev.entity)) return out;
+        auto &src = global_coordinator.GetComponent<Permanent>(ev.entity);
+        Entity max_e = global_coordinator.GetMaxIssuedEntity();
+        for (Entity e = 0; e < max_e; e++) {
+            if (!is_battlefield_permanent(e)) continue;
+            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+            auto &cd = global_coordinator.GetComponent<CardData>(e);
+            for (size_t i = 0; i < cd.replacement_effects.size(); i++) {
+                const Effect::Replacement &r = cd.replacement_effects[i];
+                if (r.kind != Effect::Replacement::PRODUCE_MANA) continue;
+                if (ev.produced_amount < static_cast<size_t>(r.produce_min_amount)) continue;
+                // The producing permanent must match the ValidCard$ type filter (e.g. "Land").
+                bool type_ok = false;
+                for (const auto &t : src.types)
+                    if (t.name == r.produce_valid_type) { type_ok = true; break; }
+                if (!type_ok) continue;
+                Candidate c;
+                c.source = e;
+                c.kind = PRODUCE_MANA;
+                c.index = static_cast<int>(i);
+                c.self_replacement = false;
+                c.produce_color = r.produce_replacement_color;
+                c.label = global_coordinator.GetComponent<Permanent>(e).name + ": produces colorless";
+                if (!already_applied(applied, c)) {
+                    // Several identical ProduceMana replacements yield the same {C} production, so
+                    // return just one — applying it sets mana_replaced and the next pass collects
+                    // none. This keeps the dispatch choice-free (no input read in mana simulation).
+                    out.push_back(c);
+                    return out;
+                }
+            }
+        }
+        return out;
+    }
+
     return out;
 }
 
@@ -304,6 +370,24 @@ std::vector<Candidate> collect(const ReplacementEvent &ev,
 void apply_one(ReplacementEvent &ev, const Candidate &c) {
     switch (c.kind) {
         case SELF_TAPPED:
+            // "Enters tapped unless you pay N life" (Witch-Blessed Meadow / shock lands): give
+            // the controller the choice to pay the life and enter untapped instead. A player can
+            // pay life only if they have at least that much (CR 119.4 / 118.8); declining or being
+            // unable to pay leaves it entering tapped.
+            if (c.tapped_unless_life > 0) {
+                Entity pe = (ev.affected_player == Zone::PLAYER_A)
+                                ? cur_game.player_a_entity : cur_game.player_b_entity;
+                auto &pl = global_coordinator.GetComponent<Player>(pe);
+                std::string prompt = "pay " + std::to_string(c.tapped_unless_life) +
+                                     " life so it enters untapped";
+                if (pl.life_total >= c.tapped_unless_life &&
+                    request_optional_yesno(ev.affected_player, prompt)) {
+                    pl.life_total -= c.tapped_unless_life;
+                    game_log("%s pays %d life.\n", player_name(ev.affected_player).c_str(),
+                             c.tapped_unless_life);
+                    break;  // enters untapped
+                }
+            }
             ev.enters_tapped = true;
             break;
         case PENDING_TAPPED:
@@ -335,6 +419,10 @@ void apply_one(ReplacementEvent &ev, const Candidate &c) {
         }
         case SKIP_UNTAP:
             ev.skip_untap = true;
+            break;
+        case PRODUCE_MANA:
+            ev.produced_color = c.produce_color;
+            ev.mana_replaced = true;
             break;
         case PREVENT_ETB: {
             ev.prevented = true;

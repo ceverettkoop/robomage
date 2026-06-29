@@ -15,6 +15,7 @@
 class Orderer;
 struct Permanent;
 struct Ability;
+struct HybridPip;
 
 // Get player entity from ownership
 Entity get_player_entity(Zone::Ownership player);
@@ -108,6 +109,20 @@ std::vector<LegalAction> collect_mana_legal_actions(
 bool can_pay_mana(Zone::Ownership controller, const std::multiset<Colors>& cost,
                   Entity paid_for, std::shared_ptr<Orderer> orderer, bool has_delve = false,
                   bool has_improvise = false);
+
+// Resolve a card's HYBRID pips (CR 107.4) against the caster's available mana. Each color-hybrid
+// pip ({W/U}) may be paid by one mana of either listed color; each twobrid pip ({2/W}) by one
+// mana of its color OR its generic-mana alternative. Enumerates the assignments (colored option
+// tried first, so a payable colored choice is preferred) and returns true on the FIRST assignment
+// that, added to `base_flat_cost`, is fully payable per can_pay_mana — writing that concrete flat
+// cost into *out_resolved when non-null. With an empty `hybrids` this is exactly
+// can_pay_mana(base_flat_cost) (and copies it to *out_resolved). Single source shared by the
+// cast-legality gate and the machine/auto payment path so castability and payment agree on the
+// hybrid choice.
+bool resolve_hybrid_cost(Zone::Ownership caster, const std::multiset<Colors>& base_flat_cost,
+                         const std::vector<HybridPip>& hybrids, Entity paid_for,
+                         std::shared_ptr<Orderer> orderer, bool has_delve = false,
+                         bool has_improvise = false, std::multiset<Colors>* out_resolved = nullptr);
 
 // Prompt the player to activate mana abilities to pay a cost. Returns true if cost was fully paid.
 // On false, caller must restore from snapshot.

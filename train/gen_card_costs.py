@@ -4,7 +4,7 @@ Run from repo root after updating src/card_vocab.h:
     python train/gen_card_costs.py
 Writes train/card_costs.py with _CARD_COST_MATRIX and _CARD_ABILITY_COST_MATRIX.
 """
-import re, os
+import re, os, unicodedata
 
 REPO_ROOT   = os.path.dirname(os.path.abspath(__file__)) + "/.."
 VOCAB_H     = os.path.join(REPO_ROOT, "src/card_vocab.h")
@@ -52,18 +52,27 @@ def find_card_file(name):
     so we also try a prefix match when an exact match isn't found.
     """
     stem = re.sub(r'[^a-z0-9_]', '', name.lower().replace(' ', '_').replace('-', '_'))
+    # Accented names: the C++ name_to_uid strips non-ASCII bytes (an accented letter is
+    # dropped, not transliterated), but Forge's filename transliterates the accent (e.g. to
+    # "lorien_revealed"). Try an NFKD-decomposed ASCII stem as well so an accented card name
+    # resolves to its on-disk script.
+    translit = unicodedata.normalize('NFKD', name).encode('ascii', 'ignore').decode('ascii')
+    translit_stem = re.sub(r'[^a-z0-9_]', '', translit.lower().replace(' ', '_').replace('-', '_'))
+    stems = [stem] if translit_stem == stem else [stem, translit_stem]
+    for s in stems:
+        filename = s + '.txt'
+        first_letter = s[0]
+        # 1. Exact match in expected subdirectory
+        candidate = os.path.join(CARDS_DIR, first_letter, filename)
+        if os.path.exists(candidate):
+            return candidate
+        # 2. Prefix match in expected subdirectory (catches DFC combined files)
+        subdir_path = os.path.join(CARDS_DIR, first_letter)
+        if os.path.isdir(subdir_path):
+            for f in sorted(os.listdir(subdir_path)):
+                if f.lower().startswith(s) and f.lower().endswith('.txt'):
+                    return os.path.join(subdir_path, f)
     filename = stem + '.txt'
-    first_letter = stem[0]
-    # 1. Exact match in expected subdirectory
-    candidate = os.path.join(CARDS_DIR, first_letter, filename)
-    if os.path.exists(candidate):
-        return candidate
-    # 2. Prefix match in expected subdirectory (catches DFC combined files)
-    subdir_path = os.path.join(CARDS_DIR, first_letter)
-    if os.path.isdir(subdir_path):
-        for f in sorted(os.listdir(subdir_path)):
-            if f.lower().startswith(stem) and f.lower().endswith('.txt'):
-                return os.path.join(subdir_path, f)
     # 3. Case-insensitive exact fallback across all subdirectories
     for subdir in sorted(os.listdir(CARDS_DIR)):
         subdir_path = os.path.join(CARDS_DIR, subdir)

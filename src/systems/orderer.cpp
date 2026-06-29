@@ -86,6 +86,16 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
         destination = rev.destination;
     }
 
+    // Unearth (CR 702.84): a permanent returned to the battlefield with its unearth ability is
+    // exiled instead of going anywhere else if it would leave the battlefield. Redirect any move
+    // off the battlefield (to graveyard/hand/library) to exile. A move already headed to exile is
+    // unchanged (so the end-step delayed exile is a no-op redirect, not a loop).
+    if (target_zone.location == Zone::BATTLEFIELD && destination != Zone::EXILE &&
+        global_coordinator.entity_has_component<Permanent>(target) &&
+        global_coordinator.GetComponent<Permanent>(target).unearthed) {
+        destination = Zone::EXILE;
+    }
+
     // Fire CARD_CHANGED_ZONE on every zone transition so any parsed ChangesZone trigger can match.
     {
         Entity owner_entity = target_zone.owner == Zone::PLAYER_A
@@ -438,6 +448,12 @@ void Orderer::draw_one(Zone::Ownership player, bool fire_draw_event) {
     draw_event.SetParam(Params::PLAYER, player_entity);
     draw_event.SetParam(Params::ENTITY, top);
     draw_event.SetParam(Params::FIRST_IN_STEP, first_in_draw_step ? 1 : 0);
+    // Running 1-based count of cards this player has drawn this turn (cards_drawn_this_turn was
+    // just pushed above, so its size includes this card). Read by a Mode$ Drawn | Number$ N
+    // trigger (Tamiyo, Inquisitive Student's "your third card in a turn") to fire on exactly the
+    // Nth draw — robust even when several cards are drawn in one batch (each event carries its own
+    // ordinal), unlike reading the live counter at trigger-scan time.
+    draw_event.SetParam(Params::AMOUNT, static_cast<uint32_t>(pl.cards_drawn_this_turn.size()));
     global_coordinator.SendEvent(draw_event);
 }
 
@@ -615,6 +631,11 @@ std::vector<Entity> Orderer::place_on_battlefield(const std::vector<std::string>
 
 std::vector<Entity> Orderer::place_in_graveyard(const std::vector<std::string> &card_names,
                                                 Zone::Ownership owner) {
+    return place_in_zone(card_names, owner, Zone::GRAVEYARD);
+}
+
+std::vector<Entity> Orderer::place_in_zone(const std::vector<std::string> &card_names,
+                                           Zone::Ownership owner, Zone::ZoneValue zone) {
     Coordinator &coordinator = Coordinator::global();
     std::vector<Entity> placed;
 
@@ -622,7 +643,7 @@ std::vector<Entity> Orderer::place_in_graveyard(const std::vector<std::string> &
         Entity card_id = coordinator.CreateEntity();
         auto card_data_id = load_card(name);
         coordinator.AddComponent(card_id, coordinator.GetComponent<CardData>(card_data_id));
-        coordinator.AddComponent(card_id, Zone(Zone::GRAVEYARD, owner, owner));
+        coordinator.AddComponent(card_id, Zone(zone, owner, owner));
         auto &cd = coordinator.GetComponent<CardData>(card_id);
         coordinator.AddComponent(card_id, color_identity_from(cd));
         placed.push_back(card_id);

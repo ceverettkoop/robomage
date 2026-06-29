@@ -29,6 +29,21 @@ namespace effects {
 bool grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer) {
     (void)orderer;
 
+    // Emblem (CR 114): an AB$ Effect | StaticAbilities$ <SVar> | Duration$ Permanent creates a
+    // player-owned emblem carrying the named permanent continuous static(s) — Kaito's [+1] "You
+    // get an emblem with 'Ninjas you control get +1/+1.'" The emblem is an unremovable, zoneless
+    // source; its statics are gathered into g_active_statics every SBA pass with the controller as
+    // their owner (see gather_active_statics), so they apply through the normal layer engine. The
+    // statics were parsed onto the ability at parse time. General over any emblem-making Effect.
+    if (!ab.effect_emblem_statics.empty()) {
+        Emblem emblem;
+        emblem.controller = ab.controller;
+        emblem.statics = ab.effect_emblem_statics;
+        cur_game.emblems.push_back(std::move(emblem));
+        game_log("%s gets an emblem.\n", player_name(ab.controller).c_str());
+        return true;
+    }
+
     // DB$ Effect | Triggers$ <SVar> — register a transient until-end-of-turn floating triggered
     // ability (Forth Eorlingas!'s "Whenever one or more creatures you control deal combat damage
     // to one or more players this turn, you become the monarch", CR 603.7e-style). Each parsed
@@ -36,12 +51,46 @@ bool grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer) {
     // where the trigger scan fires it like any triggered ability; it lapses at cleanup. General
     // over any DB$ Effect that names a Triggers$ SVar.
     if (!ab.effect_floating_triggers.empty()) {
+        // Duration$ UntilYourNextTurn (Tamiyo, Seasoned Scholar's +2 Effect) extends the floating
+        // trigger past the end of this turn — it persists until the start of the controller's next
+        // turn (removed at their untap, see game.cpp). The Forge default (no flag) lapses at cleanup.
+        bool until_next_turn = ab.duration_until_your_next_turn;
         for (const auto &trig : ab.effect_floating_triggers) {
             Ability ft = trig;
             ft.controller = ab.controller;
+            ft.duration_until_your_next_turn = until_next_turn;
             cur_game.floating_triggers.push_back(ft);
         }
-        game_log("A floating triggered ability is created until end of turn.\n");
+        game_log("A floating triggered ability is created%s.\n",
+                 until_next_turn ? " until your next turn" : " until end of turn");
+        return true;
+    }
+
+    // DB$ Effect | StaticAbilities$ <SVar(MayPlay+MayPlayWithoutManaCost, AffectedZone$ Exile)>
+    // | RememberObjects$ Remembered (Ugin, Eye of the Storms' -11): "Until end of turn, you may
+    // cast those cards without paying their mana costs." The "those cards" are the colorless
+    // nonland cards the preceding RememberChanged$ ChangeZone just exiled — still sitting in
+    // cur_game.remembered_entities (DBCleanup clears them only AFTER this sub-ability). Rather
+    // than instantiate a continuous-effect object, record a FREE cast-from-exile permission for
+    // each remembered exiled card in cur_game.impulse_cast_permission (the same per-turn map the
+    // alt-cost impulse cast uses), good until cleanup (CR 118.9 / 601.2f). The casting path
+    // offers these from EXILE while they remain there (ForgetOnMoved$ Exile = the permission
+    // lapses once a card leaves exile), pays no cost, and clears the map each cleanup.
+    if (ab.effect_grant_free_cast_from_exile) {
+        for (Entity card : cur_game.remembered_entities) {
+            if (!global_coordinator.entity_has_component<Zone>(card)) continue;
+            auto &cz = global_coordinator.GetComponent<Zone>(card);
+            if (cz.location != Zone::EXILE) continue;
+            if (!global_coordinator.entity_has_component<CardData>(card)) continue;
+            Game::ImpulseCastPermission perm;
+            perm.resource = Game::ImpulseCastPermission::FREE;
+            perm.amount = 0;
+            perm.caster = ab.controller;
+            cur_game.impulse_cast_permission[card] = perm;
+            game_log("%s may cast %s from exile without paying its mana cost this turn.\n",
+                     player_name(ab.controller).c_str(),
+                     global_coordinator.GetComponent<CardData>(card).name.c_str());
+        }
         return true;
     }
 
@@ -61,6 +110,17 @@ bool grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer) {
                                  : "Creature";
             game_log("%s can't be blocked this turn.\n", nm);
         }
+        return true;
+    }
+
+    // DB$ Effect | ReplacementEffects$ <CantHappen Counter on Spell.YouCtrl> (Veil of Summer:
+    // "Spells you control can't be countered this turn"). Record the effect's controller in the
+    // turn-long can't-be-countered set; consulted by effects::counter and cleared at cleanup.
+    // A sourceless turn-long grant (the instant resolves to the graveyard), unlike Hexing
+    // Squelcher's battlefield static.
+    if (ab.effect_spells_uncounterable_this_turn) {
+        cur_game.cant_counter_spells_of.insert(ab.controller);
+        game_log("Spells %s controls can't be countered this turn.\n", player_name(ab.controller).c_str());
         return true;
     }
 

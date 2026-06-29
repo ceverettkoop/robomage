@@ -65,9 +65,10 @@ enum class ActionCategory {
     SYLVAN_CHOICE = 43,        // Sylvan Library card pick / pay-4-life-or-top choice
     CHOOSE_CARD = 44,          // choose a card from a zone for a non-library zone-change
     ASSIGN_DAMAGE = 45,        // T3.10: attacker assigns lethal combat damage to a chosen blocker
+    COMPANION = 46,            // CR 702.139: pay {3} to put your chosen companion from the sideboard into hand
 };
 
-static constexpr int ACTION_CATEGORY_MAX = 45;  // highest ActionCategory value
+static constexpr int ACTION_CATEGORY_MAX = 46;  // highest ActionCategory value
 
 struct LegalAction {
         ActionType type;
@@ -81,6 +82,21 @@ struct LegalAction {
         bool use_offspring = false;  // cast paying the Offspring additional cost (CR 702.171)
         bool use_escape = false;     // cast from graveyard paying the Escape cost (CR 702.139)
         bool impulse_cast = false;   // cast from exile under a cur_game.impulse_cast_permission, paying its alternative RESOURCE cost (energy/life) instead of mana (Amped Raptor)
+        // PLAY_LAND of a modal DFC's BACK face: the source entity is the combined card (whose
+        // CardData is the front face), but it is being played as its back face (a land). The
+        // processor marks it pending_enters_transformed so it enters showing the back face.
+        bool play_back_face = false;
+        // CAST_SPELL of a modal DFC's BACK face when that back face is a NONLAND spell
+        // (Tergrid, God of Fright // Tergrid's Lantern). The source entity is the combined
+        // card (whose CardData is the front face); it is cast paying the BACK face's mana cost
+        // and using the back face's characteristics/abilities (CR 712.8). If the back is a
+        // permanent the processor marks it pending_enters_transformed so it enters showing the
+        // back face (reusing the transform machinery, parallel to play_back_face for lands).
+        bool cast_back_face = false;
+        // SPECIAL_ACTION that puts the player's chosen Companion (CR 702.139) from the sideboard
+        // into their hand for {3}. Disambiguates the companion special action from the play-land
+        // special action; the processor pays {3} and moves the source entity Sideboard -> Hand.
+        bool companion_to_hand = false;
         // True when this choice's card identity is public knowledge to all players
         // (e.g. a revealed tutor like Personal Tutor). Lets observers show the card
         // name even for an otherwise-private choice (search/top-of-library).

@@ -1,6 +1,9 @@
 #include "game.h"
 
+#include <algorithm>
+
 #include "../cli_output.h"
+#include "../day_night.h"
 #include "../components/creature.h"
 #include "../components/damage.h"
 #include "../components/permanent.h"
@@ -9,8 +12,10 @@
 #include "../ecs/coordinator.h"
 #include "../ecs/entity.h"
 #include "../ecs/events.h"
+#include "../effects/effects.h"
 #include "../game_queries.h"
 #include "../mana_system.h"
+#include "../saga.h"
 #include "../systems/orderer.h"
 #include "../systems/replacement_effects.h"
 #include "../systems/stack_manager.h"
@@ -18,6 +23,31 @@
 #include "deck.h"
 
 extern Coordinator global_coordinator;
+
+// CR 702.175e: "At the beginning of your end step, remove a time counter from [an impending
+// permanent]." Built-in end-step shed, mirroring the Stun untap-step shed (CR 122.1d) above:
+// remove one TIME counter from each permanent the active player controls that still has one.
+// When the last is removed the permanent stops being a noncreature impending object and becomes
+// a creature on the next state-based pass (apply_permanent_components re-adds its Creature
+// component). General — works for any current/future Impending card.
+static void shed_impending_time_counters(Zone::Ownership active_player) {
+    for (Entity e = 0; e < global_coordinator.GetMaxIssuedEntity(); ++e) {
+        // is_battlefield_permanent bakes in the phased-out exclusion (CR 702.26e): a phased-out
+        // impending permanent is treated as not on the battlefield and must not shed (per the
+        // CLAUDE.md convention — do not add a separate is_phased_out check here).
+        if (!is_battlefield_permanent(e, active_player)) continue;
+        auto &perm = global_coordinator.GetComponent<Permanent>(e);
+        // Only shed from permanents whose TIME counters are *impending* counters (CR 702.175e),
+        // not any permanent that merely has a generic TIME counter (future Vanishing/Suspend).
+        if (!perm.entered_via_impending) continue;
+        if (get_counters(e, "TIME") <= 0) continue;
+        int remaining = add_counters(e, "TIME", -1);
+        if (remaining > 0)
+            game_log("%s has a time counter removed (%d remaining).\n", perm.name.c_str(), remaining);
+        else
+            game_log("%s loses its last time counter (it is now a creature).\n", perm.name.c_str());
+    }
+}
 
 bool Game::ready_to_resolve() {
     return a_has_passed && b_has_passed;
@@ -100,6 +130,29 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
 
             switch (cur_step) {
                 case UNTAP: {
+                    // Lapse any "until your next turn" Animate (Karn +1) this player created —
+                    // its longer continuous-effect duration ends as their next turn begins.
+                    effects::revert_until_turn_animates(active_player);
+                    // Lapse any "until your next turn" player protection-from-everything grant
+                    // protecting this player (The One Ring) — its duration ends as the protected
+                    // player's next turn begins.
+                    player_protection_from_everything.erase(
+                        std::remove_if(player_protection_from_everything.begin(),
+                                       player_protection_from_everything.end(),
+                                       [active_player](const PlayerProtectionFromEverything &p) {
+                                           return p.until_your_next_turn && p.player == active_player;
+                                       }),
+                        player_protection_from_everything.end());
+                    // Lapse any "until your next turn" floating triggered ability this player
+                    // created (Tamiyo, Seasoned Scholar's +2 "until your next turn, whenever ...")
+                    // — its duration ends as the controller's next turn begins (CR 611.2).
+                    floating_triggers.erase(
+                        std::remove_if(floating_triggers.begin(), floating_triggers.end(),
+                                       [active_player](const Ability &ft) {
+                                           return ft.duration_until_your_next_turn &&
+                                                  ft.controller == active_player;
+                                       }),
+                        floating_triggers.end());
                     // Phase in phased-out permanents controlled by active player
                     for (Entity entity = 0; entity < global_coordinator.GetMaxIssuedEntity(); ++entity) {
                         if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
@@ -109,6 +162,9 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                             game_log("%s phases in\n", perm_phase.name.c_str());
                         }
                     }
+                    // Second part of the untap step (CR 502.2 / 731.2): the day/night turn-based
+                    // check, based on the turn that just ended. Runs after phasing, before untap.
+                    day_night_untap_transition();
                     // Untap all permanents controlled by active player; reset per-turn counters
                     for (Entity entity = 0; entity < global_coordinator.GetMaxIssuedEntity(); ++entity) {
                         if (!global_coordinator.entity_has_component<Permanent>(entity)) continue;
@@ -123,7 +179,21 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                             rev.entity = entity;
                             rev.affected_player = active_player;
                             replacement::dispatch(rev);
-                            if (!rev.skip_untap) permanent.is_tapped = false;
+                            // Stun counters (CR 122.1d): "If a permanent with a stun counter would
+                            // become untapped, instead remove a stun counter from it." A tapped
+                            // permanent with one or more STUN counters stays tapped and sheds one
+                            // counter rather than untapping; otherwise it untaps normally.
+                            if (!rev.skip_untap) {
+                                // Counter type is stored verbatim from the script's CounterType$
+                                // (Forge writes "Stun", CR 122.1d), so match that exact key.
+                                if (permanent.is_tapped && get_counters(entity, "Stun") > 0) {
+                                    add_counters(entity, "Stun", -1);
+                                    game_log("%s has a stun counter removed instead of untapping.\n",
+                                             permanent.name.c_str());
+                                } else {
+                                    permanent.is_tapped = false;
+                                }
+                            }
                             permanent.has_summoning_sickness = false;  // Clear summoning sickness
                             for (auto &ab : permanent.abilities) ab.activations_this_turn = 0;
                             permanent.loyalty_ability_activated_this_turn = false;  // 606.3 resets each of the controller's turns
@@ -153,6 +223,15 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     break;
                 case DRAW:
                     cur_step = FIRST_MAIN;
+                    {
+                        Event first_main_event(Events::FIRST_MAIN_BEGAN);
+                        first_main_event.SetParam(Params::PLAYER, active_player_entity);
+                        global_coordinator.SendEvent(first_main_event);
+                    }
+                    // CR 714.3c turn-based action: as the active player's precombat main phase
+                    // begins, put a lore counter on each Saga they control (firing the next
+                    // chapter). Mirrors shed_impending_time_counters' built-in step hook.
+                    saga_put_precombat_lore_counters(active_player);
                     break;
                 case FIRST_MAIN:
                     cur_step = BEGIN_COMBAT;
@@ -211,6 +290,11 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     }
                     combat_damage_assignment.clear();  // T3.10: drop any per-attacker assignments
                     cur_step = SECOND_MAIN;
+                    {
+                        Event second_main_event(Events::SECOND_MAIN_BEGAN);
+                        second_main_event.SetParam(Params::PLAYER, active_player_entity);
+                        global_coordinator.SendEvent(second_main_event);
+                    }
                     break;
                 case SECOND_MAIN:
                     cur_step = END_STEP;
@@ -219,9 +303,17 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                         end_step_event.SetParam(Params::PLAYER, active_player_entity);
                         global_coordinator.SendEvent(end_step_event);
                     }
+                    // CR 702.175e: remove a time counter from each impending permanent the active
+                    // player controls at the beginning of their end step.
+                    shed_impending_time_counters(active_player);
                     break;
                 case END_STEP:
                     cur_step = CLEANUP;
+                    {
+                        Event cleanup_event(Events::CLEANUP_BEGAN);
+                        cleanup_event.SetParam(Params::PLAYER, active_player_entity);
+                        global_coordinator.SendEvent(cleanup_event);
+                    }
                     break;
                 case CLEANUP:
                     // Clear damage from all creatures; reset prowess bonus
@@ -247,6 +339,38 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                             // "Can't be blocked this turn" (Kappa Cannoneer) lapses at cleanup.
                             cr.cant_be_blocked_this_turn = false;
                         }
+                        // "Loses <keyword> until end of turn" (Shadowspear's AB$ AnimateAll |
+                        // RemoveKeywords$) lapses at cleanup (514.2). On a permanent (any type),
+                        // so cleared outside the Creature branch above.
+                        if (global_coordinator.entity_has_component<Permanent>(entity)) {
+                            auto &perm = global_coordinator.GetComponent<Permanent>(entity);
+                            perm.removed_keywords_eot.clear();
+                            // "Until end of turn" Animate (CR 514.2) lapses now: erase the
+                            // EOT-added types, and if this EOT animate is what made a noncreature
+                            // permanent a creature (a crewed-by-trigger Vehicle like The
+                            // Fantasticar), strip its bootstrapped Creature/Damage components so it
+                            // stops being a creature — unless it is a creature by a permanent means.
+                            if (!perm.animate_added_types_eot.empty() ||
+                                perm.animate_make_creature_eot) {
+                                for (const auto &t : perm.animate_added_types_eot)
+                                    perm.types.erase(t);
+                                perm.animate_added_types_eot.clear();
+                                if (perm.animate_make_creature_eot) {
+                                    perm.animate_make_creature_eot = false;
+                                    bool still_creature = perm.animate_make_creature;
+                                    if (!still_creature &&
+                                        global_coordinator.entity_has_component<CardData>(entity))
+                                        still_creature = is_creature_card(
+                                            global_coordinator.GetComponent<CardData>(entity));
+                                    if (!still_creature) {
+                                        if (global_coordinator.entity_has_component<Creature>(entity))
+                                            global_coordinator.RemoveComponent<Creature>(entity);
+                                        if (global_coordinator.entity_has_component<Damage>(entity))
+                                            global_coordinator.RemoveComponent<Damage>(entity);
+                                    }
+                                }
+                            }
+                        }
                     }
 
                     // Reset per-turn state
@@ -256,14 +380,26 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     may_cast_this_turn.clear();
                     // Floating "this turn" triggered abilities (Forth Eorlingas!'s become-monarch
                     // trigger, CR 603.7e) last only their turn of creation; drop them at cleanup.
-                    floating_triggers.clear();
+                    // A Duration$ UntilYourNextTurn floating trigger (Tamiyo, Seasoned Scholar's +2)
+                    // survives cleanup — it is removed at its controller's next untap step instead.
+                    floating_triggers.erase(
+                        std::remove_if(floating_triggers.begin(), floating_triggers.end(),
+                                       [](const Ability &ft) { return !ft.duration_until_your_next_turn; }),
+                        floating_triggers.end());
                     // Impulse-cast permissions (Amped Raptor) likewise last only "this turn".
                     impulse_cast_permission.clear();
                     auto &player = global_coordinator.GetComponent<Player>(active_player_entity);
                     player.lands_played_this_turn = 0;
+                    // Snapshot this (the ending) turn's active player's OWN-TURN spell count before
+                    // the per-turn reset, for the next turn's untap day/night check (CR 502.2 /
+                    // 731.2). Both players' spells_cast_this_turn are reset to 0 each cleanup (the
+                    // opponent's just below), so this counter holds only spells cast during this
+                    // turn — no start-of-turn baseline subtraction is needed.
+                    prev_turn_active_spell_count = static_cast<int>(player.spells_cast_this_turn);
                     player.spells_cast_this_turn = 0;
                     player.noncreature_spells_cast_this_turn = 0;
                     player.instant_sorcery_spells_cast_this_turn = 0;
+                    player.spell_colors_cast_this_turn.clear();
                     player.cards_drawn_this_turn.clear();
                     player.cards_drawn_this_draw_step = 0;
                     // Also clear opponent's drawn-this-turn tracking
@@ -272,7 +408,34 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                         auto &opp = global_coordinator.GetComponent<Player>(opp_entity);
                         opp.cards_drawn_this_turn.clear();
                         opp.cards_drawn_this_draw_step = 0;
+                        opp.spell_colors_cast_this_turn.clear();
+                        // Reset the opponent's per-turn spell COUNTS too (CR 702.40a "cast before
+                        // it this turn"): an instant the opponent cast during the active player's
+                        // turn must not persist into the opponent's own next turn, or
+                        // storm_count_this_turn (sum of both players' spells_cast_this_turn − 1)
+                        // overcounts. "This turn" is the current turn for both players, so both
+                        // counters are zero at the start of each new turn. The active player's
+                        // own-turn count was already snapshotted into prev_turn_active_spell_count
+                        // above for the day/night check before its reset, so that is unaffected.
+                        opp.spells_cast_this_turn = 0;
+                        opp.noncreature_spells_cast_this_turn = 0;
+                        opp.instant_sorcery_spells_cast_this_turn = 0;
                     }
+                    // Turn-long continuous effects created by an instant/sorcery (Veil of Summer:
+                    // "Spells you control can't be countered this turn" + "hexproof from blue and
+                    // from black until end of turn") lapse at cleanup (CR 514.2).
+                    cant_counter_spells_of.clear();
+                    hexproof_from_colors_this_turn.clear();
+                    // An "until end of turn" player protection-from-everything grant lapses at
+                    // cleanup; an "until your next turn" grant persists (reverted at that player's
+                    // untap step instead — see the UNTAP case above).
+                    player_protection_from_everything.erase(
+                        std::remove_if(player_protection_from_everything.begin(),
+                                       player_protection_from_everything.end(),
+                                       [](const PlayerProtectionFromEverything &p) {
+                                           return !p.until_your_next_turn;
+                                       }),
+                        player_protection_from_everything.end());
                     // "Life gained this turn" (Ocelot Pride) and "tokens entered this turn"
                     // reset for BOTH players each turn — life can be gained on either player's
                     // turn, and the end-step trigger above has already checked them. Done in
@@ -287,10 +450,19 @@ bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared
                     empty_mana_pool(Zone::PLAYER_A);
                     empty_mana_pool(Zone::PLAYER_B);
 
-                    // End of turn, move to next turn
+                    // End of turn, move to next turn. An extra turn (CR 500.7 / 720) takes
+                    // priority over the normal active-player flip: if a player is owed an extra
+                    // turn, that player (the most recently added — extra_turns is a LIFO stack)
+                    // takes the next turn instead of passing to the opponent.
                     cur_step = UNTAP;
                     turn++;
-                    player_a_turn = !player_a_turn;
+                    if (!extra_turns.empty()) {
+                        Zone::Ownership next_active = extra_turns.back();
+                        extra_turns.pop_back();
+                        player_a_turn = (next_active == Zone::PLAYER_A);
+                    } else {
+                        player_a_turn = !player_a_turn;
+                    }
                     break;
             }
             // if the new step is untap or cleanup, we pretend both players passed

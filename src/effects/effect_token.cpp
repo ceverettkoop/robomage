@@ -33,6 +33,16 @@ bool token(Ability &ab, std::shared_ptr<Orderer> orderer) {
     if (tp && tp->owner_is_target && ab.target != 0 &&
         global_coordinator.entity_has_component<Player>(ab.target))
         ctrl = (ab.target == cur_game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
+    // TokenOwner$ TargetedController (Cityscape Leveler): the token is owned/controlled by the
+    // controller of the targeted permanent. The target was just destroyed by the preceding
+    // sub-ability, so read its last-known controller. With no target chosen (the "up to one"
+    // destroy hit nothing), no token is created — the "if you do" gate.
+    if (tp && tp->owner_is_targeted_controller) {
+        if (ab.target == 0) return true;  // no permanent destroyed → no token
+        Zone::Ownership tc = last_known_controller(ab.target);
+        if (tc == Zone::UNKNOWN) return true;
+        ctrl = tc;
+    }
     // TokenOwner$ RememberedOwner (Skyclave Apparition): the token is owned and controlled by
     // the OWNER of the first remembered card — the exiled permanent's owner — so if Skyclave
     // exiled your permanent, you get the Illusion when Skyclave dies (CR 707/the card text).
@@ -41,6 +51,10 @@ bool token(Ability &ab, std::shared_ptr<Orderer> orderer) {
         if (global_coordinator.entity_has_component<Zone>(r))
             ctrl = global_coordinator.GetComponent<Zone>(r).owner;
     }
+    // TokenOwner$ Promised (Gift, CR 702.176): the gift token is created under the control of the
+    // opponent who was promised the gift — the opponent of the ability's controller (two-player).
+    if (tp && tp->owner_is_promised)
+        ctrl = (ab.controller == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
 
     // TokenPower$/TokenToughness$ from an SVar (Skyclave Apparition: X = Remembered$CardManaCost):
     // override the token script's printed P/T so the created token enters as an X/X. Evaluated
@@ -68,10 +82,28 @@ bool token(Ability &ab, std::shared_ptr<Orderer> orderer) {
         // Add Permanent + Creature + Damage immediately so subabilities (e.g. Attach) can see them
         // before the next apply_permanent_components pass.
         bootstrap_token_components(tok_entity, tok, ctrl, cur_game.timestamp);
+        // TokenTapped$ True: the token enters the battlefield tapped (the gift Fish, so it can't
+        // block the turn it is given). Stamp the Permanent the bootstrap just created.
+        if (tp && tp->tapped && global_coordinator.entity_has_component<Permanent>(tok_entity))
+            global_coordinator.GetComponent<Permanent>(tok_entity).is_tapped = true;
         cur_game.remembered_entities.push_back(tok_entity);
         game_log("Token created: %u/%u %s\n", tok.power, tok.toughness, tok.name.c_str());
     }
     return true;
+}
+
+// DB$ Investigate (CR 701.x / 122): "investigate" = create a Clue token — a colorless
+// artifact named "Clue" with "{2}, Sacrifice this artifact: Draw a card." A general
+// handler over any Investigate effect: it creates `amount` Clue tokens (default 1; a count
+// SVar via dynamic_amount_expr makes it N) by delegating to the shared token() machinery
+// with the Clue token script. Reuses token() so the Clue's activated draw ability,
+// artifact type, and permanent bootstrap all flow through the one token-creation path.
+bool investigate(Ability &ab, std::shared_ptr<Orderer> orderer) {
+    // Clue tokens default to a single token; an explicit Amount$/Num$ (or a dynamic count
+    // expr) makes more. Route the count through token() unchanged (it reads ab.amount /
+    // ab.dynamic_amount_expr), only ensuring the Clue script is set.
+    effect_params<TokenParams>(ab).script = "c_a_clue_draw";
+    return token(ab, orderer);
 }
 
 bool parse_token(Ability &ab, const std::string &key, const std::string &value) {
@@ -84,10 +116,18 @@ bool parse_token(Ability &ab, const std::string &key, const std::string &value) 
         // TokenOwner$ RememberedOwner routes them to the owner of the first remembered card
         // (Skyclave Apparition: the exiled card's owner gets the Illusion). Other values
         // (You / the default) leave the token under the ability's controller.
-        if (value.find("Targeted") != std::string::npos)
+        if (value == "TargetedController")
+            effect_params<TokenParams>(ab).owner_is_targeted_controller = true;
+        else if (value.find("Targeted") != std::string::npos)
             effect_params<TokenParams>(ab).owner_is_target = true;
         else if (value.find("Remembered") != std::string::npos)
             effect_params<TokenParams>(ab).owner_is_remembered = true;
+        else if (value.find("Promised") != std::string::npos)
+            effect_params<TokenParams>(ab).owner_is_promised = true;
+        return true;
+    }
+    if (key == "TokenTapped") {
+        effect_params<TokenParams>(ab).tapped = (value == "True");
         return true;
     }
     if (key == "TokenPower") {

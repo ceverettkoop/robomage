@@ -4,9 +4,12 @@
 #include "player.h"
 #include "zone.h"
 #include "../cli_output.h"
+#include "../classes/game.h"
 #include "../ecs/coordinator.h"
 #include "../game_queries.h"
 #include "../mana_system.h"
+
+extern Game cur_game;
 
 static bool source_has_keyword(Entity source, const char *kw) {
     Coordinator &coord = Coordinator::global();
@@ -30,6 +33,12 @@ bool deal_damage(Entity source, Entity target, size_t amount) {
     if (coordinator.entity_has_component<Creature>(target)) {
         if (has_protection_from(coordinator.GetComponent<Creature>(target), source))
             return false;
+        // Protection from colored spells, damage facet (Emrakul, CR 702.16d): a permanent with
+        // this protection isn't dealt damage by a colored spell source. Backstop at the damage
+        // chokepoint — the targeted DealDamage effect short-circuits this before calling here, so
+        // this covers any other path (a future non-targeted "deal damage to each creature" spell).
+        // Combat damage has a creature source (not a spell), so it is never prevented here.
+        if (permanent_protected_from_colored_spell_source(target, source)) return false;
     }
 
     auto &dmg = coordinator.GetComponent<Damage>(target);
@@ -43,6 +52,17 @@ bool deal_damage(Entity source, Entity target, size_t amount) {
 bool deal_damage_to_player(Entity source, Entity player_entity, size_t amount) {
     Coordinator &coord = Coordinator::global();
     if (!coord.entity_has_component<Player>(player_entity)) return false;
+
+    // Protection from everything for a player (CR 702.16d; The One Ring): the protected player
+    // isn't dealt damage by a source an opponent controls. Enforced here at the effect-damage
+    // chokepoint (the combat-damage path checks the same shared predicate).
+    if (amount > 0 && player_protected_from_source(player_entity, source)) {
+        Zone::Ownership prot =
+            (player_entity == cur_game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
+        game_log("%s has protection from everything — %zu damage prevented\n",
+                 player_name(prot).c_str(), amount);
+        return false;
+    }
 
     auto &player = coord.GetComponent<Player>(player_entity);
     player.life_total -= static_cast<int32_t>(amount);

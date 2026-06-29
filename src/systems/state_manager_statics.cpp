@@ -21,6 +21,7 @@
 #include "../components/token.h"
 #include "../components/types.h"
 #include "../transform.h"
+#include "../day_night.h"
 #include "../type_constants.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
@@ -31,6 +32,7 @@
 #include "../mana_system.h"
 #include "../name_card_choices.h"
 #include "../parse.h"
+#include "../saga.h"
 #include "../svar_eval.h"
 #include "../systems/stack_manager.h"
 #include "replacement_effects.h"
@@ -43,9 +45,135 @@
 // affected_permanents_for_static and the layer-6/7 appliers so they all agree which statics
 // fan out across the affected set.
 static bool affected_is_general_filter(const std::string &aff);
+static void mark_unearthed_permanent(Entity entity, Permanent &perm);
+static void apply_global_addtype_statics(const std::set<Entity> &entities);
 
-int active_raise_cost_for(const CardData &card_data) {
+// Unearth (CR 702.84): finalize an Unearth-returned permanent the instant its Permanent is
+// created. The permanent gains haste (it enters with summoning sickness cleared and the keyword
+// granted so the layer pass keeps it through end of turn — mirrors the earthbend-haste path), is
+// flagged `unearthed` (the leaves-the-battlefield → exile redirect in Orderer::add_to_zone reads
+// it), and registers a one-shot delayed triggered ability (CR 603.7b) that exiles it at the
+// beginning of the next end step. The delayed trigger fires on the controller's end step (the next
+// one, since unearth is sorcery-speed on the controller's turn); its ChangeZone moves this exact
+// permanent from the battlefield to exile.
+static void mark_unearthed_permanent(Entity entity, Permanent &perm) {
+    perm.unearthed = true;
+    perm.has_summoning_sickness = false;  // gains haste
+    bool has_haste = false;
+    for (const auto &kw : perm.animate_added_keywords)
+        if (kw == "Haste") { has_haste = true; break; }
+    if (!has_haste) perm.animate_added_keywords.push_back("Haste");
+
+    Ability fire_ab;
+    fire_ab.ability_type = Ability::TRIGGERED;
+    fire_ab.category = "ChangeZone";
+    fire_ab.defined_remembered = true;
+    fire_ab.restore_remembered_exiled_with = {entity};  // resolve() seeds the remembered set to this card
+    fire_ab.source = entity;
+    fire_ab.origin = Zone::BATTLEFIELD;
+    fire_ab.destination = Zone::EXILE;
+
+    DelayedTrigger dt;
+    dt.ability = fire_ab;
+    dt.fire_on = Events::END_STEP_BEGAN;
+    dt.owner_entity = get_player_entity(perm.controller);
+    dt.fire_on_turn = cur_game.turn;
+    cur_game.delayed_triggers.push_back(dt);
+    game_log("%s is unearthed (haste; exiled at the next end step).\n", perm.name.c_str());
+}
+
+// Evaluate a continuous static's IsPresent$/PresentZone$/PresentCompare$ gate (CR 604.3 /
+// 611): count the cards/permanents matching `filter` in `zone` and compare against
+// `compare`. General over any zone, any compare op, and any filter — Elvish Reclaimer's
+// "+2/+2 as long as there are 3+ land cards in your graveyard" is the lands-in-graveyard
+// case. Ownership qualifiers (YouOwn/YouCtrl/OppOwn/OppCtrl) are honoured against the
+// containing zone's owner (a card off the battlefield has no controller, so .YouOwn is
+// scoped via Zone::owner here and stripped before the type/characteristic match), mirroring
+// evaluate_present_condition's owner handling. `controller` is the static source's controller
+// (the "You" reference per CR 109.5). An empty filter means "no gate" → always met.
+static bool static_present_condition_met(const std::string &filter, const std::string &zone_str,
+                                         const std::string &compare_in, Zone::Ownership controller,
+                                         Entity source, const std::set<Entity> &entities) {
+    if (filter.empty()) return true;
+    std::string compare = compare_in.empty() ? "GE1" : compare_in;
+
+    // Default zone is the battlefield (Forge convention when PresentZone$ is omitted).
+    Zone::ZoneValue zone = Zone::BATTLEFIELD;
+    if      (zone_str == "Graveyard") zone = Zone::GRAVEYARD;
+    else if (zone_str == "Hand")      zone = Zone::HAND;
+    else if (zone_str == "Exile")     zone = Zone::EXILE;
+    else if (zone_str == "Library")   zone = Zone::LIBRARY;
+    else if (zone_str == "Stack")     zone = Zone::STACK;
+    // empty / "Battlefield" → BATTLEFIELD
+
+    MatchCtx ctx;
+    ctx.controller = controller;
+    ctx.source = source;   // .Self / .Other self-reference (Trinisphere: Card.Self+untapped)
+
+    int count = 0;
+    if (zone == Zone::BATTLEFIELD) {
+        // permanent_matches_filter understands the full YouCtrl/YouOwn/OppCtrl/OppOwn grammar
+        // against a permanent's live controller/owner, so the original filter is passed through
+        // unchanged — a controller qualifier (YouCtrl) must test the controller, not Zone::owner
+        // (which would mishandle a permanent you control but don't own, e.g. a stolen creature).
+        for (auto e : entities) {
+            if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+            const auto &z = global_coordinator.GetComponent<Zone>(e);
+            if (z.location != zone) continue;
+            if (!is_battlefield_permanent(e)) continue;
+            if (!permanent_matches_filter(e, filter, ctx)) continue;
+            count++;
+        }
+    } else {
+        // Off-battlefield zones have no controller, so a YouCtrl/YouOwn (or OppCtrl/OppOwn)
+        // qualifier collapses to ownership (a card in your graveyard/hand/exile is "yours").
+        // card_matches_filter has no owner/controller token, so split those off and check them
+        // against Zone::owner here, passing only the characteristic portion to the matcher.
+        bool you = false, opp = false;
+        std::string type_filter;
+        {
+            bool first = true;
+            size_t i = 0;
+            while (i <= filter.size()) {
+                size_t nx = filter.find_first_of(".+", i);
+                size_t end = (nx == std::string::npos) ? filter.size() : nx;
+                std::string tok = filter.substr(i, end - i);
+                char sep = (i == 0) ? '\0' : filter[i - 1];
+                if (first) { type_filter = tok; first = false; }
+                else if (tok == "YouOwn" || tok == "YouCtrl") you = true;
+                else if (tok == "OppOwn" || tok == "OppCtrl") opp = true;
+                else { type_filter += sep; type_filter += tok; }  // keep other qualifiers
+                if (nx == std::string::npos) break;
+                i = nx + 1;
+            }
+        }
+        Zone::Ownership owner_req = you ? controller
+                                 : opp ? (controller == Zone::PLAYER_A ? Zone::PLAYER_B : Zone::PLAYER_A)
+                                       : Zone::UNKNOWN;
+        for (auto e : entities) {
+            if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+            const auto &z = global_coordinator.GetComponent<Zone>(e);
+            if (z.location != zone) continue;
+            if (owner_req != Zone::UNKNOWN && z.owner != owner_req) continue;
+            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+            if (!card_matches_filter(e, type_filter, ctx)) continue;
+            count++;
+        }
+    }
+    return compare_svar(count, compare);
+}
+
+int active_raise_cost_for(const CardData &card_data, Zone::Ownership caster) {
     bool is_creature = is_creature_card(card_data);
+    // Caster's spells already cast this turn — the "other spells" the relative surcharge counts
+    // (Damping Sphere). Evaluated once; 0 when the caster is unknown or has no Player component.
+    int spells_cast_this_turn = 0;
+    if (caster != Zone::UNKNOWN) {
+        Entity pe = get_player_entity(caster);
+        if (global_coordinator.entity_has_component<Player>(pe))
+            spells_cast_this_turn =
+                static_cast<int>(global_coordinator.GetComponent<Player>(pe).spells_cast_this_turn);
+    }
     int total = 0;
     for (const auto &as : g_active_statics) {
         if (as.suppressed) continue;  // 613.1f: source lost all abilities (Humility)
@@ -57,6 +185,9 @@ int active_raise_cost_for(const CardData &card_data) {
             if (src.chosen_name.empty() || src.chosen_name != card_data.name) continue;
         }
         total += as.sa->raise_cost;
+        // Relative per-spell surcharge (Damping Sphere): {1} more for each other spell the
+        // caster has cast this turn (CR 601.2f). Applies to every spell that player casts.
+        if (as.sa->raise_cost_per_spell_cast) total += spells_cast_this_turn;
     }
     return total;
 }
@@ -97,6 +228,23 @@ int active_reduce_cost_for(const CardData &card_data, Zone::Ownership caster) {
     return total;
 }
 
+int active_cost_floor_for(const CardData &card_data) {
+    int floor = 0;
+    for (const auto &as : g_active_statics) {
+        if (as.suppressed) continue;        // 613.1f: source lost all abilities (Humility)
+        if (!as.condition_met) continue;    // IsPresent$ gate (Trinisphere: source untapped)
+        if (as.sa->category != "SetCost" || !as.sa->set_cost_raise_to) continue;
+        // An empty filter means the floor applies to every spell (Trinisphere: ValidCard$ Card).
+        if (!as.sa->set_cost_filter.empty()) {
+            MatchCtx ctx;
+            extract_static_cmc_bound(as.sa->set_cost_filter, ctx);
+            if (!card_matches_filter(card_data, as.sa->set_cost_filter, ctx)) continue;
+        }
+        floor = std::max(floor, as.sa->set_cost_min);
+    }
+    return floor;
+}
+
 // Resolve the battlefield permanents a continuous static's Affected$ filter designates
 // (declared in state_manager.h). The EquippedBy / Self forms target a single creature that
 // the layer appliers resolve directly (equipped_to / the source), so this returns empty for
@@ -122,9 +270,154 @@ std::vector<Entity> affected_permanents_for_static(const ActiveStatic &as,
     return out;
 }
 
+// Parse a SetColor$ spec into a color set (CR 105.2/202.2). "Colorless" — or an empty/unrecognized
+// token — contributes no color (CR 105.2c → empty set). Color words are space- or comma-delimited
+// so an explicit multi-color set (e.g. "White Blue") is handled the same way.
+static std::set<Colors> parse_setcolor_spec(const std::string &spec) {
+    std::set<Colors> out;
+    size_t p = 0;
+    while (p < spec.size()) {
+        size_t e = spec.find_first_of(" ,", p);
+        if (e == std::string::npos) e = spec.size();
+        std::string tok = spec.substr(p, e - p);
+        if      (tok == "White") out.insert(WHITE);
+        else if (tok == "Blue")  out.insert(BLUE);
+        else if (tok == "Black") out.insert(BLACK);
+        else if (tok == "Red")   out.insert(RED);
+        else if (tok == "Green") out.insert(GREEN);
+        // "Colorless" / unrecognized → no color contributed
+        p = e + 1;
+    }
+    return out;
+}
+
+// Does a SetColor$ static's AffectedZone$ reach a card currently in `zone`? "All" = every zone;
+// empty = the Forge default (battlefield only); otherwise a space-/comma-delimited zone list.
+static bool setcolor_zone_matches(const std::string &az, Zone::ZoneValue zone, bool has_zone) {
+    if (az == "All") return true;
+    if (az.empty()) return has_zone && zone == Zone::BATTLEFIELD;  // Forge default for a continuous static
+    if (!has_zone) return false;
+    size_t p = 0;
+    while (p < az.size()) {
+        size_t e = az.find_first_of(" ,", p);
+        if (e == std::string::npos) e = az.size();
+        std::string tok = az.substr(p, e - p);
+        if ((tok == "Battlefield" && zone == Zone::BATTLEFIELD) ||
+            (tok == "Graveyard"   && zone == Zone::GRAVEYARD)   ||
+            (tok == "Hand"        && zone == Zone::HAND)        ||
+            (tok == "Library"     && zone == Zone::LIBRARY)     ||
+            (tok == "Exile"       && zone == Zone::EXILE)       ||
+            (tok == "Stack"       && zone == Zone::STACK))
+            return true;
+        p = e + 1;
+    }
+    return false;
+}
+
+// Non-recursive test of a SetColor$ static's Affected$ filter against a battlefield TOKEN
+// permanent (CR 111.1: a token is not a card, so it has no CardData and the card_matches_filter
+// path can't read it). permanent_matches_filter WOULD read it, but it reads effective_colors,
+// which is exactly the caller of setcolor_override_for — so using it here would recurse
+// (effective_colors → setcolor_override_for → permanent_matches_filter → effective_colors). So a
+// token is matched WITHOUT consulting its color:
+//   • head "Card" / "Permanent" matches any battlefield permanent; a type name matches if the
+//     token carries that type/subtype (Permanent::types).
+//   • YouCtrl / OppCtrl are honoured against the token's live controller; token is honoured
+//     (this is a token); nonToken can't be satisfied by a token.
+//   • Any other type/subtype qualifier matches if the token's type line carries it.
+// A COLOR qualifier (White/Blue/…/Colorless or non<Color>) can't be evaluated without reading the
+// token's color (which would recurse), so a filter carrying one is treated as NOT matching the
+// token — documented limitation. The only in-vocab global SetColor static, Mycosynth Lattice, uses
+// a bare "Card" filter, which matches every battlefield permanent (tokens included), so this
+// limitation is not currently reachable.
+static bool setcolor_filter_matches_token(const std::string &aff, const Permanent &perm,
+                                          Zone::Ownership static_controller) {
+    if (aff.empty()) return false;
+    Zone::Ownership opp =
+        (static_controller == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+    bool first = true;
+    size_t i = 0;
+    while (i <= aff.size()) {
+        size_t nx = aff.find_first_of(".+", i);
+        size_t end = (nx == std::string::npos) ? aff.size() : nx;
+        std::string tok = aff.substr(i, end - i);
+        if (first) {
+            // Head: a permanent wildcard or a type the token carries.
+            if (tok != "Card" && tok != "Permanent" && !permanent_has_type(perm, tok))
+                return false;
+            first = false;
+        } else if (tok == "YouCtrl") {
+            if (perm.controller != static_controller) return false;
+        } else if (tok == "OppCtrl") {
+            if (perm.controller != opp) return false;
+        } else if (tok == "token" || tok == "Token") {
+            // a token satisfies this
+        } else if (tok == "nonToken") {
+            return false;  // this IS a token
+        } else if (tok == "White" || tok == "Blue" || tok == "Black" || tok == "Red" ||
+                   tok == "Green" || tok == "Colorless" || tok.rfind("non", 0) == 0) {
+            // A color (or non-color) qualifier would require reading the token's color — skip
+            // to stay recursion-safe (documented limitation; not reachable in current vocab).
+            return false;
+        } else if (!permanent_has_type(perm, tok)) {
+            return false;  // any remaining type/subtype qualifier must be on the token's type line
+        }
+        if (nx == std::string::npos) break;
+        i = nx + 1;
+    }
+    return true;
+}
+
+// Layer-5 (CR 613.1e / 612) global color-changing override — see game_queries.h. Scans the active-
+// statics cache for a SetColor$ continuous static whose AffectedZone$ + Affected$ filter designate
+// `e`; the FIRST match wins (no current vocab stacks two global SetColor statics). For a real card
+// the match is done against the card's PRINTED characteristics (card_matches_filter) so this never
+// recurses back into effective_colors; a battlefield TOKEN permanent (no CardData) is matched by
+// setcolor_filter_matches_token, a deliberately color-free type/controller test, for the same
+// recursion-safety reason. A static whose zone/filter excludes `e` yields no override.
+bool setcolor_override_for(Entity e, std::set<Colors> &out) {
+    if (g_active_statics.empty()) return false;
+    bool has_card = global_coordinator.entity_has_component<CardData>(e);
+    bool is_token_perm = !has_card &&
+                         global_coordinator.entity_has_component<Token>(e) &&
+                         is_battlefield_permanent(e);
+    if (!has_card && !is_token_perm) return false;
+    Zone::ZoneValue zone = Zone::LIBRARY;
+    bool has_zone = global_coordinator.entity_has_component<Zone>(e);
+    if (has_zone) zone = global_coordinator.GetComponent<Zone>(e).location;
+    for (const auto &as : g_active_statics) {
+        if (as.suppressed || !as.condition_met) continue;
+        if (as.sa->category != "Continuous" || as.sa->set_color.empty()) continue;
+        if (!setcolor_zone_matches(as.sa->affected_zone, zone, has_zone)) continue;
+        if (has_card) {
+            MatchCtx ctx;
+            ctx.controller = as.controller;
+            ctx.source = as.entity;
+            extract_static_cmc_bound(as.sa->affected, ctx);
+            if (!card_matches_filter(e, as.sa->affected, ctx)) continue;
+        } else {
+            // Battlefield token permanent: recursion-safe type/controller filter match.
+            const auto &perm = global_coordinator.GetComponent<Permanent>(e);
+            if (!setcolor_filter_matches_token(as.sa->affected, perm, as.controller)) continue;
+        }
+        out = parse_setcolor_spec(as.sa->set_color);
+        return true;
+    }
+    return false;
+}
+
+bool any_mana_as_any_color_active() {
+    for (const auto &as : g_active_statics) {
+        if (as.suppressed || !as.condition_met) continue;
+        if (as.sa->category != "ManaConvert") continue;
+        if (as.sa->mana_conversion == "AnyType->AnyColor") return true;
+    }
+    return false;
+}
+
 ManaValue effective_base_cost(const CardData &card_data, Zone::Ownership caster) {
     ManaValue cost = card_data.mana_cost;
-    int raise_total = active_raise_cost_for(card_data);
+    int raise_total = active_raise_cost_for(card_data, caster);
     for (int ri = 0; ri < raise_total; ri++) cost.insert(GENERIC);
     // ReduceCost statics (Eye of Ugin): reduce the generic portion by Amount$ per matching
     // static. Applied after additions (CR 601.2f); only generic pips removed (never a colored
@@ -148,6 +441,12 @@ ManaValue effective_base_cost(const CardData &card_data, Zone::Ownership caster)
             cost.erase(it);
         }
     }
+    // SetCost cost floor (Trinisphere): applied LAST — after every other increase/reduction
+    // (CR 601.2f) — so the floor is checked against the spell's already-adjusted cost. If the
+    // total mana value is below the floor, add generic pips up to the floor; a cost already at
+    // or above it (or a spell no floor applies to) is untouched. Colored pips are never removed.
+    int floor = active_cost_floor_for(card_data);
+    while (static_cast<int>(cost.size()) < floor) cost.insert(GENERIC);
     return cost;
 }
 
@@ -160,9 +459,18 @@ static bool removal_affects(const ActiveStatic &r, Entity entity);
 // (which buffs/grants to every matching permanent); the single-target forms keep the source/
 // equipped-creature path. Shared by the layer-6 keyword-grant pass and the layer-7 P/T pass so
 // both agree on which statics fan out across the affected set (CR 613 layers 6 / 7c).
+// An attached-permanent static buffs the single object it is attached to: equipment uses the
+// "EquippedBy" filter and Auras use "EnchantedBy" (CR 303). Both resolve to the source
+// permanent's equipped_to link (auras reuse the same attachment field), so the layer appliers
+// treat them identically — single-target, not a general fan-out filter.
+static bool affected_is_attached_target(const std::string &aff) {
+    return aff.find("EquippedBy") != std::string::npos ||
+           aff.find("EnchantedBy") != std::string::npos;
+}
+
 static bool affected_is_general_filter(const std::string &aff) {
     return !aff.empty() &&
-           aff.find("EquippedBy") == std::string::npos &&
+           !affected_is_attached_target(aff) &&
            aff.find("Self") == std::string::npos;
 }
 
@@ -259,6 +567,15 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                 face = card_data.backside.get();
             bool is_creature = is_creature_card(*face);  // can be creature and land
             bool is_land = is_land_card(*face);
+            // Reconfigure (CR 702.151b): while a reconfigure equipment is attached, it is an
+            // Equipment and is NOT a creature. Suppress its creature-ness (and strip its
+            // Creature/Damage components below) for as long as equipped_to is set; unattaching
+            // restores them on the next state-based pass.
+            bool reconfigured_attached =
+                card_data.is_reconfigure &&
+                global_coordinator.entity_has_component<Permanent>(entity) &&
+                global_coordinator.GetComponent<Permanent>(entity).equipped_to != 0;
+            if (reconfigured_attached) is_creature = false;
             int etb_p1p1 = 0;  // counters this permanent enters with (614.1c), applied once the Permanent exists
             std::string etb_counter_type = "P1P1";  // kind of "enters with" counter (P1P1, CHARGE, ...)
             // providing permanent component if doesn't have
@@ -289,24 +606,83 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                     etb_counter_type = rev.etb_counter_type;
                 }
                 // It was cast and is now becoming a real permanent — consume the one-shot
-                // "was cast" marker so a later non-cast re-entry isn't treated as a cast.
-                game.cast_to_battlefield.erase(entity);
+                // "was cast" marker so a later non-cast re-entry isn't treated as a cast, and
+                // record it on the permanent (The One Ring's Card.wasCastByYou ETB gate).
+                if (game.cast_to_battlefield.erase(entity)) perm.entered_by_cast = true;
                 // Likewise consume the "cast from your hand by you" marker and record it on
                 // the permanent (Amped Raptor's Card.wasCastFromYourHandByYou gate). Only a
                 // spell the controller cast from their own hand sets this; any other entry
                 // (reanimation, tokens, ChangeZone, impulse cast from exile) leaves it false.
                 if (game.cast_from_hand.erase(entity)) perm.cast_from_hand_by_controller = true;
+                // Daybound (CR 702.145b): "If it is night and this permanent is represented by a
+                // double-faced card, it enters transformed." Mark a daybound DFC entering while
+                // it's night to flip to its back (night) face once its components exist — reusing
+                // the same pending_enters_transformed path Ajani-style transformed entries use.
+                if (card_has_daybound(card_data) && game.day_night == Game::DN_NIGHT)
+                    game.pending_enters_transformed.insert(entity);
                 if (perm.is_tapped) game_log("%s enters tapped.\n", perm.name.c_str());
                 // Spell was cast for its evoke cost — mark the permanent so its evoke
                 // self-sacrifice ETB trigger fires (consumed one-shot here).
                 if (game.pending_evoked.erase(entity)) perm.evoked = true;
+                // Spell was cast from the graveyard for its Escape cost — mark the permanent as
+                // having "escaped" so an "if it escaped" clause (Uro's sacrifice-unless) reads it.
+                if (game.pending_escaped.erase(entity)) perm.cast_with_escape = true;
                 // Spell was cast with its Offspring additional cost — mark the permanent so
                 // its offspring token-copy ETB trigger fires (consumed one-shot here).
                 if (game.pending_offspring.erase(entity)) perm.entered_with_offspring = true;
+                // Spell was cast for its Impending alternate cost (CR 702.175d): the permanent
+                // enters with N time counters. Set them on the Permanent being built (before it
+                // is added below) so this same pass's creature-suppression check already sees
+                // them and strips the Creature component — it enters as a noncreature.
+                if (game.pending_impending.erase(entity) && card_data.alt_cost.impending_count > 0) {
+                    perm.counters["TIME"] = card_data.alt_cost.impending_count;
+                    perm.entered_via_impending = true;  // marks these TIME counters as impending
+                    game_log("%s enters with %d time counter(s) (impending).\n",
+                             card_data.name.c_str(), card_data.alt_cost.impending_count);
+                }
+                // Unearth (CR 702.84): returned to the battlefield by its unearth ability — gains
+                // haste, gets the delayed end-step exile, and the leaves→exile redirect.
+                if (game.pending_unearthed.erase(entity)) mark_unearthed_permanent(entity, perm);
                 // Planeswalkers enter with loyalty counters equal to printed loyalty (306.5b).
                 if (is_planeswalker_card(card_data)) perm.counters["LOYALTY"] = card_data.starting_loyalty;
                 perm.timestamp_entered_battlefield = game.timestamp++;
                 perm.entered_on_turn = game.turn;
+                // A DB$ Attach resolved onto this creature before its Permanent existed
+                // (reanimate-then-attach, Pre-War Formalwear): finalize the equip link now
+                // that the Permanent is being created. The equipment kept its own Permanent.
+                {
+                    auto pa = game.pending_attach.find(entity);
+                    if (pa != game.pending_attach.end()) {
+                        Entity equip = pa->second;
+                        if (global_coordinator.entity_has_component<Permanent>(equip)) {
+                            auto &eq_perm = global_coordinator.GetComponent<Permanent>(equip);
+                            if (eq_perm.equipped_to != 0 &&
+                                global_coordinator.entity_has_component<Permanent>(eq_perm.equipped_to))
+                                global_coordinator.GetComponent<Permanent>(eq_perm.equipped_to).equipped_by = 0;
+                            eq_perm.equipped_to = entity;
+                            perm.equipped_by = equip;
+                            game_log("Equipment attached.\n");
+                        }
+                        game.pending_attach.erase(pa);
+                    }
+                }
+                // An Aura that resolved onto the battlefield (CR 303.4f) attaches to the object it
+                // was cast targeting. The aura is the entity whose Permanent is being created;
+                // its enchanted object was recorded at cast (pending_aura_target). Reuse the
+                // equipped_to/equipped_by attachment link so the aura's static buffs (Affected$
+                // Creature.EnchantedBy) and the aura state-based check find the enchanted object.
+                {
+                    auto pat = game.pending_aura_target.find(entity);
+                    if (pat != game.pending_aura_target.end()) {
+                        Entity enchanted = pat->second;
+                        if (enchanted != 0 && global_coordinator.entity_has_component<Permanent>(enchanted)) {
+                            perm.equipped_to = enchanted;
+                            game_log("%s is attached to %s.\n", perm.name.c_str(),
+                                     entity_name(enchanted).c_str());
+                        }
+                        game.pending_aura_target.erase(pat);
+                    }
+                }
                 global_coordinator.AddComponent(entity, perm);
                 // Non-P1P1 "enters with" counters (614.1c) attach to any permanent, not just
                 // creatures — Chalice of the Void enters with X CHARGE counters. P1P1 counters
@@ -318,6 +694,10 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                     game_log("%s enters with %d %s counter(s).\n",
                         card_data.name.c_str(), etb_p1p1, etb_counter_type.c_str());
                 }
+                // CR 714.3a/714.2b: a Saga enters with one lore counter; reaching chapter 1 fires
+                // its first chapter ability. Done once here in the newly-entered block (the
+                // Permanent now exists). Saga lifecycle lives in src/saga.cpp.
+                if (card_is_saga(card_data)) saga_add_lore_counters(entity, 1);
             }
             // copy activated abilities from card_data to permanent; incl mana abilities although mana abilities innate to basic land types
             // added elsewhere
@@ -370,14 +750,36 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                         pt_type == "M1M1" ? "-1/-1" : "+1/+1", cr.power, cr.toughness);
                 }
             }
+            // Impending (CR 702.175d-e): a permanent that entered for its impending cost ISN'T a
+            // creature while it still has time counters (it is on the battlefield only as its other
+            // types). The same Creature/Damage strip the reconfigure suppression uses applies here,
+            // gated on a remaining TIME counter; the creature block above re-adds the components on
+            // the pass after the last time counter sheds at the controller's end step (game.cpp),
+            // so it "becomes a creature" via the normal state-based recompute.
+            bool impending_suppressed =
+                global_coordinator.entity_has_component<Permanent>(entity) &&
+                global_coordinator.GetComponent<Permanent>(entity).entered_via_impending &&
+                get_counters(entity, "TIME") > 0;
+            // Reconfigure (CR 702.151b): strip the Creature/Damage components while attached so the
+            // permanent isn't a creature for combat, targeting, and state-based actions. They are
+            // re-added by the block above on the next pass once it unattaches (equipped_to == 0).
+            if (reconfigured_attached || impending_suppressed) {
+                if (global_coordinator.entity_has_component<Creature>(entity))
+                    global_coordinator.RemoveComponent<Creature>(entity);
+                if (global_coordinator.entity_has_component<Damage>(entity))
+                    global_coordinator.RemoveComponent<Damage>(entity);
+            }
             if (is_land) {
                 apply_land_abilities(entity);
             }
             // Earthbended land (DB$/AB$ Animate make_creature): an animated land is a creature
             // even though is_creature_card(card) is false, so re-bootstrap its Creature/Damage
             // components here if they were lost. Idempotent; honors the 0/0 base + Haste grant.
-            if (global_coordinator.GetComponent<Permanent>(entity).animate_make_creature)
-                effects::apply_animate_creature_bootstrap(entity);
+            {
+                const auto &perm_anim = global_coordinator.GetComponent<Permanent>(entity);
+                if (perm_anim.animate_make_creature || perm_anim.animate_make_creature_eot)
+                    effects::apply_animate_creature_bootstrap(entity);
+            }
             apply_keyword_abilities(entity);
 
             // A card moved here "transformed" (Ajani's exile-and-return) enters showing
@@ -385,6 +787,37 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
             // face before triggers are checked — this also suppresses the front-face ETB
             // triggers (a permanent entering as its back face fires only that face's ETBs).
             if (game.pending_enters_transformed.erase(entity)) set_permanent_face(entity, true);
+
+            // Daybound (CR 702.145d): any time a player controls a front-face-up permanent with
+            // daybound and it's neither day nor night, it becomes day. This continuous check fires
+            // the first time such a permanent is on the battlefield while it's still neither; once
+            // it becomes day the guard stops it re-firing. (If it was night, it entered transformed
+            // above; if already day, nothing happens.)
+            if (game.day_night == Game::DN_NEITHER && card_has_daybound(card_data) &&
+                global_coordinator.entity_has_component<Permanent>(entity) &&
+                !global_coordinator.GetComponent<Permanent>(entity).transformed)
+                become_day();
+
+            // Ninjutsu (CR 702.49e): a card put onto the battlefield "tapped and attacking" by a
+            // ninjutsu ability. A normal creature ninja has its Creature component now, so mark it
+            // attacking the defender the returned attacker had been attacking (it already entered
+            // tapped via pending_enters_tapped). A ninja that becomes a creature only via a
+            // conditional static — Kaito, a planeswalker that's a 3/4 Ninja creature during your
+            // turn — has no Creature component yet (it is bootstrapped later this pass in layer 4),
+            // so LEAVE the mark pending; the layer-4 self-animate bootstrap consumes it and sets the
+            // attacking state once the Creature exists.
+            {
+                auto pea = game.pending_enters_attacking.find(entity);
+                if (pea != game.pending_enters_attacking.end() &&
+                    global_coordinator.entity_has_component<Creature>(entity)) {
+                    auto &ncr = global_coordinator.GetComponent<Creature>(entity);
+                    ncr.is_attacking = true;
+                    ncr.attack_target = pea->second;
+                    ncr.is_blocked = false;
+                    game_log("%s is attacking (ninjutsu).\n", entity_name(entity).c_str());
+                    game.pending_enters_attacking.erase(pea);
+                }
+            }
 
             // ETBReplacement: choose creature type (Cavern of Souls)
             if (card_data.has_etb_choose_creature_type) {
@@ -638,6 +1071,158 @@ static Ability keyword_triggered_ability(const std::string &keyword) {
 // Resets land types to CardData originals, then applies type-changing effects
 // sorted by timestamp (rule 613.7: later timestamp wins within the same layer).
 // Regenerates subtype-derived mana abilities after types are finalized.
+// Parse a " & "-delimited AddType$ card-type list (Kaito: "Creature & Ninja") into Type objects,
+// classifying each token as TYPE / SUBTYPE / SUPERTYPE the same way the printed Types: line is
+// (all_types / all_subtypes / all_supertypes). Used by the self card-type animate applier.
+static std::vector<Type> parse_self_added_types(const std::string &spec) {
+    std::vector<Type> out;
+    size_t p = 0;
+    while (p < spec.size()) {
+        size_t sep = spec.find(" & ", p);
+        if (sep == std::string::npos) sep = spec.size();
+        std::string name = spec.substr(p, sep - p);
+        if (!name.empty()) {
+            Type t;
+            t.name = name;
+            if      (all_subtypes.find(name) != all_subtypes.end())   t.kind = SUBTYPE;
+            else if (all_types.find(name) != all_types.end())         t.kind = TYPE;
+            else if (all_supertypes.find(name) != all_supertypes.end()) t.kind = SUPERTYPE;
+            else t.kind = SUBTYPE;
+            out.push_back(t);
+        }
+        p = (sep < spec.size()) ? sep + 3 : sep;
+    }
+    return out;
+}
+
+// Layer 4 (CR 613.1d) — conditionally-active self card-type animate statics (Kaito, Bane of
+// Nightmares). For each active "Continuous" static whose AddType$ names CARD types and whose
+// Affected$ references the source itself, add those types to the source while the static's
+// condition holds and remove them when it lapses. If the added types include "Creature", the
+// source becomes a real creature: a Creature/Damage component is bootstrapped (so layers 6/7 set
+// its P/T and grant its keyword this same pass) when active, and stripped when inactive — unless
+// the source is a creature by a permanent means (printed face or an Animate). RemoveCardTypes$
+// drops the source's printed CARD types other than Planeswalker ("that's still a planeswalker").
+static void apply_self_animate_statics() {
+    for (auto &a : g_active_statics) {
+        if (a.suppressed) continue;
+        if (a.sa->category != "Continuous") continue;
+        if (a.sa->add_type.empty() || a.sa->add_type == "AllNonBasicLandType") continue;
+        if (a.sa->affected.find("Self") == std::string::npos) continue;
+        if (!global_coordinator.entity_has_component<Permanent>(a.entity)) continue;
+        auto &perm = global_coordinator.GetComponent<Permanent>(a.entity);
+
+        std::vector<Type> added = parse_self_added_types(a.sa->add_type);
+        bool adds_creature = false;
+        for (const auto &t : added)
+            if (t.kind == TYPE && t.name == "Creature") { adds_creature = true; break; }
+
+        // Strip this static's added types first so the grant is idempotent across passes and lapses
+        // cleanly when the condition turns off (re-added below only while the gate holds).
+        for (const auto &t : added) perm.types.erase(t);
+
+        if (a.condition_met) {
+            // RemoveCardTypes$ True: drop the printed CARD types other than Planeswalker before
+            // adding the new ones (a planeswalker becoming a creature stays a planeswalker, CR 306).
+            if (a.sa->remove_card_types) {
+                for (auto it = perm.types.begin(); it != perm.types.end();) {
+                    if (it->kind == TYPE && it->name != "Planeswalker")
+                        it = perm.types.erase(it);
+                    else
+                        ++it;
+                }
+            }
+            for (const auto &t : added) perm.types.insert(t);
+
+            if (adds_creature && !global_coordinator.entity_has_component<Creature>(a.entity)) {
+                Creature cr;
+                cr.base_power = 0;      // layer 7b's SetPower$/SetToughness$ override this to 3/4
+                cr.base_toughness = 0;
+                if (global_coordinator.entity_has_component<CardData>(a.entity))
+                    cr.keywords = global_coordinator.GetComponent<CardData>(a.entity).keywords;
+                global_coordinator.AddComponent(a.entity, cr);
+                if (!global_coordinator.entity_has_component<Damage>(a.entity)) {
+                    Damage dmg;
+                    dmg.damage_counters = 0;
+                    global_coordinator.AddComponent(a.entity, dmg);
+                }
+                // Summoning sickness (CR 302.6 / 508.1a): a permanent that becomes a creature can
+                // attack only if its controller has controlled it continuously since their most
+                // recent turn began. Approximate with "entered this turn" — sick the turn it enters,
+                // able to attack thereafter (untap clears it for permanents that keep their Creature).
+                perm.has_summoning_sickness = (perm.entered_on_turn == cur_game.turn);
+
+                // Ninjutsu (CR 702.49e): a planeswalker put onto the battlefield "tapped and
+                // attacking" had its enters-attacking mark left pending by apply_permanent_components
+                // (it had no Creature yet). Consume it now that the Creature exists.
+                auto pea = cur_game.pending_enters_attacking.find(a.entity);
+                if (pea != cur_game.pending_enters_attacking.end()) {
+                    auto &ncr = global_coordinator.GetComponent<Creature>(a.entity);
+                    ncr.is_attacking = true;
+                    ncr.attack_target = pea->second;
+                    ncr.is_blocked = false;
+                    game_log("%s is attacking (ninjutsu).\n", entity_name(a.entity).c_str());
+                    cur_game.pending_enters_attacking.erase(pea);
+                }
+            }
+        } else if (adds_creature) {
+            // Gate off: strip a Creature/Damage that exists ONLY because of this static (the source
+            // is not a creature by its printed face and isn't animated by another effect).
+            bool printed_creature =
+                global_coordinator.entity_has_component<CardData>(a.entity) &&
+                is_creature_card(global_coordinator.GetComponent<CardData>(a.entity));
+            bool animated = perm.animate_make_creature || perm.animate_make_creature_eot;
+            if (!printed_creature && !animated) {
+                if (global_coordinator.entity_has_component<Creature>(a.entity))
+                    global_coordinator.RemoveComponent<Creature>(a.entity);
+                if (global_coordinator.entity_has_component<Damage>(a.entity))
+                    global_coordinator.RemoveComponent<Damage>(a.entity);
+            }
+        }
+    }
+}
+
+// Layer 4 (CR 613.1d) — general additive card-type statics over an Affected$ permanent filter
+// (Mycosynth Lattice: "All permanents are artifacts in addition to their other types."). For each
+// active "Continuous" static whose AddType$ names types and whose Affected$ is a general permanent
+// filter — NOT the Self self-animate (apply_self_animate_statics), NOT the Land.nonBasic land-
+// subtype setter (Blood Moon, which strips/sets land subtypes via RemoveLandTypes$), NOT the
+// AllNonBasicLandType self-CDA — add those types to EVERY matching battlefield permanent in
+// addition to its existing types. Self-cleaning: each pass first strips the types this subsystem
+// recorded on each permanent (static_added_types), then re-adds for the currently-active statics,
+// so the grant lapses the instant the source leaves the battlefield. Only genuinely-new types are
+// recorded (a type the permanent already has is left untracked and never erased).
+static void apply_global_addtype_statics(const std::set<Entity> &entities) {
+    // Strip last pass's globally-added types from every permanent before re-deriving.
+    for (auto entity : entities) {
+        if (!is_battlefield_permanent(entity)) continue;
+        auto &perm = global_coordinator.GetComponent<Permanent>(entity);
+        if (perm.static_added_types.empty()) continue;
+        for (const auto &t : perm.static_added_types) perm.types.erase(t);
+        perm.static_added_types.clear();
+    }
+    for (auto &a : g_active_statics) {
+        if (a.suppressed) continue;
+        if (a.sa->category != "Continuous") continue;
+        if (a.sa->add_type.empty() || a.sa->add_type == "AllNonBasicLandType") continue;
+        if (a.sa->remove_land_types) continue;                  // Blood Moon land-subtype setter
+        if (a.sa->affected == "Land.nonBasic") continue;        // pure land type-changer form
+        if (!affected_is_general_filter(a.sa->affected)) continue;  // excludes Self/EquippedBy/empty
+        std::vector<Type> added = parse_self_added_types(a.sa->add_type);
+        MatchCtx ctx;
+        ctx.controller = a.controller;   // YouCtrl/OppCtrl reference (CR 109.5)
+        ctx.source = a.entity;           // .Other self-exclusion
+        extract_static_cmc_bound(a.sa->affected, ctx);
+        for (auto entity : entities) {
+            if (!is_battlefield_permanent(entity)) continue;
+            if (!permanent_matches_filter(entity, a.sa->affected, ctx)) continue;
+            auto &perm = global_coordinator.GetComponent<Permanent>(entity);
+            for (const auto &t : added)
+                if (perm.types.insert(t).second) perm.static_added_types.insert(t);
+        }
+    }
+}
+
 void StateManager::apply_type_changing_effects() {
     // Layer 4 reapply of DB$ Animate "becomes ..." type grants (Guide of Souls). These are
     // baked onto each permanent (animate_added_types) by the Animate effect rather than sourced
@@ -647,6 +1232,35 @@ void StateManager::apply_type_changing_effects() {
         if (!is_battlefield_permanent(entity)) continue;
         auto &perm = global_coordinator.GetComponent<Permanent>(entity);
         for (const auto &t : perm.animate_added_types) perm.types.insert(t);
+        // "Until end of turn" Animate type grants (CR 514.2) — reasserted each pass while live;
+        // the CLEANUP step erases the bucket so they lapse at end of turn.
+        for (const auto &t : perm.animate_added_types_eot) perm.types.insert(t);
+    }
+
+    // Self card-type animate statics (Kaito's "During your turn ... he's a 3/4 Ninja creature with
+    // hexproof that's still a planeswalker"). A "Continuous" static whose AddType$ names CARD types
+    // and whose Affected$ references the source itself (Permanent.Self) conditionally adds those
+    // types to the source (CR 613 layer 4). When the gate (condition_met) holds the types are added
+    // and, if "Creature" is among them, a Creature/Damage component is bootstrapped so the source is
+    // a real creature this pass (its P/T set in 7b, AddKeyword$ granted in 6); when the gate lapses
+    // the added types and the bootstrapped Creature are stripped. Runs before the land type-changer
+    // (a distinct Land.nonBasic Affected$ form) and its early-out below.
+    apply_self_animate_statics();
+
+    // Self-CDA "is every nonbasic land type" (Planar Nexus: AddType$ AllNonBasicLandType,
+    // CharacteristicDefining$ True, Affected$ Card.Self). Add the full set of nonbasic land
+    // subtypes to the source permanent itself. Idempotent (a set), reasserted every pass; a
+    // later Land.nonBasic type-setter (Blood Moon) still wins because its reset/insert runs
+    // below. General for any AllNonBasicLandType source.
+    static const char *kNonBasicLandTypes[] = {"Desert", "Gate",        "Lair",  "Locus",
+                                               "Mine",   "Power-Plant", "Sphere", "Tower",
+                                               "Urza's", "Cave"};
+    for (auto &a : g_active_statics) {
+        if (a.suppressed) continue;
+        if (a.sa->add_type != "AllNonBasicLandType") continue;
+        if (!global_coordinator.entity_has_component<Permanent>(a.entity)) continue;
+        auto &perm = global_coordinator.GetComponent<Permanent>(a.entity);
+        for (const char *t : kNonBasicLandTypes) perm.types.insert({SUBTYPE, t});
     }
 
     // Collect type-changing statics from the already-populated g_active_statics.
@@ -658,12 +1272,19 @@ void StateManager::apply_type_changing_effects() {
     for (auto &a : g_active_statics) {
         if (a.suppressed) continue;
         if (a.sa->add_type.empty()) continue;
+        // AllNonBasicLandType is the self-CDA handled above, not a Land.nonBasic affector.
+        if (a.sa->add_type == "AllNonBasicLandType") continue;
         if (!global_coordinator.entity_has_component<Permanent>(a.entity)) continue;
         auto &src_perm = global_coordinator.GetComponent<Permanent>(a.entity);
         changers.push_back({&a, src_perm.timestamp_entered_battlefield});
     }
 
-    if (changers.empty()) return;
+    if (changers.empty()) {
+        // No land-subtype changers, but a general AddType static (Mycosynth Lattice) may still
+        // apply card types to every permanent. Run it and return.
+        apply_global_addtype_statics(mEntities);
+        return;
+    }
 
     // Sort by timestamp ascending — later entries override earlier ones on the same permanent.
     std::sort(changers.begin(), changers.end(),
@@ -732,6 +1353,10 @@ void StateManager::apply_type_changing_effects() {
                         abilities.end());
         apply_land_abilities(entity);
     }
+
+    // General additive AddType statics run AFTER the land-subtype changer so a permanent whose
+    // land subtypes were just reset (Blood Moon) still gains its global type (Mycosynth's Artifact).
+    apply_global_addtype_statics(mEntities);
 }
 
 // Preamble for the continuous-effects engine: rebuild the g_active_statics cache from
@@ -792,6 +1417,18 @@ void StateManager::gather_active_statics(Game &game) {
                 if (std::find(cr.keywords.begin(), cr.keywords.end(), kc.first) == cr.keywords.end())
                     cr.keywords.push_back(kc.first);
             }
+            // Layer-6 keyword REMOVAL (CR 613, AB$ AnimateAll | RemoveKeywords$ — Shadowspear).
+            // A keyword suppressed until end of turn by a "loses <keyword>" effect is stripped
+            // from the rebuilt list after every grant is merged, so a direct reader of cr.keywords
+            // agrees with the effective-keyword accessors (which also gate on removed_keywords_eot).
+            if (!perm.removed_keywords_eot.empty()) {
+                cr.keywords.erase(
+                    std::remove_if(cr.keywords.begin(), cr.keywords.end(),
+                                   [&](const std::string &k) {
+                                       return perm.removed_keywords_eot.count(k) != 0;
+                                   }),
+                    cr.keywords.end());
+            }
         }
         if (perm.transformed) {
             for (auto &sa : perm.static_abilities) sa.applied = false;
@@ -800,6 +1437,14 @@ void StateManager::gather_active_statics(Game &game) {
         for (auto &sa : perm.static_abilities)
             g_active_statics.push_back({entity, &sa, perm.controller, false});
     }
+
+    // Emblems (CR 114): zoneless, unremovable continuous-effect sources owned by a player. Their
+    // statics are gathered with entity 0 (no Permanent) and the emblem owner as controller, so the
+    // layer appliers fan them out (e.g. Kaito's "Ninjas you control get +1/+1.") through the same
+    // path as a battlefield anthem. Pointers into game.emblems[*].statics are stable for this pass.
+    for (auto &emb : game.emblems)
+        for (auto &sa : emb.statics)
+            g_active_statics.push_back({0, &sa, emb.controller, false});
 
     // Evaluate only the conditions actually referenced; compute each at most once per
     // player rather than once per permanent.
@@ -815,6 +1460,9 @@ void StateManager::gather_active_statics(Game &game) {
 
     for (auto &a : g_active_statics) {
         if (a.sa->condition.empty() && a.sa->check_svar_expr.empty()) {
+            // No Condition$/CheckSVar$ — provisionally true (a present-only IsPresent$ static
+            // lands here and is gated by the present-count AND below); an unconditional static
+            // stays true.
             a.condition_met = true;
         } else if (a.sa->condition == "Delirium") {
             a.condition_met = (a.controller == Zone::PLAYER_A) ? delirium_a : delirium_b;
@@ -829,6 +1477,29 @@ void StateManager::gather_active_statics(Game &game) {
             a.condition_met = compare_svar(svar_val, a.sa->svar_compare);
         } else {
             a.condition_met = false;  // unrecognised condition — treat as unmet
+        }
+
+        // AND in the present-count gate (IsPresent$/PresentZone$/PresentCompare$), if any.
+        // It composes with any Condition$/CheckSVar$ above: the static is active only when
+        // every gate it declares is satisfied (CR 604.3 — a continuous static functions only
+        // while its conditions hold). Re-evaluated each SBA pass so it turns on/off live.
+        if (a.condition_met && !a.sa->present_filter.empty()) {
+            a.condition_met = static_present_condition_met(
+                a.sa->present_filter, a.sa->present_zone, a.sa->present_compare,
+                a.controller, a.entity, mEntities);
+        }
+
+        // AND in the per-source counter gate (Kaito: Affected$ ...+counters_GE1_LOYALTY — the static
+        // is active only while the SOURCE has the required number of counters of the named type).
+        // Re-evaluated each pass so Kaito stops being a creature the instant his loyalty hits 0.
+        if (a.condition_met && !a.sa->self_counter_type.empty()) {
+            int ct = 0;
+            if (global_coordinator.entity_has_component<Permanent>(a.entity)) {
+                auto &perm = global_coordinator.GetComponent<Permanent>(a.entity);
+                auto it = perm.counters.find(a.sa->self_counter_type);
+                if (it != perm.counters.end()) ct = it->second;
+            }
+            a.condition_met = compare_svar(ct, a.sa->self_counter_compare);
         }
     }
 }
@@ -883,10 +1554,11 @@ void StateManager::apply_layer6_ability_effects() {
             continue;
         }
 
-        // Determine which entity receives the grant (source or equipped creature).
-        // Affected$ is stored verbatim (e.g. "Creature.EquippedBy"), so match by substring.
+        // Determine which entity receives the grant (source or attached creature).
+        // Affected$ is stored verbatim (e.g. "Creature.EquippedBy" / "Creature.EnchantedBy"),
+        // so match by substring; both attachment forms resolve to equipped_to.
         Entity target_entity = a.entity;
-        if (a.sa->affected.find("EquippedBy") != std::string::npos) {
+        if (affected_is_attached_target(a.sa->affected)) {
             if (!global_coordinator.entity_has_component<Permanent>(a.entity)) continue;
             target_entity = global_coordinator.GetComponent<Permanent>(a.entity).equipped_to;
         }
@@ -1079,13 +1751,16 @@ void StateManager::apply_layer6_ability_grants() {
 // the grant pass). Timestamp ordering between a grant and a removal within layer 6 (the
 // Humility + anthem interaction, rule 613.7) is deferred to the dependency work (§5).
 
-// Does ability-removal static `r` apply to `entity`? Honours the Affected$ filter; today
-// only "Creature" is exercised (Humility). An unfiltered remover applies to all permanents.
+// Does ability-removal static `r` apply to `entity`? Honours the Affected$ filter through the
+// shared permanent matcher, so "Creature" (Humility), "Land" (Toxicrene), and any other filter
+// grammar all work. An unfiltered remover applies to all permanents.
 static bool removal_affects(const ActiveStatic &r, Entity entity) {
     const std::string &aff = r.sa->affected;
-    if (aff.find("Creature") != std::string::npos)
-        return global_coordinator.entity_has_component<Creature>(entity);
-    return aff.empty();
+    if (aff.empty()) return true;
+    MatchCtx ctx;
+    ctx.controller = r.controller;
+    ctx.source = r.entity;
+    return permanent_matches_filter(entity, aff, ctx);
 }
 
 // Gather every active static that removes all abilities and whose condition is met
@@ -1119,9 +1794,14 @@ void StateManager::recompute_abilities(Game &game) {
         auto &perm = global_coordinator.GetComponent<Permanent>(entity);
 
         // (a) "Loses all abilities" (Humility) — a full clear, intrinsic mana included.
-        bool full_removal = false;
+        // Collect which removers affect this entity so a grant from a remover that ALSO grants
+        // an ability (Toxicrene: "all lands have '{T}: Add any color' and lose all OTHER
+        // abilities" — one static) survives its own removal. A pure remover (Humility) grants
+        // nothing, so nothing is preserved and the clear is total, as before.
+        std::vector<Entity> affecting_removers;
         for (auto *r : removers)
-            if (removal_affects(*r, entity)) { full_removal = true; break; }
+            if (removal_affects(*r, entity)) affecting_removers.push_back(r->entity);
+        bool full_removal = !affecting_removers.empty();
 
         // (b) 305.7 land set to a basic type — loses its rules-text abilities but keeps
         //     the regenerated intrinsic (subtype-derived) mana ability.
@@ -1134,7 +1814,16 @@ void StateManager::recompute_abilities(Game &game) {
         // / the keyword rebuild in gather, so removal is reversible once the effect leaves.
         auto &abilities = perm.abilities;
         if (full_removal) {
-            abilities.clear();
+            // Drop every ability except one granted by a remover that affects this entity
+            // (the remover's own "and gains ..." clause, e.g. Toxicrene's any-color mana).
+            abilities.erase(std::remove_if(abilities.begin(), abilities.end(),
+                                           [&](const Ability &ab) {
+                                               return std::find(affecting_removers.begin(),
+                                                                affecting_removers.end(),
+                                                                ab.granted_by_static) ==
+                                                      affecting_removers.end();
+                                           }),
+                            abilities.end());
         } else {  // type_set only — keep subtype-derived mana, drop printed rules-text abilities
             abilities.erase(std::remove_if(abilities.begin(), abilities.end(),
                                            [](const Ability &ab) { return !ab.subtype_derived; }),
@@ -1165,9 +1854,9 @@ void StateManager::apply_layer7_pt_effects() {
         if (!global_coordinator.entity_has_component<Creature>(a.entity)) continue;
         auto &cr = global_coordinator.GetComponent<Creature>(a.entity);
         cr.base_power = !a.sa->set_power_svar.empty()
-            ? evaluate_sa_svar(a.sa->set_power_svar, a.controller) : 0;
+            ? evaluate_sa_svar(a.sa->set_power_svar, a.controller, a.entity) : 0;
         cr.base_toughness = !a.sa->set_toughness_svar.empty()
-            ? evaluate_sa_svar(a.sa->set_toughness_svar, a.controller) : 0;
+            ? evaluate_sa_svar(a.sa->set_toughness_svar, a.controller, a.entity) : 0;
         a.sa->applied = true;
     }
 
@@ -1200,7 +1889,7 @@ void StateManager::apply_layer7_pt_effects() {
                 for (auto &s : setters) {
                     const std::string &aff = s.a->sa->affected;
                     bool match;
-                    if (aff.find("EquippedBy") != std::string::npos) {
+                    if (affected_is_attached_target(aff)) {
                         match = global_coordinator.entity_has_component<Permanent>(s.a->entity) &&
                                 global_coordinator.GetComponent<Permanent>(s.a->entity).equipped_to == entity;
                     } else if (aff.find("Self") != std::string::npos) {
@@ -1216,9 +1905,9 @@ void StateManager::apply_layer7_pt_effects() {
                 auto &cr = global_coordinator.GetComponent<Creature>(entity);
                 cr.has_set_pt = true;
                 cr.set_power = !winner->sa->set_power_svar.empty()
-                    ? evaluate_sa_svar(winner->sa->set_power_svar, winner->controller) : 0;
+                    ? evaluate_sa_svar(winner->sa->set_power_svar, winner->controller, winner->entity) : 0;
                 cr.set_toughness = !winner->sa->set_toughness_svar.empty()
-                    ? evaluate_sa_svar(winner->sa->set_toughness_svar, winner->controller) : 0;
+                    ? evaluate_sa_svar(winner->sa->set_toughness_svar, winner->controller, winner->entity) : 0;
             }
         }
     }
@@ -1233,12 +1922,15 @@ void StateManager::apply_layer7_pt_effects() {
             continue;
         if (!a.condition_met) continue;
 
+        // Pass the static's SOURCE entity so a source-scoped count resolves correctly — e.g.
+        // Lion Sash's "+1/+1 for each +1/+1 counter on CARDNAME" (AddPower$ X, X =
+        // Count$CardCounters.P1P1) must read the counters on Lion Sash itself, not return 0.
         int dp = a.sa->add_power_svar.empty()
                      ? a.sa->add_power
-                     : evaluate_sa_svar(a.sa->add_power_svar, a.controller);
+                     : evaluate_sa_svar(a.sa->add_power_svar, a.controller, a.entity);
         int dt = a.sa->add_toughness_svar.empty()
                      ? a.sa->add_toughness
-                     : evaluate_sa_svar(a.sa->add_toughness_svar, a.controller);
+                     : evaluate_sa_svar(a.sa->add_toughness_svar, a.controller, a.entity);
         // 613.7a — a static ability's effect has its source object's timestamp.
         size_t ts = global_coordinator.entity_has_component<Permanent>(a.entity)
             ? global_coordinator.GetComponent<Permanent>(a.entity).timestamp_entered_battlefield
@@ -1256,7 +1948,7 @@ void StateManager::apply_layer7_pt_effects() {
             targets = affected_permanents_for_static(a, mEntities);
         } else {
             Entity target_entity = a.entity;
-            if (aff.find("EquippedBy") != std::string::npos) {
+            if (affected_is_attached_target(aff)) {
                 if (!global_coordinator.entity_has_component<Permanent>(a.entity)) continue;
                 target_entity = global_coordinator.GetComponent<Permanent>(a.entity).equipped_to;
             }

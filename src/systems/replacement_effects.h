@@ -3,6 +3,7 @@
 
 #include <string>
 
+#include "../classes/colors.h"
 #include "../components/zone.h"
 #include "../ecs/entity.h"
 
@@ -27,6 +28,7 @@ struct ReplacementEvent {
         MOVE_TO_ZONE,        // a card is about to change zones
         DRAW_CARD,           // a player is about to draw a card
         UNTAP,               // a permanent is about to untap during its controller's untap step
+        PRODUCE_MANA,        // a permanent is about to produce mana from being tapped (Damping Sphere)
     };
 
     Type type;
@@ -50,6 +52,14 @@ struct ReplacementEvent {
 
     // UNTAP outcome (Choke, 614.1d)
     bool   skip_untap = false;                         // a replacement prevents this permanent from untapping
+
+    // PRODUCE_MANA in/out (Damping Sphere, 614.1). Caller seeds the producing permanent (entity),
+    // its controller (affected_player), the color it would produce and how much. dispatch() may
+    // rewrite produced_color (e.g. to {C}) and sets mana_replaced; the caller adds produced_amount
+    // mana of the (possibly replaced) color to the pool.
+    Colors produced_color = COLORLESS;                 // input: color the source would produce; dispatch may replace it
+    size_t produced_amount = 0;                        // input: amount of mana produced this tap
+    bool   mana_replaced = false;                      // output: a ProduceMana replacement rewrote the production (idempotency guard)
 };
 
 namespace replacement {

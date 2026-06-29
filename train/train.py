@@ -460,6 +460,11 @@ def _resolve_model(path: str) -> str:
 # TOTAL_TIMESTEPS / N_ENVS / N_ENVS_SELF_PLAY imported from cli_spec (see top of file).
 _DECKS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                           "bin", "resources", "decks")
+# League decks live in their own folder so the league roster is curated separately
+# from the top-level training decks. A deck here is referenced as 'league/<stem>'
+# (a path relative to decks/), which the engine resolves to decks/league/<stem>.dk
+# and which namespaces its checkpoints under a matching 'league/' subdir.
+_LEAGUE_DECKS_DIR = os.path.join(_DECKS_DIR, "league")
 
 
 def make_env(rank: int, model_deck: str = "delver", opp_deck: str = "delver",
@@ -655,6 +660,11 @@ def _league_chunk(binary_path: str, learner_deck: str, roster: list[str],
     first time a deck is trained.
     """
     env_kwargs.setdefault("binary_path", binary_path)
+    # League decks may be namespaced under a subfolder (e.g. 'league/<stem>'); mirror
+    # that subdir under the checkpoint dir so snapshot saves don't fail.
+    deck_subdir = os.path.dirname(learner_deck)
+    if deck_subdir:
+        os.makedirs(os.path.join(checkpoint_dir, deck_subdir), exist_ok=True)
     vec_env = SubprocVecEnv([
         make_league_env(i, learner_deck, roster, checkpoint_dir, n_envs,
                         opp_ckpt_ratio, self_play_frac, scripted_anchor_frac, **env_kwargs)
@@ -733,10 +743,16 @@ def league(binary_path: str, decks: str | None = None,
     if decks:
         roster = [d.strip() for d in decks.split(",") if d.strip()]
     else:
-        roster = sorted(os.path.splitext(p)[0]
-                        for p in os.listdir(_DECKS_DIR) if p.endswith(".dk"))
+        # Default roster: every deck in the dedicated league folder, referenced as
+        # 'league/<stem>' so the engine loads decks/league/<stem>.dk.
+        roster = sorted(
+            "league/" + os.path.splitext(p)[0]
+            for p in (os.listdir(_LEAGUE_DECKS_DIR) if os.path.isdir(_LEAGUE_DECKS_DIR) else [])
+            if p.endswith(".dk"))
     if not roster:
-        raise ValueError(f"No decks found for league (looked in {_DECKS_DIR})")
+        raise ValueError(
+            f"No decks found for league (looked in {_LEAGUE_DECKS_DIR}). "
+            f"Add deck files there, or pass --decks explicitly.")
 
     # League opponents load checkpoint models per env (like self-play), so default
     # to the lighter self-play env count rather than N_ENVS (sized for scripted opps).

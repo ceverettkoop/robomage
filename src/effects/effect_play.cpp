@@ -58,7 +58,7 @@ bool play(Ability &ab, std::shared_ptr<Orderer> orderer) {
     // already give mana value with X = 0.
     int amount = 0;
     if (ab.play_cost_expr == "ConvertedManaCost")
-        amount = static_cast<int>(cd.mana_cost.size());
+        amount = card_mana_value(cd);
     else if (!ab.play_cost_expr.empty())
         amount = std::atoi(ab.play_cost_expr.c_str());
 

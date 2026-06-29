@@ -29,6 +29,7 @@
 #include "../game_queries.h"
 #include "../input_logger.h"
 #include "../mana_system.h"
+#include "../saga.h"
 #include "../svar_eval.h"
 #include "../systems/stack_manager.h"
 #include "orderer.h"
@@ -82,7 +83,20 @@ void StateManager::process_turn_based_actions(Game &game, std::shared_ptr<Ordere
             auto &zone = global_coordinator.GetComponent<Zone>(entity);
             if (zone.location == Zone::HAND && zone.owner == active_player) hand_size++;
         }
-        if (hand_size > 7) {
+        // Maximum hand size is 7 by default (CR 402.2), but a SetMaxHandSize continuous static
+        // affecting the active player overrides it — Tamiyo, Seasoned Scholar's emblem grants
+        // "no maximum hand size" (Unlimited → no cleanup discard). g_active_statics holds emblem
+        // statics (gathered each SBA pass with the controller as owner); the most permissive
+        // applicable override wins (Unlimited beats any finite cap).
+        int max_hand_size = 7;
+        bool unlimited = false;
+        for (const auto &as : g_active_statics) {
+            if (as.suppressed || !as.condition_met || !as.sa) continue;
+            if (as.controller != active_player || as.sa->set_max_hand_size == 0) continue;
+            if (as.sa->set_max_hand_size < 0) { unlimited = true; break; }
+            if (as.sa->set_max_hand_size > max_hand_size) max_hand_size = as.sa->set_max_hand_size;
+        }
+        if (!unlimited && hand_size > static_cast<size_t>(max_hand_size)) {
             game.pending_choice = CLEANUP_DISCARD;
             return;
         }
@@ -165,6 +179,52 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
                 orderer->add_to_zone(false, entity, Zone::GRAVEYARD);
                 any_applied = true;
             }
+        }
+
+        // 704.5n - an Aura attached to an illegal object, or not attached to anything, is put
+        // into its owner's graveyard. Auras carry an enchant restriction (CardData::enchant_filter)
+        // and track their attachment via Permanent::equipped_to (shared with equipment). We check
+        // the structural part of "illegal": no attachment, or the enchanted object has left the
+        // battlefield / is no longer a creature (the common fall-off when the enchanted creature
+        // dies or is bounced).
+        for (auto entity : mEntities) {
+            if (!is_battlefield_permanent(entity)) continue;
+            if (!global_coordinator.entity_has_component<CardData>(entity)) continue;
+            const auto &cd = global_coordinator.GetComponent<CardData>(entity);
+            if (cd.enchant_filter.empty()) continue;  // not an Aura
+            auto &perm = global_coordinator.GetComponent<Permanent>(entity);
+            Entity enchanted = perm.equipped_to;
+            bool illegal = (enchanted == 0) || !is_battlefield_permanent(enchanted);
+            if (!illegal && cd.enchant_filter.find("Creature") != std::string::npos &&
+                !global_coordinator.entity_has_component<Creature>(enchanted))
+                illegal = true;
+            if (illegal) {
+                game_log("%s is put into the graveyard (Aura not attached to a legal object)\n",
+                         entity_name(entity).c_str());
+                orderer->add_to_zone(false, entity, Zone::GRAVEYARD);
+                any_applied = true;
+            }
+        }
+
+        // CR 714.4 - Saga sacrifice. A Saga whose lore counters are >= its final chapter number,
+        // and which isn't the source of a chapter ability that has triggered but not yet left the
+        // stack (tracked by Permanent::saga_chapters_in_flight), is sacrificed by its controller.
+        // This holds for a Saga that is also a creature (Summon: Bahamut) — the printed "Sacrifice
+        // after IV" / the script's chapter count governs, independent of its other types. Note: the
+        // checked-in CR 714.4 text has no creature-Saga exception, and both cards' Oracle text
+        // ("Sacrifice after III/IV") confirms the creature Saga is sacrificed, so they agree.
+        for (auto entity : mEntities) {
+            if (!is_battlefield_permanent(entity)) continue;
+            if (!global_coordinator.entity_has_component<CardData>(entity)) continue;
+            const auto &cd = global_coordinator.GetComponent<CardData>(entity);
+            if (!card_is_saga(cd)) continue;
+            auto &perm = global_coordinator.GetComponent<Permanent>(entity);
+            int final_chapter = static_cast<int>(cd.saga_chapters.size());
+            if (get_counters(entity, "LORE") < final_chapter) continue;
+            if (perm.saga_chapters_in_flight > 0) continue;  // a chapter ability is still on the stack
+            game_log("%s is sacrificed (final chapter completed).\n", entity_name(entity).c_str());
+            orderer->add_to_zone(false, entity, Zone::GRAVEYARD);
+            any_applied = true;
         }
 
         // 704.5q - if a permanent has both a +1/+1 and a -1/-1 counter, N of each are

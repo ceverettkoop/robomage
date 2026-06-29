@@ -53,6 +53,10 @@ use `implement-missing-cards`.
   upstream Forge repo via `python tools/forge_fetch/fetch_script.py "Card Name"`. Honor the script's
   actual `SP$`/`AB$`/`DB$` categories and `Origin$`/`Destination$`/`ChangeType$`/etc. — **never
   retag** one category into another to shortcut a card.
+- **Never add a duplicate script for an already-present card.** Double-faced cards live under ONE
+  combined `<front>_<back>.txt` file; a second front-name `<front>.txt` double-adds the card and
+  shadows the combined script. The fetch tool is DFC-aware (skips combined-present cards, resolves
+  the combined filename on a miss) — rely on it; don't create a `<front>.txt` by hand.
 - Rules ground truth is `docs/mtg_comprehensive_rules.txt` (nav guide `docs/mtg_comprehensive_rules.md`).
   Grep the numbered rule (702 keywords, 704 SBAs, 5xx combat, 611/613 continuous effects & layers)
   rather than relying on memory.

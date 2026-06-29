@@ -33,6 +33,9 @@ bool gain_life(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool lose_life(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool mill(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool untap(Ability &ab, std::shared_ptr<Orderer> orderer);
+// DB$/AB$ UntapAll (Paradox Engine): untap every battlefield permanent matching ValidCards$
+// (controller-scoped). Mass counterpart of single-target Untap. See effect_untap_all.cpp.
+bool untap_all(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool cleanup(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool multiply_counter(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool phases(Ability &ab, std::shared_ptr<Orderer> orderer);
@@ -45,6 +48,7 @@ bool destroy_all(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool damage_all(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool destroy(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool token(Ability &ab, std::shared_ptr<Orderer> orderer);
+bool investigate(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool surveil(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool scry(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer);
@@ -106,6 +110,17 @@ bool repeat_each(Ability &ab, std::shared_ptr<Orderer> orderer);
 bool grant_cast(Ability &ab, std::shared_ptr<Orderer> orderer);
 // DB$ BecomeMonarch (CR 725, Forth Eorlingas!): the ability's controller becomes the monarch.
 bool become_monarch(Ability &ab, std::shared_ptr<Orderer> orderer);
+// SP$/AB$ Vote (Council's Judgment, CR 701.32 will-of-the-council): voters choose among the
+// VoteCard$ permanents and the VoteSubAbility$ effect (a DB$ ChangeZone Battlefield→Exile) is
+// applied to the winner(s). The engine is two-player only (CLAUDE.md scope), so the vote
+// reduces to the spell/ability's controller CHOOSING one permanent matching VoteCard$ — a
+// choice, not a target, so it ignores shroud/hexproof. See effect_vote.cpp.
+bool vote(Ability &ab, std::shared_ptr<Orderer> orderer);
+// K:Storm (CR 702.40): the synthesized self-cast triggered ability resolves here. ab.amount holds
+// the storm count (spells cast before the storm spell this turn, by either player), locked in when
+// the trigger fired. Puts that many copies of the source spell on the stack (each may choose new
+// targets) via the shared copy_spell_on_stack mechanism. See effect_storm.cpp.
+bool storm(Ability &ab, std::shared_ptr<Orderer> orderer);
 // SP$/DB$ NameCard (Cabal Therapy): the ability's controller names a card (CR 201.4); the
 // chosen name is stored in cur_game.named_card so a chained Card.NamedCard sub-ability
 // (here a RevealDiscardAll discard) can reference it.
@@ -115,11 +130,19 @@ bool name_card(Ability &ab, std::shared_ptr<Orderer> orderer);
 // base-P/T / keyword / creature grants) onto the permanent so the layer system reapplies
 // it each SBE pass. See effect_animate.cpp.
 bool animate(Ability &ab, std::shared_ptr<Orderer> orderer);
+// AB$ AnimateAll (Shadowspear): a mass until-end-of-turn continuous effect that removes
+// (RemoveKeywords$) or grants keyword(s) on every battlefield permanent matching ValidCards$.
+// General over "permanents matching <filter> lose/gain <keyword> until end of turn" (CR 613
+// layer 6). See effect_animate_all.cpp.
+bool animate_all(Ability &ab, std::shared_ptr<Orderer> orderer);
 // Bootstrap (or refresh) the Creature/Damage components on a permanent the Animate extension
 // points (animate_make_creature + animate_set_pt + animate_added_keywords) turned into a
 // creature — e.g. an earthbended land. Idempotent; safe to call each SBA pass. Defined in
 // effect_animate.cpp.
 void apply_animate_creature_bootstrap(Entity e);
+// Lapse every Duration$ UntilYourNextTurn Animate (Karn, the Great Creator +1) created by
+// `active_player`; call from that player's untap step. Defined in effect_animate.cpp.
+void revert_until_turn_animates(Zone::Ownership active_player);
 // DB$/AB$ Earthbend (Badgermole Cub, Ba Sing Se): the targeted land you control becomes a 0/0
 // creature with haste that's still a land (via the Animate extension), gets ab.amount +1/+1
 // counters, and a "when it leaves the battlefield, return it tapped" delayed trigger is
@@ -143,6 +166,16 @@ bool dig_until(Ability &ab, std::shared_ptr<Orderer> orderer);
 // current zone this turn, paying an alternative RESOURCE cost (PlayCost$) instead of mana.
 // See effect_play.cpp.
 bool play(Ability &ab, std::shared_ptr<Orderer> orderer);
+// DB$ AddTurn (Emrakul, the Aeons Torn): the Defined$ player (You = the ability's controller)
+// takes ab.amount (NumTurns$, default 1) extra turns after the current one, queued onto
+// cur_game.extra_turns and consulted at turn hand-off (CR 500.7 / 720). General over any "take
+// an extra turn" effect. See effect_add_turn.cpp.
+bool add_turn(Ability &ab, std::shared_ptr<Orderer> orderer);
+// DB$ StoreSVar (Carpet of Flowers): latch ab.stored_svar_set_value into the SOURCE permanent's
+// Permanent::stored_svars[ab.stored_svar_set_name] — the per-permanent named-integer scratch store
+// read back by a CheckSVar trigger gate. No-op if the source is not a battlefield permanent (e.g.
+// the leave-battlefield reset, whose Permanent is already gone). See effect_store_svar.cpp.
+bool store_svar(Ability &ab, std::shared_ptr<Orderer> orderer);
 
 
 // ── Effect-specific parse hooks ─────────────────────────────────────────────
@@ -172,6 +205,10 @@ bool parse_amass(Ability &ab, const std::string &key, const std::string &value);
 bool parse_choose_number(Ability &ab, const std::string &key, const std::string &value);
 bool parse_dig_until(Ability &ab, const std::string &key, const std::string &value);
 bool parse_play(Ability &ab, const std::string &key, const std::string &value);
+// AB$ AnimateAll RemoveKeywords$/AddKeyword$/ValidCards$ (Shadowspear). See effect_animate_all.cpp.
+bool parse_animate_all(Ability &ab, const std::string &key, const std::string &value);
+// DB$ StoreSVar SVar$/Expression$/Type$ (Carpet of Flowers). See effect_store_svar.cpp.
+bool parse_store_svar(Ability &ab, const std::string &key, const std::string &value);
 
 }  // namespace effects
 
@@ -180,14 +217,16 @@ bool parse_play(Ability &ab, const std::string &key, const std::string &value);
 // can reuse them. Definitions still live in ability.cpp for now.
 // (search_zone is declared in ability.h.)
 size_t evaluate_dynamic_amount(
-    const std::string &expr, Zone::Ownership ctrl, std::shared_ptr<Orderer> orderer, Entity target);
+    const std::string &expr, Zone::Ownership ctrl, std::shared_ptr<Orderer> orderer, Entity target,
+    Entity source = 0);
 Entity search_multi_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner,
     const std::vector<Zone::ZoneValue> &zones, const std::string &change_type, bool mandatory,
     Zone::ZoneValue destination, bool reveal = false);
 // The unless-cost payment kind for run_unless_loop: pay {N} generic mana (default), pay N life
-// (Ward—Pay life, CR 702.21), or discard N card(s) from hand (Reality Smasher, CR 701.8). Returns
-// true if the spell should be countered (payer declined or couldn't pay).
-enum class UnlessPayKind { MANA, LIFE, DISCARD };
+// (Ward—Pay life, CR 702.21), discard N card(s) from hand (Reality Smasher, CR 701.8), or pay N
+// energy ({E}, CR 122.1c — Static Prison's "unless you pay {E}"). Returns true if the prevented
+// effect should still happen (payer declined or couldn't pay).
+enum class UnlessPayKind { MANA, LIFE, DISCARD, ENERGY };
 bool run_unless_loop(size_t cost, Zone::Ownership controller, std::shared_ptr<Orderer> orderer, Entity paid_for,
                      UnlessPayKind kind = UnlessPayKind::MANA);
 

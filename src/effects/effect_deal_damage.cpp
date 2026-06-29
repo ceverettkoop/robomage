@@ -27,7 +27,11 @@ bool deal_damage(Ability &ab, std::shared_ptr<Orderer> orderer) {
     // NumDmg$ X with X = Count$Valid Creature.YouCtrl). Mirrors lose_life/gain_life, which
     // evaluate their dynamic amount at resolution.
     if (!ab.dynamic_amount_expr.empty()) {
-        dmg = evaluate_dynamic_amount(ab.dynamic_amount_expr, source_controller(ab.source), orderer, ab.target);
+        // Thread the source through so a source-relative count (Summon: Bahamut's Mega Flare,
+        // X = Count$Valid Permanent.YouCtrl+Other$CardManaCost — total MV of OTHER permanents you
+        // control) can exclude the source itself via the +Other qualifier.
+        dmg = evaluate_dynamic_amount(ab.dynamic_amount_expr, source_controller(ab.source), orderer,
+                                      ab.target, ab.source);
     }
     const DamageParams *dp = std::get_if<DamageParams>(&ab.params);
     if (dp && dp->is_delirium_scale) {
@@ -60,6 +64,12 @@ bool deal_damage(Ability &ab, std::shared_ptr<Orderer> orderer) {
         damage_planeswalker(ab.target, dmg);
         auto &pw = global_coordinator.GetComponent<Permanent>(ab.target);
         game_log("Dealt %zu damage to %s (loyalty now %d)\n", dmg, pw.name.c_str(), get_counters(ab.target, "LOYALTY"));
+    } else if (permanent_protected_from_colored_spell_source(ab.target, ab.source)) {
+        // Protection from colored spells, damage facet (Emrakul, CR 702.16d): a colored spell
+        // source can't deal damage to this permanent. Prevented here (mirroring the player
+        // protection-from-everything check above) so the targeted path skips the damage cleanly
+        // instead of tripping the "should have fizzled" guard below.
+        game_log("Permanent has protection from colored spells — %zu damage prevented\n", dmg);
     } else {
         if (::deal_damage(ab.source, ab.target, dmg)) {
             game_log("Dealt %zu damage to creature\n", dmg);

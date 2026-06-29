@@ -24,12 +24,23 @@ namespace rules_mod {
 bool activation_prohibited(Entity permanent);
 bool mana_activation_prohibited(Entity permanent);
 
-// CantBeCast: may `caster` not cast a spell right now? `card_is_creature` short-circuits the
-// nonCreature filter (per-turn noncreature limit). `cast_from` is the zone the spell is being
-// cast from (HAND for a normal cast, GRAVEYARD for flashback, etc.) — an Origin$-restricted
-// static (Grafdigger's Cage: graveyard/library) applies only when `cast_from` matches.
-bool cast_prohibited(Zone::Ownership caster, bool card_is_creature,
+// CantBeCast: may `caster` not cast `card` right now? The spell's printed characteristics are
+// read from `card` (its type line short-circuits the nonCreature filter; its mana value and
+// {X}-cost flag drive the characteristic-based prohibitions — Gaddock Teeg). `cast_from` is the
+// zone the spell is being cast from (HAND for a normal cast, GRAVEYARD for flashback, etc.) — an
+// Origin$-restricted static (Grafdigger's Cage: graveyard/library) applies only when `cast_from`
+// matches.
+bool cast_prohibited(Zone::Ownership caster, const CardData &card,
                      Zone::ZoneValue cast_from = Zone::HAND);
+
+// CantAttack (Ensnaring Bridge): may the creature `creature` NOT be declared as an attacker
+// right now (CR 509.1a)? True when any active CantAttack static's ValidCard$ filter matches it.
+// A dynamic power/toughness-vs-X qualifier (Ensnaring Bridge's Creature.powerGTX, "power greater
+// than the number of cards in your hand") is evaluated with X = the static SOURCE's controller's
+// hand size — so "your hand" is the Bridge controller's hand, applied to every creature. Only the
+// blanket form (no Target$ player restriction) is honoured. Queried in declare_attackers so a
+// prohibited creature is never offered as a legal attacker.
+bool attack_prohibited(Entity creature);
 
 // AdjustLandPlays / MayPlay (Icetill Explorer), evaluated for `player`.
 int  land_play_bonus(Zone::Ownership player);

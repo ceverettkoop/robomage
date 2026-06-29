@@ -31,6 +31,7 @@
 #include "../input_logger.h"
 #include "../mana_system.h"
 #include "../svar_eval.h"
+#include "../svar_eval.h"
 #include "../systems/stack_manager.h"
 #include "orderer.h"
 
@@ -52,6 +53,17 @@ struct PendingTrigger {
 // A short, distinct label so a player ordering two triggers from the same source can tell them
 // apart (e.g. Endurance's evoke-sacrifice trigger vs. its enters-the-battlefield trigger).
 static std::string trigger_label(const std::string &name, const Ability &ab);
+
+// Storm count (CR 702.40a): the number of OTHER spells cast before the storm spell this turn,
+// counting spells cast by EITHER player. The per-player spells_cast_this_turn counters already
+// include the storm spell itself (the cast is recorded before SPELL_CAST fires), so subtract one.
+static size_t storm_count_this_turn(const Game &game) {
+    size_t total = 0;
+    for (Entity pe : {game.player_a_entity, game.player_b_entity})
+        if (global_coordinator.entity_has_component<Player>(pe))
+            total += global_coordinator.GetComponent<Player>(pe).spells_cast_this_turn;
+    return total > 0 ? total - 1 : 0;
+}
 
 // 603.3b: place all simultaneously-triggered abilities on the stack in APNAP order — the active
 // player's triggers first (so they resolve last), then the non-active player's. Each player
@@ -136,6 +148,36 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
     // ValidTarget$ Player | CombatDamage$ True" — fires once per combat-damage batch when one or
     // more creatures the trigger's controller controls deal combat damage to one or more players.
     for (const auto &ft : game.floating_triggers) {
+        // Mode$ Attacks hosted on a command-zone Effect (Tamiyo, Seasoned Scholar's +2:
+        // "whenever a creature an opponent controls attacks you or a planeswalker you control, it
+        // gets -1/-0"). Fires once per matching attacker (CREATURE_ATTACKED), binding the attacker
+        // as the effect's (Pump) target. The Attacked$ You,Planeswalker.YouCtrl clause is satisfied
+        // whenever an opponent's creature attacks, in the two-player engine (the only defender it
+        // can have is this effect's controller or their planeswalker).
+        if (ft.trigger_on == Events::CREATURE_ATTACKED) {
+            for (const auto &ev : events) {
+                if (ev.GetType() != Events::CREATURE_ATTACKED) continue;
+                if (!ev.HasParam(Params::ENTITY)) continue;
+                Entity attacker = ev.GetParam<Entity>(Params::ENTITY);
+                // ValidCard$ Creature.OppCtrl — the attacker is controlled by an opponent of the
+                // effect's controller.
+                if (ft.trigger_attacker_opp_ctrl &&
+                    source_controller(attacker) == ft.controller) continue;
+                Ability trigger_ab = ft;
+                trigger_ab.controller = ft.controller;
+                // Defined$ TriggeredAttacker(LKICopy) — bind the attacker as the pump's target.
+                if (trigger_ab.defined_triggered_attacker_lki) trigger_ab.target = attacker;
+                PendingTrigger pt;
+                pt.ab = trigger_ab;
+                pt.controller = ft.controller;
+                pt.source = 0;
+                pt.label = "Floating trigger (" + trigger_ab.category + ")";
+                pt.log_line = "A floating triggered ability triggers.";
+                pt.needs_target = false;
+                pending.push_back(pt);
+            }
+            continue;
+        }
         if (ft.trigger_on != Events::COMBAT_DAMAGE_TO_PLAYER) continue;
         bool matched = false;
         for (const auto &ev : events) {
@@ -214,16 +256,59 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
         }
     }
 
+    // Saga chapter abilities (CR 714.3): a SAGA_CHAPTER event is emitted by the lore-counter
+    // machinery (saga.cpp) when a Saga's lore counters reach chapter N. The chapter ability lives on
+    // the Saga's CardData::saga_chapters (parsed from K:Chapter), not as a T: trigger, so it is
+    // produced here directly and queued for APNAP placement / target selection like any other
+    // triggered ability. The chapter ability is marked is_saga_chapter so the 714.4 sacrifice gate
+    // (Permanent::saga_chapters_in_flight) is released when it leaves the stack.
+    for (const auto &ev : events) {
+        if (ev.GetType() != Events::SAGA_CHAPTER) continue;
+        if (!ev.HasParam(Params::ENTITY) || !ev.HasParam(Params::AMOUNT)) continue;
+        Entity saga = ev.GetParam<Entity>(Params::ENTITY);
+        int chapter = static_cast<int>(ev.GetParam<uint32_t>(Params::AMOUNT));
+        if (!global_coordinator.entity_has_component<CardData>(saga)) continue;
+        if (!global_coordinator.entity_has_component<Permanent>(saga)) continue;
+        const auto &cd = global_coordinator.GetComponent<CardData>(saga);
+        if (chapter < 1 || chapter > static_cast<int>(cd.saga_chapters.size())) continue;
+        Zone::Ownership ctrl = global_coordinator.GetComponent<Permanent>(saga).controller;
+
+        Ability trigger_ab = cd.saga_chapters[static_cast<size_t>(chapter - 1)];
+        trigger_ab.ability_type = Ability::TRIGGERED;
+        trigger_ab.source = saga;
+        trigger_ab.controller = ctrl;
+        trigger_ab.is_saga_chapter = true;
+
+        PendingTrigger pt;
+        pt.ab = trigger_ab;
+        pt.controller = ctrl;
+        pt.source = saga;
+        pt.label = entity_name(saga) + " (chapter " + std::to_string(chapter) + ")";
+        pt.log_line = entity_name(saga) + " chapter " + std::to_string(chapter) + " triggers.";
+        pt.needs_target = (trigger_ab.valid_tgts != "N_A" && trigger_ab.target == 0);
+        pending.push_back(pt);
+    }
+
     if (!events.empty()) {
     for (auto entity : mEntities) {
         if (!is_battlefield_permanent(entity)) continue;
         auto &perm = global_coordinator.GetComponent<Permanent>(entity);
 
         // Gather triggered abilities from all sources:
-        // CardData/Token for innate abilities, Permanent for keyword-granted abilities
+        // CardData/Token for innate abilities, Permanent for keyword-granted abilities.
+        // A transformed DFC functions with its ACTIVE (back) face's abilities (CR 712.4): its
+        // triggered abilities are the back face's, and the front face's are suppressed. So pull the
+        // innate abilities from whichever face is up — this is the single place front/back trigger
+        // selection happens (the per-ability "if (perm.transformed) continue" front-face skip is
+        // therefore unnecessary, and would wrongly suppress the back face's own triggers).
         std::vector<const std::vector<Ability>*> ab_sources;
-        if (global_coordinator.entity_has_component<CardData>(entity))
-            ab_sources.push_back(&global_coordinator.GetComponent<CardData>(entity).abilities);
+        if (global_coordinator.entity_has_component<CardData>(entity)) {
+            const CardData &cd = global_coordinator.GetComponent<CardData>(entity);
+            if (perm.transformed && cd.backside)
+                ab_sources.push_back(&cd.backside->abilities);
+            else
+                ab_sources.push_back(&cd.abilities);
+        }
         if (global_coordinator.entity_has_component<Token>(entity))
             ab_sources.push_back(&global_coordinator.GetComponent<Token>(entity).abilities);
         ab_sources.push_back(&perm.abilities);
@@ -244,7 +329,15 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                 // (CR 113.6). It is handled by the dedicated graveyard scan below; firing it
                 // from the battlefield would place a spurious (no-op) trigger on the stack.
                 if (ab.trigger_from_graveyard) continue;
-                if (ab.trigger_on == 0 || ab.trigger_on != ev.GetType()) continue;
+                // Match the primary trigger event OR any additional event in trigger_on_extra (a
+                // phase trigger listing several phases, e.g. Carpet of Flowers' Phase$ Main1,Main2).
+                {
+                    bool fires = (ab.trigger_on != 0) &&
+                                 (ab.trigger_on == ev.GetType() ||
+                                  std::find(ab.trigger_on_extra.begin(), ab.trigger_on_extra.end(),
+                                            ev.GetType()) != ab.trigger_on_extra.end());
+                    if (!fires) continue;
+                }
                 // "another" check: skip if the event entity is the triggering permanent itself
                 if (ab.trigger_self_excluded && ev.HasParam(Params::ENTITY) &&
                     ev.GetParam<Entity>(Params::ENTITY) == entity) continue;
@@ -255,12 +348,16 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                 if (ab.trigger_only_self && ev.GetType() != Events::BECAME_TARGET &&
                     ev.HasParam(Params::ENTITY) &&
                     ev.GetParam<Entity>(Params::ENTITY) != entity) continue;
+                // "If you cast it" (ValidCard$ Card.wasCastByYou): a self ETB trigger that only
+                // fires when its source permanent entered the battlefield by being cast (CR
+                // 614.12; The One Ring's protection grant). perm is the source (trigger_only_self).
+                if (ab.trigger_requires_entered_by_cast && !perm.entered_by_cast) continue;
                 // Evoke self-sacrifice only fires when this permanent was cast via evoke
                 if (ab.is_evoke_sacrifice && !perm.evoked) continue;
                 // Offspring token copy only fires when this permanent was cast with offspring
                 if (ab.is_offspring_token && !perm.entered_with_offspring) continue;
-                // Don't fire front-face triggers on a transformed permanent
-                if (perm.transformed) continue;
+                // (Front/back face selection is done once when ab_sources is built above, so a
+                // transformed permanent already only sees its active face's triggers here.)
                 // ValidPlayer$ You: only fire when the event's player matches the permanent's
                 // controller. BECAME_TARGET is exempt, like trigger_only_self above: there the
                 // PLAYER param is the targeting spell's controller (the OPPONENT, typically), not
@@ -295,6 +392,15 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                         if (!is_creature && global_coordinator.entity_has_component<CardData>(ev_card))
                             is_creature = is_creature_card(global_coordinator.GetComponent<CardData>(ev_card));
                         if (!is_creature) continue;
+                    }
+                    // ValidCard$ Card.nonCreature filter on a counted SpellCast (The Fantasticar):
+                    // the triggering spell must NOT be a creature.
+                    if (ab.trigger_valid_card_non_creature && ev.HasParam(Params::ENTITY)) {
+                        Entity ev_card = ev.GetParam<Entity>(Params::ENTITY);
+                        bool is_creature = global_coordinator.entity_has_component<Token>(ev_card);
+                        if (!is_creature && global_coordinator.entity_has_component<CardData>(ev_card))
+                            is_creature = is_creature_card(global_coordinator.GetComponent<CardData>(ev_card));
+                        if (is_creature) continue;
                     }
                     // ValidCard$ Instant/Sorcery filter (Murktide Regent)
                     if (ab.trigger_valid_card_is_instant_or_sorcery && ev.HasParam(Params::ENTITY)) {
@@ -381,6 +487,14 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                     if (ab.trigger_exclude_first_draw_step && ev.HasParam(Params::FIRST_IN_STEP) &&
                         ev.GetParam<int>(Params::FIRST_IN_STEP) == 1)
                         continue;
+                    // Number$ N (Tamiyo, Inquisitive Student: "your THIRD card in a turn") — fire
+                    // only when this draw is the drawer's Nth this turn. AMOUNT is the per-draw
+                    // running ordinal stamped on the event (1-based), so exactly the Nth draw fires.
+                    if (ab.trigger_draw_number_eq > 0) {
+                        if (!ev.HasParam(Params::AMOUNT) ||
+                            ev.GetParam<uint32_t>(Params::AMOUNT) != ab.trigger_draw_number_eq)
+                            continue;
+                    }
                 }
 
                 // Colorless filter (Glaring Fleshraker): the cast spell (SPELL_CAST) or the
@@ -396,7 +510,11 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                     Entity ev_player = ev.GetParam<Entity>(Params::PLAYER);
                     if (!global_coordinator.entity_has_component<Player>(ev_player)) continue;
                     auto &pl = global_coordinator.GetComponent<Player>(ev_player);
-                    if (pl.spells_cast_this_turn != ab.trigger_spell_count_eq) continue;
+                    // The Fantasticar counts only noncreature spells; Cori-Steel Cutter counts all.
+                    size_t cast_count = ab.trigger_spell_count_noncreature
+                                            ? pl.noncreature_spells_cast_this_turn
+                                            : pl.spells_cast_this_turn;
+                    if (cast_count != ab.trigger_spell_count_eq) continue;
                 }
 
                 // Dynamic mana-value filter on the cast spell (Chalice of the Void:
@@ -481,6 +599,20 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                 if (trigger_ab.intervening_if &&
                     !evaluate_present_condition(trigger_ab, perm.controller, orderer))
                     continue;
+                // Per-permanent stored-SVar gate (Carpet of Flowers' once-per-turn CheckSVar latch,
+                // "if you haven't added mana with this ability this turn"): the trigger does not go
+                // on the stack unless the source's latched scratch int satisfies the comparison.
+                if (!stored_svar_gate_passes(entity, trigger_ab.stored_svar_gate_name,
+                                             trigger_ab.stored_svar_gate_compare))
+                    continue;
+
+                // Static$ True bookkeeping trigger (Carpet of Flowers' cleanup reset): resolve its
+                // effect immediately, off the stack (CR 605.1a-style), rather than queueing a
+                // PendingTrigger. A trivial StoreSVar latch write — safe to run inline mid-scan.
+                if (trigger_ab.trigger_static_offstack) {
+                    trigger_ab.resolve(orderer);
+                    continue;
+                }
 
                 PendingTrigger pt;
                 pt.ab = trigger_ab;
@@ -498,23 +630,29 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
         }
     }
 
-    // Leaves-the-battlefield self-triggers (CR 603.6b / 603.10): a triggered ability that
-    // watches its own source being put into the graveyard from the battlefield (Flagstones
-    // of Trokair: "When CARDNAME is put into a graveyard from the battlefield, ...") cannot be
-    // caught by the battlefield scan above — by the time triggers are checked the source has
-    // already left the battlefield and lost its Permanent component. The game instead looks
-    // back at the moment just before the event (603.10) to decide whether the ability
-    // triggered. We do that here: for each CARD_CHANGED_ZONE event leaving the battlefield,
-    // re-scan the changing card's own CardData abilities for a Card.Self trigger whose
-    // origin/destination filter matches, and queue it. CardData (and thus the ability list and
-    // the card's persisted last controller in its Zone) survives the move, so the source is
-    // fully recoverable.
+    // Self zone-change triggers that fire as the source itself moves (CR 603.6b / 603.10): a
+    // triggered ability that watches its own source change zones (Flagstones of Trokair: "When
+    // CARDNAME is put into a graveyard from the battlefield, ..."; Emrakul, the Aeons Torn: "When
+    // CARDNAME is put into a graveyard from ANYWHERE, ...") cannot be caught by the battlefield
+    // scan above — the moved card is no longer a battlefield permanent (and for a non-battlefield
+    // origin, e.g. a discard from hand or a mill from library, it never was). The game instead
+    // looks back at the moment just before the event (603.10) to decide whether the ability
+    // triggered. We do that here: for each CARD_CHANGED_ZONE event, re-scan the changing card's
+    // own CardData abilities for a Card.Self trigger whose origin/destination filter matches, and
+    // queue it. The per-ability origin filter (below) keeps an Origin$ Battlefield "dies" trigger
+    // from firing on a hand/library departure, while an Origin$ Any trigger (filter unset) fires
+    // from any zone. CardData (and the card's persisted last controller / owner in its Zone)
+    // survives the move, so the source is fully recoverable.
     for (const auto &ev : events) {
         if (ev.GetType() != Events::CARD_CHANGED_ZONE) continue;
         if (!ev.HasParam(Params::ENTITY)) continue;
         Zone::ZoneValue ev_origin = ev.GetParam<Zone::ZoneValue>(Params::ORIGIN);
-        if (ev_origin != Zone::BATTLEFIELD) continue;
         Zone::ZoneValue ev_dest = ev.GetParam<Zone::ZoneValue>(Params::DESTINATION);
+        // Enters-the-battlefield self-triggers (destination battlefield) are handled by the
+        // battlefield scan above (the source IS a battlefield permanent once it arrives), so
+        // exclude them here to avoid double-firing. This block covers self moves to any OTHER
+        // zone (graveyard, exile, hand, library) from any origin.
+        if (ev_dest == Zone::BATTLEFIELD) continue;
         Entity entity = ev.GetParam<Entity>(Params::ENTITY);
         if (!global_coordinator.entity_has_component<CardData>(entity)) continue;
         if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
@@ -546,6 +684,16 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                 auto lki_it = game.last_known_info.find(entity);
                 if (lki_it != game.last_known_info.end() && !lki_it->second.exiled_with.empty())
                     trigger_ab.restore_remembered_exiled_with = lki_it->second.exiled_with;
+            }
+
+            // Static$ True leave-battlefield reset (Carpet of Flowers' ChangesZone Battlefield→Any
+            // Self): resolve off the stack. The source's Permanent has already been destroyed, so
+            // the StoreSVar latch write is a graceful no-op (the per-permanent store reset naturally
+            // when the permanent left) — but routing it here keeps Static$ True triggers off the
+            // stack as the rules require, rather than queueing a spurious StoreSVar trigger.
+            if (trigger_ab.trigger_static_offstack) {
+                trigger_ab.resolve(orderer);
+                continue;
             }
 
             PendingTrigger pt;
@@ -588,6 +736,15 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
             Ability trigger_ab = ab;
             trigger_ab.source = spell_e;
             trigger_ab.controller = ctrl;
+
+            // Storm (CR 702.40a): lock in the copy count = number of OTHER spells cast before
+            // this one this turn, by EITHER player. The per-player cast counters were already
+            // bumped for this storm spell before SPELL_CAST fired (action_processor records the
+            // cast first), so the both-player total minus this spell is the storm count. Snapshot
+            // it now, at trigger-fire time — spells cast in RESPONSE to the storm trigger come
+            // after this spell and must not inflate the count.
+            if (trigger_ab.category == "Storm")
+                trigger_ab.amount = storm_count_this_turn(game);
 
             PendingTrigger pt;
             pt.ab = trigger_ab;

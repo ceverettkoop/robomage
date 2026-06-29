@@ -3,8 +3,8 @@
 # src/classes/action.h (ActionCategory) and src/classes/game.h (Step).
 # Re-run train/gen_enums.py after changing either enum.
 
-ACTION_CATEGORY_MAX = 45
-N_ACTION_CATEGORIES = 46
+ACTION_CATEGORY_MAX = 46
+N_ACTION_CATEGORIES = 47
 
 # ActionCategory value -> short display name.
 _CAT_NAMES = {
@@ -54,6 +54,7 @@ _CAT_NAMES = {
     43: "SYLVAN",  # SYLVAN_CHOICE
     44: "CHOOSE_CARD",  # CHOOSE_CARD
     45: "ASSIGN_DMG",  # ASSIGN_DAMAGE
+    46: "COMPANION",  # COMPANION
 }
 
 # Step (turn phase) display names, in enum order.

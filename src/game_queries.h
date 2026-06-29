@@ -2,6 +2,7 @@
 #define GAME_QUERIES_H
 
 #include <cctype>
+#include <climits>
 #include <set>
 #include <string>
 #include <vector>
@@ -54,7 +55,23 @@ inline std::set<Colors> card_colors(const CardData &cd) {
     std::set<Colors> result;
     for (Colors c : {WHITE, BLUE, BLACK, RED, GREEN})
         if (cd.mana_cost.count(c)) result.insert(c);
+    // Hybrid pips carry color too (CR 105.2/202.3f): {W/U} makes the card both white and blue,
+    // {2/W} makes it white. hybrid_mana is kept out of mana_cost, so fold its colors in here.
+    for (const auto &pip : cd.hybrid_mana)
+        for (Colors c : pip.colors)
+            if (c != COLORLESS && c != GENERIC) result.insert(c);
     return result;
+}
+
+// Mana value (converted mana cost, CR 202.3) of a card: one per non-hybrid pip in mana_cost
+// plus each hybrid pip's contribution (1 for a color hybrid, N for an {N/color} twobrid —
+// CR 202.3f: a hybrid symbol's MV is the greatest of its component symbols' MVs). X counts 0
+// outside the stack/cast (CR 202.3b). Phyrexian pips are not modeled in mana_value (they live
+// in phyrexian_mana, mirroring the engine's existing treatment). Single source for "card CMC".
+inline int card_mana_value(const CardData &cd) {
+    int mv = static_cast<int>(cd.mana_cost.size());
+    for (const auto &pip : cd.hybrid_mana) mv += pip.mana_value;
+    return mv;
 }
 
 // Enforce a positive color target restriction (e.g. ValidTgts$ Permanent.Blue on Red Elemental
@@ -114,6 +131,17 @@ int effective_power(Entity e);
 int effective_toughness(Entity e);
 std::set<Colors> effective_colors(Entity e);
 
+// Layer-5 (CR 613.1e / 612) global color-changing override. If an active SetColor$ continuous
+// static (Mycosynth Lattice) designates `e` — via its Affected$ filter and AffectedZone$ — write
+// the override color set into `out` and return true; otherwise return false (no override).
+// "Colorless" yields an empty set (CR 105.2c); an explicit color list yields those colors.
+// Defined in state_manager_statics.cpp (where g_active_statics lives). Consulted by
+// effective_colors and the colorless queries so every color-dependent check (protection-from-
+// color targeting, is_colorless) sees the affected object's effective color. Matches against the
+// object's PRINTED characteristics (card_matches_filter) to avoid recursing back into
+// effective_colors; tokens (no CardData) are not matched here.
+bool setcolor_override_for(Entity e, std::set<Colors> &out);
+
 // ── Unified filter matcher (CR 109/110/115 characteristic matching) ─────────
 // One grammar, one evaluator, two entry points. A Forge filter spec is a ';'-delimited
 // list of OR alternatives; each alternative is a head type/subtype name (or a "Card" /
@@ -135,11 +163,24 @@ struct MatchCtx {
     Entity source = 0;                           // self-exclusion source for .Other
     int cmc_bound = -1;                          // dynamic mana-value bound (Aether Vial); <0 = none
     std::string cmc_op = "";                     // comparator for cmc_bound (EQ/LE/GE/…)
+    // Dynamic value of SVar X for a power/toughness-vs-X qualifier (Ensnaring Bridge's
+    // Creature.powerGTX): the caller resolves X (e.g. the controller's hand size) and supplies
+    // it here. INT_MIN = "no X provided", in which case a powerGTX/-style qualifier fails closed.
+    int x_bound = INT_MIN;
 };
 
 bool card_matches_filter(Entity e, const std::string &spec, const MatchCtx &ctx = MatchCtx{});
 bool card_matches_filter(const CardData &cd, const std::string &spec, const MatchCtx &ctx = MatchCtx{});
 bool permanent_matches_filter(Entity e, const std::string &spec, const MatchCtx &ctx = MatchCtx{});
+
+// Count the battlefield permanents matching a Forge `Count$Valid <filter>` spec — the single
+// shared implementation behind both the spell/ability dynamic-amount path (evaluate_dynamic_amount)
+// and the static-buff svar path (evaluate_sa_svar), so the `controller` ("you") reference, the
+// `source` reference (for source-relative qualifiers like +Other / sameName), and the
+// battlefield/phasing guard are identical on both. `filter_spec` is the bare filter (the text after
+// "Count$Valid "); control/type/etc. qualifiers in it are enforced by permanent_matches_filter.
+int count_battlefield_matching(const std::string &filter_spec, Zone::Ownership controller,
+                               Entity source);
 
 // ── Forge-style comma-OR filter matching (one convention, one place) ────────
 // A Forge `Valid$`/`ValidTgts$` spec lists its OR alternatives separated by ',' (e.g.
@@ -194,6 +235,22 @@ inline void extract_static_cmc_bound(const std::string &spec, MatchCtx &ctx) {
 // token/amass/mobilize/delayed-trigger/deal-damage/etc. otherwise repeat inline.
 Zone::Ownership source_controller(Entity source);
 
+// CR 702.16: is `player_entity` currently under a "protection from everything" grant
+// (cur_game.player_protection_from_everything)? Protection from everything is protection from ALL
+// sources — including the protected player's OWN sources — so this returns true whenever the grant
+// is active for that player, regardless of who controls `source`. True means damage from `source`
+// to that player is prevented. Shared by the effect-damage chokepoint (deal_damage_to_player) and
+// the combat-damage path so the prevention rule lives in one place.
+bool player_protected_from_source(Entity player_entity, Entity source);
+
+// CR 702.16d (damage facet): is `perm_target` a permanent with "protection from colored spells"
+// (Emrakul) being dealt damage by a SOURCE that is a colored spell? True means that damage is
+// prevented. Tightly gated: the source must be a spell object (entity_has_component<Spell>) — so
+// combat damage (creature source) and ability damage are never prevented — and one or more colors
+// (a colorless spell's damage is not prevented). Reuses has_protection_from_colored_spells and
+// effective_colors so the targeting block and the damage block share one definition of the rule.
+bool permanent_protected_from_colored_spell_source(Entity perm_target, Entity source);
+
 // Last-known controller of an object for a "that permanent's controller" effect
 // (CR 608.2g/h): its Zone.controller while it still records one, else the live
 // Permanent.controller (mid-resolution before the SBA strips it), else the controller
@@ -229,12 +286,21 @@ inline bool is_colorless_card(const CardData &cd) {
             return false;
         }
     }
+    // A hybrid pip ({W/U}, {2/W}) carries color, so a card with one is not colorless (unless a
+    // Colors: override said so, handled above). Only consulted when there is no explicit override.
+    if (cd.explicit_colors.empty())
+        for (const auto &pip : cd.hybrid_mana)
+            for (Colors c : pip.colors)
+                if (c != COLORLESS && c != GENERIC) return false;
     return true;
 }
 
 // True if the entity is colorless (CR 105.2c), handling both real cards (CardData) and
 // tokens (Token, which have no mana cost — their color is the token's color indicator).
 inline bool is_colorless_entity(Entity e) {
+    // A global SetColor$ override (Mycosynth Lattice) decides colorlessness first (CR 613.1e).
+    std::set<Colors> override_colors;
+    if (setcolor_override_for(e, override_colors)) return override_colors.empty();
     if (global_coordinator.entity_has_component<CardData>(e))
         return is_colorless_card(global_coordinator.GetComponent<CardData>(e));
     if (global_coordinator.entity_has_component<Token>(e)) {
@@ -358,11 +424,37 @@ inline std::vector<Entity> battlefield_permanents(
     return out;
 }
 
+// Unblocked attackers controlled by `ctrl` (CR 509.1h): battlefield creatures that are
+// attacking and were not blocked at declare-blockers. Used to gate and pay Ninjutsu
+// (CR 702.49e) — the offer requires one, and activating returns one to hand.
+inline std::vector<Entity> unblocked_attackers(
+    const std::set<Entity> &entities, Zone::Ownership ctrl) {
+    std::vector<Entity> out;
+    for (auto e : entities) {
+        if (!is_battlefield_permanent(e, ctrl)) continue;
+        if (!global_coordinator.entity_has_component<Creature>(e)) continue;
+        auto &cr = global_coordinator.GetComponent<Creature>(e);
+        if (cr.is_attacking && !cr.is_blocked) out.push_back(e);
+    }
+    return out;
+}
+
 // True if the creature carries the given keyword string (exact match).
 inline bool creature_has_keyword(const Creature &cr, const char *kw) {
     for (const auto &k : cr.keywords)
         if (k == kw) return true;
     return false;
+}
+
+// True if keyword `kw` is currently SUPPRESSED on permanent `e` by an until-end-of-turn
+// "loses <keyword>" effect (AB$ AnimateAll | RemoveKeywords$, Shadowspear — CR 613 layer 6).
+// While suppressed the keyword is treated as absent regardless of how it was granted (printed,
+// counter, continuous). Single gate consulted by every effective-keyword accessor below so the
+// removal applies uniformly to creatures and noncreature permanents. Cleared at cleanup (514.2).
+inline bool keyword_removed_eot(Entity e, const char *kw) {
+    if (!global_coordinator.entity_has_component<Permanent>(e)) return false;
+    const auto &removed = global_coordinator.GetComponent<Permanent>(e).removed_keywords_eot;
+    return removed.find(kw) != removed.end();
 }
 
 // True if the permanent `e` is indestructible (CR 702.12b: it can't be destroyed —
@@ -375,6 +467,7 @@ inline bool creature_has_keyword(const Creature &cr, const char *kw) {
 // "put into graveyard", or the 0-toughness SBA (CR 704.5f); those callers do not consult
 // this. Single source shared by the Destroy effects and the lethal-damage SBA.
 inline bool is_indestructible(Entity e) {
+    if (keyword_removed_eot(e, "Indestructible")) return false;
     if (global_coordinator.entity_has_component<Creature>(e)) {
         return creature_has_keyword(global_coordinator.GetComponent<Creature>(e), "Indestructible");
     }
@@ -386,6 +479,29 @@ inline bool is_indestructible(Entity e) {
     if (global_coordinator.entity_has_component<Token>(e)) {
         for (const auto &k : global_coordinator.GetComponent<Token>(e).keywords)
             if (k == "Indestructible") return true;
+    }
+    return false;
+}
+
+// True if the permanent `e` currently has the keyword `kw`, reading its EFFECTIVE
+// keyword list the same way is_indestructible does: a creature's `Creature::keywords`
+// (rebuilt each static pass from the printed list plus any granted keywords — Pump
+// grants, continuous effects, keyword counters), otherwise the printed CardData (or
+// Token) keywords. Single source for "does this permanent currently have keyword K";
+// targeting (Shroud/Hexproof, CR 702.18/702.11) and any future keyword query share it
+// so they cannot drift on how a granted keyword is stored.
+inline bool permanent_has_keyword(Entity e, const char *kw) {
+    if (keyword_removed_eot(e, kw)) return false;
+    if (global_coordinator.entity_has_component<Creature>(e))
+        return creature_has_keyword(global_coordinator.GetComponent<Creature>(e), kw);
+    if (global_coordinator.entity_has_component<CardData>(e)) {
+        for (const auto &k : global_coordinator.GetComponent<CardData>(e).keywords)
+            if (k == kw) return true;
+        return false;
+    }
+    if (global_coordinator.entity_has_component<Token>(e)) {
+        for (const auto &k : global_coordinator.GetComponent<Token>(e).keywords)
+            if (k == kw) return true;
     }
     return false;
 }
@@ -416,6 +532,42 @@ inline uint32_t lethal_needed_for_blocker(Entity attacker, Entity blocker) {
     if (creature_has_keyword(acr, "Deathtouch")) return bcr.toughness > 0 ? 1u : 0u;
     uint32_t marked = marked_damage_on(blocker);
     return (bcr.toughness > marked) ? bcr.toughness - marked : 0u;
+}
+
+// True if the spell `spell` (an entity on the stack) can't be countered because some live
+// battlefield permanent has a continuous "spells … can't be countered" replacement that covers
+// it (CR 614.13/CantHappen) — e.g. Hexing Squelcher's "Spells you control can't be countered."
+// Scans battlefield permanents for a battlefield-scoped CANT_BE_COUNTERED replacement and tests
+// the spell against its ValidSA$ filter. The controller scope (YouCtrl/OppCtrl) is read from the
+// spell's caster relative to the replacement source's controller, because a stack spell has no
+// Permanent controller for the generic filter matcher to read (its YouCtrl token is a no-op off
+// the battlefield). Consulted at counter-resolution time; reusable by any future can't-be-countered
+// permanent. `entities` is the iterating system's mEntities (e.g. orderer->mEntities).
+inline bool spell_uncounterable_by_static(Entity spell, const std::set<Entity> &entities) {
+    if (!global_coordinator.entity_has_component<CardData>(spell)) return false;
+    Zone::Ownership spell_ctrl = global_coordinator.entity_has_component<Spell>(spell)
+                                     ? global_coordinator.GetComponent<Spell>(spell).caster
+                                     : Zone::UNKNOWN;
+    for (auto e : battlefield_permanents(entities)) {
+        if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+        Zone::Ownership perm_ctrl = global_coordinator.GetComponent<Permanent>(e).controller;
+        for (const auto &r : global_coordinator.GetComponent<CardData>(e).replacement_effects) {
+            if (r.kind != Effect::Replacement::CANT_BE_COUNTERED || !r.from_battlefield) continue;
+            // Controller scope is read from the spell's caster (the matcher can't read it for a
+            // stack object). YouCtrl → caster is the source's controller; OppCtrl → it isn't.
+            if (r.valid_sa_filter.find("YouCtrl") != std::string::npos) {
+                if (spell_ctrl != perm_ctrl) continue;
+            } else if (r.valid_sa_filter.find("OppCtrl") != std::string::npos) {
+                if (spell_ctrl == perm_ctrl || spell_ctrl == Zone::UNKNOWN) continue;
+            }
+            // Any remaining type/characteristic qualifiers on the filter (head "Spell", color,
+            // type) are checked against the spell's printed characteristics.
+            MatchCtx ctx;
+            ctx.controller = perm_ctrl;
+            if (card_matches_filter(spell, r.valid_sa_filter, ctx)) return true;
+        }
+    }
+    return false;
 }
 
 // True if `e` is a spell that was cast via flashback. Such a spell is exiled
@@ -479,6 +631,18 @@ inline std::string spell_additional_sac_spec(const CardData &cd) {
         if (ab.ability_type == Ability::SPELL && !ab.sac_cost_spec.empty())
             return ab.sac_cost_spec;
     return "";
+}
+
+// True if the spell's SPELL ability carries a VARIABLE life cost (Cost$ ... PayLife<X>): the
+// amount of life paid IS the spell's X (Count$xPaid), chosen as an additional cost while casting
+// (Toxic Deluge). Distinct from a fixed PayLife<N>, which is paid as a flat life cost. Reading it
+// off the SPELL ability keeps the parser's real Cost$ tag authoritative (no retag); the cast path
+// prompts for X, sets cur_game.x_paid, and pays that much life.
+inline bool spell_has_variable_life_cost(const CardData &cd) {
+    for (const auto &ab : cd.abilities)
+        if (ab.ability_type == Ability::SPELL && ab.life_cost_is_x)
+            return true;
+    return false;
 }
 
 // Single source for "a player gains life": raises their life total and accumulates
@@ -570,6 +734,23 @@ inline int graveyard_card_types(Zone::Ownership owner, const std::set<Entity> &e
 // Returns true when the given player has 4+ card types among cards in their graveyard.
 inline bool check_delirium(Zone::Ownership owner, const std::set<Entity> &entities) {
     return graveyard_card_types(owner, entities) >= 4;
+}
+
+// Number of cards in `owner`'s graveyard, excluding `except` (pass 0 to count every card).
+// Single source for the literal-count Escape ExileFromGrave cost (Uro: "exile five other
+// cards") legality check and payment loop.
+inline int graveyard_card_count(Zone::Ownership owner, const std::set<Entity> &entities,
+                                Entity except = 0) {
+    int n = 0;
+    for (auto entity : entities) {
+        if (entity == except) continue;
+        if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
+        auto &z = global_coordinator.GetComponent<Zone>(entity);
+        if (z.location != Zone::GRAVEYARD || z.owner != owner) continue;
+        if (!global_coordinator.entity_has_component<CardData>(entity)) continue;
+        n++;
+    }
+    return n;
 }
 
 #endif /* GAME_QUERIES_H */

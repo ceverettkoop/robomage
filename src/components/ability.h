@@ -4,6 +4,7 @@
 #include "../classes/colors.h"
 #include "../ecs/entity.h"
 #include "ability_params.h"
+#include "static_ability.h"
 #include "types.h"
 #include "zone.h"
 #include <memory>
@@ -27,6 +28,17 @@ struct Ability{
     int target_min = 1;              // TargetMin$ 0 = optional targeting (can choose no target)
     int target_max = 1;             // TargetMax$ N — max number of targets (1 = single target)
     bool target_max_from_xpaid = false;  // TargetMax$ X (X = Count$xPaid): cap = X paid at cast (Kozilek's Command)
+    bool target_min_from_xpaid = false;  // TargetMin$ X (X = Count$xPaid): lower bound = X paid — with the
+                                         // matching max gives EXACTLY-X targeting (Candelabra, Hide on the Ceiling)
+    std::string target_min_svar = "";    // raw TargetMin$ token when non-numeric (an SVar key); resolved post-parse
+    std::string target_max_svar = "";    // raw TargetMax$ token when non-numeric (an SVar key); resolved post-parse
+    // TargetMin$/TargetMax$ given as a count-SVar that resolves to a runtime Count$ expression
+    // OTHER than Count$xPaid (e.g. Into the Flood Maw: TargetMin$ X = TargetMax$ X, X =
+    // Count$PromisedGift.0.1). Evaluated by select_target at cast time (when the count's inputs —
+    // e.g. the gift promise — are already decided), then stamped onto target_min/target_max. A
+    // resolved count of 0 makes the ability target nothing and do nothing (CR: zero targets).
+    std::string target_min_count_expr = "";
+    std::string target_max_count_expr = "";
     Entity source = 0;
     Entity target = 0;
     std::vector<Entity> targets;    // used when target_max > 1
@@ -58,14 +70,19 @@ struct Ability{
 
     // Activated ability costs
     bool tap_cost = false;              // {T} is part of the activation cost
+    bool activation_has_x = false;      // Cost$ contains {X}: choose X at activation, add X generic to the
+                                        // activation mana cost; X = Count$xPaid (Candelabra of Tawnos)
     ManaValue activation_mana_cost;     // Mana that must be paid to activate
     int life_cost = 0;                  // PayLife<N> — life paid at activation
+    bool life_cost_is_x = false;        // PayLife<X> — variable life cost: the life paid IS X (Count$xPaid),
+                                        // chosen as an additional cost while casting (Toxic Deluge)
     int energy_cost = 0;                // PayEnergy<N> — energy ({E}) paid as part of the cost (CR 122.1c)
     bool sac_self = false;              // Sac<1/CARDNAME> — sacrifice source permanent as cost
     std::string sac_cost_spec = "";     // Sac<1/Type;Type/> — type-based sac cost; empty = none
     // DB$ Sacrifice EFFECT (not a cost): sacrifice a chosen permanent you control matching
     // sac_valid (Birthing Ritual). Distinct from sac_self/sac_cost_spec which are activation costs.
     std::string sac_valid = "";         // SacValid$ — filter for the creature/permanent to sacrifice (e.g. "Creature")
+    size_t sac_count = 1;               // number of permanents to sacrifice (Annihilator N: each sac is a separate choice; default 1)
     bool remember_sacrificed = false;   // RememberSacrificed$ True — push the sacrificed entity to remembered_entities
     std::string return_cost_type = "";  // Return<N/Type> — bounce a land of this subtype as cost
     int return_cost_count = 0;          // number of lands to return
@@ -87,6 +104,13 @@ struct Ability{
     // BECAME_MONSTROUS event (firing the BecomeMonstrous triggers). General over any Monstrosity card.
     bool is_monstrosity = false;
     bool tap_on_etb = false;            // ETB$ True on a DB$ Tap — taps Defined$ Self as it enters the battlefield
+    // K:Ninjutsu:<cost> (CR 702.49): a hand-activated ability usable only during the declare-
+    // blockers step (after blockers are declared) while its controller has an unblocked attacker.
+    // Activating it returns one unblocked attacker to hand and pays the ninjutsu mana cost
+    // (activation_mana_cost), then puts THIS card from hand onto the battlefield tapped and
+    // attacking the defender the returned attacker was attacking. Handled by process_ninjutsu;
+    // the offer is gated to DECLARE_BLOCKERS in determine_legal_actions.
+    bool is_ninjutsu = false;
     int activation_limit = 0;           // ActivationLimit$ N — max activations per turn (0 = unlimited)
     // Loyalty abilities (planeswalkers). is_loyalty_ability is the load-bearing flag;
     // loyalty_cost == 0 is still a valid loyalty ability (e.g. Jace "0:" Brainstorm), so
@@ -94,6 +118,11 @@ struct Ability{
     // SubCounter<N/LOYALTY> → -N. Paid by modifying the source's own loyalty at activation.
     bool is_loyalty_ability = false;    // Planeswalker$ True
     int loyalty_cost = 0;               // +N (AddCounter) or -N (SubCounter); loyalty counters added/removed as the cost
+    // X loyalty cost (Cost$ SubCounter<X/LOYALTY> — Chandra, Flamecaller's [-X] ultimate). The
+    // magnitude is chosen at activation (X, bounded by current loyalty for a minus ability) and
+    // recorded as cur_game.x_paid so the effect's Count$xPaid (e.g. NumDmg$ X) reads it; loyalty_cost
+    // then carries only the SIGN (-1 minus / +1 plus). Never stoi("X") at parse time.
+    bool loyalty_cost_is_x = false;
     int activation_zone = -1;           // ActivationZone$ Hand → Zone::HAND; -1 = default (battlefield)
     int activations_this_turn = 0;      // runtime counter, reset at UNTAP
     // ReduceCost$ on an ACTIVATED ability (Eiganjo's Channel: "ReduceCost$ X",
@@ -124,12 +153,42 @@ struct Ability{
     // target enumeration offer graveyard cards.
     bool target_in_graveyard = false;
     uint32_t trigger_on = 0;             // EventId that fires this ability; 0 = not event-triggered
+    // Additional EventIds this ability also fires on (a phase trigger listing multiple phases,
+    // e.g. Carpet of Flowers' Phase$ Main1,Main2 binds FIRST_MAIN_BEGAN here-plus SECOND_MAIN_BEGAN).
+    // The general battlefield trigger scan matches trigger_on OR any entry here.
+    std::vector<uint32_t> trigger_on_extra;
+    // Static$ True bookkeeping trigger (Carpet of Flowers' cleanup / leave-battlefield resets):
+    // Forge's internal "static" triggers do not use the stack — they resolve immediately and
+    // off-stack (CR 605.1a-style) the instant their event fires. The trigger scan resolves the
+    // Execute effect inline instead of placing a PendingTrigger. Distinct from
+    // trigger_taps_for_mana_static (which the mana system resolves) — this covers phase/zone-change
+    // static triggers. General over any Static$ True phase/ChangesZone trigger.
+    bool trigger_static_offstack = false;
+    // Per-permanent stored-SVar trigger gate (Carpet of Flowers' CheckSVar$ CarpetX | SVarCompare$
+    // EQ0 — "if you haven't added mana with this ability this turn"). When set, the trigger fires
+    // only if the SOURCE permanent's stored_svars[gate_name] (default 0) satisfies gate_compare
+    // (e.g. "EQ0"). Like an intervening-if (CR 603.4) it is re-checked at resolution. Distinct
+    // from the existing CheckSVar path (which resolves the SVar to a Count$ board expression);
+    // this reads a Number$ scratch int latched by DB$ StoreSVar. General over the StoreSVar/
+    // CheckSVar latch idiom.
+    std::string stored_svar_gate_name = "";
+    std::string stored_svar_gate_compare = "";
     bool trigger_self_excluded = false;  // true when ValidCard$ has .Other — won't trigger for the source itself
     bool trigger_only_self = false;      // true when ValidCard$ Card.Self — only fires when the entering entity is the source itself
+    // true when ValidCard$ has the wasCastByYou qualifier (The One Ring's "enters, if you cast
+    // it" ETB) — an intervening cast-condition: the trigger fires only when its source permanent
+    // entered the battlefield by being cast (Permanent::entered_by_cast).
+    bool trigger_requires_entered_by_cast = false;
+    // This triggered ability is a Saga chapter ability (CR 714.3). When it finishes resolving and
+    // leaves the stack, StackManager::resolve_top decrements its source Saga's
+    // saga_chapters_in_flight so the 714.4 sacrifice SBA can fire. Set when the chapter ability is
+    // built from CardData::saga_chapters in the trigger system.
+    bool is_saga_chapter = false;
     bool is_evoke_sacrifice = false;     // synthetic ETB self-trigger from K:Evoke — only fires when the permanent was evoked
     bool is_offspring_token = false;     // synthetic ETB self-trigger from K:Offspring — only fires when the permanent was cast with offspring; creates a 1/1 token copy
     bool trigger_valid_player_is_controller = false;  // true when ValidPlayer$ You
     bool mandatory = false;              // Mandatory$ True — player must choose; suppresses fail-to-find when zone non-empty
+    bool shuffle_after = false;          // Shuffle$ True — shuffle the destination library after a ChangeZoneAll move (Emrakul death trigger: shuffle graveyard into library)
     bool may_shuffle = false;            // MayShuffle$ True — player may optionally shuffle after
     size_t unless_generic_cost = 0;      // UnlessCost$ N — target controller pays {N} to prevent counter
     bool unless_cost_is_life = false;    // when true, unless_generic_cost is paid as N life rather than {N} mana (Ward—Pay life, CR 702.21)
@@ -138,6 +197,11 @@ struct Ability{
     // the counter; if they can't (or decline) the spell is countered. General "counter unless
     // discard" path (CR 701.8 discard); reuses the same run_unless_loop choice machinery.
     bool unless_cost_is_discard = false;
+    // UnlessCost$ PayEnergy<N> on a non-DestroyAll effect (Static Prison: "sacrifice CARDNAME
+    // unless you pay {E}"). The payer may pay `unless_generic_cost` energy ({E}, CR 122.1c) to
+    // prevent the effect; if they can't or decline, the effect happens. (DestroyAll's energy
+    // unless-cost rides on DestroyAllParams::energy_unless_expr instead — see parse.cpp.)
+    bool unless_cost_is_energy = false;
     // UnlessPayer$ TriggeredSourceSAController — the payer of the unless-cost is the controller of
     // the triggering spell/ability (the opponent who targeted the permanent), NOT the trigger's own
     // controller. Bound at trigger-fire time into unless_payer (UNKNOWN ⇒ default to the countered
@@ -164,6 +228,18 @@ struct Ability{
     // Default (false) = the zone's owner chooses (the normal tutor case).
     bool chooser_is_controller = false;
     bool defined_self = false;                  // Defined$ Self — ability moves its own source
+    // Defined$ TriggeredAttacker / TriggeredAttackerLKICopy — the effect (a Pump) acts on the
+    // creature that triggered this ability by attacking (Tamiyo, Seasoned Scholar: the attacking
+    // creature "gets -1/-0"). Bound as this ability's target at trigger-fire time from the
+    // CREATURE_ATTACKED event's ENTITY. The LKICopy form would use the attacker's last-known
+    // info if it has since left combat/play; the trigger resolves during the same declare-
+    // attackers step (the attacker is still on the battlefield), so the live entity is used.
+    bool defined_triggered_attacker_lki = false;
+    // K:Unearth (CR 702.84): this ChangeZone is the unearth return (Graveyard -> Battlefield).
+    // When it resolves and the source enters the battlefield, the permanent is marked "unearthed"
+    // (gains haste, is exiled at the next end step, and is exiled instead of leaving the
+    // battlefield). General over any unearth card.
+    bool is_unearth = false;
     bool defined_each_opponent = false;         // Defined$ Player.Opponent — effect applies to each opponent (no target)
     bool defined_you = false;                   // Defined$ You — effect's player is the source's controller (e.g. Ancient Tomb pain)
     // Defined$ TriggeredActivator — the effect's player is the player who caused the trigger
@@ -183,13 +259,47 @@ struct Ability{
     // Permanent so the layer system reapplies them. Only the type-add path is exercised today;
     // base-P/T/keyword/creature extension points live on Permanent (see permanent.h).
     std::vector<Type> animate_types;
+    // DB$ Animate | Abilities$ <svar>[,<svar>...] (Urza's Saga chapters I & II): activated
+    // ability(ies) the Animate GRANTS to the target permanent for the effect's Duration (CR
+    // 613.1f — a lasting "gains [activated ability]"). Each entry is a fully-parsed AB$ ability
+    // (e.g. "{T}: Add {C}." or "{2}, {T}: Create a Construct token"). The Animate handler pushes
+    // them onto the permanent's activated-ability list for a Duration$ Permanent grant. Empty when
+    // the Animate grants no abilities (Guide of Souls' type-only animate).
+    std::vector<Ability> animate_granted_abilities;
     bool animate_duration_permanent = false;
+    // Duration$ UntilYourNextTurn (Karn, the Great Creator +1): the grant lasts until the start
+    // of the animating player's NEXT turn — longer than the Forge default (until end of turn)
+    // but not the rest of the game (Duration$ Permanent). Reverted at that player's untap step.
+    bool animate_duration_until_your_next_turn = false;
+    // Duration$ UntilYourNextTurn on a non-Animate effect (The One Ring's ETB Pump that grants the
+    // controller protection from everything): the effect lasts until the start of the controller's
+    // next turn rather than the Forge default (until end of turn). Reverted at that player's untap.
+    bool duration_until_your_next_turn = false;
+    // AB$ Animate | Power$/Toughness$ (Karn +1: "power and toughness each equal to its mana
+    // value"). A numeric value sets the base P/T directly; an SVar token (e.g. Power$ X with
+    // SVar:X:Targeted$CardManaCost) is resolved post-parse into animate_power_expr /
+    // animate_toughness_expr — a runtime dynamic_amount expr evaluated against the animate TARGET
+    // (a snapshot of its mana value taken at resolution). animate_has_pt gates the whole path.
+    bool animate_has_pt = false;
+    int animate_base_power = 0;
+    int animate_base_toughness = 0;
+    std::string animate_power_token;       // raw Power$ token, pre-SVar-resolution
+    std::string animate_toughness_token;   // raw Toughness$ token, pre-SVar-resolution
+    std::string animate_power_expr;        // resolved runtime expr (empty when numeric)
+    std::string animate_toughness_expr;
 
     // Filter naming which permanents a mass effect affects (DestroyAll / SacrificeAll /
     // PutCounterAll): the ValidCards$ spec, e.g. "Cat.YouCtrl" or
     // "Permanent.nonLand+OppCtrl+nonChosenCard". A plain member (not in the params
     // variant) so PutCounterAll can carry it alongside CounterParams.
     std::string valid_cards_filter = "";
+
+    // AB$ AnimateAll | RemoveKeywords$ Hexproof & Indestructible (Shadowspear): the keyword(s)
+    // a mass continuous effect REMOVES from every permanent matching valid_cards_filter, until
+    // end of turn (CR 613 layer 6 keyword removal). Empty for effects that grant rather than
+    // remove. The add direction (AddKeyword$/Keywords$) reuses the same effect via add_keywords.
+    std::vector<std::string> remove_keywords;
+    std::vector<std::string> add_keywords;  // AnimateAll grant direction (until end of turn)
 
     // Condition$ Blessing (CopyPermanent on Ocelot Pride): the effect body runs only if the
     // ability's controller has the city's blessing (702.131). Like other condition gates, a
@@ -216,6 +326,11 @@ struct Ability{
     bool trigger_valid_card_is_instant_or_sorcery = false;  // ValidCard$ Instant/Sorcery
     bool trigger_valid_card_is_land = false;            // ValidCard$ Land.*
     bool trigger_valid_card_is_artifact = false;        // ValidCard$ Artifact.* (Kappa Cannoneer)
+    // ValidCard$ Card.nonCreature combined with an ActivatorThisTurnCast$ count (The Fantasticar's
+    // "your fourth noncreature spell each turn"): the cast spell must be NONCREATURE. Bound to the
+    // SPELL_CAST event (fired after the per-cast counters are bumped) rather than the dedicated
+    // NONCREATURE_SPELL_CAST event (fired before), so a count gate sees the current cast counted.
+    bool trigger_valid_card_non_creature = false;
     // ValidCard$ ...+!token — the changing card must be a real card, not a token (CR 110.1 /
     // 111.7). Moonshadow's "permanent cards put into your graveyard" excludes tokens.
     bool trigger_valid_card_non_token = false;
@@ -236,12 +351,20 @@ struct Ability{
     // Drawn trigger (Orcish Bowmasters): Mode$ Drawn fires on PLAYER_DREW_CARD.
     bool trigger_valid_card_opp_own = false;       // ValidCard$ Card.OppOwn — the drawn card is owned by an opponent of the source's controller
     bool trigger_exclude_first_draw_step = false;  // FirstCardInDrawStep$ False — ignore the first card the player draws in each of their draw steps
+    // Number$ N on a Mode$ Drawn trigger (CR 603.2, Tamiyo, Inquisitive Student: "whenever you
+    // draw your THIRD card in a turn"): fire only when the firing draw is the Nth card that player
+    // has drawn this turn. Matched against the per-draw running count carried on the
+    // PLAYER_DREW_CARD event (Params::AMOUNT, 1-based). 0 = no Nth-draw gate (every draw fires).
+    size_t trigger_draw_number_eq = 0;
 
     // Combat damage trigger (Barrowgoyf): damage amount stored at trigger fire time
     size_t trigger_damage_amount = 0;
 
     // Spell count trigger (Cori-Steel Cutter)
     size_t trigger_spell_count_eq = 0;  // ActivatorThisTurnCast$ EQN — fires on Nth spell
+    // The Nth-spell count above counts only NONCREATURE spells (The Fantasticar) rather than all
+    // spells cast this turn — compare against Player::noncreature_spells_cast_this_turn.
+    bool trigger_spell_count_noncreature = false;
 
     // Kicker-linked SpellCast trigger (CR 702.33e/f, Wastescape Battlemage): a
     // "When you cast this spell, if it was kicked with its [N] kicker, ..." trigger.
@@ -273,6 +396,17 @@ struct Ability{
     // triggers (no source permanent), so it cannot rely on trigger_only_self/source scans.
     bool trigger_damage_source_youctrl = false;   // ValidSource$ Creature.YouCtrl on a DamageAll combat-damage trigger
 
+    // Mode$ Attacks | ValidCard$ Creature.OppCtrl (Tamiyo, Seasoned Scholar's +2 hosted trigger):
+    // the attacking creature (CREATURE_ATTACKED's ENTITY) must be controlled by an opponent of
+    // this trigger's controller. Matched at fire time (the trigger is hosted on a command-zone
+    // Effect with no source permanent to self-reference).
+    bool trigger_attacker_opp_ctrl = false;
+    // Attacked$ You,Planeswalker.YouCtrl — the attack must be against the trigger's controller or a
+    // planeswalker they control. In the two-player engine the only defender an opponent's attacker
+    // can have IS this controller (or their planeswalker), so this is satisfied whenever an
+    // opponent's creature attacks; the flag records the script's stated intent (CR 508.1).
+    bool trigger_attacked_defender_you = false;
+
     // TriggerZones$ Graveyard (Arclight Phoenix): the triggered ability functions from
     // the graveyard, not the battlefield (CR 113.6 / 603.6). When set, the trigger scan
     // matches the source while it is in its owner's graveyard.
@@ -290,6 +424,9 @@ struct Ability{
     // Attach / Equip sub-ability
     bool optional = false;           // Optional$ True — player may decline
     bool defined_remembered = false; // Defined$ Remembered — target is cur_game.remembered_entities[0]
+    // True for the sub-ability a DB$ DelayedTrigger named in its Execute$ (vs. a trailing
+    // SubAbility$ cleanup). delayed_trigger() fires this one and chains the rest after it.
+    bool from_delayed_execute = false;
     bool defined_triggered_spell = false; // Defined$ TriggeredSpellAbility — target is the spell that triggered this ability (Chalice of the Void counters it)
     // Defined$ TriggeredSourceSA — target is the spell/ability that targeted the source (the
     // "triggering source spell ability" of a Mode$ BecomesTarget trigger, Reality Smasher). Bound
@@ -325,8 +462,39 @@ struct Ability{
     // (recorded in cur_game.chosen_cards). Empty = the legacy single-pick ChooseCard.
     std::string choose_each = "";
 
+    // SP$/AB$ Vote VoteCard$ <filter> (Council's Judgment): the permanent filter the vote
+    // chooses among (e.g. "Permanent.nonLand+YouDontCtrl"). In the two-player engine the vote
+    // reduces to the controller choosing one matching permanent; the winner is fed to the
+    // VoteSubAbility (parsed into subabilities) via the remembered set. See effect_vote.cpp.
+    std::string vote_card_filter = "";
+
     // RememberChanged$ — remember entities moved by this ChangeZone (for Doomsday)
     bool remember_changed = false;
+
+    // RememberLKI$ — remember the moved object's last-known information (Boomerang Basics:
+    // remember the bounced permanent so a paired ConditionDefined$ RememberedLKI gate can
+    // read the controller it had as it left the battlefield, CR 608.2g). Like remember_changed
+    // it stashes the moved entity in cur_game.remembered_entities; the condition reads its LKI.
+    bool remember_lki = false;
+
+    // RememberRevealed$ True (Cloak and Dagger's DBRevealHand): after a RevealHand resolves,
+    // stash every revealed card into cur_game.remembered_entities so a later Defined$ Remembered
+    // effect can act on them. Starts a fresh remembered set (clears it first) — it is the first
+    // link of the chain that records the candidates a subsequent exile picks from.
+    bool remember_revealed = false;
+
+    // RememberPumped$ True (Cloak and Dagger's DBPump): a Pump used purely as an (optional)
+    // target-selector — it applies no stat change, it just APPENDS its chosen creature to
+    // cur_game.remembered_entities so it joins the candidate pool of a later exile.
+    bool remember_pumped = false;
+
+    // Duration$ UntilHostLeavesPlay on a ChangeZone | Destination$ Exile (CR 603.6e linked
+    // exile-and-return: Cloak and Dagger, Sheltered by Ghosts, Static Prison). Each card moved
+    // to exile is recorded against the ability's host (source) so that WHEN THE HOST LEAVES THE
+    // BATTLEFIELD the card RETURNS to the zone it came from — a hand card to its owner's hand, a
+    // battlefield permanent onto the battlefield under its owner's control. Implemented as a
+    // per-card delayed trigger watching the host's departure (effects::register_exile_until_host_leaves).
+    bool duration_until_host_leaves = false;
 
     // DB$ Effect — a transient continuous effect created by an ability (CR 611). The
     // StaticAbilities$ list names the continuous static(s) it grants; RememberObjects$ Self
@@ -336,6 +504,22 @@ struct Ability{
     std::string effect_static_ability = "";  // StaticAbilities$ value (e.g. "Unblockable")
     bool effect_remember_self = false;        // RememberObjects$ Self
 
+    // Emblem (CR 114): an AB$ Effect with StaticAbilities$ <SVar> + Duration$ Permanent that gives
+    // its controller an emblem carrying the named continuous static ("Ninjas you control get
+    // +1/+1." on Kaito's [+1]). The resolved permanent static(s) are stored here at parse time; the
+    // GrantCast handler creates a player-owned Emblem (cur_game.emblems) carrying them — an
+    // unremovable, zoneless source whose statics are gathered into g_active_statics each SBA pass.
+    std::vector<StaticAbility> effect_emblem_statics;
+
+    // DB$ Effect | StaticAbilities$ <SVar> where the named static grants MayPlay$ True +
+    // MayPlayWithoutManaCost$ True with AffectedZone$ Exile (Ugin, Eye of the Storms' -11:
+    // "Until end of turn, you may cast those cards without paying their mana costs"). The
+    // StaticAbilities$ SVar is resolved at parse time; when it carries that grant this flag is
+    // set, and the GrantCast handler records a free (no-mana-cost) cast-from-exile permission
+    // for each currently-remembered exiled card (cur_game.remembered_entities), good until end
+    // of turn. CR 113.3 / 601.3e / 118.9 (cast without paying mana cost).
+    bool effect_grant_free_cast_from_exile = false;
+
     // DB$ Effect | Triggers$ <SVar> — a transient until-end-of-turn floating triggered ability
     // (Forth Eorlingas!'s "Whenever one or more creatures you control deal combat damage to one
     // or more players this turn, you become the monarch"). The named trigger SVar is parsed into
@@ -344,6 +528,14 @@ struct Ability{
     // normal trigger system, then it lapses at cleanup. Empty subabilities vector = no floating
     // trigger. General over any DB$ Effect that names a Triggers$ SVar.
     std::vector<Ability> effect_floating_triggers;
+
+    // DB$ Effect | ReplacementEffects$ <SVar> where the named SVar is a CR 614.13/CantHappen
+    // "Event$ Counter | ValidSA$ Spell.YouCtrl | Layer$ CantHappen" (Veil of Summer:
+    // "Spells you control can't be countered this turn"). Set at parse time; the GrantCast
+    // handler records the effect's controller in cur_game.cant_counter_spells_of for the rest
+    // of the turn (a turn-long, sourceless can't-be-countered grant — distinct from Hexing
+    // Squelcher's battlefield static).
+    bool effect_spells_uncounterable_this_turn = false;
 
     // Tapped$ True — searched card enters the battlefield tapped (Edge of Autumn)
     bool enters_tapped = false;
@@ -409,6 +601,12 @@ struct Ability{
     // Castability condition (Edge of Autumn): count permanents matching filter, compare to threshold
     std::string condition_present = "";   // ConditionPresent$ — e.g. "Land.YouCtrl"
     std::string condition_compare = "";   // ConditionCompare$ — e.g. "LE4", "GE3"
+    // ConditionNotPresent$ — the condition is INVERTED: the gated body runs only when the
+    // condition_present check is FALSE (Uro: "sacrifice it unless it escaped" →
+    // ConditionNotPresent$ Card.Self+escaped sacrifices unless the permanent escaped). Applied
+    // by evaluate_present_condition, which negates its result when this is set. General — works
+    // with any condition_present filter.
+    bool condition_negate = false;
     // ConditionDefined$ Targeted — the condition applies to the chosen target at
     // resolution (e.g. Fatal Push "destroy if its mana value <= X"), NOT to board state
     // at cast time. Such abilities can target anything legal; the conditional effect is
@@ -433,10 +631,30 @@ struct Ability{
     // for spell castability, which is checked only at cast time.
     bool intervening_if = false;
 
+    // IsCurse$ True (Carpet of Flowers' DB$ Pump): a Pump used purely as a targeting vehicle to
+    // establish "target opponent" for a chained sub-ability — it applies no P/T and grants no
+    // keyword. The Pump effect short-circuits (keeping ab.target = the chosen opponent player so
+    // a sub-ability's TargetedPlayerCtrl count can read it) instead of re-entering creature target
+    // selection. General over any IsCurse$ targeting-only Pump.
+    bool is_curse = false;
+
+    // DB$ StoreSVar (Carpet of Flowers): write `stored_svar_set_value` into the SOURCE permanent's
+    // stored_svars[stored_svar_set_name]. The general per-permanent named-integer scratch store
+    // (see Permanent::stored_svars). Parsed from SVar$ NAME / Expression$ N (Type$ Number).
+    std::string stored_svar_set_name = "";
+    int stored_svar_set_value = 0;
+
     // (delayed-trigger Phase$/Execute$/ValidPlayer$ moved to DelayedTriggerParams)
 
     //for each AB on a card script there may be multiple SubAbility$, would get parsed into vector below
     std::vector<Ability> subabilities; // additional abilities resolved at same time this resolves, stored in order
+
+    // Gift (CR 702.176): the gift effect(s) of a spell cast with the Gift keyword (Into the
+    // Flood Maw: DB$ Token making a tapped 1/1 Fish for the promised opponent). Copied onto the
+    // resolving spell's primary ability at cast; if the gift was promised (Spell::gift_promised),
+    // these resolve at the START of resolution — the opponent gets the gift "before its other
+    // effects" (CR 702.176c) — and are skipped otherwise. Empty for a non-gift ability.
+    std::vector<Ability> gift_abilities;
 
     // Charm/modal spell choices — each entry is a fully-parsed sub-ability
     std::vector<Ability> charm_choices;

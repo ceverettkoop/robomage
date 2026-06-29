@@ -131,7 +131,7 @@ static void record_chosen_action(const std::vector<LegalAction> &actions, int ch
     // Same vocab-index chain populate_query emits for this action, so the logged id
     // matches the queried id (previously this omitted the Permanent/token and
     // ability-source-permanent cases, drifting from the BQUERY payload).
-    int vocab = action_card_vocab_idx(la.source_entity);
+    int vocab = action_card_vocab_idx(la);
     cur_game.record_action(cat, vocab, cur_game.player_a_has_priority);
 }
 
