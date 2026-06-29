@@ -65,9 +65,10 @@ enum class ActionCategory {
     SYLVAN_CHOICE = 43,        // Sylvan Library card pick / pay-4-life-or-top choice
     CHOOSE_CARD = 44,          // choose a card from a zone for a non-library zone-change
     ASSIGN_DAMAGE = 45,        // T3.10: attacker assigns lethal combat damage to a chosen blocker
+    COMPANION = 46,            // CR 702.139: pay {3} to put your chosen companion from the sideboard into hand
 };
 
-static constexpr int ACTION_CATEGORY_MAX = 45;  // highest ActionCategory value
+static constexpr int ACTION_CATEGORY_MAX = 46;  // highest ActionCategory value
 
 struct LegalAction {
         ActionType type;

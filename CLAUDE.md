@@ -618,6 +618,7 @@ BQUERY: <N>\n
 | 43 | SYLVAN_CHOICE | Sylvan Library card pick / pay-4-life-or-top choice |
 | 44 | CHOOSE_CARD | Choose a card from a (non-library) zone for a zone-change effect |
 | 45 | ASSIGN_DAMAGE | Attacker assigns lethal combat damage to a chosen blocker (T3.10; only when 2+ blockers and power ≤ total lethal) |
+| 46 | COMPANION | Pay {3} to put your chosen companion (CR 702.139) from the sideboard into your hand (once per game) |
 
 **Confirm slot convention:** mandatory attacker/blocker queries end with a confirm action. The Python env remaps `action = num_choices - 1` to `-1` before sending to the game.
 
@@ -628,7 +629,7 @@ Total: **34392 floats** (OBS_SIZE in `train/env.py`)
 | Range | Size | Content |
 |---|---|---|
 | `[0:33794]` | 33794 | State vector (see `src/machine_io.h`) |
-| `[33794:33858]` | 64 | Action categories, padded to MAX_ACTIONS (64), normalised by ACTION_CATEGORY_MAX (45) |
+| `[33794:33858]` | 64 | Action categories, padded to MAX_ACTIONS (64), normalised by ACTION_CATEGORY_MAX (46) |
 | `[33858:33922]` | 64 | Action card IDs, padded to MAX_ACTIONS |
 | `[33922:33986]` | 64 | Action controller_is_self flags, padded to MAX_ACTIONS |
 | `[33986:34056]` | 70 | Hand cast costs (10 slots × 7 cost features) |

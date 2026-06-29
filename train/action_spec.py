@@ -47,6 +47,7 @@ Grammar (case-insensitive; one spec resolves to exactly one action):
     choice:<text>             a generic/modal choice            (OTHER_CHOICE)
     shuffle:<text>            shuffle decision                  (SHUFFLE)
     sb-in:<card> | sb-out:<card> | sb-done    sideboarding (bo3)
+    companion:<card>          pay {3}, companion sideboard->hand (COMPANION)
     desc:<text>               match ANY action by description substring
     #<n>  or a bare integer   literal action index (escape hatch)
 
@@ -99,7 +100,7 @@ _VERB_CATS = {
     "search": {19, 44}, "top": {20}, "bottom": {12}, "dig": {23},
     "mulligan": {11}, "keep": {11},
     "pay": {22}, "choice": set(_OTHER_CATS), "shuffle": {21},
-    "sb-in": {24}, "sb-out": {25}, "sb-done": {26},
+    "sb-in": {24}, "sb-out": {25}, "sb-done": {26}, "companion": {46},
     # Convenience verbs that pin a specific former-OTHER decision kind.
     "sacrifice": {27}, "return": {28}, "x": {29}, "discard": {30},
     "mode": {31}, "color": {32}, "name": {34}, "free": {42},

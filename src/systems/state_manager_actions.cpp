@@ -504,7 +504,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 auto &cd = global_coordinator.GetComponent<CardData>(comp);
                 LegalAction la(SPECIAL_ACTION, comp,
                                "Companion: pay {3}, put " + cd.name + " into your hand");
-                la.category = ActionCategory::PLAY_FREE;
+                la.category = ActionCategory::COMPANION;
                 la.companion_to_hand = true;
                 la.card_is_public = true;
                 actions.push_back(la);
