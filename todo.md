@@ -36,6 +36,20 @@ keen eyed curator buff from types exiled untested
 
 Pro color untested
 
+DEFERRED — Aura-on-PLAYER state-based action (CR 704.5n / 704.5m), latent:
+  The new 704.5n Aura fall-off SBA (state_manager.cpp, added with Sheltered by Ghosts) treats an
+  Aura as illegally-attached and destroys it whenever its `Permanent::equipped_to == 0`. But
+  `equipped_to` is only written when the enchant target has a Permanent component
+  (apply_permanent_components, state_manager_statics.cpp), so an Aura that enchants a PLAYER (a
+  Curse, or any "Enchant player" Aura) resolves with equipped_to == 0 and is immediately put into
+  the graveyard by the SBA — it can never stay on the battlefield. No player-enchanting Aura is in
+  the vocab yet, so this is latent (surfaced by code-review high over the league branch, 2026-06).
+  Proper fix needs player-attachment modeling, which the engine deliberately lacks (see The One
+  Ring notes: "no player-attach in engine"). When a Curse/Enchant-player Aura is added: record the
+  enchanted PLAYER (not just a Permanent) as the attach target, and make the 704.5n SBA treat a
+  legally player-attached Aura as attached. Until then, do NOT add an "Enchant player" Aura to the
+  vocab without this, or it will self-destruct on resolution.
+
 Engine stuff:
 ML can only pay for spells after choosing them, this does not allow some rare cases of optimal behavior (e.g. floating mana) but should reduce noise. LED is an exception, written so ML can float
 
