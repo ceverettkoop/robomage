@@ -2,6 +2,7 @@
 #define PERMANENT_H
 
 #include "../ecs/entity.h"
+#include "counter_map.h"
 #include "zone.h"
 #include "ability.h"
 #include "static_ability.h"
@@ -31,7 +32,7 @@ struct Permanent {
     // loyalty is just a LOYALTY counter (306.5c). Mutate via the get/add_counters helpers in
     // game_queries.h so +1/+1 and -1/-1 changes stay in sync with the creature's cached P/T
     // contribution (layer 7c, 613.4c). An entry is absent (not 0) when it has no counters.
-    std::map<std::string, int> counters;
+    CounterMap counters;
     // Per-permanent named integer SVars written by a DB$ StoreSVar effect (Forge's
     // "SVar:NAME:Number$N" scratch values) and read by a CheckSVar$ NAME | SVarCompare$ ...
     // trigger gate. Carpet of Flowers uses one ("CarpetX") as a once-per-turn latch: the

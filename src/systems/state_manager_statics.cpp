@@ -701,7 +701,7 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
             }
             // copy activated abilities from card_data to permanent; incl mana abilities although mana abilities innate to basic land types
             // added elsewhere
-            for (auto ab : card_data.abilities) {
+            for (const auto &ab : card_data.abilities) {
                 if (ab.ability_type != Ability::ACTIVATED) continue;
                 auto &perm_abilities = global_coordinator.GetComponent<Permanent>(entity).abilities;
                 bool already_present = false;
@@ -712,8 +712,11 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                     }
                 }
                 if (already_present) continue;
-                ab.source = entity;
+                // Copy only the ability actually added (in steady state this copies nothing —
+                // the already-present check short-circuits every pass after the first), instead
+                // of copying every card_data ability by value just to discard it each pass.
                 perm_abilities.push_back(ab);
+                perm_abilities.back().source = entity;
             }
 
             // copy static abilities from card_data to permanent (applied = false by default)
@@ -990,7 +993,7 @@ void StateManager::apply_land_abilities(Entity entity) {
         // Skip only if this exact color ability already exists
         auto &perm_abilities = perm.abilities;
         bool already_present = false;
-        for (auto ab : perm_abilities) {
+        for (const auto &ab : perm_abilities) {
             if (ab.category == "AddMana" && ab.color == required_color && ab.amount == 1) {
                 already_present = true;
                 break;

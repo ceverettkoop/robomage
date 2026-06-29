@@ -207,8 +207,13 @@ static int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &dec
             continue;
         }
 
-        populate_gamestate(&gs, viewer);
-        print_game_state(&gs);
+        // In machine mode this populate is redundant: print_game_state early-returns,
+        // and InputLogger::get_input re-runs populate_gamestate into its own buffer.
+        // Skip the wasted full-entity scan + memset on every machine-mode decision.
+        if (!machine_mode) {
+            populate_gamestate(&gs, viewer);
+            print_game_state(&gs);
+        }
         int choice = InputLogger::instance().get_input(legal_actions);
         process_action(legal_actions[static_cast<size_t>(choice)], cur_game, sys.orderer);
     }

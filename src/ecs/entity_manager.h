@@ -49,6 +49,11 @@ class EntityManager {
             // Get this entity's signature from the array
             return mSignatures[entity];
         }
+        // Read-only access without copying the bitset (hot path: entity_has_component).
+        const Signature &GetSignatureRef(Entity entity) const {
+            assert(entity < MAX_ENTITIES && "Entity out of range.");
+            return mSignatures[entity];
+        }
     private:
         // Queue of unused entity IDs
         std::queue<Entity> mAvailableEntities{};

@@ -416,8 +416,13 @@ void populate_query(Query* q, const std::vector<LegalAction>& actions) {
 
 // ── serialize_state ───────────────────────────────────────────────────────────
 
-std::vector<float> serialize_state(const GameState* gs) {
-    std::vector<float> state;
+const std::vector<float>& serialize_state(const GameState* gs) {
+    // Reused across calls: the game loop is single-threaded and the caller consumes the
+    // result (fwrite) before the next call, so a thread_local scratch buffer is safe.
+    // clear() keeps the capacity from the first call, so subsequent calls don't realloc
+    // the ~135 KB vector that was previously heap-allocated every decision.
+    static thread_local std::vector<float> state;
+    state.clear();
     state.reserve(static_cast<size_t>(STATE_SIZE));
 
     // Header: self (9) + opp (9) + step one-hot (13) + flags (3) = 34
