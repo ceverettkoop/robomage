@@ -203,6 +203,11 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         *common_args(),
     ]),
     Sub("league", "PFSP league: train one generalist model per deck vs the whole field", items=[
+        Arg("--resume", "flag",
+            help="Resume an interrupted league run from its saved progress "
+                 "(checkpoints/_league_progress.json, rewritten on every snapshot). "
+                 "Restores the roster, total budget, rotation, and all hyperparameters "
+                 "from the sidecar — other flags are ignored when set."),
         Arg("--decks", "str", default=None, suggest="league_deck", multi=True,
             help="Comma-separated deck roster to train + sample opponents from "
                  "(default: every deck in decks/league/, referenced as "

@@ -536,7 +536,21 @@ train/.venv/bin/python train/train.py observe --deck delver --opponent mav --gam
 # Bulk training (was --train-all / --train-deck)
 train/.venv/bin/python train/train.py sweep                                           # all deck×deck matchups
 train/.venv/bin/python train/train.py sweep --deck delver                             # matchups featuring delver
+
+# PFSP league (rotating learner over a shared snapshot pool)
+train/.venv/bin/python train/train.py league                                          # train the decks/league/ roster
+train/.venv/bin/python train/train.py league --resume                                 # resume an interrupted league run
 ```
+
+**League resume.** A `league` run persists its driver progress (roster, total budget,
+global steps done, current rotation, and every hyperparameter) to
+`train/checkpoints/_league_progress.json`, rewritten every time a snapshot checkpoint is
+saved and at each rotation boundary. If the session is interrupted, restart it with just
+`train.py league --resume` (in the TUI, tick the league form's **--resume** checkbox) — the
+sidecar restores the full run configuration and the loop continues from where it left off,
+re-entering a partially-trained learner for only the remainder of its rotation. All other
+flags are ignored when `--resume` is set; per-deck model weights resume from their own
+`{deck}__final.zip` / newest `{deck}__v*.zip` as usual.
 
 ### Best-of-three mode
 
