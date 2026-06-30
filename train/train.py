@@ -23,6 +23,7 @@ Usage:
 """
 
 import argparse
+import json
 import os
 import sys
 from collections import deque
@@ -235,7 +236,7 @@ class SnapshotCallback(BaseCallback):
 
     def __init__(self, checkpoint_dir: str, deck: str, snapshot_every: int,
                  promote_margin: float = 0.0, pfsp_callback: "PFSPCallback | None" = None,
-                 min_gate_samples: int = 30):
+                 min_gate_samples: int = 30, on_snapshot=None):
         super().__init__()
         self._dir = checkpoint_dir
         self._deck = deck
@@ -243,6 +244,9 @@ class SnapshotCallback(BaseCallback):
         self._margin = promote_margin
         self._pfsp = pfsp_callback
         self._min_gate_samples = min_gate_samples
+        # Optional callable(num_timesteps) run after a snapshot is saved — the league
+        # driver uses it to persist resumable progress alongside each checkpoint.
+        self._on_snapshot = on_snapshot
         self._next_at = None  # set on training start relative to current num_timesteps
 
     def _on_training_start(self) -> None:
@@ -269,6 +273,8 @@ class SnapshotCallback(BaseCallback):
         path = os.path.join(self._dir, f"{self._deck}__v{self.num_timesteps}")
         self.model.save(path)
         print(f"[snapshot] saved {self._deck}__v{self.num_timesteps}.zip")
+        if self._on_snapshot is not None:
+            self._on_snapshot(self.num_timesteps)
         return True
 
 
@@ -422,6 +428,41 @@ class ReplayLogCallback(BaseCallback):
 CHECKPOINT_DIR = "checkpoints"
 LOG_DIR = "logs"
 _CHECKPOINT_ABS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "checkpoints")
+
+# League resume: the driver's loop position (which deck is up, how many global steps
+# are done) lives outside any single model checkpoint, so we persist it to a small
+# JSON sidecar that is rewritten every time a snapshot is saved (and at each rotation
+# boundary). A crashed/interrupted `league` run then resumes from `league --resume`.
+LEAGUE_STATE_VERSION = 1
+
+
+def _league_state_path(checkpoint_dir: str) -> str:
+    return os.path.join(checkpoint_dir, "_league_progress.json")
+
+
+def _write_league_state(checkpoint_dir: str, state: dict) -> None:
+    """Atomically persist the league driver's progress to its JSON sidecar."""
+    path = _league_state_path(checkpoint_dir)
+    tmp = path + ".tmp"
+    try:
+        with open(tmp, "w") as fh:
+            json.dump(state, fh, indent=2)
+        os.replace(tmp, path)
+    except OSError as exc:
+        print(f"[league] WARNING: could not write progress file {path}: {exc}")
+
+
+def _read_league_state(checkpoint_dir: str) -> dict | None:
+    """Load the league progress sidecar, or None if it is absent/unreadable."""
+    path = _league_state_path(checkpoint_dir)
+    if not os.path.exists(path):
+        return None
+    try:
+        with open(path) as fh:
+            return json.load(fh)
+    except (OSError, ValueError) as exc:
+        print(f"[league] WARNING: could not read progress file {path}: {exc}")
+        return None
 
 
 def _resolve_model(path: str) -> str:
@@ -651,13 +692,17 @@ def _league_chunk(binary_path: str, learner_deck: str, roster: list[str],
                   n_envs: int, opp_ckpt_ratio: float, self_play_frac: float,
                   scripted_anchor_frac: float, pfsp_mode: str, pfsp_p: float,
                   softmax_eta: float, snapshot_every: int, promote_margin: float,
-                  embed_dim: int, no_shaping: bool, **env_kwargs):
+                  embed_dim: int, no_shaping: bool, on_progress=None, **env_kwargs):
     """Train one learner deck for ``chunk_steps`` against the shared league pool.
 
     Resumes the learner's own latest checkpoint (``{deck}__final`` or newest
     ``{deck}__v*``) so its cumulative step count — and therefore snapshot version
     numbering — keeps growing across rotations; starts from scratch only the very
     first time a deck is trained.
+
+    ``on_progress(steps_this_chunk)`` (optional) is called after every snapshot save
+    with the number of new steps trained so far in this chunk, so the driver can
+    persist resumable league progress alongside each checkpoint.
     """
     env_kwargs.setdefault("binary_path", binary_path)
     # League decks may be namespaced under a subfolder (e.g. 'league/<stem>'); mirror
@@ -695,16 +740,23 @@ def _league_chunk(binary_path: str, learner_deck: str, roster: list[str],
             vec_env.env_method("set_shaping_scale", 0.0)
             print("[shaping] disabled for this session (--no-shaping)")
 
+        start_steps = model.num_timesteps
+        # Translate a snapshot's absolute step count into "new steps this chunk" so the
+        # driver can persist the global league position whenever a checkpoint is saved.
+        snap_hook = None
+        if on_progress is not None:
+            snap_hook = lambda steps: on_progress(steps - start_steps)
+
         pfsp_cb = PFSPCallback(vec_env, mode=pfsp_mode, p=pfsp_p, eta=softmax_eta)
         callbacks = [
             pfsp_cb,
             SnapshotCallback(checkpoint_dir, learner_deck, snapshot_every,
-                             promote_margin=promote_margin, pfsp_callback=pfsp_cb),
+                             promote_margin=promote_margin, pfsp_callback=pfsp_cb,
+                             on_snapshot=snap_hook),
         ]
         if not no_shaping:
             callbacks.append(ShapingScaleCallback(vec_env))
 
-        start_steps = model.num_timesteps
         model.learn(total_timesteps=chunk_steps, callback=callbacks,
                     reset_num_timesteps=not resuming)
         model.save(os.path.join(checkpoint_dir, f"{learner_deck}__final"))
@@ -727,7 +779,7 @@ def league(binary_path: str, decks: str | None = None,
            promote_margin: float = LEAGUE_PROMOTE_MARGIN,
            embed_dim: int = EMBED_DIM, n_envs_override: int | None = None,
            opp_ckpt_ratio: float = 1.0, no_shaping: bool = False,
-           tally: bool = False, **env_kwargs):
+           tally: bool = False, resume: bool = False, **env_kwargs):
     """PFSP league driver: rotating single learner over a shared snapshot pool.
 
     One learner deck at a time trains for ``rotate_every`` steps against a frozen
@@ -735,12 +787,55 @@ def league(binary_path: str, decks: str | None = None,
     latest self; then the run rotates to the next deck. Snapshots dropped into the
     shared dir by earlier rotations become opponents for later ones, so the league
     structure is self-managing. Continues until ``total_timesteps`` total.
+
+    The driver's loop position (roster, total budget, global steps done, current
+    rotation, and every hyperparameter) is persisted to a JSON sidecar
+    (``checkpoints/_league_progress.json``) every time a snapshot checkpoint is saved
+    and at each rotation boundary. ``resume=True`` reloads that sidecar and continues
+    where an interrupted run left off — so a crashed league restarts with just
+    ``train.py league --resume`` (all other flags are restored from the sidecar).
     """
     checkpoint_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), CHECKPOINT_DIR)
     os.makedirs(checkpoint_dir, exist_ok=True)
     os.makedirs(LOG_DIR, exist_ok=True)
 
-    if decks:
+    steps_done = 0
+    rotation = 0
+    if resume:
+        state = _read_league_state(checkpoint_dir)
+        if state is None:
+            raise FileNotFoundError(
+                f"--resume: no league progress file at "
+                f"{_league_state_path(checkpoint_dir)}. Start a league run first "
+                f"(it writes the file as it trains), then resume it.")
+        # Restore the full run configuration from the sidecar so the resumed league
+        # is identical to the interrupted one; only --binary stays caller-supplied.
+        roster = list(state["roster"])
+        total_timesteps = int(state["total_timesteps"])
+        steps_done = int(state["steps_done"])
+        rotation = int(state["rotation"])
+        p = state.get("params", {})
+        rotate_every = int(p.get("rotate_every", rotate_every))
+        self_play_frac = float(p.get("self_play_frac", self_play_frac))
+        scripted_anchor_frac = float(p.get("scripted_anchor_frac", scripted_anchor_frac))
+        pfsp_mode = p.get("pfsp_mode", pfsp_mode)
+        pfsp_p = float(p.get("pfsp_p", pfsp_p))
+        softmax_eta = float(p.get("softmax_eta", softmax_eta))
+        snapshot_every = int(p.get("snapshot_every", snapshot_every))
+        promote_margin = float(p.get("promote_margin", promote_margin))
+        embed_dim = int(p.get("embed_dim", embed_dim))
+        n_envs_override = p.get("n_envs", n_envs_override)
+        opp_ckpt_ratio = float(p.get("opp_ckpt_ratio", opp_ckpt_ratio))
+        no_shaping = bool(p.get("no_shaping", no_shaping))
+        env_kwargs.setdefault("bo3", bool(p.get("bo3", env_kwargs.get("bo3", False))))
+        env_kwargs.setdefault("auto_sideboard",
+                              bool(p.get("auto_sideboard", env_kwargs.get("auto_sideboard", False))))
+        print(f"[league] resuming from {_league_state_path(checkpoint_dir)}: "
+              f"{steps_done:,}/{total_timesteps:,} steps, rotation {rotation}")
+        if steps_done >= total_timesteps:
+            print("[league] saved progress is already complete — nothing to resume.")
+            return
+    elif decks:
         roster = [d.strip() for d in decks.split(",") if d.strip()]
     else:
         # Default roster: every deck in the dedicated league folder, referenced as
@@ -763,24 +858,79 @@ def league(binary_path: str, decks: str | None = None,
     print(f"  pfsp_mode={pfsp_mode}  p={pfsp_p}  eta={softmax_eta}")
     print(f"  snapshot_every={snapshot_every:,}  promote_margin={promote_margin}  embed_dim={embed_dim}")
 
-    steps_done = 0
-    rotation = 0
+    # Everything the sidecar needs to faithfully reconstruct this run on --resume.
+    base_state = {
+        "version": LEAGUE_STATE_VERSION,
+        "roster": roster,
+        "total_timesteps": total_timesteps,
+        "params": {
+            "rotate_every": rotate_every,
+            "self_play_frac": self_play_frac,
+            "scripted_anchor_frac": scripted_anchor_frac,
+            "pfsp_mode": pfsp_mode,
+            "pfsp_p": pfsp_p,
+            "softmax_eta": softmax_eta,
+            "snapshot_every": snapshot_every,
+            "promote_margin": promote_margin,
+            "embed_dim": embed_dim,
+            "n_envs": n_envs,
+            "opp_ckpt_ratio": opp_ckpt_ratio,
+            "no_shaping": no_shaping,
+            "bo3": bool(env_kwargs.get("bo3", False)),
+            "auto_sideboard": bool(env_kwargs.get("auto_sideboard", False)),
+        },
+    }
+
+    def save_progress(done: int, rot: int, cstart: int):
+        # `chunk_start` = global steps_done at the start of the current rotation, so a
+        # mid-chunk resume can train only the *remainder* of an interrupted rotation
+        # rather than a fresh full chunk.
+        _write_league_state(checkpoint_dir, {**base_state, "steps_done": int(done),
+                                             "rotation": int(rot),
+                                             "chunk_start": int(cstart)})
+
+    # `chunk_start` tracks where the current rotation began. On a fresh run it equals
+    # steps_done; on --resume it is restored from the sidecar (see below).
+    chunk_start = steps_done if not resume else int(state.get("chunk_start", steps_done))
+
+    # Record the starting position immediately so an interruption before the first
+    # snapshot still leaves a resumable (if un-advanced) sidecar.
+    save_progress(steps_done, rotation, chunk_start)
+
     while steps_done < total_timesteps:
         learner = roster[rotation % len(roster)]
-        chunk = min(rotate_every, total_timesteps - steps_done)
+        done_in_rotation = steps_done - chunk_start
+        chunk = min(rotate_every - done_in_rotation, total_timesteps - steps_done)
+        if chunk <= 0:
+            # Rotation already satisfied (only reachable via an odd resume) — advance.
+            rotation += 1
+            chunk_start = steps_done
+            save_progress(steps_done, rotation, chunk_start)
+            continue
         print(f"\n{'='*60}")
         print(f"[league rotation {rotation + 1}] learner={learner}  "
-              f"({chunk:,} steps, {steps_done:,}/{total_timesteps:,} done)")
+              f"({chunk:,} steps, {steps_done:,}/{total_timesteps:,} done"
+              + (f", {done_in_rotation:,} already this rotation" if done_in_rotation else "")
+              + ")")
         print(f"{'='*60}")
+        # Persist fine-grained progress on every snapshot mid-chunk: the projected
+        # global step count, keeping `rotation`/`chunk_start` fixed so a resume
+        # re-enters this same learner for the remainder of its rotation.
+        rotation_start_done = chunk_start
         ran = _league_chunk(
             binary_path, learner, roster, checkpoint_dir, chunk,
             n_envs=n_envs, opp_ckpt_ratio=opp_ckpt_ratio,
             self_play_frac=self_play_frac, scripted_anchor_frac=scripted_anchor_frac,
             pfsp_mode=pfsp_mode, pfsp_p=pfsp_p, softmax_eta=softmax_eta,
             snapshot_every=snapshot_every, promote_margin=promote_margin,
-            embed_dim=embed_dim, no_shaping=no_shaping, **env_kwargs)
+            embed_dim=embed_dim, no_shaping=no_shaping,
+            on_progress=lambda chunk_steps: save_progress(
+                steps_done + chunk_steps, rotation, rotation_start_done),
+            **env_kwargs)
         steps_done += ran if ran else chunk
         rotation += 1
+        chunk_start = steps_done
+        save_progress(steps_done, rotation, chunk_start)
 
     print(f"\nLeague complete: {total_timesteps:,} total timesteps over {rotation} rotations.")
 
@@ -1087,7 +1237,7 @@ if __name__ == "__main__":
                snapshot_every=args.snapshot_every, promote_margin=args.promote_margin,
                embed_dim=args.embed_dim, n_envs_override=args.n_envs,
                opp_ckpt_ratio=args.opponent_ckpt_ratio, no_shaping=args.no_shaping,
-               tally=args.tally, **env_kwargs)
+               tally=args.tally, resume=args.resume, **env_kwargs)
     elif args.command == "train":
         train(args.binary, _resolve_model(args.load), args.total_timesteps,
               tally=args.tally, self_play=args.self_play,
