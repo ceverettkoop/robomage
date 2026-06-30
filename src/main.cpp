@@ -78,6 +78,10 @@ std::vector<std::string> exile_a_cards;
 std::vector<std::string> exile_b_cards;
 std::vector<std::string> sideboard_a_cards;
 std::vector<std::string> sideboard_b_cards;
+// Test-harness starting-life overrides (-1 = use the normal 20). Let scenarios exercise
+// life-payment costs (fetch lands, Toxic Deluge, phyrexian mana) at a chosen life total.
+int life_a_override = -1;
+int life_b_override = -1;
 
 // match state (accessible for state serialization)
 int match_game_number = -1;  // -1 = single game, 0-2 = bo3 game index
@@ -127,6 +131,11 @@ static int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &dec
                             bool player_a_goes_first, unsigned int seed) {
     cur_game = Game(seed);
     cur_game.generate_players(deck_a, deck_b);
+    // Apply starting-life overrides (test harness --life-a/--life-b) before any play.
+    if (life_a_override >= 0)
+        global_coordinator.GetComponent<Player>(cur_game.player_a_entity).life_total = life_a_override;
+    if (life_b_override >= 0)
+        global_coordinator.GetComponent<Player>(cur_game.player_b_entity).life_total = life_b_override;
     sys.orderer->generate_libraries(deck_a, deck_b);
 
     sys.orderer->draw_hands();
@@ -509,6 +518,12 @@ int main(int argc, char const *argv[]) {
             i++;
         } else if (std::string(argv[i]) == "--sideboard-b" && i + 1 < argc) {
             sideboard_b_cards = split_card_list(argv[i + 1]);
+            i++;
+        } else if (std::string(argv[i]) == "--life-a" && i + 1 < argc) {
+            life_a_override = std::stoi(argv[i + 1]);
+            i++;
+        } else if (std::string(argv[i]) == "--life-b" && i + 1 < argc) {
+            life_b_override = std::stoi(argv[i + 1]);
             i++;
         } else if (std::string(argv[i]) == "--narrative") {
             narrative_mode = true;

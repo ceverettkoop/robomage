@@ -204,6 +204,7 @@ class RoboMageEnv(gym.Env):
                  graveyard_a: str | None = None, graveyard_b: str | None = None,
                  exile_a: str | None = None, exile_b: str | None = None,
                  sideboard_a: str | None = None, sideboard_b: str | None = None,
+                 life_a: int | None = None, life_b: int | None = None,
                  log_viewer: str | None = None):
         super().__init__()
         self.binary_path = os.path.realpath(binary_path)
@@ -230,6 +231,10 @@ class RoboMageEnv(gym.Env):
         self._exile_b = exile_b
         self._sideboard_a = sideboard_a
         self._sideboard_b = sideboard_b
+        # --life-a/-b override the starting life total (default 20) so life-payment
+        # costs (fetch lands, Toxic Deluge, phyrexian mana) can be tested at any life.
+        self._life_a = life_a
+        self._life_b = life_b
         # When set ("A"/"B"), the engine redacts game_log_private narrative to
         # that seat's view (hidden draws, tutored/top-of-library cards) without
         # rerouting input — both seats still respond over the machine protocol.
@@ -288,6 +293,10 @@ class RoboMageEnv(gym.Env):
             cmd += ["--sideboard-a", self._sideboard_a]
         if self._sideboard_b:
             cmd += ["--sideboard-b", self._sideboard_b]
+        if self._life_a is not None:
+            cmd += ["--life-a", str(self._life_a)]
+        if self._life_b is not None:
+            cmd += ["--life-b", str(self._life_b)]
         if self._log_viewer:
             cmd += ["--log-viewer", self._log_viewer]
         self._proc = subprocess.Popen(

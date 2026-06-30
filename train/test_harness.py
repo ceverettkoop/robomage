@@ -177,6 +177,11 @@ def main():
     parser.add_argument("--exile-b", help="Cards starting in Player B's exile (comma-separated)")
     parser.add_argument("--sideboard-a", help="Cards starting in Player A's sideboard / 'outside the game' (comma-separated)")
     parser.add_argument("--sideboard-b", help="Cards starting in Player B's sideboard / 'outside the game' (comma-separated)")
+    parser.add_argument("--life-a", type=int, default=None,
+                        help="Player A's starting life total (default 20). Lets a scenario "
+                             "exercise life-payment costs at a chosen life.")
+    parser.add_argument("--life-b", type=int, default=None,
+                        help="Player B's starting life total (default 20).")
     parser.add_argument("--actions", help="Comma-separated action indices to play")
     parser.add_argument("--play",
                         help="Comma-separated semantic action specs resolved against the "
@@ -224,6 +229,8 @@ def main():
     exile_b = _parse_card_list(args.exile_b) or scenario.get("exile_b", [])
     sideboard_a = _parse_card_list(args.sideboard_a) or scenario.get("sideboard_a", [])
     sideboard_b = _parse_card_list(args.sideboard_b) or scenario.get("sideboard_b", [])
+    life_a = args.life_a if args.life_a is not None else scenario.get("life_a")
+    life_b = args.life_b if args.life_b is not None else scenario.get("life_b")
     seed = args.seed if args.seed is not None else scenario.get("seed", 1)
     # Stacked-deck mode: deck-file order == draw order. Implied by hand sculpting
     # (--hand-a/--hand-b build a stacked temp deck whose first 7 cards must be the
@@ -340,6 +347,7 @@ def main():
             graveyard_a=gy_a, graveyard_b=gy_b,
             exile_a=ex_a, exile_b=ex_b,
             sideboard_a=sb_a, sideboard_b=sb_b, no_shuffle=no_shuffle,
+            life_a=life_a, life_b=life_b,
             max_decisions=max_decisions)
         winner = bool(wins or losses)
         # A --play run resolves specs to concrete indices; print them so the line
