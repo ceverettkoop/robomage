@@ -38,6 +38,7 @@ def run_games(controller_a, controller_b, *,
               graveyard_a=None, graveyard_b=None,
               exile_a=None, exile_b=None,
               sideboard_a=None, sideboard_b=None, no_shuffle=False,
+              life_a=None, life_b=None,
               max_decisions=None):
     """Run ``n_games`` between two controllers and render the transcript.
 
@@ -61,6 +62,7 @@ def run_games(controller_a, controller_b, *,
                            graveyard_a=graveyard_a, graveyard_b=graveyard_b,
                            exile_a=exile_a, exile_b=exile_b,
                            sideboard_a=sideboard_a, sideboard_b=sideboard_b,
+                           life_a=life_a, life_b=life_b,
                            no_shuffle=no_shuffle)
         obs, _ = env.reset(seed=(seed + i) if seed is not None else None)
         # Seed Python's global RNG with the SAME per-game seed passed to the engine.

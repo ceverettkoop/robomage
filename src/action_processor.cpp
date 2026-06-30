@@ -1242,6 +1242,29 @@ bool spell_has_castable_targets(const Ability &primary, std::shared_ptr<Orderer>
     return false;
 }
 
+// CR 601.2c: when a spell's REQUIRED target count is the X it is cast for (TargetMin$ X, e.g.
+// Hide on the Ceiling — "exile X target artifacts and/or creatures", with TargetMin$ X =
+// TargetMax$ X), the player can't announce an X larger than the number of legal targets, or
+// targeting can't be completed and the spell would be cast/forced with too few targets. Returns
+// the cap (legal-target count) the CHOOSE_X menu should clamp X to; returns SIZE_MAX when no
+// targeting ability ties its mandatory minimum target count to X, i.e. no target-based cap applies.
+static size_t spell_xpaid_target_cap(const CardData &card_data, Entity spell_entity,
+                                     Zone::Ownership caster, std::shared_ptr<Orderer> orderer) {
+    size_t cap = SIZE_MAX;
+    for (const auto &ab : card_data.abilities) {
+        if (ab.ability_type != Ability::SPELL) continue;
+        for (const Ability *t : spell_targeting_abilities(ab)) {
+            if (!t->target_min_from_xpaid) continue;  // only X-driven MANDATORY target counts
+            Ability probe = *t;
+            probe.source = spell_entity;
+            probe.controller = caster;
+            cap = std::min(cap, build_valid_targets(probe, orderer, caster).size());
+        }
+        break;  // single SPELL ability (matches the cast loop's one-ability assumption)
+    }
+    return cap;
+}
+
 static void select_single_target(Ability &ability, const std::vector<Entity> &valid_targets,
                                   bool allow_done) {
     game_log("Choose target:\n");
@@ -1563,6 +1586,18 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             // has K:Replicate and the caster chose to pay it.
             int replicate_count = 0;
 
+            // CR 601.2 orders target choice (601.2c) BEFORE paying costs (601.2h). The regular
+            // mana payment is therefore captured here and deferred until after targets are chosen
+            // (below). This matters when the mana is paid by sacrificing a permanent for mana
+            // (Lotus Petal / Lion's Eye Diamond): paying first could remove the spell's only legal
+            // target before it is chosen, crashing on an empty target menu. With the payment
+            // deferred, the target is chosen while the would-be mana source is still on the
+            // battlefield; sacrificing it for mana then merely makes the target illegal, so the
+            // spell fizzles at resolution (CR 608.2b) instead of being offered with no legal target.
+            ManaValue deferred_mana_cost;
+            bool deferred_mana_pending = false;
+            bool deferred_delve = false, deferred_improvise = false;
+
             // FLASHBACK COST
             if (action.use_flashback) {
                 // Pay flashback mana cost
@@ -1707,6 +1742,11 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                 // X-COST: prompt player to choose X value, add X generic to cost
                 if (card_data.has_x_cost) {
                     size_t max_x = max_available_mana(caster, cost_to_pay, orderer);
+                    // For a spell whose required target count IS X (Hide on the Ceiling), X can't
+                    // exceed the number of legal targets (CR 601.2c) — clamp so the agent can't
+                    // pick an X that leaves a mandatory target choice with too few candidates.
+                    max_x = std::min(max_x,
+                                     spell_xpaid_target_cap(card_data, spell_entity, caster, orderer));
 
                     game_log("Choose X value (0-%zu):\n", max_x);
                     std::vector<LegalAction> x_actions;
@@ -1777,14 +1817,23 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                     for (Colors phyrex_color : card_data.phyrexian_mana) {
                         std::string color_name = mana_symbol_str(phyrex_color);
                         std::vector<LegalAction> phyrex_actions;
-                        LegalAction pay_life(PASS_PRIORITY, "Pay 2 life (instead of {" + color_name + "})");
-                        pay_life.category = ActionCategory::PAYING_COSTS;
-                        phyrex_actions.push_back(pay_life);
+                        // CR 119.4 / 118.3: a player can't pay 2 life they don't have. Only offer
+                        // the life option when life >= 2 (paying down to exactly 0 is legal — they
+                        // die to SBAs afterward). Re-checked per pip against the running life total,
+                        // since an earlier pip's life payment lowers what's left for the next.
+                        bool can_pay_life = phyrex_player.life_total >= 2;
+                        if (can_pay_life) {
+                            LegalAction pay_life(PASS_PRIORITY, "Pay 2 life (instead of {" + color_name + "})");
+                            pay_life.category = ActionCategory::PAYING_COSTS;
+                            phyrex_actions.push_back(pay_life);
+                        }
                         LegalAction pay_mana(PASS_PRIORITY, "Pay {" + color_name + "}");
                         pay_mana.category = ActionCategory::PAYING_COSTS;
                         phyrex_actions.push_back(pay_mana);
                         int phyrex_choice = InputLogger::instance().get_input(phyrex_actions);
-                        if (phyrex_choice == 0) {
+                        // The life option occupies index 0 only when it was offered; with it
+                        // suppressed the sole option is "Pay {color}", so fall through to mana.
+                        if (can_pay_life && phyrex_choice == 0) {
                             phyrex_player.life_total -= 2;
                             game_log("%s pays 2 life\n", player_name(caster).c_str());
                         } else {
@@ -1793,14 +1842,17 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                     }
                 }
 
-                if (card_data.has_delve) cur_game.delve_exiled.clear();
-                if (!prompt_mana_payment(caster, cost_to_pay, spell_entity, orderer,
-                                         card_data.has_delve, card_data.has_improvise)) {
-                    restore_mana_state(caster, mana_snap, orderer);
-                    cur_game.payment_fail_counts[spell_entity]++;
-                    game_log("Payment cancelled.\n");
-                    break;
-                }
+                // Defer the actual mana payment until after targets are chosen (CR 601.2c before
+                // 601.2g/h — see deferred_mana_* above), so a sacrifice-for-mana source spent here
+                // can't remove a spell's only legal target before it is chosen. The cost is fully
+                // resolved (base + offspring/kicker/replicate/X/hybrid/phyrexian), so the deferred
+                // payment is a pure spend with no target-dependent choices left. Untargeted spells
+                // take the same path — their (empty) target step makes "pay after targets"
+                // identical to paying now, so a single unified order serves every cast.
+                deferred_mana_cost = cost_to_pay;
+                deferred_delve = card_data.has_delve;
+                deferred_improvise = card_data.has_improvise;
+                deferred_mana_pending = true;
 
                 // VARIABLE LIFE X-COST (Toxic Deluge: "As an additional cost, pay X life").
                 // The life paid IS the spell's X (Count$xPaid). Choose X (0..life — CR 119.4
@@ -1920,6 +1972,30 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                     game_log("%s casts %s enchanting %s\n", player_name(caster).c_str(),
                              card_data.name.c_str(),
                              target_display_name(cur_game, enchant_ab.target).c_str());
+                }
+            }
+
+            // Pay the deferred regular mana cost now that targets are locked in (CR 601.2h, after
+            // the 601.2c target choice above). A sacrifice-for-mana source spent here may make a
+            // chosen target illegal — the spell then fizzles at resolution rather than ever being
+            // offered/forced with no legal target.
+            if (deferred_mana_pending) {
+                if (deferred_delve) cur_game.delve_exiled.clear();
+                if (!prompt_mana_payment(caster, deferred_mana_cost, spell_entity, orderer,
+                                         deferred_delve, deferred_improvise)) {
+                    // Payment cancelled (interactive only — machine mode pre-verifies
+                    // affordability). Targets were already chosen but the spell never reached the
+                    // stack, so rewind the half-finished cast: drop the targeting Ability / aura
+                    // link, clear the pending gift flag, restore mana, and bump payment_fail_counts
+                    // so the offer gate stops re-offering it (no scripted-agent payment loop).
+                    if (global_coordinator.entity_has_component<Ability>(spell_entity))
+                        global_coordinator.RemoveComponent<Ability>(spell_entity);
+                    cur_game.pending_aura_target.erase(spell_entity);
+                    cur_game.pending_gift_promised = false;
+                    restore_mana_state(caster, mana_snap, orderer);
+                    cur_game.payment_fail_counts[spell_entity]++;
+                    game_log("Payment cancelled.\n");
+                    break;
                 }
             }
 

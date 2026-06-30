@@ -992,6 +992,12 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 if (ab.energy_cost > 0 &&
                     player_energy(global_coordinator.GetComponent<Player>(get_player_entity(priority_player))) < ab.energy_cost)
                     continue;
+                // PayLife<N> additional cost (CR 119.4): you can't pay life you don't have. A
+                // fetch land (Pay 1 life) at 1 life is still legal (you pay down to 0, then die);
+                // only an ability costing MORE life than you have is filtered out here.
+                if (ab.life_cost > 0 &&
+                    global_coordinator.GetComponent<Player>(get_player_entity(priority_player)).life_total < ab.life_cost)
+                    continue;
                 if (ab.valid_tgts != "N_A" && !has_legal_targets(ab, orderer)) continue;
                 { auto it = cur_game.payment_fail_counts.find(ab.source);
                   if (it != cur_game.payment_fail_counts.end() && it->second >= 2) continue; }
@@ -1022,6 +1028,10 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             // PayEnergy<N> additional cost (CR 122.1c): you can't pay {E} you don't have.
             if (ab.energy_cost > 0 &&
                 player_energy(global_coordinator.GetComponent<Player>(get_player_entity(priority_player))) < ab.energy_cost)
+                continue;
+            // PayLife<N> additional cost (CR 119.4): you can't pay life you don't have.
+            if (ab.life_cost > 0 &&
+                global_coordinator.GetComponent<Player>(get_player_entity(priority_player)).life_total < ab.life_cost)
                 continue;
             // Check target legality
             if (ab.valid_tgts != "N_A" && ab.target_min > 0 && !has_legal_targets(ab, orderer)) continue;
