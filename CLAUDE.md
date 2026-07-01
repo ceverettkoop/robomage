@@ -558,6 +558,36 @@ re-entering a partially-trained learner for only the remainder of its rotation. 
 flags are ignored when `--resume` is set; per-deck model weights resume from their own
 `{deck}__final.zip` / newest `{deck}__v*.zip` as usual.
 
+**League opponent sampling (`LeaguePool`, `train/opponents.py`).** Each episode the pool
+makes two coupled choices — which opponent *deck* and which *controller* pilots it — from
+three branches: a small **latest-self** slot (`--self-play-frac`, default **0.2** — the
+anti-collapse "keep up with your own frontier" mirror), a **scripted anchor** floor
+(`--scripted-anchor-frac`, default 0.1, also the cold-start fallback), and, for the
+majority of episodes, a **PFSP-weighted historical snapshot** where each snapshot's weight
+is `(1 - learner_winrate_vs_it)^p` (`--pfsp-p`, default 2). That weighting is what
+concentrates training on the learner's **worst** matchups — a 0%-win opponent gets weight
+~1.0, a ~50% one ~0.25 — so keeping the fixed mirror slot **small** (not the old 0.8) hands
+the bulk of games to the hard matchups rather than drowning them in ~50% mirror games. It is
+self-tuning: as win-rates shift, PFSP reallocates automatically. To bias even harder toward
+losing matchups, lower `--self-play-frac` (e.g. 0.1) or raise `--pfsp-p`.
+
+**Active-pool composition (bounded but fair).** The pool is capped to
+`max(1, floor(opponent_ckpt_ratio * n_envs))` unique checkpoints (sharded across env
+processes) to bound memory, but it is **not** a raw recency slice — that starved decks early
+in the roster order. Instead it keeps, per deck, a **guaranteed** anchor (`{deck}__final`,
+or the newest snapshot if no `__final` yet) that is never evicted, plus **discretionary**
+`__v*` intermediates filled newest-first round-robin across decks. So every roster deck is
+always represented as an opponent — even a perennial-loser deck stays in the pool via its
+`__final`.
+
+**Snapshot promotion gate (`--promote-margin`, default 0.05).** The periodic
+`{deck}__v{steps}.zip` snapshots are only saved when the learner's *recent-window* win-rate
+clears `0.5 + margin` (first snapshot per deck exempt; `0` disables the gate; a negative
+margin gates below 50%). This keeps the pool from filling with near-duplicate weak
+intermediates. It gates **only** `__v*` snapshots — `{deck}__final` is always saved
+unconditionally at rotation end (and always kept in the pool per the composition rule above),
+so raising the margin never removes a deck from the field; it only thins its version history.
+
 ### Best-of-three mode
 
 `--bo3` flag (C++ and Python) runs a best-of-three match in a single process:
