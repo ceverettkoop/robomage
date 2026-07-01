@@ -567,8 +567,15 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         // An Aura (CR 303.4 / 601.2c) targets the object it will enchant as it is cast, so it
         // can only be cast if a legal object matching its Enchant restriction exists. Build a
         // transient targeting ability from the enchant filter and reuse the standard check.
+        // The enchant filter is controller-relative (Sheltered by Ghosts: Enchant Creature.YouCtrl),
+        // so the transient ability MUST carry the actual caster as controller — has_legal_targets
+        // evaluates YouCtrl/OppCtrl from ability_perspective_player, which defaults to PLAYER_A when
+        // left unset. Without this, an aura enchanting "a creature you control" cast by Player B was
+        // gated against Player A's creatures and offered with no legal target, crashing the empty
+        // target menu at cast (CR 601.2c).
         if (tgt_ok && !card_data.enchant_filter.empty()) {
             Ability enchant_ab;
+            enchant_ab.controller = priority_player;
             enchant_ab.valid_tgts = card_data.enchant_filter;
             tgt_ok = has_legal_targets(enchant_ab, orderer);
         }
