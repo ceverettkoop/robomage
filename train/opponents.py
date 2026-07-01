@@ -22,7 +22,9 @@ from env import MAX_ACTIONS
 from scripted_agent import ScriptedAgent, make_agent
 
 # Bare suffixes (and the "scripted" prefix) that denote a scripted controller.
-_SCRIPTED_SUFFIXES = frozenset({"scripted", "random", "greedy", "easy", "hard", "heuristic"})
+# Keep in sync with scripted_agent._PRESETS.
+_SCRIPTED_SUFFIXES = frozenset({"scripted", "random", "greedy", "easy", "hard",
+                                "heuristic", "explore", "fuzz"})
 
 # Checkpoint format version. v2 is the deck-pilot naming ('{deck}__v{steps}.zip' /
 # '{deck}__final.zip') used since the embed_dim bump; the double underscore is the
