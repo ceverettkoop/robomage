@@ -63,10 +63,16 @@ class Skill(Enum):
     GREEDY    — the original rule-based behaviour; the baseline opponent.
     HEURISTIC — GREEDY's scan with selected decision points overridden by
                 single-ply heuristics (board eval, combat sim, smarter targeting).
+    EXPLORE   — coverage-oriented fuzzer: a deterministic, stateless, seed-mixed
+                weighted choice biased toward the actions that drive the most engine
+                code (casting, activating, combat, varied targets/modes/X). Not meant
+                to play well — meant so that sweeping a range of seeds exercises as
+                many distinct engine paths as possible (see _explore_action).
     """
     RANDOM = "random"
     GREEDY = "greedy"
     HEURISTIC = "heuristic"
+    EXPLORE = "explore"
 
 
 @dataclass(frozen=True)
@@ -103,6 +109,32 @@ _PRESETS: dict[str, AgentConfig] = {
     "scripted":  _HARD_CONFIG,     # bare "scripted"/default now == hard (was greedy)
     "hard":      _HARD_CONFIG,
     "heuristic": _HARD_CONFIG,
+    # Coverage fuzzer (see Skill.EXPLORE). Combo lines are intentionally OFF so it
+    # never collapses into a fixed deck-specific line — it fans out across cards.
+    "explore":   AgentConfig(skill=Skill.EXPLORE, enable_combo_lines=False),
+    "fuzz":      AgentConfig(skill=Skill.EXPLORE, enable_combo_lines=False),
+}
+
+
+# Per-action-category weights for the EXPLORE tier (_explore_action). Higher weight =
+# more likely to be chosen. The bias is toward the categories that exercise the most
+# engine code (casting, activating, combat), with PASS kept low-but-nonzero so the game
+# still advances, and the "finish this phase" confirms (attackers/blockers/sideboard)
+# kept below their per-item counterparts so a few items get declared before confirming.
+# Any category not listed (targets, X, modes, mana, search, dig, discard, sacrifice,
+# name-a-card, ...) uses _EXPLORE_DEFAULT_WEIGHT — a plain uniform pick among that
+# decision's options, so which target / X / mode is taken varies freely across seeds.
+_EXPLORE_DEFAULT_WEIGHT = 2.0
+_EXPLORE_WEIGHTS: dict[int, float] = {
+    _CAT_CAST:     8.0,   # cast a spell — stack, resolution, effects, triggers, SBAs
+    _CAT_ACTIVATE: 6.0,   # activated abilities (mana, sacrifice, ETB-independent effects)
+    _CAT_LAND:     4.0,   # play a land (fuels casts; land ETBs / fetch / man-lands)
+    _CAT_SEL_ATK:  3.0,   # declare an attacker — combat triggers, damage, first strike
+    _CAT_SEL_BLK:  3.0,   # declare a blocker — blocking, combat damage assignment
+    _CAT_PASS:     1.0,   # advance priority / the game (low, but never zero)
+    _CAT_CONF_ATK: 0.6,   # finish declaring attackers (declare a few first)
+    _CAT_CONF_BLK: 0.6,   # finish declaring blockers
+    _CAT_SB_DONE:  0.6,   # finish sideboarding (swap a few cards first, bo3)
 }
 
 
@@ -655,6 +687,8 @@ class ScriptedAgent:
     def act(self, obs: np.ndarray, num_choices: int) -> int:
         if self.config.skill is Skill.RANDOM:
             return self._random_action(num_choices)
+        if self.config.skill is Skill.EXPLORE:
+            return self._explore_action(obs, num_choices)
         if self.config.skill is Skill.HEURISTIC:
             return self._heuristic_action(obs, num_choices)
         return _greedy_action(obs, num_choices)
@@ -812,13 +846,55 @@ class ScriptedAgent:
             return 0
         return int(self._rng.integers(0, num_choices))
 
+    def _explore_action(self, obs: np.ndarray, num_choices: int) -> int:
+        """Coverage fuzzer: a game-seed-deterministic, coverage-biased weighted choice.
+
+        Goal: sweeping a range of seeds should touch as many distinct engine paths as
+        possible — the opposite of GREEDY/HEURISTIC, which converge on one strong line
+        per state. Two ingredients:
+
+        * **Coverage bias.** Each legal action is weighted by its category
+          (``_EXPLORE_WEIGHTS``) so the pick leans toward the actions that drive the
+          most engine code — casting spells, activating abilities, attacking/blocking —
+          while still passing often enough to advance the game. Same-category menus
+          (targets, X values, modes, search/dig picks) get uniform weight, so *which*
+          target/mode/X is taken varies freely across seeds.
+
+        * **Determinism, tied to the GAME seed.** The weighted draw comes from Python's
+          global ``random`` — the same source GREEDY breaks ties with — which
+          ``runner.run_games`` (and the test harness) seed to the engine ``--seed``
+          before each game (``random.seed(seed)``). So the whole explore trajectory is
+          reproducible for a given seed, and a different seed reshuffles both the deck
+          (a different observation at every step) and this draw, branching into a
+          different line. No separate per-agent seed and no cross-call state to carry.
+
+        Not a strong opponent — combo lines are off (see the "explore" preset), so it
+        fans out across cards instead of collapsing into a deck's known line.
+        """
+        if num_choices <= 1:
+            return 0
+        cats = np.round(obs[STATE_SIZE:STATE_SIZE + num_choices]
+                        * ACTION_CATEGORY_MAX).astype(int)
+        weights = [_EXPLORE_WEIGHTS.get(int(c), _EXPLORE_DEFAULT_WEIGHT) for c in cats]
+        # Mulligan is a 2-way [keep, mulligan] choice — bias toward keeping (index 0)
+        # so most games actually start, but still mulligan ~1/4 of the time to exercise
+        # the mulligan + London-bottoming paths.
+        if num_choices == 2 and all(int(c) == _CAT_MULLIGAN for c in cats):
+            weights = [3.0, 1.0]
+        if sum(weights) <= 0:
+            weights = [1.0] * num_choices
+        return int(random.choices(range(num_choices), weights=weights, k=1)[0])
+
 
 def make_agent(spec: str = "scripted") -> ScriptedAgent:
     """Resolve a spec string into a ScriptedAgent.
 
     Accepts ``"scripted"``, ``"scripted:hard"``, ``"scripted:easy"``,
-    ``"scripted:random"``, or the bare suffixes ``"greedy"``/``"hard"``/
-    ``"heuristic"``/``"easy"``/``"random"`` (case-insensitive).
+    ``"scripted:random"``, ``"scripted:explore"``, or the bare suffixes
+    ``"greedy"``/``"hard"``/``"heuristic"``/``"easy"``/``"random"``/
+    ``"explore"``/``"fuzz"`` (case-insensitive). ``explore``/``fuzz`` select the
+    coverage fuzzer (Skill.EXPLORE) — vary the game ``--seed`` to fan it across
+    engine paths.
     """
     s = (spec or "scripted").strip().lower()
     suffix = s.split(":", 1)[1] if s.startswith("scripted:") else s
