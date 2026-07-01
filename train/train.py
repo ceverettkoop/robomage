@@ -693,7 +693,7 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
                 gamma=0.99,
                 gae_lambda=0.95,
                 clip_range=0.25,
-                ent_coef=0.12,
+                ent_coef=0.012,
                 verbose=1,
                 tensorboard_log=LOG_DIR,
             )
