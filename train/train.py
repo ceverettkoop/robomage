@@ -508,10 +508,43 @@ _DECKS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file
 _LEAGUE_DECKS_DIR = os.path.join(_DECKS_DIR, "league")
 
 
+def _limit_worker_threads():
+    """Pin a SubprocVecEnv worker process to a small intra-op math-thread count.
+
+    Every parallel env runs its own torch opponent policy on CPU (self-play /
+    league / random-model pools). Left at torch's default (≈ physical core
+    count), N worker processes each spawn ≈cores intra-op threads, so N envs
+    oversubscribe the machine by ≈N× — aggregate throughput then *falls* as envs
+    are added instead of rising (measurable with train/bench_nenvs.py). Data
+    parallelism here should come from the number of envs, not threads per env, so
+    each worker is pinned to a single math thread by default.
+
+    Called at the top of each env factory's ``_init`` so it applies only to the
+    workers, never the main-process learner — whose PPO gradient update keeps
+    full multithreaded backprop. Override the per-worker count with the
+    ``ROBOMAGE_WORKER_THREADS`` env var (0 = leave torch's default / opt out),
+    e.g. re-benchmark with ``ROBOMAGE_WORKER_THREADS=2``.
+    """
+    try:
+        n = int(os.environ.get("ROBOMAGE_WORKER_THREADS", "1"))
+    except ValueError:
+        n = 1
+    if n <= 0:
+        return
+    os.environ["OMP_NUM_THREADS"] = str(n)
+    os.environ["MKL_NUM_THREADS"] = str(n)
+    try:
+        import torch
+        torch.set_num_threads(n)
+    except Exception:  # noqa: BLE001 — torch may be absent (scripted-only worker)
+        pass
+
+
 def make_env(rank: int, model_deck: str = "delver", opp_deck: str = "delver",
              opponent_pool: str | None = None, opp_ckpt_ratio: float = 1.0,
              n_envs: int = 1, **env_kwargs):
     def _init():
+        _limit_worker_threads()
         opponent = "scripted"
         if opponent_pool:
             from opponents import OpponentPool
@@ -533,6 +566,7 @@ def make_fixed_model_env(opp_model_path: str, rank: int,
                          model_deck: str = "delver", opp_deck: str = "delver",
                          **env_kwargs):
     def _init():
+        _limit_worker_threads()
         env = FixedModelEnv(opp_model_path=opp_model_path,
                             model_deck=model_deck, opp_deck=opp_deck, **env_kwargs)
         if USE_MASKABLE:
@@ -546,6 +580,7 @@ def make_self_play_env(checkpoint_dir: str, rank: int,
                        model_deck: str = "delver", opp_deck: str = "delver",
                        **env_kwargs):
     def _init():
+        _limit_worker_threads()
         env = SelfPlayEnv(checkpoint_dir=checkpoint_dir,
                           model_deck=model_deck, opp_deck=opp_deck, **env_kwargs)
         if USE_MASKABLE:
@@ -559,6 +594,7 @@ def make_league_env(rank: int, learner_deck: str, roster: list[str], checkpoint_
                     n_envs: int, opp_ckpt_ratio: float, self_play_frac: float,
                     scripted_anchor_frac: float, **env_kwargs):
     def _init():
+        _limit_worker_threads()
         from opponents import LeaguePool
         pool = LeaguePool(
             learner_deck, roster, checkpoint_dir,
