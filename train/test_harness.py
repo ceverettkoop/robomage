@@ -197,6 +197,11 @@ def main():
                         help="Prompt a human at the terminal for each action (NOT usable "
                              "when Claude drives the harness — there is no TTY; use --play)")
     parser.add_argument("--scripted", action="store_true", help="Use scripted agent")
+    parser.add_argument("--scripted-spec", default="scripted",
+                        help="Which scripted tier --scripted drives (default 'scripted' = "
+                             "hard). Use 'scripted:explore' (or 'explore') for the "
+                             "coverage fuzzer — vary --seed to fan it across engine paths — "
+                             "or 'scripted:easy' / 'scripted:random' for weaker tiers.")
     parser.add_argument("--no-shuffle", action="store_true",
                         help="Don't shuffle libraries — deck-file order = draw order "
                              "(first 7 cards = opening hand). Use when feeding a stacked "
@@ -320,8 +325,8 @@ def main():
             controller = InteractiveController()
             mode_label = "Human"
         elif args.scripted:
-            controller = make_controller("scripted")
-            mode_label = "Scripted"
+            controller = make_controller(args.scripted_spec)
+            mode_label = args.scripted_spec if args.scripted_spec != "scripted" else "Scripted"
         else:
             controller = AutoPassController()
             mode_label = "Auto"
