@@ -437,10 +437,14 @@ correct way to provision a missing script:
   fetch/name such a card by its ASCII stem by hand. (The ML **vocab** match is separately
   accent-insensitive — `card_name_to_index` folds via `ascii_fold_card_name`, transliterating
   e.g. ó→o — so an accented `CardData::name` still resolves to its ASCII vocab entry.)
-- The SessionStart hook (`.claude/hooks/session-start.sh`) calls this tool for the top-level and
-  `meta/` decks so a fresh clone gets their scripts automatically. It does **not** yet scan
-  `decks/league/`, so after adding/altering a league deck, provision its scripts by running the
-  fetch tool over those deck files (or extend the hook to include the `league/` subdir).
+- The SessionStart hook (`.claude/hooks/session-start.sh`) calls this tool for the top-level,
+  `meta/`, and `league/` decks so a fresh clone gets their card **and** token scripts
+  automatically. The token pass scans each fetched card script (resolving combined DFC
+  filenames) for `TokenScript$` stems and for the keyword/effect-synthesized tokens the engine
+  hardcodes — Amass → `b_0_0_<subtype>_army`, Investigate → `c_a_clue_draw` (Clue), Mobilize →
+  `r_1_1_warrior` (Warrior) — and fetches those too. After adding a card that creates a NEW
+  engine-synthesized token kind (one with no `TokenScript$` field), add its stem to the hook's
+  `keyword_tokens` map.
 
 ### Adding a New Card
 
