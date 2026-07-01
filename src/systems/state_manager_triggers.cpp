@@ -834,6 +834,15 @@ static void place_triggers_apnap(Game &game, std::shared_ptr<Orderer> orderer,
         std::vector<size_t> group;
         for (size_t i = 0; i < pending.size(); i++)
             if (pending[i].controller == owner) group.push_back(i);
+        if (group.empty()) continue;
+
+        // Placement-time decisions (the 603.3b ordering pick and 603.3d target selection)
+        // belong to the TRIGGER'S controller, who need not be the player holding priority
+        // (e.g. the opponent's draw fired our Orcish Bowmasters). The input/BQUERY seat
+        // follows cur_game.player_a_has_priority, so temporarily seat the queries on the
+        // owner and restore afterwards (same pattern as request_optional_yesno).
+        bool prev_priority = cur_game.player_a_has_priority;
+        cur_game.player_a_has_priority = (owner == Zone::PLAYER_A);
 
         // 603.3b: the owner puts their simultaneously-triggered abilities on the stack in an
         // order of their choosing. We place one at a time; the first chosen ends up on the
@@ -858,5 +867,7 @@ static void place_triggers_apnap(Game &game, std::shared_ptr<Orderer> orderer,
             game_log("%s\n", pt.log_line.c_str());
             group.erase(group.begin() + static_cast<ptrdiff_t>(pick));
         }
+
+        cur_game.player_a_has_priority = prev_priority;
     }
 }
