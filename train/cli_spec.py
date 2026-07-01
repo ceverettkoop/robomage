@@ -23,12 +23,17 @@ N_ENVS_SELF_PLAY = 10  # self-play (each loads an opponent model)
 EMBED_DIM = 128        # policy feature-extractor embed dim for fresh models
 
 # League (PFSP) defaults.
-LEAGUE_SELF_PLAY_FRAC      = 0.8      # prob of facing the latest snapshot of the learner's own deck
+# self-play is a small floor, not the bulk of games: the PFSP-weighted historical
+# branch (1-winrate)^p already concentrates training on the learner's worst
+# matchups, and the mirror is one entry in that weighted pool. A large fixed
+# self-play slot would drown that concentration in ~50% mirror games, so keep it
+# low and let PFSP send the majority of episodes to the hardest opponents.
+LEAGUE_SELF_PLAY_FRAC      = 0.2     # prob of facing the latest snapshot of the learner's own deck
 LEAGUE_SCRIPTED_ANCHOR_FRAC = 0.1    # min share of the historical pool reserved for the scripted anchor
 LEAGUE_PFSP_P              = 2.0      # exponent p in (1-winrate)^p
 LEAGUE_SOFTMAX_ETA         = 0.01    # softmax quality learning rate
 LEAGUE_SNAPSHOT_EVERY      = 250_000 # steps between frozen snapshots
-LEAGUE_PROMOTE_MARGIN      = -0.1    # only snapshot when win-rate >= 0.5 + margin (negative gates below 50%; first exempt; 0 disables)
+LEAGUE_PROMOTE_MARGIN      = 0.05    # only snapshot when win-rate >= 0.5 + margin (negative gates below 50%; first exempt; 0 disables)
 LEAGUE_ROTATE_EVERY        = 500_000 # steps to train one learner deck before rotating
 
 

@@ -482,19 +482,54 @@ class LeaguePool:
 
     # ── snapshot discovery / sharding ────────────────────────────────────────
     def refresh(self):
-        """Rescan the checkpoint dir for snapshots, re-shard, and re-find latest-self."""
-        all_snaps: list[tuple[str, str]] = []
+        """Rescan the checkpoint dir for snapshots, re-shard, and re-find latest-self.
+
+        The active pool is bounded to ``max_unique`` files (per-process memory) but
+        composed for league *fairness* rather than by a raw recency slice over the
+        roster-ordered snapshot list — that slice kept whichever decks happened to
+        be last in the roster and silently evicted the ones listed first once the
+        pool overflowed. Instead it is built in two tiers:
+
+          * Tier 1 (guaranteed) — every roster deck's ``__final`` (or its newest
+            snapshot when no ``__final`` exists yet). This keeps a low-win-rate
+            deck present as an opponent no matter how many snapshots the stronger
+            decks have accumulated; ``max_unique`` is raised if needed so no deck's
+            anchor is ever dropped.
+          * Tier 2 (discretionary) — the remaining ``__v*`` snapshots, filled
+            newest-first round-robin across decks so one prolific deck can't crowd
+            the others out. These intermediates are already quality-gated at *save*
+            time by the promote-margin (SnapshotCallback), so re-enabling that gate
+            thins this tier without ever dropping a deck's guaranteed ``__final``.
+        """
+        per_deck: list[tuple[str, list[str]]] = []   # (deck, [oldest..newest, __final last])
         for deck in self._roster:
-            for path in deck_snapshots(deck, self._dir):
-                all_snaps.append((path, deck))
-        self._total_snaps = len(all_snaps)
+            snaps = deck_snapshots(deck, self._dir)
+            if snaps:
+                per_deck.append((deck, snaps))
+        self._total_snaps = sum(len(s) for _, s in per_deck)
         self._latest_self = latest_snapshot(self._learner, self._dir)
-        # Cap + shard the historical snapshot set to bound per-process memory.
-        # Take the *newest* snapshots: all_snaps is sorted oldest->newest, so the
-        # tail keeps the strongest/most-recent versions in the active pool rather
-        # than locking it to stale early checkpoints.
-        max_unique = max(1, int(math.floor(self._ratio * self._n_envs)))
-        active = all_snaps[-max_unique:]
+
+        # Tier 1: newest-per-deck anchor (== __final when present). Never evicted,
+        # so grow the cap to fit every deck's anchor if the ratio would undercut it.
+        guaranteed = [(snaps[-1], deck) for deck, snaps in per_deck]
+        max_unique = max(len(guaranteed), max(1, int(math.floor(self._ratio * self._n_envs))))
+
+        # Tier 2: remaining __v* intermediates, newest-first, round-robin by deck.
+        queues = [list(reversed(snaps[:-1])) for _, snaps in per_deck]  # newest -> oldest
+        decks = [deck for deck, _ in per_deck]
+        discretionary: list[tuple[str, str]] = []
+        remaining = max_unique - len(guaranteed)
+        while remaining > 0 and any(queues):
+            for qi, q in enumerate(queues):
+                if not q:
+                    continue
+                discretionary.append((q.pop(0), decks[qi]))
+                remaining -= 1
+                if remaining == 0:
+                    break
+
+        # Shard the pooled set across processes (each env keeps ~max_unique/n_envs).
+        active = guaranteed + discretionary
         self._snap_entries = active[self._env_index % self._n_envs::self._n_envs]
 
     def _maybe_refresh(self):
