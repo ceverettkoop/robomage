@@ -695,9 +695,9 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
     // spell/permanent and their counter/destroy effect is conditional on the target's
     // color (enforced in effects::counter / effects::destroy via
     // target_color_condition_met). By contrast Red Elemental Blast (ValidTgts$ Card.Blue /
-    // Permanent.Blue) bakes blue into the target restriction itself, enforced below via
-    // color_set_passes(vt, effective_colors(cand)) (CR 115.1: target restrictions are checked
-    // when chosen, against the candidate's effective color).
+    // Permanent.Blue) bakes blue into the target restriction itself, enforced below through
+    // the shared filter evaluator on both the stack-spell and battlefield-permanent paths
+    // (CR 115.1: target restrictions are checked when chosen, against the candidate).
 
     const std::string &vt = valid_tgts;
 
@@ -707,7 +707,19 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
         (target_type.find("Spell") != std::string::npos ||
          target_type.find("Activated") != std::string::npos ||
          target_type.find("Triggered") != std::string::npos)) {
-        return target_type_matches_stack_object(target_type, cand);
+        if (!target_type_matches_stack_object(target_type, cand)) return false;
+        // A bare "TargetType$ Spell" carries its restriction in ValidTgts$, written against the
+        // CARD on the stack — Red Elemental Blast "Card.Blue", Force of Negation
+        // "Card.nonCreature", Flusterstorm "Instant,Sorcery" (CR 115.1: the restriction is part
+        // of choosing the target, and re-checked at resolution via is_target_valid). Match it
+        // through the shared comma-OR card filter. A standalone ability entity on the stack (an
+        // Activated/Triggered alternative the script names explicitly — Stifle, Consign to
+        // Memory) is not a card, so a card-shaped ValidTgts ("Card,Emblem") never filters it.
+        if (vt != "N_A" && !vt.empty() &&
+            global_coordinator.entity_has_component<Spell>(cand) &&
+            !card_matches_any(cand, vt, MatchCtx{caster, source}))
+            return false;
+        return true;
     }
 
     // Card in a non-battlefield zone (e.g. Faerie Macabre targeting graveyard cards)
