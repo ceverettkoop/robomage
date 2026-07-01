@@ -271,7 +271,13 @@ train/.venv/bin/python train/test_harness.py --scenario scenario.json
 **Notes:**
 - `--hand-a`/`--hand-b` auto-pads the library to a minimum 15-card deck. For precise small libraries (e.g. testing Thassa's Oracle with near-empty deck), write deck files manually to `decks/temp/` and use `--deck-a`/`--deck-b` instead.
 - Card names in deck files omit apostrophes: `Thassas Oracle`, `Lions Eye Diamond`
-- The scripted agent always keeps (no mulligan), casts spells when affordable, plays lands, and attacks with all creatures
+- The scripted agent defaults to the **hard** (heuristic) tier everywhere a bare
+  `scripted` spec is used — the test harness `--scripted`, the league/self-play scripted
+  anchor, the mixed opponent pools, and observe/baseline/analysis. Hard adds a smart
+  mulligan, combat simulation (profitable attacks/blocks), and evaluation-based targeting
+  on top of the greedy baseline (casts spells when affordable, plays lands, attacks with
+  all creatures); deck-specific combo lines (Doomsday) are preserved. Request the old
+  greedy behaviour explicitly with `scripted:easy` / `scripted:greedy` (or `scripted:random`)
 - Temp deck files in `decks/temp/` are cleaned up automatically when using `--hand-a`/`--hand-b`; manually created files in `decks/temp/` are not
 
 ## Architecture

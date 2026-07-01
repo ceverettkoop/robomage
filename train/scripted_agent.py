@@ -85,16 +85,24 @@ class AgentConfig:
     rng_seed: int | None = None         # seed for RANDOM's generator (reproducible)
 
 
-# Canonical presets resolved from a spec-string suffix (see make_agent).
+# The "hard" configuration: heuristic play with combat simulation, evaluation-based
+# targeting, and smart mulligans. This is ALSO the default a bare "scripted" resolves
+# to — every default scripted opponent (the league/self-play scripted anchor, the
+# mixed opponent pools, observe/baseline/analysis, the test harness) plays at this
+# tier unless an explicit weaker suffix ("scripted:easy"/"greedy"/"random") is given.
+_HARD_CONFIG = AgentConfig(skill=Skill.HEURISTIC, use_combat_sim=True,
+                           use_eval_targeting=True, use_smart_mulligan=True)
+
+# Canonical presets resolved from a spec-string suffix (see make_agent). The config
+# object is read-only (ScriptedAgent only reads it), so the three hard aliases may
+# safely share one instance.
 _PRESETS: dict[str, AgentConfig] = {
     "random":    AgentConfig(skill=Skill.RANDOM, enable_combo_lines=False),
     "easy":      AgentConfig(skill=Skill.GREEDY),
     "greedy":    AgentConfig(skill=Skill.GREEDY),
-    "scripted":  AgentConfig(skill=Skill.GREEDY),     # default alias == today
-    "hard":      AgentConfig(skill=Skill.HEURISTIC, use_combat_sim=True,
-                             use_eval_targeting=True, use_smart_mulligan=True),
-    "heuristic": AgentConfig(skill=Skill.HEURISTIC, use_combat_sim=True,
-                             use_eval_targeting=True, use_smart_mulligan=True),
+    "scripted":  _HARD_CONFIG,     # bare "scripted"/default now == hard (was greedy)
+    "hard":      _HARD_CONFIG,
+    "heuristic": _HARD_CONFIG,
 }
 
 
@@ -824,8 +832,16 @@ def make_agent(spec: str = "scripted") -> ScriptedAgent:
     return ScriptedAgent(_PRESETS[suffix])
 
 
-# ── Back-compat module-level shim ───────────────────────────────────────────
-# Historically the public entry point is ``scripted_action`` and it is GREEDY.
-# Keep it an alias of the greedy implementation so behaviour stays byte-identical
-# and the function identity is preserved for importers.
-scripted_action = _greedy_action
+# ── Module-level public entry point ─────────────────────────────────────────
+# ``scripted_action`` is the bare function form used by callers that don't build a
+# ScriptedAgent (analysis/baseline/observe scripted opponent, tui_game, bench). It
+# now defaults to the "hard" heuristic agent, matching make_agent("scripted"), so
+# every default scripted call plays at the hard tier. The heuristic is a pure
+# function of (obs, num_choices) (only RANDOM is stateful), so one shared instance
+# is safe across games/processes. Callers wanting the old greedy behaviour build
+# make_agent("easy"/"greedy") explicitly.
+_DEFAULT_AGENT = ScriptedAgent(_PRESETS["scripted"])
+
+
+def scripted_action(obs: np.ndarray, num_choices: int) -> int:
+    return _DEFAULT_AGENT.act(obs, num_choices)
