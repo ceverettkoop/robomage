@@ -50,7 +50,15 @@ static Entity sacrifice_one(const Ability &ab, Zone::Ownership sacrificer,
         la.category = ActionCategory::SACRIFICE_PERMANENT;
         choices.push_back(la);
     }
+    // CR 701.16a: the SACRIFICER chooses which permanent to sacrifice, and they need not be
+    // the player holding priority (Sheoldred's Edict: the caster holds priority while the
+    // opponent picks). The input/BQUERY seat follows cur_game.player_a_has_priority, so
+    // temporarily seat the query on the sacrificer and restore afterwards (same pattern as
+    // place_triggers_apnap / request_optional_yesno).
+    bool prev_priority = cur_game.player_a_has_priority;
+    cur_game.player_a_has_priority = (sacrificer == Zone::PLAYER_A);
     int choice = InputLogger::instance().get_input(choices);
+    cur_game.player_a_has_priority = prev_priority;
     Entity chosen = choices[static_cast<size_t>(choice)].source_entity;
     if (chosen == 0) {
         game_log("%s declines to sacrifice.\n", player_name(sacrificer).c_str());
