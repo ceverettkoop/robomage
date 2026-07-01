@@ -72,7 +72,12 @@ void StateManager::deal_combat_damage(Game &game, bool first_strike_only) {
         if (!global_coordinator.entity_has_component<Creature>(entity)) continue;
         auto &cr = global_coordinator.GetComponent<Creature>(entity);
         if (!cr.is_attacking) continue;
-        if (!should_deal_damage(cr, first_strike_only)) continue;
+        // CR 510.1/702.7b: each creature deals damage in the step its own first/double
+        // strike status dictates — attackers AND blockers independently. Visit every
+        // attacker's combat in BOTH damage steps and gate each creature's damage on its
+        // own should_deal_damage; skipping the whole combat when the attacker doesn't
+        // deal this step would drop a first-striking BLOCKER's first-strike-step damage.
+        bool attacker_deals = should_deal_damage(cr, first_strike_only);
 
         std::string attacker_name = entity_name(entity);
 
@@ -89,7 +94,7 @@ void StateManager::deal_combat_damage(Game &game, bool first_strike_only) {
         if (!cr.is_blocked) {
             // Unblocked — deal damage to attack target
             uint32_t dmg = cr.power;
-            if (dmg > 0) {
+            if (attacker_deals && dmg > 0) {
                 deal_damage(entity, cr.attack_target, dmg);
                 // CR 702.16d: a player with protection from everything (The One Ring) isn't dealt
                 // combat damage by an opponent's attacker — prevent the life loss, the
@@ -129,7 +134,9 @@ void StateManager::deal_combat_damage(Game &game, bool first_strike_only) {
             auto assign_it = game.combat_damage_assignment.find(entity);
             bool have_assignment = (assign_it != game.combat_damage_assignment.end());
             bool has_trample = creature_has_keyword(cr, "Trample");
-            uint32_t remaining = cr.power;
+            // An attacker that doesn't deal damage this step assigns nothing to its
+            // blockers (and tramples nothing) — its blockers still deal their own damage.
+            uint32_t remaining = attacker_deals ? cr.power : 0;
             for (auto blocker : blockers) {
                 auto &bcr = global_coordinator.GetComponent<Creature>(blocker);
                 std::string blocker_name = entity_name(blocker);
