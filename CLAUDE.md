@@ -592,6 +592,21 @@ intermediates. It gates **only** `__v*` snapshots — `{deck}__final` is always 
 unconditionally at rotation end (and always kept in the pool per the composition rule above),
 so raising the margin never removes a deck from the field; it only thins its version history.
 
+**Adaptive entropy coefficient (`EntCoefAnnealCallback`, `train/train.py`).** PPO's
+`ent_coef` is seeded at **0.012** for fresh models and then adapted once per rollout from two
+live signals instead of being left fixed: the recent-window **win-rate** sets the annealing
+*rate* — cut the coefficient while the learner is winning (`wr ≥ 0.55`, reward it for
+committing to a line), hold while it is losing (`wr ≤ 0.45`, keep exploring the hard matchups
+the sampler now feeds it), gently anneal around even — and the observed **entropy**
+(`-train/entropy_loss`) is a *floor*: if mean entropy falls below `floor_frac` (0.3) of its
+initial value the coefficient is nudged back up, so exploration can't fully collapse even
+when winning. The value is clamped to `[ent_min=0.001, session-start]`, logged as
+`train/ent_coef` (watch it in the rollout table beside `entropy_loss`), and — because SB3
+stores `ent_coef` in the checkpoint — **persists and keeps annealing across league rotations
+and resumes**. This is why a struggling combo deck holds high entropy to keep finding its
+line while a deck that is already winning is pushed to commit; it is self-tuning, so no manual
+entropy schedule is needed.
+
 ### Best-of-three mode
 
 `--bo3` flag (C++ and Python) runs a best-of-three match in a single process:

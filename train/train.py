@@ -317,6 +317,90 @@ class ShapingScaleCallback(BaseCallback):
         self._losses = 0
 
 
+class EntCoefAnnealCallback(BaseCallback):
+    """Adaptively anneal PPO's entropy coefficient from observed entropy + win-rate.
+
+    A fixed ``ent_coef`` is a blunt instrument: too high and the policy stays
+    stochastic and never commits to a line (bad for precise combo decks like
+    Doomsday), too low and it collapses before it has explored. This controller
+    starts at the model's initial ``ent_coef`` and adjusts it once per rollout
+    from two live signals:
+
+      * **win-rate** (recent sliding window of decisive episodes) sets the *rate*
+        of annealing — cut the coefficient while the learner is winning (reward it
+        for committing), hold it while it is losing (keep exploring the hard
+        matchups it now sees most of), gently anneal around even.
+      * **entropy** (``-train/entropy_loss``, the mean policy entropy) is a
+        *floor* — if entropy has already fallen below ``floor_frac`` of its initial
+        value the coefficient is nudged back up, so exploration can never fully
+        collapse no matter how well the learner is doing.
+
+    The coefficient is clamped to ``[ent_min, ent_start]`` (annealing only, capped
+    at where this session began — it persists across league rotations because SB3
+    saves ``ent_coef`` in the checkpoint) and logged as ``train/ent_coef`` so it
+    shows up in the rollout table beside ``entropy_loss``.
+    """
+
+    def __init__(self, *, ent_min: float = 0.001, floor_frac: float = 0.3,
+                 win_band: float = 0.05, decay_win: float = 0.95,
+                 decay_even: float = 0.99, restore: float = 1.05,
+                 window: int = 200, min_games: int = 30):
+        super().__init__()
+        self._ent_min = ent_min
+        self._floor_frac = floor_frac
+        self._band = win_band
+        self._decay_win = decay_win
+        self._decay_even = decay_even
+        self._restore = restore
+        self._min_games = min_games
+        from collections import deque
+        self._recent: "deque[int]" = deque(maxlen=window)
+        self._ent_start: float | None = None
+        self._h_init: float | None = None
+
+    def _on_training_start(self) -> None:
+        # Cap annealing at wherever this session started (0.012 fresh, or the
+        # already-annealed value on a league resume — ent_coef rides in the zip).
+        self._ent_start = float(self.model.ent_coef)
+
+    def _on_step(self) -> bool:
+        for info in self.locals.get("infos", []):
+            ep = info.get("episode")
+            if ep is None:
+                continue
+            r = ep["r"]
+            if r == 0:            # draw / non-decisive — ignore
+                continue
+            self._recent.append(1 if r > 0 else 0)
+        return True
+
+    def _on_rollout_end(self) -> None:
+        # entropy_loss is recorded by the *previous* update; absent on the very
+        # first rollout (no train() yet) — hold until we have a reading.
+        h_loss = self.model.logger.name_to_value.get("train/entropy_loss")
+        if h_loss is None:
+            return
+        h = -float(h_loss)                       # mean policy entropy (nats)
+        if self._h_init is None and h > 0:
+            self._h_init = h                     # calibrate the floor to this action space
+        ent = float(self.model.ent_coef)
+        floor = self._floor_frac * self._h_init if self._h_init else 0.0
+
+        if self._h_init is not None and h < floor:
+            # Exploration collapsing — restore toward the session start, capped.
+            ent = min(self._ent_start, ent * self._restore)
+        elif len(self._recent) >= self._min_games:
+            wr = sum(self._recent) / len(self._recent)
+            if wr >= 0.5 + self._band:
+                ent = max(self._ent_min, ent * self._decay_win)    # winning → commit
+            elif wr <= 0.5 - self._band:
+                pass                                               # losing → hold, keep exploring
+            else:
+                ent = max(self._ent_min, ent * self._decay_even)   # even → gentle anneal
+        self.model.ent_coef = ent
+        self.logger.record("train/ent_coef", ent)
+
+
 class ReplayLogCallback(BaseCallback):
     """After each rollout, runs one model-vs-scripted game and saves a transcript."""
 
@@ -693,7 +777,7 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
                 gamma=0.99,
                 gae_lambda=0.95,
                 clip_range=0.25,
-                ent_coef=0.012,
+                ent_coef=0.012,   # initial seed; EntCoefAnnealCallback adapts it from here
                 verbose=1,
                 tensorboard_log=LOG_DIR,
             )
@@ -706,6 +790,7 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
         # self-play / league pools; the '{deck}__final.zip' is saved at the end.
         callbacks = [
             SnapshotCallback(checkpoint_dir, model_deck, LEAGUE_SNAPSHOT_EVERY),
+            EntCoefAnnealCallback(),
         ]
         if not no_shaping:
             callbacks.append(ShapingScaleCallback(vec_env))
@@ -769,7 +854,7 @@ def _league_chunk(binary_path: str, learner_deck: str, roster: list[str],
             model = MaskablePPO(
                 "MlpPolicy", vec_env, policy_kwargs=policy_kwargs,
                 learning_rate=3e-4, n_steps=4096, batch_size=1024, n_epochs=8,
-                gamma=0.99, gae_lambda=0.95, clip_range=0.25, ent_coef=0.12,
+                gamma=0.99, gae_lambda=0.95, clip_range=0.25, ent_coef=0.012,
                 verbose=1, tensorboard_log=LOG_DIR)
 
         if no_shaping:
@@ -789,6 +874,7 @@ def _league_chunk(binary_path: str, learner_deck: str, roster: list[str],
             SnapshotCallback(checkpoint_dir, learner_deck, snapshot_every,
                              promote_margin=promote_margin, pfsp_callback=pfsp_cb,
                              on_snapshot=snap_hook),
+            EntCoefAnnealCallback(),
         ]
         if not no_shaping:
             callbacks.append(ShapingScaleCallback(vec_env))
@@ -1028,6 +1114,7 @@ def train_fixed_model(binary_path: str, model_deck: str, opp_deck: str,
             print("[shaping] disabled for this session (--no-shaping)")
         callbacks = [
             SnapshotCallback(checkpoint_dir, model_deck, LEAGUE_SNAPSHOT_EVERY),
+            EntCoefAnnealCallback(),
         ]
         if not no_shaping:
             callbacks.append(ShapingScaleCallback(vec_env))
