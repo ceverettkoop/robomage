@@ -101,6 +101,17 @@ def _expand_checkpoint(val):
 _SCANNERS = {"deck": _scan_decks, "league_deck": _scan_league_decks,
              "checkpoint": _scan_checkpoints}
 
+# TUI-only default overrides for the league form (the common "train the whole
+# roster" run): these seed the widgets differently from the CLI Arg defaults but
+# leave cli_spec / the command-line untouched. The multipick '--decks' is
+# pre-checked separately (see _apply_league_defaults) since it needs the mounted
+# widget. '--bo3' is a shared flag (common_args), so we override it here rather
+# than flipping its global cli_spec default.
+_LEAGUE_TUI_DEFAULTS = {
+    "--bo3": True,            # best-of-three on by default
+    "--promote-margin": 0,    # 0 disables the snapshot win-rate gate
+}
+
 
 def _suggestions_for(arg):
     fn = _SCANNERS.get(getattr(arg, "suggest", None))
@@ -180,6 +191,7 @@ class LauncherApp(App):
                 rows.append(self._build_arg(item))
         if rows:
             await form.mount(*rows)
+        self._apply_league_defaults()
         self.query_one("#fieldhelp", Static).update("")
         self.update_preview()
 
@@ -246,20 +258,32 @@ class LauncherApp(App):
                 return f.get("arg")
         return None
 
+    def _default_for(self, a):
+        """Effective initial value for an arg's widget, applying TUI-only overrides.
+
+        Currently the league form seeds a few widgets differently from their
+        cli_spec defaults (see ``_LEAGUE_TUI_DEFAULTS``); everything else falls
+        through to the Arg's own default."""
+        if getattr(self._sub, "name", None) == "league" and a.name in _LEAGUE_TUI_DEFAULTS:
+            return _LEAGUE_TUI_DEFAULTS[a.name]
+        return a.default
+
     def _build_arg(self, a):
         # One row per arg; the (verbose) help shows in #fieldhelp when focused.
+        default = self._default_for(a)
         if a.kind == "flag":
-            w = Checkbox(value=bool(a.default), compact=True)
+            w = Checkbox(value=bool(default), compact=True)
             self._fields.append({"kind": "flag", "arg": a, "widget": w})
         elif a.kind == "choice":
             opts = [(c, c) for c in a.choices]
             kwargs = {"allow_blank": not a.required, "compact": True}
-            if a.default in a.choices:        # only pass a real, valid default
-                kwargs["value"] = a.default
+            if default in a.choices:          # only pass a real, valid default
+                kwargs["value"] = default
             w = Select(opts, **kwargs)
             self._fields.append({"kind": "choice", "arg": a, "widget": w})
         elif a.suggest and getattr(a, "multi", False):
             # multi-select roster (e.g. league --decks): pick several with space.
+            # League pre-checks all decks post-mount (see _apply_league_defaults).
             vals = self._options_for(a)
             w = SelectionList(*[(v, v) for v in vals])
             self._fields.append({"kind": "multipick", "arg": a, "widget": w})
@@ -269,17 +293,46 @@ class LauncherApp(App):
             # deck / checkpoint → dropdown of repo contents
             vals = self._options_for(a)
             kwargs = {"allow_blank": True, "compact": True}
-            if a.default in vals:
-                kwargs["value"] = a.default
+            if default in vals:
+                kwargs["value"] = default
             w = Select([(v, v) for v in vals], **kwargs)
             self._fields.append({"kind": "pick", "arg": a, "widget": w})
         else:
             itype = "integer" if a.kind == "int" else "text"
-            w = Input(value="" if a.default is None else str(a.default),
+            w = Input(value="" if default is None else str(default),
                       type=itype, placeholder=a.name, compact=True)
             self._fields.append({"kind": "value", "arg": a, "widget": w})
         self._help_by_widget[w] = a.help
         return self._row(a.name, w, a.required)
+
+    def _field_by_name(self, name):
+        return next((f for f in self._fields
+                     if f.get("arg") is not None and f["arg"].name == name), None)
+
+    def _apply_league_defaults(self):
+        """Post-mount league conveniences: pre-check all roster decks, then apply
+        the --resume gate. No-op for every other sub."""
+        if getattr(self._sub, "name", None) != "league":
+            return
+        decks = self._field_by_name("--decks")
+        if decks is not None and decks["kind"] == "multipick":
+            decks["widget"].select_all()   # start with the whole roster checked
+        self._apply_resume_gate()
+
+    def _apply_resume_gate(self):
+        """League ``--resume`` restores the full run config from the sidecar and
+        ignores every other flag, so disable all other fields while it is ticked
+        (and _collect emits only ``--resume``)."""
+        if getattr(self._sub, "name", None) != "league":
+            return
+        resume = self._field_by_name("--resume")
+        if resume is None:
+            return
+        on = bool(resume["widget"].value)
+        for f in self._fields:
+            w = f.get("widget")
+            if w is not None and w is not resume["widget"]:
+                w.disabled = on
 
     # ── reactive updates ──────────────────────────────────────────────────
     def on_descendant_focus(self, event):
@@ -300,6 +353,9 @@ class LauncherApp(App):
         self.update_preview()
 
     def on_checkbox_changed(self, event: Checkbox.Changed):
+        arg = self._arg_for_widget(event.control)
+        if arg is not None and arg.name == "--resume":
+            self._apply_resume_gate()
         self.update_preview()
 
     # ── argv composition ──────────────────────────────────────────────────
@@ -311,6 +367,12 @@ class LauncherApp(App):
         argv = [VENV_PY, self._script_abs()]
         if not self._tool.flat:          # flat tools (play.py, test_harness.py) have no subcommand token
             argv.append(self._sub.name)
+        # League --resume ignores all other flags (config restored from the
+        # sidecar), so emit just the resume flag for a clean command.
+        if getattr(self._sub, "name", None) == "league":
+            resume = self._field_by_name("--resume")
+            if resume is not None and resume["widget"].value:
+                return argv + ["--resume"], []
         missing = []
         for f in self._fields:
             if f["kind"] == "flag":
