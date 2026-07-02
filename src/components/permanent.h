@@ -100,6 +100,15 @@ struct Permanent {
     int animate_power = 0;         // (extension) base power Animate sets
     int animate_toughness = 0;     // (extension) base toughness Animate sets
     bool animate_make_creature = false;  // (extension) Animate turns a noncreature into a creature
+    // Activated abilities granted for the rest of the game by a resolved DB$ Animate |
+    // Abilities$ ... | Duration$ Permanent (Urza's Saga chapters I & II: gains "{T}: Add {C}" /
+    // the Construct-token ability). Stored here — not only on Permanent::abilities — so the
+    // grant survives the layer-6 ability-removal strip (recompute_abilities under Magus of the
+    // Moon / Humility erases perm.abilities and re-derives from persistent sources next pass):
+    // apply_permanent_components re-merges these into perm.abilities each SBE pass, mirroring
+    // how animate_added_keywords are re-merged in gather_active_statics. Entries carry
+    // source = this permanent, set at grant time.
+    std::vector<Ability> animate_granted_abilities;
 
     // DB$/AB$ Animate with the default "until end of turn" Duration (CR 613 continuous effect that
     // ends during the cleanup step, CR 514.2). Same role as the animate_* fields above but the

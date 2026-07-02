@@ -2,6 +2,7 @@
 #define NAME_CARD_CHOICES_H
 
 #include <set>
+#include <string>
 #include <vector>
 
 #include "classes/action.h"
@@ -24,11 +25,11 @@
 //                   exists only in the opponent's deck is still nameable. `owner`
 //                   is ignored in this scope.
 //
-// When `exclude_lands` is true, land cards are filtered out (Cabal Therapy's
-// ValidCards$ Card.nonLand); Disruptor Flute passes false to offer everything.
-// When `only_lands` is true, ONLY land cards are offered (Petrified Hamlet's
-// ValidCards$ Land — "name a land card"); exclude_lands and only_lands are mutually
-// exclusive (only_lands wins if both are set).
+// `valid_filter` is the ability's ValidCards$ spec, applied to each candidate's
+// printed characteristics through the unified matcher (card_matches_any), so every
+// filter token works uniformly — Cabal Therapy's `Card.nonLand` drops lands,
+// Petrified Hamlet's `Land` offers only lands. An empty filter offers everything
+// (Disruptor Flute's unfiltered "choose a card name").
 //
 // Each returned LegalAction carries a representative owner-owned entity for the
 // named card (so the per-action card id encodes the candidate), category
@@ -40,9 +41,9 @@
 enum class NameCardScope { CHOOSER_ONLY, BOTH_PLAYERS };
 
 std::vector<LegalAction> build_name_card_choices(const std::set<Entity> &entities,
-                                                 Zone::Ownership owner, bool exclude_lands,
+                                                 Zone::Ownership owner,
+                                                 const std::string &valid_filter,
                                                  std::vector<std::string> &out_names,
-                                                 bool only_lands = false,
                                                  NameCardScope scope = NameCardScope::CHOOSER_ONLY);
 
 #endif /* NAME_CARD_CHOICES_H */

@@ -32,6 +32,7 @@ from env import (
     _CAT_PASS, _CAT_SEL_ATK, _CAT_CONF_ATK, _CAT_SEL_BLK, _CAT_CONF_BLK,
     _CAT_ACTIVATE, _CAT_CAST, _CAT_TARGET, _CAT_LAND, _CAT_MULLIGAN, _CAT_SEARCH,
     _CAT_OTHER, _CAT_PAYING, _CAT_DIG, _CAT_TOP_LIBRARY, _CAT_SB_DONE,
+    _CAT_CHOOSE_X, _CAT_CHOOSE_CARD,
     # battlefield / stack layout
     _BF_START, _BF_SLOT_SIZE, _PERM_A_SLOTS, _BF_CARD_OFF, _STACK_START,
     _STACK_SLOT_SIZE, _HAND_START, _HAND_SLOT_SIZE,
@@ -429,9 +430,23 @@ def _greedy_action(obs: np.ndarray, num_choices: int) -> int:
                 return i
         return 1 if num_choices > 1 else 0
 
-    # 5b. Paying costs (tapping lands for mana during spell/ability payment, delve exile).
+    # 5b. Paying costs (tapping lands for mana during spell/ability payment).
     #     Pick the first available option — this taps a source to pay the cost.
     if any(c == _CAT_PAYING for c in cats):
+        return 0
+
+    # 5c. Delve exile count (a CHOOSE_X menu whose actions carry the delve spell's card
+    #     id; a plain X-cost ladder emits the null sentinel). Exile the maximum — the
+    #     cheapest cast, matching the old auto-payer (and for Murktide Regent also the
+    #     biggest body). Every offered count is payable (the engine constrains the menu).
+    if (all(c == _CAT_CHOOSE_X for c in cats)
+            and card_ids[0] > _ACTION_CARD_ID_NULL + 0.01):
+        return num_choices - 1
+
+    # 5d. Delve per-card exile pick (CHOOSE_CARD): candidates are ANY graveyard cards
+    #     (CR 702.66a), so the first pick may eat a card a smarter agent would keep
+    #     (or skip an instant/sorcery Murktide would count). Kept simple at this tier.
+    if any(c == _CAT_CHOOSE_CARD for c in cats):
         return 0
 
     # 6. Cast spells.

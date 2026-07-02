@@ -130,6 +130,15 @@ bool parse_token(Ability &ab, const std::string &key, const std::string &value) 
         effect_params<TokenParams>(ab).tapped = (value == "True");
         return true;
     }
+    if (key == "RememberTokens") {
+        // RememberTokens$ True (Cori-Steel Cutter's TrigToken): stash the created tokens in
+        // cur_game.remembered_entities so a chained Defined$ Remembered sub-ability (the
+        // optional DBAttach) can act on them. token() already remembers every token it
+        // creates unconditionally (Skyclave Apparition's chain relies on the same behaviour
+        // without the tag), so accepting the tag records the script's intent — no extra
+        // state is needed.
+        return true;
+    }
     if (key == "TokenPower") {
         effect_params<TokenParams>(ab).power_expr = value;
         return true;

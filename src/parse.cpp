@@ -565,6 +565,7 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             std::string counter_type_str = "P1P1";
             bool from_delve = false;
             bool from_xpaid = false;
+            std::string delve_filter = "";
             int literal_count = 0;
             if (!sub.empty() && sub[0] == ':') {
                 size_t c1 = sub.find(':', 1);
@@ -583,8 +584,30 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
                     } else {
                         auto svar_it = svars.find(count_tok);
                         if (svar_it != svars.end()) {
-                            if (svar_it->second.find("ExiledWithSource") != std::string::npos)
+                            if (svar_it->second.find("ExiledWithSource") != std::string::npos) {
                                 from_delve = true;
+                                // Capture the Count$ValidExile printed-characteristics filter
+                                // (Murktide Regent: "Instant.ExiledWithSource,
+                                // Sorcery.ExiledWithSource") so the ETB counter count is
+                                // restricted to the matching delve exiles — Delve itself may
+                                // exile ANY card (CR 702.66a). The ExiledWithSource qualifier
+                                // is implied by membership in cur_game.delve_exiled, so strip
+                                // it; the remainder ("Instant,Sorcery") is a card_matches_any
+                                // spec.
+                                const std::string ve_prefix = "Count$ValidExile ";
+                                size_t vp = svar_it->second.find(ve_prefix);
+                                if (vp != std::string::npos) {
+                                    delve_filter =
+                                        svar_it->second.substr(vp + ve_prefix.size());
+                                    for (const char *qual :
+                                         {".ExiledWithSource", "+ExiledWithSource"}) {
+                                        size_t qp;
+                                        while ((qp = delve_filter.find(qual)) !=
+                                               std::string::npos)
+                                            delve_filter.erase(qp, strlen(qual));
+                                    }
+                                }
+                            }
                             // Count$xPaid — the count equals the X value paid at cast time
                             // (Chalice of the Void enters with X charge counters).
                             else if (svar_it->second.find("xPaid") != std::string::npos)
@@ -598,6 +621,7 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             sa.counter_type = counter_type_str;
             sa.counter_count = literal_count;
             sa.counter_count_from_delve = from_delve;
+            sa.counter_count_delve_filter = delve_filter;
             sa.counter_count_from_xpaid = from_xpaid;
             card.static_abilities.push_back(sa);
             continue;
@@ -1093,16 +1117,31 @@ static std::string value_from_script(std::string script, std::string key) {
 }
 
 static std::vector<std::string> multi_values_from_script(std::string script, std::string key) {
+    // Match the key only as a line-start field header ("Key:value"), same rule as
+    // value_from_script above. The old bare substring find leaked SVar bodies into the "A"
+    // scan: on Urza's Saga, the 'A' inside "SVar:ABMana:AB$ Mana | ..." matched, the tail of
+    // the line ("Mana:AB$ Mana | Cost$ T | ...") was returned as an ability line, and the Saga
+    // got its chapter-granted activated abilities at parse time — available from ETB instead
+    // of only after the granting chapter ability resolved.
     std::vector<std::string> ret_val;
-    auto pos = script.find(key);
-    while (pos != std::string::npos) {
-        // advance for key itself and ':'
-        pos += key.length() + 1;
-        auto end_pos = script.find("\n", pos);
-        std::string line = script.substr(pos, (end_pos - pos));  // end_pos is at \n, so no -1 needed
+    size_t search = 0;
+    while (true) {
+        auto pos = script.find(key, search);
+        if (pos == std::string::npos) break;
+        bool at_line_start = (pos == 0 || script[pos - 1] == '\n');
+        size_t after = pos + key.length();
+        bool followed_by_colon = (after < script.size() && script[after] == ':');
+        if (!at_line_start || !followed_by_colon) {
+            search = pos + 1;
+            continue;
+        }
+        size_t valstart = after + 1;  // skip the ':'
+        auto end_pos = script.find("\n", valstart);
+        std::string line = script.substr(valstart, (end_pos - valstart));  // end_pos is at \n, so no -1 needed
         if (!line.empty() && line.back() == '\r') line.pop_back();  // strip \r for Windows line endings
         ret_val.push_back(line);
-        pos = script.find(key, end_pos);                             // find next instance
+        if (end_pos == std::string::npos) break;
+        search = end_pos + 1;
     }
     return ret_val;
 }
@@ -1638,10 +1677,10 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
     } else if (key == "ConditionCompare") {
         ability.condition_compare = value;
     } else if (key == "ValidCards" && ability.category == "NameCard") {
-        // DB$ NameCard ValidCards$ Land (Petrified Hamlet: "choose a land card name"): the
-        // filter restricting the nameable card set. Cabal Therapy's Card.nonLand is still
-        // handled by the name_card handler's hardcoded nonland candidate set (the non-You
-        // path), so only store it where the handler reads it (the Defined$ You land form).
+        // SP$/DB$ NameCard ValidCards$ <filter> — the filter restricting the nameable card
+        // set (Petrified Hamlet's Land, Cabal Therapy's Card.nonLand). The name_card handler
+        // passes it to build_name_card_choices, which applies it to each candidate via the
+        // unified matcher (card_matches_any).
         ability.valid_cards_filter = value;
     } else if (key == "VoteCard") {
         // SP$/AB$ Vote VoteCard$ <filter> (Council's Judgment): the permanent filter the vote

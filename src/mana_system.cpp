@@ -50,6 +50,7 @@ static bool activate_mana_source(Entity entity, const Ability &ab, Zone::Ownersh
 static void fire_taps_for_mana_triggers(Entity tapped_source, Zone::Ownership controller,
                                         std::shared_ptr<Orderer> orderer, ManaValue &pool,
                                         bool log);
+static bool mana_ability_is_painful(const Ability &ab);
 
 Entity get_player_entity(Zone::Ownership player) {
     return (player == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
@@ -580,17 +581,17 @@ static ManaValue pay_from_pool(ManaValue &pool, const ManaValue &cost) {
     return remaining;
 }
 
-// True if `e` is a graveyard instant/sorcery owned by `controller` — i.e. a card
-// Delve can exile to pay a generic pip. Single source for "what can Delve eat",
-// consumed by both the automatic payer and the interactive prompt.
+// True if `e` is a card in `controller`'s graveyard — i.e. a card Delve can exile to
+// pay a generic pip. CR 702.66a places no type restriction ("you may exile a card from
+// your graveyard rather than pay that mana"); riders that care about the exiled cards'
+// types (Murktide Regent's etbCounter) filter cur_game.delve_exiled themselves. Single
+// source for "what can Delve eat", consumed by both the automatic payer and the
+// interactive prompt.
 static bool is_delve_eligible(Entity e, Zone::Ownership controller) {
     if (!global_coordinator.entity_has_component<Zone>(e)) return false;
     auto &ez = global_coordinator.GetComponent<Zone>(e);
     if (ez.location != Zone::GRAVEYARD || ez.owner != controller) return false;
-    if (!global_coordinator.entity_has_component<CardData>(e)) return false;
-    for (auto &t : global_coordinator.GetComponent<CardData>(e).types)
-        if (t.kind == TYPE && (t.name == "Instant" || t.name == "Sorcery")) return true;
-    return false;
+    return global_coordinator.entity_has_component<CardData>(e);
 }
 
 // Pay one generic pip via Delve: exile `e`, record it for the etbCounter count, and
@@ -761,6 +762,19 @@ static void fire_taps_for_mana_triggers(Entity tapped_source, Zone::Ownership co
     }
 }
 
+// A mana ability is "painful" when activating it costs its controller life beyond the tap:
+// either an explicit PayLife activation cost (Horizon Canopy's "{T}, Pay 1 life") or a
+// self-damage / life-loss rider that resolves with the mana ability (Ancient Tomb's "deals
+// 2 damage to you", a DealDamage sub-ability with Defined$ You). Derived from the ability's
+// structure, not a card-name list, so any pain source scripted the same way is covered.
+static bool mana_ability_is_painful(const Ability &ab) {
+    if (ab.life_cost > 0) return true;
+    for (const auto &sub : ab.subabilities)
+        if ((sub.category == "DealDamage" || sub.category == "LoseLife") && sub.defined_you)
+            return true;
+    return false;
+}
+
 // Greedily tap sources to cover the remaining cost. This is the single mana-payment
 // algorithm used by BOTH the machine-mode payer (commit=true, mutates real ECS state)
 // and the legality check via can_pay_mana (commit=false, operates on a copied pool with
@@ -887,19 +901,24 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
             for (Colors c : need)
                 if (c != GENERIC) { pip = c; break; }
             bool found = false;
-            for (size_t i = 0; i < valid_sources.size(); i++) {
-                auto &cand = valid_sources[i];
-                if (planned.count(cand.entity)) continue;
-                // Payers must themselves be cost-free — no recursive cost chains.
-                if (!cand.ability.activation_mana_cost.empty()) continue;
-                if (pip != GENERIC && !any_color && cand.color != pip) continue;
-                size_t amt = eval_mana_amount(cand.ability, controller, orderer);
-                if (amt == 0) continue;
-                for (size_t k = 0; k < amt; k++) trial.insert(cand.color);
-                planned.insert(cand.entity);
-                plan.push_back(i);
-                found = true;
-                break;
+            // Painless payers first; a painful one (Ancient Tomb) is engaged only when no
+            // painless payer can supply the pip — same preference as the main tiers below.
+            for (int pass = 0; pass < 2 && !found; pass++) {
+                for (size_t i = 0; i < valid_sources.size(); i++) {
+                    auto &cand = valid_sources[i];
+                    if (planned.count(cand.entity)) continue;
+                    // Payers must themselves be cost-free — no recursive cost chains.
+                    if (!cand.ability.activation_mana_cost.empty()) continue;
+                    if (pass == 0 && mana_ability_is_painful(cand.ability)) continue;
+                    if (pip != GENERIC && !any_color && cand.color != pip) continue;
+                    size_t amt = eval_mana_amount(cand.ability, controller, orderer);
+                    if (amt == 0) continue;
+                    for (size_t k = 0; k < amt; k++) trial.insert(cand.color);
+                    planned.insert(cand.entity);
+                    plan.push_back(i);
+                    found = true;
+                    break;
+                }
             }
             if (!found) return false;
         }
@@ -913,6 +932,14 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
     // Cost-bearing sources net less mana than they produce (their activation cost consumes
     // other sources' output), so every priority tier below prefers cost-free candidates.
     auto cost_free = [](const SourceInfo &s) { return s.ability.activation_mana_cost.empty(); };
+
+    // Life is a resource too: a painful source (Ancient Tomb's self-damage rider, a pain
+    // land's PayLife cost) is engaged only when the cost cannot be covered painlessly —
+    // every regular tier below requires painless, and painful sources sit in their own
+    // tier just above the sac_self last resort. Efficiency (Tomb's 2-for-1 tap) never
+    // outranks life; only necessity (no painless way to finish the payment, including a
+    // colored pip only a painful source produces) does.
+    auto painless = [](const SourceInfo &s) { return !mana_ability_is_painful(s.ability); };
 
     // Pay colored costs first — prefer single-color sources to preserve flexibility
     for (auto it = remaining.begin(); it != remaining.end(); ) {
@@ -968,11 +995,12 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
             }
             return false;
         };
-        if (try_source([](const SourceInfo &s) { return s.ability.adds_no_counter && !s.ability.sac_self; })) continue;
-        if (try_source([&](const SourceInfo &s) { return cost_free(s) && !s.is_multi_color && !s.ability.sac_self; })) continue;
-        if (try_source([&](const SourceInfo &s) { return cost_free(s) && !s.ability.sac_self; })) continue;
-        if (try_source([](const SourceInfo &s) { return !s.is_multi_color && !s.ability.sac_self; })) continue;
-        if (try_source([](const SourceInfo &s) { return !s.ability.sac_self; })) continue;
+        if (try_source([&](const SourceInfo &s) { return s.ability.adds_no_counter && !s.ability.sac_self && painless(s); })) continue;
+        if (try_source([&](const SourceInfo &s) { return cost_free(s) && !s.is_multi_color && !s.ability.sac_self && painless(s); })) continue;
+        if (try_source([&](const SourceInfo &s) { return cost_free(s) && !s.ability.sac_self && painless(s); })) continue;
+        if (try_source([&](const SourceInfo &s) { return !s.is_multi_color && !s.ability.sac_self && painless(s); })) continue;
+        if (try_source([&](const SourceInfo &s) { return !s.ability.sac_self && painless(s); })) continue;
+        if (try_source([](const SourceInfo &s) { return !s.ability.sac_self; })) continue;  // painful, if needed
         if (try_source([](const SourceInfo &) { return true; })) continue;  // sac_self last resort
         return false;
     }
@@ -1004,9 +1032,10 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
             }
             return false;
         };
-        if (try_generic([](const SourceInfo &s) { return s.ability.adds_no_counter && !s.ability.sac_self; })) continue;
-        if (try_generic([&](const SourceInfo &s) { return cost_free(s) && !s.ability.sac_self; })) continue;
-        if (try_generic([](const SourceInfo &s) { return !s.ability.sac_self; })) continue;
+        if (try_generic([&](const SourceInfo &s) { return s.ability.adds_no_counter && !s.ability.sac_self && painless(s); })) continue;
+        if (try_generic([&](const SourceInfo &s) { return cost_free(s) && !s.ability.sac_self && painless(s); })) continue;
+        if (try_generic([&](const SourceInfo &s) { return !s.ability.sac_self && painless(s); })) continue;
+        if (try_generic([](const SourceInfo &s) { return !s.ability.sac_self; })) continue;  // painful, if needed
         if (try_generic([](const SourceInfo &) { return true; })) continue;  // sac_self last resort
         // Improvise: a {1} can also be paid by tapping an untapped artifact (CR 702.126).
         // Tried after mana sources so colored pips (paid above) keep their producers; an
@@ -1203,4 +1232,79 @@ bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,
     }
 
     return true;
+}
+
+void prompt_delve_exiles(Zone::Ownership controller, ManaValue &cost, Entity paid_for,
+                         std::shared_ptr<Orderer> orderer, bool has_improvise) {
+    size_t eligible_ct = 0;
+    for (auto e : orderer->mEntities)
+        if (is_delve_eligible(e, controller)) eligible_ct++;
+    size_t max_exiles = std::min(eligible_ct, cost.count(GENERIC));
+    if (max_exiles == 0) return;
+
+    // Constrain the offered counts to those the player can actually finish paying: each
+    // exile removes one GENERIC pip, so payability is monotone in the count and the legal
+    // counts form the contiguous range [min_needed .. max_exiles]. min_needed is found with
+    // the shared simulate-mode payer (can_pay_mana, has_delve=false), so the offered menu
+    // and the eventual payment can never disagree — cast legality (which allowed the
+    // maximum delve) guarantees the range is non-empty.
+    ManaValue reduced = cost;
+    size_t min_needed = 0;
+    while (min_needed < max_exiles &&
+           !can_pay_mana(controller, reduced, paid_for, orderer, /*has_delve=*/false,
+                         has_improvise)) {
+        reduced.erase(reduced.find(GENERIC));
+        min_needed++;
+    }
+
+    // Seat both decisions on the casting player.
+    bool prev_priority = cur_game.player_a_has_priority;
+    cur_game.player_a_has_priority = (controller == Zone::PLAYER_A);
+
+    // Stage 1 — how many cards to exile. Skipped when only one count is legal. The actions
+    // carry the delve spell as their source entity, so the machine protocol emits its card
+    // id (a plain X-cost ladder emits the null sentinel — this is how observers tell the
+    // two CHOOSE_X menus apart).
+    size_t exile_ct = min_needed;
+    if (max_exiles > min_needed) {
+        std::vector<LegalAction> count_menu;
+        for (size_t n = min_needed; n <= max_exiles; n++) {
+            LegalAction la(PASS_PRIORITY, paid_for,
+                           "Exile " + std::to_string(n) + (n == 1 ? " card" : " cards") +
+                               " from graveyard (Delve)");
+            la.category = ActionCategory::CHOOSE_X;
+            la.card_is_public = true;  // the spell being cast is public
+            count_menu.push_back(la);
+        }
+        game_log("Choose how many cards to exile via Delve (%zu-%zu):\n", min_needed,
+                 max_exiles);
+        int choice = InputLogger::instance().get_input(count_menu);
+        exile_ct = min_needed + static_cast<size_t>(choice);
+    }
+
+    // Stage 2 — which cards, one pick at a time; each exile drops that card from the next
+    // menu. When the remaining candidates are all going to be exiled anyway (candidates ==
+    // picks left, including the single-candidate case) there is no real choice, so they are
+    // taken without a prompt.
+    for (size_t i = 0; i < exile_ct; i++) {
+        std::vector<LegalAction> picks;
+        for (auto e : orderer->mEntities) {
+            if (!is_delve_eligible(e, controller)) continue;
+            auto &ecd = global_coordinator.GetComponent<CardData>(e);
+            LegalAction la(PASS_PRIORITY, e, "Exile " + ecd.name + " (Delve)");
+            la.category = ActionCategory::CHOOSE_CARD;
+            la.card_is_public = true;  // graveyards are public zones
+            picks.push_back(la);
+        }
+        if (picks.empty()) break;  // defensive: eligibility was counted above
+        int pick = 0;
+        if (picks.size() > exile_ct - i) {
+            game_log("Choose a card to exile via Delve (%zu of %zu):\n", i + 1, exile_ct);
+            pick = InputLogger::instance().get_input(picks);
+        }
+        delve_exile_one(picks[static_cast<size_t>(pick)].source_entity, controller, orderer,
+                        cost);
+    }
+
+    cur_game.player_a_has_priority = prev_priority;
 }

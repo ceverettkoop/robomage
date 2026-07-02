@@ -570,7 +570,10 @@ _CAT_MULLIGAN   = 11
 _CAT_SEARCH     = 19  # search library (action 0 = fail to find, 1+ = actual cards)
 _CAT_OTHER      = 10  # generic/unclassified choice (fallback default)
 _CAT_DISCARD    = 30  # choose a card to discard (cost, effect, or cleanup)
-_CAT_PAYING     = 22  # paying costs (tap lands for mana, delve exile, pitch cards)
+_CAT_PAYING     = 22  # paying costs (tap lands for mana, pitch cards)
+_CAT_CHOOSE_X   = 29  # X-value ladder, or delve exile count (delve count actions carry
+                      # the spell's card id; an X ladder has the null card-id sentinel)
+_CAT_CHOOSE_CARD = 44  # choose a card from a non-library zone (e.g. delve per-card exile)
 _CAT_DIG        = 23  # dig choice (Once Upon a Time: pick creature/land from top N)
 _CAT_SB_IN      = 24  # sideboard: choose card from sideboard to add
 _CAT_SB_OUT     = 25  # sideboard: choose card from main deck to remove

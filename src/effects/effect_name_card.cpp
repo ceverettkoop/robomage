@@ -38,7 +38,8 @@ static std::string prompt_name_card(Zone::Ownership chooser, const std::vector<s
 // their whole deck, not just their hand — which is the only sensible, decidable candidate
 // set for the engine and mirrors the Disruptor Flute ETB name-a-card decision. The shared
 // build_name_card_choices() helper (also used by Disruptor Flute in state_manager_statics.cpp)
-// builds that menu; the ValidCards$ Card.nonLand filter is honored by passing exclude_lands=true.
+// builds that menu; the ValidCards$ filter (Card.nonLand / Land / …) is passed through and
+// applied by the unified matcher inside the builder.
 bool name_card(Ability &ab, std::shared_ptr<Orderer> orderer) {
     // Defined$ You + ValidCards$ Land (Petrified Hamlet's ETB "choose a land card name"):
     // the SOURCE's controller names a land card. The choice persists for the source's
@@ -57,8 +58,8 @@ bool name_card(Ability &ab, std::shared_ptr<Orderer> orderer) {
         NameCardScope scope = only_lands ? NameCardScope::BOTH_PLAYERS : NameCardScope::CHOOSER_ONLY;
         std::vector<std::string> names;
         std::vector<LegalAction> name_choices =
-            build_name_card_choices(orderer->mEntities, chooser, /*exclude_lands=*/false, names,
-                                    /*only_lands=*/only_lands, scope);
+            build_name_card_choices(orderer->mEntities, chooser, ab.valid_cards_filter, names,
+                                    scope);
         std::string chosen = prompt_name_card(chooser, names, name_choices);
         // Record on the source permanent so its continuous static can read it; also set the
         // global for any chained sub-ability resolving in the same call (cleared afterward).
@@ -84,7 +85,7 @@ bool name_card(Ability &ab, std::shared_ptr<Orderer> orderer) {
 
     std::vector<std::string> names;
     std::vector<LegalAction> name_choices =
-        build_name_card_choices(orderer->mEntities, name_owner, /*exclude_lands=*/true, names);
+        build_name_card_choices(orderer->mEntities, name_owner, ab.valid_cards_filter, names);
 
     if (name_choices.empty()) {
         // No nameable card; the chained Card.NamedCard discard will find no match.

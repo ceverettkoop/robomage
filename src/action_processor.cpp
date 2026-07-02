@@ -35,6 +35,7 @@ static Entity prompt_permanent_choice(const std::vector<Entity> &choices, const 
 static void pay_secondary_activation_costs(
     const Ability &ability, Entity source, Zone::Ownership controller, std::shared_ptr<Orderer> orderer);
 static void select_single_target(Ability &ability, const std::vector<Entity> &valid_targets, bool allow_done);
+static std::string chosen_targets_display(const Ability &ab);
 static void process_activate_ability(const LegalAction &action, Game &game, std::shared_ptr<Orderer> orderer);
 static void process_ninjutsu(const LegalAction &action, Game &game, std::shared_ptr<Orderer> orderer);
 static std::vector<Entity> build_valid_targets(
@@ -65,6 +66,8 @@ static void trigger_ward_for_targets(Entity targeting_entity, Zone::Ownership co
                                      std::shared_ptr<Orderer> orderer);
 static void fire_became_target_events(Entity targeting_entity, Zone::Ownership controller,
                                       const std::vector<Entity> &targets);
+static void fire_targeting_hooks(Entity targeting_entity, Zone::Ownership controller,
+                                 const Ability &targeting_ab, std::shared_ptr<Orderer> orderer);
 static void pay_sacrifice_cost(Zone::Ownership caster, const std::string &spec, Entity spell_entity,
                                std::shared_ptr<Orderer> orderer);
 static void pay_exile_from_grave_cost(Zone::Ownership caster, int min_types, Entity spell_entity,
@@ -315,6 +318,21 @@ static void process_ninjutsu(const LegalAction &action, Game &game, std::shared_
     game.take_action();
 }
 
+// Every chosen target of an ability, joined for the activation announcement. Targets are
+// public information as soon as the ability is put on the stack (CR 601.2c), so a
+// multi-target activation (e.g. Faerie Macabre's "up to two target cards") must announce
+// all of its targets — naming only the first makes the transcript read as if the other
+// cards were affected without ever being targeted.
+static std::string chosen_targets_display(const Ability &ab) {
+    if (ab.targets.empty()) return target_display_name(cur_game, ab.target);
+    std::string out;
+    for (size_t i = 0; i < ab.targets.size(); i++) {
+        if (i > 0) out += (i + 1 == ab.targets.size()) ? " and " : ", ";
+        out += target_display_name(cur_game, ab.targets[i]);
+    }
+    return out;
+}
+
 static void process_activate_ability(const LegalAction &action, Game &game, std::shared_ptr<Orderer> orderer) {
     Entity permanent_entity = action.source_entity;
     const Ability &ability = action.ability;
@@ -363,14 +381,19 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
         // Create standalone ability entity on the stack
         stack_ab.source = permanent_entity;
         stack_ab.controller = ctrl;
-        orderer->push_ability_onto_stack(stack_ab, ctrl);
+        Entity ability_stack_entity = orderer->push_ability_onto_stack(stack_ab, ctrl);
+
+        // Ward (702.21) + BecomesTarget (CR 603.2c) apply to hand/graveyard-activated abilities
+        // too — CR 702.21b triggers on ANY spell or ability an opponent controls that targets
+        // the warded permanent. (Graveyard/non-battlefield targets are filtered inside the hooks.)
+        fire_targeting_hooks(ability_stack_entity, ctrl, stack_ab, orderer);
 
         auto &cd = global_coordinator.GetComponent<CardData>(permanent_entity);
         const char *from_zone = (ability.activation_zone == Zone::GRAVEYARD) ? "graveyard" : "hand";
         if (stack_ab.target != 0) {
-            std::string tgt_name = target_display_name(cur_game, stack_ab.target);
+            std::string tgt_names = chosen_targets_display(stack_ab);
             game_log("%s activates %s from %s targeting %s\n",
-                player_name(ctrl).c_str(), cd.name.c_str(), from_zone, tgt_name.c_str());
+                player_name(ctrl).c_str(), cd.name.c_str(), from_zone, tgt_names.c_str());
         } else {
             game_log("%s activates %s from %s\n", player_name(ctrl).c_str(), cd.name.c_str(), from_zone);
         }
@@ -578,20 +601,15 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
         stack_ab.controller = controller;
         Entity ability_stack_entity = orderer->push_ability_onto_stack(stack_ab, controller);
 
-        // Ward (702.21): an opponent's permanent that this ability targets may counter it.
-        if (stack_ab.valid_tgts != "N_A") {
-            std::vector<Entity> tgts = stack_ab.targets.empty()
-                ? std::vector<Entity>{stack_ab.target} : stack_ab.targets;
-            trigger_ward_for_targets(ability_stack_entity, controller, tgts, orderer);
-            // Mode$ BecomesTarget triggers (CR 603.2c) fire on abilities too; the per-trigger
-            // ValidSource$ filter (e.g. Reality Smasher's Spell.OppCtrl) gates out ability sources.
-            fire_became_target_events(ability_stack_entity, controller, tgts);
-        }
+        // Ward (702.21) + Mode$ BecomesTarget (CR 603.2c): abilities fire these too; the
+        // per-trigger ValidSource$ filter (e.g. Reality Smasher's Spell.OppCtrl) gates out
+        // ability sources for BecomesTarget.
+        fire_targeting_hooks(ability_stack_entity, controller, stack_ab, orderer);
 
         if (stack_ab.target != 0) {
-            std::string tgt_name = target_display_name(cur_game, stack_ab.target);
+            std::string tgt_names = chosen_targets_display(stack_ab);
             game_log("%s's %s ability targeting %s is on the stack\n",
-                player_name(controller).c_str(), permanent.name.c_str(), tgt_name.c_str());
+                player_name(controller).c_str(), permanent.name.c_str(), tgt_names.c_str());
         } else {
             game_log("%s's %s ability is on the stack\n", player_name(controller).c_str(), permanent.name.c_str());
         }
@@ -1498,6 +1516,18 @@ static void fire_became_target_events(Entity targeting_entity, Zone::Ownership c
     }
 }
 
+// Shared post-targeting hook point: once a targeting spell/ability entity is on the stack,
+// fire the Ward triggers (CR 702.21) and BECAME_TARGET events (CR 603.2c) for its chosen
+// targets. No-op for a non-targeting ability (ValidTgts$ absent → "N_A").
+static void fire_targeting_hooks(Entity targeting_entity, Zone::Ownership controller,
+                                 const Ability &targeting_ab, std::shared_ptr<Orderer> orderer) {
+    if (targeting_ab.valid_tgts == "N_A") return;
+    std::vector<Entity> tgts = targeting_ab.targets.empty()
+        ? std::vector<Entity>{targeting_ab.target} : targeting_ab.targets;
+    trigger_ward_for_targets(targeting_entity, controller, tgts, orderer);
+    fire_became_target_events(targeting_entity, controller, tgts);
+}
+
 void process_action(const LegalAction &action, Game &game, std::shared_ptr<Orderer> orderer) {
     switch (action.type) {
         case PASS_PRIORITY:
@@ -1597,6 +1627,12 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             else
                 cur_game.cast_from_hand.erase(spell_entity);
 
+            // A fresh delve cast must not inherit exiles recorded by a previous delve spell
+            // (delve_exiled persists until an etbCounter replacement consumes it). Cleared
+            // BEFORE the mana snapshot so a cancelled payment's rewind (restore_mana_state)
+            // returns exactly this cast's exiles to the graveyard.
+            if (card_data.has_delve) cur_game.delve_exiled.clear();
+
             // Snapshot mana state for rewind on payment failure
             auto mana_snap = snapshot_mana_state(caster, orderer);
 
@@ -1621,61 +1657,40 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             ManaValue deferred_mana_cost;
             bool deferred_mana_pending = false;
             bool deferred_delve = false, deferred_improvise = false;
+            // Non-mana alternative-cost pieces (flashback life/sacrifice, escape
+            // exile-from-graveyard) are deferred the same way: targets first (601.2c),
+            // then every cost (601.2g/h). They are paid only after the deferred mana
+            // payment commits, so a cancelled payment never costs life or a creature.
+            int deferred_life_cost = 0;
+            std::string deferred_sac_spec;
+            int deferred_exile_min_types = 0, deferred_exile_count = 0;
 
-            // FLASHBACK COST
+            // FLASHBACK COST — determined here (601.2f), but PAID after targets are
+            // chosen (601.2c before 601.2g/h; see the deferred_* block below). Paying
+            // the sacrifice first leaked information and changed the board before the
+            // target was locked in (Cabal Therapy: Flashback—Sacrifice a creature).
             if (action.use_flashback) {
-                // Pay flashback mana cost — flashback is an alternative cost (CR 702.34a),
+                // Flashback mana cost — flashback is an alternative cost (CR 702.34a),
                 // so an active SetCost floor (Trinisphere) pads it up to the floor (601.2f).
-                ManaValue fb_mana = floored_alt_mana_cost(card_data, card_data.flashback_mana_cost);
-                if (!fb_mana.empty()) {
-                    if (!prompt_mana_payment(caster, fb_mana, spell_entity, orderer, false)) {
-                        restore_mana_state(caster, mana_snap, orderer);
-                        cur_game.payment_fail_counts[spell_entity]++;
-                        game_log("Payment cancelled.\n");
-                        break;
-                    }
-                }
-                // Pay flashback life cost
-                if (card_data.flashback_alt_cost.life_cost > 0) {
-                    Entity caster_entity = (caster == Zone::PLAYER_A)
-                        ? cur_game.player_a_entity : cur_game.player_b_entity;
-                    auto &player = global_coordinator.GetComponent<Player>(caster_entity);
-                    player.life_total -= card_data.flashback_alt_cost.life_cost;
-                    game_log("%s pays %d life\n", player_name(caster).c_str(), card_data.flashback_alt_cost.life_cost);
-                }
-                // Pay flashback sacrifice cost (Cabal Therapy: Flashback—Sacrifice a creature).
-                // The cast is only offered when a matching permanent exists (cast legality),
-                // so there is always something to sacrifice here.
-                if (!card_data.flashback_alt_cost.sac_cost_spec.empty()) {
-                    pay_sacrifice_cost(caster, card_data.flashback_alt_cost.sac_cost_spec,
-                                       spell_entity, orderer);
-                }
+                deferred_mana_cost = floored_alt_mana_cost(card_data, card_data.flashback_mana_cost);
+                deferred_mana_pending = true;
+                deferred_life_cost = card_data.flashback_alt_cost.life_cost;
+                // Flashback sacrifice cost: the cast is only offered when a matching
+                // permanent exists (cast legality), so there is always something to
+                // sacrifice when the deferred payment runs.
+                deferred_sac_spec = card_data.flashback_alt_cost.sac_cost_spec;
 
             // ESCAPE COST (CR 702.139): cast from the graveyard for the escape cost — the
             // escape mana cost plus the ExileFromGrave additional cost (exile other graveyard
-            // cards covering ≥N card types). The exile is a cost, paid as the spell is cast.
+            // cards covering ≥N card types). The exile is a cost, paid as the spell is cast —
+            // after targets are chosen, like every other cost (601.2c before 601.2g/h).
             } else if (action.use_escape) {
                 // Escape is an alternative cost (CR 702.139a): fold in any active SetCost floor.
-                ManaValue esc_mana = floored_alt_mana_cost(card_data, card_data.escape_mana_cost);
-                if (!esc_mana.empty()) {
-                    if (!prompt_mana_payment(caster, esc_mana, spell_entity, orderer, false)) {
-                        restore_mana_state(caster, mana_snap, orderer);
-                        cur_game.payment_fail_counts[spell_entity]++;
-                        game_log("Payment cancelled.\n");
-                        break;
-                    }
-                }
-                if (card_data.escape_alt_cost.life_cost > 0) {
-                    auto &player = global_coordinator.GetComponent<Player>(get_player_entity(caster));
-                    player.life_total -= card_data.escape_alt_cost.life_cost;
-                    game_log("%s pays %d life\n", player_name(caster).c_str(), card_data.escape_alt_cost.life_cost);
-                }
-                if (card_data.escape_alt_cost.exile_grave_min_types > 0)
-                    pay_exile_from_grave_cost(caster, card_data.escape_alt_cost.exile_grave_min_types,
-                                              spell_entity, orderer);
-                if (card_data.escape_alt_cost.exile_grave_count > 0)
-                    pay_exile_from_grave_count_cost(caster, card_data.escape_alt_cost.exile_grave_count,
-                                                    spell_entity, orderer);
+                deferred_mana_cost = floored_alt_mana_cost(card_data, card_data.escape_mana_cost);
+                deferred_mana_pending = true;
+                deferred_life_cost = card_data.escape_alt_cost.life_cost;
+                deferred_exile_min_types = card_data.escape_alt_cost.exile_grave_min_types;
+                deferred_exile_count = card_data.escape_alt_cost.exile_grave_count;
 
             // IMPULSE CAST (Amped Raptor's DB$ Play): cast from exile under a one-shot
             // permission, paying its alternative RESOURCE cost (energy or life) instead of any
@@ -2008,9 +2023,16 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             // chosen target illegal — the spell then fizzles at resolution rather than ever being
             // offered/forced with no legal target.
             if (deferred_mana_pending) {
-                if (deferred_delve) cur_game.delve_exiled.clear();
+                // Delve (CR 702.66 / 601.2h): the caster chooses how many graveyard cards to
+                // exile and which ones, one pick at a time; each exile pays one generic pip of
+                // the deferred cost. Runs after targets are locked in (601.2c), like every
+                // other cost. The remainder is then paid WITHOUT delve — the count menu was
+                // already constrained to counts whose remaining cost is payable.
+                if (deferred_delve)
+                    prompt_delve_exiles(caster, deferred_mana_cost, spell_entity, orderer,
+                                        deferred_improvise);
                 if (!prompt_mana_payment(caster, deferred_mana_cost, spell_entity, orderer,
-                                         deferred_delve, deferred_improvise)) {
+                                         /*has_delve=*/false, deferred_improvise)) {
                     // Payment cancelled (interactive only — machine mode pre-verifies
                     // affordability). Targets were already chosen but the spell never reached the
                     // stack, so rewind the half-finished cast: drop the targeting Ability / aura
@@ -2026,6 +2048,23 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                     break;
                 }
             }
+
+            // Pay the deferred non-mana cost pieces (flashback life/sacrifice, escape
+            // exile-from-graveyard) now that targets are locked in and the mana payment
+            // committed (CR 601.2g/h after the 601.2c target choice). Sacrificing here may
+            // make a chosen target illegal — the spell then fizzles at resolution
+            // (CR 608.2b), matching paper rules.
+            if (deferred_life_cost > 0) {
+                auto &player = global_coordinator.GetComponent<Player>(get_player_entity(caster));
+                player.life_total -= deferred_life_cost;
+                game_log("%s pays %d life\n", player_name(caster).c_str(), deferred_life_cost);
+            }
+            if (!deferred_sac_spec.empty())
+                pay_sacrifice_cost(caster, deferred_sac_spec, spell_entity, orderer);
+            if (deferred_exile_min_types > 0)
+                pay_exile_from_grave_cost(caster, deferred_exile_min_types, spell_entity, orderer);
+            if (deferred_exile_count > 0)
+                pay_exile_from_grave_count_cost(caster, deferred_exile_count, spell_entity, orderer);
 
             // Log cast with target if applicable
             if (global_coordinator.entity_has_component<Ability>(spell_entity)) {
@@ -2133,14 +2172,9 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             // resolves first. Read the chosen target(s) off the spell's Ability component.
             if (global_coordinator.entity_has_component<Ability>(spell_entity)) {
                 auto &spell_ab = global_coordinator.GetComponent<Ability>(spell_entity);
-                if (spell_ab.valid_tgts != "N_A") {
-                    std::vector<Entity> tgts = spell_ab.targets.empty()
-                        ? std::vector<Entity>{spell_ab.target} : spell_ab.targets;
-                    trigger_ward_for_targets(spell_entity, caster, tgts, orderer);
-                    // Mode$ BecomesTarget triggers (Reality Smasher): a targeted permanent whose
-                    // becomes-target trigger matches fires it above this spell (CR 603.2c/603.3).
-                    fire_became_target_events(spell_entity, caster, tgts);
-                }
+                // Mode$ BecomesTarget triggers (Reality Smasher): a targeted permanent whose
+                // becomes-target trigger matches fires it above this spell (CR 603.2c/603.3).
+                fire_targeting_hooks(spell_entity, caster, spell_ab, orderer);
             }
 
             // REPLICATE (CR 702.x): "When you cast this spell, copy it for each time you paid

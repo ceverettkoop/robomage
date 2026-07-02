@@ -7,20 +7,15 @@
 #include "components/carddata.h"
 #include "components/zone.h"
 #include "ecs/coordinator.h"
+#include "game_queries.h"
 
 extern Coordinator global_coordinator;
 
-// True if the card has the Land card type.
-static bool card_is_land(const CardData &cd) {
-    for (auto &t : cd.types)
-        if (t.name == "Land") return true;
-    return false;
-}
-
 std::vector<LegalAction> build_name_card_choices(const std::set<Entity> &entities,
-                                                 Zone::Ownership owner, bool exclude_lands,
+                                                 Zone::Ownership owner,
+                                                 const std::string &valid_filter,
                                                  std::vector<std::string> &out_names,
-                                                 bool only_lands, NameCardScope scope) {
+                                                 NameCardScope scope) {
     // Distinct vocab card names in scope, each with a representative entity (so the
     // per-action card id encodes the candidate) and a copy count for ordering.
     // CHOOSER_ONLY keeps only cards owned by `owner`; BOTH_PLAYERS accepts cards owned
@@ -39,8 +34,10 @@ std::vector<LegalAction> build_name_card_choices(const std::set<Entity> &entitie
         }
         auto &cd = global_coordinator.GetComponent<CardData>(e);
         if (card_name_to_index(cd.name) < 0) continue;  // restrict to vocab cards
-        if (only_lands && !card_is_land(cd)) continue;
-        else if (exclude_lands && card_is_land(cd)) continue;
+        // Apply the ability's ValidCards$ filter against the candidate's printed
+        // characteristics via the unified matcher, so every filter token (Card.nonLand,
+        // Land, …) works uniformly. Empty filter = no restriction.
+        if (!valid_filter.empty() && !card_matches_any(e, valid_filter)) continue;
         bool found = false;
         for (size_t i = 0; i < names.size(); i++)
             if (names[i] == cd.name) { copies[i]++; found = true; break; }

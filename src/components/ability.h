@@ -426,7 +426,6 @@ struct Ability{
     // Token creation (Cori-Steel Cutter) now lives in TokenParams (params variant).
 
     // Attach / Equip sub-ability
-    bool optional = false;           // Optional$ True — player may decline
     bool defined_remembered = false; // Defined$ Remembered — target is cur_game.remembered_entities[0]
     // True for the sub-ability a DB$ DelayedTrigger named in its Execute$ (vs. a trailing
     // SubAbility$ cleanup). delayed_trigger() fires this one and chains the rest after it.
@@ -556,7 +555,7 @@ struct Ability{
     std::string dig_num_expr = "";   // DigNum$ SVar — dynamic dig count (e.g. "Count$Devotion.Blue")
     std::string change_valid = "";   // ChangeValid$ — comma-separated filter like "Card.Creature,Card.Land"
     bool rest_random_order = false;  // RestRandomOrder$ True
-    bool optional_choice = false;    // Optional$ True in Dig context — can choose nothing
+    bool optional_choice = false;    // Optional$ True — the effect is a "may": Dig can choose nothing, Attach/Sacrifice/ChangeZone/Play may be declined
     bool change_num_any = false;     // ChangeNum$ Any — may take any number (0..pool) of looked-at cards (Fateseal)
     int change_num = -1;             // ChangeNum$ <N> for Dig — exact take count incl. 0 (-1 = unset); honored over amount so "take 0" works (Birthing Ritual DBDigBis)
     int dig_destination = -1;        // DestinationZone$ — where chosen card goes (-1 = HAND, Zone::LIBRARY etc.)
