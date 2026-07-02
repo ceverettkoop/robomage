@@ -894,11 +894,14 @@ bool Ability::is_target_valid() const {
     // Optional targeting: no target chosen is valid
     if (target == 0 && targets.empty() && target_min == 0) return true;
 
-    // Multi-target abilities (target_max > 1) populate `targets`; verify every one.
+    // Multi-target abilities (target_max > 1) populate `targets`. CR 608.2b: the spell or
+    // ability is countered on resolution only if ALL of its targets are illegal; with at
+    // least one still-legal target it resolves, affecting only the legal ones (resolve()
+    // prunes the illegal targets before dispatching to the effect handler).
     if (!targets.empty()) {
         for (Entity t : targets)
-            if (!is_legal_target(t, controller)) return false;
-        return true;
+            if (is_legal_target(t, controller)) return true;
+        return false;
     }
 
     return is_legal_target(target, controller);
@@ -1007,6 +1010,24 @@ size_t evaluate_dynamic_amount(
             return static_cast<size_t>((life + 1) / 2);
         }
         return static_cast<size_t>(life);
+    }
+    // Count$ValidStack <filter> — number of stack objects matching a card filter (Mindbreak
+    // Trap: TargetMax$ MaxTgts, MaxTgts = Count$ValidStack Card — the cap on "exile any number
+    // of target spells" is the number of spell cards on the stack). Card-shaped filters are
+    // matched through the shared comma-OR card filter against each spell's printed
+    // characteristics; standalone ability entities (no CardData) are not cards and don't count.
+    // The evaluating ability's own source is excluded — a spell can never target itself, so
+    // counting it would only inflate the cap past the real candidate pool.
+    if (expr.rfind("Count$ValidStack ", 0) == 0) {
+        std::string spec = expr.substr(std::string("Count$ValidStack ").size());
+        size_t count = 0;
+        for (auto e : orderer->get_stack()) {
+            if (e == source) continue;
+            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+            if (!card_matches_any(e, spec, MatchCtx{ctrl, source})) continue;
+            count++;
+        }
+        return count;
     }
     if (expr.find("Count$Valid Creature.YouCtrl") != std::string::npos) {
         size_t count = 0;
@@ -1351,6 +1372,28 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
         if (!is_target_valid()) {
             fizzle(orderer);
             return;  // subabilities do not fire; TODO revisit this in light of cards e.g. k-command
+        }
+        // CR 608.2b: a multi-target spell/ability whose targets are only PARTLY illegal still
+        // resolves, affecting only the still-legal targets (a spell that left the stack, a
+        // permanent that left the battlefield or gained protection, ...). Prune the illegal
+        // ones here so every effect handler downstream sees legal targets only; the all-illegal
+        // case was already countered by the is_target_valid gate above.
+        if (!targets.empty()) {
+            for (auto it = targets.begin(); it != targets.end();) {
+                if (!is_legal_target(*it, controller)) {
+                    std::string tname =
+                        global_coordinator.entity_has_component<CardData>(*it)
+                            ? global_coordinator.GetComponent<CardData>(*it).name
+                            : (global_coordinator.entity_has_component<Permanent>(*it)
+                                   ? global_coordinator.GetComponent<Permanent>(*it).name
+                                   : std::string("<target>"));
+                    game_log("%s is no longer a legal target; it is unaffected\n", tname.c_str());
+                    it = targets.erase(it);
+                } else {
+                    ++it;
+                }
+            }
+            target = targets.empty() ? 0 : targets[0];
         }
     }
     // RememberTargets/RememberObjects: stash the target(s) so chained

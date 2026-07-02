@@ -1339,13 +1339,13 @@ void select_target(Ability &ability, std::shared_ptr<Orderer> orderer, Zone::Own
         effective_max = static_cast<int>(cur_game.x_paid);
     else if (!ability.target_max_count_expr.empty())
         effective_max = static_cast<int>(evaluate_dynamic_amount(
-            ability.target_max_count_expr, priority_player, orderer, 0));
+            ability.target_max_count_expr, priority_player, orderer, 0, ability.source));
     int effective_min = ability.target_min;
     if (ability.target_min_from_xpaid)
         effective_min = static_cast<int>(cur_game.x_paid);
     else if (!ability.target_min_count_expr.empty())
         effective_min = static_cast<int>(evaluate_dynamic_amount(
-            ability.target_min_count_expr, priority_player, orderer, 0));
+            ability.target_min_count_expr, priority_player, orderer, 0, ability.source));
     ability.target_min = effective_min;
     ability.target_max = effective_max;
 
