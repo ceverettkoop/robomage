@@ -327,12 +327,30 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
     if (ab.defined_remembered) {
         for (auto e : cur_game.remembered_entities) {
             if (!global_coordinator.entity_has_component<Zone>(e)) continue;
+            // Stale remembered object: only move a card that is actually in the ability's
+            // declared Origin$ zone. A delayed return (Phelia/Flickerwisp's TrigBounce,
+            // Origin$ Exile) must not "return" a card that already left exile — or a
+            // recycled entity id — since the phantom move would emit a false
+            // entered-the-battlefield event (falsely firing ETB watchers like Guide of Souls).
+            if (!ab.origins.empty()) {
+                Zone::ZoneValue loc = global_coordinator.GetComponent<Zone>(e).location;
+                bool in_origin = false;
+                for (auto z : ab.origins)
+                    if (z == loc) in_origin = true;
+                if (!in_origin) continue;
+            }
             std::string nm = global_coordinator.entity_has_component<CardData>(e)
                                  ? global_coordinator.GetComponent<CardData>(e).name
                                  : "<unknown>";
             Zone::ZoneValue landed = change_zone_move(orderer, e, ab.destination);
             if (landed == Zone::BATTLEFIELD) {
-                global_coordinator.GetComponent<Zone>(e).controller = owner;
+                // Forge default for ChangeZone Destination$ Battlefield: the card enters
+                // under its OWNER's control unless GainControl$ True (CR 110.2a). The
+                // delayed exile-returns that use this branch (Phelia, Flickerwisp, Hide on
+                // the Ceiling, Yorion, Ajani) all return the card to its owner — assigning
+                // the ability controller here let an attacker steal an opponent's permanent.
+                auto &ezone = global_coordinator.GetComponent<Zone>(e);
+                ezone.controller = ezone.owner;
                 if (ab.enters_tapped) cur_game.pending_enters_tapped.insert(e);
                 if (ab.enters_transformed) cur_game.pending_enters_transformed.insert(e);
             }
