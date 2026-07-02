@@ -66,6 +66,8 @@ static void trigger_ward_for_targets(Entity targeting_entity, Zone::Ownership co
                                      std::shared_ptr<Orderer> orderer);
 static void fire_became_target_events(Entity targeting_entity, Zone::Ownership controller,
                                       const std::vector<Entity> &targets);
+static void fire_targeting_hooks(Entity targeting_entity, Zone::Ownership controller,
+                                 const Ability &targeting_ab, std::shared_ptr<Orderer> orderer);
 static void pay_sacrifice_cost(Zone::Ownership caster, const std::string &spec, Entity spell_entity,
                                std::shared_ptr<Orderer> orderer);
 static void pay_exile_from_grave_cost(Zone::Ownership caster, int min_types, Entity spell_entity,
@@ -379,7 +381,12 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
         // Create standalone ability entity on the stack
         stack_ab.source = permanent_entity;
         stack_ab.controller = ctrl;
-        orderer->push_ability_onto_stack(stack_ab, ctrl);
+        Entity ability_stack_entity = orderer->push_ability_onto_stack(stack_ab, ctrl);
+
+        // Ward (702.21) + BecomesTarget (CR 603.2c) apply to hand/graveyard-activated abilities
+        // too — CR 702.21b triggers on ANY spell or ability an opponent controls that targets
+        // the warded permanent. (Graveyard/non-battlefield targets are filtered inside the hooks.)
+        fire_targeting_hooks(ability_stack_entity, ctrl, stack_ab, orderer);
 
         auto &cd = global_coordinator.GetComponent<CardData>(permanent_entity);
         const char *from_zone = (ability.activation_zone == Zone::GRAVEYARD) ? "graveyard" : "hand";
@@ -594,15 +601,10 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
         stack_ab.controller = controller;
         Entity ability_stack_entity = orderer->push_ability_onto_stack(stack_ab, controller);
 
-        // Ward (702.21): an opponent's permanent that this ability targets may counter it.
-        if (stack_ab.valid_tgts != "N_A") {
-            std::vector<Entity> tgts = stack_ab.targets.empty()
-                ? std::vector<Entity>{stack_ab.target} : stack_ab.targets;
-            trigger_ward_for_targets(ability_stack_entity, controller, tgts, orderer);
-            // Mode$ BecomesTarget triggers (CR 603.2c) fire on abilities too; the per-trigger
-            // ValidSource$ filter (e.g. Reality Smasher's Spell.OppCtrl) gates out ability sources.
-            fire_became_target_events(ability_stack_entity, controller, tgts);
-        }
+        // Ward (702.21) + Mode$ BecomesTarget (CR 603.2c): abilities fire these too; the
+        // per-trigger ValidSource$ filter (e.g. Reality Smasher's Spell.OppCtrl) gates out
+        // ability sources for BecomesTarget.
+        fire_targeting_hooks(ability_stack_entity, controller, stack_ab, orderer);
 
         if (stack_ab.target != 0) {
             std::string tgt_names = chosen_targets_display(stack_ab);
@@ -1514,6 +1516,18 @@ static void fire_became_target_events(Entity targeting_entity, Zone::Ownership c
     }
 }
 
+// Shared post-targeting hook point: once a targeting spell/ability entity is on the stack,
+// fire the Ward triggers (CR 702.21) and BECAME_TARGET events (CR 603.2c) for its chosen
+// targets. No-op for a non-targeting ability (ValidTgts$ absent → "N_A").
+static void fire_targeting_hooks(Entity targeting_entity, Zone::Ownership controller,
+                                 const Ability &targeting_ab, std::shared_ptr<Orderer> orderer) {
+    if (targeting_ab.valid_tgts == "N_A") return;
+    std::vector<Entity> tgts = targeting_ab.targets.empty()
+        ? std::vector<Entity>{targeting_ab.target} : targeting_ab.targets;
+    trigger_ward_for_targets(targeting_entity, controller, tgts, orderer);
+    fire_became_target_events(targeting_entity, controller, tgts);
+}
+
 void process_action(const LegalAction &action, Game &game, std::shared_ptr<Orderer> orderer) {
     switch (action.type) {
         case PASS_PRIORITY:
@@ -2158,14 +2172,9 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             // resolves first. Read the chosen target(s) off the spell's Ability component.
             if (global_coordinator.entity_has_component<Ability>(spell_entity)) {
                 auto &spell_ab = global_coordinator.GetComponent<Ability>(spell_entity);
-                if (spell_ab.valid_tgts != "N_A") {
-                    std::vector<Entity> tgts = spell_ab.targets.empty()
-                        ? std::vector<Entity>{spell_ab.target} : spell_ab.targets;
-                    trigger_ward_for_targets(spell_entity, caster, tgts, orderer);
-                    // Mode$ BecomesTarget triggers (Reality Smasher): a targeted permanent whose
-                    // becomes-target trigger matches fires it above this spell (CR 603.2c/603.3).
-                    fire_became_target_events(spell_entity, caster, tgts);
-                }
+                // Mode$ BecomesTarget triggers (Reality Smasher): a targeted permanent whose
+                // becomes-target trigger matches fires it above this spell (CR 603.2c/603.3).
+                fire_targeting_hooks(spell_entity, caster, spell_ab, orderer);
             }
 
             // REPLICATE (CR 702.x): "When you cast this spell, copy it for each time you paid
