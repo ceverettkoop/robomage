@@ -71,9 +71,32 @@ def _prune_command_logs():
             pass
 
 
+# Deck subfolders hidden from the dropdowns: temp/ holds auto-generated test
+# decks (see test_harness.py), not_used/ parked development stubs.
+_DECK_SCAN_EXCLUDE = frozenset({"temp", "not_used"})
+
+
+def _grouped_sort_key(rel):
+    """Sort decks/checkpoints top-level first, then grouped by subfolder,
+    alphabetical within each group."""
+    return (rel.count("/"), rel)
+
+
 def _scan_decks():
-    return sorted(os.path.splitext(os.path.basename(p))[0]
-                  for p in glob.glob(os.path.join(_DECKS_DIR, "*.dk")))
+    """All .dk decks under decks/ (recursive), as decks/-relative stems.
+
+    Subfolder decks are offered in the 'league/ur_delver' path-relative form
+    that train.py and the engine accept alongside top-level stems like
+    'delver'. temp/ and not_used/ are excluded."""
+    out = []
+    for root, dirs, files in os.walk(_DECKS_DIR):
+        dirs[:] = sorted(d for d in dirs if d not in _DECK_SCAN_EXCLUDE)
+        rel_dir = os.path.relpath(root, _DECKS_DIR).replace(os.sep, "/")
+        for fname in files:
+            if fname.endswith(".dk"):
+                stem = os.path.splitext(fname)[0]
+                out.append(stem if rel_dir == "." else f"{rel_dir}/{stem}")
+    return sorted(out, key=_grouped_sort_key)
 
 
 def _scan_league_decks():
@@ -84,10 +107,29 @@ def _scan_league_decks():
 
 
 def _scan_checkpoints():
-    # Basenames make the inline autocomplete nice (type "delver" → completes the
-    # filename). They are expanded to a repo-relative path at argv time so the
+    # checkpoints/-relative paths ('delver__final.zip', 'league/ur_delver__final.zip')
+    # — checkpoints of subfolder decks live in the mirrored subfolder, so scan
+    # recursively. They are expanded to a repo-relative path at argv time so the
     # value loads whether the script reads it directly (play) or resolves it.
-    return sorted(os.path.basename(p) for p in glob.glob(os.path.join(_CKPT_DIR, "*.zip")))
+    out = [os.path.relpath(p, _CKPT_DIR).replace(os.sep, "/")
+           for p in glob.glob(os.path.join(_CKPT_DIR, "**", "*.zip"), recursive=True)]
+    return sorted(out, key=_grouped_sort_key)
+
+
+def _checkpoints_for_deck(deck):
+    """Checkpoints piloting ``deck``, as checkpoints/-relative paths.
+
+    Models are per-deck generalists named '{deck}__final.zip' /
+    '{deck}__v{steps}.zip'. A subfolder deck ('league/ur_delver') looks in the
+    mirrored checkpoints subfolder first ('league/ur_delver__*.zip' — where
+    training saves them), then falls back to a flat top-level '{stem}__*.zip'
+    so pre-subfolder checkpoints keep working."""
+    ckpts = _scan_checkpoints()
+    out = [c for c in ckpts if c.startswith(f"{deck}__")]
+    stem = deck.rsplit("/", 1)[-1]
+    if stem != deck:
+        out += [c for c in ckpts if "/" not in c and c.startswith(f"{stem}__")]
+    return out
 
 
 def _expand_checkpoint(val):
@@ -230,12 +272,13 @@ class LauncherApp(App):
 
         Models are per-deck generalists named '{deck}__final.zip' /
         '{deck}__v{steps}.zip', so the --load dropdown offers the chosen deck's
-        own pilots (the opponent is irrelevant). Empty until a deck is chosen."""
+        own pilots (the opponent is irrelevant). Empty until a deck is chosen.
+        Subfolder decks look in the mirrored checkpoints subfolder first, with
+        a flat-layout fallback (see _checkpoints_for_deck)."""
         deck = self._field_value("--deck")
         if not deck:
             return []
-        prefix = f"{deck}__"
-        return [c for c in _scan_checkpoints() if c.startswith(prefix)]
+        return _checkpoints_for_deck(deck)
 
     def _refresh_load_options(self):
         """Re-filter the --load dropdown after a deck/opponent change."""

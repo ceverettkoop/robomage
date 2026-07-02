@@ -473,7 +473,10 @@ def _resolve_model(path: str) -> str:
     Accepts (in priority order):
       - Full path (returned as-is if it exists)
       - Deck-pilot shorthand like 'delver' → checkpoints/delver__final.zip, else the
-        newest checkpoints/delver__v*.zip snapshot (v2 league naming)
+        newest checkpoints/delver__v*.zip snapshot (v2 league naming). A subfolder
+        deck like 'league/ur_delver' looks in the mirrored checkpoints subfolder
+        (checkpoints/league/ur_delver__*.zip — where training saves it) first, then
+        falls back to a flat top-level 'ur_delver__*.zip'
       - Legacy matchup name like 'delver_mav' → checkpoints/delver_mav_final.zip
       - Bare basename with '.zip' appended
     """
@@ -483,13 +486,19 @@ def _resolve_model(path: str) -> str:
     if os.path.exists(path):
         return path
     # v2 deck-pilot shorthand → '{deck}__final.zip' or newest '{deck}__v*.zip'.
-    deck_final = os.path.join(_CHECKPOINT_ABS, f"{path}__final.zip")
-    if os.path.exists(deck_final):
-        return deck_final
+    # For a subfolder deck the join naturally lands in the mirrored checkpoints
+    # subfolder; a flat-layout basename lookup is the fallback.
     from opponents import latest_snapshot
-    snap = latest_snapshot(path, _CHECKPOINT_ABS)
-    if snap:
-        return snap
+    stems = [path]
+    if os.path.basename(path) != path:
+        stems.append(os.path.basename(path))
+    for stem in stems:
+        deck_final = os.path.join(_CHECKPOINT_ABS, f"{stem}__final.zip")
+        if os.path.exists(deck_final):
+            return deck_final
+        snap = latest_snapshot(stem, _CHECKPOINT_ABS)
+        if snap:
+            return snap
     # Legacy matchup shorthand → checkpoints/{name}_final.zip
     candidate = os.path.join(_CHECKPOINT_ABS, f"{path}_final.zip")
     if os.path.exists(candidate):
@@ -500,6 +509,18 @@ def _resolve_model(path: str) -> str:
         return candidate2
     # Return original — let downstream code report the error
     return path
+
+
+def _ensure_deck_ckpt_subdir(checkpoint_dir: str, deck: str) -> None:
+    """Create the mirrored checkpoints subfolder for a subfolder deck.
+
+    Decks may be namespaced under a subfolder of decks/ (e.g. 'league/<stem>');
+    their checkpoints are saved under the matching checkpoint subdir
+    ('checkpoints/league/<stem>__*.zip'), which must exist before the first
+    snapshot save."""
+    deck_subdir = os.path.dirname(deck)
+    if deck_subdir:
+        os.makedirs(os.path.join(checkpoint_dir, deck_subdir), exist_ok=True)
 # TOTAL_TIMESTEPS / N_ENVS / N_ENVS_SELF_PLAY imported from cli_spec (see top of file).
 _DECKS_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                           "bin", "resources", "decks")
@@ -643,6 +664,7 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
     env_kwargs.setdefault("binary_path", binary_path)
     checkpoint_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), CHECKPOINT_DIR)
     os.makedirs(checkpoint_dir, exist_ok=True)
+    _ensure_deck_ckpt_subdir(checkpoint_dir, model_deck)
     os.makedirs(LOG_DIR, exist_ok=True)
 
     # Parallel environments for faster data collection
@@ -745,9 +767,7 @@ def _league_chunk(binary_path: str, learner_deck: str, roster: list[str],
     env_kwargs.setdefault("binary_path", binary_path)
     # League decks may be namespaced under a subfolder (e.g. 'league/<stem>'); mirror
     # that subdir under the checkpoint dir so snapshot saves don't fail.
-    deck_subdir = os.path.dirname(learner_deck)
-    if deck_subdir:
-        os.makedirs(os.path.join(checkpoint_dir, deck_subdir), exist_ok=True)
+    _ensure_deck_ckpt_subdir(checkpoint_dir, learner_deck)
     vec_env = SubprocVecEnv([
         make_league_env(i, learner_deck, roster, checkpoint_dir, n_envs,
                         opp_ckpt_ratio, self_play_frac, scripted_anchor_frac, **env_kwargs)
@@ -991,6 +1011,7 @@ def train_fixed_model(binary_path: str, model_deck: str, opp_deck: str,
     env_kwargs.setdefault("binary_path", binary_path)
     checkpoint_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), CHECKPOINT_DIR)
     os.makedirs(checkpoint_dir, exist_ok=True)
+    _ensure_deck_ckpt_subdir(checkpoint_dir, model_deck)
     os.makedirs(LOG_DIR, exist_ok=True)
 
     if not load_path:
