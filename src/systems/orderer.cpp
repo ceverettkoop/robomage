@@ -643,6 +643,43 @@ void Orderer::do_london_mulligan() {
     }
 }
 
+bool Orderer::do_opening_hand_actions(bool player_a_goes_first) {
+    bool any_ran = false;
+    const Zone::Ownership order[2] = {player_a_goes_first ? Zone::PLAYER_A : Zone::PLAYER_B,
+                                      player_a_goes_first ? Zone::PLAYER_B : Zone::PLAYER_A};
+    for (auto player : order) {
+        bool is_starting_player = (player == order[0]);
+        // Snapshot the kept hand up front: a resolved ability moves its card out of the hand,
+        // and no new card can join the opening hand mid-phase (CR 103.5: the opening hand is
+        // the hand kept after mulligan resolution).
+        auto hand = this->get_hand(player);
+        for (auto card : hand) {
+            if (!global_coordinator.entity_has_component<CardData>(card)) continue;
+            auto &cd = global_coordinator.GetComponent<CardData>(card);
+            if (cd.opening_hand_abilities.empty()) continue;
+            // :!PlayFirst (Gemstone Caverns): only offered to a player NOT going first.
+            if (cd.opening_hand_not_first && is_starting_player) continue;
+            const Ability &first_ab = cd.opening_hand_abilities.front();
+            std::string prompt =
+                (first_ab.category == "ChangeZone" && first_ab.destination == Zone::BATTLEFIELD)
+                    ? "begin the game with " + cd.name + " on the battlefield"
+                    : "use " + cd.name + "'s opening-hand ability";
+            // request_optional_yesno seats the decision on `player` (priority save/set/restore).
+            if (!request_optional_yesno(player, prompt)) continue;
+            // Same instantiation pattern as gift_abilities in Ability::resolve: copy the parsed
+            // template, wire this card as the source and its holder as controller, and run it
+            // through the normal resolve pipeline so zone-change replacements/ETB machinery apply.
+            for (Ability ab : cd.opening_hand_abilities) {
+                ab.source = card;
+                ab.controller = player;
+                ab.resolve(shared_from_this());
+            }
+            any_ran = true;
+        }
+    }
+    return any_ran;
+}
+
 std::vector<Entity> Orderer::place_on_battlefield(const std::vector<std::string> &card_names,
                                                    Zone::Ownership owner) {
     Coordinator &coordinator = Coordinator::global();

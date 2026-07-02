@@ -927,6 +927,25 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             }
             continue;
         }
+        // K:MayEffectFromOpeningHand:<SVar>[:!PlayFirst] — "If this card is in your opening
+        // hand, you may [effect]" (CR 103.6b; Leyline of the Void's begin-the-game-on-the-
+        // battlefield). The colon field names the SVar holding the effect body (Leyline:
+        // DB$ ChangeZone | Defined$ Self | Origin$ Hand | Destination$ Battlefield); an optional
+        // !PlayFirst field (Gemstone Caverns) limits the offer to the player NOT going first.
+        // The offer itself happens after mulligans in Orderer::do_opening_hand_actions.
+        if (kw_line.rfind("MayEffectFromOpeningHand", 0) == 0) {
+            card.keywords.push_back("MayEffectFromOpeningHand");
+            std::vector<std::string> parts = split(kw_line, ':');
+            if (parts.size() >= 2) {
+                auto oit = svars.find(parts[1]);
+                if (oit != svars.end())
+                    card.opening_hand_abilities.push_back(
+                        parse_svar_ability(oit->second, Ability::SPELL, svars, card.name));
+            }
+            for (size_t pi = 2; pi < parts.size(); pi++)
+                if (parts[pi] == "!PlayFirst") card.opening_hand_not_first = true;
+            continue;
+        }
         // K:Storm — Storm (CR 702.40). A triggered ability that functions on the stack: "When
         // you cast this spell, copy it for each spell cast before it this turn. You may choose new
         // targets for the copies." Synthesize the self-cast SPELL_CAST trigger here (general over

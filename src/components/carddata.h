@@ -151,6 +151,16 @@ struct CardData{
     // a non-Saga card. The Saga lifecycle (lore counters, chapter triggers, sacrifice SBA) lives in
     // src/saga.{h,cpp}.
     std::vector<Ability> saga_chapters;
+    // K:MayEffectFromOpeningHand:<SVar>[:!PlayFirst] — "If this card is in your opening hand,
+    // you may [effect]" (CR 103.6b; the Leylines' "begin the game with it on the battlefield").
+    // The named SVar's body is parsed into opening_hand_abilities (Leyline of the Void:
+    // DB$ ChangeZone | Defined$ Self | Origin$ Hand | Destination$ Battlefield). After mulligans
+    // resolve, players are offered these in APNAP order — starting player first — before the
+    // first turn begins (Orderer::do_opening_hand_actions). An optional !PlayFirst field
+    // (Gemstone Caverns) restricts the offer to a player who is NOT the starting player.
+    // Empty for cards without the keyword.
+    std::vector<Ability> opening_hand_abilities;
+    bool opening_hand_not_first = false;
 };
 
 #endif /* CARD_H */
