@@ -13,7 +13,10 @@ assumes hypothetical engine queries — the engine does not expose them.
 
 The decision functions are STATELESS pure functions of the (perspective-relative)
 observation vector, because they run inside parallel vec-env subprocesses and
-diag/watch determinism depends on it.
+diag/watch determinism depends on it. The only exceptions are small per-game,
+per-agent sets that are themselves deterministic functions of the trajectory
+(EXPLORE's novelty set and the GREEDY/HEURISTIC fruitless-activation stall
+guard — see ``ScriptedAgent``).
 
 Layout/vocab constants are owned by ``env.py`` (they are shared engine layout used
 by env's reward shaping and observation mirroring) and imported here.
@@ -442,7 +445,25 @@ def _doomsday_pile_pick(cats, card_ids) -> int:
     return 0
 
 
-def _greedy_action(obs: np.ndarray, num_choices: int) -> int:
+# ── GREEDY/HEURISTIC fruitless-activation stall guard ───────────────────────
+# Action categories a resolution-time zone search emits (src/components/
+# ability.cpp search_zone): SEARCH_LIBRARY for library searches, TOP_LIBRARY for
+# search-to-top-of-library, CHOOSE_CARD for non-library picks (e.g. Aether
+# Vial's put-a-creature-from-hand). When such a menu offers ONLY the
+# "Fail to find" slot (a single choice carrying the null card-id sentinel — the
+# engine builds it from Entity(0), so it decodes negative, see
+# _EXPLORE_SEARCH_FAIL_WEIGHT), the search cannot succeed. If the resolving
+# item on top of the stack is a self-controlled ability, re-activating its
+# source card would just fail again, so the hard tier records the card id as
+# "fruitless" for the rest of the game and stops offering it the activation.
+# Without this, hard-scripted bw_dnt activated Aether Vial into a guaranteed
+# fail-to-find every turn (~60 activations) until the decision cap — the one
+# non-decisive game of a 441-game fuzz campaign.
+_SEARCH_MENU_CATS = frozenset((_CAT_SEARCH, _CAT_TOP_LIBRARY, _CAT_CHOOSE_CARD))
+
+
+def _greedy_action(obs: np.ndarray, num_choices: int,
+                   fruitless: set[int] | None = None) -> int:
     """
     Rule-based agent for test_minimal.dk (blue/red fetch-land deck).
     Works correctly for either Player A or Player B because the observation
@@ -643,6 +664,10 @@ def _greedy_action(obs: np.ndarray, num_choices: int) -> int:
                 if cid == _KEEN_EYED_CURATOR_VOCAB_IDX and not _stack_is_empty(obs):
                     continue  # don't pile copies onto the stack (each extra one
                               # fizzles when its graveyard target is already exiled)
+                if fruitless and cid in fruitless:
+                    continue  # stall guard: this card's search found NOTHING
+                              # earlier this game (see _SEARCH_MENU_CATS) —
+                              # re-activating it would just fail to find again
                 return i
 
     # 9. (Removed - mana abilities no longer offered during normal priority in machine mode;
@@ -792,10 +817,12 @@ class ScriptedAgent:
 
     ``act`` is a pure function of the (perspective-relative) observation, except
     for the RANDOM tier which draws from a per-agent seeded generator so parallel
-    vec-env subprocesses stay reproducible and independent of the global RNG, and
-    the EXPLORE tier which carries a per-game set of already-chosen card ids for
-    its novelty bias (cleared by ``new_game``; the GREEDY/HEURISTIC paths never
-    touch it).
+    vec-env subprocesses stay reproducible and independent of the global RNG, the
+    EXPLORE tier which carries a per-game set of already-chosen card ids for
+    its novelty bias, and the GREEDY/HEURISTIC path which carries a per-game set
+    of "fruitless" activation card ids (the stall guard, see ``_hard_act``).
+    Both per-game sets are cleared by ``new_game`` and are deterministic
+    functions of the trajectory, so same-seed replays stay identical.
     """
 
     def __init__(self, config: AgentConfig = AgentConfig()):
@@ -805,33 +832,81 @@ class ScriptedAgent:
         # Card ids already cast/activated this game: only touched by the EXPLORE
         # tier (novelty bias). Reset per game via new_game().
         self._explore_seen: set[int] = set()
+        # Stall guard (GREEDY/HEURISTIC only): card ids whose activated ability
+        # searched and found NOTHING this game, keyed by seat (obs[32] > 0.5) so
+        # one shared instance driving both players (e.g. _DEFAULT_AGENT via
+        # scripted_action) can't leak one seat's dead activation to the other.
+        # Reset per game via new_game(). See _SEARCH_MENU_CATS / _hard_act.
+        self._fruitless_activations: dict[bool, set[int]] = {}
 
     def new_game(self) -> None:
         """Reset per-game state at the start of a game.
 
         Called by ``runner.run_games`` (via ``ScriptedController.new_game``) before
-        each game so a reused agent instance can't leak state across games. Only
-        the EXPLORE tier holds per-game state today (the novelty-bias set); as a
-        belt-and-braces for reuse paths that never call this (e.g. a scripted
-        opponent living across vec-env episodes), ``_explore_action`` also clears
-        the set itself whenever it sees a pregame mulligan decision.
+        each game so a reused agent instance can't leak state across games. The
+        per-game state is the EXPLORE novelty-bias set and the GREEDY/HEURISTIC
+        fruitless-activation set; as a belt-and-braces for reuse paths that never
+        call this (e.g. a scripted opponent living across vec-env episodes), both
+        ``_explore_action`` and ``_hard_act`` also clear their own set whenever
+        they see a pregame mulligan decision.
         """
         self._explore_seen.clear()
+        self._fruitless_activations.clear()
 
     def act(self, obs: np.ndarray, num_choices: int) -> int:
         if self.config.skill is Skill.RANDOM:
             return self._random_action(num_choices)
         if self.config.skill is Skill.EXPLORE:
             return self._explore_action(obs, num_choices)
+        return self._hard_act(obs, num_choices)
+
+    def _hard_act(self, obs: np.ndarray, num_choices: int) -> int:
+        """GREEDY/HEURISTIC entry: fruitless-activation stall guard + dispatch.
+
+        The guard piggybacks on the fact that a resolution-time search query is
+        answered while the resolving ability is still on top of the stack (the
+        engine's search_zone runs inside the ability's resolution), so the obs
+        itself names the culprit — no cross-decision correlation state needed.
+        When a search-category menu offers ONLY the fail-to-find slot, the
+        search provably cannot succeed; if the top of the stack is a
+        self-controlled ability, its source card id is recorded as fruitless for
+        the rest of the game and the greedy ACTIVATE scan skips it from then on.
+        This stops e.g. Aether Vial being re-activated into a guaranteed
+        fail-to-find every turn until the decision cap (a hand change could in
+        principle make a later activation succeed, but per-game permanence is an
+        acceptable trade for never stalling — the fuzz-campaign stall hand never
+        changed). Everything is O(1) per decision: two single-float decodes plus
+        set/dict lookups, and the stack slot is read only on a fail-only menu.
+        """
+        # cats[0] is enough to classify the menus we care about: a mulligan
+        # query is all-MULLIGAN, and a fail-only search menu has exactly one
+        # action. Avoids decoding the whole category array a second time.
+        c0 = int(round(float(obs[STATE_SIZE]) * ACTION_CATEGORY_MAX))
+        if c0 == _CAT_MULLIGAN:
+            # A game always opens with a mulligan query, so seeing one means a
+            # new game started: clear the guard even when nobody called
+            # new_game() (same safety net as _explore_seen in _explore_action).
+            self._fruitless_activations.clear()
+        elif (num_choices == 1 and c0 in _SEARCH_MENU_CATS
+              and float(obs[STATE_SIZE + MAX_ACTIONS]) < 0.0):
+            # Fail-only search menu (single choice, null card-id sentinel):
+            # blame the resolving self-controlled ability on top of the stack.
+            cid = _slot_card_idx(obs, _STACK_START + 1)
+            if (cid >= 0 and obs[_STACK_START] > 0.5          # self-controlled
+                    and obs[_STACK_START + 2] < 0.5):         # ability, not spell
+                seat = bool(obs[32] > 0.5)
+                self._fruitless_activations.setdefault(seat, set()).add(cid)
+        fruitless = self._fruitless_activations.get(bool(obs[32] > 0.5))
         if self.config.skill is Skill.HEURISTIC:
-            return self._heuristic_action(obs, num_choices)
-        return _greedy_action(obs, num_choices)
+            return self._heuristic_action(obs, num_choices, fruitless)
+        return _greedy_action(obs, num_choices, fruitless)
 
     # ------------------------------------------------------------------
     # HEURISTIC decision points (everything else falls back to GREEDY).
     # ------------------------------------------------------------------
 
-    def _heuristic_action(self, obs: np.ndarray, num_choices: int) -> int:
+    def _heuristic_action(self, obs: np.ndarray, num_choices: int,
+                          fruitless: set[int] | None = None) -> int:
         cfg = self.config
         cats = np.round(obs[STATE_SIZE:STATE_SIZE + num_choices]
                         * ACTION_CATEGORY_MAX).astype(int)
@@ -866,7 +941,7 @@ class ScriptedAgent:
             return self._target_choice(g(), cats, card_ids, ctrl_arr)
 
         # Anything not explicitly improved: proven GREEDY behaviour.
-        return _greedy_action(obs, num_choices)
+        return _greedy_action(obs, num_choices, fruitless)
 
     @staticmethod
     def _confirm(cats, confirm_cat: int) -> int:
@@ -1109,8 +1184,10 @@ def make_agent(spec: str = "scripted") -> ScriptedAgent:
 # ScriptedAgent (analysis/baseline/observe scripted opponent, tui_game, bench). It
 # now defaults to the "hard" heuristic agent, matching make_agent("scripted"), so
 # every default scripted call plays at the hard tier. The heuristic is a pure
-# function of (obs, num_choices) (only RANDOM is stateful), so one shared instance
-# is safe across games/processes. Callers wanting the old greedy behaviour build
+# function of (obs, num_choices) except for the per-game fruitless-activation
+# stall guard, which is seat-keyed and self-clearing on the pregame mulligan
+# (see _hard_act), so one shared instance stays safe across games/processes and
+# across both seats. Callers wanting the old greedy behaviour build
 # make_agent("easy"/"greedy") explicitly.
 _DEFAULT_AGENT = ScriptedAgent(_PRESETS["scripted"])
 
