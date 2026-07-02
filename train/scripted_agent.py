@@ -32,7 +32,7 @@ from env import (
     _CAT_PASS, _CAT_SEL_ATK, _CAT_CONF_ATK, _CAT_SEL_BLK, _CAT_CONF_BLK,
     _CAT_ACTIVATE, _CAT_CAST, _CAT_TARGET, _CAT_LAND, _CAT_MULLIGAN, _CAT_SEARCH,
     _CAT_OTHER, _CAT_PAYING, _CAT_DIG, _CAT_TOP_LIBRARY, _CAT_SB_DONE,
-    _CAT_CHOOSE_X, _CAT_CHOOSE_CARD,
+    _CAT_COMPANION, _CAT_CHOOSE_X, _CAT_CHOOSE_CARD,
     # battlefield / stack layout
     _BF_START, _BF_SLOT_SIZE, _PERM_A_SLOTS, _BF_CARD_OFF, _STACK_START,
     _STACK_SLOT_SIZE, _HAND_START, _HAND_SLOT_SIZE,
@@ -149,6 +149,8 @@ _EXPLORE_WEIGHTS: dict[int, float] = {
     _CAT_CONF_ATK: 0.6,   # finish declaring attackers (declare a few first)
     _CAT_CONF_BLK: 0.6,   # finish declaring blockers
     _CAT_SB_DONE:  0.6,   # finish sideboarding (swap a few cards first, bo3)
+    _CAT_COMPANION: 8.0,  # once-per-game and rarely offered — take it when legal so
+                          # the companion machinery (and the card itself) gets fuzzed
 }
 
 # Novelty bias for the EXPLORE tier: a CAST_SPELL / ACTIVATE_ABILITY option whose
@@ -200,6 +202,7 @@ _EXPLORE_PATIENT_WEIGHTS: dict[int, float] = {
     _CAT_CONF_ATK: 0.6,   # confirms below their per-item counterparts, as in
     _CAT_CONF_BLK: 0.6,   # _EXPLORE_WEIGHTS, so a few get declared first
     _CAT_SB_DONE:  0.6,
+    _CAT_COMPANION: 8.0,  # as in _EXPLORE_WEIGHTS: once-per-game, take it when legal
 }
 
 # Patient-only CAST scaling: weight *= (1 + mana_value * factor). A legal MV-7

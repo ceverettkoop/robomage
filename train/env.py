@@ -586,6 +586,7 @@ _CAT_DIG        = 23  # dig choice (Once Upon a Time: pick creature/land from to
 _CAT_SB_IN      = 24  # sideboard: choose card from sideboard to add
 _CAT_SB_OUT     = 25  # sideboard: choose card from main deck to remove
 _CAT_SB_DONE    = 26  # sideboard: finish sideboarding
+_CAT_COMPANION  = 46  # pay {3}: put your companion from the sideboard into your hand
 
 # Colored mana requirements per card vocab index (card_vocab.h).
 # Keys are color pool indices: W=0, U=1, B=2, R=3, G=4, C=5.

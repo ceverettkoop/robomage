@@ -120,6 +120,36 @@ def _make_deck_file(hand, library, label):
     return name, path
 
 
+def _merge_sideboard_deck(deck_name, label):
+    """Fold a deck file's SIDEBOARD: section into its mainboard.
+
+    Loads decks/<deck_name>.dk, sums quantities for names that appear in both
+    sections, and writes the merged list as a temp deck (empty sideboard) so
+    single-game fuzzing can reach sideboard-only cards. Returns (name, path)
+    like _make_deck_file; the caller unlinks the temp file on exit.
+    """
+    src = _DECKS_DIR / f"{deck_name}.dk"
+    counts = {}  # card name -> quantity, insertion-ordered
+    with open(src) as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.upper().startswith("SIDEBOARD"):
+                continue
+            qty, _, card = line.partition(" ")
+            card = card.strip()
+            if not qty.isdigit() or not card:
+                sys.exit(f"--merge-sideboard: unparseable line in {src}: {line!r}")
+            counts[card] = counts.get(card, 0) + int(qty)
+    _TEMP_DECKS_DIR.mkdir(exist_ok=True)
+    name = f"temp/_merged_{label}"
+    path = str(_DECKS_DIR / f"{name}.dk")
+    with open(path, "w") as f:
+        for card, qty in counts.items():
+            f.write(f"{qty} {card}\n")
+        f.write("\nSIDEBOARD:\n")
+    return name, path
+
+
 
 # ── Main entry point ──────────────────────────────────────────────────────────
 
@@ -204,6 +234,23 @@ def main():
                              "'explore:patient' (or 'patient') for its big-mana profile "
                              "that develops mana and holds expensive cards until castable, "
                              "or 'scripted:easy' / 'scripted:random' for weaker tiers.")
+    parser.add_argument("--bo3", action="store_true",
+                        help="Run a best-of-three match instead of a single game "
+                             "(loser goes first next game; both players sideboard "
+                             "between games). The engine emits GAME_RESULT: per game "
+                             "and MATCH_RESULT: at the end. Composes with --scripted/"
+                             "--scripted-spec; raises the default --max-decisions to "
+                             "1500 (up to 3 games + sideboard decisions).")
+    parser.add_argument("--merge-sideboard", action="store_true",
+                        help="Fold each deck's SIDEBOARD: section into its mainboard "
+                             "(quantities summed for duplicate names) and run from a "
+                             "merged temp deck with NO sideboard — lets single-game "
+                             "fuzzing reach sideboard-only cards. Requires both "
+                             "--deck-a and --deck-b (rejected with inline --hand/"
+                             "--library seats, whose temp decks have no sideboard "
+                             "to merge) and is rejected with --bo3 (merging the "
+                             "sideboard and then sideboarding makes no sense). "
+                             "Merged decks still shuffle (no --no-shuffle implied).")
     parser.add_argument("--no-shuffle", action="store_true",
                         help="Don't shuffle libraries — deck-file order = draw order "
                              "(first 7 cards = opening hand). Use when feeding a stacked "
@@ -250,8 +297,22 @@ def main():
     no_shuffle = args.no_shuffle or bool(hand_a) or bool(hand_b)
     actions_str = args.actions or scenario.get("actions")
     play_specs = args.play or scenario.get("play")
+    # A bo3 match is up to 3 games plus sideboarding decisions, so its default
+    # decision cap is 3x the single-game one (the engine's own step cap scales
+    # the same way: MAX_STEPS_BO3 = 3 * MAX_STEPS in env.py).
     max_decisions = (args.max_decisions if args.max_decisions is not None
-                     else scenario.get("max_decisions", 500))
+                     else scenario.get("max_decisions", 1500 if args.bo3 else 500))
+
+    if args.merge_sideboard:
+        if args.bo3:
+            parser.error("--merge-sideboard cannot be combined with --bo3 "
+                         "(the merged deck has no sideboard left to board from)")
+        if hand_a or hand_b or library_a or library_b:
+            parser.error("--merge-sideboard only applies to --deck-a/--deck-b deck "
+                         "files; inline --hand/--library seats build stacked temp "
+                         "decks with no sideboard to merge")
+        if not (args.deck_a and args.deck_b):
+            parser.error("--merge-sideboard requires both --deck-a and --deck-b")
 
     # Parse action list
     actions = None
@@ -266,6 +327,9 @@ def main():
         # Determine deck names
         if args.deck_a and not hand_a:
             deck_a_name = args.deck_a
+            if args.merge_sideboard:
+                deck_a_name, deck_a_file = _merge_sideboard_deck(args.deck_a, "a")
+                cleanup_paths.append(deck_a_file)
         elif hand_a:
             library_a = _pad_library(hand_a, library_a)
             deck_a_name, deck_a_file = _make_deck_file(hand_a, library_a, "a")
@@ -275,6 +339,9 @@ def main():
 
         if args.deck_b and not hand_b:
             deck_b_name = args.deck_b
+            if args.merge_sideboard:
+                deck_b_name, deck_b_file = _merge_sideboard_deck(args.deck_b, "b")
+                cleanup_paths.append(deck_b_file)
         elif hand_b:
             library_b = _pad_library(hand_b, library_b)
             deck_b_name, deck_b_file = _make_deck_file(hand_b, library_b, "b")
@@ -288,11 +355,15 @@ def main():
         if hand_a:
             print(f"Player A hand:    {', '.join(hand_a)}")
             print(f"Player A library: {', '.join(library_a)}")
+        elif args.merge_sideboard:
+            print(f"Player A deck: {deck_a_name} (sideboard merged from {args.deck_a})")
         else:
             print(f"Player A deck: {deck_a_name}")
         if hand_b:
             print(f"Player B hand:    {', '.join(hand_b)}")
             print(f"Player B library: {', '.join(library_b)}")
+        elif args.merge_sideboard:
+            print(f"Player B deck: {deck_b_name} (sideboard merged from {args.deck_b})")
         else:
             print(f"Player B deck: {deck_b_name}")
         if battlefield_a:
@@ -353,7 +424,7 @@ def main():
         wins, losses, _ = runner.run_games(
             controller, controller, label_a=mode_label, label_b=mode_label,
             binary_path=args.binary, deck_a=deck_a_name, deck_b=deck_b_name,
-            n_games=1, seed=seed, verbose=True,
+            n_games=1, bo3=args.bo3, seed=seed, verbose=True,
             battlefield_a=bf_a, battlefield_b=bf_b,
             graveyard_a=gy_a, graveyard_b=gy_b,
             exile_a=ex_a, exile_b=ex_b,
