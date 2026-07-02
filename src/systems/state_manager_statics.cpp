@@ -542,13 +542,9 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                 bootstrap_token_components(entity, token, zone.controller, game.timestamp);
                 apply_keyword_abilities(entity);
             } else {
-                // Token has left the battlefield — schedule for destruction
-                if (global_coordinator.entity_has_component<Permanent>(entity))
-                    global_coordinator.RemoveComponent<Permanent>(entity);
-                if (global_coordinator.entity_has_component<Creature>(entity))
-                    global_coordinator.RemoveComponent<Creature>(entity);
-                if (global_coordinator.entity_has_component<Damage>(entity))
-                    global_coordinator.RemoveComponent<Damage>(entity);
+                // Token has left the battlefield — strip components (shared helper also clears
+                // attachment links, 704.5n) and schedule for destruction
+                strip_permanent_components(entity);
                 tokens_to_destroy.push_back(entity);
             }
             continue;
@@ -907,28 +903,10 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
             }
 
         } else {  // off battlefield, check to remove
-            if (global_coordinator.entity_has_component<Permanent>(entity)) {
-                // Clear any equipment attachment links before the Permanent is removed, so no
-                // dangling reference survives (704.5n). A creature leaving the battlefield
-                // unattaches its equipment (which stays on the battlefield); an equipment
-                // leaving clears the host creature's back-link.
-                auto &perm = global_coordinator.GetComponent<Permanent>(entity);
-                if (perm.equipped_by != 0 &&
-                    global_coordinator.entity_has_component<Permanent>(perm.equipped_by)) {
-                    global_coordinator.GetComponent<Permanent>(perm.equipped_by).equipped_to = 0;
-                }
-                if (perm.equipped_to != 0 &&
-                    global_coordinator.entity_has_component<Permanent>(perm.equipped_to)) {
-                    global_coordinator.GetComponent<Permanent>(perm.equipped_to).equipped_by = 0;
-                }
-                global_coordinator.RemoveComponent<Permanent>(entity);
-            }
-            if (global_coordinator.entity_has_component<Creature>(entity)) {
-                global_coordinator.RemoveComponent<Creature>(entity);
-            }
-            if (global_coordinator.entity_has_component<Damage>(entity)) {
-                global_coordinator.RemoveComponent<Damage>(entity);
-            }
+            // Shared strip (game_queries.cpp): clears equipment attachment links (704.5n) before
+            // removing Permanent/Creature/Damage. Same helper add_to_zone uses for the
+            // same-resolution-return entry reset (CR 400.7).
+            strip_permanent_components(entity);
         }
     }
 

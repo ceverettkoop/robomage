@@ -139,6 +139,16 @@ int effective_power(Entity e);
 int effective_toughness(Entity e);
 std::set<Colors> effective_colors(Entity e);
 
+// Strip the battlefield-state components (Permanent/Creature/Damage) from a card that is no
+// longer on the battlefield — clearing its equipment/aura attachment links first so no dangling
+// reference survives (CR 704.5n). Shared by the state-based off-battlefield strip
+// (apply_permanent_components) and by add_to_zone's battlefield-entry reset: a card that left
+// and returned within a single resolution (same-resolution flicker, Ajani's exile-and-return
+// transform) re-enters before the state-based pass could strip it, and per CR 400.7 the
+// returning card is a NEW object that must not keep its stale tapped/summoning-sickness/
+// counter/attachment state. Defined in game_queries.cpp.
+void strip_permanent_components(Entity entity);
+
 // Layer-5 (CR 613.1e / 612) global color-changing override. If an active SetColor$ continuous
 // static (Mycosynth Lattice) designates `e` — via its Affected$ filter and AffectedZone$ — write
 // the override color set into `out` and return true; otherwise return false (no override).

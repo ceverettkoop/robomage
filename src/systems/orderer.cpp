@@ -213,6 +213,21 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     if (on_bottom) target_zone.distance_from_top = back + 1;
     target_zone.location = destination;
 
+    // CR 400.7: a card returning to the battlefield is a NEW object. Its previous battlefield
+    // components are normally gone already — stripped by the state-based pass while it was away —
+    // but a card that leaves AND returns within a single resolution (same-resolution flicker,
+    // Ajani's exile-and-return transform) re-enters before that pass could run and still carries
+    // its stale Permanent/Creature/Damage (tapped state, summoning sickness, counters,
+    // attachments, damage). Strip them here, at entry, AFTER the departure-side LKI snapshot
+    // above captured last-known info; the next state-based pass then rebuilds the permanent fresh
+    // exactly like any other entry — including the ENTERS_BATTLEFIELD replacement dispatch
+    // (enters tapped / with counters) and the pending_enters_tapped/_transformed one-shots.
+    // (Phasing never passes through add_to_zone; a phased-out permanent keeps its state, 702.26.)
+    if (destination == Zone::BATTLEFIELD && origin != Zone::BATTLEFIELD &&
+        global_coordinator.entity_has_component<Permanent>(target)) {
+        strip_permanent_components(target);
+    }
+
     // A zone change re-derives visibility from the new zone: any prior "identity
     // known to the opponent while hidden in hand" belief no longer applies (the
     // card is now either public, or a fresh hidden object). Reveal sites set this

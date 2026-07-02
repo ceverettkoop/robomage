@@ -67,6 +67,29 @@ std::set<Colors> effective_colors(Entity e) {
     return {};
 }
 
+// Strip Permanent/Creature/Damage from a card no longer on the battlefield (or re-entering it as
+// a new object, CR 400.7). Clears equipment/aura attachment links first so no dangling reference
+// survives (704.5n): a creature leaving unattaches its equipment (which stays), an equipment
+// leaving clears the host's back-link. Contract documented at the declaration in game_queries.h.
+void strip_permanent_components(Entity entity) {
+    if (global_coordinator.entity_has_component<Permanent>(entity)) {
+        auto &perm = global_coordinator.GetComponent<Permanent>(entity);
+        if (perm.equipped_by != 0 &&
+            global_coordinator.entity_has_component<Permanent>(perm.equipped_by)) {
+            global_coordinator.GetComponent<Permanent>(perm.equipped_by).equipped_to = 0;
+        }
+        if (perm.equipped_to != 0 &&
+            global_coordinator.entity_has_component<Permanent>(perm.equipped_to)) {
+            global_coordinator.GetComponent<Permanent>(perm.equipped_to).equipped_by = 0;
+        }
+        global_coordinator.RemoveComponent<Permanent>(entity);
+    }
+    if (global_coordinator.entity_has_component<Creature>(entity))
+        global_coordinator.RemoveComponent<Creature>(entity);
+    if (global_coordinator.entity_has_component<Damage>(entity))
+        global_coordinator.RemoveComponent<Damage>(entity);
+}
+
 // ── Unified filter matcher (declared in game_queries.h) ─────────────────────
 // A flattened view of the one object under test, populated either from a card's printed
 // characteristics or a battlefield permanent's live components, then handed to one shared
