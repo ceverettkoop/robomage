@@ -128,6 +128,16 @@ bool color_token(const std::string &q, Colors &c) {
     return false;
 }
 
+// True when the object is one or more colors (CR 105.2a) — membership in the five real colors
+// only. The colors set can carry a COLORLESS sentinel (a Devoid card's explicit_colors is
+// {COLORLESS}), which must read as "has no colors", so a bare empty() test is not equivalent.
+// Single source for the Colorless / nonColorless qualifier pair.
+bool view_has_any_color(const CharView &v) {
+    for (Colors c : {WHITE, BLUE, BLACK, RED, GREEN})
+        if (v.colors.count(c)) return true;
+    return false;
+}
+
 // A "power"/"toughness" comparator qualifier (e.g. "toughnessLE2", "powerGE5"): static
 // characteristic compared against the object's P/T (CR 208.2 / 107.1). Returns true when `q`
 // IS such a qualifier (and writes the result into `ok`); false when `q` is something else.
@@ -197,7 +207,7 @@ bool eval_qualifier(const CharView &v, const MatchCtx &ctx, const std::string &q
     if (q == "untapped")  return !v.is_tapped;
     if (q == "Basic")        return v.types && has_basic_supertype(*v.types);
     if (q == "nonBasic")     return v.types && !has_basic_supertype(*v.types);
-    if (q == "Colorless")    return v.colors.empty();  // CR 105.2c
+    if (q == "Colorless")    return !view_has_any_color(v);  // CR 105.2c
     if (q == "hasXCost")     return v.has_x_cost;       // {X} in the printed mana cost (Gaddock Teeg)
     // mana-value family (dynamic bound applied once by the caller) --------------
     if (q.rfind("cmc", 0) == 0) {
@@ -236,6 +246,10 @@ bool eval_qualifier(const CharView &v, const MatchCtx &ctx, const std::string &q
         Colors c;
         if (color_token(rest, c)) return v.colors.count(c) == 0;       // non<Color>  (fixes the old bug)
         const std::string rest_lc = ascii_lower(rest);
+        // nonColorless = "one or more colors" (Ugin's exiles, All Is Dust). "Colorless" is not a
+        // color, so it must be handled here — falling through to the non<subtype> arm made the
+        // qualifier match EVERY object (nothing has "Colorless" in its type line).
+        if (rest_lc == "colorless") return view_has_any_color(v);
         for (const char *ct : kCardTypes)
             if (rest_lc == ascii_lower(ct)) return !view_has_typeline(v, ct);  // non<CardType>
         return !view_has_typeline(v, rest);                           // non<subtype>
