@@ -62,6 +62,12 @@ struct DelayedTrigger {
     // "when X leaves, do Y" delayed trigger; 0 = not entity-watched (the phase-based default).
     Entity watch_entity = 0;          // the specific permanent whose departure fires this trigger
     bool fire_on_leave_battlefield = false;  // true: match watch_entity leaving the battlefield, not a phase
+    // Destination filter for fire_on_leave_battlefield triggers: when non-empty, the trigger
+    // fires only if the watched entity moved from the battlefield TO one of these zones (e.g.
+    // earthbend's "when it dies or is exiled" = {GRAVEYARD, EXILE} — a bounce to hand or a
+    // shuffle into the library must NOT fire it). Empty = any departure ("leaves the
+    // battlefield", e.g. the exile-until-host-leaves triggers).
+    std::vector<Zone::ZoneValue> fire_dest_zones;
     // RememberObjects$ RememberedLKI (CR 603.7a): objects this delayed trigger captured when it
     // was set up (the cards the preceding RememberChanged$ ChangeZone moved, e.g. the permanent
     // Flickerwisp/Phelia exiled). Restored into cur_game.remembered_entities before the fire

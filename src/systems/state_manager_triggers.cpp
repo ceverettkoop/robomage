@@ -99,6 +99,7 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
         for (size_t i = 0; i < game.delayed_triggers.size(); i++) {
             auto &dt = game.delayed_triggers[i];
             bool matched = false;
+            bool expired = false;
             for (const auto &ev : events) {
                 if (ev.GetType() != dt.fire_on) continue;
                 // Entity-watched "when THIS permanent leaves the battlefield" delayed trigger
@@ -110,6 +111,19 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                     if (!ev.HasParam(Params::ENTITY)) continue;
                     if (ev.GetParam<Entity>(Params::ENTITY) != dt.watch_entity) continue;
                     if (ev.GetParam<Zone::ZoneValue>(Params::ORIGIN) != Zone::BATTLEFIELD) continue;
+                    // Destination filter (e.g. earthbend's "when it dies or is exiled"): when the
+                    // trigger names specific destination zones, a move to any other zone (bounce
+                    // to hand, shuffle into library) does not fire it. Either way the watched
+                    // object has left the battlefield — a later re-entry is a NEW object
+                    // (CR 400.7), so a non-matching departure EXPIRES the trigger unfired rather
+                    // than leaving it armed against the reused entity id.
+                    if (!dt.fire_dest_zones.empty()) {
+                        Zone::ZoneValue dest = ev.GetParam<Zone::ZoneValue>(Params::DESTINATION);
+                        bool dest_ok = false;
+                        for (Zone::ZoneValue z : dt.fire_dest_zones)
+                            if (z == dest) { dest_ok = true; break; }
+                        if (!dest_ok) { expired = true; break; }
+                    }
                     matched = true;
                     break;
                 }
@@ -134,6 +148,8 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                 pt.log_line = "Delayed trigger fires.";
                 pt.needs_target = (trigger_ab.valid_tgts != "N_A" && trigger_ab.target == 0);
                 pending.push_back(pt);
+                to_remove.push_back(i);
+            } else if (expired) {
                 to_remove.push_back(i);
             }
         }
