@@ -26,6 +26,17 @@ void apply_animate_creature_bootstrap(Entity e) {
     if (!global_coordinator.entity_has_component<Permanent>(e)) return;
     auto &perm = global_coordinator.GetComponent<Permanent>(e);
     if (!perm.animate_make_creature && !perm.animate_make_creature_eot) return;
+    // Maintain the LIVE type line too (CR 613.1d layer 4): everything that enumerates
+    // battlefield permanents by type — targeting (is_legal_target), sacrifice/return cost
+    // candidates (controlled_permanents_matching), statics' Affected$ — matches through
+    // permanent_matches_filter, which reads Permanent::types, not the Creature component.
+    // An Earthbend-style caller sets the make-creature flag directly (no ab.animate_types
+    // pass through animate()), so without this insert the animated land is invisible to
+    // every "Creature" filter despite fighting in combat. Idempotent (set insert); re-run
+    // every SBA pass while the flag holds, so it survives type-line rebuilds. The reverting
+    // durations already erase "Creature" via their recorded type buckets (animate() records
+    // it as genuinely-new on a noncreature), so nothing leaks past cleanup/until-turn.
+    perm.types.insert(Type{TYPE, "Creature"});
     if (!global_coordinator.entity_has_component<Creature>(e)) {
         // Base P/T: an Animate that set them explicitly (Earthbend) wins; otherwise fall back to
         // the permanent's PRINTED P/T (a Vehicle such as The Fantasticar animates as its printed
