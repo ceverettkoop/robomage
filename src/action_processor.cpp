@@ -21,6 +21,7 @@
 #include "game_queries.h"
 #include "input_logger.h"
 #include "mana_system.h"
+#include "parse.h"
 #include "systems/orderer.h"
 #include "systems/rules_modifying.h"
 #include "systems/state_manager.h"
@@ -53,7 +54,7 @@ static void assign_combat_damage(Game &game, std::shared_ptr<Orderer> orderer);
 // One Ward ability a permanent currently has (CR 702.21): an unless-cost (generic mana
 // amount, or a life amount when is_life) the targeting player must pay or have the spell/
 // ability countered. Collected from the printed ward (CardData::ward_cost) and from any
-// granted "Ward:N" in the effective keyword list.
+// granted "Ward:N" / "Ward:PayLife<N>" in the effective keyword list.
 struct WardInstance {
     int cost;
     bool is_life;
@@ -1392,10 +1393,11 @@ void select_target(Ability &ability, std::shared_ptr<Orderer> orderer, Zone::Own
 // just the printed ward. Two storage forms, kept distinct so they are not double-counted:
 //   - Printed ward: parse.cpp stores the numeric cost in CardData::ward_cost (with
 //     ward_is_life) and pushes the BARE string "Ward" onto CardData::keywords.
-//   - Granted ward: add_keywords_from_spec pushes the raw spec part "Ward:N" (with a colon
-//     and number) onto the effective keyword list — never the bare "Ward".
+//   - Granted ward: add_keywords_from_spec pushes the raw spec part "Ward:N" or
+//     "Ward:PayLife<N>" (with a colon and cost arg) onto the effective keyword list — never
+//     the bare "Ward".
 // We therefore take the printed instance from ward_cost, and every granted instance from a
-// "Ward:N" keyword string, deduping identical granted copies so a single granted Ward:1 fires
+// "Ward:..." keyword string, deduping identical granted copies so a single granted Ward:1 fires
 // exactly once. Distinct ward costs (e.g. printed Ward 2 plus granted Ward 1) each yield their
 // own instance and each trigger, per CR 702.21h.
 static std::vector<WardInstance> collect_ward_instances(Entity e) {
@@ -1419,11 +1421,10 @@ static std::vector<WardInstance> collect_ward_instances(Entity e) {
             // Only "Ward:N" (granted form). Bare "Ward" is the printed marker, already counted
             // via ward_cost above; skip it to avoid double-firing the printed ward.
             if (kw.rfind("Ward:", 0) != 0) continue;
-            std::string arg = kw.substr(5);
-            int cost = 1;
-            if (!arg.empty() && arg.find_first_not_of("0123456789") == std::string::npos)
-                cost = std::stoi(arg);
-            WardInstance inst{cost, false};  // granted "Ward:N" is a generic-mana cost
+            // Same cost grammar as the printed K:Ward parse — "Ward:N" is a generic-mana
+            // cost, "Ward:PayLife<N>" a life payment (Hexing Squelcher's grant).
+            WardInstance inst{1, false};
+            parse_ward_cost(kw.substr(5), inst.cost, inst.is_life);
             // Dedupe identical granted copies (same source granting Ward:1 once must fire once).
             bool dup = false;
             for (const auto &w : wards)

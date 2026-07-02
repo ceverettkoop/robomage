@@ -17,4 +17,13 @@ Token parse_token_script(const std::string &script_name);
 // inside the body are left as their literal token (the granted bodies in use are self-contained).
 Ability parse_ability_body(const std::string &body, Ability::AbilityType type = Ability::ACTIVATED);
 
+// Parse a Ward cost argument — the text after "Ward:" in a K: line or a granted keyword
+// (CR 702.21). Sets `cost` and `is_life` for the two supported shapes: "PayLife<N>"
+// (Ward—Pay N life) and a plain numeric "N" ({N} generic mana). A missing or malformed arg
+// degrades to a {1} mana ward rather than crashing card load (with -fno-exceptions a stray
+// std::stoi would abort). Shared by the printed-ward K: parse (parse.cpp) and the
+// granted-ward keyword scan (collect_ward_instances in action_processor.cpp) so both paths
+// enforce the same cost shapes.
+void parse_ward_cost(const std::string &arg, int &cost, bool &is_life);
+
 #endif /* PARSE_H */
