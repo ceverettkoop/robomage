@@ -35,6 +35,7 @@ static Entity prompt_permanent_choice(const std::vector<Entity> &choices, const 
 static void pay_secondary_activation_costs(
     const Ability &ability, Entity source, Zone::Ownership controller, std::shared_ptr<Orderer> orderer);
 static void select_single_target(Ability &ability, const std::vector<Entity> &valid_targets, bool allow_done);
+static std::string chosen_targets_display(const Ability &ab);
 static void process_activate_ability(const LegalAction &action, Game &game, std::shared_ptr<Orderer> orderer);
 static void process_ninjutsu(const LegalAction &action, Game &game, std::shared_ptr<Orderer> orderer);
 static std::vector<Entity> build_valid_targets(
@@ -315,6 +316,21 @@ static void process_ninjutsu(const LegalAction &action, Game &game, std::shared_
     game.take_action();
 }
 
+// Every chosen target of an ability, joined for the activation announcement. Targets are
+// public information as soon as the ability is put on the stack (CR 601.2c), so a
+// multi-target activation (e.g. Faerie Macabre's "up to two target cards") must announce
+// all of its targets — naming only the first makes the transcript read as if the other
+// cards were affected without ever being targeted.
+static std::string chosen_targets_display(const Ability &ab) {
+    if (ab.targets.empty()) return target_display_name(cur_game, ab.target);
+    std::string out;
+    for (size_t i = 0; i < ab.targets.size(); i++) {
+        if (i > 0) out += (i + 1 == ab.targets.size()) ? " and " : ", ";
+        out += target_display_name(cur_game, ab.targets[i]);
+    }
+    return out;
+}
+
 static void process_activate_ability(const LegalAction &action, Game &game, std::shared_ptr<Orderer> orderer) {
     Entity permanent_entity = action.source_entity;
     const Ability &ability = action.ability;
@@ -368,9 +384,9 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
         auto &cd = global_coordinator.GetComponent<CardData>(permanent_entity);
         const char *from_zone = (ability.activation_zone == Zone::GRAVEYARD) ? "graveyard" : "hand";
         if (stack_ab.target != 0) {
-            std::string tgt_name = target_display_name(cur_game, stack_ab.target);
+            std::string tgt_names = chosen_targets_display(stack_ab);
             game_log("%s activates %s from %s targeting %s\n",
-                player_name(ctrl).c_str(), cd.name.c_str(), from_zone, tgt_name.c_str());
+                player_name(ctrl).c_str(), cd.name.c_str(), from_zone, tgt_names.c_str());
         } else {
             game_log("%s activates %s from %s\n", player_name(ctrl).c_str(), cd.name.c_str(), from_zone);
         }
@@ -589,9 +605,9 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
         }
 
         if (stack_ab.target != 0) {
-            std::string tgt_name = target_display_name(cur_game, stack_ab.target);
+            std::string tgt_names = chosen_targets_display(stack_ab);
             game_log("%s's %s ability targeting %s is on the stack\n",
-                player_name(controller).c_str(), permanent.name.c_str(), tgt_name.c_str());
+                player_name(controller).c_str(), permanent.name.c_str(), tgt_names.c_str());
         } else {
             game_log("%s's %s ability is on the stack\n", player_name(controller).c_str(), permanent.name.c_str());
         }
