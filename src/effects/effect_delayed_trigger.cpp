@@ -67,6 +67,12 @@ bool delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer) {
     // when the trigger fires so the Execute ability's Defined$ DelayTriggerRememberedLKI acts on
     // exactly those objects (Flickerwisp / Phelia return the card they exiled).
     if (dp && dp->remember_objects_lki) {
+        // Nothing remembered means nothing to act on (CR 603.6-style): an "up to one
+        // target" exile with no target chosen (or the target gone by resolution) moved
+        // nothing, so do NOT register the delayed return at all. Registering it anyway
+        // made the return fire on whatever the global remembered set held at end of turn
+        // (a phantom "<unknown>" entering the battlefield, falsely firing ETB watchers).
+        if (cur_game.remembered_entities.empty()) return false;
         dt.remembered_objects = cur_game.remembered_entities;
         fire_ab.restore_remembered_exiled_with = cur_game.remembered_entities;
     }
