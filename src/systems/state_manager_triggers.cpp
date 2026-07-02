@@ -128,9 +128,13 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                     break;
                 }
                 if (dt.fire_on == Events::UPKEEP_BEGAN && game.turn < dt.fire_on_turn) continue;
-                // Owner check: only fire on the correct player's upkeep
-                if (ev.HasParam(Params::PLAYER) &&
-                    ev.GetParam<Entity>(Params::PLAYER) != dt.owner_entity) continue;
+                // Phase-player restriction: only an explicit ValidPlayer$ restriction pins the
+                // trigger to one player's phase. Unrestricted (restrict_player == 0), "the next
+                // turn's upkeep" / "the next end step" fires at the next occurrence of the phase
+                // regardless of whose turn it is (CR 603.7 — Mishra's Bauble draws at the
+                // opponent's upkeep when sacrificed on your own turn).
+                if (dt.restrict_player != 0 && ev.HasParam(Params::PLAYER) &&
+                    ev.GetParam<Entity>(Params::PLAYER) != dt.restrict_player) continue;
                 matched = true;
                 break;
             }

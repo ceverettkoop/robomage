@@ -56,6 +56,13 @@ struct DelayedTrigger {
     uint32_t fire_on;       // event ID (e.g. Events::UPKEEP_BEGAN)
     Entity owner_entity;    // player entity who controls it
     size_t fire_on_turn;    // game.turn value at which to fire (cur_game.turn + 1 at registration)
+    // Phase restriction (script ValidPlayer$): the player whose phase this trigger may fire on,
+    // or 0 = any player's phase. "At the beginning of the next turn's upkeep" / "the next end
+    // step" fires at the NEXT occurrence of that phase whoever's turn it is (Mishra's Bauble,
+    // Flickerwisp), so most delayed triggers leave this 0; only an explicit "your upkeep"-style
+    // ValidPlayer$ You restricts it. Independent of owner_entity, which is always the ability's
+    // controller (the Bauble draw is the controller's even on the opponent's upkeep).
+    Entity restrict_player = 0;
     // "When THIS specific permanent leaves the battlefield" delayed trigger (CR 603.6e), set up
     // by the earthbend resolution: fire_on is CARD_CHANGED_ZONE, and the trigger fires only when
     // `watch_entity` is the card that left the battlefield (origin BATTLEFIELD). General over any
