@@ -38,7 +38,7 @@ enum class ActionCategory {
     SEARCH_LIBRARY = 19,    // select a card from a library search (index 0 = fail to find)
     TOP_LIBRARY = 20,       // select a card to place on top of library
     SHUFFLE = 21,           // shuffle a library
-    PAYING_COSTS = 22,      // delve exile or pitch card from hand to pay costs
+    PAYING_COSTS = 22,      // tap a source / pitch a card to pay costs (interactive payment)
     DIG_CHOICE = 23,        // choose a card from a dig (look at top N) ability
     SIDEBOARD_IN = 24,      // choose a card from sideboard to add to main deck
     SIDEBOARD_OUT = 25,     // choose a card from main deck to move to sideboard
@@ -48,7 +48,9 @@ enum class ActionCategory {
     //     default/fallback for any choice not specifically classified. ---
     SACRIFICE_PERMANENT = 27,  // choose a permanent to sacrifice (cost or effect)
     RETURN_PERMANENT = 28,     // choose a permanent to return to its owner's hand
-    CHOOSE_X = 29,             // choose the value of X for an X cost
+    CHOOSE_X = 29,             // choose the value of X for an X cost, or a delve exile count
+                               // (delve count actions carry the spell as source entity;
+                               //  an X ladder emits the null card-id sentinel)
     DISCARD = 30,              // choose a card to discard (cost, effect, or cleanup)
     CHOOSE_MODE = 31,          // choose a modal/charm mode
     CHOOSE_MANA_COLOR = 32,    // choose the color of a flexible mana producer

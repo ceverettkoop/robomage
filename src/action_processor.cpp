@@ -1613,6 +1613,12 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             else
                 cur_game.cast_from_hand.erase(spell_entity);
 
+            // A fresh delve cast must not inherit exiles recorded by a previous delve spell
+            // (delve_exiled persists until an etbCounter replacement consumes it). Cleared
+            // BEFORE the mana snapshot so a cancelled payment's rewind (restore_mana_state)
+            // returns exactly this cast's exiles to the graveyard.
+            if (card_data.has_delve) cur_game.delve_exiled.clear();
+
             // Snapshot mana state for rewind on payment failure
             auto mana_snap = snapshot_mana_state(caster, orderer);
 
@@ -2003,9 +2009,16 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             // chosen target illegal — the spell then fizzles at resolution rather than ever being
             // offered/forced with no legal target.
             if (deferred_mana_pending) {
-                if (deferred_delve) cur_game.delve_exiled.clear();
+                // Delve (CR 702.66 / 601.2h): the caster chooses how many graveyard cards to
+                // exile and which ones, one pick at a time; each exile pays one generic pip of
+                // the deferred cost. Runs after targets are locked in (601.2c), like every
+                // other cost. The remainder is then paid WITHOUT delve — the count menu was
+                // already constrained to counts whose remaining cost is payable.
+                if (deferred_delve)
+                    prompt_delve_exiles(caster, deferred_mana_cost, spell_entity, orderer,
+                                        deferred_improvise);
                 if (!prompt_mana_payment(caster, deferred_mana_cost, spell_entity, orderer,
-                                         deferred_delve, deferred_improvise)) {
+                                         /*has_delve=*/false, deferred_improvise)) {
                     // Payment cancelled (interactive only — machine mode pre-verifies
                     // affordability). Targets were already chosen but the spell never reached the
                     // stack, so rewind the half-finished cast: drop the targeting Ability / aura
