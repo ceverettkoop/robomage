@@ -1653,10 +1653,10 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
     } else if (key == "ConditionCompare") {
         ability.condition_compare = value;
     } else if (key == "ValidCards" && ability.category == "NameCard") {
-        // DB$ NameCard ValidCards$ Land (Petrified Hamlet: "choose a land card name"): the
-        // filter restricting the nameable card set. Cabal Therapy's Card.nonLand is still
-        // handled by the name_card handler's hardcoded nonland candidate set (the non-You
-        // path), so only store it where the handler reads it (the Defined$ You land form).
+        // SP$/DB$ NameCard ValidCards$ <filter> — the filter restricting the nameable card
+        // set (Petrified Hamlet's Land, Cabal Therapy's Card.nonLand). The name_card handler
+        // passes it to build_name_card_choices, which applies it to each candidate via the
+        // unified matcher (card_matches_any).
         ability.valid_cards_filter = value;
     } else if (key == "VoteCard") {
         // SP$/AB$ Vote VoteCard$ <filter> (Council's Judgment): the permanent filter the vote

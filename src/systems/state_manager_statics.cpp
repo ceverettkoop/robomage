@@ -898,11 +898,12 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                 if (perm_ref.chosen_name.empty()) {
                     Zone::Ownership opp = (perm_ref.controller == Zone::PLAYER_A)
                         ? Zone::PLAYER_B : Zone::PLAYER_A;
-                    // Distinct opponent-owned vocab cards (whole deck, lands included), built
-                    // by the shared helper also used by Cabal Therapy's SP$ NameCard.
+                    // Distinct opponent-owned vocab cards (whole deck; empty ValidCards$
+                    // filter = no restriction, so lands are included), built by the shared
+                    // helper also used by Cabal Therapy's SP$ NameCard.
                     std::vector<std::string> names;
                     std::vector<LegalAction> name_choices =
-                        build_name_card_choices(mEntities, opp, /*exclude_lands=*/false, names);
+                        build_name_card_choices(mEntities, opp, /*valid_filter=*/"", names);
                     if (!name_choices.empty()) {
                         bool prev_priority = cur_game.player_a_has_priority;
                         cur_game.player_a_has_priority = (perm_ref.controller == Zone::PLAYER_A);
