@@ -64,11 +64,13 @@ class Skill(Enum):
     GREEDY    — the original rule-based behaviour; the baseline opponent.
     HEURISTIC — GREEDY's scan with selected decision points overridden by
                 single-ply heuristics (board eval, combat sim, smarter targeting).
-    EXPLORE   — coverage-oriented fuzzer: a deterministic, stateless, seed-mixed
-                weighted choice biased toward the actions that drive the most engine
-                code (casting, activating, combat, varied targets/modes/X). Not meant
-                to play well — meant so that sweeping a range of seeds exercises as
-                many distinct engine paths as possible (see _explore_action).
+    EXPLORE   — coverage-oriented fuzzer: a deterministic, seed-mixed weighted
+                choice biased toward the actions that drive the most engine code
+                (casting, activating, combat, varied targets/modes/X), plus a
+                per-game novelty boost for not-yet-chosen cast/activate cards.
+                Not meant to play well — meant so that sweeping a range of seeds
+                exercises as many distinct engine paths as possible
+                (see _explore_action).
     """
     RANDOM = "random"
     GREEDY = "greedy"
@@ -137,6 +139,16 @@ _EXPLORE_WEIGHTS: dict[int, float] = {
     _CAT_CONF_BLK: 0.6,   # finish declaring blockers
     _CAT_SB_DONE:  0.6,   # finish sideboarding (swap a few cards first, bo3)
 }
+
+# Novelty bias for the EXPLORE tier: a CAST_SPELL / ACTIVATE_ABILITY option whose
+# card id this agent has NOT yet chosen this game gets its category weight
+# multiplied by this factor. Without it, expensive cards sharing a deck with
+# cheaper lines were NEVER cast across a whole seed sweep (e.g. Meteor Sword,
+# hard-cast Lorien Revealed) — the weighted draw kept landing on the cheap
+# alternatives. First-time options winning ~3x more often fixes that while the
+# already-seen cards keep their normal weight. Tracked per game in
+# ``ScriptedAgent._explore_seen`` (see ``new_game``).
+_EXPLORE_NOVELTY_FACTOR = 3.0
 
 
 def _action_card_id(card_ids: np.ndarray, i: int) -> int:
@@ -691,13 +703,31 @@ class ScriptedAgent:
 
     ``act`` is a pure function of the (perspective-relative) observation, except
     for the RANDOM tier which draws from a per-agent seeded generator so parallel
-    vec-env subprocesses stay reproducible and independent of the global RNG.
+    vec-env subprocesses stay reproducible and independent of the global RNG, and
+    the EXPLORE tier which carries a per-game set of already-chosen card ids for
+    its novelty bias (cleared by ``new_game``; the GREEDY/HEURISTIC paths never
+    touch it).
     """
 
     def __init__(self, config: AgentConfig = AgentConfig()):
         self.config = config
         # Per-agent generator: only consulted by the RANDOM tier.
         self._rng = np.random.default_rng(config.rng_seed)
+        # Card ids already cast/activated this game: only touched by the EXPLORE
+        # tier (novelty bias). Reset per game via new_game().
+        self._explore_seen: set[int] = set()
+
+    def new_game(self) -> None:
+        """Reset per-game state at the start of a game.
+
+        Called by ``runner.run_games`` (via ``ScriptedController.new_game``) before
+        each game so a reused agent instance can't leak state across games. Only
+        the EXPLORE tier holds per-game state today (the novelty-bias set); as a
+        belt-and-braces for reuse paths that never call this (e.g. a scripted
+        opponent living across vec-env episodes), ``_explore_action`` also clears
+        the set itself whenever it sees a pregame mulligan decision.
+        """
+        self._explore_seen.clear()
 
     def act(self, obs: np.ndarray, num_choices: int) -> int:
         if self.config.skill is Skill.RANDOM:
@@ -866,7 +896,7 @@ class ScriptedAgent:
 
         Goal: sweeping a range of seeds should touch as many distinct engine paths as
         possible — the opposite of GREEDY/HEURISTIC, which converge on one strong line
-        per state. Two ingredients:
+        per state. Three ingredients:
 
         * **Coverage bias.** Each legal action is weighted by its category
           (``_EXPLORE_WEIGHTS``) so the pick leans toward the actions that drive the
@@ -875,13 +905,24 @@ class ScriptedAgent:
           (targets, X values, modes, search/dig picks) get uniform weight, so *which*
           target/mode/X is taken varies freely across seeds.
 
+        * **Novelty bias.** A cast/activate option whose card id this agent has not
+          yet chosen this game gets its weight multiplied by
+          ``_EXPLORE_NOVELTY_FACTOR``, so expensive cards with cheaper alternatives
+          in the same deck still get cast somewhere in a seed sweep instead of losing
+          the draw every time. Options with the null card sentinel are non-novel (no
+          boost). Chosen cast/activate card ids are recorded in ``_explore_seen``,
+          which is per game: ``new_game()`` clears it, and the pregame mulligan
+          decision clears it too as a safety net for agent instances reused across
+          games without a ``new_game()`` call.
+
         * **Determinism, tied to the GAME seed.** The weighted draw comes from Python's
           global ``random`` — the same source GREEDY breaks ties with — which
           ``runner.run_games`` (and the test harness) seed to the engine ``--seed``
           before each game (``random.seed(seed)``). So the whole explore trajectory is
           reproducible for a given seed, and a different seed reshuffles both the deck
           (a different observation at every step) and this draw, branching into a
-          different line. No separate per-agent seed and no cross-call state to carry.
+          different line. No separate per-agent seed; the only cross-call state is the
+          per-game novelty set, itself a deterministic function of the trajectory.
 
         Not a strong opponent — combo lines are off (see the "explore" preset), so it
         fans out across cards instead of collapsing into a deck's known line.
@@ -890,7 +931,21 @@ class ScriptedAgent:
             return 0
         cats = np.round(obs[STATE_SIZE:STATE_SIZE + num_choices]
                         * ACTION_CATEGORY_MAX).astype(int)
-        weights = [_EXPLORE_WEIGHTS.get(int(c), _EXPLORE_DEFAULT_WEIGHT) for c in cats]
+        # A game always opens with a mulligan query, so seeing one means a new game
+        # started: clear the novelty set even when nobody called new_game() (e.g. a
+        # scripted opponent reused across vec-env episodes). Repeated clears during
+        # London mulligans are harmless — nothing is cast pregame.
+        if any(int(c) == _CAT_MULLIGAN for c in cats):
+            self._explore_seen.clear()
+        card_ids = obs[STATE_SIZE + MAX_ACTIONS:STATE_SIZE + 2 * MAX_ACTIONS]
+        weights = []
+        for i, c in enumerate(cats):
+            w = _EXPLORE_WEIGHTS.get(int(c), _EXPLORE_DEFAULT_WEIGHT)
+            if int(c) in (_CAT_CAST, _CAT_ACTIVATE):
+                cid = _action_card_id(card_ids, i)
+                if cid >= 0 and cid not in self._explore_seen:
+                    w *= _EXPLORE_NOVELTY_FACTOR
+            weights.append(w)
         # Mulligan is a 2-way [keep, mulligan] choice — bias toward keeping (index 0)
         # so most games actually start, but still mulligan ~1/4 of the time to exercise
         # the mulligan + London-bottoming paths.
@@ -898,7 +953,13 @@ class ScriptedAgent:
             weights = [3.0, 1.0]
         if sum(weights) <= 0:
             weights = [1.0] * num_choices
-        return int(random.choices(range(num_choices), weights=weights, k=1)[0])
+        choice = int(random.choices(range(num_choices), weights=weights, k=1)[0])
+        # Record the chosen card so this game's later draws treat it as non-novel.
+        if int(cats[choice]) in (_CAT_CAST, _CAT_ACTIVATE):
+            cid = _action_card_id(card_ids, choice)
+            if cid >= 0:
+                self._explore_seen.add(cid)
+        return choice
 
 
 def make_agent(spec: str = "scripted") -> ScriptedAgent:

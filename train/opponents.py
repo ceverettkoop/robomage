@@ -118,6 +118,10 @@ class ScriptedController:
         self._agent = agent
         self.label = label
 
+    def new_game(self) -> None:
+        """Reset the agent's per-game state (EXPLORE novelty set) at game start."""
+        self._agent.new_game()
+
     def choose(self, obs, num_choices, action_masks=None, decoded_actions=None) -> int:
         return self._agent.act(obs, num_choices)
 

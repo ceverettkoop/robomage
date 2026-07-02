@@ -74,6 +74,14 @@ def run_games(controller_a, controller_b, *,
         # game deterministic.
         if seed is not None:
             random.seed(seed + i)
+        # Controllers are reused across the n_games loop; give stateful ones (the
+        # scripted EXPLORE tier's per-game novelty set) a fresh-game reset. Duck-typed
+        # so index/model/interactive controllers need no stub; calling it twice when
+        # one controller drives both seats is harmless.
+        for ctrl in (controller_a, controller_b):
+            new_game = getattr(ctrl, "new_game", None)
+            if new_game is not None:
+                new_game()
         done = False
         capped = False
         total_reward = 0.0
