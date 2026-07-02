@@ -201,6 +201,8 @@ def main():
                         help="Which scripted tier --scripted drives (default 'scripted' = "
                              "hard). Use 'scripted:explore' (or 'explore') for the "
                              "coverage fuzzer — vary --seed to fan it across engine paths — "
+                             "'explore:patient' (or 'patient') for its big-mana profile "
+                             "that develops mana and holds expensive cards until castable, "
                              "or 'scripted:easy' / 'scripted:random' for weaker tiers.")
     parser.add_argument("--no-shuffle", action="store_true",
                         help="Don't shuffle libraries — deck-file order = draw order "

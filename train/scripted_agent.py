@@ -54,7 +54,7 @@ from env import (
     _hand_has_card, _stack_is_empty,
 )
 from decode import decode_game_state
-from card_costs import _LAND_VOCAB_IDS
+from card_costs import _LAND_VOCAB_IDS, _CARD_COST_MATRIX
 
 
 class Skill(Enum):
@@ -92,6 +92,8 @@ class AgentConfig:
     use_smart_mulligan: bool = False    # keep based on opening-hand land count
     enable_combo_lines: bool = True     # keep deck-specific combo logic (Doomsday etc.)
     rng_seed: int | None = None         # seed for RANDOM's generator (reproducible)
+    explore_profile: str = "default"    # EXPLORE weight profile: "default" (coverage)
+                                        # or "patient" (big-mana; _EXPLORE_PATIENT_WEIGHTS)
 
 
 # The "hard" configuration: heuristic play with combat simulation, evaluation-based
@@ -116,6 +118,13 @@ _PRESETS: dict[str, AgentConfig] = {
     # never collapses into a fixed deck-specific line — it fans out across cards.
     "explore":   AgentConfig(skill=Skill.EXPLORE, enable_combo_lines=False),
     "fuzz":      AgentConfig(skill=Skill.EXPLORE, enable_combo_lines=False),
+    # Big-mana explore variant (see _EXPLORE_PATIENT_WEIGHTS): develops mana and
+    # holds expensive cards until they are castable. Plain explore never even sees
+    # a 7-drop as a LEGAL option — this profile exists to create that availability.
+    "explore:patient": AgentConfig(skill=Skill.EXPLORE, enable_combo_lines=False,
+                                   explore_profile="patient"),
+    "patient":         AgentConfig(skill=Skill.EXPLORE, enable_combo_lines=False,
+                                   explore_profile="patient"),
 }
 
 
@@ -149,6 +158,66 @@ _EXPLORE_WEIGHTS: dict[int, float] = {
 # already-seen cards keep their normal weight. Tracked per game in
 # ``ScriptedAgent._explore_seen`` (see ``new_game``).
 _EXPLORE_NOVELTY_FACTOR = 3.0
+
+# ── "Patient" big-mana EXPLORE profile (explore:patient) ────────────────────
+# The plain-explore weight draw only picks among LEGAL actions, and empirically
+# (130+ explore games) expensive cards never became legal: explore never develops
+# enough mana for a 7-drop, and cheap alternate lines with the same card id (e.g.
+# islandcycling Lorien Revealed) remove the card from hand long before it could be
+# hard-cast. No weighting among legal options fixes availability — this profile
+# does, by developing mana and holding expensive cards. Shares all the EXPLORE
+# machinery (novelty bias on casts, seed-mixed global-random draw); only the
+# weights below differ. Plain "explore" reads only _EXPLORE_WEIGHTS and is
+# untouched by this table.
+_EXPLORE_PATIENT_WEIGHTS: dict[int, float] = {
+    _CAT_CAST:     8.0,   # base; scaled up by mana value (_PATIENT_CAST_MV_FACTOR)
+                          # so a legal expensive cast dominates the draw
+    _CAT_ACTIVATE: 1.0,   # demoted hard: cheap activations (cycling, sac lines)
+                          # are what strip expensive cards from hand early
+    _CAT_LAND:     100.0, # near-always take the land drop — mana development is
+                          # the whole point of this profile
+    _CAT_SEL_ATK:  3.0,   # keep combat as in plain explore so games stay decisive
+    _CAT_SEL_BLK:  3.0,
+    _CAT_PASS:     6.0,   # bank mana-development turns: an early cheap ACTIVATE
+                          # now competes with a strong PASS instead of winning
+    _CAT_CONF_ATK: 0.6,   # confirms below their per-item counterparts, as in
+    _CAT_CONF_BLK: 0.6,   # _EXPLORE_WEIGHTS, so a few get declared first
+    _CAT_SB_DONE:  0.6,
+}
+
+# Patient-only CAST scaling: weight *= (1 + mana_value * factor). A legal MV-7
+# cast gets 8x the pull of an MV-0 one, so once the mana finally exists the big
+# card is cast almost immediately instead of losing the draw to cheap spells.
+_PATIENT_CAST_MV_FACTOR = 1.0
+
+# Patient mode gives NO novelty boost to ACTIVATE options. The novelty factor is
+# what makes plain explore eagerly try an unseen islandcycle/sac activation the
+# first turn it appears — exactly the card-stripping behaviour this profile must
+# suppress. Casts keep the boost (a novel expensive cast should win the draw).
+_PATIENT_ACTIVATE_NOVELTY = False
+
+# Patient-only "hold" scaling for card-consuming activations: an ACTIVATE whose
+# card id is still in the acting player's HAND (cycling, Talon Gates-style
+# from-hand lines) gets its weight DIVIDED by (1 + mana_value * factor) — the
+# mirror image of the CAST scaling. A flat ACTIVATE demotion is not enough: the
+# option reappears at every priority window, so even a small per-window pick
+# probability compounds into "always cycled before turn 5" over a game. Scaling
+# the demotion by MV holds exactly the cards this profile exists to hard-cast
+# while leaving cheap from-hand activations barely affected. Battlefield
+# activations (Wasteland, equip, ...) are untouched — their card is not in hand.
+_PATIENT_HOLD_MV_FACTOR = 1.0
+
+
+def _card_mana_value(cid: int) -> float:
+    """Printed mana value of a vocab card via the cast-cost matrix.
+
+    ``_CARD_COST_MATRIX`` rows are the 7 pip counts (W/U/B/R/G/C/generic)
+    divided by 10, so the row sum times 10 is the card's total mana value
+    (X contributes 0). Unknown/out-of-range ids count as 0.
+    """
+    if 0 <= cid < len(_CARD_COST_MATRIX):
+        return float(_CARD_COST_MATRIX[cid].sum()) * 10.0
+    return 0.0
 
 
 def _action_card_id(card_ids: np.ndarray, i: int) -> int:
@@ -926,6 +995,13 @@ class ScriptedAgent:
 
         Not a strong opponent — combo lines are off (see the "explore" preset), so it
         fans out across cards instead of collapsing into a deck's known line.
+
+        The ``explore:patient`` preset (``AgentConfig.explore_profile ==
+        "patient"``) runs this same machinery with a big-mana weight profile —
+        land drops near-mandatory, PASS boosted over cheap activations, CAST
+        weight scaled by mana value — so expensive cards that plain explore never
+        even sees as legal options get developed toward and hard-cast (see
+        ``_EXPLORE_PATIENT_WEIGHTS``).
         """
         if num_choices <= 1:
             return 0
@@ -938,13 +1014,28 @@ class ScriptedAgent:
         if any(int(c) == _CAT_MULLIGAN for c in cats):
             self._explore_seen.clear()
         card_ids = obs[STATE_SIZE + MAX_ACTIONS:STATE_SIZE + 2 * MAX_ACTIONS]
+        # The "patient" profile swaps in the big-mana weight table, scales CAST
+        # weight by mana value, and withholds the novelty boost from ACTIVATE
+        # (see the _EXPLORE_PATIENT_* constants). The default profile takes the
+        # exact same code path with the original table, so plain explore
+        # behaviour (and its RNG consumption) is unchanged.
+        patient = self.config.explore_profile == "patient"
+        table = _EXPLORE_PATIENT_WEIGHTS if patient else _EXPLORE_WEIGHTS
         weights = []
         for i, c in enumerate(cats):
-            w = _EXPLORE_WEIGHTS.get(int(c), _EXPLORE_DEFAULT_WEIGHT)
+            w = table.get(int(c), _EXPLORE_DEFAULT_WEIGHT)
             if int(c) in (_CAT_CAST, _CAT_ACTIVATE):
                 cid = _action_card_id(card_ids, i)
                 if cid >= 0 and cid not in self._explore_seen:
-                    w *= _EXPLORE_NOVELTY_FACTOR
+                    if int(c) == _CAT_CAST or not patient or _PATIENT_ACTIVATE_NOVELTY:
+                        w *= _EXPLORE_NOVELTY_FACTOR
+                if patient and cid >= 0:
+                    if int(c) == _CAT_CAST:
+                        w *= 1.0 + _card_mana_value(cid) * _PATIENT_CAST_MV_FACTOR
+                    elif _hand_has_card(obs, cid):
+                        # Card-consuming from-hand activation (cycling etc.):
+                        # hold the card — see _PATIENT_HOLD_MV_FACTOR.
+                        w /= 1.0 + _card_mana_value(cid) * _PATIENT_HOLD_MV_FACTOR
             weights.append(w)
         # Mulligan is a 2-way [keep, mulligan] choice — bias toward keeping (index 0)
         # so most games actually start, but still mulligan ~1/4 of the time to exercise
@@ -968,9 +1059,12 @@ def make_agent(spec: str = "scripted") -> ScriptedAgent:
     Accepts ``"scripted"``, ``"scripted:hard"``, ``"scripted:easy"``,
     ``"scripted:random"``, ``"scripted:explore"``, or the bare suffixes
     ``"greedy"``/``"hard"``/``"heuristic"``/``"easy"``/``"random"``/
-    ``"explore"``/``"fuzz"`` (case-insensitive). ``explore``/``fuzz`` select the
-    coverage fuzzer (Skill.EXPLORE) — vary the game ``--seed`` to fan it across
-    engine paths.
+    ``"explore"``/``"fuzz"``/``"explore:patient"``/``"patient"``
+    (case-insensitive). ``explore``/``fuzz`` select the coverage fuzzer
+    (Skill.EXPLORE) — vary the game ``--seed`` to fan it across engine paths.
+    ``explore:patient`` (or bare ``patient``; ``scripted:explore:patient`` also
+    resolves) is the fuzzer's big-mana profile: it develops mana and holds
+    expensive cards until they are castable (see ``_EXPLORE_PATIENT_WEIGHTS``).
     """
     s = (spec or "scripted").strip().lower()
     suffix = s.split(":", 1)[1] if s.startswith("scripted:") else s
