@@ -90,9 +90,14 @@ instead of `$PIPESTATUS`.
 -Do not attempt to test cards that are not already in `src/card_vocab.h`. Cards absent from the card vocab are considered unimplemented.
 -Do not use commas when using the test harness. The harness splits `--play`, `--hand-a/-b`,
  `--library-a/-b`, and `--battlefield-a/-b` on commas, so a comma inside a card name (e.g.
- "Thalia, Guardian of Thraben", "Tamiyo, Inquisitive Student") breaks the parse. Refer to such
- cards by a comma-free unique substring (e.g. `cast:thalia`, `Tamiyo@own`) or use a stacked
- `temp/` deck file (one card per line, no commas) instead of inline comma-separated lists.
+ "Thalia, Guardian of Thraben", "Tamiyo, Inquisitive Student") breaks the parse. **The fix is
+ simply to omit the comma from the card name**: pass `Ajani Nacatl Pariah`, `Thalia Guardian
+ of Thraben` — the engine resolves card names via `name_to_uid`, which strips punctuation, so
+ the comma-free form loads the exact same card (verified: a `--battlefield-a "Ajani Nacatl
+ Pariah"` preset yields the real Ajani, Nacatl Pariah). This works in every comma-split list
+ flag (`--hand`, `--library`, `--battlefield/graveyard/exile/sideboard` presets). In `--play`
+ specs, use a comma-free unique substring (`cast:thalia`, `Tamiyo@own`); a stacked `temp/`
+ deck file (one card per line, commas allowed there) also works.
 -train.py observe is helpful for checking new builds (it replaced the old diag/watch
  commands — one command observes any {scripted|model} vs {scripted|model} matchup).
  Use `--games N` for a multi-game regression pass (per-game results + W/L/D summary),
