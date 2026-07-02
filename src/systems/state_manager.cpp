@@ -219,6 +219,9 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
             const auto &cd = global_coordinator.GetComponent<CardData>(entity);
             if (!card_is_saga(cd)) continue;
             auto &perm = global_coordinator.GetComponent<Permanent>(entity);
+            // Layer-6 ability removal: a Saga turned into a Mountain (Magus of the Moon,
+            // CR 305.7) is no longer a Saga — 714.4 doesn't sacrifice it, even at full lore.
+            if (perm.abilities_removed) continue;
             int final_chapter = static_cast<int>(cd.saga_chapters.size());
             if (get_counters(entity, "LORE") < final_chapter) continue;
             if (perm.saga_chapters_in_flight > 0) continue;  // a chapter ability is still on the stack

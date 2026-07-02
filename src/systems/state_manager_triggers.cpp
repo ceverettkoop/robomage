@@ -291,6 +291,16 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
         if (!global_coordinator.entity_has_component<Permanent>(saga)) continue;
         const auto &cd = global_coordinator.GetComponent<CardData>(saga);
         if (chapter < 1 || chapter > static_cast<int>(cd.saga_chapters.size())) continue;
+        // Layer-6 ability removal: a Saga whose abilities are removed (turned into a Mountain
+        // by Magus of the Moon, CR 305.7) has no chapter abilities — the trigger never happens.
+        // The lore-counter machinery is gated too (saga.cpp), so this only catches an event
+        // emitted in the same window the removal landed; release the 714.4 in-flight gate the
+        // emitter took since no chapter ability will go on (and thus leave) the stack.
+        if (global_coordinator.GetComponent<Permanent>(saga).abilities_removed) {
+            auto &saga_perm = global_coordinator.GetComponent<Permanent>(saga);
+            if (saga_perm.saga_chapters_in_flight > 0) saga_perm.saga_chapters_in_flight--;
+            continue;
+        }
         Zone::Ownership ctrl = global_coordinator.GetComponent<Permanent>(saga).controller;
 
         Ability trigger_ab = cd.saga_chapters[static_cast<size_t>(chapter - 1)];
@@ -321,16 +331,24 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
         // innate abilities from whichever face is up — this is the single place front/back trigger
         // selection happens (the per-ability "if (perm.transformed) continue" front-face skip is
         // therefore unnecessary, and would wrongly suppress the back face's own triggers).
+        // Layer-6 ability removal (CR 613.1f / 305.7): a permanent whose abilities are removed
+        // (Humility "lose all abilities", or a land turned into a basic type by Magus of the
+        // Moon) has NO innate triggered abilities either — skip its CardData/Token sources.
+        // perm.abilities stays in the list: the layer pass already filtered it down to what
+        // survives the removal (an ability granted by the remover itself, or the regenerated
+        // subtype-derived mana ability), so anything still there is legitimately functioning.
         std::vector<const std::vector<Ability>*> ab_sources;
-        if (global_coordinator.entity_has_component<CardData>(entity)) {
-            const CardData &cd = global_coordinator.GetComponent<CardData>(entity);
-            if (perm.transformed && cd.backside)
-                ab_sources.push_back(&cd.backside->abilities);
-            else
-                ab_sources.push_back(&cd.abilities);
+        if (!perm.abilities_removed) {
+            if (global_coordinator.entity_has_component<CardData>(entity)) {
+                const CardData &cd = global_coordinator.GetComponent<CardData>(entity);
+                if (perm.transformed && cd.backside)
+                    ab_sources.push_back(&cd.backside->abilities);
+                else
+                    ab_sources.push_back(&cd.abilities);
+            }
+            if (global_coordinator.entity_has_component<Token>(entity))
+                ab_sources.push_back(&global_coordinator.GetComponent<Token>(entity).abilities);
         }
-        if (global_coordinator.entity_has_component<Token>(entity))
-            ab_sources.push_back(&global_coordinator.GetComponent<Token>(entity).abilities);
         ab_sources.push_back(&perm.abilities);
         if (ab_sources.empty()) continue;
 

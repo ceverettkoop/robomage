@@ -145,6 +145,22 @@ struct Permanent {
     // and for noncreature permanents (whose keywords the accessors read off CardData/Token).
     std::set<std::string> removed_keywords_eot;
 
+    // Layer 6 (CR 613.1f) ability removal is in force on this permanent THIS pass: either a
+    // "loses all abilities" static affects it (Humility/Toxicrene, remove_all_abilities) or a
+    // land-subtype setter turned it into a basic-typed land (Blood Moon / Magus of the Moon,
+    // CR 305.7 — "It loses all abilities generated from its rules text"). Recomputed every
+    // continuous-effects pass (reset in gather_active_statics, set in recompute_abilities), so
+    // it lapses automatically when the removal source leaves. The layer pass already erases the
+    // ACTIVATED abilities from `abilities` above; this flag is for the readers that pull
+    // abilities straight off CardData/Token — trigger collection (state_manager_triggers.cpp)
+    // skips a flagged permanent's innate TRIGGERED abilities, and the Saga chapter machinery
+    // (saga.cpp / the 714.4 sacrifice SBA) treats a flagged Saga as not-a-Saga. Abilities still
+    // present in `abilities` (granted by the remover itself, or the regenerated subtype-derived
+    // mana ability) are NOT suppressed by this flag. Simplification vs CR 613.5: any grant from
+    // a non-remover source is erased regardless of timestamp (matches the existing layer-6
+    // removal model documented in state_manager_statics.cpp).
+    bool abilities_removed = false;
+
     // CR 714.4 Saga sacrifice gate: the number of this Saga's chapter abilities that have
     // TRIGGERED (lore counters reached the chapter) but not yet LEFT THE STACK. Incremented when a
     // lore counter reaches a chapter (saga.cpp), decremented when the chapter ability finishes

@@ -22,6 +22,10 @@ void saga_add_lore_counters(Entity saga, int n) {
     const auto &cd = global_coordinator.GetComponent<CardData>(saga);
     int final_chapter = static_cast<int>(cd.saga_chapters.size());
     if (final_chapter == 0) return;  // not a Saga
+    // Layer-6 ability removal (CR 613.1f / 305.7): under Magus of the Moon this permanent is a
+    // Mountain — it has lost the Saga subtype and its chapter abilities, so the Saga rules
+    // (714.3b lore counters, 714.2b chapter triggers) don't apply to it while the effect lasts.
+    if (global_coordinator.GetComponent<Permanent>(saga).abilities_removed) return;
 
     // CR 714.2: add the lore counter(s) via the shared counter store, then fire each chapter the
     // count newly reaches (CR 714.2b: "if the number of lore counters was less than N and became
