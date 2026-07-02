@@ -361,6 +361,21 @@ void Orderer::generate_libraries(const Deck &deck_a, const Deck &deck_b) {
             list_idx++;
         }
     }
+
+    // Sideboard cards ("outside the game"): instantiate each deck's SIDEBOARD: section as
+    // SIDEBOARD-zone entities so wish effects (Karn, the Great Creator -2, Origin$ Sideboard)
+    // can find them in every game, not just via test-harness --sideboard presets. SIDEBOARD is
+    // never serialized to the ML state (populate_gamestate ignores it), and this runs after the
+    // creature-subtype scan above so ChooseType menus are unchanged. setup_companions reuses an
+    // already-instantiated sideboard entity instead of creating its own, so no duplication.
+    for (size_t i = 0; i < 2; i++) {
+        Zone::Ownership sb_owner = (i == 0) ? Zone::PLAYER_A : Zone::PLAYER_B;
+        const Deck &d = (i == 0) ? deck_a : deck_b;
+        std::vector<std::string> sb_names;
+        for (const auto &entry : d.sideboard)
+            for (size_t n = 0; n < entry.first; n++) sb_names.push_back(entry.second);
+        if (!sb_names.empty()) place_in_zone(sb_names, sb_owner, Zone::SIDEBOARD);
+    }
 }
 
 void Orderer::draw_hands() {

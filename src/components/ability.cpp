@@ -115,7 +115,8 @@ Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner, Zone
         // Graveyard / face-up exile / sideboard ("outside the game") picks (Karn, the Great
         // Creator -2: choose an artifact card you own in exile or your sideboard). These zones
         // hold their cards as entities tagged by Zone owner, so enumerate by owner like the
-        // graveyard. (The sideboard is only populated with entities in the bo3 sideboard phase.)
+        // graveyard. (Sideboard entities are instantiated at game start by generate_libraries
+        // from the deck's SIDEBOARD: section, plus any test-harness --sideboard presets.)
         for (auto e : orderer->mEntities) {
             if (!global_coordinator.entity_has_component<Zone>(e)) continue;
             auto &z = global_coordinator.GetComponent<Zone>(e);

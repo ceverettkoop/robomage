@@ -111,15 +111,17 @@ static void register_exile_until_host_leaves(Entity host, Entity card, Zone::Zon
 // A library search reveals the chosen card when it must satisfy a restriction
 // more specific than "any card" — the searcher proves the card qualifies (e.g.
 // Personal Tutor: "search for a sorcery card, reveal it"). An unrestricted
-// "Card" search (Vampiric/Demonic Tutor, Doomsday) reveals nothing. Searches of
-// other zones are public already, so this only matters for the library.
+// "Card" search (Vampiric/Demonic Tutor, Doomsday) reveals nothing. The
+// sideboard ("outside the game") is likewise hidden, and wish effects say
+// "reveal it" (Karn, the Great Creator -2), so it reveals the same way.
+// Searches of other zones are public already.
 static bool search_reveals_card(const Ability &ab) {
-    bool from_library = (ab.origin == Zone::LIBRARY);
+    bool from_hidden = (ab.origin == Zone::LIBRARY || ab.origin == Zone::SIDEBOARD);
     for (auto z : ab.origins) {
-        if (z == Zone::LIBRARY) from_library = true;
+        if (z == Zone::LIBRARY || z == Zone::SIDEBOARD) from_hidden = true;
     }
     bool specific_type = !ab.change_type.empty() && ab.change_type != "Card";
-    return from_library && specific_type;
+    return from_hidden && specific_type;
 }
 
 bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
