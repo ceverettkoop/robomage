@@ -490,6 +490,19 @@ bool run_unless_loop(
 
     while (true) {
         std::vector<LegalAction> unless_actions = collect_mana_legal_actions(controller, orderer);
+        // Drop cost-bearing mana sources (Talon Gates' {1}{T}) whose activation cost the
+        // FLOATING pool can't cover right now: the tap-a-source loop below pays activation
+        // costs only from mana already floating, so offering such a source would either
+        // produce free mana or (refused) re-offer the same menu forever to a deterministic
+        // machine-mode agent. The menu is rebuilt each iteration, so the source reappears
+        // as soon as enough mana has been floated.
+        unless_actions.erase(
+            std::remove_if(unless_actions.begin(), unless_actions.end(),
+                [&](const LegalAction &la) {
+                    return !la.ability.activation_mana_cost.empty() &&
+                           !can_afford(controller, la.ability.activation_mana_cost);
+                }),
+            unless_actions.end());
 
         bool can_pay = can_afford(controller, cond_cost);
         size_t pay_idx = unless_actions.size();
@@ -523,6 +536,17 @@ bool run_unless_loop(
             auto &chosen = unless_actions[static_cast<size_t>(choice)];
             Entity land = chosen.source_entity;
             auto &perm = global_coordinator.GetComponent<Permanent>(land);
+            // A cost-bearing mana source (Talon Gates' {1}{T}) must pay its activation cost
+            // from the floating pool before producing; refuse the activation (no tap, no
+            // mana) while the pool can't cover it, and re-prompt so the player can float
+            // mana from a cost-free source first.
+            if (!chosen.ability.activation_mana_cost.empty()) {
+                if (!can_afford(controller, chosen.ability.activation_mana_cost)) {
+                    game_log("Cannot pay that ability's activation cost — tap another source for mana first.\n");
+                    continue;
+                }
+                spend_mana(controller, chosen.ability.activation_mana_cost, land);
+            }
             perm.is_tapped = true;
             add_mana(controller, chosen.ability.color, chosen.ability.amount);
             game_log("%s tapped %s for {%s}\n", player_name(controller).c_str(), perm.name.c_str(),
@@ -695,9 +719,9 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
     // spell/permanent and their counter/destroy effect is conditional on the target's
     // color (enforced in effects::counter / effects::destroy via
     // target_color_condition_met). By contrast Red Elemental Blast (ValidTgts$ Card.Blue /
-    // Permanent.Blue) bakes blue into the target restriction itself, enforced below via
-    // color_set_passes(vt, effective_colors(cand)) (CR 115.1: target restrictions are checked
-    // when chosen, against the candidate's effective color).
+    // Permanent.Blue) bakes blue into the target restriction itself, enforced below through
+    // the shared filter evaluator on both the stack-spell and battlefield-permanent paths
+    // (CR 115.1: target restrictions are checked when chosen, against the candidate).
 
     const std::string &vt = valid_tgts;
 
@@ -707,7 +731,19 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
         (target_type.find("Spell") != std::string::npos ||
          target_type.find("Activated") != std::string::npos ||
          target_type.find("Triggered") != std::string::npos)) {
-        return target_type_matches_stack_object(target_type, cand);
+        if (!target_type_matches_stack_object(target_type, cand)) return false;
+        // A bare "TargetType$ Spell" carries its restriction in ValidTgts$, written against the
+        // CARD on the stack — Red Elemental Blast "Card.Blue", Force of Negation
+        // "Card.nonCreature", Flusterstorm "Instant,Sorcery" (CR 115.1: the restriction is part
+        // of choosing the target, and re-checked at resolution via is_target_valid). Match it
+        // through the shared comma-OR card filter. A standalone ability entity on the stack (an
+        // Activated/Triggered alternative the script names explicitly — Stifle, Consign to
+        // Memory) is not a card, so a card-shaped ValidTgts ("Card,Emblem") never filters it.
+        if (vt != "N_A" && !vt.empty() &&
+            global_coordinator.entity_has_component<Spell>(cand) &&
+            !card_matches_any(cand, vt, MatchCtx{caster, source}))
+            return false;
+        return true;
     }
 
     // Card in a non-battlefield zone (e.g. Faerie Macabre targeting graveyard cards)
@@ -1069,10 +1105,14 @@ size_t evaluate_dynamic_amount(
         return static_cast<size_t>(threshold ? high_val : low_val);
     }
     // Count$UrzaLands.high.low — the "Tron" mana lands (Urza's Mine/Power Plant/Tower): returns
-    // high if the controller controls at least one Urza's Mine AND one Urza's Power Plant AND one
-    // Urza's Tower (a complete set, by card NAME), low otherwise. Each land's own ability scales
-    // its colorless output (Mine/Power Plant: .2.1 → {C}{C} assembled / {C} alone; Tower: .3.1 →
-    // {C}{C}{C} / {C}). General over any card scaling a dynamic amount by Tron assembly.
+    // high if the controller controls at least one Urza's Mine AND one Urza's Power-Plant AND one
+    // Urza's Tower (a complete set), low otherwise. Per CR 205.3i these are LAND TYPES, so the
+    // check reads each permanent's effective type line (Permanent::types — includes types added
+    // by continuous effects, e.g. Planar Nexus's AllNonBasicLandType self-CDA), not card names.
+    // One permanent with several of the subtypes (Nexus) satisfies each it carries. Each land's
+    // own ability scales its colorless output (Mine/Power Plant: .2.1 → {C}{C} assembled / {C}
+    // alone; Tower: .3.1 → {C}{C}{C} / {C}). General over any card scaling a dynamic amount by
+    // Tron assembly.
     if (expr.find("Count$UrzaLands.") != std::string::npos) {
         size_t dot1 = expr.find("UrzaLands.") + std::string("UrzaLands.").size();
         size_t dot2 = expr.find('.', dot1);
@@ -1080,11 +1120,11 @@ size_t evaluate_dynamic_amount(
         int low_val = std::stoi(expr.substr(dot2 + 1));
         bool mine = false, plant = false, tower = false;
         for (auto e : battlefield_permanents(orderer->mEntities, ctrl)) {
-            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
-            const std::string &nm = global_coordinator.GetComponent<CardData>(e).name;
-            if (nm == "Urza's Mine") mine = true;
-            else if (nm == "Urza's Power Plant") plant = true;
-            else if (nm == "Urza's Tower") tower = true;
+            const auto &perm = global_coordinator.GetComponent<Permanent>(e);
+            if (!permanent_has_type(perm, "Urza's")) continue;
+            if (permanent_has_type(perm, "Mine")) mine = true;
+            if (permanent_has_type(perm, "Power-Plant")) plant = true;
+            if (permanent_has_type(perm, "Tower")) tower = true;
         }
         return static_cast<size_t>((mine && plant && tower) ? high_val : low_val);
     }

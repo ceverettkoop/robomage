@@ -44,7 +44,7 @@ static void delve_exile_one(Entity e, Zone::Ownership controller,
                             std::shared_ptr<Orderer> orderer, ManaValue &remaining);
 static bool is_improvise_eligible(Entity e, Zone::Ownership controller, Entity paid_for);
 static void improvise_tap_one(Entity e, Zone::Ownership controller, ManaValue &remaining);
-static void activate_mana_source(Entity entity, const Ability &ab, Zone::Ownership controller,
+static bool activate_mana_source(Entity entity, const Ability &ab, Zone::Ownership controller,
                                  std::shared_ptr<Orderer> orderer, ManaValue &pool,
                                  Player &player, bool commit);
 static void fire_taps_for_mana_triggers(Entity tapped_source, Zone::Ownership controller,
@@ -650,17 +650,30 @@ void increment_activation_count(Permanent &perm, const Ability &ability) {
 // working `pool`; the write-only ECS side effects are skipped when !commit (simulate mode).
 // Shared by the auto-payer (commit toggles per simulate/real) and the interactive payer
 // (always commit, with pool == the player's real mana pool).
-static void activate_mana_source(Entity entity, const Ability &ab, Zone::Ownership controller,
+// Returns false — with NO side effects (no tap, no sacrifice, no mana produced, pool
+// untouched) — when the ability's activation mana cost (Talon Gates' {1}{T}) cannot be paid
+// from the working pool. The cost is paid FIRST, before any other effect, so a refusal
+// cancels cleanly; the auto-payer pre-covers the cost by tapping other sources into the
+// pool (cover_activation_cost), and the interactive payer relies on this check to refuse.
+static bool activate_mana_source(Entity entity, const Ability &ab, Zone::Ownership controller,
                                  std::shared_ptr<Orderer> orderer, ManaValue &pool,
                                  Player &player, bool commit) {
     auto &perm = global_coordinator.GetComponent<Permanent>(entity);
+    if (!ab.activation_mana_cost.empty()) {
+        // pay_from_pool returns the unpayable remainder and drains the pool even on a
+        // partial payment, so snapshot the pool and restore it when the cost bounces.
+        ManaValue pool_before = pool;
+        ManaValue unpaid = pay_from_pool(pool, ab.activation_mana_cost);
+        if (!unpaid.empty()) {
+            pool = pool_before;
+            return false;
+        }
+    }
     if (commit && ab.tap_cost) perm.is_tapped = true;
     if (commit && ab.sac_self) {
         game_log("%s sacrifices %s\n", player_name(controller).c_str(), perm.name.c_str());
         orderer->add_to_zone(false, entity, Zone::GRAVEYARD);
     }
-    if (!ab.activation_mana_cost.empty())
-        pay_from_pool(pool, ab.activation_mana_cost);
     if (commit && ab.life_cost > 0) {
         player.life_total -= ab.life_cost;
         game_log("%s pays %d life\n", player_name(controller).c_str(), ab.life_cost);
@@ -703,6 +716,7 @@ static void activate_mana_source(Entity entity, const Ability &ab, Zone::Ownersh
         }
     }
     if (commit) increment_activation_count(perm, ab);
+    return true;
 }
 
 // True if `e` is (currently) a creature on the battlefield — used to gate ValidCard$ Creature on
@@ -844,10 +858,61 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
     // equals si.ability.color (set when the SourceInfo was built), so the shared
     // activate_mana_source reads the produced color straight off the ability.
     auto activate_source = [&](const SourceInfo &si) {
-        activate_mana_source(si.entity, si.ability, controller, orderer, pool, player, commit);
+        return activate_mana_source(si.entity, si.ability, controller, orderer, pool, player,
+                                    commit);
     };
 
     std::set<Entity> tapped_entities;
+
+    // A cost-bearing mana source (Talon Gates' {1}{T}: add one mana of any color) must
+    // actually PAY its activation cost before producing. Cover the cost from the working
+    // pool, tapping additional cost-FREE sources into the pool when it falls short. The
+    // cover is planned on copies first, so a failed cover taps nothing and the caller just
+    // skips the source; on success the payer taps are committed here and the cost itself is
+    // then paid inside activate_mana_source. This preserves the invariant that total mana
+    // produced minus activation costs paid equals the amount credited toward `remaining`.
+    auto cover_activation_cost = [&](const SourceInfo &si) -> bool {
+        const ManaValue &act = si.ability.activation_mana_cost;
+        if (act.empty() || can_afford_pool(pool, act)) return true;
+        ManaValue trial = pool;
+        std::set<Entity> planned = tapped_entities;
+        planned.insert(si.entity);
+        std::vector<size_t> plan;  // indices into valid_sources to engage as payers
+        while (!can_afford_pool(trial, act)) {
+            // The unpayable pips of the activation cost against the trial pool; pay a
+            // colored pip first (it is the more constrained match), else a generic one.
+            ManaValue trial_copy = trial;
+            ManaValue need = pay_from_pool(trial_copy, act);
+            Colors pip = GENERIC;
+            for (Colors c : need)
+                if (c != GENERIC) { pip = c; break; }
+            bool found = false;
+            for (size_t i = 0; i < valid_sources.size(); i++) {
+                auto &cand = valid_sources[i];
+                if (planned.count(cand.entity)) continue;
+                // Payers must themselves be cost-free — no recursive cost chains.
+                if (!cand.ability.activation_mana_cost.empty()) continue;
+                if (pip != GENERIC && !any_color && cand.color != pip) continue;
+                size_t amt = eval_mana_amount(cand.ability, controller, orderer);
+                if (amt == 0) continue;
+                for (size_t k = 0; k < amt; k++) trial.insert(cand.color);
+                planned.insert(cand.entity);
+                plan.push_back(i);
+                found = true;
+                break;
+            }
+            if (!found) return false;
+        }
+        for (size_t i : plan) {
+            if (!activate_source(valid_sources[i])) return false;  // cost-free; can't bounce
+            tapped_entities.insert(valid_sources[i].entity);
+        }
+        return can_afford_pool(pool, act);
+    };
+
+    // Cost-bearing sources net less mana than they produce (their activation cost consumes
+    // other sources' output), so every priority tier below prefers cost-free candidates.
+    auto cost_free = [](const SourceInfo &s) { return s.ability.activation_mana_cost.empty(); };
 
     // Pay colored costs first — prefer single-color sources to preserve flexibility
     for (auto it = remaining.begin(); it != remaining.end(); ) {
@@ -874,7 +939,12 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
                 if (tapped_entities.count(si.entity)) continue;
                 if (!any_color && si.color != needed) continue;
                 if (!predicate(si)) continue;
-                activate_source(si);
+                // A cost-bearing source is engaged only once its activation cost is
+                // covered (pre-tapping payer sources into the pool); if the cost cannot
+                // be covered — or the activation itself bounces — the source is skipped
+                // untouched and the scan moves on.
+                if (!cover_activation_cost(si)) continue;
+                if (!activate_source(si)) continue;
                 tapped_entities.insert(si.entity);
                 // Only satisfy the pip with mana the source ACTUALLY produced. A source
                 // that produced no mana of `needed` (e.g. a 0-mana ManaReflected source
@@ -899,6 +969,8 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
             return false;
         };
         if (try_source([](const SourceInfo &s) { return s.ability.adds_no_counter && !s.ability.sac_self; })) continue;
+        if (try_source([&](const SourceInfo &s) { return cost_free(s) && !s.is_multi_color && !s.ability.sac_self; })) continue;
+        if (try_source([&](const SourceInfo &s) { return cost_free(s) && !s.ability.sac_self; })) continue;
         if (try_source([](const SourceInfo &s) { return !s.is_multi_color && !s.ability.sac_self; })) continue;
         if (try_source([](const SourceInfo &s) { return !s.ability.sac_self; })) continue;
         if (try_source([](const SourceInfo &) { return true; })) continue;  // sac_self last resort
@@ -917,7 +989,9 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
             for (auto &si : valid_sources) {
                 if (tapped_entities.count(si.entity)) continue;
                 if (!predicate(si)) continue;
-                activate_source(si);
+                // Same activation-cost gate as the colored loop above.
+                if (!cover_activation_cost(si)) continue;
+                if (!activate_source(si)) continue;
                 tapped_entities.insert(si.entity);
                 // Only pay a generic pip with mana the source actually produced; a 0-mana
                 // source erases nothing (consistent with the colored loop above).
@@ -931,6 +1005,7 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
             return false;
         };
         if (try_generic([](const SourceInfo &s) { return s.ability.adds_no_counter && !s.ability.sac_self; })) continue;
+        if (try_generic([&](const SourceInfo &s) { return cost_free(s) && !s.ability.sac_self; })) continue;
         if (try_generic([](const SourceInfo &s) { return !s.ability.sac_self; })) continue;
         if (try_generic([](const SourceInfo &) { return true; })) continue;  // sac_self last resort
         // Improvise: a {1} can also be paid by tapping an untapped artifact (CR 702.126).
@@ -1118,8 +1193,12 @@ bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,
         } else {
             // Mana ability activation — same core sequence as the auto-payer. The interactive
             // payer always commits to real state, so pool == the player's real mana pool.
-            activate_mana_source(chosen.source_entity, chosen.ability, controller, orderer,
-                                 player.mana, player, /*commit=*/true);
+            // A cost-bearing source (Talon Gates' {1}{T}) refuses to activate while the pool
+            // can't cover its activation cost: nothing is tapped and no mana is produced, and
+            // the loop re-prompts so the player can float mana from another source first.
+            if (!activate_mana_source(chosen.source_entity, chosen.ability, controller, orderer,
+                                      player.mana, player, /*commit=*/true))
+                game_log("Cannot pay that ability's activation cost — tap another source for mana first.\n");
         }
     }
 

@@ -1234,6 +1234,23 @@ static bool gift_mode_satisfiable(const std::vector<const Ability *> &targeting,
 // reachable promise state and the spell is castable if any one is fully satisfiable.
 bool spell_has_castable_targets(const Ability &primary, std::shared_ptr<Orderer> orderer,
                                 Zone::Ownership caster, bool has_gift) {
+    // Modal spell (CR 601.2b/601.2c): castable iff at least one mode can be legally chosen —
+    // a mode that needs no target, or one with a legal target available. The modes live in
+    // charm_choices (not subabilities), so the ordinary targeting walk below never sees them;
+    // without this a Charm whose every mode lacked a target (Red Elemental Blast with nothing
+    // blue anywhere) was offered and then fizzled at resolution. Mirrors the mode filter in
+    // effects::charm, which is what actually enforces the choice at resolution.
+    if (!primary.charm_choices.empty()) {
+        for (const Ability &mode : primary.charm_choices) {
+            if (mode.valid_tgts == "N_A" || mode.target_min == 0) return true;
+            Ability probe = mode;
+            probe.source = primary.source;
+            probe.controller = caster;
+            if (!build_valid_targets(probe, orderer, caster).empty()) return true;
+        }
+        return false;
+    }
+
     std::vector<const Ability *> targeting = spell_targeting_abilities(primary);
     if (targeting.empty()) return true;  // no targets required
 

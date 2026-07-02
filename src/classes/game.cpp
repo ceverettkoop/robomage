@@ -114,8 +114,17 @@ void Game::take_action() {
 bool Game::advance_step(std::shared_ptr<StackManager> stack_manager, std::shared_ptr<Orderer> orderer) {
     // will advance step and return true if step advanced
     // otherwise will resove stack or pass priority as needed
-    if (ready_to_resolve()) {
-        if (!stack_manager->is_empty()) {
+    // CR 502.4: no player receives priority during the untap step. The step's
+    // turn-based actions (phasing, day/night check, untapping) run in the UNTAP
+    // case below and the step advances straight to upkeep without a decision
+    // window, regardless of pass tracking — this also covers the start of the
+    // game, where cur_step begins at UNTAP with neither player having passed.
+    // Nothing is resolved off the stack here either: an ability that triggers
+    // during the untap step waits until a player would receive priority during
+    // the upkeep (CR 603.3b), so it stays on the stack for the normal upkeep
+    // priority round after the step change.
+    if (ready_to_resolve() || cur_step == UNTAP) {
+        if (!stack_manager->is_empty() && cur_step != UNTAP) {
             stack_manager->resolve_top(orderer);
             // reset pass tracking when something has resolved
             a_has_passed = false;
