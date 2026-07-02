@@ -105,12 +105,6 @@ bool pump(Ability &ab, std::shared_ptr<Orderer> orderer) {
     // subabilities do the work — don't re-pick a battlefield creature here.
     if (ab.target_in_graveyard) return true;
 
-    // IsCurse$ True (Carpet of Flowers): the Pump targets a PLAYER (ValidTgts$ Opponent), chosen
-    // as the trigger went on the stack, and applies no P/T. Keep ab.target = that opponent so the
-    // chained DB$ Mana sub-ability's Count$Valid Island.TargetedPlayerCtrl reads the opponent's
-    // Islands; do NOT re-enter the creature-target menu below.
-    if (ab.is_curse) return true;
-
     // Defined$ TriggeredAttacker(LKICopy) (Tamiyo, Seasoned Scholar): the pump's target is the
     // attacking creature, already bound at trigger-fire time (no ValidTgts$ menu to present).
     // Apply the P/T change directly to it. A target of 0 (attacker gone) is a harmless no-op.
@@ -140,54 +134,65 @@ bool pump(Ability &ab, std::shared_ptr<Orderer> orderer) {
         }
     }
 
-    // Present target selection, then chain subabilities with that target
+    // A target chosen when the spell was cast (CR 601.2c) or the trigger was placed (603.3d)
+    // is honored as-is — its legality was already re-verified in Ability::resolve (608.2b;
+    // an illegal target fizzles there and never reaches this handler). That covers targeted
+    // pump spells (Giant Growth, Dismember — whose IsCurse$ AI hint needs no special-casing
+    // here), player-targeted curse pumps (Carpet of Flowers: ab.target stays the opponent so
+    // the chained DB$ Mana sub's Count$Valid Island.TargetedPlayerCtrl reads their Islands;
+    // apply_pump_to_creature no-ops on a player), and graveyard targets. Only a Pump that
+    // reaches resolution with NO pre-chosen target — an immediate-trigger sub-ability, which
+    // deliberately skips placement-time selection (see effect_immediate_trigger.cpp; Guide of
+    // Souls, Cloak and Dagger) — selects its target here.
     Zone::Ownership ctrl = ab.controller;
-    Zone::Ownership opp = (ctrl == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
-    // ValidTgts$ Creature.ControlledBy ParentTarget (Cloak and Dagger's DBPump): the creature
-    // must be controlled by the targeted opponent. In the two-player engine the parent's
-    // "target opponent" is always the source's single opponent, so filter to the opponent's
-    // creatures. YouCtrl restricts to the controller's own creatures (the common pump case).
-    bool want_youctrl = ab.valid_tgts.find("YouCtrl") != std::string::npos;
-    bool want_oppctrl = ab.valid_tgts.find("ParentTarget") != std::string::npos ||
-                        ab.valid_tgts.find("OppCtrl") != std::string::npos ||
-                        ab.valid_tgts.find("ControlledBy") != std::string::npos;
-    std::vector<Entity> pump_targets;
-    for (Entity e = 0; e < global_coordinator.GetMaxIssuedEntity(); ++e) {
-        if (!is_battlefield_permanent(e)) continue;
-        if (!global_coordinator.entity_has_component<Creature>(e)) continue;
-        auto &p = global_coordinator.GetComponent<Permanent>(e);
-        if (want_youctrl && p.controller != ctrl) continue;
-        if (want_oppctrl && p.controller != opp) continue;
-        pump_targets.push_back(e);
-    }
-    if (pump_targets.empty()) {
-        game_log("Pump: no valid targets.\n");
-        // still chain subabilities with no target
-    } else {
-        // TargetMin$ 0 (Cloak and Dagger: "up to one target creature"): the controller may
-        // choose no creature. Offer an explicit decline option in that case.
-        bool optional = (ab.target_min == 0);
-        game_log("Choose a creature for Pump:\n");
-        std::vector<LegalAction> tgt_actions;
-        for (auto te : pump_targets) {
-            std::string ename = global_coordinator.GetComponent<Permanent>(te).name;
-            auto &tcr = global_coordinator.GetComponent<Creature>(te);
-            LegalAction la(PASS_PRIORITY, te,
-                ename + " [" + std::to_string(tcr.power) + "/" + std::to_string(tcr.toughness) + "]");
-            la.category = ActionCategory::SELECT_TARGET;
-            tgt_actions.push_back(la);
+    if (ab.target == 0) {
+        Zone::Ownership opp = (ctrl == Zone::PLAYER_A) ? Zone::PLAYER_B : Zone::PLAYER_A;
+        // ValidTgts$ Creature.ControlledBy ParentTarget (Cloak and Dagger's DBPump): the creature
+        // must be controlled by the targeted opponent. In the two-player engine the parent's
+        // "target opponent" is always the source's single opponent, so filter to the opponent's
+        // creatures. YouCtrl restricts to the controller's own creatures (the common pump case).
+        bool want_youctrl = ab.valid_tgts.find("YouCtrl") != std::string::npos;
+        bool want_oppctrl = ab.valid_tgts.find("ParentTarget") != std::string::npos ||
+                            ab.valid_tgts.find("OppCtrl") != std::string::npos ||
+                            ab.valid_tgts.find("ControlledBy") != std::string::npos;
+        std::vector<Entity> pump_targets;
+        for (Entity e = 0; e < global_coordinator.GetMaxIssuedEntity(); ++e) {
+            if (!is_battlefield_permanent(e)) continue;
+            if (!global_coordinator.entity_has_component<Creature>(e)) continue;
+            auto &p = global_coordinator.GetComponent<Permanent>(e);
+            if (want_youctrl && p.controller != ctrl) continue;
+            if (want_oppctrl && p.controller != opp) continue;
+            pump_targets.push_back(e);
         }
-        if (optional) {
-            LegalAction none(PASS_PRIORITY, std::string("Choose no creature"));
-            none.category = ActionCategory::SELECT_TARGET;
-            tgt_actions.push_back(none);
+        if (pump_targets.empty()) {
+            game_log("Pump: no valid targets.\n");
+            // still chain subabilities with no target
+        } else {
+            // TargetMin$ 0 (Cloak and Dagger: "up to one target creature"): the controller may
+            // choose no creature. Offer an explicit decline option in that case.
+            bool optional = (ab.target_min == 0);
+            game_log("Choose a creature for Pump:\n");
+            std::vector<LegalAction> tgt_actions;
+            for (auto te : pump_targets) {
+                std::string ename = global_coordinator.GetComponent<Permanent>(te).name;
+                auto &tcr = global_coordinator.GetComponent<Creature>(te);
+                LegalAction la(PASS_PRIORITY, te,
+                    ename + " [" + std::to_string(tcr.power) + "/" + std::to_string(tcr.toughness) + "]");
+                la.category = ActionCategory::SELECT_TARGET;
+                tgt_actions.push_back(la);
+            }
+            if (optional) {
+                LegalAction none(PASS_PRIORITY, std::string("Choose no creature"));
+                none.category = ActionCategory::SELECT_TARGET;
+                tgt_actions.push_back(none);
+            }
+            bool prev_priority = cur_game.player_a_has_priority;
+            cur_game.player_a_has_priority = (ctrl == Zone::PLAYER_A);
+            int choice = InputLogger::instance().get_input(tgt_actions);
+            cur_game.player_a_has_priority = prev_priority;
+            if (choice >= 0 && choice < static_cast<int>(pump_targets.size()))
+                ab.target = pump_targets[static_cast<size_t>(choice)];
         }
-        bool prev_priority = cur_game.player_a_has_priority;
-        cur_game.player_a_has_priority = (ctrl == Zone::PLAYER_A);
-        int choice = InputLogger::instance().get_input(tgt_actions);
-        cur_game.player_a_has_priority = prev_priority;
-        if (choice >= 0 && choice < static_cast<int>(pump_targets.size()))
-            ab.target = pump_targets[static_cast<size_t>(choice)];
     }
 
     // RememberPumped$ True (Cloak and Dagger): this Pump is only a target-selector. Append the
@@ -231,9 +236,9 @@ static void parse_pump_amount(const std::string &value, int &out_static, std::st
 
 bool parse_pump(Ability &ab, const std::string &key, const std::string &value) {
     if (key == "IsCurse") {
-        // IsCurse$ True (Carpet of Flowers): the Pump is a targeting vehicle only (it establishes
-        // "target opponent" for a chained sub-ability) and applies no P/T. The handler keeps
-        // ab.target = the chosen opponent player and short-circuits.
+        // IsCurse$ True is Forge's AI hint that the pump is detrimental (Dismember's -5/-5,
+        // Carpet of Flowers' player-targeted curse). It changes nothing about resolution —
+        // the handler honors the pre-chosen target either way — so it is only recorded.
         if (value == "True") ab.is_curse = true;
         return true;
     }

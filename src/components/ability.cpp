@@ -1341,8 +1341,13 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
         game_log("Triggered ability's stored-SVar gate is no longer satisfied; it does nothing.\n");
         return;
     }
-    // Pre-resolve target validity check — skipped for categories that select their own target internally
-    if (valid_tgts != "N_A" && category != "Pump") {
+    // Pre-resolve target validity check (CR 608.2b). A Pump that reaches resolution with no
+    // pre-chosen target selects its own target inside the handler (an immediate-trigger
+    // sub-ability — see effects::pump / effect_immediate_trigger.cpp), so only that case is
+    // exempt; a Pump whose target was chosen at cast/trigger placement is verified like any
+    // other targeted effect and fizzles if the target became illegal (it does NOT retarget).
+    bool pump_selects_own_target = (category == "Pump" && target == 0 && targets.empty());
+    if (valid_tgts != "N_A" && !pump_selects_own_target) {
         if (!is_target_valid()) {
             fizzle(orderer);
             return;  // subabilities do not fire; TODO revisit this in light of cards e.g. k-command

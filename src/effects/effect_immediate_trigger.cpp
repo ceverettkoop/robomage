@@ -62,9 +62,10 @@ bool immediate_trigger(Ability &ab, std::shared_ptr<Orderer> orderer) {
             continue;
         }
         if (!fire) continue;  // condition not met: skip the reflexive effect
-        // A DB$ Pump sub picks its own target inside the pump handler (mirrors resolve()'s
-        // `category != "Pump"` carve-out), so pre-selecting here would prompt twice and let
-        // the second pick override the first (Guide of Souls' put-counters-on-target-attacker).
+        // A DB$ Pump sub with no pre-chosen target picks its own target inside the pump
+        // handler (which also knows the ControlledBy-ParentTarget filter select_target
+        // doesn't), so leave its target unset here and let the handler prompt (Guide of
+        // Souls' put-counters-on-target-attacker, Cloak and Dagger's optional pump).
         if (sub.valid_tgts != "N_A" && sub.category != "Pump" && has_legal_targets(sub, orderer))
             select_target(sub, orderer, ab.controller);
         sub.resolve(orderer);
