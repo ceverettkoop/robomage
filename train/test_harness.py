@@ -257,6 +257,15 @@ def main():
                              "deck via --deck-a/--deck-b. Implied automatically when "
                              "--hand-a/--hand-b are given. Without it, libraries are "
                              "shuffled with the seeded RNG (deterministic per --seed).")
+    parser.add_argument("--coverage-json", metavar="PATH",
+                        help="Accumulate per-action-category and per-card "
+                             "offered/taken counters over the run and write "
+                             "them as JSON to PATH at exit (includes a "
+                             "never_offered list of deck cards with zero menu "
+                             "appearances). Read-only observation — play and "
+                             "RNG are unchanged. Campaigns write one JSON per "
+                             "game and combine them with "
+                             "train/coverage_report.py merge/summarize.")
     parser.add_argument("--log-decisions", action="store_true",
                         help="Have the engine write its self-contained RMLOG v2 decision "
                              "log (bin/resources/logs/game_<seed>.log), replayable with "
@@ -419,6 +428,32 @@ def main():
         sb_a = ",".join(_card_to_deck_name(c) for c in sideboard_a) if sideboard_a else None
         sb_b = ",".join(_card_to_deck_name(c) for c in sideboard_b) if sideboard_b else None
 
+        # Coverage accounting (opt-in): resolve each seat's full card list
+        # (mainboard + sideboard + zone presets) so the report can flag deck
+        # cards that never appeared in any menu. Imported lazily — the feature
+        # costs nothing when the flag is off.
+        coverage = None
+        if args.coverage_json:
+            from coverage_report import CoverageAccumulator, read_deck_cards
+            seat_cards = []
+            for deck_name, hand, library, extras in (
+                    (args.deck_a or deck_a_name, hand_a, library_a,
+                     (battlefield_a, graveyard_a, exile_a, sideboard_a)),
+                    (args.deck_b or deck_b_name, hand_b, library_b,
+                     (battlefield_b, graveyard_b, exile_b, sideboard_b))):
+                if hand:
+                    cards = list(hand) + list(library)
+                else:
+                    cards = read_deck_cards(str(_DECKS_DIR / f"{deck_name}.dk"))
+                for zone in extras:
+                    cards.extend(zone)
+                seat_cards.append(cards)
+            coverage = CoverageAccumulator(
+                decks={"a": args.deck_a or deck_a_name,
+                       "b": args.deck_b or deck_b_name},
+                seeds=[seed], n_games=1,
+                deck_cards_a=seat_cards[0], deck_cards_b=seat_cards[1])
+
         # The observation/decision loop lives in runner.run_games (shared with
         # train.py observe). test_harness only seeds the state above.
         wins, losses, _ = runner.run_games(
@@ -430,8 +465,12 @@ def main():
             exile_a=ex_a, exile_b=ex_b,
             sideboard_a=sb_a, sideboard_b=sb_b, no_shuffle=no_shuffle,
             life_a=life_a, life_b=life_b,
-            max_decisions=max_decisions, log_decisions=args.log_decisions)
+            max_decisions=max_decisions, log_decisions=args.log_decisions,
+            coverage=coverage)
         winner = bool(wins or losses)
+        if coverage is not None:
+            coverage.write(args.coverage_json)
+            print(f"\ncoverage written to {args.coverage_json}")
         # A --play run resolves specs to concrete indices; print them so the line
         # can be replayed deterministically as a plain --actions integer list.
         if isinstance(controller, PlayController) and controller.resolved:
