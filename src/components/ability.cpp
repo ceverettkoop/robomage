@@ -490,6 +490,19 @@ bool run_unless_loop(
 
     while (true) {
         std::vector<LegalAction> unless_actions = collect_mana_legal_actions(controller, orderer);
+        // Drop cost-bearing mana sources (Talon Gates' {1}{T}) whose activation cost the
+        // FLOATING pool can't cover right now: the tap-a-source loop below pays activation
+        // costs only from mana already floating, so offering such a source would either
+        // produce free mana or (refused) re-offer the same menu forever to a deterministic
+        // machine-mode agent. The menu is rebuilt each iteration, so the source reappears
+        // as soon as enough mana has been floated.
+        unless_actions.erase(
+            std::remove_if(unless_actions.begin(), unless_actions.end(),
+                [&](const LegalAction &la) {
+                    return !la.ability.activation_mana_cost.empty() &&
+                           !can_afford(controller, la.ability.activation_mana_cost);
+                }),
+            unless_actions.end());
 
         bool can_pay = can_afford(controller, cond_cost);
         size_t pay_idx = unless_actions.size();
@@ -523,6 +536,17 @@ bool run_unless_loop(
             auto &chosen = unless_actions[static_cast<size_t>(choice)];
             Entity land = chosen.source_entity;
             auto &perm = global_coordinator.GetComponent<Permanent>(land);
+            // A cost-bearing mana source (Talon Gates' {1}{T}) must pay its activation cost
+            // from the floating pool before producing; refuse the activation (no tap, no
+            // mana) while the pool can't cover it, and re-prompt so the player can float
+            // mana from a cost-free source first.
+            if (!chosen.ability.activation_mana_cost.empty()) {
+                if (!can_afford(controller, chosen.ability.activation_mana_cost)) {
+                    game_log("Cannot pay that ability's activation cost — tap another source for mana first.\n");
+                    continue;
+                }
+                spend_mana(controller, chosen.ability.activation_mana_cost, land);
+            }
             perm.is_tapped = true;
             add_mana(controller, chosen.ability.color, chosen.ability.amount);
             game_log("%s tapped %s for {%s}\n", player_name(controller).c_str(), perm.name.c_str(),
