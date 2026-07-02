@@ -24,7 +24,8 @@ from scripted_agent import ScriptedAgent, make_agent
 # Bare suffixes (and the "scripted" prefix) that denote a scripted controller.
 # Keep in sync with scripted_agent._PRESETS.
 _SCRIPTED_SUFFIXES = frozenset({"scripted", "random", "greedy", "easy", "hard",
-                                "heuristic", "explore", "fuzz"})
+                                "heuristic", "explore", "fuzz",
+                                "explore:patient", "patient"})
 
 # Checkpoint format version. v2 is the deck-pilot naming ('{deck}__v{steps}.zip' /
 # '{deck}__final.zip') used since the embed_dim bump; the double underscore is the
@@ -117,6 +118,10 @@ class ScriptedController:
     def __init__(self, agent: ScriptedAgent, label: str = "scripted"):
         self._agent = agent
         self.label = label
+
+    def new_game(self) -> None:
+        """Reset the agent's per-game state (EXPLORE novelty set) at game start."""
+        self._agent.new_game()
 
     def choose(self, obs, num_choices, action_masks=None, decoded_actions=None) -> int:
         return self._agent.act(obs, num_choices)

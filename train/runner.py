@@ -18,7 +18,8 @@ import random
 import numpy as np
 
 import decode
-from env import NarrativeEnv, STATE_SIZE, ACTION_CATEGORY_MAX, BINARY
+from env import (NarrativeEnv, STATE_SIZE, ACTION_CATEGORY_MAX, MAX_ACTIONS,
+                 N_CARD_TYPES, BINARY)
 from _enums import _CAT_NAMES, _STEP_NAMES
 
 
@@ -39,13 +40,19 @@ def run_games(controller_a, controller_b, *,
               exile_a=None, exile_b=None,
               sideboard_a=None, sideboard_b=None, no_shuffle=False,
               life_a=None, life_b=None,
-              max_decisions=None, log_decisions=False):
+              max_decisions=None, log_decisions=False, coverage=None):
     """Run ``n_games`` between two controllers and render the transcript.
 
     ``controller_a``/``controller_b`` are :class:`opponents.Controller` objects;
     pass the *same* object for both sides for a single global decision-maker
     (the harness's action-list / interactive / auto-pass modes).  ``label_a`` /
     ``label_b`` are the display labels for each side ("Scripted", "Model", ...).
+
+    ``coverage`` is an optional :class:`coverage_report.CoverageAccumulator`
+    (or anything with the same ``record(cats, ids, action)``); when given, every
+    decision's menu categories/card ids and the chosen index are tallied into
+    it. Read-only observation — it never alters play or RNG consumption — and
+    costs nothing when None.
 
     Returns ``(wins, losses, draws)`` from Player A's perspective. A game that
     ends with no winner (e.g. the engine's step cap — a stall) counts as a draw
@@ -74,6 +81,14 @@ def run_games(controller_a, controller_b, *,
         # game deterministic.
         if seed is not None:
             random.seed(seed + i)
+        # Controllers are reused across the n_games loop; give stateful ones (the
+        # scripted EXPLORE tier's per-game novelty set) a fresh-game reset. Duck-typed
+        # so index/model/interactive controllers need no stub; calling it twice when
+        # one controller drives both seats is harmless.
+        for ctrl in (controller_a, controller_b):
+            new_game = getattr(ctrl, "new_game", None)
+            if new_game is not None:
+                new_game()
         done = False
         capped = False
         total_reward = 0.0
@@ -146,6 +161,12 @@ def run_games(controller_a, controller_b, *,
             action = controller.choose(obs, num_choices,
                                        action_masks=env.action_masks(),
                                        decoded_actions=decoded)
+
+            if coverage is not None:
+                ids = np.rint(obs[STATE_SIZE + MAX_ACTIONS:
+                                  STATE_SIZE + MAX_ACTIONS + num_choices]
+                              * N_CARD_TYPES).astype(int)
+                coverage.record(cats.tolist(), ids.tolist(), int(action))
 
             if verbose:
                 gs = decode.decode_game_state(obs[:STATE_SIZE])

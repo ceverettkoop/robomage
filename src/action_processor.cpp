@@ -1949,16 +1949,25 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                 // (targetable) creature — declining is not a legal way to cast the spell, so don't
                 // offer the yes/no: force the promise rather than dropping into a zero-target mode
                 // that fizzles. The cast was only legal because the promised mode is satisfiable.
+                // Mirror case: if the PROMISED mode has no legal target — e.g. the opponent's
+                // only creature is Dryad Arbor, a Land Creature, so "nonland permanent" is empty
+                // while "creature" is not — promising is not a legal way to cast the spell
+                // either, so don't offer the yes/no at all (the cast was only legal because the
+                // not-promised mode is satisfiable).
                 bool must_promise = false;
+                bool can_promise = true;
                 for (const auto &t : card_data.abilities) {
                     if (t.ability_type != Ability::SPELL) continue;
                     std::vector<const Ability *> targeting = spell_targeting_abilities(t);
-                    must_promise = !targeting.empty() &&
-                                   !gift_mode_satisfiable(targeting, orderer, caster, false);
+                    if (!targeting.empty()) {
+                        must_promise = !gift_mode_satisfiable(targeting, orderer, caster, false);
+                        can_promise = gift_mode_satisfiable(targeting, orderer, caster, true);
+                    }
                     break;
                 }
                 if (must_promise ||
-                    request_optional_yesno(caster, "promise " + gname + " to your opponent")) {
+                    (can_promise &&
+                     request_optional_yesno(caster, "promise " + gname + " to your opponent"))) {
                     gift_promised = true;
                     game_log("%s promises the gift to %s\n", player_name(caster).c_str(),
                              player_name(caster == Zone::PLAYER_A ? Zone::PLAYER_B

@@ -13,7 +13,10 @@ assumes hypothetical engine queries — the engine does not expose them.
 
 The decision functions are STATELESS pure functions of the (perspective-relative)
 observation vector, because they run inside parallel vec-env subprocesses and
-diag/watch determinism depends on it.
+diag/watch determinism depends on it. The only exceptions are small per-game,
+per-agent sets that are themselves deterministic functions of the trajectory
+(EXPLORE's novelty set and the GREEDY/HEURISTIC fruitless-activation stall
+guard — see ``ScriptedAgent``).
 
 Layout/vocab constants are owned by ``env.py`` (they are shared engine layout used
 by env's reward shaping and observation mirroring) and imported here.
@@ -32,16 +35,17 @@ from env import (
     _CAT_PASS, _CAT_SEL_ATK, _CAT_CONF_ATK, _CAT_SEL_BLK, _CAT_CONF_BLK,
     _CAT_ACTIVATE, _CAT_CAST, _CAT_TARGET, _CAT_LAND, _CAT_MULLIGAN, _CAT_SEARCH,
     _CAT_OTHER, _CAT_PAYING, _CAT_DIG, _CAT_TOP_LIBRARY, _CAT_SB_DONE,
-    _CAT_CHOOSE_X, _CAT_CHOOSE_CARD,
+    _CAT_COMPANION, _CAT_CHOOSE_X, _CAT_CHOOSE_CARD, _CAT_YESNO,
     # battlefield / stack layout
     _BF_START, _BF_SLOT_SIZE, _PERM_A_SLOTS, _BF_CARD_OFF, _STACK_START,
-    _STACK_SLOT_SIZE, _HAND_START, _HAND_SLOT_SIZE,
+    _STACK_SLOT_SIZE, _HAND_START, _HAND_SLOT_SIZE, _CUR_TURN_IDX,
     _OFF_IS_TAPPED, _OFF_IS_ATTACKING, _OFF_HAS_SICKNESS, _OFF_IS_CREATURE,
     _OFF_IS_LAND,
     # per-slot card-id decoder
     _slot_card_idx,
     # vocab / targeting constants
     _ACTION_CARD_ID_NULL, _ACTION_CTRL_NULL, _BLUE_POOL_IDX, _WASTELAND_VOCAB_IDX,
+    _AETHER_VIAL_VOCAB_IDX,
     _BASIC_LAND_IDS, _COUNTER_SPELL_VOCAB_IDS, _COUNTERSPELL_VOCAB_IDX,
     _DOOMSDAY_VOCAB_IDX, _DARK_RITUAL_VOCAB_IDX, _THASSAS_ORACLE_VOCAB_IDX,
     _STREET_WRAITH_VOCAB_IDX, _EDGE_OF_AUTUMN_VOCAB_IDX, _DOOMSDAY_DECK_IDS,
@@ -54,7 +58,7 @@ from env import (
     _hand_has_card, _stack_is_empty,
 )
 from decode import decode_game_state
-from card_costs import _LAND_VOCAB_IDS
+from card_costs import _LAND_VOCAB_IDS, _CARD_COST_MATRIX
 
 
 class Skill(Enum):
@@ -64,11 +68,13 @@ class Skill(Enum):
     GREEDY    — the original rule-based behaviour; the baseline opponent.
     HEURISTIC — GREEDY's scan with selected decision points overridden by
                 single-ply heuristics (board eval, combat sim, smarter targeting).
-    EXPLORE   — coverage-oriented fuzzer: a deterministic, stateless, seed-mixed
-                weighted choice biased toward the actions that drive the most engine
-                code (casting, activating, combat, varied targets/modes/X). Not meant
-                to play well — meant so that sweeping a range of seeds exercises as
-                many distinct engine paths as possible (see _explore_action).
+    EXPLORE   — coverage-oriented fuzzer: a deterministic, seed-mixed weighted
+                choice biased toward the actions that drive the most engine code
+                (casting, activating, combat, varied targets/modes/X), plus a
+                per-game novelty boost for not-yet-chosen cast/activate cards.
+                Not meant to play well — meant so that sweeping a range of seeds
+                exercises as many distinct engine paths as possible
+                (see _explore_action).
     """
     RANDOM = "random"
     GREEDY = "greedy"
@@ -90,6 +96,8 @@ class AgentConfig:
     use_smart_mulligan: bool = False    # keep based on opening-hand land count
     enable_combo_lines: bool = True     # keep deck-specific combo logic (Doomsday etc.)
     rng_seed: int | None = None         # seed for RANDOM's generator (reproducible)
+    explore_profile: str = "default"    # EXPLORE weight profile: "default" (coverage)
+                                        # or "patient" (big-mana; _EXPLORE_PATIENT_WEIGHTS)
 
 
 # The "hard" configuration: heuristic play with combat simulation, evaluation-based
@@ -114,6 +122,13 @@ _PRESETS: dict[str, AgentConfig] = {
     # never collapses into a fixed deck-specific line — it fans out across cards.
     "explore":   AgentConfig(skill=Skill.EXPLORE, enable_combo_lines=False),
     "fuzz":      AgentConfig(skill=Skill.EXPLORE, enable_combo_lines=False),
+    # Big-mana explore variant (see _EXPLORE_PATIENT_WEIGHTS): develops mana and
+    # holds expensive cards until they are castable. Plain explore never even sees
+    # a 7-drop as a LEGAL option — this profile exists to create that availability.
+    "explore:patient": AgentConfig(skill=Skill.EXPLORE, enable_combo_lines=False,
+                                   explore_profile="patient"),
+    "patient":         AgentConfig(skill=Skill.EXPLORE, enable_combo_lines=False,
+                                   explore_profile="patient"),
 }
 
 
@@ -124,7 +139,9 @@ _PRESETS: dict[str, AgentConfig] = {
 # kept below their per-item counterparts so a few items get declared before confirming.
 # Any category not listed (targets, X, modes, mana, search, dig, discard, sacrifice,
 # name-a-card, ...) uses _EXPLORE_DEFAULT_WEIGHT — a plain uniform pick among that
-# decision's options, so which target / X / mode is taken varies freely across seeds.
+# decision's options, so which target / X / mode is taken varies freely across seeds
+# (one exception: the SEARCH_LIBRARY fail-to-find slot, see
+# _EXPLORE_SEARCH_FAIL_WEIGHT).
 _EXPLORE_DEFAULT_WEIGHT = 2.0
 _EXPLORE_WEIGHTS: dict[int, float] = {
     _CAT_CAST:     8.0,   # cast a spell — stack, resolution, effects, triggers, SBAs
@@ -136,7 +153,95 @@ _EXPLORE_WEIGHTS: dict[int, float] = {
     _CAT_CONF_ATK: 0.6,   # finish declaring attackers (declare a few first)
     _CAT_CONF_BLK: 0.6,   # finish declaring blockers
     _CAT_SB_DONE:  0.6,   # finish sideboarding (swap a few cards first, bo3)
+    _CAT_COMPANION: 8.0,  # once-per-game and rarely offered — take it when legal so
+                          # the companion machinery (and the card itself) gets fuzzed
 }
+
+# Novelty bias for the EXPLORE tier: a CAST_SPELL / ACTIVATE_ABILITY option whose
+# card id this agent has NOT yet chosen this game gets its category weight
+# multiplied by this factor. Without it, expensive cards sharing a deck with
+# cheaper lines were NEVER cast across a whole seed sweep (e.g. Meteor Sword,
+# hard-cast Lorien Revealed) — the weighted draw kept landing on the cheap
+# alternatives. First-time options winning ~3x more often fixes that while the
+# already-seen cards keep their normal weight. Tracked per game in
+# ``ScriptedAgent._explore_seen`` (see ``new_game``).
+_EXPLORE_NOVELTY_FACTOR = 3.0
+
+# SEARCH_LIBRARY fail-to-find de-weight (relative to 1.0 per real pick; applies to
+# BOTH explore profiles — a category-level tweak, not a patient one). A library
+# search menu offers "Fail to find" alongside the real picks at the same uniform
+# default weight, so a uniform draw failed ~1,200 tutors across a 441-game fuzz
+# campaign — wasting coverage of the ChangeZone search/shuffle/ETB paths behind
+# every fetch land and tutor. 0.3 keeps the fail branch reachable (the
+# shuffle-without-find path still wants occasional fuzzing) while a real pick wins
+# the large majority of searches. The fail slot is identified by its null card-id
+# sentinel, not by index: the engine builds it from Entity(0) — no card — so its
+# emitted card id decodes negative (src/components/ability.cpp "Fail to find" /
+# machine_io.cpp action_card_vocab_idx), while every real pick is a library card
+# with a vocab id >= 0. Mandatory searches simply have no such slot, and a
+# fail-only menu is a 1-choice decision handled before weighting.
+_EXPLORE_SEARCH_FAIL_WEIGHT = 0.3
+
+# ── "Patient" big-mana EXPLORE profile (explore:patient) ────────────────────
+# The plain-explore weight draw only picks among LEGAL actions, and empirically
+# (130+ explore games) expensive cards never became legal: explore never develops
+# enough mana for a 7-drop, and cheap alternate lines with the same card id (e.g.
+# islandcycling Lorien Revealed) remove the card from hand long before it could be
+# hard-cast. No weighting among legal options fixes availability — this profile
+# does, by developing mana and holding expensive cards. Shares all the EXPLORE
+# machinery (novelty bias on casts, seed-mixed global-random draw); only the
+# weights below differ. Plain "explore" reads only _EXPLORE_WEIGHTS and is
+# untouched by this table.
+_EXPLORE_PATIENT_WEIGHTS: dict[int, float] = {
+    _CAT_CAST:     8.0,   # base; scaled up by mana value (_PATIENT_CAST_MV_FACTOR)
+                          # so a legal expensive cast dominates the draw
+    _CAT_ACTIVATE: 1.0,   # demoted hard: cheap activations (cycling, sac lines)
+                          # are what strip expensive cards from hand early
+    _CAT_LAND:     100.0, # near-always take the land drop — mana development is
+                          # the whole point of this profile
+    _CAT_SEL_ATK:  3.0,   # keep combat as in plain explore so games stay decisive
+    _CAT_SEL_BLK:  3.0,
+    _CAT_PASS:     6.0,   # bank mana-development turns: an early cheap ACTIVATE
+                          # now competes with a strong PASS instead of winning
+    _CAT_CONF_ATK: 0.6,   # confirms below their per-item counterparts, as in
+    _CAT_CONF_BLK: 0.6,   # _EXPLORE_WEIGHTS, so a few get declared first
+    _CAT_SB_DONE:  0.6,
+    _CAT_COMPANION: 8.0,  # as in _EXPLORE_WEIGHTS: once-per-game, take it when legal
+}
+
+# Patient-only CAST scaling: weight *= (1 + mana_value * factor). A legal MV-7
+# cast gets 8x the pull of an MV-0 one, so once the mana finally exists the big
+# card is cast almost immediately instead of losing the draw to cheap spells.
+_PATIENT_CAST_MV_FACTOR = 1.0
+
+# Patient mode gives NO novelty boost to ACTIVATE options. The novelty factor is
+# what makes plain explore eagerly try an unseen islandcycle/sac activation the
+# first turn it appears — exactly the card-stripping behaviour this profile must
+# suppress. Casts keep the boost (a novel expensive cast should win the draw).
+_PATIENT_ACTIVATE_NOVELTY = False
+
+# Patient-only "hold" scaling for card-consuming activations: an ACTIVATE whose
+# card id is still in the acting player's HAND (cycling, Talon Gates-style
+# from-hand lines) gets its weight DIVIDED by (1 + mana_value * factor) — the
+# mirror image of the CAST scaling. A flat ACTIVATE demotion is not enough: the
+# option reappears at every priority window, so even a small per-window pick
+# probability compounds into "always cycled before turn 5" over a game. Scaling
+# the demotion by MV holds exactly the cards this profile exists to hard-cast
+# while leaving cheap from-hand activations barely affected. Battlefield
+# activations (Wasteland, equip, ...) are untouched — their card is not in hand.
+_PATIENT_HOLD_MV_FACTOR = 1.0
+
+
+def _card_mana_value(cid: int) -> float:
+    """Printed mana value of a vocab card via the cast-cost matrix.
+
+    ``_CARD_COST_MATRIX`` rows are the 7 pip counts (W/U/B/R/G/C/generic)
+    divided by 10, so the row sum times 10 is the card's total mana value
+    (X contributes 0). Unknown/out-of-range ids count as 0.
+    """
+    if 0 <= cid < len(_CARD_COST_MATRIX):
+        return float(_CARD_COST_MATRIX[cid].sum()) * 10.0
+    return 0.0
 
 
 def _action_card_id(card_ids: np.ndarray, i: int) -> int:
@@ -341,7 +446,30 @@ def _doomsday_pile_pick(cats, card_ids) -> int:
     return 0
 
 
-def _greedy_action(obs: np.ndarray, num_choices: int) -> int:
+# ── GREEDY/HEURISTIC fruitless-activation stall guard ───────────────────────
+# Action categories a resolution-time zone search emits (src/components/
+# ability.cpp search_zone): SEARCH_LIBRARY for library searches, TOP_LIBRARY for
+# search-to-top-of-library, CHOOSE_CARD for non-library picks (e.g. Aether
+# Vial's put-a-creature-from-hand). When such a menu offers ONLY the
+# "Fail to find" slot (a single choice carrying the null card-id sentinel — the
+# engine builds it from Entity(0), so it decodes negative, see
+# _EXPLORE_SEARCH_FAIL_WEIGHT), the search cannot succeed. If the resolving
+# item on top of the stack is a self-controlled ability, re-activating its
+# source card right now would just fail again, so the hard tier records the
+# fail against the card id and skips its ACTIVATE for the rest of the TURN —
+# not the game, because eligibility can change in ways the obs can't see
+# (Aether Vial's search keys on its charge-counter count, which isn't in the
+# state vector: a fail at 0 counters says nothing about next turn's 1). After
+# _FRUITLESS_ACTIVATION_LIMIT failed tries the card is dropped for the game:
+# hard-scripted bw_dnt once activated Vial into a guaranteed fail-to-find
+# every turn (~60 activations) to the decision cap — the one non-decisive
+# game of a 441-game fuzz campaign — so retries must be bounded.
+_SEARCH_MENU_CATS = frozenset((_CAT_SEARCH, _CAT_TOP_LIBRARY, _CAT_CHOOSE_CARD))
+_FRUITLESS_ACTIVATION_LIMIT = 3
+
+
+def _greedy_action(obs: np.ndarray, num_choices: int,
+                   fruitless: set[int] | None = None) -> int:
     """
     Rule-based agent for test_minimal.dk (blue/red fetch-land deck).
     Works correctly for either Player A or Player B because the observation
@@ -443,11 +571,29 @@ def _greedy_action(obs: np.ndarray, num_choices: int) -> int:
             and card_ids[0] > _ACTION_CARD_ID_NULL + 0.01):
         return num_choices - 1
 
-    # 5d. Delve per-card exile pick (CHOOSE_CARD): candidates are ANY graveyard cards
-    #     (CR 702.66a), so the first pick may eat a card a smarter agent would keep
-    #     (or skip an instant/sorcery Murktide would count). Kept simple at this tier.
+    # 5d. Zone-change card pick (CHOOSE_CARD). An optional search-style pick (Aether
+    #     Vial's put-a-creature-from-hand) leads with a null-id "Fail to find" slot —
+    #     take the first REAL card instead, so Vial actually deploys a creature when
+    #     one is eligible (declining was strictly worse: the guard below never
+    #     blacklists a menu that has a real pick, so the agent just failed forever).
+    #     Delve per-card exile picks are all-real menus, so they still take slot 0
+    #     (the first pick may eat a card a smarter agent would keep, or skip an
+    #     instant/sorcery Murktide would count — kept simple at this tier).
     if any(c == _CAT_CHOOSE_CARD for c in cats):
+        for i, c in enumerate(cats):
+            if c == _CAT_CHOOSE_CARD and _action_card_id(card_ids, i) >= 0:
+                return i
         return 0
+
+    # 5e. Optional "may" trigger (OPTIONAL_YESNO, 0=Decline / 1=Accept). The tier's
+    #     default is to decline (the final fallback returns 0), but Aether Vial's
+    #     upkeep charge-counter trigger must be ACCEPTED or the Vial sits at 0
+    #     counters forever and never deploys a creature. The resolving trigger is on
+    #     top of the stack while the yes/no is asked, so the source is identifiable.
+    if (num_choices == 2 and all(c == _CAT_YESNO for c in cats)
+            and obs[_STACK_START] > 0.5 and obs[_STACK_START + 2] < 0.5
+            and _slot_card_idx(obs, _STACK_START + 1) == _AETHER_VIAL_VOCAB_IDX):
+        return 1
 
     # 6. Cast spells.
     #    Counter spells (Counterspell, Daze, Force of Will) require an opponent's spell
@@ -542,6 +688,10 @@ def _greedy_action(obs: np.ndarray, num_choices: int) -> int:
                 if cid == _KEEN_EYED_CURATOR_VOCAB_IDX and not _stack_is_empty(obs):
                     continue  # don't pile copies onto the stack (each extra one
                               # fizzles when its graveyard target is already exiled)
+                if fruitless and cid in fruitless:
+                    continue  # stall guard: this card's search found NOTHING
+                              # earlier this game (see _SEARCH_MENU_CATS) —
+                              # re-activating it would just fail to find again
                 return i
 
     # 9. (Removed - mana abilities no longer offered during normal priority in machine mode;
@@ -691,28 +841,108 @@ class ScriptedAgent:
 
     ``act`` is a pure function of the (perspective-relative) observation, except
     for the RANDOM tier which draws from a per-agent seeded generator so parallel
-    vec-env subprocesses stay reproducible and independent of the global RNG.
+    vec-env subprocesses stay reproducible and independent of the global RNG, the
+    EXPLORE tier which carries a per-game set of already-chosen card ids for
+    its novelty bias, and the GREEDY/HEURISTIC path which carries a per-game set
+    of "fruitless" activation card ids (the stall guard, see ``_hard_act``).
+    Both per-game sets are cleared by ``new_game`` and are deterministic
+    functions of the trajectory, so same-seed replays stay identical.
     """
 
     def __init__(self, config: AgentConfig = AgentConfig()):
         self.config = config
         # Per-agent generator: only consulted by the RANDOM tier.
         self._rng = np.random.default_rng(config.rng_seed)
+        # Card ids already cast/activated this game: only touched by the EXPLORE
+        # tier (novelty bias). Reset per game via new_game().
+        self._explore_seen: set[int] = set()
+        # Stall guard (GREEDY/HEURISTIC only): per-seat map of card id ->
+        # [failed_search_count, turn_of_last_fail] for activated abilities whose
+        # search found NOTHING. Keyed by seat (obs[32] > 0.5) so one shared
+        # instance driving both players (e.g. _DEFAULT_AGENT via scripted_action)
+        # can't leak one seat's dead activation to the other. Reset per game via
+        # new_game(). See _SEARCH_MENU_CATS / _hard_act.
+        self._fruitless_activations: dict[bool, dict[int, list[int]]] = {}
+
+    def new_game(self) -> None:
+        """Reset per-game state at the start of a game.
+
+        Called by ``runner.run_games`` (via ``ScriptedController.new_game``) before
+        each game so a reused agent instance can't leak state across games. The
+        per-game state is the EXPLORE novelty-bias set and the GREEDY/HEURISTIC
+        fruitless-activation set; as a belt-and-braces for reuse paths that never
+        call this (e.g. a scripted opponent living across vec-env episodes), both
+        ``_explore_action`` and ``_hard_act`` also clear their own set whenever
+        they see a pregame mulligan decision.
+        """
+        self._explore_seen.clear()
+        self._fruitless_activations.clear()
 
     def act(self, obs: np.ndarray, num_choices: int) -> int:
         if self.config.skill is Skill.RANDOM:
             return self._random_action(num_choices)
         if self.config.skill is Skill.EXPLORE:
             return self._explore_action(obs, num_choices)
+        return self._hard_act(obs, num_choices)
+
+    def _hard_act(self, obs: np.ndarray, num_choices: int) -> int:
+        """GREEDY/HEURISTIC entry: fruitless-activation stall guard + dispatch.
+
+        The guard piggybacks on the fact that a resolution-time search query is
+        answered while the resolving ability is still on top of the stack (the
+        engine's search_zone runs inside the ability's resolution), so the obs
+        itself names the culprit — no cross-decision correlation state needed.
+        When a search-category menu offers ONLY the fail-to-find slot, the
+        search provably cannot succeed; if the top of the stack is a
+        self-controlled ability, the fail is recorded against its source card
+        id and the greedy ACTIVATE scan skips that card for the rest of the
+        TURN — retrying next turn, because eligibility can change invisibly
+        (Aether Vial's search keys on its charge counters, which are not in
+        the obs: a fail at 0 counters says nothing about 1). A card that fails
+        _FRUITLESS_ACTIVATION_LIMIT times is dropped for the game, so the
+        original stall (Vial re-activated into a guaranteed fail every turn to
+        the decision cap) stays bounded at a few wasted activations. Everything
+        is O(1) per decision except a small set build when fails exist (rare);
+        the stack slot is read only on a fail-only menu.
+        """
+        # cats[0] is enough to classify the menus we care about: a mulligan
+        # query is all-MULLIGAN, and a fail-only search menu has exactly one
+        # action. Avoids decoding the whole category array a second time.
+        c0 = int(round(float(obs[STATE_SIZE]) * ACTION_CATEGORY_MAX))
+        if c0 == _CAT_MULLIGAN:
+            # A game always opens with a mulligan query, so seeing one means a
+            # new game started: clear the guard even when nobody called
+            # new_game() (same safety net as _explore_seen in _explore_action).
+            self._fruitless_activations.clear()
+        elif (num_choices == 1 and c0 in _SEARCH_MENU_CATS
+              and float(obs[STATE_SIZE + MAX_ACTIONS]) < 0.0):
+            # Fail-only search menu (single choice, null card-id sentinel):
+            # blame the resolving self-controlled ability on top of the stack.
+            cid = _slot_card_idx(obs, _STACK_START + 1)
+            if (cid >= 0 and obs[_STACK_START] > 0.5          # self-controlled
+                    and obs[_STACK_START + 2] < 0.5):         # ability, not spell
+                seat = bool(obs[32] > 0.5)
+                turn = int(round(float(obs[_CUR_TURN_IDX]) * 50))
+                entry = self._fruitless_activations.setdefault(
+                    seat, {}).setdefault(cid, [0, -1])
+                entry[0] += 1
+                entry[1] = turn
+        fruitless = None
+        seat_fails = self._fruitless_activations.get(bool(obs[32] > 0.5))
+        if seat_fails:
+            turn = int(round(float(obs[_CUR_TURN_IDX]) * 50))
+            fruitless = {cid for cid, (n, t) in seat_fails.items()
+                         if n >= _FRUITLESS_ACTIVATION_LIMIT or t == turn}
         if self.config.skill is Skill.HEURISTIC:
-            return self._heuristic_action(obs, num_choices)
-        return _greedy_action(obs, num_choices)
+            return self._heuristic_action(obs, num_choices, fruitless)
+        return _greedy_action(obs, num_choices, fruitless)
 
     # ------------------------------------------------------------------
     # HEURISTIC decision points (everything else falls back to GREEDY).
     # ------------------------------------------------------------------
 
-    def _heuristic_action(self, obs: np.ndarray, num_choices: int) -> int:
+    def _heuristic_action(self, obs: np.ndarray, num_choices: int,
+                          fruitless: set[int] | None = None) -> int:
         cfg = self.config
         cats = np.round(obs[STATE_SIZE:STATE_SIZE + num_choices]
                         * ACTION_CATEGORY_MAX).astype(int)
@@ -747,7 +977,7 @@ class ScriptedAgent:
             return self._target_choice(g(), cats, card_ids, ctrl_arr)
 
         # Anything not explicitly improved: proven GREEDY behaviour.
-        return _greedy_action(obs, num_choices)
+        return _greedy_action(obs, num_choices, fruitless)
 
     @staticmethod
     def _confirm(cats, confirm_cat: int) -> int:
@@ -866,14 +1096,26 @@ class ScriptedAgent:
 
         Goal: sweeping a range of seeds should touch as many distinct engine paths as
         possible — the opposite of GREEDY/HEURISTIC, which converge on one strong line
-        per state. Two ingredients:
+        per state. Three ingredients:
 
         * **Coverage bias.** Each legal action is weighted by its category
           (``_EXPLORE_WEIGHTS``) so the pick leans toward the actions that drive the
           most engine code — casting spells, activating abilities, attacking/blocking —
           while still passing often enough to advance the game. Same-category menus
           (targets, X values, modes, search/dig picks) get uniform weight, so *which*
-          target/mode/X is taken varies freely across seeds.
+          target/mode/X is taken varies freely across seeds — except a library
+          search's "Fail to find" slot, which is de-weighted to
+          ``_EXPLORE_SEARCH_FAIL_WEIGHT`` so tutors/fetches usually complete.
+
+        * **Novelty bias.** A cast/activate option whose card id this agent has not
+          yet chosen this game gets its weight multiplied by
+          ``_EXPLORE_NOVELTY_FACTOR``, so expensive cards with cheaper alternatives
+          in the same deck still get cast somewhere in a seed sweep instead of losing
+          the draw every time. Options with the null card sentinel are non-novel (no
+          boost). Chosen cast/activate card ids are recorded in ``_explore_seen``,
+          which is per game: ``new_game()`` clears it, and the pregame mulligan
+          decision clears it too as a safety net for agent instances reused across
+          games without a ``new_game()`` call.
 
         * **Determinism, tied to the GAME seed.** The weighted draw comes from Python's
           global ``random`` — the same source GREEDY breaks ties with — which
@@ -881,16 +1123,57 @@ class ScriptedAgent:
           before each game (``random.seed(seed)``). So the whole explore trajectory is
           reproducible for a given seed, and a different seed reshuffles both the deck
           (a different observation at every step) and this draw, branching into a
-          different line. No separate per-agent seed and no cross-call state to carry.
+          different line. No separate per-agent seed; the only cross-call state is the
+          per-game novelty set, itself a deterministic function of the trajectory.
 
         Not a strong opponent — combo lines are off (see the "explore" preset), so it
         fans out across cards instead of collapsing into a deck's known line.
+
+        The ``explore:patient`` preset (``AgentConfig.explore_profile ==
+        "patient"``) runs this same machinery with a big-mana weight profile —
+        land drops near-mandatory, PASS boosted over cheap activations, CAST
+        weight scaled by mana value — so expensive cards that plain explore never
+        even sees as legal options get developed toward and hard-cast (see
+        ``_EXPLORE_PATIENT_WEIGHTS``).
         """
         if num_choices <= 1:
             return 0
         cats = np.round(obs[STATE_SIZE:STATE_SIZE + num_choices]
                         * ACTION_CATEGORY_MAX).astype(int)
-        weights = [_EXPLORE_WEIGHTS.get(int(c), _EXPLORE_DEFAULT_WEIGHT) for c in cats]
+        # A game always opens with a mulligan query, so seeing one means a new game
+        # started: clear the novelty set even when nobody called new_game() (e.g. a
+        # scripted opponent reused across vec-env episodes). Repeated clears during
+        # London mulligans are harmless — nothing is cast pregame.
+        if any(int(c) == _CAT_MULLIGAN for c in cats):
+            self._explore_seen.clear()
+        card_ids = obs[STATE_SIZE + MAX_ACTIONS:STATE_SIZE + 2 * MAX_ACTIONS]
+        # The "patient" profile swaps in the big-mana weight table, scales CAST
+        # weight by mana value, and withholds the novelty boost from ACTIVATE
+        # (see the _EXPLORE_PATIENT_* constants). The default profile takes the
+        # exact same code path with the original table, so plain explore
+        # behaviour (and its RNG consumption) is unchanged.
+        patient = self.config.explore_profile == "patient"
+        table = _EXPLORE_PATIENT_WEIGHTS if patient else _EXPLORE_WEIGHTS
+        weights = []
+        for i, c in enumerate(cats):
+            w = table.get(int(c), _EXPLORE_DEFAULT_WEIGHT)
+            # De-weight a search's "Fail to find" (the null-card-id slot) so the
+            # tutor/fetch usually finds — see _EXPLORE_SEARCH_FAIL_WEIGHT.
+            if int(c) == _CAT_SEARCH and _action_card_id(card_ids, i) < 0:
+                w *= _EXPLORE_SEARCH_FAIL_WEIGHT
+            if int(c) in (_CAT_CAST, _CAT_ACTIVATE):
+                cid = _action_card_id(card_ids, i)
+                if cid >= 0 and cid not in self._explore_seen:
+                    if int(c) == _CAT_CAST or not patient or _PATIENT_ACTIVATE_NOVELTY:
+                        w *= _EXPLORE_NOVELTY_FACTOR
+                if patient and cid >= 0:
+                    if int(c) == _CAT_CAST:
+                        w *= 1.0 + _card_mana_value(cid) * _PATIENT_CAST_MV_FACTOR
+                    elif _hand_has_card(obs, cid):
+                        # Card-consuming from-hand activation (cycling etc.):
+                        # hold the card — see _PATIENT_HOLD_MV_FACTOR.
+                        w /= 1.0 + _card_mana_value(cid) * _PATIENT_HOLD_MV_FACTOR
+            weights.append(w)
         # Mulligan is a 2-way [keep, mulligan] choice — bias toward keeping (index 0)
         # so most games actually start, but still mulligan ~1/4 of the time to exercise
         # the mulligan + London-bottoming paths.
@@ -898,7 +1181,13 @@ class ScriptedAgent:
             weights = [3.0, 1.0]
         if sum(weights) <= 0:
             weights = [1.0] * num_choices
-        return int(random.choices(range(num_choices), weights=weights, k=1)[0])
+        choice = int(random.choices(range(num_choices), weights=weights, k=1)[0])
+        # Record the chosen card so this game's later draws treat it as non-novel.
+        if int(cats[choice]) in (_CAT_CAST, _CAT_ACTIVATE):
+            cid = _action_card_id(card_ids, choice)
+            if cid >= 0:
+                self._explore_seen.add(cid)
+        return choice
 
 
 def make_agent(spec: str = "scripted") -> ScriptedAgent:
@@ -907,9 +1196,12 @@ def make_agent(spec: str = "scripted") -> ScriptedAgent:
     Accepts ``"scripted"``, ``"scripted:hard"``, ``"scripted:easy"``,
     ``"scripted:random"``, ``"scripted:explore"``, or the bare suffixes
     ``"greedy"``/``"hard"``/``"heuristic"``/``"easy"``/``"random"``/
-    ``"explore"``/``"fuzz"`` (case-insensitive). ``explore``/``fuzz`` select the
-    coverage fuzzer (Skill.EXPLORE) — vary the game ``--seed`` to fan it across
-    engine paths.
+    ``"explore"``/``"fuzz"``/``"explore:patient"``/``"patient"``
+    (case-insensitive). ``explore``/``fuzz`` select the coverage fuzzer
+    (Skill.EXPLORE) — vary the game ``--seed`` to fan it across engine paths.
+    ``explore:patient`` (or bare ``patient``; ``scripted:explore:patient`` also
+    resolves) is the fuzzer's big-mana profile: it develops mana and holds
+    expensive cards until they are castable (see ``_EXPLORE_PATIENT_WEIGHTS``).
     """
     s = (spec or "scripted").strip().lower()
     suffix = s.split(":", 1)[1] if s.startswith("scripted:") else s
@@ -928,8 +1220,10 @@ def make_agent(spec: str = "scripted") -> ScriptedAgent:
 # ScriptedAgent (analysis/baseline/observe scripted opponent, tui_game, bench). It
 # now defaults to the "hard" heuristic agent, matching make_agent("scripted"), so
 # every default scripted call plays at the hard tier. The heuristic is a pure
-# function of (obs, num_choices) (only RANDOM is stateful), so one shared instance
-# is safe across games/processes. Callers wanting the old greedy behaviour build
+# function of (obs, num_choices) except for the per-game fruitless-activation
+# stall guard, which is seat-keyed and self-clearing on the pregame mulligan
+# (see _hard_act), so one shared instance stays safe across games/processes and
+# across both seats. Callers wanting the old greedy behaviour build
 # make_agent("easy"/"greedy") explicitly.
 _DEFAULT_AGENT = ScriptedAgent(_PRESETS["scripted"])
 
