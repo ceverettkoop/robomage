@@ -135,7 +135,9 @@ _PRESETS: dict[str, AgentConfig] = {
 # kept below their per-item counterparts so a few items get declared before confirming.
 # Any category not listed (targets, X, modes, mana, search, dig, discard, sacrifice,
 # name-a-card, ...) uses _EXPLORE_DEFAULT_WEIGHT — a plain uniform pick among that
-# decision's options, so which target / X / mode is taken varies freely across seeds.
+# decision's options, so which target / X / mode is taken varies freely across seeds
+# (one exception: the SEARCH_LIBRARY fail-to-find slot, see
+# _EXPLORE_SEARCH_FAIL_WEIGHT).
 _EXPLORE_DEFAULT_WEIGHT = 2.0
 _EXPLORE_WEIGHTS: dict[int, float] = {
     _CAT_CAST:     8.0,   # cast a spell — stack, resolution, effects, triggers, SBAs
@@ -158,6 +160,21 @@ _EXPLORE_WEIGHTS: dict[int, float] = {
 # already-seen cards keep their normal weight. Tracked per game in
 # ``ScriptedAgent._explore_seen`` (see ``new_game``).
 _EXPLORE_NOVELTY_FACTOR = 3.0
+
+# SEARCH_LIBRARY fail-to-find de-weight (relative to 1.0 per real pick; applies to
+# BOTH explore profiles — a category-level tweak, not a patient one). A library
+# search menu offers "Fail to find" alongside the real picks at the same uniform
+# default weight, so a uniform draw failed ~1,200 tutors across a 441-game fuzz
+# campaign — wasting coverage of the ChangeZone search/shuffle/ETB paths behind
+# every fetch land and tutor. 0.3 keeps the fail branch reachable (the
+# shuffle-without-find path still wants occasional fuzzing) while a real pick wins
+# the large majority of searches. The fail slot is identified by its null card-id
+# sentinel, not by index: the engine builds it from Entity(0) — no card — so its
+# emitted card id decodes negative (src/components/ability.cpp "Fail to find" /
+# machine_io.cpp action_card_vocab_idx), while every real pick is a library card
+# with a vocab id >= 0. Mandatory searches simply have no such slot, and a
+# fail-only menu is a 1-choice decision handled before weighting.
+_EXPLORE_SEARCH_FAIL_WEIGHT = 0.3
 
 # ── "Patient" big-mana EXPLORE profile (explore:patient) ────────────────────
 # The plain-explore weight draw only picks among LEGAL actions, and empirically
@@ -972,7 +989,9 @@ class ScriptedAgent:
           most engine code — casting spells, activating abilities, attacking/blocking —
           while still passing often enough to advance the game. Same-category menus
           (targets, X values, modes, search/dig picks) get uniform weight, so *which*
-          target/mode/X is taken varies freely across seeds.
+          target/mode/X is taken varies freely across seeds — except a library
+          search's "Fail to find" slot, which is de-weighted to
+          ``_EXPLORE_SEARCH_FAIL_WEIGHT`` so tutors/fetches usually complete.
 
         * **Novelty bias.** A cast/activate option whose card id this agent has not
           yet chosen this game gets its weight multiplied by
@@ -1024,6 +1043,10 @@ class ScriptedAgent:
         weights = []
         for i, c in enumerate(cats):
             w = table.get(int(c), _EXPLORE_DEFAULT_WEIGHT)
+            # De-weight a search's "Fail to find" (the null-card-id slot) so the
+            # tutor/fetch usually finds — see _EXPLORE_SEARCH_FAIL_WEIGHT.
+            if int(c) == _CAT_SEARCH and _action_card_id(card_ids, i) < 0:
+                w *= _EXPLORE_SEARCH_FAIL_WEIGHT
             if int(c) in (_CAT_CAST, _CAT_ACTIVATE):
                 cid = _action_card_id(card_ids, i)
                 if cid >= 0 and cid not in self._explore_seen:
