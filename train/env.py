@@ -383,7 +383,15 @@ class RoboMageEnv(gym.Env):
             line = self._proc.stdout.readline()
 
             if not line:
-                # Process ended — game over
+                # Process ended. A clean exit is game over; a nonzero exit means
+                # the engine aborted (e.g. fatal_error on a bad decklist) — fail
+                # loudly instead of handing the driver a dead env.
+                rc = self._proc.wait()
+                if rc != 0:
+                    self._kill_proc()
+                    raise RuntimeError(
+                        f"game process exited with code {rc} before the game "
+                        "finished — see the engine's FATAL/ERROR output on stderr")
                 done = True
                 break
 
