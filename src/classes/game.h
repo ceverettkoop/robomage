@@ -91,6 +91,14 @@ struct LastKnownInfo {
                                            // had exiled, so a leaves-the-battlefield ability (Skyclave
                                            // Apparition's TrigToken) can still find them after the
                                            // Permanent component is stripped by the SBA pass.
+    // How-it-entered markers (Permanent flags), snapshotted so an ETB trigger of a permanent that
+    // entered and then LEFT again before trigger collection (legend-rule keep-other, 0-toughness
+    // SBA death) can still be gated correctly by the 603.10 look-back scan: the trigger fired when
+    // the permanent entered (CR 603.3a), even though its Permanent component is gone by now.
+    bool entered_by_cast = false;          // "if you cast it" gate (The One Ring)
+    bool evoked = false;                   // evoke self-sacrifice gate
+    bool entered_with_offspring = false;   // offspring token-copy gate
+    bool transformed = false;              // which DFC face was active (CR 712.4 ability selection)
 };
 
 enum MandatoryChoice {

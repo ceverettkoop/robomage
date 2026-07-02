@@ -137,6 +137,16 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
         // leaves-the-battlefield ability that creates a token sized/owned by an exiled card
         // (Skyclave Apparition) still needs them after the Permanent component is stripped.
         lki.exiled_with = global_coordinator.GetComponent<Permanent>(target).exiled_with;
+        // How-it-entered markers: an ETB trigger of a permanent that leaves again before trigger
+        // collection (legend rule, 0-toughness SBA) is fired by the look-back scan in
+        // check_triggered_abilities, which needs these gates after Permanent is stripped.
+        {
+            const auto &p = global_coordinator.GetComponent<Permanent>(target);
+            lki.entered_by_cast = p.entered_by_cast;
+            lki.evoked = p.evoked;
+            lki.entered_with_offspring = p.entered_with_offspring;
+            lki.transformed = p.transformed;
+        }
         if (global_coordinator.entity_has_component<Creature>(target)) {
             auto &cr = global_coordinator.GetComponent<Creature>(target);
             lki.power = static_cast<int>(cr.power);

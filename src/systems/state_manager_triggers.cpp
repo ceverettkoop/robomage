@@ -664,12 +664,19 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
         if (!ev.HasParam(Params::ENTITY)) continue;
         Zone::ZoneValue ev_origin = ev.GetParam<Zone::ZoneValue>(Params::ORIGIN);
         Zone::ZoneValue ev_dest = ev.GetParam<Zone::ZoneValue>(Params::DESTINATION);
-        // Enters-the-battlefield self-triggers (destination battlefield) are handled by the
-        // battlefield scan above (the source IS a battlefield permanent once it arrives), so
-        // exclude them here to avoid double-firing. This block covers self moves to any OTHER
-        // zone (graveyard, exile, hand, library) from any origin.
-        if (ev_dest == Zone::BATTLEFIELD) continue;
         Entity entity = ev.GetParam<Entity>(Params::ENTITY);
+        // Enters-the-battlefield self-triggers (destination battlefield) are handled by the
+        // battlefield scan above (the source IS a battlefield permanent once it arrives) — but
+        // only while it is STILL there at collection time. A permanent that entered and then
+        // left again before triggers were collected (legend-rule keep-the-other-copy, CR 704.5j;
+        // a 0-toughness SBA death) still DID enter, so its ETB trigger fired (CR 603.3a) and is
+        // collected here from the event with last-known information (603.10d). Skip only the
+        // still-on-battlefield case to avoid double-firing.
+        bool etb_lookback = false;
+        if (ev_dest == Zone::BATTLEFIELD) {
+            if (is_battlefield_permanent(entity)) continue;
+            etb_lookback = true;
+        }
         if (!global_coordinator.entity_has_component<CardData>(entity)) continue;
         if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
         // The source's controller as it left the battlefield persists on its Zone component
@@ -677,8 +684,23 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
         // controller; fall back to the owner if it was never set.
         auto &z = global_coordinator.GetComponent<Zone>(entity);
         Zone::Ownership ctrl = (z.controller != Zone::UNKNOWN) ? z.controller : z.owner;
+        // The how-it-entered gates ("if you cast it", evoke, offspring) and the active DFC face
+        // lived on the stripped Permanent; the look-back reads them from the LKI snapshot taken
+        // as the permanent left the battlefield.
+        const LastKnownInfo *lki = nullptr;
+        {
+            auto lki_it = game.last_known_info.find(entity);
+            if (lki_it != game.last_known_info.end()) lki = &lki_it->second;
+        }
+        // DisableTriggers (Doorkeeper Thrull) applies to the entering permanent's ETB triggers
+        // exactly as in the battlefield scan.
+        if (etb_lookback && rules_mod::etb_triggers_suppressed(entity)) continue;
         const std::string ent_name = entity_name(entity);
-        for (const auto &ab : global_coordinator.GetComponent<CardData>(entity).abilities) {
+        // A transformed DFC functions with its active (back) face's abilities (CR 712.4).
+        const CardData &cd = global_coordinator.GetComponent<CardData>(entity);
+        const std::vector<Ability> &self_abs =
+            (lki && lki->transformed && cd.backside) ? cd.backside->abilities : cd.abilities;
+        for (const auto &ab : self_abs) {
             if (ab.ability_type != Ability::TRIGGERED) continue;
             if (ab.trigger_on != Events::CARD_CHANGED_ZONE) continue;
             if (!ab.trigger_only_self) continue;  // Card.Self — only the source's own move
@@ -686,6 +708,11 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                 ev_origin != static_cast<Zone::ZoneValue>(ab.trigger_zone_origin)) continue;
             if (ab.trigger_zone_destination >= 0 &&
                 ev_dest != static_cast<Zone::ZoneValue>(ab.trigger_zone_destination)) continue;
+            // ETB gates mirrored from the battlefield scan, read from the LKI snapshot:
+            // "if you cast it" (The One Ring), evoke self-sacrifice, offspring token copy.
+            if (ab.trigger_requires_entered_by_cast && !(lki && lki->entered_by_cast)) continue;
+            if (ab.is_evoke_sacrifice && !(lki && lki->evoked)) continue;
+            if (ab.is_offspring_token && !(lki && lki->entered_with_offspring)) continue;
 
             Ability trigger_ab = ab;
             trigger_ab.source = entity;
@@ -696,10 +723,18 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
             // gates on it still being exiled): the source has already left the battlefield, so its
             // exiled_with list lives in the last-known-info snapshot captured at departure. Carry
             // it onto the trigger so resolve() can restore the remembered set (CR 608.2h).
-            {
-                auto lki_it = game.last_known_info.find(entity);
-                if (lki_it != game.last_known_info.end() && !lki_it->second.exiled_with.empty())
-                    trigger_ab.restore_remembered_exiled_with = lki_it->second.exiled_with;
+            if (lki && !lki->exiled_with.empty())
+                trigger_ab.restore_remembered_exiled_with = lki->exiled_with;
+
+            if (etb_lookback) {
+                // Parity with the battlefield ETB scan: bind Defined$ TriggeredActivator from the
+                // event's player, and apply the 603.4 intervening-if (evaluated now, as the
+                // trigger would go on the stack).
+                if (ev.HasParam(Params::PLAYER))
+                    bind_triggered_activator(trigger_ab, ev.GetParam<Entity>(Params::PLAYER));
+                if (trigger_ab.intervening_if &&
+                    !evaluate_present_condition(trigger_ab, ctrl, orderer))
+                    continue;
             }
 
             // Static$ True leave-battlefield reset (Carpet of Flowers' ChangesZone Battlefield→Any
