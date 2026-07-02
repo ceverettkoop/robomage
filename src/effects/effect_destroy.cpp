@@ -15,6 +15,13 @@ extern Coordinator global_coordinator;
 namespace effects {
 
 static void destroy_single(Entity tgt, std::shared_ptr<Orderer> orderer) {
+    // An "up to one target" destroy resolving with NO target chosen (tgt == 0) is a
+    // deliberate no-op, not a vanished target — say so instead of the misleading
+    // "no longer in play" line (reserved below for a real target that has gone away).
+    if (tgt == 0) {
+        game_log("Destroy: no target chosen\n");
+        return;
+    }
     if (!global_coordinator.entity_has_component<Zone>(tgt)) {
         game_log("Destroy: target is no longer in play\n");
         return;
@@ -24,9 +31,7 @@ static void destroy_single(Entity tgt, std::shared_ptr<Orderer> orderer) {
         game_log("Destroy: target is no longer on the battlefield\n");
         return;
     }
-    std::string name = global_coordinator.entity_has_component<Permanent>(tgt)
-                           ? global_coordinator.GetComponent<Permanent>(tgt).name
-                           : "<unknown>";
+    std::string name = entity_name(tgt);
     // CR 702.12b: a permanent with indestructible can't be destroyed. The effect still
     // resolves; the permanent stays on the battlefield.
     if (is_indestructible(tgt)) {
@@ -41,9 +46,7 @@ bool destroy(Ability &ab, std::shared_ptr<Orderer> orderer) {
     // Pyroblast/Hydroblast destroy mode: only destroy if the target is the required
     // color. The spell still resolves (doing nothing) against a wrong-color permanent.
     if (!target_color_condition_met(ab, ab.target)) {
-        std::string tname = global_coordinator.entity_has_component<Permanent>(ab.target)
-                                ? global_coordinator.GetComponent<Permanent>(ab.target).name
-                                : "<unknown>";
+        std::string tname = entity_name(ab.target);
         game_log("%s is not the required color — not destroyed\n", tname.c_str());
         return true;
     }
@@ -59,8 +62,7 @@ bool destroy(Ability &ab, std::shared_ptr<Orderer> orderer) {
         if (global_coordinator.entity_has_component<CardData>(tgt)) {
             int tgt_cmc = card_mana_value(global_coordinator.GetComponent<CardData>(tgt));
             if (tgt_cmc > threshold) {
-                std::string tname = global_coordinator.entity_has_component<Permanent>(tgt)
-                    ? global_coordinator.GetComponent<Permanent>(tgt).name : "<unknown>";
+                std::string tname = entity_name(tgt);
                 game_log("%s has mana value %d (threshold %d) — not destroyed\n", tname.c_str(), tgt_cmc, threshold);
                 return true;
             }

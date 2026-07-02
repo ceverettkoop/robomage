@@ -5,6 +5,7 @@
 #include <cstdio>
 
 #include "classes/game.h"
+#include "components/ability.h"
 #include "svar_eval.h"
 
 extern Coordinator global_coordinator;
@@ -65,6 +66,34 @@ std::set<Colors> effective_colors(Entity e) {
         return cols;
     }
     return {};
+}
+
+// The single shared display-name resolver (contract documented at the declaration in
+// game_queries.h). Display-only: never consulted by rules logic, so the " token" tag and
+// the ability-entity description cannot affect behavior.
+std::string entity_name(Entity e) {
+    if (global_coordinator.entity_has_component<Permanent>(e)) {
+        auto &perm = global_coordinator.GetComponent<Permanent>(e);
+        return perm.is_token ? perm.name + " token" : perm.name;
+    }
+    if (global_coordinator.entity_has_component<CardData>(e))
+        return global_coordinator.GetComponent<CardData>(e).name;
+    if (global_coordinator.entity_has_component<Token>(e))
+        return global_coordinator.GetComponent<Token>(e).name + " token";
+    if (global_coordinator.entity_has_component<Ability>(e)) {
+        // A standalone ability entity (an activated/triggered ability on the stack, or a
+        // delayed-trigger holder): describe it via its source card when the source still
+        // carries a name, else via the ability's effect category.
+        const auto &ab = global_coordinator.GetComponent<Ability>(e);
+        if (ab.source != 0 && ab.source != e &&
+            (global_coordinator.entity_has_component<Permanent>(ab.source) ||
+             global_coordinator.entity_has_component<CardData>(ab.source) ||
+             global_coordinator.entity_has_component<Token>(ab.source)))
+            return entity_name(ab.source) + "'s ability";
+        if (!ab.category.empty()) return ab.category + " ability";
+        return "an ability";
+    }
+    return "<unknown>";
 }
 
 // Strip Permanent/Creature/Damage from a card no longer on the battlefield (or re-entering it as

@@ -139,6 +139,15 @@ int effective_power(Entity e);
 int effective_toughness(Entity e);
 std::set<Colors> effective_colors(Entity e);
 
+// Human-readable name for an entity, used in game_log output and action labels. The single
+// shared resolver (do not open-code a CardData/Permanent name ternary at a log site):
+// a battlefield object's Permanent name (a token is tagged " token"), then the card's
+// printed CardData name, then a lingering Token component (a token that already left the
+// battlefield keeps only Token), then a standalone ability entity described via its source
+// card ("Sylvan Library's ability") or its effect category. "<unknown>" only when the
+// entity carries no name-bearing component at all. Defined in game_queries.cpp.
+std::string entity_name(Entity e);
+
 // Strip the battlefield-state components (Permanent/Creature/Damage) from a card that is no
 // longer on the battlefield — clearing its equipment/aura attachment links first so no dangling
 // reference survives (CR 704.5n). Shared by the state-based off-battlefield strip

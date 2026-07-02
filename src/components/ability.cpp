@@ -45,6 +45,10 @@ extern Game cur_game;
 // (CR 608.2c). Forward-declared per CLAUDE.md.
 static void bind_sub_target(const Ability &parent, Ability &sub);
 
+// Category-aware detail suffix for the "Resolving ability" log line. Display-only.
+// Forward-declared per CLAUDE.md.
+static std::string resolving_log_detail(const Ability &ab, std::shared_ptr<Orderer> orderer);
+
 // ── Stack-object target matching (TargetType$) ──────────────────────────────
 // TargetType$ is a comma-separated list of OR alternatives, each restricting the chosen
 // target to a kind of object ON THE STACK: a "Spell[.quals]" alternative matches a spell
@@ -1287,6 +1291,60 @@ static void bind_sub_target(const Ability &parent, Ability &sub) {
     // else: independent Defined$ reference — leave sub.target alone (effect resolves its own ref)
 }
 
+// Detail suffix for the "Resolving ability (category: ...)" log line. Ability::amount is
+// only what the effect actually uses for some categories, so a blanket ", amount: N" was
+// often a meaningless 0 or an un-evaluated base. Policy: Pump shows its effective +A/+D
+// (via the same resolve_pump_amounts the handler uses); categories whose amount IS the
+// effect magnitude show the effective amount (the dynamic Count$ expression evaluated the
+// same side-effect-free way the handler will); everything else shows nothing. Display-only.
+static std::string resolving_log_detail(const Ability &ab, std::shared_ptr<Orderer> orderer) {
+    auto signed_str = [](int v) {
+        return (v >= 0 ? std::string("+") : std::string()) + std::to_string(v);
+    };
+    if (ab.category == "Pump" || ab.category == "PumpAll") {
+        const PumpParams *pp = std::get_if<PumpParams>(&ab.params);
+        if (!pp || (pp->att == 0 && pp->def == 0 && pp->att_expr.empty() && pp->def_expr.empty()))
+            return "";  // keyword-grant-only pump — no P/T change to report
+        int att = 0, def = 0;
+        effects::resolve_pump_amounts(pp, ab.controller, orderer, ab.target, att, def);
+        return ", " + signed_str(att) + "/" + signed_str(def);
+    }
+    // Counter effects keep their count in CounterParams (CounterNum$/its SVar), not
+    // Ability::amount — read it the way the handlers do.
+    if (ab.category == "PutCounter" || ab.category == "PutCounterAll" ||
+        ab.category == "RemoveCounter") {
+        const CounterParams *cp = std::get_if<CounterParams>(&ab.params);
+        if (!cp) return "";
+        int n = cp->count;
+        if (!cp->count_expr.empty())
+            n = static_cast<int>(
+                evaluate_dynamic_amount(cp->count_expr, ab.controller, orderer, ab.target));
+        return ", amount: " + std::to_string(n);
+    }
+    // Discard only counts by Ability::amount in Random mode (Hymn to Tourach); the
+    // reveal-and-choose / discard-all modes (Thoughtseize, Cabal Therapy) have no fixed count.
+    if (ab.category == "Discard") {
+        const DiscardParams *dp = std::get_if<DiscardParams>(&ab.params);
+        if (dp && dp->mode == "Random") return ", amount: " + std::to_string(ab.amount);
+        return "";
+    }
+    // Categories where Ability::amount (or its dynamic Count$ expression) is the effect's
+    // magnitude, so printing it is informative.
+    static const std::set<std::string> kAmountIsAuthoritative = {
+        "DealDamage", "DamageAll", "Draw", "Mill", "GainLife", "LoseLife",
+        "Scry", "Surveil"};
+    if (kAmountIsAuthoritative.count(ab.category)) {
+        size_t amt = ab.amount;
+        // Draw/Mill treat a 0 amount as the "draw/mill a card" default — mirror it.
+        if (amt == 0 && (ab.category == "Draw" || ab.category == "Mill")) amt = 1;
+        if (!ab.dynamic_amount_expr.empty())
+            amt = evaluate_dynamic_amount(ab.dynamic_amount_expr, ab.controller, orderer,
+                                          ab.target, ab.source);
+        return ", amount: " + std::to_string(amt);
+    }
+    return "";
+}
+
 void Ability::resolve(std::shared_ptr<Orderer> orderer) {
     // Leaves-the-battlefield ability whose body references the cards its source had exiled
     // (Skyclave Apparition's TrigToken): restore those entities into the remembered set before
@@ -1381,12 +1439,7 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
         if (!targets.empty()) {
             for (auto it = targets.begin(); it != targets.end();) {
                 if (!is_legal_target(*it, controller)) {
-                    std::string tname =
-                        global_coordinator.entity_has_component<CardData>(*it)
-                            ? global_coordinator.GetComponent<CardData>(*it).name
-                            : (global_coordinator.entity_has_component<Permanent>(*it)
-                                   ? global_coordinator.GetComponent<Permanent>(*it).name
-                                   : std::string("<target>"));
+                    std::string tname = entity_name(*it);
                     game_log("%s is no longer a legal target; it is unaffected\n", tname.c_str());
                     it = targets.erase(it);
                 } else {
@@ -1405,7 +1458,8 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
         else if (target != 0)
             cur_game.remembered_entities.push_back(target);
     }
-    game_log("Resolving ability (category: %s, amount: %zu)\n", category.c_str(), amount);
+    game_log("Resolving ability (category: %s%s)\n", category.c_str(),
+             resolving_log_detail(*this, orderer).c_str());
 
     // Gift (CR 702.176c): if this spell promised its gift, the promised opponent receives the gift
     // BEFORE the spell's other effects. The gift effect(s) are carried on the primary (spell)

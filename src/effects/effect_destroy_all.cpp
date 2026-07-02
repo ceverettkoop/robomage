@@ -91,8 +91,7 @@ bool destroy_all(Ability &ab, std::shared_ptr<Orderer> orderer) {
         to_destroy.push_back(e);
     }
     for (auto e : to_destroy) {
-        std::string ename = global_coordinator.entity_has_component<Permanent>(e)
-            ? global_coordinator.GetComponent<Permanent>(e).name : "<unknown>";
+        std::string ename = entity_name(e);
         // CR 702.12b: an indestructible permanent can't be destroyed by a mass-destroy effect.
         if (is_indestructible(e)) {
             game_log("%s is indestructible — not destroyed\n", ename.c_str());

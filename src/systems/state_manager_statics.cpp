@@ -508,17 +508,7 @@ static void add_keywords_from_spec(Creature &cr, const std::string &spec) {
     }
 }
 
-std::string entity_name(Entity e) {
-    if (global_coordinator.entity_has_component<Permanent>(e)) {
-        auto &perm = global_coordinator.GetComponent<Permanent>(e);
-        return perm.is_token ? perm.name + " token" : perm.name;
-    }
-    if (global_coordinator.entity_has_component<CardData>(e))
-        return global_coordinator.GetComponent<CardData>(e).name;
-    if (global_coordinator.entity_has_component<Token>(e))
-        return global_coordinator.GetComponent<Token>(e).name + " token";
-    return "<unknown>";
-}
+// entity_name moved to game_queries.cpp — the single shared display-name resolver.
 
 std::string target_display_name(const Game &game, Entity tgt) {
     if (global_coordinator.entity_has_component<Player>(tgt))

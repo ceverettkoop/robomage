@@ -263,9 +263,17 @@ void cli_print_seed(unsigned int seed) {
     game_log("Using seed: %u\n", seed);
 }
 
+// Header for the pre-game decisions (mulligans, CR 103.6b opening-hand actions) so they
+// don't read as part of a numbered turn.
+void cli_print_pregame_header() {
+    game_log("\n-------- PREGAME --------\n");
+}
+
 void cli_print_turn_header(size_t turn, bool player_a_turn) {
     const char* name = player_a_turn ? "Player A" : "Player B";
-    game_log("\n-------- TURN %zu (%s) --------\n", turn, name);
+    // Game::turn counts from 0; display 1-based so the first header reads "TURN 1"
+    // (never "TURN 0"). Display-only — the 0-based counter itself is untouched.
+    game_log("\n-------- TURN %zu (%s) --------\n", turn + 1, name);
 }
 
 void cli_print_invalid_action() {
