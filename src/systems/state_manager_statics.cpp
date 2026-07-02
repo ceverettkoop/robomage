@@ -48,6 +48,7 @@ static bool affected_is_general_filter(const std::string &aff);
 static void mark_unearthed_permanent(Entity entity, Permanent &perm);
 static void apply_global_addtype_statics(const std::set<Entity> &entities);
 static bool etb_ability_removal_applies(Entity entity, const std::set<Entity> &entities);
+static void remerge_animate_granted_abilities(Entity entity);
 
 // Unearth (CR 702.84): finalize an Unearth-returned permanent the instant its Permanent is
 // created. The permanent gains haste (it enters with summoning sickness cleared and the keyword
@@ -543,6 +544,7 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
             if (zone.location == Zone::BATTLEFIELD) {
                 bootstrap_token_components(entity, token, zone.controller, game.timestamp);
                 apply_keyword_abilities(entity);
+                remerge_animate_granted_abilities(entity);
             } else {
                 // Token has left the battlefield — strip components (shared helper also clears
                 // attachment links, 704.5n) and schedule for destruction
@@ -721,6 +723,11 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                 perm_abilities.push_back(ab);
                 perm_abilities.back().source = entity;
             }
+            // Re-merge rest-of-game ability grants (DB$ Animate | Abilities$ | Duration$
+            // Permanent — Urza's Saga chapters) that a layer-6 ability removal (Magus of the
+            // Moon) stripped from perm.abilities; a no-op in steady state (dedup) and while
+            // the remover is still present (recompute_abilities strips again after layers).
+            remerge_animate_granted_abilities(entity);
 
             // copy static abilities from card_data to permanent (applied = false by default)
             if (global_coordinator.GetComponent<Permanent>(entity).static_abilities.empty() &&
@@ -996,6 +1003,23 @@ void StateManager::apply_land_abilities(Entity entity) {
 
         mana_ability.source = entity;
         perm_abilities.push_back(mana_ability);
+    }
+}
+
+// Re-merge the rest-of-game activated-ability grants recorded on
+// Permanent::animate_granted_abilities (DB$ Animate | Abilities$ ... | Duration$ Permanent —
+// Urza's Saga chapters I & II) into perm.abilities. The layer-6 ability-removal strip
+// (recompute_abilities, Magus of the Moon / Humility) erases perm.abilities each pass and the
+// other persistent sources (CardData copies, subtype mana, keywords) are re-derived by this
+// SBE pass — this is the matching re-derive for resolved "gains [activated ability]" grants,
+// so they come back once the remover leaves. Deduped, so it's a no-op in steady state.
+static void remerge_animate_granted_abilities(Entity entity) {
+    auto &perm = global_coordinator.GetComponent<Permanent>(entity);
+    for (const auto &granted : perm.animate_granted_abilities) {
+        bool present = false;
+        for (auto &existing : perm.abilities)
+            if (existing.identical_activated_ability(granted)) { present = true; break; }
+        if (!present) perm.abilities.push_back(granted);
     }
 }
 

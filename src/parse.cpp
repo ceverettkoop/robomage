@@ -1093,16 +1093,31 @@ static std::string value_from_script(std::string script, std::string key) {
 }
 
 static std::vector<std::string> multi_values_from_script(std::string script, std::string key) {
+    // Match the key only as a line-start field header ("Key:value"), same rule as
+    // value_from_script above. The old bare substring find leaked SVar bodies into the "A"
+    // scan: on Urza's Saga, the 'A' inside "SVar:ABMana:AB$ Mana | ..." matched, the tail of
+    // the line ("Mana:AB$ Mana | Cost$ T | ...") was returned as an ability line, and the Saga
+    // got its chapter-granted activated abilities at parse time — available from ETB instead
+    // of only after the granting chapter ability resolved.
     std::vector<std::string> ret_val;
-    auto pos = script.find(key);
-    while (pos != std::string::npos) {
-        // advance for key itself and ':'
-        pos += key.length() + 1;
-        auto end_pos = script.find("\n", pos);
-        std::string line = script.substr(pos, (end_pos - pos));  // end_pos is at \n, so no -1 needed
+    size_t search = 0;
+    while (true) {
+        auto pos = script.find(key, search);
+        if (pos == std::string::npos) break;
+        bool at_line_start = (pos == 0 || script[pos - 1] == '\n');
+        size_t after = pos + key.length();
+        bool followed_by_colon = (after < script.size() && script[after] == ':');
+        if (!at_line_start || !followed_by_colon) {
+            search = pos + 1;
+            continue;
+        }
+        size_t valstart = after + 1;  // skip the ':'
+        auto end_pos = script.find("\n", valstart);
+        std::string line = script.substr(valstart, (end_pos - valstart));  // end_pos is at \n, so no -1 needed
         if (!line.empty() && line.back() == '\r') line.pop_back();  // strip \r for Windows line endings
         ret_val.push_back(line);
-        pos = script.find(key, end_pos);                             // find next instance
+        if (end_pos == std::string::npos) break;
+        search = end_pos + 1;
     }
     return ret_val;
 }
