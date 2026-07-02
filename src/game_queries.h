@@ -60,6 +60,12 @@ inline std::set<Colors> card_colors(const CardData &cd) {
     for (const auto &pip : cd.hybrid_mana)
         for (Colors c : pip.colors)
             if (c != COLORLESS && c != GENERIC) result.insert(c);
+    // Phyrexian pips carry color too (CR 202.2d): {B/P} makes the card black no matter how the
+    // cost is actually paid (mana or life). phyrexian_mana is kept out of mana_cost like hybrid,
+    // so fold its colors in here — otherwise a Phyrexian-only cost (Surgical Extraction, {B/P}
+    // {B/P}) would read as colorless.
+    for (Colors c : cd.phyrexian_mana)
+        if (c != COLORLESS && c != GENERIC) result.insert(c);
     return result;
 }
 
@@ -294,6 +300,11 @@ inline bool is_colorless_card(const CardData &cd) {
         for (const auto &pip : cd.hybrid_mana)
             for (Colors c : pip.colors)
                 if (c != COLORLESS && c != GENERIC) return false;
+    // A Phyrexian pip carries color the same way (CR 202.2d): {B/P} makes the card black even
+    // when paid with life, so it is never colorless (absent a Colors: override, handled above).
+    if (cd.explicit_colors.empty())
+        for (Colors c : cd.phyrexian_mana)
+            if (c != COLORLESS && c != GENERIC) return false;
     return true;
 }
 

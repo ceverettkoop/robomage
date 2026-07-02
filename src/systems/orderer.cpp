@@ -276,17 +276,12 @@ void Orderer::shuffle_library(Zone::Ownership owner) {
 extern bool no_shuffle;
 
 // Derive a card's color identity from its mana cost, honoring an explicit
-// color-identity override (e.g. Dryad Arbor) when present.
+// color-identity override (e.g. Dryad Arbor) when present. Routed through the shared
+// card_colors() (game_queries.h) so hybrid and Phyrexian pips (CR 202.2d: {B/P} makes the
+// card black however it is paid) color the card here the same way they do everywhere else.
 static ColorIdentity color_identity_from(const CardData &cd) {
     ColorIdentity ci;
-    if (!cd.explicit_colors.empty()) {
-        // Use explicit color identity override (e.g. Dryad Arbor)
-        ci.colors = cd.explicit_colors;
-    } else {
-        for (auto c : cd.mana_cost) {
-            if (c != GENERIC && c != COLORLESS && c != NO_COLOR) ci.colors.insert(c);
-        }
-    }
+    ci.colors = card_colors(cd);
     return ci;
 }
 
