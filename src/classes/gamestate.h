@@ -40,6 +40,8 @@ typedef struct PermanentState_tag {
     int  damage;
     int  loyalty;                // loyalty counters for planeswalkers (0 for non-planeswalkers)
     char token_name[32];         // non-empty for tokens (card_vocab_idx == TOKEN_SENTINEL)
+    char counters[64];           // compact typed-counter summary ("charge:2, +1/+1:3"), empty = none
+                                 // (display only — NOT serialized to the ML state vector)
 } PermanentState;
 
 typedef struct StackEntry_tag {

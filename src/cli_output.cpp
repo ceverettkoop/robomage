@@ -263,9 +263,17 @@ void cli_print_seed(unsigned int seed) {
     game_log("Using seed: %u\n", seed);
 }
 
+// Header for the pre-game decisions (mulligans, CR 103.6b opening-hand actions) so they
+// don't read as part of a numbered turn.
+void cli_print_pregame_header() {
+    game_log("\n-------- PREGAME --------\n");
+}
+
 void cli_print_turn_header(size_t turn, bool player_a_turn) {
     const char* name = player_a_turn ? "Player A" : "Player B";
-    game_log("\n-------- TURN %zu (%s) --------\n", turn, name);
+    // Game::turn counts from 0; display 1-based so the first header reads "TURN 1"
+    // (never "TURN 0"). Display-only — the 0-based counter itself is untouched.
+    game_log("\n-------- TURN %zu (%s) --------\n", turn + 1, name);
 }
 
 void cli_print_invalid_action() {
@@ -318,7 +326,9 @@ void print_game_state(const GameState* gs) {
                 if (slot->has_summoning_sickness && len < (int)sizeof(line))
                     len += snprintf(line + len, (size_t)((int)sizeof(line) - len), " (SICK)");
                 if (slot->damage > 0 && len < (int)sizeof(line))
-                    snprintf(line + len, (size_t)((int)sizeof(line) - len), " (%d damage)", slot->damage);
+                    len += snprintf(line + len, (size_t)((int)sizeof(line) - len), " (%d damage)", slot->damage);
+                if (slot->counters[0] != '\0' && len < (int)sizeof(line))
+                    snprintf(line + len, (size_t)((int)sizeof(line) - len), " {%s}", slot->counters);
                 game_log("%s\n", line);
             }
             if (!found_any) game_log("  (no permanents)\n");

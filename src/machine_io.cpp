@@ -2,6 +2,8 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cctype>
+#include <cstdio>
 #include <cstring>
 #include <vector>
 
@@ -29,6 +31,7 @@ extern Game cur_game;
 static int get_card_vocab_idx(Entity e);
 static void push_player_block(std::vector<float>& out, const PlayerState& ps);
 static void push_perm_slot(std::vector<float>& out, const PermanentState& p);
+static void format_counter_summary(const CounterMap& counters, char* buf, size_t buf_len);
 
 static int get_card_vocab_idx(Entity e) {
     if (global_coordinator.entity_has_component<Permanent>(e)) {
@@ -66,6 +69,29 @@ int action_card_vocab_idx(Entity e) {
             return TOKEN_SENTINEL;
     }
     return -1;
+}
+
+// Compact display summary of a permanent's typed counter store for the board
+// printout ("charge:2, +1/+1:3, loyalty:4"). Engine counter types are uppercase
+// tokens (CR 122.1 kinds: "P1P1", "M1M1", "CHARGE", "LOYALTY", ...); render P1P1/M1M1
+// with their conventional +1/+1 / -1/-1 names and everything else lowercased.
+// Writes the empty string when the permanent has no counters. Display only — this
+// never feeds the ML state vector.
+static void format_counter_summary(const CounterMap& counters, char* buf, size_t buf_len) {
+    buf[0] = '\0';
+    size_t len = 0;
+    for (const auto& c : counters) {
+        std::string label;
+        if (c.first == "P1P1")      label = "+1/+1";
+        else if (c.first == "M1M1") label = "-1/-1";
+        else {
+            label = c.first;
+            for (auto& ch : label) ch = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
+        }
+        int n = snprintf(buf + len, buf_len - len, "%s%s:%d", len > 0 ? ", " : "", label.c_str(), c.second);
+        if (n < 0 || static_cast<size_t>(n) >= buf_len - len) break;  // truncated: keep what fit
+        len += static_cast<size_t>(n);
+    }
 }
 
 int action_card_vocab_idx(const LegalAction& la) {
@@ -288,6 +314,8 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
                     ps.damage = static_cast<int>(global_coordinator.GetComponent<Damage>(e).damage_counters);
 
                 ps.loyalty = get_counters(e, "LOYALTY");  // nonzero only for planeswalkers
+
+                format_counter_summary(perm.counters, ps.counters, sizeof(ps.counters));
 
                 ps.token_name[0] = '\0';
                 if (perm.is_token && global_coordinator.entity_has_component<Token>(e)) {

@@ -138,6 +138,9 @@ static int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &dec
         global_coordinator.GetComponent<Player>(cur_game.player_b_entity).life_total = life_b_override;
     sys.orderer->generate_libraries(deck_a, deck_b);
 
+    // Pre-game section header: mulligans, test-harness fiat setup, and the CR 103.6b
+    // opening-hand actions below all print under PREGAME, before the first turn header.
+    cli_print_pregame_header();
     sys.orderer->draw_hands();
     sys.orderer->do_london_mulligan();
 

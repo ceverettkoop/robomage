@@ -11,6 +11,7 @@
 void cli_print_version(const char* version);
 void cli_print_help(const char* program, const char* version);
 void cli_print_seed(unsigned int seed);
+void cli_print_pregame_header();
 void cli_print_turn_header(size_t turn, bool player_a_turn);
 void cli_print_invalid_action();
 

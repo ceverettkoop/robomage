@@ -33,15 +33,9 @@ static Zone::ZoneValue change_zone_move(const std::shared_ptr<Orderer> &orderer,
 static void register_exile_until_host_leaves(Entity host, Entity card, Zone::ZoneValue origin);
 
 // Name an object for a log line / action label without assuming it is a card: a token has a
-// Permanent (and Token) but no CardData, so reading CardData on it crashes. Prefer the card's
-// printed name, fall back to the permanent's name (tokens), then to a placeholder.
-static std::string object_display_name(Entity e) {
-    if (global_coordinator.entity_has_component<CardData>(e))
-        return global_coordinator.GetComponent<CardData>(e).name;
-    if (global_coordinator.entity_has_component<Permanent>(e))
-        return global_coordinator.GetComponent<Permanent>(e).name;
-    return "<unknown>";
-}
+// Permanent (and Token) but no CardData, so reading CardData on it crashes. Delegates to the
+// shared resolver (game_queries.h), which also names lingering tokens and ability entities.
+static std::string object_display_name(Entity e) { return entity_name(e); }
 
 // Move a card for a ChangeZone effect and report the zone it actually landed in. A
 // replacement effect can divert the move during add_to_zone — Containment Priest redirects an
@@ -193,11 +187,7 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
             // exile so the return knows where the card came from (Sheltered by Ghosts / Static
             // Prison target a battlefield permanent: origin BATTLEFIELD).
             Zone::ZoneValue tgt_origin = global_coordinator.GetComponent<Zone>(tgt).location;
-            std::string tname = global_coordinator.entity_has_component<CardData>(tgt)
-                                    ? global_coordinator.GetComponent<CardData>(tgt).name
-                                    : (global_coordinator.entity_has_component<Permanent>(tgt)
-                                              ? global_coordinator.GetComponent<Permanent>(tgt).name
-                                              : "<unknown>");
+            std::string tname = entity_name(tgt);
             // A target that is a spell/ability on the stack (Mindbreak Trap: "exile any
             // number of target spells") is being removed from the stack. Strip its Spell/
             // Ability components — like effects::counter does — so the stack no longer
@@ -251,9 +241,7 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
 
     // Defined$ Self — move the source card directly (e.g. Talon Gates putting itself onto battlefield from hand)
     if (ab.defined_self && ab.source != 0) {
-        std::string sname = global_coordinator.entity_has_component<CardData>(ab.source)
-                                ? global_coordinator.GetComponent<CardData>(ab.source).name
-                                : "<unknown>";
+        std::string sname = entity_name(ab.source);
         if (ab.enters_tapped && ab.destination == Zone::BATTLEFIELD)
             cur_game.pending_enters_tapped.insert(ab.source);
         Zone::ZoneValue landed = change_zone_move(orderer, ab.source, ab.destination);
@@ -349,9 +337,7 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
                     if (z == loc) in_origin = true;
                 if (!in_origin) continue;
             }
-            std::string nm = global_coordinator.entity_has_component<CardData>(e)
-                                 ? global_coordinator.GetComponent<CardData>(e).name
-                                 : "<unknown>";
+            std::string nm = entity_name(e);
             Zone::ZoneValue landed = change_zone_move(orderer, e, ab.destination);
             if (landed == Zone::BATTLEFIELD) {
                 // Forge default for ChangeZone Destination$ Battlefield: the card enters
@@ -376,9 +362,7 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
     // only sensible reading of a battlefield origin here.
     if (ab.origin == Zone::BATTLEFIELD && ab.change_type.empty() && ab.source != 0 &&
         global_coordinator.entity_has_component<Zone>(ab.source)) {
-        std::string nm = global_coordinator.entity_has_component<CardData>(ab.source)
-                             ? global_coordinator.GetComponent<CardData>(ab.source).name
-                             : "<unknown>";
+        std::string nm = entity_name(ab.source);
         Zone::ZoneValue landed = change_zone_move(orderer, ab.source, ab.destination);
         if (ab.remember_changed) cur_game.remembered_entities.push_back(ab.source);
         if (landed == Zone::BATTLEFIELD) {

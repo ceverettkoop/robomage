@@ -11,9 +11,7 @@ struct Game;
 // Helpers shared across the StateManager translation units (state_manager.cpp
 // and its state_manager_*.cpp siblings). Not part of the public System API.
 
-// Human-readable name for an entity — permanent, card, or token — used in
-// game_log output. Defined in state_manager_statics.cpp.
-std::string entity_name(Entity e);
+// entity_name — the shared display-name resolver — lives in game_queries.h.
 
 // Display name for a spell/ability target or attack target: "Player A"/"Player B"
 // when the entity is a player, otherwise entity_name(). Single source for the

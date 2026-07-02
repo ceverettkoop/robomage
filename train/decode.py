@@ -133,6 +133,20 @@ def _decode_player(state, offset):
     }
 
 
+def decode_turn(state):
+    """Decode the current turn as the sequential 1-based display number.
+
+    The state vector carries the engine's internal ``Game::turn`` (0-based,
+    incremented once per player-turn) as ``turn / 50``; the engine's narrative
+    ``-------- TURN N --------`` headers display it 1-based (A=1, B=2, A=3, ...),
+    so add 1 here to keep every Python-side turn display in agreement.
+    During the pregame (mulligans) the internal counter is still 0, so this
+    returns 1 — callers that want a pregame marker must detect mulligan/bottom
+    decisions themselves (see `is_mulligan` / `is_bottom`).
+    """
+    return int(round(float(state[_IDX_TURN]) * 50)) + 1
+
+
 def decode_step(state):
     """Decode the current step from the one-hot at state[18:31]."""
     step_vec = state[18:31]
@@ -225,7 +239,7 @@ def decode_game_state(state, labels=SELF_OPP_LABELS):
         "is_active_player": bool(is_active),
         "active_is_a": (is_active == is_player_a),
         "step": decode_step(state),
-        "turn": int(round(state[_IDX_TURN] * 50)),
+        "turn": decode_turn(state),
         "stack_size": int(round(state[33] * 10)),
         "self": _decode_player(state, 0),
         "opponent": _decode_player(state, 9),

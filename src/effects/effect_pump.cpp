@@ -39,8 +39,7 @@ void apply_pump_to_creature(Entity target, int pump_att, int pump_def, const Pum
     cr.eot_power_bonus += pump_att;
     cr.eot_toughness_bonus += pump_def;
     recompute_pt(cr);
-    std::string tname = global_coordinator.entity_has_component<Permanent>(target)
-        ? global_coordinator.GetComponent<Permanent>(target).name : "<unknown>";
+    std::string tname = entity_name(target);
     if (pump_att != 0 || pump_def != 0)
         game_log("%s gets %+d/%+d (now %u/%u)\n", tname.c_str(), pump_att, pump_def, cr.power, cr.toughness);
     // Grant "until end of turn" keyword(s) (e.g. Haste). Stored in the eot_keywords

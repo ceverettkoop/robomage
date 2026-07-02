@@ -45,16 +45,12 @@ bool counter(Ability &ab, std::shared_ptr<Orderer> orderer) {
             // Pyroblast/Hydroblast: only counter if the target is the required color.
             // The spell still resolves (and is put to the graveyard) doing nothing otherwise.
             if (!target_color_condition_met(ab, ab.target)) {
-                std::string tname = global_coordinator.entity_has_component<CardData>(ab.target)
-                                        ? global_coordinator.GetComponent<CardData>(ab.target).name
-                                        : "<unknown>";
+                std::string tname = entity_name(ab.target);
                 game_log("%s is not the required color — not countered\n", tname.c_str());
                 do_counter = false;
             }
             if (do_counter && ab.unless_generic_cost > 0) {
-                std::string tname = global_coordinator.entity_has_component<CardData>(ab.target)
-                                        ? global_coordinator.GetComponent<CardData>(ab.target).name
-                                        : "<unknown>";
+                std::string tname = entity_name(ab.target);
                 // UnlessPayer$ (Reality Smasher: TriggeredSourceSAController) selects WHO pays —
                 // the controller of the spell that targeted the source. When unset, default to the
                 // countered spell's controller (Ward / Mana Leak / Daze).
@@ -81,17 +77,13 @@ bool counter(Ability &ab, std::shared_ptr<Orderer> orderer) {
                   global_coordinator.GetComponent<Spell>(ab.target).cant_be_countered) ||
                  spell_uncounterable_by_static(ab.target, orderer->mEntities) ||
                  cur_game.cant_counter_spells_of.count(target_controller) > 0)) {
-                std::string name = global_coordinator.entity_has_component<CardData>(ab.target)
-                                       ? global_coordinator.GetComponent<CardData>(ab.target).name
-                                       : "<unknown>";
+                std::string name = entity_name(ab.target);
                 game_log("%s can't be countered\n", name.c_str());
                 do_counter = false;
             }
 
             if (do_counter) {
-                std::string name = global_coordinator.entity_has_component<CardData>(ab.target)
-                                       ? global_coordinator.GetComponent<CardData>(ab.target).name
-                                       : "<unknown>";
+                std::string name = entity_name(ab.target);
                 bool is_standalone_ability = !global_coordinator.entity_has_component<Spell>(ab.target) &&
                                             global_coordinator.entity_has_component<Ability>(ab.target);
                 // A COPY of a spell (CR 707.10c) is not a card: a countered copy ceases to exist
