@@ -205,7 +205,7 @@ class RoboMageEnv(gym.Env):
                  exile_a: str | None = None, exile_b: str | None = None,
                  sideboard_a: str | None = None, sideboard_b: str | None = None,
                  life_a: int | None = None, life_b: int | None = None,
-                 log_viewer: str | None = None):
+                 log_viewer: str | None = None, log_decisions: bool = False):
         super().__init__()
         self.binary_path = os.path.realpath(binary_path)
         self.render_mode = render_mode
@@ -239,6 +239,10 @@ class RoboMageEnv(gym.Env):
         # that seat's view (hidden draws, tutored/top-of-library cards) without
         # rerouting input — both seats still respond over the machine protocol.
         self._log_viewer = log_viewer
+        # Machine mode writes no decision log by default (training runs millions of
+        # episodes); log_decisions=True passes --log-decisions so a harness/observe
+        # run can produce a self-contained RMLOG v2 replay log on request.
+        self._log_decisions = log_decisions
 
         self.observation_space = spaces.Box(
             low=-10.0, high=10.0, shape=(OBS_SIZE,), dtype=np.float32
@@ -299,6 +303,8 @@ class RoboMageEnv(gym.Env):
             cmd += ["--life-b", str(self._life_b)]
         if self._log_viewer:
             cmd += ["--log-viewer", self._log_viewer]
+        if self._log_decisions:
+            cmd += ["--log-decisions"]
         self._proc = subprocess.Popen(
             cmd,
             stdin=subprocess.PIPE,

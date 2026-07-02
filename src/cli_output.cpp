@@ -251,8 +251,11 @@ void cli_print_help(const char* program, const char* version) {
     printf("  --deck-a <name>     Load named deck for player A\n");
     printf("  --deck-b <name>     Load named deck for player B\n");
     printf("  --player <A|B>      Designate a human player (A or B)\n");
-    printf("  --replay <logfile>  Replay a previously logged game\n");
+    printf("  --replay <logfile>  Replay a previously logged game (self-contained: seed,\n");
+    printf("                      flags and decks come from the log's RMLOG v2 header)\n");
     printf("  --machine           Machine mode: emit BQUERY lines for AI input\n");
+    printf("  --log-decisions     Write the decision log in machine mode (off by default\n");
+    printf("                      there; CLI/interactive games always log)\n");
     printf("  --gui               Launch with GUI\n");
     printf("  --bo3               Best-of-three match mode\n");
     printf("  --help, -h          Show this help message\n");

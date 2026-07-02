@@ -28,6 +28,12 @@ extern pthread_cond_t input_cond;
 extern volatile bool gui_killed;
 extern volatile bool quit_gui;
 
+static int get_int_input();
+static void record_chosen_action(const std::vector<LegalAction> &actions, int choice);
+static std::vector<std::string> parse_flag_tokens(const std::string &flags_line);
+static std::string read_header_field(std::ifstream &file, const std::string &key);
+static std::string read_embedded_deck(std::ifstream &file, const std::string &deck_key);
+
 static int get_int_input() {
     // GUI will only pass ints, but does not filter for range
     if (gui_mode) {
@@ -68,21 +74,108 @@ static int get_int_input() {
     }
 }
 
+void DecisionLogHeader::add_flag(const std::string &token) {
+    if (!flags.empty()) flags += " ";
+    flags += token;
+}
+
+void DecisionLogHeader::add_flag(const std::string &key, const std::string &value) {
+    add_flag(key + "=" + value);
+}
+
+void DecisionLogHeader::add_flag_list(const std::string &key, const std::vector<std::string> &values) {
+    if (values.empty()) return;
+    std::string joined;
+    for (const std::string &v : values) {
+        if (!joined.empty()) joined += ",";
+        joined += v;
+    }
+    add_flag(key, joined);
+}
+
+// Split an RMLOG v2 FLAGS line back into flag tokens. Tokens are space-separated,
+// but a key=value token's value may itself contain spaces (card names in the
+// preset-zone lists, e.g. battlefield-b=Grizzly Bears,Mountain). A fragment
+// without '=' that is not a known bare flag is therefore a continuation of the
+// previous token, and is glued back on with the space it was split at.
+static std::vector<std::string> parse_flag_tokens(const std::string &flags_line) {
+    std::vector<std::string> tokens;
+    if (flags_line.empty() || flags_line == "-") return tokens;
+    size_t start = 0;
+    while (start <= flags_line.size()) {
+        size_t end = flags_line.find(' ', start);
+        if (end == std::string::npos) end = flags_line.size();
+        std::string piece = flags_line.substr(start, end - start);
+        if (!piece.empty()) {
+            bool bare_flag = (piece == "no-shuffle" || piece == "bo3");
+            bool has_key = piece.find('=') != std::string::npos;
+            if (tokens.empty() || bare_flag || has_key) {
+                tokens.push_back(piece);
+            } else {
+                tokens.back() += " " + piece;
+            }
+        }
+        start = end + 1;
+    }
+    return tokens;
+}
+
+// Read one header line and strip a required "KEY " prefix (or the bare keyword
+// itself), fatal-erroring with context when the log doesn't match the v2 layout.
+static std::string read_header_field(std::ifstream &file, const std::string &key) {
+    std::string line;
+    if (!std::getline(file, line)) {
+        fatal_error("Replay log ended early: missing " + key + " header line");
+    }
+    if (line == key) return "";
+    if (line.rfind(key + " ", 0) != 0) {
+        fatal_error("Replay log header: expected '" + key + " ...', got '" + line + "'");
+    }
+    return line.substr(key.size() + 1);
+}
+
+// Accumulate verbatim decklist lines up to the END_DECK sentinel.
+static std::string read_embedded_deck(std::ifstream &file, const std::string &deck_key) {
+    std::string text;
+    std::string line;
+    while (true) {
+        if (!std::getline(file, line)) {
+            fatal_error("Replay log ended early: no END_DECK after " + deck_key);
+        }
+        if (line == "END_DECK") return text;
+        text += line + "\n";
+    }
+}
+
 InputLogger &InputLogger::instance() {
     static InputLogger logger;
     return logger;
 }
 
-void InputLogger::init_logging(unsigned int seed, const std::string &resource_dir) {
+void InputLogger::write_header(unsigned int seed, const DecisionLogHeader &header) {
+    log_file << "RMLOG v2\n";
+    log_file << "SEED " << seed << "\n";
+    log_file << "FLAGS " << (header.flags.empty() ? "-" : header.flags) << "\n";
+    log_file << "DECK_A " << header.deck_a_name << "\n";
+    log_file << header.deck_a_text;
+    if (header.deck_a_text.empty() || header.deck_a_text.back() != '\n') log_file << "\n";
+    log_file << "END_DECK\n";
+    log_file << "DECK_B " << header.deck_b_name << "\n";
+    log_file << header.deck_b_text;
+    if (header.deck_b_text.empty() || header.deck_b_text.back() != '\n') log_file << "\n";
+    log_file << "END_DECK\n";
+    log_file << "DECISIONS" << std::endl;
+    log_file.flush();
+}
+
+void InputLogger::init_logging(unsigned int seed, const std::string &resource_dir, const DecisionLogHeader &header) {
     log_path = resource_dir + "/logs/game_" + std::to_string(seed) + ".log";
     log_file.open(log_path);
     if (!log_file.is_open()) {
         non_fatal_error("Failed to open log file: " + log_path);
         return;
     }
-    // First line is seed
-    log_file << seed << std::endl;
-    log_file.flush();
+    write_header(seed, header);
     replay_mode = false;
     game_log("Logging inputs to: %s\n", log_path.c_str());
 }
@@ -92,25 +185,53 @@ void InputLogger::init_replay(const std::string &replay_path) {
     if (!replay_file.is_open()) {
         fatal_error("Failed to open replay file: " + replay_path);
     }
-    // Read seed from first line
-    if (!(replay_file >> replay_seed)) {
-        fatal_error("Failed to read seed from replay file");
+    std::string line;
+    if (!std::getline(replay_file, line)) {
+        fatal_error("Replay file is empty: " + replay_path);
     }
+    if (line != "RMLOG v2") {
+        if (!line.empty() && line.find_first_not_of("0123456789") == std::string::npos) {
+            fatal_error("Replay log predates the RMLOG v2 format (first line is a bare seed). "
+                        "Old logs record only seed + choices and cannot be replayed self-contained; "
+                        "re-record the game with the current engine.");
+        }
+        fatal_error("Unrecognized replay log format: expected 'RMLOG v2', got '" + line + "'");
+    }
+    std::string seed_str = read_header_field(replay_file, "SEED");
+    if (seed_str.empty() || seed_str.find_first_not_of("0123456789") != std::string::npos) {
+        fatal_error("Replay log header: SEED value is not a number: '" + seed_str + "'");
+    }
+    replay_seed = static_cast<unsigned int>(std::stoul(seed_str));
+    replay_header.flags = read_header_field(replay_file, "FLAGS");
+    replay_flags = parse_flag_tokens(replay_header.flags);
+    replay_header.deck_a_name = read_header_field(replay_file, "DECK_A");
+    replay_header.deck_a_text = read_embedded_deck(replay_file, "DECK_A");
+    replay_header.deck_b_name = read_header_field(replay_file, "DECK_B");
+    replay_header.deck_b_text = read_embedded_deck(replay_file, "DECK_B");
+    read_header_field(replay_file, "DECISIONS");
+    replay_deck_a = Deck::from_string(replay_header.deck_a_text);
+    replay_deck_b = Deck::from_string(replay_header.deck_b_text);
     replay_mode = true;
     game_log("REPLAY MODE: Using seed %u from %s\n", replay_seed, replay_path.c_str());
+    game_log("REPLAY MODE: Using embedded decks '%s' / '%s' (command-line deck args ignored)\n",
+             replay_header.deck_a_name.c_str(), replay_header.deck_b_name.c_str());
 }
 
-void InputLogger::init_machine(unsigned int seed, const std::string &resource_dir) {
+void InputLogger::init_machine(unsigned int seed, const std::string &resource_dir, bool enable_log,
+                               const DecisionLogHeader &header) {
+    machine_mode = true;
+    replay_mode = false;
+    // Machine mode (RL training / test harness) writes no decision log unless
+    // --log-decisions is given — training runs millions of episodes.
+    if (!enable_log) return;
     log_path = resource_dir + "/logs/game_" + std::to_string(seed) + ".log";
     log_file.open(log_path);
     if (!log_file.is_open()) {
         non_fatal_error("Failed to open log file: " + log_path);
-    } else {
-        log_file << seed << std::endl;
-        log_file.flush();
+        return;
     }
-    machine_mode = true;
-    replay_mode = false;
+    write_header(seed, header);
+    game_log("Logging inputs to: %s\n", log_path.c_str());
 }
 
 bool InputLogger::is_replay_mode() const {
@@ -122,6 +243,22 @@ bool InputLogger::is_machine_mode() const {
 
 unsigned int InputLogger::get_replay_seed() const {
     return replay_seed;
+}
+
+const DecisionLogHeader &InputLogger::get_replay_header() const {
+    return replay_header;
+}
+
+const Deck &InputLogger::get_replay_deck_a() const {
+    return replay_deck_a;
+}
+
+const Deck &InputLogger::get_replay_deck_b() const {
+    return replay_deck_b;
+}
+
+const std::vector<std::string> &InputLogger::get_replay_flags() const {
+    return replay_flags;
 }
 
 static void record_chosen_action(const std::vector<LegalAction> &actions, int choice) {

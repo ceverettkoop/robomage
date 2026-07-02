@@ -5,24 +5,48 @@
 #include <string>
 #include <vector>
 #include "classes/action.h"
+#include "classes/deck.h"
 #include "components/zone.h"
 #include "gui_flags.h"
+
+// Everything the RMLOG v2 decision-log header records beyond the seed: the
+// state-affecting launch flags and both decklists (verbatim file text), so a
+// log is a self-contained replay — `--replay <file>` needs no other arguments.
+struct DecisionLogHeader {
+    std::string flags;  // space-separated tokens; empty = none (written as "-")
+    std::string deck_a_name;
+    std::string deck_a_text;
+    std::string deck_b_name;
+    std::string deck_b_text;
+    void add_flag(const std::string& token);
+    void add_flag(const std::string& key, const std::string& value);
+    // key=comma,joined,list — no-op when the list is empty
+    void add_flag_list(const std::string& key, const std::vector<std::string>& values);
+};
 
 class InputLogger {
    public:
     static InputLogger& instance();
 
-    void init_logging(unsigned int seed, const std::string& resource_dir);
+    void init_logging(unsigned int seed, const std::string& resource_dir, const DecisionLogHeader& header);
     void init_replay(const std::string& log_path);
-    void init_machine(unsigned int seed, const std::string& resource_dir);
+    void init_machine(unsigned int seed, const std::string& resource_dir, bool enable_log,
+                      const DecisionLogHeader& header);
     bool is_replay_mode() const;
     bool is_machine_mode() const;
     unsigned int get_replay_seed() const;
+    // Parsed from the RMLOG v2 header (valid after init_replay)
+    const DecisionLogHeader& get_replay_header() const;
+    const Deck& get_replay_deck_a() const;
+    const Deck& get_replay_deck_b() const;
+    const std::vector<std::string>& get_replay_flags() const;
 
     int get_input(const std::vector<LegalAction>& actions);
 
    private:
     InputLogger() = default;
+    // Write the RMLOG v2 header (seed, flags, embedded decklists) to the open log file.
+    void write_header(unsigned int seed, const DecisionLogHeader& header);
     // Persist a committed choice: echo it to the log file (if open) and record it in
     // the action history. Shared by the machine / auto-pass / CLI input paths.
     void commit_choice(const std::vector<LegalAction>& actions, int choice);
@@ -32,6 +56,10 @@ class InputLogger {
     std::ofstream log_file;
     std::ifstream replay_file;
     std::string log_path;
+    DecisionLogHeader replay_header;
+    Deck replay_deck_a;
+    Deck replay_deck_b;
+    std::vector<std::string> replay_flags;
     int auto_pass_until_turn = -1;
 };
 
