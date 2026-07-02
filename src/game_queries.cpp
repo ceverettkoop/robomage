@@ -226,12 +226,18 @@ bool eval_qualifier(const CharView &v, const MatchCtx &ctx, const std::string &q
     // positive color ----------------------------------------------------------
     { Colors c; if (color_token(q, c)) return v.colors.count(c) > 0; }
     // negations ---------------------------------------------------------------
-    if (q.size() > 3 && q.compare(0, 3, "non") == 0) {
+    // The "non" prefix and the card-type word are matched ASCII case-insensitively:
+    // Forge scripts vary the token's casing (Cityscape Leveler writes "nonland" where
+    // Abrupt Decay writes "nonLand"), and a case-sensitive miss here used to fall
+    // through to the non<subtype> arm — which matches nothing for "land", silently
+    // turning the restriction into a pass for every permanent, lands included.
+    if (q.size() > 3 && ascii_lower(q.substr(0, 3)) == "non") {
         std::string rest = q.substr(3);
         Colors c;
         if (color_token(rest, c)) return v.colors.count(c) == 0;       // non<Color>  (fixes the old bug)
+        const std::string rest_lc = ascii_lower(rest);
         for (const char *ct : kCardTypes)
-            if (rest == ct) return !view_has_typeline(v, ct);          // non<CardType>
+            if (rest_lc == ascii_lower(ct)) return !view_has_typeline(v, ct);  // non<CardType>
         return !view_has_typeline(v, rest);                           // non<subtype>
     }
     // with<Keyword> — the object currently has the named keyword ability (Pick Your Poison's
