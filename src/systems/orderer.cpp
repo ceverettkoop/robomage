@@ -137,6 +137,16 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
         // leaves-the-battlefield ability that creates a token sized/owned by an exiled card
         // (Skyclave Apparition) still needs them after the Permanent component is stripped.
         lki.exiled_with = global_coordinator.GetComponent<Permanent>(target).exiled_with;
+        // How-it-entered markers: an ETB trigger of a permanent that leaves again before trigger
+        // collection (legend rule, 0-toughness SBA) is fired by the look-back scan in
+        // check_triggered_abilities, which needs these gates after Permanent is stripped.
+        {
+            const auto &p = global_coordinator.GetComponent<Permanent>(target);
+            lki.entered_by_cast = p.entered_by_cast;
+            lki.evoked = p.evoked;
+            lki.entered_with_offspring = p.entered_with_offspring;
+            lki.transformed = p.transformed;
+        }
         if (global_coordinator.entity_has_component<Creature>(target)) {
             auto &cr = global_coordinator.GetComponent<Creature>(target);
             lki.power = static_cast<int>(cr.power);
@@ -202,6 +212,21 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
 
     if (on_bottom) target_zone.distance_from_top = back + 1;
     target_zone.location = destination;
+
+    // CR 400.7: a card returning to the battlefield is a NEW object. Its previous battlefield
+    // components are normally gone already — stripped by the state-based pass while it was away —
+    // but a card that leaves AND returns within a single resolution (same-resolution flicker,
+    // Ajani's exile-and-return transform) re-enters before that pass could run and still carries
+    // its stale Permanent/Creature/Damage (tapped state, summoning sickness, counters,
+    // attachments, damage). Strip them here, at entry, AFTER the departure-side LKI snapshot
+    // above captured last-known info; the next state-based pass then rebuilds the permanent fresh
+    // exactly like any other entry — including the ENTERS_BATTLEFIELD replacement dispatch
+    // (enters tapped / with counters) and the pending_enters_tapped/_transformed one-shots.
+    // (Phasing never passes through add_to_zone; a phased-out permanent keeps its state, 702.26.)
+    if (destination == Zone::BATTLEFIELD && origin != Zone::BATTLEFIELD &&
+        global_coordinator.entity_has_component<Permanent>(target)) {
+        strip_permanent_components(target);
+    }
 
     // A zone change re-derives visibility from the new zone: any prior "identity
     // known to the opponent while hidden in hand" belief no longer applies (the
@@ -276,17 +301,12 @@ void Orderer::shuffle_library(Zone::Ownership owner) {
 extern bool no_shuffle;
 
 // Derive a card's color identity from its mana cost, honoring an explicit
-// color-identity override (e.g. Dryad Arbor) when present.
+// color-identity override (e.g. Dryad Arbor) when present. Routed through the shared
+// card_colors() (game_queries.h) so hybrid and Phyrexian pips (CR 202.2d: {B/P} makes the
+// card black however it is paid) color the card here the same way they do everywhere else.
 static ColorIdentity color_identity_from(const CardData &cd) {
     ColorIdentity ci;
-    if (!cd.explicit_colors.empty()) {
-        // Use explicit color identity override (e.g. Dryad Arbor)
-        ci.colors = cd.explicit_colors;
-    } else {
-        for (auto c : cd.mana_cost) {
-            if (c != GENERIC && c != COLORLESS && c != NO_COLOR) ci.colors.insert(c);
-        }
-    }
+    ci.colors = card_colors(cd);
     return ci;
 }
 
@@ -355,6 +375,21 @@ void Orderer::generate_libraries(const Deck &deck_a, const Deck &deck_b) {
             player.creature_subtypes.push_back({list_idx, subtype_idx});
             list_idx++;
         }
+    }
+
+    // Sideboard cards ("outside the game"): instantiate each deck's SIDEBOARD: section as
+    // SIDEBOARD-zone entities so wish effects (Karn, the Great Creator -2, Origin$ Sideboard)
+    // can find them in every game, not just via test-harness --sideboard presets. SIDEBOARD is
+    // never serialized to the ML state (populate_gamestate ignores it), and this runs after the
+    // creature-subtype scan above so ChooseType menus are unchanged. setup_companions reuses an
+    // already-instantiated sideboard entity instead of creating its own, so no duplication.
+    for (size_t i = 0; i < 2; i++) {
+        Zone::Ownership sb_owner = (i == 0) ? Zone::PLAYER_A : Zone::PLAYER_B;
+        const Deck &d = (i == 0) ? deck_a : deck_b;
+        std::vector<std::string> sb_names;
+        for (const auto &entry : d.sideboard)
+            for (size_t n = 0; n < entry.first; n++) sb_names.push_back(entry.second);
+        if (!sb_names.empty()) place_in_zone(sb_names, sb_owner, Zone::SIDEBOARD);
     }
 }
 
@@ -606,6 +641,43 @@ void Orderer::do_london_mulligan() {
         // Player B decides
         if (!b_kept) decide_for(Zone::PLAYER_B, b_kept, mulligans_b, false);
     }
+}
+
+bool Orderer::do_opening_hand_actions(bool player_a_goes_first) {
+    bool any_ran = false;
+    const Zone::Ownership order[2] = {player_a_goes_first ? Zone::PLAYER_A : Zone::PLAYER_B,
+                                      player_a_goes_first ? Zone::PLAYER_B : Zone::PLAYER_A};
+    for (auto player : order) {
+        bool is_starting_player = (player == order[0]);
+        // Snapshot the kept hand up front: a resolved ability moves its card out of the hand,
+        // and no new card can join the opening hand mid-phase (CR 103.5: the opening hand is
+        // the hand kept after mulligan resolution).
+        auto hand = this->get_hand(player);
+        for (auto card : hand) {
+            if (!global_coordinator.entity_has_component<CardData>(card)) continue;
+            auto &cd = global_coordinator.GetComponent<CardData>(card);
+            if (cd.opening_hand_abilities.empty()) continue;
+            // :!PlayFirst (Gemstone Caverns): only offered to a player NOT going first.
+            if (cd.opening_hand_not_first && is_starting_player) continue;
+            const Ability &first_ab = cd.opening_hand_abilities.front();
+            std::string prompt =
+                (first_ab.category == "ChangeZone" && first_ab.destination == Zone::BATTLEFIELD)
+                    ? "begin the game with " + cd.name + " on the battlefield"
+                    : "use " + cd.name + "'s opening-hand ability";
+            // request_optional_yesno seats the decision on `player` (priority save/set/restore).
+            if (!request_optional_yesno(player, prompt)) continue;
+            // Same instantiation pattern as gift_abilities in Ability::resolve: copy the parsed
+            // template, wire this card as the source and its holder as controller, and run it
+            // through the normal resolve pipeline so zone-change replacements/ETB machinery apply.
+            for (Ability ab : cd.opening_hand_abilities) {
+                ab.source = card;
+                ab.controller = player;
+                ab.resolve(shared_from_this());
+            }
+            any_ran = true;
+        }
+    }
+    return any_ran;
 }
 
 std::vector<Entity> Orderer::place_on_battlefield(const std::vector<std::string> &card_names,

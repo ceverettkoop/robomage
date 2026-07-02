@@ -47,6 +47,7 @@
 static bool affected_is_general_filter(const std::string &aff);
 static void mark_unearthed_permanent(Entity entity, Permanent &perm);
 static void apply_global_addtype_statics(const std::set<Entity> &entities);
+static bool etb_ability_removal_applies(Entity entity, const std::set<Entity> &entities);
 
 // Unearth (CR 702.84): finalize an Unearth-returned permanent the instant its Permanent is
 // created. The permanent gains haste (it enters with summoning sickness cleared and the keyword
@@ -450,6 +451,17 @@ ManaValue effective_base_cost(const CardData &card_data, Zone::Ownership caster)
     return cost;
 }
 
+ManaValue floored_alt_mana_cost(const CardData &card_data, const ManaValue &alt_mana) {
+    // Same floor rule as effective_base_cost's SetCost step, applied to the SUBSTITUTED
+    // (alternative) mana cost instead of the printed one (CR 601.2f: Trinisphere checks the
+    // cost after alternative costs and increases/reductions are applied). Colored pips stay;
+    // only generic is added to raise a sub-floor total.
+    ManaValue cost = alt_mana;
+    int floor = active_cost_floor_for(card_data);
+    while (static_cast<int>(cost.size()) < floor) cost.insert(GENERIC);
+    return cost;
+}
+
 static void add_keywords_from_spec(Creature &cr, const std::string &spec);
 static bool removal_affects(const ActiveStatic &r, Entity entity);
 
@@ -542,13 +554,9 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                 bootstrap_token_components(entity, token, zone.controller, game.timestamp);
                 apply_keyword_abilities(entity);
             } else {
-                // Token has left the battlefield — schedule for destruction
-                if (global_coordinator.entity_has_component<Permanent>(entity))
-                    global_coordinator.RemoveComponent<Permanent>(entity);
-                if (global_coordinator.entity_has_component<Creature>(entity))
-                    global_coordinator.RemoveComponent<Creature>(entity);
-                if (global_coordinator.entity_has_component<Damage>(entity))
-                    global_coordinator.RemoveComponent<Damage>(entity);
+                // Token has left the battlefield — strip components (shared helper also clears
+                // attachment links, 704.5n) and schedule for destruction
+                strip_permanent_components(entity);
                 tokens_to_destroy.push_back(entity);
             }
             continue;
@@ -696,8 +704,13 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
                 }
                 // CR 714.3a/714.2b: a Saga enters with one lore counter; reaching chapter 1 fires
                 // its first chapter ability. Done once here in the newly-entered block (the
-                // Permanent now exists). Saga lifecycle lives in src/saga.cpp.
-                if (card_is_saga(card_data)) saga_add_lore_counters(entity, 1);
+                // Permanent now exists). Saga lifecycle lives in src/saga.cpp. This runs BEFORE
+                // this pass's layer run can flag the fresh Permanent, so consult the removal
+                // statics directly: per CR 613.1 an ability-removal effect applies immediately,
+                // and a Saga entering under Magus of the Moon enters as a Mountain — no lore
+                // counter, no chapter I (the flag-based gates in saga.cpp cover later turns).
+                if (card_is_saga(card_data) && !etb_ability_removal_applies(entity, mEntities))
+                    saga_add_lore_counters(entity, 1);
             }
             // copy activated abilities from card_data to permanent; incl mana abilities although mana abilities innate to basic land types
             // added elsewhere
@@ -907,28 +920,10 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
             }
 
         } else {  // off battlefield, check to remove
-            if (global_coordinator.entity_has_component<Permanent>(entity)) {
-                // Clear any equipment attachment links before the Permanent is removed, so no
-                // dangling reference survives (704.5n). A creature leaving the battlefield
-                // unattaches its equipment (which stays on the battlefield); an equipment
-                // leaving clears the host creature's back-link.
-                auto &perm = global_coordinator.GetComponent<Permanent>(entity);
-                if (perm.equipped_by != 0 &&
-                    global_coordinator.entity_has_component<Permanent>(perm.equipped_by)) {
-                    global_coordinator.GetComponent<Permanent>(perm.equipped_by).equipped_to = 0;
-                }
-                if (perm.equipped_to != 0 &&
-                    global_coordinator.entity_has_component<Permanent>(perm.equipped_to)) {
-                    global_coordinator.GetComponent<Permanent>(perm.equipped_to).equipped_by = 0;
-                }
-                global_coordinator.RemoveComponent<Permanent>(entity);
-            }
-            if (global_coordinator.entity_has_component<Creature>(entity)) {
-                global_coordinator.RemoveComponent<Creature>(entity);
-            }
-            if (global_coordinator.entity_has_component<Damage>(entity)) {
-                global_coordinator.RemoveComponent<Damage>(entity);
-            }
+            // Shared strip (game_queries.cpp): clears equipment attachment links (704.5n) before
+            // removing Permanent/Creature/Damage. Same helper add_to_zone uses for the
+            // same-resolution-return entry reset (CR 400.7).
+            strip_permanent_components(entity);
         }
     }
 
@@ -1379,6 +1374,10 @@ void StateManager::gather_active_statics(Game &game) {
         if (!is_battlefield_permanent(entity)) continue;
 
         auto &perm = global_coordinator.GetComponent<Permanent>(entity);
+        // Layer-6 removal is recomputed from scratch each pass: recompute_abilities (after
+        // layer 7) re-flags every permanent still affected, so clearing here makes the flag
+        // lapse the moment the removal source leaves the battlefield.
+        perm.abilities_removed = false;
         if (global_coordinator.entity_has_component<Creature>(entity)) {
             auto &cr = global_coordinator.GetComponent<Creature>(entity);
             cr.static_power_bonus = 0;
@@ -1766,6 +1765,50 @@ static bool removal_affects(const ActiveStatic &r, Entity entity) {
     return permanent_matches_filter(entity, aff, ctx);
 }
 
+// Does an ability-removal continuous effect from an ALREADY-PRESENT battlefield source apply to
+// `entity` as it enters the battlefield? Needed by the "as it enters" Saga lore counter
+// (CR 714.3a), which is awarded inside apply_permanent_components BEFORE this pass's layer run
+// can set Permanent::abilities_removed on the fresh Permanent — but per CR 613.1 the removal
+// applies immediately, so a Saga entering under Magus of the Moon enters as a Mountain with no
+// lore counter and never fires chapter I. Scans battlefield statics directly (g_active_statics
+// may predate this entity). Covers both removal shapes recompute_abilities handles: a
+// remove_all_abilities remover (Humility/Toxicrene) matched through its Affected$ filter, and a
+// remove_land_types basic-type setter (Magus/Blood Moon — hardcoded Land.nonBasic, mirroring
+// apply_type_changing_effects). Simplification: only unconditional statics are considered —
+// every current-vocab remover is unconditional; a conditional one would need this pass's
+// condition evaluation, which hasn't run yet for the entering permanent.
+static bool etb_ability_removal_applies(Entity entity, const std::set<Entity> &entities) {
+    bool is_land = false, is_basic = false;
+    if (global_coordinator.entity_has_component<CardData>(entity)) {
+        const auto &cd = global_coordinator.GetComponent<CardData>(entity);
+        for (const auto &t : cd.types) {
+            if (t.kind == TYPE && t.name == "Land") is_land = true;
+            if (t.kind == SUPERTYPE && t.name == "Basic") is_basic = true;
+        }
+    }
+    for (auto src : entities) {
+        if (src == entity) continue;
+        if (!is_battlefield_permanent(src)) continue;
+        const auto &sperm = global_coordinator.GetComponent<Permanent>(src);
+        for (const auto &sa : sperm.static_abilities) {
+            if (sa.category != "Continuous") continue;
+            if (!sa.condition.empty() || !sa.check_svar_expr.empty() || !sa.present_filter.empty())
+                continue;  // conditional — see simplification note above
+            if (sa.remove_land_types) {
+                if (is_land && !is_basic && sa.affected == "Land.nonBasic") return true;
+                continue;
+            }
+            if (!sa.remove_all_abilities) continue;
+            if (sa.affected.empty()) return true;
+            MatchCtx ctx;
+            ctx.controller = sperm.controller;
+            ctx.source = src;
+            if (permanent_matches_filter(entity, sa.affected, ctx)) return true;
+        }
+    }
+    return false;
+}
+
 // Gather every active static that removes all abilities and whose condition is met
 // (Humility and friends). Shared by suppress_removed_statics / recompute_abilities.
 static std::vector<const ActiveStatic *> collect_ability_removers() {
@@ -1812,6 +1855,13 @@ void StateManager::recompute_abilities(Game &game) {
                         != g_type_set_lands.end();
 
         if (!full_removal && !type_set) continue;
+
+        // Mark the removal for the CardData/Token-reading paths (trigger collection, the Saga
+        // chapter machinery) — erasing perm.abilities below only strips the ACTIVATED copies;
+        // innate TRIGGERED abilities are matched straight off CardData at trigger time and must
+        // consult this flag (the pre-fix bug: Urza's Saga chapters kept firing under a Magus of
+        // the Moon because trigger collection never saw the layer-6 removal).
+        perm.abilities_removed = true;
 
         // These are re-derived next pass by apply_permanent_components / apply_land_abilities
         // / the keyword rebuild in gather, so removal is reversible once the effect leaves.

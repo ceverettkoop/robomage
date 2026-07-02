@@ -60,6 +60,12 @@ inline std::set<Colors> card_colors(const CardData &cd) {
     for (const auto &pip : cd.hybrid_mana)
         for (Colors c : pip.colors)
             if (c != COLORLESS && c != GENERIC) result.insert(c);
+    // Phyrexian pips carry color too (CR 202.2d): {B/P} makes the card black no matter how the
+    // cost is actually paid (mana or life). phyrexian_mana is kept out of mana_cost like hybrid,
+    // so fold its colors in here — otherwise a Phyrexian-only cost (Surgical Extraction, {B/P}
+    // {B/P}) would read as colorless.
+    for (Colors c : cd.phyrexian_mana)
+        if (c != COLORLESS && c != GENERIC) result.insert(c);
     return result;
 }
 
@@ -104,15 +110,17 @@ inline bool color_set_passes_noncolor(const std::string &vt, const std::set<Colo
 // against the candidate's characteristics). General over the permanent card types
 // (CR 110.4a) plus the spell-only types, so it is not special-cased to any one card.
 // `types` is the permanent's (or card's) full Type list; only kind == TYPE entries are
-// considered for the negation. The substring scan keys on "non" + the exact type name,
+// considered for the negation. The substring scan keys on "non" + the type name, matched
+// ASCII case-insensitively (Forge scripts vary the casing — "nonland" vs "nonLand"),
 // so it is safe alongside other '.'/'+' qualifiers in the same spec string.
 inline bool type_set_passes_nontype(const std::string &spec, const std::set<Type> &types) {
     static const char *kCardTypes[] = {
         "Land", "Creature", "Artifact", "Enchantment", "Planeswalker",
         "Battle", "Instant", "Sorcery", "Tribal"};
+    const std::string spec_lc = ascii_lower(spec);
     for (const char *ct : kCardTypes) {
-        std::string tok = std::string("non") + ct;
-        if (spec.find(tok) == std::string::npos) continue;
+        std::string tok = ascii_lower(std::string("non") + ct);
+        if (spec_lc.find(tok) == std::string::npos) continue;
         for (const auto &t : types)
             if (t.kind == TYPE && t.name == ct) return false;
     }
@@ -130,6 +138,16 @@ inline bool type_set_passes_nontype(const std::string &spec, const std::set<Type
 int effective_power(Entity e);
 int effective_toughness(Entity e);
 std::set<Colors> effective_colors(Entity e);
+
+// Strip the battlefield-state components (Permanent/Creature/Damage) from a card that is no
+// longer on the battlefield — clearing its equipment/aura attachment links first so no dangling
+// reference survives (CR 704.5n). Shared by the state-based off-battlefield strip
+// (apply_permanent_components) and by add_to_zone's battlefield-entry reset: a card that left
+// and returned within a single resolution (same-resolution flicker, Ajani's exile-and-return
+// transform) re-enters before the state-based pass could strip it, and per CR 400.7 the
+// returning card is a NEW object that must not keep its stale tapped/summoning-sickness/
+// counter/attachment state. Defined in game_queries.cpp.
+void strip_permanent_components(Entity entity);
 
 // Layer-5 (CR 613.1e / 612) global color-changing override. If an active SetColor$ continuous
 // static (Mycosynth Lattice) designates `e` — via its Affected$ filter and AffectedZone$ — write
@@ -292,6 +310,11 @@ inline bool is_colorless_card(const CardData &cd) {
         for (const auto &pip : cd.hybrid_mana)
             for (Colors c : pip.colors)
                 if (c != COLORLESS && c != GENERIC) return false;
+    // A Phyrexian pip carries color the same way (CR 202.2d): {B/P} makes the card black even
+    // when paid with life, so it is never colorless (absent a Colors: override, handled above).
+    if (cd.explicit_colors.empty())
+        for (Colors c : cd.phyrexian_mana)
+            if (c != COLORLESS && c != GENERIC) return false;
     return true;
 }
 

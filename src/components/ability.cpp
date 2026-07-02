@@ -115,7 +115,8 @@ Entity search_zone(std::shared_ptr<Orderer> orderer, Zone::Ownership owner, Zone
         // Graveyard / face-up exile / sideboard ("outside the game") picks (Karn, the Great
         // Creator -2: choose an artifact card you own in exile or your sideboard). These zones
         // hold their cards as entities tagged by Zone owner, so enumerate by owner like the
-        // graveyard. (The sideboard is only populated with entities in the bo3 sideboard phase.)
+        // graveyard. (Sideboard entities are instantiated at game start by generate_libraries
+        // from the deck's SIDEBOARD: section, plus any test-harness --sideboard presets.)
         for (auto e : orderer->mEntities) {
             if (!global_coordinator.entity_has_component<Zone>(e)) continue;
             auto &z = global_coordinator.GetComponent<Zone>(e);
@@ -798,13 +799,21 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
         if (opp_ctrl && cz.owner == caster) return false;
         if (!global_coordinator.entity_has_component<CardData>(cand)) return false;
         auto &cd = global_coordinator.GetComponent<CardData>(cand);
-        bool type_ok = !(inc_creatures || inc_lands || inc_artifacts || inc_enchantments);
+        // Instant/Sorcery graveyard targets (Mystic Sanctuary: ValidTgts$
+        // Instant.YouOwn,Sorcery.YouOwn) filter alongside the permanent types — without
+        // these the type gate fell open and offered the whole graveyard.
+        bool inc_instants  = vt.find("Instant") != std::string::npos;
+        bool inc_sorceries = vt.find("Sorcery") != std::string::npos;
+        bool type_ok = !(inc_creatures || inc_lands || inc_artifacts || inc_enchantments ||
+                         inc_instants || inc_sorceries);
         for (auto &t : cd.types) {
             if (t.kind != TYPE) continue;
             if (inc_creatures    && t.name == "Creature")    type_ok = true;
             if (inc_lands        && t.name == "Land")        type_ok = true;
             if (inc_artifacts    && t.name == "Artifact")    type_ok = true;
             if (inc_enchantments && t.name == "Enchantment") type_ok = true;
+            if (inc_instants     && t.name == "Instant")     type_ok = true;
+            if (inc_sorceries    && t.name == "Sorcery")     type_ok = true;
         }
         if (!type_ok) return false;
         // Mana-value bound (e.g. Lorehold Charm's cmcLE2): a graveyard card has no live MV
@@ -885,11 +894,14 @@ bool Ability::is_target_valid() const {
     // Optional targeting: no target chosen is valid
     if (target == 0 && targets.empty() && target_min == 0) return true;
 
-    // Multi-target abilities (target_max > 1) populate `targets`; verify every one.
+    // Multi-target abilities (target_max > 1) populate `targets`. CR 608.2b: the spell or
+    // ability is countered on resolution only if ALL of its targets are illegal; with at
+    // least one still-legal target it resolves, affecting only the legal ones (resolve()
+    // prunes the illegal targets before dispatching to the effect handler).
     if (!targets.empty()) {
         for (Entity t : targets)
-            if (!is_legal_target(t, controller)) return false;
-        return true;
+            if (is_legal_target(t, controller)) return true;
+        return false;
     }
 
     return is_legal_target(target, controller);
@@ -998,6 +1010,24 @@ size_t evaluate_dynamic_amount(
             return static_cast<size_t>((life + 1) / 2);
         }
         return static_cast<size_t>(life);
+    }
+    // Count$ValidStack <filter> — number of stack objects matching a card filter (Mindbreak
+    // Trap: TargetMax$ MaxTgts, MaxTgts = Count$ValidStack Card — the cap on "exile any number
+    // of target spells" is the number of spell cards on the stack). Card-shaped filters are
+    // matched through the shared comma-OR card filter against each spell's printed
+    // characteristics; standalone ability entities (no CardData) are not cards and don't count.
+    // The evaluating ability's own source is excluded — a spell can never target itself, so
+    // counting it would only inflate the cap past the real candidate pool.
+    if (expr.rfind("Count$ValidStack ", 0) == 0) {
+        std::string spec = expr.substr(std::string("Count$ValidStack ").size());
+        size_t count = 0;
+        for (auto e : orderer->get_stack()) {
+            if (e == source) continue;
+            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+            if (!card_matches_any(e, spec, MatchCtx{ctrl, source})) continue;
+            count++;
+        }
+        return count;
     }
     if (expr.find("Count$Valid Creature.YouCtrl") != std::string::npos) {
         size_t count = 0;
@@ -1332,11 +1362,38 @@ void Ability::resolve(std::shared_ptr<Orderer> orderer) {
         game_log("Triggered ability's stored-SVar gate is no longer satisfied; it does nothing.\n");
         return;
     }
-    // Pre-resolve target validity check — skipped for categories that select their own target internally
-    if (valid_tgts != "N_A" && category != "Pump") {
+    // Pre-resolve target validity check (CR 608.2b). A Pump that reaches resolution with no
+    // pre-chosen target selects its own target inside the handler (an immediate-trigger
+    // sub-ability — see effects::pump / effect_immediate_trigger.cpp), so only that case is
+    // exempt; a Pump whose target was chosen at cast/trigger placement is verified like any
+    // other targeted effect and fizzles if the target became illegal (it does NOT retarget).
+    bool pump_selects_own_target = (category == "Pump" && target == 0 && targets.empty());
+    if (valid_tgts != "N_A" && !pump_selects_own_target) {
         if (!is_target_valid()) {
             fizzle(orderer);
             return;  // subabilities do not fire; TODO revisit this in light of cards e.g. k-command
+        }
+        // CR 608.2b: a multi-target spell/ability whose targets are only PARTLY illegal still
+        // resolves, affecting only the still-legal targets (a spell that left the stack, a
+        // permanent that left the battlefield or gained protection, ...). Prune the illegal
+        // ones here so every effect handler downstream sees legal targets only; the all-illegal
+        // case was already countered by the is_target_valid gate above.
+        if (!targets.empty()) {
+            for (auto it = targets.begin(); it != targets.end();) {
+                if (!is_legal_target(*it, controller)) {
+                    std::string tname =
+                        global_coordinator.entity_has_component<CardData>(*it)
+                            ? global_coordinator.GetComponent<CardData>(*it).name
+                            : (global_coordinator.entity_has_component<Permanent>(*it)
+                                   ? global_coordinator.GetComponent<Permanent>(*it).name
+                                   : std::string("<target>"));
+                    game_log("%s is no longer a legal target; it is unaffected\n", tname.c_str());
+                    it = targets.erase(it);
+                } else {
+                    ++it;
+                }
+            }
+            target = targets.empty() ? 0 : targets[0];
         }
     }
     // RememberTargets/RememberObjects: stash the target(s) so chained

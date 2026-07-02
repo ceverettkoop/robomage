@@ -111,15 +111,17 @@ static void register_exile_until_host_leaves(Entity host, Entity card, Zone::Zon
 // A library search reveals the chosen card when it must satisfy a restriction
 // more specific than "any card" — the searcher proves the card qualifies (e.g.
 // Personal Tutor: "search for a sorcery card, reveal it"). An unrestricted
-// "Card" search (Vampiric/Demonic Tutor, Doomsday) reveals nothing. Searches of
-// other zones are public already, so this only matters for the library.
+// "Card" search (Vampiric/Demonic Tutor, Doomsday) reveals nothing. The
+// sideboard ("outside the game") is likewise hidden, and wish effects say
+// "reveal it" (Karn, the Great Creator -2), so it reveals the same way.
+// Searches of other zones are public already.
 static bool search_reveals_card(const Ability &ab) {
-    bool from_library = (ab.origin == Zone::LIBRARY);
+    bool from_hidden = (ab.origin == Zone::LIBRARY || ab.origin == Zone::SIDEBOARD);
     for (auto z : ab.origins) {
-        if (z == Zone::LIBRARY) from_library = true;
+        if (z == Zone::LIBRARY || z == Zone::SIDEBOARD) from_hidden = true;
     }
     bool specific_type = !ab.change_type.empty() && ab.change_type != "Card";
-    return from_library && specific_type;
+    return from_hidden && specific_type;
 }
 
 bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
@@ -138,17 +140,25 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
                                 ? global_coordinator.GetComponent<Zone>(ab.source).owner
                                 : last_known_controller(ab.source);
 
-    // DefinedPlayer$ TargetedController (Erode: "Its controller may search their library
-    // for a basic land card, put it onto the battlefield tapped, then shuffle."): the
-    // searching/owning player for a search-based ChangeZone is the targeted card's
-    // controller, not the spell's caster (CR 109.5). The target may already have left the
-    // battlefield (Erode's Destroy sub-ability ran first), but Zone.controller persists
-    // through the move to the graveyard, so it still names the last controller. This only
-    // redirects the search path; the targeted-move branch below is skipped because such a
-    // sub-ability carries no target of its own (ValidTgts$ N_A).
-    if (ab.defined_targeted_controller && ab.target != 0) {
-        Zone::Ownership tc = last_known_controller(ab.target);  // CR 608.2g/h, robust to post-move reads
-        if (tc != Zone::UNKNOWN) owner = tc;
+    // DefinedPlayer$ TargetedController (Erode / White Orchid Phantom's DBSearch: "Its
+    // controller may search their library for a basic land card, put it onto the battlefield
+    // tapped, then shuffle."): the searching/owning player for a search-based ChangeZone is
+    // the targeted card's controller, not the spell's caster (CR 109.5). The target may
+    // already have left the battlefield (the parent Destroy ran first), but Zone.controller
+    // persists through the move to the graveyard, so it still names the last controller. This
+    // only redirects the search path; the targeted-move branch below is skipped because such
+    // a sub-ability carries no target of its own (ValidTgts$ N_A).
+    //
+    // The defined player is derived FROM the parent's chosen target, so with no target the
+    // definition names no one and the effect does nothing (White Orchid Phantom's "up to one
+    // target" trigger with zero targets picked: no land was destroyed, so nobody searches —
+    // the search must not fall back to the caster's own library).
+    if (ab.defined_targeted_controller) {
+        Zone::Ownership tc =
+            ab.target != 0 ? last_known_controller(ab.target)  // CR 608.2g/h, robust to post-move reads
+                           : Zone::UNKNOWN;
+        if (tc == Zone::UNKNOWN) return true;  // no targeted object → no defined player; still chain subs
+        owner = tc;
     }
 
     // DefinedPlayer$ Targeted with a chosen PLAYER target (Thought-Knot Seer: the sub-ability's
@@ -441,16 +451,25 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
     bool multi_zone = ab.origins.size() > 1;
     bool reveal = search_reveals_card(ab);
 
-    // Chooser$ You — the ability's controller makes the selection from `owner`'s zone (Thought-Knot
-    // Seer: you pick a nonland card from the targeted opponent's revealed hand to exile). Switch
-    // priority to the controller so the choice prompt is offered to them, not the searched player,
-    // and restore it after. The searched cards are public knowledge here (the hand was revealed by
-    // the parent RevealHand), so the picks carry card_is_public — flag reveal so the chosen card's
-    // identity is shown even into a hidden destination and recorded in the belief state.
+    // Seat the search/pick prompt on the player who actually makes the choice. By default that
+    // is the searched zone's owner — normally also the ability's controller, but a DefinedPlayer$
+    // TargetedController search (White Orchid Phantom / Erode: the destroyed land's controller
+    // may search THEIR library) belongs to that player, not the caster whose trigger is resolving
+    // (the resolve seat is the controller's, set in stack_manager). The input/BQUERY seat follows
+    // cur_game.player_a_has_priority, so save/set/restore it around the prompts — the same pattern
+    // as request_optional_yesno and place_triggers_apnap.
+    //
+    // Chooser$ You overrides: the ability's CONTROLLER makes the selection from `owner`'s zone
+    // (Thought-Knot Seer: you pick a nonland card from the targeted opponent's revealed hand to
+    // exile). The searched cards are public knowledge there (the hand was revealed by the parent
+    // RevealHand), so the picks carry card_is_public — flag reveal so the chosen card's identity
+    // is shown even into a hidden destination and recorded in the belief state.
     bool prev_priority = cur_game.player_a_has_priority;
     if (ab.chooser_is_controller) {
         cur_game.player_a_has_priority = (ab.controller == Zone::PLAYER_A);
         reveal = true;
+    } else {
+        cur_game.player_a_has_priority = (owner == Zone::PLAYER_A);
     }
 
     // Dynamic mana-value bound on the search filter (Aether Vial: "Creature.cmcEQX",
@@ -511,7 +530,7 @@ bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
             break;
         }
     }
-    if (ab.chooser_is_controller) cur_game.player_a_has_priority = prev_priority;
+    cur_game.player_a_has_priority = prev_priority;
     return true;
 }
 

@@ -326,6 +326,10 @@ struct Ability{
     bool trigger_valid_card_is_instant_or_sorcery = false;  // ValidCard$ Instant/Sorcery
     bool trigger_valid_card_is_land = false;            // ValidCard$ Land.*
     bool trigger_valid_card_is_artifact = false;        // ValidCard$ Artifact.* (Kappa Cannoneer)
+    // ValidCard$ ...+untapped — the changing card must be an UNTAPPED battlefield permanent
+    // at trigger time (Mystic Sanctuary: "When this land enters untapped"). The enters-tapped
+    // replacement (T2.2) has already set Permanent::is_tapped by the time triggers are scanned.
+    bool trigger_valid_card_untapped = false;
     // ValidCard$ Card.nonCreature combined with an ActivatorThisTurnCast$ count (The Fantasticar's
     // "your fourth noncreature spell each turn"): the cast spell must be NONCREATURE. Bound to the
     // SPELL_CAST event (fired after the per-cast counters are bumped) rather than the dedicated

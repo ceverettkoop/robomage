@@ -69,8 +69,8 @@ static void setup_companion_for(Zone::Ownership owner, const Deck &deck,
         }
     }
 
-    // 2) Otherwise look for a Companion named in the deck's sideboard list (a normal game start, in
-    //    which sideboard cards are not yet entities) and instantiate it below if eligible.
+    // 2) Otherwise look for a Companion named in the deck's sideboard list (fallback for callers
+    //    that haven't instantiated sideboard entities) and instantiate it below if eligible.
     std::string comp_name;
     if (comp == 0) {
         for (const auto &entry : deck.sideboard) {

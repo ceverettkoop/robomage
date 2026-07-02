@@ -67,6 +67,29 @@ std::set<Colors> effective_colors(Entity e) {
     return {};
 }
 
+// Strip Permanent/Creature/Damage from a card no longer on the battlefield (or re-entering it as
+// a new object, CR 400.7). Clears equipment/aura attachment links first so no dangling reference
+// survives (704.5n): a creature leaving unattaches its equipment (which stays), an equipment
+// leaving clears the host's back-link. Contract documented at the declaration in game_queries.h.
+void strip_permanent_components(Entity entity) {
+    if (global_coordinator.entity_has_component<Permanent>(entity)) {
+        auto &perm = global_coordinator.GetComponent<Permanent>(entity);
+        if (perm.equipped_by != 0 &&
+            global_coordinator.entity_has_component<Permanent>(perm.equipped_by)) {
+            global_coordinator.GetComponent<Permanent>(perm.equipped_by).equipped_to = 0;
+        }
+        if (perm.equipped_to != 0 &&
+            global_coordinator.entity_has_component<Permanent>(perm.equipped_to)) {
+            global_coordinator.GetComponent<Permanent>(perm.equipped_to).equipped_by = 0;
+        }
+        global_coordinator.RemoveComponent<Permanent>(entity);
+    }
+    if (global_coordinator.entity_has_component<Creature>(entity))
+        global_coordinator.RemoveComponent<Creature>(entity);
+    if (global_coordinator.entity_has_component<Damage>(entity))
+        global_coordinator.RemoveComponent<Damage>(entity);
+}
+
 // ── Unified filter matcher (declared in game_queries.h) ─────────────────────
 // A flattened view of the one object under test, populated either from a card's printed
 // characteristics or a battlefield permanent's live components, then handed to one shared
@@ -125,6 +148,16 @@ bool color_token(const std::string &q, Colors &c) {
     if (q == "Black") { c = BLACK; return true; }
     if (q == "Red")   { c = RED;   return true; }
     if (q == "Green") { c = GREEN; return true; }
+    return false;
+}
+
+// True when the object is one or more colors (CR 105.2a) — membership in the five real colors
+// only. The colors set can carry a COLORLESS sentinel (a Devoid card's explicit_colors is
+// {COLORLESS}), which must read as "has no colors", so a bare empty() test is not equivalent.
+// Single source for the Colorless / nonColorless qualifier pair.
+bool view_has_any_color(const CharView &v) {
+    for (Colors c : {WHITE, BLUE, BLACK, RED, GREEN})
+        if (v.colors.count(c)) return true;
     return false;
 }
 
@@ -197,7 +230,7 @@ bool eval_qualifier(const CharView &v, const MatchCtx &ctx, const std::string &q
     if (q == "untapped")  return !v.is_tapped;
     if (q == "Basic")        return v.types && has_basic_supertype(*v.types);
     if (q == "nonBasic")     return v.types && !has_basic_supertype(*v.types);
-    if (q == "Colorless")    return v.colors.empty();  // CR 105.2c
+    if (q == "Colorless")    return !view_has_any_color(v);  // CR 105.2c
     if (q == "hasXCost")     return v.has_x_cost;       // {X} in the printed mana cost (Gaddock Teeg)
     // mana-value family (dynamic bound applied once by the caller) --------------
     if (q.rfind("cmc", 0) == 0) {
@@ -226,12 +259,22 @@ bool eval_qualifier(const CharView &v, const MatchCtx &ctx, const std::string &q
     // positive color ----------------------------------------------------------
     { Colors c; if (color_token(q, c)) return v.colors.count(c) > 0; }
     // negations ---------------------------------------------------------------
-    if (q.size() > 3 && q.compare(0, 3, "non") == 0) {
+    // The "non" prefix and the card-type word are matched ASCII case-insensitively:
+    // Forge scripts vary the token's casing (Cityscape Leveler writes "nonland" where
+    // Abrupt Decay writes "nonLand"), and a case-sensitive miss here used to fall
+    // through to the non<subtype> arm — which matches nothing for "land", silently
+    // turning the restriction into a pass for every permanent, lands included.
+    if (q.size() > 3 && ascii_lower(q.substr(0, 3)) == "non") {
         std::string rest = q.substr(3);
         Colors c;
         if (color_token(rest, c)) return v.colors.count(c) == 0;       // non<Color>  (fixes the old bug)
+        const std::string rest_lc = ascii_lower(rest);
+        // nonColorless = "one or more colors" (Ugin's exiles, All Is Dust). "Colorless" is not a
+        // color, so it must be handled here — falling through to the non<subtype> arm made the
+        // qualifier match EVERY object (nothing has "Colorless" in its type line).
+        if (rest_lc == "colorless") return view_has_any_color(v);
         for (const char *ct : kCardTypes)
-            if (rest == ct) return !view_has_typeline(v, ct);          // non<CardType>
+            if (rest_lc == ascii_lower(ct)) return !view_has_typeline(v, ct);  // non<CardType>
         return !view_has_typeline(v, rest);                           // non<subtype>
     }
     // with<Keyword> — the object currently has the named keyword ability (Pick Your Poison's

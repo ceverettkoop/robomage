@@ -56,12 +56,25 @@ struct DelayedTrigger {
     uint32_t fire_on;       // event ID (e.g. Events::UPKEEP_BEGAN)
     Entity owner_entity;    // player entity who controls it
     size_t fire_on_turn;    // game.turn value at which to fire (cur_game.turn + 1 at registration)
+    // Phase restriction (script ValidPlayer$): the player whose phase this trigger may fire on,
+    // or 0 = any player's phase. "At the beginning of the next turn's upkeep" / "the next end
+    // step" fires at the NEXT occurrence of that phase whoever's turn it is (Mishra's Bauble,
+    // Flickerwisp), so most delayed triggers leave this 0; only an explicit "your upkeep"-style
+    // ValidPlayer$ You restricts it. Independent of owner_entity, which is always the ability's
+    // controller (the Bauble draw is the controller's even on the opponent's upkeep).
+    Entity restrict_player = 0;
     // "When THIS specific permanent leaves the battlefield" delayed trigger (CR 603.6e), set up
     // by the earthbend resolution: fire_on is CARD_CHANGED_ZONE, and the trigger fires only when
     // `watch_entity` is the card that left the battlefield (origin BATTLEFIELD). General over any
     // "when X leaves, do Y" delayed trigger; 0 = not entity-watched (the phase-based default).
     Entity watch_entity = 0;          // the specific permanent whose departure fires this trigger
     bool fire_on_leave_battlefield = false;  // true: match watch_entity leaving the battlefield, not a phase
+    // Destination filter for fire_on_leave_battlefield triggers: when non-empty, the trigger
+    // fires only if the watched entity moved from the battlefield TO one of these zones (e.g.
+    // earthbend's "when it dies or is exiled" = {GRAVEYARD, EXILE} — a bounce to hand or a
+    // shuffle into the library must NOT fire it). Empty = any departure ("leaves the
+    // battlefield", e.g. the exile-until-host-leaves triggers).
+    std::vector<Zone::ZoneValue> fire_dest_zones;
     // RememberObjects$ RememberedLKI (CR 603.7a): objects this delayed trigger captured when it
     // was set up (the cards the preceding RememberChanged$ ChangeZone moved, e.g. the permanent
     // Flickerwisp/Phelia exiled). Restored into cur_game.remembered_entities before the fire
@@ -85,6 +98,14 @@ struct LastKnownInfo {
                                            // had exiled, so a leaves-the-battlefield ability (Skyclave
                                            // Apparition's TrigToken) can still find them after the
                                            // Permanent component is stripped by the SBA pass.
+    // How-it-entered markers (Permanent flags), snapshotted so an ETB trigger of a permanent that
+    // entered and then LEFT again before trigger collection (legend-rule keep-other, 0-toughness
+    // SBA death) can still be gated correctly by the 603.10 look-back scan: the trigger fired when
+    // the permanent entered (CR 603.3a), even though its Permanent component is gone by now.
+    bool entered_by_cast = false;          // "if you cast it" gate (The One Ring)
+    bool evoked = false;                   // evoke self-sacrifice gate
+    bool entered_with_offspring = false;   // offspring token-copy gate
+    bool transformed = false;              // which DFC face was active (CR 712.4 ability selection)
 };
 
 enum MandatoryChoice {

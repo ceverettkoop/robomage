@@ -1,6 +1,7 @@
 #ifndef STR_UTIL_H
 #define STR_UTIL_H
 
+#include <cctype>
 #include <string>
 #include <vector>
 
@@ -26,6 +27,15 @@ inline std::vector<std::string> split(const std::string &s, char delim, bool ski
         if (pos == std::string::npos) break;
         start = pos + 1;
     }
+    return out;
+}
+
+// Returns `s` lowercased byte-wise (ASCII only). For case-insensitive matching of
+// script tokens whose casing varies across Forge card scripts (e.g. Cityscape
+// Leveler's "nonland" vs Abrupt Decay's "nonLand").
+inline std::string ascii_lower(const std::string &s) {
+    std::string out = s;
+    for (char &c : out) c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
     return out;
 }
 

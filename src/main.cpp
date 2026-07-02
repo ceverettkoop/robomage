@@ -180,6 +180,14 @@ static int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &dec
         }
     }
 
+    // CR 103.6: after mulligans resolve (and any test-harness fiat setup above), each player
+    // in APNAP order — starting player first — may take opening-hand actions (CR 103.6b,
+    // Leyline of the Void: begin the game with it on the battlefield). If anything moved,
+    // run state-based effects so a card put onto the battlefield gets its Permanent
+    // component before the first turn begins.
+    if (sys.orderer->do_opening_hand_actions(player_a_goes_first))
+        sys.state_manager->state_based_effects(cur_game, sys.orderer);
+
     cur_game.player_a_turn = player_a_goes_first;
     cur_game.player_a_has_priority = player_a_goes_first;
 

@@ -79,6 +79,17 @@ bool delayed_trigger(Ability &ab, std::shared_ptr<Orderer> orderer) {
     dt.ability = fire_ab;
     dt.fire_on = event_id;
     dt.owner_entity = owner_entity;
+    // ValidPlayer$ pins the firing phase to one player's turn: "You" = the ability's controller,
+    // "Opponent" = the other player. "Player" (any player) or an absent ValidPlayer$ leaves the
+    // trigger unrestricted — it fires at the NEXT occurrence of the phase whoever is active
+    // (Mishra's Bauble's "the next turn's upkeep", Flickerwisp's "the next end step").
+    if (dp) {
+        if (dp->valid_player == "You")
+            dt.restrict_player = owner_entity;
+        else if (dp->valid_player == "Opponent")
+            dt.restrict_player =
+                get_player_entity(owner == Zone::PLAYER_A ? Zone::PLAYER_B : Zone::PLAYER_A);
+    }
     dt.fire_on_turn = next_turn ? cur_game.turn + 1 : cur_game.turn;
     cur_game.delayed_triggers.push_back(dt);
     game_log("Delayed trigger registered: %s at next %s.\n", fire_ab.category.c_str(),

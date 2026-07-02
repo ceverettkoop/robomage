@@ -99,6 +99,7 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
         for (size_t i = 0; i < game.delayed_triggers.size(); i++) {
             auto &dt = game.delayed_triggers[i];
             bool matched = false;
+            bool expired = false;
             for (const auto &ev : events) {
                 if (ev.GetType() != dt.fire_on) continue;
                 // Entity-watched "when THIS permanent leaves the battlefield" delayed trigger
@@ -110,13 +111,30 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                     if (!ev.HasParam(Params::ENTITY)) continue;
                     if (ev.GetParam<Entity>(Params::ENTITY) != dt.watch_entity) continue;
                     if (ev.GetParam<Zone::ZoneValue>(Params::ORIGIN) != Zone::BATTLEFIELD) continue;
+                    // Destination filter (e.g. earthbend's "when it dies or is exiled"): when the
+                    // trigger names specific destination zones, a move to any other zone (bounce
+                    // to hand, shuffle into library) does not fire it. Either way the watched
+                    // object has left the battlefield — a later re-entry is a NEW object
+                    // (CR 400.7), so a non-matching departure EXPIRES the trigger unfired rather
+                    // than leaving it armed against the reused entity id.
+                    if (!dt.fire_dest_zones.empty()) {
+                        Zone::ZoneValue dest = ev.GetParam<Zone::ZoneValue>(Params::DESTINATION);
+                        bool dest_ok = false;
+                        for (Zone::ZoneValue z : dt.fire_dest_zones)
+                            if (z == dest) { dest_ok = true; break; }
+                        if (!dest_ok) { expired = true; break; }
+                    }
                     matched = true;
                     break;
                 }
                 if (dt.fire_on == Events::UPKEEP_BEGAN && game.turn < dt.fire_on_turn) continue;
-                // Owner check: only fire on the correct player's upkeep
-                if (ev.HasParam(Params::PLAYER) &&
-                    ev.GetParam<Entity>(Params::PLAYER) != dt.owner_entity) continue;
+                // Phase-player restriction: only an explicit ValidPlayer$ restriction pins the
+                // trigger to one player's phase. Unrestricted (restrict_player == 0), "the next
+                // turn's upkeep" / "the next end step" fires at the next occurrence of the phase
+                // regardless of whose turn it is (CR 603.7 — Mishra's Bauble draws at the
+                // opponent's upkeep when sacrificed on your own turn).
+                if (dt.restrict_player != 0 && ev.HasParam(Params::PLAYER) &&
+                    ev.GetParam<Entity>(Params::PLAYER) != dt.restrict_player) continue;
                 matched = true;
                 break;
             }
@@ -134,6 +152,8 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                 pt.log_line = "Delayed trigger fires.";
                 pt.needs_target = (trigger_ab.valid_tgts != "N_A" && trigger_ab.target == 0);
                 pending.push_back(pt);
+                to_remove.push_back(i);
+            } else if (expired) {
                 to_remove.push_back(i);
             }
         }
@@ -271,6 +291,16 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
         if (!global_coordinator.entity_has_component<Permanent>(saga)) continue;
         const auto &cd = global_coordinator.GetComponent<CardData>(saga);
         if (chapter < 1 || chapter > static_cast<int>(cd.saga_chapters.size())) continue;
+        // Layer-6 ability removal: a Saga whose abilities are removed (turned into a Mountain
+        // by Magus of the Moon, CR 305.7) has no chapter abilities — the trigger never happens.
+        // The lore-counter machinery is gated too (saga.cpp), so this only catches an event
+        // emitted in the same window the removal landed; release the 714.4 in-flight gate the
+        // emitter took since no chapter ability will go on (and thus leave) the stack.
+        if (global_coordinator.GetComponent<Permanent>(saga).abilities_removed) {
+            auto &saga_perm = global_coordinator.GetComponent<Permanent>(saga);
+            if (saga_perm.saga_chapters_in_flight > 0) saga_perm.saga_chapters_in_flight--;
+            continue;
+        }
         Zone::Ownership ctrl = global_coordinator.GetComponent<Permanent>(saga).controller;
 
         Ability trigger_ab = cd.saga_chapters[static_cast<size_t>(chapter - 1)];
@@ -301,16 +331,24 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
         // innate abilities from whichever face is up — this is the single place front/back trigger
         // selection happens (the per-ability "if (perm.transformed) continue" front-face skip is
         // therefore unnecessary, and would wrongly suppress the back face's own triggers).
+        // Layer-6 ability removal (CR 613.1f / 305.7): a permanent whose abilities are removed
+        // (Humility "lose all abilities", or a land turned into a basic type by Magus of the
+        // Moon) has NO innate triggered abilities either — skip its CardData/Token sources.
+        // perm.abilities stays in the list: the layer pass already filtered it down to what
+        // survives the removal (an ability granted by the remover itself, or the regenerated
+        // subtype-derived mana ability), so anything still there is legitimately functioning.
         std::vector<const std::vector<Ability>*> ab_sources;
-        if (global_coordinator.entity_has_component<CardData>(entity)) {
-            const CardData &cd = global_coordinator.GetComponent<CardData>(entity);
-            if (perm.transformed && cd.backside)
-                ab_sources.push_back(&cd.backside->abilities);
-            else
-                ab_sources.push_back(&cd.abilities);
+        if (!perm.abilities_removed) {
+            if (global_coordinator.entity_has_component<CardData>(entity)) {
+                const CardData &cd = global_coordinator.GetComponent<CardData>(entity);
+                if (perm.transformed && cd.backside)
+                    ab_sources.push_back(&cd.backside->abilities);
+                else
+                    ab_sources.push_back(&cd.abilities);
+            }
+            if (global_coordinator.entity_has_component<Token>(entity))
+                ab_sources.push_back(&global_coordinator.GetComponent<Token>(entity).abilities);
         }
-        if (global_coordinator.entity_has_component<Token>(entity))
-            ab_sources.push_back(&global_coordinator.GetComponent<Token>(entity).abilities);
         ab_sources.push_back(&perm.abilities);
         if (ab_sources.empty()) continue;
 
@@ -448,6 +486,16 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                         if (!global_coordinator.entity_has_component<CardData>(ev_card)) continue;
                         if (!is_permanent_card(global_coordinator.GetComponent<CardData>(ev_card)))
                             continue;
+                    }
+                    // ValidCard$ ...+untapped filter (Mystic Sanctuary: "When this land enters
+                    // untapped"): the changing card must be an untapped battlefield permanent
+                    // right now. The enters-tapped replacement dispatch (T2.2) runs inside
+                    // apply_permanent_components, which precedes this trigger scan in the SBA
+                    // loop, so Permanent::is_tapped already reflects how the card entered.
+                    if (ab.trigger_valid_card_untapped && ev.HasParam(Params::ENTITY)) {
+                        Entity ev_card = ev.GetParam<Entity>(Params::ENTITY);
+                        if (!global_coordinator.entity_has_component<Permanent>(ev_card)) continue;
+                        if (global_coordinator.GetComponent<Permanent>(ev_card).is_tapped) continue;
                     }
                     // ValidCard(s)$ <Subtype> filter (Ajani: a Cat changing zone). Checked
                     // against the changing card's CardData or Token subtypes.
@@ -648,12 +696,19 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
         if (!ev.HasParam(Params::ENTITY)) continue;
         Zone::ZoneValue ev_origin = ev.GetParam<Zone::ZoneValue>(Params::ORIGIN);
         Zone::ZoneValue ev_dest = ev.GetParam<Zone::ZoneValue>(Params::DESTINATION);
-        // Enters-the-battlefield self-triggers (destination battlefield) are handled by the
-        // battlefield scan above (the source IS a battlefield permanent once it arrives), so
-        // exclude them here to avoid double-firing. This block covers self moves to any OTHER
-        // zone (graveyard, exile, hand, library) from any origin.
-        if (ev_dest == Zone::BATTLEFIELD) continue;
         Entity entity = ev.GetParam<Entity>(Params::ENTITY);
+        // Enters-the-battlefield self-triggers (destination battlefield) are handled by the
+        // battlefield scan above (the source IS a battlefield permanent once it arrives) — but
+        // only while it is STILL there at collection time. A permanent that entered and then
+        // left again before triggers were collected (legend-rule keep-the-other-copy, CR 704.5j;
+        // a 0-toughness SBA death) still DID enter, so its ETB trigger fired (CR 603.3a) and is
+        // collected here from the event with last-known information (603.10d). Skip only the
+        // still-on-battlefield case to avoid double-firing.
+        bool etb_lookback = false;
+        if (ev_dest == Zone::BATTLEFIELD) {
+            if (is_battlefield_permanent(entity)) continue;
+            etb_lookback = true;
+        }
         if (!global_coordinator.entity_has_component<CardData>(entity)) continue;
         if (!global_coordinator.entity_has_component<Zone>(entity)) continue;
         // The source's controller as it left the battlefield persists on its Zone component
@@ -661,8 +716,23 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
         // controller; fall back to the owner if it was never set.
         auto &z = global_coordinator.GetComponent<Zone>(entity);
         Zone::Ownership ctrl = (z.controller != Zone::UNKNOWN) ? z.controller : z.owner;
+        // The how-it-entered gates ("if you cast it", evoke, offspring) and the active DFC face
+        // lived on the stripped Permanent; the look-back reads them from the LKI snapshot taken
+        // as the permanent left the battlefield.
+        const LastKnownInfo *lki = nullptr;
+        {
+            auto lki_it = game.last_known_info.find(entity);
+            if (lki_it != game.last_known_info.end()) lki = &lki_it->second;
+        }
+        // DisableTriggers (Doorkeeper Thrull) applies to the entering permanent's ETB triggers
+        // exactly as in the battlefield scan.
+        if (etb_lookback && rules_mod::etb_triggers_suppressed(entity)) continue;
         const std::string ent_name = entity_name(entity);
-        for (const auto &ab : global_coordinator.GetComponent<CardData>(entity).abilities) {
+        // A transformed DFC functions with its active (back) face's abilities (CR 712.4).
+        const CardData &cd = global_coordinator.GetComponent<CardData>(entity);
+        const std::vector<Ability> &self_abs =
+            (lki && lki->transformed && cd.backside) ? cd.backside->abilities : cd.abilities;
+        for (const auto &ab : self_abs) {
             if (ab.ability_type != Ability::TRIGGERED) continue;
             if (ab.trigger_on != Events::CARD_CHANGED_ZONE) continue;
             if (!ab.trigger_only_self) continue;  // Card.Self — only the source's own move
@@ -670,6 +740,16 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                 ev_origin != static_cast<Zone::ZoneValue>(ab.trigger_zone_origin)) continue;
             if (ab.trigger_zone_destination >= 0 &&
                 ev_dest != static_cast<Zone::ZoneValue>(ab.trigger_zone_destination)) continue;
+            // ETB gates mirrored from the battlefield scan, read from the LKI snapshot:
+            // "if you cast it" (The One Ring), evoke self-sacrifice, offspring token copy.
+            if (ab.trigger_requires_entered_by_cast && !(lki && lki->entered_by_cast)) continue;
+            if (ab.is_evoke_sacrifice && !(lki && lki->evoked)) continue;
+            if (ab.is_offspring_token && !(lki && lki->entered_with_offspring)) continue;
+            // ValidCard$ ...+untapped: the look-back path only runs once the permanent has
+            // already left the battlefield again, and its tapped-as-it-entered state is not
+            // captured in LKI — the live Permanent check the battlefield scan uses is gone.
+            // Be conservative and don't fire the untapped-gated trigger here.
+            if (ab.trigger_valid_card_untapped) continue;
 
             Ability trigger_ab = ab;
             trigger_ab.source = entity;
@@ -680,10 +760,18 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
             // gates on it still being exiled): the source has already left the battlefield, so its
             // exiled_with list lives in the last-known-info snapshot captured at departure. Carry
             // it onto the trigger so resolve() can restore the remembered set (CR 608.2h).
-            {
-                auto lki_it = game.last_known_info.find(entity);
-                if (lki_it != game.last_known_info.end() && !lki_it->second.exiled_with.empty())
-                    trigger_ab.restore_remembered_exiled_with = lki_it->second.exiled_with;
+            if (lki && !lki->exiled_with.empty())
+                trigger_ab.restore_remembered_exiled_with = lki->exiled_with;
+
+            if (etb_lookback) {
+                // Parity with the battlefield ETB scan: bind Defined$ TriggeredActivator from the
+                // event's player, and apply the 603.4 intervening-if (evaluated now, as the
+                // trigger would go on the stack).
+                if (ev.HasParam(Params::PLAYER))
+                    bind_triggered_activator(trigger_ab, ev.GetParam<Entity>(Params::PLAYER));
+                if (trigger_ab.intervening_if &&
+                    !evaluate_present_condition(trigger_ab, ctrl, orderer))
+                    continue;
             }
 
             // Static$ True leave-battlefield reset (Carpet of Flowers' ChangesZone Battlefield→Any
@@ -861,8 +949,19 @@ static void place_triggers_apnap(Game &game, std::shared_ptr<Orderer> orderer,
                 pick = static_cast<size_t>(InputLogger::instance().get_input(choices));
             }
             PendingTrigger &pt = pending[group[pick]];
-            if (pt.needs_target && has_legal_targets(pt.ab, orderer))
+            if (pt.needs_target) {
+                // CR 603.3d: if no legal choices can be made for a required target as the
+                // triggered ability would go on the stack, the ability is simply removed —
+                // never placed target-less (it would fizzle confusingly, or worse, resolve
+                // against target 0). Optional targeting (target_min 0) always passes.
+                if (!has_legal_targets(pt.ab, orderer)) {
+                    game_log("%s's trigger is removed - no legal targets (603.3d)\n",
+                             entity_name(pt.source).c_str());
+                    group.erase(group.begin() + static_cast<ptrdiff_t>(pick));
+                    continue;
+                }
                 select_target(pt.ab, orderer, pt.controller);
+            }
             orderer->push_ability_onto_stack(pt.ab, pt.controller);
             game_log("%s\n", pt.log_line.c_str());
             group.erase(group.begin() + static_cast<ptrdiff_t>(pick));

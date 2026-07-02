@@ -20,8 +20,8 @@ namespace effects {
 
 // DB$/AB$ Earthbend N (Badgermole Cub: Num$ 1; Ba Sing Se: Num$ 2). CR-style keyword action:
 //   "Target land you control becomes a 0/0 creature with haste that's still a land. Put N
-//    +1/+1 counters on it. When it dies or is exiled (leaves the battlefield), return it to
-//    the battlefield tapped under its owner's control."
+//    +1/+1 counters on it. When it dies or is exiled, return it to the battlefield tapped
+//    under its owner's control."
 //
 // The land-animation reuses the Animate extension points on Permanent (animate_make_creature,
 // animate_set_pt + 0/0 base, animate_added_keywords = Haste, Duration Permanent). The added
@@ -30,7 +30,9 @@ namespace effects {
 // apply_animate_creature_bootstrap. The N +1/+1 counters are added immediately so the
 // permanent is N/N (not the transient 0/0) before any state-based action runs. The
 // return-tapped clause is a delayed trigger (CR 603.6e) watching this specific permanent's
-// departure from the battlefield; it fires once and returns the card to the battlefield tapped.
+// departure from the battlefield TO the graveyard or exile ("when it dies or is exiled");
+// it fires once and returns the card to the battlefield tapped. A bounce to hand or a shuffle
+// into the library does NOT fire it — the trigger expires unfired (the object is gone).
 bool earthbend(Ability &ab, std::shared_ptr<Orderer> orderer) {
     (void)orderer;
     Entity tgt = ab.target;
@@ -67,9 +69,10 @@ bool earthbend(Ability &ab, std::shared_ptr<Orderer> orderer) {
     game_log("%s becomes a 0/0 creature with haste that's still a land; put %d +1/+1 counter(s) on it.\n",
              perm.name.c_str(), n);
 
-    // Register the delayed "when it leaves the battlefield, return it tapped under its owner's
+    // Register the delayed "when it dies or is exiled, return it tapped under its owner's
     // control" trigger (CR 603.6e). The fire ability is a generic ChangeZone of the watched card
     // itself (Defined$ Self) from wherever it went back onto the battlefield, entering tapped.
+    // The destination filter restricts firing to graveyard/exile departures per the oracle text.
     Ability fire_ab;
     fire_ab.ability_type = Ability::TRIGGERED;
     fire_ab.category = "ChangeZone";
@@ -86,6 +89,7 @@ bool earthbend(Ability &ab, std::shared_ptr<Orderer> orderer) {
     dt.fire_on_turn = cur_game.turn;
     dt.watch_entity = tgt;
     dt.fire_on_leave_battlefield = true;
+    dt.fire_dest_zones = {Zone::GRAVEYARD, Zone::EXILE};
     cur_game.delayed_triggers.push_back(dt);
 
     return true;

@@ -46,6 +46,14 @@ public:
     std::vector<Entity> get_graveyard(Zone::Ownership owner);
     std::vector<Entity> get_stack();
     void do_london_mulligan();
+    // CR 103.6/103.6b opening-hand actions: after mulligans resolve (each player has kept and
+    // bottomed), each player in APNAP order — starting player first — may run the
+    // MayEffectFromOpeningHand ability of each such card in their kept hand (Leyline of the
+    // Void: begin the game with it on the battlefield). Each offer is an OPTIONAL_YESNO
+    // decision seated on the deciding player. Returns true if any ability ran, so the caller
+    // can re-run state-based effects and a card put onto the battlefield gets its Permanent
+    // component before the first turn begins.
+    bool do_opening_hand_actions(bool player_a_goes_first);
     std::vector<Entity> place_on_battlefield(const std::vector<std::string> &card_names,
                                              Zone::Ownership owner);
     // Test-harness helper: start cards already in a player's graveyard (mirrors

@@ -110,6 +110,27 @@ static bool next_param(const std::string& line, size_t& pos, std::string& key, s
     return false;
 }
 
+// Parse a Ward cost argument (the text after "Ward:") into its amount and payment kind
+// (CR 702.21). "PayLife<N>" is a life payment; a plain numeric arg is {N} generic mana.
+// Parse the amount defensively: with -fno-exceptions a std::stoi on a missing '>' or
+// non-numeric body would abort, so validate digits first and degrade to a {1} mana ward
+// on a malformed or missing arg rather than crashing card load.
+void parse_ward_cost(const std::string &arg, int &cost, bool &is_life) {
+    cost = 1;
+    is_life = false;
+    if (arg.rfind("PayLife<", 0) == 0) {
+        size_t close = arg.find('>');
+        std::string n = (close != std::string::npos && close > 8) ? arg.substr(8, close - 8)
+                                                                  : std::string();
+        if (!n.empty() && n.find_first_not_of("0123456789") == std::string::npos) {
+            cost = std::stoi(n);
+            is_life = true;
+        }
+    } else if (!arg.empty() && arg.find_first_not_of("0123456789") == std::string::npos) {
+        cost = std::stoi(arg);
+    }
+}
+
 // all to lowercase, spaces to underscores, other characters removed
 std::string name_to_uid(std::string name) {
     std::vector<size_t> to_rm;
@@ -508,32 +529,10 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
         // is synthesized when a targeting spell/ability is put on the stack.
         if (kw_line.rfind("Ward", 0) == 0) {
             size_t colon = kw_line.find(':');
-            if (colon != std::string::npos) {
-                std::string ward_arg = kw_line.substr(colon + 1);
-                // Ward—Pay N life (K:Ward:PayLife<N>): the unless-cost is a life payment,
-                // not mana (CR 702.21). Any other arg is a numeric mana cost. Parse the
-                // amount defensively: with -fno-exceptions a std::stoi on a missing '>' or
-                // non-numeric body would abort, so validate digits first and degrade to a
-                // {1} mana ward on a malformed arg rather than crashing card load.
-                if (ward_arg.rfind("PayLife<", 0) == 0) {
-                    size_t close = ward_arg.find('>');
-                    std::string n = (close != std::string::npos && close > 8)
-                                        ? ward_arg.substr(8, close - 8) : std::string();
-                    if (!n.empty() && n.find_first_not_of("0123456789") == std::string::npos) {
-                        card.ward_cost = std::stoi(n);
-                        card.ward_is_life = true;
-                    } else {
-                        card.ward_cost = 1;
-                    }
-                } else if (!ward_arg.empty() &&
-                           ward_arg.find_first_not_of("0123456789") == std::string::npos) {
-                    card.ward_cost = std::stoi(ward_arg);
-                } else {
-                    card.ward_cost = 1;
-                }
-            } else {
-                card.ward_cost = 1;  // K:Ward without a cost defaults to {1}
-            }
+            // K:Ward without a cost arg defaults to a {1} mana ward inside parse_ward_cost.
+            std::string ward_arg = (colon != std::string::npos) ? kw_line.substr(colon + 1)
+                                                                : std::string();
+            parse_ward_cost(ward_arg, card.ward_cost, card.ward_is_life);
             card.keywords.push_back("Ward");
             continue;
         }
@@ -926,6 +925,25 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
                         card.gift_description.pop_back();
                 }
             }
+            continue;
+        }
+        // K:MayEffectFromOpeningHand:<SVar>[:!PlayFirst] — "If this card is in your opening
+        // hand, you may [effect]" (CR 103.6b; Leyline of the Void's begin-the-game-on-the-
+        // battlefield). The colon field names the SVar holding the effect body (Leyline:
+        // DB$ ChangeZone | Defined$ Self | Origin$ Hand | Destination$ Battlefield); an optional
+        // !PlayFirst field (Gemstone Caverns) limits the offer to the player NOT going first.
+        // The offer itself happens after mulligans in Orderer::do_opening_hand_actions.
+        if (kw_line.rfind("MayEffectFromOpeningHand", 0) == 0) {
+            card.keywords.push_back("MayEffectFromOpeningHand");
+            std::vector<std::string> parts = split(kw_line, ':');
+            if (parts.size() >= 2) {
+                auto oit = svars.find(parts[1]);
+                if (oit != svars.end())
+                    card.opening_hand_abilities.push_back(
+                        parse_svar_ability(oit->second, Ability::SPELL, svars, card.name));
+            }
+            for (size_t pi = 2; pi < parts.size(); pi++)
+                if (parts[pi] == "!PlayFirst") card.opening_hand_not_first = true;
             continue;
         }
         // K:Storm — Storm (CR 702.40). A triggered ability that functions on the stack: "When
@@ -2556,6 +2574,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
     bool valid_card_artifact = false;
     bool valid_card_colorless = false;
     bool valid_card_non_token = false;
+    bool valid_card_untapped = false;
     bool valid_card_permanent = false;
     bool mode_is_drawn = false;
     bool mode_is_attacks = false;
@@ -2692,6 +2711,11 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
             if (value.find("Artifact")    != std::string::npos) valid_card_artifact     = true;
             if (value.find("Colorless")   != std::string::npos) valid_card_colorless    = true;
             if (value.find("!token")      != std::string::npos) valid_card_non_token    = true;
+            // "+untapped"/".untapped" qualifier — the changing card must be untapped when the
+            // trigger checks it (Mystic Sanctuary: ValidCard$ Card.Self+untapped, "enters
+            // untapped"). Matched delimited so a plain "tapped" token can't set it.
+            if (value.find("+untapped")   != std::string::npos ||
+                value.find(".untapped")   != std::string::npos) valid_card_untapped     = true;
             // ValidCard$ Permanent (head token) — restrict to permanent card types. Matched
             // on the leading token so a subtype merely named within isn't misread.
             if (value.substr(0, value.find_first_of(".+")) == "Permanent")
@@ -2803,6 +2827,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
         ability.trigger_valid_card_is_artifact            = valid_card_artifact;
         ability.trigger_valid_card_colorless              = valid_card_colorless;
         ability.trigger_valid_card_non_token              = valid_card_non_token;
+        ability.trigger_valid_card_untapped               = valid_card_untapped;
         ability.trigger_valid_card_is_permanent           = valid_card_permanent;
         ability.trigger_valid_card_subtype                = valid_card_subtype;
         ability.trigger_valid_player_is_controller        = valid_card_owner_you || valid_player_is_you;
@@ -3038,6 +3063,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
                 effect.trigger_valid_card_is_artifact           = ability.trigger_valid_card_is_artifact;
                 effect.trigger_valid_card_colorless             = ability.trigger_valid_card_colorless;
                 effect.trigger_valid_card_non_token             = ability.trigger_valid_card_non_token;
+                effect.trigger_valid_card_untapped              = ability.trigger_valid_card_untapped;
                 effect.trigger_valid_card_is_permanent          = ability.trigger_valid_card_is_permanent;
                 effect.trigger_valid_card_subtype               = ability.trigger_valid_card_subtype;
                 effect.trigger_optional                         = ability.trigger_optional;

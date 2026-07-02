@@ -21,6 +21,7 @@
 #include "game_queries.h"
 #include "input_logger.h"
 #include "mana_system.h"
+#include "parse.h"
 #include "systems/orderer.h"
 #include "systems/rules_modifying.h"
 #include "systems/state_manager.h"
@@ -53,7 +54,7 @@ static void assign_combat_damage(Game &game, std::shared_ptr<Orderer> orderer);
 // One Ward ability a permanent currently has (CR 702.21): an unless-cost (generic mana
 // amount, or a life amount when is_life) the targeting player must pay or have the spell/
 // ability countered. Collected from the printed ward (CardData::ward_cost) and from any
-// granted "Ward:N" in the effective keyword list.
+// granted "Ward:N" / "Ward:PayLife<N>" in the effective keyword list.
 struct WardInstance {
     int cost;
     bool is_life;
@@ -684,16 +685,22 @@ static void pay_alternate_cost(const LegalAction &action, Game &game, std::share
     Entity caster_entity = (caster == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
     auto &player = global_coordinator.GetComponent<Player>(caster_entity);
 
-    // Free alt cost (e.g. Once Upon a Time first spell)
-    if (card_data.alt_cost.is_free) {
+    // Mana portion of the alt cost (e.g. Evoke:R) with the active SetCost floor (Trinisphere)
+    // folded in — CR 601.2f applies the floor AFTER the alternative cost is substituted for the
+    // mana cost, so even a "free" alt cast ({0} Mindbreak Trap, Daze's pitch) pays up to the
+    // floor. The non-mana parts of the cost below are unaffected.
+    ManaValue alt_mana = floored_alt_mana_cost(card_data, card_data.alt_cost.mana_cost);
+
+    // Free alt cost (e.g. Once Upon a Time first spell), with no floor imposed on it
+    if (card_data.alt_cost.is_free && alt_mana.empty()) {
         game_log("%s casts for free (alternate cost)\n", player_name(caster).c_str());
         return;
     }
 
-    // mana portion of the alt cost (e.g. Evoke:R). Affordability is pre-verified by
-    // can_afford_alt, so in machine mode this always succeeds.
-    if (!card_data.alt_cost.mana_cost.empty()) {
-        prompt_mana_payment(caster, card_data.alt_cost.mana_cost, spell_entity, orderer);
+    // Affordability is pre-verified by can_afford_alt (against the same floored cost),
+    // so in machine mode this always succeeds.
+    if (!alt_mana.empty()) {
+        prompt_mana_payment(caster, alt_mana, spell_entity, orderer);
     }
 
     // life
@@ -1332,13 +1339,13 @@ void select_target(Ability &ability, std::shared_ptr<Orderer> orderer, Zone::Own
         effective_max = static_cast<int>(cur_game.x_paid);
     else if (!ability.target_max_count_expr.empty())
         effective_max = static_cast<int>(evaluate_dynamic_amount(
-            ability.target_max_count_expr, priority_player, orderer, 0));
+            ability.target_max_count_expr, priority_player, orderer, 0, ability.source));
     int effective_min = ability.target_min;
     if (ability.target_min_from_xpaid)
         effective_min = static_cast<int>(cur_game.x_paid);
     else if (!ability.target_min_count_expr.empty())
         effective_min = static_cast<int>(evaluate_dynamic_amount(
-            ability.target_min_count_expr, priority_player, orderer, 0));
+            ability.target_min_count_expr, priority_player, orderer, 0, ability.source));
     ability.target_min = effective_min;
     ability.target_max = effective_max;
 
@@ -1392,10 +1399,11 @@ void select_target(Ability &ability, std::shared_ptr<Orderer> orderer, Zone::Own
 // just the printed ward. Two storage forms, kept distinct so they are not double-counted:
 //   - Printed ward: parse.cpp stores the numeric cost in CardData::ward_cost (with
 //     ward_is_life) and pushes the BARE string "Ward" onto CardData::keywords.
-//   - Granted ward: add_keywords_from_spec pushes the raw spec part "Ward:N" (with a colon
-//     and number) onto the effective keyword list — never the bare "Ward".
+//   - Granted ward: add_keywords_from_spec pushes the raw spec part "Ward:N" or
+//     "Ward:PayLife<N>" (with a colon and cost arg) onto the effective keyword list — never
+//     the bare "Ward".
 // We therefore take the printed instance from ward_cost, and every granted instance from a
-// "Ward:N" keyword string, deduping identical granted copies so a single granted Ward:1 fires
+// "Ward:..." keyword string, deduping identical granted copies so a single granted Ward:1 fires
 // exactly once. Distinct ward costs (e.g. printed Ward 2 plus granted Ward 1) each yield their
 // own instance and each trigger, per CR 702.21h.
 static std::vector<WardInstance> collect_ward_instances(Entity e) {
@@ -1419,11 +1427,10 @@ static std::vector<WardInstance> collect_ward_instances(Entity e) {
             // Only "Ward:N" (granted form). Bare "Ward" is the printed marker, already counted
             // via ward_cost above; skip it to avoid double-firing the printed ward.
             if (kw.rfind("Ward:", 0) != 0) continue;
-            std::string arg = kw.substr(5);
-            int cost = 1;
-            if (!arg.empty() && arg.find_first_not_of("0123456789") == std::string::npos)
-                cost = std::stoi(arg);
-            WardInstance inst{cost, false};  // granted "Ward:N" is a generic-mana cost
+            // Same cost grammar as the printed K:Ward parse — "Ward:N" is a generic-mana
+            // cost, "Ward:PayLife<N>" a life payment (Hexing Squelcher's grant).
+            WardInstance inst{1, false};
+            parse_ward_cost(kw.substr(5), inst.cost, inst.is_life);
             // Dedupe identical granted copies (same source granting Ward:1 once must fire once).
             bool dup = false;
             for (const auto &w : wards)
@@ -1617,9 +1624,11 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
 
             // FLASHBACK COST
             if (action.use_flashback) {
-                // Pay flashback mana cost
-                if (!card_data.flashback_mana_cost.empty()) {
-                    if (!prompt_mana_payment(caster, card_data.flashback_mana_cost, spell_entity, orderer, false)) {
+                // Pay flashback mana cost — flashback is an alternative cost (CR 702.34a),
+                // so an active SetCost floor (Trinisphere) pads it up to the floor (601.2f).
+                ManaValue fb_mana = floored_alt_mana_cost(card_data, card_data.flashback_mana_cost);
+                if (!fb_mana.empty()) {
+                    if (!prompt_mana_payment(caster, fb_mana, spell_entity, orderer, false)) {
                         restore_mana_state(caster, mana_snap, orderer);
                         cur_game.payment_fail_counts[spell_entity]++;
                         game_log("Payment cancelled.\n");
@@ -1646,8 +1655,10 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             // escape mana cost plus the ExileFromGrave additional cost (exile other graveyard
             // cards covering ≥N card types). The exile is a cost, paid as the spell is cast.
             } else if (action.use_escape) {
-                if (!card_data.escape_mana_cost.empty()) {
-                    if (!prompt_mana_payment(caster, card_data.escape_mana_cost, spell_entity, orderer, false)) {
+                // Escape is an alternative cost (CR 702.139a): fold in any active SetCost floor.
+                ManaValue esc_mana = floored_alt_mana_cost(card_data, card_data.escape_mana_cost);
+                if (!esc_mana.empty()) {
+                    if (!prompt_mana_payment(caster, esc_mana, spell_entity, orderer, false)) {
                         restore_mana_state(caster, mana_snap, orderer);
                         cur_game.payment_fail_counts[spell_entity]++;
                         game_log("Payment cancelled.\n");
