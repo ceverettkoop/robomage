@@ -1105,10 +1105,14 @@ size_t evaluate_dynamic_amount(
         return static_cast<size_t>(threshold ? high_val : low_val);
     }
     // Count$UrzaLands.high.low — the "Tron" mana lands (Urza's Mine/Power Plant/Tower): returns
-    // high if the controller controls at least one Urza's Mine AND one Urza's Power Plant AND one
-    // Urza's Tower (a complete set, by card NAME), low otherwise. Each land's own ability scales
-    // its colorless output (Mine/Power Plant: .2.1 → {C}{C} assembled / {C} alone; Tower: .3.1 →
-    // {C}{C}{C} / {C}). General over any card scaling a dynamic amount by Tron assembly.
+    // high if the controller controls at least one Urza's Mine AND one Urza's Power-Plant AND one
+    // Urza's Tower (a complete set), low otherwise. Per CR 205.3i these are LAND TYPES, so the
+    // check reads each permanent's effective type line (Permanent::types — includes types added
+    // by continuous effects, e.g. Planar Nexus's AllNonBasicLandType self-CDA), not card names.
+    // One permanent with several of the subtypes (Nexus) satisfies each it carries. Each land's
+    // own ability scales its colorless output (Mine/Power Plant: .2.1 → {C}{C} assembled / {C}
+    // alone; Tower: .3.1 → {C}{C}{C} / {C}). General over any card scaling a dynamic amount by
+    // Tron assembly.
     if (expr.find("Count$UrzaLands.") != std::string::npos) {
         size_t dot1 = expr.find("UrzaLands.") + std::string("UrzaLands.").size();
         size_t dot2 = expr.find('.', dot1);
@@ -1116,11 +1120,11 @@ size_t evaluate_dynamic_amount(
         int low_val = std::stoi(expr.substr(dot2 + 1));
         bool mine = false, plant = false, tower = false;
         for (auto e : battlefield_permanents(orderer->mEntities, ctrl)) {
-            if (!global_coordinator.entity_has_component<CardData>(e)) continue;
-            const std::string &nm = global_coordinator.GetComponent<CardData>(e).name;
-            if (nm == "Urza's Mine") mine = true;
-            else if (nm == "Urza's Power Plant") plant = true;
-            else if (nm == "Urza's Tower") tower = true;
+            const auto &perm = global_coordinator.GetComponent<Permanent>(e);
+            if (!permanent_has_type(perm, "Urza's")) continue;
+            if (permanent_has_type(perm, "Mine")) mine = true;
+            if (permanent_has_type(perm, "Power-Plant")) plant = true;
+            if (permanent_has_type(perm, "Tower")) tower = true;
         }
         return static_cast<size_t>((mine && plant && tower) ? high_val : low_val);
     }
