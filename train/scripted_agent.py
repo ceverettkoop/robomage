@@ -35,16 +35,17 @@ from env import (
     _CAT_PASS, _CAT_SEL_ATK, _CAT_CONF_ATK, _CAT_SEL_BLK, _CAT_CONF_BLK,
     _CAT_ACTIVATE, _CAT_CAST, _CAT_TARGET, _CAT_LAND, _CAT_MULLIGAN, _CAT_SEARCH,
     _CAT_OTHER, _CAT_PAYING, _CAT_DIG, _CAT_TOP_LIBRARY, _CAT_SB_DONE,
-    _CAT_COMPANION, _CAT_CHOOSE_X, _CAT_CHOOSE_CARD,
+    _CAT_COMPANION, _CAT_CHOOSE_X, _CAT_CHOOSE_CARD, _CAT_YESNO,
     # battlefield / stack layout
     _BF_START, _BF_SLOT_SIZE, _PERM_A_SLOTS, _BF_CARD_OFF, _STACK_START,
-    _STACK_SLOT_SIZE, _HAND_START, _HAND_SLOT_SIZE,
+    _STACK_SLOT_SIZE, _HAND_START, _HAND_SLOT_SIZE, _CUR_TURN_IDX,
     _OFF_IS_TAPPED, _OFF_IS_ATTACKING, _OFF_HAS_SICKNESS, _OFF_IS_CREATURE,
     _OFF_IS_LAND,
     # per-slot card-id decoder
     _slot_card_idx,
     # vocab / targeting constants
     _ACTION_CARD_ID_NULL, _ACTION_CTRL_NULL, _BLUE_POOL_IDX, _WASTELAND_VOCAB_IDX,
+    _AETHER_VIAL_VOCAB_IDX,
     _BASIC_LAND_IDS, _COUNTER_SPELL_VOCAB_IDS, _COUNTERSPELL_VOCAB_IDX,
     _DOOMSDAY_VOCAB_IDX, _DARK_RITUAL_VOCAB_IDX, _THASSAS_ORACLE_VOCAB_IDX,
     _STREET_WRAITH_VOCAB_IDX, _EDGE_OF_AUTUMN_VOCAB_IDX, _DOOMSDAY_DECK_IDS,
@@ -454,12 +455,17 @@ def _doomsday_pile_pick(cats, card_ids) -> int:
 # engine builds it from Entity(0), so it decodes negative, see
 # _EXPLORE_SEARCH_FAIL_WEIGHT), the search cannot succeed. If the resolving
 # item on top of the stack is a self-controlled ability, re-activating its
-# source card would just fail again, so the hard tier records the card id as
-# "fruitless" for the rest of the game and stops offering it the activation.
-# Without this, hard-scripted bw_dnt activated Aether Vial into a guaranteed
-# fail-to-find every turn (~60 activations) until the decision cap — the one
-# non-decisive game of a 441-game fuzz campaign.
+# source card right now would just fail again, so the hard tier records the
+# fail against the card id and skips its ACTIVATE for the rest of the TURN —
+# not the game, because eligibility can change in ways the obs can't see
+# (Aether Vial's search keys on its charge-counter count, which isn't in the
+# state vector: a fail at 0 counters says nothing about next turn's 1). After
+# _FRUITLESS_ACTIVATION_LIMIT failed tries the card is dropped for the game:
+# hard-scripted bw_dnt once activated Vial into a guaranteed fail-to-find
+# every turn (~60 activations) to the decision cap — the one non-decisive
+# game of a 441-game fuzz campaign — so retries must be bounded.
 _SEARCH_MENU_CATS = frozenset((_CAT_SEARCH, _CAT_TOP_LIBRARY, _CAT_CHOOSE_CARD))
+_FRUITLESS_ACTIVATION_LIMIT = 3
 
 
 def _greedy_action(obs: np.ndarray, num_choices: int,
@@ -565,11 +571,29 @@ def _greedy_action(obs: np.ndarray, num_choices: int,
             and card_ids[0] > _ACTION_CARD_ID_NULL + 0.01):
         return num_choices - 1
 
-    # 5d. Delve per-card exile pick (CHOOSE_CARD): candidates are ANY graveyard cards
-    #     (CR 702.66a), so the first pick may eat a card a smarter agent would keep
-    #     (or skip an instant/sorcery Murktide would count). Kept simple at this tier.
+    # 5d. Zone-change card pick (CHOOSE_CARD). An optional search-style pick (Aether
+    #     Vial's put-a-creature-from-hand) leads with a null-id "Fail to find" slot —
+    #     take the first REAL card instead, so Vial actually deploys a creature when
+    #     one is eligible (declining was strictly worse: the guard below never
+    #     blacklists a menu that has a real pick, so the agent just failed forever).
+    #     Delve per-card exile picks are all-real menus, so they still take slot 0
+    #     (the first pick may eat a card a smarter agent would keep, or skip an
+    #     instant/sorcery Murktide would count — kept simple at this tier).
     if any(c == _CAT_CHOOSE_CARD for c in cats):
+        for i, c in enumerate(cats):
+            if c == _CAT_CHOOSE_CARD and _action_card_id(card_ids, i) >= 0:
+                return i
         return 0
+
+    # 5e. Optional "may" trigger (OPTIONAL_YESNO, 0=Decline / 1=Accept). The tier's
+    #     default is to decline (the final fallback returns 0), but Aether Vial's
+    #     upkeep charge-counter trigger must be ACCEPTED or the Vial sits at 0
+    #     counters forever and never deploys a creature. The resolving trigger is on
+    #     top of the stack while the yes/no is asked, so the source is identifiable.
+    if (num_choices == 2 and all(c == _CAT_YESNO for c in cats)
+            and obs[_STACK_START] > 0.5 and obs[_STACK_START + 2] < 0.5
+            and _slot_card_idx(obs, _STACK_START + 1) == _AETHER_VIAL_VOCAB_IDX):
+        return 1
 
     # 6. Cast spells.
     #    Counter spells (Counterspell, Daze, Force of Will) require an opponent's spell
@@ -832,12 +856,13 @@ class ScriptedAgent:
         # Card ids already cast/activated this game: only touched by the EXPLORE
         # tier (novelty bias). Reset per game via new_game().
         self._explore_seen: set[int] = set()
-        # Stall guard (GREEDY/HEURISTIC only): card ids whose activated ability
-        # searched and found NOTHING this game, keyed by seat (obs[32] > 0.5) so
-        # one shared instance driving both players (e.g. _DEFAULT_AGENT via
-        # scripted_action) can't leak one seat's dead activation to the other.
-        # Reset per game via new_game(). See _SEARCH_MENU_CATS / _hard_act.
-        self._fruitless_activations: dict[bool, set[int]] = {}
+        # Stall guard (GREEDY/HEURISTIC only): per-seat map of card id ->
+        # [failed_search_count, turn_of_last_fail] for activated abilities whose
+        # search found NOTHING. Keyed by seat (obs[32] > 0.5) so one shared
+        # instance driving both players (e.g. _DEFAULT_AGENT via scripted_action)
+        # can't leak one seat's dead activation to the other. Reset per game via
+        # new_game(). See _SEARCH_MENU_CATS / _hard_act.
+        self._fruitless_activations: dict[bool, dict[int, list[int]]] = {}
 
     def new_game(self) -> None:
         """Reset per-game state at the start of a game.
@@ -869,14 +894,16 @@ class ScriptedAgent:
         itself names the culprit — no cross-decision correlation state needed.
         When a search-category menu offers ONLY the fail-to-find slot, the
         search provably cannot succeed; if the top of the stack is a
-        self-controlled ability, its source card id is recorded as fruitless for
-        the rest of the game and the greedy ACTIVATE scan skips it from then on.
-        This stops e.g. Aether Vial being re-activated into a guaranteed
-        fail-to-find every turn until the decision cap (a hand change could in
-        principle make a later activation succeed, but per-game permanence is an
-        acceptable trade for never stalling — the fuzz-campaign stall hand never
-        changed). Everything is O(1) per decision: two single-float decodes plus
-        set/dict lookups, and the stack slot is read only on a fail-only menu.
+        self-controlled ability, the fail is recorded against its source card
+        id and the greedy ACTIVATE scan skips that card for the rest of the
+        TURN — retrying next turn, because eligibility can change invisibly
+        (Aether Vial's search keys on its charge counters, which are not in
+        the obs: a fail at 0 counters says nothing about 1). A card that fails
+        _FRUITLESS_ACTIVATION_LIMIT times is dropped for the game, so the
+        original stall (Vial re-activated into a guaranteed fail every turn to
+        the decision cap) stays bounded at a few wasted activations. Everything
+        is O(1) per decision except a small set build when fails exist (rare);
+        the stack slot is read only on a fail-only menu.
         """
         # cats[0] is enough to classify the menus we care about: a mulligan
         # query is all-MULLIGAN, and a fail-only search menu has exactly one
@@ -895,8 +922,17 @@ class ScriptedAgent:
             if (cid >= 0 and obs[_STACK_START] > 0.5          # self-controlled
                     and obs[_STACK_START + 2] < 0.5):         # ability, not spell
                 seat = bool(obs[32] > 0.5)
-                self._fruitless_activations.setdefault(seat, set()).add(cid)
-        fruitless = self._fruitless_activations.get(bool(obs[32] > 0.5))
+                turn = int(round(float(obs[_CUR_TURN_IDX]) * 50))
+                entry = self._fruitless_activations.setdefault(
+                    seat, {}).setdefault(cid, [0, -1])
+                entry[0] += 1
+                entry[1] = turn
+        fruitless = None
+        seat_fails = self._fruitless_activations.get(bool(obs[32] > 0.5))
+        if seat_fails:
+            turn = int(round(float(obs[_CUR_TURN_IDX]) * 50))
+            fruitless = {cid for cid, (n, t) in seat_fails.items()
+                         if n >= _FRUITLESS_ACTIVATION_LIMIT or t == turn}
         if self.config.skill is Skill.HEURISTIC:
             return self._heuristic_action(obs, num_choices, fruitless)
         return _greedy_action(obs, num_choices, fruitless)

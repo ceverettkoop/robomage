@@ -587,6 +587,7 @@ _CAT_SB_IN      = 24  # sideboard: choose card from sideboard to add
 _CAT_SB_OUT     = 25  # sideboard: choose card from main deck to remove
 _CAT_SB_DONE    = 26  # sideboard: finish sideboarding
 _CAT_COMPANION  = 46  # pay {3}: put your companion from the sideboard into your hand
+_CAT_YESNO      = 41  # optional yes/no confirmation (OPTIONAL_YESNO; 0=Decline, 1=Accept)
 
 # Colored mana requirements per card vocab index (card_vocab.h).
 # Keys are color pool indices: W=0, U=1, B=2, R=3, G=4, C=5.
@@ -639,6 +640,7 @@ _OFF_IS_LAND      = 9    # new: 1.0 if this slot is a land
 
 # Vocab indices used for targeting decisions (mirror src/card_vocab.h)
 _WASTELAND_VOCAB_IDX     = 10
+_AETHER_VIAL_VOCAB_IDX   = 121
 _BASIC_LAND_IDS          = frozenset({0, 19})  # Mountain(0), Island(19)
 _COUNTER_SPELL_VOCAB_IDS = frozenset({12, 13, 22})  # Force of Will(12), Daze(13), Counterspell(22)
 _COUNTERSPELL_VOCAB_IDX  = 22
