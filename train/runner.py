@@ -78,8 +78,8 @@ def run_games(controller_a, controller_b, *,
         capped = False
         total_reward = 0.0
         decision = 0
-        turn = 0
-        prev_active_is_a = None       # None until the first non-mulligan query
+        turn = 0                      # last turn header shown (1-based, from the state vector)
+        pregame_shown = False
         known_hand = {"A": [], "B": []}
         log_lines = []                # buffered so a draw can be dumped to file
 
@@ -111,16 +111,25 @@ def run_games(controller_a, controller_b, *,
             step_name = _STEP_NAMES[int(np.argmax(obs[18:31]))]
             cats = np.round(
                 obs[STATE_SIZE:STATE_SIZE + num_choices] * ACTION_CATEGORY_MAX).astype(int)
-            is_mulligan = any(c == 11 for c in cats)
+            is_pregame = decode.is_mulligan(cats) or decode.is_bottom(cats)
 
             known_hand[player] = decode.decode_hand(obs)
 
-            if not is_mulligan and active_is_a != prev_active_is_a:
-                turn += 1
+            # Turn headers mirror the engine's sequential 1-based narrative
+            # headers (A=1, B=2, A=3, ...) by decoding Game::turn from the
+            # state vector — a local flip counter drifts when a turn yields no
+            # decision query (or the same player takes consecutive turns).
+            # Mulligan/bottoming decisions happen before turn 1; mark them
+            # PREGAME like the engine does instead of showing a turn number.
+            if is_pregame:
+                if not pregame_shown:
+                    emit("--- Pregame ---")
+                    pregame_shown = True
+            elif (cur_turn := decode.decode_turn(obs)) != turn:
+                turn = cur_turn
                 emit(f"--- Turn {turn} (Player {'A' if active_is_a else 'B'}) ---")
                 emit(f"  PA: {', '.join(known_hand['A']) or '(empty)'}")
                 emit(f"  PB: {', '.join(known_hand['B']) or '(empty)'}")
-                prev_active_is_a = active_is_a
 
             controller = controller_a if priority_is_a else controller_b
             label = label_a if priority_is_a else label_b

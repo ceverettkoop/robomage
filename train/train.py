@@ -357,8 +357,7 @@ class ReplayLogCallback(BaseCallback):
             obs, _ = masked.reset()
             done = False
             total_reward = 0.0
-            turn = 0
-            prev_active_is_a = None
+            turn = 0   # last turn header shown (1-based, from the state vector)
             known_hand = {"A": [], "B": []}
 
             with open(log_path, "w") as f:
@@ -384,13 +383,16 @@ class ReplayLogCallback(BaseCallback):
 
                     known_hand[cur_side] = _decode_hand(obs)
 
-                    if not is_mulligan and active_is_a != prev_active_is_a:
-                        turn += 1
+                    # Sequential 1-based turn from the state vector (matches the
+                    # engine's TURN headers); a flip counter drifts when a turn
+                    # yields no decision query.
+                    cur_turn = decode.decode_turn(obs)
+                    if not is_mulligan and cur_turn != turn:
+                        turn = cur_turn
                         active_label = "A" if active_is_a else "B"
                         f.write(f"--- Turn {turn} (Player {active_label}) ---\n")
                         f.write(f"  PA: {', '.join(known_hand['A']) or '(empty)'}\n")
                         f.write(f"  PB: {', '.join(known_hand['B']) or '(empty)'}\n")
-                        prev_active_is_a = active_is_a
 
                     if model_has_priority:
                         masks = env.action_masks() if USE_MASKABLE else None
