@@ -8,6 +8,7 @@
 #include "../cli_output.h"
 #include "../components/permanent.h"
 #include "../ecs/coordinator.h"
+#include "../game_queries.h"
 #include "../input_logger.h"
 
 extern Coordinator global_coordinator;
@@ -23,17 +24,13 @@ bool attach(Ability &ab, std::shared_ptr<Orderer> orderer) {
                                  ? cur_game.remembered_entities[0]
                                  : ab.target;
 
-    if (ab.optional) {
-        // Ask the controller whether to attach
-        game_log("Attach equipment to token? (0=No 1=Yes)\n");
-        std::vector<LegalAction> attach_actions = {
-            LegalAction(PASS_PRIORITY, std::string("No")),
-            LegalAction(PASS_PRIORITY, std::string("Yes")),
-        };
-        attach_actions[0].category = ActionCategory::OPTIONAL_YESNO;
-        attach_actions[1].category = ActionCategory::OPTIONAL_YESNO;
-        int choice = InputLogger::instance().get_input(attach_actions);
-        if (choice == 0) goto attach_done;
+    if (ab.optional_choice && target_creature != 0) {
+        // Optional$ True — "you MAY attach ..." (Cori-Steel Cutter's DBAttach). The ability's
+        // controller decides at resolution through the shared yes/no prompt, which seats the
+        // decision on them (like every other resolution-time "you may" confirmation).
+        if (!request_optional_yesno(ab.controller, "attach " + entity_name(equip_entity) +
+                                                       " to " + entity_name(target_creature)))
+            goto attach_done;
     }
     // A reanimation-then-attach chain (Pre-War Formalwear: ChangeZone Graveyard→Battlefield then
     // DB$ Attach Defined$ Remembered) resolves before the next state-based pass adds the moved
