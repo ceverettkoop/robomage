@@ -1,6 +1,7 @@
 #include "deck.h"
 
 #include <fstream>
+#include <sstream>
 
 #include "../card_db.h"
 #include "../error.h"
@@ -9,8 +10,26 @@ extern std::string RESOURCE_DIR;
 
 Deck::Deck(std::string path) {
     auto stream = std::fstream(path);
-    if (!stream.is_open()) non_fatal_error("Failed to open decklist at " + path);
+    if (!stream.is_open()) {
+        non_fatal_error("Failed to open decklist at " + path);
+        return;
+    }
 
+    std::stringstream buffer;
+    buffer << stream.rdbuf();
+    raw_text = buffer.str();
+    parse_text(raw_text);
+}
+
+Deck Deck::from_string(const std::string &text) {
+    Deck deck;
+    deck.raw_text = text;
+    deck.parse_text(text);
+    return deck;
+}
+
+void Deck::parse_text(const std::string &text) {
+    std::istringstream stream(text);
     std::string line;
     bool in_sideboard = false;
 

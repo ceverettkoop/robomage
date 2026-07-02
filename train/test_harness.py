@@ -208,6 +208,10 @@ def main():
                              "deck via --deck-a/--deck-b. Implied automatically when "
                              "--hand-a/--hand-b are given. Without it, libraries are "
                              "shuffled with the seeded RNG (deterministic per --seed).")
+    parser.add_argument("--log-decisions", action="store_true",
+                        help="Have the engine write its self-contained RMLOG v2 decision "
+                             "log (bin/resources/logs/game_<seed>.log), replayable with "
+                             "--replay alone. Off by default in machine mode.")
     parser.add_argument("--seed", type=int, default=None,
                         help="RNG seed (default: 1, or scenario's seed if given)")
     parser.add_argument("--max-decisions", type=int, default=None,
@@ -353,7 +357,7 @@ def main():
             exile_a=ex_a, exile_b=ex_b,
             sideboard_a=sb_a, sideboard_b=sb_b, no_shuffle=no_shuffle,
             life_a=life_a, life_b=life_b,
-            max_decisions=max_decisions)
+            max_decisions=max_decisions, log_decisions=args.log_decisions)
         winner = bool(wins or losses)
         # A --play run resolves specs to concrete indices; print them so the line
         # can be replayed deterministically as a plain --actions integer list.
