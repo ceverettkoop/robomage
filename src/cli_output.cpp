@@ -326,7 +326,9 @@ void print_game_state(const GameState* gs) {
                 if (slot->has_summoning_sickness && len < (int)sizeof(line))
                     len += snprintf(line + len, (size_t)((int)sizeof(line) - len), " (SICK)");
                 if (slot->damage > 0 && len < (int)sizeof(line))
-                    snprintf(line + len, (size_t)((int)sizeof(line) - len), " (%d damage)", slot->damage);
+                    len += snprintf(line + len, (size_t)((int)sizeof(line) - len), " (%d damage)", slot->damage);
+                if (slot->counters[0] != '\0' && len < (int)sizeof(line))
+                    snprintf(line + len, (size_t)((int)sizeof(line) - len), " {%s}", slot->counters);
                 game_log("%s\n", line);
             }
             if (!found_any) game_log("  (no permanents)\n");
