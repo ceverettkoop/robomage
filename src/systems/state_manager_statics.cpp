@@ -450,6 +450,17 @@ ManaValue effective_base_cost(const CardData &card_data, Zone::Ownership caster)
     return cost;
 }
 
+ManaValue floored_alt_mana_cost(const CardData &card_data, const ManaValue &alt_mana) {
+    // Same floor rule as effective_base_cost's SetCost step, applied to the SUBSTITUTED
+    // (alternative) mana cost instead of the printed one (CR 601.2f: Trinisphere checks the
+    // cost after alternative costs and increases/reductions are applied). Colored pips stay;
+    // only generic is added to raise a sub-floor total.
+    ManaValue cost = alt_mana;
+    int floor = active_cost_floor_for(card_data);
+    while (static_cast<int>(cost.size()) < floor) cost.insert(GENERIC);
+    return cost;
+}
+
 static void add_keywords_from_spec(Creature &cr, const std::string &spec);
 static bool removal_affects(const ActiveStatic &r, Entity entity);
 

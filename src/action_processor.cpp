@@ -685,16 +685,22 @@ static void pay_alternate_cost(const LegalAction &action, Game &game, std::share
     Entity caster_entity = (caster == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
     auto &player = global_coordinator.GetComponent<Player>(caster_entity);
 
-    // Free alt cost (e.g. Once Upon a Time first spell)
-    if (card_data.alt_cost.is_free) {
+    // Mana portion of the alt cost (e.g. Evoke:R) with the active SetCost floor (Trinisphere)
+    // folded in — CR 601.2f applies the floor AFTER the alternative cost is substituted for the
+    // mana cost, so even a "free" alt cast ({0} Mindbreak Trap, Daze's pitch) pays up to the
+    // floor. The non-mana parts of the cost below are unaffected.
+    ManaValue alt_mana = floored_alt_mana_cost(card_data, card_data.alt_cost.mana_cost);
+
+    // Free alt cost (e.g. Once Upon a Time first spell), with no floor imposed on it
+    if (card_data.alt_cost.is_free && alt_mana.empty()) {
         game_log("%s casts for free (alternate cost)\n", player_name(caster).c_str());
         return;
     }
 
-    // mana portion of the alt cost (e.g. Evoke:R). Affordability is pre-verified by
-    // can_afford_alt, so in machine mode this always succeeds.
-    if (!card_data.alt_cost.mana_cost.empty()) {
-        prompt_mana_payment(caster, card_data.alt_cost.mana_cost, spell_entity, orderer);
+    // Affordability is pre-verified by can_afford_alt (against the same floored cost),
+    // so in machine mode this always succeeds.
+    if (!alt_mana.empty()) {
+        prompt_mana_payment(caster, alt_mana, spell_entity, orderer);
     }
 
     // life
@@ -1618,9 +1624,11 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
 
             // FLASHBACK COST
             if (action.use_flashback) {
-                // Pay flashback mana cost
-                if (!card_data.flashback_mana_cost.empty()) {
-                    if (!prompt_mana_payment(caster, card_data.flashback_mana_cost, spell_entity, orderer, false)) {
+                // Pay flashback mana cost — flashback is an alternative cost (CR 702.34a),
+                // so an active SetCost floor (Trinisphere) pads it up to the floor (601.2f).
+                ManaValue fb_mana = floored_alt_mana_cost(card_data, card_data.flashback_mana_cost);
+                if (!fb_mana.empty()) {
+                    if (!prompt_mana_payment(caster, fb_mana, spell_entity, orderer, false)) {
                         restore_mana_state(caster, mana_snap, orderer);
                         cur_game.payment_fail_counts[spell_entity]++;
                         game_log("Payment cancelled.\n");
@@ -1647,8 +1655,10 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             // escape mana cost plus the ExileFromGrave additional cost (exile other graveyard
             // cards covering ≥N card types). The exile is a cost, paid as the spell is cast.
             } else if (action.use_escape) {
-                if (!card_data.escape_mana_cost.empty()) {
-                    if (!prompt_mana_payment(caster, card_data.escape_mana_cost, spell_entity, orderer, false)) {
+                // Escape is an alternative cost (CR 702.139a): fold in any active SetCost floor.
+                ManaValue esc_mana = floored_alt_mana_cost(card_data, card_data.escape_mana_cost);
+                if (!esc_mana.empty()) {
+                    if (!prompt_mana_payment(caster, esc_mana, spell_entity, orderer, false)) {
                         restore_mana_state(caster, mana_snap, orderer);
                         cur_game.payment_fail_counts[spell_entity]++;
                         game_log("Payment cancelled.\n");
