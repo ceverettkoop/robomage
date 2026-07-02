@@ -581,17 +581,17 @@ static ManaValue pay_from_pool(ManaValue &pool, const ManaValue &cost) {
     return remaining;
 }
 
-// True if `e` is a graveyard instant/sorcery owned by `controller` — i.e. a card
-// Delve can exile to pay a generic pip. Single source for "what can Delve eat",
-// consumed by both the automatic payer and the interactive prompt.
+// True if `e` is a card in `controller`'s graveyard — i.e. a card Delve can exile to
+// pay a generic pip. CR 702.66a places no type restriction ("you may exile a card from
+// your graveyard rather than pay that mana"); riders that care about the exiled cards'
+// types (Murktide Regent's etbCounter) filter cur_game.delve_exiled themselves. Single
+// source for "what can Delve eat", consumed by both the automatic payer and the
+// interactive prompt.
 static bool is_delve_eligible(Entity e, Zone::Ownership controller) {
     if (!global_coordinator.entity_has_component<Zone>(e)) return false;
     auto &ez = global_coordinator.GetComponent<Zone>(e);
     if (ez.location != Zone::GRAVEYARD || ez.owner != controller) return false;
-    if (!global_coordinator.entity_has_component<CardData>(e)) return false;
-    for (auto &t : global_coordinator.GetComponent<CardData>(e).types)
-        if (t.kind == TYPE && (t.name == "Instant" || t.name == "Sorcery")) return true;
-    return false;
+    return global_coordinator.entity_has_component<CardData>(e);
 }
 
 // Pay one generic pip via Delve: exile `e`, record it for the etbCounter count, and

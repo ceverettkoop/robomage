@@ -132,7 +132,7 @@ bool prompt_mana_payment(Zone::Ownership controller, const ManaValue& cost,
                          bool has_delve = false, bool has_improvise = false);
 
 // Interactive Delve (CR 702.66 / 601.2h): the caster first chooses HOW MANY graveyard
-// instants/sorceries to exile (a CHOOSE_X count menu constrained to counts whose remaining
+// cards to exile (a CHOOSE_X count menu constrained to counts whose remaining
 // cost is still payable, so any offered pick is safe), then WHICH cards, one CHOOSE_CARD
 // pick at a time (each exile removes that card from the next menu). Exiled cards are
 // recorded in cur_game.delve_exiled (for etbCounter counts, e.g. Murktide Regent) and each

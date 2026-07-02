@@ -443,8 +443,9 @@ def _greedy_action(obs: np.ndarray, num_choices: int) -> int:
             and card_ids[0] > _ACTION_CARD_ID_NULL + 0.01):
         return num_choices - 1
 
-    # 5d. Delve per-card exile pick (CHOOSE_CARD): all candidates are graveyard
-    #     instants/sorceries, so the first is as good as any at this tier.
+    # 5d. Delve per-card exile pick (CHOOSE_CARD): candidates are ANY graveyard cards
+    #     (CR 702.66a), so the first pick may eat a card a smarter agent would keep
+    #     (or skip an instant/sorcery Murktide would count). Kept simple at this tier.
     if any(c == _CAT_CHOOSE_CARD for c in cats):
         return 0
 

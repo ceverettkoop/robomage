@@ -25,7 +25,11 @@ struct StaticAbility {
     // ETB counter fields (category = "EtbCounter"):
     std::string counter_type = "";    // "P1P1" for +1/+1 counters, "CHARGE" for charge counters
     int counter_count = 0;            // literal count (etbCounter:M1M1:6 → 6); 0 when dynamic
-    bool counter_count_from_delve = false;  // counter count = cur_game.delve_exiled.size()
+    bool counter_count_from_delve = false;  // counter count = delve exiles matching the filter below
+    // Count$ValidExile printed-characteristics filter for the delve counter count (Murktide
+    // Regent: "Instant,Sorcery" — the ExiledWithSource qualifier is stripped at parse time,
+    // it being implied by membership in cur_game.delve_exiled). Empty = count every exile.
+    std::string counter_count_delve_filter = "";
     bool counter_count_from_xpaid = false;  // counter count = X paid at cast (Chalice of the Void: Count$xPaid)
     // RaiseCost fields (category = "RaiseCost"):
     int raise_cost = 0;               // generic mana added to cost of matching spells

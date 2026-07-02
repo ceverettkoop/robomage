@@ -565,6 +565,7 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             std::string counter_type_str = "P1P1";
             bool from_delve = false;
             bool from_xpaid = false;
+            std::string delve_filter = "";
             int literal_count = 0;
             if (!sub.empty() && sub[0] == ':') {
                 size_t c1 = sub.find(':', 1);
@@ -583,8 +584,30 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
                     } else {
                         auto svar_it = svars.find(count_tok);
                         if (svar_it != svars.end()) {
-                            if (svar_it->second.find("ExiledWithSource") != std::string::npos)
+                            if (svar_it->second.find("ExiledWithSource") != std::string::npos) {
                                 from_delve = true;
+                                // Capture the Count$ValidExile printed-characteristics filter
+                                // (Murktide Regent: "Instant.ExiledWithSource,
+                                // Sorcery.ExiledWithSource") so the ETB counter count is
+                                // restricted to the matching delve exiles — Delve itself may
+                                // exile ANY card (CR 702.66a). The ExiledWithSource qualifier
+                                // is implied by membership in cur_game.delve_exiled, so strip
+                                // it; the remainder ("Instant,Sorcery") is a card_matches_any
+                                // spec.
+                                const std::string ve_prefix = "Count$ValidExile ";
+                                size_t vp = svar_it->second.find(ve_prefix);
+                                if (vp != std::string::npos) {
+                                    delve_filter =
+                                        svar_it->second.substr(vp + ve_prefix.size());
+                                    for (const char *qual :
+                                         {".ExiledWithSource", "+ExiledWithSource"}) {
+                                        size_t qp;
+                                        while ((qp = delve_filter.find(qual)) !=
+                                               std::string::npos)
+                                            delve_filter.erase(qp, strlen(qual));
+                                    }
+                                }
+                            }
                             // Count$xPaid — the count equals the X value paid at cast time
                             // (Chalice of the Void enters with X charge counters).
                             else if (svar_it->second.find("xPaid") != std::string::npos)
@@ -598,6 +621,7 @@ static void parse_card_face(const std::string& front_script, CardData& card) {
             sa.counter_type = counter_type_str;
             sa.counter_count = literal_count;
             sa.counter_count_from_delve = from_delve;
+            sa.counter_count_delve_filter = delve_filter;
             sa.counter_count_from_xpaid = from_xpaid;
             card.static_abilities.push_back(sa);
             continue;

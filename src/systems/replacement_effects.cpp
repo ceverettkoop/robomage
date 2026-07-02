@@ -147,7 +147,18 @@ std::vector<Candidate> collect(const ReplacementEvent &ev,
                 const StaticAbility &sa = cd.static_abilities[i];
                 if (sa.category != "EtbCounter") continue;
                 int n = 0;
-                if (sa.counter_count_from_delve) n = static_cast<int>(cur_game.delve_exiled.size());
+                if (sa.counter_count_from_delve) {
+                    // Delve may exile ANY card (CR 702.66a); the etbCounter rider counts only
+                    // the exiles matching the script's ValidExile filter (Murktide Regent:
+                    // "each instant and sorcery card exiled with it" → "Instant,Sorcery").
+                    MatchCtx dctx;
+                    dctx.controller = ev.affected_player;
+                    dctx.source = ev.entity;
+                    for (Entity ex : cur_game.delve_exiled)
+                        if (sa.counter_count_delve_filter.empty() ||
+                            card_matches_any(ex, sa.counter_count_delve_filter, dctx))
+                            n++;
+                }
                 else if (sa.counter_count_from_xpaid) {
                     auto it = cur_game.pending_etb_xpaid.find(ev.entity);
                     if (it != cur_game.pending_etb_xpaid.end()) n = it->second;
