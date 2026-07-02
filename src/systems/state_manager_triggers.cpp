@@ -465,6 +465,16 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                         if (!is_permanent_card(global_coordinator.GetComponent<CardData>(ev_card)))
                             continue;
                     }
+                    // ValidCard$ ...+untapped filter (Mystic Sanctuary: "When this land enters
+                    // untapped"): the changing card must be an untapped battlefield permanent
+                    // right now. The enters-tapped replacement dispatch (T2.2) runs inside
+                    // apply_permanent_components, which precedes this trigger scan in the SBA
+                    // loop, so Permanent::is_tapped already reflects how the card entered.
+                    if (ab.trigger_valid_card_untapped && ev.HasParam(Params::ENTITY)) {
+                        Entity ev_card = ev.GetParam<Entity>(Params::ENTITY);
+                        if (!global_coordinator.entity_has_component<Permanent>(ev_card)) continue;
+                        if (global_coordinator.GetComponent<Permanent>(ev_card).is_tapped) continue;
+                    }
                     // ValidCard(s)$ <Subtype> filter (Ajani: a Cat changing zone). Checked
                     // against the changing card's CardData or Token subtypes.
                     if (!ab.trigger_valid_card_subtype.empty() && ev.HasParam(Params::ENTITY)) {
@@ -713,6 +723,11 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
             if (ab.trigger_requires_entered_by_cast && !(lki && lki->entered_by_cast)) continue;
             if (ab.is_evoke_sacrifice && !(lki && lki->evoked)) continue;
             if (ab.is_offspring_token && !(lki && lki->entered_with_offspring)) continue;
+            // ValidCard$ ...+untapped: the look-back path only runs once the permanent has
+            // already left the battlefield again, and its tapped-as-it-entered state is not
+            // captured in LKI — the live Permanent check the battlefield scan uses is gone.
+            // Be conservative and don't fire the untapped-gated trigger here.
+            if (ab.trigger_valid_card_untapped) continue;
 
             Ability trigger_ab = ab;
             trigger_ab.source = entity;
@@ -912,8 +927,19 @@ static void place_triggers_apnap(Game &game, std::shared_ptr<Orderer> orderer,
                 pick = static_cast<size_t>(InputLogger::instance().get_input(choices));
             }
             PendingTrigger &pt = pending[group[pick]];
-            if (pt.needs_target && has_legal_targets(pt.ab, orderer))
+            if (pt.needs_target) {
+                // CR 603.3d: if no legal choices can be made for a required target as the
+                // triggered ability would go on the stack, the ability is simply removed —
+                // never placed target-less (it would fizzle confusingly, or worse, resolve
+                // against target 0). Optional targeting (target_min 0) always passes.
+                if (!has_legal_targets(pt.ab, orderer)) {
+                    game_log("%s's trigger is removed - no legal targets (603.3d)\n",
+                             entity_name(pt.source).c_str());
+                    group.erase(group.begin() + static_cast<ptrdiff_t>(pick));
+                    continue;
+                }
                 select_target(pt.ab, orderer, pt.controller);
+            }
             orderer->push_ability_onto_stack(pt.ab, pt.controller);
             game_log("%s\n", pt.log_line.c_str());
             group.erase(group.begin() + static_cast<ptrdiff_t>(pick));

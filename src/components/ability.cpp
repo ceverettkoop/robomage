@@ -798,13 +798,21 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
         if (opp_ctrl && cz.owner == caster) return false;
         if (!global_coordinator.entity_has_component<CardData>(cand)) return false;
         auto &cd = global_coordinator.GetComponent<CardData>(cand);
-        bool type_ok = !(inc_creatures || inc_lands || inc_artifacts || inc_enchantments);
+        // Instant/Sorcery graveyard targets (Mystic Sanctuary: ValidTgts$
+        // Instant.YouOwn,Sorcery.YouOwn) filter alongside the permanent types — without
+        // these the type gate fell open and offered the whole graveyard.
+        bool inc_instants  = vt.find("Instant") != std::string::npos;
+        bool inc_sorceries = vt.find("Sorcery") != std::string::npos;
+        bool type_ok = !(inc_creatures || inc_lands || inc_artifacts || inc_enchantments ||
+                         inc_instants || inc_sorceries);
         for (auto &t : cd.types) {
             if (t.kind != TYPE) continue;
             if (inc_creatures    && t.name == "Creature")    type_ok = true;
             if (inc_lands        && t.name == "Land")        type_ok = true;
             if (inc_artifacts    && t.name == "Artifact")    type_ok = true;
             if (inc_enchantments && t.name == "Enchantment") type_ok = true;
+            if (inc_instants     && t.name == "Instant")     type_ok = true;
+            if (inc_sorceries    && t.name == "Sorcery")     type_ok = true;
         }
         if (!type_ok) return false;
         // Mana-value bound (e.g. Lorehold Charm's cmcLE2): a graveyard card has no live MV

@@ -2555,6 +2555,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
     bool valid_card_artifact = false;
     bool valid_card_colorless = false;
     bool valid_card_non_token = false;
+    bool valid_card_untapped = false;
     bool valid_card_permanent = false;
     bool mode_is_drawn = false;
     bool mode_is_attacks = false;
@@ -2691,6 +2692,11 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
             if (value.find("Artifact")    != std::string::npos) valid_card_artifact     = true;
             if (value.find("Colorless")   != std::string::npos) valid_card_colorless    = true;
             if (value.find("!token")      != std::string::npos) valid_card_non_token    = true;
+            // "+untapped"/".untapped" qualifier — the changing card must be untapped when the
+            // trigger checks it (Mystic Sanctuary: ValidCard$ Card.Self+untapped, "enters
+            // untapped"). Matched delimited so a plain "tapped" token can't set it.
+            if (value.find("+untapped")   != std::string::npos ||
+                value.find(".untapped")   != std::string::npos) valid_card_untapped     = true;
             // ValidCard$ Permanent (head token) — restrict to permanent card types. Matched
             // on the leading token so a subtype merely named within isn't misread.
             if (value.substr(0, value.find_first_of(".+")) == "Permanent")
@@ -2802,6 +2808,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
         ability.trigger_valid_card_is_artifact            = valid_card_artifact;
         ability.trigger_valid_card_colorless              = valid_card_colorless;
         ability.trigger_valid_card_non_token              = valid_card_non_token;
+        ability.trigger_valid_card_untapped               = valid_card_untapped;
         ability.trigger_valid_card_is_permanent           = valid_card_permanent;
         ability.trigger_valid_card_subtype                = valid_card_subtype;
         ability.trigger_valid_player_is_controller        = valid_card_owner_you || valid_player_is_you;
@@ -3037,6 +3044,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
                 effect.trigger_valid_card_is_artifact           = ability.trigger_valid_card_is_artifact;
                 effect.trigger_valid_card_colorless             = ability.trigger_valid_card_colorless;
                 effect.trigger_valid_card_non_token             = ability.trigger_valid_card_non_token;
+                effect.trigger_valid_card_untapped              = ability.trigger_valid_card_untapped;
                 effect.trigger_valid_card_is_permanent          = ability.trigger_valid_card_is_permanent;
                 effect.trigger_valid_card_subtype               = ability.trigger_valid_card_subtype;
                 effect.trigger_optional                         = ability.trigger_optional;
