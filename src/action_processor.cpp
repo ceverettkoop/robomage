@@ -1621,61 +1621,40 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             ManaValue deferred_mana_cost;
             bool deferred_mana_pending = false;
             bool deferred_delve = false, deferred_improvise = false;
+            // Non-mana alternative-cost pieces (flashback life/sacrifice, escape
+            // exile-from-graveyard) are deferred the same way: targets first (601.2c),
+            // then every cost (601.2g/h). They are paid only after the deferred mana
+            // payment commits, so a cancelled payment never costs life or a creature.
+            int deferred_life_cost = 0;
+            std::string deferred_sac_spec;
+            int deferred_exile_min_types = 0, deferred_exile_count = 0;
 
-            // FLASHBACK COST
+            // FLASHBACK COST — determined here (601.2f), but PAID after targets are
+            // chosen (601.2c before 601.2g/h; see the deferred_* block below). Paying
+            // the sacrifice first leaked information and changed the board before the
+            // target was locked in (Cabal Therapy: Flashback—Sacrifice a creature).
             if (action.use_flashback) {
-                // Pay flashback mana cost — flashback is an alternative cost (CR 702.34a),
+                // Flashback mana cost — flashback is an alternative cost (CR 702.34a),
                 // so an active SetCost floor (Trinisphere) pads it up to the floor (601.2f).
-                ManaValue fb_mana = floored_alt_mana_cost(card_data, card_data.flashback_mana_cost);
-                if (!fb_mana.empty()) {
-                    if (!prompt_mana_payment(caster, fb_mana, spell_entity, orderer, false)) {
-                        restore_mana_state(caster, mana_snap, orderer);
-                        cur_game.payment_fail_counts[spell_entity]++;
-                        game_log("Payment cancelled.\n");
-                        break;
-                    }
-                }
-                // Pay flashback life cost
-                if (card_data.flashback_alt_cost.life_cost > 0) {
-                    Entity caster_entity = (caster == Zone::PLAYER_A)
-                        ? cur_game.player_a_entity : cur_game.player_b_entity;
-                    auto &player = global_coordinator.GetComponent<Player>(caster_entity);
-                    player.life_total -= card_data.flashback_alt_cost.life_cost;
-                    game_log("%s pays %d life\n", player_name(caster).c_str(), card_data.flashback_alt_cost.life_cost);
-                }
-                // Pay flashback sacrifice cost (Cabal Therapy: Flashback—Sacrifice a creature).
-                // The cast is only offered when a matching permanent exists (cast legality),
-                // so there is always something to sacrifice here.
-                if (!card_data.flashback_alt_cost.sac_cost_spec.empty()) {
-                    pay_sacrifice_cost(caster, card_data.flashback_alt_cost.sac_cost_spec,
-                                       spell_entity, orderer);
-                }
+                deferred_mana_cost = floored_alt_mana_cost(card_data, card_data.flashback_mana_cost);
+                deferred_mana_pending = true;
+                deferred_life_cost = card_data.flashback_alt_cost.life_cost;
+                // Flashback sacrifice cost: the cast is only offered when a matching
+                // permanent exists (cast legality), so there is always something to
+                // sacrifice when the deferred payment runs.
+                deferred_sac_spec = card_data.flashback_alt_cost.sac_cost_spec;
 
             // ESCAPE COST (CR 702.139): cast from the graveyard for the escape cost — the
             // escape mana cost plus the ExileFromGrave additional cost (exile other graveyard
-            // cards covering ≥N card types). The exile is a cost, paid as the spell is cast.
+            // cards covering ≥N card types). The exile is a cost, paid as the spell is cast —
+            // after targets are chosen, like every other cost (601.2c before 601.2g/h).
             } else if (action.use_escape) {
                 // Escape is an alternative cost (CR 702.139a): fold in any active SetCost floor.
-                ManaValue esc_mana = floored_alt_mana_cost(card_data, card_data.escape_mana_cost);
-                if (!esc_mana.empty()) {
-                    if (!prompt_mana_payment(caster, esc_mana, spell_entity, orderer, false)) {
-                        restore_mana_state(caster, mana_snap, orderer);
-                        cur_game.payment_fail_counts[spell_entity]++;
-                        game_log("Payment cancelled.\n");
-                        break;
-                    }
-                }
-                if (card_data.escape_alt_cost.life_cost > 0) {
-                    auto &player = global_coordinator.GetComponent<Player>(get_player_entity(caster));
-                    player.life_total -= card_data.escape_alt_cost.life_cost;
-                    game_log("%s pays %d life\n", player_name(caster).c_str(), card_data.escape_alt_cost.life_cost);
-                }
-                if (card_data.escape_alt_cost.exile_grave_min_types > 0)
-                    pay_exile_from_grave_cost(caster, card_data.escape_alt_cost.exile_grave_min_types,
-                                              spell_entity, orderer);
-                if (card_data.escape_alt_cost.exile_grave_count > 0)
-                    pay_exile_from_grave_count_cost(caster, card_data.escape_alt_cost.exile_grave_count,
-                                                    spell_entity, orderer);
+                deferred_mana_cost = floored_alt_mana_cost(card_data, card_data.escape_mana_cost);
+                deferred_mana_pending = true;
+                deferred_life_cost = card_data.escape_alt_cost.life_cost;
+                deferred_exile_min_types = card_data.escape_alt_cost.exile_grave_min_types;
+                deferred_exile_count = card_data.escape_alt_cost.exile_grave_count;
 
             // IMPULSE CAST (Amped Raptor's DB$ Play): cast from exile under a one-shot
             // permission, paying its alternative RESOURCE cost (energy or life) instead of any
@@ -2026,6 +2005,23 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                     break;
                 }
             }
+
+            // Pay the deferred non-mana cost pieces (flashback life/sacrifice, escape
+            // exile-from-graveyard) now that targets are locked in and the mana payment
+            // committed (CR 601.2g/h after the 601.2c target choice). Sacrificing here may
+            // make a chosen target illegal — the spell then fizzles at resolution
+            // (CR 608.2b), matching paper rules.
+            if (deferred_life_cost > 0) {
+                auto &player = global_coordinator.GetComponent<Player>(get_player_entity(caster));
+                player.life_total -= deferred_life_cost;
+                game_log("%s pays %d life\n", player_name(caster).c_str(), deferred_life_cost);
+            }
+            if (!deferred_sac_spec.empty())
+                pay_sacrifice_cost(caster, deferred_sac_spec, spell_entity, orderer);
+            if (deferred_exile_min_types > 0)
+                pay_exile_from_grave_cost(caster, deferred_exile_min_types, spell_entity, orderer);
+            if (deferred_exile_count > 0)
+                pay_exile_from_grave_count_cost(caster, deferred_exile_count, spell_entity, orderer);
 
             // Log cast with target if applicable
             if (global_coordinator.entity_has_component<Ability>(spell_entity)) {
