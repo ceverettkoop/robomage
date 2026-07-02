@@ -1767,7 +1767,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                 // payable assignment (shared with the cast-legality gate via resolve_hybrid_cost);
                 // interactive mode prompts the player per pip, like the Phyrexian block below.
                 if (!card_data.hybrid_mana.empty()) {
-                    if (InputLogger::instance().is_machine_mode()) {
+                    if (InputLogger::instance().is_machine_schedule()) {
                         ManaValue resolved;
                         if (resolve_hybrid_cost(caster, cost_to_pay, card_data.hybrid_mana,
                                                 spell_entity, orderer, card_data.has_delve,

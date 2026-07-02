@@ -270,7 +270,8 @@ static void run_sideboard_phase(Deck &deck, Zone::Ownership player) {
         if (actions.size() <= 1) break;  // no sideboard cards available
 
         // in machine mode, cap sideboarding at 15 swaps to prevent infinite loops
-        if (machine_mode && sb_swaps >= 15) {
+        // (schedule-affecting, so a replayed machine log must apply the same cap)
+        if (InputLogger::instance().is_machine_schedule() && sb_swaps >= 15) {
             game_log("%s hit sideboard swap limit (15), auto-finishing.\n", player_name);
             break;
         }
@@ -406,6 +407,8 @@ static void *game_loop(void *args) {
             }
             if (key == "no-shuffle") {
                 no_shuffle = true;
+            } else if (key == "machine") {
+                // decision-schedule marker; consumed by InputLogger::init_replay
             } else if (key == "bo3") {
                 bo3_mode = true;
             } else if (key == "battlefield-a") {
@@ -448,6 +451,9 @@ static void *game_loop(void *args) {
         DecisionLogHeader hdr;
         if (no_shuffle) hdr.add_flag("no-shuffle");
         if (bo3_mode) hdr.add_flag("bo3");
+        // Machine mode's decision schedule differs from the interactive one; mark it so
+        // --replay knows to follow the machine schedule (InputLogger::is_machine_schedule).
+        if (machine_mode) hdr.add_flag("machine");
         hdr.add_flag_list("battlefield-a", battlefield_a_cards);
         hdr.add_flag_list("battlefield-b", battlefield_b_cards);
         hdr.add_flag_list("graveyard-a", graveyard_a_cards);

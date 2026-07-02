@@ -1023,7 +1023,7 @@ bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,
         return true;
     }
 
-    bool is_machine = InputLogger::instance().is_machine_mode();
+    bool is_machine = InputLogger::instance().is_machine_schedule();
 
     // Drain existing pool toward the cost first
     ManaValue remaining = pay_partial(controller, cost);

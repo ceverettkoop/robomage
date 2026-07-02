@@ -107,7 +107,7 @@ static std::vector<std::string> parse_flag_tokens(const std::string &flags_line)
         if (end == std::string::npos) end = flags_line.size();
         std::string piece = flags_line.substr(start, end - start);
         if (!piece.empty()) {
-            bool bare_flag = (piece == "no-shuffle" || piece == "bo3");
+            bool bare_flag = (piece == "no-shuffle" || piece == "bo3" || piece == "machine");
             bool has_key = piece.find('=') != std::string::npos;
             if (tokens.empty() || bare_flag || has_key) {
                 tokens.push_back(piece);
@@ -211,6 +211,12 @@ void InputLogger::init_replay(const std::string &replay_path) {
     read_header_field(replay_file, "DECISIONS");
     replay_deck_a = Deck::from_string(replay_header.deck_a_text);
     replay_deck_b = Deck::from_string(replay_header.deck_b_text);
+    // A machine-mode log's decision schedule differs from the interactive one (auto-paid
+    // mana, hidden mana-source menu entries, ...); replaying it must follow the machine
+    // schedule or the logged indices land on the wrong menus.
+    for (const std::string &tok : replay_flags) {
+        if (tok == "machine") replay_machine_schedule = true;
+    }
     replay_mode = true;
     game_log("REPLAY MODE: Using seed %u from %s\n", replay_seed, replay_path.c_str());
     game_log("REPLAY MODE: Using embedded decks '%s' / '%s' (command-line deck args ignored)\n",
@@ -239,6 +245,9 @@ bool InputLogger::is_replay_mode() const {
 }
 bool InputLogger::is_machine_mode() const {
     return machine_mode;
+}
+bool InputLogger::is_machine_schedule() const {
+    return machine_mode || replay_machine_schedule;
 }
 
 unsigned int InputLogger::get_replay_seed() const {
@@ -290,9 +299,18 @@ int InputLogger::get_input(const std::vector<LegalAction> &actions) {
         if (!(replay_file >> choice)) {
             fatal_error("Replay file ended unexpectedly");
         }
+        replay_decision_no++;
         // Remap -1 (old confirm sentinel) to last slot for old replay file compatibility
         if (choice == -1 && !actions.empty()) {
             choice = static_cast<int>(actions.size()) - 1;
+        }
+        // Divergence guard: a logged index outside the live menu means the replayed game
+        // has drifted from the recorded one — fail here with context instead of letting
+        // the caller index out of bounds.
+        if (choice < 0 || choice >= static_cast<int>(actions.size())) {
+            fatal_error("replay diverged at decision " + std::to_string(replay_decision_no) +
+                        ": logged index " + std::to_string(choice) + " but menu has " +
+                        std::to_string(actions.size()) + " actions");
         }
         Zone::Ownership priority = cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;
         game_log("(REPLAY) [T%zu | %s | %s] Input: %d\n", cur_game.turn, step_to_string(cur_game.cur_step),

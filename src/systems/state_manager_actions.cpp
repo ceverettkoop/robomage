@@ -584,7 +584,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         // condition (e.g. Fatal Push: only show if a creature with mana value <= the current
         // revolt-aware threshold exists). This is a masking heuristic, NOT a rules gate —
         // the spell can still legally target any creature in CLI/interactive play.
-        if (InputLogger::instance().is_machine_mode() && tgt_ok && condition_ok) {
+        if (InputLogger::instance().is_machine_schedule() && tgt_ok && condition_ok) {
             for (const auto &ab : card_data.abilities) {
                 if (ab.ability_type != Ability::SPELL) continue;
                 if (ab.condition_present.find("cmcLEX") != std::string::npos &&
@@ -1084,7 +1084,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
     }
 
     // not filtering mana abilities based on if they contribute to a spell- will revisit this if it makes ML harder
-    bool machine = InputLogger::instance().is_machine_mode();
+    bool machine = InputLogger::instance().is_machine_schedule();
     for (auto &ma : legal_mana_abilities) {
         // In machine mode, normal mana sources stay hidden and are auto-paid during cost
         // payment. Instant-speed sources (e.g. LED) can only be activated at priority to
