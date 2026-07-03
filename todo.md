@@ -24,9 +24,6 @@ TODO:
   delve card is a sorcery-speed creature (Murktide, Barrowgoyf), so two can't be on the stack at
   once.
 
-- Surgical Extraction script carries a single B/P pip (needs an upstream refetch of the correct
-  Forge script).
-
 ## Cosmetic / logging
 
 - The One Ring damage-prevention double-logs: a prevented Ancient Tomb self-damage prints BOTH
