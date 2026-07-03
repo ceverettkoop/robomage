@@ -146,6 +146,7 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
             lki.evoked = p.evoked;
             lki.entered_with_offspring = p.entered_with_offspring;
             lki.transformed = p.transformed;
+            lki.cast_from_hand_by_controller = p.cast_from_hand_by_controller;
         }
         if (global_coordinator.entity_has_component<Creature>(target)) {
             auto &cr = global_coordinator.GetComponent<Creature>(target);

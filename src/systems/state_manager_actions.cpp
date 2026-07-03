@@ -267,10 +267,16 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
     // ConditionPresent$ Card.wasCastFromYourHandByYou (Amped Raptor): the ability's source —
     // the card that triggered it — must have entered the battlefield as a spell its controller
     // cast from their own hand. Read the persisted flag off its Permanent (set when the
-    // permanent was created from a hand cast). A non-hand entry leaves the flag false.
+    // permanent was created from a hand cast). A non-hand entry leaves the flag false. If the
+    // source has already left the battlefield before this trigger resolves (e.g. Amped Raptor
+    // killed in response to its own ETB trigger), the Permanent is gone; fall back to the
+    // last-known-information snapshot captured as it left play (CR 603.10 / 608.2h) so the
+    // exile-cast clause is not silently lost.
     if (ab.condition_present == "Card.wasCastFromYourHandByYou") {
-        return global_coordinator.entity_has_component<Permanent>(ab.source) &&
-               global_coordinator.GetComponent<Permanent>(ab.source).cast_from_hand_by_controller;
+        if (global_coordinator.entity_has_component<Permanent>(ab.source))
+            return global_coordinator.GetComponent<Permanent>(ab.source).cast_from_hand_by_controller;
+        auto lit = cur_game.last_known_info.find(ab.source);
+        return lit != cur_game.last_known_info.end() && lit->second.cast_from_hand_by_controller;
     }
 
     // IsPresent$ Card.Self: the source must itself be on the battlefield (Kappa Cannoneer's

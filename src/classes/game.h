@@ -106,6 +106,10 @@ struct LastKnownInfo {
     bool evoked = false;                   // evoke self-sacrifice gate
     bool entered_with_offspring = false;   // offspring token-copy gate
     bool transformed = false;              // which DFC face was active (CR 712.4 ability selection)
+    bool cast_from_hand_by_controller = false;  // "if you cast it from your hand" gate (Amped
+                                                // Raptor's Card.wasCastFromYourHandByYou), read via
+                                                // LKI when the source left play before the trigger
+                                                // resolved (CR 603.10 / 608.2h).
 };
 
 enum MandatoryChoice {
