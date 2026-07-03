@@ -49,6 +49,7 @@ static void mark_unearthed_permanent(Entity entity, Permanent &perm);
 static void apply_global_addtype_statics(const std::set<Entity> &entities);
 static bool etb_ability_removal_applies(Entity entity, const std::set<Entity> &entities);
 static void remerge_animate_granted_abilities(Entity entity);
+static const char *zone_display_name(Zone::ZoneValue loc);
 
 // Unearth (CR 702.84): finalize an Unearth-returned permanent the instant its Permanent is
 // created. The permanent gains haste (it enters with summoning sickness cleared and the keyword
@@ -925,12 +926,39 @@ void StateManager::apply_permanent_components(Game &game, std::shared_ptr<Ordere
         }
     }
 
-    // Destroy token entities that left the battlefield (done after iteration to avoid invalidating iterators)
+    // A token that left the battlefield is first put into its actual destination zone and
+    // then ceases to exist as a state-based action (CR 111.7 / 704.5d). The move to that zone
+    // already happened (firing the appropriate CARD_CHANGED_ZONE at the mover), so this cleanup
+    // only reports where the token went and removes the now-empty entity. Moving to a
+    // non-graveyard zone (hand/library/exile) is NOT destruction — CR 701.7 destruction is a
+    // battlefield->graveyard move only — so it must never be logged or treated as "destroyed"
+    // (that would wrongly imply a dies event). A token that genuinely went to the graveyard did
+    // die (CR 704.5d); that death was already logged and its dies-triggers queued by the mover
+    // that put it there, so here we only note that it ceases to exist. Done after iteration to
+    // avoid invalidating iterators.
     for (auto e : tokens_to_destroy) {
-        game_log("Token is destroyed.\n");
+        const char *tok_name = global_coordinator.entity_has_component<Token>(e)
+            ? global_coordinator.GetComponent<Token>(e).name.c_str() : "Token";
+        Zone::ZoneValue dest = global_coordinator.GetComponent<Zone>(e).location;
+        game_log("%s (token) is put into %s and ceases to exist.\n",
+                 tok_name, zone_display_name(dest));
         global_coordinator.DestroyEntity(e);
     }
 
+}
+
+// Human-readable name of a zone, for narrative logging.
+static const char *zone_display_name(Zone::ZoneValue loc) {
+    switch (loc) {
+        case Zone::LIBRARY:     return "the library";
+        case Zone::BATTLEFIELD: return "the battlefield";
+        case Zone::HAND:        return "its owner's hand";
+        case Zone::STACK:       return "the stack";
+        case Zone::GRAVEYARD:   return "the graveyard";
+        case Zone::EXILE:       return "exile";
+        case Zone::SIDEBOARD:   return "the sideboard";
+    }
+    return "another zone";
 }
 
 // 702.131b: Ascend on a permanent — any time its controller controls ten or more
