@@ -24,8 +24,8 @@ TODO:
   delve card is a sorcery-speed creature (Murktide, Barrowgoyf), so two can't be on the stack at
   once.
 
-- Surgical Extraction script carries a single B/P pip (needs an upstream refetch of the correct
-  Forge script).
+- When a copied spell targets a permanent with ward, ward will not trigger. Possible similar issues related to
+  selecting new targets for copied spells.
 
 ## Cosmetic / logging
 
@@ -35,7 +35,6 @@ TODO:
   though the SBA correctly destroys it — floor-0 display only (CR 122.1b). Surfaced in fuzz
   campaign #2 (car_doomsday vs tron).
 
-- Parse and display ability descriptions and targeting prompts (more readable human menus).
 
 ## Deferred — bigger, needs its own session
 
@@ -119,8 +118,6 @@ without this, or it will self-destruct on resolution.
 - Engine `--battlefield-a/-b` (and other preset list flags) split on commas → assert-crash
   (reported as DRAW) on comma-named cards. Workaround: pass comma-free names (name_to_uid strips
   punctuation, so the same card loads). The underlying assert is unfixed.
-- Old-format / pre-fix machine-mode logs are NOT replayable (cleanup candidate; the new RMLOG v2
-  logs replay fine — see the replay-fidelity work).
 
 ## ML / observation
 
@@ -143,25 +140,3 @@ without this, or it will self-destruct on resolution.
   or per-step creation cap) and abort with a logged diagnostic so it surfaces in training.
 - Before trusting 1000: instrument a debug build to record peak mLivingEntityCount across the
   engine-sanity-check decks and set the cap from the measured high-water mark (peak x2).
-
-## Recently fixed / triaged (branch fix/campaign-2-engine-bugs, not yet merged — do NOT re-open)
-
-- FIXED: Amped Raptor reads wasCastFromYourHandByYou via LKI (1834b69); Phyrexian pip counts 1
-  toward mana value (532523d); Trinisphere {3} floor applies to impulse/free casts (43624df);
-  DealDamage damages every target (Prismari Charm multi-target, b1f9eee); dies-trigger suppressed
-  under ability removal via LKI (f63ac02).
-- VERIFIED NOT BUGS: Goblin Bombardment "fizzle vs legal target" (false positive — legitimate
-  608.2b self/dead-target fizzles); Static Prison "upkeep-after-draw" (its trigger is Phase$ Main1,
-  correct); delve paying the Trinisphere floor (rules-correct payment at 601.2h); Ajani, Nacatl
-  Avenger [0] damage (works — deals damage = creatures you control, not "counters added").
-- Ward on spell copies: real code gap (spawn_spell_copies skips fire_targeting_hooks) but
-  UNREACHABLE in current vocab (copy producers Flusterstorm/Consign target stack objects; Ward is
-  only on permanents). Route copies through fire_targeting_hooks when a permanent-targeting
-  copy-spell card is added.
-
-## Dead-code / duplication cleanup (docs/dead_code_audit.md)
-
-Tier 1 DONE (each committed separately): is_battlefield_permanent() scan helper;
-target_display_name() entity->display-name; action_card_vocab_idx() entity->vocab-index; phasing
-"phased-out = not on battlefield" baked into is_battlefield_permanent() + battlefield_permanents()
-accessor. Tier 2/3 (safe deletions + localized dup) deferred — see the audit doc.
