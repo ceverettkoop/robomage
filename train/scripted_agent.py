@@ -52,6 +52,8 @@ from env import (
     _KEEP_ONE_LANDER_IDS,
     _GREEN_SUNS_ZENITH_VOCAB_IDX, _KEEN_EYED_CURATOR_VOCAB_IDX, _MANA_DORK_IDS,
     _UNRELIABLE_LAND_IDS,
+    _URZAS_MINE_VOCAB_IDX, _URZAS_POWER_PLANT_VOCAB_IDX, _URZAS_TOWER_VOCAB_IDX,
+    _PLANAR_NEXUS_VOCAB_IDX, _TRON_LAND_IDS,
     # library-count context index (obs[_LIBRARY_CTX_START] == self_library_ct / 60)
     _LIBRARY_CTX_START,
     # shared helpers (also used by env's reward shaping, so they stay in env.py)
@@ -94,6 +96,7 @@ class AgentConfig:
     use_combat_sim: bool = False        # profitable attacks/blocks via local P/T sim
     use_eval_targeting: bool = False    # removal -> biggest threat, burn -> lethal-only
     use_smart_mulligan: bool = False    # keep based on opening-hand land count
+    use_tron_synergy: bool = False      # prioritize completing the Urza's Tron land set
     enable_combo_lines: bool = True     # keep deck-specific combo logic (Doomsday etc.)
     rng_seed: int | None = None         # seed for RANDOM's generator (reproducible)
     explore_profile: str = "default"    # EXPLORE weight profile: "default" (coverage)
@@ -106,7 +109,8 @@ class AgentConfig:
 # mixed opponent pools, observe/baseline/analysis, the test harness) plays at this
 # tier unless an explicit weaker suffix ("scripted:easy"/"greedy"/"random") is given.
 _HARD_CONFIG = AgentConfig(skill=Skill.HEURISTIC, use_combat_sim=True,
-                           use_eval_targeting=True, use_smart_mulligan=True)
+                           use_eval_targeting=True, use_smart_mulligan=True,
+                           use_tron_synergy=True)
 
 # Canonical presets resolved from a spec-string suffix (see make_agent). The config
 # object is read-only (ScriptedAgent only reads it), so the three hard aliases may
@@ -283,6 +287,36 @@ def _opponent_has_nonbasic_land(obs: np.ndarray) -> bool:
         if idx >= 0 and idx not in _BASIC_LAND_IDS:
             return True
     return False
+
+
+def _controlled_tron_pieces(obs: np.ndarray) -> set[int]:
+    """Vocab ids of Urza's Mine/Power-Plant/Tower self currently controls
+    (self battlefield slots 0-47). Planar Nexus is deliberately excluded — it's
+    the substitute offered once a real piece is missing, not a piece itself."""
+    found: set[int] = set()
+    for slot in range(_PERM_A_SLOTS):
+        base = _BF_START + slot * _BF_SLOT_SIZE
+        idx = _slot_card_idx(obs, base + _BF_CARD_OFF)
+        if idx in _TRON_LAND_IDS:
+            found.add(idx)
+    return found
+
+
+def _tron_choice(cats, card_ids, cat: int, controlled: set[int]) -> int | None:
+    """Pick whichever offered ``cat``-category action completes the Tron set:
+    a real Urza's Mine/Power-Plant/Tower self doesn't yet control, else Planar
+    Nexus (every nonbasic land type via its self-CDA, so it substitutes for any
+    missing piece — see state_manager_statics.cpp). Returns None if nothing
+    offered helps, so the caller can fall back to its normal pick.
+    """
+    for target in _TRON_LAND_IDS - controlled:
+        for i, c in enumerate(cats):
+            if c == cat and _action_card_id(card_ids, i) == target:
+                return i
+    for i, c in enumerate(cats):
+        if c == cat and _action_card_id(card_ids, i) == _PLANAR_NEXUS_VOCAB_IDX:
+            return i
+    return None
 
 
 def _opponent_has_spell_on_stack(obs: np.ndarray) -> bool:
@@ -975,6 +1009,24 @@ class ScriptedAgent:
         if (cfg.use_eval_targeting and any(c == _CAT_TARGET for c in cats)
                 and not _is_doomsday_deck(obs)):
             return self._target_choice(g(), cats, card_ids, ctrl_arr)
+
+        # Tron synergy: once we control at least one of Urza's Mine/Power-Plant/
+        # Tower, prefer playing a hand land that completes the set (a missing
+        # real piece, else Planar Nexus) over any other offered land drop.
+        if cfg.use_tron_synergy and any(c == _CAT_LAND for c in cats):
+            controlled = _controlled_tron_pieces(obs)
+            if controlled:
+                pick = _tron_choice(cats, card_ids, _CAT_LAND, controlled)
+                if pick is not None:
+                    return pick
+
+        # Tron synergy: a library search (Expedition Map, fetch effects) finds
+        # the Tron piece we're missing, or Planar Nexus as a substitute, ahead
+        # of any other offered card.
+        if cfg.use_tron_synergy and any(c == _CAT_SEARCH for c in cats):
+            pick = _tron_choice(cats, card_ids, _CAT_SEARCH, _controlled_tron_pieces(obs))
+            if pick is not None:
+                return pick
 
         # Anything not explicitly improved: proven GREEDY behaviour.
         return _greedy_action(obs, num_choices, fruitless)
