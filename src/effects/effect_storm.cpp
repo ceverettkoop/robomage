@@ -25,10 +25,14 @@
 extern Coordinator global_coordinator;
 
 bool effects::storm(Ability &ab, std::shared_ptr<Orderer> orderer) {
-    // The source storm spell must still be on the stack (the trigger resolves above it). If it's
-    // already gone (e.g. countered in response), there is nothing to copy.
+    // The Storm triggered ability is a separate object on the stack, independent of the spell
+    // that created it (CR 113.7a / 702.40a). It still makes its copies even if that spell has
+    // already left the stack — e.g. it was countered (Daze) before this trigger resolved. The
+    // shared copy routine handles both cases: it copies the live spell if it's still on the
+    // stack, else it rebuilds the copies from the spell's last-known copiable characteristics
+    // (which survive on the card entity in the graveyard). CR 707.10.2: the copies are created
+    // on the stack even though the original is gone.
     if (ab.source == 0) return true;
-    if (!global_coordinator.entity_has_component<Spell>(ab.source)) return true;
     if (ab.amount > 0)
         copy_spell_on_stack(ab.source, static_cast<int>(ab.amount), ab.controller, orderer);
     return true;
