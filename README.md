@@ -147,3 +147,8 @@ train/.venv/bin/python train/analysis.py interactive (model, or deck shorthand) 
 `analysis.py` also has non-interactive subcommands for a single chart/report each — `report`,
 `cardvalue`, `shap`, `value-swings`, `regret`, `entropy`, `consistency` — see
 `train/.venv/bin/python train/analysis.py -h`.
+
+### View logs in tensorboard:
+```
+train/.venv/bin/tensorboard --logdir logs
+```

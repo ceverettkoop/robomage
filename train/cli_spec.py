@@ -216,7 +216,9 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--decks", "str", default=None, suggest="league_deck", multi=True,
             help="Comma-separated deck roster to train + sample opponents from "
                  "(default: every deck in decks/league/, referenced as "
-                 "'league/<stem>'). In the TUI, pick multiple with space."),
+                 "'league/<stem>'). Roster ORDER is the training rotation order. "
+                 "In the TUI, pick multiple with space; reorder the highlighted "
+                 "deck in the rotation with [ / ]."),
         Arg("--self-play-frac", "float", default=LEAGUE_SELF_PLAY_FRAC,
             help="Probability of facing the latest snapshot of the learner's own "
                  "deck (OpenAI-Five 'play the latest self' slot; default %.2f). "

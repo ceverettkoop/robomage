@@ -172,6 +172,7 @@ class LauncherApp(App):
     .fieldrow.tall { height: auto; }
     .fieldrow.tall SelectionList { width: 1fr; height: auto; max-height: 8; border: round $accent; }
     #fieldhelp { height: 1; padding: 0 1; color: $text-muted; }
+    .rosterorder { width: 1fr; color: $accent; }
     #preview { height: auto; max-height: 5; padding: 0 1; color: $text-muted; border-top: solid $accent; }
     """
 
@@ -180,6 +181,10 @@ class LauncherApp(App):
     BINDINGS = [
         ("r", "run", "Run"),
         ("q", "quit", "Quit"),
+        # League roster reorder — only active while the --decks list is focused
+        # (see check_action); moves the highlighted deck in the training rotation.
+        ("[", "roster_earlier", "◀ order"),
+        ("]", "roster_later", "order ▶"),
     ]
 
     def __init__(self):
@@ -231,6 +236,10 @@ class LauncherApp(App):
                 rows.append(self._row("opp-mode", sel, required=False))
             else:
                 rows.append(self._build_arg(item))
+                # A roster multipick gets a live rotation-order readout row below it.
+                f = self._fields[-1]
+                if f.get("readout") is not None:
+                    rows.append(self._row("order", f["readout"], required=False))
         if rows:
             await form.mount(*rows)
         self._apply_league_defaults()
@@ -327,9 +336,14 @@ class LauncherApp(App):
         elif a.suggest and getattr(a, "multi", False):
             # multi-select roster (e.g. league --decks): pick several with space.
             # League pre-checks all decks post-mount (see _apply_league_defaults).
+            # `order` is the emitted roster order (== training rotation order); it
+            # tracks selection order and is reorderable with [ / ] (see
+            # action_roster_earlier / _reconcile_roster_order). `readout` shows it.
             vals = self._options_for(a)
             w = SelectionList(*[(v, v) for v in vals])
-            self._fields.append({"kind": "multipick", "arg": a, "widget": w})
+            readout = Static("", classes="rosterorder")
+            self._fields.append({"kind": "multipick", "arg": a, "widget": w,
+                                 "order": [], "readout": readout})
             self._help_by_widget[w] = a.help
             return self._row(a.name, w, a.required, extra="tall")
         elif a.suggest:
@@ -360,7 +374,69 @@ class LauncherApp(App):
         decks = self._field_by_name("--decks")
         if decks is not None and decks["kind"] == "multipick":
             decks["widget"].select_all()   # start with the whole roster checked
+            self._reconcile_roster_order(decks)   # seed rotation order + readout
         self._apply_resume_gate()
+
+    # ── league roster ordering (== training rotation order) ─────────────────
+    def _roster_field(self):
+        """The league ``--decks`` multipick field, or None when not on it."""
+        if getattr(self._sub, "name", None) != "league":
+            return None
+        f = self._field_by_name("--decks")
+        return f if (f is not None and f.get("readout") is not None) else None
+
+    def _reconcile_roster_order(self, f):
+        """Sync f["order"] (the emitted rotation order) with what's checked:
+        keep the existing order for survivors (preserving manual [ / ] reorders),
+        drop deselected decks, and append newly-checked decks in check order."""
+        selected = list(f["widget"].selected)           # check-order
+        sel_set = set(selected)
+        order = [d for d in f.get("order", []) if d in sel_set]
+        order += [d for d in selected if d not in order]
+        f["order"] = order
+        self._refresh_roster_readout(f)
+
+    def _refresh_roster_readout(self, f):
+        order = [d for d in f.get("order", []) if d in set(f["widget"].selected)]
+        if order:
+            txt = "  ".join(f"{i + 1}. {d.split('/')[-1]}" for i, d in enumerate(order))
+        else:
+            txt = "(no decks selected)"
+        f["readout"].update("rotation → " + txt)
+
+    def _roster_move(self, delta):
+        """Move the highlighted deck delta places in the rotation order."""
+        f = self._roster_field()
+        if f is None or self.focused is not f["widget"]:
+            return
+        w = f["widget"]
+        idx = w.highlighted
+        if idx is None:
+            return
+        val = w.get_option_at_index(idx).value
+        order = f.get("order", [])
+        if val not in order:
+            return                                       # highlighted deck not checked
+        i = order.index(val)
+        j = i + delta
+        if 0 <= j < len(order):
+            order[i], order[j] = order[j], order[i]
+            self._refresh_roster_readout(f)
+            self.update_preview()
+
+    def action_roster_earlier(self):
+        self._roster_move(-1)
+
+    def action_roster_later(self):
+        self._roster_move(1)
+
+    def check_action(self, action, parameters):
+        # The roster reorder keys are only meaningful (and only shown in the
+        # footer) while the league --decks list is focused.
+        if action in ("roster_earlier", "roster_later"):
+            f = self._roster_field()
+            return f is not None and self.focused is f["widget"]
+        return True
 
     def _apply_resume_gate(self):
         """League ``--resume`` restores the full run config from the sidecar and
@@ -382,6 +458,9 @@ class LauncherApp(App):
         help_text = self._help_by_widget.get(event.widget)
         if help_text is not None:
             self.query_one("#fieldhelp", Static).update(help_text)
+        # Roster reorder keys ([ / ]) are only live while the list is focused, so
+        # re-evaluate check_action to show/hide them in the footer on focus change.
+        self.refresh_bindings()
 
     def on_select_changed(self, event: Select.Changed):
         arg = self._arg_for_widget(event.select)
@@ -390,6 +469,9 @@ class LauncherApp(App):
         self.update_preview()
 
     def on_selection_list_selected_changed(self, event: SelectionList.SelectedChanged):
+        f = next((f for f in self._fields if f.get("widget") is event.selection_list), None)
+        if f is not None and f.get("readout") is not None:
+            self._reconcile_roster_order(f)
         self.update_preview()
 
     def on_input_changed(self, event: Input.Changed):
@@ -433,7 +515,15 @@ class LauncherApp(App):
                     missing.append(f["arg"].name)
             elif f["kind"] == "multipick":   # multi-select roster → comma-joined
                 a = f["arg"]
-                vals = list(f["widget"].selected)
+                # Emit in the user-set rotation order (f["order"], reorderable with
+                # [ / ]), filtered to what's currently checked; fall back to raw
+                # check-order for non-order-tracked multipicks.
+                selected = set(f["widget"].selected)
+                order = f.get("order")
+                if order is not None:
+                    vals = [d for d in order if d in selected]
+                else:
+                    vals = list(f["widget"].selected)
                 if vals:
                     argv += [a.name, ",".join(vals)]
                 elif a.required:
