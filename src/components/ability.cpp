@@ -1345,7 +1345,39 @@ static std::string resolving_log_detail(const Ability &ab, std::shared_ptr<Order
     return "";
 }
 
+// The remembered set (cur_game.remembered_entities) is per-resolution scope in Forge — each
+// resolving spell/ability instance has its OWN Remembered list (CR 608.2). This engine backs it
+// with one global vector, so a top-level ability's resolution must not inherit remembered objects
+// left behind by an EARLIER, unrelated ability that never cleared them (Skyclave Apparition's ETB
+// exile pushes its target via RememberChanged and only clears on its own leaves-battlefield
+// trigger). Without scoping, the next RememberChanged effect (Phelia's attack exile) appended to
+// that stale set and its delayed-return trigger snapshotted BOTH cards, returning Skyclave's
+// permanently-exiled target too (CR 603.7c — a delayed trigger references only the objects it was
+// set up over). This RAII guard gives each TOP-LEVEL resolve a clean remembered set and restores
+// the prior contents on the way out; sub-abilities (resolved recursively within the same call)
+// keep sharing the parent's accumulated set, as their chained Remembered$ readers require.
+// Destructors run on every return path under -fno-exceptions, so all early-outs are covered.
+namespace {
+int g_resolve_depth = 0;
+struct RememberedResolutionScope {
+    bool top_level;
+    std::vector<Entity> saved;
+    RememberedResolutionScope() : top_level(g_resolve_depth == 0) {
+        if (top_level) {
+            saved = cur_game.remembered_entities;
+            cur_game.remembered_entities.clear();
+        }
+        ++g_resolve_depth;
+    }
+    ~RememberedResolutionScope() {
+        --g_resolve_depth;
+        if (top_level) cur_game.remembered_entities = saved;
+    }
+};
+}  // namespace
+
 void Ability::resolve(std::shared_ptr<Orderer> orderer) {
+    RememberedResolutionScope remembered_scope;
     // Leaves-the-battlefield ability whose body references the cards its source had exiled
     // (Skyclave Apparition's TrigToken): restore those entities into the remembered set before
     // any gate or SVar runs, so ConditionPresent$ Card.ExiledWithSource, Remembered$CardManaCost

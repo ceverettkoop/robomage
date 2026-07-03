@@ -96,7 +96,7 @@ static bool can_afford_alt(const CardData& card_data, const AltCost& alt_cost,
     // Mana portion of the alt cost (e.g. Evoke:R) with the active SetCost floor
     // (Trinisphere) folded in — CR 601.2f applies the floor AFTER the alternative cost is
     // substituted, so even a Cost$ 0 / pitch cast must be able to pay up to the floor.
-    ManaValue alt_mana = floored_alt_mana_cost(card_data, alt_cost.mana_cost);
+    ManaValue alt_mana = floored_alt_mana_cost(card_data, alt_cost.mana_cost, priority_player);
 
     // Free alt cost: castable iff any floor imposed on it is payable
     if (alt_cost.is_free)
@@ -404,7 +404,7 @@ static void offer_modal_back_face_casts(std::vector<LegalAction> &actions, const
         bool tgt_ok = true, condition_ok = true;
         for (const auto &ab : back.abilities) {
             if (ab.ability_type != Ability::SPELL) continue;
-            tgt_ok = has_legal_targets(ab, orderer);
+            tgt_ok = has_legal_targets(cast_gate_probe(ab, card_entity, priority_player), orderer);
             if (!ab.condition_present.empty() && !ab.condition_on_target)
                 condition_ok = evaluate_present_condition(ab, priority_player, orderer);
             break;
@@ -565,7 +565,11 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             // switches on the gift promise (Into the Flood Maw: a creature without the gift, a
             // nonland permanent with it), so the spell is castable iff a legal target exists for
             // at least one reachable mode. Reduces to has_legal_targets for ordinary spells.
-            tgt_ok = spell_has_castable_targets(ab, orderer, priority_player, card_data.has_gift);
+            // Probe with the real cast source/controller (card_entity) so source-dependent target
+            // restrictions — protection from this spell's color, OppCtrl — match select_target and
+            // a protected-only target (Emrakul vs white, Scryb Ranger vs blue) is not offered.
+            Ability probe = cast_gate_probe(ab, card_entity, priority_player);
+            tgt_ok = spell_has_castable_targets(probe, orderer, priority_player, card_data.has_gift);
             // Target-conditional abilities (ConditionDefined$ Targeted, e.g. Fatal Push)
             // may target anything legal; the condition is checked on the target at
             // resolution, so it must not gate cast-time legality.
@@ -710,7 +714,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         bool tgt_ok = true;
         for (const auto &ab : gcd.abilities) {
             if (ab.ability_type != Ability::SPELL) continue;
-            tgt_ok = has_legal_targets(ab, orderer);
+            tgt_ok = has_legal_targets(cast_gate_probe(ab, gy_entity, priority_player), orderer);
             break;
         }
         if (!tgt_ok) continue;
@@ -718,7 +722,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         // Check affordability: flashback mana cost (floored — flashback is an alternative
         // cost, CR 702.34a, so an active SetCost floor applies to it too) + life cost
         bool can_afford_fb = can_pay_mana(
-            priority_player, floored_alt_mana_cost(gcd, gcd.flashback_mana_cost), gy_entity, orderer);
+            priority_player, floored_alt_mana_cost(gcd, gcd.flashback_mana_cost, priority_player), gy_entity, orderer);
         if (can_afford_fb && gcd.flashback_alt_cost.life_cost > 0) {
             Entity pp_entity = get_player_entity(priority_player);
             if (global_coordinator.GetComponent<Player>(pp_entity).life_total < gcd.flashback_alt_cost.life_cost)
@@ -764,13 +768,13 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         bool tgt_ok = true;
         for (const auto &ab : gcd.abilities) {
             if (ab.ability_type != Ability::SPELL) continue;
-            tgt_ok = has_legal_targets(ab, orderer);
+            tgt_ok = has_legal_targets(cast_gate_probe(ab, gy_entity, priority_player), orderer);
             break;
         }
         if (!tgt_ok) continue;
 
         // Escape is an alternative cost (CR 702.139a): fold in any active SetCost floor.
-        if (!can_pay_mana(priority_player, floored_alt_mana_cost(gcd, gcd.escape_mana_cost),
+        if (!can_pay_mana(priority_player, floored_alt_mana_cost(gcd, gcd.escape_mana_cost, priority_player),
                           gy_entity, orderer))
             continue;
 
@@ -820,7 +824,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         bool tgt_ok = true;
         for (const auto &ab : gcd.abilities) {
             if (ab.ability_type != Ability::SPELL) continue;
-            tgt_ok = has_legal_targets(ab, orderer);
+            tgt_ok = has_legal_targets(cast_gate_probe(ab, gy_entity, priority_player), orderer);
             break;
         }
         if (!tgt_ok) continue;
@@ -876,7 +880,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         bool tgt_ok = true;
         for (const auto &ab : ecd.abilities) {
             if (ab.ability_type != Ability::SPELL) continue;
-            tgt_ok = has_legal_targets(ab, orderer);
+            tgt_ok = has_legal_targets(cast_gate_probe(ab, ex_entity, priority_player), orderer);
             break;
         }
         if (!tgt_ok) continue;

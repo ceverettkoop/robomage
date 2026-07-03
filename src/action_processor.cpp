@@ -707,7 +707,7 @@ static void pay_alternate_cost(const LegalAction &action, Game &game, std::share
     // folded in — CR 601.2f applies the floor AFTER the alternative cost is substituted for the
     // mana cost, so even a "free" alt cast ({0} Mindbreak Trap, Daze's pitch) pays up to the
     // floor. The non-mana parts of the cost below are unaffected.
-    ManaValue alt_mana = floored_alt_mana_cost(card_data, card_data.alt_cost.mana_cost);
+    ManaValue alt_mana = floored_alt_mana_cost(card_data, card_data.alt_cost.mana_cost, caster);
 
     // Free alt cost (e.g. Once Upon a Time first spell), with no floor imposed on it
     if (card_data.alt_cost.is_free && alt_mana.empty()) {
@@ -1284,6 +1284,21 @@ bool spell_has_castable_targets(const Ability &primary, std::shared_ptr<Orderer>
     return false;
 }
 
+Ability cast_gate_probe(const Ability &tmpl, Entity card_entity, Zone::Ownership caster) {
+    Ability probe = tmpl;
+    probe.source = card_entity;
+    probe.controller = caster;
+    // Chained targeting sub-abilities (Into the Flood Maw's DBChangeZone, Cabal Therapy's
+    // DB$ Discard) pick their own target as the spell is cast (CR 601.2c) and are probed via
+    // spell_targeting_abilities, so they need the same source/controller. Charm modes are stamped
+    // by spell_has_castable_targets from primary.source, so they inherit the stamp set here.
+    for (auto &sub : probe.subabilities) {
+        sub.source = card_entity;
+        sub.controller = caster;
+    }
+    return probe;
+}
+
 // CR 601.2c: when a spell's REQUIRED target count is the X it is cast for (TargetMin$ X, e.g.
 // Hide on the Ceiling — "exile X target artifacts and/or creatures", with TargetMin$ X =
 // TargetMax$ X), the player can't announce an X larger than the number of legal targets, or
@@ -1672,7 +1687,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             if (action.use_flashback) {
                 // Flashback mana cost — flashback is an alternative cost (CR 702.34a),
                 // so an active SetCost floor (Trinisphere) pads it up to the floor (601.2f).
-                deferred_mana_cost = floored_alt_mana_cost(card_data, card_data.flashback_mana_cost);
+                deferred_mana_cost = floored_alt_mana_cost(card_data, card_data.flashback_mana_cost, caster);
                 deferred_mana_pending = true;
                 deferred_life_cost = card_data.flashback_alt_cost.life_cost;
                 // Flashback sacrifice cost: the cast is only offered when a matching
@@ -1686,7 +1701,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             // after targets are chosen, like every other cost (601.2c before 601.2g/h).
             } else if (action.use_escape) {
                 // Escape is an alternative cost (CR 702.139a): fold in any active SetCost floor.
-                deferred_mana_cost = floored_alt_mana_cost(card_data, card_data.escape_mana_cost);
+                deferred_mana_cost = floored_alt_mana_cost(card_data, card_data.escape_mana_cost, caster);
                 deferred_mana_pending = true;
                 deferred_life_cost = card_data.escape_alt_cost.life_cost;
                 deferred_exile_min_types = card_data.escape_alt_cost.exile_grave_min_types;
@@ -1958,7 +1973,13 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                 bool can_promise = true;
                 for (const auto &t : card_data.abilities) {
                     if (t.ability_type != Ability::SPELL) continue;
-                    std::vector<const Ability *> targeting = spell_targeting_abilities(t);
+                    // Probe with the real spell source/controller so a mode's target legality
+                    // (protection from this spell's color, OppCtrl) matches select_target below —
+                    // otherwise can_promise/must_promise can green-light a mode whose only target
+                    // is protected (Scryb Ranger vs blue Into the Flood Maw), then select_target
+                    // finds zero targets and aborts (CR 601.2c / 702.16e).
+                    Ability probe = cast_gate_probe(t, spell_entity, caster);
+                    std::vector<const Ability *> targeting = spell_targeting_abilities(probe);
                     if (!targeting.empty()) {
                         must_promise = !gift_mode_satisfiable(targeting, orderer, caster, false);
                         can_promise = gift_mode_satisfiable(targeting, orderer, caster, true);

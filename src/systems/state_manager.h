@@ -79,13 +79,17 @@ int active_reduce_cost_for(const CardData &card_data, Zone::Ownership caster);
 int active_cost_floor_for(const CardData &card_data);
 
 // The mana portion of an alternative casting cost (alt cost / flashback / escape) with the
-// active SetCost floor (Trinisphere) folded in. CR 601.2f applies the floor AFTER the
-// alternative cost is substituted for the mana cost, so a sub-floor alternative — including
-// a free one (Mindbreak Trap's {0}, Daze's pitch) — is padded with generic pips up to the
-// floor; the non-mana parts of the cost (pitch, sacrifice, life) are unaffected and colored
-// pips in the alt cost are kept. Shared by determine_legal_actions (affordability) and
-// action_processor (payment) so the two cannot disagree on the floor.
-ManaValue floored_alt_mana_cost(const CardData &card_data, const ManaValue &alt_mana);
+// active cost-increase surcharge (Thalia) and SetCost floor (Trinisphere) folded in. CR 601.2f
+// applies both AFTER the alternative cost is substituted for the mana cost: first the additive
+// increase, then the floor. So a sub-floor alternative — including a free one (Mindbreak Trap's
+// {0}, Daze's pitch) — is padded with generic pips up to the floor; a noncreature pitch spell
+// under an opposing Thalia pays the extra {1} on top of its alternative cost. The non-mana parts
+// of the cost (pitch, sacrifice, life) are unaffected and colored pips in the alt cost are kept.
+// `caster` folds in the per-spell/NamedCard-aware increase for the casting player (Zone::UNKNOWN
+// omits the caster-relative part). Shared by determine_legal_actions (affordability) and
+// action_processor (payment) so the two cannot disagree.
+ManaValue floored_alt_mana_cost(const CardData &card_data, const ManaValue &alt_mana,
+                                Zone::Ownership caster = Zone::UNKNOWN);
 
 // `card_data.mana_cost` with the active RaiseCost generic surcharge folded in (but
 // NOT the X-cost choice, which is resolved interactively at cast time). The single

@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -70,6 +71,26 @@ static size_t storm_count_this_turn(const Game &game) {
 // orders their own group via a mandatory choice when more than one trigger is theirs.
 static void place_triggers_apnap(Game &game, std::shared_ptr<Orderer> orderer,
                                  std::vector<PendingTrigger> &pending);
+
+// The CardData face a card presents for an ENTERS-the-battlefield trigger match, honoring a
+// transform-on-entry. Ajani, Nacatl Pariah returns to the battlefield already transformed to his
+// planeswalker back face; the CARD_CHANGED_ZONE event still carries the entity whose (front)
+// CardData is the creature Cat, but CR 712.2/712.14 make the entering object's characteristics its
+// active BACK face. So an external "a creature you control enters" trigger (Guide of Souls) must
+// test the back face — a noncreature planeswalker back does NOT satisfy "a creature enters" (and a
+// creature back WOULD). apply_permanent_components sets Permanent::transformed before triggers are
+// collected (it runs first in the SBA loop), so the flipped face is already reflected here. Falls
+// back to the front CardData for a non-transformed card, a card with no back face, or one no longer
+// on the battlefield.
+static const CardData *etb_effective_face(Entity e) {
+    if (!global_coordinator.entity_has_component<CardData>(e)) return nullptr;
+    const CardData &front = global_coordinator.GetComponent<CardData>(e);
+    if (front.backside &&
+        global_coordinator.entity_has_component<Permanent>(e) &&
+        global_coordinator.GetComponent<Permanent>(e).transformed)
+        return front.backside.get();
+    return &front;
+}
 
 // Bind the triggering player (the event's PLAYER, e.g. the caster of the triggering spell)
 // onto any ability in the tree that uses Defined$ TriggeredActivator (CR 603.x). The
@@ -354,6 +375,13 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
 
         const std::string ent_name = entity_name(entity);
 
+        // Mode$ ChangesZoneAll batch triggers (CR 603.2c) fire once for a whole group of
+        // simultaneous zone changes, not once per matching card. Track which of this permanent's
+        // batch triggers have already queued this scan so later matching events in the same batch
+        // are skipped. Keyed by the ability template address (&ab), which is stable across the
+        // event loop (it lives in CardData/Token/perm.abilities).
+        std::set<const Ability *> batch_zone_all_fired;
+
         for (const auto &ev : events) {
             for (const auto *src : ab_sources) {
             for (const auto &ab : *src) {
@@ -423,12 +451,17 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                         ev_origin != static_cast<Zone::ZoneValue>(ab.trigger_zone_origin)) continue;
                     if (ab.trigger_zone_destination >= 0 &&
                         ev_dest != static_cast<Zone::ZoneValue>(ab.trigger_zone_destination)) continue;
-                    // ValidCard$ Creature filter
+                    // ValidCard$ Creature filter. Honor a transform-on-entry: a permanent that
+                    // entered already flipped to a NONCREATURE back face (Ajani, Nacatl Pariah ->
+                    // his planeswalker side) must not satisfy "a creature enters" (CR 712.2/712.14,
+                    // via etb_effective_face), which is what wrongly fired Guide of Souls.
                     if (ab.trigger_valid_card_is_creature && ev.HasParam(Params::ENTITY)) {
                         Entity ev_card = ev.GetParam<Entity>(Params::ENTITY);
                         bool is_creature = global_coordinator.entity_has_component<Token>(ev_card);
-                        if (!is_creature && global_coordinator.entity_has_component<CardData>(ev_card))
-                            is_creature = is_creature_card(global_coordinator.GetComponent<CardData>(ev_card));
+                        if (!is_creature) {
+                            const CardData *face = etb_effective_face(ev_card);
+                            if (face) is_creature = is_creature_card(*face);
+                        }
                         if (!is_creature) continue;
                     }
                     // ValidCard$ Card.nonCreature filter on a counted SpellCast (The Fantasticar):
@@ -661,6 +694,12 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                     trigger_ab.resolve(orderer);
                     continue;
                 }
+
+                // Mode$ ChangesZoneAll batch trigger (CR 603.2c): dedupe to a single firing for
+                // the whole simultaneous group. The first matching event queues it; further
+                // matching events for this same ability template are skipped.
+                if (ab.trigger_batch_zone_all && !batch_zone_all_fired.insert(&ab).second)
+                    continue;
 
                 PendingTrigger pt;
                 pt.ab = trigger_ab;

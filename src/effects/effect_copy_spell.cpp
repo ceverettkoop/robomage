@@ -29,26 +29,63 @@
 
 extern Coordinator global_coordinator;
 
+// Forward declarations
+static void spawn_spell_copies(const CardData &orig_card, const ColorIdentity *orig_color,
+                               const Ability *orig_ability, bool cant_be_countered, int x_paid,
+                               int count, Zone::Ownership controller,
+                               std::shared_ptr<Orderer> orderer);
+
 void copy_spell_on_stack(Entity original, int count, Zone::Ownership controller,
                          std::shared_ptr<Orderer> orderer) {
     if (count <= 0) return;
     if (!global_coordinator.entity_has_component<CardData>(original)) return;
-    if (!global_coordinator.entity_has_component<Spell>(original)) return;
 
+    // Copiable characteristics: the card's printed values and color identity (CR 707.2). These
+    // survive on the card entity even after the spell has left the stack (a countered spell keeps
+    // its CardData/ColorIdentity in the graveyard; only its Spell/Ability components are stripped).
     const auto &orig_card = global_coordinator.GetComponent<CardData>(original);
-    const Spell &orig_spell = global_coordinator.GetComponent<Spell>(original);
-    bool orig_has_ability = global_coordinator.entity_has_component<Ability>(original);
+    const ColorIdentity *orig_color =
+        global_coordinator.entity_has_component<ColorIdentity>(original)
+            ? &global_coordinator.GetComponent<ColorIdentity>(original)
+            : nullptr;
 
+    if (global_coordinator.entity_has_component<Spell>(original)) {
+        // The original is still a live spell on the stack (Replicate / an uncountered Storm
+        // spell): copy its resolving Ability and Spell flags directly.
+        const Spell &orig_spell = global_coordinator.GetComponent<Spell>(original);
+        const Ability *orig_ability =
+            global_coordinator.entity_has_component<Ability>(original)
+                ? &global_coordinator.GetComponent<Ability>(original)
+                : nullptr;
+        spawn_spell_copies(orig_card, orig_color, orig_ability, orig_spell.cant_be_countered,
+                           orig_spell.x_paid, count, controller, orderer);
+    } else {
+        // The original has already left the stack (e.g. a Storm spell countered before its Storm
+        // triggered ability resolved — CR 702.40a / 113.7a: the Storm ability is a separate object,
+        // independent of the spell that created it, so countering that spell doesn't stop the
+        // copies). Rebuild the copies from the spell's last-known copiable characteristics: the
+        // card's SPELL ability template reproduces the resolving ability, and the copies choose
+        // their own new targets anyway, so the template's (absent) targets don't matter.
+        const Ability *orig_ability = nullptr;
+        for (const auto &tmpl : orig_card.abilities)
+            if (tmpl.ability_type == Ability::SPELL) { orig_ability = &tmpl; break; }
+        spawn_spell_copies(orig_card, orig_color, orig_ability, false, 0, count, controller,
+                           orderer);
+    }
+}
+
+// Create `count` copies of a spell on top of the stack from its copiable characteristics. Used
+// for both the live-spell path (source components read directly) and the last-known-information
+// path (source already off the stack). See copy_spell_on_stack for the CR references.
+static void spawn_spell_copies(const CardData &orig_card, const ColorIdentity *orig_color,
+                               const Ability *orig_ability, bool cant_be_countered, int x_paid,
+                               int count, Zone::Ownership controller,
+                               std::shared_ptr<Orderer> orderer) {
     for (int i = 0; i < count; i++) {
         Entity copy = global_coordinator.CreateEntity();
 
-        // Copiable characteristics: the card's printed values and color identity (CR 707.2). A
-        // spell on the stack always carries a ColorIdentity (added when its card entity was
-        // created), so copy it directly.
         global_coordinator.AddComponent(copy, orig_card);
-        if (global_coordinator.entity_has_component<ColorIdentity>(original))
-            global_coordinator.AddComponent(
-                copy, global_coordinator.GetComponent<ColorIdentity>(original));
+        if (orig_color) global_coordinator.AddComponent(copy, *orig_color);
 
         // The copy's Zone is added by place_created_on_stack() at the end (CR 707.10: the copy
         // is created on the stack, not moved there from any zone). Until then it has no Zone, so
@@ -57,15 +94,15 @@ void copy_spell_on_stack(Entity original, int count, Zone::Ownership controller,
 
         Spell copy_spell;
         copy_spell.caster = controller;
-        copy_spell.cant_be_countered = orig_spell.cant_be_countered;
-        copy_spell.x_paid = orig_spell.x_paid;  // copies copy the X chosen for the original (CR 707.10b)
+        copy_spell.cant_be_countered = cant_be_countered;
+        copy_spell.x_paid = x_paid;  // copies copy the X chosen for the original (CR 707.10b)
         copy_spell.is_copy = true;               // ceases to exist when it leaves the stack
         // A copy is not cast: it has no replicate count of its own and copies no further.
         global_coordinator.AddComponent(copy, copy_spell);
 
         // Copy the resolving spell ability and let the controller choose new targets (CR 707.12).
-        if (orig_has_ability) {
-            Ability ability = global_coordinator.GetComponent<Ability>(original);
+        if (orig_ability) {
+            Ability ability = *orig_ability;
             ability.source = copy;
             ability.controller = controller;
             ability.target = 0;
