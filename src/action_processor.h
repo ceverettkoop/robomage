@@ -34,6 +34,17 @@ bool has_legal_targets(const Ability& ability, std::shared_ptr<Orderer> orderer)
 bool spell_has_castable_targets(const Ability& primary, std::shared_ptr<Orderer> orderer,
                                 Zone::Ownership caster, bool has_gift);
 
+// Stamp the real casting source/controller onto a spell-ability TEMPLATE (from CardData::abilities,
+// whose source is 0) and its targeting sub-abilities, returning the stamped copy for the
+// cast-legality target probe. Cast-time source-dependent target restrictions — protection from the
+// spell's color (CR 702.16e; e.g. Emrakul vs a white spell, Scryb Ranger vs a blue spell), and the
+// OppCtrl/YouCtrl perspective — are evaluated off the ability's source/controller. Without this the
+// gate probes with source 0, so has_protection_from(cand, 0) is vacuously false and a protected
+// creature is offered as a legal target; select_target then re-checks with the real source, finds
+// none, and aborts (CR 601.2c). `card_entity` is the card being cast, which is the SAME entity that
+// becomes the spell on the stack, so its source matches select_target's exactly.
+Ability cast_gate_probe(const Ability& tmpl, Entity card_entity, Zone::Ownership caster);
+
 // Prompts the active player to choose a target and sets ability.target.
 // Targets are presented opponent-first so action index 0 always refers to an
 // opponent entity (player or permanent), regardless of which player is casting.

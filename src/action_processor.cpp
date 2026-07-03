@@ -1284,6 +1284,21 @@ bool spell_has_castable_targets(const Ability &primary, std::shared_ptr<Orderer>
     return false;
 }
 
+Ability cast_gate_probe(const Ability &tmpl, Entity card_entity, Zone::Ownership caster) {
+    Ability probe = tmpl;
+    probe.source = card_entity;
+    probe.controller = caster;
+    // Chained targeting sub-abilities (Into the Flood Maw's DBChangeZone, Cabal Therapy's
+    // DB$ Discard) pick their own target as the spell is cast (CR 601.2c) and are probed via
+    // spell_targeting_abilities, so they need the same source/controller. Charm modes are stamped
+    // by spell_has_castable_targets from primary.source, so they inherit the stamp set here.
+    for (auto &sub : probe.subabilities) {
+        sub.source = card_entity;
+        sub.controller = caster;
+    }
+    return probe;
+}
+
 // CR 601.2c: when a spell's REQUIRED target count is the X it is cast for (TargetMin$ X, e.g.
 // Hide on the Ceiling — "exile X target artifacts and/or creatures", with TargetMin$ X =
 // TargetMax$ X), the player can't announce an X larger than the number of legal targets, or
@@ -1958,7 +1973,13 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                 bool can_promise = true;
                 for (const auto &t : card_data.abilities) {
                     if (t.ability_type != Ability::SPELL) continue;
-                    std::vector<const Ability *> targeting = spell_targeting_abilities(t);
+                    // Probe with the real spell source/controller so a mode's target legality
+                    // (protection from this spell's color, OppCtrl) matches select_target below —
+                    // otherwise can_promise/must_promise can green-light a mode whose only target
+                    // is protected (Scryb Ranger vs blue Into the Flood Maw), then select_target
+                    // finds zero targets and aborts (CR 601.2c / 702.16e).
+                    Ability probe = cast_gate_probe(t, spell_entity, caster);
+                    std::vector<const Ability *> targeting = spell_targeting_abilities(probe);
                     if (!targeting.empty()) {
                         must_promise = !gift_mode_satisfiable(targeting, orderer, caster, false);
                         can_promise = gift_mode_satisfiable(targeting, orderer, caster, true);

@@ -404,7 +404,7 @@ static void offer_modal_back_face_casts(std::vector<LegalAction> &actions, const
         bool tgt_ok = true, condition_ok = true;
         for (const auto &ab : back.abilities) {
             if (ab.ability_type != Ability::SPELL) continue;
-            tgt_ok = has_legal_targets(ab, orderer);
+            tgt_ok = has_legal_targets(cast_gate_probe(ab, card_entity, priority_player), orderer);
             if (!ab.condition_present.empty() && !ab.condition_on_target)
                 condition_ok = evaluate_present_condition(ab, priority_player, orderer);
             break;
@@ -565,7 +565,11 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             // switches on the gift promise (Into the Flood Maw: a creature without the gift, a
             // nonland permanent with it), so the spell is castable iff a legal target exists for
             // at least one reachable mode. Reduces to has_legal_targets for ordinary spells.
-            tgt_ok = spell_has_castable_targets(ab, orderer, priority_player, card_data.has_gift);
+            // Probe with the real cast source/controller (card_entity) so source-dependent target
+            // restrictions — protection from this spell's color, OppCtrl — match select_target and
+            // a protected-only target (Emrakul vs white, Scryb Ranger vs blue) is not offered.
+            Ability probe = cast_gate_probe(ab, card_entity, priority_player);
+            tgt_ok = spell_has_castable_targets(probe, orderer, priority_player, card_data.has_gift);
             // Target-conditional abilities (ConditionDefined$ Targeted, e.g. Fatal Push)
             // may target anything legal; the condition is checked on the target at
             // resolution, so it must not gate cast-time legality.
@@ -710,7 +714,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         bool tgt_ok = true;
         for (const auto &ab : gcd.abilities) {
             if (ab.ability_type != Ability::SPELL) continue;
-            tgt_ok = has_legal_targets(ab, orderer);
+            tgt_ok = has_legal_targets(cast_gate_probe(ab, gy_entity, priority_player), orderer);
             break;
         }
         if (!tgt_ok) continue;
@@ -764,7 +768,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         bool tgt_ok = true;
         for (const auto &ab : gcd.abilities) {
             if (ab.ability_type != Ability::SPELL) continue;
-            tgt_ok = has_legal_targets(ab, orderer);
+            tgt_ok = has_legal_targets(cast_gate_probe(ab, gy_entity, priority_player), orderer);
             break;
         }
         if (!tgt_ok) continue;
@@ -820,7 +824,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         bool tgt_ok = true;
         for (const auto &ab : gcd.abilities) {
             if (ab.ability_type != Ability::SPELL) continue;
-            tgt_ok = has_legal_targets(ab, orderer);
+            tgt_ok = has_legal_targets(cast_gate_probe(ab, gy_entity, priority_player), orderer);
             break;
         }
         if (!tgt_ok) continue;
@@ -876,7 +880,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         bool tgt_ok = true;
         for (const auto &ab : ecd.abilities) {
             if (ab.ability_type != Ability::SPELL) continue;
-            tgt_ok = has_legal_targets(ab, orderer);
+            tgt_ok = has_legal_targets(cast_gate_probe(ab, ex_entity, priority_player), orderer);
             break;
         }
         if (!tgt_ok) continue;
