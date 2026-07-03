@@ -267,10 +267,16 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
     // ConditionPresent$ Card.wasCastFromYourHandByYou (Amped Raptor): the ability's source —
     // the card that triggered it — must have entered the battlefield as a spell its controller
     // cast from their own hand. Read the persisted flag off its Permanent (set when the
-    // permanent was created from a hand cast). A non-hand entry leaves the flag false.
+    // permanent was created from a hand cast). A non-hand entry leaves the flag false. If the
+    // source has already left the battlefield before this trigger resolves (e.g. Amped Raptor
+    // killed in response to its own ETB trigger), the Permanent is gone; fall back to the
+    // last-known-information snapshot captured as it left play (CR 603.10 / 608.2h) so the
+    // exile-cast clause is not silently lost.
     if (ab.condition_present == "Card.wasCastFromYourHandByYou") {
-        return global_coordinator.entity_has_component<Permanent>(ab.source) &&
-               global_coordinator.GetComponent<Permanent>(ab.source).cast_from_hand_by_controller;
+        if (global_coordinator.entity_has_component<Permanent>(ab.source))
+            return global_coordinator.GetComponent<Permanent>(ab.source).cast_from_hand_by_controller;
+        auto lit = cur_game.last_known_info.find(ab.source);
+        return lit != cur_game.last_known_info.end() && lit->second.cast_from_hand_by_controller;
     }
 
     // IsPresent$ Card.Self: the source must itself be on the battlefield (Kappa Cannoneer's
@@ -620,7 +626,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                         auto &cz = global_coordinator.GetComponent<Zone>(ce);
                         if (cz.location != Zone::BATTLEFIELD) continue;
                         if (!global_coordinator.entity_has_component<CardData>(ce)) continue;
-                        int cmc = static_cast<int>(global_coordinator.GetComponent<CardData>(ce).mana_cost.size());
+                        int cmc = card_mana_value(global_coordinator.GetComponent<CardData>(ce));
                         if (cmc <= threshold) { any_valid = true; break; }
                     }
                     if (!any_valid) tgt_ok = false;
@@ -875,6 +881,15 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                   // the optional cast is sensibly offered.
             if (ppl.life_total < perm_grant.amount) continue;
         }
+
+        // Cost-increase / SetCost-floor statics apply to alternative costs too (CR 118.9d /
+        // 601.2f): an impulse/free cast substitutes a {0} mana cost, but an active Trinisphere
+        // floor pads that up to its minimum ({3}) and Thalia adds its surcharge — payable ON TOP
+        // of the energy/life resource cost. Require the floored mana; empty (no floor/increase)
+        // means no extra mana and this gate is a no-op.
+        ManaValue floor_mana = floored_alt_mana_cost(ecd, ManaValue{}, priority_player);
+        if (!floor_mana.empty() && !can_pay_mana(priority_player, floor_mana, ex_entity, orderer))
+            continue;
 
         // Any targeting requirement must have at least one legal target.
         bool tgt_ok = true;

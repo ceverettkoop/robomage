@@ -10,6 +10,7 @@
 #include "../classes/game.h"
 #include "../cli_output.h"
 #include "../components/carddata.h"
+#include "../game_queries.h"
 #include "../components/player.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
@@ -84,7 +85,7 @@ bool dig(Ability &ab, std::shared_ptr<Orderer> orderer) {
         }
         if (!card_matches) continue;
         // Apply the mana-value bound if present (cmc <= threshold).
-        if (has_cmc_le && static_cast<int>(cd.mana_cost.size()) > cmc_threshold) continue;
+        if (has_cmc_le && card_mana_value(cd) > cmc_threshold) continue;
         matching.push_back(e);
     }
 

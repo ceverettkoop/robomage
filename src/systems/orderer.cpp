@@ -146,6 +146,11 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
             lki.evoked = p.evoked;
             lki.entered_with_offspring = p.entered_with_offspring;
             lki.transformed = p.transformed;
+            // Layer-6 ability removal (Humility, CR 613.1f): a permanent whose abilities were
+            // removed has no triggered abilities, so its own leaves/dies look-back trigger
+            // (CR 603.10) must not fire — capture the flag before Permanent is stripped.
+            lki.abilities_removed = p.abilities_removed;
+            lki.cast_from_hand_by_controller = p.cast_from_hand_by_controller;
         }
         if (global_coordinator.entity_has_component<Creature>(target)) {
             auto &cr = global_coordinator.GetComponent<Creature>(target);

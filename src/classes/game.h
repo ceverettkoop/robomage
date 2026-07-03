@@ -106,6 +106,14 @@ struct LastKnownInfo {
     bool evoked = false;                   // evoke self-sacrifice gate
     bool entered_with_offspring = false;   // offspring token-copy gate
     bool transformed = false;              // which DFC face was active (CR 712.4 ability selection)
+    bool abilities_removed = false;        // Permanent::abilities_removed snapshot: a permanent that
+                                           // had its abilities removed (Humility, layer 6 / CR 613.1f)
+                                           // has no triggered abilities, so its own leaves/dies
+                                           // look-back trigger (CR 603.10) must not fire either.
+    bool cast_from_hand_by_controller = false;  // "if you cast it from your hand" gate (Amped
+                                                // Raptor's Card.wasCastFromYourHandByYou), read via
+                                                // LKI when the source left play before the trigger
+                                                // resolved (CR 603.10 / 608.2h).
 };
 
 enum MandatoryChoice {

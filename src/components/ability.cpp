@@ -822,7 +822,7 @@ bool Ability::is_legal_target(Entity cand, Zone::Ownership caster) const {
         if (!type_ok) return false;
         // Mana-value bound (e.g. Lorehold Charm's cmcLE2): a graveyard card has no live MV
         // layer, so read its printed mana value.
-        if (cmc_le >= 0 && static_cast<int>(cd.mana_cost.size()) > cmc_le) return false;
+        if (cmc_le >= 0 && card_mana_value(cd) > cmc_le) return false;
         if (nonbasic_only && has_basic_supertype(cd.types)) return false;
         return true;
     }
@@ -1175,7 +1175,7 @@ size_t evaluate_dynamic_amount(
         // becomes a creature whose P/T equal its own mana value, snapshotted at resolution.
         int mv = 0;
         if (target != 0 && global_coordinator.entity_has_component<CardData>(target))
-            mv = static_cast<int>(global_coordinator.GetComponent<CardData>(target).mana_cost.size());
+            mv = card_mana_value(global_coordinator.GetComponent<CardData>(target));
         return static_cast<size_t>(mv < 0 ? 0 : mv);
     }
     // Remembered$Valid <comma-OR-filter> — number of remembered cards (e.g. cards just moved
@@ -1201,7 +1201,7 @@ size_t evaluate_dynamic_amount(
         if (!cur_game.remembered_entities.empty()) {
             Entity r = cur_game.remembered_entities[0];
             if (global_coordinator.entity_has_component<CardData>(r))
-                base = static_cast<int>(global_coordinator.GetComponent<CardData>(r).mana_cost.size());
+                base = card_mana_value(global_coordinator.GetComponent<CardData>(r));
         }
         size_t plus = expr.find("/Plus.");
         if (plus != std::string::npos) base += std::stoi(expr.substr(plus + 6));

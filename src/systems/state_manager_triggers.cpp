@@ -605,8 +605,8 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                     if (!ev.HasParam(Params::ENTITY)) continue;
                     Entity spell_e = ev.GetParam<Entity>(Params::ENTITY);
                     if (!global_coordinator.entity_has_component<CardData>(spell_e)) continue;
-                    int spell_mv = static_cast<int>(
-                        global_coordinator.GetComponent<CardData>(spell_e).mana_cost.size());
+                    int spell_mv = card_mana_value(
+                        global_coordinator.GetComponent<CardData>(spell_e));
                     int bound = evaluate_sa_svar(ab.trigger_cmc_expr, perm.controller, entity);
                     const std::string &op = ab.trigger_cmc_op;
                     bool ok = (op == "EQ") ? (spell_mv == bound)
@@ -769,6 +769,14 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
         const std::string ent_name = entity_name(entity);
         // A transformed DFC functions with its active (back) face's abilities (CR 712.4).
         const CardData &cd = global_coordinator.GetComponent<CardData>(entity);
+        // Layer-6 ability removal (CR 613.1f / 305.7) via the LKI look-back (CR 603.10): a
+        // permanent whose abilities were removed as it left play (Humility "lose all abilities")
+        // had NO triggered abilities to fire on leaving — the look-back uses its last-known
+        // abilities, which were none. Suppress its own leaves/dies self-trigger entirely,
+        // regardless of active DFC face, mirroring the on-battlefield scan's abilities_removed
+        // gate above. (The subtype-derived mana ability / remover-granted abilities that survive
+        // removal live on perm.abilities, not on the printed CardData scanned here.)
+        if (lki && lki->abilities_removed) continue;
         const std::vector<Ability> &self_abs =
             (lki && lki->transformed && cd.backside) ? cd.backside->abilities : cd.abilities;
         for (const auto &ab : self_abs) {
