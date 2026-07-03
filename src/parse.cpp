@@ -2594,6 +2594,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
 
     std::string execute_svar;
     bool mode_changes_zone = false;
+    bool mode_changes_zone_all = false;
     bool dest_is_battlefield = false;
     bool dest_is_graveyard = false;
     bool origin_is_battlefield = false;
@@ -2651,10 +2652,14 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
     std::string key, value;
     while (next_param(line, param_pos, key, value)) {
         if (key == "Mode") {
-            // ChangesZoneAll ("one or more ... ") is matched per changing card like
-            // ChangesZone; the once-per-batch nuance is elided (it differs only when
-            // multiple matching cards change zone simultaneously).
+            // ChangesZone fires once per matching card. ChangesZoneAll ("whenever one or more
+            // cards ...") is a single batch trigger (CR 603.2c): it fires exactly ONCE for a
+            // group of simultaneous zone changes, no matter how many cards matched. Both reuse the
+            // same per-card origin/destination/ValidCards filters; the _all form additionally sets
+            // trigger_batch_zone_all so the trigger scan dedupes it to a single firing per batch
+            // (Moonshadow: milling 3 permanent cards removes ONE -1/-1 counter, not three).
             if (value == "ChangesZone" || value == "ChangesZoneAll") mode_changes_zone = true;
+            if (value == "ChangesZoneAll") mode_changes_zone_all = true;
             else if (value == "Phase") mode_is_phase = true;
             else if (value == "SpellCast") mode_is_spell_cast = true;
             else if (value == "DamageDone") mode_is_damage_done = true;
@@ -2878,6 +2883,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
         ability.trigger_valid_card_non_token              = valid_card_non_token;
         ability.trigger_valid_card_untapped               = valid_card_untapped;
         ability.trigger_valid_card_is_permanent           = valid_card_permanent;
+        ability.trigger_batch_zone_all                    = mode_changes_zone_all;
         ability.trigger_valid_card_subtype                = valid_card_subtype;
         ability.trigger_valid_player_is_controller        = valid_card_owner_you || valid_player_is_you;
         if (valid_card_self) ability.trigger_only_self = true;
@@ -3114,6 +3120,7 @@ static Ability parse_one_trigger(const std::string &line, const std::map<std::st
                 effect.trigger_valid_card_non_token             = ability.trigger_valid_card_non_token;
                 effect.trigger_valid_card_untapped              = ability.trigger_valid_card_untapped;
                 effect.trigger_valid_card_is_permanent          = ability.trigger_valid_card_is_permanent;
+                effect.trigger_batch_zone_all                   = ability.trigger_batch_zone_all;
                 effect.trigger_valid_card_subtype               = ability.trigger_valid_card_subtype;
                 effect.trigger_optional                         = ability.trigger_optional;
                 effect.trigger_valid_card_opp_own               = ability.trigger_valid_card_opp_own;

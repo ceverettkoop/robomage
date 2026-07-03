@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -354,6 +355,13 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
 
         const std::string ent_name = entity_name(entity);
 
+        // Mode$ ChangesZoneAll batch triggers (CR 603.2c) fire once for a whole group of
+        // simultaneous zone changes, not once per matching card. Track which of this permanent's
+        // batch triggers have already queued this scan so later matching events in the same batch
+        // are skipped. Keyed by the ability template address (&ab), which is stable across the
+        // event loop (it lives in CardData/Token/perm.abilities).
+        std::set<const Ability *> batch_zone_all_fired;
+
         for (const auto &ev : events) {
             for (const auto *src : ab_sources) {
             for (const auto &ab : *src) {
@@ -661,6 +669,12 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                     trigger_ab.resolve(orderer);
                     continue;
                 }
+
+                // Mode$ ChangesZoneAll batch trigger (CR 603.2c): dedupe to a single firing for
+                // the whole simultaneous group. The first matching event queues it; further
+                // matching events for this same ability template are skipped.
+                if (ab.trigger_batch_zone_all && !batch_zone_all_fired.insert(&ab).second)
+                    continue;
 
                 PendingTrigger pt;
                 pt.ab = trigger_ab;
