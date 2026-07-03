@@ -1733,6 +1733,18 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                 }
                 if (card_data.has_x_cost) cur_game.x_paid = 0;
 
+                // Cost-increase / SetCost-floor statics apply to alternative costs too
+                // (CR 118.9d / 601.2f): the impulse/free cast substitutes a {0} mana cost, but
+                // an active Trinisphere floor pads it up to its minimum ({3}) and Thalia adds
+                // its surcharge — paid ON TOP of the resource cost (energy/life) that was just
+                // paid. Deferred until after targets like every other cost. Empty (no floor /
+                // increase applies) leaves the cast free of mana, exactly as before.
+                ManaValue floor_mana = floored_alt_mana_cost(card_data, ManaValue{}, caster);
+                if (!floor_mana.empty()) {
+                    deferred_mana_cost = floor_mana;
+                    deferred_mana_pending = true;
+                }
+
             // ALTERNATE COST
             } else if (action.use_alt_cost) {
                 pay_alternate_cost(action, game, orderer, card_data, spell_entity, zone);

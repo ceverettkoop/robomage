@@ -882,6 +882,15 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
             if (ppl.life_total < perm_grant.amount) continue;
         }
 
+        // Cost-increase / SetCost-floor statics apply to alternative costs too (CR 118.9d /
+        // 601.2f): an impulse/free cast substitutes a {0} mana cost, but an active Trinisphere
+        // floor pads that up to its minimum ({3}) and Thalia adds its surcharge — payable ON TOP
+        // of the energy/life resource cost. Require the floored mana; empty (no floor/increase)
+        // means no extra mana and this gate is a no-op.
+        ManaValue floor_mana = floored_alt_mana_cost(ecd, ManaValue{}, priority_player);
+        if (!floor_mana.empty() && !can_pay_mana(priority_player, floor_mana, ex_entity, orderer))
+            continue;
+
         // Any targeting requirement must have at least one legal target.
         bool tgt_ok = true;
         for (const auto &ab : ecd.abilities) {
