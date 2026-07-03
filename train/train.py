@@ -23,6 +23,7 @@ Usage:
 """
 
 import argparse
+import datetime
 import json
 import os
 import sys
@@ -431,6 +432,16 @@ CHECKPOINT_DIR = "checkpoints"
 LOG_DIR = "logs"
 _CHECKPOINT_ABS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "checkpoints")
 
+
+def _tb_log_name(deck: str) -> str:
+    """Rollout log folder name for a training session: '{deck}_{YYYY-MM-DD}'.
+
+    SB3 appends '_{run_number}' to this to disambiguate repeated runs on the
+    same day, so the final logs/ subfolder looks like 'delver_2026-07-03_1'
+    instead of the default 'MaskablePPO_1'.
+    """
+    return f"{deck}_{datetime.date.today().isoformat()}"
+
 # League resume: the driver's loop position (which deck is up, how many global steps
 # are done) lives outside any single model checkpoint, so we persist it to a small
 # JSON sidecar that is rewritten every time a snapshot is saved (and at each rotation
@@ -740,7 +751,8 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
                                            bo3=env_kwargs.get("bo3", False)))
 
         print(f"Training for {total_timesteps:,} timesteps across {actual_n_envs} envs...")
-        model.learn(total_timesteps=total_timesteps, callback=callbacks, reset_num_timesteps=load_path is None)
+        model.learn(total_timesteps=total_timesteps, callback=callbacks,
+                    reset_num_timesteps=load_path is None, tb_log_name=_tb_log_name(model_deck))
         model.save(os.path.join(checkpoint_dir, f"{model_deck}__final"))
         print(f"Saved final model as {model_deck}__final.")
     finally:
@@ -816,7 +828,7 @@ def _league_chunk(binary_path: str, learner_deck: str, roster: list[str],
             callbacks.append(ShapingScaleCallback(vec_env))
 
         model.learn(total_timesteps=chunk_steps, callback=callbacks,
-                    reset_num_timesteps=not resuming)
+                    reset_num_timesteps=not resuming, tb_log_name=_tb_log_name(learner_deck))
         model.save(os.path.join(checkpoint_dir, f"{learner_deck}__final"))
         print(f"[league] saved {learner_deck}__final")
         # PPO collects whole rollouts, so the chunk overshoots chunk_steps; return
@@ -1061,7 +1073,8 @@ def train_fixed_model(binary_path: str, model_deck: str, opp_deck: str,
                                            bo3=env_kwargs.get("bo3", False)))
 
         print(f"Training for {total_timesteps:,} timesteps across {n_envs} envs...")
-        model.learn(total_timesteps=total_timesteps, callback=callbacks, reset_num_timesteps=False)
+        model.learn(total_timesteps=total_timesteps, callback=callbacks, reset_num_timesteps=False,
+                    tb_log_name=_tb_log_name(model_deck))
         model.save(os.path.join(checkpoint_dir, f"{model_deck}__final"))
         print(f"Saved final model as {model_deck}__final.")
     finally:
