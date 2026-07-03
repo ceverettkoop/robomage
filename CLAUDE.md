@@ -21,9 +21,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   Add similar shared accessors (next to these) when a new entity-scan pattern starts repeating.
 - Static (local) functions should be forward declared at top of source file for clarity
 - C++17 with exceptions disabled (`-fno-exceptions`)
-- GUI is written in C99 with raylib
+- GUI is written in C99 with raylib; GUI is deprecated for now but left as-is, TUI is focus for UI
 - Uses clang-format configuration in `.clang-format`
 - DO NOT MODIFY CARD SCRIPTS
+- When given a long list of tasks or bugs to fix, do them one at a time (unless it is sensible to batch some)
+  and use subagents for each one. Instruct the subagents to not spawn additional agents. 
 
 ## Project Overview
 
@@ -54,14 +56,13 @@ this version current if a newer Comprehensive Rules release supersedes it.
 - **Build the project**: `make clean && make`
 - **Clean build artifacts**: `make clean`
 - **Build for release**: `make BUILD=RELEASE`
-- **Disable GUI**: `make HEADLESS=TRUE`
+- **Enable the GUI**: `make GUI=TRUE`
 
-**Build headless by default.** Unless the user explicitly asks for the GUI, build with
-`make HEADLESS=TRUE` (and `make clean && make HEADLESS=TRUE` for a clean build). The GUI (raylib)
-front end is **deprecated** and no longer actively maintained — the text/CLI (TUI) interface is the
-actively maintained front end. The GUI code is retained in the tree in case it is revived in the
-future, but it requires raylib (often unavailable, e.g. in headless cloud containers), so prefer
-`HEADLESS=TRUE` everywhere it isn't specifically requested.
+**Builds are headless (TUI) by default** — no flag needed. Only pass `make GUI=TRUE` when the
+user explicitly asks for the GUI. The GUI (raylib) front end is **deprecated** and no longer
+actively maintained (and requires raylib, often unavailable); the text/CLI (TUI) interface is
+the actively maintained front end. The GUI code is retained in the tree in case it is revived.
+(`make HEADLESS=TRUE` is still accepted as a redundant no-op for backward compatibility.)
 
 The compiled binary is output to `bin/robomage`.
 
@@ -291,7 +292,7 @@ train/.venv/bin/python train/test_harness.py --scenario scenario.json
 
 The codebase follows an Entity Component System architecture based on [Austin Morlan's ECS tutorial](https://austinmorlan.com/posts/entity_component_system/):
 
-- **Entities** (`src/ecs/entity.h`): Simple uint32_t IDs, maximum 5000 entities
+- **Entities** (`src/ecs/entity.h`): Simple uint32_t IDs, capped at `MAX_ENTITIES` (see `src/ecs/entity.h`)
 - **Components** (`src/components/`): Pure data structs attached to entities
 - **Systems** (`src/systems/`): Logic that operates on entities with specific component signatures
 - **Coordinator** (`src/ecs/coordinator.h`): Central manager accessed via `global_coordinator` singleton
@@ -540,7 +541,7 @@ train/.venv/bin/python train/train.py --self-play --deck delver --opponent mav  
 # Evaluation / inspection
 train/.venv/bin/python train/train.py baseline delver                                 # win rate vs scripted (deck shorthand → delver__final.zip)
 # observe: one command for any {scripted|model} vs {scripted|model} matchup
-# (replaces the old diag/watch/observe). --games N for a multi-game pass + summary,
+# (replaced the old diag/watch commands). --games N for a multi-game pass + summary,
 # --verbose for the full per-decision transcript, --seed for reproducibility, --bo3 for matches.
 train/.venv/bin/python train/train.py observe --player-a delver --player-b scripted --deck delver --opponent mav  # watch one game (per-side controller + deck)
 train/.venv/bin/python train/train.py observe --deck delver --opponent mav                          # scripted vs scripted, one game (compact)
@@ -613,28 +614,12 @@ so raising the margin never removes a deck from the field; it only thins its ver
 - Individual game win/loss: +0.3 / -0.3 (intermediate)
 - Match win/loss: +1.0 / -1.0 (terminal)
 
-**State vector match context** (indices 33018-33021, all 0.0 in single-game mode):
-- `game_number / 3.0`, `self_match_wins / 2.0`, `opp_match_wins / 2.0`, `is_sideboard_phase`
-
-**State vector library & post-board context** (indices 33022-33024):
-- `self_library_ct / 60.0`, `opp_library_ct / 60.0`, `is_post_board` (1.0 if game 2+ of bo3)
-
-**Current turn** (index 33025): `turn / 50.0`
-
-**Known top-of-library** (indices 33026-33665): 5 × 128 card one-hots for the
-top 5 cards of the viewer's library. All-zeros slot = unknown. Populated as
-cards are placed on top (Ponder/Brainstorm/Rearrange/Sylvan) and cleared to
-unknown whenever the library is shuffled. Also slides up when a card is drawn
-from within the tracked top-5 window.
-
-**Opponent revealed-cards multi-hot** (indices 33666-33793): 128-float binary
-multi-hot of every card the opponent-of-viewer has revealed so far this match.
-Bit `i` = 1 once the opponent has shown card vocab index `i`. Set when an
-opponent card enters a public zone (battlefield/stack/graveyard/exile) or is
-revealed by a tutor; accumulated across the games of a bo3 and persisting over
-the per-game ECS reset (the engine's deterministic "belief state", since a
-feedforward policy cannot remember reveals across `reset()`). Empty (all zeros)
-at game-1 turn-1. Tracked in `src/classes/match_state.{h,cpp}`.
+**Bo3-relevant state-vector fields** (exact indices/normalizers live in the `src/machine_io.h`
+layout block — don't hardcode them here):
+- **Match context** — `game_number`, `self/opp_match_wins`, `is_sideboard_phase` (all 0.0 in single-game mode).
+- **Library & post-board context** — `self/opp_library_ct`, `is_post_board` (1.0 in game 2+ of a bo3).
+- **Known top-5 library cards** for the viewer — set as cards are placed on top (Ponder/Brainstorm/Rearrange/Sylvan), cleared to unknown on shuffle, and slid up when a tracked card is drawn.
+- **Opponent revealed-cards multi-hot** — binary "has the opponent-of-viewer ever revealed card X this match", set when an opponent card enters a public zone (battlefield/stack/graveyard/exile) or is revealed by a tutor. It's the engine's deterministic "belief state" (a feedforward policy can't remember reveals across `reset()`), accumulated across a bo3's games and persisted over the per-game ECS reset. Tracked in `src/classes/match_state.{h,cpp}`.
 
 ### Machine mode protocol
 
@@ -653,74 +638,24 @@ BQUERY: <N>\n
 [float32 × MAX_ACTIONS — action card_is_public flags (padded)]
 ```
 - `N` = number of legal choices
-- State vector: 33794 floats (see `src/machine_io.h` for layout)
-- Action categories: ActionCategory enum integers (0–44)
-- Card IDs: `card_vocab_index / N_CARD_TYPES`, or `-1.0 / N_CARD_TYPES` (-0.0078125) as null sentinel
+- State vector: `STATE_SIZE` floats, serialized from the **priority player's** ("self") perspective
+- Action categories: `ActionCategory` enum integers
+- Card IDs: `card_vocab_index / N_CARD_TYPES`, or `-1.0 / N_CARD_TYPES` as null sentinel
 - Controller flags: `1.0` = self-controlled, `0.0` = opponent, null sentinel for non-entity actions
-- Public flags: `1.0` if the choice's card identity is public knowledge to all players (a revealed tutor, e.g. Personal Tutor), else `0.0`. Lets observers show the card name for an otherwise-private choice (search / top-of-library). Consumed as a side-channel (`env._action_public`); **not** part of the gym observation vector yet, so `OBS_SIZE` and trained checkpoints are unaffected.
+- Public flags: `1.0` if the choice's card identity is public knowledge to all players (a revealed tutor, e.g. Personal Tutor), else `0.0`. Lets observers show the card name for an otherwise-private choice (search / top-of-library). Consumed as a side-channel (`env._action_public`); **not** part of the gym observation vector, so `OBS_SIZE` and trained checkpoints are unaffected.
 
-**ActionCategory values** (emitted per legal action):
-
-| Value | Name | Meaning |
-|---|---|---|
-| 0 | PASS_PRIORITY | Pass priority |
-| 2 | SELECT_ATTACKER | Choose a creature to attack with |
-| 3 | CONFIRM_ATTACKERS | Confirm attacker declaration (sent as -1) |
-| 4 | SELECT_BLOCKER | Choose a creature to block with |
-| 5 | CONFIRM_BLOCKERS | Confirm blocker declaration (sent as -1) |
-| 6 | ACTIVATE_ABILITY | Activate a non-mana ability |
-| 7 | CAST_SPELL | Cast a spell from hand |
-| 8 | SELECT_TARGET | Choose a target for a spell/ability |
-| 9 | PLAY_LAND | Play a land from hand |
-| 10 | OTHER_CHOICE | Generic/unclassified choice — fallback default for any decision not given a specific category below |
-| 11 | MULLIGAN | Keep (0) or mulligan (1) |
-| 12 | BOTTOM_DECK_CARD | Choose card to put on library bottom (post-mulligan) |
-| 13–18 | MANA_W/U/B/R/G/C | Tap a land for the corresponding color |
-| 19 | SEARCH_LIBRARY | Choose card from library search (0 = fail to find) |
-| 20 | TOP_LIBRARY | Choose card to put on top of library |
-| 21 | SHUFFLE | Choose whether to shuffle |
-| 22 | PAYING_COSTS | Pay an optional cost |
-| 23 | DIG_CHOICE | Choose creature/land from top N cards (e.g. Once Upon a Time) |
-| 24 | SIDEBOARD_IN | Choose a card from sideboard to add to main deck (bo3) |
-| 25 | SIDEBOARD_OUT | Choose a card from main deck to move to sideboard (bo3) |
-| 26 | SIDEBOARD_DONE | Finish sideboarding (bo3) |
-| 27 | SACRIFICE_PERMANENT | Choose a permanent to sacrifice (cost or effect) |
-| 28 | RETURN_PERMANENT | Choose a permanent to return to its owner's hand |
-| 29 | CHOOSE_X | Choose the value of X for an X cost |
-| 30 | DISCARD | Choose a card to discard (cost, effect, or cleanup) |
-| 31 | CHOOSE_MODE | Choose a modal/charm mode |
-| 32 | CHOOSE_MANA_COLOR | Choose the color of a flexible mana producer (e.g. LED) |
-| 33 | PAY_UNLESS | Pay-or-decline of a "counter unless pay" cost (Mana Leak/Daze) |
-| 34 | NAME_CARD | Name a card |
-| 35 | CHOOSE_TYPE | Choose a creature type |
-| 36 | KEEP_LEGEND | Legend rule: choose which duplicate to keep |
-| 37 | ORDER_TRIGGERS | Order simultaneous triggers onto the stack |
-| 38 | CHOOSE_REPLACEMENT | Choose which replacement effect / dredge-or-draw to apply |
-| 39 | ATTACK_TARGET | Choose what a creature attacks (player or planeswalker) |
-| 40 | BLOCK_TARGET | Choose which attacker a blocker blocks |
-| 41 | OPTIONAL_YESNO | Optional yes/no confirmation |
-| 42 | PLAY_FREE | Play a card for free (e.g. cast from exile) |
-| 43 | SYLVAN_CHOICE | Sylvan Library card pick / pay-4-life-or-top choice |
-| 44 | CHOOSE_CARD | Choose a card from a (non-library) zone for a zone-change effect |
-| 45 | ASSIGN_DAMAGE | Attacker assigns lethal combat damage to a chosen blocker (T3.10; only when 2+ blockers and power ≤ total lethal) |
-| 46 | COMPANION | Pay {3} to put your chosen companion (CR 702.139) from the sideboard into your hand (once per game) |
+**Source of truth (do not duplicate the values here — they drift):**
+- **State vector layout, `STATE_SIZE`, `N_CARD_TYPES`, per-slot field order** — the commented
+  layout block and constants in `src/machine_io.h`. Card identity is a single normalized id
+  float per slot (`norm_card_id`), *not* a one-hot.
+- **`ActionCategory` values and meanings** — the enum in `src/classes/action.h` (mirrored to
+  Python by codegen in `train/_enums.py`; `ACTION_CATEGORY_MAX` is generated from it).
+- **`OBS_SIZE` and the observation composition** (`STATE_SIZE + 3*MAX_ACTIONS` metadata +
+  hand/battlefield cost features) — `train/env.py`.
 
 **Confirm slot convention:** mandatory attacker/blocker queries end with a confirm action. The Python env remaps `action = num_choices - 1` to `-1` before sending to the game.
 
-### Observation space
-
-Total: **34392 floats** (OBS_SIZE in `train/env.py`)
-
-| Range | Size | Content |
-|---|---|---|
-| `[0:33794]` | 33794 | State vector (see `src/machine_io.h`) |
-| `[33794:33858]` | 64 | Action categories, padded to MAX_ACTIONS (64), normalised by ACTION_CATEGORY_MAX (46) |
-| `[33858:33922]` | 64 | Action card IDs, padded to MAX_ACTIONS |
-| `[33922:33986]` | 64 | Action controller_is_self flags, padded to MAX_ACTIONS |
-| `[33986:34056]` | 70 | Hand cast costs (10 slots × 7 cost features) |
-| `[34056:34392]` | 336 | Battlefield ability costs (48 slots × 7 cost features) |
-
-State vector layout is documented in `src/machine_io.h`. Key indices: `obs[31]` = priority player is the active player (perspective-relative), `obs[32]` = priority player is Player A (absolute). To get `active_is_a`: `(obs[31] > 0.5) == (obs[32] > 0.5)`.
+**Two perspective flags** worth knowing without opening the source: in the state vector, one flag marks whether the priority player is the active player (perspective-relative) and another marks whether "self" is Player A (absolute); AND-ing their agreement recovers `active_is_a`. See `src/machine_io.h` for their exact indices.
 
 ### Key files
 

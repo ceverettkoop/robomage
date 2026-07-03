@@ -30,8 +30,9 @@ BINNAME=robomage
 PYTHON := $(shell [ -x train/.venv/bin/python ] && echo train/.venv/bin/python || echo python3)
 # Auto-generated Python files kept in sync with the C++ sources at build time.
 PYGEN := train/_enums.py train/card_costs.py
-GUI=TRUE
-HEADLESS:=FALSE
+# Headless (TUI-only) is the default build. The raylib GUI front end is
+# deprecated; opt into it explicitly with `make GUI=TRUE`.
+GUI:=FALSE
 DEBUGFLAGS = -ggdb
 CXXFLAGS = -std=c++17 -fno-exceptions
 CFLAGS =
