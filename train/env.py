@@ -685,6 +685,19 @@ _LED_DRAW_STACK_IDS      = frozenset({_STREET_WRAITH_VOCAB_IDX, _EDGE_OF_AUTUMN_
                                       _PONDER_VOCAB_IDX})
 _DOOMSDAY_DECK_IDS       = frozenset({53, 54, 55, 56, 57, 58, 59, 60, 61, 67, 68, 69, 70})
 
+# Tron deck card vocab indices (mirror src/card_vocab.h). The three Urza lands
+# each add extra colorless mana once the other two are also controlled (see
+# Count$UrzaLands in src/components/ability.cpp); Planar Nexus is every
+# nonbasic land type via a self-CDA (state_manager_statics.cpp), so a single
+# Planar Nexus supplies whichever of the three types a real piece is missing.
+_URZAS_MINE_VOCAB_IDX        = 274
+_URZAS_POWER_PLANT_VOCAB_IDX = 275
+_URZAS_TOWER_VOCAB_IDX       = 276
+_PLANAR_NEXUS_VOCAB_IDX      = 266
+_EXPEDITION_MAP_VOCAB_IDX    = 246
+_TRON_LAND_IDS           = frozenset({_URZAS_MINE_VOCAB_IDX, _URZAS_POWER_PLANT_VOCAB_IDX,
+                                      _URZAS_TOWER_VOCAB_IDX})
+
 _CAT_TOP_LIBRARY = 20  # choose card to put on top of library (Doomsday pile ordering)
 _CAT_SHUFFLE     = 21  # shuffle choice (0 = don't shuffle, 1 = shuffle)
 
