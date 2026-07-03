@@ -38,54 +38,35 @@ TODO:
 
 ## Deferred — bigger, needs its own session
 
-### Modal spell mode & target selection at CAST (CR 601.2b/c) — DEFERRED (known bug)
+### Modal spell mode & target selection at CAST (CR 601.2b/c) — FIXED 2026-07-02
 
-STATUS: known bug, deliberately deferred to a dedicated session (user decision 2026-07-02).
+Modes + targets are now announced at cast (`announce_spell_targets` in src/action_processor.cpp;
+picks recorded in `Ability::charm_chosen`), `effects::charm` is a resolver only (per-mode CR 608.2b
+re-verification; choose-at-resolution loop kept as a fallback for unrouted cast paths), copies keep
+modes and may re-target (effect_copy_spell.cpp), and `spell_has_castable_targets` requires
+CharmNum$ choosable modes. The state vector also grew (STATE_SIZE 2919 → 3183): every stack slot
+now serializes its announced targets (all spells/abilities) and chosen-mode multi-hot — a shape
+change that invalidates ALL pre-existing checkpoints (retrain from scratch). Engine-internal
+ordering note: X is chosen before modes (strict 601.2b says modes first) because mode choosability
+can depend on X (Kozilek's Command `Creature.cmcLEX`); not opponent-observable.
 
-CURRENT BEHAVIOR: modal ("Choose one/two —", `SP$ Charm` / `CharmNum$`) spells choose BOTH their
-mode(s) AND their target(s) at RESOLUTION, not when cast. See the explicit note in
-src/effects/effect_charm.cpp:28-30 ("This engine chooses modes at resolution rather than on cast —
-a simplification shared by every Charm card here"). `effects::charm` loops CharmNum$ times; each
-iteration prompts CHOOSE_MODE, then selects that mode's target(s) via `select_target`, then
-resolves it immediately — all during resolution.
+Remaining acceptable gaps: mode multi-hot capped at 6, serialized targets capped at 4 per stack
+object; an all-modes-untargetable charm COPY is still created and fizzles at resolution
+(CR 707.10c pruning not applied per-mode).
 
-CORRECT BEHAVIOR:
-- CR 601.2b: as the spell is put on the stack (cast), its controller chooses the mode(s) —
-  different modes, CharmNum$ of them.
-- CR 601.2c: immediately after modes, targets are chosen (also at cast, and become public info).
-  Target legality is then re-checked at resolution (CR 608.2b): a spell whose targets are all
-  illegal is countered; otherwise it resolves affecting only the still-legal targets.
+### Pre-existing breakage surfaced while testing the modal fix (2026-07-02)
 
-OBSERVABLE CONSEQUENCES OF THE CURRENT SIMPLIFICATION:
-- Targets are locked in too late: an opponent cannot respond to the specific chosen mode/target
-  (e.g. cannot save the creature Prismari Charm will target, because the target isn't announced
-  until the spell resolves). Priority/interaction is wrong.
-- Mode/target choices are hidden from the opponent until resolution (should be public on cast).
-
-WHAT THE FIX REQUIRES:
-1. Move mode + target selection into the cast-announcement flow (src/action_processor.cpp,
-   alongside the existing non-modal target selection). Record which mode(s) were chosen and each
-   chosen sub-ability's target/targets on the spell's Ability (the `charm_choices` already exist;
-   need a "chosen" marker + populated targets per chosen mode).
-2. `effects::charm` becomes a RESOLVER only: for each pre-chosen mode, re-verify target legality
-   (608.2b) and resolve — no prompting at resolution.
-3. Handle modal-spell COPIES (CR 707.10): a copy keeps the same modes but its controller may choose
-   new targets — the copy path (src/effects/effect_copy_spell.cpp) must carry the modes and
-   re-select targets.
-4. Handle the "fewer legal modes than required" case at cast (CR 601.2b/e).
-
-WHY DEFERRED (not a quick fix):
-- Changes the ML DECISION SCHEDULE: the CHOOSE_MODE and SELECT_TARGET decisions move from
-  resolution-time to cast-time, shifting the BQUERY decision sequence. This affects replay
-  fidelity and every per-deck checkpoint (all trained against the resolution-time order). Must be
-  done deliberately with the ML pipeline in mind (the state-vector/action-encoding SHAPE is
-  unchanged, but the ORDER of emitted decisions changes).
-- Cross-cutting: cast flow + charm resolver + copy path + legality re-check.
-
-VOCAB MODAL CARDS TO REGRESSION-TEST: Prismari Charm (Choose one — note its damage mode "1 damage
-to each of one or two targets"; the multi-target DealDamage itself was fixed separately on branch
-fix/campaign-2-engine-bugs, commit b1f9eee), Prismari Command (Choose two), and any other
-`SP$ Charm` / `CharmNum$` card. Ref: effect_charm.cpp:28-30.
+- **meta/ deck loading crashes the engine**: `--deck-a meta/arclight_phoenix` (also boros_aggro)
+  dies at startup — parse_card_script assert after trying to open `p/petal.txt` / `p/parlor.txt`
+  (something splits multi-word card names: "Lotus Petal" → "Petal", "Elegant Parlor" → "Parlor";
+  en route it even parses unrelated fallback matches like charm_peddler.txt). Reproduced on
+  UNMODIFIED main (verified via git stash), so unrelated to the modal change. league/ decks load
+  fine. Affects any regression pass over meta decks.
+- **train/regression/replay_diff.py and train/test_revealed_accumulator.py are broken on main**:
+  both import `TestHarness` / `get_scripted_action` from train/test_harness.py, which no longer
+  exports them (harness refactor moved the loop into runner.py). The regression corpus can't be
+  replayed until these imports are fixed. (Corpus decks are delver/doomsday/mav — modal-free — so
+  the modal fix doesn't invalidate the corpus itself; scripted games on those decks run clean.)
 
 ### T3.2 cleanup-step trigger priority (rule 514.3a) — DEFERRED
 No card in the current vocab has a cleanup-step trigger that uses the stack, so the "no priority

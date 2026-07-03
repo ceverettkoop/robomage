@@ -37,7 +37,7 @@
 // NOTE: Exile zones are populated in GameState but NOT serialized.
 // Add them back once cards that use exile are implemented.
 //
-// Fixed-size state vector layout (STATE_SIZE = 2919 floats):
+// Fixed-size state vector layout (STATE_SIZE = 3183 floats):
 // Card identity is a single normalized id float per slot (see norm_card_id):
 // idx/N_CARD_TYPES, or -1/N_CARD_TYPES for empty/unknown. The id is NOT a one-hot.
 //
@@ -56,57 +56,73 @@
 //                          controller_is_self, is_creature, is_land, loyalty/10, card_id
 //                Empty slots: 11 zeros + card_id sentinel (-1/N_CARD_TYPES).
 //
-//  [1186-1221]   Stack: 12 slots x 3 floats = 36
-//                Per slot: controller_is_self(1), card_id(1), is_spell(1)
-//                is_spell=1.0 for a cast spell; 0.0 for a triggered/activated ability
+//  [1186-1485]   Stack: 12 slots x 25 floats = 300
+//                Per slot: controller_is_self(1), card_id(1), is_spell(1),
+//                          chosen-mode multi-hot(6), 4 target sub-slots x 4 floats(16)
+//                is_spell=1.0 for a cast spell; 0.0 for a triggered/activated ability.
+//                Chosen-mode multi-hot: 1.0 at index i if modal mode i (of the spell's
+//                charm_choices) was announced at cast (CR 601.2b); all zeros when the
+//                object is not modal. Target sub-slots carry the object's ANNOUNCED
+//                targets (public info, CR 601.2c) in announcement order — primary
+//                ability targets, then targeting sub-abilities', then each chosen
+//                mode's — truncated at 4. Per target sub-slot:
+//                  present(1: a target occupies this sub-slot),
+//                  target_is_player(1),
+//                  target_controller_is_self(1: controller of the targeted permanent /
+//                    the targeted player himself; owner for a non-permanent card),
+//                  target_card_id(1: norm_card_id; -1 sentinel for players).
+//                Empty sub-slots: 3 zeros + card_id sentinel.
 //
-//  [1222-1285]   Self graveyard: 64 slots x 1 float = 64
-//  [1286-1349]   Opp graveyard:  64 slots x 1 float = 64
+//  [1486-1549]   Self graveyard: 64 slots x 1 float = 64
+//  [1550-1613]   Opp graveyard:  64 slots x 1 float = 64
 //                Per slot: card_id (sentinel = empty)
 //
-//  [1350-1359]   Self hand: 10 slots x 1 float = 10
+//  [1614-1623]   Self hand: 10 slots x 1 float = 10
 //                Per slot: card_id (sentinel = empty)
 //
-//  [1360-1871]   Action history: 128 entries x 4 floats = 512 (newest first)
+//  [1624-2135]   Action history: 128 entries x 4 floats = 512 (newest first)
 //                Per entry: category / ACTION_CATEGORY_MAX,
 //                           card_vocab_idx / N_CARD_TYPES (or -1/N_CARD_TYPES sentinel),
 //                           is_self (1.0 = viewer's action, 0.0 = opponent's),
 //                           turn / 50.0 (the game turn when the action was taken)
 //                Empty entries (beyond action_history_len) are all zeros.
 //
-//  [1872-1875]   Match context (4 floats, all 0.0 in single-game mode):
+//  [2136-2139]   Match context (4 floats, all 0.0 in single-game mode):
 //                game_number / 3.0, self_match_wins / 2.0,
 //                opp_match_wins / 2.0, is_sideboard_phase (0.0 or 1.0)
 //
-//  [1876-1878]   Library & post-board context (3 floats):
+//  [2140-2142]   Library & post-board context (3 floats):
 //                self_library_ct / 60.0, opp_library_ct / 60.0,
 //                is_post_board (1.0 if game 2+ of bo3, else 0.0)
 //
-//  [1879]        Current game turn / 50.0
+//  [2143]        Current game turn / 50.0
 //
-//  [1880-1884]   Known top-5 library cards for the viewer: 5 slots x 1 float = 5
+//  [2144-2148]   Known top-5 library cards for the viewer: 5 slots x 1 float = 5
 //                Per slot: card_id (sentinel = unknown). Index 0 is the top of
 //                the library. Entries are set when a card is placed on top (e.g.
 //                Ponder, Brainstorm, Rearrange) and cleared when shuffled.
 //
-//  [1885-2908]   Opponent revealed-cards multi-hot (N_CARD_TYPES floats, zeros =
+//  [2149-3172]   Opponent revealed-cards multi-hot (N_CARD_TYPES floats, zeros =
 //                none seen yet). Binary "has the opponent-of-viewer ever revealed
 //                card X this match"; accumulated across the games of a bo3 and
 //                persists over the per-game ECS reset. Set whenever an opponent
 //                card enters a public zone (battlefield/stack/graveyard/exile) or
 //                is revealed by a tutor. This is the only vocab-width block.
 //
-//  [2909-2918]   Known opponent-hand cards: 10 slots x 1 float = 10
+//  [3173-3182]   Known opponent-hand cards: 10 slots x 1 float = 10
 //                Per slot: card_id (sentinel = empty/unknown). The specific
 //                identities of opponent-hand cards the viewer has had revealed
 //                (Duress/Thoughtseize/tutor) and that are still in hand. Unlike
 //                the multi-hot above this tracks the exact card and a slot clears
 //                when that card leaves the hand for another zone.
 
-static constexpr int STATE_SIZE             = 2919;
+static constexpr int STATE_SIZE             = 3183;
 static constexpr int N_CARD_TYPES      = 1024; // embedding vocab size (card identity is emitted as a normalized id, not a one-hot)
 static constexpr int PERM_SLOT_SIZE    = 12;   // 8 stat/combat + 2 type flags + loyalty + 1 card-id float
-static constexpr int STACK_SLOT_SIZE   = 3;    // controller_is_self(1) + card-id float(1) + is_spell(1)
+static constexpr int STACK_MODE_SLOTS  = MAX_STACK_MODES; // chosen-mode multi-hot width per stack slot
+static constexpr int STACK_TGT_SLOTS   = MAX_STACK_TGTS;  // serialized targets per stack slot (truncated)
+static constexpr int STACK_TGT_FIELDS  = 4;    // present + is_player + controller_is_self + card-id
+static constexpr int STACK_SLOT_SIZE   = 3 + STACK_MODE_SLOTS + STACK_TGT_SLOTS * STACK_TGT_FIELDS;
 static constexpr int GY_SLOT_SIZE      = 1;    // card-id float only
 static constexpr float TURN_NORMALIZER = 50.0f; // divisor for turn fields
 

@@ -133,6 +133,22 @@ static void spawn_spell_copies(const CardData &orig_card, const ColorIdentity *o
                 if (sub.valid_tgts != "N_A" && has_legal_targets(sub, orderer))
                     select_target(sub, orderer, controller);
             }
+            // Modal spell copy (CR 707.10c): the copy has the SAME chosen modes — they can't
+            // be changed — but its controller may choose new targets for each chosen mode.
+            // Re-select a chosen mode's targets when a legal candidate exists for this copy;
+            // otherwise keep the original's targets (re-verified at resolution, CR 608.2b,
+            // fizzling that mode naturally if they're illegal).
+            for (int idx : ability.charm_chosen) {
+                if (idx < 0 || static_cast<size_t>(idx) >= ability.charm_choices.size()) continue;
+                Ability &mode = ability.charm_choices[static_cast<size_t>(idx)];
+                mode.source = copy;
+                mode.controller = controller;
+                if (mode.valid_tgts != "N_A" && has_legal_targets(mode, orderer)) {
+                    mode.target = 0;
+                    mode.targets.clear();
+                    select_target(mode, orderer, controller);
+                }
+            }
             global_coordinator.AddComponent(copy, ability);
         }
 

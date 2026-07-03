@@ -36,12 +36,14 @@ All changes are general, keyed on tag intent (no card-specific branches).
 
 - **Charm "choose N" (`src/effects/effect_charm.cpp`).** The handler picked exactly one mode.
   It now loops `Ability::charm_num` times, removing each chosen mode from the menu before the
-  next pick (CR 601.2b: chosen modes must be different) and resolving each chosen mode's
-  targets + effect immediately (matching Forge's top-to-bottom resolution). A choose-one card
-  (`charm_num` default 1) is unaffected. Modes with no legal target are still filtered out; if
-  fewer than N legal modes remain the spell resolves with what it could choose.
-  *(Simplification, shared by every Charm card in this engine: modes are chosen at resolution
-  rather than on cast. Documented across the charm docs.)*
+  next pick (CR 601.2b: chosen modes must be different). A choose-one card (`charm_num`
+  default 1) is unaffected. Modes with no legal target are filtered out of the menu.
+  *(UPDATE 2026-07-02: modes + their targets are now announced at CAST per CR 601.2b/c —
+  `announce_spell_targets`/`announce_charm_modes` in `src/action_processor.cpp`, picks recorded
+  in `Ability::charm_chosen` — and `effects::charm` only resolves the pre-chosen modes in order,
+  re-verifying each mode's targets at resolution (CR 608.2b). The engine chooses X before modes
+  (strict 601.2b orders modes first) because mode choosability depends on X here (`cmcLEX`);
+  not opponent-observable. The cast-legality gate requires `charm_num` choosable modes.)*
 
 - **`Count$xPaid` as a dynamic amount (`src/components/ability.cpp::evaluate_dynamic_amount`,
   `src/parse.cpp`).** Added an `xPaid` branch to `evaluate_dynamic_amount` (returns
@@ -89,7 +91,9 @@ All changes are general, keyed on tag intent (no card-specific branches).
   `Count$xPaid`. Nothing was repurposed into a different category.
 - **Choose-two with distinct modes (CR 601.2b).** Each chosen mode is removed before the next pick;
   a mode with no legal target is not offered (e.g. the exile-creature mode is hidden when no creature
-  has mana value ≤ X). With fewer than two legal modes the spell resolves with whatever it could pick.
+  has mana value ≤ X). Since the 2026-07-02 cast-time announcement fix, mode+target picks happen as
+  the spell is CAST, and the cast is only offered when at least two modes are choosable
+  (`spell_has_castable_targets`).
 - **`cmcLEX` / `TargetMax$ X` read the X actually paid** (`cur_game.x_paid`), restored from the
   resolving spell so it is not corrupted by an intervening X-cost cast.
 

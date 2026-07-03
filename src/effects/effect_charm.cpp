@@ -22,13 +22,27 @@ static void resolve_chosen_mode(Ability &parent, Ability &chosen, std::shared_pt
     chosen.resolve(orderer);
 }
 
-// Modal spell (CR 700.2): "Choose one/two —". The number of modes to pick is CharmNum$
-// (default 1). CR 601.2b requires the chosen modes to be different, so each pick is
-// removed from the menu before the next. Forge resolves the modes top-to-bottom; matching
-// that, each chosen mode has its targets selected and resolves immediately before the next
-// mode is chosen. (This engine chooses modes at resolution rather than on cast — a
-// simplification shared by every Charm card here; see docs/card_implementations.)
+// Modal spell (CR 700.2): "Choose one/two —". The mode(s) and their targets were announced
+// when the spell was CAST (CR 601.2b/c) — see announce_spell_targets — and recorded in
+// charm_chosen. Resolution only replays those picks in order: each mode's own resolve()
+// re-verifies its targets (CR 608.2b), so a mode whose targets became illegal fizzles
+// individually without any prompting here. The choose-at-resolution loop below remains as a
+// FALLBACK for a charm that reached the stack without an announcement (a cast path not
+// routed through announce_spell_targets).
 bool charm(Ability &ab, std::shared_ptr<Orderer> orderer) {
+    if (!ab.charm_chosen.empty()) {
+        for (int idx : ab.charm_chosen) {
+            if (idx < 0 || static_cast<size_t>(idx) >= ab.charm_choices.size()) continue;
+            Ability &chosen = ab.charm_choices[static_cast<size_t>(idx)];
+            chosen.source = ab.source;
+            chosen.controller = ab.controller;
+            chosen.resolve(orderer);
+        }
+        // Skip subabilities — charm handles its own resolution
+        return false;
+    }
+
+    game_log("(modes were not announced at cast — choosing at resolution)\n");
     int to_pick = ab.charm_num < 1 ? 1 : ab.charm_num;
     // Track which choice indices remain selectable.
     std::vector<bool> taken(ab.charm_choices.size(), false);

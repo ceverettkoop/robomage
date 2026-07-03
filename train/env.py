@@ -68,7 +68,7 @@ try:
 except ImportError:
     from train._enums import ACTION_CATEGORY_MAX
 
-STATE_SIZE = 2919  # see src/machine_io.h; card identity is 1 id float/slot, not a one-hot
+STATE_SIZE = 3183  # see src/machine_io.h; card identity is 1 id float/slot, not a one-hot
 # NOTE: Exile zones are tracked in GameState but not serialized to the observation.
 # NOTE: ActionChoice.description is never emitted in the BQUERY payload — it is for
 #       human-readable display only and is not part of the ML observation.
@@ -117,7 +117,7 @@ _ACTION_CTRL_NULL    = -1.0 / N_CARD_TYPES  # null sentinel for non-entity actio
 MAX_HAND_SLOTS = 10
 _HAND_COST_FEATS  = MAX_HAND_SLOTS * _N_COST_FEATS  # 10 * 7 = 70
 _BF_ABILITY_FEATS = 48 * _N_COST_FEATS              # 48 * 7 = 336
-OBS_SIZE = STATE_SIZE + 3 * MAX_ACTIONS + _HAND_COST_FEATS + _BF_ABILITY_FEATS  # 34392
+OBS_SIZE = STATE_SIZE + 3 * MAX_ACTIONS + _HAND_COST_FEATS + _BF_ABILITY_FEATS  # 3781
 
 # ── State layout offsets (mirror src/machine_io.h) ───────────────────────────
 # Creatures, lands, and other permanents share one unified section (no separate land slots).
@@ -127,7 +127,11 @@ _GLOBAL_SIZE            = 34                   # header: player blocks, step one
 _PERM_SLOTS             = 48                   # per-player; 96 total (self + opp)
 _PERM_SLOT_SIZE         = 12                   # 11 status (incl. loyalty) + 1 card id
 _STACK_SLOTS            = 12
-_STACK_SLOT_SIZE        = 3                    # ctrl + card id + is_spell
+_STACK_MODE_SLOTS       = 6                    # chosen-mode multi-hot width per stack slot
+_STACK_TGT_SLOTS        = 4                    # announced-target sub-slots per stack slot
+_STACK_TGT_FIELDS       = 4                    # present + is_player + ctrl_is_self + card id
+# ctrl + card id + is_spell, then mode multi-hot, then target sub-slots (25 total)
+_STACK_SLOT_SIZE        = 3 + _STACK_MODE_SLOTS + _STACK_TGT_SLOTS * _STACK_TGT_FIELDS
 _GY_SLOTS_TOTAL         = 128                  # 64 self + 64 opponent
 _GY_SLOT_SIZE           = 1                    # card id only
 _HAND_SLOTS_TOTAL       = 10
@@ -146,19 +150,19 @@ _OPP_KNOWN_HAND_SLOT_SIZE = 1                  # card id per slot
 _SELF_PERM_START     = _GLOBAL_SIZE                                                  # 34
 _OPP_PERM_START      = _SELF_PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE              # 610
 _STACK_START         = _OPP_PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE               # 1186
-_GY_START            = _STACK_START + _STACK_SLOTS * _STACK_SLOT_SIZE                # 1222
-_HAND_START          = _GY_START + _GY_SLOTS_TOTAL * _GY_SLOT_SIZE                   # 1350
-_HIST_START          = _HAND_START + _HAND_SLOTS_TOTAL * _HAND_SLOT_SIZE             # 1360
-_HIST_END            = _HIST_START + _ACTION_HISTORY_SIZE * _ACTION_HISTORY_ENTRY    # 1872
-_MATCH_CTX_START     = _HIST_END                                                     # 1872
-_LIBRARY_CTX_START   = _MATCH_CTX_START + _MATCH_CTX_SIZE                            # 1876
-_CUR_TURN_IDX        = _LIBRARY_CTX_START + _LIBRARY_CTX_SIZE                        # 1879
-_KNOWN_TOP_LIB_START = _CUR_TURN_IDX + _CUR_TURN_SIZE                                # 1880
-_KNOWN_TOP_LIB_END   = _KNOWN_TOP_LIB_START + _KNOWN_TOP_LIB_SLOTS * _KNOWN_TOP_LIB_SLOT_SIZE  # 1885
-_REVEALED_START      = _KNOWN_TOP_LIB_END                                            # 1885
-_REVEALED_END        = _REVEALED_START + _REVEALED_SIZE                              # 2909
-_OPP_KNOWN_HAND_START = _REVEALED_END                                                # 2909
-_OPP_KNOWN_HAND_END  = _OPP_KNOWN_HAND_START + _OPP_KNOWN_HAND_SLOTS * _OPP_KNOWN_HAND_SLOT_SIZE  # 2919
+_GY_START            = _STACK_START + _STACK_SLOTS * _STACK_SLOT_SIZE                # 1486
+_HAND_START          = _GY_START + _GY_SLOTS_TOTAL * _GY_SLOT_SIZE                   # 1614
+_HIST_START          = _HAND_START + _HAND_SLOTS_TOTAL * _HAND_SLOT_SIZE             # 1624
+_HIST_END            = _HIST_START + _ACTION_HISTORY_SIZE * _ACTION_HISTORY_ENTRY    # 2136
+_MATCH_CTX_START     = _HIST_END                                                     # 2136
+_LIBRARY_CTX_START   = _MATCH_CTX_START + _MATCH_CTX_SIZE                            # 2140
+_CUR_TURN_IDX        = _LIBRARY_CTX_START + _LIBRARY_CTX_SIZE                        # 2143
+_KNOWN_TOP_LIB_START = _CUR_TURN_IDX + _CUR_TURN_SIZE                                # 2144
+_KNOWN_TOP_LIB_END   = _KNOWN_TOP_LIB_START + _KNOWN_TOP_LIB_SLOTS * _KNOWN_TOP_LIB_SLOT_SIZE  # 2149
+_REVEALED_START      = _KNOWN_TOP_LIB_END                                            # 2149
+_REVEALED_END        = _REVEALED_START + _REVEALED_SIZE                              # 3173
+_OPP_KNOWN_HAND_START = _REVEALED_END                                                # 3173
+_OPP_KNOWN_HAND_END  = _OPP_KNOWN_HAND_START + _OPP_KNOWN_HAND_SLOTS * _OPP_KNOWN_HAND_SLOT_SIZE  # 3183
 
 assert _OPP_KNOWN_HAND_END == STATE_SIZE, (_OPP_KNOWN_HAND_END, STATE_SIZE)
 

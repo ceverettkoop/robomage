@@ -78,6 +78,10 @@ static std::vector<const Ability *> spell_targeting_abilities(const Ability &pri
 static bool gift_mode_satisfiable(const std::vector<const Ability *> &targeting,
                                   std::shared_ptr<Orderer> orderer, Zone::Ownership caster,
                                   bool promised);
+static bool charm_mode_choosable(Ability &candidate, std::shared_ptr<Orderer> orderer,
+                                 Zone::Ownership caster);
+static void announce_charm_modes(Ability &ability, std::shared_ptr<Orderer> orderer,
+                                 Zone::Ownership caster);
 
 // entity_name() is shared from the StateManager TUs via state_manager_internal.h.
 // mana_symbol_str() is the canonical const-char* color symbol from classes/colors.h.
@@ -1259,19 +1263,26 @@ static bool gift_mode_satisfiable(const std::vector<const Ability *> &targeting,
 // reachable promise state and the spell is castable if any one is fully satisfiable.
 bool spell_has_castable_targets(const Ability &primary, std::shared_ptr<Orderer> orderer,
                                 Zone::Ownership caster, bool has_gift) {
-    // Modal spell (CR 601.2b/601.2c): castable iff at least one mode can be legally chosen —
-    // a mode that needs no target, or one with a legal target available. The modes live in
-    // charm_choices (not subabilities), so the ordinary targeting walk below never sees them;
-    // without this a Charm whose every mode lacked a target (Red Elemental Blast with nothing
-    // blue anywhere) was offered and then fizzled at resolution. Mirrors the mode filter in
-    // effects::charm, which is what actually enforces the choice at resolution.
+    // Modal spell (CR 601.2b/601.2c): castable iff CharmNum$ DIFFERENT modes can be legally
+    // chosen — a choosable mode needs no target, or has a legal target available. The modes
+    // live in charm_choices (not subabilities), so the ordinary targeting walk below never
+    // sees them; without this a Charm whose every mode lacked a target (Red Elemental Blast
+    // with nothing blue anywhere) was offered and then hit an empty mode menu at cast.
+    // Mirrors charm_mode_choosable, the filter announce_charm_modes applies at cast (X isn't
+    // chosen yet at gate time, so an xPaid-driven target minimum counts as 0 here — X may
+    // legally be 0 — matching effective_target_min).
     if (!primary.charm_choices.empty()) {
+        int choosable = 0;
+        int needed = primary.charm_num < 1 ? 1 : primary.charm_num;
         for (const Ability &mode : primary.charm_choices) {
-            if (mode.valid_tgts == "N_A" || mode.target_min == 0) return true;
             Ability probe = mode;
             probe.source = primary.source;
             probe.controller = caster;
-            if (!build_valid_targets(probe, orderer, caster).empty()) return true;
+            if (mode.valid_tgts == "N_A" ||
+                effective_target_min(probe, caster, orderer) <= 0 ||
+                !build_valid_targets(probe, orderer, caster).empty()) {
+                if (++choosable >= needed) return true;
+            }
         }
         return false;
     }
@@ -1417,6 +1428,104 @@ void select_target(Ability &ability, std::shared_ptr<Orderer> orderer, Zone::Own
     }
     // Set primary target to first chosen (for backward compat)
     if (!ability.targets.empty()) ability.target = ability.targets[0];
+}
+
+// Can this charm mode be legally chosen right now (CR 601.2b/c)? A mode is unchoosable only
+// when it REQUIRES a target and none exists. The required minimum mirrors select_target's
+// bound resolution: an xPaid-driven min reads the X already paid (X is chosen before modes),
+// a count-SVar min is evaluated against the current state, else the literal TargetMin$.
+static bool charm_mode_choosable(Ability &candidate, std::shared_ptr<Orderer> orderer,
+                                 Zone::Ownership caster) {
+    if (candidate.valid_tgts == "N_A") return true;
+    int min = candidate.target_min;
+    if (candidate.target_min_from_xpaid)
+        min = static_cast<int>(cur_game.x_paid);
+    else if (!candidate.target_min_count_expr.empty())
+        min = static_cast<int>(evaluate_dynamic_amount(
+            candidate.target_min_count_expr, caster, orderer, 0, candidate.source));
+    if (min <= 0) return true;
+    return !build_valid_targets(candidate, orderer, caster).empty();
+}
+
+// Modal spell announcement (CR 601.2b): as the spell is CAST, its controller chooses
+// CharmNum$ different modes, then each chosen mode's targets (CR 601.2c) — all before any
+// cost is paid and before the opponent gets priority, becoming public information. The picks
+// are recorded in charm_chosen; effects::charm resolves exactly those modes, re-verifying
+// target legality at resolution (CR 608.2b).
+static void announce_charm_modes(Ability &ability, std::shared_ptr<Orderer> orderer,
+                                 Zone::Ownership caster) {
+    int to_pick = ability.charm_num < 1 ? 1 : ability.charm_num;
+    // Track which choice indices remain selectable.
+    std::vector<bool> taken(ability.charm_choices.size(), false);
+
+    for (int pick = 0; pick < to_pick; pick++) {
+        game_log("Choose mode:\n");
+        std::vector<LegalAction> mode_actions;
+        std::vector<size_t> mode_indices;  // map action index -> charm_choices index
+        for (size_t i = 0; i < ability.charm_choices.size(); i++) {
+            if (taken[i]) continue;  // CR 601.2b: a mode can be chosen only once
+            Ability &candidate = ability.charm_choices[i];
+            candidate.source = ability.source;
+            candidate.controller = caster;
+            if (!charm_mode_choosable(candidate, orderer, caster)) continue;
+            std::string desc =
+                (i < ability.charm_choice_descriptions.size() && !ability.charm_choice_descriptions[i].empty())
+                    ? ability.charm_choice_descriptions[i]
+                    : ("Mode " + std::to_string(i + 1));
+            LegalAction la(PASS_PRIORITY, desc);
+            la.category = ActionCategory::CHOOSE_MODE;
+            mode_actions.push_back(la);
+            mode_indices.push_back(i);
+        }
+        if (mode_actions.empty()) {
+            // No further legal mode (all taken or none with legal targets). The cast-legality
+            // gate (spell_has_castable_targets) requires CharmNum$ choosable modes up front,
+            // so this is only reachable when an earlier pick's target choice changed the
+            // board — proceed with the modes picked so far rather than aborting the cast.
+            game_log("No further legal mode — %d chosen\n", pick);
+            break;
+        }
+        int choice = InputLogger::instance().get_input(mode_actions);
+        size_t chosen_idx = mode_indices[static_cast<size_t>(choice)];
+        taken[chosen_idx] = true;
+        ability.charm_chosen.push_back(static_cast<int>(chosen_idx));
+        Ability &chosen = ability.charm_choices[chosen_idx];
+        game_log("%s chooses mode — %s\n", player_name(caster).c_str(),
+                 (chosen_idx < ability.charm_choice_descriptions.size() &&
+                  !ability.charm_choice_descriptions[chosen_idx].empty())
+                     ? ability.charm_choice_descriptions[chosen_idx].c_str()
+                     : ("Mode " + std::to_string(chosen_idx + 1)).c_str());
+        if (chosen.valid_tgts != "N_A") {
+            select_target(chosen, orderer, caster);
+        }
+    }
+}
+
+// CR 601.2b/c: announce ALL of a spell's cast-time choices on its (already source/controller-
+// stamped) primary ability — modal mode(s) first, then the primary target, then each targeting
+// chained sub-ability's target. Shared by every path that puts a CAST spell on the stack: the
+// CAST_SPELL action and the cast-from-exile mini-cast (effect_choose_card).
+void announce_spell_targets(Ability &ability, std::shared_ptr<Orderer> orderer,
+                            Zone::Ownership caster) {
+    if (!ability.charm_choices.empty()) {
+        announce_charm_modes(ability, orderer, caster);
+    }
+
+    if (ability.valid_tgts != "N_A") {
+        select_target(ability, orderer, caster);
+    }
+    // A spell whose top-level effect doesn't itself target, but whose chained
+    // sub-ability does, chooses that target as it's cast (CR 601.2c). Cabal
+    // Therapy: SP$ NameCard (Defined$ You, no target) + DB$ Discard (ValidTgts$
+    // Player). Select each targeting sub-ability's target now and store it on the
+    // sub-ability template; resolution preserves it (see Ability::resolve).
+    for (auto &sub : ability.subabilities) {
+        if (sub.valid_tgts != "N_A") {
+            sub.source = ability.source;
+            sub.controller = caster;
+            select_target(sub, orderer, caster);
+        }
+    }
 }
 
 // Ward (CR 702.21): "Whenever this permanent becomes the target of a spell or ability an
@@ -2020,22 +2129,14 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
                 // it fires at resolution only if the gift was promised (Ability::resolve).
                 if (card_data.has_gift) ability.gift_abilities = card_data.gift_abilities;
 
-                // Handle targeting
-                if (ability.valid_tgts != "N_A") {
-                    select_target(ability, orderer, caster);
-                }
-                // A spell whose top-level effect doesn't itself target, but whose chained
-                // sub-ability does, chooses that target as it's cast (CR 601.2c). Cabal
-                // Therapy: SP$ NameCard (Defined$ You, no target) + DB$ Discard (ValidTgts$
-                // Player). Select each targeting sub-ability's target now and store it on the
-                // sub-ability template; resolution preserves it (see Ability::resolve).
-                for (auto &sub : ability.subabilities) {
-                    if (sub.valid_tgts != "N_A") {
-                        sub.source = spell_entity;
-                        sub.controller = caster;
-                        select_target(sub, orderer, caster);
-                    }
-                }
+                // Announce cast-time choices (CR 601.2b/c): modal mode(s), the primary
+                // target, and targeting sub-abilities' targets. NOTE on ordering: strict
+                // CR 601.2b announces modes before X, but X was chosen above in the cost
+                // branch — mode choosability can depend on X (Kozilek's Command's
+                // "Creature.cmcLEX" exile mode), and both are the caster's own announcements
+                // made atomically before any opponent priority, so the swap is not
+                // opponent-observable.
+                announce_spell_targets(ability, orderer, caster);
 
                 global_coordinator.AddComponent(spell_entity, ability);
                 break;  // TODO: support spells with multiple abilities

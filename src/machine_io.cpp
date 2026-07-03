@@ -32,6 +32,8 @@ static int get_card_vocab_idx(Entity e);
 static void push_player_block(std::vector<float>& out, const PlayerState& ps);
 static void push_perm_slot(std::vector<float>& out, const PermanentState& p);
 static void format_counter_summary(const CounterMap& counters, char* buf, size_t buf_len);
+static void add_stack_target(StackEntry& se, int& n, Entity tgt, Zone::Ownership viewer);
+static void fill_stack_choices(const Ability& ab, StackEntry& se, Zone::Ownership viewer);
 
 static int get_card_vocab_idx(Entity e) {
     if (global_coordinator.entity_has_component<Permanent>(e)) {
@@ -69,6 +71,48 @@ int action_card_vocab_idx(Entity e) {
             return TOKEN_SENTINEL;
     }
     return -1;
+}
+
+// Record one announced target of a stack object into the entry's next free target
+// sub-slot (bounded by MAX_STACK_TGTS; excess targets are silently truncated).
+static void add_stack_target(StackEntry& se, int& n, Entity tgt, Zone::Ownership viewer) {
+    if (tgt == 0 || n >= MAX_STACK_TGTS) return;
+    StackTarget& st = se.targets[n];
+    st.present = true;
+    st.is_player = global_coordinator.entity_has_component<Player>(tgt);
+    Zone::Ownership ctrl = Zone::UNKNOWN;
+    if (st.is_player) {
+        ctrl = (tgt == cur_game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;
+    } else if (global_coordinator.entity_has_component<Permanent>(tgt)) {
+        ctrl = global_coordinator.GetComponent<Permanent>(tgt).controller;
+    } else if (global_coordinator.entity_has_component<Zone>(tgt)) {
+        // Non-permanent target (a spell on the stack, a graveyard card): its owner.
+        ctrl = global_coordinator.GetComponent<Zone>(tgt).owner;
+    }
+    st.controller_is_self = (ctrl == viewer);
+    st.card_vocab_idx = st.is_player ? -1 : action_card_vocab_idx(tgt);
+    n++;
+}
+
+// Fill a stack entry's announced choices — targets and chosen modal modes — from the
+// object's Ability (all public info, announced as it was cast / put on the stack,
+// CR 601.2b/c). Targets are recorded in announcement order: the primary ability's,
+// then targeting sub-abilities', then each cast-chosen mode's.
+static void fill_stack_choices(const Ability& ab, StackEntry& se, Zone::Ownership viewer) {
+    int n = 0;
+    auto add_ability_targets = [&](const Ability& a) {
+        if (!a.targets.empty())
+            for (Entity t : a.targets) add_stack_target(se, n, t, viewer);
+        else
+            add_stack_target(se, n, a.target, viewer);
+    };
+    add_ability_targets(ab);
+    for (const Ability& sub : ab.subabilities) add_ability_targets(sub);
+    for (int idx : ab.charm_chosen) {
+        if (idx < 0 || static_cast<size_t>(idx) >= ab.charm_choices.size()) continue;
+        if (idx < MAX_STACK_MODES) se.chosen_modes[idx] = true;
+        add_ability_targets(ab.charm_choices[static_cast<size_t>(idx)]);
+    }
 }
 
 // Compact display summary of a permanent's typed counter store for the board
@@ -263,15 +307,16 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
             case Zone::STACK: {
                 gs->stack_size++;
                 if (stack_item_count < MAX_STACK_DISPLAY + 8) {
-                    StackEntry se;
+                    StackEntry se = {};
                     se.card_vocab_idx    = action_card_vocab_idx(e);
                     se.controller_is_self = (zone.owner == viewer);
                     se.is_spell           = global_coordinator.entity_has_component<Spell>(e);
-                    se.target_name[0] = '\0';
+                    for (int t = 0; t < MAX_STACK_TGTS; t++) se.targets[t].card_vocab_idx = -1;
                     if (global_coordinator.entity_has_component<Ability>(e)) {
-                        Entity tgt = global_coordinator.GetComponent<Ability>(e).target;
-                        if (tgt != 0) {
-                            std::string tname = target_display_name(cur_game, tgt);
+                        const auto& ab = global_coordinator.GetComponent<Ability>(e);
+                        fill_stack_choices(ab, se, viewer);
+                        if (ab.target != 0) {
+                            std::string tname = target_display_name(cur_game, ab.target);
                             strncpy(se.target_name, tname.c_str(), sizeof(se.target_name) - 1);
                             se.target_name[sizeof(se.target_name) - 1] = '\0';
                         }
@@ -470,17 +515,36 @@ const std::vector<float>& serialize_state(const GameState* gs) {
     for (int i = 0; i < MAX_BATTLEFIELD_SLOTS; i++)
         push_perm_slot(state, gs->opp_permanents[i]);
 
-    // Stack (12 x 3 = 36): controller_is_self(1) + card_id(1) + is_spell(1)
+    // Stack (12 x 25 = 300): controller_is_self(1) + card_id(1) + is_spell(1) +
+    // chosen-mode multi-hot(6) + 4 announced-target sub-slots x
+    // [present, is_player, controller_is_self, card_id](16). See machine_io.h.
     int stored_stack = std::min(gs->stack_size, MAX_STACK_DISPLAY);
     for (int i = 0; i < MAX_STACK_DISPLAY; i++) {
         if (i < stored_stack) {
-            state.push_back(gs->stack[i].controller_is_self ? 1.0f : 0.0f);
-            state.push_back(norm_card_id(gs->stack[i].card_vocab_idx));
-            state.push_back(gs->stack[i].is_spell ? 1.0f : 0.0f);
+            const StackEntry& se = gs->stack[i];
+            state.push_back(se.controller_is_self ? 1.0f : 0.0f);
+            state.push_back(norm_card_id(se.card_vocab_idx));
+            state.push_back(se.is_spell ? 1.0f : 0.0f);
+            for (int m = 0; m < MAX_STACK_MODES; m++)
+                state.push_back(se.chosen_modes[m] ? 1.0f : 0.0f);
+            for (int t = 0; t < MAX_STACK_TGTS; t++) {
+                const StackTarget& st = se.targets[t];
+                state.push_back(st.present ? 1.0f : 0.0f);
+                state.push_back(st.is_player ? 1.0f : 0.0f);
+                state.push_back(st.controller_is_self ? 1.0f : 0.0f);
+                state.push_back(norm_card_id(st.card_vocab_idx));
+            }
         } else {
             state.push_back(0.0f);
             state.push_back(norm_card_id(-1));
             state.push_back(0.0f);
+            for (int m = 0; m < MAX_STACK_MODES; m++) state.push_back(0.0f);
+            for (int t = 0; t < MAX_STACK_TGTS; t++) {
+                state.push_back(0.0f);
+                state.push_back(0.0f);
+                state.push_back(0.0f);
+                state.push_back(norm_card_id(-1));
+            }
         }
     }
 

@@ -20,13 +20,15 @@ import numpy as np
 from env import (STATE_SIZE, MAX_ACTIONS, ACTION_CATEGORY_MAX,
                  _SELF_PERM_START, _OPP_PERM_START, _STACK_START,
                  _GY_START, _HAND_START, _PERM_SLOT_SIZE as PERM_SLOT_SIZE,
-                 _STACK_SLOT_SIZE, _GY_SLOT_SIZE, _HAND_SLOT_SIZE,
+                 _STACK_SLOT_SIZE, _STACK_SLOTS, _STACK_MODE_SLOTS,
+                 _STACK_TGT_SLOTS, _STACK_TGT_FIELDS,
+                 _GY_SLOT_SIZE, _HAND_SLOT_SIZE,
                  _LIBRARY_CTX_START, _CUR_TURN_IDX, MAX_HAND_SLOTS,
                  _slot_card_idx, _ACTION_CARD_ID_NULL)
 from card_costs import N_CARD_TYPES, _VOCAB_NAMES as _CARD_NAMES
 
 # ── Engine constants (card identity is a single normalized id float per slot) ──
-STACK_SLOT_SIZE = _STACK_SLOT_SIZE                 # ctrl(1) + card-id(1) + is_spell(1)
+STACK_SLOT_SIZE = _STACK_SLOT_SIZE                 # ctrl + card-id + is_spell + modes + targets (25)
 GY_SLOT_SIZE = _GY_SLOT_SIZE                       # card-id only
 _OPP_GY_START = _GY_START + 64 * GY_SLOT_SIZE      # opp graveyard begins after 64 self slots
 
@@ -209,18 +211,34 @@ def _decode_graveyard(state, start):
 
 
 def _decode_stack(state, labels=SELF_OPP_LABELS):
-    """Decode the stack (12 slots x 130: ctrl + card_onehot + is_spell)."""
+    """Decode the stack (12 slots x 25: ctrl + card id + is_spell + chosen-mode
+    multi-hot(6) + 4 announced-target sub-slots of [present, is_player, ctrl, card id])."""
     entries = []
-    for i in range(12):
+    for i in range(_STACK_SLOTS):
         base = _STACK_START + i * STACK_SLOT_SIZE
         idx = onehot_to_index(state, base + 1)  # skip controller_is_self float
         if idx < 0:
             continue
+        modes = [m for m in range(_STACK_MODE_SLOTS) if state[base + 3 + m] > 0.5]
+        targets = []
+        for t in range(_STACK_TGT_SLOTS):
+            tbase = base + 3 + _STACK_MODE_SLOTS + t * _STACK_TGT_FIELDS
+            if state[tbase] < 0.5:  # present flag
+                continue
+            ctrl = labels["self"] if state[tbase + 2] > 0.5 else labels["opponent"]
+            if state[tbase + 1] > 0.5:  # is_player
+                targets.append(f"{ctrl} (player)")
+            else:
+                tidx = onehot_to_index(state, tbase + 3)
+                tname = card_index_to_name(tidx) if tidx >= 0 else "?"
+                targets.append(f"{tname} ({ctrl})")
         entries.append({
             "name": card_index_to_name(idx),
             "card_idx": idx,
             "controller": labels["self"] if state[base] > 0.5 else labels["opponent"],
             "is_spell": state[base + 2] > 0.5,
+            "modes": modes,       # chosen modal mode indices (empty = not modal)
+            "targets": targets,   # announced targets, human-readable
         })
     return entries
 
@@ -434,7 +452,12 @@ def fmt_mana(mana):
 def fmt_stack_entry(e):
     """Format a decoded stack-entry dict (from _decode_stack)."""
     kind = "spell" if e["is_spell"] else "ability"
-    return f"{e['name']} ({kind}, {e['controller']})"
+    s = f"{e['name']} ({kind}, {e['controller']})"
+    if e.get("modes"):
+        s += f" [modes {','.join(str(m) for m in e['modes'])}]"
+    if e.get("targets"):
+        s += f" -> {'; '.join(e['targets'])}"
+    return s
 
 
 def format_state_lines(gs):

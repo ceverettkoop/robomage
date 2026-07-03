@@ -22,18 +22,21 @@ Index layout must stay in sync with src/machine_io.h:
                          slots 0-47: self; slots 48-95: opponent
                          status: power, toughness, tapped, attacking, blocking,
                                  sickness, damage, controller_is_self, is_creature, is_land, loyalty
-  obs[1090:1126]       12 stack slots   × 3 floats  (controller_is_self + card id + is_spell)
-  obs[1126:1254]      128 graveyard slots × 1 float (card id)
+  obs[1186:1486]       12 stack slots   × 25 floats (controller_is_self + card id + is_spell +
+                         chosen-mode multi-hot(6) + 4 announced-target sub-slots ×
+                         [present, is_player, controller_is_self, card id])
+  obs[1486:1614]      128 graveyard slots × 1 float (card id)
                          slots 0-63: self; slots 64-127: opponent
-  obs[1254:1264]       10 hand slots    × 1 float  (card id)
-  obs[1264:1776]      128 action history entries × 4 floats (newest first)
+  obs[1614:1624]       10 hand slots    × 1 float  (card id)
+  obs[1624:2136]      128 action history entries × 4 floats (newest first)
                          per entry: category_norm, card_id_norm, is_self, turn/50
-  obs[1776:1780]       match context (4 floats: game_number, self_wins, opp_wins, sideboard_phase)
-  obs[1780:1783]       library counts & post-board (self_lib/60, opp_lib/60, is_post_board)
-  obs[1783]            current game turn / 50
-  obs[1784:1789]       5 known top-of-library slots × 1 float (card id, sentinel = unknown)
-  obs[1789:2813]       opponent revealed-cards multi-hot (N_CARD_TYPES floats, accumulated across the match)
-  obs[2813:]           action metadata + cost features (appended by env.py)
+  obs[2136:2140]       match context (4 floats: game_number, self_wins, opp_wins, sideboard_phase)
+  obs[2140:2143]       library counts & post-board (self_lib/60, opp_lib/60, is_post_board)
+  obs[2143]            current game turn / 50
+  obs[2144:2149]       5 known top-of-library slots × 1 float (card id, sentinel = unknown)
+  obs[2149:3173]       opponent revealed-cards multi-hot (N_CARD_TYPES floats, accumulated across the match)
+  obs[3173:3183]       10 known opponent-hand slots × 1 float (card id)
+  obs[3183:]           action metadata + cost features (appended by env.py)
 """
 
 import torch
@@ -82,8 +85,13 @@ _PERM_SLOTS      = 96   # 48 self + 48 opponent (unified: creatures, lands, othe
 _PERM_SLOT_SIZE  = 12   # 11 status floats (incl. loyalty) + 1 card id
 _PERM_CARD_OFF   = 11   # card id follows the 11 status floats
 
-_STACK_SLOTS     = 12
-_STACK_SLOT_SIZE = 3    # controller_is_self(1) + card id(1) + is_spell(1)
+_STACK_SLOTS      = 12
+_STACK_MODE_SLOTS = 6   # chosen-mode multi-hot width per stack slot
+_STACK_TGT_SLOTS  = 4   # announced-target sub-slots per stack slot
+_STACK_TGT_FIELDS = 4   # present + is_player + ctrl_is_self + card id
+_STACK_TGT_OFF    = 3 + _STACK_MODE_SLOTS  # target sub-slots follow ctrl/id/is_spell + modes
+# controller_is_self(1) + card id(1) + is_spell(1) + modes + target sub-slots (25)
+_STACK_SLOT_SIZE  = _STACK_TGT_OFF + _STACK_TGT_SLOTS * _STACK_TGT_FIELDS
 
 _GY_SLOTS        = 128  # 64 self + 64 opponent
 _GY_SLOT_SIZE    = 1    # card id only
@@ -103,25 +111,25 @@ _OPP_KNOWN_HAND_SLOT_SIZE = 1  # card id per slot
 _CARD_EMBED_DIM  = 32   # dimension of the learned card-identity embedding
 
 _PERM_START  = _GLOBAL_SIZE                                    # 34
-_PERM_END    = _PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE     # 13282
-_STACK_START = _PERM_END                                       # 13282
-_STACK_END   = _STACK_START + _STACK_SLOTS * _STACK_SLOT_SIZE  # 14842
-_GY_START    = _STACK_END                                      # 14842
-_GY_END      = _GY_START + _GY_SLOTS * _GY_SLOT_SIZE           # 31226
-_HAND_START  = _GY_END                                         # 31226
-_HAND_END    = _HAND_START + _HAND_SLOTS * _HAND_SLOT_SIZE     # 32506
-_HIST_START  = _HAND_END                                       # 32506
-_HIST_END    = _HIST_START + _HIST_ENTRIES * _HIST_ENTRY_SIZE  # 33018
-# obs[33018:33022] = match context (4 floats: game_number, self_wins, opp_wins, sideboard_phase)
-# obs[33022:33025] = library counts & post-board (self_lib/60, opp_lib/60, is_post_board)
-_MATCH_CTX_START      = _HIST_END                              # 33018
-_MATCH_CTX_END        = _MATCH_CTX_START + 4                   # 33022 (library ctx start)
-_LIBRARY_CTX_END      = _MATCH_CTX_END + 3                     # 33025 (current turn idx)
-_CUR_TURN_IDX         = _LIBRARY_CTX_END                       # 33025
-_KNOWN_TOP_LIB_START  = _CUR_TURN_IDX + 1                      # 33026
-_KNOWN_TOP_LIB_END    = _KNOWN_TOP_LIB_START + _KNOWN_TOP_LIB_SLOTS * _KNOWN_TOP_LIB_SLOT_SIZE  # 33666
-_REVEALED_START       = _KNOWN_TOP_LIB_END                    # 33666
-_REVEALED_END         = _REVEALED_START + _REVEALED_SIZE      # 33794
+_PERM_END    = _PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE     # 1186
+_STACK_START = _PERM_END                                       # 1186
+_STACK_END   = _STACK_START + _STACK_SLOTS * _STACK_SLOT_SIZE  # 1486
+_GY_START    = _STACK_END                                      # 1486
+_GY_END      = _GY_START + _GY_SLOTS * _GY_SLOT_SIZE           # 1614
+_HAND_START  = _GY_END                                         # 1614
+_HAND_END    = _HAND_START + _HAND_SLOTS * _HAND_SLOT_SIZE     # 1624
+_HIST_START  = _HAND_END                                       # 1624
+_HIST_END    = _HIST_START + _HIST_ENTRIES * _HIST_ENTRY_SIZE  # 2136
+# obs[2136:2140] = match context (4 floats: game_number, self_wins, opp_wins, sideboard_phase)
+# obs[2140:2143] = library counts & post-board (self_lib/60, opp_lib/60, is_post_board)
+_MATCH_CTX_START      = _HIST_END                              # 2136
+_MATCH_CTX_END        = _MATCH_CTX_START + 4                   # 2140 (library ctx start)
+_LIBRARY_CTX_END      = _MATCH_CTX_END + 3                     # 2143 (current turn idx)
+_CUR_TURN_IDX         = _LIBRARY_CTX_END                       # 2143
+_KNOWN_TOP_LIB_START  = _CUR_TURN_IDX + 1                      # 2144
+_KNOWN_TOP_LIB_END    = _KNOWN_TOP_LIB_START + _KNOWN_TOP_LIB_SLOTS * _KNOWN_TOP_LIB_SLOT_SIZE  # 2149
+_REVEALED_START       = _KNOWN_TOP_LIB_END                    # 2149
+_REVEALED_END         = _REVEALED_START + _REVEALED_SIZE      # 3173
 _OPP_KNOWN_HAND_START = _REVEALED_END
 _OPP_KNOWN_HAND_END   = _OPP_KNOWN_HAND_START + _OPP_KNOWN_HAND_SLOTS * _OPP_KNOWN_HAND_SLOT_SIZE
 _STATE_END            = _OPP_KNOWN_HAND_END
@@ -140,7 +148,8 @@ class CardGameExtractor(BaseFeaturesExtractor):
 
     Three independent encoders cover the slot formats:
       perm_encoder   (11 status + card_embed → embed_dim): permanents
-      stack_encoder  (2 flags + card_embed → embed_dim//2): stack items
+      stack_encoder  (20 scalars + card_embed + target-embed mean → embed_dim//2):
+                     stack items with their announced modes/targets
       entity_encoder (card_embed → embed_dim): graveyard, hand, known top-library
 
     Empty slots (id sentinel) are masked out of the perm / graveyard / hand
@@ -191,9 +200,13 @@ class CardGameExtractor(BaseFeaturesExtractor):
             nn.ReLU(),
         )
 
-        # Encoder for stack slots (controller_is_self + is_spell + card embedding)
+        # Encoder for stack slots: controller_is_self + is_spell, chosen-mode multi-hot,
+        # per-target scalar flags (present/is_player/ctrl_is_self × 4 sub-slots), the
+        # object's card embedding, and the masked mean of its announced targets' card
+        # embeddings.
+        _stack_scalars = 2 + _STACK_MODE_SLOTS + _STACK_TGT_SLOTS * (_STACK_TGT_FIELDS - 1)
         self.stack_encoder = nn.Sequential(
-            nn.Linear(2 + card_embed_dim, embed_dim),
+            nn.Linear(_stack_scalars + 2 * card_embed_dim, embed_dim),
             nn.ReLU(),
             nn.Linear(embed_dim, half),
             nn.ReLU(),
@@ -246,7 +259,16 @@ class CardGameExtractor(BaseFeaturesExtractor):
         perm_in = torch.cat([perms[:, :, :_PERM_CARD_OFF], perm_card_emb], dim=-1)
 
         stk_card_emb, _ = self._embed_ids(stack[:, :, 1])
-        stk_in = torch.cat([stack[:, :, 0:1], stack[:, :, 2:3], stk_card_emb], dim=-1)
+        # Announced-target sub-slots: (B, 12, 4, 4) of [present, is_player, ctrl, card id].
+        stk_tgts = stack[:, :, _STACK_TGT_OFF:].reshape(
+            -1, _STACK_SLOTS, _STACK_TGT_SLOTS, _STACK_TGT_FIELDS)
+        stk_tgt_emb, _ = self._embed_ids(stk_tgts[:, :, :, 3])       # (B, 12, 4, card_embed)
+        stk_tgt_mask = stk_tgts[:, :, :, 0:1]                        # present flag
+        stk_tgt_agg = (stk_tgt_emb * stk_tgt_mask).sum(2) / stk_tgt_mask.sum(2).clamp(min=1.0)
+        stk_modes = stack[:, :, 3:_STACK_TGT_OFF]                    # chosen-mode multi-hot
+        stk_tgt_scalars = stk_tgts[:, :, :, :3].reshape(-1, _STACK_SLOTS, _STACK_TGT_SLOTS * 3)
+        stk_in = torch.cat([stack[:, :, 0:1], stack[:, :, 2:3], stk_modes, stk_tgt_scalars,
+                            stk_card_emb, stk_tgt_agg], dim=-1)
 
         gy_emb_in, gy_present = self._embed_ids(graveyard[:, :, 0])
         hand_emb_in, hand_present = self._embed_ids(hand[:, :, 0])

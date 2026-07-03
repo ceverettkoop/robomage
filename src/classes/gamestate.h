@@ -12,6 +12,8 @@ extern "C" {
 // relevant limits, also used in machine_io.h
 #define MAX_BATTLEFIELD_SLOTS 48  // all permanents (creatures + lands + other) per player
 #define MAX_STACK_DISPLAY 12
+#define MAX_STACK_MODES 6  // chosen-mode multi-hot width per stack entry
+#define MAX_STACK_TGTS 4   // announced targets serialized per stack entry (truncated)
 #define MAX_GY_SLOTS 64  // per player
 #define MAX_HAND_SLOTS 10
 #define MAX_ACTIONS 64
@@ -44,11 +46,24 @@ typedef struct PermanentState_tag {
                                  // (display only — NOT serialized to the ML state vector)
 } PermanentState;
 
+// One announced target of a stack object (public info, chosen at cast — CR 601.2c).
+typedef struct StackTarget_tag {
+    bool present;             // a target occupies this sub-slot
+    bool is_player;           // the target is a player (card_vocab_idx = -1 then)
+    bool controller_is_self;  // controller of the targeted permanent / the targeted player
+                              // himself (owner for a non-permanent card)
+    int  card_vocab_idx;      // -1 = player / unknown
+} StackTarget;
+
 typedef struct StackEntry_tag {
     int  card_vocab_idx;  // -1 = unknown/empty
     bool controller_is_self;
     bool is_spell;        // true = card spell on stack; false = triggered/activated ability
-    char target_name[48]; // display name of target, empty = no target
+    bool chosen_modes[MAX_STACK_MODES];  // multi-hot of modal modes announced at cast
+                                         // (CR 601.2b); all false when not modal
+    StackTarget targets[MAX_STACK_TGTS]; // announced targets in announcement order:
+                                         // primary, sub-abilities', chosen modes'
+    char target_name[48]; // display name of first target, empty = no target (display only)
 } StackEntry;
 
 typedef enum ActionRefZone_tag {

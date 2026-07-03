@@ -667,6 +667,12 @@ struct Ability{
     std::vector<Ability> charm_choices;
     std::vector<std::string> charm_choice_descriptions;  // SpellDescription$ for each choice
     int charm_num = 1;  // CharmNum$ — how many modes to pick (default 1)
+    // Mode indices (into charm_choices) chosen when the spell was CAST (CR 601.2b), in pick
+    // order. Each chosen mode's targets were selected at the same time (CR 601.2c) and live on
+    // the charm_choices entry itself. effects::charm resolves exactly these modes; empty means
+    // the spell reached the stack through a path that didn't announce (legacy fallback: choose
+    // at resolution).
+    std::vector<int> charm_chosen;
 
     void resolve(std::shared_ptr<Orderer> orderer);
     bool identical_activated_ability(const Ability& other);

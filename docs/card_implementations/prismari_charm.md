@@ -24,5 +24,9 @@ Choose one —
 ## Tests
 - Isolation: skipped — mechanics already proven by Lorehold Charm (SP$ Charm modal dispatch; Surveil+Draw / DealDamage 1-2 targets / ChangeZone bounce)
 - Regression: skipped (verify_skip)
+- 2026-07-02 (cast-time announcement fix): mode + 1–2 damage targets are chosen at CAST
+  (CR 601.2b/c) and are public on the stack; verified the opponent can respond to the announced
+  target (Bolt kills the targeted Bears in response → the damage mode fizzles at resolution,
+  CR 608.2b). Each mode re-exercised via test_harness `--play`.
 ## Result
 implemented (verification skipped — proven by Lorehold Charm)

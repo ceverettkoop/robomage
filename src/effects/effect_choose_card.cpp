@@ -132,10 +132,13 @@ bool choose_card(Ability &ab, std::shared_ptr<Orderer> orderer) {
                 Ability cast_ab = spell_ab;
                 cast_ab.source = chosen;
                 cast_ab.controller = ctrl;
-                // Select a target now (as casting normally would) so the spell
-                // doesn't fizzle for want of a target on resolution.
-                if (cast_ab.valid_tgts != "N_A" && has_legal_targets(cast_ab, orderer)) {
-                    select_target(cast_ab, orderer, ctrl);
+                // Announce cast-time choices now (modal modes + all targets, CR 601.2b/c) as
+                // casting normally would, so the spell doesn't fizzle for want of a target on
+                // resolution. Guarded: this forced cast wasn't vetted by the offer-time cast
+                // gate, so a spell with no castable target set skips announcement and simply
+                // fizzles at resolution instead of forcing an empty target menu.
+                if (spell_has_castable_targets(cast_ab, orderer, ctrl, cd.has_gift)) {
+                    announce_spell_targets(cast_ab, orderer, ctrl);
                 }
                 global_coordinator.AddComponent(chosen, cast_ab);
                 break;

@@ -131,10 +131,11 @@ _GY_SLOTS        = _GY_SLOTS_TOTAL        # 128
 _GY_SLOT_SZ      = _GY_SLOT_SIZE          # 1
 _GY_SELF_SLOTS   = _GY_SLOTS_TOTAL // 2   # slots 0-63 = self GY, 64-127 = opp GY
 
-# Stack layout: 12 slots x 3 floats. Per slot: controller_is_self(1), card id(1), is_spell(1)
+# Stack layout: 12 slots x 25 floats. Per slot: controller_is_self(1), card id(1),
+# is_spell(1), chosen-mode multi-hot(6), 4 announced-target sub-slots x 4 floats.
 _STACK_START   = _ENV_STACK_START
 _STACK_SLOTS   = _ENV_STACK_SLOTS
-_STACK_SLOT_SZ = _STACK_SLOT_SIZE         # 3
+_STACK_SLOT_SZ = _STACK_SLOT_SIZE         # 25
 
 # Hand layout: 10 slots x 1 float (imported _HAND_START from env.py)
 _HAND_SLOTS = 10
@@ -257,7 +258,7 @@ def _extract_interpretable(obs):
     # Stack size
     f[i] = obs[33] * 10.0; i += 1
 
-    # Stack contents (12 slots: controller_is_self, card one-hot[128], is_spell)
+    # Stack contents (12 slots: controller_is_self, card id, is_spell, modes, targets)
     self_stack = opp_stack = 0
     stack_spells = stack_abilities = 0
     for slot in range(_STACK_SLOTS):
@@ -269,7 +270,7 @@ def _extract_interpretable(obs):
             self_stack += 1
         else:
             opp_stack += 1
-        if obs[base + _STACK_SLOT_SZ - 1] > 0.5:
+        if obs[base + 2] > 0.5:  # is_spell (fixed offset; targets/modes follow)
             stack_spells += 1
         else:
             stack_abilities += 1
@@ -816,7 +817,7 @@ def _decode_board_state(obs, value=None):
             if name is None:
                 continue
             ctrl_is_self = obs[base] > 0.5
-            is_spell     = obs[base + _STACK_SLOT_SZ - 1] > 0.5
+            is_spell     = obs[base + 2] > 0.5  # fixed offset; modes/targets follow
             ctrl_str     = self_label if ctrl_is_self else opp_label
             type_str     = "spell" if is_spell else "ability"
             print(f"    [{ctrl_str}] {name} ({type_str})")
