@@ -667,6 +667,14 @@ BQUERY: <N>\n
 - `train/play.py` — interactive human-vs-model play
 - `train/gen_card_costs.py` — regenerates `train/card_costs.py` from `src/card_vocab.h`
 - `train/test_harness.py` — LLM test harness for card behavior verification (see Testing guidelines)
+- `train/fuzz_campaign.py` — batch fuzzing driver for the league fuzz campaigns: runs N scripted
+  games for ONE matchup (both seats driven by the coverage `explore` fuzzer, independent per-seat
+  novelty state) with per-game seed increments, and dumps the full verbose transcript to a file for
+  bug/rules-deviation review. One invocation per (matchup, mode); the transcript file is then
+  reviewed. `--mode explore` (default, broad coverage) or `--mode explore:patient` (big-mana profile)
+  are the two campaign modes. Example: `train/.venv/bin/python train/fuzz_campaign.py --deck-a
+  league/ur_delver --deck-b league/gw_maverick --mode explore --games 100 --seed 1 --out out.txt`
+  (decks resolve relative to `bin/resources/decks/`; W/L/D summary to stdout, any draw is a finding).
 - `train/action_spec.py` — shared semantic-action resolver: turns a `--play` spec string (`cast:Lightning Bolt`, `target:X@opp`, `pass`, …) into the matching legal action index against the current decision's decoded menu. Used by `PlayController` (test harness `--play`, `observe --play-a/--play-b`) and, later, by `play.py` for typed human input.
 - `train/card_costs.py` — auto-generated cast-cost and ability-cost matrices (do not edit manually)
 - `src/machine_io.h` — state vector layout documentation and constants
