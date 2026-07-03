@@ -605,8 +605,8 @@ void StateManager::check_triggered_abilities(Game &game, std::shared_ptr<Orderer
                     if (!ev.HasParam(Params::ENTITY)) continue;
                     Entity spell_e = ev.GetParam<Entity>(Params::ENTITY);
                     if (!global_coordinator.entity_has_component<CardData>(spell_e)) continue;
-                    int spell_mv = static_cast<int>(
-                        global_coordinator.GetComponent<CardData>(spell_e).mana_cost.size());
+                    int spell_mv = card_mana_value(
+                        global_coordinator.GetComponent<CardData>(spell_e));
                     int bound = evaluate_sa_svar(ab.trigger_cmc_expr, perm.controller, entity);
                     const std::string &op = ab.trigger_cmc_op;
                     bool ok = (op == "EQ") ? (spell_mv == bound)

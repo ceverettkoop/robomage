@@ -72,11 +72,14 @@ inline std::set<Colors> card_colors(const CardData &cd) {
 // Mana value (converted mana cost, CR 202.3) of a card: one per non-hybrid pip in mana_cost
 // plus each hybrid pip's contribution (1 for a color hybrid, N for an {N/color} twobrid —
 // CR 202.3f: a hybrid symbol's MV is the greatest of its component symbols' MVs). X counts 0
-// outside the stack/cast (CR 202.3b). Phyrexian pips are not modeled in mana_value (they live
-// in phyrexian_mana, mirroring the engine's existing treatment). Single source for "card CMC".
+// outside the stack/cast (CR 202.3b). Each Phyrexian pip ({B/P}) counts 1 toward mana value
+// (CR 202.3f: a Phyrexian symbol is worth its color component, MV 1) regardless of whether the
+// cost is actually paid with mana or life; phyrexian_mana is kept out of mana_cost (mirroring
+// hybrid_mana), so fold it in here. Single source for "card CMC".
 inline int card_mana_value(const CardData &cd) {
     int mv = static_cast<int>(cd.mana_cost.size());
     for (const auto &pip : cd.hybrid_mana) mv += pip.mana_value;
+    mv += static_cast<int>(cd.phyrexian_mana.size());
     return mv;
 }
 

@@ -626,7 +626,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                         auto &cz = global_coordinator.GetComponent<Zone>(ce);
                         if (cz.location != Zone::BATTLEFIELD) continue;
                         if (!global_coordinator.entity_has_component<CardData>(ce)) continue;
-                        int cmc = static_cast<int>(global_coordinator.GetComponent<CardData>(ce).mana_cost.size());
+                        int cmc = card_mana_value(global_coordinator.GetComponent<CardData>(ce));
                         if (cmc <= threshold) { any_valid = true; break; }
                     }
                     if (!any_valid) tgt_ok = false;
