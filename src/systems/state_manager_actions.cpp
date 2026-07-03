@@ -96,7 +96,7 @@ static bool can_afford_alt(const CardData& card_data, const AltCost& alt_cost,
     // Mana portion of the alt cost (e.g. Evoke:R) with the active SetCost floor
     // (Trinisphere) folded in — CR 601.2f applies the floor AFTER the alternative cost is
     // substituted, so even a Cost$ 0 / pitch cast must be able to pay up to the floor.
-    ManaValue alt_mana = floored_alt_mana_cost(card_data, alt_cost.mana_cost);
+    ManaValue alt_mana = floored_alt_mana_cost(card_data, alt_cost.mana_cost, priority_player);
 
     // Free alt cost: castable iff any floor imposed on it is payable
     if (alt_cost.is_free)
@@ -722,7 +722,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         // Check affordability: flashback mana cost (floored — flashback is an alternative
         // cost, CR 702.34a, so an active SetCost floor applies to it too) + life cost
         bool can_afford_fb = can_pay_mana(
-            priority_player, floored_alt_mana_cost(gcd, gcd.flashback_mana_cost), gy_entity, orderer);
+            priority_player, floored_alt_mana_cost(gcd, gcd.flashback_mana_cost, priority_player), gy_entity, orderer);
         if (can_afford_fb && gcd.flashback_alt_cost.life_cost > 0) {
             Entity pp_entity = get_player_entity(priority_player);
             if (global_coordinator.GetComponent<Player>(pp_entity).life_total < gcd.flashback_alt_cost.life_cost)
@@ -774,7 +774,7 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         if (!tgt_ok) continue;
 
         // Escape is an alternative cost (CR 702.139a): fold in any active SetCost floor.
-        if (!can_pay_mana(priority_player, floored_alt_mana_cost(gcd, gcd.escape_mana_cost),
+        if (!can_pay_mana(priority_player, floored_alt_mana_cost(gcd, gcd.escape_mana_cost, priority_player),
                           gy_entity, orderer))
             continue;
 

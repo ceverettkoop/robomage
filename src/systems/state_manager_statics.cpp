@@ -453,12 +453,21 @@ ManaValue effective_base_cost(const CardData &card_data, Zone::Ownership caster)
     return cost;
 }
 
-ManaValue floored_alt_mana_cost(const CardData &card_data, const ManaValue &alt_mana) {
-    // Same floor rule as effective_base_cost's SetCost step, applied to the SUBSTITUTED
-    // (alternative) mana cost instead of the printed one (CR 601.2f: Trinisphere checks the
-    // cost after alternative costs and increases/reductions are applied). Colored pips stay;
-    // only generic is added to raise a sub-floor total.
+ManaValue floored_alt_mana_cost(const CardData &card_data, const ManaValue &alt_mana,
+                                Zone::Ownership caster) {
+    // The alternative cost SUBSTITUTES for the printed mana cost (CR 601.2b); cost increases
+    // and the SetCost floor then apply ON TOP (CR 601.2f) — the same ordering as
+    // effective_base_cost, just against the substituted mana instead of the printed cost.
     ManaValue cost = alt_mana;
+    // Cost-increase statics (Thalia, Guardian of Thraben: noncreature spells cost {1} more) add
+    // an additive generic surcharge that applies to the total cost regardless of whether a normal
+    // or alternative cost is being paid. Folded in here so a pitch/alternative cast (Daze, Force
+    // of Will) is taxed exactly like its normal-cost cast. NamedCard-aware / nonCreature-filtered
+    // via the shared active_raise_cost_for; the per-spell surcharge needs the casting player.
+    int raise_total = active_raise_cost_for(card_data, caster);
+    for (int ri = 0; ri < raise_total; ri++) cost.insert(GENERIC);
+    // SetCost floor (Trinisphere): applied LAST — after the increase (601.2f). Colored pips stay;
+    // only generic is added to raise a sub-floor total.
     int floor = active_cost_floor_for(card_data);
     while (static_cast<int>(cost.size()) < floor) cost.insert(GENERIC);
     return cost;

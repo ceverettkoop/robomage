@@ -707,7 +707,7 @@ static void pay_alternate_cost(const LegalAction &action, Game &game, std::share
     // folded in — CR 601.2f applies the floor AFTER the alternative cost is substituted for the
     // mana cost, so even a "free" alt cast ({0} Mindbreak Trap, Daze's pitch) pays up to the
     // floor. The non-mana parts of the cost below are unaffected.
-    ManaValue alt_mana = floored_alt_mana_cost(card_data, card_data.alt_cost.mana_cost);
+    ManaValue alt_mana = floored_alt_mana_cost(card_data, card_data.alt_cost.mana_cost, caster);
 
     // Free alt cost (e.g. Once Upon a Time first spell), with no floor imposed on it
     if (card_data.alt_cost.is_free && alt_mana.empty()) {
@@ -1687,7 +1687,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             if (action.use_flashback) {
                 // Flashback mana cost — flashback is an alternative cost (CR 702.34a),
                 // so an active SetCost floor (Trinisphere) pads it up to the floor (601.2f).
-                deferred_mana_cost = floored_alt_mana_cost(card_data, card_data.flashback_mana_cost);
+                deferred_mana_cost = floored_alt_mana_cost(card_data, card_data.flashback_mana_cost, caster);
                 deferred_mana_pending = true;
                 deferred_life_cost = card_data.flashback_alt_cost.life_cost;
                 // Flashback sacrifice cost: the cast is only offered when a matching
@@ -1701,7 +1701,7 @@ void process_action(const LegalAction &action, Game &game, std::shared_ptr<Order
             // after targets are chosen, like every other cost (601.2c before 601.2g/h).
             } else if (action.use_escape) {
                 // Escape is an alternative cost (CR 702.139a): fold in any active SetCost floor.
-                deferred_mana_cost = floored_alt_mana_cost(card_data, card_data.escape_mana_cost);
+                deferred_mana_cost = floored_alt_mana_cost(card_data, card_data.escape_mana_cost, caster);
                 deferred_mana_pending = true;
                 deferred_life_cost = card_data.escape_alt_cost.life_cost;
                 deferred_exile_min_types = card_data.escape_alt_cost.exile_grave_min_types;
