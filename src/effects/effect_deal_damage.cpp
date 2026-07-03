@@ -20,6 +20,8 @@ extern Coordinator global_coordinator;
 
 namespace effects {
 
+static void deal_damage_to_target(Ability &ab, Entity tgt, size_t dmg);
+
 bool deal_damage(Ability &ab, std::shared_ptr<Orderer> orderer) {
     // Delirium-conditional damage (Unholy Heat)
     size_t dmg = ab.amount;
@@ -55,35 +57,51 @@ bool deal_damage(Ability &ab, std::shared_ptr<Orderer> orderer) {
         }
         return true;
     }
-    if (global_coordinator.entity_has_component<Player>(ab.target)) {
-        deal_damage_to_player(ab.source, ab.target, dmg);
-        auto &player = global_coordinator.GetComponent<Player>(ab.target);
+    // Multi-target DealDamage (Prismari Charm: "deals 1 damage to each of one or two targets"):
+    // action_processor stores every chosen target in ab.targets (target_max > 1). Deal `dmg` to
+    // EACH of them, reusing the single per-target dispatch. A single-target ability leaves
+    // ab.targets empty and uses ab.target. Each target is checked independently at resolution, so
+    // one target having become illegal (gone from the battlefield, protection) skips only that
+    // target without aborting the rest (CR 608.2c).
+    if (!ab.targets.empty()) {
+        for (Entity tgt : ab.targets) deal_damage_to_target(ab, tgt, dmg);
+    } else {
+        deal_damage_to_target(ab, ab.target, dmg);
+    }
+    return true;
+}
+
+// Deal `dmg` to a single already-chosen target — a player, a planeswalker, or a creature — the
+// shared per-target dispatch used by both the single- and multi-target DealDamage paths.
+static void deal_damage_to_target(Ability &ab, Entity tgt, size_t dmg) {
+    if (global_coordinator.entity_has_component<Player>(tgt)) {
+        deal_damage_to_player(ab.source, tgt, dmg);
+        auto &player = global_coordinator.GetComponent<Player>(tgt);
         game_log("Dealt %zu damage to player (now at %d life)\n", dmg, player.life_total);
-    } else if (is_planeswalker_permanent(ab.target)) {
+    } else if (is_planeswalker_permanent(tgt)) {
         // Damage to a planeswalker removes that many loyalty counters (306.8).
-        damage_planeswalker(ab.target, dmg);
-        auto &pw = global_coordinator.GetComponent<Permanent>(ab.target);
-        game_log("Dealt %zu damage to %s (loyalty now %d)\n", dmg, pw.name.c_str(), get_counters(ab.target, "LOYALTY"));
-    } else if (permanent_protected_from_colored_spell_source(ab.target, ab.source)) {
+        damage_planeswalker(tgt, dmg);
+        auto &pw = global_coordinator.GetComponent<Permanent>(tgt);
+        game_log("Dealt %zu damage to %s (loyalty now %d)\n", dmg, pw.name.c_str(), get_counters(tgt, "LOYALTY"));
+    } else if (permanent_protected_from_colored_spell_source(tgt, ab.source)) {
         // Protection from colored spells, damage facet (Emrakul, CR 702.16d): a colored spell
         // source can't deal damage to this permanent. Prevented here (mirroring the player
         // protection-from-everything check above) so the targeted path skips the damage cleanly
         // instead of tripping the "should have fizzled" guard below.
         game_log("Permanent has protection from colored spells — %zu damage prevented\n", dmg);
     } else {
-        if (::deal_damage(ab.source, ab.target, dmg)) {
+        if (::deal_damage(ab.source, tgt, dmg)) {
             game_log("Dealt %zu damage to creature\n", dmg);
         } else {
 #ifndef NDEBUG
             fprintf(stderr, "SOURCE:");
             dump_entity(ab.source);
             fprintf(stderr, "TARGET:");
-            dump_entity(ab.target);
+            dump_entity(tgt);
 #endif
             non_fatal_error("Damage should have fizzled prior to this");
         }
     }
-    return true;
 }
 
 bool parse_deal_damage(Ability &ab, const std::string &key, const std::string &value) {
