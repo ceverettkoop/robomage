@@ -917,7 +917,7 @@ def league(binary_path: str, decks: str | None = None,
            embed_dim: int = EMBED_DIM, n_envs_override: int | None = None,
            opp_ckpt_ratio: float = 1.0, no_shaping: bool = False,
            adaptive_boost: float = LEAGUE_ADAPTIVE_BOOST,
-           shard: str | None = None,
+           shard: str | None = None, train_decks_spec: str | None = None,
            tally: bool = False, resume: bool = False, **env_kwargs):
     """PFSP league driver: rotating single learner over a shared snapshot pool.
 
@@ -993,6 +993,7 @@ def league(binary_path: str, decks: str | None = None,
         opp_ckpt_ratio = float(p.get("opp_ckpt_ratio", opp_ckpt_ratio))
         no_shaping = bool(p.get("no_shaping", no_shaping))
         adaptive_boost = float(p.get("adaptive_boost", adaptive_boost))
+        train_decks_spec = p.get("train_decks", train_decks_spec)
         env_kwargs.setdefault("bo3", bool(p.get("bo3", env_kwargs.get("bo3", False))))
         env_kwargs.setdefault("auto_sideboard",
                               bool(p.get("auto_sideboard", env_kwargs.get("auto_sideboard", False))))
@@ -1015,10 +1016,20 @@ def league(binary_path: str, decks: str | None = None,
             f"No decks found for league (looked in {_LEAGUE_DECKS_DIR}). "
             f"Add deck files there, or pass --decks explicitly.")
 
-    # Distributed sharding: this driver TRAINS only its strided roster slice, but
+    # Distributed sharding: this driver TRAINS only its slice of the roster, but
     # the opponent pool (and adaptive-rotation leader comparison) still spans the
-    # full roster — peer shards' snapshots arrive via the shared/synced dir.
-    if shard_split is not None:
+    # full roster — peer shards' snapshots arrive via the shared/synced dir. The
+    # slice is either an explicit --train-decks subset (arbitrary assignment from
+    # the web distribution UI) or the strided --shard slice.
+    if train_decks_spec:
+        train_decks = [d.strip() for d in train_decks_spec.split(",") if d.strip()]
+        unknown = [d for d in train_decks if d not in roster]
+        if unknown:
+            raise ValueError(
+                f"--train-decks: {unknown} not in the --decks roster {roster}.")
+        if not train_decks:
+            raise ValueError("--train-decks is empty.")
+    elif shard_split is not None:
         shard_id, num_shards = shard_split
         train_decks = roster[shard_id::num_shards]
         if not train_decks:
@@ -1032,8 +1043,9 @@ def league(binary_path: str, decks: str | None = None,
     # to the lighter self-play env count rather than N_ENVS (sized for scripted opps).
     n_envs = n_envs_override if n_envs_override is not None else N_ENVS_SELF_PLAY
     print(f"League roster: {', '.join(roster)}")
-    if shard_split is not None:
-        print(f"  shard {shard}: training only {', '.join(train_decks)}")
+    if train_decks != roster:
+        label = f"shard {shard}" if shard else "this driver"
+        print(f"  {label}: training only {', '.join(train_decks)}")
     print(f"  total={total_timesteps:,}  rotate_every={rotate_every:,}  "
           f"adaptive_boost={adaptive_boost}  n_envs={n_envs}")
     print(f"  self_play_frac={self_play_frac}  scripted_anchor_frac={scripted_anchor_frac}")
@@ -1060,6 +1072,7 @@ def league(binary_path: str, decks: str | None = None,
             "opp_ckpt_ratio": opp_ckpt_ratio,
             "no_shaping": no_shaping,
             "adaptive_boost": adaptive_boost,
+            "train_decks": train_decks_spec,
             "bo3": bool(env_kwargs.get("bo3", False)),
             "auto_sideboard": bool(env_kwargs.get("auto_sideboard", False)),
         },
@@ -1440,6 +1453,7 @@ if __name__ == "__main__":
                embed_dim=args.embed_dim, n_envs_override=args.n_envs,
                opp_ckpt_ratio=args.opponent_ckpt_ratio, no_shaping=args.no_shaping,
                adaptive_boost=args.adaptive_boost, shard=args.shard,
+               train_decks_spec=args.train_decks,
                tally=args.tally, resume=args.resume, **env_kwargs)
     elif args.command == "train":
         train(args.binary, _resolve_model(args.load), args.total_timesteps,

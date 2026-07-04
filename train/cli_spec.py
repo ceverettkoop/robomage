@@ -334,6 +334,14 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "progress sidecar (_league_progress.shard{i}of{n}.json); pass the "
                  "same --shard together with --resume. Omit for single-machine "
                  "training."),
+        Arg("--train-decks", "str", default=None, metavar="A,B,...",
+            help="Distributed training: explicit comma-separated subset of --decks "
+                 "that THIS driver trains (rotates over), overriding the strided "
+                 "--shard slice while opponents still span the full --decks roster. "
+                 "The web distribution UI (scripts/league_agent.py) sets this "
+                 "per machine for arbitrary deck-to-machine assignment; --shard is "
+                 "still passed alongside for the sidecar tag. Omit to use the "
+                 "strided slice."),
         Arg("--opponent-ckpt-ratio", "float", default=1.0,
             help="Cap on unique opponent checkpoints kept resident, as a ratio of "
                  "n_envs (default 1.0 -> <=1 checkpoint per env process)."),
