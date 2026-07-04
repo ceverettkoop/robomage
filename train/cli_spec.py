@@ -71,6 +71,44 @@ LEAGUE_ROTATE_EVERY        = 500_000 # steps to train one learner deck before ro
 LEAGUE_ADAPTIVE_BOOST      = 2.0
 
 
+# ── Distributed league sharding (docs/distributed_league_training.md) ─────────
+# A league run may train only a slice of the roster ("--shard i/n") while still
+# sampling opponents from the full roster — one shard per machine over a
+# shared/synced checkpoint dir. These helpers are the single home for the shard
+# spec format and the filename tag that namespaces each shard's sidecar,
+# heartbeat, and control files; they live here (stdlib-only) so the ops scripts
+# (scripts/league_worker.py, scripts/league_dashboard.py) can import them
+# without pulling in train.py's torch stack.
+
+def parse_shard(spec):
+    """Parse a '--shard i/n' spec into (shard_id, num_shards); None -> None.
+
+    Raises ValueError on malformed specs (not 'i/n', n < 1, or i outside
+    0..n-1) so a typo fails at startup rather than silently training the
+    wrong roster slice."""
+    if spec is None:
+        return None
+    parts = str(spec).split("/")
+    if len(parts) != 2:
+        raise ValueError(f"--shard must look like 'i/n' (got {spec!r})")
+    try:
+        i, n = int(parts[0]), int(parts[1])
+    except ValueError:
+        raise ValueError(f"--shard must be two integers 'i/n' (got {spec!r})")
+    if n < 1 or not (0 <= i < n):
+        raise ValueError(f"--shard {spec!r}: need 0 <= i < n and n >= 1")
+    return i, n
+
+
+def shard_tag(spec):
+    """Filename tag for a shard's coordination files: '' when unsharded, else
+    '.shard{i}of{n}' — e.g. _league_progress.shard0of2.json."""
+    parsed = parse_shard(spec)
+    if parsed is None:
+        return ""
+    return f".shard{parsed[0]}of{parsed[1]}"
+
+
 # ── Spec dataclasses ──────────────────────────────────────────────────────────
 
 @dataclass
@@ -288,6 +326,22 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
                  "win-rate falls below 50%% or its trained steps trail the roster "
                  "leader. Rotation order is unchanged (no deck is starved). "
                  f"1 = fixed-length rotations (default {LEAGUE_ADAPTIVE_BOOST:.1f})."),
+        Arg("--shard", "str", default=None, metavar="i/n",
+            help="Distributed training: train only roster slice i of n (0-indexed, "
+                 "strided) while still sampling opponents from the FULL roster. Run "
+                 "one shard per machine over a shared/synced checkpoint dir "
+                 "(docs/distributed_league_training.md). Each shard keeps its own "
+                 "progress sidecar (_league_progress.shard{i}of{n}.json); pass the "
+                 "same --shard together with --resume. Omit for single-machine "
+                 "training."),
+        Arg("--train-decks", "str", default=None, metavar="A,B,...",
+            help="Distributed training: explicit comma-separated subset of --decks "
+                 "that THIS driver trains (rotates over), overriding the strided "
+                 "--shard slice while opponents still span the full --decks roster. "
+                 "The web distribution UI (scripts/league_agent.py) sets this "
+                 "per machine for arbitrary deck-to-machine assignment; --shard is "
+                 "still passed alongside for the sidecar tag. Omit to use the "
+                 "strided slice."),
         Arg("--opponent-ckpt-ratio", "float", default=1.0,
             help="Cap on unique opponent checkpoints kept resident, as a ratio of "
                  "n_envs (default 1.0 -> <=1 checkpoint per env process)."),

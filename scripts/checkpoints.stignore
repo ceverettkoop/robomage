@@ -1,0 +1,15 @@
+// Syncthing ignore patterns for train/checkpoints/ (distributed league
+// training — docs/distributed_league_training.md). league_worker.py copies
+// this file to train/checkpoints/.stignore on startup if absent (the dir is
+// gitignored, so the template lives here in scripts/).
+//
+// Never replicate atomic-write intermediates: both train.py's sidecar writes
+// and the worker/dashboard coordination files write foo.json.tmp then
+// os.replace(). Replicating a .tmp could ship a partial file.
+*.tmp
+// TensorBoard logs are local-only (LOG_DIR is cwd-relative and shouldn't land
+// here anyway — defensive).
+logs
+// Everything else syncs: {deck}__v*.zip / {deck}__final.zip snapshots, the
+// _league_progress*.json sidecars, and the _worker_status*/_control* files
+// (the dashboard's status + control transport — do NOT ignore those).
