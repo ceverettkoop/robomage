@@ -45,6 +45,7 @@ from cli_spec import (TOTAL_TIMESTEPS, N_ENVS, N_ENVS_SELF_PLAY, EMBED_DIM,
                       LEAGUE_SELF_PLAY_FRAC, LEAGUE_SCRIPTED_ANCHOR_FRAC,
                       LEAGUE_PFSP_P, LEAGUE_SOFTMAX_ETA, LEAGUE_SNAPSHOT_EVERY,
                       LEAGUE_PROMOTE_MARGIN, LEAGUE_ROTATE_EVERY,
+                      LEAGUE_ADAPTIVE_BOOST,
                       TRAIN_TOOL, apply_to_parser)
 
 try:
@@ -492,6 +493,53 @@ def _read_league_state(checkpoint_dir: str) -> dict | None:
         return None
 
 
+def _deck_trained_steps(deck: str, checkpoint_dir: str) -> int:
+    """Cumulative trained steps of a deck's generalist, from its snapshot filenames.
+
+    The newest ``{deck}__v{steps}.zip`` version number is the model's absolute
+    ``num_timesteps`` at save; ``__final`` carries no count, so this slightly
+    undercounts (by at most one snapshot interval). 0 when the deck has no
+    versioned snapshots (fresh deck). Used only to seed the adaptive-rotation
+    catch-up need for decks the sidecar has no stats for yet."""
+    from opponents import deck_snapshots, _SNAPSHOT_RE
+    best = 0
+    for path in deck_snapshots(deck, checkpoint_dir):
+        m = _SNAPSHOT_RE.match(os.path.basename(path))
+        if m:
+            best = max(best, int(m.group("steps")))
+    return best
+
+
+def _rotation_target(learner: str, roster: list[str], deck_stats: dict,
+                     checkpoint_dir: str, rotate_every: int,
+                     adaptive_boost: float) -> int:
+    """Step budget for this learner's rotation, stretched for catch-up decks.
+
+    Need is the greater of two 0..1 signals: how far the deck's last league
+    win-rate sits below 50%, and how far its cumulative trained steps trail the
+    roster's most-trained deck. The budget interpolates from ``rotate_every``
+    (need 0) to ``adaptive_boost * rotate_every`` (need 1), so rotation order is
+    untouched and no deck is ever starved — struggling decks just get a longer
+    turn, and the boost decays automatically as their win-rate recovers."""
+    if adaptive_boost <= 1.0:
+        return rotate_every
+    stats = deck_stats.get(learner) or {}
+    wr = stats.get("winrate")
+    wr_need = 0.0 if wr is None else max(0.0, min(1.0, (0.5 - float(wr)) / 0.5))
+    steps = {d: int((deck_stats.get(d) or {}).get("steps")
+                    or _deck_trained_steps(d, checkpoint_dir)) for d in roster}
+    max_steps = max(steps.values(), default=0)
+    steps_need = (1.0 - steps[learner] / max_steps) if max_steps > 0 else 0.0
+    need = max(wr_need, max(0.0, min(1.0, steps_need)))
+    target = int(rotate_every * (1.0 + (adaptive_boost - 1.0) * need))
+    if target != rotate_every:
+        print(f"[league] adaptive rotation for {learner}: winrate="
+              f"{'n/a' if wr is None else f'{float(wr):.2f}'} (need {wr_need:.2f}), "
+              f"steps {steps[learner]:,}/{max_steps:,} (need {steps_need:.2f}) "
+              f"-> {target:,} steps this rotation")
+    return target
+
+
 def _resolve_model(path: str) -> str:
     """Resolve a model shorthand to a full checkpoint path.
 
@@ -839,8 +887,17 @@ def _league_chunk(binary_path: str, learner_deck: str, roster: list[str],
         model.save(os.path.join(checkpoint_dir, f"{learner_deck}__final"))
         print(f"[league] saved {learner_deck}__final")
         # PPO collects whole rollouts, so the chunk overshoots chunk_steps; return
-        # the actual new steps so the driver's global budget stays accurate.
-        return model.num_timesteps - start_steps
+        # the actual new steps so the driver's global budget stays accurate, plus
+        # the learner's end-of-rotation win-rate and absolute step count for the
+        # driver's adaptive-rotation stats (recent window when it has enough
+        # games to judge current strength, else the chunk-lifetime average;
+        # None when no decisive game finished).
+        wr, n = pfsp_cb.recent_winrate()
+        if n == 0:
+            wr = None  # no decisive game finished this chunk
+        elif n < 50:
+            wr = pfsp_cb.overall_winrate()
+        return model.num_timesteps - start_steps, wr, model.num_timesteps
     finally:
         vec_env.close()
 
@@ -856,6 +913,7 @@ def league(binary_path: str, decks: str | None = None,
            promote_margin: float = LEAGUE_PROMOTE_MARGIN,
            embed_dim: int = EMBED_DIM, n_envs_override: int | None = None,
            opp_ckpt_ratio: float = 1.0, no_shaping: bool = False,
+           adaptive_boost: float = LEAGUE_ADAPTIVE_BOOST,
            tally: bool = False, resume: bool = False, **env_kwargs):
     """PFSP league driver: rotating single learner over a shared snapshot pool.
 
@@ -864,6 +922,12 @@ def league(binary_path: str, decks: str | None = None,
     latest self; then the run rotates to the next deck. Snapshots dropped into the
     shared dir by earlier rotations become opponents for later ones, so the league
     structure is self-managing. Continues until ``total_timesteps`` total.
+
+    Adaptive rotation length (``adaptive_boost`` > 1): a catch-up deck's rotation
+    is stretched toward ``adaptive_boost * rotate_every``, scaled by how far its
+    last league win-rate sits below 50% or its cumulative trained steps trail the
+    roster leader (see ``_rotation_target``). Rotation *order* is unchanged, so
+    every deck keeps training; strong decks just take shorter turns.
 
     The driver's loop position (roster, total budget, global steps done, current
     rotation, and every hyperparameter) is persisted to a JSON sidecar
@@ -904,6 +968,7 @@ def league(binary_path: str, decks: str | None = None,
         n_envs_override = p.get("n_envs", n_envs_override)
         opp_ckpt_ratio = float(p.get("opp_ckpt_ratio", opp_ckpt_ratio))
         no_shaping = bool(p.get("no_shaping", no_shaping))
+        adaptive_boost = float(p.get("adaptive_boost", adaptive_boost))
         env_kwargs.setdefault("bo3", bool(p.get("bo3", env_kwargs.get("bo3", False))))
         env_kwargs.setdefault("auto_sideboard",
                               bool(p.get("auto_sideboard", env_kwargs.get("auto_sideboard", False))))
@@ -930,7 +995,8 @@ def league(binary_path: str, decks: str | None = None,
     # to the lighter self-play env count rather than N_ENVS (sized for scripted opps).
     n_envs = n_envs_override if n_envs_override is not None else N_ENVS_SELF_PLAY
     print(f"League roster: {', '.join(roster)}")
-    print(f"  total={total_timesteps:,}  rotate_every={rotate_every:,}  n_envs={n_envs}")
+    print(f"  total={total_timesteps:,}  rotate_every={rotate_every:,}  "
+          f"adaptive_boost={adaptive_boost}  n_envs={n_envs}")
     print(f"  self_play_frac={self_play_frac}  scripted_anchor_frac={scripted_anchor_frac}")
     print(f"  pfsp_mode={pfsp_mode}  p={pfsp_p}  eta={softmax_eta}")
     print(f"  snapshot_every={snapshot_every:,}  promote_margin={promote_margin}  embed_dim={embed_dim}")
@@ -953,10 +1019,19 @@ def league(binary_path: str, decks: str | None = None,
             "n_envs": n_envs,
             "opp_ckpt_ratio": opp_ckpt_ratio,
             "no_shaping": no_shaping,
+            "adaptive_boost": adaptive_boost,
             "bo3": bool(env_kwargs.get("bo3", False)),
             "auto_sideboard": bool(env_kwargs.get("auto_sideboard", False)),
         },
     }
+
+    # Per-deck adaptive-rotation stats ({deck: {"winrate": float|None, "steps": int}}),
+    # updated at each rotation end and persisted so --resume keeps the same targets.
+    deck_stats: dict = (state.get("deck_stats") or {}) if resume else {}
+    # The current rotation's step budget (adaptive; == rotate_every when boost is 1
+    # or the deck has no catch-up need). Persisted so a mid-chunk resume finishes
+    # the same-sized rotation it started.
+    rotation_target = state.get("rotation_target") if resume else None
 
     def save_progress(done: int, rot: int, cstart: int):
         # `chunk_start` = global steps_done at the start of the current rotation, so a
@@ -964,7 +1039,9 @@ def league(binary_path: str, decks: str | None = None,
         # rather than a fresh full chunk.
         _write_league_state(checkpoint_dir, {**base_state, "steps_done": int(done),
                                              "rotation": int(rot),
-                                             "chunk_start": int(cstart)})
+                                             "chunk_start": int(cstart),
+                                             "rotation_target": rotation_target,
+                                             "deck_stats": deck_stats})
 
     # `chunk_start` tracks where the current rotation began. On a fresh run it equals
     # steps_done; on --resume it is restored from the sidecar (see below).
@@ -977,11 +1054,18 @@ def league(binary_path: str, decks: str | None = None,
     while steps_done < total_timesteps:
         learner = roster[rotation % len(roster)]
         done_in_rotation = steps_done - chunk_start
-        chunk = min(rotate_every - done_in_rotation, total_timesteps - steps_done)
+        if done_in_rotation == 0 or rotation_target is None:
+            # Fresh rotation (or a pre-adaptive sidecar resumed mid-rotation):
+            # size this rotation by the learner's catch-up need.
+            rotation_target = _rotation_target(
+                learner, roster, deck_stats, checkpoint_dir, rotate_every,
+                adaptive_boost)
+        chunk = min(rotation_target - done_in_rotation, total_timesteps - steps_done)
         if chunk <= 0:
             # Rotation already satisfied (only reachable via an odd resume) — advance.
             rotation += 1
             chunk_start = steps_done
+            rotation_target = None
             save_progress(steps_done, rotation, chunk_start)
             continue
         print(f"\n{'='*60}")
@@ -994,7 +1078,7 @@ def league(binary_path: str, decks: str | None = None,
         # global step count, keeping `rotation`/`chunk_start` fixed so a resume
         # re-enters this same learner for the remainder of its rotation.
         rotation_start_done = chunk_start
-        ran = _league_chunk(
+        ran, learner_wr, learner_steps = _league_chunk(
             binary_path, learner, roster, checkpoint_dir, chunk,
             n_envs=n_envs, opp_ckpt_ratio=opp_ckpt_ratio,
             self_play_frac=self_play_frac, scripted_anchor_frac=scripted_anchor_frac,
@@ -1004,9 +1088,11 @@ def league(binary_path: str, decks: str | None = None,
             on_progress=lambda chunk_steps: save_progress(
                 steps_done + chunk_steps, rotation, rotation_start_done),
             **env_kwargs)
+        deck_stats[learner] = {"winrate": learner_wr, "steps": int(learner_steps)}
         steps_done += ran if ran else chunk
         rotation += 1
         chunk_start = steps_done
+        rotation_target = None
         save_progress(steps_done, rotation, chunk_start)
 
     print(f"\nLeague complete: {total_timesteps:,} total timesteps over {rotation} rotations.")
@@ -1312,6 +1398,7 @@ if __name__ == "__main__":
                snapshot_every=args.snapshot_every, promote_margin=args.promote_margin,
                embed_dim=args.embed_dim, n_envs_override=args.n_envs,
                opp_ckpt_ratio=args.opponent_ckpt_ratio, no_shaping=args.no_shaping,
+               adaptive_boost=args.adaptive_boost,
                tally=args.tally, resume=args.resume, **env_kwargs)
     elif args.command == "train":
         train(args.binary, _resolve_model(args.load), args.total_timesteps,

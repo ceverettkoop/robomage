@@ -62,6 +62,13 @@ LEAGUE_SOFTMAX_ETA         = 0.01    # softmax quality learning rate
 LEAGUE_SNAPSHOT_EVERY      = 250_000 # steps between frozen snapshots
 LEAGUE_PROMOTE_MARGIN      = 0.05    # only snapshot when win-rate >= 0.5 + margin (negative gates below 50%; first exempt; 0 disables)
 LEAGUE_ROTATE_EVERY        = 500_000 # steps to train one learner deck before rotating
+# Adaptive rotation length: a struggling deck's rotation is stretched up to this
+# multiplier of --rotate-every, scaled by how far its last league win-rate sits
+# below 50% OR how far its cumulative trained steps trail the roster leader
+# (whichever need is greater). Every deck still rotates — the boost is bounded,
+# so strong decks are never starved, and it self-corrects as win-rates recover.
+# 1.0 disables (fixed-length rotations).
+LEAGUE_ADAPTIVE_BOOST      = 2.0
 
 
 # ── Spec dataclasses ──────────────────────────────────────────────────────────
@@ -271,6 +278,12 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--rotate-every", "int", default=LEAGUE_ROTATE_EVERY,
             help="Steps to train one learner deck before rotating to the next "
                  "(default %d)." % LEAGUE_ROTATE_EVERY),
+        Arg("--adaptive-boost", "float", default=LEAGUE_ADAPTIVE_BOOST,
+            help="Max rotation-length multiplier for catch-up decks: a rotation "
+                 "stretches toward boost x --rotate-every as the deck's last league "
+                 "win-rate falls below 50%% or its trained steps trail the roster "
+                 "leader. Rotation order is unchanged (no deck is starved). "
+                 "1 = fixed-length rotations (default %.1f)." % LEAGUE_ADAPTIVE_BOOST),
         Arg("--opponent-ckpt-ratio", "float", default=1.0,
             help="Cap on unique opponent checkpoints kept resident, as a ratio of "
                  "n_envs (default 1.0 -> <=1 checkpoint per env process)."),
