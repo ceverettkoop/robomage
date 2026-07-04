@@ -41,7 +41,7 @@ import decode
 from _enums import _CAT_NAMES, _STEP_NAMES
 # CLI definitions + training defaults live in cli_spec.py (single source shared with the TUI).
 from cli_spec import (TOTAL_TIMESTEPS, N_ENVS, N_ENVS_SELF_PLAY, EMBED_DIM,
-                      ENT_COEF,
+                      ENT_COEF, PPO_KWARGS, NET_ARCH,
                       LEAGUE_SELF_PLAY_FRAC, LEAGUE_SCRIPTED_ANCHOR_FRAC,
                       LEAGUE_PFSP_P, LEAGUE_SOFTMAX_ETA, LEAGUE_SNAPSHOT_EVERY,
                       LEAGUE_PROMOTE_MARGIN, LEAGUE_ROTATE_EVERY,
@@ -714,7 +714,7 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
         policy_kwargs = dict(
             features_extractor_class=CardGameExtractor,
             features_extractor_kwargs=dict(embed_dim=embed_dim),
-            net_arch=[256, 256],
+            net_arch=list(NET_ARCH),
         )
 
         # Per-deck generalist: auto-resume this deck's own latest checkpoint so a
@@ -736,16 +736,9 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
                 "MlpPolicy",
                 vec_env,
                 policy_kwargs=policy_kwargs,
-                learning_rate=3e-4,
-                n_steps=4096,           # steps per env per update
-                batch_size=1024,
-                n_epochs=8,
-                gamma=0.99,
-                gae_lambda=0.95,
-                clip_range=0.25,
-                ent_coef=ENT_COEF,
                 verbose=1,
                 tensorboard_log=LOG_DIR,
+                **PPO_KWARGS,
             )
 
         actual_n_envs = n_envs
@@ -803,7 +796,7 @@ def _league_chunk(binary_path: str, learner_deck: str, roster: list[str],
         policy_kwargs = dict(
             features_extractor_class=CardGameExtractor,
             features_extractor_kwargs=dict(embed_dim=embed_dim),
-            net_arch=[256, 256],
+            net_arch=list(NET_ARCH),
         )
         from opponents import latest_snapshot
         resume = os.path.join(checkpoint_dir, f"{learner_deck}__final.zip")
@@ -818,9 +811,7 @@ def _league_chunk(binary_path: str, learner_deck: str, roster: list[str],
             print(f"[league] starting {learner_deck} from scratch (embed_dim={embed_dim})")
             model = MaskablePPO(
                 "MlpPolicy", vec_env, policy_kwargs=policy_kwargs,
-                learning_rate=3e-4, n_steps=4096, batch_size=1024, n_epochs=8,
-                gamma=0.99, gae_lambda=0.95, clip_range=0.25, ent_coef=ENT_COEF,
-                verbose=1, tensorboard_log=LOG_DIR)
+                verbose=1, tensorboard_log=LOG_DIR, **PPO_KWARGS)
 
         if no_shaping:
             vec_env.env_method("set_shaping_scale", 0.0)
@@ -1066,11 +1057,6 @@ def train_fixed_model(binary_path: str, model_deck: str, opp_deck: str,
     ])
 
     try:
-        policy_kwargs = dict(
-            features_extractor_class=CardGameExtractor,
-            net_arch=[256, 256],
-        )
-
         print(f"Resuming from {load_path}")
         model = _assert_ent_coef(MaskablePPO.load(load_path, env=vec_env),
                                  model_deck)

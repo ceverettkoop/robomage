@@ -160,24 +160,18 @@ def _build_vec_env(mode, n_envs, deck, opp_deck, env_kwargs):
 def _make_model(vec_env, embed_dim):
     """Fresh MaskablePPO matching train.py's hyperparameters (no checkpoint I/O)."""
     import train as T
+    from cli_spec import PPO_KWARGS, NET_ARCH
     policy_kwargs = dict(
         features_extractor_class=T.CardGameExtractor,
         features_extractor_kwargs=dict(embed_dim=embed_dim),
-        net_arch=[256, 256],
+        net_arch=list(NET_ARCH),
     )
     return T.MaskablePPO(
         "MlpPolicy",
         vec_env,
         policy_kwargs=policy_kwargs,
-        learning_rate=3e-4,
-        n_steps=4096,
-        batch_size=1024,
-        n_epochs=8,
-        gamma=0.99,
-        gae_lambda=0.95,
-        clip_range=0.25,
-        ent_coef=0.12,
         verbose=0,
+        **PPO_KWARGS,
     )
 
 

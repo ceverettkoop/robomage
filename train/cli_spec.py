@@ -31,6 +31,24 @@ EMBED_DIM = 128        # policy feature-extractor embed dim for fresh models
 # more than aggro decks, and capped league win-rates.)
 ENT_COEF = 0.012
 
+# PPO hyperparameters for newly constructed models — single home so the
+# single-opponent train() path and the league path can never drift apart (the
+# stale-ent_coef bug survived one fix precisely because these were duplicated
+# inline at both sites). On checkpoint RESUME, MaskablePPO.load restores
+# whatever the checkpoint was saved with; only ent_coef is re-asserted
+# afterwards (train.py _assert_ent_coef).
+PPO_KWARGS = dict(
+    learning_rate=3e-4,
+    n_steps=4096,       # steps per env per update
+    batch_size=1024,
+    n_epochs=8,
+    gamma=0.99,
+    gae_lambda=0.95,
+    clip_range=0.25,
+    ent_coef=ENT_COEF,
+)
+NET_ARCH = [256, 256]  # policy/value MLP head sizes (after the feature extractor)
+
 # League (PFSP) defaults.
 # self-play is a small floor, not the bulk of games: the PFSP-weighted historical
 # branch (1-winrate)^p already concentrates training on the learner's worst
