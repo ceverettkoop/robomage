@@ -823,13 +823,14 @@ def _league_chunk(binary_path: str, learner_deck: str, roster: list[str],
                   n_envs: int, opp_ckpt_ratio: float, self_play_frac: float,
                   scripted_anchor_frac: float, pfsp_mode: str, pfsp_p: float,
                   softmax_eta: float, snapshot_every: int, promote_margin: float,
-                  embed_dim: int, no_shaping: bool, on_progress=None, **env_kwargs):
+                  embed_dim: int, no_shaping: bool, fresh: bool = False,
+                  on_progress=None, **env_kwargs):
     """Train one learner deck for ``chunk_steps`` against the shared league pool.
 
     Resumes the learner's own latest checkpoint (``{deck}__final`` or newest
     ``{deck}__v*``) so its cumulative step count — and therefore snapshot version
     numbering — keeps growing across rotations; starts from scratch only the very
-    first time a deck is trained.
+    first time a deck is trained, or whenever ``fresh`` is set.
 
     ``on_progress(steps_this_chunk)`` (optional) is called after every snapshot save
     with the number of new steps trained so far in this chunk, so the driver can
@@ -850,9 +851,11 @@ def _league_chunk(binary_path: str, learner_deck: str, roster: list[str],
             net_arch=list(NET_ARCH),
         )
         from opponents import latest_snapshot
-        resume = os.path.join(checkpoint_dir, f"{learner_deck}__final.zip")
-        if not os.path.exists(resume):
-            resume = latest_snapshot(learner_deck, checkpoint_dir)
+        resume = None
+        if not fresh:
+            resume = os.path.join(checkpoint_dir, f"{learner_deck}__final.zip")
+            if not os.path.exists(resume):
+                resume = latest_snapshot(learner_deck, checkpoint_dir)
         resuming = bool(resume and os.path.exists(resume))
         if resuming:
             print(f"[league] resuming {learner_deck} from {os.path.basename(resume)}")
@@ -1407,43 +1410,56 @@ def _warn_if_debug_build(binary_path: str) -> None:
             "release engine first:\n      make BUILD=RELEASE\n  and re-run (pass "
             "--binary to point at it if it is not the default bin/robomage).\n",
             flush=True)
+        
+def _run_sweep(args, parser):
+    """Train one deck's generalist against a PFSP pool of the other decks.
 
-
-def _run_sweep(args, parser, decks_filter):
-    """Train every deck×deck matchup, optionally filtered to one deck."""
+    Like ``league``, but with a single fixed learner: ``args.deck`` is the only
+    model that trains and it never rotates away — the roster (default: every
+    other deck in ``bin/resources/decks/``) supplies opponents only, sampled the
+    same way ``league`` samples them (scripted anchor floor, PFSP/softmax-weighted
+    historical snapshots, and a latest-self slot). This is a single, un-rotated
+    call into the same ``_league_chunk`` the league driver uses per rotation.
+    """
     all_decks = sorted(os.path.splitext(p)[0]
                        for p in os.listdir(_DECKS_DIR) if p.endswith(".dk"))
-    if decks_filter:
-        if decks_filter not in all_decks:
-            parser.error(f"Deck '{decks_filter}' not found in {_DECKS_DIR}. "
+    if args.deck not in all_decks:
+        parser.error(f"Deck '{args.deck}' not found in {_DECKS_DIR}. "
+                     f"Available: {', '.join(all_decks)}")
+    if args.opponents:
+        roster = [d.strip() for d in args.opponents.split(",") if d.strip()]
+        unknown = [d for d in roster if d not in all_decks]
+        if unknown:
+            parser.error(f"--opponents: {unknown} not found in {_DECKS_DIR}. "
                          f"Available: {', '.join(all_decks)}")
-        matchups = [(d, o) for d in all_decks for o in all_decks
-                    if d == decks_filter or o == decks_filter]
-        label = f"featuring '{decks_filter}'"
     else:
-        matchups = [(d, o) for d in all_decks for o in all_decks]
-        label = "all"
+        roster = [d for d in all_decks if d != args.deck]
+    if not roster:
+        parser.error("No opponent decks available for the pool (need at least "
+                     "one other deck in bin/resources/decks/, or pass --opponents).")
+
+    checkpoint_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), CHECKPOINT_DIR)
+    os.makedirs(checkpoint_dir, exist_ok=True)
+    os.makedirs(LOG_DIR, exist_ok=True)
+    n_envs = args.n_envs if args.n_envs is not None else N_ENVS_SELF_PLAY
     env_kwargs = dict(bo3=args.bo3, auto_sideboard=args.auto_sideboard)
-    print(f"Training {len(matchups)} matchups ({label}) for {args.total_timesteps:,} timesteps each:")
-    for d, o in matchups:
-        print(f"  {d} vs {o}")
-    # Each matchup session continues the trained deck's one generalist ({d}__final),
-    # so a deck trained across several opponents in a sweep accumulates onto a
-    # single model. train() auto-resumes it; we only force-fresh the very first
-    # session of each deck so a re-run keeps building rather than wiping.
-    seen_decks = set()
-    for i, (d, o) in enumerate(matchups):
-        print(f"\n{'='*60}")
-        print(f"[{i+1}/{len(matchups)}] {d} vs {o}")
-        print(f"{'='*60}")
-        train(args.binary, load_path=None, total_timesteps=args.total_timesteps,
-              tally=args.tally, self_play=args.self_play,
-              model_deck=d, opp_deck=o, fresh=(args.fresh and d not in seen_decks),
-              n_envs_override=args.n_envs, no_shaping=args.no_shaping,
-              opponent_pool=args.opponent_pool, opp_ckpt_ratio=args.opponent_ckpt_ratio,
-              embed_dim=args.embed_dim, **env_kwargs)
-        seen_decks.add(d)
-    print(f"\nAll {len(matchups)} matchups complete.")
+
+    print(f"Sweep: training '{args.deck}' vs pool [{', '.join(roster)}]")
+    print(f"  total={args.total_timesteps:,}  n_envs={n_envs}")
+    print(f"  self_play_frac={args.self_play_frac}  scripted_anchor_frac={args.scripted_anchor_frac}")
+    print(f"  pfsp_mode={args.pfsp_mode}  p={args.pfsp_p}  eta={args.softmax_eta}")
+    print(f"  snapshot_every={args.snapshot_every:,}  promote_margin={args.promote_margin}  "
+          f"embed_dim={args.embed_dim}")
+
+    _league_chunk(args.binary, args.deck, roster, checkpoint_dir, args.total_timesteps,
+                 n_envs=n_envs, opp_ckpt_ratio=args.opponent_ckpt_ratio,
+                 self_play_frac=args.self_play_frac,
+                 scripted_anchor_frac=args.scripted_anchor_frac,
+                 pfsp_mode=args.pfsp_mode, pfsp_p=args.pfsp_p, softmax_eta=args.softmax_eta,
+                 snapshot_every=args.snapshot_every, promote_margin=args.promote_margin,
+                 embed_dim=args.embed_dim, no_shaping=args.no_shaping,
+                 fresh=args.fresh, **env_kwargs)
+    print(f"\nSweep complete: {args.total_timesteps:,} timesteps for '{args.deck}'.")
 
 
 if __name__ == "__main__":
@@ -1492,7 +1508,7 @@ if __name__ == "__main__":
               opponent_pool=args.opponent_pool, opp_ckpt_ratio=args.opponent_ckpt_ratio,
               embed_dim=args.embed_dim, fresh=args.fresh, **env_kwargs)
     elif args.command == "sweep":
-        _run_sweep(args, parser, args.deck)
+        _run_sweep(args, parser)
     elif args.command == "fixed-model":
         train_fixed_model(args.binary, args.deck, args.opponent,
                           load_path=_resolve_model(args.load),
