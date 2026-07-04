@@ -23,7 +23,8 @@ sparklines/bars so the common views need no display at all.
 
 Interactive session commands (available after shap, value-swings, or via 'interactive'):
     list                  list all games
-    replay <N> [-v]       per-decision trace for game N; -v adds zones + chosen action
+    replay <N> [-v]       per-decision trace for game N; -v adds zones, chosen
+                          action, and interleaved opponent actions
     boardstate <N> [step] full board + decision detail; enters GDB-style stepping mode
     summary               win/loss/draw stats
     cardvalue [N]         rank cards by importance (ΔV, priority, win-rate)
@@ -445,8 +446,15 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
         "interp_features": [array, ...],
         "actions": [int, ...],       # model's chosen action index at each step
         "num_choices": [int, ...],   # number of legal actions at each step
+        "opp_actions": [{"desc": str, "before_model_step": int}, ...],
         "result": float,  # +1 win, -1 loss from model perspective
         "model_is_a": bool }
+
+    Per-step lists cover MODEL decisions only (the analyses pool them as such).
+    Opponent decisions are captured separately in "opp_actions" as pre-decoded
+    description strings — "before_model_step": i means the action was taken
+    after model decision i-1 and before model decision i (== len(values) for
+    opponent actions after the model's last decision).
     """
     import torch
 
@@ -467,6 +475,7 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
         trace_actions = []
         trace_num_choices = []
         trace_probs = []
+        trace_opp_actions = []
         done = False
         total_reward = 0.0
 
@@ -500,6 +509,12 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
                     action = int(action)
                 else:
                     action = scripted_action(obs, num_choices)
+                # Decode now (obs is from the opponent's perspective and is not
+                # kept) so the replay can interleave opponent actions later.
+                trace_opp_actions.append({
+                    "desc": _action_desc(obs, action),
+                    "before_model_step": len(trace_obs),
+                })
 
             obs, reward, terminated, truncated, _ = env.step(action)
             total_reward += reward
@@ -513,6 +528,7 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
             "actions": trace_actions,
             "num_choices": trace_num_choices,
             "action_probs": trace_probs,
+            "opp_actions": trace_opp_actions,
             "result": model_reward,
             "model_is_a": model_is_a,
         })
@@ -675,7 +691,8 @@ def _replay_sim_game(game, game_idx, verbose=False):
     """Print a human-readable trace for a simulation game.
 
     verbose=True adds, under each decision's one-liner, the decoded zones
-    (both battlefields, hand, graveyards, stack) and the model's chosen action.
+    (both battlefields, hand, graveyards, stack) and the model's chosen action,
+    and interleaves the opponent's actions between the model's decisions.
     The obs at each recorded step is from the model's perspective ("self" = model).
     """
     result_str = "WIN" if game["result"] > 0 else ("LOSS" if game["result"] < 0 else "DRAW")
@@ -688,7 +705,31 @@ def _replay_sim_game(game, game_idx, verbose=False):
     obs_list = game.get("observations", [])
     actions = game.get("actions", [])
     num_choices = game.get("num_choices", [])
+
+    # Opponent actions grouped by the model decision they precede
+    opp_by_step = {}
+    if verbose:
+        for oa in game.get("opp_actions", []):
+            opp_by_step.setdefault(oa["before_model_step"], []).append(oa["desc"])
+
+    def print_opp_actions(step):
+        # Collapse runs of identical consecutive actions ("PASS (x19)")
+        run_desc, run_len = None, 0
+        def flush():
+            if run_len == 1:
+                print(f"        opp --> {run_desc}")
+            elif run_len > 1:
+                print(f"        opp --> {run_desc} (x{run_len})")
+        for desc in opp_by_step.get(step, []):
+            if desc == run_desc:
+                run_len += 1
+            else:
+                flush()
+                run_desc, run_len = desc, 1
+        flush()
+
     for i, (feat, val) in enumerate(zip(feats, vals)):
+        print_opp_actions(i)
         step = _step_name_from_feat(feat)
         mana_total = feat[_FEAT["self_total_mana"]]
         print(f"  [{i:3d}] {step:<14}  "
@@ -720,6 +761,7 @@ def _replay_sim_game(game, game_idx, verbose=False):
             print(f"        Action  : {_action_desc(obs, actions[i])}  "
                   f"[choice {actions[i]} of {num_choices[i]}]")
         print()
+    print_opp_actions(len(feats))  # opponent actions after the model's last decision
     print()
 
 
@@ -1292,7 +1334,8 @@ def _interactive_session(ctx):
             can_run = ctx.get("env") is not None
             print("  list / games              — list all games with result/decisions/side")
             print("  replay <N> [-v]           — one-line-per-decision trace for game N; -v adds")
-            print("                              zones (battlefields/hand/GYs/stack) + chosen action")
+            print("                              zones (battlefields/hand/GYs/stack), chosen action,")
+            print("                              and interleaved opponent actions")
             print("  boardstate <N> [step]     — full board + decision at step in game N (default 0)")
             print("  bs <N> [step]             — alias; enters GDB-style stepping mode")
             print("  summary                   — win/loss/draw stats for all simulated games")
