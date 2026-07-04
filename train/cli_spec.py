@@ -21,6 +21,15 @@ TOTAL_TIMESTEPS = 2_000_000
 N_ENVS = 32            # parallel game processes
 N_ENVS_SELF_PLAY = 10  # self-play (each loads an opponent model)
 EMBED_DIM = 128        # policy feature-extractor embed dim for fresh models
+# PPO entropy bonus coefficient. Canonical value for every training path (train,
+# league) AND re-asserted on checkpoint resume: MaskablePPO.load restores the
+# ent_coef the checkpoint was *saved* with, so without the override a model born
+# under an old value keeps it forever. (A stale 0.12 — 10x the intended 0.012 —
+# rode along this way in checkpoints created before the original fix; the entropy
+# term then dominated the PPO loss ~2.5:1 over the policy-gradient term, forcing
+# a permanently noisy policy. That hurts precise-line decks like Doomsday far
+# more than aggro decks, and capped league win-rates.)
+ENT_COEF = 0.012
 
 # League (PFSP) defaults.
 # self-play is a small floor, not the bulk of games: the PFSP-weighted historical

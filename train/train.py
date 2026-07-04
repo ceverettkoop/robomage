@@ -41,6 +41,7 @@ import decode
 from _enums import _CAT_NAMES, _STEP_NAMES
 # CLI definitions + training defaults live in cli_spec.py (single source shared with the TUI).
 from cli_spec import (TOTAL_TIMESTEPS, N_ENVS, N_ENVS_SELF_PLAY, EMBED_DIM,
+                      ENT_COEF,
                       LEAGUE_SELF_PLAY_FRAC, LEAGUE_SCRIPTED_ANCHOR_FRAC,
                       LEAGUE_PFSP_P, LEAGUE_SOFTMAX_ETA, LEAGUE_SNAPSHOT_EVERY,
                       LEAGUE_PROMOTE_MARGIN, LEAGUE_ROTATE_EVERY,
@@ -433,6 +434,19 @@ LOG_DIR = "logs"
 _CHECKPOINT_ABS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "checkpoints")
 
 
+def _assert_ent_coef(model, label: str):
+    """Re-assert the canonical entropy coefficient on a resumed checkpoint.
+
+    MaskablePPO.load restores the ent_coef the checkpoint was saved with, so a
+    model created under an old (buggy) value would otherwise carry it across
+    every future resume. Logged when the stored value actually differs."""
+    if model.ent_coef != ENT_COEF:
+        print(f"[hyperparam] {label}: overriding stale ent_coef "
+              f"{model.ent_coef} -> {ENT_COEF}")
+        model.ent_coef = ENT_COEF
+    return model
+
+
 def _tb_log_name(deck: str) -> str:
     """Rollout log folder name for a training session: '{deck}_{YYYY-MM-DD}'.
 
@@ -715,7 +729,8 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
 
         if load_path:
             print(f"Resuming from {load_path}")
-            model = MaskablePPO.load(load_path, env=vec_env)
+            model = _assert_ent_coef(MaskablePPO.load(load_path, env=vec_env),
+                                     model_deck)
         else:
             model = MaskablePPO(
                 "MlpPolicy",
@@ -728,7 +743,7 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
                 gamma=0.99,
                 gae_lambda=0.95,
                 clip_range=0.25,
-                ent_coef=0.012,
+                ent_coef=ENT_COEF,
                 verbose=1,
                 tensorboard_log=LOG_DIR,
             )
@@ -797,13 +812,14 @@ def _league_chunk(binary_path: str, learner_deck: str, roster: list[str],
         resuming = bool(resume and os.path.exists(resume))
         if resuming:
             print(f"[league] resuming {learner_deck} from {os.path.basename(resume)}")
-            model = MaskablePPO.load(resume, env=vec_env)
+            model = _assert_ent_coef(MaskablePPO.load(resume, env=vec_env),
+                                     learner_deck)
         else:
             print(f"[league] starting {learner_deck} from scratch (embed_dim={embed_dim})")
             model = MaskablePPO(
                 "MlpPolicy", vec_env, policy_kwargs=policy_kwargs,
                 learning_rate=3e-4, n_steps=4096, batch_size=1024, n_epochs=8,
-                gamma=0.99, gae_lambda=0.95, clip_range=0.25, ent_coef=0.12,
+                gamma=0.99, gae_lambda=0.95, clip_range=0.25, ent_coef=ENT_COEF,
                 verbose=1, tensorboard_log=LOG_DIR)
 
         if no_shaping:
@@ -1056,7 +1072,8 @@ def train_fixed_model(binary_path: str, model_deck: str, opp_deck: str,
         )
 
         print(f"Resuming from {load_path}")
-        model = MaskablePPO.load(load_path, env=vec_env)
+        model = _assert_ent_coef(MaskablePPO.load(load_path, env=vec_env),
+                                 model_deck)
 
         if no_shaping:
             vec_env.env_method("set_shaping_scale", 0.0)
