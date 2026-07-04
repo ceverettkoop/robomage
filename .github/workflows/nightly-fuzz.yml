@@ -1,0 +1,61 @@
+name: Nightly fuzz
+
+on:
+  schedule:
+    # 08:00 UTC daily.
+    - cron: "0 8 * * *"
+  workflow_dispatch:
+    inputs:
+      games:
+        description: Games per matchup
+        default: "40"
+      seed:
+        description: Base RNG seed (blank => derived from run number)
+        default: ""
+
+jobs:
+  fuzz:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - mode: explore
+            label: explore
+          - mode: "explore:patient"
+            label: explore-patient
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up robomage
+        uses: ./.github/actions/setup-robomage
+
+      # Rotate the seed each night (from the run number) so new game lines are
+      # explored over time; always print it so a finding is reproducible locally.
+      - name: Deep fuzz sweep (all league matchups)
+        run: |
+          SEED="${{ inputs.seed }}"
+          if [ -z "$SEED" ]; then SEED=$(( ${{ github.run_number }} * 100000 )); fi
+          GAMES="${{ inputs.games }}"; GAMES="${GAMES:-40}"
+          echo "seed=$SEED mode=${{ matrix.mode }} games=$GAMES"
+          {
+            echo "### Nightly fuzz — mode \`${{ matrix.mode }}\`"
+            echo "Reproduce locally:"
+            echo '```'
+            echo "train/.venv/bin/python train/ci_check.py --tier fuzz --matchups all \\"
+            echo "  --mode ${{ matrix.mode }} --fuzz-games $GAMES --seed $SEED"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          train/.venv/bin/python train/ci_check.py \
+            --tier fuzz --matchups all --mode "${{ matrix.mode }}" \
+            --fuzz-games "$GAMES" --seed "$SEED" --out-dir ci_out
+
+      - name: Upload transcripts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          # Seed is recoverable from the run number (see the step summary).
+          name: nightly-fuzz-${{ matrix.label }}-${{ github.run_number }}
+          path: ci_out/
+          retention-days: 14

@@ -1823,7 +1823,30 @@ static void apply_param_to_ability(Ability& ability, const std::string& key, con
             // optional on a fail-to-find. The search-based ChangeZone already shuffles after a
             // library fetch (the found case, which is all this card does in practice), so the
             // flag adds nothing the handler doesn't already do.
-            "ShuffleNonMandatory"
+            "ShuffleNonMandatory",
+            // ── AI-only / cosmetic params — no rules impact, safely ignored ──────────────
+            // AITgts$ <filter> (Into the Flood Maw, Pyroblast, Hydroblast, Fatal Push) and
+            // AIXMax$ <svar> (Green Sun's Zenith): hints that steer Forge's own AI (which
+            // target to pick / how big an X to pay). Our engine picks targets and X itself,
+            // so these are advisory only and irrelevant to the modeled rules.
+            "AITgts", "AIXMax",
+            // GiftDescription$ <text> (Into the Flood Maw) and ChangeValidDesc$ <text>
+            // (Once Upon a Time): prose describing the gift offered / the ChangeZone filter.
+            // Purely cosmetic — the load-bearing filters are parsed from the other params.
+            "GiftDescription", "ChangeValidDesc",
+            // ForceRevealToController$ True (Once Upon a Time): reveals the looked-at card to
+            // its own controller. Informational in a perfect-information engine.
+            "ForceRevealToController",
+            // ── Params for mechanics NOT YET MODELED — currently no-ops, tracked in todo.md ─
+            // Suppressed here to keep the log clean; each still needs a real handler (see the
+            // "Unrecognized ability params suppressed but unimplemented" section of todo.md):
+            //   Reorder$ True (Brainstorm) — let the player order the cards put back on top.
+            //   TriggerAmount$ / RememberOriginalTokens$ (Ajani, Nacatl Avenger) — the token
+            //     count carried to the transform trigger, and tracking the original tokens.
+            //   LockTokenScript$ True (Into the Flood Maw) — pin the gifted Fish token's script.
+            //   ExileOnMoved$ Battlefield (Manifold Key) — exile the permanent when it moves.
+            "Reorder", "TriggerAmount", "RememberOriginalTokens", "LockTokenScript",
+            "ExileOnMoved"
         };
         if (ignored_keys.find(key) == ignored_keys.end()) {
             std::string msg = "Unrecognized ability param: " + key + "$ " + value;

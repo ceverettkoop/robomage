@@ -1,781 +1,2769 @@
-robomage 0.001
-Using seed: 1641108517
-Player A draws Mishra's Bauble
-Player A draws Murktide Regent
-Player A draws Brainstorm
-Player A draws Polluted Delta
-Player A draws Force of Will
-Player A draws Lightning Bolt
-Player A draws Volcanic Island
-Player B draws Daze
-Player B draws Murktide Regent
-Player B draws Volcanic Island
-Player B draws Misty Rainforest
-Player B draws Unholy Heat
-Player B draws Brainstorm
-Player B draws Volcanic Island
-Player A hand:
-Murktide Regent
-Mishra's Bauble
-Force of Will
-Brainstorm
-Lightning Bolt
-Polluted Delta
-Volcanic Island
-<<DECISION 1: action=0>>
-Player B hand:
-Murktide Regent
-Brainstorm
-Daze
-Unholy Heat
-Volcanic Island
-Volcanic Island
-Misty Rainforest
-<<DECISION 2: action=0>>
--------- TURN 0 (Player A) --------
-<<DECISION 3: action=3>>
-Player A casts Mishra's Bauble
-<<DECISION 4: action=0>>
-Mishra's Bauble enters the battlefield
-<<DECISION 5: action=1>>
-Player A played Polluted Delta
-<<DECISION 6: action=1>>
-Choose target:
-<<DECISION 7: action=0>>
-Targeting choice 0
-Player A sacrifices Mishra's Bauble
-Player A's Mishra's Bauble ability targeting Player B is on the stack
-<<DECISION 8: action=1>>
-Player A pays 1 life
-Player A sacrifices Polluted Delta
-Player A's Polluted Delta ability is on the stack
-Resolving ability (category: ChangeZone, amount: 0)
-Searching Player A's library:
-<<DECISION 9: action=1>>
-Player A shuffles their library
-Player A puts Island to the battlefield
-<<DECISION 10: action=1>>
-Player A activated Island for 1(U)
-Player A casts Brainstorm
-<<DECISION 11: action=0>>
-Resolving ability (category: Draw, amount: 3)
-Player A draws Ponder
-Player A draws Dragon's Rage Channeler
-Player A draws Volcanic Island
-Resolving ability (category: ChangeZone, amount: 2)
-Player A chooses a card from Player A hand:
-<<DECISION 12: action=0>>
-Player A puts Murktide Regent to top of library
-Player A puts a card to top of library
-Player A chooses a card from Player A hand:
-<<DECISION 13: action=0>>
-Player A puts Dragon's Rage Channeler to top of library
-Player A puts a card to top of library
-Resolving ability (category: PeekAndReveal, amount: 0)
-Player A looks at top of Player B's library: Volcanic Island
-Resolving ability (category: DelayedTrigger, amount: 0)
-Delayed trigger registered: Draw at next Upkeep.
-Resolving ability (category: Draw, amount: 0)
-No creatures eligible to attack.
-No attackers ��� skipping declare blockers.
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 1 (Player B) --------
-Player B draws Volcanic Island
-<<DECISION 14: action=1>>
-Player B played Volcanic Island
-<<DECISION 15: action=1>>
-Player B activated Volcanic Island for 1(U)
-Player B casts Brainstorm
-<<DECISION 16: action=0>>
-<<DECISION 17: action=1>>
-Player A pays 1 life
-<<DECISION 18: action=0>>
-Player A exiles Ponder
-Choose target:
-<<DECISION 19: action=0>>
-Targeting choice 0
-Player A casts Force of Will targeting Brainstorm
-<<DECISION 20: action=1>>
-<<DECISION 21: action=0>>
-Player B returns Volcanic Island to hand
-Choose target:
-<<DECISION 22: action=0>>
-Targeting choice 0
-Player B casts Daze targeting Force of Will
-Resolving ability (category: Counter, amount: 0)
-Force of Will's controller may pay {1} to save it:
-<<DECISION 23: action=0>>
-Force of Will is countered
-Resolving ability (category: Draw, amount: 3)
-Player B draws Brainstorm
-Player B draws Brainstorm
-Player B draws Daze
-Resolving ability (category: ChangeZone, amount: 2)
-Player B chooses a card from Player B hand:
-<<DECISION 24: action=0>>
-Player B puts Murktide Regent to top of library
-Player B puts a card to top of library
-Player B chooses a card from Player B hand:
-<<DECISION 25: action=0>>
-Player B puts Brainstorm to top of library
-Player B puts a card to top of library
-No creatures eligible to attack.
-No attackers ��� skipping declare blockers.
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 2 (Player A) --------
-Delayed trigger fires.
-Resolving ability (category: Draw, amount: 0)
-Player A draws Dragon's Rage Channeler
-<<DECISION 26: action=1>>
-Player A played Volcanic Island
-<<DECISION 27: action=1>>
-Player A activated Volcanic Island for 1(R)
-Player A casts Dragon's Rage Channeler
-Dragon's Rage Channeler enters the battlefield
-No creatures eligible to attack.
-No attackers ��� skipping declare blockers.
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 3 (Player B) --------
-Player B draws Brainstorm
-<<DECISION 28: action=1>>
-Player B played Volcanic Island
-<<DECISION 29: action=1>>
-Player B activated Volcanic Island for 1(U)
-Player B casts Brainstorm
-<<DECISION 30: action=0>>
-Resolving ability (category: Draw, amount: 3)
-Player B draws Murktide Regent
-Player B draws Mountain
-Player B draws Daze
-Resolving ability (category: ChangeZone, amount: 2)
-Player B chooses a card from Player B hand:
-<<DECISION 31: action=0>>
-Player B puts Murktide Regent to top of library
-Player B puts a card to top of library
-Player B chooses a card from Player B hand:
-<<DECISION 32: action=0>>
-Player B puts Brainstorm to top of library
-Player B puts a card to top of library
-No creatures eligible to attack.
-No attackers ��� skipping declare blockers.
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 4 (Player A) --------
-<<DECISION 33: action=1>>
-Player A activated Volcanic Island for 1(R)
-Choose target:
-<<DECISION 34: action=0>>
-Targeting choice 0
-Player A casts Lightning Bolt targeting Player B
-Dragon's Rage Channeler triggered
-<<DECISION 35: action=1>>
-<<DECISION 36: action=0>>
-Player B returns Volcanic Island to hand
-Choose target:
-<<DECISION 37: action=0>>
-Targeting choice 0
-Player B casts Daze targeting Lightning Bolt
-Resolving ability (category: Counter, amount: 0)
-Lightning Bolt's controller may pay {1} to save it:
-<<DECISION 38: action=1>>
-Lightning Bolt is countered
-Resolving ability (category: Surveil, amount: 1)
-Top card of Player A's library: Murktide Regent
-<<DECISION 39: action=1>>
-Player A puts Murktide Regent into the graveyard.
-Dragon's Rage Channeler gains 2/2 Flying (Delirium)
-Player A draws Unholy Heat
-<<DECISION 40: action=1>>
-Player A played Volcanic Island
-<<DECISION 41: action=1>>
-Player A activated Volcanic Island for 1(R)
-Choose target:
-<<DECISION 42: action=0>>
-Targeting choice 0
-Player A casts Unholy Heat targeting Dragon's Rage Channeler
-Dragon's Rage Channeler triggered
-Resolving ability (category: Surveil, amount: 1)
-Top card of Player A's library: Scalding Tarn
-<<DECISION 43: action=1>>
-Player A puts Scalding Tarn into the graveyard.
-Resolving ability (category: DealDamage, amount: 2)
-Dealt 6 damage to creature
-Dragon's Rage Channeler is destroyed (lethal damage)
-No creatures eligible to attack.
-No attackers ��� skipping declare blockers.
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 5 (Player B) --------
-Player B draws Brainstorm
-<<DECISION 44: action=1>>
-Player B played Mountain
-No creatures eligible to attack.
-No attackers ��� skipping declare blockers.
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 6 (Player A) --------
-Player A draws Daze
-No creatures eligible to attack.
-No attackers ��� skipping declare blockers.
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 7 (Player B) --------
-Player B draws Murktide Regent
-<<DECISION 45: action=1>>
-Player B played Volcanic Island
-<<DECISION 46: action=1>>
-Player B activated Volcanic Island for 1(U)
-Player B casts Brainstorm
-<<DECISION 47: action=0>>
-<<DECISION 48: action=1>>
-Player A activated Island for 1(U)
-Player A activated Volcanic Island for 1(U)
-Choose target:
-<<DECISION 49: action=0>>
-Targeting choice 0
-Player A casts Daze targeting Brainstorm
-<<DECISION 50: action=1>>
-<<DECISION 51: action=0>>
-Player B returns Volcanic Island to hand
-Choose target:
-<<DECISION 52: action=0>>
-Targeting choice 0
-Player B casts Daze targeting Daze
-Resolving ability (category: Counter, amount: 0)
-Daze's controller may pay {1} to save it:
-<<DECISION 53: action=2>>
-Daze is countered
-Resolving ability (category: Draw, amount: 3)
-Player B draws Wasteland
-Player B draws Ponder
-Player B draws Lightning Bolt
-Resolving ability (category: ChangeZone, amount: 2)
-Player B chooses a card from Player B hand:
-<<DECISION 54: action=0>>
-Player B puts Murktide Regent to top of library
-Player B puts a card to top of library
-Player B chooses a card from Player B hand:
-<<DECISION 55: action=0>>
-Player B puts Lightning Bolt to top of library
-Player B puts a card to top of library
-No creatures eligible to attack.
-No attackers ��� skipping declare blockers.
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 8 (Player A) --------
-Player A draws Mishra's Bauble
-<<DECISION 56: action=1>>
-Player A casts Mishra's Bauble
-Mishra's Bauble enters the battlefield
-<<DECISION 57: action=1>>
-Choose target:
-<<DECISION 58: action=0>>
-Targeting choice 0
-Player A sacrifices Mishra's Bauble
-Player A's Mishra's Bauble ability targeting Player B is on the stack
-Resolving ability (category: PeekAndReveal, amount: 0)
-Player A looks at top of Player B's library: Lightning Bolt
-Resolving ability (category: DelayedTrigger, amount: 0)
-Delayed trigger registered: Draw at next Upkeep.
-Resolving ability (category: Draw, amount: 0)
-No creatures eligible to attack.
-No attackers ��� skipping declare blockers.
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 9 (Player B) --------
-Player B draws Lightning Bolt
-<<DECISION 59: action=1>>
-Player B activated Mountain for 1(R)
-Choose target:
-<<DECISION 60: action=0>>
-Targeting choice 0
-Player B casts Lightning Bolt targeting Player A
-Resolving ability (category: DealDamage, amount: 3)
-Dealt 3 damage to player (now at 15 life)
-<<DECISION 61: action=1>>
-Player B played Volcanic Island
-<<DECISION 62: action=1>>
-Player B activated Volcanic Island for 1(U)
-Player B casts Ponder
-Resolving ability (category: RearrangeTopOfLibrary, amount: 3)
-Player B looks at the top 3 card(s) of their library.
-Choose which card goes 3 from top:
-<<DECISION 63: action=0>>
-Choose which card goes 2 from top:
-<<DECISION 64: action=0>>
-<<DECISION 65: action=0>>
-Resolving ability (category: Draw, amount: 1)
-Player B draws Cori-Steel Cutter
-No creatures eligible to attack.
-No attackers ��� skipping declare blockers.
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 10 (Player A) --------
-Delayed trigger fires.
-Resolving ability (category: Draw, amount: 0)
-Player A draws Scalding Tarn
-<<DECISION 66: action=1>>
-Player A played Scalding Tarn
-<<DECISION 67: action=1>>
-Player A pays 1 life
-Player A sacrifices Scalding Tarn
-Player A's Scalding Tarn ability is on the stack
-Resolving ability (category: ChangeZone, amount: 0)
-Searching Player A's library:
-<<DECISION 68: action=1>>
-Player A shuffles their library
-Player A puts Mountain to the battlefield
-No creatures eligible to attack.
-No attackers ��� skipping declare blockers.
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 11 (Player B) --------
-Player B draws Wasteland
-<<DECISION 69: action=6>>
-Player B activated Mountain for 1(R)
-Player B activated Volcanic Island for 1(U)
-Player B casts Cori-Steel Cutter
-Cori-Steel Cutter enters the battlefield
-<<DECISION 70: action=1>>
-Player B played Volcanic Island
-No creatures eligible to attack.
-No attackers ��� skipping declare blockers.
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 12 (Player A) --------
-Player A draws Daze
-No creatures eligible to attack.
-No attackers ��� skipping declare blockers.
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 13 (Player B) --------
-Player B draws Murktide Regent
-<<DECISION 71: action=5>>
-Player B exiles Brainstorm via Delve.
-Player B exiles Brainstorm via Delve.
-Player B exiles Brainstorm via Delve.
-Player B exiles Lightning Bolt via Delve.
-Player B exiles Daze via Delve.
-Player B activated Volcanic Island for 1(U)
-Player B activated Volcanic Island for 1(U)
-Player B casts Murktide Regent
-<<DECISION 72: action=1>>
-Player A activated Island for 1(U)
-Player A activated Mountain for 1(R)
-Choose target:
-<<DECISION 73: action=0>>
-Targeting choice 0
-Player A casts Daze targeting Murktide Regent
-Resolving ability (category: Counter, amount: 0)
-Murktide Regent's controller may pay {1} to save it:
-<<DECISION 74: action=1>>
-Murktide Regent is countered
-<<DECISION 75: action=1>>
-Player B played Volcanic Island
-No creatures eligible to attack.
-No attackers ��� skipping declare blockers.
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 14 (Player A) --------
-Player A draws Brainstorm
-<<DECISION 76: action=1>>
-Player A activated Island for 1(U)
-Player A casts Brainstorm
-Resolving ability (category: Draw, amount: 3)
-Player A draws Volcanic Island
-Player A draws Mishra's Bauble
-Player A draws Delver of Secrets
-Resolving ability (category: ChangeZone, amount: 2)
-Player A chooses a card from Player A hand:
-<<DECISION 77: action=0>>
-Player A puts Delver of Secrets to top of library
-Player A puts a card to top of library
-Player A chooses a card from Player A hand:
-<<DECISION 78: action=0>>
-Player A puts Mishra's Bauble to top of library
-Player A puts a card to top of library
-<<DECISION 79: action=1>>
-Player A played Volcanic Island
-No creatures eligible to attack.
-No attackers ��� skipping declare blockers.
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 15 (Player B) --------
-Player B draws Mishra's Bauble
-<<DECISION 80: action=4>>
-Player B casts Mishra's Bauble
-Mishra's Bauble enters the battlefield
-<<DECISION 81: action=1>>
-Player B played Misty Rainforest
-<<DECISION 82: action=1>>
-Choose target:
-<<DECISION 83: action=0>>
-Targeting choice 0
-Player B sacrifices Mishra's Bauble
-Player B's Mishra's Bauble ability targeting Player A is on the stack
-<<DECISION 84: action=1>>
-Player B pays 1 life
-Player B sacrifices Misty Rainforest
-Player B's Misty Rainforest ability is on the stack
-Resolving ability (category: ChangeZone, amount: 0)
-Searching Player B's library:
-<<DECISION 85: action=1>>
-Player B shuffles their library
-Player B puts Island to the battlefield
-Resolving ability (category: PeekAndReveal, amount: 0)
-Player B looks at top of Player A's library: Mishra's Bauble
-Resolving ability (category: DelayedTrigger, amount: 0)
-Delayed trigger registered: Draw at next Upkeep.
-Resolving ability (category: Draw, amount: 0)
-No creatures eligible to attack.
-No attackers ��� skipping declare blockers.
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 16 (Player A) --------
-Player A draws Mishra's Bauble
-<<DECISION 86: action=1>>
-Player A casts Mishra's Bauble
-Mishra's Bauble enters the battlefield
-<<DECISION 87: action=1>>
-Choose target:
-<<DECISION 88: action=0>>
-Targeting choice 0
-Player A sacrifices Mishra's Bauble
-Player A's Mishra's Bauble ability targeting Player B is on the stack
-Resolving ability (category: PeekAndReveal, amount: 0)
-Player A looks at top of Player B's library: Dragon's Rage Channeler
-Resolving ability (category: DelayedTrigger, amount: 0)
-Delayed trigger registered: Draw at next Upkeep.
-Resolving ability (category: Draw, amount: 0)
-No creatures eligible to attack.
-No attackers ��� skipping declare blockers.
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 17 (Player B) --------
-Delayed trigger fires.
-Resolving ability (category: Draw, amount: 0)
-Player B draws Dragon's Rage Channeler
-<<DECISION 89: action=3>>
-Player B activated Mountain for 1(R)
-Player B casts Dragon's Rage Channeler
-Dragon's Rage Channeler enters the battlefield
-Dragon's Rage Channeler gains 2/2 Flying (Delirium)
-<<DECISION 90: action=3>>
-Player B activated Volcanic Island for 1(R)
-Choose target:
-<<DECISION 91: action=0>>
-Targeting choice 0
-Player B casts Unholy Heat targeting Dragon's Rage Channeler
-Dragon's Rage Channeler triggered
-Cori-Steel Cutter triggered
-Resolving ability (category: Token, amount: 0)
-Token created: 1/1 Monk Token
-Resolving ability (category: Attach, amount: 0)
-Equipment attached.
-Resolving ability (category: Cleanup, amount: 0)
-Monk Token token gains 1/1 Trample & Haste (always)
-Resolving ability (category: Surveil, amount: 1)
-Top card of Player B's library: Ponder
-<<DECISION 92: action=1>>
-Player B puts Ponder into the graveyard.
-Resolving ability (category: DealDamage, amount: 2)
-Dealt 6 damage to creature
-Dragon's Rage Channeler is destroyed (lethal damage)
-<<DECISION 93: action=1>>
-Player B played Wasteland
-<<DECISION 94: action=1>>
-Player B activated Volcanic Island for 1(R)
-Player B activated Island for 1(U)
-Choose creature to equip:
-<<DECISION 95: action=0>>
-Cori-Steel Cutter equipped to Monk Token.
-<<DECISION 96: action=1>>
-Player B activated Volcanic Island for 1(R)
-Player B activated Wasteland for 1(C)
-Choose creature to equip:
-<<DECISION 97: action=0>>
-Cori-Steel Cutter equipped to Monk Token.
---- Declare Attackers (Player B) ---
-<<DECISION 98: action=0>>
-Select target for Monk Token token:
-<<DECISION 99: action=0>>
-Monk Token token attacking Player A.
---- Declare Attackers (Player B) ---
-  [attacking] Monk Token token [2/2] -> Player A
-<<DECISION 100: action=-1>>
-Attackers declared:
-  Monk Token token -> Player A
-No creatures eligible to block.
---- Combat Damage ---
-  Monk Token token deals 2 damage to Player A
---- End Combat Damage ---
--------- TURN 18 (Player A) --------
-Delayed trigger fires.
-Resolving ability (category: Draw, amount: 0)
-Player A draws Delver of Secrets
-<<DECISION 101: action=1>>
-Player A activated Island for 1(U)
-Player A casts Delver of Secrets
-Delver of Secrets enters the battlefield
-No creatures eligible to attack.
-No attackers ��� skipping declare blockers.
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 19 (Player B) --------
-<<DECISION 102: action=0>>
-Player B draws Ponder
-<<DECISION 103: action=0>>
-<<DECISION 104: action=2>>
-Player B activated Island for 1(U)
-Player B casts Ponder
-Monk Token token triggered
-<<DECISION 105: action=1>>
-Choose target:
-<<DECISION 106: action=0>>
-Targeting choice 0
-Player B sacrifices Wasteland
-Player B's Wasteland ability targeting Volcanic Island is on the stack
-Resolving ability (category: Destroy, amount: 0)
-Volcanic Island is destroyed
-Resolving ability (category: ProwessBonus, amount: 1)
-Prowess: creature gets +1/+1 until end of turn.
-Resolving ability (category: RearrangeTopOfLibrary, amount: 3)
-Player B looks at the top 3 card(s) of their library.
-Choose which card goes 3 from top:
-<<DECISION 107: action=0>>
-Choose which card goes 2 from top:
-<<DECISION 108: action=0>>
-<<DECISION 109: action=0>>
-Resolving ability (category: Draw, amount: 1)
-Player B draws Unholy Heat
-<<DECISION 110: action=2>>
-Player B activated Mountain for 1(R)
-Choose target:
-<<DECISION 111: action=0>>
-Targeting choice 0
-Player B casts Unholy Heat targeting Delver of Secrets
-Cori-Steel Cutter triggered
-Monk Token token triggered
-Resolving ability (category: ProwessBonus, amount: 1)
-Prowess: creature gets +1/+1 until end of turn.
-Resolving ability (category: Token, amount: 0)
-Token created: 1/1 Monk Token
-Resolving ability (category: Attach, amount: 0)
-Equipment attached.
-Resolving ability (category: Cleanup, amount: 0)
-Monk Token token gains 1/1 Trample & Haste (always)
-Resolving ability (category: DealDamage, amount: 2)
-Dealt 6 damage to creature
-Delver of Secrets is destroyed (lethal damage)
-<<DECISION 112: action=1>>
-Player B played Wasteland
-<<DECISION 113: action=1>>
-Player B activated Volcanic Island for 1(R)
-Player B activated Volcanic Island for 1(U)
-Choose creature to equip:
-<<DECISION 114: action=0>>
-Cori-Steel Cutter equipped to Monk Token.
-Monk Token token gains 1/1 Trample & Haste (always)
-<<DECISION 115: action=1>>
-Player B activated Volcanic Island for 1(R)
-Player B activated Wasteland for 1(C)
-Choose creature to equip:
-<<DECISION 116: action=0>>
-Cori-Steel Cutter equipped to Monk Token.
---- Declare Attackers (Player B) ---
-<<DECISION 117: action=0>>
-Select target for Monk Token token:
-<<DECISION 118: action=0>>
-Monk Token token attacking Player A.
---- Declare Attackers (Player B) ---
-  [attacking] Monk Token token [4/4] -> Player A
-<<DECISION 119: action=-1>>
-Attackers declared:
-  Monk Token token -> Player A
-No creatures eligible to block.
---- Combat Damage ---
-  Monk Token token deals 4 damage to Player A
---- End Combat Damage ---
--------- TURN 20 (Player A) --------
-Player A draws Murktide Regent
-<<DECISION 120: action=1>>
-Player A exiles Force of Will via Delve.
-Player A exiles Brainstorm via Delve.
-Player A exiles Brainstorm via Delve.
-Player A exiles Lightning Bolt via Delve.
-Player A exiles Daze via Delve.
-Player A activated Island for 1(U)
-Player A activated Volcanic Island for 1(U)
-Player A casts Murktide Regent
-Murktide Regent enters the battlefield
-Murktide Regent enters with 5 +1/+1 counter(s) (8/8).
-No creatures eligible to attack.
-No attackers ��� skipping declare blockers.
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 21 (Player B) --------
-<<DECISION 121: action=0>>
-Player B draws Wasteland
-<<DECISION 122: action=0>>
-<<DECISION 123: action=1>>
-Player B played Wasteland
-<<DECISION 124: action=1>>
-Player B activated Mountain for 1(R)
-Player B activated Island for 1(U)
-Choose creature to equip:
-<<DECISION 125: action=0>>
-Cori-Steel Cutter equipped to Monk Token.
-<<DECISION 126: action=1>>
-Player B activated Volcanic Island for 1(R)
-Player B activated Volcanic Island for 1(U)
-Choose creature to equip:
-<<DECISION 127: action=0>>
-Cori-Steel Cutter equipped to Monk Token.
-<<DECISION 128: action=1>>
-Player B activated Volcanic Island for 1(R)
-Player B activated Wasteland for 1(C)
-Choose creature to equip:
-<<DECISION 129: action=0>>
-Cori-Steel Cutter equipped to Monk Token.
-<<DECISION 130: action=1>>
-Choose target:
-<<DECISION 131: action=0>>
-Targeting choice 0
-Player B sacrifices Wasteland
-Player B's Wasteland ability targeting Volcanic Island is on the stack
-Resolving ability (category: Destroy, amount: 0)
-Volcanic Island is destroyed
---- Declare Attackers (Player B) ---
-<<DECISION 132: action=0>>
-Select target for Monk Token token:
-<<DECISION 133: action=0>>
-Monk Token token attacking Player A.
---- Declare Attackers (Player B) ---
-  [attacking] Monk Token token [2/2] -> Player A
-<<DECISION 134: action=0>>
-Select target for Monk Token token:
-<<DECISION 135: action=0>>
-Monk Token token attacking Player A.
---- Declare Attackers (Player B) ---
-  [attacking] Monk Token token [2/2] -> Player A
-  [attacking] Monk Token token [1/1] -> Player A
-<<DECISION 136: action=-1>>
-Attackers declared:
-  Monk Token token -> Player A
-  Monk Token token -> Player A
---- Declare Blockers (Player A) ---
-Attackers:
-  0: Monk Token token [2/2]
-  1: Monk Token token [1/1]
-Your creatures:
-<<DECISION 137: action=-1>>
-Blockers declared:
-  (none)
---- Combat Damage ---
-  Monk Token token deals 2 damage to Player A
-  Monk Token token deals 1 damage to Player A
---- End Combat Damage ---
--------- TURN 22 (Player A) --------
-Player A draws Brainstorm
-<<DECISION 138: action=1>>
-Player A activated Island for 1(U)
-Player A casts Brainstorm
-Resolving ability (category: Draw, amount: 3)
-Player A draws Misty Rainforest
-Player A draws Force of Will
-Player A draws Thundering Falls
-Resolving ability (category: ChangeZone, amount: 2)
-Player A chooses a card from Player A hand:
-<<DECISION 139: action=0>>
-Player A puts Force of Will to top of library
-Player A puts a card to top of library
-Player A chooses a card from Player A hand:
-<<DECISION 140: action=0>>
-Player A puts Misty Rainforest to top of library
-Player A puts a card to top of library
-<<DECISION 141: action=1>>
-Player A played Thundering Falls
-Thundering Falls enters tapped.
-Thundering Falls triggered
-Resolving ability (category: Surveil, amount: 1)
-Top card of Player A's library: Misty Rainforest
-<<DECISION 142: action=1>>
-Player A puts Misty Rainforest into the graveyard.
---- Declare Attackers (Player A) ---
-<<DECISION 143: action=0>>
-Select target for Murktide Regent:
-<<DECISION 144: action=0>>
-Murktide Regent attacking Player B.
---- Declare Attackers (Player A) ---
-  [attacking] Murktide Regent [8/8] -> Player B
-<<DECISION 145: action=-1>>
-Attackers declared:
-  Murktide Regent -> Player B
-No creatures eligible to block.
---- Combat Damage ---
-  Murktide Regent deals 8 damage to Player B
---- End Combat Damage ---
--------- TURN 23 (Player B) --------
-<<DECISION 146: action=0>>
-Player B draws Dragon's Rage Channeler
-<<DECISION 147: action=0>>
-<<DECISION 148: action=1>>
-Player B activated Mountain for 1(R)
-Player B casts Dragon's Rage Channeler
-<<DECISION 149: action=1>>
-Choose target:
-<<DECISION 150: action=0>>
-Targeting choice 0
-Player B sacrifices Wasteland
-Player B's Wasteland ability targeting Volcanic Island is on the stack
-Resolving ability (category: Destroy, amount: 0)
-Volcanic Island is destroyed
-Dragon's Rage Channeler enters the battlefield
-Dragon's Rage Channeler gains 2/2 Flying (Delirium)
-<<DECISION 151: action=1>>
-Player B activated Volcanic Island for 1(R)
-Player B activated Island for 1(U)
-Choose creature to equip:
-<<DECISION 152: action=0>>
-Cori-Steel Cutter equipped to Dragon's Rage Channeler.
-Dragon's Rage Channeler gains 1/1 Trample & Haste (always)
-<<DECISION 153: action=1>>
-Player B activated Volcanic Island for 1(R)
-Player B activated Volcanic Island for 1(U)
-Choose creature to equip:
-<<DECISION 154: action=0>>
-Cori-Steel Cutter equipped to Dragon's Rage Channeler.
-Dragon's Rage Channeler must attack and is declared as an attacker.
---- Declare Attackers (Player B) ---
-  [attacking] Dragon's Rage Channeler [4/4] -> Player A
-<<DECISION 155: action=0>>
-Select target for Monk Token token:
-<<DECISION 156: action=0>>
-Monk Token token attacking Player A.
---- Declare Attackers (Player B) ---
-  [attacking] Dragon's Rage Channeler [4/4] -> Player A
-  [attacking] Monk Token token [1/1] -> Player A
-<<DECISION 157: action=0>>
-Select target for Monk Token token:
-<<DECISION 158: action=0>>
-Monk Token token attacking Player A.
---- Declare Attackers (Player B) ---
-  [attacking] Dragon's Rage Channeler [4/4] -> Player A
-  [attacking] Monk Token token [1/1] -> Player A
-  [attacking] Monk Token token [1/1] -> Player A
-<<DECISION 159: action=-1>>
-Attackers declared:
-  Dragon's Rage Channeler -> Player A
-  Monk Token token -> Player A
-  Monk Token token -> Player A
-No creatures eligible to block.
---- Combat Damage ---
-  Dragon's Rage Channeler deals 4 damage to Player A
-  Monk Token token deals 1 damage to Player A
-  Monk Token token deals 1 damage to Player A
---- End Combat Damage ---
-Player A has -1 life - Player B wins!
-=== GAME OVER: winner=Player B ===
+--- Narrative ---
+  robomage 0.001
+  Using seed: 1187322509
+  -------- PREGAME --------
+  Player A draws Brainstorm
+  Player A draws Volcanic Island
+  Player A draws Force of Will
+  Player A draws Cori-Steel Cutter
+  Player A draws Ponder
+  Player A draws Dragon's Rage Channeler
+  Player A draws Ponder
+  Player B draws Wasteland
+  Player B draws Lightning Bolt
+  Player B draws Unholy Heat
+  Player B draws Force of Will
+  Player B draws Force of Will
+  Player B draws Dragon's Rage Channeler
+  Player B draws Wasteland
+  Player A hand:
+  Dragon's Rage Channeler
+  Cori-Steel Cutter
+  Force of Will
+  Brainstorm
+  Ponder
+  Ponder
+  Volcanic Island
+--- Pregame ---
+
+--- Decision 1 ---
+  Priority: Player A (active)
+  Step: Untap
+  Self:  20 life | mana: empty | hand(7): Dragon's Rage Channeler, Cori-Steel Cutter, Force of Will, Brainstorm, Ponder, Ponder, Volcanic Island
+  Opp:   20 life | mana: empty | hand count: 7
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> A/A: 0 (Keep)
+--- Narrative ---
+  Player A keeps a 7-card hand.
+  Player B hand:
+  Dragon's Rage Channeler
+  Force of Will
+  Force of Will
+  Lightning Bolt
+  Unholy Heat
+  Wasteland
+  Wasteland
+
+--- Decision 2 ---
+  Priority: Player B (non-active)
+  Step: Untap
+  Self:  20 life | mana: empty | hand(7): Dragon's Rage Channeler, Force of Will, Force of Will, Lightning Bolt, Unholy Heat, Wasteland, Wasteland
+  Opp:   20 life | mana: empty | hand count: 7
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> B/B: 0 (Keep)
+--- Narrative ---
+  Player B keeps a 7-card hand.
+  -------- TURN 1 (Player A) --------
+--- Turn 1 (Player A) ---
+  PA: Dragon's Rage Channeler, Cori-Steel Cutter, Force of Will, Brainstorm, Ponder, Ponder, Volcanic Island
+  PB: Dragon's Rage Channeler, Force of Will, Force of Will, Lightning Bolt, Unholy Heat, Wasteland, Wasteland
+
+--- Decision 3 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  20 life | mana: empty | hand(7): Dragon's Rage Channeler, Cori-Steel Cutter, Force of Will, Brainstorm, Ponder, Ponder, Volcanic Island
+  Opp:   20 life | mana: empty | hand count: 7
+  Actions:
+   0: Pass priority
+   1: Play Volcanic Island
+  >> A/A: 1 (Play Volcanic Island)
+--- Narrative ---
+  Player A played Volcanic Island
+
+--- Decision 4 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  20 life | mana: empty | hand(6): Dragon's Rage Channeler, Cori-Steel Cutter, Force of Will, Brainstorm, Ponder, Ponder
+  Opp:   20 life | mana: empty | hand count: 7
+  Self BF:  Volcanic Island
+  Actions:
+   0: Pass priority
+   1: Cast Dragon's Rage Channeler
+   2: Cast Brainstorm
+   3: Cast Ponder
+   4: Cast Ponder
+  >> A/A: 1 (Cast Dragon's Rage Channeler)
+--- Narrative ---
+  Player A activated Volcanic Island for 1(R)
+  Player A casts Dragon's Rage Channeler
+
+--- Decision 5 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  20 life | mana: empty | hand(5): Cori-Steel Cutter, Force of Will, Brainstorm, Ponder, Ponder
+  Opp:   20 life | mana: empty | hand count: 7
+  Self BF:  Volcanic Island (T)
+  Stack: Dragon's Rage Channeler (spell, self)
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)
+  >> A/A: 0 (Pass priority)
+
+--- Decision 6 ---
+  Priority: Player B (non-active)
+  Step: First Main
+  Self:  20 life | mana: empty | hand(7): Dragon's Rage Channeler, Force of Will, Force of Will, Lightning Bolt, Unholy Heat, Wasteland, Wasteland
+  Opp:   20 life | mana: empty | hand count: 5
+  Opp BF:   Volcanic Island (T)
+  Stack: Dragon's Rage Channeler (spell, opponent)
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)
+   2: Cast Force of Will (alternate cost)
+  >> B/B: 1 (Cast Force of Will (alternate cost))
+--- Narrative ---
+  Player B pays 1 life
+
+--- Decision 7 ---
+  Priority: Player B (non-active)
+  Step: First Main
+  Self:  19 life | mana: empty | hand(7): Dragon's Rage Channeler, Force of Will, Force of Will, Lightning Bolt, Unholy Heat, Wasteland, Wasteland
+  Opp:   20 life | mana: empty | hand count: 5
+  Opp BF:   Volcanic Island (T)
+  Stack: Dragon's Rage Channeler (spell, opponent)
+  Actions:
+   0: Exile Force of Will
+  >> B/B: 0 (Exile Force of Will)
+--- Narrative ---
+  Player B exiles Force of Will
+  Choose target:
+
+--- Decision 8 ---
+  Priority: Player B (non-active)
+  Step: First Main
+  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Force of Will, Lightning Bolt, Unholy Heat, Wasteland, Wasteland
+  Opp:   20 life | mana: empty | hand count: 5
+  Opp BF:   Volcanic Island (T)
+  Stack: Dragon's Rage Channeler (spell, opponent)
+  Actions:
+   0: Dragon's Rage Channeler
+  >> B/B: 0 (Dragon's Rage Channeler)
+--- Narrative ---
+  Targeting choice 0
+  Player B casts Force of Will targeting Dragon's Rage Channeler
+
+--- Decision 9 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  20 life | mana: empty | hand(5): Cori-Steel Cutter, Force of Will, Brainstorm, Ponder, Ponder
+  Opp:   19 life | mana: empty | hand count: 5
+  Self BF:  Volcanic Island (T)
+  Stack: Force of Will (spell, opponent) -> Dragon's Rage Channeler (self) -> Dragon's Rage Channeler (spell, self)
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)
+  >> A/A: 1 (Cast Force of Will (alternate cost))
+--- Narrative ---
+  Player A pays 1 life
+
+--- Decision 10 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  19 life | mana: empty | hand(5): Cori-Steel Cutter, Force of Will, Brainstorm, Ponder, Ponder
+  Opp:   19 life | mana: empty | hand count: 5
+  Self BF:  Volcanic Island (T)
+  Stack: Force of Will (spell, opponent) -> Dragon's Rage Channeler (self) -> Dragon's Rage Channeler (spell, self)
+  Actions:
+   0: Exile Brainstorm
+   1: Exile Ponder
+   2: Exile Ponder
+  >> A/A: 0 (Exile Brainstorm)
+--- Narrative ---
+  Player A exiles Brainstorm
+  Choose target:
+
+--- Decision 11 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  19 life | mana: empty | hand(4): Cori-Steel Cutter, Force of Will, Ponder, Ponder
+  Opp:   19 life | mana: empty | hand count: 5
+  Self BF:  Volcanic Island (T)
+  Stack: Force of Will (spell, opponent) -> Dragon's Rage Channeler (self) -> Dragon's Rage Channeler (spell, self)
+  Actions:
+   0: Force of Will
+   1: Dragon's Rage Channeler
+  >> A/A: 0 (Force of Will)
+--- Narrative ---
+  Targeting choice 0
+  Player A casts Force of Will targeting Force of Will
+  Resolving ability (category: Counter)
+  Force of Will is countered
+  Dragon's Rage Channeler enters the battlefield
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 2 (Player B) --------
+  Player B draws Volcanic Island
+--- Turn 2 (Player B) ---
+  PA: Cori-Steel Cutter, Force of Will, Ponder, Ponder
+  PB: Dragon's Rage Channeler, Lightning Bolt, Unholy Heat, Volcanic Island, Wasteland, Wasteland
+
+--- Decision 12 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Lightning Bolt, Unholy Heat, Volcanic Island, Wasteland, Wasteland
+  Opp:   19 life | mana: empty | hand count: 3
+  Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Volcanic Island (T)
+  Self GY: Force of Will
+  Opp GY:  Force of Will
+  Actions:
+   0: Pass priority
+   1: Play Volcanic Island
+   2: Play Wasteland
+   3: Play Wasteland
+  >> B/B: 1 (Play Volcanic Island)
+--- Narrative ---
+  Player B played Volcanic Island
+
+--- Decision 13 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Lightning Bolt, Unholy Heat, Wasteland, Wasteland
+  Opp:   19 life | mana: empty | hand count: 3
+  Self BF:  Volcanic Island
+  Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Volcanic Island (T)
+  Self GY: Force of Will
+  Opp GY:  Force of Will
+  Actions:
+   0: Pass priority
+   1: Cast Dragon's Rage Channeler
+   2: Cast Lightning Bolt
+   3: Cast Unholy Heat
+  >> B/B: 1 (Cast Dragon's Rage Channeler)
+--- Narrative ---
+  Player B activated Volcanic Island for 1(R)
+  Player B casts Dragon's Rage Channeler
+  Dragon's Rage Channeler enters the battlefield
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 3 (Player A) --------
+  Player A draws Lightning Bolt
+--- Turn 3 (Player A) ---
+  PA: Cori-Steel Cutter, Lightning Bolt, Ponder, Ponder
+  PB: Dragon's Rage Channeler, Lightning Bolt, Unholy Heat, Wasteland, Wasteland
+
+--- Decision 14 ---
+  Priority: Player A (active)
+  Step: Draw
+  Self:  19 life | mana: empty | hand(4): Cori-Steel Cutter, Lightning Bolt, Ponder, Ponder
+  Opp:   19 life | mana: empty | hand count: 4
+  Self BF:  Dragon's Rage Channeler [1/1] | Volcanic Island
+  Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Volcanic Island (T)
+  Self GY: Force of Will
+  Opp GY:  Force of Will
+  Actions:
+   0: Pass priority
+   1: Cast Lightning Bolt
+  >> A/A: 1 (Cast Lightning Bolt)
+--- Narrative ---
+  Choose target:
+
+--- Decision 15 ---
+  Priority: Player A (active)
+  Step: Draw
+  Self:  19 life | mana: empty | hand(4): Cori-Steel Cutter, Lightning Bolt, Ponder, Ponder
+  Opp:   19 life | mana: empty | hand count: 4
+  Self BF:  Dragon's Rage Channeler [1/1] | Volcanic Island
+  Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Volcanic Island (T)
+  Self GY: Force of Will
+  Opp GY:  Force of Will
+  Actions:
+   0: Player B (19 life)
+   1: Player A (19 life)
+   2: Dragon's Rage Channeler
+   3: Dragon's Rage Channeler
+  >> A/A: 0 (Player B (19 life))
+--- Narrative ---
+  Targeting choice 0
+  Player A activated Volcanic Island for 1(R)
+  Player A casts Lightning Bolt targeting Player B
+  Dragon's Rage Channeler triggered
+  Resolving ability (category: Surveil, amount: 1)
+  Top card of Player A's library: Mishra's Bauble
+
+--- Decision 16 ---
+  Priority: Player A (active)
+  Step: Draw
+  Self:  19 life | mana: empty | hand(3): Cori-Steel Cutter, Ponder, Ponder
+  Opp:   19 life | mana: empty | hand count: 4
+  Self BF:  Dragon's Rage Channeler [1/1] | Volcanic Island (T)
+  Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Volcanic Island (T)
+  Stack: Dragon's Rage Channeler (ability, self) -> Lightning Bolt (spell, self) -> opponent (player)
+  Self GY: Force of Will
+  Opp GY:  Force of Will
+  Actions:
+   0: Keep on top
+   1: Put in graveyard
+  >> A/A: 1 (Put in graveyard)
+--- Narrative ---
+  Player A puts Mishra's Bauble into the graveyard.
+  Resolving ability (category: DealDamage, amount: 3)
+  Dealt 3 damage to player (now at 16 life)
+  --- Declare Attackers (Player A) ---
+
+--- Decision 17 ---
+  Priority: Player A (active)
+  Step: Declare Atk
+  Self:  19 life | mana: empty | hand(3): Cori-Steel Cutter, Ponder, Ponder
+  Opp:   16 life | mana: empty | hand count: 4
+  Self BF:  Dragon's Rage Channeler [1/1] | Volcanic Island (T)
+  Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Volcanic Island (T)
+  Self GY: Mishra's Bauble, Force of Will, Lightning Bolt
+  Opp GY:  Force of Will
+  Actions:
+   0: Dragon's Rage Channeler [1/1]
+   1: Confirm attackers
+  >> A/A: 0 (Dragon's Rage Channeler [1/1])
+--- Narrative ---
+  Dragon's Rage Channeler attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Dragon's Rage Channeler [1/1] -> Player B
+
+--- Decision 18 ---
+  Priority: Player A (active)
+  Step: Declare Atk
+  Self:  19 life | mana: empty | hand(3): Cori-Steel Cutter, Ponder, Ponder
+  Opp:   16 life | mana: empty | hand count: 4
+  Self BF:  Dragon's Rage Channeler [1/1] (ATK) | Volcanic Island (T)
+  Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Volcanic Island (T)
+  Self GY: Mishra's Bauble, Force of Will, Lightning Bolt
+  Opp GY:  Force of Will
+  Actions:
+   0: Confirm attackers
+  >> A/A: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Dragon's Rage Channeler -> Player B
+  --- Declare Blockers (Player B) ---
+  Attackers:
+    0: Dragon's Rage Channeler [1/1]
+  Your creatures:
+
+--- Decision 19 ---
+  Priority: Player B (non-active)
+  Step: Declare Blk
+  Self:  16 life | mana: empty | hand(4): Lightning Bolt, Unholy Heat, Wasteland, Wasteland
+  Opp:   19 life | mana: empty | hand count: 3
+  Self BF:  Dragon's Rage Channeler [1/1] (SICK) | Volcanic Island (T)
+  Opp BF:   Dragon's Rage Channeler [1/1] (T,ATK) | Volcanic Island (T)
+  Self GY: Force of Will
+  Opp GY:  Mishra's Bauble, Force of Will, Lightning Bolt
+  Actions:
+   0: Dragon's Rage Channeler [1/1]
+   1: Confirm blockers
+  >> B/B: 1 (Confirm blockers)
+--- Narrative ---
+  Blockers declared:
+    (none)
+  --- Combat Damage ---
+    Dragon's Rage Channeler deals 1 damage to Player B
+  --- End Combat Damage ---
+  -------- TURN 4 (Player B) --------
+--- Turn 4 (Player B) ---
+  PA: Cori-Steel Cutter, Ponder, Ponder
+  PB: Lightning Bolt, Unholy Heat, Wasteland, Wasteland
+
+--- Decision 20 ---
+  Priority: Player B (active)
+  Step: Upkeep
+  Self:  15 life | mana: empty | hand(4): Lightning Bolt, Unholy Heat, Wasteland, Wasteland
+  Opp:   19 life | mana: empty | hand count: 3
+  Self BF:  Dragon's Rage Channeler [1/1] | Volcanic Island
+  Opp BF:   Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T)
+  Self GY: Force of Will
+  Opp GY:  Mishra's Bauble, Force of Will, Lightning Bolt
+  Actions:
+   0: Pass priority
+   1: Cast Lightning Bolt
+   2: Cast Unholy Heat
+  >> B/B: 1 (Cast Lightning Bolt)
+--- Narrative ---
+  Choose target:
+
+--- Decision 21 ---
+  Priority: Player B (active)
+  Step: Upkeep
+  Self:  15 life | mana: empty | hand(4): Lightning Bolt, Unholy Heat, Wasteland, Wasteland
+  Opp:   19 life | mana: empty | hand count: 3
+  Self BF:  Dragon's Rage Channeler [1/1] | Volcanic Island
+  Opp BF:   Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T)
+  Self GY: Force of Will
+  Opp GY:  Mishra's Bauble, Force of Will, Lightning Bolt
+  Actions:
+   0: Player A (19 life)
+   1: Player B (15 life)
+   2: Dragon's Rage Channeler
+   3: Dragon's Rage Channeler
+  >> B/B: 0 (Player A (19 life))
+--- Narrative ---
+  Targeting choice 0
+  Player B activated Volcanic Island for 1(R)
+  Player B casts Lightning Bolt targeting Player A
+  Dragon's Rage Channeler triggered
+  Resolving ability (category: Surveil, amount: 1)
+  Top card of Player B's library: Scalding Tarn
+
+--- Decision 22 ---
+  Priority: Player B (active)
+  Step: Upkeep
+  Self:  15 life | mana: empty | hand(3): Unholy Heat, Wasteland, Wasteland
+  Opp:   19 life | mana: empty | hand count: 3
+  Self BF:  Dragon's Rage Channeler [1/1] | Volcanic Island (T)
+  Opp BF:   Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T)
+  Stack: Dragon's Rage Channeler (ability, self) -> Lightning Bolt (spell, self) -> opponent (player)
+  Self GY: Force of Will
+  Opp GY:  Mishra's Bauble, Force of Will, Lightning Bolt
+  Actions:
+   0: Keep on top
+   1: Put in graveyard
+  >> B/B: 1 (Put in graveyard)
+--- Narrative ---
+  Player B puts Scalding Tarn into the graveyard.
+  Resolving ability (category: DealDamage, amount: 3)
+  Dealt 3 damage to player (now at 16 life)
+  Player B draws Lightning Bolt
+
+--- Decision 23 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  15 life | mana: empty | hand(4): Lightning Bolt, Unholy Heat, Wasteland, Wasteland
+  Opp:   16 life | mana: empty | hand count: 3
+  Self BF:  Dragon's Rage Channeler [1/1] | Volcanic Island (T)
+  Opp BF:   Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T)
+  Self GY: Force of Will, Lightning Bolt, Scalding Tarn
+  Opp GY:  Mishra's Bauble, Force of Will, Lightning Bolt
+  Actions:
+   0: Pass priority
+   1: Play Wasteland
+   2: Play Wasteland
+  >> B/B: 1 (Play Wasteland)
+--- Narrative ---
+  Player B played Wasteland
+
+--- Decision 24 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  15 life | mana: empty | hand(3): Lightning Bolt, Unholy Heat, Wasteland
+  Opp:   16 life | mana: empty | hand count: 3
+  Self BF:  Dragon's Rage Channeler [1/1] | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T)
+  Self GY: Force of Will, Lightning Bolt, Scalding Tarn
+  Opp GY:  Mishra's Bauble, Force of Will, Lightning Bolt
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 1 (Activate Wasteland (Destroy))
+--- Narrative ---
+  Choose target:
+
+--- Decision 25 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  15 life | mana: empty | hand(3): Lightning Bolt, Unholy Heat, Wasteland
+  Opp:   16 life | mana: empty | hand count: 3
+  Self BF:  Dragon's Rage Channeler [1/1] | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T)
+  Self GY: Force of Will, Lightning Bolt, Scalding Tarn
+  Opp GY:  Mishra's Bauble, Force of Will, Lightning Bolt
+  Actions:
+   0: Volcanic Island
+   1: Volcanic Island
+   2: Wasteland
+  >> B/B: 0 (Volcanic Island)
+--- Narrative ---
+  Targeting choice 0
+  Player B sacrifices Wasteland
+  Player B's Wasteland ability targeting Volcanic Island is on the stack
+  Resolving ability (category: Destroy)
+  Volcanic Island is destroyed
+  --- Declare Attackers (Player B) ---
+
+--- Decision 26 ---
+  Priority: Player B (active)
+  Step: Declare Atk
+  Self:  15 life | mana: empty | hand(3): Lightning Bolt, Unholy Heat, Wasteland
+  Opp:   16 life | mana: empty | hand count: 3
+  Self BF:  Dragon's Rage Channeler [1/1] | Volcanic Island (T)
+  Opp BF:   Dragon's Rage Channeler [1/1] (T)
+  Self GY: Force of Will, Lightning Bolt, Scalding Tarn, Wasteland
+  Opp GY:  Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island
+  Actions:
+   0: Dragon's Rage Channeler [1/1]
+   1: Confirm attackers
+  >> B/B: 0 (Dragon's Rage Channeler [1/1])
+--- Narrative ---
+  Dragon's Rage Channeler attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Dragon's Rage Channeler [1/1] -> Player A
+
+--- Decision 27 ---
+  Priority: Player B (active)
+  Step: Declare Atk
+  Self:  15 life | mana: empty | hand(3): Lightning Bolt, Unholy Heat, Wasteland
+  Opp:   16 life | mana: empty | hand count: 3
+  Self BF:  Dragon's Rage Channeler [1/1] (ATK) | Volcanic Island (T)
+  Opp BF:   Dragon's Rage Channeler [1/1] (T)
+  Self GY: Force of Will, Lightning Bolt, Scalding Tarn, Wasteland
+  Opp GY:  Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island
+  Actions:
+   0: Confirm attackers
+  >> B/B: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Dragon's Rage Channeler -> Player A
+  No creatures eligible to block.
+  --- Combat Damage ---
+    Dragon's Rage Channeler deals 1 damage to Player A
+  --- End Combat Damage ---
+  -------- TURN 5 (Player A) --------
+  Player A draws Scalding Tarn
+--- Turn 5 (Player A) ---
+  PA: Cori-Steel Cutter, Ponder, Ponder, Scalding Tarn
+  PB: Lightning Bolt, Unholy Heat, Wasteland
+
+--- Decision 28 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  15 life | mana: empty | hand(4): Cori-Steel Cutter, Ponder, Ponder, Scalding Tarn
+  Opp:   15 life | mana: empty | hand count: 3
+  Self BF:  Dragon's Rage Channeler [1/1]
+  Opp BF:   Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T)
+  Self GY: Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island
+  Opp GY:  Force of Will, Lightning Bolt, Scalding Tarn, Wasteland
+  Actions:
+   0: Pass priority
+   1: Play Scalding Tarn
+  >> A/A: 1 (Play Scalding Tarn)
+--- Narrative ---
+  Player A played Scalding Tarn
+
+--- Decision 29 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  15 life | mana: empty | hand(3): Cori-Steel Cutter, Ponder, Ponder
+  Opp:   15 life | mana: empty | hand count: 3
+  Self BF:  Dragon's Rage Channeler [1/1] | Scalding Tarn
+  Opp BF:   Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T)
+  Self GY: Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island
+  Opp GY:  Force of Will, Lightning Bolt, Scalding Tarn, Wasteland
+  Actions:
+   0: Pass priority
+   1: Activate Scalding Tarn (ChangeZone)
+  >> A/A: 1 (Activate Scalding Tarn (ChangeZone))
+--- Narrative ---
+  Player A pays 1 life
+  Player A sacrifices Scalding Tarn
+  Player A's Scalding Tarn ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Searching Player A's library:
+
+--- Decision 30 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  14 life | mana: empty | hand(3): Cori-Steel Cutter, Ponder, Ponder
+  Opp:   15 life | mana: empty | hand count: 3
+  Self BF:  Dragon's Rage Channeler [1/1]
+  Opp BF:   Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T)
+  Stack: Scalding Tarn (ability, self)
+  Self GY: Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island, Scalding Tarn
+  Opp GY:  Force of Will, Lightning Bolt, Scalding Tarn, Wasteland
+  Actions:
+   0: Fail to find
+   1: Island
+   2: Mountain
+   3: Volcanic Island
+   4: Volcanic Island
+   5: Volcanic Island
+   6: Thundering Falls
+  >> A/A: 1 (Island)
+--- Narrative ---
+  Player A shuffles their library
+  Player A puts Island to the battlefield
+
+--- Decision 31 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  14 life | mana: empty | hand(3): Cori-Steel Cutter, Ponder, Ponder
+  Opp:   15 life | mana: empty | hand count: 3
+  Self BF:  Dragon's Rage Channeler [1/1] | Island
+  Opp BF:   Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T)
+  Self GY: Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island, Scalding Tarn
+  Opp GY:  Force of Will, Lightning Bolt, Scalding Tarn, Wasteland
+  Actions:
+   0: Pass priority
+   1: Cast Ponder
+   2: Cast Ponder
+  >> A/A: 1 (Cast Ponder)
+--- Narrative ---
+  Player A activated Island for 1(U)
+  Player A casts Ponder
+  Dragon's Rage Channeler triggered
+  Resolving ability (category: Surveil, amount: 1)
+  Top card of Player A's library: Volcanic Island
+
+--- Decision 32 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  14 life | mana: empty | hand(2): Cori-Steel Cutter, Ponder
+  Opp:   15 life | mana: empty | hand count: 3
+  Self BF:  Dragon's Rage Channeler [1/1] | Island (T)
+  Opp BF:   Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T)
+  Stack: Dragon's Rage Channeler (ability, self) -> Ponder (spell, self)
+  Self GY: Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island, Scalding Tarn
+  Opp GY:  Force of Will, Lightning Bolt, Scalding Tarn, Wasteland
+  Actions:
+   0: Keep on top
+   1: Put in graveyard
+  >> A/A: 1 (Put in graveyard)
+--- Narrative ---
+  Player A puts Volcanic Island into the graveyard.
+  Resolving ability (category: RearrangeTopOfLibrary)
+  Player A looks at the top 3 card(s) of their library.
+  Choose which card goes 3 from top:
+
+--- Decision 33 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  14 life | mana: empty | hand(2): Cori-Steel Cutter, Ponder
+  Opp:   15 life | mana: empty | hand count: 3
+  Self BF:  Dragon's Rage Channeler [1/1] | Island (T)
+  Opp BF:   Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T)
+  Stack: Ponder (spell, self)
+  Self GY: Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island, Volcanic Island, Scalding Tarn
+  Opp GY:  Force of Will, Lightning Bolt, Scalding Tarn, Wasteland
+  Actions:
+   0: Wooded Foothills
+   1: Dragon's Rage Channeler
+   2: Force of Will
+  >> A/A: 0 (Wooded Foothills)
+--- Narrative ---
+  Choose which card goes 2 from top:
+
+--- Decision 34 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  14 life | mana: empty | hand(2): Cori-Steel Cutter, Ponder
+  Opp:   15 life | mana: empty | hand count: 3
+  Self BF:  Dragon's Rage Channeler [1/1] | Island (T)
+  Opp BF:   Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T)
+  Stack: Ponder (spell, self)
+  Self GY: Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island, Volcanic Island, Scalding Tarn
+  Opp GY:  Force of Will, Lightning Bolt, Scalding Tarn, Wasteland
+  Actions:
+   0: Dragon's Rage Channeler
+   1: Force of Will
+  >> A/A: 0 (Dragon's Rage Channeler)
+
+--- Decision 35 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  14 life | mana: empty | hand(2): Cori-Steel Cutter, Ponder
+  Opp:   15 life | mana: empty | hand count: 3
+  Self BF:  Dragon's Rage Channeler [1/1] | Island (T)
+  Opp BF:   Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T)
+  Stack: Ponder (spell, self)
+  Self GY: Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island, Volcanic Island, Scalding Tarn
+  Opp GY:  Force of Will, Lightning Bolt, Scalding Tarn, Wasteland
+  Actions:
+   0: Don't shuffle
+   1: Shuffle
+  >> A/A: 0 (Don't shuffle)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 1)
+  Player A draws Force of Will
+  Dragon's Rage Channeler gains 2/2 Flying (Delirium)
+  Dragon's Rage Channeler must attack and is declared as an attacker.
+  --- Declare Attackers (Player A) ---
+    [attacking] Dragon's Rage Channeler [3/3] -> Player B
+
+--- Decision 36 ---
+  Priority: Player A (active)
+  Step: Declare Atk
+  Self:  14 life | mana: empty | hand(3): Cori-Steel Cutter, Force of Will, Ponder
+  Opp:   15 life | mana: empty | hand count: 3
+  Self BF:  Dragon's Rage Channeler [3/3] (ATK) | Island (T)
+  Opp BF:   Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T)
+  Self GY: Mishra's Bauble, Force of Will, Lightning Bolt, Ponder, Volcanic Island, Volcanic Island, Scalding Tarn
+  Opp GY:  Force of Will, Lightning Bolt, Scalding Tarn, Wasteland
+  Actions:
+   0: Confirm attackers
+  >> A/A: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Dragon's Rage Channeler -> Player B
+  No creatures eligible to block.
+  --- Combat Damage ---
+    Dragon's Rage Channeler deals 3 damage to Player B
+  --- End Combat Damage ---
+  -------- TURN 6 (Player B) --------
+--- Turn 6 (Player B) ---
+  PA: Cori-Steel Cutter, Force of Will, Ponder
+  PB: Lightning Bolt, Unholy Heat, Wasteland
+
+--- Decision 37 ---
+  Priority: Player B (active)
+  Step: Upkeep
+  Self:  12 life | mana: empty | hand(3): Lightning Bolt, Unholy Heat, Wasteland
+  Opp:   14 life | mana: empty | hand count: 3
+  Self BF:  Dragon's Rage Channeler [1/1] | Volcanic Island
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
+  Self GY: Force of Will, Lightning Bolt, Scalding Tarn, Wasteland
+  Opp GY:  Mishra's Bauble, Force of Will, Lightning Bolt, Ponder, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Cast Lightning Bolt
+   2: Cast Unholy Heat
+  >> B/B: 1 (Cast Lightning Bolt)
+--- Narrative ---
+  Choose target:
+
+--- Decision 38 ---
+  Priority: Player B (active)
+  Step: Upkeep
+  Self:  12 life | mana: empty | hand(3): Lightning Bolt, Unholy Heat, Wasteland
+  Opp:   14 life | mana: empty | hand count: 3
+  Self BF:  Dragon's Rage Channeler [1/1] | Volcanic Island
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
+  Self GY: Force of Will, Lightning Bolt, Scalding Tarn, Wasteland
+  Opp GY:  Mishra's Bauble, Force of Will, Lightning Bolt, Ponder, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Player A (14 life)
+   1: Player B (12 life)
+   2: Dragon's Rage Channeler
+   3: Dragon's Rage Channeler
+  >> B/B: 0 (Player A (14 life))
+--- Narrative ---
+  Targeting choice 0
+  Player B activated Volcanic Island for 1(R)
+  Player B casts Lightning Bolt targeting Player A
+  Dragon's Rage Channeler triggered
+
+--- Decision 39 ---
+  Priority: Player A (non-active)
+  Step: Upkeep
+  Self:  14 life | mana: empty | hand(3): Cori-Steel Cutter, Force of Will, Ponder
+  Opp:   12 life | mana: empty | hand count: 2
+  Self BF:  Dragon's Rage Channeler [3/3] (T) | Island (T)
+  Opp BF:   Dragon's Rage Channeler [1/1] | Volcanic Island (T)
+  Stack: Dragon's Rage Channeler (ability, opponent) -> Lightning Bolt (spell, opponent) -> self (player)
+  Self GY: Mishra's Bauble, Force of Will, Lightning Bolt, Ponder, Volcanic Island, Volcanic Island, Scalding Tarn
+  Opp GY:  Force of Will, Lightning Bolt, Scalding Tarn, Wasteland
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)
+  >> A/A: 1 (Cast Force of Will (alternate cost))
+--- Narrative ---
+  Player A pays 1 life
+
+--- Decision 40 ---
+  Priority: Player A (non-active)
+  Step: Upkeep
+  Self:  13 life | mana: empty | hand(3): Cori-Steel Cutter, Force of Will, Ponder
+  Opp:   12 life | mana: empty | hand count: 2
+  Self BF:  Dragon's Rage Channeler [3/3] (T) | Island (T)
+  Opp BF:   Dragon's Rage Channeler [1/1] | Volcanic Island (T)
+  Stack: Dragon's Rage Channeler (ability, opponent) -> Lightning Bolt (spell, opponent) -> self (player)
+  Self GY: Mishra's Bauble, Force of Will, Lightning Bolt, Ponder, Volcanic Island, Volcanic Island, Scalding Tarn
+  Opp GY:  Force of Will, Lightning Bolt, Scalding Tarn, Wasteland
+  Actions:
+   0: Exile Ponder
+  >> A/A: 0 (Exile Ponder)
+--- Narrative ---
+  Player A exiles Ponder
+  Choose target:
+
+--- Decision 41 ---
+  Priority: Player A (non-active)
+  Step: Upkeep
+  Self:  13 life | mana: empty | hand(2): Cori-Steel Cutter, Force of Will
+  Opp:   12 life | mana: empty | hand count: 2
+  Self BF:  Dragon's Rage Channeler [3/3] (T) | Island (T)
+  Opp BF:   Dragon's Rage Channeler [1/1] | Volcanic Island (T)
+  Stack: Dragon's Rage Channeler (ability, opponent) -> Lightning Bolt (spell, opponent) -> self (player)
+  Self GY: Mishra's Bauble, Force of Will, Lightning Bolt, Ponder, Volcanic Island, Volcanic Island, Scalding Tarn
+  Opp GY:  Force of Will, Lightning Bolt, Scalding Tarn, Wasteland
+  Actions:
+   0: Lightning Bolt
+  >> A/A: 0 (Lightning Bolt)
+--- Narrative ---
+  Targeting choice 0
+  Player A casts Force of Will targeting Lightning Bolt
+  Dragon's Rage Channeler triggered
+  Resolving ability (category: Surveil, amount: 1)
+  Top card of Player A's library: Dragon's Rage Channeler
+
+--- Decision 42 ---
+  Priority: Player A (non-active)
+  Step: Upkeep
+  Self:  13 life | mana: empty | hand(1): Cori-Steel Cutter
+  Opp:   12 life | mana: empty | hand count: 2
+  Self BF:  Dragon's Rage Channeler [3/3] (T) | Island (T)
+  Opp BF:   Dragon's Rage Channeler [1/1] | Volcanic Island (T)
+  Stack: Dragon's Rage Channeler (ability, self) -> Force of Will (spell, self) -> Lightning Bolt (opponent) -> Dragon's Rage Channeler (ability, opponent) -> Lightning Bolt (spell, opponent) -> self (player)
+  Self GY: Mishra's Bauble, Force of Will, Lightning Bolt, Ponder, Volcanic Island, Volcanic Island, Scalding Tarn
+  Opp GY:  Force of Will, Lightning Bolt, Scalding Tarn, Wasteland
+  Actions:
+   0: Keep on top
+   1: Put in graveyard
+  >> A/A: 1 (Put in graveyard)
+--- Narrative ---
+  Player A puts Dragon's Rage Channeler into the graveyard.
+  Resolving ability (category: Counter)
+  Lightning Bolt is countered
+  Resolving ability (category: Surveil, amount: 1)
+  Top card of Player B's library: Wooded Foothills
+
+--- Decision 43 ---
+  Priority: Player B (active)
+  Step: Upkeep
+  Self:  12 life | mana: empty | hand(2): Unholy Heat, Wasteland
+  Opp:   13 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [1/1] | Volcanic Island (T)
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
+  Stack: Dragon's Rage Channeler (ability, self)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Keep on top
+   1: Put in graveyard
+  >> B/B: 1 (Put in graveyard)
+--- Narrative ---
+  Player B puts Wooded Foothills into the graveyard.
+  Player B draws Dragon's Rage Channeler
+
+--- Decision 44 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  12 life | mana: empty | hand(3): Dragon's Rage Channeler, Unholy Heat, Wasteland
+  Opp:   13 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [1/1] | Volcanic Island (T)
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Wooded Foothills, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Play Wasteland
+  >> B/B: 1 (Play Wasteland)
+--- Narrative ---
+  Player B played Wasteland
+
+--- Decision 45 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  12 life | mana: empty | hand(2): Dragon's Rage Channeler, Unholy Heat
+  Opp:   13 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [1/1] | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Wooded Foothills, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+
+--- Decision 46 ---
+  Priority: Player B (active)
+  Step: Begin Combat
+  Self:  12 life | mana: empty | hand(2): Dragon's Rage Channeler, Unholy Heat
+  Opp:   13 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [1/1] | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Wooded Foothills, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  --- Declare Attackers (Player B) ---
+
+--- Decision 47 ---
+  Priority: Player B (active)
+  Step: Declare Atk
+  Self:  12 life | mana: empty | hand(2): Dragon's Rage Channeler, Unholy Heat
+  Opp:   13 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [1/1] | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Wooded Foothills, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Dragon's Rage Channeler [1/1]
+   1: Confirm attackers
+  >> B/B: 0 (Dragon's Rage Channeler [1/1])
+--- Narrative ---
+  Dragon's Rage Channeler attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Dragon's Rage Channeler [1/1] -> Player A
+
+--- Decision 48 ---
+  Priority: Player B (active)
+  Step: Declare Atk
+  Self:  12 life | mana: empty | hand(2): Dragon's Rage Channeler, Unholy Heat
+  Opp:   13 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [1/1] (ATK) | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Wooded Foothills, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Confirm attackers
+  >> B/B: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Dragon's Rage Channeler -> Player A
+
+--- Decision 49 ---
+  Priority: Player B (active)
+  Step: Declare Atk
+  Self:  12 life | mana: empty | hand(2): Dragon's Rage Channeler, Unholy Heat
+  Opp:   13 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [1/1] (T,ATK) | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Wooded Foothills, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to block.
+
+--- Decision 50 ---
+  Priority: Player B (active)
+  Step: Declare Blk
+  Self:  12 life | mana: empty | hand(2): Dragon's Rage Channeler, Unholy Heat
+  Opp:   13 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [1/1] (T,ATK) | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Wooded Foothills, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  --- Combat Damage ---
+    Dragon's Rage Channeler deals 1 damage to Player A
+  --- End Combat Damage ---
+
+--- Decision 51 ---
+  Priority: Player B (active)
+  Step: Combat Dmg
+  Self:  12 life | mana: empty | hand(2): Dragon's Rage Channeler, Unholy Heat
+  Opp:   12 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [1/1] (T,ATK) | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Wooded Foothills, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+
+--- Decision 52 ---
+  Priority: Player B (active)
+  Step: End Combat
+  Self:  12 life | mana: empty | hand(2): Dragon's Rage Channeler, Unholy Heat
+  Opp:   12 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [1/1] (T,ATK) | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Wooded Foothills, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+
+--- Decision 53 ---
+  Priority: Player B (active)
+  Step: Second Main
+  Self:  12 life | mana: empty | hand(2): Dragon's Rage Channeler, Unholy Heat
+  Opp:   12 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Wooded Foothills, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+
+--- Decision 54 ---
+  Priority: Player B (active)
+  Step: End Step
+  Self:  12 life | mana: empty | hand(2): Dragon's Rage Channeler, Unholy Heat
+  Opp:   12 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Wooded Foothills, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 7 (Player A) --------
+--- Turn 7 (Player A) ---
+  PA: Cori-Steel Cutter
+  PB: Dragon's Rage Channeler, Unholy Heat
+
+--- Decision 55 ---
+  Priority: Player B (non-active)
+  Step: Upkeep
+  Self:  12 life | mana: empty | hand(2): Dragon's Rage Channeler, Unholy Heat
+  Opp:   12 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3] | Island
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Wooded Foothills, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Player A draws Wooded Foothills
+
+--- Decision 56 ---
+  Priority: Player B (non-active)
+  Step: Draw
+  Self:  12 life | mana: empty | hand(2): Dragon's Rage Channeler, Unholy Heat
+  Opp:   12 life | mana: empty | hand count: 2
+  Self BF:  Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3] | Island
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Wooded Foothills, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+
+--- Decision 57 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  12 life | mana: empty | hand(2): Cori-Steel Cutter, Wooded Foothills
+  Opp:   12 life | mana: empty | hand count: 2
+  Self BF:  Dragon's Rage Channeler [3/3] | Island
+  Opp BF:   Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T) | Wasteland
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Volcanic Island, Volcanic Island, Scalding Tarn
+  Opp GY:  Force of Will, Lightning Bolt, Lightning Bolt, Wooded Foothills, Scalding Tarn, Wasteland
+  Actions:
+   0: Pass priority
+   1: Play Wooded Foothills
+  >> A/A: 1 (Play Wooded Foothills)
+--- Narrative ---
+  Player A played Wooded Foothills
+
+--- Decision 58 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  12 life | mana: empty | hand(1): Cori-Steel Cutter
+  Opp:   12 life | mana: empty | hand count: 2
+  Self BF:  Dragon's Rage Channeler [3/3] | Island | Wooded Foothills
+  Opp BF:   Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T) | Wasteland
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Volcanic Island, Volcanic Island, Scalding Tarn
+  Opp GY:  Force of Will, Lightning Bolt, Lightning Bolt, Wooded Foothills, Scalding Tarn, Wasteland
+  Actions:
+   0: Pass priority
+   1: Activate Wooded Foothills (ChangeZone)
+  >> A/A: 1 (Activate Wooded Foothills (ChangeZone))
+--- Narrative ---
+  Player A pays 1 life
+  Player A sacrifices Wooded Foothills
+  Player A's Wooded Foothills ability is on the stack
+
+--- Decision 59 ---
+  Priority: Player B (non-active)
+  Step: First Main
+  Self:  12 life | mana: empty | hand(2): Dragon's Rage Channeler, Unholy Heat
+  Opp:   11 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3] | Island
+  Stack: Wooded Foothills (ability, opponent)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Wooded Foothills, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: ChangeZone)
+  Searching Player A's library:
+
+--- Decision 60 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  11 life | mana: empty | hand(1): Cori-Steel Cutter
+  Opp:   12 life | mana: empty | hand count: 2
+  Self BF:  Dragon's Rage Channeler [3/3] | Island
+  Opp BF:   Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T) | Wasteland
+  Stack: Wooded Foothills (ability, self)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Opp GY:  Force of Will, Lightning Bolt, Lightning Bolt, Wooded Foothills, Scalding Tarn, Wasteland
+  Actions:
+   0: Fail to find
+   1: Mountain
+   2: Volcanic Island
+   3: Volcanic Island
+   4: Thundering Falls
+  >> A/A: 1 (Mountain)
+--- Narrative ---
+  Player A shuffles their library
+  Player A puts Mountain to the battlefield
+
+--- Decision 61 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  11 life | mana: empty | hand(1): Cori-Steel Cutter
+  Opp:   12 life | mana: empty | hand count: 2
+  Self BF:  Dragon's Rage Channeler [3/3] | Island | Mountain
+  Opp BF:   Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T) | Wasteland
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Opp GY:  Force of Will, Lightning Bolt, Lightning Bolt, Wooded Foothills, Scalding Tarn, Wasteland
+  Actions:
+   0: Pass priority
+   1: Cast Cori-Steel Cutter
+  >> A/A: 1 (Cast Cori-Steel Cutter)
+--- Narrative ---
+  Player A activated Mountain for 1(R)
+  Player A activated Island for 1(U)
+  Player A casts Cori-Steel Cutter
+  Dragon's Rage Channeler triggered
+
+--- Decision 62 ---
+  Priority: Player B (non-active)
+  Step: First Main
+  Self:  12 life | mana: empty | hand(2): Dragon's Rage Channeler, Unholy Heat
+  Opp:   11 life | mana: empty | hand count: 0
+  Self BF:  Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3] | Island (T) | Mountain (T)
+  Stack: Dragon's Rage Channeler (ability, opponent) -> Cori-Steel Cutter (spell, opponent)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Wooded Foothills, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Surveil, amount: 1)
+  Top card of Player A's library: Ponder
+
+--- Decision 63 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  11 life | mana: empty | hand(0): (empty)
+  Opp:   12 life | mana: empty | hand count: 2
+  Self BF:  Dragon's Rage Channeler [3/3] | Island (T) | Mountain (T)
+  Opp BF:   Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T) | Wasteland
+  Stack: Dragon's Rage Channeler (ability, self) -> Cori-Steel Cutter (spell, self)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Opp GY:  Force of Will, Lightning Bolt, Lightning Bolt, Wooded Foothills, Scalding Tarn, Wasteland
+  Actions:
+   0: Keep on top
+   1: Put in graveyard
+  >> A/A: 1 (Put in graveyard)
+--- Narrative ---
+  Player A puts Ponder into the graveyard.
+
+--- Decision 64 ---
+  Priority: Player B (non-active)
+  Step: First Main
+  Self:  12 life | mana: empty | hand(2): Dragon's Rage Channeler, Unholy Heat
+  Opp:   11 life | mana: empty | hand count: 0
+  Self BF:  Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3] | Island (T) | Mountain (T)
+  Stack: Cori-Steel Cutter (spell, opponent)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Wooded Foothills, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Cori-Steel Cutter enters the battlefield
+
+--- Decision 65 ---
+  Priority: Player B (non-active)
+  Step: First Main
+  Self:  12 life | mana: empty | hand(2): Dragon's Rage Channeler, Unholy Heat
+  Opp:   11 life | mana: empty | hand count: 0
+  Self BF:  Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Wooded Foothills, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+
+--- Decision 66 ---
+  Priority: Player B (non-active)
+  Step: Begin Combat
+  Self:  12 life | mana: empty | hand(2): Dragon's Rage Channeler, Unholy Heat
+  Opp:   11 life | mana: empty | hand count: 0
+  Self BF:  Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Wooded Foothills, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Dragon's Rage Channeler must attack and is declared as an attacker.
+  --- Declare Attackers (Player A) ---
+    [attacking] Dragon's Rage Channeler [3/3] -> Player B
+
+--- Decision 67 ---
+  Priority: Player A (active)
+  Step: Declare Atk
+  Self:  11 life | mana: empty | hand(0): (empty)
+  Opp:   12 life | mana: empty | hand count: 2
+  Self BF:  Dragon's Rage Channeler [3/3] (ATK) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Opp BF:   Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T) | Wasteland
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Opp GY:  Force of Will, Lightning Bolt, Lightning Bolt, Wooded Foothills, Scalding Tarn, Wasteland
+  Actions:
+   0: Confirm attackers
+  >> A/A: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Dragon's Rage Channeler -> Player B
+
+--- Decision 68 ---
+  Priority: Player B (non-active)
+  Step: Declare Atk
+  Self:  12 life | mana: empty | hand(2): Dragon's Rage Channeler, Unholy Heat
+  Opp:   11 life | mana: empty | hand count: 0
+  Self BF:  Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3] (T,ATK) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Wooded Foothills, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to block.
+
+--- Decision 69 ---
+  Priority: Player B (non-active)
+  Step: Declare Blk
+  Self:  12 life | mana: empty | hand(2): Dragon's Rage Channeler, Unholy Heat
+  Opp:   11 life | mana: empty | hand count: 0
+  Self BF:  Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3] (T,ATK) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Wooded Foothills, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  --- Combat Damage ---
+    Dragon's Rage Channeler deals 3 damage to Player B
+  --- End Combat Damage ---
+
+--- Decision 70 ---
+  Priority: Player B (non-active)
+  Step: Combat Dmg
+  Self:  9 life | mana: empty | hand(2): Dragon's Rage Channeler, Unholy Heat
+  Opp:   11 life | mana: empty | hand count: 0
+  Self BF:  Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3] (T,ATK) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Wooded Foothills, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+
+--- Decision 71 ---
+  Priority: Player B (non-active)
+  Step: End Combat
+  Self:  9 life | mana: empty | hand(2): Dragon's Rage Channeler, Unholy Heat
+  Opp:   11 life | mana: empty | hand count: 0
+  Self BF:  Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3] (T,ATK) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Wooded Foothills, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+
+--- Decision 72 ---
+  Priority: Player B (non-active)
+  Step: Second Main
+  Self:  9 life | mana: empty | hand(2): Dragon's Rage Channeler, Unholy Heat
+  Opp:   11 life | mana: empty | hand count: 0
+  Self BF:  Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Wooded Foothills, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+
+--- Decision 73 ---
+  Priority: Player B (non-active)
+  Step: End Step
+  Self:  9 life | mana: empty | hand(2): Dragon's Rage Channeler, Unholy Heat
+  Opp:   11 life | mana: empty | hand count: 0
+  Self BF:  Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Wooded Foothills, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 8 (Player B) --------
+--- Turn 8 (Player B) ---
+  PA: (empty)
+  PB: Dragon's Rage Channeler, Unholy Heat
+
+--- Decision 74 ---
+  Priority: Player B (active)
+  Step: Upkeep
+  Self:  9 life | mana: empty | hand(2): Dragon's Rage Channeler, Unholy Heat
+  Opp:   11 life | mana: empty | hand count: 0
+  Self BF:  Dragon's Rage Channeler [1/1] | Volcanic Island | Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Wooded Foothills, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Cast Unholy Heat
+   2: Activate Wasteland (Destroy)
+  >> B/B: 1 (Cast Unholy Heat)
+--- Narrative ---
+  Choose target:
+
+--- Decision 75 ---
+  Priority: Player B (active)
+  Step: Upkeep
+  Self:  9 life | mana: empty | hand(2): Dragon's Rage Channeler, Unholy Heat
+  Opp:   11 life | mana: empty | hand count: 0
+  Self BF:  Dragon's Rage Channeler [1/1] | Volcanic Island | Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Wooded Foothills, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Dragon's Rage Channeler
+   1: Dragon's Rage Channeler
+  >> B/B: 0 (Dragon's Rage Channeler)
+--- Narrative ---
+  Targeting choice 0
+  Player B activated Volcanic Island for 1(R)
+  Player B casts Unholy Heat targeting Dragon's Rage Channeler
+  Dragon's Rage Channeler triggered
+
+--- Decision 76 ---
+  Priority: Player B (active)
+  Step: Upkeep
+  Self:  9 life | mana: empty | hand(1): Dragon's Rage Channeler
+  Opp:   11 life | mana: empty | hand count: 0
+  Self BF:  Dragon's Rage Channeler [1/1] | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Stack: Dragon's Rage Channeler (ability, self) -> Unholy Heat (spell, self) -> Dragon's Rage Channeler (opponent)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Wooded Foothills, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Surveil, amount: 1)
+  Top card of Player B's library: Scalding Tarn
+
+--- Decision 77 ---
+  Priority: Player B (active)
+  Step: Upkeep
+  Self:  9 life | mana: empty | hand(1): Dragon's Rage Channeler
+  Opp:   11 life | mana: empty | hand count: 0
+  Self BF:  Dragon's Rage Channeler [1/1] | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Stack: Dragon's Rage Channeler (ability, self) -> Unholy Heat (spell, self) -> Dragon's Rage Channeler (opponent)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Wooded Foothills, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Keep on top
+   1: Put in graveyard
+  >> B/B: 1 (Put in graveyard)
+--- Narrative ---
+  Player B puts Scalding Tarn into the graveyard.
+
+--- Decision 78 ---
+  Priority: Player B (active)
+  Step: Upkeep
+  Self:  9 life | mana: empty | hand(1): Dragon's Rage Channeler
+  Opp:   11 life | mana: empty | hand count: 0
+  Self BF:  Dragon's Rage Channeler [1/1] | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Stack: Unholy Heat (spell, self) -> Dragon's Rage Channeler (opponent)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Wooded Foothills, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: DealDamage, amount: 2)
+  Dealt 2 damage to creature
+
+--- Decision 79 ---
+  Priority: Player B (active)
+  Step: Upkeep
+  Self:  9 life | mana: empty | hand(1): Dragon's Rage Channeler
+  Opp:   11 life | mana: empty | hand count: 0
+  Self BF:  Dragon's Rage Channeler [1/1] | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3, 2dmg] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Player B draws Daze
+
+--- Decision 80 ---
+  Priority: Player B (active)
+  Step: Draw
+  Self:  9 life | mana: empty | hand(2): Dragon's Rage Channeler, Daze
+  Opp:   11 life | mana: empty | hand count: 0
+  Self BF:  Dragon's Rage Channeler [1/1] | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3, 2dmg] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+
+--- Decision 81 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  9 life | mana: empty | hand(2): Dragon's Rage Channeler, Daze
+  Opp:   11 life | mana: empty | hand count: 0
+  Self BF:  Dragon's Rage Channeler [1/1] | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3, 2dmg] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+
+--- Decision 82 ---
+  Priority: Player B (active)
+  Step: Begin Combat
+  Self:  9 life | mana: empty | hand(2): Dragon's Rage Channeler, Daze
+  Opp:   11 life | mana: empty | hand count: 0
+  Self BF:  Dragon's Rage Channeler [1/1] | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3, 2dmg] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  --- Declare Attackers (Player B) ---
+
+--- Decision 83 ---
+  Priority: Player B (active)
+  Step: Declare Atk
+  Self:  9 life | mana: empty | hand(2): Dragon's Rage Channeler, Daze
+  Opp:   11 life | mana: empty | hand count: 0
+  Self BF:  Dragon's Rage Channeler [1/1] | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3, 2dmg] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Dragon's Rage Channeler [1/1]
+   1: Confirm attackers
+  >> B/B: 0 (Dragon's Rage Channeler [1/1])
+--- Narrative ---
+  Dragon's Rage Channeler attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Dragon's Rage Channeler [1/1] -> Player A
+
+--- Decision 84 ---
+  Priority: Player B (active)
+  Step: Declare Atk
+  Self:  9 life | mana: empty | hand(2): Dragon's Rage Channeler, Daze
+  Opp:   11 life | mana: empty | hand count: 0
+  Self BF:  Dragon's Rage Channeler [1/1] (ATK) | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3, 2dmg] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Confirm attackers
+  >> B/B: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Dragon's Rage Channeler -> Player A
+
+--- Decision 85 ---
+  Priority: Player B (active)
+  Step: Declare Atk
+  Self:  9 life | mana: empty | hand(2): Dragon's Rage Channeler, Daze
+  Opp:   11 life | mana: empty | hand count: 0
+  Self BF:  Dragon's Rage Channeler [1/1] (T,ATK) | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3, 2dmg] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to block.
+
+--- Decision 86 ---
+  Priority: Player B (active)
+  Step: Declare Blk
+  Self:  9 life | mana: empty | hand(2): Dragon's Rage Channeler, Daze
+  Opp:   11 life | mana: empty | hand count: 0
+  Self BF:  Dragon's Rage Channeler [1/1] (T,ATK) | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3, 2dmg] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  --- Combat Damage ---
+    Dragon's Rage Channeler deals 1 damage to Player A
+  --- End Combat Damage ---
+
+--- Decision 87 ---
+  Priority: Player B (active)
+  Step: Combat Dmg
+  Self:  9 life | mana: empty | hand(2): Dragon's Rage Channeler, Daze
+  Opp:   10 life | mana: empty | hand count: 0
+  Self BF:  Dragon's Rage Channeler [1/1] (T,ATK) | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3, 2dmg] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+
+--- Decision 88 ---
+  Priority: Player B (active)
+  Step: End Combat
+  Self:  9 life | mana: empty | hand(2): Dragon's Rage Channeler, Daze
+  Opp:   10 life | mana: empty | hand count: 0
+  Self BF:  Dragon's Rage Channeler [1/1] (T,ATK) | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3, 2dmg] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+
+--- Decision 89 ---
+  Priority: Player B (active)
+  Step: Second Main
+  Self:  9 life | mana: empty | hand(2): Dragon's Rage Channeler, Daze
+  Opp:   10 life | mana: empty | hand count: 0
+  Self BF:  Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3, 2dmg] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+
+--- Decision 90 ---
+  Priority: Player B (active)
+  Step: End Step
+  Self:  9 life | mana: empty | hand(2): Dragon's Rage Channeler, Daze
+  Opp:   10 life | mana: empty | hand count: 0
+  Self BF:  Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3, 2dmg] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 9 (Player A) --------
+--- Turn 9 (Player A) ---
+  PA: (empty)
+  PB: Dragon's Rage Channeler, Daze
+
+--- Decision 91 ---
+  Priority: Player B (non-active)
+  Step: Upkeep
+  Self:  9 life | mana: empty | hand(2): Dragon's Rage Channeler, Daze
+  Opp:   10 life | mana: empty | hand count: 0
+  Self BF:  Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Island | Mountain
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Player A draws Force of Will
+
+--- Decision 92 ---
+  Priority: Player B (non-active)
+  Step: Draw
+  Self:  9 life | mana: empty | hand(2): Dragon's Rage Channeler, Daze
+  Opp:   10 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Island | Mountain
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+
+--- Decision 93 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  10 life | mana: empty | hand(1): Force of Will
+  Opp:   9 life | mana: empty | hand count: 2
+  Self BF:  Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Island | Mountain
+  Opp BF:   Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T) | Wasteland
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Opp GY:  Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Wasteland
+  Actions:
+   0: Pass priority
+   1: Equip Cori-Steel Cutter
+  >> A/A: 1 (Equip Cori-Steel Cutter)
+--- Narrative ---
+  Player A activated Mountain for 1(R)
+  Player A activated Island for 1(U)
+  Choose creature to equip:
+
+--- Decision 94 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  10 life | mana: empty | hand(1): Force of Will
+  Opp:   9 life | mana: empty | hand count: 2
+  Self BF:  Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Opp BF:   Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T) | Wasteland
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Opp GY:  Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Wasteland
+  Actions:
+   0: Dragon's Rage Channeler [3/3]
+  >> A/A: 0 (Dragon's Rage Channeler [3/3])
+--- Narrative ---
+  Cori-Steel Cutter equipped to Dragon's Rage Channeler.
+  Dragon's Rage Channeler gains 1/1 Trample & Haste (always)
+
+--- Decision 95 ---
+  Priority: Player B (non-active)
+  Step: First Main
+  Self:  9 life | mana: empty | hand(2): Dragon's Rage Channeler, Daze
+  Opp:   10 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [4/4] | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+
+--- Decision 96 ---
+  Priority: Player B (non-active)
+  Step: Begin Combat
+  Self:  9 life | mana: empty | hand(2): Dragon's Rage Channeler, Daze
+  Opp:   10 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [4/4] | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Dragon's Rage Channeler must attack and is declared as an attacker.
+  --- Declare Attackers (Player A) ---
+    [attacking] Dragon's Rage Channeler [4/4] -> Player B
+
+--- Decision 97 ---
+  Priority: Player A (active)
+  Step: Declare Atk
+  Self:  10 life | mana: empty | hand(1): Force of Will
+  Opp:   9 life | mana: empty | hand count: 2
+  Self BF:  Dragon's Rage Channeler [4/4] (ATK) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Opp BF:   Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T) | Wasteland
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Opp GY:  Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Wasteland
+  Actions:
+   0: Confirm attackers
+  >> A/A: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Dragon's Rage Channeler -> Player B
+
+--- Decision 98 ---
+  Priority: Player B (non-active)
+  Step: Declare Atk
+  Self:  9 life | mana: empty | hand(2): Dragon's Rage Channeler, Daze
+  Opp:   10 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [4/4] (T,ATK) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to block.
+
+--- Decision 99 ---
+  Priority: Player B (non-active)
+  Step: Declare Blk
+  Self:  9 life | mana: empty | hand(2): Dragon's Rage Channeler, Daze
+  Opp:   10 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [4/4] (T,ATK) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  --- Combat Damage ---
+    Dragon's Rage Channeler deals 4 damage to Player B
+  --- End Combat Damage ---
+
+--- Decision 100 ---
+  Priority: Player B (non-active)
+  Step: Combat Dmg
+  Self:  5 life | mana: empty | hand(2): Dragon's Rage Channeler, Daze
+  Opp:   10 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [4/4] (T,ATK) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+
+--- Decision 101 ---
+  Priority: Player B (non-active)
+  Step: End Combat
+  Self:  5 life | mana: empty | hand(2): Dragon's Rage Channeler, Daze
+  Opp:   10 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [4/4] (T,ATK) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+
+--- Decision 102 ---
+  Priority: Player B (non-active)
+  Step: Second Main
+  Self:  5 life | mana: empty | hand(2): Dragon's Rage Channeler, Daze
+  Opp:   10 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [4/4] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+
+--- Decision 103 ---
+  Priority: Player B (non-active)
+  Step: End Step
+  Self:  5 life | mana: empty | hand(2): Dragon's Rage Channeler, Daze
+  Opp:   10 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [1/1] (T) | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [4/4] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 10 (Player B) --------
+--- Turn 10 (Player B) ---
+  PA: Force of Will
+  PB: Dragon's Rage Channeler, Daze
+
+--- Decision 104 ---
+  Priority: Player B (active)
+  Step: Upkeep
+  Self:  5 life | mana: empty | hand(2): Dragon's Rage Channeler, Daze
+  Opp:   10 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [1/1] | Volcanic Island | Wasteland
+  Opp BF:   Dragon's Rage Channeler [4/4] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Player B draws Thundering Falls
+
+--- Decision 105 ---
+  Priority: Player B (active)
+  Step: Draw
+  Self:  5 life | mana: empty | hand(3): Dragon's Rage Channeler, Daze, Thundering Falls
+  Opp:   10 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [1/1] | Volcanic Island | Wasteland
+  Opp BF:   Dragon's Rage Channeler [4/4] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+
+--- Decision 106 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  5 life | mana: empty | hand(3): Dragon's Rage Channeler, Daze, Thundering Falls
+  Opp:   10 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [1/1] | Volcanic Island | Wasteland
+  Opp BF:   Dragon's Rage Channeler [4/4] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Play Thundering Falls
+   2: Cast Dragon's Rage Channeler
+   3: Activate Wasteland (Destroy)
+  >> B/B: 2 (Cast Dragon's Rage Channeler)
+--- Narrative ---
+  Player B activated Volcanic Island for 1(R)
+  Player B casts Dragon's Rage Channeler
+
+--- Decision 107 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  5 life | mana: empty | hand(2): Daze, Thundering Falls
+  Opp:   10 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [1/1] | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [4/4] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Stack: Dragon's Rage Channeler (spell, self)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Cast Daze (alternate cost)
+   2: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Dragon's Rage Channeler enters the battlefield
+
+--- Decision 108 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  5 life | mana: empty | hand(2): Daze, Thundering Falls
+  Opp:   10 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] (SICK) | Volcanic Island (T) | Wasteland
+  Opp BF:   Dragon's Rage Channeler [4/4] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Play Thundering Falls
+   2: Activate Wasteland (Destroy)
+  >> B/B: 1 (Play Thundering Falls)
+--- Narrative ---
+  Player B played Thundering Falls
+  Thundering Falls enters tapped.
+  Thundering Falls triggered
+
+--- Decision 109 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  5 life | mana: empty | hand(1): Daze
+  Opp:   10 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] (SICK) | Volcanic Island (T) | Wasteland | Thundering Falls (T)
+  Opp BF:   Dragon's Rage Channeler [4/4] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Stack: Thundering Falls (ability, self)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Surveil, amount: 1)
+  Top card of Player B's library: Scalding Tarn
+
+--- Decision 110 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  5 life | mana: empty | hand(1): Daze
+  Opp:   10 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] (SICK) | Volcanic Island (T) | Wasteland | Thundering Falls (T)
+  Opp BF:   Dragon's Rage Channeler [4/4] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Stack: Thundering Falls (ability, self)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Keep on top
+   1: Put in graveyard
+  >> B/B: 1 (Put in graveyard)
+--- Narrative ---
+  Player B puts Scalding Tarn into the graveyard.
+
+--- Decision 111 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  5 life | mana: empty | hand(1): Daze
+  Opp:   10 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] (SICK) | Volcanic Island (T) | Wasteland | Thundering Falls (T)
+  Opp BF:   Dragon's Rage Channeler [4/4] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+
+--- Decision 112 ---
+  Priority: Player B (active)
+  Step: Begin Combat
+  Self:  5 life | mana: empty | hand(1): Daze
+  Opp:   10 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] (SICK) | Volcanic Island (T) | Wasteland | Thundering Falls (T)
+  Opp BF:   Dragon's Rage Channeler [4/4] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  --- Declare Attackers (Player B) ---
+
+--- Decision 113 ---
+  Priority: Player B (active)
+  Step: Declare Atk
+  Self:  5 life | mana: empty | hand(1): Daze
+  Opp:   10 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] (SICK) | Volcanic Island (T) | Wasteland | Thundering Falls (T)
+  Opp BF:   Dragon's Rage Channeler [4/4] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Dragon's Rage Channeler [1/1]
+   1: Confirm attackers
+  >> B/B: 0 (Dragon's Rage Channeler [1/1])
+--- Narrative ---
+  Dragon's Rage Channeler attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Dragon's Rage Channeler [1/1] -> Player A
+
+--- Decision 114 ---
+  Priority: Player B (active)
+  Step: Declare Atk
+  Self:  5 life | mana: empty | hand(1): Daze
+  Opp:   10 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [1/1] (ATK) | Dragon's Rage Channeler [1/1] (SICK) | Volcanic Island (T) | Wasteland | Thundering Falls (T)
+  Opp BF:   Dragon's Rage Channeler [4/4] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Confirm attackers
+  >> B/B: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Dragon's Rage Channeler -> Player A
+
+--- Decision 115 ---
+  Priority: Player B (active)
+  Step: Declare Atk
+  Self:  5 life | mana: empty | hand(1): Daze
+  Opp:   10 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [1/1] (T,ATK) | Dragon's Rage Channeler [1/1] (SICK) | Volcanic Island (T) | Wasteland | Thundering Falls (T)
+  Opp BF:   Dragon's Rage Channeler [4/4] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to block.
+
+--- Decision 116 ---
+  Priority: Player B (active)
+  Step: Declare Blk
+  Self:  5 life | mana: empty | hand(1): Daze
+  Opp:   10 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [1/1] (T,ATK) | Dragon's Rage Channeler [1/1] (SICK) | Volcanic Island (T) | Wasteland | Thundering Falls (T)
+  Opp BF:   Dragon's Rage Channeler [4/4] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  --- Combat Damage ---
+    Dragon's Rage Channeler deals 1 damage to Player A
+  --- End Combat Damage ---
+
+--- Decision 117 ---
+  Priority: Player B (active)
+  Step: Combat Dmg
+  Self:  5 life | mana: empty | hand(1): Daze
+  Opp:   9 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [1/1] (T,ATK) | Dragon's Rage Channeler [1/1] (SICK) | Volcanic Island (T) | Wasteland | Thundering Falls (T)
+  Opp BF:   Dragon's Rage Channeler [4/4] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+
+--- Decision 118 ---
+  Priority: Player B (active)
+  Step: End Combat
+  Self:  5 life | mana: empty | hand(1): Daze
+  Opp:   9 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [1/1] (T,ATK) | Dragon's Rage Channeler [1/1] (SICK) | Volcanic Island (T) | Wasteland | Thundering Falls (T)
+  Opp BF:   Dragon's Rage Channeler [4/4] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+
+--- Decision 119 ---
+  Priority: Player B (active)
+  Step: Second Main
+  Self:  5 life | mana: empty | hand(1): Daze
+  Opp:   9 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Volcanic Island (T) | Wasteland | Thundering Falls (T)
+  Opp BF:   Dragon's Rage Channeler [4/4] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+
+--- Decision 120 ---
+  Priority: Player B (active)
+  Step: End Step
+  Self:  5 life | mana: empty | hand(1): Daze
+  Opp:   9 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Volcanic Island (T) | Wasteland | Thundering Falls (T)
+  Opp BF:   Dragon's Rage Channeler [4/4] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 11 (Player A) --------
+--- Turn 11 (Player A) ---
+  PA: Force of Will
+  PB: Daze
+
+--- Decision 121 ---
+  Priority: Player B (non-active)
+  Step: Upkeep
+  Self:  5 life | mana: empty | hand(1): Daze
+  Opp:   9 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Volcanic Island (T) | Wasteland | Thundering Falls (T)
+  Opp BF:   Dragon's Rage Channeler [4/4] | Cori-Steel Cutter | Island | Mountain
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Player A draws Daze
+
+--- Decision 122 ---
+  Priority: Player B (non-active)
+  Step: Draw
+  Self:  5 life | mana: empty | hand(1): Daze
+  Opp:   9 life | mana: empty | hand count: 2
+  Self BF:  Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Volcanic Island (T) | Wasteland | Thundering Falls (T)
+  Opp BF:   Dragon's Rage Channeler [4/4] | Cori-Steel Cutter | Island | Mountain
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+
+--- Decision 123 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  9 life | mana: empty | hand(2): Force of Will, Daze
+  Opp:   5 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [4/4] | Cori-Steel Cutter | Island | Mountain
+  Opp BF:   Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Volcanic Island (T) | Wasteland | Thundering Falls (T)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Opp GY:  Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
+  Actions:
+   0: Pass priority
+   1: Equip Cori-Steel Cutter
+  >> A/A: 1 (Equip Cori-Steel Cutter)
+--- Narrative ---
+  Player A activated Mountain for 1(R)
+  Player A activated Island for 1(U)
+  Choose creature to equip:
+
+--- Decision 124 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  9 life | mana: empty | hand(2): Force of Will, Daze
+  Opp:   5 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [4/4] | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Opp BF:   Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Volcanic Island (T) | Wasteland | Thundering Falls (T)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Opp GY:  Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
+  Actions:
+   0: Dragon's Rage Channeler [4/4]
+  >> A/A: 0 (Dragon's Rage Channeler [4/4])
+--- Narrative ---
+  Cori-Steel Cutter equipped to Dragon's Rage Channeler.
+
+--- Decision 125 ---
+  Priority: Player B (non-active)
+  Step: First Main
+  Self:  5 life | mana: empty | hand(1): Daze
+  Opp:   9 life | mana: empty | hand count: 2
+  Self BF:  Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Volcanic Island (T) | Wasteland | Thundering Falls (T)
+  Opp BF:   Dragon's Rage Channeler [4/4] | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+
+--- Decision 126 ---
+  Priority: Player B (non-active)
+  Step: Begin Combat
+  Self:  5 life | mana: empty | hand(1): Daze
+  Opp:   9 life | mana: empty | hand count: 2
+  Self BF:  Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Volcanic Island (T) | Wasteland | Thundering Falls (T)
+  Opp BF:   Dragon's Rage Channeler [4/4] | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Dragon's Rage Channeler must attack and is declared as an attacker.
+  --- Declare Attackers (Player A) ---
+    [attacking] Dragon's Rage Channeler [4/4] -> Player B
+
+--- Decision 127 ---
+  Priority: Player A (active)
+  Step: Declare Atk
+  Self:  9 life | mana: empty | hand(2): Force of Will, Daze
+  Opp:   5 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [4/4] (ATK) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Opp BF:   Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Volcanic Island (T) | Wasteland | Thundering Falls (T)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Opp GY:  Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
+  Actions:
+   0: Confirm attackers
+  >> A/A: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Dragon's Rage Channeler -> Player B
+
+--- Decision 128 ---
+  Priority: Player B (non-active)
+  Step: Declare Atk
+  Self:  5 life | mana: empty | hand(1): Daze
+  Opp:   9 life | mana: empty | hand count: 2
+  Self BF:  Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Volcanic Island (T) | Wasteland | Thundering Falls (T)
+  Opp BF:   Dragon's Rage Channeler [4/4] (T,ATK) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to block.
+
+--- Decision 129 ---
+  Priority: Player B (non-active)
+  Step: Declare Blk
+  Self:  5 life | mana: empty | hand(1): Daze
+  Opp:   9 life | mana: empty | hand count: 2
+  Self BF:  Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Volcanic Island (T) | Wasteland | Thundering Falls (T)
+  Opp BF:   Dragon's Rage Channeler [4/4] (T,ATK) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  --- Combat Damage ---
+    Dragon's Rage Channeler deals 4 damage to Player B
+  --- End Combat Damage ---
+
+--- Decision 130 ---
+  Priority: Player B (non-active)
+  Step: Combat Dmg
+  Self:  1 life | mana: empty | hand(1): Daze
+  Opp:   9 life | mana: empty | hand count: 2
+  Self BF:  Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Volcanic Island (T) | Wasteland | Thundering Falls (T)
+  Opp BF:   Dragon's Rage Channeler [4/4] (T,ATK) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+
+--- Decision 131 ---
+  Priority: Player B (non-active)
+  Step: End Combat
+  Self:  1 life | mana: empty | hand(1): Daze
+  Opp:   9 life | mana: empty | hand count: 2
+  Self BF:  Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Volcanic Island (T) | Wasteland | Thundering Falls (T)
+  Opp BF:   Dragon's Rage Channeler [4/4] (T,ATK) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+
+--- Decision 132 ---
+  Priority: Player B (non-active)
+  Step: Second Main
+  Self:  1 life | mana: empty | hand(1): Daze
+  Opp:   9 life | mana: empty | hand count: 2
+  Self BF:  Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Volcanic Island (T) | Wasteland | Thundering Falls (T)
+  Opp BF:   Dragon's Rage Channeler [4/4] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+
+--- Decision 133 ---
+  Priority: Player B (non-active)
+  Step: End Step
+  Self:  1 life | mana: empty | hand(1): Daze
+  Opp:   9 life | mana: empty | hand count: 2
+  Self BF:  Dragon's Rage Channeler [1/1] (T) | Dragon's Rage Channeler [1/1] (SICK) | Volcanic Island (T) | Wasteland | Thundering Falls (T)
+  Opp BF:   Dragon's Rage Channeler [4/4] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 12 (Player B) --------
+--- Turn 12 (Player B) ---
+  PA: Force of Will, Daze
+  PB: Daze
+
+--- Decision 134 ---
+  Priority: Player B (active)
+  Step: Upkeep
+  Self:  1 life | mana: empty | hand(1): Daze
+  Opp:   9 life | mana: empty | hand count: 2
+  Self BF:  Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Volcanic Island | Wasteland | Thundering Falls
+  Opp BF:   Dragon's Rage Channeler [4/4] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Player B draws Mishra's Bauble
+
+--- Decision 135 ---
+  Priority: Player B (active)
+  Step: Draw
+  Self:  1 life | mana: empty | hand(2): Mishra's Bauble, Daze
+  Opp:   9 life | mana: empty | hand count: 2
+  Self BF:  Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Volcanic Island | Wasteland | Thundering Falls
+  Opp BF:   Dragon's Rage Channeler [4/4] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+
+--- Decision 136 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  1 life | mana: empty | hand(2): Mishra's Bauble, Daze
+  Opp:   9 life | mana: empty | hand count: 2
+  Self BF:  Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Volcanic Island | Wasteland | Thundering Falls
+  Opp BF:   Dragon's Rage Channeler [4/4] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Cast Mishra's Bauble
+   2: Activate Wasteland (Destroy)
+  >> B/B: 1 (Cast Mishra's Bauble)
+--- Narrative ---
+  Player B casts Mishra's Bauble
+  Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+
+--- Decision 137 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  1 life | mana: empty | hand(1): Daze
+  Opp:   9 life | mana: empty | hand count: 2
+  Self BF:  Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Volcanic Island | Wasteland | Thundering Falls
+  Opp BF:   Dragon's Rage Channeler [4/4] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Stack: Mishra's Bauble (spell, self)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Dragon's Rage Channeler (Surveil)
+   1: Dragon's Rage Channeler (Surveil)
+  >> B/B: 0 (Dragon's Rage Channeler (Surveil))
+--- Narrative ---
+  Dragon's Rage Channeler triggered
+  Dragon's Rage Channeler triggered
+
+--- Decision 138 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  1 life | mana: empty | hand(1): Daze
+  Opp:   9 life | mana: empty | hand count: 2
+  Self BF:  Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Volcanic Island | Wasteland | Thundering Falls
+  Opp BF:   Dragon's Rage Channeler [4/4] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Stack: Dragon's Rage Channeler (ability, self) -> Dragon's Rage Channeler (ability, self) -> Mishra's Bauble (spell, self)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Cast Daze
+   2: Cast Daze (alternate cost)
+   3: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+
+--- Decision 139 ---
+  Priority: Player A (non-active)
+  Step: First Main
+  Self:  9 life | mana: empty | hand(2): Force of Will, Daze
+  Opp:   1 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [4/4] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Opp BF:   Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Volcanic Island | Wasteland | Thundering Falls
+  Stack: Dragon's Rage Channeler (ability, opponent) -> Dragon's Rage Channeler (ability, opponent) -> Mishra's Bauble (spell, opponent)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Opp GY:  Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)
+   2: Cast Daze (alternate cost)
+  >> A/A: 1 (Cast Force of Will (alternate cost))
+--- Narrative ---
+  Player A pays 1 life
+
+--- Decision 140 ---
+  Priority: Player A (non-active)
+  Step: First Main
+  Self:  8 life | mana: empty | hand(2): Force of Will, Daze
+  Opp:   1 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [4/4] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Opp BF:   Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Volcanic Island | Wasteland | Thundering Falls
+  Stack: Dragon's Rage Channeler (ability, opponent) -> Dragon's Rage Channeler (ability, opponent) -> Mishra's Bauble (spell, opponent)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Opp GY:  Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
+  Actions:
+   0: Exile Daze
+  >> A/A: 0 (Exile Daze)
+--- Narrative ---
+  Player A exiles Daze
+  Choose target:
+
+--- Decision 141 ---
+  Priority: Player A (non-active)
+  Step: First Main
+  Self:  8 life | mana: empty | hand(1): Force of Will
+  Opp:   1 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [4/4] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Opp BF:   Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Volcanic Island | Wasteland | Thundering Falls
+  Stack: Dragon's Rage Channeler (ability, opponent) -> Dragon's Rage Channeler (ability, opponent) -> Mishra's Bauble (spell, opponent)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Opp GY:  Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
+  Actions:
+   0: Mishra's Bauble
+  >> A/A: 0 (Mishra's Bauble)
+--- Narrative ---
+  Targeting choice 0
+  Player A casts Force of Will targeting Mishra's Bauble
+  Dragon's Rage Channeler triggered
+
+--- Decision 142 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  1 life | mana: empty | hand(1): Daze
+  Opp:   8 life | mana: empty | hand count: 0
+  Self BF:  Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Volcanic Island | Wasteland | Thundering Falls
+  Opp BF:   Dragon's Rage Channeler [4/4] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Stack: Dragon's Rage Channeler (ability, opponent) -> Force of Will (spell, opponent) -> Mishra's Bauble (self) -> Dragon's Rage Channeler (ability, self) -> Dragon's Rage Channeler (ability, self) -> Mishra's Bauble (spell, self)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Cast Daze
+   2: Cast Daze (alternate cost)
+   3: Activate Wasteland (Destroy)
+  >> B/B: 1 (Cast Daze)
+--- Narrative ---
+  Choose target:
+
+--- Decision 143 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  1 life | mana: empty | hand(1): Daze
+  Opp:   8 life | mana: empty | hand count: 0
+  Self BF:  Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Volcanic Island | Wasteland | Thundering Falls
+  Opp BF:   Dragon's Rage Channeler [4/4] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Stack: Dragon's Rage Channeler (ability, opponent) -> Force of Will (spell, opponent) -> Mishra's Bauble (self) -> Dragon's Rage Channeler (ability, self) -> Dragon's Rage Channeler (ability, self) -> Mishra's Bauble (spell, self)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Force of Will
+   1: Mishra's Bauble
+  >> B/B: 0 (Force of Will)
+--- Narrative ---
+  Targeting choice 0
+  Player B activated Volcanic Island for 1(U)
+  Player B activated Wasteland for 1(C)
+  Player B casts Daze targeting Force of Will
+  Player B orders 2 simultaneous triggers (pick which goes on the stack next).
+
+--- Decision 144 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  1 life | mana: empty | hand(0): (empty)
+  Opp:   8 life | mana: empty | hand count: 0
+  Self BF:  Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Volcanic Island (T) | Wasteland (T) | Thundering Falls
+  Opp BF:   Dragon's Rage Channeler [4/4] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Stack: Daze (spell, self) -> Force of Will (opponent) -> Dragon's Rage Channeler (ability, opponent) -> Force of Will (spell, opponent) -> Mishra's Bauble (self) -> Dragon's Rage Channeler (ability, self) -> Dragon's Rage Channeler (ability, self) -> Mishra's Bauble (spell, self)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Dragon's Rage Channeler (Surveil)
+   1: Dragon's Rage Channeler (Surveil)
+  >> B/B: 0 (Dragon's Rage Channeler (Surveil))
+--- Narrative ---
+  Dragon's Rage Channeler triggered
+  Dragon's Rage Channeler triggered
+  Resolving ability (category: Surveil, amount: 1)
+  Top card of Player B's library: Daze
+
+--- Decision 145 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  1 life | mana: empty | hand(0): (empty)
+  Opp:   8 life | mana: empty | hand count: 0
+  Self BF:  Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Volcanic Island (T) | Wasteland (T) | Thundering Falls
+  Opp BF:   Dragon's Rage Channeler [4/4] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Stack: Dragon's Rage Channeler (ability, self) -> Dragon's Rage Channeler (ability, self) -> Daze (spell, self) -> Force of Will (opponent) -> Dragon's Rage Channeler (ability, opponent) -> Force of Will (spell, opponent) -> Mishra's Bauble (self) -> Dragon's Rage Channeler (ability, self) -> Dragon's Rage Channeler (ability, self) -> Mishra's Bauble (spell, self)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Keep on top
+   1: Put in graveyard
+  >> B/B: 1 (Put in graveyard)
+--- Narrative ---
+  Player B puts Daze into the graveyard.
+  Resolving ability (category: Surveil, amount: 1)
+  Top card of Player B's library: Cori-Steel Cutter
+
+--- Decision 146 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  1 life | mana: empty | hand(0): (empty)
+  Opp:   8 life | mana: empty | hand count: 0
+  Self BF:  Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Volcanic Island (T) | Wasteland (T) | Thundering Falls
+  Opp BF:   Dragon's Rage Channeler [4/4] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Stack: Dragon's Rage Channeler (ability, self) -> Daze (spell, self) -> Force of Will (opponent) -> Dragon's Rage Channeler (ability, opponent) -> Force of Will (spell, opponent) -> Mishra's Bauble (self) -> Dragon's Rage Channeler (ability, self) -> Dragon's Rage Channeler (ability, self) -> Mishra's Bauble (spell, self)
+  Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Daze, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Keep on top
+   1: Put in graveyard
+  >> B/B: 1 (Put in graveyard)
+--- Narrative ---
+  Player B puts Cori-Steel Cutter into the graveyard.
+  Resolving ability (category: Counter)
+  Force of Will's controller may pay {1} to save it:
+
+--- Decision 147 ---
+  Priority: Player A (non-active)
+  Step: First Main
+  Self:  8 life | mana: empty | hand(0): (empty)
+  Opp:   1 life | mana: empty | hand count: 0
+  Self BF:  Dragon's Rage Channeler [4/4] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Opp BF:   Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Volcanic Island (T) | Wasteland (T) | Thundering Falls
+  Stack: Daze (spell, opponent) -> Force of Will (self) -> Dragon's Rage Channeler (ability, self) -> Force of Will (spell, self) -> Mishra's Bauble (opponent) -> Dragon's Rage Channeler (ability, opponent) -> Dragon's Rage Channeler (ability, opponent) -> Mishra's Bauble (spell, opponent)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Opp GY:  Cori-Steel Cutter, Force of Will, Lightning Bolt, Lightning Bolt, Daze, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
+  Actions:
+   0: Don't pay (spell is countered)
+  >> A/A: 0 (Don't pay (spell is countered))
+--- Narrative ---
+  Force of Will is countered
+  Resolving ability (category: Surveil, amount: 1)
+  Top card of Player A's library: Murktide Regent
+
+--- Decision 148 ---
+  Priority: Player A (non-active)
+  Step: First Main
+  Self:  8 life | mana: empty | hand(0): (empty)
+  Opp:   1 life | mana: empty | hand count: 0
+  Self BF:  Dragon's Rage Channeler [4/4] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Opp BF:   Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Volcanic Island (T) | Wasteland (T) | Thundering Falls
+  Stack: Dragon's Rage Channeler (ability, self) -> Dragon's Rage Channeler (ability, opponent) -> Dragon's Rage Channeler (ability, opponent) -> Mishra's Bauble (spell, opponent)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Opp GY:  Cori-Steel Cutter, Force of Will, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
+  Actions:
+   0: Keep on top
+   1: Put in graveyard
+  >> A/A: 1 (Put in graveyard)
+--- Narrative ---
+  Player A puts Murktide Regent into the graveyard.
+  Resolving ability (category: Surveil, amount: 1)
+  Top card of Player B's library: Delver of Secrets
+
+--- Decision 149 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  1 life | mana: empty | hand(0): (empty)
+  Opp:   8 life | mana: empty | hand count: 0
+  Self BF:  Dragon's Rage Channeler [1/1] | Dragon's Rage Channeler [1/1] | Volcanic Island (T) | Wasteland (T) | Thundering Falls
+  Opp BF:   Dragon's Rage Channeler [4/4] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Stack: Dragon's Rage Channeler (ability, self) -> Dragon's Rage Channeler (ability, self) -> Mishra's Bauble (spell, self)
+  Self GY: Cori-Steel Cutter, Force of Will, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Murktide Regent, Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Keep on top
+   1: Put in graveyard
+  >> B/B: 1 (Put in graveyard)
+--- Narrative ---
+  Player B puts Delver of Secrets into the graveyard.
+  Dragon's Rage Channeler gains 2/2 Flying (Delirium)
+  Dragon's Rage Channeler gains 2/2 Flying (Delirium)
+  Resolving ability (category: Surveil, amount: 1)
+  Top card of Player B's library: Daze
+
+--- Decision 150 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  1 life | mana: empty | hand(0): (empty)
+  Opp:   8 life | mana: empty | hand count: 0
+  Self BF:  Dragon's Rage Channeler [3/3] | Dragon's Rage Channeler [3/3] | Volcanic Island (T) | Wasteland (T) | Thundering Falls
+  Opp BF:   Dragon's Rage Channeler [4/4] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Stack: Dragon's Rage Channeler (ability, self) -> Mishra's Bauble (spell, self)
+  Self GY: Delver of Secrets, Cori-Steel Cutter, Force of Will, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Murktide Regent, Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Keep on top
+   1: Put in graveyard
+  >> B/B: 1 (Put in graveyard)
+--- Narrative ---
+  Player B puts Daze into the graveyard.
+  Mishra's Bauble enters the battlefield
+
+--- Decision 151 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  1 life | mana: empty | hand(0): (empty)
+  Opp:   8 life | mana: empty | hand count: 0
+  Self BF:  Dragon's Rage Channeler [3/3] | Dragon's Rage Channeler [3/3] | Mishra's Bauble | Volcanic Island (T) | Wasteland (T) | Thundering Falls
+  Opp BF:   Dragon's Rage Channeler [4/4] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Delver of Secrets, Cori-Steel Cutter, Force of Will, Lightning Bolt, Lightning Bolt, Daze, Daze, Daze, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Murktide Regent, Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Activate Mishra's Bauble (PeekAndReveal)
+  >> B/B: 1 (Activate Mishra's Bauble (PeekAndReveal))
+--- Narrative ---
+  Choose target:
+
+--- Decision 152 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  1 life | mana: empty | hand(0): (empty)
+  Opp:   8 life | mana: empty | hand count: 0
+  Self BF:  Dragon's Rage Channeler [3/3] | Dragon's Rage Channeler [3/3] | Mishra's Bauble | Volcanic Island (T) | Wasteland (T) | Thundering Falls
+  Opp BF:   Dragon's Rage Channeler [4/4] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Delver of Secrets, Cori-Steel Cutter, Force of Will, Lightning Bolt, Lightning Bolt, Daze, Daze, Daze, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Murktide Regent, Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Player A (8 life)
+   1: Player B (1 life)
+  >> B/B: 0 (Player A (8 life))
+--- Narrative ---
+  Targeting choice 0
+  Player B sacrifices Mishra's Bauble
+  Player B's Mishra's Bauble ability targeting Player A is on the stack
+  Resolving ability (category: PeekAndReveal)
+  Player B looks at top of Player A's library: Unholy Heat
+  Resolving ability (category: DelayedTrigger)
+  Delayed trigger registered: Draw at next Upkeep.
+  Dragon's Rage Channeler must attack and is declared as an attacker.
+  Dragon's Rage Channeler must attack and is declared as an attacker.
+  --- Declare Attackers (Player B) ---
+    [attacking] Dragon's Rage Channeler [3/3] -> Player A
+    [attacking] Dragon's Rage Channeler [3/3] -> Player A
+
+--- Decision 153 ---
+  Priority: Player B (active)
+  Step: Declare Atk
+  Self:  1 life | mana: empty | hand(0): (empty)
+  Opp:   8 life | mana: empty | hand count: 0
+  Self BF:  Dragon's Rage Channeler [3/3] (ATK) | Dragon's Rage Channeler [3/3] (ATK) | Volcanic Island (T) | Wasteland (T) | Thundering Falls
+  Opp BF:   Dragon's Rage Channeler [4/4] (T) | Cori-Steel Cutter | Island (T) | Mountain (T)
+  Self GY: Delver of Secrets, Mishra's Bauble, Cori-Steel Cutter, Force of Will, Lightning Bolt, Lightning Bolt, Daze, Daze, Daze, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
+  Opp GY:  Murktide Regent, Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Confirm attackers
+  >> B/B: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Dragon's Rage Channeler -> Player A
+    Dragon's Rage Channeler -> Player A
+  No creatures eligible to block.
+  --- Combat Damage ---
+    Dragon's Rage Channeler deals 3 damage to Player A
+    Dragon's Rage Channeler deals 3 damage to Player A
+  --- End Combat Damage ---
+  -------- TURN 13 (Player A) --------
+  Delayed trigger fires.
+  Resolving ability (category: Draw, amount: 1)
+  Player B draws Ponder
+  Player A draws Unholy Heat
+--- Turn 13 (Player A) ---
+  PA: Unholy Heat
+  PB: (empty)
+
+--- Decision 154 ---
+  Priority: Player A (active)
+  Step: Draw
+  Self:  2 life | mana: empty | hand(1): Unholy Heat
+  Opp:   1 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [4/4] | Cori-Steel Cutter | Island | Mountain
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Dragon's Rage Channeler [3/3] (T) | Volcanic Island (T) | Wasteland (T) | Thundering Falls
+  Self GY: Murktide Regent, Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Opp GY:  Delver of Secrets, Mishra's Bauble, Cori-Steel Cutter, Force of Will, Lightning Bolt, Lightning Bolt, Daze, Daze, Daze, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
+  Actions:
+   0: Pass priority
+   1: Cast Unholy Heat
+  >> A/A: 1 (Cast Unholy Heat)
+--- Narrative ---
+  Choose target:
+
+--- Decision 155 ---
+  Priority: Player A (active)
+  Step: Draw
+  Self:  2 life | mana: empty | hand(1): Unholy Heat
+  Opp:   1 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [4/4] | Cori-Steel Cutter | Island | Mountain
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Dragon's Rage Channeler [3/3] (T) | Volcanic Island (T) | Wasteland (T) | Thundering Falls
+  Self GY: Murktide Regent, Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Opp GY:  Delver of Secrets, Mishra's Bauble, Cori-Steel Cutter, Force of Will, Lightning Bolt, Lightning Bolt, Daze, Daze, Daze, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
+  Actions:
+   0: Dragon's Rage Channeler
+   1: Dragon's Rage Channeler
+   2: Dragon's Rage Channeler
+  >> A/A: 0 (Dragon's Rage Channeler)
+--- Narrative ---
+  Targeting choice 0
+  Player A activated Mountain for 1(R)
+  Player A casts Unholy Heat targeting Dragon's Rage Channeler
+  Dragon's Rage Channeler triggered
+  Resolving ability (category: Surveil, amount: 1)
+  Top card of Player A's library: Delver of Secrets
+
+--- Decision 156 ---
+  Priority: Player A (active)
+  Step: Draw
+  Self:  2 life | mana: empty | hand(0): (empty)
+  Opp:   1 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [4/4] | Cori-Steel Cutter | Island | Mountain (T)
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Dragon's Rage Channeler [3/3] (T) | Volcanic Island (T) | Wasteland (T) | Thundering Falls
+  Stack: Dragon's Rage Channeler (ability, self) -> Unholy Heat (spell, self) -> Dragon's Rage Channeler (opponent)
+  Self GY: Murktide Regent, Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Opp GY:  Delver of Secrets, Mishra's Bauble, Cori-Steel Cutter, Force of Will, Lightning Bolt, Lightning Bolt, Daze, Daze, Daze, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
+  Actions:
+   0: Keep on top
+   1: Put in graveyard
+  >> A/A: 1 (Put in graveyard)
+--- Narrative ---
+  Player A puts Delver of Secrets into the graveyard.
+  Resolving ability (category: DealDamage, amount: 2)
+  Dealt 6 damage to creature
+  Dragon's Rage Channeler is destroyed (lethal damage)
+  Dragon's Rage Channeler must attack and is declared as an attacker.
+  --- Declare Attackers (Player A) ---
+    [attacking] Dragon's Rage Channeler [4/4] -> Player B
+
+--- Decision 157 ---
+  Priority: Player A (active)
+  Step: Declare Atk
+  Self:  2 life | mana: empty | hand(0): (empty)
+  Opp:   1 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [4/4] (ATK) | Cori-Steel Cutter | Island | Mountain (T)
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Volcanic Island (T) | Wasteland (T) | Thundering Falls
+  Self GY: Delver of Secrets, Murktide Regent, Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Force of Will, Lightning Bolt, Unholy Heat, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
+  Opp GY:  Delver of Secrets, Dragon's Rage Channeler, Mishra's Bauble, Cori-Steel Cutter, Force of Will, Lightning Bolt, Lightning Bolt, Daze, Daze, Daze, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
+  Actions:
+   0: Confirm attackers
+  >> A/A: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Dragon's Rage Channeler -> Player B
+  No creatures eligible to block.
+  --- Combat Damage ---
+    Dragon's Rage Channeler deals 4 damage to Player B
+  --- End Combat Damage ---
+  Player B has -3 life - Player A wins!
+
+=== A/A wins ===

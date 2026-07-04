@@ -65,10 +65,15 @@ USER_AGENT = "robomage-forge-fetch/1.0"
 _REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 CARDS_DIR = os.path.join(_REPO_ROOT, "bin", "resources", "cardsfolder")
 TOKENS_DIR = os.path.join(_REPO_ROOT, "bin", "resources", "tokenscripts")
+VOCAB_H = os.path.join(_REPO_ROOT, "src", "card_vocab.h")
 
 # Per-run cache of contents-API directory listings, keyed by (letter, branch);
 # value is the list of filenames or None when the listing was unavailable.
 _DIR_CACHE = {}
+
+# Per-run cache of the card_vocab.h card-name order (used only as a DFC back-face
+# fallback when the contents API is unavailable — see _dfc_back_candidate).
+_VOCAB_ORDER = None
 
 
 def name_to_uid(name):
@@ -86,9 +91,12 @@ def _resolve(uid, is_token):
     return f"cardsfolder/{letter}/{uid}.txt", os.path.join(CARDS_DIR, letter, f"{uid}.txt")
 
 
-def fetch_text(url, timeout=25):
+def fetch_text(url, timeout=25, extra_headers=None):
     """Return the body for a 200 response, or None for 404; raise on other errors."""
-    req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+    headers = {"User-Agent": USER_AGENT}
+    if extra_headers:
+        headers.update(extra_headers)
+    req = urllib.request.Request(url, headers=headers)
     try:
         with urllib.request.urlopen(req, timeout=timeout) as r:
             return r.read().decode("utf-8", "replace")
@@ -158,7 +166,12 @@ def _list_forge_dir(letter, branch):
         return _DIR_CACHE[key]
     names = None
     try:
-        body = fetch_text(API_DIR.format(letter=letter, branch=branch))
+        # Authenticate the contents-API request when GITHUB_TOKEN is set (CI):
+        # raises the unauthenticated 60 req/hr cap to 5000. No-op locally when the
+        # var is absent — the raw-content fetches never hit this rate limit.
+        token = os.environ.get("GITHUB_TOKEN")
+        auth = {"Authorization": f"Bearer {token}"} if token else None
+        body = fetch_text(API_DIR.format(letter=letter, branch=branch), extra_headers=auth)
         if body is not None:
             names = [e.get("name", "") for e in json.loads(body)]
     except (urllib.error.URLError, ValueError, OSError):
@@ -167,16 +180,53 @@ def _list_forge_dir(letter, branch):
     return names
 
 
+def _vocab_order():
+    """The card names listed in src/card_vocab.h, in file (index) order. Cached."""
+    global _VOCAB_ORDER
+    if _VOCAB_ORDER is None:
+        names = []
+        try:
+            with open(VOCAB_H, encoding="utf-8", errors="replace") as f:
+                # Entries look like {"Card Name", N}; several may share a line.
+                names = re.findall(r'\{"((?:[^"\\]|\\.)*)"\s*,\s*\d+\}', f.read())
+        except OSError:
+            names = []
+        _VOCAB_ORDER = names
+    return _VOCAB_ORDER
+
+
+def _dfc_back_candidate(uid):
+    """Back-face combined-filename candidate '<uid>_<back>.txt' for a DFC front,
+    derived from card_vocab.h adjacency (the engine registers a transform card's
+    two faces as consecutive entries, front then back — e.g. Delver of Secrets /
+    Insectile Aberration), else None.
+
+    This is the token-free fallback for _discover_forge_dfc when the GitHub
+    contents API (the normal directory-listing discovery) is unavailable — it is
+    blocked outright in the sandboxed cloud/session environment and rate-limited
+    when unauthenticated. The candidate is only ever *probed*: the caller fetches
+    it from raw and re-verifies its front face, so a wrong adjacency guess is
+    discarded, never written."""
+    names = _vocab_order()
+    for i, nm in enumerate(names[:-1]):
+        if name_to_uid(nm) == uid:
+            back = name_to_uid(names[i + 1])
+            if back:
+                return f"{uid}_{back}.txt"
+    return None
+
+
 def _discover_forge_dfc(uid, branch):
     """The combined '<uid>_<back>.txt' filename Forge serves for a DFC, or None."""
     names = _list_forge_dir(uid[0], branch)
-    if not names:
-        return None
-    prefix = uid + "_"
-    for nm in sorted(names):
-        if nm.startswith(prefix) and nm.endswith(".txt"):
-            return nm
-    return None
+    if names:
+        prefix = uid + "_"
+        for nm in sorted(names):
+            if nm.startswith(prefix) and nm.endswith(".txt"):
+                return nm
+    # Contents API unavailable (blocked / rate-limited): fall back to the
+    # vocab-adjacency candidate. The caller verifies the front face before writing.
+    return _dfc_back_candidate(uid)
 
 
 def _write(name, dest, body, branch):

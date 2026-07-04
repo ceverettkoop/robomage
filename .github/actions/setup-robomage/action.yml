@@ -1,0 +1,80 @@
+name: Set up robomage
+description: >
+  Provision the Python venv + Forge card scripts and build the headless engine,
+  with pip / card-script / ccache caching. Shared by the CI and nightly-fuzz
+  workflows so both use an identical environment.
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+
+    - name: Cache pip
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/pip
+        key: pip-${{ runner.os }}-numpy-gymnasium
+        restore-keys: pip-${{ runner.os }}-
+
+    - name: Create venv + install harness deps
+      shell: bash
+      run: |
+        python3 -m venv train/.venv
+        train/.venv/bin/python -m pip install --quiet --upgrade pip
+        # numpy + gymnasium are all the test harness / env import chain needs
+        # (no torch — that is only for PPO training). Mirrors the SessionStart hook.
+        train/.venv/bin/python -m pip install --quiet numpy gymnasium
+
+    # Card + token scripts are .gitignored and fetched from Card-Forge/forge.
+    # Restore-then-save (not the monolithic cache action) so the FIRST run still
+    # populates the cache even if a later build/test step fails the job. The fetch
+    # tool is add-only, so a stale restore only re-fetches the delta.
+    - name: Restore card scripts cache
+      id: cards-cache
+      uses: actions/cache/restore@v4
+      with:
+        path: |
+          bin/resources/cardsfolder
+          bin/resources/tokenscripts
+        key: cards-v1-${{ hashFiles('bin/resources/decks/**/*.dk', 'src/card_vocab.h', 'tools/forge_fetch/*.py') }}
+        restore-keys: cards-v1-
+
+    - name: Provision card + token scripts
+      shell: bash
+      env:
+        # Authenticates the contents-API calls fetch_script.py makes to resolve
+        # DFC filenames (raises the 60 req/hr unauthenticated cap to 5000).
+        GITHUB_TOKEN: ${{ github.token }}
+      run: train/.venv/bin/python tools/forge_fetch/provision_decks.py
+
+    - name: Save card scripts cache
+      # Save right after provisioning (before the build can fail) so the first
+      # green-or-red run leaves a warm cache. No-op on an exact-key hit.
+      if: always() && steps.cards-cache.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v4
+      with:
+        path: |
+          bin/resources/cardsfolder
+          bin/resources/tokenscripts
+        key: cards-v1-${{ hashFiles('bin/resources/decks/**/*.dk', 'src/card_vocab.h', 'tools/forge_fetch/*.py') }}
+
+    - name: Cache ccache
+      uses: actions/cache@v4
+      with:
+        path: ~/.ccache
+        key: ccache-${{ runner.os }}-${{ hashFiles('src/**', 'Makefile') }}
+        restore-keys: ccache-${{ runner.os }}-
+
+    - name: Install ccache
+      shell: bash
+      run: sudo apt-get update -qq && sudo apt-get install -y -qq ccache
+
+    - name: Build engine (headless, debug)
+      shell: bash
+      # Default debug build on purpose: keeps warnings, _GLIBCXX_ASSERTIONS and
+      # the engine's WARNING:/assert paths active (better bug detection than
+      # RELEASE, whose -march=native is wrong for shared runners).
+      run: make -j"$(nproc)" CXX="ccache g++" CC="ccache gcc"
