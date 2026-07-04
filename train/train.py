@@ -1382,6 +1382,33 @@ def _describe_action(cats, card_ids, action, num_choices):
     return cat_name
 
 
+def _is_debug_build(binary_path: str) -> bool | None:
+    """True if the engine binary was built debug, False if release, None if unknown.
+
+    The Makefile's release build (BUILD=RELEASE) compiles -O2 -flto -DNDEBUG with
+    no debug info; the default debug build adds -ggdb, which embeds DWARF
+    `.debug_info` sections. So the presence of that section name in the binary is
+    a reliable debug-vs-release signal (no engine change / extra dependency)."""
+    try:
+        with open(binary_path, "rb") as f:
+            return b".debug_info" in f.read()
+    except OSError:
+        return None
+
+
+def _warn_if_debug_build(binary_path: str) -> None:
+    """Warn (once) that RL training should use a release engine build for speed."""
+    if _is_debug_build(binary_path):
+        print(
+            "\n\033[33mWARNING: training against a DEBUG engine build "
+            f"({binary_path}).\033[0m\n"
+            "  The debug build runs the engine with assertions and no optimization, "
+            "which makes\n  self-play data collection several times slower. Build the "
+            "release engine first:\n      make BUILD=RELEASE\n  and re-run (pass "
+            "--binary to point at it if it is not the default bin/robomage).\n",
+            flush=True)
+
+
 def _run_sweep(args, parser, decks_filter):
     """Train every deck×deck matchup, optionally filtered to one deck."""
     all_decks = sorted(os.path.splitext(p)[0]
@@ -1443,6 +1470,8 @@ if __name__ == "__main__":
 
     if args.command in ("train", "sweep", "fixed-model", "alternate", "league"):
         env_kwargs = dict(bo3=args.bo3, auto_sideboard=args.auto_sideboard)
+        # These are the training subcommands — nudge toward a release engine build.
+        _warn_if_debug_build(args.binary)
 
     if args.command == "league":
         league(args.binary, decks=args.decks, total_timesteps=args.total_timesteps,

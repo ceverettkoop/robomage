@@ -107,7 +107,15 @@ program:$(C_OBJ) $(CXX_OBJ)
 	@mkdir -p $(BINDIR)
 	$(CXX) -o $(BINDIR)/$(BINNAME) $(C_OBJ) $(CXX_OBJ) $(LDFLAGS) $(LDLIBS) $(PLATFLAGS)
 
-.PHONY: all pygen clean
+# Standardized engine test gate — the single command CI and developers run. Builds
+# first (via `all`), then runs every tier of train/ci_check.py (codegen-sync, vocab
+# coverage, byte-identical replay corpus, deterministic league smoke, short fuzz).
+# Exits nonzero on any finding. Requires the card scripts to be provisioned first
+# (tools/forge_fetch/provision_decks.py; the SessionStart hook does this).
+check: all
+	$(PYTHON) train/ci_check.py
+
+.PHONY: all pygen check clean
 
 clean:
 	rm -f $(ODIR)/*/*.o $(ODIR)/*/*.d

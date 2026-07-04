@@ -1,531 +1,2554 @@
-robomage 0.001
-Using seed: 1641108517
-Player A draws Daze
-Player A draws Force of Will
-Player A draws Lion's Eye Diamond
-Player A draws Polluted Delta
-Player A draws Lotus Petal
-Player A draws Street Wraith
-Player A draws Polluted Delta
-Player B draws Daze
-Player B draws Murktide Regent
-Player B draws Volcanic Island
-Player B draws Misty Rainforest
-Player B draws Unholy Heat
-Player B draws Brainstorm
-Player B draws Volcanic Island
-Player A hand:
-Force of Will
-Daze
-Lotus Petal
-Lion's Eye Diamond
-Street Wraith
-Polluted Delta
-Polluted Delta
-<<DECISION 1: action=0>>
-Player B hand:
-Murktide Regent
-Brainstorm
-Daze
-Unholy Heat
-Volcanic Island
-Volcanic Island
-Misty Rainforest
-<<DECISION 2: action=0>>
--------- TURN 0 (Player A) --------
-<<DECISION 3: action=0>>
-<<DECISION 4: action=0>>
-<<DECISION 5: action=0>>
-<<DECISION 6: action=3>>
-Player A casts Lotus Petal
-<<DECISION 7: action=0>>
-Lotus Petal enters the battlefield
-<<DECISION 8: action=3>>
-Player A casts Lion's Eye Diamond
-<<DECISION 9: action=0>>
-Lion's Eye Diamond enters the battlefield
-<<DECISION 10: action=1>>
-Player A played Polluted Delta
-<<DECISION 11: action=1>>
-Player A sacrifices Lion's Eye Diamond
-Player A discards Force of Will
-Player A discards Daze
-Player A discards Street Wraith
-Player A discards Polluted Delta
-Player A's Lion's Eye Diamond ability is on the stack
-<<DECISION 12: action=1>>
-Player A pays 1 life
-Player A sacrifices Polluted Delta
-Player A's Polluted Delta ability is on the stack
-Resolving ability (category: ChangeZone, amount: 0)
-Searching Player A's library:
-<<DECISION 13: action=1>>
-Player A shuffles their library
-Player A puts Swamp to the battlefield
-Resolving ability (category: AddMana, amount: 3)
-<<DECISION 14: action=4>>
-Player A adds 3{G}
-MANA_WASTED: A
-No creatures eligible to attack.
-No attackers ��� skipping declare blockers.
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 1 (Player B) --------
-Player B draws Volcanic Island
-<<DECISION 15: action=1>>
-Player B played Volcanic Island
-<<DECISION 16: action=1>>
-Player B activated Volcanic Island for 1(U)
-Player B casts Brainstorm
-<<DECISION 17: action=0>>
-Resolving ability (category: Draw, amount: 3)
-Player B draws Brainstorm
-Player B draws Brainstorm
-Player B draws Daze
-Resolving ability (category: ChangeZone, amount: 2)
-Player B chooses a card from Player B hand:
-<<DECISION 18: action=0>>
-Player B puts Murktide Regent to top of library
-Player B puts a card to top of library
-Player B chooses a card from Player B hand:
-<<DECISION 19: action=0>>
-Player B puts Brainstorm to top of library
-Player B puts a card to top of library
-No creatures eligible to attack.
-No attackers ��� skipping declare blockers.
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 2 (Player A) --------
-Player A draws Brainstorm
-<<DECISION 20: action=1>>
-Player A sacrifices Lotus Petal
-Player A activated Lotus Petal for 1(U)
-Player A casts Brainstorm
-<<DECISION 21: action=1>>
-<<DECISION 22: action=0>>
-Player B returns Volcanic Island to hand
-Choose target:
-<<DECISION 23: action=0>>
-Targeting choice 0
-Player B casts Daze targeting Brainstorm
-Resolving ability (category: Counter, amount: 0)
-Brainstorm's controller may pay {1} to save it:
-<<DECISION 24: action=1>>
-Brainstorm is countered
-No creatures eligible to attack.
-No attackers ��� skipping declare blockers.
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 3 (Player B) --------
-Player B draws Brainstorm
-<<DECISION 25: action=1>>
-Player B played Volcanic Island
-<<DECISION 26: action=1>>
-Player B activated Volcanic Island for 1(U)
-Player B casts Brainstorm
-<<DECISION 27: action=0>>
-Resolving ability (category: Draw, amount: 3)
-Player B draws Murktide Regent
-Player B draws Mountain
-Player B draws Daze
-Resolving ability (category: ChangeZone, amount: 2)
-Player B chooses a card from Player B hand:
-<<DECISION 28: action=0>>
-Player B puts Murktide Regent to top of library
-Player B puts a card to top of library
-Player B chooses a card from Player B hand:
-<<DECISION 29: action=0>>
-Player B puts Brainstorm to top of library
-Player B puts a card to top of library
-No creatures eligible to attack.
-No attackers ��� skipping declare blockers.
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 4 (Player A) --------
-Player A draws Thoughtseize
-<<DECISION 30: action=1>>
-Player A activated Swamp for 1(B)
-Choose target:
-<<DECISION 31: action=0>>
-Targeting choice 0
-Player A casts Thoughtseize targeting Player B
-<<DECISION 32: action=1>>
-<<DECISION 33: action=0>>
-Player B returns Volcanic Island to hand
-Choose target:
-<<DECISION 34: action=0>>
-Targeting choice 0
-Player B casts Daze targeting Thoughtseize
-Resolving ability (category: Counter, amount: 0)
-Thoughtseize's controller may pay {1} to save it:
-<<DECISION 35: action=0>>
-Thoughtseize is countered
-No creatures eligible to attack.
-No attackers ��� skipping declare blockers.
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 5 (Player B) --------
-Player B draws Brainstorm
-<<DECISION 36: action=1>>
-Player B played Mountain
-No creatures eligible to attack.
-No attackers ��� skipping declare blockers.
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 6 (Player A) --------
-Player A draws Underground Sea
-<<DECISION 37: action=1>>
-Player A played Underground Sea
-No creatures eligible to attack.
-No attackers ��� skipping declare blockers.
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 7 (Player B) --------
-Player B draws Murktide Regent
-<<DECISION 38: action=1>>
-Player B played Volcanic Island
-<<DECISION 39: action=1>>
-Player B activated Volcanic Island for 1(U)
-Player B casts Brainstorm
-<<DECISION 40: action=0>>
-Resolving ability (category: Draw, amount: 3)
-Player B draws Wasteland
-Player B draws Ponder
-Player B draws Lightning Bolt
-Resolving ability (category: ChangeZone, amount: 2)
-Player B chooses a card from Player B hand:
-<<DECISION 41: action=0>>
-Player B puts Murktide Regent to top of library
-Player B puts a card to top of library
-Player B chooses a card from Player B hand:
-<<DECISION 42: action=0>>
-Player B puts Lightning Bolt to top of library
-Player B puts a card to top of library
-No creatures eligible to attack.
-No attackers ��� skipping declare blockers.
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 8 (Player A) --------
-Player A draws Brainstorm
-<<DECISION 43: action=1>>
-Player A activated Underground Sea for 1(U)
-Player A casts Brainstorm
-<<DECISION 44: action=1>>
-<<DECISION 45: action=0>>
-Player B returns Volcanic Island to hand
-Choose target:
-<<DECISION 46: action=0>>
-Targeting choice 0
-Player B casts Daze targeting Brainstorm
-Resolving ability (category: Counter, amount: 0)
-Brainstorm's controller may pay {1} to save it:
-<<DECISION 47: action=1>>
-Brainstorm is countered
-No creatures eligible to attack.
-No attackers ��� skipping declare blockers.
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 9 (Player B) --------
-Player B draws Lightning Bolt
-<<DECISION 48: action=1>>
-Player B activated Mountain for 1(R)
-Choose target:
-<<DECISION 49: action=0>>
-Targeting choice 0
-Player B casts Lightning Bolt targeting Player A
-Resolving ability (category: DealDamage, amount: 3)
-Dealt 3 damage to player (now at 16 life)
-<<DECISION 50: action=1>>
-Player B played Volcanic Island
-<<DECISION 51: action=1>>
-Player B activated Volcanic Island for 1(U)
-Player B casts Ponder
-Resolving ability (category: RearrangeTopOfLibrary, amount: 3)
-Player B looks at the top 3 card(s) of their library.
-Choose which card goes 3 from top:
-<<DECISION 52: action=0>>
-Choose which card goes 2 from top:
-<<DECISION 53: action=0>>
-<<DECISION 54: action=0>>
-Resolving ability (category: Draw, amount: 1)
-Player B draws Cori-Steel Cutter
-No creatures eligible to attack.
-No attackers ��� skipping declare blockers.
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 10 (Player A) --------
-Player A draws Island
-<<DECISION 55: action=1>>
-Player A played Island
-No creatures eligible to attack.
-No attackers ��� skipping declare blockers.
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 11 (Player B) --------
-Player B draws Wasteland
-<<DECISION 56: action=6>>
-Player B activated Mountain for 1(R)
-Player B activated Volcanic Island for 1(U)
-Player B casts Cori-Steel Cutter
-Cori-Steel Cutter enters the battlefield
-<<DECISION 57: action=1>>
-Player B played Volcanic Island
-No creatures eligible to attack.
-No attackers ��� skipping declare blockers.
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 12 (Player A) --------
-Player A draws Street Wraith
-<<DECISION 58: action=0>>
-<<DECISION 59: action=0>>
-<<DECISION 60: action=0>>
-No creatures eligible to attack.
-<<DECISION 61: action=0>>
-No attackers ��� skipping declare blockers.
-<<DECISION 62: action=0>>
---- Combat Damage ---
---- End Combat Damage ---
-<<DECISION 63: action=0>>
-<<DECISION 64: action=0>>
-<<DECISION 65: action=0>>
-<<DECISION 66: action=0>>
--------- TURN 13 (Player B) --------
-<<DECISION 67: action=0>>
-Player B draws Murktide Regent
-<<DECISION 68: action=0>>
-<<DECISION 69: action=5>>
-Player B exiles Brainstorm via Delve.
-Player B exiles Brainstorm via Delve.
-Player B exiles Brainstorm via Delve.
-Player B exiles Lightning Bolt via Delve.
-Player B exiles Daze via Delve.
-Player B activated Volcanic Island for 1(U)
-Player B activated Volcanic Island for 1(U)
-Player B casts Murktide Regent
-<<DECISION 70: action=0>>
-Murktide Regent enters the battlefield
-Murktide Regent enters with 5 +1/+1 counter(s) (8/8).
-<<DECISION 71: action=5>>
-Player B activated Mountain for 1(R)
-Choose target:
-<<DECISION 72: action=0>>
-Targeting choice 0
-Player B casts Unholy Heat targeting Murktide Regent
-Cori-Steel Cutter triggered
-<<DECISION 73: action=0>>
-Resolving ability (category: Token, amount: 0)
-Token created: 1/1 Monk Token
-Resolving ability (category: Attach, amount: 0)
-Equipment attached.
-Resolving ability (category: Cleanup, amount: 0)
-Monk Token token gains 1/1 Trample & Haste (always)
-<<DECISION 74: action=0>>
-Resolving ability (category: DealDamage, amount: 2)
-Dealt 2 damage to creature
-<<DECISION 75: action=1>>
-Player B played Volcanic Island
-<<DECISION 76: action=0>>
-<<DECISION 77: action=0>>
---- Declare Attackers (Player B) ---
-<<DECISION 78: action=0>>
-Select target for Monk Token token:
-<<DECISION 79: action=0>>
-Monk Token token attacking Player A.
---- Declare Attackers (Player B) ---
-  [attacking] Monk Token token [2/2] -> Player A
-<<DECISION 80: action=-1>>
-Attackers declared:
-  Monk Token token -> Player A
-<<DECISION 81: action=0>>
-No creatures eligible to block.
-<<DECISION 82: action=0>>
---- Combat Damage ---
-  Monk Token token deals 2 damage to Player A
---- End Combat Damage ---
-<<DECISION 83: action=0>>
-<<DECISION 84: action=0>>
-<<DECISION 85: action=0>>
-<<DECISION 86: action=0>>
--------- TURN 14 (Player A) --------
-<<DECISION 87: action=0>>
-Player A draws Daze
-<<DECISION 88: action=0>>
-<<DECISION 89: action=0>>
-<<DECISION 90: action=0>>
-No creatures eligible to attack.
-<<DECISION 91: action=0>>
-No attackers ��� skipping declare blockers.
-<<DECISION 92: action=0>>
---- Combat Damage ---
---- End Combat Damage ---
-<<DECISION 93: action=0>>
-<<DECISION 94: action=0>>
-<<DECISION 95: action=0>>
-<<DECISION 96: action=0>>
--------- TURN 15 (Player B) --------
-<<DECISION 97: action=0>>
-Player B draws Mishra's Bauble
-<<DECISION 98: action=0>>
-<<DECISION 99: action=4>>
-Player B casts Mishra's Bauble
-Monk Token token triggered
-<<DECISION 100: action=1>>
-Player A activated Island for 1(U)
-Player A activated Swamp for 1(B)
-Choose target:
-<<DECISION 101: action=0>>
-Targeting choice 0
-Player A casts Daze targeting Mishra's Bauble
-<<DECISION 102: action=0>>
-Resolving ability (category: Counter, amount: 0)
-Mishra's Bauble's controller may pay {1} to save it:
-<<DECISION 103: action=7>>
-Mishra's Bauble is countered
-<<DECISION 104: action=0>>
-Resolving ability (category: ProwessBonus, amount: 1)
-Prowess: creature gets +1/+1 until end of turn.
-<<DECISION 105: action=0>>
-<<DECISION 106: action=1>>
-Player B played Misty Rainforest
-<<DECISION 107: action=1>>
-Player B activated Mountain for 1(R)
-Player B activated Volcanic Island for 1(U)
-Choose creature to equip:
-<<DECISION 108: action=0>>
-Cori-Steel Cutter equipped to Murktide Regent.
-Murktide Regent gains 1/1 Trample & Haste (always)
-<<DECISION 109: action=1>>
-Player B activated Volcanic Island for 1(R)
-Player B activated Volcanic Island for 1(U)
-Choose creature to equip:
-<<DECISION 110: action=0>>
-Cori-Steel Cutter equipped to Murktide Regent.
-<<DECISION 111: action=1>>
-Player B pays 1 life
-Player B sacrifices Misty Rainforest
-Player B's Misty Rainforest ability is on the stack
-<<DECISION 112: action=0>>
-Resolving ability (category: ChangeZone, amount: 0)
-Searching Player B's library:
-<<DECISION 113: action=1>>
-Player B shuffles their library
-Player B puts Island to the battlefield
-<<DECISION 114: action=0>>
-<<DECISION 115: action=0>>
---- Declare Attackers (Player B) ---
-<<DECISION 116: action=0>>
-Select target for Murktide Regent:
-<<DECISION 117: action=0>>
-Murktide Regent attacking Player A.
---- Declare Attackers (Player B) ---
-  [attacking] Murktide Regent [9/9] -> Player A
-<<DECISION 118: action=0>>
-Select target for Monk Token token:
-<<DECISION 119: action=0>>
-Monk Token token attacking Player A.
---- Declare Attackers (Player B) ---
-  [attacking] Murktide Regent [9/9] -> Player A
-  [attacking] Monk Token token [2/2] -> Player A
-<<DECISION 120: action=-1>>
-Attackers declared:
-  Murktide Regent -> Player A
-  Monk Token token -> Player A
-<<DECISION 121: action=0>>
-No creatures eligible to block.
-<<DECISION 122: action=0>>
---- Combat Damage ---
-  Murktide Regent deals 9 damage to Player A
-  Monk Token token deals 2 damage to Player A
---- End Combat Damage ---
-<<DECISION 123: action=0>>
-<<DECISION 124: action=0>>
-<<DECISION 125: action=0>>
-<<DECISION 126: action=0>>
--------- TURN 16 (Player A) --------
-<<DECISION 127: action=0>>
-Player A draws Flooded Strand
-<<DECISION 128: action=0>>
-<<DECISION 129: action=1>>
-Player A played Flooded Strand
-<<DECISION 130: action=1>>
-Player A pays 1 life
-Player A sacrifices Flooded Strand
-Player A's Flooded Strand ability is on the stack
-<<DECISION 131: action=0>>
-Resolving ability (category: ChangeZone, amount: 0)
-Searching Player A's library:
-<<DECISION 132: action=1>>
-Player A shuffles their library
-Player A puts Undercity Sewers to the battlefield
-Undercity Sewers enters tapped.
-Undercity Sewers triggered
-<<DECISION 133: action=0>>
-Resolving ability (category: Surveil, amount: 1)
-Top card of Player A's library: Ponder
-<<DECISION 134: action=1>>
-Player A puts Ponder into the graveyard.
-<<DECISION 135: action=0>>
-<<DECISION 136: action=0>>
-No creatures eligible to attack.
-<<DECISION 137: action=0>>
-No attackers ��� skipping declare blockers.
-<<DECISION 138: action=0>>
---- Combat Damage ---
---- End Combat Damage ---
-<<DECISION 139: action=0>>
-<<DECISION 140: action=0>>
-<<DECISION 141: action=0>>
-<<DECISION 142: action=0>>
--------- TURN 17 (Player B) --------
-<<DECISION 143: action=0>>
-Player B draws Force of Will
-<<DECISION 144: action=0>>
-<<DECISION 145: action=1>>
-Player B played Wasteland
-<<DECISION 146: action=1>>
-Player B activated Mountain for 1(R)
-Player B activated Island for 1(U)
-Choose creature to equip:
-<<DECISION 147: action=0>>
-Cori-Steel Cutter equipped to Murktide Regent.
-<<DECISION 148: action=1>>
-Player B activated Volcanic Island for 1(R)
-Player B activated Volcanic Island for 1(U)
-Choose creature to equip:
-<<DECISION 149: action=0>>
-Cori-Steel Cutter equipped to Murktide Regent.
-<<DECISION 150: action=1>>
-Player B activated Volcanic Island for 1(R)
-Player B activated Wasteland for 1(C)
-Choose creature to equip:
-<<DECISION 151: action=0>>
-Cori-Steel Cutter equipped to Murktide Regent.
-<<DECISION 152: action=0>>
-<<DECISION 153: action=0>>
---- Declare Attackers (Player B) ---
-<<DECISION 154: action=0>>
-Select target for Murktide Regent:
-<<DECISION 155: action=0>>
-Murktide Regent attacking Player A.
---- Declare Attackers (Player B) ---
-  [attacking] Murktide Regent [9/9] -> Player A
-<<DECISION 156: action=0>>
-Select target for Monk Token token:
-<<DECISION 157: action=0>>
-Monk Token token attacking Player A.
---- Declare Attackers (Player B) ---
-  [attacking] Murktide Regent [9/9] -> Player A
-  [attacking] Monk Token token [1/1] -> Player A
-<<DECISION 158: action=-1>>
-Attackers declared:
-  Murktide Regent -> Player A
-  Monk Token token -> Player A
-<<DECISION 159: action=0>>
-No creatures eligible to block.
-<<DECISION 160: action=0>>
---- Combat Damage ---
-  Murktide Regent deals 9 damage to Player A
-  Monk Token token deals 1 damage to Player A
---- End Combat Damage ---
-Player A has -8 life - Player B wins!
-=== GAME OVER: winner=Player B ===
+--- Narrative ---
+  robomage 0.001
+  Using seed: 1187322509
+  -------- PREGAME --------
+  Player A draws Thassa's Oracle
+  Player A draws Polluted Delta
+  Player A draws Lotus Petal
+  Player A draws Dark Ritual
+  Player A draws Brainstorm
+  Player A draws Thoughtseize
+  Player A draws Ponder
+  Player B draws Wasteland
+  Player B draws Lightning Bolt
+  Player B draws Unholy Heat
+  Player B draws Force of Will
+  Player B draws Force of Will
+  Player B draws Dragon's Rage Channeler
+  Player B draws Wasteland
+  Player A hand:
+  Thoughtseize
+  Dark Ritual
+  Lotus Petal
+  Thassa's Oracle
+  Brainstorm
+  Ponder
+  Polluted Delta
+--- Pregame ---
+
+--- Decision 1 ---
+  Priority: Player A (active)
+  Step: Untap
+  Self:  20 life | mana: empty | hand(7): Thoughtseize, Dark Ritual, Lotus Petal, Thassa's Oracle, Brainstorm, Ponder, Polluted Delta
+  Opp:   20 life | mana: empty | hand count: 7
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> A/A: 0 (Keep)
+--- Narrative ---
+  Player A keeps a 7-card hand.
+  Player B hand:
+  Dragon's Rage Channeler
+  Force of Will
+  Force of Will
+  Lightning Bolt
+  Unholy Heat
+  Wasteland
+  Wasteland
+
+--- Decision 2 ---
+  Priority: Player B (non-active)
+  Step: Untap
+  Self:  20 life | mana: empty | hand(7): Dragon's Rage Channeler, Force of Will, Force of Will, Lightning Bolt, Unholy Heat, Wasteland, Wasteland
+  Opp:   20 life | mana: empty | hand count: 7
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> B/B: 0 (Keep)
+--- Narrative ---
+  Player B keeps a 7-card hand.
+  -------- TURN 1 (Player A) --------
+--- Turn 1 (Player A) ---
+  PA: Thoughtseize, Dark Ritual, Lotus Petal, Thassa's Oracle, Brainstorm, Ponder, Polluted Delta
+  PB: Dragon's Rage Channeler, Force of Will, Force of Will, Lightning Bolt, Unholy Heat, Wasteland, Wasteland
+
+--- Decision 3 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  20 life | mana: empty | hand(7): Thoughtseize, Dark Ritual, Lotus Petal, Thassa's Oracle, Brainstorm, Ponder, Polluted Delta
+  Opp:   20 life | mana: empty | hand count: 7
+  Actions:
+   0: Pass priority
+   1: Play Polluted Delta
+   2: Cast Lotus Petal
+  >> A/A: 2 (Cast Lotus Petal)
+--- Narrative ---
+  Player A casts Lotus Petal
+
+--- Decision 4 ---
+  Priority: Player B (non-active)
+  Step: First Main
+  Self:  20 life | mana: empty | hand(7): Dragon's Rage Channeler, Force of Will, Force of Will, Lightning Bolt, Unholy Heat, Wasteland, Wasteland
+  Opp:   20 life | mana: empty | hand count: 6
+  Stack: Lotus Petal (spell, opponent)
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)
+   2: Cast Force of Will (alternate cost)
+  >> B/B: 1 (Cast Force of Will (alternate cost))
+--- Narrative ---
+  Player B pays 1 life
+
+--- Decision 5 ---
+  Priority: Player B (non-active)
+  Step: First Main
+  Self:  19 life | mana: empty | hand(7): Dragon's Rage Channeler, Force of Will, Force of Will, Lightning Bolt, Unholy Heat, Wasteland, Wasteland
+  Opp:   20 life | mana: empty | hand count: 6
+  Stack: Lotus Petal (spell, opponent)
+  Actions:
+   0: Exile Force of Will
+  >> B/B: 0 (Exile Force of Will)
+--- Narrative ---
+  Player B exiles Force of Will
+  Choose target:
+
+--- Decision 6 ---
+  Priority: Player B (non-active)
+  Step: First Main
+  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Force of Will, Lightning Bolt, Unholy Heat, Wasteland, Wasteland
+  Opp:   20 life | mana: empty | hand count: 6
+  Stack: Lotus Petal (spell, opponent)
+  Actions:
+   0: Lotus Petal
+  >> B/B: 0 (Lotus Petal)
+--- Narrative ---
+  Targeting choice 0
+  Player B casts Force of Will targeting Lotus Petal
+  Resolving ability (category: Counter)
+  Lotus Petal is countered
+
+--- Decision 7 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  20 life | mana: empty | hand(6): Thoughtseize, Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Polluted Delta
+  Opp:   19 life | mana: empty | hand count: 5
+  Self GY: Lotus Petal
+  Opp GY:  Force of Will
+  Actions:
+   0: Pass priority
+   1: Play Polluted Delta
+  >> A/A: 1 (Play Polluted Delta)
+--- Narrative ---
+  Player A played Polluted Delta
+
+--- Decision 8 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  20 life | mana: empty | hand(5): Thoughtseize, Dark Ritual, Thassa's Oracle, Brainstorm, Ponder
+  Opp:   19 life | mana: empty | hand count: 5
+  Self BF:  Polluted Delta
+  Self GY: Lotus Petal
+  Opp GY:  Force of Will
+  Actions:
+   0: Pass priority
+   1: Activate Polluted Delta (ChangeZone)
+  >> A/A: 1 (Activate Polluted Delta (ChangeZone))
+--- Narrative ---
+  Player A pays 1 life
+  Player A sacrifices Polluted Delta
+  Player A's Polluted Delta ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Searching Player A's library:
+
+--- Decision 9 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  19 life | mana: empty | hand(5): Thoughtseize, Dark Ritual, Thassa's Oracle, Brainstorm, Ponder
+  Opp:   19 life | mana: empty | hand count: 5
+  Stack: Polluted Delta (ability, self)
+  Self GY: Lotus Petal, Polluted Delta
+  Opp GY:  Force of Will
+  Actions:
+   0: Fail to find
+   1: Swamp
+   2: Undercity Sewers
+   3: Underground Sea
+   4: Underground Sea
+   5: Underground Sea
+   6: Island
+  >> A/A: 1 (Swamp)
+--- Narrative ---
+  Player A shuffles their library
+  Player A puts Swamp to the battlefield
+
+--- Decision 10 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  19 life | mana: empty | hand(5): Thoughtseize, Dark Ritual, Thassa's Oracle, Brainstorm, Ponder
+  Opp:   19 life | mana: empty | hand count: 5
+  Self BF:  Swamp
+  Self GY: Lotus Petal, Polluted Delta
+  Opp GY:  Force of Will
+  Actions:
+   0: Pass priority
+   1: Cast Thoughtseize
+   2: Cast Dark Ritual
+  >> A/A: 1 (Cast Thoughtseize)
+--- Narrative ---
+  Choose target:
+
+--- Decision 11 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  19 life | mana: empty | hand(5): Thoughtseize, Dark Ritual, Thassa's Oracle, Brainstorm, Ponder
+  Opp:   19 life | mana: empty | hand count: 5
+  Self BF:  Swamp
+  Self GY: Lotus Petal, Polluted Delta
+  Opp GY:  Force of Will
+  Actions:
+   0: Player B (19 life)
+   1: Player A (19 life)
+  >> A/A: 0 (Player B (19 life))
+--- Narrative ---
+  Targeting choice 0
+  Player A activated Swamp for 1(B)
+  Player A casts Thoughtseize targeting Player B
+  Resolving ability (category: Discard)
+  Player B reveals their hand:
+    Dragon's Rage Channeler
+    Lightning Bolt
+    Unholy Heat
+    Wasteland
+    Wasteland
+  Player A chooses a card to discard:
+
+--- Decision 12 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  19 life | mana: empty | hand(4): Dark Ritual, Thassa's Oracle, Brainstorm, Ponder
+  Opp:   19 life | mana: empty | hand count: 5
+  Self BF:  Swamp (T)
+  Stack: Thoughtseize (spell, self) -> opponent (player)
+  Self GY: Lotus Petal, Polluted Delta
+  Opp GY:  Force of Will
+  Actions:
+   0: Dragon's Rage Channeler
+   1: Lightning Bolt
+   2: Unholy Heat
+  >> A/A: 0 (Dragon's Rage Channeler)
+--- Narrative ---
+  Player B discards Dragon's Rage Channeler
+  Resolving ability (category: LoseLife, amount: 2)
+  Player A loses 2 life (now at 17)
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 2 (Player B) --------
+  Player B draws Volcanic Island
+--- Turn 2 (Player B) ---
+  PA: Dark Ritual, Thassa's Oracle, Brainstorm, Ponder
+  PB: Lightning Bolt, Unholy Heat, Volcanic Island, Wasteland, Wasteland
+
+--- Decision 13 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  19 life | mana: empty | hand(5): Lightning Bolt, Unholy Heat, Volcanic Island, Wasteland, Wasteland
+  Opp:   17 life | mana: empty | hand count: 4
+  Opp BF:   Swamp (T)
+  Self GY: Dragon's Rage Channeler, Force of Will
+  Opp GY:  Thoughtseize, Lotus Petal, Polluted Delta
+  Actions:
+   0: Pass priority
+   1: Play Volcanic Island
+   2: Play Wasteland
+   3: Play Wasteland
+  >> B/B: 1 (Play Volcanic Island)
+--- Narrative ---
+  Player B played Volcanic Island
+
+--- Decision 14 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  19 life | mana: empty | hand(4): Lightning Bolt, Unholy Heat, Wasteland, Wasteland
+  Opp:   17 life | mana: empty | hand count: 4
+  Self BF:  Volcanic Island
+  Opp BF:   Swamp (T)
+  Self GY: Dragon's Rage Channeler, Force of Will
+  Opp GY:  Thoughtseize, Lotus Petal, Polluted Delta
+  Actions:
+   0: Pass priority
+   1: Cast Lightning Bolt
+  >> B/B: 1 (Cast Lightning Bolt)
+--- Narrative ---
+  Choose target:
+
+--- Decision 15 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  19 life | mana: empty | hand(4): Lightning Bolt, Unholy Heat, Wasteland, Wasteland
+  Opp:   17 life | mana: empty | hand count: 4
+  Self BF:  Volcanic Island
+  Opp BF:   Swamp (T)
+  Self GY: Dragon's Rage Channeler, Force of Will
+  Opp GY:  Thoughtseize, Lotus Petal, Polluted Delta
+  Actions:
+   0: Player A (17 life)
+   1: Player B (19 life)
+  >> B/B: 0 (Player A (17 life))
+--- Narrative ---
+  Targeting choice 0
+  Player B activated Volcanic Island for 1(R)
+  Player B casts Lightning Bolt targeting Player A
+  Resolving ability (category: DealDamage, amount: 3)
+  Dealt 3 damage to player (now at 14 life)
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 3 (Player A) --------
+--- Turn 3 (Player A) ---
+  PA: Dark Ritual, Thassa's Oracle, Brainstorm, Ponder
+  PB: Lightning Bolt, Unholy Heat, Wasteland, Wasteland
+
+--- Decision 16 ---
+  Priority: Player A (active)
+  Step: Upkeep
+  Self:  14 life | mana: empty | hand(4): Dark Ritual, Thassa's Oracle, Brainstorm, Ponder
+  Opp:   19 life | mana: empty | hand count: 3
+  Self BF:  Swamp
+  Opp BF:   Volcanic Island (T)
+  Self GY: Thoughtseize, Lotus Petal, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player A draws Dauthi Voidwalker
+
+--- Decision 17 ---
+  Priority: Player A (active)
+  Step: Draw
+  Self:  14 life | mana: empty | hand(5): Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Dauthi Voidwalker
+  Opp:   19 life | mana: empty | hand count: 3
+  Self BF:  Swamp
+  Opp BF:   Volcanic Island (T)
+  Self GY: Thoughtseize, Lotus Petal, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual
+  >> A/A: 0 (Pass priority)
+
+--- Decision 18 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  14 life | mana: empty | hand(5): Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Dauthi Voidwalker
+  Opp:   19 life | mana: empty | hand count: 3
+  Self BF:  Swamp
+  Opp BF:   Volcanic Island (T)
+  Self GY: Thoughtseize, Lotus Petal, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual
+  >> A/A: 0 (Pass priority)
+
+--- Decision 19 ---
+  Priority: Player A (active)
+  Step: Begin Combat
+  Self:  14 life | mana: empty | hand(5): Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Dauthi Voidwalker
+  Opp:   19 life | mana: empty | hand count: 3
+  Self BF:  Swamp
+  Opp BF:   Volcanic Island (T)
+  Self GY: Thoughtseize, Lotus Petal, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to attack.
+
+--- Decision 20 ---
+  Priority: Player A (active)
+  Step: Declare Atk
+  Self:  14 life | mana: empty | hand(5): Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Dauthi Voidwalker
+  Opp:   19 life | mana: empty | hand count: 3
+  Self BF:  Swamp
+  Opp BF:   Volcanic Island (T)
+  Self GY: Thoughtseize, Lotus Petal, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  No attackers — skipping declare blockers.
+
+--- Decision 21 ---
+  Priority: Player A (active)
+  Step: Declare Blk
+  Self:  14 life | mana: empty | hand(5): Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Dauthi Voidwalker
+  Opp:   19 life | mana: empty | hand count: 3
+  Self BF:  Swamp
+  Opp BF:   Volcanic Island (T)
+  Self GY: Thoughtseize, Lotus Petal, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  --- Combat Damage ---
+  --- End Combat Damage ---
+
+--- Decision 22 ---
+  Priority: Player A (active)
+  Step: Combat Dmg
+  Self:  14 life | mana: empty | hand(5): Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Dauthi Voidwalker
+  Opp:   19 life | mana: empty | hand count: 3
+  Self BF:  Swamp
+  Opp BF:   Volcanic Island (T)
+  Self GY: Thoughtseize, Lotus Petal, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual
+  >> A/A: 0 (Pass priority)
+
+--- Decision 23 ---
+  Priority: Player A (active)
+  Step: End Combat
+  Self:  14 life | mana: empty | hand(5): Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Dauthi Voidwalker
+  Opp:   19 life | mana: empty | hand count: 3
+  Self BF:  Swamp
+  Opp BF:   Volcanic Island (T)
+  Self GY: Thoughtseize, Lotus Petal, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual
+  >> A/A: 0 (Pass priority)
+
+--- Decision 24 ---
+  Priority: Player A (active)
+  Step: Second Main
+  Self:  14 life | mana: empty | hand(5): Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Dauthi Voidwalker
+  Opp:   19 life | mana: empty | hand count: 3
+  Self BF:  Swamp
+  Opp BF:   Volcanic Island (T)
+  Self GY: Thoughtseize, Lotus Petal, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual
+  >> A/A: 0 (Pass priority)
+
+--- Decision 25 ---
+  Priority: Player A (active)
+  Step: End Step
+  Self:  14 life | mana: empty | hand(5): Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Dauthi Voidwalker
+  Opp:   19 life | mana: empty | hand count: 3
+  Self BF:  Swamp
+  Opp BF:   Volcanic Island (T)
+  Self GY: Thoughtseize, Lotus Petal, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 4 (Player B) --------
+--- Turn 4 (Player B) ---
+  PA: Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Dauthi Voidwalker
+  PB: Lightning Bolt, Unholy Heat, Wasteland, Wasteland
+
+--- Decision 26 ---
+  Priority: Player A (non-active)
+  Step: Upkeep
+  Self:  14 life | mana: empty | hand(5): Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Dauthi Voidwalker
+  Opp:   19 life | mana: empty | hand count: 3
+  Self BF:  Swamp
+  Opp BF:   Volcanic Island
+  Self GY: Thoughtseize, Lotus Petal, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player B draws Scalding Tarn
+
+--- Decision 27 ---
+  Priority: Player A (non-active)
+  Step: Draw
+  Self:  14 life | mana: empty | hand(5): Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Dauthi Voidwalker
+  Opp:   19 life | mana: empty | hand count: 4
+  Self BF:  Swamp
+  Opp BF:   Volcanic Island
+  Self GY: Thoughtseize, Lotus Petal, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual
+  >> A/A: 0 (Pass priority)
+
+--- Decision 28 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  19 life | mana: empty | hand(4): Unholy Heat, Scalding Tarn, Wasteland, Wasteland
+  Opp:   14 life | mana: empty | hand count: 5
+  Self BF:  Volcanic Island
+  Opp BF:   Swamp
+  Self GY: Dragon's Rage Channeler, Force of Will, Lightning Bolt
+  Opp GY:  Thoughtseize, Lotus Petal, Polluted Delta
+  Actions:
+   0: Pass priority
+   1: Play Scalding Tarn
+   2: Play Wasteland
+   3: Play Wasteland
+  >> B/B: 1 (Play Scalding Tarn)
+--- Narrative ---
+  Player B played Scalding Tarn
+
+--- Decision 29 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  19 life | mana: empty | hand(3): Unholy Heat, Wasteland, Wasteland
+  Opp:   14 life | mana: empty | hand count: 5
+  Self BF:  Volcanic Island | Scalding Tarn
+  Opp BF:   Swamp
+  Self GY: Dragon's Rage Channeler, Force of Will, Lightning Bolt
+  Opp GY:  Thoughtseize, Lotus Petal, Polluted Delta
+  Actions:
+   0: Pass priority
+   1: Activate Scalding Tarn (ChangeZone)
+  >> B/B: 1 (Activate Scalding Tarn (ChangeZone))
+--- Narrative ---
+  Player B pays 1 life
+  Player B sacrifices Scalding Tarn
+  Player B's Scalding Tarn ability is on the stack
+
+--- Decision 30 ---
+  Priority: Player A (non-active)
+  Step: First Main
+  Self:  14 life | mana: empty | hand(5): Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Dauthi Voidwalker
+  Opp:   18 life | mana: empty | hand count: 3
+  Self BF:  Swamp
+  Opp BF:   Volcanic Island
+  Stack: Scalding Tarn (ability, opponent)
+  Self GY: Thoughtseize, Lotus Petal, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: ChangeZone)
+  Searching Player B's library:
+
+--- Decision 31 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  18 life | mana: empty | hand(3): Unholy Heat, Wasteland, Wasteland
+  Opp:   14 life | mana: empty | hand count: 5
+  Self BF:  Volcanic Island
+  Opp BF:   Swamp
+  Stack: Scalding Tarn (ability, self)
+  Self GY: Dragon's Rage Channeler, Force of Will, Lightning Bolt, Scalding Tarn
+  Opp GY:  Thoughtseize, Lotus Petal, Polluted Delta
+  Actions:
+   0: Fail to find
+   1: Island
+   2: Mountain
+   3: Volcanic Island
+   4: Volcanic Island
+   5: Volcanic Island
+   6: Thundering Falls
+  >> B/B: 1 (Island)
+--- Narrative ---
+  Player B shuffles their library
+  Player B puts Island to the battlefield
+
+--- Decision 32 ---
+  Priority: Player A (non-active)
+  Step: First Main
+  Self:  14 life | mana: empty | hand(5): Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Dauthi Voidwalker
+  Opp:   18 life | mana: empty | hand count: 3
+  Self BF:  Swamp
+  Opp BF:   Island | Volcanic Island
+  Self GY: Thoughtseize, Lotus Petal, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual
+  >> A/A: 0 (Pass priority)
+
+--- Decision 33 ---
+  Priority: Player A (non-active)
+  Step: Begin Combat
+  Self:  14 life | mana: empty | hand(5): Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Dauthi Voidwalker
+  Opp:   18 life | mana: empty | hand count: 3
+  Self BF:  Swamp
+  Opp BF:   Island | Volcanic Island
+  Self GY: Thoughtseize, Lotus Petal, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to attack.
+
+--- Decision 34 ---
+  Priority: Player A (non-active)
+  Step: Declare Atk
+  Self:  14 life | mana: empty | hand(5): Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Dauthi Voidwalker
+  Opp:   18 life | mana: empty | hand count: 3
+  Self BF:  Swamp
+  Opp BF:   Island | Volcanic Island
+  Self GY: Thoughtseize, Lotus Petal, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  No attackers — skipping declare blockers.
+
+--- Decision 35 ---
+  Priority: Player A (non-active)
+  Step: Declare Blk
+  Self:  14 life | mana: empty | hand(5): Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Dauthi Voidwalker
+  Opp:   18 life | mana: empty | hand count: 3
+  Self BF:  Swamp
+  Opp BF:   Island | Volcanic Island
+  Self GY: Thoughtseize, Lotus Petal, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  --- Combat Damage ---
+  --- End Combat Damage ---
+
+--- Decision 36 ---
+  Priority: Player A (non-active)
+  Step: Combat Dmg
+  Self:  14 life | mana: empty | hand(5): Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Dauthi Voidwalker
+  Opp:   18 life | mana: empty | hand count: 3
+  Self BF:  Swamp
+  Opp BF:   Island | Volcanic Island
+  Self GY: Thoughtseize, Lotus Petal, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual
+  >> A/A: 0 (Pass priority)
+
+--- Decision 37 ---
+  Priority: Player A (non-active)
+  Step: End Combat
+  Self:  14 life | mana: empty | hand(5): Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Dauthi Voidwalker
+  Opp:   18 life | mana: empty | hand count: 3
+  Self BF:  Swamp
+  Opp BF:   Island | Volcanic Island
+  Self GY: Thoughtseize, Lotus Petal, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual
+  >> A/A: 0 (Pass priority)
+
+--- Decision 38 ---
+  Priority: Player A (non-active)
+  Step: Second Main
+  Self:  14 life | mana: empty | hand(5): Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Dauthi Voidwalker
+  Opp:   18 life | mana: empty | hand count: 3
+  Self BF:  Swamp
+  Opp BF:   Island | Volcanic Island
+  Self GY: Thoughtseize, Lotus Petal, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual
+  >> A/A: 0 (Pass priority)
+
+--- Decision 39 ---
+  Priority: Player A (non-active)
+  Step: End Step
+  Self:  14 life | mana: empty | hand(5): Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Dauthi Voidwalker
+  Opp:   18 life | mana: empty | hand count: 3
+  Self BF:  Swamp
+  Opp BF:   Island | Volcanic Island
+  Self GY: Thoughtseize, Lotus Petal, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 5 (Player A) --------
+--- Turn 5 (Player A) ---
+  PA: Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Dauthi Voidwalker
+  PB: Unholy Heat, Wasteland, Wasteland
+
+--- Decision 40 ---
+  Priority: Player A (active)
+  Step: Upkeep
+  Self:  14 life | mana: empty | hand(5): Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Dauthi Voidwalker
+  Opp:   18 life | mana: empty | hand count: 3
+  Self BF:  Swamp
+  Opp BF:   Island | Volcanic Island
+  Self GY: Thoughtseize, Lotus Petal, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player A draws Ponder
+
+--- Decision 41 ---
+  Priority: Player A (active)
+  Step: Draw
+  Self:  14 life | mana: empty | hand(6): Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Ponder, Dauthi Voidwalker
+  Opp:   18 life | mana: empty | hand count: 3
+  Self BF:  Swamp
+  Opp BF:   Island | Volcanic Island
+  Self GY: Thoughtseize, Lotus Petal, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual
+  >> A/A: 0 (Pass priority)
+
+--- Decision 42 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  14 life | mana: empty | hand(6): Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Ponder, Dauthi Voidwalker
+  Opp:   18 life | mana: empty | hand count: 3
+  Self BF:  Swamp
+  Opp BF:   Island | Volcanic Island
+  Self GY: Thoughtseize, Lotus Petal, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual
+  >> A/A: 0 (Pass priority)
+
+--- Decision 43 ---
+  Priority: Player A (active)
+  Step: Begin Combat
+  Self:  14 life | mana: empty | hand(6): Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Ponder, Dauthi Voidwalker
+  Opp:   18 life | mana: empty | hand count: 3
+  Self BF:  Swamp
+  Opp BF:   Island | Volcanic Island
+  Self GY: Thoughtseize, Lotus Petal, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to attack.
+
+--- Decision 44 ---
+  Priority: Player A (active)
+  Step: Declare Atk
+  Self:  14 life | mana: empty | hand(6): Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Ponder, Dauthi Voidwalker
+  Opp:   18 life | mana: empty | hand count: 3
+  Self BF:  Swamp
+  Opp BF:   Island | Volcanic Island
+  Self GY: Thoughtseize, Lotus Petal, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  No attackers — skipping declare blockers.
+
+--- Decision 45 ---
+  Priority: Player A (active)
+  Step: Declare Blk
+  Self:  14 life | mana: empty | hand(6): Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Ponder, Dauthi Voidwalker
+  Opp:   18 life | mana: empty | hand count: 3
+  Self BF:  Swamp
+  Opp BF:   Island | Volcanic Island
+  Self GY: Thoughtseize, Lotus Petal, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  --- Combat Damage ---
+  --- End Combat Damage ---
+
+--- Decision 46 ---
+  Priority: Player A (active)
+  Step: Combat Dmg
+  Self:  14 life | mana: empty | hand(6): Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Ponder, Dauthi Voidwalker
+  Opp:   18 life | mana: empty | hand count: 3
+  Self BF:  Swamp
+  Opp BF:   Island | Volcanic Island
+  Self GY: Thoughtseize, Lotus Petal, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual
+  >> A/A: 0 (Pass priority)
+
+--- Decision 47 ---
+  Priority: Player A (active)
+  Step: End Combat
+  Self:  14 life | mana: empty | hand(6): Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Ponder, Dauthi Voidwalker
+  Opp:   18 life | mana: empty | hand count: 3
+  Self BF:  Swamp
+  Opp BF:   Island | Volcanic Island
+  Self GY: Thoughtseize, Lotus Petal, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual
+  >> A/A: 0 (Pass priority)
+
+--- Decision 48 ---
+  Priority: Player A (active)
+  Step: Second Main
+  Self:  14 life | mana: empty | hand(6): Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Ponder, Dauthi Voidwalker
+  Opp:   18 life | mana: empty | hand count: 3
+  Self BF:  Swamp
+  Opp BF:   Island | Volcanic Island
+  Self GY: Thoughtseize, Lotus Petal, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual
+  >> A/A: 0 (Pass priority)
+
+--- Decision 49 ---
+  Priority: Player A (active)
+  Step: End Step
+  Self:  14 life | mana: empty | hand(6): Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Ponder, Dauthi Voidwalker
+  Opp:   18 life | mana: empty | hand count: 3
+  Self BF:  Swamp
+  Opp BF:   Island | Volcanic Island
+  Self GY: Thoughtseize, Lotus Petal, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 6 (Player B) --------
+--- Turn 6 (Player B) ---
+  PA: Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Ponder, Dauthi Voidwalker
+  PB: Unholy Heat, Wasteland, Wasteland
+
+--- Decision 50 ---
+  Priority: Player A (non-active)
+  Step: Upkeep
+  Self:  14 life | mana: empty | hand(6): Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Ponder, Dauthi Voidwalker
+  Opp:   18 life | mana: empty | hand count: 3
+  Self BF:  Swamp
+  Opp BF:   Island | Volcanic Island
+  Self GY: Thoughtseize, Lotus Petal, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player B draws Mishra's Bauble
+
+--- Decision 51 ---
+  Priority: Player A (non-active)
+  Step: Draw
+  Self:  14 life | mana: empty | hand(6): Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Ponder, Dauthi Voidwalker
+  Opp:   18 life | mana: empty | hand count: 4
+  Self BF:  Swamp
+  Opp BF:   Island | Volcanic Island
+  Self GY: Thoughtseize, Lotus Petal, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual
+  >> A/A: 0 (Pass priority)
+
+--- Decision 52 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  18 life | mana: empty | hand(4): Mishra's Bauble, Unholy Heat, Wasteland, Wasteland
+  Opp:   14 life | mana: empty | hand count: 6
+  Self BF:  Island | Volcanic Island
+  Opp BF:   Swamp
+  Self GY: Dragon's Rage Channeler, Force of Will, Lightning Bolt, Scalding Tarn
+  Opp GY:  Thoughtseize, Lotus Petal, Polluted Delta
+  Actions:
+   0: Pass priority
+   1: Play Wasteland
+   2: Play Wasteland
+   3: Cast Mishra's Bauble
+  >> B/B: 3 (Cast Mishra's Bauble)
+--- Narrative ---
+  Player B casts Mishra's Bauble
+
+--- Decision 53 ---
+  Priority: Player A (non-active)
+  Step: First Main
+  Self:  14 life | mana: empty | hand(6): Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Ponder, Dauthi Voidwalker
+  Opp:   18 life | mana: empty | hand count: 3
+  Self BF:  Swamp
+  Opp BF:   Island | Volcanic Island
+  Stack: Mishra's Bauble (spell, opponent)
+  Self GY: Thoughtseize, Lotus Petal, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Mishra's Bauble enters the battlefield
+
+--- Decision 54 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  18 life | mana: empty | hand(3): Unholy Heat, Wasteland, Wasteland
+  Opp:   14 life | mana: empty | hand count: 6
+  Self BF:  Mishra's Bauble | Island | Volcanic Island
+  Opp BF:   Swamp
+  Self GY: Dragon's Rage Channeler, Force of Will, Lightning Bolt, Scalding Tarn
+  Opp GY:  Thoughtseize, Lotus Petal, Polluted Delta
+  Actions:
+   0: Pass priority
+   1: Play Wasteland
+   2: Play Wasteland
+   3: Activate Mishra's Bauble (PeekAndReveal)
+  >> B/B: 1 (Play Wasteland)
+--- Narrative ---
+  Player B played Wasteland
+
+--- Decision 55 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  18 life | mana: empty | hand(2): Unholy Heat, Wasteland
+  Opp:   14 life | mana: empty | hand count: 6
+  Self BF:  Mishra's Bauble | Island | Volcanic Island | Wasteland
+  Opp BF:   Swamp
+  Self GY: Dragon's Rage Channeler, Force of Will, Lightning Bolt, Scalding Tarn
+  Opp GY:  Thoughtseize, Lotus Petal, Polluted Delta
+  Actions:
+   0: Pass priority
+   1: Activate Mishra's Bauble (PeekAndReveal)
+   2: Activate Wasteland (Destroy)
+  >> B/B: 1 (Activate Mishra's Bauble (PeekAndReveal))
+--- Narrative ---
+  Choose target:
+
+--- Decision 56 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  18 life | mana: empty | hand(2): Unholy Heat, Wasteland
+  Opp:   14 life | mana: empty | hand count: 6
+  Self BF:  Mishra's Bauble | Island | Volcanic Island | Wasteland
+  Opp BF:   Swamp
+  Self GY: Dragon's Rage Channeler, Force of Will, Lightning Bolt, Scalding Tarn
+  Opp GY:  Thoughtseize, Lotus Petal, Polluted Delta
+  Actions:
+   0: Player A (14 life)
+   1: Player B (18 life)
+  >> B/B: 0 (Player A (14 life))
+--- Narrative ---
+  Targeting choice 0
+  Player B sacrifices Mishra's Bauble
+  Player B's Mishra's Bauble ability targeting Player A is on the stack
+
+--- Decision 57 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  18 life | mana: empty | hand(2): Unholy Heat, Wasteland
+  Opp:   14 life | mana: empty | hand count: 6
+  Self BF:  Island | Volcanic Island | Wasteland
+  Opp BF:   Swamp
+  Stack: Mishra's Bauble (ability, self) -> opponent (player)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Scalding Tarn
+  Opp GY:  Thoughtseize, Lotus Petal, Polluted Delta
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 1 (Activate Wasteland (Destroy))
+--- Narrative ---
+  Choose target:
+
+--- Decision 58 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  18 life | mana: empty | hand(2): Unholy Heat, Wasteland
+  Opp:   14 life | mana: empty | hand count: 6
+  Self BF:  Island | Volcanic Island | Wasteland
+  Opp BF:   Swamp
+  Stack: Mishra's Bauble (ability, self) -> opponent (player)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Scalding Tarn
+  Opp GY:  Thoughtseize, Lotus Petal, Polluted Delta
+  Actions:
+   0: Volcanic Island
+   1: Wasteland
+  >> B/B: 0 (Volcanic Island)
+--- Narrative ---
+  Targeting choice 0
+  Player B sacrifices Wasteland
+  Player B's Wasteland ability targeting Volcanic Island is on the stack
+
+--- Decision 59 ---
+  Priority: Player A (non-active)
+  Step: First Main
+  Self:  14 life | mana: empty | hand(6): Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Ponder, Dauthi Voidwalker
+  Opp:   18 life | mana: empty | hand count: 2
+  Self BF:  Swamp
+  Opp BF:   Island | Volcanic Island
+  Stack: Wasteland (ability, opponent) -> Volcanic Island (opponent) -> Mishra's Bauble (ability, opponent) -> self (player)
+  Self GY: Thoughtseize, Lotus Petal, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Scalding Tarn, Wasteland
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Destroy)
+  Volcanic Island is destroyed
+
+--- Decision 60 ---
+  Priority: Player A (non-active)
+  Step: First Main
+  Self:  14 life | mana: empty | hand(6): Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Ponder, Dauthi Voidwalker
+  Opp:   18 life | mana: empty | hand count: 2
+  Self BF:  Swamp
+  Opp BF:   Island
+  Stack: Mishra's Bauble (ability, opponent) -> self (player)
+  Self GY: Thoughtseize, Lotus Petal, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island, Scalding Tarn, Wasteland
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: PeekAndReveal)
+  Player B looks at top of Player A's library: Edge of Autumn
+  Resolving ability (category: DelayedTrigger)
+  Delayed trigger registered: Draw at next Upkeep.
+
+--- Decision 61 ---
+  Priority: Player A (non-active)
+  Step: First Main
+  Self:  14 life | mana: empty | hand(6): Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Ponder, Dauthi Voidwalker
+  Opp:   18 life | mana: empty | hand count: 2
+  Self BF:  Swamp
+  Opp BF:   Island
+  Self GY: Thoughtseize, Lotus Petal, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island, Scalding Tarn, Wasteland
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual
+  >> A/A: 0 (Pass priority)
+
+--- Decision 62 ---
+  Priority: Player A (non-active)
+  Step: Begin Combat
+  Self:  14 life | mana: empty | hand(6): Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Ponder, Dauthi Voidwalker
+  Opp:   18 life | mana: empty | hand count: 2
+  Self BF:  Swamp
+  Opp BF:   Island
+  Self GY: Thoughtseize, Lotus Petal, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island, Scalding Tarn, Wasteland
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to attack.
+
+--- Decision 63 ---
+  Priority: Player A (non-active)
+  Step: Declare Atk
+  Self:  14 life | mana: empty | hand(6): Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Ponder, Dauthi Voidwalker
+  Opp:   18 life | mana: empty | hand count: 2
+  Self BF:  Swamp
+  Opp BF:   Island
+  Self GY: Thoughtseize, Lotus Petal, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island, Scalding Tarn, Wasteland
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  No attackers — skipping declare blockers.
+
+--- Decision 64 ---
+  Priority: Player A (non-active)
+  Step: Declare Blk
+  Self:  14 life | mana: empty | hand(6): Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Ponder, Dauthi Voidwalker
+  Opp:   18 life | mana: empty | hand count: 2
+  Self BF:  Swamp
+  Opp BF:   Island
+  Self GY: Thoughtseize, Lotus Petal, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island, Scalding Tarn, Wasteland
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  --- Combat Damage ---
+  --- End Combat Damage ---
+
+--- Decision 65 ---
+  Priority: Player A (non-active)
+  Step: Combat Dmg
+  Self:  14 life | mana: empty | hand(6): Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Ponder, Dauthi Voidwalker
+  Opp:   18 life | mana: empty | hand count: 2
+  Self BF:  Swamp
+  Opp BF:   Island
+  Self GY: Thoughtseize, Lotus Petal, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island, Scalding Tarn, Wasteland
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual
+  >> A/A: 0 (Pass priority)
+
+--- Decision 66 ---
+  Priority: Player A (non-active)
+  Step: End Combat
+  Self:  14 life | mana: empty | hand(6): Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Ponder, Dauthi Voidwalker
+  Opp:   18 life | mana: empty | hand count: 2
+  Self BF:  Swamp
+  Opp BF:   Island
+  Self GY: Thoughtseize, Lotus Petal, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island, Scalding Tarn, Wasteland
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual
+  >> A/A: 0 (Pass priority)
+
+--- Decision 67 ---
+  Priority: Player A (non-active)
+  Step: Second Main
+  Self:  14 life | mana: empty | hand(6): Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Ponder, Dauthi Voidwalker
+  Opp:   18 life | mana: empty | hand count: 2
+  Self BF:  Swamp
+  Opp BF:   Island
+  Self GY: Thoughtseize, Lotus Petal, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island, Scalding Tarn, Wasteland
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual
+  >> A/A: 0 (Pass priority)
+
+--- Decision 68 ---
+  Priority: Player A (non-active)
+  Step: End Step
+  Self:  14 life | mana: empty | hand(6): Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Ponder, Dauthi Voidwalker
+  Opp:   18 life | mana: empty | hand count: 2
+  Self BF:  Swamp
+  Opp BF:   Island
+  Self GY: Thoughtseize, Lotus Petal, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island, Scalding Tarn, Wasteland
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 7 (Player A) --------
+  Delayed trigger fires.
+--- Turn 7 (Player A) ---
+  PA: Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Ponder, Dauthi Voidwalker
+  PB: Unholy Heat, Wasteland
+
+--- Decision 69 ---
+  Priority: Player A (active)
+  Step: Upkeep
+  Self:  14 life | mana: empty | hand(6): Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Ponder, Dauthi Voidwalker
+  Opp:   18 life | mana: empty | hand count: 2
+  Self BF:  Swamp
+  Opp BF:   Island
+  Stack: Mishra's Bauble (ability, opponent)
+  Self GY: Thoughtseize, Lotus Petal, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island, Scalding Tarn, Wasteland
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 1)
+  Player B draws Delver of Secrets
+
+--- Decision 70 ---
+  Priority: Player A (active)
+  Step: Upkeep
+  Self:  14 life | mana: empty | hand(6): Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Ponder, Dauthi Voidwalker
+  Opp:   18 life | mana: empty | hand count: 3
+  Self BF:  Swamp
+  Opp BF:   Island
+  Self GY: Thoughtseize, Lotus Petal, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island, Scalding Tarn, Wasteland
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual
+  >> A/A: 0 (Pass priority)
+--- Narrative ---
+  Player A draws Edge of Autumn
+
+--- Decision 71 ---
+  Priority: Player A (active)
+  Step: Draw
+  Self:  14 life | mana: empty | hand(7): Dark Ritual, Thassa's Oracle, Edge of Autumn, Brainstorm, Ponder, Ponder, Dauthi Voidwalker
+  Opp:   18 life | mana: empty | hand count: 3
+  Self BF:  Swamp
+  Opp BF:   Island
+  Self GY: Thoughtseize, Lotus Petal, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island, Scalding Tarn, Wasteland
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual
+   2: Activate Edge of Autumn from hand (Draw)
+  >> A/A: 2 (Activate Edge of Autumn from hand (Draw))
+
+--- Decision 72 ---
+  Priority: Player A (active)
+  Step: Draw
+  Self:  14 life | mana: empty | hand(7): Dark Ritual, Thassa's Oracle, Edge of Autumn, Brainstorm, Ponder, Ponder, Dauthi Voidwalker
+  Opp:   18 life | mana: empty | hand count: 3
+  Self BF:  Swamp
+  Opp BF:   Island
+  Self GY: Thoughtseize, Lotus Petal, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island, Scalding Tarn, Wasteland
+  Actions:
+   0: Sacrifice Swamp
+  >> A/A: 0 (Sacrifice Swamp)
+--- Narrative ---
+  Player A sacrifices Swamp
+  Player A activates Edge of Autumn from hand
+  Resolving ability (category: Draw, amount: 1)
+  Player A draws Dark Ritual
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 8 (Player B) --------
+  Player B draws Ponder
+--- Turn 8 (Player B) ---
+  PA: Dark Ritual, Thassa's Oracle, Edge of Autumn, Brainstorm, Ponder, Ponder, Dauthi Voidwalker
+  PB: Delver of Secrets, Unholy Heat, Ponder, Wasteland
+
+--- Decision 73 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  18 life | mana: empty | hand(4): Delver of Secrets, Unholy Heat, Ponder, Wasteland
+  Opp:   14 life | mana: empty | hand count: 7
+  Self BF:  Island
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island, Scalding Tarn, Wasteland
+  Opp GY:  Thoughtseize, Lotus Petal, Edge of Autumn, Swamp, Polluted Delta
+  Actions:
+   0: Pass priority
+   1: Play Wasteland
+   2: Cast Delver of Secrets
+   3: Cast Ponder
+  >> B/B: 2 (Cast Delver of Secrets)
+--- Narrative ---
+  Player B activated Island for 1(U)
+  Player B casts Delver of Secrets
+  Delver of Secrets enters the battlefield
+
+--- Decision 74 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  18 life | mana: empty | hand(3): Unholy Heat, Ponder, Wasteland
+  Opp:   14 life | mana: empty | hand count: 7
+  Self BF:  Delver of Secrets [1/1] (SICK) | Island (T)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island, Scalding Tarn, Wasteland
+  Opp GY:  Thoughtseize, Lotus Petal, Edge of Autumn, Swamp, Polluted Delta
+  Actions:
+   0: Pass priority
+   1: Play Wasteland
+  >> B/B: 1 (Play Wasteland)
+--- Narrative ---
+  Player B played Wasteland
+
+--- Decision 75 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  18 life | mana: empty | hand(2): Unholy Heat, Ponder
+  Opp:   14 life | mana: empty | hand count: 7
+  Self BF:  Delver of Secrets [1/1] (SICK) | Island (T) | Wasteland
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island, Scalding Tarn, Wasteland
+  Opp GY:  Thoughtseize, Lotus Petal, Edge of Autumn, Swamp, Polluted Delta
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+
+--- Decision 76 ---
+  Priority: Player B (active)
+  Step: Begin Combat
+  Self:  18 life | mana: empty | hand(2): Unholy Heat, Ponder
+  Opp:   14 life | mana: empty | hand count: 7
+  Self BF:  Delver of Secrets [1/1] (SICK) | Island (T) | Wasteland
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island, Scalding Tarn, Wasteland
+  Opp GY:  Thoughtseize, Lotus Petal, Edge of Autumn, Swamp, Polluted Delta
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  No creatures eligible to attack.
+
+--- Decision 77 ---
+  Priority: Player B (active)
+  Step: Declare Atk
+  Self:  18 life | mana: empty | hand(2): Unholy Heat, Ponder
+  Opp:   14 life | mana: empty | hand count: 7
+  Self BF:  Delver of Secrets [1/1] (SICK) | Island (T) | Wasteland
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island, Scalding Tarn, Wasteland
+  Opp GY:  Thoughtseize, Lotus Petal, Edge of Autumn, Swamp, Polluted Delta
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  No attackers — skipping declare blockers.
+
+--- Decision 78 ---
+  Priority: Player B (active)
+  Step: Declare Blk
+  Self:  18 life | mana: empty | hand(2): Unholy Heat, Ponder
+  Opp:   14 life | mana: empty | hand count: 7
+  Self BF:  Delver of Secrets [1/1] (SICK) | Island (T) | Wasteland
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island, Scalding Tarn, Wasteland
+  Opp GY:  Thoughtseize, Lotus Petal, Edge of Autumn, Swamp, Polluted Delta
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  --- Combat Damage ---
+  --- End Combat Damage ---
+
+--- Decision 79 ---
+  Priority: Player B (active)
+  Step: Combat Dmg
+  Self:  18 life | mana: empty | hand(2): Unholy Heat, Ponder
+  Opp:   14 life | mana: empty | hand count: 7
+  Self BF:  Delver of Secrets [1/1] (SICK) | Island (T) | Wasteland
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island, Scalding Tarn, Wasteland
+  Opp GY:  Thoughtseize, Lotus Petal, Edge of Autumn, Swamp, Polluted Delta
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+
+--- Decision 80 ---
+  Priority: Player B (active)
+  Step: End Combat
+  Self:  18 life | mana: empty | hand(2): Unholy Heat, Ponder
+  Opp:   14 life | mana: empty | hand count: 7
+  Self BF:  Delver of Secrets [1/1] (SICK) | Island (T) | Wasteland
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island, Scalding Tarn, Wasteland
+  Opp GY:  Thoughtseize, Lotus Petal, Edge of Autumn, Swamp, Polluted Delta
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+
+--- Decision 81 ---
+  Priority: Player B (active)
+  Step: Second Main
+  Self:  18 life | mana: empty | hand(2): Unholy Heat, Ponder
+  Opp:   14 life | mana: empty | hand count: 7
+  Self BF:  Delver of Secrets [1/1] (SICK) | Island (T) | Wasteland
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island, Scalding Tarn, Wasteland
+  Opp GY:  Thoughtseize, Lotus Petal, Edge of Autumn, Swamp, Polluted Delta
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+
+--- Decision 82 ---
+  Priority: Player B (active)
+  Step: End Step
+  Self:  18 life | mana: empty | hand(2): Unholy Heat, Ponder
+  Opp:   14 life | mana: empty | hand count: 7
+  Self BF:  Delver of Secrets [1/1] (SICK) | Island (T) | Wasteland
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island, Scalding Tarn, Wasteland
+  Opp GY:  Thoughtseize, Lotus Petal, Edge of Autumn, Swamp, Polluted Delta
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  -------- TURN 9 (Player A) --------
+--- Turn 9 (Player A) ---
+  PA: Dark Ritual, Thassa's Oracle, Edge of Autumn, Brainstorm, Ponder, Ponder, Dauthi Voidwalker
+  PB: Unholy Heat, Ponder
+
+--- Decision 83 ---
+  Priority: Player B (non-active)
+  Step: Upkeep
+  Self:  18 life | mana: empty | hand(2): Unholy Heat, Ponder
+  Opp:   14 life | mana: empty | hand count: 7
+  Self BF:  Delver of Secrets [1/1] (SICK) | Island (T) | Wasteland
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island, Scalding Tarn, Wasteland
+  Opp GY:  Thoughtseize, Lotus Petal, Edge of Autumn, Swamp, Polluted Delta
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Player A draws Lotus Petal
+
+--- Decision 84 ---
+  Priority: Player B (non-active)
+  Step: Draw
+  Self:  18 life | mana: empty | hand(2): Unholy Heat, Ponder
+  Opp:   14 life | mana: empty | hand count: 8
+  Self BF:  Delver of Secrets [1/1] (SICK) | Island (T) | Wasteland
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island, Scalding Tarn, Wasteland
+  Opp GY:  Thoughtseize, Lotus Petal, Edge of Autumn, Swamp, Polluted Delta
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+
+--- Decision 85 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  14 life | mana: empty | hand(8): Dark Ritual, Dark Ritual, Lotus Petal, Thassa's Oracle, Brainstorm, Ponder, Ponder, Dauthi Voidwalker
+  Opp:   18 life | mana: empty | hand count: 2
+  Opp BF:   Delver of Secrets [1/1] (SICK) | Island (T) | Wasteland
+  Self GY: Thoughtseize, Lotus Petal, Edge of Autumn, Swamp, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island, Scalding Tarn, Wasteland
+  Actions:
+   0: Pass priority
+   1: Cast Lotus Petal
+  >> A/A: 1 (Cast Lotus Petal)
+--- Narrative ---
+  Player A casts Lotus Petal
+
+--- Decision 86 ---
+  Priority: Player B (non-active)
+  Step: First Main
+  Self:  18 life | mana: empty | hand(2): Unholy Heat, Ponder
+  Opp:   14 life | mana: empty | hand count: 7
+  Self BF:  Delver of Secrets [1/1] (SICK) | Island (T) | Wasteland
+  Stack: Lotus Petal (spell, opponent)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island, Scalding Tarn, Wasteland
+  Opp GY:  Thoughtseize, Lotus Petal, Edge of Autumn, Swamp, Polluted Delta
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Lotus Petal enters the battlefield
+
+--- Decision 87 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  14 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Thassa's Oracle, Brainstorm, Ponder, Ponder, Dauthi Voidwalker
+  Opp:   18 life | mana: empty | hand count: 2
+  Self BF:  Lotus Petal
+  Opp BF:   Delver of Secrets [1/1] (SICK) | Island (T) | Wasteland
+  Self GY: Thoughtseize, Lotus Petal, Edge of Autumn, Swamp, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island, Scalding Tarn, Wasteland
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual
+   2: Cast Dark Ritual
+   3: Cast Brainstorm
+   4: Cast Ponder
+   5: Cast Ponder
+  >> A/A: 3 (Cast Brainstorm)
+--- Narrative ---
+  Player A sacrifices Lotus Petal
+  Player A activated Lotus Petal for 1(U)
+  Player A casts Brainstorm
+
+--- Decision 88 ---
+  Priority: Player B (non-active)
+  Step: First Main
+  Self:  18 life | mana: empty | hand(2): Unholy Heat, Ponder
+  Opp:   14 life | mana: empty | hand count: 6
+  Self BF:  Delver of Secrets [1/1] (SICK) | Island (T) | Wasteland
+  Stack: Brainstorm (spell, opponent)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island, Scalding Tarn, Wasteland
+  Opp GY:  Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Swamp, Polluted Delta
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 3)
+  Player A draws Underground Sea
+  Player A draws Force of Will
+  Player A draws Deep Analysis
+  Resolving ability (category: ChangeZone)
+  Player A chooses a card from Player A hand:
+
+--- Decision 89 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  14 life | mana: empty | hand(9): Force of Will, Dark Ritual, Dark Ritual, Thassa's Oracle, Ponder, Ponder, Underground Sea, Dauthi Voidwalker, Deep Analysis
+  Opp:   18 life | mana: empty | hand count: 2
+  Opp BF:   Delver of Secrets [1/1] (SICK) | Island (T) | Wasteland
+  Stack: Brainstorm (spell, self)
+  Self GY: Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Swamp, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island, Scalding Tarn, Wasteland
+  Actions:
+   0: Force of Will
+   1: Dark Ritual
+   2: Dark Ritual
+   3: Thassa's Oracle
+   4: Ponder
+   5: Ponder
+   6: Underground Sea
+   7: Dauthi Voidwalker
+   8: Deep Analysis
+  >> A/A: 3 (Thassa's Oracle)
+--- Narrative ---
+  Player A puts Thassa's Oracle to top of library
+  Player A chooses a card from Player A hand:
+
+--- Decision 90 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  14 life | mana: empty | hand(8): Force of Will, Dark Ritual, Dark Ritual, Ponder, Ponder, Underground Sea, Dauthi Voidwalker, Deep Analysis
+  Opp:   18 life | mana: empty | hand count: 2
+  Opp BF:   Delver of Secrets [1/1] (SICK) | Island (T) | Wasteland
+  Stack: Brainstorm (spell, self)
+  Self GY: Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Swamp, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island, Scalding Tarn, Wasteland
+  Actions:
+   0: Force of Will
+   1: Dark Ritual
+   2: Dark Ritual
+   3: Ponder
+   4: Ponder
+   5: Underground Sea
+   6: Dauthi Voidwalker
+   7: Deep Analysis
+  >> A/A: 0 (Force of Will)
+--- Narrative ---
+  Player A puts Force of Will to top of library
+
+--- Decision 91 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  14 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Ponder, Ponder, Underground Sea, Dauthi Voidwalker, Deep Analysis
+  Opp:   18 life | mana: empty | hand count: 2
+  Opp BF:   Delver of Secrets [1/1] (SICK) | Island (T) | Wasteland
+  Self GY: Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Swamp, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island, Scalding Tarn, Wasteland
+  Actions:
+   0: Pass priority
+   1: Play Underground Sea
+  >> A/A: 1 (Play Underground Sea)
+--- Narrative ---
+  Player A played Underground Sea
+
+--- Decision 92 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  14 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Ponder, Ponder, Dauthi Voidwalker, Deep Analysis
+  Opp:   18 life | mana: empty | hand count: 2
+  Self BF:  Underground Sea
+  Opp BF:   Delver of Secrets [1/1] (SICK) | Island (T) | Wasteland
+  Self GY: Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Swamp, Polluted Delta
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island, Scalding Tarn, Wasteland
+  Actions:
+   0: Pass priority
+   1: Cast Dark Ritual
+   2: Cast Dark Ritual
+   3: Cast Ponder
+   4: Cast Ponder
+  >> A/A: 3 (Cast Ponder)
+--- Narrative ---
+  Player A activated Underground Sea for 1(U)
+  Player A casts Ponder
+
+--- Decision 93 ---
+  Priority: Player B (non-active)
+  Step: First Main
+  Self:  18 life | mana: empty | hand(2): Unholy Heat, Ponder
+  Opp:   14 life | mana: empty | hand count: 5
+  Self BF:  Delver of Secrets [1/1] (SICK) | Island (T) | Wasteland
+  Opp BF:   Underground Sea (T)
+  Stack: Ponder (spell, opponent)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island, Scalding Tarn, Wasteland
+  Opp GY:  Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Swamp, Polluted Delta
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 1 (Activate Wasteland (Destroy))
+--- Narrative ---
+  Choose target:
+
+--- Decision 94 ---
+  Priority: Player B (non-active)
+  Step: First Main
+  Self:  18 life | mana: empty | hand(2): Unholy Heat, Ponder
+  Opp:   14 life | mana: empty | hand count: 5
+  Self BF:  Delver of Secrets [1/1] (SICK) | Island (T) | Wasteland
+  Opp BF:   Underground Sea (T)
+  Stack: Ponder (spell, opponent)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island, Scalding Tarn, Wasteland
+  Opp GY:  Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Swamp, Polluted Delta
+  Actions:
+   0: Underground Sea
+   1: Wasteland
+  >> B/B: 0 (Underground Sea)
+--- Narrative ---
+  Targeting choice 0
+  Player B sacrifices Wasteland
+  Player B's Wasteland ability targeting Underground Sea is on the stack
+  Resolving ability (category: Destroy)
+  Underground Sea is destroyed
+  Resolving ability (category: RearrangeTopOfLibrary)
+  Player A looks at the top 3 card(s) of their library.
+  Choose which card goes 3 from top:
+
+--- Decision 95 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  14 life | mana: empty | hand(5): Dark Ritual, Dark Ritual, Ponder, Dauthi Voidwalker, Deep Analysis
+  Opp:   18 life | mana: empty | hand count: 2
+  Opp BF:   Delver of Secrets [1/1] (SICK) | Island (T)
+  Stack: Ponder (spell, self)
+  Self GY: Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Swamp, Polluted Delta, Underground Sea
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Force of Will
+   1: Thassa's Oracle
+   2: Personal Tutor
+  >> A/A: 1 (Thassa's Oracle)
+--- Narrative ---
+  Choose which card goes 2 from top:
+
+--- Decision 96 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  14 life | mana: empty | hand(5): Dark Ritual, Dark Ritual, Ponder, Dauthi Voidwalker, Deep Analysis
+  Opp:   18 life | mana: empty | hand count: 2
+  Opp BF:   Delver of Secrets [1/1] (SICK) | Island (T)
+  Stack: Ponder (spell, self)
+  Self GY: Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Swamp, Polluted Delta, Underground Sea
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Force of Will
+   1: Personal Tutor
+  >> A/A: 0 (Force of Will)
+
+--- Decision 97 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  14 life | mana: empty | hand(5): Dark Ritual, Dark Ritual, Ponder, Dauthi Voidwalker, Deep Analysis
+  Opp:   18 life | mana: empty | hand count: 2
+  Opp BF:   Delver of Secrets [1/1] (SICK) | Island (T)
+  Stack: Ponder (spell, self)
+  Self GY: Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Swamp, Polluted Delta, Underground Sea
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Don't shuffle
+   1: Shuffle
+  >> A/A: 0 (Don't shuffle)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 1)
+  Player A draws Personal Tutor
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 10 (Player B) --------
+  Delver of Secrets triggered
+  Resolving ability (category: PeekAndReveal)
+  Top card of library: Scalding Tarn
+--- Turn 10 (Player B) ---
+  PA: Dark Ritual, Dark Ritual, Ponder, Dauthi Voidwalker, Deep Analysis
+  PB: Unholy Heat, Ponder
+
+--- Decision 98 ---
+  Priority: Player B (active)
+  Step: Upkeep
+  Self:  18 life | mana: empty | hand(2): Unholy Heat, Ponder
+  Opp:   14 life | mana: empty | hand count: 6
+  Self BF:  Delver of Secrets [1/1] | Island
+  Stack: Delver of Secrets (ability, self)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
+  Actions:
+   0: Don't reveal
+   1: Reveal
+  >> B/B: 1 (Reveal)
+--- Narrative ---
+  Revealed: Scalding Tarn
+  Player B draws Scalding Tarn
+
+--- Decision 99 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  18 life | mana: empty | hand(3): Unholy Heat, Ponder, Scalding Tarn
+  Opp:   14 life | mana: empty | hand count: 6
+  Self BF:  Delver of Secrets [1/1] | Island
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
+  Actions:
+   0: Pass priority
+   1: Play Scalding Tarn
+   2: Cast Ponder
+  >> B/B: 2 (Cast Ponder)
+--- Narrative ---
+  Player B activated Island for 1(U)
+  Player B casts Ponder
+  Resolving ability (category: RearrangeTopOfLibrary)
+  Player B looks at the top 3 card(s) of their library.
+  Choose which card goes 3 from top:
+
+--- Decision 100 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  18 life | mana: empty | hand(2): Unholy Heat, Scalding Tarn
+  Opp:   14 life | mana: empty | hand count: 6
+  Self BF:  Delver of Secrets [1/1] | Island (T)
+  Stack: Ponder (spell, self)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
+  Actions:
+   0: Force of Will
+   1: Flooded Strand
+   2: Dragon's Rage Channeler
+  >> B/B: 0 (Force of Will)
+--- Narrative ---
+  Choose which card goes 2 from top:
+
+--- Decision 101 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  18 life | mana: empty | hand(2): Unholy Heat, Scalding Tarn
+  Opp:   14 life | mana: empty | hand count: 6
+  Self BF:  Delver of Secrets [1/1] | Island (T)
+  Stack: Ponder (spell, self)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
+  Actions:
+   0: Flooded Strand
+   1: Dragon's Rage Channeler
+  >> B/B: 0 (Flooded Strand)
+
+--- Decision 102 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  18 life | mana: empty | hand(2): Unholy Heat, Scalding Tarn
+  Opp:   14 life | mana: empty | hand count: 6
+  Self BF:  Delver of Secrets [1/1] | Island (T)
+  Stack: Ponder (spell, self)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
+  Actions:
+   0: Don't shuffle
+   1: Shuffle
+  >> B/B: 0 (Don't shuffle)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 1)
+  Player B draws Dragon's Rage Channeler
+
+--- Decision 103 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  18 life | mana: empty | hand(3): Dragon's Rage Channeler, Unholy Heat, Scalding Tarn
+  Opp:   14 life | mana: empty | hand count: 6
+  Self BF:  Delver of Secrets [1/1] | Island (T)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Ponder, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
+  Actions:
+   0: Pass priority
+   1: Play Scalding Tarn
+  >> B/B: 1 (Play Scalding Tarn)
+--- Narrative ---
+  Player B played Scalding Tarn
+
+--- Decision 104 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  18 life | mana: empty | hand(2): Dragon's Rage Channeler, Unholy Heat
+  Opp:   14 life | mana: empty | hand count: 6
+  Self BF:  Delver of Secrets [1/1] | Island (T) | Scalding Tarn
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Ponder, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
+  Actions:
+   0: Pass priority
+   1: Activate Scalding Tarn (ChangeZone)
+  >> B/B: 1 (Activate Scalding Tarn (ChangeZone))
+--- Narrative ---
+  Player B pays 1 life
+  Player B sacrifices Scalding Tarn
+  Player B's Scalding Tarn ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Searching Player B's library:
+
+--- Decision 105 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  17 life | mana: empty | hand(2): Dragon's Rage Channeler, Unholy Heat
+  Opp:   14 life | mana: empty | hand count: 6
+  Self BF:  Delver of Secrets [1/1] | Island (T)
+  Stack: Scalding Tarn (ability, self)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
+  Actions:
+   0: Fail to find
+   1: Mountain
+   2: Volcanic Island
+   3: Volcanic Island
+   4: Volcanic Island
+   5: Thundering Falls
+  >> B/B: 1 (Mountain)
+--- Narrative ---
+  Player B shuffles their library
+  Player B puts Mountain to the battlefield
+
+--- Decision 106 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  17 life | mana: empty | hand(2): Dragon's Rage Channeler, Unholy Heat
+  Opp:   14 life | mana: empty | hand count: 6
+  Self BF:  Delver of Secrets [1/1] | Island (T) | Mountain
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
+  Actions:
+   0: Pass priority
+   1: Cast Dragon's Rage Channeler
+   2: Cast Unholy Heat
+  >> B/B: 1 (Cast Dragon's Rage Channeler)
+--- Narrative ---
+  Player B activated Mountain for 1(R)
+  Player B casts Dragon's Rage Channeler
+  Dragon's Rage Channeler enters the battlefield
+  Dragon's Rage Channeler gains 2/2 Flying (Delirium)
+  --- Declare Attackers (Player B) ---
+
+--- Decision 107 ---
+  Priority: Player B (active)
+  Step: Declare Atk
+  Self:  17 life | mana: empty | hand(1): Unholy Heat
+  Opp:   14 life | mana: empty | hand count: 6
+  Self BF:  Delver of Secrets [1/1] | Dragon's Rage Channeler [3/3] (SICK) | Island (T) | Mountain (T)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
+  Actions:
+   0: Delver of Secrets [1/1]
+   1: Confirm attackers
+  >> B/B: 0 (Delver of Secrets [1/1])
+--- Narrative ---
+  Delver of Secrets attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Delver of Secrets [1/1] -> Player A
+
+--- Decision 108 ---
+  Priority: Player B (active)
+  Step: Declare Atk
+  Self:  17 life | mana: empty | hand(1): Unholy Heat
+  Opp:   14 life | mana: empty | hand count: 6
+  Self BF:  Delver of Secrets [1/1] (ATK) | Dragon's Rage Channeler [3/3] (SICK) | Island (T) | Mountain (T)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
+  Actions:
+   0: Confirm attackers
+  >> B/B: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Delver of Secrets -> Player A
+  No creatures eligible to block.
+  --- Combat Damage ---
+    Delver of Secrets deals 1 damage to Player A
+  --- End Combat Damage ---
+  -------- TURN 11 (Player A) --------
+  Player A draws Force of Will
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 12 (Player B) --------
+  Delver of Secrets triggered
+--- Turn 12 (Player B) ---
+  PA: Dark Ritual, Dark Ritual, Ponder, Dauthi Voidwalker, Deep Analysis
+  PB: Unholy Heat
+
+--- Decision 109 ---
+  Priority: Player B (active)
+  Step: Upkeep
+  Self:  17 life | mana: empty | hand(1): Unholy Heat
+  Opp:   13 life | mana: empty | hand count: 7
+  Self BF:  Delver of Secrets [1/1] | Dragon's Rage Channeler [3/3] | Island | Mountain
+  Stack: Delver of Secrets (ability, self)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
+  Actions:
+   0: Pass priority
+   1: Cast Unholy Heat
+  >> B/B: 1 (Cast Unholy Heat)
+--- Narrative ---
+  Choose target:
+
+--- Decision 110 ---
+  Priority: Player B (active)
+  Step: Upkeep
+  Self:  17 life | mana: empty | hand(1): Unholy Heat
+  Opp:   13 life | mana: empty | hand count: 7
+  Self BF:  Delver of Secrets [1/1] | Dragon's Rage Channeler [3/3] | Island | Mountain
+  Stack: Delver of Secrets (ability, self)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
+  Actions:
+   0: Delver of Secrets
+   1: Dragon's Rage Channeler
+  >> B/B: 0 (Delver of Secrets)
+--- Narrative ---
+  Targeting choice 0
+  Player B activated Mountain for 1(R)
+  Player B casts Unholy Heat targeting Delver of Secrets
+  Dragon's Rage Channeler triggered
+
+--- Decision 111 ---
+  Priority: Player A (non-active)
+  Step: Upkeep
+  Self:  13 life | mana: empty | hand(7): Force of Will, Dark Ritual, Dark Ritual, Personal Tutor, Ponder, Dauthi Voidwalker, Deep Analysis
+  Opp:   17 life | mana: empty | hand count: 0
+  Opp BF:   Delver of Secrets [1/1] | Dragon's Rage Channeler [3/3] | Island | Mountain (T)
+  Stack: Dragon's Rage Channeler (ability, opponent) -> Unholy Heat (spell, opponent) -> Delver of Secrets (opponent) -> Delver of Secrets (ability, opponent)
+  Self GY: Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)
+  >> A/A: 1 (Cast Force of Will (alternate cost))
+--- Narrative ---
+  Player A pays 1 life
+
+--- Decision 112 ---
+  Priority: Player A (non-active)
+  Step: Upkeep
+  Self:  12 life | mana: empty | hand(7): Force of Will, Dark Ritual, Dark Ritual, Personal Tutor, Ponder, Dauthi Voidwalker, Deep Analysis
+  Opp:   17 life | mana: empty | hand count: 0
+  Opp BF:   Delver of Secrets [1/1] | Dragon's Rage Channeler [3/3] | Island | Mountain (T)
+  Stack: Dragon's Rage Channeler (ability, opponent) -> Unholy Heat (spell, opponent) -> Delver of Secrets (opponent) -> Delver of Secrets (ability, opponent)
+  Self GY: Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Exile Personal Tutor
+   1: Exile Ponder
+   2: Exile Deep Analysis
+  >> A/A: 0 (Exile Personal Tutor)
+--- Narrative ---
+  Player A exiles Personal Tutor
+  Choose target:
+
+--- Decision 113 ---
+  Priority: Player A (non-active)
+  Step: Upkeep
+  Self:  12 life | mana: empty | hand(6): Force of Will, Dark Ritual, Dark Ritual, Ponder, Dauthi Voidwalker, Deep Analysis
+  Opp:   17 life | mana: empty | hand count: 0
+  Opp BF:   Delver of Secrets [1/1] | Dragon's Rage Channeler [3/3] | Island | Mountain (T)
+  Stack: Dragon's Rage Channeler (ability, opponent) -> Unholy Heat (spell, opponent) -> Delver of Secrets (opponent) -> Delver of Secrets (ability, opponent)
+  Self GY: Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Unholy Heat
+  >> A/A: 0 (Unholy Heat)
+--- Narrative ---
+  Targeting choice 0
+  Player A casts Force of Will targeting Unholy Heat
+  Resolving ability (category: Counter)
+  Unholy Heat is countered
+  Resolving ability (category: Surveil, amount: 1)
+  Top card of Player B's library: Ponder
+
+--- Decision 114 ---
+  Priority: Player B (active)
+  Step: Upkeep
+  Self:  17 life | mana: empty | hand(0): (empty)
+  Opp:   12 life | mana: empty | hand count: 5
+  Self BF:  Delver of Secrets [1/1] | Dragon's Rage Channeler [3/3] | Island | Mountain (T)
+  Stack: Dragon's Rage Channeler (ability, self) -> Delver of Secrets (ability, self)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Unholy Heat, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Force of Will, Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
+  Actions:
+   0: Keep on top
+   1: Put in graveyard
+  >> B/B: 1 (Put in graveyard)
+--- Narrative ---
+  Player B puts Ponder into the graveyard.
+  Resolving ability (category: PeekAndReveal)
+  Top card of library: Murktide Regent
+
+--- Decision 115 ---
+  Priority: Player B (active)
+  Step: Upkeep
+  Self:  17 life | mana: empty | hand(0): (empty)
+  Opp:   12 life | mana: empty | hand count: 5
+  Self BF:  Delver of Secrets [1/1] | Dragon's Rage Channeler [3/3] | Island | Mountain (T)
+  Stack: Delver of Secrets (ability, self)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Unholy Heat, Ponder, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Force of Will, Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
+  Actions:
+   0: Don't reveal
+   1: Reveal
+  >> B/B: 1 (Reveal)
+--- Narrative ---
+  Revealed: Murktide Regent
+  Player B draws Murktide Regent
+  Dragon's Rage Channeler must attack and is declared as an attacker.
+  --- Declare Attackers (Player B) ---
+    [attacking] Dragon's Rage Channeler [3/3] -> Player A
+
+--- Decision 116 ---
+  Priority: Player B (active)
+  Step: Declare Atk
+  Self:  17 life | mana: empty | hand(1): Murktide Regent
+  Opp:   12 life | mana: empty | hand count: 5
+  Self BF:  Delver of Secrets [1/1] | Dragon's Rage Channeler [3/3] (ATK) | Island | Mountain (T)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Unholy Heat, Ponder, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Force of Will, Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
+  Actions:
+   0: Delver of Secrets [1/1]
+   1: Confirm attackers
+  >> B/B: 0 (Delver of Secrets [1/1])
+--- Narrative ---
+  Delver of Secrets attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Delver of Secrets [1/1] -> Player A
+    [attacking] Dragon's Rage Channeler [3/3] -> Player A
+
+--- Decision 117 ---
+  Priority: Player B (active)
+  Step: Declare Atk
+  Self:  17 life | mana: empty | hand(1): Murktide Regent
+  Opp:   12 life | mana: empty | hand count: 5
+  Self BF:  Delver of Secrets [1/1] (ATK) | Dragon's Rage Channeler [3/3] (ATK) | Island | Mountain (T)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Unholy Heat, Ponder, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Force of Will, Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
+  Actions:
+   0: Confirm attackers
+  >> B/B: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Delver of Secrets -> Player A
+    Dragon's Rage Channeler -> Player A
+  No creatures eligible to block.
+  --- Combat Damage ---
+    Delver of Secrets deals 1 damage to Player A
+    Dragon's Rage Channeler deals 3 damage to Player A
+  --- End Combat Damage ---
+  -------- TURN 13 (Player A) --------
+  Player A draws Thassa's Oracle
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 14 (Player B) --------
+  Delver of Secrets triggered
+  Resolving ability (category: PeekAndReveal)
+  Top card of library: Volcanic Island
+--- Turn 14 (Player B) ---
+  PA: Force of Will, Dark Ritual, Dark Ritual, Ponder, Dauthi Voidwalker, Deep Analysis
+  PB: Murktide Regent
+
+--- Decision 118 ---
+  Priority: Player B (active)
+  Step: Upkeep
+  Self:  17 life | mana: empty | hand(1): Murktide Regent
+  Opp:   8 life | mana: empty | hand count: 6
+  Self BF:  Delver of Secrets [1/1] | Dragon's Rage Channeler [3/3] | Island | Mountain
+  Stack: Delver of Secrets (ability, self)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Unholy Heat, Ponder, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Force of Will, Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
+  Actions:
+   0: Don't reveal
+   1: Reveal
+  >> B/B: 1 (Reveal)
+--- Narrative ---
+  Revealed: Volcanic Island
+  Player B draws Volcanic Island
+
+--- Decision 119 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  17 life | mana: empty | hand(2): Murktide Regent, Volcanic Island
+  Opp:   8 life | mana: empty | hand count: 6
+  Self BF:  Delver of Secrets [1/1] | Dragon's Rage Channeler [3/3] | Island | Mountain
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Unholy Heat, Ponder, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Force of Will, Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
+  Actions:
+   0: Pass priority
+   1: Play Volcanic Island
+  >> B/B: 1 (Play Volcanic Island)
+--- Narrative ---
+  Player B played Volcanic Island
+
+--- Decision 120 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  17 life | mana: empty | hand(1): Murktide Regent
+  Opp:   8 life | mana: empty | hand count: 6
+  Self BF:  Delver of Secrets [1/1] | Dragon's Rage Channeler [3/3] | Island | Mountain | Volcanic Island
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Unholy Heat, Ponder, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Force of Will, Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
+  Actions:
+   0: Pass priority
+   1: Cast Murktide Regent
+  >> B/B: 1 (Cast Murktide Regent)
+--- Narrative ---
+  Choose how many cards to exile via Delve (4-5):
+
+--- Decision 121 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  17 life | mana: empty | hand(1): Murktide Regent
+  Opp:   8 life | mana: empty | hand count: 6
+  Self BF:  Delver of Secrets [1/1] | Dragon's Rage Channeler [3/3] | Island | Mountain | Volcanic Island
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Unholy Heat, Ponder, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Force of Will, Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
+  Actions:
+   0: Exile 4 cards from graveyard (Delve)
+   1: Exile 5 cards from graveyard (Delve)
+  >> B/B: 1 (Exile 5 cards from graveyard (Delve))
+--- Narrative ---
+  Choose a card to exile via Delve (1 of 5):
+
+--- Decision 122 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  17 life | mana: empty | hand(1): Murktide Regent
+  Opp:   8 life | mana: empty | hand count: 6
+  Self BF:  Delver of Secrets [1/1] | Dragon's Rage Channeler [3/3] | Island | Mountain | Volcanic Island
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Unholy Heat, Ponder, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Force of Will, Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
+  Actions:
+   0: Exile Dragon's Rage Channeler (Delve)
+   1: Exile Mishra's Bauble (Delve)
+   2: Exile Force of Will (Delve)
+   3: Exile Lightning Bolt (Delve)
+   4: Exile Unholy Heat (Delve)
+   5: Exile Ponder (Delve)
+   6: Exile Ponder (Delve)
+   7: Exile Volcanic Island (Delve)
+   8: Exile Scalding Tarn (Delve)
+   9: Exile Scalding Tarn (Delve)
+  10: Exile Wasteland (Delve)
+  11: Exile Wasteland (Delve)
+  >> B/B: 0 (Exile Dragon's Rage Channeler (Delve))
+--- Narrative ---
+  Player B exiles Dragon's Rage Channeler via Delve.
+  Choose a card to exile via Delve (2 of 5):
+
+--- Decision 123 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  17 life | mana: empty | hand(1): Murktide Regent
+  Opp:   8 life | mana: empty | hand count: 6
+  Self BF:  Delver of Secrets [1/1] | Dragon's Rage Channeler [3/3] | Island | Mountain | Volcanic Island
+  Self GY: Mishra's Bauble, Force of Will, Lightning Bolt, Unholy Heat, Ponder, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Force of Will, Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
+  Actions:
+   0: Exile Mishra's Bauble (Delve)
+   1: Exile Force of Will (Delve)
+   2: Exile Lightning Bolt (Delve)
+   3: Exile Unholy Heat (Delve)
+   4: Exile Ponder (Delve)
+   5: Exile Ponder (Delve)
+   6: Exile Volcanic Island (Delve)
+   7: Exile Scalding Tarn (Delve)
+   8: Exile Scalding Tarn (Delve)
+   9: Exile Wasteland (Delve)
+  10: Exile Wasteland (Delve)
+  >> B/B: 0 (Exile Mishra's Bauble (Delve))
+--- Narrative ---
+  Player B exiles Mishra's Bauble via Delve.
+  Choose a card to exile via Delve (3 of 5):
+
+--- Decision 124 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  17 life | mana: empty | hand(1): Murktide Regent
+  Opp:   8 life | mana: empty | hand count: 6
+  Self BF:  Delver of Secrets [1/1] | Dragon's Rage Channeler [3/3] | Island | Mountain | Volcanic Island
+  Self GY: Force of Will, Lightning Bolt, Unholy Heat, Ponder, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Force of Will, Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
+  Actions:
+   0: Exile Force of Will (Delve)
+   1: Exile Lightning Bolt (Delve)
+   2: Exile Unholy Heat (Delve)
+   3: Exile Ponder (Delve)
+   4: Exile Ponder (Delve)
+   5: Exile Volcanic Island (Delve)
+   6: Exile Scalding Tarn (Delve)
+   7: Exile Scalding Tarn (Delve)
+   8: Exile Wasteland (Delve)
+   9: Exile Wasteland (Delve)
+  >> B/B: 0 (Exile Force of Will (Delve))
+--- Narrative ---
+  Player B exiles Force of Will via Delve.
+  Choose a card to exile via Delve (4 of 5):
+
+--- Decision 125 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  17 life | mana: empty | hand(1): Murktide Regent
+  Opp:   8 life | mana: empty | hand count: 6
+  Self BF:  Delver of Secrets [1/1] | Dragon's Rage Channeler [3/3] | Island | Mountain | Volcanic Island
+  Self GY: Lightning Bolt, Unholy Heat, Ponder, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Force of Will, Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
+  Actions:
+   0: Exile Lightning Bolt (Delve)
+   1: Exile Unholy Heat (Delve)
+   2: Exile Ponder (Delve)
+   3: Exile Ponder (Delve)
+   4: Exile Volcanic Island (Delve)
+   5: Exile Scalding Tarn (Delve)
+   6: Exile Scalding Tarn (Delve)
+   7: Exile Wasteland (Delve)
+   8: Exile Wasteland (Delve)
+  >> B/B: 0 (Exile Lightning Bolt (Delve))
+--- Narrative ---
+  Player B exiles Lightning Bolt via Delve.
+  Choose a card to exile via Delve (5 of 5):
+
+--- Decision 126 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  17 life | mana: empty | hand(1): Murktide Regent
+  Opp:   8 life | mana: empty | hand count: 6
+  Self BF:  Delver of Secrets [1/1] | Dragon's Rage Channeler [3/3] | Island | Mountain | Volcanic Island
+  Self GY: Unholy Heat, Ponder, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Force of Will, Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
+  Actions:
+   0: Exile Unholy Heat (Delve)
+   1: Exile Ponder (Delve)
+   2: Exile Ponder (Delve)
+   3: Exile Volcanic Island (Delve)
+   4: Exile Scalding Tarn (Delve)
+   5: Exile Scalding Tarn (Delve)
+   6: Exile Wasteland (Delve)
+   7: Exile Wasteland (Delve)
+  >> B/B: 0 (Exile Unholy Heat (Delve))
+--- Narrative ---
+  Player B exiles Unholy Heat via Delve.
+  Player B activated Island for 1(U)
+  Player B activated Volcanic Island for 1(U)
+  Player B casts Murktide Regent
+  Dragon's Rage Channeler loses Delirium bonus
+  Murktide Regent enters the battlefield
+  Murktide Regent enters with 3 +1/+1 counter(s) (6/6).
+  --- Declare Attackers (Player B) ---
+
+--- Decision 127 ---
+  Priority: Player B (active)
+  Step: Declare Atk
+  Self:  17 life | mana: empty | hand(0): (empty)
+  Opp:   8 life | mana: empty | hand count: 6
+  Self BF:  Delver of Secrets [1/1] | Murktide Regent [6/6] (SICK) | Dragon's Rage Channeler [1/1] | Island (T) | Mountain | Volcanic Island (T)
+  Self GY: Ponder, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Force of Will, Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
+  Actions:
+   0: Delver of Secrets [1/1]
+   1: Dragon's Rage Channeler [1/1]
+   2: Confirm attackers
+  >> B/B: 0 (Delver of Secrets [1/1])
+--- Narrative ---
+  Delver of Secrets attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Delver of Secrets [1/1] -> Player A
+
+--- Decision 128 ---
+  Priority: Player B (active)
+  Step: Declare Atk
+  Self:  17 life | mana: empty | hand(0): (empty)
+  Opp:   8 life | mana: empty | hand count: 6
+  Self BF:  Delver of Secrets [1/1] (ATK) | Murktide Regent [6/6] (SICK) | Dragon's Rage Channeler [1/1] | Island (T) | Mountain | Volcanic Island (T)
+  Self GY: Ponder, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Force of Will, Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
+  Actions:
+   0: Dragon's Rage Channeler [1/1]
+   1: Confirm attackers
+  >> B/B: 0 (Dragon's Rage Channeler [1/1])
+--- Narrative ---
+  Dragon's Rage Channeler attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Delver of Secrets [1/1] -> Player A
+    [attacking] Dragon's Rage Channeler [1/1] -> Player A
+
+--- Decision 129 ---
+  Priority: Player B (active)
+  Step: Declare Atk
+  Self:  17 life | mana: empty | hand(0): (empty)
+  Opp:   8 life | mana: empty | hand count: 6
+  Self BF:  Delver of Secrets [1/1] (ATK) | Murktide Regent [6/6] (SICK) | Dragon's Rage Channeler [1/1] (ATK) | Island (T) | Mountain | Volcanic Island (T)
+  Self GY: Ponder, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Force of Will, Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
+  Actions:
+   0: Confirm attackers
+  >> B/B: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Delver of Secrets -> Player A
+    Dragon's Rage Channeler -> Player A
+  No creatures eligible to block.
+  --- Combat Damage ---
+    Delver of Secrets deals 1 damage to Player A
+    Dragon's Rage Channeler deals 1 damage to Player A
+  --- End Combat Damage ---
+  -------- TURN 15 (Player A) --------
+  Player A draws Cavern of Souls
+--- Turn 15 (Player A) ---
+  PA: Dark Ritual, Dark Ritual, Thassa's Oracle, Ponder, Cavern of Souls, Dauthi Voidwalker, Deep Analysis
+  PB: (empty)
+
+--- Decision 130 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  6 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Thassa's Oracle, Ponder, Cavern of Souls, Dauthi Voidwalker, Deep Analysis
+  Opp:   17 life | mana: empty | hand count: 0
+  Opp BF:   Delver of Secrets [1/1] (T) | Murktide Regent [6/6] (SICK) | Dragon's Rage Channeler [1/1] (T) | Island (T) | Mountain | Volcanic Island (T)
+  Self GY: Force of Will, Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
+  Opp GY:  Ponder, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Pass priority
+   1: Play Cavern of Souls
+  >> A/A: 1 (Play Cavern of Souls)
+--- Narrative ---
+  Player A played Cavern of Souls
+  Choose a creature type for Cavern of Souls:
+
+--- Decision 131 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  6 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Thassa's Oracle, Ponder, Dauthi Voidwalker, Deep Analysis
+  Opp:   17 life | mana: empty | hand count: 0
+  Self BF:  Cavern of Souls
+  Opp BF:   Delver of Secrets [1/1] (T) | Murktide Regent [6/6] (SICK) | Dragon's Rage Channeler [1/1] (T) | Island (T) | Mountain | Volcanic Island (T)
+  Self GY: Force of Will, Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
+  Opp GY:  Ponder, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Choose creature type: Lhurgoyf
+   1: Choose creature type: Wraith
+   2: Choose creature type: Dauthi
+   3: Choose creature type: Rogue
+   4: Choose creature type: Merfolk
+   5: Choose creature type: Wizard
+  >> A/A: 0 (Choose creature type: Lhurgoyf)
+--- Narrative ---
+  Player A chose creature type: Lhurgoyf
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 16 (Player B) --------
+  Delver of Secrets triggered
+  Resolving ability (category: PeekAndReveal)
+  Top card of library: Brainstorm
+--- Turn 16 (Player B) ---
+  PA: Dark Ritual, Dark Ritual, Thassa's Oracle, Ponder, Dauthi Voidwalker, Deep Analysis
+  PB: (empty)
+
+--- Decision 132 ---
+  Priority: Player B (active)
+  Step: Upkeep
+  Self:  17 life | mana: empty | hand(0): (empty)
+  Opp:   6 life | mana: empty | hand count: 6
+  Self BF:  Delver of Secrets [1/1] | Murktide Regent [6/6] | Dragon's Rage Channeler [1/1] | Island | Mountain | Volcanic Island
+  Opp BF:   Cavern of Souls
+  Stack: Delver of Secrets (ability, self)
+  Self GY: Ponder, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Force of Will, Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
+  Actions:
+   0: Don't reveal
+   1: Reveal
+  >> B/B: 1 (Reveal)
+--- Narrative ---
+  Revealed: Brainstorm
+  Delver of Secrets transforms into Insectile Aberration!
+  Player B draws Brainstorm
+
+--- Decision 133 ---
+  Priority: Player B (active)
+  Step: Draw
+  Self:  17 life | mana: empty | hand(1): Brainstorm
+  Opp:   6 life | mana: empty | hand count: 6
+  Self BF:  Insectile Aberration [3/2] | Murktide Regent [6/6] | Dragon's Rage Channeler [1/1] | Island | Mountain | Volcanic Island
+  Opp BF:   Cavern of Souls
+  Self GY: Ponder, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Force of Will, Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
+  Actions:
+   0: Pass priority
+   1: Cast Brainstorm
+  >> B/B: 1 (Cast Brainstorm)
+--- Narrative ---
+  Player B activated Island for 1(U)
+  Player B casts Brainstorm
+  Dragon's Rage Channeler triggered
+  Resolving ability (category: Surveil, amount: 1)
+  Top card of Player B's library: Wooded Foothills
+
+--- Decision 134 ---
+  Priority: Player B (active)
+  Step: Draw
+  Self:  17 life | mana: empty | hand(0): (empty)
+  Opp:   6 life | mana: empty | hand count: 6
+  Self BF:  Insectile Aberration [3/2] | Murktide Regent [6/6] | Dragon's Rage Channeler [1/1] | Island (T) | Mountain | Volcanic Island
+  Opp BF:   Cavern of Souls
+  Stack: Dragon's Rage Channeler (ability, self) -> Brainstorm (spell, self)
+  Self GY: Ponder, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Force of Will, Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
+  Actions:
+   0: Keep on top
+   1: Put in graveyard
+  >> B/B: 1 (Put in graveyard)
+--- Narrative ---
+  Player B puts Wooded Foothills into the graveyard.
+  Resolving ability (category: Draw, amount: 3)
+  Player B draws Dragon's Rage Channeler
+  Player B draws Unholy Heat
+  Player B draws Delver of Secrets
+  Resolving ability (category: ChangeZone)
+  Player B chooses a card from Player B hand:
+
+--- Decision 135 ---
+  Priority: Player B (active)
+  Step: Draw
+  Self:  17 life | mana: empty | hand(3): Delver of Secrets, Dragon's Rage Channeler, Unholy Heat
+  Opp:   6 life | mana: empty | hand count: 6
+  Self BF:  Insectile Aberration [3/2] | Murktide Regent [6/6] | Dragon's Rage Channeler [1/1] | Island (T) | Mountain | Volcanic Island
+  Opp BF:   Cavern of Souls
+  Stack: Brainstorm (spell, self)
+  Self GY: Ponder, Ponder, Wooded Foothills, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Force of Will, Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
+  Actions:
+   0: Delver of Secrets
+   1: Dragon's Rage Channeler
+   2: Unholy Heat
+  >> B/B: 0 (Delver of Secrets)
+--- Narrative ---
+  Player B puts Delver of Secrets to top of library
+  Player B chooses a card from Player B hand:
+
+--- Decision 136 ---
+  Priority: Player B (active)
+  Step: Draw
+  Self:  17 life | mana: empty | hand(2): Dragon's Rage Channeler, Unholy Heat
+  Opp:   6 life | mana: empty | hand count: 6
+  Self BF:  Insectile Aberration [3/2] | Murktide Regent [6/6] | Dragon's Rage Channeler [1/1] | Island (T) | Mountain | Volcanic Island
+  Opp BF:   Cavern of Souls
+  Stack: Brainstorm (spell, self)
+  Self GY: Ponder, Ponder, Wooded Foothills, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Force of Will, Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
+  Actions:
+   0: Dragon's Rage Channeler
+   1: Unholy Heat
+  >> B/B: 0 (Dragon's Rage Channeler)
+--- Narrative ---
+  Player B puts Dragon's Rage Channeler to top of library
+
+--- Decision 137 ---
+  Priority: Player B (active)
+  Step: Draw
+  Self:  17 life | mana: empty | hand(1): Unholy Heat
+  Opp:   6 life | mana: empty | hand count: 6
+  Self BF:  Insectile Aberration [3/2] | Murktide Regent [6/6] | Dragon's Rage Channeler [1/1] | Island (T) | Mountain | Volcanic Island
+  Opp BF:   Cavern of Souls
+  Self GY: Brainstorm, Ponder, Ponder, Wooded Foothills, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Force of Will, Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
+  Actions:
+   0: Pass priority
+   1: Cast Unholy Heat
+  >> B/B: 1 (Cast Unholy Heat)
+--- Narrative ---
+  Choose target:
+
+--- Decision 138 ---
+  Priority: Player B (active)
+  Step: Draw
+  Self:  17 life | mana: empty | hand(1): Unholy Heat
+  Opp:   6 life | mana: empty | hand count: 6
+  Self BF:  Insectile Aberration [3/2] | Murktide Regent [6/6] | Dragon's Rage Channeler [1/1] | Island (T) | Mountain | Volcanic Island
+  Opp BF:   Cavern of Souls
+  Self GY: Brainstorm, Ponder, Ponder, Wooded Foothills, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Force of Will, Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
+  Actions:
+   0: Insectile Aberration
+   1: Murktide Regent
+   2: Dragon's Rage Channeler
+  >> B/B: 0 (Insectile Aberration)
+--- Narrative ---
+  Targeting choice 0
+  Player B activated Mountain for 1(R)
+  Player B casts Unholy Heat targeting Insectile Aberration
+  Dragon's Rage Channeler triggered
+  Resolving ability (category: Surveil, amount: 1)
+  Top card of Player B's library: Dragon's Rage Channeler
+
+--- Decision 139 ---
+  Priority: Player B (active)
+  Step: Draw
+  Self:  17 life | mana: empty | hand(0): (empty)
+  Opp:   6 life | mana: empty | hand count: 6
+  Self BF:  Insectile Aberration [3/2] | Murktide Regent [6/6] | Dragon's Rage Channeler [1/1] | Island (T) | Mountain (T) | Volcanic Island
+  Opp BF:   Cavern of Souls
+  Stack: Dragon's Rage Channeler (ability, self) -> Unholy Heat (spell, self) -> Insectile Aberration (self)
+  Self GY: Brainstorm, Ponder, Ponder, Wooded Foothills, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Force of Will, Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
+  Actions:
+   0: Keep on top
+   1: Put in graveyard
+  >> B/B: 1 (Put in graveyard)
+--- Narrative ---
+  Player B puts Dragon's Rage Channeler into the graveyard.
+  Dragon's Rage Channeler gains 2/2 Flying (Delirium)
+  Resolving ability (category: DealDamage, amount: 2)
+  Dealt 6 damage to creature
+  Insectile Aberration is destroyed (lethal damage)
+  Dragon's Rage Channeler must attack and is declared as an attacker.
+  --- Declare Attackers (Player B) ---
+    [attacking] Dragon's Rage Channeler [3/3] -> Player A
+
+--- Decision 140 ---
+  Priority: Player B (active)
+  Step: Declare Atk
+  Self:  17 life | mana: empty | hand(0): (empty)
+  Opp:   6 life | mana: empty | hand count: 6
+  Self BF:  Murktide Regent [6/6] | Dragon's Rage Channeler [3/3] (ATK) | Island (T) | Mountain (T) | Volcanic Island
+  Opp BF:   Cavern of Souls
+  Self GY: Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Unholy Heat, Ponder, Ponder, Wooded Foothills, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Force of Will, Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
+  Actions:
+   0: Murktide Regent [6/6]
+   1: Confirm attackers
+  >> B/B: 0 (Murktide Regent [6/6])
+--- Narrative ---
+  Murktide Regent attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Murktide Regent [6/6] -> Player A
+    [attacking] Dragon's Rage Channeler [3/3] -> Player A
+
+--- Decision 141 ---
+  Priority: Player B (active)
+  Step: Declare Atk
+  Self:  17 life | mana: empty | hand(0): (empty)
+  Opp:   6 life | mana: empty | hand count: 6
+  Self BF:  Murktide Regent [6/6] (ATK) | Dragon's Rage Channeler [3/3] (ATK) | Island (T) | Mountain (T) | Volcanic Island
+  Opp BF:   Cavern of Souls
+  Self GY: Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Unholy Heat, Ponder, Ponder, Wooded Foothills, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Force of Will, Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
+  Actions:
+   0: Confirm attackers
+  >> B/B: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Murktide Regent -> Player A
+    Dragon's Rage Channeler -> Player A
+  No creatures eligible to block.
+  --- Combat Damage ---
+    Murktide Regent deals 6 damage to Player A
+    Dragon's Rage Channeler deals 3 damage to Player A
+  --- End Combat Damage ---
+  Player A has -3 life - Player B wins!
+
+=== B/B wins ===

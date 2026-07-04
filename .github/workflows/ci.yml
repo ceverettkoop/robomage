@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up robomage
+        uses: ./.github/actions/setup-robomage
+
+      # Fixed default seed => a red PR is the diff's fault, not RNG. Runs every
+      # tier: codegen-sync, vocab coverage, byte-identical replay corpus,
+      # deterministic league smoke, short fuzz.
+      - name: Run engine test gate
+        run: train/.venv/bin/python train/ci_check.py --out-dir ci_out
+
+      - name: Upload transcripts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-transcripts-${{ github.run_id }}
+          path: ci_out/
+          retention-days: 14

@@ -85,6 +85,11 @@ expansions. Prefer bare `make` and `... | grep -i error` over
 instead of `$PIPESTATUS`.
 
 ## Testing guidelines
+-**The standard gate is `make check`** (builds + runs `train/ci_check.py`: codegen-sync,
+ vocab coverage, byte-identical replay corpus, deterministic league smoke, short fuzz). It
+ must pass before pushing, and CI runs exactly it. See [`docs/ci.md`](docs/ci.md) for the
+ tiers, how to reproduce a CI failure, and how to intentionally re-record the replay corpus /
+ regenerate the codegen. `train/fuzz_campaign.py` remains the manual exploratory fuzz tool.
 -Don't use sed or cat - if possible don't pipe a bunch of commands together in a way that will require asking my permission, run build and test tasks as simply as possible
 -Non fatal errors are not acceptable
 -Draws are not acceptable

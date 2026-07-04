@@ -1,653 +1,2706 @@
-robomage 0.001
-Using seed: 1641108517
-Player A draws Mishra's Bauble
-Player A draws Murktide Regent
-Player A draws Brainstorm
-Player A draws Polluted Delta
-Player A draws Force of Will
-Player A draws Lightning Bolt
-Player A draws Volcanic Island
-Player B draws Savannah
-Player B draws Forest
-Player B draws Wasteland
-Player B draws Wasteland
-Player B draws Scythecat Cub
-Player B draws Noble Hierarch
-Player B draws Wasteland
-Player A hand:
-Murktide Regent
-Mishra's Bauble
-Force of Will
-Brainstorm
-Lightning Bolt
-Polluted Delta
-Volcanic Island
-<<DECISION 1: action=0>>
-Player B hand:
-Forest
-Noble Hierarch
-Savannah
-Scythecat Cub
-Wasteland
-Wasteland
-Wasteland
-<<DECISION 2: action=0>>
--------- TURN 0 (Player A) --------
-<<DECISION 3: action=3>>
-Player A casts Mishra's Bauble
-<<DECISION 4: action=0>>
-Mishra's Bauble enters the battlefield
-<<DECISION 5: action=1>>
-Player A played Polluted Delta
-<<DECISION 6: action=1>>
-Choose target:
-<<DECISION 7: action=0>>
-Targeting choice 0
-Player A sacrifices Mishra's Bauble
-Player A's Mishra's Bauble ability targeting Player B is on the stack
-<<DECISION 8: action=1>>
-Player A pays 1 life
-Player A sacrifices Polluted Delta
-Player A's Polluted Delta ability is on the stack
-Resolving ability (category: ChangeZone, amount: 0)
-Searching Player A's library:
-<<DECISION 9: action=1>>
-Player A shuffles their library
-Player A puts Island to the battlefield
-<<DECISION 10: action=1>>
-Player A activated Island for 1(U)
-Player A casts Brainstorm
-<<DECISION 11: action=0>>
-Resolving ability (category: Draw, amount: 3)
-Player A draws Ponder
-Player A draws Dragon's Rage Channeler
-Player A draws Volcanic Island
-Resolving ability (category: ChangeZone, amount: 2)
-Player A chooses a card from Player A hand:
-<<DECISION 12: action=0>>
-Player A puts Murktide Regent to top of library
-Player A puts a card to top of library
-Player A chooses a card from Player A hand:
-<<DECISION 13: action=0>>
-Player A puts Dragon's Rage Channeler to top of library
-Player A puts a card to top of library
-Resolving ability (category: PeekAndReveal, amount: 0)
-Player A looks at top of Player B's library: Thalia, Guardian of Thraben
-Resolving ability (category: DelayedTrigger, amount: 0)
-Delayed trigger registered: Draw at next Upkeep.
-Resolving ability (category: Draw, amount: 0)
-No creatures eligible to attack.
-No attackers ��� skipping declare blockers.
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 1 (Player B) --------
-Player B draws Thalia, Guardian of Thraben
-<<DECISION 14: action=1>>
-Player B played Forest
-<<DECISION 15: action=1>>
-Player B activated Forest for 1(G)
-Player B casts Noble Hierarch
-<<DECISION 16: action=1>>
-Player A pays 1 life
-<<DECISION 17: action=0>>
-Player A exiles Ponder
-Choose target:
-<<DECISION 18: action=0>>
-Targeting choice 0
-Player A casts Force of Will targeting Noble Hierarch
-Resolving ability (category: Counter, amount: 0)
-Noble Hierarch is countered
-No creatures eligible to attack.
-No attackers ��� skipping declare blockers.
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 2 (Player A) --------
-Delayed trigger fires.
-Resolving ability (category: Draw, amount: 0)
-Player A draws Dragon's Rage Channeler
-<<DECISION 19: action=1>>
-Player A played Volcanic Island
-<<DECISION 20: action=1>>
-Player A activated Volcanic Island for 1(R)
-Player A casts Dragon's Rage Channeler
-Dragon's Rage Channeler enters the battlefield
-No creatures eligible to attack.
-No attackers ��� skipping declare blockers.
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 3 (Player B) --------
-Player B draws Once Upon a Time
-<<DECISION 21: action=1>>
-Player B played Savannah
-<<DECISION 22: action=1>>
-Player B activated Forest for 1(G)
-Player B activated Savannah for 1(G)
-Player B casts Once Upon a Time
-Resolving ability (category: Dig, amount: 1)
-Player B looks at the top 5 card(s) of their library.
-<<DECISION 23: action=1>>
-Player B puts Noble Hierarch into hand.
-Player B puts 4 card(s) on the bottom of their library.
-No creatures eligible to attack.
-No attackers ��� skipping declare blockers.
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 4 (Player A) --------
-<<DECISION 24: action=1>>
-Player A activated Volcanic Island for 1(R)
-Choose target:
-<<DECISION 25: action=0>>
-Targeting choice 0
-Player A casts Lightning Bolt targeting Player B
-Dragon's Rage Channeler triggered
-Resolving ability (category: Surveil, amount: 1)
-Top card of Player A's library: Murktide Regent
-<<DECISION 26: action=1>>
-Player A puts Murktide Regent into the graveyard.
-Dragon's Rage Channeler gains 2/2 Flying (Delirium)
-Resolving ability (category: DealDamage, amount: 3)
-Dealt 3 damage to player (now at 17 life)
-Player A draws Unholy Heat
-<<DECISION 27: action=1>>
-Player A played Volcanic Island
-<<DECISION 28: action=1>>
-Player A activated Volcanic Island for 1(R)
-Choose target:
-<<DECISION 29: action=0>>
-Targeting choice 0
-Player A casts Unholy Heat targeting Dragon's Rage Channeler
-Dragon's Rage Channeler triggered
-Resolving ability (category: Surveil, amount: 1)
-Top card of Player A's library: Scalding Tarn
-<<DECISION 30: action=1>>
-Player A puts Scalding Tarn into the graveyard.
-Resolving ability (category: DealDamage, amount: 2)
-Dealt 6 damage to creature
-Dragon's Rage Channeler is destroyed (lethal damage)
-No creatures eligible to attack.
-No attackers ��� skipping declare blockers.
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 5 (Player B) --------
-Player B draws Swords to Plowshares
-<<DECISION 31: action=4>>
-Player B activated Forest for 1(G)
-Player B casts Noble Hierarch
-Noble Hierarch enters the battlefield
-<<DECISION 32: action=4>>
-Player B activated Savannah for 1(W)
-Choose target:
-<<DECISION 33: action=0>>
-Targeting choice 0
-Player B casts Swords to Plowshares targeting Noble Hierarch
-Resolving ability (category: ChangeZone, amount: 0)
-Noble Hierarch is moved to exile
-Resolving ability (category: GainLife, amount: 0)
-Player B gains 0 life (now at 17)
-<<DECISION 34: action=1>>
-Player B played Wasteland
-<<DECISION 35: action=1>>
-Choose target:
-<<DECISION 36: action=0>>
-Targeting choice 0
-Player B sacrifices Wasteland
-Player B's Wasteland ability targeting Volcanic Island is on the stack
-Resolving ability (category: Destroy, amount: 0)
-Volcanic Island is destroyed
-No creatures eligible to attack.
-No attackers ��� skipping declare blockers.
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 6 (Player A) --------
-Player A draws Daze
-No creatures eligible to attack.
-No attackers ��� skipping declare blockers.
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 7 (Player B) --------
-Player B draws Once Upon a Time
-<<DECISION 37: action=1>>
-Player B activated Forest for 1(G)
-Player B activated Savannah for 1(G)
-Player B casts Once Upon a Time
-<<DECISION 38: action=1>>
-Player A activated Island for 1(U)
-Player A activated Volcanic Island for 1(U)
-Choose target:
-<<DECISION 39: action=0>>
-Targeting choice 0
-Player A casts Daze targeting Once Upon a Time
-Resolving ability (category: Counter, amount: 0)
-Once Upon a Time's controller may pay {1} to save it:
-<<DECISION 40: action=0>>
-Once Upon a Time is countered
-<<DECISION 41: action=1>>
-Player B played Wasteland
-<<DECISION 42: action=1>>
-Choose target:
-<<DECISION 43: action=0>>
-Targeting choice 0
-Player B sacrifices Wasteland
-Player B's Wasteland ability targeting Volcanic Island is on the stack
-Resolving ability (category: Destroy, amount: 0)
-Volcanic Island is destroyed
-No creatures eligible to attack.
-No attackers ��� skipping declare blockers.
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 8 (Player A) --------
-Player A draws Mishra's Bauble
-<<DECISION 44: action=1>>
-Player A casts Mishra's Bauble
-Mishra's Bauble enters the battlefield
-<<DECISION 45: action=1>>
-Choose target:
-<<DECISION 46: action=0>>
-Targeting choice 0
-Player A sacrifices Mishra's Bauble
-Player A's Mishra's Bauble ability targeting Player B is on the stack
-Resolving ability (category: PeekAndReveal, amount: 0)
-Player A looks at top of Player B's library: Wooded Foothills
-Resolving ability (category: DelayedTrigger, amount: 0)
-Delayed trigger registered: Draw at next Upkeep.
-Resolving ability (category: Draw, amount: 0)
-No creatures eligible to attack.
-No attackers ��� skipping declare blockers.
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 9 (Player B) --------
-Player B draws Wooded Foothills
-<<DECISION 47: action=3>>
-Player B activated Forest for 1(G)
-Player B activated Savannah for 1(G)
-Player B casts Scythecat Cub
-Scythecat Cub enters the battlefield
-<<DECISION 48: action=1>>
-Player B played Wasteland
-Choose target:
-<<DECISION 49: action=0>>
-Targeting choice 0
-Scythecat Cub triggered
-<<DECISION 50: action=0>>
-Resolving ability (category: Pump, amount: 0)
-Choose a creature for Pump:
-<<DECISION 51: action=0>>
-Resolving ability (category: PutCounter, amount: 0)
-Put 1 +1/+1 counter(s) on creature (now 3/3).
-Resolving ability (category: MultiplyCounter, amount: 0)
-<<DECISION 52: action=0>>
-<<DECISION 53: action=0>>
-No creatures eligible to attack.
-<<DECISION 54: action=0>>
-No attackers ��� skipping declare blockers.
-<<DECISION 55: action=0>>
---- Combat Damage ---
---- End Combat Damage ---
-<<DECISION 56: action=0>>
-<<DECISION 57: action=0>>
-<<DECISION 58: action=0>>
-<<DECISION 59: action=0>>
--------- TURN 10 (Player A) --------
-Delayed trigger fires.
-<<DECISION 60: action=0>>
-Resolving ability (category: Draw, amount: 0)
-<<DECISION 61: action=0>>
-Player A draws Scalding Tarn
-<<DECISION 62: action=0>>
-<<DECISION 63: action=1>>
-Player A played Scalding Tarn
-<<DECISION 64: action=1>>
-Player A pays 1 life
-Player A sacrifices Scalding Tarn
-Player A's Scalding Tarn ability is on the stack
-<<DECISION 65: action=0>>
-Resolving ability (category: ChangeZone, amount: 0)
-Searching Player A's library:
-<<DECISION 66: action=1>>
-Player A shuffles their library
-Player A puts Mountain to the battlefield
-<<DECISION 67: action=0>>
-<<DECISION 68: action=0>>
-No creatures eligible to attack.
-<<DECISION 69: action=0>>
-No attackers ��� skipping declare blockers.
-<<DECISION 70: action=0>>
---- Combat Damage ---
---- End Combat Damage ---
-<<DECISION 71: action=0>>
-<<DECISION 72: action=0>>
-<<DECISION 73: action=0>>
-<<DECISION 74: action=0>>
--------- TURN 11 (Player B) --------
-<<DECISION 75: action=0>>
-Player B draws Knight of the Reliquary
-<<DECISION 76: action=0>>
-<<DECISION 77: action=2>>
-Player B activated Savannah for 1(W)
-Player B activated Forest for 1(G)
-Player B activated Wasteland for 1(C)
-Player B casts Knight of the Reliquary
-Knight of the Reliquary enters the battlefield
-Knight of the Reliquary gains (always)
-<<DECISION 78: action=1>>
-Player B played Wooded Foothills
-Choose target:
-<<DECISION 79: action=0>>
-Targeting choice 0
-Scythecat Cub triggered
-<<DECISION 80: action=1>>
-Player B pays 1 life
-Player B sacrifices Wooded Foothills
-Player B's Wooded Foothills ability is on the stack
-Resolving ability (category: ChangeZone, amount: 0)
-Searching Player B's library:
-<<DECISION 81: action=1>>
-Player B shuffles their library
-Player B puts Dryad Arbor to the battlefield
-Choose target:
-<<DECISION 82: action=0>>
-Targeting choice 0
-Scythecat Cub triggered
-Resolving ability (category: Pump, amount: 0)
-Choose a creature for Pump:
-<<DECISION 83: action=0>>
-Resolving ability (category: PutCounter, amount: 0)
-Put 1 +1/+1 counter(s) on creature (now 2/2).
-Resolving ability (category: MultiplyCounter, amount: 0)
-Resolving ability (category: Pump, amount: 0)
-Choose a creature for Pump:
-<<DECISION 84: action=0>>
-Resolving ability (category: PutCounter, amount: 0)
-Resolving ability (category: MultiplyCounter, amount: 0)
-MultiplyCounter: doubled +1/+1 counters on creature (now 3/3).
---- Declare Attackers (Player B) ---
-<<DECISION 85: action=0>>
-Select target for Scythecat Cub:
-<<DECISION 86: action=0>>
-Scythecat Cub attacking Player A.
---- Declare Attackers (Player B) ---
-  [attacking] Scythecat Cub [3/3] -> Player A
-<<DECISION 87: action=-1>>
-Attackers declared:
-  Scythecat Cub -> Player A
-No creatures eligible to block.
---- Combat Damage ---
-  Scythecat Cub deals 3 damage to Player A
---- End Combat Damage ---
--------- TURN 12 (Player A) --------
-Player A draws Wasteland
-<<DECISION 88: action=1>>
-Player A played Wasteland
-<<DECISION 89: action=1>>
-Choose target:
-<<DECISION 90: action=0>>
-Targeting choice 0
-Player A sacrifices Wasteland
-Player A's Wasteland ability targeting Dryad Arbor is on the stack
-Resolving ability (category: Destroy, amount: 0)
-Dryad Arbor is destroyed
-No creatures eligible to attack.
-No attackers ��� skipping declare blockers.
---- Combat Damage ---
---- End Combat Damage ---
--------- TURN 13 (Player B) --------
-<<DECISION 91: action=0>>
-Player B draws Swords to Plowshares
-<<DECISION 92: action=1>>
-Player B activated Savannah for 1(W)
-Choose target:
-<<DECISION 93: action=0>>
-Targeting choice 0
-Player B casts Swords to Plowshares targeting Knight of the Reliquary
-<<DECISION 94: action=0>>
-Resolving ability (category: ChangeZone, amount: 0)
-Knight of the Reliquary is moved to exile
-Resolving ability (category: GainLife, amount: 0)
-Player B gains 2 life (now at 18)
-<<DECISION 95: action=0>>
-<<DECISION 96: action=0>>
-<<DECISION 97: action=0>>
---- Declare Attackers (Player B) ---
-<<DECISION 98: action=0>>
-Select target for Scythecat Cub:
-<<DECISION 99: action=0>>
-Scythecat Cub attacking Player A.
---- Declare Attackers (Player B) ---
-  [attacking] Scythecat Cub [3/3] -> Player A
-<<DECISION 100: action=-1>>
-Attackers declared:
-  Scythecat Cub -> Player A
-<<DECISION 101: action=0>>
-No creatures eligible to block.
-<<DECISION 102: action=0>>
---- Combat Damage ---
-  Scythecat Cub deals 3 damage to Player A
---- End Combat Damage ---
-<<DECISION 103: action=0>>
-<<DECISION 104: action=0>>
-<<DECISION 105: action=0>>
-<<DECISION 106: action=0>>
--------- TURN 14 (Player A) --------
-<<DECISION 107: action=0>>
-Player A draws Cori-Steel Cutter
-<<DECISION 108: action=0>>
-<<DECISION 109: action=1>>
-Player A activated Mountain for 1(R)
-Player A activated Island for 1(U)
-Player A casts Cori-Steel Cutter
-<<DECISION 110: action=0>>
-Cori-Steel Cutter enters the battlefield
-<<DECISION 111: action=0>>
-<<DECISION 112: action=0>>
-No creatures eligible to attack.
-<<DECISION 113: action=0>>
-No attackers ��� skipping declare blockers.
-<<DECISION 114: action=0>>
---- Combat Damage ---
---- End Combat Damage ---
-<<DECISION 115: action=0>>
-<<DECISION 116: action=0>>
-<<DECISION 117: action=0>>
-<<DECISION 118: action=0>>
--------- TURN 15 (Player B) --------
-<<DECISION 119: action=0>>
-Player B draws Savannah
-<<DECISION 120: action=0>>
-<<DECISION 121: action=2>>
-Player B activated Savannah for 1(W)
-Player B activated Forest for 1(G)
-Player B casts Thalia, Guardian of Thraben
-<<DECISION 122: action=0>>
-Thalia, Guardian of Thraben enters the battlefield
-<<DECISION 123: action=1>>
-Player B played Savannah
-Choose target:
-<<DECISION 124: action=0>>
-Targeting choice 0
-Scythecat Cub triggered
-<<DECISION 125: action=0>>
-Resolving ability (category: Pump, amount: 0)
-Choose a creature for Pump:
-<<DECISION 126: action=0>>
-Resolving ability (category: PutCounter, amount: 0)
-Put 1 +1/+1 counter(s) on creature (now 4/4).
-Resolving ability (category: MultiplyCounter, amount: 0)
-<<DECISION 127: action=0>>
-<<DECISION 128: action=0>>
---- Declare Attackers (Player B) ---
-<<DECISION 129: action=0>>
-Select target for Scythecat Cub:
-<<DECISION 130: action=0>>
-Scythecat Cub attacking Player A.
---- Declare Attackers (Player B) ---
-  [attacking] Scythecat Cub [4/4] -> Player A
-<<DECISION 131: action=-1>>
-Attackers declared:
-  Scythecat Cub -> Player A
-<<DECISION 132: action=0>>
-No creatures eligible to block.
-<<DECISION 133: action=0>>
---- Combat Damage ---
-  Scythecat Cub deals 4 damage to Player A
---- End Combat Damage ---
-<<DECISION 134: action=0>>
-<<DECISION 135: action=0>>
-<<DECISION 136: action=0>>
-<<DECISION 137: action=0>>
--------- TURN 16 (Player A) --------
-<<DECISION 138: action=0>>
-Player A draws Dragon's Rage Channeler
-<<DECISION 139: action=0>>
-<<DECISION 140: action=1>>
-Player A activated Mountain for 1(R)
-Player A casts Dragon's Rage Channeler
-<<DECISION 141: action=0>>
-Dragon's Rage Channeler enters the battlefield
-Dragon's Rage Channeler gains 2/2 Flying (Delirium)
-<<DECISION 142: action=0>>
-<<DECISION 143: action=0>>
-No creatures eligible to attack.
-<<DECISION 144: action=0>>
-No attackers ��� skipping declare blockers.
-<<DECISION 145: action=0>>
---- Combat Damage ---
---- End Combat Damage ---
-<<DECISION 146: action=0>>
-<<DECISION 147: action=0>>
-<<DECISION 148: action=0>>
-<<DECISION 149: action=0>>
--------- TURN 17 (Player B) --------
-<<DECISION 150: action=0>>
-Player B draws Green Sun's Zenith
-<<DECISION 151: action=0>>
-<<DECISION 152: action=1>>
-Choose X value (0-2):
-<<DECISION 153: action=2>>
-Player B chooses X = 2
-Player B activated Forest for 1(G)
-Player B activated Savannah for 1(G)
-Player B activated Savannah for 1(G)
-Player B activated Wasteland for 1(C)
-Player B casts Green Sun's Zenith
-Resolving ability (category: ChangeZone, amount: 1)
-Searching Player B's library:
-<<DECISION 154: action=1>>
-Player B shuffles their library
-Player B puts Birds of Paradise to the battlefield
-Green Sun's Zenith is shuffled into its owner's library
---- Declare Attackers (Player B) ---
-<<DECISION 155: action=0>>
-Select target for Scythecat Cub:
-<<DECISION 156: action=0>>
-Scythecat Cub attacking Player A.
---- Declare Attackers (Player B) ---
-  [attacking] Scythecat Cub [4/4] -> Player A
-<<DECISION 157: action=0>>
-Select target for Thalia, Guardian of Thraben:
-<<DECISION 158: action=0>>
-Thalia, Guardian of Thraben attacking Player A.
---- Declare Attackers (Player B) ---
-  [attacking] Scythecat Cub [4/4] -> Player A
-  [attacking] Thalia, Guardian of Thraben [2/1] -> Player A
-<<DECISION 159: action=-1>>
-Attackers declared:
-  Scythecat Cub -> Player A
-  Thalia, Guardian of Thraben -> Player A
---- Declare Blockers (Player A) ---
-Attackers:
-  0: Scythecat Cub [4/4]
-  1: Thalia, Guardian of Thraben [2/1]
-Your creatures:
-<<DECISION 160: action=-1>>
-Blockers declared:
-  (none)
---- First Strike Combat Damage ---
-  Thalia, Guardian of Thraben deals 2 damage to Player A
---- End First Strike Combat Damage ---
---- Combat Damage ---
-  Scythecat Cub deals 4 damage to Player A
---- End Combat Damage ---
--------- TURN 18 (Player A) --------
-Player A draws Volcanic Island
-<<DECISION 161: action=1>>
-Player A played Volcanic Island
-<<DECISION 162: action=1>>
-Player A activated Mountain for 1(R)
-Player A activated Island for 1(U)
-Choose creature to equip:
-<<DECISION 163: action=0>>
-Cori-Steel Cutter equipped to Dragon's Rage Channeler.
-Dragon's Rage Channeler gains 1/1 Trample & Haste (always)
-Dragon's Rage Channeler must attack and is declared as an attacker.
---- Declare Attackers (Player A) ---
-  [attacking] Dragon's Rage Channeler [4/4] -> Player B
-<<DECISION 164: action=-1>>
-Attackers declared:
-  Dragon's Rage Channeler -> Player B
---- Declare Blockers (Player B) ---
-Attackers:
-  0: Dragon's Rage Channeler [4/4]
-Your creatures:
-<<DECISION 165: action=-1>>
-Blockers declared:
-  (none)
---- Combat Damage ---
-  Dragon's Rage Channeler deals 4 damage to Player B
---- End Combat Damage ---
--------- TURN 19 (Player B) --------
-<<DECISION 166: action=0>>
-Player B draws Savannah
-<<DECISION 167: action=0>>
-<<DECISION 168: action=1>>
-Player B played Savannah
-Choose target:
-<<DECISION 169: action=0>>
-Targeting choice 0
-Scythecat Cub triggered
-<<DECISION 170: action=1>>
-Choose target:
-<<DECISION 171: action=0>>
-Targeting choice 0
-Player B sacrifices Wasteland
-Player B's Wasteland ability targeting Volcanic Island is on the stack
-Resolving ability (category: Destroy, amount: 0)
-Volcanic Island is destroyed
-Resolving ability (category: Pump, amount: 0)
-Choose a creature for Pump:
-<<DECISION 172: action=0>>
-Resolving ability (category: PutCounter, amount: 0)
-Put 1 +1/+1 counter(s) on creature (now 1/2).
-Resolving ability (category: MultiplyCounter, amount: 0)
---- Declare Attackers (Player B) ---
-<<DECISION 173: action=0>>
-Select target for Birds of Paradise:
-<<DECISION 174: action=0>>
-Birds of Paradise attacking Player A.
---- Declare Attackers (Player B) ---
-  [attacking] Birds of Paradise [1/2] -> Player A
-<<DECISION 175: action=0>>
-Select target for Scythecat Cub:
-<<DECISION 176: action=0>>
-Scythecat Cub attacking Player A.
---- Declare Attackers (Player B) ---
-  [attacking] Birds of Paradise [1/2] -> Player A
-  [attacking] Scythecat Cub [4/4] -> Player A
-<<DECISION 177: action=0>>
-Select target for Thalia, Guardian of Thraben:
-<<DECISION 178: action=0>>
-Thalia, Guardian of Thraben attacking Player A.
---- Declare Attackers (Player B) ---
-  [attacking] Birds of Paradise [1/2] -> Player A
-  [attacking] Scythecat Cub [4/4] -> Player A
-  [attacking] Thalia, Guardian of Thraben [2/1] -> Player A
-<<DECISION 179: action=-1>>
-Attackers declared:
-  Birds of Paradise -> Player A
-  Scythecat Cub -> Player A
-  Thalia, Guardian of Thraben -> Player A
-No creatures eligible to block.
---- First Strike Combat Damage ---
-  Thalia, Guardian of Thraben deals 2 damage to Player A
---- End First Strike Combat Damage ---
-Player A has -1 life - Player B wins!
-=== GAME OVER: winner=Player B ===
+--- Narrative ---
+  robomage 0.001
+  Using seed: 1187322509
+  -------- PREGAME --------
+  Player A draws Brainstorm
+  Player A draws Volcanic Island
+  Player A draws Force of Will
+  Player A draws Cori-Steel Cutter
+  Player A draws Ponder
+  Player A draws Dragon's Rage Channeler
+  Player A draws Ponder
+  Player B draws Windswept Heath
+  Player B draws Once Upon a Time
+  Player B draws Scythecat Cub
+  Player B draws Knight of the Reliquary
+  Player B draws Knight of the Reliquary
+  Player B draws Green Sun's Zenith
+  Player B draws Wooded Foothills
+  Player A hand:
+  Dragon's Rage Channeler
+  Cori-Steel Cutter
+  Force of Will
+  Brainstorm
+  Ponder
+  Ponder
+  Volcanic Island
+--- Pregame ---
+
+--- Decision 1 ---
+  Priority: Player A (active)
+  Step: Untap
+  Self:  20 life | mana: empty | hand(7): Dragon's Rage Channeler, Cori-Steel Cutter, Force of Will, Brainstorm, Ponder, Ponder, Volcanic Island
+  Opp:   20 life | mana: empty | hand count: 7
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> A/A: 0 (Keep)
+--- Narrative ---
+  Player A keeps a 7-card hand.
+  Player B hand:
+  Green Sun's Zenith
+  Knight of the Reliquary
+  Knight of the Reliquary
+  Once Upon a Time
+  Scythecat Cub
+  Windswept Heath
+  Wooded Foothills
+
+--- Decision 2 ---
+  Priority: Player B (non-active)
+  Step: Untap
+  Self:  20 life | mana: empty | hand(7): Green Sun's Zenith, Knight of the Reliquary, Knight of the Reliquary, Once Upon a Time, Scythecat Cub, Windswept Heath, Wooded Foothills
+  Opp:   20 life | mana: empty | hand count: 7
+  Actions:
+   0: Keep
+   1: Mulligan
+  >> B/B: 0 (Keep)
+--- Narrative ---
+  Player B keeps a 7-card hand.
+  -------- TURN 1 (Player A) --------
+--- Turn 1 (Player A) ---
+  PA: Dragon's Rage Channeler, Cori-Steel Cutter, Force of Will, Brainstorm, Ponder, Ponder, Volcanic Island
+  PB: Green Sun's Zenith, Knight of the Reliquary, Knight of the Reliquary, Once Upon a Time, Scythecat Cub, Windswept Heath, Wooded Foothills
+
+--- Decision 3 ---
+  Priority: Player B (non-active)
+  Step: Upkeep
+  Self:  20 life | mana: empty | hand(7): Green Sun's Zenith, Knight of the Reliquary, Knight of the Reliquary, Once Upon a Time, Scythecat Cub, Windswept Heath, Wooded Foothills
+  Opp:   20 life | mana: empty | hand count: 7
+  Actions:
+   0: Pass priority
+   1: Cast Once Upon a Time (alternate cost)
+  >> B/B: 1 (Cast Once Upon a Time (alternate cost))
+--- Narrative ---
+  Player B casts for free (alternate cost)
+  Player B casts Once Upon a Time
+
+--- Decision 4 ---
+  Priority: Player A (active)
+  Step: Upkeep
+  Self:  20 life | mana: empty | hand(7): Dragon's Rage Channeler, Cori-Steel Cutter, Force of Will, Brainstorm, Ponder, Ponder, Volcanic Island
+  Opp:   20 life | mana: empty | hand count: 6
+  Stack: Once Upon a Time (spell, opponent)
+  Actions:
+   0: Pass priority
+   1: Cast Force of Will (alternate cost)
+  >> A/A: 1 (Cast Force of Will (alternate cost))
+--- Narrative ---
+  Player A pays 1 life
+
+--- Decision 5 ---
+  Priority: Player A (active)
+  Step: Upkeep
+  Self:  19 life | mana: empty | hand(7): Dragon's Rage Channeler, Cori-Steel Cutter, Force of Will, Brainstorm, Ponder, Ponder, Volcanic Island
+  Opp:   20 life | mana: empty | hand count: 6
+  Stack: Once Upon a Time (spell, opponent)
+  Actions:
+   0: Exile Brainstorm
+   1: Exile Ponder
+   2: Exile Ponder
+  >> A/A: 0 (Exile Brainstorm)
+--- Narrative ---
+  Player A exiles Brainstorm
+  Choose target:
+
+--- Decision 6 ---
+  Priority: Player A (active)
+  Step: Upkeep
+  Self:  19 life | mana: empty | hand(6): Dragon's Rage Channeler, Cori-Steel Cutter, Force of Will, Ponder, Ponder, Volcanic Island
+  Opp:   20 life | mana: empty | hand count: 6
+  Stack: Once Upon a Time (spell, opponent)
+  Actions:
+   0: Once Upon a Time
+  >> A/A: 0 (Once Upon a Time)
+--- Narrative ---
+  Targeting choice 0
+  Player A casts Force of Will targeting Once Upon a Time
+  Resolving ability (category: Counter)
+  Once Upon a Time is countered
+
+--- Decision 7 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  19 life | mana: empty | hand(5): Dragon's Rage Channeler, Cori-Steel Cutter, Ponder, Ponder, Volcanic Island
+  Opp:   20 life | mana: empty | hand count: 6
+  Self GY: Force of Will
+  Opp GY:  Once Upon a Time
+  Actions:
+   0: Pass priority
+   1: Play Volcanic Island
+  >> A/A: 1 (Play Volcanic Island)
+--- Narrative ---
+  Player A played Volcanic Island
+
+--- Decision 8 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  19 life | mana: empty | hand(4): Dragon's Rage Channeler, Cori-Steel Cutter, Ponder, Ponder
+  Opp:   20 life | mana: empty | hand count: 6
+  Self BF:  Volcanic Island
+  Self GY: Force of Will
+  Opp GY:  Once Upon a Time
+  Actions:
+   0: Pass priority
+   1: Cast Dragon's Rage Channeler
+   2: Cast Ponder
+   3: Cast Ponder
+  >> A/A: 1 (Cast Dragon's Rage Channeler)
+--- Narrative ---
+  Player A activated Volcanic Island for 1(R)
+  Player A casts Dragon's Rage Channeler
+  Dragon's Rage Channeler enters the battlefield
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 2 (Player B) --------
+  Player B draws Wasteland
+--- Turn 2 (Player B) ---
+  PA: Dragon's Rage Channeler, Cori-Steel Cutter, Ponder, Ponder
+  PB: Green Sun's Zenith, Knight of the Reliquary, Knight of the Reliquary, Scythecat Cub, Wasteland, Windswept Heath, Wooded Foothills
+
+--- Decision 9 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  20 life | mana: empty | hand(7): Green Sun's Zenith, Knight of the Reliquary, Knight of the Reliquary, Scythecat Cub, Wasteland, Windswept Heath, Wooded Foothills
+  Opp:   19 life | mana: empty | hand count: 3
+  Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Volcanic Island (T)
+  Self GY: Once Upon a Time
+  Opp GY:  Force of Will
+  Actions:
+   0: Pass priority
+   1: Play Wasteland
+   2: Play Windswept Heath
+   3: Play Wooded Foothills
+  >> B/B: 1 (Play Wasteland)
+--- Narrative ---
+  Player B played Wasteland
+
+--- Decision 10 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  20 life | mana: empty | hand(6): Green Sun's Zenith, Knight of the Reliquary, Knight of the Reliquary, Scythecat Cub, Windswept Heath, Wooded Foothills
+  Opp:   19 life | mana: empty | hand count: 3
+  Self BF:  Wasteland
+  Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Volcanic Island (T)
+  Self GY: Once Upon a Time
+  Opp GY:  Force of Will
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 1 (Activate Wasteland (Destroy))
+--- Narrative ---
+  Choose target:
+
+--- Decision 11 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  20 life | mana: empty | hand(6): Green Sun's Zenith, Knight of the Reliquary, Knight of the Reliquary, Scythecat Cub, Windswept Heath, Wooded Foothills
+  Opp:   19 life | mana: empty | hand count: 3
+  Self BF:  Wasteland
+  Opp BF:   Dragon's Rage Channeler [1/1] (SICK) | Volcanic Island (T)
+  Self GY: Once Upon a Time
+  Opp GY:  Force of Will
+  Actions:
+   0: Volcanic Island
+   1: Wasteland
+  >> B/B: 0 (Volcanic Island)
+--- Narrative ---
+  Targeting choice 0
+  Player B sacrifices Wasteland
+  Player B's Wasteland ability targeting Volcanic Island is on the stack
+  Resolving ability (category: Destroy)
+  Volcanic Island is destroyed
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 3 (Player A) --------
+  Player A draws Lightning Bolt
+  --- Declare Attackers (Player A) ---
+--- Turn 3 (Player A) ---
+  PA: Cori-Steel Cutter, Lightning Bolt, Ponder, Ponder
+  PB: Green Sun's Zenith, Knight of the Reliquary, Knight of the Reliquary, Scythecat Cub, Windswept Heath, Wooded Foothills
+
+--- Decision 12 ---
+  Priority: Player A (active)
+  Step: Declare Atk
+  Self:  19 life | mana: empty | hand(4): Cori-Steel Cutter, Lightning Bolt, Ponder, Ponder
+  Opp:   20 life | mana: empty | hand count: 6
+  Self BF:  Dragon's Rage Channeler [1/1]
+  Self GY: Force of Will, Volcanic Island
+  Opp GY:  Once Upon a Time, Wasteland
+  Actions:
+   0: Dragon's Rage Channeler [1/1]
+   1: Confirm attackers
+  >> A/A: 0 (Dragon's Rage Channeler [1/1])
+--- Narrative ---
+  Dragon's Rage Channeler attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Dragon's Rage Channeler [1/1] -> Player B
+
+--- Decision 13 ---
+  Priority: Player A (active)
+  Step: Declare Atk
+  Self:  19 life | mana: empty | hand(4): Cori-Steel Cutter, Lightning Bolt, Ponder, Ponder
+  Opp:   20 life | mana: empty | hand count: 6
+  Self BF:  Dragon's Rage Channeler [1/1] (ATK)
+  Self GY: Force of Will, Volcanic Island
+  Opp GY:  Once Upon a Time, Wasteland
+  Actions:
+   0: Confirm attackers
+  >> A/A: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Dragon's Rage Channeler -> Player B
+  No creatures eligible to block.
+  --- Combat Damage ---
+    Dragon's Rage Channeler deals 1 damage to Player B
+  --- End Combat Damage ---
+  -------- TURN 4 (Player B) --------
+  Player B draws Windswept Heath
+--- Turn 4 (Player B) ---
+  PA: Cori-Steel Cutter, Lightning Bolt, Ponder, Ponder
+  PB: Green Sun's Zenith, Knight of the Reliquary, Knight of the Reliquary, Scythecat Cub, Windswept Heath, Windswept Heath, Wooded Foothills
+
+--- Decision 14 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  19 life | mana: empty | hand(7): Green Sun's Zenith, Knight of the Reliquary, Knight of the Reliquary, Scythecat Cub, Windswept Heath, Windswept Heath, Wooded Foothills
+  Opp:   19 life | mana: empty | hand count: 4
+  Opp BF:   Dragon's Rage Channeler [1/1] (T)
+  Self GY: Once Upon a Time, Wasteland
+  Opp GY:  Force of Will, Volcanic Island
+  Actions:
+   0: Pass priority
+   1: Play Windswept Heath
+   2: Play Windswept Heath
+   3: Play Wooded Foothills
+  >> B/B: 1 (Play Windswept Heath)
+--- Narrative ---
+  Player B played Windswept Heath
+
+--- Decision 15 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  19 life | mana: empty | hand(6): Green Sun's Zenith, Knight of the Reliquary, Knight of the Reliquary, Scythecat Cub, Windswept Heath, Wooded Foothills
+  Opp:   19 life | mana: empty | hand count: 4
+  Self BF:  Windswept Heath
+  Opp BF:   Dragon's Rage Channeler [1/1] (T)
+  Self GY: Once Upon a Time, Wasteland
+  Opp GY:  Force of Will, Volcanic Island
+  Actions:
+   0: Pass priority
+   1: Activate Windswept Heath (ChangeZone)
+  >> B/B: 1 (Activate Windswept Heath (ChangeZone))
+--- Narrative ---
+  Player B pays 1 life
+  Player B sacrifices Windswept Heath
+  Player B's Windswept Heath ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Searching Player B's library:
+
+--- Decision 16 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  18 life | mana: empty | hand(6): Green Sun's Zenith, Knight of the Reliquary, Knight of the Reliquary, Scythecat Cub, Windswept Heath, Wooded Foothills
+  Opp:   19 life | mana: empty | hand count: 4
+  Opp BF:   Dragon's Rage Channeler [1/1] (T)
+  Stack: Windswept Heath (ability, self)
+  Self GY: Once Upon a Time, Wasteland, Windswept Heath
+  Opp GY:  Force of Will, Volcanic Island
+  Actions:
+   0: Fail to find
+   1: Dryad Arbor
+   2: Forest
+   3: Plains
+   4: Savannah
+   5: Savannah
+   6: Savannah
+   7: Savannah
+  >> B/B: 1 (Dryad Arbor)
+--- Narrative ---
+  Player B shuffles their library
+  Player B puts Dryad Arbor to the battlefield
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 5 (Player A) --------
+  Player A draws Mishra's Bauble
+--- Turn 5 (Player A) ---
+  PA: Mishra's Bauble, Cori-Steel Cutter, Lightning Bolt, Ponder, Ponder
+  PB: Green Sun's Zenith, Knight of the Reliquary, Knight of the Reliquary, Scythecat Cub, Windswept Heath, Wooded Foothills
+
+--- Decision 17 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  19 life | mana: empty | hand(5): Mishra's Bauble, Cori-Steel Cutter, Lightning Bolt, Ponder, Ponder
+  Opp:   18 life | mana: empty | hand count: 6
+  Self BF:  Dragon's Rage Channeler [1/1]
+  Opp BF:   Dryad Arbor [1/1] (SICK)
+  Self GY: Force of Will, Volcanic Island
+  Opp GY:  Once Upon a Time, Wasteland, Windswept Heath
+  Actions:
+   0: Pass priority
+   1: Cast Mishra's Bauble
+  >> A/A: 1 (Cast Mishra's Bauble)
+--- Narrative ---
+  Player A casts Mishra's Bauble
+  Dragon's Rage Channeler triggered
+  Resolving ability (category: Surveil, amount: 1)
+  Top card of Player A's library: Scalding Tarn
+
+--- Decision 18 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  19 life | mana: empty | hand(4): Cori-Steel Cutter, Lightning Bolt, Ponder, Ponder
+  Opp:   18 life | mana: empty | hand count: 6
+  Self BF:  Dragon's Rage Channeler [1/1]
+  Opp BF:   Dryad Arbor [1/1] (SICK)
+  Stack: Dragon's Rage Channeler (ability, self) -> Mishra's Bauble (spell, self)
+  Self GY: Force of Will, Volcanic Island
+  Opp GY:  Once Upon a Time, Wasteland, Windswept Heath
+  Actions:
+   0: Keep on top
+   1: Put in graveyard
+  >> A/A: 1 (Put in graveyard)
+--- Narrative ---
+  Player A puts Scalding Tarn into the graveyard.
+  Mishra's Bauble enters the battlefield
+
+--- Decision 19 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  19 life | mana: empty | hand(4): Cori-Steel Cutter, Lightning Bolt, Ponder, Ponder
+  Opp:   18 life | mana: empty | hand count: 6
+  Self BF:  Dragon's Rage Channeler [1/1] | Mishra's Bauble
+  Opp BF:   Dryad Arbor [1/1] (SICK)
+  Self GY: Force of Will, Volcanic Island, Scalding Tarn
+  Opp GY:  Once Upon a Time, Wasteland, Windswept Heath
+  Actions:
+   0: Pass priority
+   1: Activate Mishra's Bauble (PeekAndReveal)
+  >> A/A: 1 (Activate Mishra's Bauble (PeekAndReveal))
+--- Narrative ---
+  Choose target:
+
+--- Decision 20 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  19 life | mana: empty | hand(4): Cori-Steel Cutter, Lightning Bolt, Ponder, Ponder
+  Opp:   18 life | mana: empty | hand count: 6
+  Self BF:  Dragon's Rage Channeler [1/1] | Mishra's Bauble
+  Opp BF:   Dryad Arbor [1/1] (SICK)
+  Self GY: Force of Will, Volcanic Island, Scalding Tarn
+  Opp GY:  Once Upon a Time, Wasteland, Windswept Heath
+  Actions:
+   0: Player B (18 life)
+   1: Player A (19 life)
+  >> A/A: 0 (Player B (18 life))
+--- Narrative ---
+  Targeting choice 0
+  Player A sacrifices Mishra's Bauble
+  Player A's Mishra's Bauble ability targeting Player B is on the stack
+  Resolving ability (category: PeekAndReveal)
+  Player A looks at top of Player B's library: Savannah
+  Resolving ability (category: DelayedTrigger)
+  Delayed trigger registered: Draw at next Upkeep.
+  --- Declare Attackers (Player A) ---
+
+--- Decision 21 ---
+  Priority: Player A (active)
+  Step: Declare Atk
+  Self:  19 life | mana: empty | hand(4): Cori-Steel Cutter, Lightning Bolt, Ponder, Ponder
+  Opp:   18 life | mana: empty | hand count: 6
+  Self BF:  Dragon's Rage Channeler [1/1]
+  Opp BF:   Dryad Arbor [1/1] (SICK)
+  Self GY: Mishra's Bauble, Force of Will, Volcanic Island, Scalding Tarn
+  Opp GY:  Once Upon a Time, Wasteland, Windswept Heath
+  Actions:
+   0: Dragon's Rage Channeler [1/1]
+   1: Confirm attackers
+  >> A/A: 0 (Dragon's Rage Channeler [1/1])
+--- Narrative ---
+  Dragon's Rage Channeler attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Dragon's Rage Channeler [1/1] -> Player B
+
+--- Decision 22 ---
+  Priority: Player A (active)
+  Step: Declare Atk
+  Self:  19 life | mana: empty | hand(4): Cori-Steel Cutter, Lightning Bolt, Ponder, Ponder
+  Opp:   18 life | mana: empty | hand count: 6
+  Self BF:  Dragon's Rage Channeler [1/1] (ATK)
+  Opp BF:   Dryad Arbor [1/1] (SICK)
+  Self GY: Mishra's Bauble, Force of Will, Volcanic Island, Scalding Tarn
+  Opp GY:  Once Upon a Time, Wasteland, Windswept Heath
+  Actions:
+   0: Confirm attackers
+  >> A/A: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Dragon's Rage Channeler -> Player B
+  --- Declare Blockers (Player B) ---
+  Attackers:
+    0: Dragon's Rage Channeler [1/1]
+  Your creatures:
+
+--- Decision 23 ---
+  Priority: Player B (non-active)
+  Step: Declare Blk
+  Self:  18 life | mana: empty | hand(6): Green Sun's Zenith, Knight of the Reliquary, Knight of the Reliquary, Scythecat Cub, Windswept Heath, Wooded Foothills
+  Opp:   19 life | mana: empty | hand count: 4
+  Self BF:  Dryad Arbor [1/1] (SICK)
+  Opp BF:   Dragon's Rage Channeler [1/1] (T,ATK)
+  Self GY: Once Upon a Time, Wasteland, Windswept Heath
+  Opp GY:  Mishra's Bauble, Force of Will, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Dryad Arbor [1/1]
+   1: Confirm blockers
+  >> B/B: 1 (Confirm blockers)
+--- Narrative ---
+  Blockers declared:
+    (none)
+  --- Combat Damage ---
+    Dragon's Rage Channeler deals 1 damage to Player B
+  --- End Combat Damage ---
+  -------- TURN 6 (Player B) --------
+  Delayed trigger fires.
+  Resolving ability (category: Draw, amount: 1)
+  Player A draws Wasteland
+  Player B draws Savannah
+--- Turn 6 (Player B) ---
+  PA: Cori-Steel Cutter, Lightning Bolt, Ponder, Ponder
+  PB: Green Sun's Zenith, Knight of the Reliquary, Knight of the Reliquary, Savannah, Scythecat Cub, Windswept Heath, Wooded Foothills
+
+--- Decision 24 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  17 life | mana: empty | hand(7): Green Sun's Zenith, Knight of the Reliquary, Knight of the Reliquary, Savannah, Scythecat Cub, Windswept Heath, Wooded Foothills
+  Opp:   19 life | mana: empty | hand count: 5
+  Self BF:  Dryad Arbor [1/1]
+  Opp BF:   Dragon's Rage Channeler [1/1] (T)
+  Self GY: Once Upon a Time, Wasteland, Windswept Heath
+  Opp GY:  Mishra's Bauble, Force of Will, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Play Savannah
+   2: Play Windswept Heath
+   3: Play Wooded Foothills
+   4: Cast Green Sun's Zenith
+  >> B/B: 1 (Play Savannah)
+--- Narrative ---
+  Player B played Savannah
+
+--- Decision 25 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  17 life | mana: empty | hand(6): Green Sun's Zenith, Knight of the Reliquary, Knight of the Reliquary, Scythecat Cub, Windswept Heath, Wooded Foothills
+  Opp:   19 life | mana: empty | hand count: 5
+  Self BF:  Dryad Arbor [1/1] | Savannah
+  Opp BF:   Dragon's Rage Channeler [1/1] (T)
+  Self GY: Once Upon a Time, Wasteland, Windswept Heath
+  Opp GY:  Mishra's Bauble, Force of Will, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Pass priority
+   1: Cast Green Sun's Zenith
+   2: Cast Scythecat Cub
+  >> B/B: 1 (Cast Green Sun's Zenith)
+--- Narrative ---
+  Choose X value (0-1):
+
+--- Decision 26 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  17 life | mana: empty | hand(6): Green Sun's Zenith, Knight of the Reliquary, Knight of the Reliquary, Scythecat Cub, Windswept Heath, Wooded Foothills
+  Opp:   19 life | mana: empty | hand count: 5
+  Self BF:  Dryad Arbor [1/1] | Savannah
+  Opp BF:   Dragon's Rage Channeler [1/1] (T)
+  Self GY: Once Upon a Time, Wasteland, Windswept Heath
+  Opp GY:  Mishra's Bauble, Force of Will, Volcanic Island, Scalding Tarn
+  Actions:
+   0: X = 0
+   1: X = 1
+  >> B/B: 0 (X = 0)
+--- Narrative ---
+  Player B chooses X = 0
+  Player B activated Dryad Arbor for 1(G)
+  Player B casts Green Sun's Zenith
+  Resolving ability (category: ChangeZone)
+  Searching Player B's library:
+
+--- Decision 27 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  17 life | mana: empty | hand(5): Knight of the Reliquary, Knight of the Reliquary, Scythecat Cub, Windswept Heath, Wooded Foothills
+  Opp:   19 life | mana: empty | hand count: 5
+  Self BF:  Dryad Arbor [1/1] (T) | Savannah
+  Opp BF:   Dragon's Rage Channeler [1/1] (T)
+  Stack: Green Sun's Zenith (spell, self)
+  Self GY: Once Upon a Time, Wasteland, Windswept Heath
+  Opp GY:  Mishra's Bauble, Force of Will, Volcanic Island, Scalding Tarn
+  Actions:
+   0: Fail to find
+  >> B/B: 0 (Fail to find)
+--- Narrative ---
+  Player B shuffles their library
+  Player B fails to find
+  Green Sun's Zenith is shuffled into its owner's library
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 7 (Player A) --------
+  Player A draws Ponder
+--- Turn 7 (Player A) ---
+  PA: Cori-Steel Cutter, Lightning Bolt, Ponder, Ponder, Ponder, Wasteland
+  PB: Knight of the Reliquary, Knight of the Reliquary, Scythecat Cub, Windswept Heath, Wooded Foothills
+
+--- Decision 28 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  19 life | mana: empty | hand(6): Cori-Steel Cutter, Lightning Bolt, Ponder, Ponder, Ponder, Wasteland
+  Opp:   17 life | mana: empty | hand count: 5
+  Self BF:  Dragon's Rage Channeler [1/1]
+  Opp BF:   Dryad Arbor [1/1] (T) | Savannah
+  Self GY: Mishra's Bauble, Force of Will, Volcanic Island, Scalding Tarn
+  Opp GY:  Once Upon a Time, Wasteland, Windswept Heath
+  Actions:
+   0: Pass priority
+   1: Play Wasteland
+  >> A/A: 1 (Play Wasteland)
+--- Narrative ---
+  Player A played Wasteland
+
+--- Decision 29 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  19 life | mana: empty | hand(5): Cori-Steel Cutter, Lightning Bolt, Ponder, Ponder, Ponder
+  Opp:   17 life | mana: empty | hand count: 5
+  Self BF:  Dragon's Rage Channeler [1/1] | Wasteland
+  Opp BF:   Dryad Arbor [1/1] (T) | Savannah
+  Self GY: Mishra's Bauble, Force of Will, Volcanic Island, Scalding Tarn
+  Opp GY:  Once Upon a Time, Wasteland, Windswept Heath
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> A/A: 1 (Activate Wasteland (Destroy))
+--- Narrative ---
+  Choose target:
+
+--- Decision 30 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  19 life | mana: empty | hand(5): Cori-Steel Cutter, Lightning Bolt, Ponder, Ponder, Ponder
+  Opp:   17 life | mana: empty | hand count: 5
+  Self BF:  Dragon's Rage Channeler [1/1] | Wasteland
+  Opp BF:   Dryad Arbor [1/1] (T) | Savannah
+  Self GY: Mishra's Bauble, Force of Will, Volcanic Island, Scalding Tarn
+  Opp GY:  Once Upon a Time, Wasteland, Windswept Heath
+  Actions:
+   0: Dryad Arbor
+   1: Savannah
+   2: Wasteland
+  >> A/A: 0 (Dryad Arbor)
+--- Narrative ---
+  Targeting choice 0
+  Player A sacrifices Wasteland
+  Player A's Wasteland ability targeting Dryad Arbor is on the stack
+  Resolving ability (category: Destroy)
+  Dryad Arbor is destroyed
+  --- Declare Attackers (Player A) ---
+
+--- Decision 31 ---
+  Priority: Player A (active)
+  Step: Declare Atk
+  Self:  19 life | mana: empty | hand(5): Cori-Steel Cutter, Lightning Bolt, Ponder, Ponder, Ponder
+  Opp:   17 life | mana: empty | hand count: 5
+  Self BF:  Dragon's Rage Channeler [1/1]
+  Opp BF:   Savannah
+  Self GY: Mishra's Bauble, Force of Will, Volcanic Island, Scalding Tarn, Wasteland
+  Opp GY:  Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath
+  Actions:
+   0: Dragon's Rage Channeler [1/1]
+   1: Confirm attackers
+  >> A/A: 0 (Dragon's Rage Channeler [1/1])
+--- Narrative ---
+  Dragon's Rage Channeler attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Dragon's Rage Channeler [1/1] -> Player B
+
+--- Decision 32 ---
+  Priority: Player A (active)
+  Step: Declare Atk
+  Self:  19 life | mana: empty | hand(5): Cori-Steel Cutter, Lightning Bolt, Ponder, Ponder, Ponder
+  Opp:   17 life | mana: empty | hand count: 5
+  Self BF:  Dragon's Rage Channeler [1/1] (ATK)
+  Opp BF:   Savannah
+  Self GY: Mishra's Bauble, Force of Will, Volcanic Island, Scalding Tarn, Wasteland
+  Opp GY:  Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath
+  Actions:
+   0: Confirm attackers
+  >> A/A: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Dragon's Rage Channeler -> Player B
+  No creatures eligible to block.
+  --- Combat Damage ---
+    Dragon's Rage Channeler deals 1 damage to Player B
+  --- End Combat Damage ---
+  -------- TURN 8 (Player B) --------
+  Player B draws Wooded Foothills
+--- Turn 8 (Player B) ---
+  PA: Cori-Steel Cutter, Lightning Bolt, Ponder, Ponder, Ponder
+  PB: Knight of the Reliquary, Knight of the Reliquary, Scythecat Cub, Windswept Heath, Wooded Foothills, Wooded Foothills
+
+--- Decision 33 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  16 life | mana: empty | hand(6): Knight of the Reliquary, Knight of the Reliquary, Scythecat Cub, Windswept Heath, Wooded Foothills, Wooded Foothills
+  Opp:   19 life | mana: empty | hand count: 5
+  Self BF:  Savannah
+  Opp BF:   Dragon's Rage Channeler [1/1] (T)
+  Self GY: Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath
+  Opp GY:  Mishra's Bauble, Force of Will, Volcanic Island, Scalding Tarn, Wasteland
+  Actions:
+   0: Pass priority
+   1: Play Windswept Heath
+   2: Play Wooded Foothills
+   3: Play Wooded Foothills
+  >> B/B: 1 (Play Windswept Heath)
+--- Narrative ---
+  Player B played Windswept Heath
+
+--- Decision 34 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  16 life | mana: empty | hand(5): Knight of the Reliquary, Knight of the Reliquary, Scythecat Cub, Wooded Foothills, Wooded Foothills
+  Opp:   19 life | mana: empty | hand count: 5
+  Self BF:  Savannah | Windswept Heath
+  Opp BF:   Dragon's Rage Channeler [1/1] (T)
+  Self GY: Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath
+  Opp GY:  Mishra's Bauble, Force of Will, Volcanic Island, Scalding Tarn, Wasteland
+  Actions:
+   0: Pass priority
+   1: Activate Windswept Heath (ChangeZone)
+  >> B/B: 1 (Activate Windswept Heath (ChangeZone))
+--- Narrative ---
+  Player B pays 1 life
+  Player B sacrifices Windswept Heath
+  Player B's Windswept Heath ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Searching Player B's library:
+
+--- Decision 35 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  15 life | mana: empty | hand(5): Knight of the Reliquary, Knight of the Reliquary, Scythecat Cub, Wooded Foothills, Wooded Foothills
+  Opp:   19 life | mana: empty | hand count: 5
+  Self BF:  Savannah
+  Opp BF:   Dragon's Rage Channeler [1/1] (T)
+  Stack: Windswept Heath (ability, self)
+  Self GY: Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
+  Opp GY:  Mishra's Bauble, Force of Will, Volcanic Island, Scalding Tarn, Wasteland
+  Actions:
+   0: Fail to find
+   1: Forest
+   2: Plains
+   3: Savannah
+   4: Savannah
+   5: Savannah
+  >> B/B: 1 (Forest)
+--- Narrative ---
+  Player B shuffles their library
+  Player B puts Forest to the battlefield
+
+--- Decision 36 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  15 life | mana: empty | hand(5): Knight of the Reliquary, Knight of the Reliquary, Scythecat Cub, Wooded Foothills, Wooded Foothills
+  Opp:   19 life | mana: empty | hand count: 5
+  Self BF:  Forest | Savannah
+  Opp BF:   Dragon's Rage Channeler [1/1] (T)
+  Self GY: Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
+  Opp GY:  Mishra's Bauble, Force of Will, Volcanic Island, Scalding Tarn, Wasteland
+  Actions:
+   0: Pass priority
+   1: Cast Scythecat Cub
+  >> B/B: 1 (Cast Scythecat Cub)
+--- Narrative ---
+  Player B activated Forest for 1(G)
+  Player B activated Savannah for 1(G)
+  Player B casts Scythecat Cub
+  Scythecat Cub enters the battlefield
+  No creatures eligible to attack.
+  No attackers — skipping declare blockers.
+  --- Combat Damage ---
+  --- End Combat Damage ---
+  -------- TURN 9 (Player A) --------
+  Player A draws Flooded Strand
+--- Turn 9 (Player A) ---
+  PA: Cori-Steel Cutter, Lightning Bolt, Ponder, Ponder, Ponder, Flooded Strand
+  PB: Knight of the Reliquary, Knight of the Reliquary, Scythecat Cub, Wooded Foothills, Wooded Foothills
+
+--- Decision 37 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  19 life | mana: empty | hand(6): Cori-Steel Cutter, Lightning Bolt, Ponder, Ponder, Ponder, Flooded Strand
+  Opp:   15 life | mana: empty | hand count: 4
+  Self BF:  Dragon's Rage Channeler [1/1]
+  Opp BF:   Forest (T) | Savannah (T) | Scythecat Cub [2/2] (SICK)
+  Self GY: Mishra's Bauble, Force of Will, Volcanic Island, Scalding Tarn, Wasteland
+  Opp GY:  Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
+  Actions:
+   0: Pass priority
+   1: Play Flooded Strand
+  >> A/A: 1 (Play Flooded Strand)
+--- Narrative ---
+  Player A played Flooded Strand
+
+--- Decision 38 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  19 life | mana: empty | hand(5): Cori-Steel Cutter, Lightning Bolt, Ponder, Ponder, Ponder
+  Opp:   15 life | mana: empty | hand count: 4
+  Self BF:  Dragon's Rage Channeler [1/1] | Flooded Strand
+  Opp BF:   Forest (T) | Savannah (T) | Scythecat Cub [2/2] (SICK)
+  Self GY: Mishra's Bauble, Force of Will, Volcanic Island, Scalding Tarn, Wasteland
+  Opp GY:  Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
+  Actions:
+   0: Pass priority
+   1: Activate Flooded Strand (ChangeZone)
+  >> A/A: 1 (Activate Flooded Strand (ChangeZone))
+--- Narrative ---
+  Player A pays 1 life
+  Player A sacrifices Flooded Strand
+  Player A's Flooded Strand ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Searching Player A's library:
+
+--- Decision 39 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  18 life | mana: empty | hand(5): Cori-Steel Cutter, Lightning Bolt, Ponder, Ponder, Ponder
+  Opp:   15 life | mana: empty | hand count: 4
+  Self BF:  Dragon's Rage Channeler [1/1]
+  Opp BF:   Forest (T) | Savannah (T) | Scythecat Cub [2/2] (SICK)
+  Stack: Flooded Strand (ability, self)
+  Self GY: Mishra's Bauble, Force of Will, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland
+  Opp GY:  Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
+  Actions:
+   0: Fail to find
+   1: Island
+   2: Volcanic Island
+   3: Volcanic Island
+   4: Volcanic Island
+   5: Thundering Falls
+  >> A/A: 1 (Island)
+--- Narrative ---
+  Player A shuffles their library
+  Player A puts Island to the battlefield
+
+--- Decision 40 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  18 life | mana: empty | hand(5): Cori-Steel Cutter, Lightning Bolt, Ponder, Ponder, Ponder
+  Opp:   15 life | mana: empty | hand count: 4
+  Self BF:  Dragon's Rage Channeler [1/1] | Island
+  Opp BF:   Forest (T) | Savannah (T) | Scythecat Cub [2/2] (SICK)
+  Self GY: Mishra's Bauble, Force of Will, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland
+  Opp GY:  Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
+  Actions:
+   0: Pass priority
+   1: Cast Ponder
+   2: Cast Ponder
+   3: Cast Ponder
+  >> A/A: 1 (Cast Ponder)
+--- Narrative ---
+  Player A activated Island for 1(U)
+  Player A casts Ponder
+  Dragon's Rage Channeler triggered
+  Resolving ability (category: Surveil, amount: 1)
+  Top card of Player A's library: Dragon's Rage Channeler
+
+--- Decision 41 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  18 life | mana: empty | hand(4): Cori-Steel Cutter, Lightning Bolt, Ponder, Ponder
+  Opp:   15 life | mana: empty | hand count: 4
+  Self BF:  Dragon's Rage Channeler [1/1] | Island (T)
+  Opp BF:   Forest (T) | Savannah (T) | Scythecat Cub [2/2] (SICK)
+  Stack: Dragon's Rage Channeler (ability, self) -> Ponder (spell, self)
+  Self GY: Mishra's Bauble, Force of Will, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland
+  Opp GY:  Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
+  Actions:
+   0: Keep on top
+   1: Put in graveyard
+  >> A/A: 1 (Put in graveyard)
+--- Narrative ---
+  Player A puts Dragon's Rage Channeler into the graveyard.
+  Dragon's Rage Channeler gains 2/2 Flying (Delirium)
+  Resolving ability (category: RearrangeTopOfLibrary)
+  Player A looks at the top 3 card(s) of their library.
+  Choose which card goes 3 from top:
+
+--- Decision 42 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  18 life | mana: empty | hand(4): Cori-Steel Cutter, Lightning Bolt, Ponder, Ponder
+  Opp:   15 life | mana: empty | hand count: 4
+  Self BF:  Dragon's Rage Channeler [3/3] | Island (T)
+  Opp BF:   Forest (T) | Savannah (T) | Scythecat Cub [2/2] (SICK)
+  Stack: Ponder (spell, self)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland
+  Opp GY:  Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
+  Actions:
+   0: Wasteland
+   1: Volcanic Island
+   2: Unholy Heat
+  >> A/A: 0 (Wasteland)
+--- Narrative ---
+  Choose which card goes 2 from top:
+
+--- Decision 43 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  18 life | mana: empty | hand(4): Cori-Steel Cutter, Lightning Bolt, Ponder, Ponder
+  Opp:   15 life | mana: empty | hand count: 4
+  Self BF:  Dragon's Rage Channeler [3/3] | Island (T)
+  Opp BF:   Forest (T) | Savannah (T) | Scythecat Cub [2/2] (SICK)
+  Stack: Ponder (spell, self)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland
+  Opp GY:  Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
+  Actions:
+   0: Volcanic Island
+   1: Unholy Heat
+  >> A/A: 0 (Volcanic Island)
+
+--- Decision 44 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  18 life | mana: empty | hand(4): Cori-Steel Cutter, Lightning Bolt, Ponder, Ponder
+  Opp:   15 life | mana: empty | hand count: 4
+  Self BF:  Dragon's Rage Channeler [3/3] | Island (T)
+  Opp BF:   Forest (T) | Savannah (T) | Scythecat Cub [2/2] (SICK)
+  Stack: Ponder (spell, self)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland
+  Opp GY:  Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
+  Actions:
+   0: Don't shuffle
+   1: Shuffle
+  >> A/A: 0 (Don't shuffle)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 1)
+  Player A draws Unholy Heat
+  Dragon's Rage Channeler must attack and is declared as an attacker.
+  --- Declare Attackers (Player A) ---
+    [attacking] Dragon's Rage Channeler [3/3] -> Player B
+
+--- Decision 45 ---
+  Priority: Player A (active)
+  Step: Declare Atk
+  Self:  18 life | mana: empty | hand(5): Cori-Steel Cutter, Lightning Bolt, Unholy Heat, Ponder, Ponder
+  Opp:   15 life | mana: empty | hand count: 4
+  Self BF:  Dragon's Rage Channeler [3/3] (ATK) | Island (T)
+  Opp BF:   Forest (T) | Savannah (T) | Scythecat Cub [2/2] (SICK)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland
+  Opp GY:  Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
+  Actions:
+   0: Confirm attackers
+  >> A/A: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Dragon's Rage Channeler -> Player B
+  No creatures eligible to block.
+  --- Combat Damage ---
+    Dragon's Rage Channeler deals 3 damage to Player B
+  --- End Combat Damage ---
+  -------- TURN 10 (Player B) --------
+  Player B draws Karakas
+--- Turn 10 (Player B) ---
+  PA: Cori-Steel Cutter, Lightning Bolt, Unholy Heat, Ponder, Ponder
+  PB: Karakas, Knight of the Reliquary, Knight of the Reliquary, Wooded Foothills, Wooded Foothills
+
+--- Decision 46 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  12 life | mana: empty | hand(5): Karakas, Knight of the Reliquary, Knight of the Reliquary, Wooded Foothills, Wooded Foothills
+  Opp:   18 life | mana: empty | hand count: 5
+  Self BF:  Forest | Savannah | Scythecat Cub [2/2]
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
+  Self GY: Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland
+  Actions:
+   0: Pass priority
+   1: Play Karakas
+   2: Play Wooded Foothills
+   3: Play Wooded Foothills
+  >> B/B: 1 (Play Karakas)
+--- Narrative ---
+  Player B played Karakas
+  Choose target:
+
+--- Decision 47 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  12 life | mana: empty | hand(4): Knight of the Reliquary, Knight of the Reliquary, Wooded Foothills, Wooded Foothills
+  Opp:   18 life | mana: empty | hand count: 5
+  Self BF:  Forest | Karakas | Savannah | Scythecat Cub [2/2]
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
+  Self GY: Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland
+  Actions:
+   0: Scythecat Cub
+  >> B/B: 0 (Scythecat Cub)
+--- Narrative ---
+  Targeting choice 0
+  Scythecat Cub triggered
+  Resolving ability (category: Pump)
+  Resolving ability (category: PutCounter, amount: 1)
+  Put 1 +1/+1 counter(s) on creature (now 3/3).
+  Resolving ability (category: MultiplyCounter)
+
+--- Decision 48 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  12 life | mana: empty | hand(4): Knight of the Reliquary, Knight of the Reliquary, Wooded Foothills, Wooded Foothills
+  Opp:   18 life | mana: empty | hand count: 5
+  Self BF:  Forest | Karakas | Savannah | Scythecat Cub [3/3]
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
+  Self GY: Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland
+  Actions:
+   0: Pass priority
+   1: Cast Knight of the Reliquary
+   2: Cast Knight of the Reliquary
+  >> B/B: 1 (Cast Knight of the Reliquary)
+--- Narrative ---
+  Player B activated Karakas for 1(W)
+  Player B activated Forest for 1(G)
+  Player B activated Savannah for 1(G)
+  Player B casts Knight of the Reliquary
+  Knight of the Reliquary enters the battlefield
+  Knight of the Reliquary gains (always)
+  --- Declare Attackers (Player B) ---
+
+--- Decision 49 ---
+  Priority: Player B (active)
+  Step: Declare Atk
+  Self:  12 life | mana: empty | hand(3): Knight of the Reliquary, Wooded Foothills, Wooded Foothills
+  Opp:   18 life | mana: empty | hand count: 5
+  Self BF:  Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (SICK) | Savannah (T) | Scythecat Cub [3/3]
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
+  Self GY: Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland
+  Actions:
+   0: Scythecat Cub [3/3]
+   1: Confirm attackers
+  >> B/B: 0 (Scythecat Cub [3/3])
+--- Narrative ---
+  Scythecat Cub attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Scythecat Cub [3/3] -> Player A
+
+--- Decision 50 ---
+  Priority: Player B (active)
+  Step: Declare Atk
+  Self:  12 life | mana: empty | hand(3): Knight of the Reliquary, Wooded Foothills, Wooded Foothills
+  Opp:   18 life | mana: empty | hand count: 5
+  Self BF:  Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (SICK) | Savannah (T) | Scythecat Cub [3/3] (ATK)
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
+  Self GY: Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland
+  Actions:
+   0: Confirm attackers
+  >> B/B: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Scythecat Cub -> Player A
+  No creatures eligible to block.
+  --- Combat Damage ---
+    Scythecat Cub deals 3 damage to Player A
+  --- End Combat Damage ---
+  -------- TURN 11 (Player A) --------
+  Player A draws Volcanic Island
+--- Turn 11 (Player A) ---
+  PA: Cori-Steel Cutter, Lightning Bolt, Unholy Heat, Ponder, Ponder, Volcanic Island
+  PB: Knight of the Reliquary, Wooded Foothills, Wooded Foothills
+
+--- Decision 51 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  15 life | mana: empty | hand(6): Cori-Steel Cutter, Lightning Bolt, Unholy Heat, Ponder, Ponder, Volcanic Island
+  Opp:   12 life | mana: empty | hand count: 3
+  Self BF:  Dragon's Rage Channeler [3/3] | Island
+  Opp BF:   Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (SICK) | Savannah (T) | Scythecat Cub [3/3] (T)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland
+  Opp GY:  Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
+  Actions:
+   0: Pass priority
+   1: Play Volcanic Island
+   2: Cast Ponder
+   3: Cast Ponder
+  >> A/A: 2 (Cast Ponder)
+--- Narrative ---
+  Player A activated Island for 1(U)
+  Player A casts Ponder
+  Dragon's Rage Channeler triggered
+  Resolving ability (category: Surveil, amount: 1)
+  Top card of Player A's library: Wasteland
+
+--- Decision 52 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  15 life | mana: empty | hand(5): Cori-Steel Cutter, Lightning Bolt, Unholy Heat, Ponder, Volcanic Island
+  Opp:   12 life | mana: empty | hand count: 3
+  Self BF:  Dragon's Rage Channeler [3/3] | Island (T)
+  Opp BF:   Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (SICK) | Savannah (T) | Scythecat Cub [3/3] (T)
+  Stack: Dragon's Rage Channeler (ability, self) -> Ponder (spell, self)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland
+  Opp GY:  Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
+  Actions:
+   0: Keep on top
+   1: Put in graveyard
+  >> A/A: 1 (Put in graveyard)
+--- Narrative ---
+  Player A puts Wasteland into the graveyard.
+  Resolving ability (category: RearrangeTopOfLibrary)
+  Player A looks at the top 3 card(s) of their library.
+  Choose which card goes 3 from top:
+
+--- Decision 53 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  15 life | mana: empty | hand(5): Cori-Steel Cutter, Lightning Bolt, Unholy Heat, Ponder, Volcanic Island
+  Opp:   12 life | mana: empty | hand count: 3
+  Self BF:  Dragon's Rage Channeler [3/3] | Island (T)
+  Opp BF:   Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (SICK) | Savannah (T) | Scythecat Cub [3/3] (T)
+  Stack: Ponder (spell, self)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
+  Actions:
+   0: Daze
+   1: Daze
+   2: Mishra's Bauble
+  >> A/A: 0 (Daze)
+--- Narrative ---
+  Choose which card goes 2 from top:
+
+--- Decision 54 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  15 life | mana: empty | hand(5): Cori-Steel Cutter, Lightning Bolt, Unholy Heat, Ponder, Volcanic Island
+  Opp:   12 life | mana: empty | hand count: 3
+  Self BF:  Dragon's Rage Channeler [3/3] | Island (T)
+  Opp BF:   Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (SICK) | Savannah (T) | Scythecat Cub [3/3] (T)
+  Stack: Ponder (spell, self)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
+  Actions:
+   0: Daze
+   1: Mishra's Bauble
+  >> A/A: 0 (Daze)
+
+--- Decision 55 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  15 life | mana: empty | hand(5): Cori-Steel Cutter, Lightning Bolt, Unholy Heat, Ponder, Volcanic Island
+  Opp:   12 life | mana: empty | hand count: 3
+  Self BF:  Dragon's Rage Channeler [3/3] | Island (T)
+  Opp BF:   Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (SICK) | Savannah (T) | Scythecat Cub [3/3] (T)
+  Stack: Ponder (spell, self)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
+  Actions:
+   0: Don't shuffle
+   1: Shuffle
+  >> A/A: 0 (Don't shuffle)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 1)
+  Player A draws Mishra's Bauble
+
+--- Decision 56 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  15 life | mana: empty | hand(6): Mishra's Bauble, Cori-Steel Cutter, Lightning Bolt, Unholy Heat, Ponder, Volcanic Island
+  Opp:   12 life | mana: empty | hand count: 3
+  Self BF:  Dragon's Rage Channeler [3/3] | Island (T)
+  Opp BF:   Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (SICK) | Savannah (T) | Scythecat Cub [3/3] (T)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Ponder, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
+  Actions:
+   0: Pass priority
+   1: Play Volcanic Island
+   2: Cast Mishra's Bauble
+  >> A/A: 2 (Cast Mishra's Bauble)
+--- Narrative ---
+  Player A casts Mishra's Bauble
+  Dragon's Rage Channeler triggered
+  Resolving ability (category: Surveil, amount: 1)
+  Top card of Player A's library: Daze
+
+--- Decision 57 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  15 life | mana: empty | hand(5): Cori-Steel Cutter, Lightning Bolt, Unholy Heat, Ponder, Volcanic Island
+  Opp:   12 life | mana: empty | hand count: 3
+  Self BF:  Dragon's Rage Channeler [3/3] | Island (T)
+  Opp BF:   Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (SICK) | Savannah (T) | Scythecat Cub [3/3] (T)
+  Stack: Dragon's Rage Channeler (ability, self) -> Mishra's Bauble (spell, self)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Ponder, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
+  Actions:
+   0: Keep on top
+   1: Put in graveyard
+  >> A/A: 1 (Put in graveyard)
+--- Narrative ---
+  Player A puts Daze into the graveyard.
+  Mishra's Bauble enters the battlefield
+
+--- Decision 58 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  15 life | mana: empty | hand(5): Cori-Steel Cutter, Lightning Bolt, Unholy Heat, Ponder, Volcanic Island
+  Opp:   12 life | mana: empty | hand count: 3
+  Self BF:  Dragon's Rage Channeler [3/3] | Mishra's Bauble | Island (T)
+  Opp BF:   Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (SICK) | Savannah (T) | Scythecat Cub [3/3] (T)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Daze, Ponder, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
+  Actions:
+   0: Pass priority
+   1: Play Volcanic Island
+   2: Activate Mishra's Bauble (PeekAndReveal)
+  >> A/A: 1 (Play Volcanic Island)
+--- Narrative ---
+  Player A played Volcanic Island
+
+--- Decision 59 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  15 life | mana: empty | hand(4): Cori-Steel Cutter, Lightning Bolt, Unholy Heat, Ponder
+  Opp:   12 life | mana: empty | hand count: 3
+  Self BF:  Dragon's Rage Channeler [3/3] | Mishra's Bauble | Island (T) | Volcanic Island
+  Opp BF:   Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (SICK) | Savannah (T) | Scythecat Cub [3/3] (T)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Daze, Ponder, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
+  Actions:
+   0: Pass priority
+   1: Cast Lightning Bolt
+   2: Cast Unholy Heat
+   3: Cast Ponder
+   4: Activate Mishra's Bauble (PeekAndReveal)
+  >> A/A: 1 (Cast Lightning Bolt)
+--- Narrative ---
+  Choose target:
+
+--- Decision 60 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  15 life | mana: empty | hand(4): Cori-Steel Cutter, Lightning Bolt, Unholy Heat, Ponder
+  Opp:   12 life | mana: empty | hand count: 3
+  Self BF:  Dragon's Rage Channeler [3/3] | Mishra's Bauble | Island (T) | Volcanic Island
+  Opp BF:   Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (SICK) | Savannah (T) | Scythecat Cub [3/3] (T)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Daze, Ponder, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
+  Actions:
+   0: Player B (12 life)
+   1: Player A (15 life)
+   2: Knight of the Reliquary
+   3: Scythecat Cub
+   4: Dragon's Rage Channeler
+  >> A/A: 0 (Player B (12 life))
+--- Narrative ---
+  Targeting choice 0
+  Player A activated Volcanic Island for 1(R)
+  Player A casts Lightning Bolt targeting Player B
+  Dragon's Rage Channeler triggered
+
+--- Decision 61 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  15 life | mana: empty | hand(3): Cori-Steel Cutter, Unholy Heat, Ponder
+  Opp:   12 life | mana: empty | hand count: 3
+  Self BF:  Dragon's Rage Channeler [3/3] | Mishra's Bauble | Island (T) | Volcanic Island (T)
+  Opp BF:   Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (SICK) | Savannah (T) | Scythecat Cub [3/3] (T)
+  Stack: Dragon's Rage Channeler (ability, self) -> Lightning Bolt (spell, self) -> opponent (player)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Daze, Ponder, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
+  Actions:
+   0: Pass priority
+   1: Activate Mishra's Bauble (PeekAndReveal)
+  >> A/A: 1 (Activate Mishra's Bauble (PeekAndReveal))
+--- Narrative ---
+  Choose target:
+
+--- Decision 62 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  15 life | mana: empty | hand(3): Cori-Steel Cutter, Unholy Heat, Ponder
+  Opp:   12 life | mana: empty | hand count: 3
+  Self BF:  Dragon's Rage Channeler [3/3] | Mishra's Bauble | Island (T) | Volcanic Island (T)
+  Opp BF:   Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (SICK) | Savannah (T) | Scythecat Cub [3/3] (T)
+  Stack: Dragon's Rage Channeler (ability, self) -> Lightning Bolt (spell, self) -> opponent (player)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Daze, Ponder, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
+  Actions:
+   0: Player B (12 life)
+   1: Player A (15 life)
+  >> A/A: 0 (Player B (12 life))
+--- Narrative ---
+  Targeting choice 0
+  Player A sacrifices Mishra's Bauble
+  Player A's Mishra's Bauble ability targeting Player B is on the stack
+  Resolving ability (category: PeekAndReveal)
+  Player A looks at top of Player B's library: Wasteland
+  Resolving ability (category: DelayedTrigger)
+  Delayed trigger registered: Draw at next Upkeep.
+  Resolving ability (category: Surveil, amount: 1)
+  Top card of Player A's library: Daze
+
+--- Decision 63 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  15 life | mana: empty | hand(3): Cori-Steel Cutter, Unholy Heat, Ponder
+  Opp:   12 life | mana: empty | hand count: 3
+  Self BF:  Dragon's Rage Channeler [3/3] | Island (T) | Volcanic Island (T)
+  Opp BF:   Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (SICK) | Savannah (T) | Scythecat Cub [3/3] (T)
+  Stack: Dragon's Rage Channeler (ability, self) -> Lightning Bolt (spell, self) -> opponent (player)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Daze, Ponder, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
+  Actions:
+   0: Keep on top
+   1: Put in graveyard
+  >> A/A: 1 (Put in graveyard)
+--- Narrative ---
+  Player A puts Daze into the graveyard.
+  Resolving ability (category: DealDamage, amount: 3)
+  Dealt 3 damage to player (now at 9 life)
+  Dragon's Rage Channeler must attack and is declared as an attacker.
+  --- Declare Attackers (Player A) ---
+    [attacking] Dragon's Rage Channeler [3/3] -> Player B
+
+--- Decision 64 ---
+  Priority: Player A (active)
+  Step: Declare Atk
+  Self:  15 life | mana: empty | hand(3): Cori-Steel Cutter, Unholy Heat, Ponder
+  Opp:   9 life | mana: empty | hand count: 3
+  Self BF:  Dragon's Rage Channeler [3/3] (ATK) | Island (T) | Volcanic Island (T)
+  Opp BF:   Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (SICK) | Savannah (T) | Scythecat Cub [3/3] (T)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
+  Actions:
+   0: Confirm attackers
+  >> A/A: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Dragon's Rage Channeler -> Player B
+  No creatures eligible to block.
+  --- Combat Damage ---
+    Dragon's Rage Channeler deals 3 damage to Player B
+  --- End Combat Damage ---
+  -------- TURN 12 (Player B) --------
+  Delayed trigger fires.
+--- Turn 12 (Player B) ---
+  PA: Cori-Steel Cutter, Unholy Heat, Ponder
+  PB: Knight of the Reliquary, Wooded Foothills, Wooded Foothills
+
+--- Decision 65 ---
+  Priority: Player B (active)
+  Step: Upkeep
+  Self:  6 life | mana: empty | hand(3): Knight of the Reliquary, Wooded Foothills, Wooded Foothills
+  Opp:   15 life | mana: empty | hand count: 3
+  Self BF:  Forest | Karakas | Knight of the Reliquary [6/6] | Savannah | Scythecat Cub [3/3]
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T) | Volcanic Island (T)
+  Stack: Mishra's Bauble (ability, opponent)
+  Self GY: Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Pass priority
+   1: Activate Knight of the Reliquary (ChangeZone)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 1)
+  Player A draws Murktide Regent
+
+--- Decision 66 ---
+  Priority: Player B (active)
+  Step: Upkeep
+  Self:  6 life | mana: empty | hand(3): Knight of the Reliquary, Wooded Foothills, Wooded Foothills
+  Opp:   15 life | mana: empty | hand count: 4
+  Self BF:  Forest | Karakas | Knight of the Reliquary [6/6] | Savannah | Scythecat Cub [3/3]
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T) | Volcanic Island (T)
+  Self GY: Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Pass priority
+   1: Activate Knight of the Reliquary (ChangeZone)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Player B draws Wasteland
+
+--- Decision 67 ---
+  Priority: Player B (active)
+  Step: Draw
+  Self:  6 life | mana: empty | hand(4): Knight of the Reliquary, Wasteland, Wooded Foothills, Wooded Foothills
+  Opp:   15 life | mana: empty | hand count: 4
+  Self BF:  Forest | Karakas | Knight of the Reliquary [6/6] | Savannah | Scythecat Cub [3/3]
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T) | Volcanic Island (T)
+  Self GY: Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Pass priority
+   1: Activate Knight of the Reliquary (ChangeZone)
+  >> B/B: 0 (Pass priority)
+
+--- Decision 68 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  6 life | mana: empty | hand(4): Knight of the Reliquary, Wasteland, Wooded Foothills, Wooded Foothills
+  Opp:   15 life | mana: empty | hand count: 4
+  Self BF:  Forest | Karakas | Knight of the Reliquary [6/6] | Savannah | Scythecat Cub [3/3]
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T) | Volcanic Island (T)
+  Self GY: Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Pass priority
+   1: Play Wasteland
+   2: Play Wooded Foothills
+   3: Play Wooded Foothills
+   4: Cast Knight of the Reliquary
+   5: Activate Knight of the Reliquary (ChangeZone)
+  >> B/B: 4 (Cast Knight of the Reliquary)
+--- Narrative ---
+  Player B activated Karakas for 1(W)
+  Player B activated Forest for 1(G)
+  Player B activated Savannah for 1(G)
+  Player B casts Knight of the Reliquary
+
+--- Decision 69 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  6 life | mana: empty | hand(3): Wasteland, Wooded Foothills, Wooded Foothills
+  Opp:   15 life | mana: empty | hand count: 4
+  Self BF:  Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] | Savannah (T) | Scythecat Cub [3/3]
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T) | Volcanic Island (T)
+  Stack: Knight of the Reliquary (spell, self)
+  Self GY: Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Pass priority
+   1: Activate Knight of the Reliquary (ChangeZone)
+  >> B/B: 1 (Activate Knight of the Reliquary (ChangeZone))
+
+--- Decision 70 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  6 life | mana: empty | hand(3): Wasteland, Wooded Foothills, Wooded Foothills
+  Opp:   15 life | mana: empty | hand count: 4
+  Self BF:  Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (T) | Savannah (T) | Scythecat Cub [3/3]
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T) | Volcanic Island (T)
+  Stack: Knight of the Reliquary (spell, self)
+  Self GY: Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Sacrifice Forest
+   1: Sacrifice Savannah
+  >> B/B: 0 (Sacrifice Forest)
+--- Narrative ---
+  Player B sacrifices Forest
+  Player B's Knight of the Reliquary ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Searching Player B's library:
+
+--- Decision 71 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  6 life | mana: empty | hand(3): Wasteland, Wooded Foothills, Wooded Foothills
+  Opp:   15 life | mana: empty | hand count: 4
+  Self BF:  Karakas (T) | Knight of the Reliquary [7/7] (T) | Savannah (T) | Scythecat Cub [3/3]
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T) | Volcanic Island (T)
+  Stack: Knight of the Reliquary (ability, self) -> Knight of the Reliquary (spell, self)
+  Self GY: Dryad Arbor, Forest, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Fail to find
+   1: Gaea's Cradle
+   2: Horizon Canopy
+   3: Plains
+   4: Savannah
+   5: Savannah
+   6: Savannah
+   7: Talon Gates of Madara
+   8: Wasteland
+   9: Wasteland
+  10: Windswept Heath
+  11: Windswept Heath
+  12: Wooded Foothills
+  13: Wooded Foothills
+  >> B/B: 1 (Gaea's Cradle)
+--- Narrative ---
+  Player B shuffles their library
+  Player B puts Gaea's Cradle to the battlefield
+  Choose target:
+
+--- Decision 72 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  6 life | mana: empty | hand(3): Wasteland, Wooded Foothills, Wooded Foothills
+  Opp:   15 life | mana: empty | hand count: 4
+  Self BF:  Gaea's Cradle | Karakas (T) | Knight of the Reliquary [7/7] (T) | Savannah (T) | Scythecat Cub [3/3]
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T) | Volcanic Island (T)
+  Stack: Knight of the Reliquary (spell, self)
+  Self GY: Dryad Arbor, Forest, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Knight of the Reliquary
+   1: Scythecat Cub
+  >> B/B: 0 (Knight of the Reliquary)
+--- Narrative ---
+  Targeting choice 0
+  Scythecat Cub triggered
+  Resolving ability (category: Pump)
+  Resolving ability (category: PutCounter, amount: 1)
+  Put 1 +1/+1 counter(s) on creature (now 8/8).
+  Resolving ability (category: MultiplyCounter)
+  Knight of the Reliquary enters the battlefield
+  Knight of the Reliquary gains (always)
+
+--- Decision 73 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  6 life | mana: empty | hand(3): Wasteland, Wooded Foothills, Wooded Foothills
+  Opp:   15 life | mana: empty | hand count: 4
+  Self BF:  Gaea's Cradle | Karakas (T) | Knight of the Reliquary [8/8] (T) | Knight of the Reliquary [7/7] (SICK) | Savannah (T) | Scythecat Cub [3/3]
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T) | Volcanic Island (T)
+  Self GY: Dryad Arbor, Forest, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Pass priority
+   1: Play Wasteland
+   2: Play Wooded Foothills
+   3: Play Wooded Foothills
+  >> B/B: 1 (Play Wasteland)
+--- Narrative ---
+  Player B played Wasteland
+  Choose target:
+
+--- Decision 74 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  6 life | mana: empty | hand(2): Wooded Foothills, Wooded Foothills
+  Opp:   15 life | mana: empty | hand count: 4
+  Self BF:  Gaea's Cradle | Karakas (T) | Knight of the Reliquary [8/8] (T) | Knight of the Reliquary [7/7] (SICK) | Savannah (T) | Scythecat Cub [3/3] | Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T) | Volcanic Island (T)
+  Self GY: Dryad Arbor, Forest, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Knight of the Reliquary
+   1: Knight of the Reliquary
+   2: Scythecat Cub
+  >> B/B: 0 (Knight of the Reliquary)
+--- Narrative ---
+  Targeting choice 0
+  Scythecat Cub triggered
+
+--- Decision 75 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  6 life | mana: empty | hand(2): Wooded Foothills, Wooded Foothills
+  Opp:   15 life | mana: empty | hand count: 4
+  Self BF:  Gaea's Cradle | Karakas (T) | Knight of the Reliquary [8/8] (T) | Knight of the Reliquary [7/7] (SICK) | Savannah (T) | Scythecat Cub [3/3] | Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T) | Volcanic Island (T)
+  Stack: Scythecat Cub (ability, self) -> Knight of the Reliquary (self)
+  Self GY: Dryad Arbor, Forest, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Pass priority
+   1: Activate Wasteland (Destroy)
+  >> B/B: 1 (Activate Wasteland (Destroy))
+--- Narrative ---
+  Choose target:
+
+--- Decision 76 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  6 life | mana: empty | hand(2): Wooded Foothills, Wooded Foothills
+  Opp:   15 life | mana: empty | hand count: 4
+  Self BF:  Gaea's Cradle | Karakas (T) | Knight of the Reliquary [8/8] (T) | Knight of the Reliquary [7/7] (SICK) | Savannah (T) | Scythecat Cub [3/3] | Wasteland
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T) | Volcanic Island (T)
+  Stack: Scythecat Cub (ability, self) -> Knight of the Reliquary (self)
+  Self GY: Dryad Arbor, Forest, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Volcanic Island
+   1: Gaea's Cradle
+   2: Karakas
+   3: Savannah
+   4: Wasteland
+  >> B/B: 0 (Volcanic Island)
+--- Narrative ---
+  Targeting choice 0
+  Player B sacrifices Wasteland
+  Player B's Wasteland ability targeting Volcanic Island is on the stack
+  Resolving ability (category: Destroy)
+  Volcanic Island is destroyed
+  Resolving ability (category: Pump)
+  Resolving ability (category: PutCounter, amount: 1)
+  Resolving ability (category: MultiplyCounter)
+  MultiplyCounter: doubled +1/+1 counters on creature (now 10/10).
+  --- Declare Attackers (Player B) ---
+
+--- Decision 77 ---
+  Priority: Player B (active)
+  Step: Declare Atk
+  Self:  6 life | mana: empty | hand(2): Wooded Foothills, Wooded Foothills
+  Opp:   15 life | mana: empty | hand count: 4
+  Self BF:  Gaea's Cradle | Karakas (T) | Knight of the Reliquary [10/10] (T) | Knight of the Reliquary [8/8] (SICK) | Savannah (T) | Scythecat Cub [3/3]
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
+  Self GY: Dryad Arbor, Forest, Once Upon a Time, Wasteland, Wasteland, Windswept Heath, Windswept Heath
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Flooded Strand, Volcanic Island, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Scythecat Cub [3/3]
+   1: Confirm attackers
+  >> B/B: 0 (Scythecat Cub [3/3])
+--- Narrative ---
+  Scythecat Cub attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Scythecat Cub [3/3] -> Player A
+
+--- Decision 78 ---
+  Priority: Player B (active)
+  Step: Declare Atk
+  Self:  6 life | mana: empty | hand(2): Wooded Foothills, Wooded Foothills
+  Opp:   15 life | mana: empty | hand count: 4
+  Self BF:  Gaea's Cradle | Karakas (T) | Knight of the Reliquary [10/10] (T) | Knight of the Reliquary [8/8] (SICK) | Savannah (T) | Scythecat Cub [3/3] (ATK)
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
+  Self GY: Dryad Arbor, Forest, Once Upon a Time, Wasteland, Wasteland, Windswept Heath, Windswept Heath
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Flooded Strand, Volcanic Island, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Confirm attackers
+  >> B/B: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Scythecat Cub -> Player A
+  No creatures eligible to block.
+  --- Combat Damage ---
+    Scythecat Cub deals 3 damage to Player A
+  --- End Combat Damage ---
+  -------- TURN 13 (Player A) --------
+  Player A draws Mishra's Bauble
+--- Turn 13 (Player A) ---
+  PA: Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Ponder
+  PB: Wooded Foothills, Wooded Foothills
+
+--- Decision 79 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  12 life | mana: empty | hand(5): Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Ponder
+  Opp:   6 life | mana: empty | hand count: 2
+  Self BF:  Dragon's Rage Channeler [3/3] | Island
+  Opp BF:   Gaea's Cradle | Karakas (T) | Knight of the Reliquary [10/10] (T) | Knight of the Reliquary [8/8] (SICK) | Savannah (T) | Scythecat Cub [3/3] (T)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Flooded Strand, Volcanic Island, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Dryad Arbor, Forest, Once Upon a Time, Wasteland, Wasteland, Windswept Heath, Windswept Heath
+  Actions:
+   0: Pass priority
+   1: Cast Mishra's Bauble
+   2: Cast Ponder
+  >> A/A: 1 (Cast Mishra's Bauble)
+--- Narrative ---
+  Player A casts Mishra's Bauble
+  Dragon's Rage Channeler triggered
+  Resolving ability (category: Surveil, amount: 1)
+  Top card of Player A's library: Mountain
+
+--- Decision 80 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  12 life | mana: empty | hand(4): Murktide Regent, Cori-Steel Cutter, Unholy Heat, Ponder
+  Opp:   6 life | mana: empty | hand count: 2
+  Self BF:  Dragon's Rage Channeler [3/3] | Island
+  Opp BF:   Gaea's Cradle | Karakas (T) | Knight of the Reliquary [10/10] (T) | Knight of the Reliquary [8/8] (SICK) | Savannah (T) | Scythecat Cub [3/3] (T)
+  Stack: Dragon's Rage Channeler (ability, self) -> Mishra's Bauble (spell, self)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Flooded Strand, Volcanic Island, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Dryad Arbor, Forest, Once Upon a Time, Wasteland, Wasteland, Windswept Heath, Windswept Heath
+  Actions:
+   0: Keep on top
+   1: Put in graveyard
+  >> A/A: 1 (Put in graveyard)
+--- Narrative ---
+  Player A puts Mountain into the graveyard.
+  Mishra's Bauble enters the battlefield
+
+--- Decision 81 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  12 life | mana: empty | hand(4): Murktide Regent, Cori-Steel Cutter, Unholy Heat, Ponder
+  Opp:   6 life | mana: empty | hand count: 2
+  Self BF:  Dragon's Rage Channeler [3/3] | Mishra's Bauble | Island
+  Opp BF:   Gaea's Cradle | Karakas (T) | Knight of the Reliquary [10/10] (T) | Knight of the Reliquary [8/8] (SICK) | Savannah (T) | Scythecat Cub [3/3] (T)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Dryad Arbor, Forest, Once Upon a Time, Wasteland, Wasteland, Windswept Heath, Windswept Heath
+  Actions:
+   0: Pass priority
+   1: Cast Ponder
+   2: Activate Mishra's Bauble (PeekAndReveal)
+  >> A/A: 1 (Cast Ponder)
+--- Narrative ---
+  Player A activated Island for 1(U)
+  Player A casts Ponder
+  Dragon's Rage Channeler triggered
+
+--- Decision 82 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  12 life | mana: empty | hand(3): Murktide Regent, Cori-Steel Cutter, Unholy Heat
+  Opp:   6 life | mana: empty | hand count: 2
+  Self BF:  Dragon's Rage Channeler [3/3] | Mishra's Bauble | Island (T)
+  Opp BF:   Gaea's Cradle | Karakas (T) | Knight of the Reliquary [10/10] (T) | Knight of the Reliquary [8/8] (SICK) | Savannah (T) | Scythecat Cub [3/3] (T)
+  Stack: Dragon's Rage Channeler (ability, self) -> Ponder (spell, self)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Dryad Arbor, Forest, Once Upon a Time, Wasteland, Wasteland, Windswept Heath, Windswept Heath
+  Actions:
+   0: Pass priority
+   1: Activate Mishra's Bauble (PeekAndReveal)
+  >> A/A: 1 (Activate Mishra's Bauble (PeekAndReveal))
+--- Narrative ---
+  Choose target:
+
+--- Decision 83 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  12 life | mana: empty | hand(3): Murktide Regent, Cori-Steel Cutter, Unholy Heat
+  Opp:   6 life | mana: empty | hand count: 2
+  Self BF:  Dragon's Rage Channeler [3/3] | Mishra's Bauble | Island (T)
+  Opp BF:   Gaea's Cradle | Karakas (T) | Knight of the Reliquary [10/10] (T) | Knight of the Reliquary [8/8] (SICK) | Savannah (T) | Scythecat Cub [3/3] (T)
+  Stack: Dragon's Rage Channeler (ability, self) -> Ponder (spell, self)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Dryad Arbor, Forest, Once Upon a Time, Wasteland, Wasteland, Windswept Heath, Windswept Heath
+  Actions:
+   0: Player B (6 life)
+   1: Player A (12 life)
+  >> A/A: 0 (Player B (6 life))
+--- Narrative ---
+  Targeting choice 0
+  Player A sacrifices Mishra's Bauble
+  Player A's Mishra's Bauble ability targeting Player B is on the stack
+  Resolving ability (category: PeekAndReveal)
+  Player A looks at top of Player B's library: Green Sun's Zenith
+  Resolving ability (category: DelayedTrigger)
+  Delayed trigger registered: Draw at next Upkeep.
+  Resolving ability (category: Surveil, amount: 1)
+  Top card of Player A's library: Misty Rainforest
+
+--- Decision 84 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  12 life | mana: empty | hand(3): Murktide Regent, Cori-Steel Cutter, Unholy Heat
+  Opp:   6 life | mana: empty | hand count: 2
+  Self BF:  Dragon's Rage Channeler [3/3] | Island (T)
+  Opp BF:   Gaea's Cradle | Karakas (T) | Knight of the Reliquary [10/10] (T) | Knight of the Reliquary [8/8] (SICK) | Savannah (T) | Scythecat Cub [3/3] (T)
+  Stack: Dragon's Rage Channeler (ability, self) -> Ponder (spell, self)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Dryad Arbor, Forest, Once Upon a Time, Wasteland, Wasteland, Windswept Heath, Windswept Heath
+  Actions:
+   0: Keep on top
+   1: Put in graveyard
+  >> A/A: 1 (Put in graveyard)
+--- Narrative ---
+  Player A puts Misty Rainforest into the graveyard.
+  Resolving ability (category: RearrangeTopOfLibrary)
+  Player A looks at the top 3 card(s) of their library.
+  Choose which card goes 3 from top:
+
+--- Decision 85 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  12 life | mana: empty | hand(3): Murktide Regent, Cori-Steel Cutter, Unholy Heat
+  Opp:   6 life | mana: empty | hand count: 2
+  Self BF:  Dragon's Rage Channeler [3/3] | Island (T)
+  Opp BF:   Gaea's Cradle | Karakas (T) | Knight of the Reliquary [10/10] (T) | Knight of the Reliquary [8/8] (SICK) | Savannah (T) | Scythecat Cub [3/3] (T)
+  Stack: Ponder (spell, self)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Dryad Arbor, Forest, Once Upon a Time, Wasteland, Wasteland, Windswept Heath, Windswept Heath
+  Actions:
+   0: Polluted Delta
+   1: Thundering Falls
+   2: Lightning Bolt
+  >> A/A: 0 (Polluted Delta)
+--- Narrative ---
+  Choose which card goes 2 from top:
+
+--- Decision 86 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  12 life | mana: empty | hand(3): Murktide Regent, Cori-Steel Cutter, Unholy Heat
+  Opp:   6 life | mana: empty | hand count: 2
+  Self BF:  Dragon's Rage Channeler [3/3] | Island (T)
+  Opp BF:   Gaea's Cradle | Karakas (T) | Knight of the Reliquary [10/10] (T) | Knight of the Reliquary [8/8] (SICK) | Savannah (T) | Scythecat Cub [3/3] (T)
+  Stack: Ponder (spell, self)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Dryad Arbor, Forest, Once Upon a Time, Wasteland, Wasteland, Windswept Heath, Windswept Heath
+  Actions:
+   0: Thundering Falls
+   1: Lightning Bolt
+  >> A/A: 0 (Thundering Falls)
+
+--- Decision 87 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  12 life | mana: empty | hand(3): Murktide Regent, Cori-Steel Cutter, Unholy Heat
+  Opp:   6 life | mana: empty | hand count: 2
+  Self BF:  Dragon's Rage Channeler [3/3] | Island (T)
+  Opp BF:   Gaea's Cradle | Karakas (T) | Knight of the Reliquary [10/10] (T) | Knight of the Reliquary [8/8] (SICK) | Savannah (T) | Scythecat Cub [3/3] (T)
+  Stack: Ponder (spell, self)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Dryad Arbor, Forest, Once Upon a Time, Wasteland, Wasteland, Windswept Heath, Windswept Heath
+  Actions:
+   0: Don't shuffle
+   1: Shuffle
+  >> A/A: 0 (Don't shuffle)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 1)
+  Player A draws Lightning Bolt
+  Dragon's Rage Channeler must attack and is declared as an attacker.
+  --- Declare Attackers (Player A) ---
+    [attacking] Dragon's Rage Channeler [3/3] -> Player B
+
+--- Decision 88 ---
+  Priority: Player A (active)
+  Step: Declare Atk
+  Self:  12 life | mana: empty | hand(4): Murktide Regent, Cori-Steel Cutter, Lightning Bolt, Unholy Heat
+  Opp:   6 life | mana: empty | hand count: 2
+  Self BF:  Dragon's Rage Channeler [3/3] (ATK) | Island (T)
+  Opp BF:   Gaea's Cradle | Karakas (T) | Knight of the Reliquary [10/10] (T) | Knight of the Reliquary [8/8] (SICK) | Savannah (T) | Scythecat Cub [3/3] (T)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Dryad Arbor, Forest, Once Upon a Time, Wasteland, Wasteland, Windswept Heath, Windswept Heath
+  Actions:
+   0: Confirm attackers
+  >> A/A: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Dragon's Rage Channeler -> Player B
+  No creatures eligible to block.
+  --- Combat Damage ---
+    Dragon's Rage Channeler deals 3 damage to Player B
+  --- End Combat Damage ---
+  -------- TURN 14 (Player B) --------
+  Delayed trigger fires.
+--- Turn 14 (Player B) ---
+  PA: Murktide Regent, Cori-Steel Cutter, Lightning Bolt, Unholy Heat
+  PB: Wooded Foothills, Wooded Foothills
+
+--- Decision 89 ---
+  Priority: Player B (active)
+  Step: Upkeep
+  Self:  3 life | mana: empty | hand(2): Wooded Foothills, Wooded Foothills
+  Opp:   12 life | mana: empty | hand count: 4
+  Self BF:  Gaea's Cradle | Karakas | Knight of the Reliquary [10/10] | Knight of the Reliquary [8/8] | Savannah | Scythecat Cub [3/3]
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
+  Stack: Mishra's Bauble (ability, opponent)
+  Self GY: Dryad Arbor, Forest, Once Upon a Time, Wasteland, Wasteland, Windswept Heath, Windswept Heath
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Pass priority
+   1: Activate Knight of the Reliquary (ChangeZone)
+   2: Activate Knight of the Reliquary (ChangeZone)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Resolving ability (category: Draw, amount: 1)
+  Player A draws Thundering Falls
+
+--- Decision 90 ---
+  Priority: Player B (active)
+  Step: Upkeep
+  Self:  3 life | mana: empty | hand(2): Wooded Foothills, Wooded Foothills
+  Opp:   12 life | mana: empty | hand count: 5
+  Self BF:  Gaea's Cradle | Karakas | Knight of the Reliquary [10/10] | Knight of the Reliquary [8/8] | Savannah | Scythecat Cub [3/3]
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
+  Self GY: Dryad Arbor, Forest, Once Upon a Time, Wasteland, Wasteland, Windswept Heath, Windswept Heath
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Pass priority
+   1: Activate Knight of the Reliquary (ChangeZone)
+   2: Activate Knight of the Reliquary (ChangeZone)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Player B draws Green Sun's Zenith
+
+--- Decision 91 ---
+  Priority: Player B (active)
+  Step: Draw
+  Self:  3 life | mana: empty | hand(3): Green Sun's Zenith, Wooded Foothills, Wooded Foothills
+  Opp:   12 life | mana: empty | hand count: 5
+  Self BF:  Gaea's Cradle | Karakas | Knight of the Reliquary [10/10] | Knight of the Reliquary [8/8] | Savannah | Scythecat Cub [3/3]
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
+  Self GY: Dryad Arbor, Forest, Once Upon a Time, Wasteland, Wasteland, Windswept Heath, Windswept Heath
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Pass priority
+   1: Activate Knight of the Reliquary (ChangeZone)
+   2: Activate Knight of the Reliquary (ChangeZone)
+  >> B/B: 0 (Pass priority)
+
+--- Decision 92 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  3 life | mana: empty | hand(3): Green Sun's Zenith, Wooded Foothills, Wooded Foothills
+  Opp:   12 life | mana: empty | hand count: 5
+  Self BF:  Gaea's Cradle | Karakas | Knight of the Reliquary [10/10] | Knight of the Reliquary [8/8] | Savannah | Scythecat Cub [3/3]
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
+  Self GY: Dryad Arbor, Forest, Once Upon a Time, Wasteland, Wasteland, Windswept Heath, Windswept Heath
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Pass priority
+   1: Play Wooded Foothills
+   2: Play Wooded Foothills
+   3: Cast Green Sun's Zenith
+   4: Activate Knight of the Reliquary (ChangeZone)
+   5: Activate Knight of the Reliquary (ChangeZone)
+  >> B/B: 3 (Cast Green Sun's Zenith)
+--- Narrative ---
+  Choose X value (0-4):
+
+--- Decision 93 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  3 life | mana: empty | hand(3): Green Sun's Zenith, Wooded Foothills, Wooded Foothills
+  Opp:   12 life | mana: empty | hand count: 5
+  Self BF:  Gaea's Cradle | Karakas | Knight of the Reliquary [10/10] | Knight of the Reliquary [8/8] | Savannah | Scythecat Cub [3/3]
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
+  Self GY: Dryad Arbor, Forest, Once Upon a Time, Wasteland, Wasteland, Windswept Heath, Windswept Heath
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: X = 0
+   1: X = 1
+   2: X = 2
+   3: X = 3
+   4: X = 4
+  >> B/B: 0 (X = 0)
+--- Narrative ---
+  Player B chooses X = 0
+  Player B activated Gaea's Cradle for 3(G)
+  Player B casts Green Sun's Zenith
+
+--- Decision 94 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  3 life | mana: 2G | hand(2): Wooded Foothills, Wooded Foothills
+  Opp:   12 life | mana: empty | hand count: 5
+  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [10/10] | Knight of the Reliquary [8/8] | Savannah | Scythecat Cub [3/3]
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
+  Stack: Green Sun's Zenith (spell, self)
+  Self GY: Dryad Arbor, Forest, Once Upon a Time, Wasteland, Wasteland, Windswept Heath, Windswept Heath
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Pass priority
+   1: Activate Knight of the Reliquary (ChangeZone)
+   2: Activate Knight of the Reliquary (ChangeZone)
+  >> B/B: 1 (Activate Knight of the Reliquary (ChangeZone))
+
+--- Decision 95 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  3 life | mana: 2G | hand(2): Wooded Foothills, Wooded Foothills
+  Opp:   12 life | mana: empty | hand count: 5
+  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [10/10] (T) | Knight of the Reliquary [8/8] | Savannah | Scythecat Cub [3/3]
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
+  Stack: Green Sun's Zenith (spell, self)
+  Self GY: Dryad Arbor, Forest, Once Upon a Time, Wasteland, Wasteland, Windswept Heath, Windswept Heath
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Sacrifice Savannah
+  >> B/B: 0 (Sacrifice Savannah)
+--- Narrative ---
+  Player B sacrifices Savannah
+  Player B's Knight of the Reliquary ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Searching Player B's library:
+
+--- Decision 96 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  3 life | mana: 2G | hand(2): Wooded Foothills, Wooded Foothills
+  Opp:   12 life | mana: empty | hand count: 5
+  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [11/11] (T) | Knight of the Reliquary [9/9] | Scythecat Cub [3/3]
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
+  Stack: Knight of the Reliquary (ability, self) -> Green Sun's Zenith (spell, self)
+  Self GY: Dryad Arbor, Forest, Once Upon a Time, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Fail to find
+   1: Horizon Canopy
+   2: Plains
+   3: Savannah
+   4: Savannah
+   5: Savannah
+   6: Talon Gates of Madara
+   7: Wasteland
+   8: Wasteland
+   9: Windswept Heath
+  10: Windswept Heath
+  11: Wooded Foothills
+  12: Wooded Foothills
+  >> B/B: 1 (Horizon Canopy)
+--- Narrative ---
+  Player B shuffles their library
+  Player B puts Horizon Canopy to the battlefield
+  Choose target:
+
+--- Decision 97 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  3 life | mana: 2G | hand(2): Wooded Foothills, Wooded Foothills
+  Opp:   12 life | mana: empty | hand count: 5
+  Self BF:  Gaea's Cradle (T) | Horizon Canopy | Karakas | Knight of the Reliquary [11/11] (T) | Knight of the Reliquary [9/9] | Scythecat Cub [3/3]
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
+  Stack: Green Sun's Zenith (spell, self)
+  Self GY: Dryad Arbor, Forest, Once Upon a Time, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Knight of the Reliquary
+   1: Knight of the Reliquary
+   2: Scythecat Cub
+  >> B/B: 0 (Knight of the Reliquary)
+--- Narrative ---
+  Targeting choice 0
+  Scythecat Cub triggered
+
+--- Decision 98 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  3 life | mana: 2G | hand(2): Wooded Foothills, Wooded Foothills
+  Opp:   12 life | mana: empty | hand count: 5
+  Self BF:  Gaea's Cradle (T) | Horizon Canopy | Karakas | Knight of the Reliquary [11/11] (T) | Knight of the Reliquary [9/9] | Scythecat Cub [3/3]
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
+  Stack: Scythecat Cub (ability, self) -> Knight of the Reliquary (self) -> Green Sun's Zenith (spell, self)
+  Self GY: Dryad Arbor, Forest, Once Upon a Time, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Pass priority
+   1: Activate Horizon Canopy (Draw)
+  >> B/B: 1 (Activate Horizon Canopy (Draw))
+--- Narrative ---
+  Player B sacrifices Horizon Canopy
+  Player B's Horizon Canopy ability is on the stack
+  Resolving ability (category: Draw, amount: 1)
+  Player B draws Noble Hierarch
+  Resolving ability (category: Pump)
+  Resolving ability (category: PutCounter, amount: 1)
+  Put 1 +1/+1 counter(s) on creature (now 13/13).
+  Resolving ability (category: MultiplyCounter)
+  Resolving ability (category: ChangeZone)
+  Searching Player B's library:
+
+--- Decision 99 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  3 life | mana: 1G | hand(3): Noble Hierarch, Wooded Foothills, Wooded Foothills
+  Opp:   12 life | mana: empty | hand count: 5
+  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [13/13] (T) | Knight of the Reliquary [10/10] | Scythecat Cub [3/3]
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
+  Stack: Green Sun's Zenith (spell, self)
+  Self GY: Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Fail to find
+  >> B/B: 0 (Fail to find)
+--- Narrative ---
+  Player B shuffles their library
+  Player B fails to find
+  Green Sun's Zenith is shuffled into its owner's library
+
+--- Decision 100 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  3 life | mana: 1G | hand(3): Noble Hierarch, Wooded Foothills, Wooded Foothills
+  Opp:   12 life | mana: empty | hand count: 5
+  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [13/13] (T) | Knight of the Reliquary [10/10] | Scythecat Cub [3/3]
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
+  Self GY: Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Pass priority
+   1: Play Wooded Foothills
+   2: Play Wooded Foothills
+   3: Cast Noble Hierarch
+  >> B/B: 3 (Cast Noble Hierarch)
+--- Narrative ---
+  Player B casts Noble Hierarch
+  Noble Hierarch enters the battlefield
+
+--- Decision 101 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  3 life | mana: empty | hand(2): Wooded Foothills, Wooded Foothills
+  Opp:   12 life | mana: empty | hand count: 5
+  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [13/13] (T) | Knight of the Reliquary [10/10] | Noble Hierarch [0/1] (SICK) | Scythecat Cub [3/3]
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
+  Self GY: Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Pass priority
+   1: Play Wooded Foothills
+   2: Play Wooded Foothills
+  >> B/B: 1 (Play Wooded Foothills)
+--- Narrative ---
+  Player B played Wooded Foothills
+  Choose target:
+
+--- Decision 102 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  3 life | mana: empty | hand(1): Wooded Foothills
+  Opp:   12 life | mana: empty | hand count: 5
+  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [13/13] (T) | Knight of the Reliquary [10/10] | Noble Hierarch [0/1] (SICK) | Scythecat Cub [3/3] | Wooded Foothills
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
+  Self GY: Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Knight of the Reliquary
+   1: Knight of the Reliquary
+   2: Noble Hierarch
+   3: Scythecat Cub
+  >> B/B: 0 (Knight of the Reliquary)
+--- Narrative ---
+  Targeting choice 0
+  Scythecat Cub triggered
+
+--- Decision 103 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  3 life | mana: empty | hand(1): Wooded Foothills
+  Opp:   12 life | mana: empty | hand count: 5
+  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [13/13] (T) | Knight of the Reliquary [10/10] | Noble Hierarch [0/1] (SICK) | Scythecat Cub [3/3] | Wooded Foothills
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
+  Stack: Scythecat Cub (ability, self) -> Knight of the Reliquary (self)
+  Self GY: Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Pass priority
+   1: Activate Wooded Foothills (ChangeZone)
+  >> B/B: 1 (Activate Wooded Foothills (ChangeZone))
+--- Narrative ---
+  Player B pays 1 life
+  Player B sacrifices Wooded Foothills
+  Player B's Wooded Foothills ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Searching Player B's library:
+
+--- Decision 104 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  2 life | mana: empty | hand(1): Wooded Foothills
+  Opp:   12 life | mana: empty | hand count: 5
+  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [14/14] (T) | Knight of the Reliquary [11/11] | Noble Hierarch [0/1] (SICK) | Scythecat Cub [3/3]
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
+  Stack: Wooded Foothills (ability, self) -> Scythecat Cub (ability, self) -> Knight of the Reliquary (self)
+  Self GY: Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Fail to find
+   1: Savannah
+   2: Savannah
+   3: Savannah
+  >> B/B: 1 (Savannah)
+--- Narrative ---
+  Player B shuffles their library
+  Player B puts Savannah to the battlefield
+  Choose target:
+
+--- Decision 105 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  2 life | mana: empty | hand(1): Wooded Foothills
+  Opp:   12 life | mana: empty | hand count: 5
+  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [14/14] (T) | Knight of the Reliquary [11/11] | Noble Hierarch [0/1] (SICK) | Savannah | Scythecat Cub [3/3]
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
+  Stack: Scythecat Cub (ability, self) -> Knight of the Reliquary (self)
+  Self GY: Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Knight of the Reliquary
+   1: Knight of the Reliquary
+   2: Noble Hierarch
+   3: Scythecat Cub
+  >> B/B: 0 (Knight of the Reliquary)
+--- Narrative ---
+  Targeting choice 0
+  Scythecat Cub triggered
+
+--- Decision 106 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  2 life | mana: empty | hand(1): Wooded Foothills
+  Opp:   12 life | mana: empty | hand count: 5
+  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [14/14] (T) | Knight of the Reliquary [11/11] | Noble Hierarch [0/1] (SICK) | Savannah | Scythecat Cub [3/3]
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
+  Stack: Scythecat Cub (ability, self) -> Knight of the Reliquary (self) -> Scythecat Cub (ability, self) -> Knight of the Reliquary (self)
+  Self GY: Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Pass priority
+   1: Activate Knight of the Reliquary (ChangeZone)
+  >> B/B: 1 (Activate Knight of the Reliquary (ChangeZone))
+
+--- Decision 107 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  2 life | mana: empty | hand(1): Wooded Foothills
+  Opp:   12 life | mana: empty | hand count: 5
+  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [14/14] (T) | Knight of the Reliquary [11/11] (T) | Noble Hierarch [0/1] (SICK) | Savannah | Scythecat Cub [3/3]
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
+  Stack: Scythecat Cub (ability, self) -> Knight of the Reliquary (self) -> Scythecat Cub (ability, self) -> Knight of the Reliquary (self)
+  Self GY: Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Sacrifice Savannah
+  >> B/B: 0 (Sacrifice Savannah)
+--- Narrative ---
+  Player B sacrifices Savannah
+  Player B's Knight of the Reliquary ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Searching Player B's library:
+
+--- Decision 108 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  2 life | mana: empty | hand(1): Wooded Foothills
+  Opp:   12 life | mana: empty | hand count: 5
+  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [15/15] (T) | Knight of the Reliquary [12/12] (T) | Noble Hierarch [0/1] (SICK) | Scythecat Cub [3/3]
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
+  Stack: Knight of the Reliquary (ability, self) -> Scythecat Cub (ability, self) -> Knight of the Reliquary (self) -> Scythecat Cub (ability, self) -> Knight of the Reliquary (self)
+  Self GY: Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Fail to find
+   1: Plains
+   2: Savannah
+   3: Savannah
+   4: Talon Gates of Madara
+   5: Wasteland
+   6: Wasteland
+   7: Windswept Heath
+   8: Windswept Heath
+   9: Wooded Foothills
+  10: Wooded Foothills
+  >> B/B: 1 (Plains)
+--- Narrative ---
+  Player B shuffles their library
+  Player B puts Plains to the battlefield
+  Choose target:
+
+--- Decision 109 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  2 life | mana: empty | hand(1): Wooded Foothills
+  Opp:   12 life | mana: empty | hand count: 5
+  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [15/15] (T) | Knight of the Reliquary [12/12] (T) | Noble Hierarch [0/1] (SICK) | Plains | Scythecat Cub [3/3]
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
+  Stack: Scythecat Cub (ability, self) -> Knight of the Reliquary (self) -> Scythecat Cub (ability, self) -> Knight of the Reliquary (self)
+  Self GY: Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Knight of the Reliquary
+   1: Knight of the Reliquary
+   2: Noble Hierarch
+   3: Scythecat Cub
+  >> B/B: 0 (Knight of the Reliquary)
+--- Narrative ---
+  Targeting choice 0
+  Scythecat Cub triggered
+  Resolving ability (category: Pump)
+  Resolving ability (category: PutCounter, amount: 1)
+  Resolving ability (category: MultiplyCounter)
+  MultiplyCounter: doubled +1/+1 counters on creature (now 18/18).
+  Resolving ability (category: Pump)
+  Resolving ability (category: PutCounter, amount: 1)
+  Put 1 +1/+1 counter(s) on creature (now 19/19).
+  Resolving ability (category: MultiplyCounter)
+  Resolving ability (category: Pump)
+  Resolving ability (category: PutCounter, amount: 1)
+  Put 1 +1/+1 counter(s) on creature (now 20/20).
+  Resolving ability (category: MultiplyCounter)
+  --- Declare Attackers (Player B) ---
+
+--- Decision 110 ---
+  Priority: Player B (active)
+  Step: Declare Atk
+  Self:  2 life | mana: empty | hand(1): Wooded Foothills
+  Opp:   12 life | mana: empty | hand count: 5
+  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [20/20] (T) | Knight of the Reliquary [12/12] (T) | Noble Hierarch [0/1] (SICK) | Plains | Scythecat Cub [3/3]
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
+  Self GY: Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Scythecat Cub [3/3]
+   1: Confirm attackers
+  >> B/B: 0 (Scythecat Cub [3/3])
+--- Narrative ---
+  Scythecat Cub attacking Player A.
+  --- Declare Attackers (Player B) ---
+    [attacking] Scythecat Cub [3/3] -> Player A
+
+--- Decision 111 ---
+  Priority: Player B (active)
+  Step: Declare Atk
+  Self:  2 life | mana: empty | hand(1): Wooded Foothills
+  Opp:   12 life | mana: empty | hand count: 5
+  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [20/20] (T) | Knight of the Reliquary [12/12] (T) | Noble Hierarch [0/1] (SICK) | Plains | Scythecat Cub [3/3] (ATK)
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
+  Self GY: Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
+  Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Confirm attackers
+  >> B/B: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Scythecat Cub -> Player A
+  Noble Hierarch triggered
+  Resolving ability (category: ExaltedBonus)
+  Exalted (Noble Hierarch): Scythecat Cub gets +1/+1 until end of turn.
+  No creatures eligible to block.
+  --- Combat Damage ---
+    Scythecat Cub deals 4 damage to Player A
+  --- End Combat Damage ---
+  -------- TURN 15 (Player A) --------
+  Player A draws Polluted Delta
+--- Turn 15 (Player A) ---
+  PA: Murktide Regent, Cori-Steel Cutter, Lightning Bolt, Unholy Heat, Polluted Delta, Thundering Falls
+  PB: Wooded Foothills
+
+--- Decision 112 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  8 life | mana: empty | hand(6): Murktide Regent, Cori-Steel Cutter, Lightning Bolt, Unholy Heat, Polluted Delta, Thundering Falls
+  Opp:   2 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [3/3] | Island
+  Opp BF:   Gaea's Cradle (T) | Karakas | Knight of the Reliquary [20/20] (T) | Knight of the Reliquary [12/12] (T) | Noble Hierarch [0/1] (SICK) | Plains | Scythecat Cub [3/3] (T)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
+  Actions:
+   0: Pass priority
+   1: Play Polluted Delta
+   2: Play Thundering Falls
+  >> A/A: 1 (Play Polluted Delta)
+--- Narrative ---
+  Player A played Polluted Delta
+
+--- Decision 113 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  8 life | mana: empty | hand(5): Murktide Regent, Cori-Steel Cutter, Lightning Bolt, Unholy Heat, Thundering Falls
+  Opp:   2 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [3/3] | Island | Polluted Delta
+  Opp BF:   Gaea's Cradle (T) | Karakas | Knight of the Reliquary [20/20] (T) | Knight of the Reliquary [12/12] (T) | Noble Hierarch [0/1] (SICK) | Plains | Scythecat Cub [3/3] (T)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
+  Actions:
+   0: Pass priority
+   1: Activate Polluted Delta (ChangeZone)
+  >> A/A: 1 (Activate Polluted Delta (ChangeZone))
+--- Narrative ---
+  Player A pays 1 life
+  Player A sacrifices Polluted Delta
+  Player A's Polluted Delta ability is on the stack
+  Resolving ability (category: ChangeZone)
+  Searching Player A's library:
+
+--- Decision 114 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  7 life | mana: empty | hand(5): Murktide Regent, Cori-Steel Cutter, Lightning Bolt, Unholy Heat, Thundering Falls
+  Opp:   2 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [3/3] | Island
+  Opp BF:   Gaea's Cradle (T) | Karakas | Knight of the Reliquary [20/20] (T) | Knight of the Reliquary [12/12] (T) | Noble Hierarch [0/1] (SICK) | Plains | Scythecat Cub [3/3] (T)
+  Stack: Polluted Delta (ability, self)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Polluted Delta, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
+  Actions:
+   0: Fail to find
+   1: Volcanic Island
+   2: Volcanic Island
+  >> A/A: 1 (Volcanic Island)
+--- Narrative ---
+  Player A shuffles their library
+  Player A puts Volcanic Island to the battlefield
+
+--- Decision 115 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  7 life | mana: empty | hand(5): Murktide Regent, Cori-Steel Cutter, Lightning Bolt, Unholy Heat, Thundering Falls
+  Opp:   2 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [3/3] | Island | Volcanic Island
+  Opp BF:   Gaea's Cradle (T) | Karakas | Knight of the Reliquary [20/20] (T) | Knight of the Reliquary [12/12] (T) | Noble Hierarch [0/1] (SICK) | Plains | Scythecat Cub [3/3] (T)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Polluted Delta, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
+  Actions:
+   0: Pass priority
+   1: Cast Murktide Regent
+   2: Cast Cori-Steel Cutter
+   3: Cast Lightning Bolt
+   4: Cast Unholy Heat
+  >> A/A: 1 (Cast Murktide Regent)
+--- Narrative ---
+  Choose a card to exile via Delve (1 of 5):
+
+--- Decision 116 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  7 life | mana: empty | hand(5): Murktide Regent, Cori-Steel Cutter, Lightning Bolt, Unholy Heat, Thundering Falls
+  Opp:   2 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [3/3] | Island | Volcanic Island
+  Opp BF:   Gaea's Cradle (T) | Karakas | Knight of the Reliquary [20/20] (T) | Knight of the Reliquary [12/12] (T) | Noble Hierarch [0/1] (SICK) | Plains | Scythecat Cub [3/3] (T)
+  Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Polluted Delta, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
+  Actions:
+   0: Exile Dragon's Rage Channeler (Delve)
+   1: Exile Mishra's Bauble (Delve)
+   2: Exile Mishra's Bauble (Delve)
+   3: Exile Mishra's Bauble (Delve)
+   4: Exile Force of Will (Delve)
+   5: Exile Lightning Bolt (Delve)
+   6: Exile Daze (Delve)
+   7: Exile Daze (Delve)
+   8: Exile Ponder (Delve)
+   9: Exile Ponder (Delve)
+  10: Exile Ponder (Delve)
+  11: Exile Mountain (Delve)
+  12: Exile Flooded Strand (Delve)
+  13: Exile Polluted Delta (Delve)
+  14: Exile Volcanic Island (Delve)
+  15: Exile Volcanic Island (Delve)
+  16: Exile Misty Rainforest (Delve)
+  17: Exile Scalding Tarn (Delve)
+  18: Exile Wasteland (Delve)
+  19: Exile Wasteland (Delve)
+  >> A/A: 0 (Exile Dragon's Rage Channeler (Delve))
+--- Narrative ---
+  Player A exiles Dragon's Rage Channeler via Delve.
+  Choose a card to exile via Delve (2 of 5):
+
+--- Decision 117 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  7 life | mana: empty | hand(5): Murktide Regent, Cori-Steel Cutter, Lightning Bolt, Unholy Heat, Thundering Falls
+  Opp:   2 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [3/3] | Island | Volcanic Island
+  Opp BF:   Gaea's Cradle (T) | Karakas | Knight of the Reliquary [20/20] (T) | Knight of the Reliquary [12/12] (T) | Noble Hierarch [0/1] (SICK) | Plains | Scythecat Cub [3/3] (T)
+  Self GY: Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Polluted Delta, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
+  Actions:
+   0: Exile Mishra's Bauble (Delve)
+   1: Exile Mishra's Bauble (Delve)
+   2: Exile Mishra's Bauble (Delve)
+   3: Exile Force of Will (Delve)
+   4: Exile Lightning Bolt (Delve)
+   5: Exile Daze (Delve)
+   6: Exile Daze (Delve)
+   7: Exile Ponder (Delve)
+   8: Exile Ponder (Delve)
+   9: Exile Ponder (Delve)
+  10: Exile Mountain (Delve)
+  11: Exile Flooded Strand (Delve)
+  12: Exile Polluted Delta (Delve)
+  13: Exile Volcanic Island (Delve)
+  14: Exile Volcanic Island (Delve)
+  15: Exile Misty Rainforest (Delve)
+  16: Exile Scalding Tarn (Delve)
+  17: Exile Wasteland (Delve)
+  18: Exile Wasteland (Delve)
+  >> A/A: 0 (Exile Mishra's Bauble (Delve))
+--- Narrative ---
+  Player A exiles Mishra's Bauble via Delve.
+  Choose a card to exile via Delve (3 of 5):
+
+--- Decision 118 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  7 life | mana: empty | hand(5): Murktide Regent, Cori-Steel Cutter, Lightning Bolt, Unholy Heat, Thundering Falls
+  Opp:   2 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [3/3] | Island | Volcanic Island
+  Opp BF:   Gaea's Cradle (T) | Karakas | Knight of the Reliquary [20/20] (T) | Knight of the Reliquary [12/12] (T) | Noble Hierarch [0/1] (SICK) | Plains | Scythecat Cub [3/3] (T)
+  Self GY: Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Polluted Delta, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
+  Actions:
+   0: Exile Mishra's Bauble (Delve)
+   1: Exile Mishra's Bauble (Delve)
+   2: Exile Force of Will (Delve)
+   3: Exile Lightning Bolt (Delve)
+   4: Exile Daze (Delve)
+   5: Exile Daze (Delve)
+   6: Exile Ponder (Delve)
+   7: Exile Ponder (Delve)
+   8: Exile Ponder (Delve)
+   9: Exile Mountain (Delve)
+  10: Exile Flooded Strand (Delve)
+  11: Exile Polluted Delta (Delve)
+  12: Exile Volcanic Island (Delve)
+  13: Exile Volcanic Island (Delve)
+  14: Exile Misty Rainforest (Delve)
+  15: Exile Scalding Tarn (Delve)
+  16: Exile Wasteland (Delve)
+  17: Exile Wasteland (Delve)
+  >> A/A: 0 (Exile Mishra's Bauble (Delve))
+--- Narrative ---
+  Player A exiles Mishra's Bauble via Delve.
+  Choose a card to exile via Delve (4 of 5):
+
+--- Decision 119 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  7 life | mana: empty | hand(5): Murktide Regent, Cori-Steel Cutter, Lightning Bolt, Unholy Heat, Thundering Falls
+  Opp:   2 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [3/3] | Island | Volcanic Island
+  Opp BF:   Gaea's Cradle (T) | Karakas | Knight of the Reliquary [20/20] (T) | Knight of the Reliquary [12/12] (T) | Noble Hierarch [0/1] (SICK) | Plains | Scythecat Cub [3/3] (T)
+  Self GY: Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Polluted Delta, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
+  Actions:
+   0: Exile Mishra's Bauble (Delve)
+   1: Exile Force of Will (Delve)
+   2: Exile Lightning Bolt (Delve)
+   3: Exile Daze (Delve)
+   4: Exile Daze (Delve)
+   5: Exile Ponder (Delve)
+   6: Exile Ponder (Delve)
+   7: Exile Ponder (Delve)
+   8: Exile Mountain (Delve)
+   9: Exile Flooded Strand (Delve)
+  10: Exile Polluted Delta (Delve)
+  11: Exile Volcanic Island (Delve)
+  12: Exile Volcanic Island (Delve)
+  13: Exile Misty Rainforest (Delve)
+  14: Exile Scalding Tarn (Delve)
+  15: Exile Wasteland (Delve)
+  16: Exile Wasteland (Delve)
+  >> A/A: 0 (Exile Mishra's Bauble (Delve))
+--- Narrative ---
+  Player A exiles Mishra's Bauble via Delve.
+  Choose a card to exile via Delve (5 of 5):
+
+--- Decision 120 ---
+  Priority: Player A (active)
+  Step: First Main
+  Self:  7 life | mana: empty | hand(5): Murktide Regent, Cori-Steel Cutter, Lightning Bolt, Unholy Heat, Thundering Falls
+  Opp:   2 life | mana: empty | hand count: 1
+  Self BF:  Dragon's Rage Channeler [3/3] | Island | Volcanic Island
+  Opp BF:   Gaea's Cradle (T) | Karakas | Knight of the Reliquary [20/20] (T) | Knight of the Reliquary [12/12] (T) | Noble Hierarch [0/1] (SICK) | Plains | Scythecat Cub [3/3] (T)
+  Self GY: Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Polluted Delta, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
+  Actions:
+   0: Exile Force of Will (Delve)
+   1: Exile Lightning Bolt (Delve)
+   2: Exile Daze (Delve)
+   3: Exile Daze (Delve)
+   4: Exile Ponder (Delve)
+   5: Exile Ponder (Delve)
+   6: Exile Ponder (Delve)
+   7: Exile Mountain (Delve)
+   8: Exile Flooded Strand (Delve)
+   9: Exile Polluted Delta (Delve)
+  10: Exile Volcanic Island (Delve)
+  11: Exile Volcanic Island (Delve)
+  12: Exile Misty Rainforest (Delve)
+  13: Exile Scalding Tarn (Delve)
+  14: Exile Wasteland (Delve)
+  15: Exile Wasteland (Delve)
+  >> A/A: 0 (Exile Force of Will (Delve))
+--- Narrative ---
+  Player A exiles Force of Will via Delve.
+  Player A activated Island for 1(U)
+  Player A activated Volcanic Island for 1(U)
+  Player A casts Murktide Regent
+  Dragon's Rage Channeler loses Delirium bonus
+  Murktide Regent enters the battlefield
+  Murktide Regent enters with 1 +1/+1 counter(s) (4/4).
+  --- Declare Attackers (Player A) ---
+
+--- Decision 121 ---
+  Priority: Player A (active)
+  Step: Declare Atk
+  Self:  7 life | mana: empty | hand(4): Cori-Steel Cutter, Lightning Bolt, Unholy Heat, Thundering Falls
+  Opp:   2 life | mana: empty | hand count: 1
+  Self BF:  Murktide Regent [4/4] (SICK) | Dragon's Rage Channeler [1/1] | Island (T) | Volcanic Island (T)
+  Opp BF:   Gaea's Cradle (T) | Karakas | Knight of the Reliquary [20/20] (T) | Knight of the Reliquary [12/12] (T) | Noble Hierarch [0/1] (SICK) | Plains | Scythecat Cub [3/3] (T)
+  Self GY: Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Polluted Delta, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
+  Actions:
+   0: Dragon's Rage Channeler [1/1]
+   1: Confirm attackers
+  >> A/A: 0 (Dragon's Rage Channeler [1/1])
+--- Narrative ---
+  Dragon's Rage Channeler attacking Player B.
+  --- Declare Attackers (Player A) ---
+    [attacking] Dragon's Rage Channeler [1/1] -> Player B
+
+--- Decision 122 ---
+  Priority: Player A (active)
+  Step: Declare Atk
+  Self:  7 life | mana: empty | hand(4): Cori-Steel Cutter, Lightning Bolt, Unholy Heat, Thundering Falls
+  Opp:   2 life | mana: empty | hand count: 1
+  Self BF:  Murktide Regent [4/4] (SICK) | Dragon's Rage Channeler [1/1] (ATK) | Island (T) | Volcanic Island (T)
+  Opp BF:   Gaea's Cradle (T) | Karakas | Knight of the Reliquary [20/20] (T) | Knight of the Reliquary [12/12] (T) | Noble Hierarch [0/1] (SICK) | Plains | Scythecat Cub [3/3] (T)
+  Self GY: Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Polluted Delta, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
+  Opp GY:  Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
+  Actions:
+   0: Confirm attackers
+  >> A/A: 0 (Confirm attackers)
+--- Narrative ---
+  Attackers declared:
+    Dragon's Rage Channeler -> Player B
+  --- Declare Blockers (Player B) ---
+  Attackers:
+    0: Dragon's Rage Channeler [1/1]
+  Your creatures:
+
+--- Decision 123 ---
+  Priority: Player B (non-active)
+  Step: Declare Blk
+  Self:  2 life | mana: empty | hand(1): Wooded Foothills
+  Opp:   7 life | mana: empty | hand count: 4
+  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [20/20] (T) | Knight of the Reliquary [12/12] (T) | Noble Hierarch [0/1] (SICK) | Plains | Scythecat Cub [3/3] (T)
+  Opp BF:   Murktide Regent [4/4] (SICK) | Dragon's Rage Channeler [1/1] (T,ATK) | Island (T) | Volcanic Island (T)
+  Self GY: Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
+  Opp GY:  Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Polluted Delta, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Noble Hierarch [0/1]
+   1: Confirm blockers
+  >> B/B: 1 (Confirm blockers)
+--- Narrative ---
+  Blockers declared:
+    (none)
+  --- Combat Damage ---
+    Dragon's Rage Channeler deals 1 damage to Player B
+  --- End Combat Damage ---
+  -------- TURN 16 (Player B) --------
+--- Turn 16 (Player B) ---
+  PA: Cori-Steel Cutter, Lightning Bolt, Unholy Heat, Thundering Falls
+  PB: Wooded Foothills
+
+--- Decision 124 ---
+  Priority: Player B (active)
+  Step: Upkeep
+  Self:  1 life | mana: empty | hand(1): Wooded Foothills
+  Opp:   7 life | mana: empty | hand count: 4
+  Self BF:  Gaea's Cradle | Karakas | Knight of the Reliquary [20/20] | Knight of the Reliquary [12/12] | Noble Hierarch [0/1] | Plains | Scythecat Cub [3/3]
+  Opp BF:   Murktide Regent [4/4] (SICK) | Dragon's Rage Channeler [1/1] (T) | Island (T) | Volcanic Island (T)
+  Self GY: Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
+  Opp GY:  Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Polluted Delta, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Pass priority
+   1: Activate Knight of the Reliquary (ChangeZone)
+   2: Activate Knight of the Reliquary (ChangeZone)
+  >> B/B: 0 (Pass priority)
+--- Narrative ---
+  Player B draws Wooded Foothills
+
+--- Decision 125 ---
+  Priority: Player B (active)
+  Step: Draw
+  Self:  1 life | mana: empty | hand(2): Wooded Foothills, Wooded Foothills
+  Opp:   7 life | mana: empty | hand count: 4
+  Self BF:  Gaea's Cradle | Karakas | Knight of the Reliquary [20/20] | Knight of the Reliquary [12/12] | Noble Hierarch [0/1] | Plains | Scythecat Cub [3/3]
+  Opp BF:   Murktide Regent [4/4] (SICK) | Dragon's Rage Channeler [1/1] (T) | Island (T) | Volcanic Island (T)
+  Self GY: Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
+  Opp GY:  Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Polluted Delta, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Pass priority
+   1: Activate Knight of the Reliquary (ChangeZone)
+   2: Activate Knight of the Reliquary (ChangeZone)
+  >> B/B: 0 (Pass priority)
+
+--- Decision 126 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  1 life | mana: empty | hand(2): Wooded Foothills, Wooded Foothills
+  Opp:   7 life | mana: empty | hand count: 4
+  Self BF:  Gaea's Cradle | Karakas | Knight of the Reliquary [20/20] | Knight of the Reliquary [12/12] | Noble Hierarch [0/1] | Plains | Scythecat Cub [3/3]
+  Opp BF:   Murktide Regent [4/4] (SICK) | Dragon's Rage Channeler [1/1] (T) | Island (T) | Volcanic Island (T)
+  Self GY: Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
+  Opp GY:  Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Polluted Delta, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Pass priority
+   1: Play Wooded Foothills
+   2: Play Wooded Foothills
+   3: Activate Knight of the Reliquary (ChangeZone)
+   4: Activate Knight of the Reliquary (ChangeZone)
+  >> B/B: 1 (Play Wooded Foothills)
+--- Narrative ---
+  Player B played Wooded Foothills
+  Choose target:
+
+--- Decision 127 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  1 life | mana: empty | hand(1): Wooded Foothills
+  Opp:   7 life | mana: empty | hand count: 4
+  Self BF:  Gaea's Cradle | Karakas | Knight of the Reliquary [20/20] | Knight of the Reliquary [12/12] | Noble Hierarch [0/1] | Plains | Scythecat Cub [3/3] | Wooded Foothills
+  Opp BF:   Murktide Regent [4/4] (SICK) | Dragon's Rage Channeler [1/1] (T) | Island (T) | Volcanic Island (T)
+  Self GY: Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
+  Opp GY:  Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Polluted Delta, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Knight of the Reliquary
+   1: Knight of the Reliquary
+   2: Noble Hierarch
+   3: Scythecat Cub
+  >> B/B: 0 (Knight of the Reliquary)
+--- Narrative ---
+  Targeting choice 0
+  Scythecat Cub triggered
+
+--- Decision 128 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  1 life | mana: empty | hand(1): Wooded Foothills
+  Opp:   7 life | mana: empty | hand count: 4
+  Self BF:  Gaea's Cradle | Karakas | Knight of the Reliquary [20/20] | Knight of the Reliquary [12/12] | Noble Hierarch [0/1] | Plains | Scythecat Cub [3/3] | Wooded Foothills
+  Opp BF:   Murktide Regent [4/4] (SICK) | Dragon's Rage Channeler [1/1] (T) | Island (T) | Volcanic Island (T)
+  Stack: Scythecat Cub (ability, self) -> Knight of the Reliquary (self)
+  Self GY: Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
+  Opp GY:  Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Polluted Delta, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Pass priority
+   1: Activate Knight of the Reliquary (ChangeZone)
+   2: Activate Knight of the Reliquary (ChangeZone)
+   3: Activate Wooded Foothills (ChangeZone)
+  >> B/B: 1 (Activate Knight of the Reliquary (ChangeZone))
+
+--- Decision 129 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  1 life | mana: empty | hand(1): Wooded Foothills
+  Opp:   7 life | mana: empty | hand count: 4
+  Self BF:  Gaea's Cradle | Karakas | Knight of the Reliquary [20/20] (T) | Knight of the Reliquary [12/12] | Noble Hierarch [0/1] | Plains | Scythecat Cub [3/3] | Wooded Foothills
+  Opp BF:   Murktide Regent [4/4] (SICK) | Dragon's Rage Channeler [1/1] (T) | Island (T) | Volcanic Island (T)
+  Stack: Scythecat Cub (ability, self) -> Knight of the Reliquary (self)
+  Self GY: Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
+  Opp GY:  Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Polluted Delta, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Sacrifice Plains
+  >> B/B: 0 (Sacrifice Plains)
+--- Narrative ---
+  Player B sacrifices Plains
+  Player B's Knight of the Reliquary ability is on the stack
+
+--- Decision 130 ---
+  Priority: Player B (active)
+  Step: First Main
+  Self:  1 life | mana: empty | hand(1): Wooded Foothills
+  Opp:   7 life | mana: empty | hand count: 4
+  Self BF:  Gaea's Cradle | Karakas | Knight of the Reliquary [21/21] (T) | Knight of the Reliquary [13/13] | Noble Hierarch [0/1] | Scythecat Cub [3/3] | Wooded Foothills
+  Opp BF:   Murktide Regent [4/4] (SICK) | Dragon's Rage Channeler [1/1] (T) | Island (T) | Volcanic Island (T)
+  Stack: Knight of the Reliquary (ability, self) -> Scythecat Cub (ability, self) -> Knight of the Reliquary (self)
+  Self GY: Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Plains, Savannah, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
+  Opp GY:  Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Polluted Delta, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
+  Actions:
+   0: Pass priority
+   1: Activate Wooded Foothills (ChangeZone)
+  >> B/B: 1 (Activate Wooded Foothills (ChangeZone))
+--- Narrative ---
+  Player B pays 1 life
+  Player B sacrifices Wooded Foothills
+  Player B's Wooded Foothills ability is on the stack
+  Player B has 0 life - Player A wins!
+
+=== A/A wins ===

@@ -27,6 +27,40 @@ TODO:
 - When a copied spell targets a permanent with ward, ward will not trigger. Possible similar issues related to
   selecting new targets for copied spells.
 
+## Audit: ability-param keys the parser silently ignores
+
+`apply_param_to_ability` (`src/parse.cpp`) skips a hard-coded `ignored_keys` set
+instead of warning. **Task: review every key in that set and confirm the engine
+is not missing functionality by ignoring it.** Each key below has an inline
+justification comment at its definition; verify each still holds (a card added
+later can make a formerly-cosmetic param load-bearing).
+
+**No implementation ever needed** (Forge-AI hints and display/prose only — not
+part of our rules model, per project scope):
+- AI hints: `AILogic`, `AINoRecursiveCheck`, `AITgts`, `AIXMax`.
+- Descriptions / prompts / prose: `SpellDescription`, `StackDescription`,
+  `TriggerDescription`, `ConditionDescription`, `TgtPrompt`, `SelectPrompt`,
+  `ValidTgtsDesc`, `ValidDescription`, `ChangeTypeDesc`, `ChangeValidDesc`,
+  `GiftDescription`, `VoteMessage`, `SacMessage`, `PrecostDesc`, `Name`, `Image`.
+
+**Justified as cosmetic/redundant in code — spot-check the reasoning holds:**
+`Duration`, `Hidden`, `ForgetOtherTargets`, `ForgetOnMoved`, `Choices`,
+`ControlledByPlayer`, `Reveal`, `Ultimate`, `Triggers`, `Stackable`,
+`ForgetOtherRemembered`, `DamageMap`, `Announce`, `ValidCards`, `Imprint`,
+`ClearImprinted`, `ShuffleNonMandatory`, `ForceRevealToController`.
+
+**Known unimplemented — currently no-ops, need a real handler** (the affected
+cards still play via their other tags; drop each from `ignored_keys` when done):
+- **Reorder$ True** (Brainstorm): let the player choose the order of the cards put
+  back on top of the library. Currently the returned cards keep a default order.
+- **TriggerAmount$ Remembered$Amount** and **RememberOriginalTokens$ True**
+  (Ajani, Nacatl Avenger): carry the number of tokens created to the transform
+  trigger, and remember the original token set it references.
+- **LockTokenScript$ True** (Into the Flood Maw): pin the gifted tapped-Fish
+  token's script for the gift clause.
+- **ExileOnMoved$ Battlefield** (Manifold Key): exile the permanent when it moves
+  off the battlefield.
+
 ## Cosmetic / logging
 
 - The One Ring damage-prevention double-logs: a prevented Ancient Tomb self-damage prints BOTH
@@ -62,11 +96,11 @@ object; an all-modes-untargetable charm COPY is still created and fizzles at res
   en route it even parses unrelated fallback matches like charm_peddler.txt). Reproduced on
   UNMODIFIED main (verified via git stash), so unrelated to the modal change. league/ decks load
   fine. Affects any regression pass over meta decks.
-- **train/regression/replay_diff.py and train/test_revealed_accumulator.py are broken on main**:
-  both import `TestHarness` / `get_scripted_action` from train/test_harness.py, which no longer
-  exports them (harness refactor moved the loop into runner.py). The regression corpus can't be
-  replayed until these imports are fixed. (Corpus decks are delver/doomsday/mav — modal-free — so
-  the modal fix doesn't invalidate the corpus itself; scripted games on those decks run clean.)
+- **train/test_revealed_accumulator.py is broken on main**: imports `TestHarness` /
+  `get_scripted_action` from train/test_harness.py, which no longer exports them (harness refactor
+  moved the loop into runner.py). (train/regression/replay_diff.py had the same breakage and was
+  FIXED with the CI work — it now drives the deterministic scripted game via runner.run_games and
+  its corpus was re-recorded; test_revealed_accumulator.py still needs the same treatment.)
 
 ### T3.2 cleanup-step trigger priority (rule 514.3a) — DEFERRED
 No card in the current vocab has a cleanup-step trigger that uses the stack, so the "no priority

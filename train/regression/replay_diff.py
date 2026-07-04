@@ -1,24 +1,22 @@
 #!/usr/bin/env python3
-"""Determinism safety net for the effect-dispatch refactor.
+"""Byte-identical determinism safety net for the curated decks.
 
-Plays a fixed set of scripted games against the engine and snapshots the full
-game narrative (every `game_log` line the engine emits, plus the integer
-decision the scripted agent makes at each point) into a transcript per
-scenario. The scripted agent is a pure function of game state and the engine is
-deterministic given a seed + `--no-shuffle`, so an unchanged engine reproduces
-each transcript byte-for-byte.
+Plays a fixed set of scripted deck-vs-deck games (the three fully-implemented
+curated decks — delver/doomsday/mav — in every seating) and snapshots the full
+scripted transcript (every `game_log` line the engine emits plus the runner's
+per-decision markers) into one file per scenario. The scripted agent is a pure
+function of game state and the engine is deterministic given a seed, so an
+unchanged engine + agent + card data reproduces each transcript byte-for-byte.
 
   record  — play each scenario, write train/regression/corpus/<name>.txt
-  check   — replay each scenario, diff against the recorded transcript
+  check   — replay each scenario, diff against the recorded transcript (exit 1
+            on any drift). Wired as the `replay` tier of train/ci_check.py.
 
-Run `record` ONCE on a known-good build (main, before the refactor). Run
-`check` after every refactor batch. A passing `check` proves the refactor did
-not change a single narrative line or scripted decision across these games —
-which is exactly what the effect-dispatch rewrite must preserve.
-
-We drive the game in the engine's real machine mode (not `--replay`) on
-purpose: replaying a machine-mode decision log in CLI mode diverges and is not a
-faithful reproduction of the game.
+Run `record` only when a behavior change is INTENTIONAL (an engine/effect change,
+a scripted-agent change, or a card-data change that legitimately alters these
+games); commit the regenerated corpus as part of that change's review. A passing
+`check` otherwise proves the change did not alter a single narrative line or
+scripted decision across these games.
 
 Usage (from repo root):
   train/.venv/bin/python train/regression/replay_diff.py record
@@ -58,62 +56,39 @@ SCENARIOS = [
 ]
 
 
-def _play(deck_a: str, deck_b: str, seed: int, actions=None):
-    """Drive one game in machine mode. If `actions` is None, the (nondeterministic)
-    scripted agent chooses and we record what it picked; otherwise the given
-    action ints are fed back verbatim. Returns (transcript, chosen_actions).
+def _play(deck_a: str, deck_b: str, seed: int) -> str:
+    """Drive one scripted deck-vs-deck game and return its full transcript.
 
-    The transcript is all engine narrative plus a marker per decision, so it is
-    a deterministic function of (seed, decks, actions) alone."""
-    from test_harness import (TestHarness, get_scripted_action,  # noqa: E402
-                              _MANDATORY_CATS)
+    Uses the shared deterministic game loop (runner.run_games) with the scripted
+    (hard) agent on both seats. The scripted agent is a pure function of game
+    state and the engine is deterministic given a seed, so an unchanged engine +
+    agent + card data reproduces the transcript byte-for-byte. Libraries shuffle
+    with the seeded RNG (natural games, deterministic given the frozen SEED)."""
+    import contextlib
+    import io
 
-    th = TestHarness(binary=str(_BINARY))
-    # Shuffle each library with the seeded RNG (no --no-shuffle): natural games,
-    # deterministic given the frozen SEED.
-    th.start(deck_a, deck_b, seed, no_shuffle=False)
-    lines: list[str] = []
-    chosen: list[int] = []
-    decision = 0
-    try:
-        while True:
-            narrative, query = th.read_until_query()
-            lines.extend(narrative)
-            if query is None:
-                lines.append(f"=== GAME OVER: winner={th.winner} ===")
-                break
-            if actions is not None and decision >= len(actions):
-                # Refactor needs more decisions than recorded — drift; stop here
-                # (the narrative diff has already diverged above).
-                lines.append("<<RAN OUT OF RECORDED ACTIONS>>")
-                break
-            state, cats_int, card_ids, ctrl, pub, num_choices = query
-            if actions is None:
-                choice = get_scripted_action(
-                    state, cats_int, card_ids, ctrl, num_choices)
-                has_confirm = any(int(cats_int[i]) in _MANDATORY_CATS
-                                  for i in range(num_choices))
-                game_action = -1 if (has_confirm and choice == num_choices - 1) else choice
-            else:
-                game_action = actions[decision]
-            decision += 1
-            chosen.append(int(game_action))
-            lines.append(f"<<DECISION {decision}: action={game_action}>>")
-            th._send(game_action)
-    finally:
-        th.kill()
-    return "\n".join(lines) + "\n", chosen
+    import runner  # noqa: E402
+    from opponents import make_controller  # noqa: E402
+
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        runner.run_games(
+            make_controller("scripted"), make_controller("scripted"),
+            label_a="A", label_b="B", binary_path=str(_BINARY),
+            deck_a=deck_a, deck_b=deck_b, n_games=1, seed=seed, verbose=True)
+    return buf.getvalue()
 
 
 def cmd_record() -> int:
     _CORPUS.mkdir(parents=True, exist_ok=True)
+    # Drop any stale ".actions" files from the previous (forced-replay) format —
+    # the deterministic scripted transcript no longer needs them.
+    for stale in _CORPUS.glob("*.actions"):
+        stale.unlink()
     for name, deck_a, deck_b in SCENARIOS:
-        transcript, actions = _play(deck_a, deck_b, SEED, actions=None)
+        transcript = _play(deck_a, deck_b, SEED)
         (_CORPUS / f"{name}.txt").write_text(transcript)
-        (_CORPUS / f"{name}.actions").write_text(
-            ",".join(str(a) for a in actions))
-        print(f"  recorded {name}: {len(actions)} decisions, "
-              f"{len(transcript)} bytes")
+        print(f"  recorded {name}: {len(transcript)} bytes")
     print(f"Recorded {len(SCENARIOS)} scenarios (seed {SEED}) to {_CORPUS}")
     return 0
 
@@ -122,15 +97,12 @@ def cmd_check() -> int:
     failures = []
     for name, deck_a, deck_b in SCENARIOS:
         expected_path = _CORPUS / f"{name}.txt"
-        actions_path = _CORPUS / f"{name}.actions"
-        if not expected_path.exists() or not actions_path.exists():
+        if not expected_path.exists():
             print(f"  MISSING corpus for {name} — run `record` first")
             failures.append(name)
             continue
         expected = expected_path.read_text()
-        raw = actions_path.read_text().strip()
-        actions = [int(x) for x in raw.split(",")] if raw else []
-        actual, _ = _play(deck_a, deck_b, SEED, actions=actions)
+        actual = _play(deck_a, deck_b, SEED)
         if actual == expected:
             print(f"  OK   {name}")
         else:
