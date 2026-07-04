@@ -23,7 +23,7 @@ sparklines/bars so the common views need no display at all.
 
 Interactive session commands (available after shap, value-swings, or via 'interactive'):
     list                  list all games
-    replay <N>            board-state trace for game N
+    replay <N> [-v]       per-decision trace for game N; -v adds zones + chosen action
     boardstate <N> [step] full board + decision detail; enters GDB-style stepping mode
     summary               win/loss/draw stats
     cardvalue [N]         rank cards by importance (ΔV, priority, win-rate)
@@ -71,7 +71,8 @@ from env import (ACTION_CATEGORY_MAX, RoboMageEnv, scripted_action,
                  _SELF_PERM_START, _PERM_SLOTS as _ENV_PERM_SLOTS, _PERM_SLOT_SIZE,
                  _GY_START, _GY_SLOTS_TOTAL, _GY_SLOT_SIZE,
                  _STACK_START as _ENV_STACK_START, _STACK_SLOTS as _ENV_STACK_SLOTS,
-                 _STACK_SLOT_SIZE, _HAND_SLOT_SIZE, _slot_card_idx)
+                 _STACK_SLOT_SIZE, _HAND_SLOT_SIZE, _slot_card_idx,
+                 _PERM_CARD_OFF)
 
 
 def _resolve_card_name(cid):
@@ -116,16 +117,21 @@ _INTERP_FEATURE_NAMES = [
     "is_sideboard",
 ]
 
+# Name → index into an interp feature vector. Always index feats through this
+# (feat[_FEAT["self_creatures"]]) — hardcoded integers go stale when a feature
+# is inserted upstream.
+_FEAT = {name: i for i, name in enumerate(_INTERP_FEATURE_NAMES)}
+
 # Permanent slot layout (derived from env.py / machine_io.h). Card identity is a
 # single normalized id float per slot; decode via _slot_card_idx (round(val*N)).
 _PERM_START   = _SELF_PERM_START          # 34 (self slots first, then opponent)
 _PERM_SLOTS   = _ENV_PERM_SLOTS * 2       # 96 = 48 self + 48 opponent
-_PERM_SLOT_SZ = _PERM_SLOT_SIZE           # 11 (10 status + 1 card id)
+_PERM_SLOT_SZ = _PERM_SLOT_SIZE           # 12 (11 status incl. loyalty + 1 card id)
 _SELF_PERM_SLOTS = _ENV_PERM_SLOTS        # 48: slots 0-47 = self, 48-95 = opponent
 # Per-slot offsets: power(0), toughness(1), tapped(2), attacking(3), blocking(4),
 #                   sickness(5), damage(6), controller_is_self(7), is_creature(8),
-#                   is_land(9), card_id(10)
-_PERM_CARD_OFF   = 10
+#                   is_land(9), loyalty(10), card_id(11 = _PERM_CARD_OFF from env.py)
+_PERM_LOYALTY_OFF = 10
 _GY_START_OBS    = _GY_START
 _GY_SLOTS        = _GY_SLOTS_TOTAL        # 128
 _GY_SLOT_SZ      = _GY_SLOT_SIZE          # 1
@@ -517,26 +523,26 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
     return games
 
 
+def _action_desc(obs, i):
+    """Human-readable description of legal-action slot i ("CAST_SPELL (Lightning Bolt)")."""
+    cat = int(round(obs[STATE_SIZE + i] * ACTION_CATEGORY_MAX))
+    cat_name = _CAT_NAMES.get(cat, str(cat))
+
+    card_raw = obs[STATE_SIZE + MAX_ACTIONS + i]
+    if card_raw < 0:
+        return cat_name
+    cid = int(round(card_raw * N_CARD_TYPES))
+    if 0 <= cid < len(_VOCAB_NAMES):
+        return f"{cat_name} ({_VOCAB_NAMES[cid]})"
+    return f"{cat_name} (card#{cid})"
+
+
 def _decode_legal_actions(obs, num_choices, chosen_action):
     """Return a list of strings describing each legal action, marking the chosen one."""
     lines = []
     for i in range(num_choices):
-        cat_raw = obs[STATE_SIZE + i]
-        cat = int(round(cat_raw * ACTION_CATEGORY_MAX))
-        cat_name = _CAT_NAMES.get(cat, str(cat))
-
-        card_raw = obs[STATE_SIZE + MAX_ACTIONS + i]
-        if card_raw < 0:
-            card_str = ""
-        else:
-            cid = int(round(card_raw * N_CARD_TYPES))
-            if 0 <= cid < len(_VOCAB_NAMES):
-                card_str = f" ({_VOCAB_NAMES[cid]})"
-            else:
-                card_str = f" (card#{cid})"
-
         marker = " <-- chosen" if i == chosen_action else ""
-        lines.append(f"    [{i}] {cat_name}{card_str}{marker}")
+        lines.append(f"    [{i}] {_action_desc(obs, i)}{marker}")
     return lines
 
 
@@ -665,8 +671,13 @@ def _step_name_from_feat(feat):
     return _INTERP_STEP_NAMES[best]
 
 
-def _replay_sim_game(game, game_idx):
-    """Print a human-readable trace for a simulation game."""
+def _replay_sim_game(game, game_idx, verbose=False):
+    """Print a human-readable trace for a simulation game.
+
+    verbose=True adds, under each decision's one-liner, the decoded zones
+    (both battlefields, hand, graveyards, stack) and the model's chosen action.
+    The obs at each recorded step is from the model's perspective ("self" = model).
+    """
     result_str = "WIN" if game["result"] > 0 else ("LOSS" if game["result"] < 0 else "DRAW")
     side = "A" if game["model_is_a"] else "B"
     print(f"\nGame {game_idx} — Model={side}, {result_str}, {len(game['values'])} model decisions")
@@ -674,15 +685,41 @@ def _replay_sim_game(game, game_idx):
 
     feats = game["interp_features"]
     vals = game["values"]
+    obs_list = game.get("observations", [])
+    actions = game.get("actions", [])
+    num_choices = game.get("num_choices", [])
     for i, (feat, val) in enumerate(zip(feats, vals)):
         step = _step_name_from_feat(feat)
-        mana_total = feat[9]
+        mana_total = feat[_FEAT["self_total_mana"]]
         print(f"  [{i:3d}] {step:<14}  "
-              f"Life {feat[0]:.0f}/{feat[1]:.0f}  "
-              f"Board {feat[18]:.0f}c+{feat[19]:.0f}l / {feat[21]:.0f}c+{feat[22]:.0f}l  "
+              f"Life {feat[_FEAT['self_life']]:.0f}/{feat[_FEAT['opp_life']]:.0f}  "
+              f"Board {feat[_FEAT['self_creatures']]:.0f}c+{feat[_FEAT['self_lands']]:.0f}l"
+              f" / {feat[_FEAT['opp_creatures']]:.0f}c+{feat[_FEAT['opp_lands']]:.0f}l  "
               f"Mana {mana_total:.0f}  "
-              f"GY {feat[37]:.0f}/{feat[38]:.0f}  "
+              f"GY {feat[_FEAT['self_gy_size']]:.0f}/{feat[_FEAT['opp_gy_size']]:.0f}  "
               f"V={val:+.3f}")
+        if not verbose or i >= len(obs_list):
+            continue
+        obs = obs_list[i]
+        sp = _perm_summaries(obs, range(_SELF_PERM_SLOTS))
+        op = _perm_summaries(obs, range(_SELF_PERM_SLOTS, _PERM_SLOTS))
+        print(f"        BF self : {', '.join(sp) if sp else '—'}")
+        print(f"        BF opp  : {', '.join(op) if op else '—'}")
+        hand = _hand_card_names(obs)
+        print(f"        Hand    : {', '.join(hand) if hand else '—'}")
+        gy_self = _gy_card_names(obs, self_side=True)
+        gy_opp  = _gy_card_names(obs, self_side=False)
+        if gy_self:
+            print(f"        GY self : {', '.join(gy_self)}")
+        if gy_opp:
+            print(f"        GY opp  : {', '.join(gy_opp)}")
+        stack = _stack_summaries(obs)
+        if stack:
+            print(f"        Stack   : {'; '.join(stack)}")
+        if i < len(actions) and i < len(num_choices):
+            print(f"        Action  : {_action_desc(obs, actions[i])}  "
+                  f"[choice {actions[i]} of {num_choices[i]}]")
+        print()
     print()
 
 
@@ -735,6 +772,74 @@ def _print_swing_table(top_swings):
               f" {s['swing_to'] - s['swing_from']:>+7.3f}   {result_str:<6}({side}) {s['n_decisions']}")
 
 
+def _card_name_at(obs, base):
+    """Decode card name from the card-id float at obs[base] (None if empty)."""
+    cid = _slot_card_idx(obs, base)
+    if cid < 0:
+        return None
+    return _VOCAB_NAMES[cid] if cid < len(_VOCAB_NAMES) else f"card#{cid}"
+
+
+def _perm_summaries(obs, slot_range):
+    """One compact string per occupied battlefield slot ("Grizzly Bears 2/2 [tapped]")."""
+    out = []
+    for slot in slot_range:
+        base = _PERM_START + slot * _PERM_SLOT_SZ
+        name = _card_name_at(obs, base + _PERM_CARD_OFF)
+        if name is None:
+            continue
+        power     = obs[base + 0] * 10.0
+        toughness = obs[base + 1] * 10.0
+        tapped    = obs[base + 2] > 0.5
+        attacking = obs[base + 3] > 0.5
+        blocking  = obs[base + 4] > 0.5
+        sickness  = obs[base + 5] > 0.5
+        damage    = obs[base + 6] * 10.0
+        is_creat  = obs[base + 8] > 0.5
+        loyalty   = obs[base + _PERM_LOYALTY_OFF] * 10.0
+        flags = []
+        if tapped:        flags.append("tapped")
+        if attacking:     flags.append("atk")
+        if blocking:      flags.append("blk")
+        if sickness:      flags.append("sick")
+        if damage > 0.4:  flags.append(f"dmg={damage:.0f}")
+        if loyalty > 0.4: flags.append(f"loy={loyalty:.0f}")
+        flag_str = f" [{', '.join(flags)}]" if flags else ""
+        if is_creat:
+            out.append(f"{name} {power:.0f}/{toughness:.0f}{flag_str}")
+        else:
+            out.append(f"{name}{flag_str}")
+    return out
+
+
+def _stack_summaries(obs, self_label="self", opp_label="opp"):
+    """One compact string per occupied stack slot ("[A] Lightning Bolt (spell)")."""
+    out = []
+    for slot in range(_STACK_SLOTS):
+        base = _STACK_START + slot * _STACK_SLOT_SZ
+        name = _card_name_at(obs, base + 1)
+        if name is None:
+            continue
+        ctrl_str = self_label if obs[base] > 0.5 else opp_label
+        type_str = "spell" if obs[base + 2] > 0.5 else "ability"  # fixed offset; modes/targets follow
+        out.append(f"[{ctrl_str}] {name} ({type_str})")
+    return out
+
+
+def _hand_card_names(obs):
+    """Names of the priority player's hand cards (non-empty slots only)."""
+    names = [_card_name_at(obs, _HAND_START + s * _HAND_SLOT_SIZE)
+             for s in range(_HAND_SLOTS)]
+    return [n for n in names if n is not None]
+
+
+def _gy_card_names(obs, self_side):
+    """Names of the cards in one player's graveyard (non-empty slots only)."""
+    rng = range(_GY_SELF_SLOTS) if self_side else range(_GY_SELF_SLOTS, _GY_SLOTS)
+    names = [_card_name_at(obs, _GY_START_OBS + s * _GY_SLOT_SZ) for s in rng]
+    return [n for n in names if n is not None]
+
+
 def _decode_board_state(obs, value=None):
     """Print a detailed board state decoded from a raw observation vector."""
     # obs[32] = 1.0 if "self" (priority player) is Player A
@@ -768,41 +873,6 @@ def _decode_board_state(obs, value=None):
         parts = [f"{_MANA_COLORS[j]}:{mana[j]:.0f}" for j in range(6) if mana[j] > 0.4]
         return " ".join(parts) if parts else "—"
 
-    def card_at(base):
-        """Decode card name from the card-id float at obs[base] (None if empty)."""
-        cid = _slot_card_idx(obs, base)
-        if cid < 0:
-            return None
-        return _VOCAB_NAMES[cid] if cid < len(_VOCAB_NAMES) else f"card#{cid}"
-
-    def perm_lines(slot_range):
-        lines = []
-        for slot in slot_range:
-            base = _PERM_START + slot * _PERM_SLOT_SZ
-            name = card_at(base + _PERM_CARD_OFF)
-            if name is None:
-                continue
-            power     = obs[base + 0] * 10.0
-            toughness = obs[base + 1] * 10.0
-            tapped    = obs[base + 2] > 0.5
-            attacking = obs[base + 3] > 0.5
-            blocking  = obs[base + 4] > 0.5
-            sickness  = obs[base + 5] > 0.5
-            damage    = obs[base + 6] * 10.0
-            is_creat  = obs[base + 8] > 0.5
-            flags = []
-            if tapped:       flags.append("tapped")
-            if attacking:    flags.append("atk")
-            if blocking:     flags.append("blk")
-            if sickness:     flags.append("sick")
-            if damage > 0.4: flags.append(f"dmg={damage:.0f}")
-            flag_str = f" [{', '.join(flags)}]" if flags else ""
-            if is_creat:
-                lines.append(f"    {name}  {power:.0f}/{toughness:.0f}{flag_str}")
-            else:
-                lines.append(f"    {name}{flag_str}")
-        return lines
-
     print(f"Step: {step_name}  ({'active' if priority_is_active else 'non-active'} player has priority){val_str}")
     if game_number > 0 or self_match_wins > 0 or opp_match_wins > 0 or is_sideboard or is_post_board:
         sb_str = "  [sideboarding]" if is_sideboard else ("  [post-board]" if is_post_board else "")
@@ -811,39 +881,27 @@ def _decode_board_state(obs, value=None):
 
     if stack_size > 0:
         print("  Stack (top first):")
-        for slot in range(_STACK_SLOTS):
-            base = _STACK_START + slot * _STACK_SLOT_SZ
-            name = card_at(base + 1)
-            if name is None:
-                continue
-            ctrl_is_self = obs[base] > 0.5
-            is_spell     = obs[base + 2] > 0.5  # fixed offset; modes/targets follow
-            ctrl_str     = self_label if ctrl_is_self else opp_label
-            type_str     = "spell" if is_spell else "ability"
-            print(f"    [{ctrl_str}] {name} ({type_str})")
+        for ln in _stack_summaries(obs, self_label, opp_label):
+            print(f"    {ln}")
 
     print()
     print(f"  [{self_label}] Priority player  "
           f"Life={self_life:.0f}  Hand={self_hand_ct:.0f}  Lib={self_library_ct}  Mana=[{mana_str(self_mana)}]")
 
-    sp = perm_lines(range(_SELF_PERM_SLOTS))
+    sp = _perm_summaries(obs, range(_SELF_PERM_SLOTS))
     if sp:
         print(f"  Battlefield ({len(sp)}):")
-        for ln in sp: print(ln)
+        for ln in sp: print(f"    {ln}")
     else:
         print("  Battlefield: empty")
 
-    hand_cards = [card_at(_HAND_START + s * _HAND_SLOT_SIZE)
-                  for s in range(_HAND_SLOTS)]
-    hand_cards = [n for n in hand_cards if n is not None]
+    hand_cards = _hand_card_names(obs)
     if hand_cards:
         print(f"  Hand ({len(hand_cards)}): {', '.join(hand_cards)}")
     else:
         print("  Hand: empty")
 
-    self_gy = [card_at(_GY_START_OBS + s * _GY_SLOT_SZ)
-               for s in range(_GY_SELF_SLOTS)]
-    self_gy = [n for n in self_gy if n is not None]
+    self_gy = _gy_card_names(obs, self_side=True)
     if self_gy:
         print(f"  Graveyard ({len(self_gy)}): {', '.join(self_gy)}")
     else:
@@ -853,16 +911,14 @@ def _decode_board_state(obs, value=None):
     print(f"  [{opp_label}] Opponent          "
           f"Life={opp_life:.0f}  Hand={opp_hand_ct:.0f}  Lib={opp_library_ct}  Mana=[{mana_str(opp_mana)}]")
 
-    op = perm_lines(range(_SELF_PERM_SLOTS, _PERM_SLOTS))
+    op = _perm_summaries(obs, range(_SELF_PERM_SLOTS, _PERM_SLOTS))
     if op:
         print(f"  Battlefield ({len(op)}):")
-        for ln in op: print(ln)
+        for ln in op: print(f"    {ln}")
     else:
         print("  Battlefield: empty")
 
-    opp_gy = [card_at(_GY_START_OBS + s * _GY_SLOT_SZ)
-              for s in range(_GY_SELF_SLOTS, _GY_SLOTS)]
-    opp_gy = [n for n in opp_gy if n is not None]
+    opp_gy = _gy_card_names(obs, self_side=False)
     if opp_gy:
         print(f"  Graveyard ({len(opp_gy)}): {', '.join(opp_gy)}")
     else:
@@ -1203,7 +1259,7 @@ def _interactive_session(ctx):
         can_run = ctx.get("env") is not None
         print("\n" + "=" * 60)
         print(f"Interactive session — {len(games)} games in memory.")
-        cmds = ["list", "replay <N>", "boardstate <N> <step>", "summary",
+        cmds = ["list", "replay <N> [-v]", "boardstate <N> <step>", "summary",
                 "cardvalue [N]", "targeting", "sideboard",
                 "swings [N]", "shap", "regret [N]", "entropy", "consistency [N]",
                 "calibration", "turning", "clusters",
@@ -1235,7 +1291,8 @@ def _interactive_session(ctx):
         elif cmd in ("help", "?", "h"):
             can_run = ctx.get("env") is not None
             print("  list / games              — list all games with result/decisions/side")
-            print("  replay <N>                — print board-state trace for game N")
+            print("  replay <N> [-v]           — one-line-per-decision trace for game N; -v adds")
+            print("                              zones (battlefields/hand/GYs/stack) + chosen action")
             print("  boardstate <N> [step]     — full board + decision at step in game N (default 0)")
             print("  bs <N> [step]             — alias; enters GDB-style stepping mode")
             print("  summary                   — win/loss/draw stats for all simulated games")
@@ -1274,17 +1331,22 @@ def _interactive_session(ctx):
 
         elif cmd == "replay":
             if len(parts) < 2:
-                print("  Usage: replay <game_index>")
+                print("  Usage: replay <game_index> [-v]")
+                continue
+            flags = [p for p in parts[1:] if p in ("-v", "v", "verbose", "full")]
+            args_ = [p for p in parts[1:] if p not in flags]
+            if not args_:
+                print("  Usage: replay <game_index> [-v]")
                 continue
             try:
-                n = int(parts[1])
+                n = int(args_[0])
             except ValueError:
                 print("  Expected an integer game index.")
                 continue
             if n < 0 or n >= len(games):
                 print(f"  Game index out of range. Valid range: 0–{len(games) - 1}")
                 continue
-            _replay_sim_game(games[n], n)
+            _replay_sim_game(games[n], n, verbose=bool(flags))
 
         elif cmd in ("boardstate", "bs"):
             if len(parts) < 2:
@@ -1774,12 +1836,12 @@ def cmd_value_swings(args):
                 continue
             feat = g["interp_features"][idx]
             print(f"    {label}: "
-                  f"Life {feat[0]:.0f}/{feat[1]:.0f}  "
-                  f"Creatures {feat[18]:.0f}v{feat[21]:.0f}  "
-                  f"Lands {feat[19]:.0f}v{feat[22]:.0f}  "
-                  f"Hand {feat[17]:.0f}  "
-                  f"Power {feat[32]:.0f}v{feat[33]:.0f}  "
-                  f"GY {feat[37]:.0f}/{feat[38]:.0f}")
+                  f"Life {feat[_FEAT['self_life']]:.0f}/{feat[_FEAT['opp_life']]:.0f}  "
+                  f"Creatures {feat[_FEAT['self_creatures']]:.0f}v{feat[_FEAT['opp_creatures']]:.0f}  "
+                  f"Lands {feat[_FEAT['self_lands']]:.0f}v{feat[_FEAT['opp_lands']]:.0f}  "
+                  f"Hand {feat[_FEAT['self_hand_size']]:.0f}  "
+                  f"Power {feat[_FEAT['self_total_power']]:.0f}v{feat[_FEAT['opp_total_power']]:.0f}  "
+                  f"GY {feat[_FEAT['self_gy_size']]:.0f}/{feat[_FEAT['opp_gy_size']]:.0f}")
 
         # Show value trajectory for this game
         vals = g["values"]
@@ -1850,10 +1912,10 @@ def cmd_value_swings(args):
 
 def _board_bucket_from_feat(feat):
     """Categorize board state from interpretable features into (life_bucket, board_bucket, timing_bucket)."""
-    life_diff = feat[2]  # life_diff
-    creature_diff = feat[24]  # creature_diff
+    life_diff = feat[_FEAT["life_diff"]]
+    creature_diff = feat[_FEAT["creature_diff"]]
     # Timing: use hand size + land count as a rough game-phase proxy
-    self_lands = feat[19]
+    self_lands = feat[_FEAT["self_lands"]]
     if self_lands <= 2:
         timing = "early"
     elif self_lands <= 4:
