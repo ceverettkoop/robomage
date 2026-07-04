@@ -1,0 +1,36 @@
+# systemd template for a league training worker shard (optional — the worker
+# already restarts a crashed *trainer*; this restarts the worker itself and
+# starts it at boot). Install per docs/distributed_league_training.md:
+#
+#   1. Copy your full league command into WORKER_ARGS below (or better, use a
+#      drop-in: systemctl edit league-worker@0of2 and set Environment=).
+#   2. sudo cp scripts/league-worker@.service /etc/systemd/system/
+#   3. sudo systemctl enable --now league-worker@0of2   # machine 1
+#      sudo systemctl enable --now league-worker@1of2   # machine 2
+#
+# The instance name (%i, e.g. "0of2") becomes the --shard value with the 'of'
+# replaced by '/' via the ExecStart shell line.
+
+[Unit]
+Description=RoboMage league training worker (shard %i)
+After=network-online.target syncthing.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+# EDIT these three for your machine (user, repo path, league flags):
+User=sean
+Environment=ROBOMAGE=/home/sean/development/robomage
+Environment=WORKER_ARGS=league --binary bin/robomage --bo3
+WorkingDirectory=/home/sean/development/robomage
+ExecStart=/bin/sh -c 'exec "$ROBOMAGE/scripts/league_worker.py" \
+    --shard "$(echo %i | sed s/of/\\//)" -- \
+    "$ROBOMAGE/train/.venv/bin/python" "$ROBOMAGE/train/train.py" $WORKER_ARGS'
+Restart=always
+RestartSec=15
+# SIGINT lets the worker stop the trainer group gracefully (sidecar persists).
+KillSignal=SIGINT
+TimeoutStopSec=90
+
+[Install]
+WantedBy=multi-user.target

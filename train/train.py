@@ -45,7 +45,7 @@ from cli_spec import (TOTAL_TIMESTEPS, N_ENVS, N_ENVS_SELF_PLAY, EMBED_DIM,
                       LEAGUE_SELF_PLAY_FRAC, LEAGUE_SCRIPTED_ANCHOR_FRAC,
                       LEAGUE_PFSP_P, LEAGUE_SOFTMAX_ETA, LEAGUE_SNAPSHOT_EVERY,
                       LEAGUE_PROMOTE_MARGIN, LEAGUE_ROTATE_EVERY,
-                      LEAGUE_ADAPTIVE_BOOST,
+                      LEAGUE_ADAPTIVE_BOOST, parse_shard, shard_tag,
                       TRAIN_TOOL, apply_to_parser)
 
 try:
@@ -464,13 +464,16 @@ def _tb_log_name(deck: str) -> str:
 LEAGUE_STATE_VERSION = 1
 
 
-def _league_state_path(checkpoint_dir: str) -> str:
-    return os.path.join(checkpoint_dir, "_league_progress.json")
+def _league_state_path(checkpoint_dir: str, tag: str = "") -> str:
+    # `tag` namespaces the sidecar per roster shard ('' for a single-machine
+    # run, '.shard{i}of{n}' for distributed shards — see cli_spec.shard_tag),
+    # so two drivers sharing a synced checkpoint dir never clobber each other.
+    return os.path.join(checkpoint_dir, f"_league_progress{tag}.json")
 
 
-def _write_league_state(checkpoint_dir: str, state: dict) -> None:
+def _write_league_state(checkpoint_dir: str, state: dict, tag: str = "") -> None:
     """Atomically persist the league driver's progress to its JSON sidecar."""
-    path = _league_state_path(checkpoint_dir)
+    path = _league_state_path(checkpoint_dir, tag)
     tmp = path + ".tmp"
     try:
         with open(tmp, "w") as fh:
@@ -480,9 +483,9 @@ def _write_league_state(checkpoint_dir: str, state: dict) -> None:
         print(f"[league] WARNING: could not write progress file {path}: {exc}")
 
 
-def _read_league_state(checkpoint_dir: str) -> dict | None:
+def _read_league_state(checkpoint_dir: str, tag: str = "") -> dict | None:
     """Load the league progress sidecar, or None if it is absent/unreadable."""
-    path = _league_state_path(checkpoint_dir)
+    path = _league_state_path(checkpoint_dir, tag)
     if not os.path.exists(path):
         return None
     try:
@@ -914,6 +917,7 @@ def league(binary_path: str, decks: str | None = None,
            embed_dim: int = EMBED_DIM, n_envs_override: int | None = None,
            opp_ckpt_ratio: float = 1.0, no_shaping: bool = False,
            adaptive_boost: float = LEAGUE_ADAPTIVE_BOOST,
+           shard: str | None = None,
            tally: bool = False, resume: bool = False, **env_kwargs):
     """PFSP league driver: rotating single learner over a shared snapshot pool.
 
@@ -929,26 +933,46 @@ def league(binary_path: str, decks: str | None = None,
     roster leader (see ``_rotation_target``). Rotation *order* is unchanged, so
     every deck keeps training; strong decks just take shorter turns.
 
+    Distributed sharding (``shard='i/n'``): this driver trains only the strided
+    roster slice ``roster[i::n]`` while still sampling opponents from the FULL
+    roster — run one shard per machine over a shared/synced checkpoint dir and
+    each machine's pool ingests the other's snapshots automatically (see
+    docs/distributed_league_training.md). ``total_timesteps`` is per-driver (the
+    compute THIS process spends on its slice); there is deliberately no
+    cross-machine step counter. Each shard keeps its own sidecar, so pass the
+    same ``--shard`` together with ``--resume``.
+
     The driver's loop position (roster, total budget, global steps done, current
     rotation, and every hyperparameter) is persisted to a JSON sidecar
-    (``checkpoints/_league_progress.json``) every time a snapshot checkpoint is saved
-    and at each rotation boundary. ``resume=True`` reloads that sidecar and continues
-    where an interrupted run left off — so a crashed league restarts with just
-    ``train.py league --resume`` (all other flags are restored from the sidecar).
+    (``checkpoints/_league_progress{.shard{i}of{n}}.json``) every time a snapshot
+    checkpoint is saved and at each rotation boundary. ``resume=True`` reloads
+    that sidecar and continues where an interrupted run left off — so a crashed
+    league restarts with just ``train.py league --resume`` (all other flags are
+    restored from the sidecar).
     """
     checkpoint_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), CHECKPOINT_DIR)
     os.makedirs(checkpoint_dir, exist_ok=True)
     os.makedirs(LOG_DIR, exist_ok=True)
 
+    shard_split = parse_shard(shard)  # fail fast on a malformed spec
+    tag = shard_tag(shard)
+
     steps_done = 0
     rotation = 0
     if resume:
-        state = _read_league_state(checkpoint_dir)
+        state = _read_league_state(checkpoint_dir, tag)
         if state is None:
             raise FileNotFoundError(
                 f"--resume: no league progress file at "
-                f"{_league_state_path(checkpoint_dir)}. Start a league run first "
-                f"(it writes the file as it trains), then resume it.")
+                f"{_league_state_path(checkpoint_dir, tag)}. Start a league run "
+                f"first (it writes the file as it trains), then resume it"
+                + (" — a sharded run must be resumed with the SAME --shard."
+                   if shard else "."))
+        saved_shard = state.get("shard")
+        if saved_shard != shard:
+            raise ValueError(
+                f"--resume: sidecar {_league_state_path(checkpoint_dir, tag)} was "
+                f"written by shard {saved_shard!r} but --shard is {shard!r}.")
         # Restore the full run configuration from the sidecar so the resumed league
         # is identical to the interrupted one; only --binary stays caller-supplied.
         roster = list(state["roster"])
@@ -972,7 +996,7 @@ def league(binary_path: str, decks: str | None = None,
         env_kwargs.setdefault("bo3", bool(p.get("bo3", env_kwargs.get("bo3", False))))
         env_kwargs.setdefault("auto_sideboard",
                               bool(p.get("auto_sideboard", env_kwargs.get("auto_sideboard", False))))
-        print(f"[league] resuming from {_league_state_path(checkpoint_dir)}: "
+        print(f"[league] resuming from {_league_state_path(checkpoint_dir, tag)}: "
               f"{steps_done:,}/{total_timesteps:,} steps, rotation {rotation}")
         if steps_done >= total_timesteps:
             print("[league] saved progress is already complete — nothing to resume.")
@@ -991,10 +1015,25 @@ def league(binary_path: str, decks: str | None = None,
             f"No decks found for league (looked in {_LEAGUE_DECKS_DIR}). "
             f"Add deck files there, or pass --decks explicitly.")
 
+    # Distributed sharding: this driver TRAINS only its strided roster slice, but
+    # the opponent pool (and adaptive-rotation leader comparison) still spans the
+    # full roster — peer shards' snapshots arrive via the shared/synced dir.
+    if shard_split is not None:
+        shard_id, num_shards = shard_split
+        train_decks = roster[shard_id::num_shards]
+        if not train_decks:
+            raise ValueError(
+                f"--shard {shard}: slice {shard_id}::{num_shards} of a "
+                f"{len(roster)}-deck roster is empty.")
+    else:
+        train_decks = roster
+
     # League opponents load checkpoint models per env (like self-play), so default
     # to the lighter self-play env count rather than N_ENVS (sized for scripted opps).
     n_envs = n_envs_override if n_envs_override is not None else N_ENVS_SELF_PLAY
     print(f"League roster: {', '.join(roster)}")
+    if shard_split is not None:
+        print(f"  shard {shard}: training only {', '.join(train_decks)}")
     print(f"  total={total_timesteps:,}  rotate_every={rotate_every:,}  "
           f"adaptive_boost={adaptive_boost}  n_envs={n_envs}")
     print(f"  self_play_frac={self_play_frac}  scripted_anchor_frac={scripted_anchor_frac}")
@@ -1005,6 +1044,7 @@ def league(binary_path: str, decks: str | None = None,
     base_state = {
         "version": LEAGUE_STATE_VERSION,
         "roster": roster,
+        "shard": shard,
         "total_timesteps": total_timesteps,
         "params": {
             "rotate_every": rotate_every,
@@ -1041,7 +1081,7 @@ def league(binary_path: str, decks: str | None = None,
                                              "rotation": int(rot),
                                              "chunk_start": int(cstart),
                                              "rotation_target": rotation_target,
-                                             "deck_stats": deck_stats})
+                                             "deck_stats": deck_stats}, tag)
 
     # `chunk_start` tracks where the current rotation began. On a fresh run it equals
     # steps_done; on --resume it is restored from the sidecar (see below).
@@ -1052,7 +1092,8 @@ def league(binary_path: str, decks: str | None = None,
     save_progress(steps_done, rotation, chunk_start)
 
     while steps_done < total_timesteps:
-        learner = roster[rotation % len(roster)]
+        # Rotate over this shard's slice; the pool below still spans `roster`.
+        learner = train_decks[rotation % len(train_decks)]
         done_in_rotation = steps_done - chunk_start
         if done_in_rotation == 0 or rotation_target is None:
             # Fresh rotation (or a pre-adaptive sidecar resumed mid-rotation):
@@ -1398,7 +1439,7 @@ if __name__ == "__main__":
                snapshot_every=args.snapshot_every, promote_margin=args.promote_margin,
                embed_dim=args.embed_dim, n_envs_override=args.n_envs,
                opp_ckpt_ratio=args.opponent_ckpt_ratio, no_shaping=args.no_shaping,
-               adaptive_boost=args.adaptive_boost,
+               adaptive_boost=args.adaptive_boost, shard=args.shard,
                tally=args.tally, resume=args.resume, **env_kwargs)
     elif args.command == "train":
         train(args.binary, _resolve_model(args.load), args.total_timesteps,
