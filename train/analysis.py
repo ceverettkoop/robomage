@@ -73,7 +73,7 @@ from env import (ACTION_CATEGORY_MAX, RoboMageEnv, scripted_action,
                  _GY_START, _GY_SLOTS_TOTAL, _GY_SLOT_SIZE,
                  _STACK_START as _ENV_STACK_START, _STACK_SLOTS as _ENV_STACK_SLOTS,
                  _STACK_SLOT_SIZE, _HAND_SLOT_SIZE, _slot_card_idx,
-                 _PERM_CARD_OFF)
+                 _PERM_CARD_OFF, _CUR_TURN_IDX)
 
 
 def _resolve_card_name(cid):
@@ -116,6 +116,7 @@ _INTERP_FEATURE_NAMES = [
     "step_end", "step_cleanup",
     "self_library_size", "opp_library_size", "is_post_board",
     "is_sideboard",
+    "turn",
 ]
 
 # Name → index into an interp feature vector. Always index feats through this
@@ -298,6 +299,9 @@ def _extract_interpretable(obs):
     f[i] = obs[_LIBRARY_CTX_START + 1] * 60.0; i += 1  # opp_library_size
     f[i] = 1.0 if obs[_LIBRARY_CTX_START + 2] > 0.5 else 0.0; i += 1  # is_post_board
     f[i] = 1.0 if obs[_MATCH_CTX_START + 3] > 0.5 else 0.0; i += 1  # is_sideboard
+
+    # Current game turn (obs stores turn / 50, mirror machine_io.h TURN_NORMALIZER)
+    f[i] = obs[_CUR_TURN_IDX] * 50.0; i += 1
 
     return f
 
@@ -540,17 +544,18 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
 
 
 def _action_desc(obs, i):
-    """Human-readable description of legal-action slot i ("CAST_SPELL (Lightning Bolt)")."""
+    """Human-readable description of legal-action slot i ("CAST (Lightning Bolt)").
+    Tokens render as "Token"; a target choice with no card entity is a player."""
     cat = int(round(obs[STATE_SIZE + i] * ACTION_CATEGORY_MAX))
     cat_name = _CAT_NAMES.get(cat, str(cat))
 
     card_raw = obs[STATE_SIZE + MAX_ACTIONS + i]
     if card_raw < 0:
+        if cat_name in ("TARGET", "ATK_TGT"):
+            return f"{cat_name} (Player)"
         return cat_name
     cid = int(round(card_raw * N_CARD_TYPES))
-    if 0 <= cid < len(_VOCAB_NAMES):
-        return f"{cat_name} ({_VOCAB_NAMES[cid]})"
-    return f"{cat_name} (card#{cid})"
+    return f"{cat_name} ({decode.card_index_to_name(cid) or f'card#{cid}'})"
 
 
 def _decode_legal_actions(obs, num_choices, chosen_action):
@@ -732,7 +737,10 @@ def _replay_sim_game(game, game_idx, verbose=False):
         print_opp_actions(i)
         step = _step_name_from_feat(feat)
         mana_total = feat[_FEAT["self_total_mana"]]
-        print(f"  [{i:3d}] {step:<14}  "
+        # Game::turn counts from 0; display 1-based like the engine's turn header
+        turn_no = 1 + (int(round(feat[_FEAT["turn"]])) if len(feat) > _FEAT["turn"] else 0)
+        whose = "self" if feat[_FEAT["is_active_player"]] > 0.5 else "opp"
+        print(f"  [{i:3d}] T{turn_no:<2d} {whose:<4} {step:<14}  "
               f"Life {feat[_FEAT['self_life']]:.0f}/{feat[_FEAT['opp_life']]:.0f}  "
               f"Board {feat[_FEAT['self_creatures']]:.0f}c+{feat[_FEAT['self_lands']]:.0f}l"
               f" / {feat[_FEAT['opp_creatures']]:.0f}c+{feat[_FEAT['opp_lands']]:.0f}l  "
@@ -815,11 +823,12 @@ def _print_swing_table(top_swings):
 
 
 def _card_name_at(obs, base):
-    """Decode card name from the card-id float at obs[base] (None if empty)."""
+    """Decode card name from the card-id float at obs[base] (None if empty).
+    Tokens (TOKEN_SENTINEL id) render as "Token"."""
     cid = _slot_card_idx(obs, base)
     if cid < 0:
         return None
-    return _VOCAB_NAMES[cid] if cid < len(_VOCAB_NAMES) else f"card#{cid}"
+    return decode.card_index_to_name(cid) or f"card#{cid}"
 
 
 def _perm_summaries(obs, slot_range):
@@ -915,7 +924,11 @@ def _decode_board_state(obs, value=None):
         parts = [f"{_MANA_COLORS[j]}:{mana[j]:.0f}" for j in range(6) if mana[j] > 0.4]
         return " ".join(parts) if parts else "—"
 
-    print(f"Step: {step_name}  ({'active' if priority_is_active else 'non-active'} player has priority){val_str}")
+    # "self" = the priority player in this decode, so the active-player flag says whose turn it is.
+    # Game::turn counts from 0; display 1-based like the engine's turn header.
+    turn_no = int(round(obs[_CUR_TURN_IDX] * 50.0)) + 1
+    whose = self_label if priority_is_active else opp_label
+    print(f"Turn {turn_no} ({whose}'s turn) — Step: {step_name}  (priority: {self_label}){val_str}")
     if game_number > 0 or self_match_wins > 0 or opp_match_wins > 0 or is_sideboard or is_post_board:
         sb_str = "  [sideboarding]" if is_sideboard else ("  [post-board]" if is_post_board else "")
         print(f"Match: game {game_number}  wins {self_label}={self_match_wins} {opp_label}={opp_match_wins}{sb_str}")
