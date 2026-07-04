@@ -1423,6 +1423,10 @@ def _run_sweep(args, parser):
     """
     all_decks = sorted(os.path.splitext(p)[0]
                        for p in os.listdir(_DECKS_DIR) if p.endswith(".dk"))
+    all_decks += sorted(
+        "league/" + os.path.splitext(p)[0]
+        for p in (os.listdir(_LEAGUE_DECKS_DIR) if os.path.isdir(_LEAGUE_DECKS_DIR) else [])
+        if p.endswith(".dk"))
     if args.deck not in all_decks:
         parser.error(f"Deck '{args.deck}' not found in {_DECKS_DIR}. "
                      f"Available: {', '.join(all_decks)}")
