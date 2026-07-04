@@ -29,7 +29,9 @@ page walks top to bottom:
 
 1. **Machines** — auto-discovered agents on the tailnet (hostname, IP, cores,
    state). Untick any you don't want to use; use *Add a peer* if one isn't
-   found automatically.
+   found automatically. Each machine has an **envs** box to set its own
+   `--n-envs` (parallel game processes) — leave blank to use the global value,
+   or size it to that machine's cores.
 2. **League settings** — the same options as the TUI league form
    (total-timesteps, rotate-every, self-play-frac, pfsp-p, adaptive-boost,
    bo3, …), pre-filled with defaults.
@@ -44,6 +46,10 @@ page walks top to bottom:
 
 `--total-timesteps` is per-machine — the compute that machine spends on its
 decks. Machines assigned no decks simply don't start.
+
+Each machine tees its session output to `logs/distributed/<session>_<host><shard>.log`
+(shown in the status card and reported in `/api/agent/info`); crash-restarts and
+Resume of the same session append to it.
 
 ## Notes
 

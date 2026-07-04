@@ -40,6 +40,8 @@ from cli_spec import (parse_shard, shard_tag, iter_args, TRAIN_TOOL,  # noqa: E4
                       BINARY)
 
 DEFAULT_CHECKPOINT_DIR = os.path.join(_REPO_ROOT, "train", "checkpoints")
+# Per-machine league session output is teed here (one file per session/shard).
+DISTRIBUTED_LOG_DIR = os.path.join(_REPO_ROOT, "logs", "distributed")
 DEFAULT_VENV_PY = os.path.join(_REPO_ROOT, "train", ".venv", "bin", "python")
 TRAIN_PY = os.path.join(_REPO_ROOT, "train", "train.py")
 LEAGUE_DECKS_DIR = os.path.join(_REPO_ROOT, "bin", "resources", "decks", "league")
@@ -208,21 +210,41 @@ class Trainer:
             cmd += ["--resume"]
         return cmd
 
+    def log_path(self):
+        """Per-session, per-machine log file under logs/distributed/. One file
+        per Start (session_id); crash-restarts and Resume of the same session
+        append, so it's the continuous transcript for this machine's shard."""
+        c = self.config or {}
+        sid = c.get("session_id") or "session"
+        tag = shard_tag(c.get("shard")) or ".single"
+        host = socket.gethostname()
+        safe = f"{sid}_{host}{tag}".replace("/", "-")
+        return os.path.join(DISTRIBUTED_LOG_DIR, safe + ".log")
+
     def _spawn(self):
         cmd = self._cmd()
         print(f"[agent] launching: {' '.join(cmd)}", flush=True)
+        os.makedirs(DISTRIBUTED_LOG_DIR, exist_ok=True)
+        logf = open(self.log_path(), "a", buffering=1)  # line-buffered
+        logf.write(f"\n===== launch {time.strftime('%Y-%m-%d %H:%M:%S')} : "
+                   f"{' '.join(cmd)} =====\n")
         self.proc = subprocess.Popen(
             cmd, cwd=_REPO_ROOT, start_new_session=True,
             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
         self.state = "running"
-        threading.Thread(target=self._drain, args=(self.proc,), daemon=True).start()
+        threading.Thread(target=self._drain, args=(self.proc, logf),
+                         daemon=True).start()
 
-    def _drain(self, proc):
-        for line in proc.stdout:
-            sys.stdout.write(line)
-            s = line.strip()
-            if s:
-                self.last_log_line = s[:300]
+    def _drain(self, proc, logf):
+        try:
+            for line in proc.stdout:
+                sys.stdout.write(line)
+                logf.write(line)
+                s = line.strip()
+                if s:
+                    self.last_log_line = s[:300]
+        finally:
+            logf.close()
 
     def _kill(self):
         if self.proc is None or self.proc.poll() is not None:
@@ -324,6 +346,7 @@ class Trainer:
             "total_timesteps": total,
             "restarts": self.restarts,
             "last_log_line": self.last_log_line,
+            "log": self.log_path() if self.config else None,
         }
 
 
@@ -391,7 +414,7 @@ _PAGE = r"""<!doctype html>
  </div>
 </div>
 <script>
-let SPEC=null, MACHINES=[], SEL={}, ASSIGN={};
+let SPEC=null, MACHINES=[], SEL={}, ASSIGN={}, NENVS={};
 const $=id=>document.getElementById(id);
 const esc=s=>{const d=document.createElement('div');d.textContent=s==null?'':String(s);return d.innerHTML};
 const fmt=n=>n==null?'?':Number(n).toLocaleString();
@@ -429,8 +452,13 @@ async function loadMachines(){
   const r=await jget('/api/machines'); MACHINES=r.machines;
   for(const m of MACHINES){ if(SEL[m.hostname]===undefined) SEL[m.hostname]=true; }
   $('machines').innerHTML=MACHINES.map(m=>
-    `<label><input type=checkbox ${SEL[m.hostname]?'checked':''} onchange="SEL['${esc(m.hostname)}']=this.checked;rebuildDist()">
-      <b>${esc(m.hostname)}</b> <span class=muted>${esc(m.ip)} · ${m.cores} cores · ${esc(m.state)}${m.is_self?' · this machine':''}</span></label>`).join('');
+    `<div style="display:flex;align-items:center;gap:.5em;margin:.15em 0">
+      <label style="flex:1;margin:0"><input type=checkbox ${SEL[m.hostname]?'checked':''} onchange="SEL['${esc(m.hostname)}']=this.checked;rebuildDist()">
+        <b>${esc(m.hostname)}</b> <span class=muted>${esc(m.ip)} · ${m.cores} cores · ${esc(m.state)}${m.is_self?' · self':''}</span></label>
+      <input type=number min=1 style="width:5.5em" title="envs on this machine (blank = global --n-envs)"
+        placeholder="envs" value="${NENVS[m.hostname]??''}"
+        onchange="NENVS['${esc(m.hostname)}']=this.value">
+    </div>`).join('');
   rebuildDist();
 }
 async function addPeer(){await jpost('/api/peers/add',{ip:$('peerip').value});$('peerip').value='';loadMachines();}
@@ -475,7 +503,8 @@ async function start(){
   const byHost={}; ms.forEach(m=>byHost[m.hostname]=m);
   const amap={};
   for(const d of roster){const h=ASSIGN[d]; if(!h)continue; (amap[h]=amap[h]||[]).push(d);}
-  const assignments=Object.entries(amap).map(([host,decks])=>({host,ip:byHost[host]?.ip,train_decks:decks}));
+  const assignments=Object.entries(amap).map(([host,decks])=>(
+    {host,ip:byHost[host]?.ip,train_decks:decks,n_envs:NENVS[host]||undefined}));
   $('startmsg').textContent='starting…';
   const r=await jpost('/api/session/start',{settings:gatherSettings(),roster,assignments});
   $('startmsg').textContent=r.error?('error: '+r.error):('started session '+r.session_id);
@@ -494,7 +523,8 @@ async function loadStatus(){
       <span class=muted>learner: <b>${esc(m.learner||'—')}</b> · rotation ${m.rotation??'—'} · decks: ${esc(decks)}</span>
       <div class=bar><div style="width:${pct}%"></div></div>
       <span class=muted>${fmt(m.steps_done)} / ${fmt(m.total_timesteps)} (${pct}%)</span>
-      <div class=muted>${esc(m.last_log_line||'')}</div></div>`;
+      <div class=muted>${esc(m.last_log_line||'')}</div>
+      ${m.log?`<div class=muted>log: ${esc(m.log)}</div>`:''}</div>`;
   }).join('')||'<span class=muted>no agents found</span>';
 }
 loadSpec(); loadMachines(); loadStatus();
@@ -665,12 +695,18 @@ def make_handler(trainer, port, token):
             session_id = body.get("session_id") or f"s{int(time.time())}"
             results = []
             for i, a in enumerate(assignments):
+                # Per-machine settings: a machine's --n-envs override (from the UI)
+                # wins over the shared global value, so each host can run an env
+                # count matched to its core budget.
+                machine_settings = dict(settings)
+                if a.get("n_envs") not in (None, "", 0):
+                    machine_settings["--n-envs"] = a["n_envs"]
                 config = {
                     "session_id": session_id,
                     "roster": roster,
                     "train_decks": a["train_decks"],
                     "shard": f"{i}/{n}",
-                    "settings": settings,
+                    "settings": machine_settings,
                     "binary": body.get("binary") or BINARY,
                 }
                 ip = a.get("ip") or self_ip
