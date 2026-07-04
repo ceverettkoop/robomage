@@ -348,11 +348,40 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         *train_opts(),
         *common_args(),
     ]),
-    Sub("sweep", "Train many deck×deck matchups sequentially", items=[
-        Arg("--deck", "str", default=None, suggest="deck",
-            help="Only matchups featuring this deck. Omit to train ALL matchups."),
-        _opponent_mode(),
-        *opponent_pool_opts(),
+    Sub("sweep", "PFSP sweep: train one deck's generalist vs a pool of the other decks", items=[
+        Arg("--deck", "str", required=True, suggest="deck",
+            help="Deck to train (.dk stem). Saved as {deck}__final.zip; this session "
+                 "accumulates onto it, same as 'train'."),
+        Arg("--opponents", "str", default=None, suggest="deck", multi=True,
+            help="Comma-separated pool of opponent decks to sample from via PFSP "
+                 "(default: every other deck in bin/resources/decks/). Like league's "
+                 "roster, but this pool is opponents only — --deck is never rotated "
+                 "into training and never part of the pool."),
+        Arg("--self-play-frac", "float", default=LEAGUE_SELF_PLAY_FRAC,
+            help="Probability of facing the latest snapshot of --deck itself (the "
+                 "'play the latest self' slot; default %.2f). Auto-ramped down while "
+                 "few snapshots exist." % LEAGUE_SELF_PLAY_FRAC),
+        Arg("--scripted-anchor-frac", "float", default=LEAGUE_SCRIPTED_ANCHOR_FRAC,
+            help="Minimum share of the historical-pool branch reserved for the "
+                 "scripted anchor so it never vanishes (default %.2f)." % LEAGUE_SCRIPTED_ANCHOR_FRAC),
+        Arg("--pfsp-mode", "choice", choices=("pfsp", "softmax"), default="pfsp",
+            help="Opponent quality weighting: 'pfsp' = (1-winrate)^p (AlphaStar) or "
+                 "'softmax' = exp(q) with OpenAI-Five quality updates (default pfsp)."),
+        Arg("--pfsp-p", "float", default=LEAGUE_PFSP_P,
+            help="PFSP exponent p in (1-winrate)^p (default %.1f)." % LEAGUE_PFSP_P),
+        Arg("--softmax-eta", "float", default=LEAGUE_SOFTMAX_ETA,
+            help="Softmax quality learning rate eta (default %.3f)." % LEAGUE_SOFTMAX_ETA),
+        Arg("--snapshot-every", "int", default=LEAGUE_SNAPSHOT_EVERY,
+            help="Save a frozen {deck}__v{steps}.zip snapshot every N steps "
+                 "(default %d)." % LEAGUE_SNAPSHOT_EVERY),
+        Arg("--promote-margin", "float", default=LEAGUE_PROMOTE_MARGIN,
+            help="Only keep a snapshot when --deck's recent-window win-rate "
+                 ">= 0.5 + margin (negative gates below 0.5, e.g. -0.1 -> 0.40; the "
+                 "first snapshot is exempt so self-play can bootstrap; 0 disables "
+                 "the gate; default %.2f)." % LEAGUE_PROMOTE_MARGIN),
+        Arg("--opponent-ckpt-ratio", "float", default=1.0,
+            help="Cap on unique opponent checkpoints kept resident, as a ratio of "
+                 "n_envs (default 1.0 -> <=1 checkpoint per env process)."),
         *train_opts(),
         *common_args(),
     ]),

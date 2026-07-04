@@ -538,7 +538,7 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
         })
         if verbose:
             result_str = "W" if model_reward > 0 else ("L" if model_reward < 0 else "D")
-            print(f"  game {g + 1}/{n_games}: {len(trace_obs)} decisions, {result_str}",
+            print(f"  game {g}/{n_games - 1}: {len(trace_obs)} decisions, {result_str}",
                   flush=True)
     return games
 
