@@ -279,11 +279,15 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
             help="Steps to train one learner deck before rotating to the next "
                  "(default %d)." % LEAGUE_ROTATE_EVERY),
         Arg("--adaptive-boost", "float", default=LEAGUE_ADAPTIVE_BOOST,
+            # argparse %-expands help at display time, so a literal percent sign
+            # must stay doubled ('%%') in the final string — hence the f-string
+            # (old-style '%' interpolation would collapse it and argparse then
+            # chokes on '% o' in 'or'; Python 3.14 raises at add_argument time).
             help="Max rotation-length multiplier for catch-up decks: a rotation "
                  "stretches toward boost x --rotate-every as the deck's last league "
                  "win-rate falls below 50%% or its trained steps trail the roster "
                  "leader. Rotation order is unchanged (no deck is starved). "
-                 "1 = fixed-length rotations (default %.1f)." % LEAGUE_ADAPTIVE_BOOST),
+                 f"1 = fixed-length rotations (default {LEAGUE_ADAPTIVE_BOOST:.1f})."),
         Arg("--opponent-ckpt-ratio", "float", default=1.0,
             help="Cap on unique opponent checkpoints kept resident, as a ratio of "
                  "n_envs (default 1.0 -> <=1 checkpoint per env process)."),
