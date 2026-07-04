@@ -21,6 +21,33 @@ TOTAL_TIMESTEPS = 2_000_000
 N_ENVS = 32            # parallel game processes
 N_ENVS_SELF_PLAY = 10  # self-play (each loads an opponent model)
 EMBED_DIM = 128        # policy feature-extractor embed dim for fresh models
+# PPO entropy bonus coefficient. Canonical value for every training path (train,
+# league) AND re-asserted on checkpoint resume: MaskablePPO.load restores the
+# ent_coef the checkpoint was *saved* with, so without the override a model born
+# under an old value keeps it forever. (A stale 0.12 — 10x the intended 0.012 —
+# rode along this way in checkpoints created before the original fix; the entropy
+# term then dominated the PPO loss ~2.5:1 over the policy-gradient term, forcing
+# a permanently noisy policy. That hurts precise-line decks like Doomsday far
+# more than aggro decks, and capped league win-rates.)
+ENT_COEF = 0.012
+
+# PPO hyperparameters for newly constructed models — single home so the
+# single-opponent train() path and the league path can never drift apart (the
+# stale-ent_coef bug survived one fix precisely because these were duplicated
+# inline at both sites). On checkpoint RESUME, MaskablePPO.load restores
+# whatever the checkpoint was saved with; only ent_coef is re-asserted
+# afterwards (train.py _assert_ent_coef).
+PPO_KWARGS = dict(
+    learning_rate=3e-4,
+    n_steps=4096,       # steps per env per update
+    batch_size=1024,
+    n_epochs=8,
+    gamma=0.99,
+    gae_lambda=0.95,
+    clip_range=0.25,
+    ent_coef=ENT_COEF,
+)
+NET_ARCH = [256, 256]  # policy/value MLP head sizes (after the feature extractor)
 
 # League (PFSP) defaults.
 # self-play is a small floor, not the bulk of games: the PFSP-weighted historical
@@ -35,6 +62,13 @@ LEAGUE_SOFTMAX_ETA         = 0.01    # softmax quality learning rate
 LEAGUE_SNAPSHOT_EVERY      = 250_000 # steps between frozen snapshots
 LEAGUE_PROMOTE_MARGIN      = 0.05    # only snapshot when win-rate >= 0.5 + margin (negative gates below 50%; first exempt; 0 disables)
 LEAGUE_ROTATE_EVERY        = 500_000 # steps to train one learner deck before rotating
+# Adaptive rotation length: a struggling deck's rotation is stretched up to this
+# multiplier of --rotate-every, scaled by how far its last league win-rate sits
+# below 50% OR how far its cumulative trained steps trail the roster leader
+# (whichever need is greater). Every deck still rotates — the boost is bounded,
+# so strong decks are never starved, and it self-corrects as win-rates recover.
+# 1.0 disables (fixed-length rotations).
+LEAGUE_ADAPTIVE_BOOST      = 2.0
 
 
 # ── Spec dataclasses ──────────────────────────────────────────────────────────
@@ -244,6 +278,12 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
         Arg("--rotate-every", "int", default=LEAGUE_ROTATE_EVERY,
             help="Steps to train one learner deck before rotating to the next "
                  "(default %d)." % LEAGUE_ROTATE_EVERY),
+        Arg("--adaptive-boost", "float", default=LEAGUE_ADAPTIVE_BOOST,
+            help="Max rotation-length multiplier for catch-up decks: a rotation "
+                 "stretches toward boost x --rotate-every as the deck's last league "
+                 "win-rate falls below 50%% or its trained steps trail the roster "
+                 "leader. Rotation order is unchanged (no deck is starved). "
+                 "1 = fixed-length rotations (default %.1f)." % LEAGUE_ADAPTIVE_BOOST),
         Arg("--opponent-ckpt-ratio", "float", default=1.0,
             help="Cap on unique opponent checkpoints kept resident, as a ratio of "
                  "n_envs (default 1.0 -> <=1 checkpoint per env process)."),
