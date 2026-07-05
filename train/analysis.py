@@ -431,15 +431,14 @@ def _get_policy_probs(model, obs, num_choices):
     """
     import torch
     obs_t = torch.as_tensor(obs, dtype=torch.float32).unsqueeze(0)
+    # Go through the policy's own get_distribution rather than reading
+    # action_net directly — PerActionMaskablePolicy computes logits with its
+    # action scorer and leaves the stock action_net unused/untrained.
+    mask = np.zeros((1, MAX_ACTIONS), dtype=bool)
+    mask[0, :num_choices] = True
     with torch.no_grad():
-        try:
-            features = model.policy.extract_features(obs_t, model.policy.features_extractor)
-        except TypeError:
-            features = model.policy.extract_features(obs_t)
-        latent_pi, _ = model.policy.mlp_extractor(features)
-        logits = model.policy.action_net(latent_pi)[0].clone()
-        logits[num_choices:] = float('-inf')
-        probs = torch.softmax(logits, dim=0).cpu().numpy()
+        dist = model.policy.get_distribution(obs_t, action_masks=mask)
+        probs = dist.distribution.probs[0].cpu().numpy()
     return probs[:num_choices].astype(np.float64)
 
 

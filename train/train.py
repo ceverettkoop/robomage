@@ -32,7 +32,7 @@ from collections import deque
 from env import (RoboMageEnv, ModelVsScriptedEnv, SelfPlayEnv, FixedModelEnv, NarrativeEnv,
                  scripted_action,
                  OBS_SIZE, STATE_SIZE, MAX_ACTIONS, ACTION_CATEGORY_MAX, BINARY)
-from extractor import CardGameExtractor
+from extractor import CardGameExtractor, PerActionMaskablePolicy
 from card_costs import N_CARD_TYPES
 import decode
 # Action-category / step display names are generated from the C++ enums
@@ -63,6 +63,31 @@ from stable_baselines3.common.callbacks import BaseCallback
 from stable_baselines3.common.monitor import Monitor
 
 import numpy as np
+
+# ── Per-action logit head (prototype, opt-in) ────────────────────────────────
+# Set ROBOMAGE_PER_ACTION_HEAD=1 to train with PerActionMaskablePolicy, which
+# scores each candidate action from its own encoded features (category + target
+# card embedding + controller_is_self) instead of a flat positional Linear. This
+# changes the network shape, so such runs are NOT checkpoint-compatible with
+# stock MlpPolicy models — start them --fresh.
+USE_PER_ACTION_HEAD = os.environ.get("ROBOMAGE_PER_ACTION_HEAD", "0").lower() \
+    not in ("0", "", "false", "no")
+
+
+def _policy_config(policy_kwargs):
+    """Resolve (policy, policy_kwargs) for MaskablePPO construction.
+
+    Swaps in the per-action-logit head (and flips the extractor into
+    per_action_head mode) when ROBOMAGE_PER_ACTION_HEAD is set; otherwise returns
+    the stock "MlpPolicy" untouched.
+    """
+    if not (USE_PER_ACTION_HEAD and USE_MASKABLE):
+        return "MlpPolicy", policy_kwargs
+    pk = dict(policy_kwargs)
+    fe = dict(pk.get("features_extractor_kwargs", {}))
+    fe["per_action_head"] = True
+    pk["features_extractor_kwargs"] = fe
+    return PerActionMaskablePolicy, pk
 
 
 class WinTallyCallback(BaseCallback):
@@ -783,8 +808,9 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
             model = _assert_ent_coef(MaskablePPO.load(load_path, env=vec_env),
                                      model_deck)
         else:
+            policy_cls, policy_kwargs = _policy_config(policy_kwargs)
             model = MaskablePPO(
-                "MlpPolicy",
+                policy_cls,
                 vec_env,
                 policy_kwargs=policy_kwargs,
                 verbose=1,
@@ -863,8 +889,9 @@ def _league_chunk(binary_path: str, learner_deck: str, roster: list[str],
                                      learner_deck)
         else:
             print(f"[league] starting {learner_deck} from scratch (embed_dim={embed_dim})")
+            policy_cls, policy_kwargs = _policy_config(policy_kwargs)
             model = MaskablePPO(
-                "MlpPolicy", vec_env, policy_kwargs=policy_kwargs,
+                policy_cls, vec_env, policy_kwargs=policy_kwargs,
                 verbose=1, tensorboard_log=LOG_DIR, **PPO_KWARGS)
 
         if no_shaping:

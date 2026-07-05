@@ -39,15 +39,26 @@ Index layout must stay in sync with src/machine_io.h:
   obs[3183:]           action metadata + cost features (appended by env.py)
 """
 
+from functools import partial
+
 import torch
 import torch.nn as nn
 import gymnasium as gym
 from stable_baselines3.common.torch_layers import BaseFeaturesExtractor
+from sb3_contrib.common.maskable.policies import MaskableActorCriticPolicy
 
 try:
     from card_costs import N_CARD_TYPES
 except ImportError:
     from train.card_costs import N_CARD_TYPES
+
+# ACTION_CATEGORY_MAX (mirrors src/classes/action.h via codegen) is needed to
+# decode the per-action category-norm floats back to integer category ids for the
+# per-action logit head. Same source of truth env.py uses for the action block.
+try:
+    from _enums import ACTION_CATEGORY_MAX
+except ImportError:
+    from train._enums import ACTION_CATEGORY_MAX
 
 
 def _masked_mean_max(emb: torch.Tensor, present: torch.Tensor) -> torch.Tensor:
@@ -110,6 +121,23 @@ _OPP_KNOWN_HAND_SLOT_SIZE = 1  # card id per slot
 
 _CARD_EMBED_DIM  = 32   # dimension of the learned card-identity embedding
 
+# ── Per-action logit head (opt-in) ──────────────────────────────────────────
+# The action block env.py appends after the state vector is, per action slot:
+#   cats[MAX_ACTIONS] (category/ACTION_CATEGORY_MAX) | ids[MAX_ACTIONS] (norm card
+#   id of the action's referenced entity — e.g. a target's card) | ctrl[MAX_ACTIONS]
+#   (controller_is_self). When per_action_head=True the extractor encodes each slot
+#   (category embed + target-card embed + ctrl) into a per-action feature so the
+#   policy can score "target my own permanent" against that action's OWN features
+#   instead of a flat positional Linear. See PerActionMaskablePolicy.
+# MAX_ACTIONS and STATE_SIZE come from env.py (single source of truth for the
+# action-block layout the engine emits).
+try:
+    from env import MAX_ACTIONS as _MAX_ACTIONS, STATE_SIZE as _ENV_STATE_SIZE
+except ImportError:
+    from train.env import MAX_ACTIONS as _MAX_ACTIONS, STATE_SIZE as _ENV_STATE_SIZE
+_ACTION_CAT_EMBED  = 8    # learned embedding dim for the action category
+_PER_ACTION_DIM    = 32   # per-action feature width fed to the action scorer
+
 _PERM_START  = _GLOBAL_SIZE                                    # 34
 _PERM_END    = _PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE     # 1186
 _STACK_START = _PERM_END                                       # 1186
@@ -134,6 +162,8 @@ _OPP_KNOWN_HAND_START = _REVEALED_END
 _OPP_KNOWN_HAND_END   = _OPP_KNOWN_HAND_START + _OPP_KNOWN_HAND_SLOTS * _OPP_KNOWN_HAND_SLOT_SIZE
 _STATE_END            = _OPP_KNOWN_HAND_END
 # obs[_STATE_END:] = action metadata + cost features appended by env.py
+# Guard against the two layout mirrors drifting apart (env.py owns STATE_SIZE).
+assert _STATE_END == _ENV_STATE_SIZE, (_STATE_END, _ENV_STATE_SIZE)
 
 
 class CardGameExtractor(BaseFeaturesExtractor):
@@ -169,11 +199,12 @@ class CardGameExtractor(BaseFeaturesExtractor):
         observation_space: gym.Space,
         embed_dim: int = 64,
         card_embed_dim: int = _CARD_EMBED_DIM,
+        per_action_head: bool = False,
     ):
         half = embed_dim // 2
         _hist_size = _HIST_ENTRIES * _HIST_ENTRY_SIZE     # 512
         _meta_ctx_size = _KNOWN_TOP_LIB_START - _HIST_END  # 8 (match+lib+turn)
-        features_dim = (
+        base_features_dim = (
             _GLOBAL_SIZE                                 # 34
             + _hist_size                                 # 512 action history
             + _meta_ctx_size                             # 8 match + lib + turn
@@ -186,6 +217,17 @@ class CardGameExtractor(BaseFeaturesExtractor):
             + embed_dim * 2                              # hand masked-mean + max
             + embed_dim * 2                              # known opponent-hand masked-mean + max
         )
+        # When the per-action logit head is enabled, the encoded per-action tensor
+        # (MAX_ACTIONS × _PER_ACTION_DIM) is appended at the END of the returned
+        # features so PerActionMaskablePolicy can slice it back out by offset.
+        self.per_action_head = per_action_head
+        if per_action_head:
+            self.per_action_slots = _MAX_ACTIONS
+            self.per_action_dim = _PER_ACTION_DIM
+            self.per_action_offset = base_features_dim
+            features_dim = base_features_dim + self.per_action_slots * self.per_action_dim
+        else:
+            features_dim = base_features_dim
         super().__init__(observation_space, features_dim=features_dim)
 
         # Shared card-identity embedding. Slot id -1 (empty) maps to padding row 0;
@@ -226,6 +268,18 @@ class CardGameExtractor(BaseFeaturesExtractor):
             nn.Linear(_REVEALED_SIZE, embed_dim),
             nn.ReLU(),
         )
+
+        # Per-action encoder (opt-in): category embed + referenced-card embed +
+        # controller_is_self → a per-action feature. Shares self.card_emb for the
+        # target card identity so a target land's id is embedded, not a raw float.
+        if per_action_head:
+            self.action_cat_emb = nn.Embedding(ACTION_CATEGORY_MAX + 1, _ACTION_CAT_EMBED)
+            self.action_encoder = nn.Sequential(
+                nn.Linear(_ACTION_CAT_EMBED + card_embed_dim + 1, embed_dim),
+                nn.ReLU(),
+                nn.Linear(embed_dim, self.per_action_dim),
+                nn.ReLU(),
+            )
 
     def _embed_ids(self, id_floats: torch.Tensor):
         """Map normalized id floats → (card embeddings, present mask).
@@ -293,5 +347,109 @@ class CardGameExtractor(BaseFeaturesExtractor):
         top_lib_agg = top_lib_emb.mean(1)
         revealed_agg = self.revealed_encoder(revealed)  # (B, embed) dense multi-hot encoding
 
-        return torch.cat([global_ctx, hist_ctx, meta_ctx, top_lib_agg, revealed_agg, action_extras,
+        base = torch.cat([global_ctx, hist_ctx, meta_ctx, top_lib_agg, revealed_agg, action_extras,
                           perm_agg, stk_agg, gy_agg, hand_agg, opp_hand_agg], dim=-1)
+        if not self.per_action_head:
+            return base
+
+        # Encode each candidate action from its own (category, referenced-card,
+        # controller) triple. The action block is the first 3*MAX_ACTIONS floats of
+        # action_extras: cats | ids | ctrl. Appended flat; sliced back out by the
+        # policy's action scorer. Padded slots (beyond num_choices) are harmless —
+        # their logits are masked out by MaskablePPO's action mask downstream.
+        a0 = _STATE_END
+        cats = obs[:, a0:a0 + _MAX_ACTIONS]
+        act_ids = obs[:, a0 + _MAX_ACTIONS:a0 + 2 * _MAX_ACTIONS]
+        ctrl = obs[:, a0 + 2 * _MAX_ACTIONS:a0 + 3 * _MAX_ACTIONS]
+        cat_idx = torch.round(cats * ACTION_CATEGORY_MAX).long().clamp_(0, ACTION_CATEGORY_MAX)
+        cat_e = self.action_cat_emb(cat_idx)                 # (B, A, cat_embed)
+        act_id_e, _ = self._embed_ids(act_ids)               # (B, A, card_embed)
+        pa_in = torch.cat([cat_e, act_id_e, ctrl.unsqueeze(-1)], dim=-1)
+        pa = self.action_encoder(pa_in)                      # (B, A, per_action_dim)
+        return torch.cat([base, pa.reshape(pa.shape[0], -1)], dim=-1)
+
+
+class _ActionScorer(nn.Module):
+    """Score each candidate action from (per-action feature, policy latent).
+
+    logit[i] = w · tanh(W_l · latent_pi + W_a · action_feat[i]). The policy latent
+    supplies the global context ("what effect is resolving, whose turn, board
+    state") and the per-action feature supplies "this candidate is a target on my
+    own permanent", so the two are combined for THIS action's logit — instead of a
+    single Linear(latent → MAX_ACTIONS) learning a fixed positional map.
+    """
+
+    def __init__(self, latent_dim: int, per_action_dim: int, hidden: int = 64):
+        super().__init__()
+        self.latent_proj = nn.Linear(latent_dim, hidden)
+        self.action_proj = nn.Linear(per_action_dim, hidden)
+        self.out = nn.Linear(hidden, 1)
+
+    def forward(self, latent_pi: torch.Tensor, per_action: torch.Tensor) -> torch.Tensor:
+        # latent_pi: (B, L)   per_action: (B, A, D)   ->   logits: (B, A)
+        h = torch.tanh(self.latent_proj(latent_pi).unsqueeze(1) + self.action_proj(per_action))
+        return self.out(h).squeeze(-1)
+
+
+class PerActionMaskablePolicy(MaskableActorCriticPolicy):
+    """MaskablePPO policy that scores logits per candidate action.
+
+    Requires a CardGameExtractor built with ``per_action_head=True`` (which appends
+    the encoded per-action tensor to the features). The stock policy's
+    ``action_net`` (a Linear over the pooled latent) is left unused; logits come
+    from ``_ActionScorer`` so each action's own encoded features (category, target
+    card embedding, controller_is_self) drive its logit.
+
+    Prototype: enabling this changes the network shape, so it is NOT
+    checkpoint-compatible with the stock MlpPolicy models.
+    """
+
+    def _build(self, lr_schedule) -> None:
+        super()._build(lr_schedule)
+        assert self.share_features_extractor, \
+            "PerActionMaskablePolicy requires share_features_extractor=True"
+        fe = self.features_extractor
+        assert getattr(fe, "per_action_head", False), \
+            "PerActionMaskablePolicy requires CardGameExtractor(per_action_head=True)"
+        self._pa_offset = fe.per_action_offset
+        self._pa_slots = fe.per_action_slots
+        self._pa_dim = fe.per_action_dim
+        self.action_scorer = _ActionScorer(self.mlp_extractor.latent_dim_pi, self._pa_dim)
+        if self.ortho_init:
+            self.action_scorer.out.apply(partial(self.init_weights, gain=0.01))
+        # The scorer was created after super()'s optimizer captured the parameter
+        # list, so rebuild the optimizer to include it.
+        self.optimizer = self.optimizer_class(
+            self.parameters(), lr=lr_schedule(1), **self.optimizer_kwargs)
+
+    def _slice_per_action(self, features: torch.Tensor) -> torch.Tensor:
+        pa = features[:, self._pa_offset:self._pa_offset + self._pa_slots * self._pa_dim]
+        return pa.reshape(pa.shape[0], self._pa_slots, self._pa_dim)
+
+    def _dist_from(self, features, latent_pi, action_masks):
+        logits = self.action_scorer(latent_pi, self._slice_per_action(features))
+        distribution = self.action_dist.proba_distribution(action_logits=logits)
+        if action_masks is not None:
+            distribution.apply_masking(action_masks)
+        return distribution
+
+    def forward(self, obs, deterministic=False, action_masks=None):
+        features = self.extract_features(obs)
+        latent_pi, latent_vf = self.mlp_extractor(features)
+        values = self.value_net(latent_vf)
+        distribution = self._dist_from(features, latent_pi, action_masks)
+        actions = distribution.get_actions(deterministic=deterministic)
+        log_prob = distribution.log_prob(actions)
+        return actions, values, log_prob
+
+    def evaluate_actions(self, obs, actions, action_masks=None):
+        features = self.extract_features(obs)
+        latent_pi, latent_vf = self.mlp_extractor(features)
+        distribution = self._dist_from(features, latent_pi, action_masks)
+        values = self.value_net(latent_vf)
+        return values, distribution.log_prob(actions), distribution.entropy()
+
+    def get_distribution(self, obs, action_masks=None):
+        features = self.extract_features(obs)
+        latent_pi = self.mlp_extractor.forward_actor(features)
+        return self._dist_from(features, latent_pi, action_masks)
