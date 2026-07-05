@@ -54,6 +54,11 @@ from env import (
     _UNRELIABLE_LAND_IDS,
     _URZAS_MINE_VOCAB_IDX, _URZAS_POWER_PLANT_VOCAB_IDX, _URZAS_TOWER_VOCAB_IDX,
     _PLANAR_NEXUS_VOCAB_IDX, _TRON_LAND_IDS,
+    _KARN_GREAT_CREATOR_VOCAB_IDX, _CITYSCAPE_LEVELER_VOCAB_IDX,
+    _CANDELABRA_VOCAB_IDX, _MULTI_MANA_LAND_IDS,
+    _SOLITUDE_VOCAB_IDX, _THE_ONE_RING_VOCAB_IDX,
+    # pending-decision source index (obs[_PENDING_DECISION_START] == source card id)
+    _PENDING_DECISION_START,
     # library-count context index (obs[_LIBRARY_CTX_START] == self_library_ct / 60)
     _LIBRARY_CTX_START,
     # shared helpers (also used by env's reward shaping, so they stay in env.py)
@@ -287,6 +292,32 @@ def _opponent_has_nonbasic_land(obs: np.ndarray) -> bool:
         if idx >= 0 and idx not in _BASIC_LAND_IDS:
             return True
     return False
+
+
+def _opponent_has_creature(obs: np.ndarray) -> bool:
+    """Return True if opponent controls at least one creature (opp perm slots 48-95)."""
+    for slot in range(_PERM_A_SLOTS):
+        base = _BF_START + (slot + _PERM_A_SLOTS) * _BF_SLOT_SIZE
+        if obs[base + _OFF_IS_CREATURE] > 0.5:
+            return True
+    return False
+
+
+def _tapped_multi_mana_lands(obs: np.ndarray) -> int:
+    """Count self-controlled TAPPED lands that make more than one mana (self slots 0-47).
+
+    These are the lands worth untapping with Candelabra of Tawnos — untapping a tapped
+    Ancient Tomb / metalcraft Urza's Workshop / assembled Urza's tron land frees 2-3 mana
+    apiece, whereas untapping a one-mana land (or any untapped land) gains nothing.
+    """
+    count = 0
+    for slot in range(_PERM_A_SLOTS):
+        base = _BF_START + slot * _BF_SLOT_SIZE
+        if obs[base + _OFF_IS_TAPPED] < 0.5:
+            continue  # untapped — nothing to untap
+        if _slot_card_idx(obs, base + _BF_CARD_OFF) in _MULTI_MANA_LAND_IDS:
+            count += 1
+    return count
 
 
 def _controlled_tron_pieces(obs: np.ndarray) -> set[int]:
@@ -683,6 +714,9 @@ def _greedy_action(obs: np.ndarray, num_choices: int,
             if (cid == _GREEN_SUNS_ZENITH_VOCAB_IDX
                     and _count_untapped_mana_sources(obs) < _GSZ_MIN_MANA_SOURCES):
                 continue  # hold GSZ until it can pay X>=1 (avoids the X=0 Dryad Arbor cast)
+            if cid == _SOLITUDE_VOCAB_IDX and not _opponent_has_creature(obs):
+                continue  # Solitude's value is its ETB exile — don't hard-cast it
+                          # as a vanilla 3/2 when there's no opposing creature to hit
             return i
 
     # 7. Play land (may unlock mana for a spell next query)
@@ -711,6 +745,13 @@ def _greedy_action(obs: np.ndarray, num_choices: int,
         if c == _CAT_ACTIVATE and _action_card_id(card_ids, i) == _EDGE_OF_AUTUMN_VOCAB_IDX:
             return i
 
+    # Always activate The One Ring's {T} draw ability whenever able — each use draws
+    # a card per burden counter (pure card advantage), and it only taps once per turn.
+    # Ungated by phase so it still fires on turns the agent has nothing else to do.
+    for i, c in enumerate(cats):
+        if c == _CAT_ACTIVATE and _action_card_id(card_ids, i) == _THE_ONE_RING_VOCAB_IDX:
+            return i
+
     if in_main_phase:
         for i, c in enumerate(cats):
             if c == _CAT_ACTIVATE:
@@ -722,6 +763,8 @@ def _greedy_action(obs: np.ndarray, num_choices: int,
                 if cid == _KEEN_EYED_CURATOR_VOCAB_IDX and not _stack_is_empty(obs):
                     continue  # don't pile copies onto the stack (each extra one
                               # fizzles when its graveyard target is already exiled)
+                if cid == _CANDELABRA_VOCAB_IDX and _tapped_multi_mana_lands(obs) == 0:
+                    continue  # nothing worth untapping — don't tap Candelabra for X=0
                 if fruitless and cid in fruitless:
                     continue  # stall guard: this card's search found NOTHING
                               # earlier this game (see _SEARCH_MENU_CATS) —
@@ -844,6 +887,28 @@ def _lookup_pt(perms: list, card_idx: int, *, exclude_attacking=False,
             continue
         return p["power"], p["toughness"]
     return None
+
+
+def _best_opp_creature_target(g: dict, cats, card_ids, ctrl_arr, num_choices: int) -> int | None:
+    """Among SELECT_TARGET actions, the opponent creature with the highest power.
+
+    Robust to the action controller encoding (self ~= 1.0, opponent permanent ~= 0.0,
+    a player / "no target" slot is the negative null sentinel): opp-controlled entity
+    targets are the ones with ctrl in (~0, 0.5). Returns None if no opp creature is
+    offered, so the caller can fall back to its usual pick.
+    """
+    best_i, best_pow = None, None
+    for i in range(num_choices):
+        if cats[i] != _CAT_TARGET:
+            continue
+        ctrl = ctrl_arr[i]
+        if ctrl > 0.5 or ctrl < -1e-4:
+            continue  # self-controlled, or a player / "no target" slot (negative null)
+        pt = _lookup_pt(g["opp_battlefield"], _action_card_id(card_ids, i))
+        power = pt[0] if pt else 0
+        if best_pow is None or power > best_pow:
+            best_i, best_pow = i, power
+    return best_i
 
 
 def _desired_block_count(g: dict, attackers: list) -> int:
@@ -1005,10 +1070,70 @@ class ScriptedAgent:
             if any(c == _CAT_SEL_ATK for c in cats):
                 return self._attack_choice(g(), cats, card_ids)
 
+        # Tron synergy: Candelabra of Tawnos untaps X target lands. It's only a mana
+        # engine when it untaps lands that make MORE THAN ONE mana (Ancient Tomb, a
+        # metalcraft Urza's Workshop, the assembled Urza's tron lands), so pay X for
+        # exactly the tapped ones and target those, instead of letting the generic
+        # picker choose X=0 / the first land. The pending-decision source names the
+        # ability making each choice even before it hits the stack, so it can't be
+        # confused with any other X ability or land-targeting effect.
+        if (cfg.use_tron_synergy
+                and _slot_card_idx(obs, _PENDING_DECISION_START) == _CANDELABRA_VOCAB_IDX):
+            # X value: untap as many of our tapped >1-mana lands as X allows.
+            if all(c == _CAT_CHOOSE_X for c in cats):
+                return min(num_choices - 1, _tapped_multi_mana_lands(obs))
+            # Targets: pick the >1-mana lands.
+            if any(c == _CAT_TARGET for c in cats):
+                for i, c in enumerate(cats):
+                    if c == _CAT_TARGET and _action_card_id(card_ids, i) in _MULTI_MANA_LAND_IDS:
+                        return i
+
+        # Solitude's ETB exiles "up to one" creature, so its target menu leads with a
+        # "No target" slot the generic picker can fall into. We only cast Solitude with
+        # an opponent creature to hit (see _greedy_action), so here take that creature —
+        # the biggest one — rather than whiffing on the optional "No target".
+        if (any(c == _CAT_TARGET for c in cats)
+                and _slot_card_idx(obs, _PENDING_DECISION_START) == _SOLITUDE_VOCAB_IDX):
+            pick = _best_opp_creature_target(g(), cats, card_ids, ctrl_arr, num_choices)
+            if pick is not None:
+                return pick
+
         # Eval-based targeting — skipped for combo decks (R1: never disturb Doomsday).
         if (cfg.use_eval_targeting and any(c == _CAT_TARGET for c in cats)
                 and not _is_doomsday_deck(obs)):
             return self._target_choice(g(), cats, card_ids, ctrl_arr)
+
+        # Tron synergy: Karn, the Great Creator's -2 wishes an artifact from the
+        # sideboard/exile into hand — grab Cityscape Leveler, Tron's marquee wish
+        # target. Its fetch is a hidden reveal, so the choice can arrive as a search
+        # or a choose-card menu; match by pending source + card id across either.
+        if (cfg.use_tron_synergy
+                and _slot_card_idx(obs, _PENDING_DECISION_START) == _KARN_GREAT_CREATOR_VOCAB_IDX):
+            for i in range(num_choices):
+                if _action_card_id(card_ids, i) == _CITYSCAPE_LEVELER_VOCAB_IDX:
+                    return i
+
+        # Tron synergy: once Cityscape Leveler is in hand (typically off a Karn wish),
+        # prioritize casting it — it's the deck's premier threat/artifact-and-land
+        # destruction payoff, so cast it ahead of any other affordable spell.
+        if cfg.use_tron_synergy and any(c == _CAT_CAST for c in cats):
+            for i, c in enumerate(cats):
+                if c == _CAT_CAST and _action_card_id(card_ids, i) == _CITYSCAPE_LEVELER_VOCAB_IDX:
+                    return i
+
+        # Tron synergy: when activating Karn, the Great Creator, prefer his -2 (wish an
+        # artifact — Cityscape Leveler — from the sideboard into hand) over the +1
+        # (Animate). The two loyalty abilities are indistinguishable in the observation
+        # (same ACTIVATE category + Karn card id), differing only in menu order: the
+        # engine emits them in script order, +1 Animate then -2 ChangeZone, so the LAST
+        # Karn activation offered is the wish. Only force it when both are on the menu
+        # (Karn has the 2 loyalty to spend); with just +1 left, greedy takes it.
+        if cfg.use_tron_synergy:
+            karn_acts = [i for i, c in enumerate(cats)
+                         if c == _CAT_ACTIVATE
+                         and _action_card_id(card_ids, i) == _KARN_GREAT_CREATOR_VOCAB_IDX]
+            if len(karn_acts) >= 2:
+                return karn_acts[-1]
 
         # Tron synergy: once we control at least one of Urza's Mine/Power-Plant/
         # Tower, prefer playing a hand land that completes the set (a missing

@@ -694,6 +694,10 @@ _AETHER_VIAL_VOCAB_IDX   = 121
 _BASIC_LAND_IDS          = frozenset({0, 19})  # Mountain(0), Island(19)
 _COUNTER_SPELL_VOCAB_IDS = frozenset({12, 13, 22})  # Force of Will(12), Daze(13), Counterspell(22)
 _COUNTERSPELL_VOCAB_IDX  = 22
+# Death and Taxes: Solitude's ETB exiles a creature, so hard-cast it only with an
+# opponent creature to hit. The One Ring's {T} draws a card per burden counter.
+_SOLITUDE_VOCAB_IDX      = 141
+_THE_ONE_RING_VOCAB_IDX  = 285
 _BLUE_POOL_IDX           = 4   # obs[3 + 1]; mana pool is at obs[3:9], W/U/B/R/G/C, /10
 
 # Doomsday deck card vocab indices (mirror src/card_vocab.h)
@@ -746,6 +750,20 @@ _URZAS_TOWER_VOCAB_IDX       = 276
 _PLANAR_NEXUS_VOCAB_IDX      = 266
 _EXPEDITION_MAP_VOCAB_IDX    = 246
 _TRON_LAND_IDS           = frozenset({_URZAS_MINE_VOCAB_IDX, _URZAS_POWER_PLANT_VOCAB_IDX,
+                                      _URZAS_TOWER_VOCAB_IDX})
+# Karn, the Great Creator wishes an artifact from the sideboard/exile into hand
+# (-2), and Cityscape Leveler is the Tron wishboard's marquee target.
+_KARN_GREAT_CREATOR_VOCAB_IDX = 280
+_CITYSCAPE_LEVELER_VOCAB_IDX  = 287
+# Candelabra of Tawnos untaps X target lands; it's a mana engine only when it
+# untaps lands that make MORE THAN ONE mana, so we bias its targets to those.
+# Ancient Tomb ({C}{C}) and Urza's Workshop (metalcraft: {C} per Urza's land)
+# always/often produce >1; the three Urza's tron lands produce {C}{C}{C} each
+# once the set is assembled. Planar Nexus is deliberately excluded — it only
+# ever makes a single mana of any type, so untapping it gains nothing.
+_CANDELABRA_VOCAB_IDX    = 242
+_MULTI_MANA_LAND_IDS     = frozenset({123, 261,  # Ancient Tomb, Urza's Workshop
+                                      _URZAS_MINE_VOCAB_IDX, _URZAS_POWER_PLANT_VOCAB_IDX,
                                       _URZAS_TOWER_VOCAB_IDX})
 
 _CAT_TOP_LIBRARY = 20  # choose card to put on top of library (Doomsday pile ordering)
