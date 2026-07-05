@@ -1156,7 +1156,8 @@
   Undercity Sewers enters tapped.
   Undercity Sewers triggered
   Resolving ability (category: Surveil, amount: 1)
-  Top card of Player B's library: Dauthi Voidwalker
+  Player B surveils 1.
+  Surveil: looking at Dauthi Voidwalker
 
 --- Decision 66 ---
   Priority: Player B (active)
@@ -1169,11 +1170,11 @@
   Self GY: Force of Will, Thoughtseize, Lotus Petal, Lotus Petal, Brainstorm, Ponder, Polluted Delta, Verdant Catacombs
   Opp GY:  Thoughtseize, Dark Ritual, Lotus Petal, Polluted Delta
   Actions:
-   0: Keep on top
-   1: Put in graveyard
-  >> B/B: 1 (Put in graveyard)
+   0: Put Dauthi Voidwalker on top of library
+   1: Put Dauthi Voidwalker into graveyard
+  >> B/B: 1 (Put Dauthi Voidwalker into graveyard)
 --- Narrative ---
-  Player B puts Dauthi Voidwalker into the graveyard.
+  Player B puts Dauthi Voidwalker into their graveyard.
   No creatures eligible to attack.
   No attackers — skipping declare blockers.
   --- Combat Damage ---

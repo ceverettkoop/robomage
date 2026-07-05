@@ -480,7 +480,8 @@
   Undercity Sewers enters tapped.
   Undercity Sewers triggered
   Resolving ability (category: Surveil, amount: 1)
-  Top card of Player B's library: Thoughtseize
+  Player B surveils 1.
+  Surveil: looking at Thoughtseize
 
 --- Decision 23 ---
   Priority: Player B (active)
@@ -493,11 +494,11 @@
   Self GY: Force of Will, Lotus Petal, Brainstorm, Polluted Delta
   Opp GY:  Noble Hierarch, Once Upon a Time
   Actions:
-   0: Keep on top
-   1: Put in graveyard
-  >> B/B: 1 (Put in graveyard)
+   0: Put Thoughtseize on top of library
+   1: Put Thoughtseize into graveyard
+  >> B/B: 1 (Put Thoughtseize into graveyard)
 --- Narrative ---
-  Player B puts Thoughtseize into the graveyard.
+  Player B puts Thoughtseize into their graveyard.
   No creatures eligible to attack.
   No attackers — skipping declare blockers.
   --- Combat Damage ---

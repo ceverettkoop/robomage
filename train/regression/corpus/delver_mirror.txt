@@ -286,7 +286,8 @@
   Player A casts Lightning Bolt targeting Player B
   Dragon's Rage Channeler triggered
   Resolving ability (category: Surveil, amount: 1)
-  Top card of Player A's library: Mishra's Bauble
+  Player A surveils 1.
+  Surveil: looking at Mishra's Bauble
 
 --- Decision 16 ---
   Priority: Player A (active)
@@ -299,11 +300,11 @@
   Self GY: Force of Will
   Opp GY:  Force of Will
   Actions:
-   0: Keep on top
-   1: Put in graveyard
-  >> A/A: 1 (Put in graveyard)
+   0: Put Mishra's Bauble on top of library
+   1: Put Mishra's Bauble into graveyard
+  >> A/A: 1 (Put Mishra's Bauble into graveyard)
 --- Narrative ---
-  Player A puts Mishra's Bauble into the graveyard.
+  Player A puts Mishra's Bauble into their graveyard.
   Resolving ability (category: DealDamage, amount: 3)
   Dealt 3 damage to player (now at 16 life)
   --- Declare Attackers (Player A) ---
@@ -408,7 +409,8 @@
   Player B casts Lightning Bolt targeting Player A
   Dragon's Rage Channeler triggered
   Resolving ability (category: Surveil, amount: 1)
-  Top card of Player B's library: Scalding Tarn
+  Player B surveils 1.
+  Surveil: looking at Scalding Tarn
 
 --- Decision 22 ---
   Priority: Player B (active)
@@ -421,11 +423,11 @@
   Self GY: Force of Will
   Opp GY:  Mishra's Bauble, Force of Will, Lightning Bolt
   Actions:
-   0: Keep on top
-   1: Put in graveyard
-  >> B/B: 1 (Put in graveyard)
+   0: Put Scalding Tarn on top of library
+   1: Put Scalding Tarn into graveyard
+  >> B/B: 1 (Put Scalding Tarn into graveyard)
 --- Narrative ---
-  Player B puts Scalding Tarn into the graveyard.
+  Player B puts Scalding Tarn into their graveyard.
   Resolving ability (category: DealDamage, amount: 3)
   Dealt 3 damage to player (now at 16 life)
   Player B draws Lightning Bolt
@@ -606,7 +608,8 @@
   Player A casts Ponder
   Dragon's Rage Channeler triggered
   Resolving ability (category: Surveil, amount: 1)
-  Top card of Player A's library: Volcanic Island
+  Player A surveils 1.
+  Surveil: looking at Volcanic Island
 
 --- Decision 32 ---
   Priority: Player A (active)
@@ -619,11 +622,11 @@
   Self GY: Mishra's Bauble, Force of Will, Lightning Bolt, Volcanic Island, Scalding Tarn
   Opp GY:  Force of Will, Lightning Bolt, Scalding Tarn, Wasteland
   Actions:
-   0: Keep on top
-   1: Put in graveyard
-  >> A/A: 1 (Put in graveyard)
+   0: Put Volcanic Island on top of library
+   1: Put Volcanic Island into graveyard
+  >> A/A: 1 (Put Volcanic Island into graveyard)
 --- Narrative ---
-  Player A puts Volcanic Island into the graveyard.
+  Player A puts Volcanic Island into their graveyard.
   Resolving ability (category: RearrangeTopOfLibrary)
   Player A looks at the top 3 card(s) of their library.
   Choose which card goes 3 from top:
@@ -797,7 +800,8 @@
   Player A casts Force of Will targeting Lightning Bolt
   Dragon's Rage Channeler triggered
   Resolving ability (category: Surveil, amount: 1)
-  Top card of Player A's library: Dragon's Rage Channeler
+  Player A surveils 1.
+  Surveil: looking at Dragon's Rage Channeler
 
 --- Decision 42 ---
   Priority: Player A (non-active)
@@ -810,15 +814,16 @@
   Self GY: Mishra's Bauble, Force of Will, Lightning Bolt, Ponder, Volcanic Island, Volcanic Island, Scalding Tarn
   Opp GY:  Force of Will, Lightning Bolt, Scalding Tarn, Wasteland
   Actions:
-   0: Keep on top
-   1: Put in graveyard
-  >> A/A: 1 (Put in graveyard)
+   0: Put Dragon's Rage Channeler on top of library
+   1: Put Dragon's Rage Channeler into graveyard
+  >> A/A: 1 (Put Dragon's Rage Channeler into graveyard)
 --- Narrative ---
-  Player A puts Dragon's Rage Channeler into the graveyard.
+  Player A puts Dragon's Rage Channeler into their graveyard.
   Resolving ability (category: Counter)
   Lightning Bolt is countered
   Resolving ability (category: Surveil, amount: 1)
-  Top card of Player B's library: Wooded Foothills
+  Player B surveils 1.
+  Surveil: looking at Wooded Foothills
 
 --- Decision 43 ---
   Priority: Player B (active)
@@ -831,11 +836,11 @@
   Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Scalding Tarn, Wasteland
   Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Volcanic Island, Volcanic Island, Scalding Tarn
   Actions:
-   0: Keep on top
-   1: Put in graveyard
-  >> B/B: 1 (Put in graveyard)
+   0: Put Wooded Foothills on top of library
+   1: Put Wooded Foothills into graveyard
+  >> B/B: 1 (Put Wooded Foothills into graveyard)
 --- Narrative ---
-  Player B puts Wooded Foothills into the graveyard.
+  Player B puts Wooded Foothills into their graveyard.
   Player B draws Dragon's Rage Channeler
 
 --- Decision 44 ---
@@ -1151,7 +1156,8 @@
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Surveil, amount: 1)
-  Top card of Player A's library: Ponder
+  Player A surveils 1.
+  Surveil: looking at Ponder
 
 --- Decision 63 ---
   Priority: Player A (active)
@@ -1164,11 +1170,11 @@
   Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
   Opp GY:  Force of Will, Lightning Bolt, Lightning Bolt, Wooded Foothills, Scalding Tarn, Wasteland
   Actions:
-   0: Keep on top
-   1: Put in graveyard
-  >> A/A: 1 (Put in graveyard)
+   0: Put Ponder on top of library
+   1: Put Ponder into graveyard
+  >> A/A: 1 (Put Ponder into graveyard)
 --- Narrative ---
-  Player A puts Ponder into the graveyard.
+  Player A puts Ponder into their graveyard.
 
 --- Decision 64 ---
   Priority: Player B (non-active)
@@ -1382,7 +1388,8 @@
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Surveil, amount: 1)
-  Top card of Player B's library: Scalding Tarn
+  Player B surveils 1.
+  Surveil: looking at Scalding Tarn
 
 --- Decision 77 ---
   Priority: Player B (active)
@@ -1395,11 +1402,11 @@
   Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Wooded Foothills, Scalding Tarn, Wasteland
   Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
   Actions:
-   0: Keep on top
-   1: Put in graveyard
-  >> B/B: 1 (Put in graveyard)
+   0: Put Scalding Tarn on top of library
+   1: Put Scalding Tarn into graveyard
+  >> B/B: 1 (Put Scalding Tarn into graveyard)
 --- Narrative ---
-  Player B puts Scalding Tarn into the graveyard.
+  Player B puts Scalding Tarn into their graveyard.
 
 --- Decision 78 ---
   Priority: Player B (active)
@@ -1917,7 +1924,8 @@
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Surveil, amount: 1)
-  Top card of Player B's library: Scalding Tarn
+  Player B surveils 1.
+  Surveil: looking at Scalding Tarn
 
 --- Decision 110 ---
   Priority: Player B (active)
@@ -1930,11 +1938,11 @@
   Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Wasteland
   Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
   Actions:
-   0: Keep on top
-   1: Put in graveyard
-  >> B/B: 1 (Put in graveyard)
+   0: Put Scalding Tarn on top of library
+   1: Put Scalding Tarn into graveyard
+  >> B/B: 1 (Put Scalding Tarn into graveyard)
 --- Narrative ---
-  Player B puts Scalding Tarn into the graveyard.
+  Player B puts Scalding Tarn into their graveyard.
 
 --- Decision 111 ---
   Priority: Player B (active)
@@ -2495,7 +2503,8 @@
   Dragon's Rage Channeler triggered
   Dragon's Rage Channeler triggered
   Resolving ability (category: Surveil, amount: 1)
-  Top card of Player B's library: Daze
+  Player B surveils 1.
+  Surveil: looking at Daze
 
 --- Decision 145 ---
   Priority: Player B (active)
@@ -2508,13 +2517,14 @@
   Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
   Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
   Actions:
-   0: Keep on top
-   1: Put in graveyard
-  >> B/B: 1 (Put in graveyard)
+   0: Put Daze on top of library
+   1: Put Daze into graveyard
+  >> B/B: 1 (Put Daze into graveyard)
 --- Narrative ---
-  Player B puts Daze into the graveyard.
+  Player B puts Daze into their graveyard.
   Resolving ability (category: Surveil, amount: 1)
-  Top card of Player B's library: Cori-Steel Cutter
+  Player B surveils 1.
+  Surveil: looking at Cori-Steel Cutter
 
 --- Decision 146 ---
   Priority: Player B (active)
@@ -2527,11 +2537,11 @@
   Self GY: Force of Will, Lightning Bolt, Lightning Bolt, Daze, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
   Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
   Actions:
-   0: Keep on top
-   1: Put in graveyard
-  >> B/B: 1 (Put in graveyard)
+   0: Put Cori-Steel Cutter on top of library
+   1: Put Cori-Steel Cutter into graveyard
+  >> B/B: 1 (Put Cori-Steel Cutter into graveyard)
 --- Narrative ---
-  Player B puts Cori-Steel Cutter into the graveyard.
+  Player B puts Cori-Steel Cutter into their graveyard.
   Resolving ability (category: Counter)
   Force of Will's controller may pay {1} to save it:
 
@@ -2551,7 +2561,8 @@
 --- Narrative ---
   Force of Will is countered
   Resolving ability (category: Surveil, amount: 1)
-  Top card of Player A's library: Murktide Regent
+  Player A surveils 1.
+  Surveil: looking at Murktide Regent
 
 --- Decision 148 ---
   Priority: Player A (non-active)
@@ -2564,13 +2575,14 @@
   Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
   Opp GY:  Cori-Steel Cutter, Force of Will, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
   Actions:
-   0: Keep on top
-   1: Put in graveyard
-  >> A/A: 1 (Put in graveyard)
+   0: Put Murktide Regent on top of library
+   1: Put Murktide Regent into graveyard
+  >> A/A: 1 (Put Murktide Regent into graveyard)
 --- Narrative ---
-  Player A puts Murktide Regent into the graveyard.
+  Player A puts Murktide Regent into their graveyard.
   Resolving ability (category: Surveil, amount: 1)
-  Top card of Player B's library: Delver of Secrets
+  Player B surveils 1.
+  Surveil: looking at Delver of Secrets
 
 --- Decision 149 ---
   Priority: Player B (active)
@@ -2583,15 +2595,16 @@
   Self GY: Cori-Steel Cutter, Force of Will, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
   Opp GY:  Murktide Regent, Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
   Actions:
-   0: Keep on top
-   1: Put in graveyard
-  >> B/B: 1 (Put in graveyard)
+   0: Put Delver of Secrets on top of library
+   1: Put Delver of Secrets into graveyard
+  >> B/B: 1 (Put Delver of Secrets into graveyard)
 --- Narrative ---
-  Player B puts Delver of Secrets into the graveyard.
+  Player B puts Delver of Secrets into their graveyard.
   Dragon's Rage Channeler gains 2/2 Flying (Delirium)
   Dragon's Rage Channeler gains 2/2 Flying (Delirium)
   Resolving ability (category: Surveil, amount: 1)
-  Top card of Player B's library: Daze
+  Player B surveils 1.
+  Surveil: looking at Daze
 
 --- Decision 150 ---
   Priority: Player B (active)
@@ -2604,11 +2617,11 @@
   Self GY: Delver of Secrets, Cori-Steel Cutter, Force of Will, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
   Opp GY:  Murktide Regent, Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
   Actions:
-   0: Keep on top
-   1: Put in graveyard
-  >> B/B: 1 (Put in graveyard)
+   0: Put Daze on top of library
+   1: Put Daze into graveyard
+  >> B/B: 1 (Put Daze into graveyard)
 --- Narrative ---
-  Player B puts Daze into the graveyard.
+  Player B puts Daze into their graveyard.
   Mishra's Bauble enters the battlefield
 
 --- Decision 151 ---
@@ -2720,7 +2733,8 @@
   Player A casts Unholy Heat targeting Dragon's Rage Channeler
   Dragon's Rage Channeler triggered
   Resolving ability (category: Surveil, amount: 1)
-  Top card of Player A's library: Delver of Secrets
+  Player A surveils 1.
+  Surveil: looking at Delver of Secrets
 
 --- Decision 156 ---
   Priority: Player A (active)
@@ -2733,11 +2747,11 @@
   Self GY: Murktide Regent, Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Force of Will, Force of Will, Lightning Bolt, Ponder, Ponder, Wooded Foothills, Volcanic Island, Volcanic Island, Scalding Tarn
   Opp GY:  Delver of Secrets, Mishra's Bauble, Cori-Steel Cutter, Force of Will, Lightning Bolt, Lightning Bolt, Daze, Daze, Daze, Unholy Heat, Wooded Foothills, Scalding Tarn, Scalding Tarn, Scalding Tarn, Wasteland
   Actions:
-   0: Keep on top
-   1: Put in graveyard
-  >> A/A: 1 (Put in graveyard)
+   0: Put Delver of Secrets on top of library
+   1: Put Delver of Secrets into graveyard
+  >> A/A: 1 (Put Delver of Secrets into graveyard)
 --- Narrative ---
-  Player A puts Delver of Secrets into the graveyard.
+  Player A puts Delver of Secrets into their graveyard.
   Resolving ability (category: DealDamage, amount: 2)
   Dealt 6 damage to creature
   Dragon's Rage Channeler is destroyed (lethal damage)

@@ -1960,7 +1960,8 @@
   Resolving ability (category: Counter)
   Unholy Heat is countered
   Resolving ability (category: Surveil, amount: 1)
-  Top card of Player B's library: Ponder
+  Player B surveils 1.
+  Surveil: looking at Ponder
 
 --- Decision 114 ---
   Priority: Player B (active)
@@ -1972,11 +1973,11 @@
   Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Lightning Bolt, Unholy Heat, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Force of Will, Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
   Actions:
-   0: Keep on top
-   1: Put in graveyard
-  >> B/B: 1 (Put in graveyard)
+   0: Put Ponder on top of library
+   1: Put Ponder into graveyard
+  >> B/B: 1 (Put Ponder into graveyard)
 --- Narrative ---
-  Player B puts Ponder into the graveyard.
+  Player B puts Ponder into their graveyard.
   Resolving ability (category: PeekAndReveal)
   Top card of library: Murktide Regent
 
@@ -2386,7 +2387,8 @@
   Player B casts Brainstorm
   Dragon's Rage Channeler triggered
   Resolving ability (category: Surveil, amount: 1)
-  Top card of Player B's library: Wooded Foothills
+  Player B surveils 1.
+  Surveil: looking at Wooded Foothills
 
 --- Decision 134 ---
   Priority: Player B (active)
@@ -2399,11 +2401,11 @@
   Self GY: Ponder, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Force of Will, Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
   Actions:
-   0: Keep on top
-   1: Put in graveyard
-  >> B/B: 1 (Put in graveyard)
+   0: Put Wooded Foothills on top of library
+   1: Put Wooded Foothills into graveyard
+  >> B/B: 1 (Put Wooded Foothills into graveyard)
 --- Narrative ---
-  Player B puts Wooded Foothills into the graveyard.
+  Player B puts Wooded Foothills into their graveyard.
   Resolving ability (category: Draw, amount: 3)
   Player B draws Dragon's Rage Channeler
   Player B draws Unholy Heat
@@ -2483,7 +2485,8 @@
   Player B casts Unholy Heat targeting Insectile Aberration
   Dragon's Rage Channeler triggered
   Resolving ability (category: Surveil, amount: 1)
-  Top card of Player B's library: Dragon's Rage Channeler
+  Player B surveils 1.
+  Surveil: looking at Dragon's Rage Channeler
 
 --- Decision 139 ---
   Priority: Player B (active)
@@ -2496,11 +2499,11 @@
   Self GY: Brainstorm, Ponder, Ponder, Wooded Foothills, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Force of Will, Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
   Actions:
-   0: Keep on top
-   1: Put in graveyard
-  >> B/B: 1 (Put in graveyard)
+   0: Put Dragon's Rage Channeler on top of library
+   1: Put Dragon's Rage Channeler into graveyard
+  >> B/B: 1 (Put Dragon's Rage Channeler into graveyard)
 --- Narrative ---
-  Player B puts Dragon's Rage Channeler into the graveyard.
+  Player B puts Dragon's Rage Channeler into their graveyard.
   Dragon's Rage Channeler gains 2/2 Flying (Delirium)
   Resolving ability (category: DealDamage, amount: 2)
   Dealt 6 damage to creature

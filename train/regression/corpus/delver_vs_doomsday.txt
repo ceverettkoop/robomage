@@ -373,7 +373,8 @@
   Player A casts Lightning Bolt targeting Player B
   Dragon's Rage Channeler triggered
   Resolving ability (category: Surveil, amount: 1)
-  Top card of Player A's library: Mishra's Bauble
+  Player A surveils 1.
+  Surveil: looking at Mishra's Bauble
 
 --- Decision 20 ---
   Priority: Player A (active)
@@ -386,11 +387,11 @@
   Self GY: Force of Will
   Opp GY:  Force of Will, Lotus Petal, Brainstorm
   Actions:
-   0: Keep on top
-   1: Put in graveyard
-  >> A/A: 1 (Put in graveyard)
+   0: Put Mishra's Bauble on top of library
+   1: Put Mishra's Bauble into graveyard
+  >> A/A: 1 (Put Mishra's Bauble into graveyard)
 --- Narrative ---
-  Player A puts Mishra's Bauble into the graveyard.
+  Player A puts Mishra's Bauble into their graveyard.
   Resolving ability (category: DealDamage, amount: 3)
   Dealt 3 damage to player (now at 16 life)
   --- Declare Attackers (Player A) ---
@@ -528,7 +529,8 @@
   Player A casts Ponder
   Dragon's Rage Channeler triggered
   Resolving ability (category: Surveil, amount: 1)
-  Top card of Player A's library: Wasteland
+  Player A surveils 1.
+  Surveil: looking at Wasteland
 
 --- Decision 27 ---
   Priority: Player A (active)
@@ -541,11 +543,11 @@
   Self GY: Mishra's Bauble, Force of Will, Lightning Bolt
   Opp GY:  Force of Will, Lotus Petal, Brainstorm, Polluted Delta
   Actions:
-   0: Keep on top
-   1: Put in graveyard
-  >> A/A: 1 (Put in graveyard)
+   0: Put Wasteland on top of library
+   1: Put Wasteland into graveyard
+  >> A/A: 1 (Put Wasteland into graveyard)
 --- Narrative ---
-  Player A puts Wasteland into the graveyard.
+  Player A puts Wasteland into their graveyard.
   Resolving ability (category: RearrangeTopOfLibrary)
   Player A looks at the top 3 card(s) of their library.
   Choose which card goes 3 from top:
@@ -680,7 +682,8 @@
   Player A casts Ponder
   Dragon's Rage Channeler triggered
   Resolving ability (category: Surveil, amount: 1)
-  Top card of Player A's library: Unholy Heat
+  Player A surveils 1.
+  Surveil: looking at Unholy Heat
 
 --- Decision 35 ---
   Priority: Player A (active)
@@ -693,11 +696,11 @@
   Self GY: Mishra's Bauble, Force of Will, Lightning Bolt, Ponder, Scalding Tarn, Wasteland
   Opp GY:  Force of Will, Lotus Petal, Brainstorm, Polluted Delta
   Actions:
-   0: Keep on top
-   1: Put in graveyard
-  >> A/A: 1 (Put in graveyard)
+   0: Put Unholy Heat on top of library
+   1: Put Unholy Heat into graveyard
+  >> A/A: 1 (Put Unholy Heat into graveyard)
 --- Narrative ---
-  Player A puts Unholy Heat into the graveyard.
+  Player A puts Unholy Heat into their graveyard.
   Resolving ability (category: RearrangeTopOfLibrary)
   Player A looks at the top 3 card(s) of their library.
   Choose which card goes 3 from top:
@@ -802,7 +805,8 @@
   Undercity Sewers enters tapped.
   Undercity Sewers triggered
   Resolving ability (category: Surveil, amount: 1)
-  Top card of Player B's library: Thoughtseize
+  Player B surveils 1.
+  Surveil: looking at Thoughtseize
 
 --- Decision 41 ---
   Priority: Player B (active)
@@ -815,11 +819,11 @@
   Self GY: Force of Will, Lotus Petal, Brainstorm, Polluted Delta
   Opp GY:  Mishra's Bauble, Force of Will, Lightning Bolt, Unholy Heat, Ponder, Ponder, Scalding Tarn, Wasteland
   Actions:
-   0: Keep on top
-   1: Put in graveyard
-  >> B/B: 1 (Put in graveyard)
+   0: Put Thoughtseize on top of library
+   1: Put Thoughtseize into graveyard
+  >> B/B: 1 (Put Thoughtseize into graveyard)
 --- Narrative ---
-  Player B puts Thoughtseize into the graveyard.
+  Player B puts Thoughtseize into their graveyard.
   No creatures eligible to attack.
   No attackers — skipping declare blockers.
   --- Combat Damage ---
@@ -1335,7 +1339,8 @@
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Surveil, amount: 1)
-  Top card of Player A's library: Delver of Secrets
+  Player A surveils 1.
+  Surveil: looking at Delver of Secrets
 
 --- Decision 70 ---
   Priority: Player A (active)
@@ -1348,11 +1353,11 @@
   Self GY: Ponder, Scalding Tarn, Wasteland
   Opp GY:  Force of Will, Thoughtseize, Lotus Petal, Brainstorm, Polluted Delta, Verdant Catacombs
   Actions:
-   0: Keep on top
-   1: Put in graveyard
-  >> A/A: 1 (Put in graveyard)
+   0: Put Delver of Secrets on top of library
+   1: Put Delver of Secrets into graveyard
+  >> A/A: 1 (Put Delver of Secrets into graveyard)
 --- Narrative ---
-  Player A puts Delver of Secrets into the graveyard.
+  Player A puts Delver of Secrets into their graveyard.
 
 --- Decision 71 ---
   Priority: Player B (non-active)
@@ -1370,7 +1375,8 @@
   >> B/B: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Surveil, amount: 1)
-  Top card of Player A's library: Murktide Regent
+  Player A surveils 1.
+  Surveil: looking at Murktide Regent
 
 --- Decision 72 ---
   Priority: Player A (active)
@@ -1383,11 +1389,11 @@
   Self GY: Delver of Secrets, Ponder, Scalding Tarn, Wasteland
   Opp GY:  Force of Will, Thoughtseize, Lotus Petal, Brainstorm, Polluted Delta, Verdant Catacombs
   Actions:
-   0: Keep on top
-   1: Put in graveyard
-  >> A/A: 1 (Put in graveyard)
+   0: Put Murktide Regent on top of library
+   1: Put Murktide Regent into graveyard
+  >> A/A: 1 (Put Murktide Regent into graveyard)
 --- Narrative ---
-  Player A puts Murktide Regent into the graveyard.
+  Player A puts Murktide Regent into their graveyard.
 
 --- Decision 73 ---
   Priority: Player B (non-active)

@@ -993,7 +993,8 @@
   >> A/A: 0 (Pass priority)
 --- Narrative ---
   Resolving ability (category: Surveil, amount: 1)
-  Top card of Player A's library: Cavern of Souls
+  Player A surveils 1.
+  Surveil: looking at Cavern of Souls
 
 --- Decision 62 ---
   Priority: Player A (active)
@@ -1006,11 +1007,11 @@
   Self GY: Thoughtseize, Lotus Petal, Polluted Delta, Polluted Delta
   Opp GY:  Green Sun's Zenith, Once Upon a Time, Wasteland
   Actions:
-   0: Keep on top
-   1: Put in graveyard
-  >> A/A: 1 (Put in graveyard)
+   0: Put Cavern of Souls on top of library
+   1: Put Cavern of Souls into graveyard
+  >> A/A: 1 (Put Cavern of Souls into graveyard)
 --- Narrative ---
-  Player A puts Cavern of Souls into the graveyard.
+  Player A puts Cavern of Souls into their graveyard.
 
 --- Decision 63 ---
   Priority: Player A (active)

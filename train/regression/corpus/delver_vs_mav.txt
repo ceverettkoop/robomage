@@ -350,7 +350,8 @@
   Player A casts Mishra's Bauble
   Dragon's Rage Channeler triggered
   Resolving ability (category: Surveil, amount: 1)
-  Top card of Player A's library: Scalding Tarn
+  Player A surveils 1.
+  Surveil: looking at Scalding Tarn
 
 --- Decision 18 ---
   Priority: Player A (active)
@@ -363,11 +364,11 @@
   Self GY: Force of Will, Volcanic Island
   Opp GY:  Once Upon a Time, Wasteland, Windswept Heath
   Actions:
-   0: Keep on top
-   1: Put in graveyard
-  >> A/A: 1 (Put in graveyard)
+   0: Put Scalding Tarn on top of library
+   1: Put Scalding Tarn into graveyard
+  >> A/A: 1 (Put Scalding Tarn into graveyard)
 --- Narrative ---
-  Player A puts Scalding Tarn into the graveyard.
+  Player A puts Scalding Tarn into their graveyard.
   Mishra's Bauble enters the battlefield
 
 --- Decision 19 ---
@@ -821,7 +822,8 @@
   Player A casts Ponder
   Dragon's Rage Channeler triggered
   Resolving ability (category: Surveil, amount: 1)
-  Top card of Player A's library: Dragon's Rage Channeler
+  Player A surveils 1.
+  Surveil: looking at Dragon's Rage Channeler
 
 --- Decision 41 ---
   Priority: Player A (active)
@@ -834,11 +836,11 @@
   Self GY: Mishra's Bauble, Force of Will, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland
   Opp GY:  Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
   Actions:
-   0: Keep on top
-   1: Put in graveyard
-  >> A/A: 1 (Put in graveyard)
+   0: Put Dragon's Rage Channeler on top of library
+   1: Put Dragon's Rage Channeler into graveyard
+  >> A/A: 1 (Put Dragon's Rage Channeler into graveyard)
 --- Narrative ---
-  Player A puts Dragon's Rage Channeler into the graveyard.
+  Player A puts Dragon's Rage Channeler into their graveyard.
   Dragon's Rage Channeler gains 2/2 Flying (Delirium)
   Resolving ability (category: RearrangeTopOfLibrary)
   Player A looks at the top 3 card(s) of their library.
@@ -1048,7 +1050,8 @@
   Player A casts Ponder
   Dragon's Rage Channeler triggered
   Resolving ability (category: Surveil, amount: 1)
-  Top card of Player A's library: Wasteland
+  Player A surveils 1.
+  Surveil: looking at Wasteland
 
 --- Decision 52 ---
   Priority: Player A (active)
@@ -1061,11 +1064,11 @@
   Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland
   Opp GY:  Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
   Actions:
-   0: Keep on top
-   1: Put in graveyard
-  >> A/A: 1 (Put in graveyard)
+   0: Put Wasteland on top of library
+   1: Put Wasteland into graveyard
+  >> A/A: 1 (Put Wasteland into graveyard)
 --- Narrative ---
-  Player A puts Wasteland into the graveyard.
+  Player A puts Wasteland into their graveyard.
   Resolving ability (category: RearrangeTopOfLibrary)
   Player A looks at the top 3 card(s) of their library.
   Choose which card goes 3 from top:
@@ -1139,7 +1142,8 @@
   Player A casts Mishra's Bauble
   Dragon's Rage Channeler triggered
   Resolving ability (category: Surveil, amount: 1)
-  Top card of Player A's library: Daze
+  Player A surveils 1.
+  Surveil: looking at Daze
 
 --- Decision 57 ---
   Priority: Player A (active)
@@ -1152,11 +1156,11 @@
   Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Ponder, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
   Actions:
-   0: Keep on top
-   1: Put in graveyard
-  >> A/A: 1 (Put in graveyard)
+   0: Put Daze on top of library
+   1: Put Daze into graveyard
+  >> A/A: 1 (Put Daze into graveyard)
 --- Narrative ---
-  Player A puts Daze into the graveyard.
+  Player A puts Daze into their graveyard.
   Mishra's Bauble enters the battlefield
 
 --- Decision 58 ---
@@ -1257,7 +1261,8 @@
   Resolving ability (category: DelayedTrigger)
   Delayed trigger registered: Draw at next Upkeep.
   Resolving ability (category: Surveil, amount: 1)
-  Top card of Player A's library: Daze
+  Player A surveils 1.
+  Surveil: looking at Daze
 
 --- Decision 63 ---
   Priority: Player A (active)
@@ -1270,11 +1275,11 @@
   Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Daze, Ponder, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
   Actions:
-   0: Keep on top
-   1: Put in graveyard
-  >> A/A: 1 (Put in graveyard)
+   0: Put Daze on top of library
+   1: Put Daze into graveyard
+  >> A/A: 1 (Put Daze into graveyard)
 --- Narrative ---
-  Player A puts Daze into the graveyard.
+  Player A puts Daze into their graveyard.
   Resolving ability (category: DealDamage, amount: 3)
   Dealt 3 damage to player (now at 9 life)
   Dragon's Rage Channeler must attack and is declared as an attacker.
@@ -1611,7 +1616,8 @@
   Player A casts Mishra's Bauble
   Dragon's Rage Channeler triggered
   Resolving ability (category: Surveil, amount: 1)
-  Top card of Player A's library: Mountain
+  Player A surveils 1.
+  Surveil: looking at Mountain
 
 --- Decision 80 ---
   Priority: Player A (active)
@@ -1624,11 +1630,11 @@
   Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Flooded Strand, Volcanic Island, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Dryad Arbor, Forest, Once Upon a Time, Wasteland, Wasteland, Windswept Heath, Windswept Heath
   Actions:
-   0: Keep on top
-   1: Put in graveyard
-  >> A/A: 1 (Put in graveyard)
+   0: Put Mountain on top of library
+   1: Put Mountain into graveyard
+  >> A/A: 1 (Put Mountain into graveyard)
 --- Narrative ---
-  Player A puts Mountain into the graveyard.
+  Player A puts Mountain into their graveyard.
   Mishra's Bauble enters the battlefield
 
 --- Decision 81 ---
@@ -1690,7 +1696,8 @@
   Resolving ability (category: DelayedTrigger)
   Delayed trigger registered: Draw at next Upkeep.
   Resolving ability (category: Surveil, amount: 1)
-  Top card of Player A's library: Misty Rainforest
+  Player A surveils 1.
+  Surveil: looking at Misty Rainforest
 
 --- Decision 84 ---
   Priority: Player A (active)
@@ -1703,11 +1710,11 @@
   Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Dryad Arbor, Forest, Once Upon a Time, Wasteland, Wasteland, Windswept Heath, Windswept Heath
   Actions:
-   0: Keep on top
-   1: Put in graveyard
-  >> A/A: 1 (Put in graveyard)
+   0: Put Misty Rainforest on top of library
+   1: Put Misty Rainforest into graveyard
+  >> A/A: 1 (Put Misty Rainforest into graveyard)
 --- Narrative ---
-  Player A puts Misty Rainforest into the graveyard.
+  Player A puts Misty Rainforest into their graveyard.
   Resolving ability (category: RearrangeTopOfLibrary)
   Player A looks at the top 3 card(s) of their library.
   Choose which card goes 3 from top:
