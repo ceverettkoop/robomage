@@ -1418,12 +1418,36 @@ def _interactive_session(ctx):
                 print(f"  Game index out of range. Valid range: 0–{len(games) - 1}")
                 continue
 
+            def _opp_actions_before(g, step):
+                # Opponent actions that occurred between model decision step-1 and
+                # model decision `step` (before_model_step == step), with runs of
+                # identical consecutive actions collapsed ("PASS (x19)").
+                descs = [oa["desc"] for oa in g.get("opp_actions", [])
+                         if oa["before_model_step"] == step]
+                if not descs:
+                    return
+                print(f"  Opponent actions since decision {step - 1}:")
+                run_desc, run_len = None, 0
+                def flush():
+                    if run_len == 1:
+                        print(f"        opp --> {run_desc}")
+                    elif run_len > 1:
+                        print(f"        opp --> {run_desc} (x{run_len})")
+                for desc in descs:
+                    if desc == run_desc:
+                        run_len += 1
+                    else:
+                        flush()
+                        run_desc, run_len = desc, 1
+                flush()
+
             def _show_step(g, gn, step):
                 n_obs = len(g["observations"])
                 obs = g["observations"][step]
                 val = g["values"][step] if step < len(g["values"]) else None
                 result_str = "WIN" if g["result"] > 0 else ("LOSS" if g["result"] < 0 else "DRAW")
                 print(f"\nGame {gn} [{result_str}]  —  decision {step}/{n_obs - 1}")
+                _opp_actions_before(g, step)
 
                 # Model's decision at this step
                 has_action = "actions" in g and step < len(g["actions"])
