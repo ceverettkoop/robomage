@@ -42,7 +42,7 @@ import decode
 from _enums import _CAT_NAMES, _STEP_NAMES
 # CLI definitions + training defaults live in cli_spec.py (single source shared with the TUI).
 from cli_spec import (TOTAL_TIMESTEPS, N_ENVS, N_ENVS_SELF_PLAY, EMBED_DIM,
-                      ENT_COEF, PPO_KWARGS, NET_ARCH,
+                      ENT_COEF, TARGET_KL, lr_for_timesteps, PPO_KWARGS, NET_ARCH,
                       LEAGUE_SELF_PLAY_FRAC, LEAGUE_SCRIPTED_ANCHOR_FRAC,
                       LEAGUE_PFSP_P, LEAGUE_SOFTMAX_ETA, LEAGUE_SNAPSHOT_EVERY,
                       LEAGUE_PROMOTE_MARGIN, LEAGUE_ROTATE_EVERY,
@@ -62,6 +62,7 @@ except ImportError:
 from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv
 from stable_baselines3.common.callbacks import BaseCallback
 from stable_baselines3.common.monitor import Monitor
+from stable_baselines3.common.utils import ConstantSchedule
 
 import numpy as np
 
@@ -413,17 +414,65 @@ LOG_DIR = "logs"
 _CHECKPOINT_ABS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "checkpoints")
 
 
-def _assert_ent_coef(model, label: str):
-    """Re-assert the canonical entropy coefficient on a resumed checkpoint.
+def _reassert_hparams(model, label: str):
+    """Re-assert canonical hyperparameters on a resumed checkpoint.
 
-    MaskablePPO.load restores the ent_coef the checkpoint was saved with, so a
-    model created under an old (buggy) value would otherwise carry it across
-    every future resume. Logged when the stored value actually differs."""
+    MaskablePPO.load restores the values the checkpoint was saved with, so a
+    model created under an old (or unset) value would otherwise carry it across
+    every future resume. Covers:
+      * ent_coef — a stale 0.12 rode along in old checkpoints (see cli_spec).
+      * target_kl — checkpoints predating the KL early-stop were saved with
+        target_kl=None and would never early-stop without this.
+    The learning rate is NOT set here: it is driven every rollout by
+    LRDecayCallback (keyed to num_timesteps), which overrides whatever LR the
+    checkpoint restored. Each override is logged when the stored value differs."""
     if model.ent_coef != ENT_COEF:
         print(f"[hyperparam] {label}: overriding stale ent_coef "
               f"{model.ent_coef} -> {ENT_COEF}")
         model.ent_coef = ENT_COEF
+    if model.target_kl != TARGET_KL:
+        print(f"[hyperparam] {label}: overriding stale target_kl "
+              f"{model.target_kl} -> {TARGET_KL}")
+        model.target_kl = TARGET_KL
     return model
+
+
+class LRDecayCallback(BaseCallback):
+    """Drive the learning rate from a schedule keyed to ABSOLUTE num_timesteps.
+
+    SB3's native ``learning_rate`` schedule is a function of ``progress_remaining``,
+    which resets to 1.0 at the start of every ``learn()`` call — so it is blind to
+    how many steps a resumed checkpoint already trained and would restart the decay
+    each short resume session. This callback instead sets ``model.lr_schedule`` to
+    a constant computed from ``lr_for_timesteps(model.num_timesteps)`` before each
+    optimizer update, giving a single global decay curve that survives resume
+    (a generalist resumed at N steps continues from position N).
+
+    ``ConstantSchedule`` (not a lambda) is used so the assigned ``lr_schedule``
+    stays picklable — ``model.save()`` serializes it, and a closure capturing the
+    model would recursively drag the whole model into the checkpoint. It is
+    re-assigned every rollout, so the constant only holds for the one update that
+    follows; ``_update_learning_rate`` then applies it to the optimizer and logs
+    ``train/learning_rate``.
+    """
+
+    def _apply(self) -> float:
+        lr = lr_for_timesteps(self.model.num_timesteps)
+        self.model.lr_schedule = ConstantSchedule(lr)
+        return lr
+
+    def _on_training_start(self) -> None:
+        lr = self._apply()
+        if self.verbose:
+            print(f"[lr] start num_timesteps={self.model.num_timesteps:,} -> lr={lr:.2e}")
+
+    def _on_rollout_end(self) -> None:
+        # Fires after each rollout's collection (num_timesteps updated) and before
+        # the following train(), so that update uses the step-appropriate LR.
+        self._apply()
+
+    def _on_step(self) -> bool:
+        return True
 
 
 def _tb_log_name(deck: str) -> str:
@@ -726,8 +775,8 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
 
         if load_path:
             print(f"Resuming from {load_path}")
-            model = _assert_ent_coef(MaskablePPO.load(load_path, env=vec_env),
-                                     model_deck)
+            model = _reassert_hparams(MaskablePPO.load(load_path, env=vec_env),
+                                      model_deck)
         else:
             policy_cls, policy_kwargs = _policy_config(policy_kwargs)
             model = MaskablePPO(
@@ -746,6 +795,7 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
         # Periodic deck-pilot snapshots ('{deck}__v{steps}.zip') feed the shared
         # self-play / league pools; the '{deck}__final.zip' is saved at the end.
         callbacks = [
+            LRDecayCallback(),
             SnapshotCallback(checkpoint_dir, model_deck, LEAGUE_SNAPSHOT_EVERY),
         ]
         if not no_shaping:
@@ -806,8 +856,8 @@ def _league_chunk(binary_path: str, learner_deck: str, roster: list[str],
         resuming = bool(resume and os.path.exists(resume))
         if resuming:
             print(f"[league] resuming {learner_deck} from {os.path.basename(resume)}")
-            model = _assert_ent_coef(MaskablePPO.load(resume, env=vec_env),
-                                     learner_deck)
+            model = _reassert_hparams(MaskablePPO.load(resume, env=vec_env),
+                                      learner_deck)
         else:
             print(f"[league] starting {learner_deck} from scratch (embed_dim={embed_dim})")
             policy_cls, policy_kwargs = _policy_config(policy_kwargs)
@@ -828,6 +878,7 @@ def _league_chunk(binary_path: str, learner_deck: str, roster: list[str],
 
         pfsp_cb = PFSPCallback(vec_env, mode=pfsp_mode, p=pfsp_p, eta=softmax_eta)
         callbacks = [
+            LRDecayCallback(),
             pfsp_cb,
             SnapshotCallback(checkpoint_dir, learner_deck, snapshot_every,
                              promote_margin=promote_margin, pfsp_callback=pfsp_cb,
@@ -1149,13 +1200,14 @@ def train_fixed_model(binary_path: str, model_deck: str, opp_deck: str,
 
     try:
         print(f"Resuming from {load_path}")
-        model = _assert_ent_coef(MaskablePPO.load(load_path, env=vec_env),
-                                 model_deck)
+        model = _reassert_hparams(MaskablePPO.load(load_path, env=vec_env),
+                                  model_deck)
 
         if no_shaping:
             vec_env.env_method("set_shaping_scale", 0.0)
             print("[shaping] disabled for this session (--no-shaping)")
         callbacks = [
+            LRDecayCallback(),
             SnapshotCallback(checkpoint_dir, model_deck, LEAGUE_SNAPSHOT_EVERY),
         ]
         if not no_shaping:

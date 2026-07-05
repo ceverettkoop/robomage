@@ -31,14 +31,49 @@ EMBED_DIM = 128        # policy feature-extractor embed dim for fresh models
 # more than aggro decks, and capped league win-rates.)
 ENT_COEF = 0.012
 
+# PPO KL early-stop threshold. When the per-epoch approximate KL exceeds
+# 1.5 * TARGET_KL, MaskablePPO aborts the rest of that update's epochs — a
+# safety brake against destructively large policy steps that becomes more
+# valuable as a generalist matures. Canonical value for every training path AND
+# re-asserted on checkpoint resume (older checkpoints saved with target_kl=None
+# would otherwise never early-stop). See train.py _reassert_hparams.
+TARGET_KL = 0.025
+
+# Learning-rate decay schedule, keyed to a model's ABSOLUTE cumulative
+# num_timesteps (not SB3's per-learn() progress_remaining, which resets every
+# resume). LR falls linearly from LR_PEAK at step 0 to LR_FLOOR at
+# LR_DECAY_STEPS, then stays flat at LR_FLOOR. Because it is anchored to the
+# checkpoint's own step count, a resumed generalist that already trained N steps
+# picks the schedule up at position N — so decay survives the many short resume
+# sessions a per-deck generalist accumulates over. Applied by train.py's
+# LRDecayCallback on every training path. See lr_for_timesteps().
+LR_PEAK = 3e-4
+LR_FLOOR = 5e-5
+LR_DECAY_STEPS = 10_000_000
+
+
+def lr_for_timesteps(num_timesteps: int) -> float:
+    """Linear LR decay from LR_PEAK to LR_FLOOR over [0, LR_DECAY_STEPS] cumulative
+    timesteps, clamped flat at LR_FLOOR beyond LR_DECAY_STEPS.
+
+    Keyed to the model's absolute num_timesteps so the schedule is continuous
+    across checkpoint resumes (a generalist resumed at N steps continues the same
+    global decay curve rather than restarting it)."""
+    if num_timesteps >= LR_DECAY_STEPS:
+        return LR_FLOOR
+    frac = max(0, num_timesteps) / LR_DECAY_STEPS  # 0.0 at step 0 → 1.0 at floor
+    return LR_PEAK + (LR_FLOOR - LR_PEAK) * frac
+
 # PPO hyperparameters for newly constructed models — single home so the
 # single-opponent train() path and the league path can never drift apart (the
 # stale-ent_coef bug survived one fix precisely because these were duplicated
 # inline at both sites). On checkpoint RESUME, MaskablePPO.load restores
-# whatever the checkpoint was saved with; only ent_coef is re-asserted
-# afterwards (train.py _assert_ent_coef).
+# whatever the checkpoint was saved with; ent_coef and target_kl are re-asserted
+# afterwards (train.py _reassert_hparams), and the LR is driven every rollout by
+# LRDecayCallback regardless of the saved learning_rate. `learning_rate` here is
+# just the nominal starting value the callback overrides on the first update.
 PPO_KWARGS = dict(
-    learning_rate=3e-4,
+    learning_rate=LR_PEAK,
     n_steps=4096,       # steps per env per update
     batch_size=1024,
     n_epochs=8,
@@ -46,6 +81,7 @@ PPO_KWARGS = dict(
     gae_lambda=0.95,
     clip_range=0.25,
     ent_coef=ENT_COEF,
+    target_kl=TARGET_KL,
 )
 NET_ARCH = [256, 256]  # policy/value MLP head sizes (after the feature extractor)
 
