@@ -250,6 +250,18 @@ void cli_emit_machine_query(const Query* q, const GameState* gs) {
                      gs->opp_permanents[i].counters);
         }
         fwrite(ctrs, PERM_COUNTERS_LEN, 2 * MAX_BATTLEFIELD_SLOTS, stdout);
+
+        // Per-permanent token names — the state vector only carries the generic
+        // TOKEN_SENTINEL card id for every token, so observers can't tell a Clue
+        // from a Human Knight without this. Narrative-only side-channel, slot-aligned
+        // with the permanent blocks like the counters above; empty for non-tokens.
+        char toks[2 * MAX_BATTLEFIELD_SLOTS][PERM_TOKEN_NAME_LEN] = {};
+        for (int i = 0; i < MAX_BATTLEFIELD_SLOTS; i++) {
+            snprintf(toks[i], PERM_TOKEN_NAME_LEN, "%s", gs->self_permanents[i].token_name);
+            snprintf(toks[MAX_BATTLEFIELD_SLOTS + i], PERM_TOKEN_NAME_LEN, "%s",
+                     gs->opp_permanents[i].token_name);
+        }
+        fwrite(toks, PERM_TOKEN_NAME_LEN, 2 * MAX_BATTLEFIELD_SLOTS, stdout);
     }
     fflush(stdout);
 }

@@ -93,6 +93,12 @@ _BQUERY_DESC_BYTES  = MAX_ACTIONS * MAX_CHOICE_DESC
 PERM_COUNTERS_LEN   = 64
 N_PERM_SLOTS        = 48
 _BQUERY_PERM_CTRS_BYTES = 2 * N_PERM_SLOTS * PERM_COUNTERS_LEN
+# Per-permanent token names (narrative-only, slot-aligned like the counters block).
+# Every token shares the generic TOKEN_SENTINEL card id in the state vector, so this
+# is the only channel carrying a token's real name to observers. Must match
+# PERM_TOKEN_NAME_LEN / MAX_BATTLEFIELD_SLOTS in src/classes/gamestate.h.
+PERM_TOKEN_NAME_LEN = 32
+_BQUERY_PERM_TOKS_BYTES = 2 * N_PERM_SLOTS * PERM_TOKEN_NAME_LEN
 # ACTION_CATEGORY_MAX imported from _enums above (mirrors src/classes/action.h).
 
 
@@ -291,6 +297,7 @@ class RoboMageEnv(gym.Env):
         self._action_public = np.zeros(MAX_ACTIONS, dtype=np.float32)  # card_is_public per action
         self._action_descriptions = None  # list[str] per action under --narrative, else None
         self._perm_counters = None        # (self[48], opp[48]) counter summaries under --narrative, else None
+        self._perm_token_names = None     # (self[48], opp[48]) token names under --narrative, else None
         self._pending_confirm = False  # True when last query used the -1 convention
         self._step_count = 0
         self.last_engine_seed = None  # engine --seed of the most recent reset()
@@ -518,9 +525,17 @@ class RoboMageEnv(gym.Env):
                         self._read_exactly(_BQUERY_PERM_CTRS_BYTES),
                         2 * N_PERM_SLOTS, PERM_COUNTERS_LEN)
                     self._perm_counters = (ctrs[:N_PERM_SLOTS], ctrs[N_PERM_SLOTS:])
+                    # Per-permanent token names (side-channel, like the counters):
+                    # (self_slots, opp_slots), slot-aligned with the permanent blocks.
+                    # Non-empty only for token permanents.
+                    toks = _decode_char_block(
+                        self._read_exactly(_BQUERY_PERM_TOKS_BYTES),
+                        2 * N_PERM_SLOTS, PERM_TOKEN_NAME_LEN)
+                    self._perm_token_names = (toks[:N_PERM_SLOTS], toks[N_PERM_SLOTS:])
                 else:
                     self._action_descriptions = None
                     self._perm_counters = None
+                    self._perm_token_names = None
 
                 # The -1 confirm convention applies to mandatory attacker/blocker queries.
                 self._pending_confirm = any(

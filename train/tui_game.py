@@ -168,7 +168,7 @@ class CardButton(Static):
 
 class StateUpdate(Message):
     def __init__(self, obs, num_choices, actions, human_turn, opp_perspective=False,
-                 perm_counters=None):
+                 perm_counters=None, perm_token_names=None):
         self.obs = obs
         self.num_choices = num_choices
         self.actions = actions            # decoded action dicts (human turn) or []
@@ -180,6 +180,9 @@ class StateUpdate(Message):
         # (self[48], opp[48]) typed-counter summaries (env._perm_counters
         # side-channel), same perspective as obs — decode swaps them with it.
         self.perm_counters = perm_counters
+        # (self[48], opp[48]) token names (env._perm_token_names side-channel),
+        # same perspective as obs — decode swaps them with it.
+        self.perm_token_names = perm_token_names
         super().__init__()
 
 
@@ -320,7 +323,8 @@ class GameApp(App):
                                               actions if human_must_act else [],
                                               human_turn=human_must_act,
                                               opp_perspective=opp_turn,
-                                              perm_counters=getattr(env, "_perm_counters", None)))
+                                              perm_counters=getattr(env, "_perm_counters", None),
+                                              perm_token_names=getattr(env, "_perm_token_names", None)))
 
                 opp_acted = False
                 autopass_acted = False
@@ -378,7 +382,8 @@ class GameApp(App):
         gs = decode.decode_game_state(
             obs[:STATE_SIZE],
             labels=_MIRROR_LABELS if mirrored else decode.SELF_OPP_LABELS,
-            perm_counters=message.perm_counters)
+            perm_counters=message.perm_counters,
+            perm_token_names=message.perm_token_names)
         if mirrored:
             for a, b in (("self", "opponent"),
                          ("self_library", "opp_library"),
