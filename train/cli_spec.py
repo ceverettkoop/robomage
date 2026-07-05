@@ -429,11 +429,14 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
     Sub("baseline", "Evaluate model win rate vs the scripted HARD agent (mirror match)", items=[
         Arg("model", "str", required=False, suggest="checkpoint",
             help="Model .zip path or shorthand (omit with --all)"),
-        Arg("--games", "int", default=100, help="Number of games (default: 100)"),
+        Arg("--games", "int", default=None,
+            help="Games per matchup (default: 100 for a single model, 50 per opponent "
+                 "with --all)"),
         Arg("--all", "flag",
-            help="Sweep every {deck}__final.zip under checkpoints/ (recursive): each "
-                 "is evaluated on its own deck vs scripted:hard and the per-checkpoint "
-                 "win rates are appended to the report log"),
+            help="Round-robin every league deck's {deck}__final.zip vs scripted:hard on "
+                 "every league deck (including the mirror): an N-deck roster runs N×N "
+                 "matchups of --games each, and the per-matchup win rates are appended "
+                 "to the report log"),
         Arg("--log", "str", default=None,
             help="Report file for --all (default: checkpoints/baseline_report.log, appended)"),
         Arg("--deck", "str", default=None, suggest="deck",

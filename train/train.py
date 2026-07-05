@@ -1242,16 +1242,17 @@ def _deck_from_checkpoint(model_path: str) -> str | None:
 
 
 def baseline(binary_path: str, model_path: str, n_games: int = 100,
-             deck: str | None = None, seed: int | None = None,
-             quiet: bool = False):
-    """Evaluate a model's win rate vs the scripted HARD agent (mirror match).
+             deck: str | None = None, opp_deck: str | None = None,
+             seed: int | None = None, quiet: bool = False):
+    """Evaluate a model's win rate vs the scripted HARD agent.
 
     The model pilots ``deck`` (inferred from the checkpoint's deck-pilot
-    filename when not given) and faces scripted:hard on the same deck. Seats
-    alternate each game (model is Player A in even games) so neither side gets
-    a systematic on-the-play edge. ``seed`` makes the run reproducible (game
-    ``i`` uses ``seed + i``; None = random per game). Returns
-    ``(wins, losses, draws)`` from the model's perspective.
+    filename when not given) and faces scripted:hard piloting ``opp_deck``
+    (defaults to ``deck`` — a mirror match). Seats alternate each game (model
+    is Player A in even games) so neither side gets a systematic on-the-play
+    edge. ``seed`` makes the run reproducible (game ``i`` uses ``seed + i``;
+    None = random per game). Returns ``(wins, losses, draws)`` from the model's
+    perspective.
     """
     import runner
     from opponents import ModelController, ScriptedController
@@ -1260,6 +1261,8 @@ def baseline(binary_path: str, model_path: str, n_games: int = 100,
     model = MaskablePPO.load(model_path)
     if deck is None:
         deck = _deck_from_checkpoint(model_path)
+    if opp_deck is None:
+        opp_deck = deck
     ctrl_model = ModelController(model, label="Model", deterministic=True)
     ctrl_scripted = ScriptedController(make_agent("scripted:hard"), label="Scripted")
     wins = losses = draws = 0
@@ -1268,11 +1271,13 @@ def baseline(binary_path: str, model_path: str, n_games: int = 100,
         model_is_a = (i % 2 == 0)
         ctrl_a, ctrl_b = ((ctrl_model, ctrl_scripted) if model_is_a
                           else (ctrl_scripted, ctrl_model))
+        # The model always pilots `deck`; the scripted opponent always `opp_deck`.
+        deck_a, deck_b = ((deck, opp_deck) if model_is_a else (opp_deck, deck))
         w, l, d = runner.run_games(
             ctrl_a, ctrl_b,
             label_a="Model" if model_is_a else "Scripted",
             label_b="Scripted" if model_is_a else "Model",
-            binary_path=binary_path, deck_a=deck, deck_b=deck,
+            binary_path=binary_path, deck_a=deck_a, deck_b=deck_b,
             n_games=1, seed=(seed + i) if seed is not None else None,
             transcript="quiet")
         wins += w if model_is_a else l
@@ -1284,46 +1289,79 @@ def baseline(binary_path: str, model_path: str, n_games: int = 100,
 
     if not quiet:
         print()
+        vs = (f"scripted:hard ({opp_deck})" if opp_deck != deck else "scripted:hard")
         print(f"{os.path.basename(model_path)} ({deck or 'default deck'}) vs "
-              f"scripted:hard over {n_games} games: {wins}W / {losses}L / {draws}D "
+              f"{vs} over {n_games} games: {wins}W / {losses}L / {draws}D "
               f"({100 * wins / n_games:.1f}% win rate)")
     return wins, losses, draws
 
 
-def baseline_all(binary_path: str, n_games: int = 100, seed: int | None = None,
-                 log_path: str | None = None):
-    """Run :func:`baseline` for every ``{deck}__final.zip`` checkpoint.
+def _league_roster() -> list[str]:
+    """The league deck roster ('league/<stem>' for every decks/league/*.dk).
 
-    Discovers final checkpoints recursively under checkpoints/ (subfolder
-    checkpoints keep their namespace, e.g. 'league/bug'), evaluates each on its
-    own deck vs scripted:hard, and appends a timestamped summary to
-    ``log_path`` (default checkpoints/baseline_report.log) as well as stdout.
+    Mirrors :func:`league`'s default roster so the baseline sweep evaluates the
+    same set of decks the league trains.
     """
-    import glob as _glob
+    return sorted(
+        "league/" + os.path.splitext(p)[0]
+        for p in (os.listdir(_LEAGUE_DECKS_DIR) if os.path.isdir(_LEAGUE_DECKS_DIR) else [])
+        if p.endswith(".dk"))
 
-    finals = sorted(_glob.glob(os.path.join(_CHECKPOINT_ABS, "**", "*__final.zip"),
-                               recursive=True))
-    if not finals:
-        print(f"No __final checkpoints found under {_CHECKPOINT_ABS}")
+
+def baseline_all(binary_path: str, n_games: int = 50, seed: int | None = None,
+                 log_path: str | None = None):
+    """Round-robin every league deck's model vs scripted:hard on every league deck.
+
+    For each league deck (decks/league/*.dk) that has a ``{deck}__final.zip``
+    checkpoint, the model plays ``n_games`` (default 50) against scripted:hard
+    piloting *each* league deck — including its own (the mirror). So an
+    N-deck roster runs N×N matchups of ``n_games`` each (e.g. 7 decks → 49
+    matchups → 2450 games at the default 50). A per-matchup win-rate grid plus a
+    timestamped summary are appended to ``log_path`` (default
+    checkpoints/baseline_report.log) as well as printed to stdout.
+    """
+    roster = _league_roster()
+    if not roster:
+        print(f"No league decks found under {_LEAGUE_DECKS_DIR}")
         return
+
+    # Resolve each roster deck to its final checkpoint; skip decks without one.
+    learners = []  # (deck, checkpoint_path)
+    for deck in roster:
+        try:
+            ckpt = _resolve_model(deck)
+        except Exception:
+            ckpt = None
+        if ckpt and os.path.exists(ckpt):
+            learners.append((deck, ckpt))
+        else:
+            print(f"[baseline] skipping {deck}: no __final checkpoint found", flush=True)
+    if not learners:
+        print(f"No league __final checkpoints found under {_CHECKPOINT_ABS}")
+        return
+
     if log_path is None:
         log_path = os.path.join(_CHECKPOINT_ABS, "baseline_report.log")
 
     stamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    header = (f"=== baseline sweep vs scripted:hard — {stamp} — "
-              f"{n_games} games/checkpoint, seed={seed} ===")
+    header = (f"=== league baseline round-robin vs scripted:hard — {stamp} — "
+              f"{n_games} games/matchup, seed={seed} ===")
     lines = [header]
     print(header, flush=True)
-    for path in finals:
-        deck = _deck_from_checkpoint(path)
-        rel = os.path.relpath(path, _CHECKPOINT_ABS)
-        print(f"\n--- {rel} (deck {deck or 'default'}) ---", flush=True)
-        w, l, d = baseline(binary_path, path, n_games=n_games, deck=deck,
-                           seed=seed)
-        total = w + l + d
-        line = (f"{rel:<40} deck={deck or 'default':<20} "
-                f"{w}W/{l}L/{d}D  {100 * w / total if total else 0:.1f}% win rate")
-        lines.append(line)
+
+    for deck, ckpt in learners:
+        row_cells = []
+        print(f"\n--- {deck} model vs scripted:hard on each league deck ---", flush=True)
+        for opp in roster:
+            print(f"\n  {deck} (model) vs {opp} (scripted:hard):", flush=True)
+            w, l, d = baseline(binary_path, ckpt, n_games=n_games, deck=deck,
+                               opp_deck=opp, seed=seed)
+            total = w + l + d
+            pct = 100 * w / total if total else 0
+            row_cells.append(f"vs {opp}={w}W/{l}L/{d}D({pct:.0f}%)")
+            lines.append(f"{deck:<22} vs {opp:<22} "
+                         f"{w}W/{l}L/{d}D  {pct:.1f}% win rate")
+        lines.append(f"  [{deck}] " + "  ".join(row_cells))
 
     summary = "\n".join(lines)
     with open(log_path, "a") as f:
@@ -1538,11 +1576,11 @@ if __name__ == "__main__":
                 play_a=args.play_a, play_b=args.play_b)
     elif args.command == "baseline":
         if args.all:
-            baseline_all(args.binary, n_games=args.games, seed=args.seed,
+            baseline_all(args.binary, n_games=args.games or 50, seed=args.seed,
                          log_path=args.log)
         elif args.model is None:
             parser.error("baseline: give a model checkpoint, or --all to sweep "
-                         "every __final checkpoint")
+                         "every league deck")
         else:
-            baseline(args.binary, _resolve_model(args.model), args.games,
+            baseline(args.binary, _resolve_model(args.model), args.games or 100,
                      deck=args.deck, seed=args.seed)

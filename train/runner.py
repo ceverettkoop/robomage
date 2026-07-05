@@ -22,6 +22,7 @@ Dependency-light on purpose (numpy + env + decode + the generated enum tables);
 torch is only pulled in if a caller passes a model ``Controller`` / checkpoint.
 """
 
+import datetime
 import random
 import sys
 
@@ -201,7 +202,7 @@ def run_games(controller_a, controller_b, *,
 
     Returns ``(wins, losses, draws)`` from Player A's perspective. A game that
     ends with no winner (e.g. the engine's step cap — a stall) counts as a draw
-    and its full log is saved to ``draw_<n>.txt``; a game stopped early by
+    and its full log is saved to ``draw_<timestamp>.txt``; a game stopped early by
     ``max_decisions`` is reported as incomplete and not counted.
     """
     if transcript is None:
@@ -343,7 +344,8 @@ def run_games(controller_a, controller_b, *,
         else:
             draws += 1
             result = "DRAW (should not occur)"
-            log_path = f"draw_{i + 1}.txt"
+            stamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+            log_path = f"draw_{stamp}.txt"
             with open(log_path, "w") as f:
                 f.write("\n".join(log_lines) + "\n")
             # A draw is a finding — always announce it, even in quiet mode.
