@@ -2676,7 +2676,7 @@
   Step: First Main
   Self:  17 life | mana: empty | hand(0): (empty)
   Opp:   15 life | mana: empty | hand count: 4
-  Self BF:  Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Token [1/1] (SICK)
+  Self BF:  Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Opp BF:   Lotus Petal | Swamp
   Stack: Cori-Steel Cutter (ability, self) -> Dragon's Rage Channeler (ability, self) -> Cori-Steel Cutter (spell, self)
   Self GY: Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Misty Rainforest, Scalding Tarn, Wasteland
@@ -2694,7 +2694,7 @@
   Self:  15 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp
-  Opp BF:   Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Token [1/1] (SICK)
+  Opp BF:   Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Stack: Dragon's Rage Channeler (ability, opponent) -> Cori-Steel Cutter (spell, opponent)
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Verdant Catacombs
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Misty Rainforest, Scalding Tarn, Wasteland
@@ -2712,7 +2712,7 @@
   Step: First Main
   Self:  17 life | mana: empty | hand(0): (empty)
   Opp:   15 life | mana: empty | hand count: 4
-  Self BF:  Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Token [1/1] (SICK)
+  Self BF:  Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Opp BF:   Lotus Petal | Swamp
   Stack: Dragon's Rage Channeler (ability, self) -> Cori-Steel Cutter (spell, self)
   Self GY: Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Misty Rainforest, Scalding Tarn, Wasteland
@@ -2730,7 +2730,7 @@
   Self:  15 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp
-  Opp BF:   Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Token [1/1] (SICK)
+  Opp BF:   Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Stack: Cori-Steel Cutter (spell, opponent)
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Verdant Catacombs
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
@@ -2747,7 +2747,7 @@
   Self:  15 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp
-  Opp BF:   Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Token [1/1] (SICK)
+  Opp BF:   Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Verdant Catacombs
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Actions:
@@ -2761,7 +2761,7 @@
   Self:  15 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp
-  Opp BF:   Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Token [1/1] (SICK)
+  Opp BF:   Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Verdant Catacombs
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Actions:
@@ -2778,7 +2778,7 @@
   Step: Declare Atk
   Self:  17 life | mana: empty | hand(0): (empty)
   Opp:   15 life | mana: empty | hand count: 4
-  Self BF:  Dragon's Rage Channeler [3/3] (ATK) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Token [1/1] (SICK)
+  Self BF:  Dragon's Rage Channeler [3/3] (ATK) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Opp BF:   Lotus Petal | Swamp
   Self GY: Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Opp GY:  Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Verdant Catacombs
@@ -2795,7 +2795,7 @@
   Self:  15 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp
-  Opp BF:   Dragon's Rage Channeler [3/3] (T,ATK) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Token [1/1] (SICK)
+  Opp BF:   Dragon's Rage Channeler [3/3] (T,ATK) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Verdant Catacombs
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Actions:
@@ -2811,7 +2811,7 @@
   Self:  15 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp
-  Opp BF:   Dragon's Rage Channeler [3/3] (T,ATK) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Token [1/1] (SICK)
+  Opp BF:   Dragon's Rage Channeler [3/3] (T,ATK) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Verdant Catacombs
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Actions:
@@ -2829,7 +2829,7 @@
   Self:  12 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp
-  Opp BF:   Dragon's Rage Channeler [3/3] (T,ATK) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Token [1/1] (SICK)
+  Opp BF:   Dragon's Rage Channeler [3/3] (T,ATK) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Verdant Catacombs
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Actions:
@@ -2843,7 +2843,7 @@
   Self:  12 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp
-  Opp BF:   Dragon's Rage Channeler [3/3] (T,ATK) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Token [1/1] (SICK)
+  Opp BF:   Dragon's Rage Channeler [3/3] (T,ATK) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Verdant Catacombs
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Actions:
@@ -2857,7 +2857,7 @@
   Self:  12 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Token [1/1] (SICK)
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Verdant Catacombs
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Actions:
@@ -2871,7 +2871,7 @@
   Self:  12 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Token [1/1] (SICK)
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Verdant Catacombs
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Actions:
@@ -2890,7 +2890,7 @@
   Self:  12 life | mana: empty | hand(4): Doomsday, Doomsday, Force of Will, Dark Ritual
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Token [1/1] (SICK)
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Verdant Catacombs
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Actions:
@@ -2906,7 +2906,7 @@
   Self:  12 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Token [1/1] (SICK)
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Verdant Catacombs
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Actions:
@@ -2920,7 +2920,7 @@
   Self:  12 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Token [1/1] (SICK)
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Verdant Catacombs
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Actions:
@@ -2934,7 +2934,7 @@
   Self:  12 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Token [1/1] (SICK)
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Verdant Catacombs
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Actions:
@@ -2950,7 +2950,7 @@
   Self:  12 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Token [1/1] (SICK)
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Verdant Catacombs
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Actions:
@@ -2966,7 +2966,7 @@
   Self:  12 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Token [1/1] (SICK)
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Verdant Catacombs
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Actions:
@@ -2983,7 +2983,7 @@
   Self:  12 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Token [1/1] (SICK)
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Verdant Catacombs
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Actions:
@@ -2997,7 +2997,7 @@
   Self:  12 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Token [1/1] (SICK)
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Verdant Catacombs
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Actions:
@@ -3011,7 +3011,7 @@
   Self:  12 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Token [1/1] (SICK)
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Verdant Catacombs
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Actions:
@@ -3025,7 +3025,7 @@
   Self:  12 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp
-  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Token [1/1] (SICK)
+  Opp BF:   Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls (T) | Monk [1/1] (SICK)
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Verdant Catacombs
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Actions:
@@ -3044,7 +3044,7 @@
   Self:  12 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp
-  Opp BF:   Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Cori-Steel Cutter | Island | Mountain | Volcanic Island | Thundering Falls | Token [1/1]
+  Opp BF:   Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Cori-Steel Cutter | Island | Mountain | Volcanic Island | Thundering Falls | Monk [1/1]
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Verdant Catacombs
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Actions:
@@ -3060,7 +3060,7 @@
   Self:  12 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
   Opp:   17 life | mana: empty | hand count: 1
   Self BF:  Lotus Petal | Swamp
-  Opp BF:   Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Cori-Steel Cutter | Island | Mountain | Volcanic Island | Thundering Falls | Token [1/1]
+  Opp BF:   Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Cori-Steel Cutter | Island | Mountain | Volcanic Island | Thundering Falls | Monk [1/1]
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Verdant Catacombs
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Actions:
@@ -3073,7 +3073,7 @@
   Step: First Main
   Self:  17 life | mana: empty | hand(1): Delver of Secrets
   Opp:   12 life | mana: empty | hand count: 5
-  Self BF:  Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Cori-Steel Cutter | Island | Mountain | Volcanic Island | Thundering Falls | Token [1/1]
+  Self BF:  Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Cori-Steel Cutter | Island | Mountain | Volcanic Island | Thundering Falls | Monk [1/1]
   Opp BF:   Lotus Petal | Swamp
   Self GY: Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Opp GY:  Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Verdant Catacombs
@@ -3093,7 +3093,7 @@
   Self:  12 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp
-  Opp BF:   Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain | Volcanic Island | Thundering Falls | Token [1/1]
+  Opp BF:   Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain | Volcanic Island | Thundering Falls | Monk [1/1]
   Stack: Delver of Secrets (spell, opponent)
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Verdant Catacombs
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
@@ -3109,7 +3109,7 @@
   Step: First Main
   Self:  17 life | mana: empty | hand(0): (empty)
   Opp:   12 life | mana: empty | hand count: 5
-  Self BF:  Delver of Secrets [1/1] (SICK) | Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain | Volcanic Island | Thundering Falls | Token [1/1]
+  Self BF:  Delver of Secrets [1/1] (SICK) | Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain | Volcanic Island | Thundering Falls | Monk [1/1]
   Opp BF:   Lotus Petal | Swamp
   Self GY: Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Opp GY:  Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Verdant Catacombs
@@ -3128,7 +3128,7 @@
   Step: First Main
   Self:  17 life | mana: empty | hand(0): (empty)
   Opp:   12 life | mana: empty | hand count: 5
-  Self BF:  Delver of Secrets [1/1] (SICK) | Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Token [1/1]
+  Self BF:  Delver of Secrets [1/1] (SICK) | Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1]
   Opp BF:   Lotus Petal | Swamp
   Self GY: Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Opp GY:  Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Verdant Catacombs
@@ -3147,7 +3147,7 @@
   Self:  12 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp
-  Opp BF:   Delver of Secrets [2/2] (SICK) | Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Token [1/1]
+  Opp BF:   Delver of Secrets [2/2] (SICK) | Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1]
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Verdant Catacombs
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Actions:
@@ -3161,7 +3161,7 @@
   Self:  12 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp
-  Opp BF:   Delver of Secrets [2/2] (SICK) | Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Token [1/1]
+  Opp BF:   Delver of Secrets [2/2] (SICK) | Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1]
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Verdant Catacombs
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Actions:
@@ -3178,7 +3178,7 @@
   Step: Declare Atk
   Self:  17 life | mana: empty | hand(0): (empty)
   Opp:   12 life | mana: empty | hand count: 5
-  Self BF:  Delver of Secrets [2/2] (SICK) | Dragon's Rage Channeler [3/3] (ATK) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Token [1/1]
+  Self BF:  Delver of Secrets [2/2] (SICK) | Dragon's Rage Channeler [3/3] (ATK) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1]
   Opp BF:   Lotus Petal | Swamp
   Self GY: Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Opp GY:  Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Verdant Catacombs
@@ -3198,7 +3198,7 @@
   Step: Declare Atk
   Self:  17 life | mana: empty | hand(0): (empty)
   Opp:   12 life | mana: empty | hand count: 5
-  Self BF:  Delver of Secrets [2/2] (ATK,SICK) | Dragon's Rage Channeler [3/3] (ATK) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Token [1/1]
+  Self BF:  Delver of Secrets [2/2] (ATK,SICK) | Dragon's Rage Channeler [3/3] (ATK) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1]
   Opp BF:   Lotus Petal | Swamp
   Self GY: Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Opp GY:  Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Verdant Catacombs
@@ -3218,7 +3218,7 @@
   Step: Declare Atk
   Self:  17 life | mana: empty | hand(0): (empty)
   Opp:   12 life | mana: empty | hand count: 5
-  Self BF:  Delver of Secrets [2/2] (ATK,SICK) | Dragon's Rage Channeler [3/3] (ATK) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Token [1/1] (ATK)
+  Self BF:  Delver of Secrets [2/2] (ATK,SICK) | Dragon's Rage Channeler [3/3] (ATK) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (ATK)
   Opp BF:   Lotus Petal | Swamp
   Self GY: Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Opp GY:  Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Verdant Catacombs
@@ -3237,7 +3237,7 @@
   Self:  12 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp
-  Opp BF:   Delver of Secrets [2/2] (T,ATK,SICK) | Dragon's Rage Channeler [3/3] (T,ATK) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Token [1/1] (T,ATK)
+  Opp BF:   Delver of Secrets [2/2] (T,ATK,SICK) | Dragon's Rage Channeler [3/3] (T,ATK) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T,ATK)
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Verdant Catacombs
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Actions:
@@ -3253,7 +3253,7 @@
   Self:  12 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp
-  Opp BF:   Delver of Secrets [2/2] (T,ATK,SICK) | Dragon's Rage Channeler [3/3] (T,ATK) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Token [1/1] (T,ATK)
+  Opp BF:   Delver of Secrets [2/2] (T,ATK,SICK) | Dragon's Rage Channeler [3/3] (T,ATK) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T,ATK)
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Verdant Catacombs
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Actions:
@@ -3273,7 +3273,7 @@
   Self:  6 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp
-  Opp BF:   Delver of Secrets [2/2] (T,ATK,SICK) | Dragon's Rage Channeler [3/3] (T,ATK) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Token [1/1] (T,ATK)
+  Opp BF:   Delver of Secrets [2/2] (T,ATK,SICK) | Dragon's Rage Channeler [3/3] (T,ATK) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T,ATK)
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Verdant Catacombs
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Actions:
@@ -3287,7 +3287,7 @@
   Self:  6 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp
-  Opp BF:   Delver of Secrets [2/2] (T,ATK,SICK) | Dragon's Rage Channeler [3/3] (T,ATK) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Token [1/1] (T,ATK)
+  Opp BF:   Delver of Secrets [2/2] (T,ATK,SICK) | Dragon's Rage Channeler [3/3] (T,ATK) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T,ATK)
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Verdant Catacombs
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Actions:
@@ -3301,7 +3301,7 @@
   Self:  6 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp
-  Opp BF:   Delver of Secrets [2/2] (T,SICK) | Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Token [1/1] (T)
+  Opp BF:   Delver of Secrets [2/2] (T,SICK) | Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Verdant Catacombs
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Actions:
@@ -3315,7 +3315,7 @@
   Self:  6 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp
-  Opp BF:   Delver of Secrets [2/2] (T,SICK) | Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Token [1/1] (T)
+  Opp BF:   Delver of Secrets [2/2] (T,SICK) | Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Verdant Catacombs
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Actions:
@@ -3334,7 +3334,7 @@
   Self:  6 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp
-  Opp BF:   Delver of Secrets [2/2] (T,SICK) | Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Token [1/1] (T)
+  Opp BF:   Delver of Secrets [2/2] (T,SICK) | Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Verdant Catacombs
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Actions:
@@ -3350,7 +3350,7 @@
   Self:  6 life | mana: empty | hand(6): Doomsday, Doomsday, Force of Will, Dark Ritual, Bloodstained Mire, Barrowgoyf
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp
-  Opp BF:   Delver of Secrets [2/2] (T,SICK) | Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Token [1/1] (T)
+  Opp BF:   Delver of Secrets [2/2] (T,SICK) | Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Verdant Catacombs
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Actions:
@@ -3364,7 +3364,7 @@
   Self:  6 life | mana: empty | hand(6): Doomsday, Doomsday, Force of Will, Dark Ritual, Bloodstained Mire, Barrowgoyf
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp
-  Opp BF:   Delver of Secrets [2/2] (T,SICK) | Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Token [1/1] (T)
+  Opp BF:   Delver of Secrets [2/2] (T,SICK) | Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Verdant Catacombs
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Actions:
@@ -3381,7 +3381,7 @@
   Self:  6 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp | Bloodstained Mire
-  Opp BF:   Delver of Secrets [2/2] (T,SICK) | Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Token [1/1] (T)
+  Opp BF:   Delver of Secrets [2/2] (T,SICK) | Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Verdant Catacombs
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Actions:
@@ -3400,7 +3400,7 @@
   Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp
-  Opp BF:   Delver of Secrets [2/2] (T,SICK) | Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Token [1/1] (T)
+  Opp BF:   Delver of Secrets [2/2] (T,SICK) | Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
   Stack: Bloodstained Mire (ability, self)
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Bloodstained Mire, Verdant Catacombs
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
@@ -3418,7 +3418,7 @@
   Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp
-  Opp BF:   Delver of Secrets [2/2] (T,SICK) | Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Token [1/1] (T)
+  Opp BF:   Delver of Secrets [2/2] (T,SICK) | Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
   Stack: Bloodstained Mire (ability, self)
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Bloodstained Mire, Verdant Catacombs
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
@@ -3440,7 +3440,7 @@
   Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T)
-  Opp BF:   Delver of Secrets [2/2] (T,SICK) | Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Token [1/1] (T)
+  Opp BF:   Delver of Secrets [2/2] (T,SICK) | Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
   Stack: Undercity Sewers (ability, self)
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Bloodstained Mire, Verdant Catacombs
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
@@ -3459,7 +3459,7 @@
   Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T)
-  Opp BF:   Delver of Secrets [2/2] (T,SICK) | Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Token [1/1] (T)
+  Opp BF:   Delver of Secrets [2/2] (T,SICK) | Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
   Stack: Undercity Sewers (ability, self)
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Bloodstained Mire, Verdant Catacombs
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
@@ -3476,7 +3476,7 @@
   Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T)
-  Opp BF:   Delver of Secrets [2/2] (T,SICK) | Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Token [1/1] (T)
+  Opp BF:   Delver of Secrets [2/2] (T,SICK) | Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Bloodstained Mire, Verdant Catacombs, Misty Rainforest
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Actions:
@@ -3490,7 +3490,7 @@
   Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T)
-  Opp BF:   Delver of Secrets [2/2] (T,SICK) | Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Token [1/1] (T)
+  Opp BF:   Delver of Secrets [2/2] (T,SICK) | Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Bloodstained Mire, Verdant Catacombs, Misty Rainforest
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Actions:
@@ -3506,7 +3506,7 @@
   Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T)
-  Opp BF:   Delver of Secrets [2/2] (T,SICK) | Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Token [1/1] (T)
+  Opp BF:   Delver of Secrets [2/2] (T,SICK) | Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Bloodstained Mire, Verdant Catacombs, Misty Rainforest
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Actions:
@@ -3522,7 +3522,7 @@
   Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T)
-  Opp BF:   Delver of Secrets [2/2] (T,SICK) | Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Token [1/1] (T)
+  Opp BF:   Delver of Secrets [2/2] (T,SICK) | Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Bloodstained Mire, Verdant Catacombs, Misty Rainforest
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Actions:
@@ -3539,7 +3539,7 @@
   Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T)
-  Opp BF:   Delver of Secrets [2/2] (T,SICK) | Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Token [1/1] (T)
+  Opp BF:   Delver of Secrets [2/2] (T,SICK) | Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Bloodstained Mire, Verdant Catacombs, Misty Rainforest
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Actions:
@@ -3553,7 +3553,7 @@
   Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T)
-  Opp BF:   Delver of Secrets [2/2] (T,SICK) | Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Token [1/1] (T)
+  Opp BF:   Delver of Secrets [2/2] (T,SICK) | Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Bloodstained Mire, Verdant Catacombs, Misty Rainforest
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Actions:
@@ -3567,7 +3567,7 @@
   Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T)
-  Opp BF:   Delver of Secrets [2/2] (T,SICK) | Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Token [1/1] (T)
+  Opp BF:   Delver of Secrets [2/2] (T,SICK) | Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Bloodstained Mire, Verdant Catacombs, Misty Rainforest
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Actions:
@@ -3581,7 +3581,7 @@
   Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T)
-  Opp BF:   Delver of Secrets [2/2] (T,SICK) | Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Token [1/1] (T)
+  Opp BF:   Delver of Secrets [2/2] (T,SICK) | Dragon's Rage Channeler [3/3] (T) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [1/1] (T)
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Bloodstained Mire, Verdant Catacombs, Misty Rainforest
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Actions:
@@ -3601,7 +3601,7 @@
   Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T)
-  Opp BF:   Delver of Secrets [2/2] | Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Cori-Steel Cutter | Island | Mountain | Volcanic Island | Thundering Falls | Token [1/1]
+  Opp BF:   Delver of Secrets [2/2] | Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Cori-Steel Cutter | Island | Mountain | Volcanic Island | Thundering Falls | Monk [1/1]
   Stack: Delver of Secrets (ability, opponent)
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Bloodstained Mire, Verdant Catacombs, Misty Rainforest
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
@@ -3618,7 +3618,7 @@
   Step: Upkeep
   Self:  17 life | mana: empty | hand(0): (empty)
   Opp:   5 life | mana: empty | hand count: 5
-  Self BF:  Delver of Secrets [2/2] | Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Cori-Steel Cutter | Island | Mountain | Volcanic Island | Thundering Falls | Token [1/1]
+  Self BF:  Delver of Secrets [2/2] | Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Cori-Steel Cutter | Island | Mountain | Volcanic Island | Thundering Falls | Monk [1/1]
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers (T)
   Stack: Delver of Secrets (ability, self)
   Self GY: Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
@@ -3637,7 +3637,7 @@
   Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T)
-  Opp BF:   Insectile Aberration [4/3] | Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Cori-Steel Cutter | Island | Mountain | Volcanic Island | Thundering Falls | Token [1/1]
+  Opp BF:   Insectile Aberration [4/3] | Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Cori-Steel Cutter | Island | Mountain | Volcanic Island | Thundering Falls | Monk [1/1]
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Bloodstained Mire, Verdant Catacombs, Misty Rainforest
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Actions:
@@ -3652,7 +3652,7 @@
   Step: Draw
   Self:  17 life | mana: empty | hand(1): Unholy Heat
   Opp:   5 life | mana: empty | hand count: 5
-  Self BF:  Insectile Aberration [4/3] | Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Cori-Steel Cutter | Island | Mountain | Volcanic Island | Thundering Falls | Token [1/1]
+  Self BF:  Insectile Aberration [4/3] | Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Cori-Steel Cutter | Island | Mountain | Volcanic Island | Thundering Falls | Monk [1/1]
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers (T)
   Self GY: Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Opp GY:  Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Bloodstained Mire, Verdant Catacombs, Misty Rainforest
@@ -3668,7 +3668,7 @@
   Step: Draw
   Self:  17 life | mana: empty | hand(1): Unholy Heat
   Opp:   5 life | mana: empty | hand count: 5
-  Self BF:  Insectile Aberration [4/3] | Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Cori-Steel Cutter | Island | Mountain | Volcanic Island | Thundering Falls | Token [1/1]
+  Self BF:  Insectile Aberration [4/3] | Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Cori-Steel Cutter | Island | Mountain | Volcanic Island | Thundering Falls | Monk [1/1]
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers (T)
   Self GY: Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Opp GY:  Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Bloodstained Mire, Verdant Catacombs, Misty Rainforest
@@ -3688,7 +3688,7 @@
   Step: Draw
   Self:  17 life | mana: empty | hand(0): (empty)
   Opp:   5 life | mana: empty | hand count: 5
-  Self BF:  Insectile Aberration [4/3] | Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Cori-Steel Cutter | Island | Mountain (T) | Volcanic Island | Thundering Falls | Token [1/1]
+  Self BF:  Insectile Aberration [4/3] | Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Cori-Steel Cutter | Island | Mountain (T) | Volcanic Island | Thundering Falls | Monk [1/1]
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers (T)
   Stack: Unholy Heat (spell, self) -> Insectile Aberration (self)
   Self GY: Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
@@ -3707,7 +3707,7 @@
   Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T)
-  Opp BF:   Insectile Aberration [4/3] | Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Cori-Steel Cutter | Island | Mountain (T) | Volcanic Island | Thundering Falls | Token [1/1]
+  Opp BF:   Insectile Aberration [4/3] | Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Cori-Steel Cutter | Island | Mountain (T) | Volcanic Island | Thundering Falls | Monk [1/1]
   Stack: Token (ability, opponent) -> Dragon's Rage Channeler (ability, opponent) -> Unholy Heat (spell, opponent) -> Insectile Aberration (opponent)
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Bloodstained Mire, Verdant Catacombs, Misty Rainforest
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
@@ -3725,7 +3725,7 @@
   Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T)
-  Opp BF:   Insectile Aberration [4/3] | Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Cori-Steel Cutter | Island | Mountain (T) | Volcanic Island | Thundering Falls | Token [2/2]
+  Opp BF:   Insectile Aberration [4/3] | Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Cori-Steel Cutter | Island | Mountain (T) | Volcanic Island | Thundering Falls | Monk [2/2]
   Stack: Dragon's Rage Channeler (ability, opponent) -> Unholy Heat (spell, opponent) -> Insectile Aberration (opponent)
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Bloodstained Mire, Verdant Catacombs, Misty Rainforest
   Opp GY:  Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
@@ -3743,7 +3743,7 @@
   Step: Draw
   Self:  17 life | mana: empty | hand(0): (empty)
   Opp:   5 life | mana: empty | hand count: 5
-  Self BF:  Insectile Aberration [4/3] | Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Cori-Steel Cutter | Island | Mountain (T) | Volcanic Island | Thundering Falls | Token [2/2]
+  Self BF:  Insectile Aberration [4/3] | Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Cori-Steel Cutter | Island | Mountain (T) | Volcanic Island | Thundering Falls | Monk [2/2]
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers (T)
   Stack: Dragon's Rage Channeler (ability, self) -> Unholy Heat (spell, self) -> Insectile Aberration (self)
   Self GY: Dragon's Rage Channeler, Force of Will, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
@@ -3761,7 +3761,7 @@
   Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T)
-  Opp BF:   Insectile Aberration [4/3] | Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Cori-Steel Cutter | Island | Mountain (T) | Volcanic Island | Thundering Falls | Token [2/2]
+  Opp BF:   Insectile Aberration [4/3] | Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Cori-Steel Cutter | Island | Mountain (T) | Volcanic Island | Thundering Falls | Monk [2/2]
   Stack: Unholy Heat (spell, opponent) -> Insectile Aberration (opponent)
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Bloodstained Mire, Verdant Catacombs, Misty Rainforest
   Opp GY:  Dragon's Rage Channeler, Force of Will, Brainstorm, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
@@ -3780,7 +3780,7 @@
   Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Cori-Steel Cutter | Island | Mountain (T) | Volcanic Island | Thundering Falls | Token [2/2]
+  Opp BF:   Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Cori-Steel Cutter | Island | Mountain (T) | Volcanic Island | Thundering Falls | Monk [2/2]
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Bloodstained Mire, Verdant Catacombs, Misty Rainforest
   Opp GY:  Delver of Secrets, Dragon's Rage Channeler, Force of Will, Brainstorm, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Actions:
@@ -3793,7 +3793,7 @@
   Step: First Main
   Self:  17 life | mana: empty | hand(0): (empty)
   Opp:   5 life | mana: empty | hand count: 5
-  Self BF:  Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Cori-Steel Cutter | Island | Mountain (T) | Volcanic Island | Thundering Falls | Token [2/2]
+  Self BF:  Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Cori-Steel Cutter | Island | Mountain (T) | Volcanic Island | Thundering Falls | Monk [2/2]
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers (T)
   Self GY: Delver of Secrets, Dragon's Rage Channeler, Force of Will, Brainstorm, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Opp GY:  Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Bloodstained Mire, Verdant Catacombs, Misty Rainforest
@@ -3812,7 +3812,7 @@
   Step: First Main
   Self:  17 life | mana: empty | hand(0): (empty)
   Opp:   5 life | mana: empty | hand count: 5
-  Self BF:  Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Token [2/2]
+  Self BF:  Dragon's Rage Channeler [3/3] | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [2/2]
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers (T)
   Self GY: Delver of Secrets, Dragon's Rage Channeler, Force of Will, Brainstorm, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Opp GY:  Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Bloodstained Mire, Verdant Catacombs, Misty Rainforest
@@ -3830,7 +3830,7 @@
   Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [4/4] | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Token [2/2]
+  Opp BF:   Dragon's Rage Channeler [4/4] | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [2/2]
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Bloodstained Mire, Verdant Catacombs, Misty Rainforest
   Opp GY:  Delver of Secrets, Dragon's Rage Channeler, Force of Will, Brainstorm, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Actions:
@@ -3844,7 +3844,7 @@
   Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [4/4] | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Token [2/2]
+  Opp BF:   Dragon's Rage Channeler [4/4] | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [2/2]
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Bloodstained Mire, Verdant Catacombs, Misty Rainforest
   Opp GY:  Delver of Secrets, Dragon's Rage Channeler, Force of Will, Brainstorm, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Actions:
@@ -3861,7 +3861,7 @@
   Step: Declare Atk
   Self:  17 life | mana: empty | hand(0): (empty)
   Opp:   5 life | mana: empty | hand count: 5
-  Self BF:  Dragon's Rage Channeler [4/4] (ATK) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Token [2/2]
+  Self BF:  Dragon's Rage Channeler [4/4] (ATK) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [2/2]
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers (T)
   Self GY: Delver of Secrets, Dragon's Rage Channeler, Force of Will, Brainstorm, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Opp GY:  Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Bloodstained Mire, Verdant Catacombs, Misty Rainforest
@@ -3880,7 +3880,7 @@
   Step: Declare Atk
   Self:  17 life | mana: empty | hand(0): (empty)
   Opp:   5 life | mana: empty | hand count: 5
-  Self BF:  Dragon's Rage Channeler [4/4] (ATK) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Token [2/2] (ATK)
+  Self BF:  Dragon's Rage Channeler [4/4] (ATK) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [2/2] (ATK)
   Opp BF:   Lotus Petal | Swamp | Undercity Sewers (T)
   Self GY: Delver of Secrets, Dragon's Rage Channeler, Force of Will, Brainstorm, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Opp GY:  Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Bloodstained Mire, Verdant Catacombs, Misty Rainforest
@@ -3898,7 +3898,7 @@
   Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [4/4] (T,ATK) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Token [2/2] (T,ATK)
+  Opp BF:   Dragon's Rage Channeler [4/4] (T,ATK) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [2/2] (T,ATK)
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Bloodstained Mire, Verdant Catacombs, Misty Rainforest
   Opp GY:  Delver of Secrets, Dragon's Rage Channeler, Force of Will, Brainstorm, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Actions:
@@ -3914,7 +3914,7 @@
   Self:  5 life | mana: empty | hand(5): Doomsday, Doomsday, Force of Will, Dark Ritual, Barrowgoyf
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Lotus Petal | Swamp | Undercity Sewers (T)
-  Opp BF:   Dragon's Rage Channeler [4/4] (T,ATK) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Token [2/2] (T,ATK)
+  Opp BF:   Dragon's Rage Channeler [4/4] (T,ATK) | Cori-Steel Cutter | Cori-Steel Cutter | Island (T) | Mountain (T) | Volcanic Island (T) | Thundering Falls | Monk [2/2] (T,ATK)
   Self GY: Force of Will, Daze, Dark Ritual, Lotus Petal, Edge of Autumn, Ponder, Polluted Delta, Underground Sea, Bloodstained Mire, Verdant Catacombs, Misty Rainforest
   Opp GY:  Delver of Secrets, Dragon's Rage Channeler, Force of Will, Brainstorm, Lightning Bolt, Lightning Bolt, Lightning Bolt, Daze, Daze, Unholy Heat, Unholy Heat, Ponder, Flooded Strand, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland
   Actions:
