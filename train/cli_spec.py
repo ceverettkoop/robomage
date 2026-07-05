@@ -432,46 +432,21 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
 
 # analysis.py — every command loads a trained model and simulates games (the
 # .rmrec recording-file commands were removed; the live model-sim path is the
-# single source). 'cardvalue' / 'report' are capture-mode (print/emit files);
-# the rest enter a REPL afterwards (interactive → TUI hands over the terminal).
+# single source). Two commands remain: 'report' is capture-mode (emits a
+# self-contained HTML battery and exits), while 'interactive' opens the REPL
+# (TUI hands over the terminal) — the REPL supersets every per-analysis view
+# (cardvalue, shap, value-swings, regret, entropy, consistency, targeting,
+# calibration, turning, clusters, whatif, …) and is the only mode with a live
+# env for `run`/`whatif`. The former standalone analysis subcommands were thin
+# wrappers over those same REPL views and were dropped.
 ANALYSIS_TOOL = Tool("analysis", "train/analysis.py", subs=[
-    Sub("cardvalue", "Rank cards by importance in a matchup (ΔV, policy priority, win-rate)", items=[
-        *sim_args(),
-        Arg("--n-games", "int", default=50, help="Number of games to simulate (default: 50)"),
-        Arg("--top", "int", default=30, help="Show top N cards (default: 30)"),
-    ]),
     Sub("report", "Run the standard battery and emit a single HTML report", items=[
         *sim_args(),
         Arg("--n-games", "int", default=50, help="Number of games to simulate (default: 50)"),
     ]),
-    Sub("shap", "SHAP analysis of value function over simulated games", mode="interactive", items=[
-        *sim_args(),
-        Arg("--n-games", "int", default=50, help="Number of games to simulate (default: 50)"),
-        Arg("--n-samples", "int", default=200, help="SHAP sample count (default: 200)"),
-        Arg("--n-background", "int", default=50, help="SHAP background size (default: 50)"),
-    ]),
-    Sub("value-swings", "Find games with largest value function swings", mode="interactive", items=[
-        *sim_args(),
-        Arg("--n-games", "int", default=50, help="Number of games to simulate (default: 50)"),
-        Arg("--top", "int", default=10, help="Show top N swings (default: 10)"),
-    ]),
-    Sub("regret", "Action regret analysis using policy distribution", mode="interactive", items=[
-        *sim_args(),
-        Arg("--n-games", "int", default=50, help="Number of games to simulate (default: 50)"),
-        Arg("--top", "int", default=20, help="Show top N high-regret decisions (default: 20)"),
-    ]),
-    Sub("entropy", "Policy entropy by game phase and board state", mode="interactive", items=[
-        *sim_args(),
-        Arg("--n-games", "int", default=50, help="Number of games to simulate (default: 50)"),
-    ]),
-    Sub("consistency", "Decision consistency for similar game states", mode="interactive", items=[
-        *sim_args(),
-        Arg("--n-games", "int", default=50, help="Number of games to simulate (default: 50)"),
-        Arg("--top", "int", default=20, help="Show top N inconsistent pairs (default: 20)"),
-    ]),
     Sub("interactive",
         "Interactive session: simulate games then inspect replays, board states, "
-        "value charts, SHAP, and more", mode="interactive", items=[
+        "value charts, SHAP, counterfactual whatif, and more", mode="interactive", items=[
             *sim_args(),
             Arg("--n-games", "int", default=20,
                 help="Games to pre-simulate before entering session (default: 20; 0 = skip)"),

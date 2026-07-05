@@ -262,6 +262,7 @@ class RoboMageEnv(gym.Env):
         self._action_descriptions = None  # list[str] per action under --narrative, else None
         self._pending_confirm = False  # True when last query used the -1 convention
         self._step_count = 0
+        self.last_engine_seed = None  # engine --seed of the most recent reset()
 
     # ------------------------------------------------------------------
     # gymnasium API
@@ -273,7 +274,14 @@ class RoboMageEnv(gym.Env):
         self._kill_proc()
         # Generate a unique seed for each game so time(nullptr) collisions don't
         # produce repeated games when many resets happen within the same second.
-        rng_seed = self.np_random.integers(0, 2**31 - 1)
+        # A caller can force a specific engine seed (options={"engine_seed": N})
+        # to replay a previously-collected game deterministically; the seed
+        # actually used is exposed as self.last_engine_seed.
+        if options is not None and "engine_seed" in options:
+            rng_seed = int(options["engine_seed"])
+        else:
+            rng_seed = int(self.np_random.integers(0, 2**31 - 1))
+        self.last_engine_seed = rng_seed
         cmd = [self.binary_path, "--machine", "--seed", str(rng_seed)]
         if self._narrative:
             cmd += ["--narrative"]

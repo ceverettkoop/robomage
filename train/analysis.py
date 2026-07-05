@@ -7,21 +7,21 @@ the resulting per-decision traces (full observations, value estimates V(s), and
 policy probabilities). The older offline .rmrec recording-file commands were
 removed; this live model-sim path is now the single source.
 
-Usage:
-    python analysis.py cardvalue <model.zip> --opponent scripted [--n-games 50 --top 30]
+There are two commands:
     python analysis.py report <model.zip> --opponent scripted [--n-games 50]
-    python analysis.py shap <model.zip> --opponent scripted [--n-games 50 --n-samples 200 --n-background 50]
-    python analysis.py value-swings <model.zip> --opponent scripted [--n-games 50 --top 10]
-    python analysis.py regret <model.zip> --opponent scripted [--n-games 50 --top 20]
-    python analysis.py entropy <model.zip> --opponent scripted [--n-games 50]
-    python analysis.py consistency <model.zip> --opponent scripted [--n-games 50 --top 20]
+        Run the standard battery once and emit a single self-contained HTML
+        report (headless, non-interactive — for CI / sharing). Exits when done.
     python analysis.py interactive <model.zip> --opponent scripted [--n-games 20]
+        Simulate games, then open the REPL below. This is the only mode with a
+        live env, so 'run' and 'whatif' work only here. The REPL supersets every
+        per-analysis view (cardvalue, shap, regret, entropy, consistency, …), so
+        the former standalone analysis subcommands were folded into it.
 
 Charts save as PNGs under --out (default train/analysis_out/) so the tool works
 headless; pass --show to also open a GUI window. The REPL also prints terminal
 sparklines/bars so the common views need no display at all.
 
-Interactive session commands (available after shap, value-swings, or via 'interactive'):
+Interactive session commands (via 'interactive'):
     list                  list all games
     replay <N> [-v]       per-decision trace for game N; -v adds zones, chosen
                           action, and interleaved opponent actions
@@ -35,6 +35,8 @@ Interactive session commands (available after shap, value-swings, or via 'intera
     consistency [N]       decision consistency for similar states (top N pairs)
     targeting             self vs opp targeting, hold vs cast analysis
     sideboard             sideboard decisions by each agent (bo3)
+    whatif <N> <step> [k] counterfactual: branch chosen + top-k actions from the
+                          same seed, roll each to the end, compare result/V(s)
     calibration           V(s) at game start vs actual win rate
     turning               find the permanent zero-crossing ('point of no return')
     clusters              classify games by V(s) curve shape (archetypes)
@@ -441,6 +443,29 @@ def _get_policy_probs(model, obs, num_choices):
     return probs[:num_choices].astype(np.float64)
 
 
+def _reset_for_game(env, model_is_a, engine_seed=None):
+    """Reset `env` for a game the model plays as side `model_is_a`.
+
+    Mirrors the deck-swap the collector uses so the model always pilots its own
+    deck: when the model is Player B the decks are swapped across the reset (the
+    engine process is spawned with the swapped decks, then the env attributes are
+    restored). Passing `engine_seed` forces that exact engine --seed so a
+    previously-collected game replays byte-identically. Returns
+    (obs, engine_seed_used).
+    """
+    opts = {"engine_seed": engine_seed} if engine_seed is not None else None
+    if model_is_a:
+        obs, _ = env.reset(options=opts)
+    else:
+        old_a, old_b = env._deck_a, env._deck_b
+        env._deck_a, env._deck_b = old_b, old_a
+        try:
+            obs, _ = env.reset(options=opts)
+        finally:
+            env._deck_a, env._deck_b = old_a, old_b
+    return obs, env.last_engine_seed
+
+
 def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
     """Play n_games and collect per-step (obs, value, action) traces.
 
@@ -451,6 +476,9 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
         "actions": [int, ...],       # model's chosen action index at each step
         "num_choices": [int, ...],   # number of legal actions at each step
         "opp_actions": [{"desc": str, "before_model_step": int}, ...],
+        "engine_seed": int,          # engine --seed of the played game (replay key)
+        "full_actions": [int, ...],  # every action index fed to env.step, in order
+        "prefix_len": [int, ...],    # per model step: # of full_actions before it
         "result": float,  # +1 win, -1 loss from model perspective
         "model_is_a": bool }
 
@@ -459,19 +487,18 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
     description strings — "before_model_step": i means the action was taken
     after model decision i-1 and before model decision i (== len(values) for
     opponent actions after the model's last decision).
+
+    `engine_seed` + `full_actions` + `prefix_len` make each game exactly
+    replayable (see _replay_to_step / the interactive `whatif` command): reset
+    with the recorded seed and feed full_actions[:prefix_len[step]] to land back
+    in the state where the model made decision `step`.
     """
     import torch
 
     games = []
     for g in range(n_games):
-        obs, _ = env.reset()
         model_is_a = bool(np.random.random() < 0.5)
-        # Swap decks so model always plays its deck
-        if not model_is_a:
-            old_a, old_b = env._deck_a, env._deck_b
-            env._deck_a, env._deck_b = old_b, old_a
-            obs, _ = env.reset()
-            env._deck_a, env._deck_b = old_a, old_b
+        obs, engine_seed = _reset_for_game(env, model_is_a)
 
         trace_obs = []
         trace_vals = []
@@ -480,6 +507,8 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
         trace_num_choices = []
         trace_probs = []
         trace_opp_actions = []
+        full_actions = []
+        prefix_len = []
         done = False
         total_reward = 0.0
 
@@ -499,6 +528,7 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
                 trace_interp.append(_extract_interpretable(obs))
                 trace_num_choices.append(num_choices)
                 trace_probs.append(probs)
+                prefix_len.append(len(full_actions))
 
                 mask = np.zeros(MAX_ACTIONS, dtype=bool)
                 mask[:num_choices] = True
@@ -520,6 +550,7 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
                     "before_model_step": len(trace_obs),
                 })
 
+            full_actions.append(action)
             obs, reward, terminated, truncated, _ = env.step(action)
             total_reward += reward
             done = terminated or truncated
@@ -533,6 +564,9 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
             "num_choices": trace_num_choices,
             "action_probs": trace_probs,
             "opp_actions": trace_opp_actions,
+            "engine_seed": engine_seed,
+            "full_actions": full_actions,
+            "prefix_len": prefix_len,
             "result": model_reward,
             "model_is_a": model_is_a,
         })
@@ -541,6 +575,176 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
             print(f"  game {g}/{n_games - 1}: {len(trace_obs)} decisions, {result_str}",
                   flush=True)
     return games
+
+
+def _game_is_replayable(game):
+    """True if a game trace carries the seed + action log needed for replay."""
+    return (game.get("engine_seed") is not None
+            and game.get("full_actions") is not None
+            and game.get("prefix_len") is not None)
+
+
+def _replay_to_step(env, game, step):
+    """Re-run `game` in `env` up to (not including) model decision `step`.
+
+    Resets with the game's recorded engine seed and deck arrangement, then feeds
+    the recorded interleaved action log until the model is on the clock for
+    decision `step`. Returns (obs, ok): `ok` is False (with a printed warning) if
+    replay diverged from the stored observation, so callers never present a
+    counterfactual built on a desynced state.
+    """
+    engine_seed = game["engine_seed"]
+    model_is_a = game["model_is_a"]
+    prefix = game["prefix_len"][step]
+    full_actions = game["full_actions"]
+
+    obs, _ = _reset_for_game(env, model_is_a, engine_seed)
+    for a in full_actions[:prefix]:
+        obs, _r, terminated, truncated, _ = env.step(a)
+        if terminated or truncated:
+            print(f"  Replay ended early at prefix action; cannot reach step {step}.")
+            return obs, False
+
+    expected = game["observations"][step]
+    if not np.allclose(obs, expected, atol=1e-4):
+        n_diff = int(np.sum(~np.isclose(obs, expected, atol=1e-4)))
+        print(f"  WARNING: replay diverged from recorded state at step {step} "
+              f"({n_diff} obs floats differ). Engine nondeterminism? "
+              f"Counterfactual results may be unreliable.")
+        return obs, False
+    return obs, True
+
+
+def _rollout_from(model, env, opp_model, obs, model_is_a, first_action):
+    """Play a branch to completion: take `first_action`, then let the model and
+    opponent finish the game. Returns a dict with the branch's model V(s)
+    trajectory, final result (+1/-1/0 from the model's perspective), and the
+    number of model decisions after the branch.
+    """
+    import torch
+
+    branch_vals = []
+    total_reward = 0.0
+    obs, reward, terminated, truncated, _ = env.step(first_action)
+    total_reward += reward
+    done = terminated or truncated
+
+    while not done:
+        a_has_priority = obs[32] > 0.5
+        model_has_priority = a_has_priority if model_is_a else not a_has_priority
+        num_choices = env._num_choices
+        mask = np.zeros(MAX_ACTIONS, dtype=bool)
+        mask[:num_choices] = True
+
+        if model_has_priority:
+            obs_t = torch.as_tensor(obs, dtype=torch.float32).unsqueeze(0)
+            with torch.no_grad():
+                branch_vals.append(model.policy.predict_values(obs_t).item())
+            action, _ = model.predict(obs, action_masks=mask, deterministic=True)
+            action = int(action)
+        else:
+            if opp_model is not None:
+                action, _ = opp_model.predict(obs, action_masks=mask, deterministic=True)
+                action = int(action)
+            else:
+                action = scripted_action(obs, num_choices)
+
+        obs, reward, terminated, truncated, _ = env.step(action)
+        total_reward += reward
+        done = terminated or truncated
+
+    result = total_reward if model_is_a else -total_reward
+    return {
+        "values": branch_vals,
+        "result": result,
+        "n_decisions": len(branch_vals),
+    }
+
+
+def _run_whatif(model, env, opp_model, game, game_idx, step, k):
+    """Counterfactual rollout: at model decision `step` of `game`, branch on the
+    chosen action and the top-`k` alternatives (by recorded policy probability),
+    rolling each to completion from the SAME seed. Returns a list of branch dicts
+    (chosen first) or None if the game can't be replayed.
+    """
+    if not _game_is_replayable(game):
+        print("  This game has no recorded seed/action log — it predates the "
+              "replay-enabled collector. Re-collect (or 'run <N>') to enable whatif.")
+        return None
+    if env is None or model is None:
+        print("  No live env available. Use the 'interactive' command to enable whatif.")
+        return None
+
+    n_steps = len(game["observations"])
+    if step < 0 or step >= n_steps:
+        print(f"  Step out of range for game {game_idx}. Valid range: 0–{n_steps - 1}")
+        return None
+
+    chosen = game["actions"][step]
+    num_choices = game["num_choices"][step]
+    probs = game["action_probs"][step] if game.get("action_probs") else None
+
+    # Candidate order: chosen action first, then the highest-probability
+    # alternatives (falling back to index order when no probs are recorded).
+    alts = [i for i in range(num_choices) if i != chosen]
+    if probs is not None:
+        alts.sort(key=lambda i: -probs[i])
+    candidates = [chosen] + alts[:max(0, k)]
+
+    obs0 = game["observations"][step]
+    result_str = "WIN" if game["result"] > 0 else ("LOSS" if game["result"] < 0 else "DRAW")
+    print(f"\nWhatif — game {game_idx} [{result_str}], decision {step}/{n_steps - 1}, "
+          f"branching {len(candidates)} action(s) from the same seed "
+          f"(seed={game['engine_seed']}):")
+
+    branches = []
+    for ci, act in enumerate(candidates):
+        obs, ok = _replay_to_step(env, game, step)
+        if not ok:
+            # Divergence already warned; abort the whole whatif — every branch
+            # would share the same bad prefix.
+            return None
+        desc = _action_desc(obs0, act)
+        p = probs[act] if probs is not None else None
+        roll = _rollout_from(model, env, opp_model, obs, game["model_is_a"], act)
+        branch = {
+            "action": act,
+            "desc": desc,
+            "prob": p,
+            "is_chosen": act == chosen,
+            "v_after": roll["values"][0] if roll["values"] else None,
+            "result": roll["result"],
+            "n_decisions": roll["n_decisions"],
+            "values": roll["values"],
+        }
+        branches.append(branch)
+
+    # Determinism sanity check on the chosen branch: replaying the recorded
+    # action should reproduce the recorded game result.
+    chosen_branch = branches[0]
+    if abs(chosen_branch["result"] - game["result"]) > 1e-6:
+        print(f"  WARNING: replaying the chosen action gave result "
+              f"{chosen_branch['result']:+.1f} but the recorded game was "
+              f"{game['result']:+.1f} — engine nondeterminism; treat results with care.")
+
+    _print_whatif_table(branches)
+    return branches
+
+
+def _print_whatif_table(branches):
+    """Print the whatif branch comparison table."""
+    print(f"\n  {'Action':<34} {'P(a)':>7} {'V after':>9} {'Result':>8} {'Len':>5}")
+    print(f"  {'-'*34} {'-'*7} {'-'*9} {'-'*8} {'-'*5}")
+    for b in branches:
+        tag = " *" if b["is_chosen"] else "  "
+        desc = (b["desc"][:30] + "…") if len(b["desc"]) > 31 else b["desc"]
+        pstr = f"{b['prob']:.3f}" if b["prob"] is not None else "  –  "
+        vstr = f"{b['v_after']:+.3f}" if b["v_after"] is not None else "  –  "
+        res = b["result"]
+        rstr = "WIN" if res > 0 else ("LOSS" if res < 0 else "DRAW")
+        print(f"{tag}{desc:<34} {pstr:>7} {vstr:>9} {rstr:>8} {b['n_decisions']:>5}")
+    print("  (* = action the model actually took; V after = model V(s) at the "
+          "first decision after branching)")
 
 
 def _action_desc(obs, i):
@@ -567,100 +771,6 @@ def _decode_legal_actions(obs, num_choices, chosen_action):
     return lines
 
 
-def cmd_shap(args):
-    """SHAP analysis of the value function over simulated games."""
-    import shap
-    import torch
-
-    n_games = args.n_games
-    n_samples = args.n_samples
-    n_background = args.n_background
-
-    model, env, opp_model = _load_model_and_env(args)
-
-    print(f"\nCollecting {n_games} game traces...")
-    games = _collect_game_traces(model, env, opp_model, n_games)
-    env.close()
-
-    # Pool all model decision points
-    all_interp = np.array([f for g in games for f in g["interp_features"]])
-    all_obs    = np.array([o for g in games for o in g["observations"]])
-    all_vals   = np.array([v for g in games for v in g["values"]])
-    print(f"Collected {len(all_interp)} decision points across {n_games} games.")
-    print(f"Value stats: mean={all_vals.mean():.3f}  std={all_vals.std():.3f}  "
-          f"min={all_vals.min():.3f}  max={all_vals.max():.3f}")
-
-    if len(all_interp) < n_background + 10:
-        print("Not enough data points for SHAP analysis.", file=sys.stderr)
-        return
-
-    # Build a wrapper that maps interpretable features -> value prediction.
-    # We need the raw observations paired with the interpretable features so we
-    # can look up (or interpolate) the value. Since SHAP perturbs the
-    # interpretable features, we use a nearest-neighbor approach: for each
-    # perturbed sample, find the closest real observation in interpretable space
-    # and return its value. This is valid because KernelExplainer works by
-    # masking/replacing features with background values.
-    #
-    # But a cleaner approach: SHAP KernelExplainer on the actual value-function
-    # with the interpretable features requires a function f(interp) -> value.
-    # We fit a lightweight surrogate (gradient-boosted trees) on
-    # (interp_features -> raw_value) to make SHAP tractable.
-
-    from sklearn.ensemble import GradientBoostingRegressor
-
-    print("\nFitting surrogate model on interpretable features...")
-    surrogate = GradientBoostingRegressor(
-        n_estimators=200, max_depth=5, learning_rate=0.1, subsample=0.8,
-    )
-    surrogate.fit(all_interp, all_vals)
-    r2 = surrogate.score(all_interp, all_vals)
-    print(f"Surrogate R^2 on training data: {r2:.4f}")
-    if r2 < 0.5:
-        print("Warning: surrogate fit is poor — SHAP results may be unreliable.", file=sys.stderr)
-
-    # SHAP on the surrogate
-    background_idx = np.random.choice(len(all_interp), size=min(n_background, len(all_interp)),
-                                      replace=False)
-    background = all_interp[background_idx]
-
-    sample_idx = np.random.choice(len(all_interp), size=min(n_samples, len(all_interp)),
-                                  replace=False)
-    samples = all_interp[sample_idx]
-
-    print(f"\nRunning SHAP KernelExplainer ({n_background} background, {len(samples)} samples)...")
-    explainer = shap.KernelExplainer(surrogate.predict, background)
-    shap_values = explainer.shap_values(samples)
-
-    # Print feature importance (mean |SHAP|)
-    mean_abs_shap = np.abs(shap_values).mean(axis=0)
-    sorted_idx = np.argsort(-mean_abs_shap)
-
-    print(f"\n{'Feature':<25} {'Mean |SHAP|':>12} {'Std SHAP':>12} {'Surrogate Importance':>20}")
-    print("-" * 72)
-    feat_importance = surrogate.feature_importances_
-    for rank, idx in enumerate(sorted_idx):
-        name = _INTERP_FEATURE_NAMES[idx]
-        print(f"  {name:<23} {mean_abs_shap[idx]:12.4f} {shap_values[:, idx].std():12.4f}"
-              f" {feat_importance[idx]:20.4f}")
-
-    # Try to plot
-    try:
-        plt = viz.pyplot(show=viz.want_show(args))
-        if plt is not None:
-            shap.summary_plot(shap_values, samples, feature_names=_INTERP_FEATURE_NAMES,
-                              show=False)
-            plt.tight_layout()
-            viz.save_or_show(plt, plt.gcf(), "shap_summary", args)
-    except Exception as e:
-        print(f"\nCould not display SHAP plot: {e}", file=sys.stderr)
-        print("SHAP values printed above.", file=sys.stderr)
-
-    _interactive_session({
-        "games": games, "swing_data": None,
-        "shap_values": shap_values, "shap_samples": samples,
-        "model": None, "env": None, "opp_model": None, "args": args,
-    })
 
 
 _INTERP_STEP_NAMES = [
@@ -1317,9 +1427,9 @@ def _interactive_session(ctx):
         cmds = ["list", "replay <N> [-v]", "boardstate <N> <step>", "summary",
                 "cardvalue [N]", "targeting", "sideboard",
                 "swings [N]", "shap", "regret [N]", "entropy", "consistency [N]",
-                "calibration", "turning", "clusters",
+                "calibration", "turning", "clusters", "whatif <N> <step> [k]",
                 "chart <N>", "chart swings [N]", "chart cardvalue [N]", "chart shap",
-                "chart calibration", "chart turning", "chart clusters"]
+                "chart calibration", "chart turning", "chart clusters", "chart whatif"]
         if can_run:
             cmds.append("run <N>")
         cmds += ["help", "quit"]
@@ -1360,6 +1470,9 @@ def _interactive_session(ctx):
             print("  cardvalue [N]             — rank cards by importance (ΔV, priority, win-rate lift)")
             print("  targeting                 — self vs opp targeting, hold vs cast analysis")
             print("  sideboard                 — sideboard decisions by each agent (bo3)")
+            print("  whatif <N> <step> [k]     — counterfactual: branch the chosen action + top-k")
+            print("                              alternatives from the same seed, roll each to the end,")
+            print("                              and compare final result / V(s) (k default 3)")
             print("  calibration               — V(s) at game start vs actual win rate (is model biased?)")
             print("  turning                   — find the 'point of no return' in each game")
             print("  clusters                  — classify games by V(s) curve shape (archetypes)")
@@ -1370,6 +1483,7 @@ def _interactive_session(ctx):
             print("  chart calibration         — calibration curve plot")
             print("  chart turning             — turning point distribution plot")
             print("  chart clusters            — overlay V(s) curves by archetype")
+            print("  chart whatif              — overlay branch V(s) curves from the last whatif")
             if can_run:
                 print("  run <N>                   — simulate N more games and add to pool")
             print("  quit / exit               — leave interactive session")
@@ -1778,13 +1892,47 @@ def _interactive_session(ctx):
                     ax.set_ylim(-1.1, 1.1)
                 viz.save_or_show(plt, fig, "clusters", args)
 
+            elif sub == "whatif":
+                wf = ctx.get("whatif_data")
+                if not wf:
+                    print("  Run 'whatif <game> <step> [k]' first to generate branches.")
+                    continue
+                gn, step, branches = wf["game_idx"], wf["step"], wf["branches"]
+                g = games[gn]
+                actual_vals = g["values"]
+                fig, ax = plt.subplots(figsize=(11, 5))
+                # Actual game V(s) up to and including the branch point.
+                xs_actual = list(range(len(actual_vals)))
+                ax.plot(xs_actual, actual_vals, color="black", linewidth=1.4,
+                        alpha=0.5, label="actual game")
+                ax.axvline(step, color="gray", linestyle="--", linewidth=1,
+                           label=f"branch @ step {step}")
+                for b in branches:
+                    # Each branch's V(s) trajectory starts at the decision after
+                    # the branch, so offset the x-axis to step+1.
+                    bx = list(range(step + 1, step + 1 + len(b["values"])))
+                    res = b["result"]
+                    rstr = "W" if res > 0 else ("L" if res < 0 else "D")
+                    lab = ("[chosen] " if b["is_chosen"] else "") + f"{b['desc']} → {rstr}"
+                    lw = 2.0 if b["is_chosen"] else 1.1
+                    ax.plot(bx, b["values"], linewidth=lw, alpha=0.85,
+                            label=(lab[:40] + "…") if len(lab) > 41 else lab)
+                ax.axhline(0, color="gray", linewidth=0.5, linestyle="--")
+                ax.set_xlabel("Model decision step")
+                ax.set_ylabel("V(s)")
+                ax.set_title(f"Whatif — game {gn}, branch at step {step}")
+                ax.legend(loc="best", fontsize=7)
+                ax.grid(True, alpha=0.3)
+                viz.save_or_show(plt, fig, f"whatif_g{gn}_s{step}", args)
+
             else:
                 # chart <N> — value curve for a single game
                 try:
                     gn = int(sub)
                 except ValueError:
                     print("  Usage: chart <game_index> | chart swings [N] | chart cardvalue [N] "
-                          "| chart shap | chart calibration | chart turning | chart clusters")
+                          "| chart shap | chart calibration | chart turning | chart clusters "
+                          "| chart whatif")
                     continue
                 if gn < 0 or gn >= len(games):
                     print(f"  Game index out of range. Valid range: 0–{len(games) - 1}")
@@ -1853,6 +2001,26 @@ def _interactive_session(ctx):
         elif cmd == "sideboard":
             _sim_sideboard_report(games)
 
+        elif cmd == "whatif":
+            if len(parts) < 3:
+                print("  Usage: whatif <game_index> <step> [k]   "
+                      "(k = # of alternative actions, default 3)")
+                continue
+            try:
+                gn = int(parts[1])
+                step = int(parts[2])
+                k = int(parts[3]) if len(parts) >= 4 else 3
+            except ValueError:
+                print("  Expected integer game_index, step, and optional k.")
+                continue
+            if gn < 0 or gn >= len(games):
+                print(f"  Game index out of range. Valid range: 0–{len(games) - 1}")
+                continue
+            branches = _run_whatif(ctx.get("model"), ctx.get("env"),
+                                   ctx.get("opp_model"), games[gn], gn, step, k)
+            if branches:
+                ctx["whatif_data"] = {"game_idx": gn, "step": step, "branches": branches}
+
         elif cmd == "run":
             if ctx.get("env") is None or ctx.get("model") is None:
                 print("  No live env available. Use the 'interactive' command to enable 'run'.")
@@ -1870,124 +2038,13 @@ def _interactive_session(ctx):
             ctx["calibration_data"] = None
             ctx["turning_data"] = None
             ctx["cluster_data"] = None
+            ctx["whatif_data"] = None
             print(f"  Pool now has {len(games)} games.")
 
         else:
             print(f"  Unknown command: {cmd!r}. Type 'help' for available commands.")
 
 
-def cmd_value_swings(args):
-    """Find games where the value function swung most dramatically."""
-    import torch
-
-    n_games = args.n_games
-    top_n = args.top
-
-    model, env, opp_model = _load_model_and_env(args)
-
-    print(f"\nCollecting {n_games} game traces...")
-    games = _collect_game_traces(model, env, opp_model, n_games)
-    env.close()
-
-    swing_data = _compute_swings(games)
-    top_swings = swing_data[:top_n]
-
-    print(f"\nTop {min(top_n, len(top_swings))} value function swings:\n")
-    _print_swing_table(top_swings)
-
-    # Detailed breakdowns of the top swings
-    print(f"\n{'='*70}")
-    print("Detailed breakdown of top swings:\n")
-
-    for rank, s in enumerate(top_swings[:min(5, len(top_swings))]):
-        g = games[s["game_idx"]]
-        step = s["swing_step"]
-        result_str = "WIN" if g["result"] > 0 else ("LOSS" if g["result"] < 0 else "DRAW")
-        side = "A" if g["model_is_a"] else "B"
-
-        print(f"--- Game {s['game_idx']} (Model={side}, {result_str}, "
-              f"{s['n_decisions']} decisions) ---")
-        print(f"    Swing at step {step}: {s['swing_from']:+.3f} -> {s['swing_to']:+.3f} "
-              f"(delta {s['swing_to'] - s['swing_from']:+.3f})")
-
-        # Show board state before and after the swing
-        for label, idx in [("Before", step), ("After", step + 1)]:
-            if idx >= len(g["interp_features"]):
-                continue
-            feat = g["interp_features"][idx]
-            print(f"    {label}: "
-                  f"Life {feat[_FEAT['self_life']]:.0f}/{feat[_FEAT['opp_life']]:.0f}  "
-                  f"Creatures {feat[_FEAT['self_creatures']]:.0f}v{feat[_FEAT['opp_creatures']]:.0f}  "
-                  f"Lands {feat[_FEAT['self_lands']]:.0f}v{feat[_FEAT['opp_lands']]:.0f}  "
-                  f"Hand {feat[_FEAT['self_hand_size']]:.0f}  "
-                  f"Power {feat[_FEAT['self_total_power']]:.0f}v{feat[_FEAT['opp_total_power']]:.0f}  "
-                  f"GY {feat[_FEAT['self_gy_size']]:.0f}/{feat[_FEAT['opp_gy_size']]:.0f}")
-
-        # Show value trajectory for this game
-        vals = g["values"]
-        n = len(vals)
-        # Show a compressed trajectory: every Nth step + the swing point
-        stride = max(1, n // 20)
-        keypoints = set(range(0, n, stride))
-        keypoints.add(step)
-        if step + 1 < n:
-            keypoints.add(step + 1)
-        keypoints.add(n - 1)
-
-        trajectory = []
-        for i in sorted(keypoints):
-            marker = " <-- SWING" if i == step else ""
-            trajectory.append(f"      [{i:3d}] V={vals[i]:+.3f}{marker}")
-        print("    Value trajectory:")
-        for line in trajectory:
-            print(line)
-        print()
-
-    # Aggregate statistics
-    if swing_data:
-        all_swings = [s["swing_magnitude"] for s in swing_data]
-        win_swings = [s["swing_magnitude"] for s in swing_data if s["result"] > 0]
-        loss_swings = [s["swing_magnitude"] for s in swing_data if s["result"] < 0]
-        print(f"\nSwing statistics across {len(swing_data)} games:")
-        print(f"  Overall: mean={np.mean(all_swings):.3f}  "
-              f"median={np.median(all_swings):.3f}  max={np.max(all_swings):.3f}")
-        if win_swings:
-            print(f"  Wins:    mean={np.mean(win_swings):.3f}  "
-                  f"median={np.median(win_swings):.3f}")
-        if loss_swings:
-            print(f"  Losses:  mean={np.mean(loss_swings):.3f}  "
-                  f"median={np.median(loss_swings):.3f}")
-
-    # Try to plot value curves for top swing games
-    try:
-        plt = viz.pyplot(show=viz.want_show(args))
-        if plt is not None:
-            n_plot = min(5, len(top_swings))
-            fig, axes = plt.subplots(n_plot, 1, figsize=(10, 3 * n_plot), squeeze=False)
-            for i, s in enumerate(top_swings[:n_plot]):
-                ax = axes[i, 0]
-                g = games[s["game_idx"]]
-                vals = g["values"]
-                result_str = "WIN" if g["result"] > 0 else ("LOSS" if g["result"] < 0 else "DRAW")
-                ax.plot(vals, color="steelblue", linewidth=1.2)
-                ax.axhline(0, color="gray", linewidth=0.5, linestyle="--")
-                ax.axvline(s["swing_step"], color="red", linewidth=1, linestyle="--",
-                           label=f"swing ({s['swing_to'] - s['swing_from']:+.2f})")
-                ax.set_ylabel("V(s)")
-                ax.set_title(f"Game {s['game_idx']} ({result_str})")
-                ax.legend(loc="upper right", fontsize=8)
-                ax.grid(True, alpha=0.3)
-            axes[-1, 0].set_xlabel("Decision step")
-            viz.save_or_show(plt, fig, "value_swings", args)
-    except Exception as e:
-        print(f"\nCould not display plot: {e}", file=sys.stderr)
-
-    _interactive_session({
-        "games": games, "swing_data": swing_data,
-        "shap_values": None, "shap_samples": None,
-        "calibration_data": None, "turning_data": None, "cluster_data": None,
-        "model": None, "env": None, "opp_model": None, "args": args,
-    })
 
 
 def _board_bucket_from_feat(feat):
@@ -2939,22 +2996,6 @@ def _chart_value_overview(games, args=None):
     return viz.save_or_show(plt, fig, "value_overview", args)
 
 
-def cmd_cardvalue(args):
-    """Rank cards by importance for the loaded matchup, then enter the REPL."""
-    model, env, opp_model = _load_model_and_env(args)
-
-    print(f"\nCollecting {args.n_games} game traces...")
-    games = _collect_game_traces(model, env, opp_model, args.n_games)
-    env.close()
-
-    rows = _analyze_cardvalue(games, top_n=args.top)
-    _chart_cardvalue(rows, args=args, top_n=min(args.top, 25))
-
-    _interactive_session({
-        "games": games, "swing_data": None,
-        "shap_values": None, "shap_samples": None,
-        "model": None, "env": None, "opp_model": None, "args": args,
-    })
 
 
 def _capture(fn, *a, **k):
@@ -3016,111 +3057,10 @@ def cmd_report(args):
     print(f"\n[report] wrote {report_path}")
 
 
-def cmd_regret(args):
-    """Action regret / counterfactual analysis using policy distribution."""
-    model, env, opp_model = _load_model_and_env(args)
-
-    print(f"\nCollecting {args.n_games} game traces...")
-    games = _collect_game_traces(model, env, opp_model, args.n_games)
-    env.close()
-
-    _analyze_regret(games, top_n=args.top)
-
-    _interactive_session({
-        "games": games, "swing_data": None,
-        "shap_values": None, "shap_samples": None,
-        "model": None, "env": None, "opp_model": None, "args": args,
-    })
 
 
-def cmd_entropy(args):
-    """Policy entropy analysis over game phases and board states."""
-    model, env, opp_model = _load_model_and_env(args)
-
-    print(f"\nCollecting {args.n_games} game traces...")
-    games = _collect_game_traces(model, env, opp_model, args.n_games)
-    env.close()
-
-    records = _analyze_entropy(games)
-
-    # Try to plot
-    try:
-        plt = viz.pyplot(show=viz.want_show(args))
-
-        # Entropy by phase
-        phase_data = {}
-        for r in records:
-            step_name = _step_name_from_feat(r["feat"])
-            phase_data.setdefault(step_name, []).append(r["norm_entropy"])
-
-        phases_present = [p for p in _INTERP_STEP_NAMES if p in phase_data]
-        if plt is not None and phases_present:
-            fig, axes = plt.subplots(1, 2, figsize=(14, 5))
-
-            # Box plot by phase
-            ax = axes[0]
-            bp_data = [phase_data[p] for p in phases_present]
-            ax.boxplot(bp_data, labels=phases_present, vert=True)
-            ax.set_xticklabels(phases_present, rotation=45, ha="right", fontsize=8)
-            ax.set_ylabel("Normalized Entropy")
-            ax.set_title("Policy Entropy by Game Phase")
-            ax.grid(True, alpha=0.3)
-
-            # Entropy by outcome over time (game progress)
-            ax = axes[1]
-            win_records = [r for r in records if r["result"] > 0]
-            loss_records = [r for r in records if r["result"] < 0]
-            for label, recs, color in [("Wins", win_records, "steelblue"),
-                                       ("Losses", loss_records, "firebrick")]:
-                if not recs:
-                    continue
-                # Bin by step index within game
-                max_step = max(r["step"] for r in recs)
-                if max_step < 5:
-                    continue
-                n_bins = min(20, max_step)
-                bin_edges = np.linspace(0, max_step + 1, n_bins + 1)
-                bin_means = []
-                bin_centers = []
-                for b in range(n_bins):
-                    in_bin = [r["norm_entropy"] for r in recs
-                              if bin_edges[b] <= r["step"] < bin_edges[b + 1]]
-                    if in_bin:
-                        bin_means.append(np.mean(in_bin))
-                        bin_centers.append((bin_edges[b] + bin_edges[b + 1]) / 2)
-                ax.plot(bin_centers, bin_means, color=color, label=label, linewidth=1.5)
-            ax.set_xlabel("Decision Step in Game")
-            ax.set_ylabel("Mean Normalized Entropy")
-            ax.set_title("Entropy Over Game Progress")
-            ax.legend()
-            ax.grid(True, alpha=0.3)
-
-            viz.save_or_show(plt, fig, "entropy", args)
-    except Exception as e:
-        print(f"\nCould not display plot: {e}", file=sys.stderr)
-
-    _interactive_session({
-        "games": games, "swing_data": None,
-        "shap_values": None, "shap_samples": None,
-        "model": None, "env": None, "opp_model": None, "args": args,
-    })
 
 
-def cmd_consistency(args):
-    """Decision consistency analysis for similar game states."""
-    model, env, opp_model = _load_model_and_env(args)
-
-    print(f"\nCollecting {args.n_games} game traces...")
-    games = _collect_game_traces(model, env, opp_model, args.n_games)
-    env.close()
-
-    _analyze_consistency(games, top_n=args.top)
-
-    _interactive_session({
-        "games": games, "swing_data": None,
-        "shap_values": None, "shap_samples": None,
-        "model": None, "env": None, "opp_model": None, "args": args,
-    })
 
 
 def cmd_interactive(args):
@@ -3140,6 +3080,7 @@ def cmd_interactive(args):
         "calibration_data": None,
         "turning_data": None,
         "cluster_data": None,
+        "whatif_data": None,
         "model": model,
         "env": env,
         "opp_model": opp_model,
@@ -3167,13 +3108,7 @@ def main():
 
     args = parser.parse_args()
     {
-        "cardvalue": cmd_cardvalue,
         "report": cmd_report,
-        "shap": cmd_shap,
-        "value-swings": cmd_value_swings,
-        "regret": cmd_regret,
-        "entropy": cmd_entropy,
-        "consistency": cmd_consistency,
         "interactive": cmd_interactive,
     }[args.command](args)
 

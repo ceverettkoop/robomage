@@ -2,12 +2,10 @@ TODO:
 
 ## Open engine correctness issues
 
+- surveil not correct for surveil more than 2 - it does them one at a time, agent should be offered X cards and decide to put on top or in graveyard one at a time, in user desired order
+
 - Dauthi Voidwalker (vocab 88) does not work exactly as written — casts immediately (should be
   the exile-a-card-then-cast-from-exile ability with its "can't be cast unless" restriction).
-
-- Keen-Eyed Curator (vocab 40): buff from the types among exiled cards — untested.
-
-- Protection from a color (pro-color) — untested.
 
 - rules_modifying::may_play_lands_from_graveyard ignores Affected$ filters (rules_modifying.cpp:136):
   returns true if the player controls ANY `may_play_from_graveyard` static, without consulting
@@ -88,19 +86,6 @@ Remaining acceptable gaps: mode multi-hot capped at 6, serialized targets capped
 object; an all-modes-untargetable charm COPY is still created and fizzles at resolution
 (CR 707.10c pruning not applied per-mode).
 
-### Pre-existing breakage surfaced while testing the modal fix (2026-07-02)
-
-- **meta/ deck loading crashes the engine**: `--deck-a meta/arclight_phoenix` (also boros_aggro)
-  dies at startup — parse_card_script assert after trying to open `p/petal.txt` / `p/parlor.txt`
-  (something splits multi-word card names: "Lotus Petal" → "Petal", "Elegant Parlor" → "Parlor";
-  en route it even parses unrelated fallback matches like charm_peddler.txt). Reproduced on
-  UNMODIFIED main (verified via git stash), so unrelated to the modal change. league/ decks load
-  fine. Affects any regression pass over meta decks.
-- **train/test_revealed_accumulator.py is broken on main**: imports `TestHarness` /
-  `get_scripted_action` from train/test_harness.py, which no longer exports them (harness refactor
-  moved the loop into runner.py). (train/regression/replay_diff.py had the same breakage and was
-  FIXED with the CI work — it now drives the deterministic scripted game via runner.run_games and
-  its corpus was re-recorded; test_revealed_accumulator.py still needs the same treatment.)
 
 ### T3.2 cleanup-step trigger priority (rule 514.3a) — DEFERRED
 No card in the current vocab has a cleanup-step trigger that uses the stack, so the "no priority
