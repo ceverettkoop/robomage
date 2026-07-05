@@ -14,6 +14,15 @@
 # exec'ing (a mid-session rebuild races the workers and fails them with EACCES).
 set -euo pipefail
 
+# Only provision when running in a Claude Code remote (cloud) environment.
+# CLAUDE_CODE_REMOTE is set by the remote runner and absent on a local CLI
+# session — locally the user's own machine already has these deps set up
+# (or manages them themselves), so skip the (slow) fetch/install work.
+if [ "${CLAUDE_CODE_REMOTE:-}" != "true" ]; then
+  echo "[session-start] Not a remote environment (CLAUDE_CODE_REMOTE unset) — skipping provisioning."
+  exit 0
+fi
+
 ROOT="${CLAUDE_PROJECT_DIR:-$(cd "$(dirname "$0")/../.." && pwd)}"
 cd "$ROOT"
 
