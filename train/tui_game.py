@@ -23,13 +23,13 @@ import time
 import numpy as np
 from rich.text import Text
 
-from textual import work
+from textual import events, work
 from textual.app import App, ComposeResult
 from textual.content import Content
 from textual.containers import Horizontal, Vertical, VerticalScroll
 from textual.message import Message
 from textual.widgets import Footer, Header, OptionList, RichLog, Static
-from textual.widgets.option_list import Option
+from textual.widgets.option_list import Option, OptionDoesNotExist
 
 from env import NarrativeEnv, STATE_SIZE
 import decode
@@ -160,8 +160,30 @@ class CardButton(Static):
         if left:
             self.styles.border_left = ("round", left)
 
+    def set_action_highlight(self, on: bool) -> None:
+        """Toggle the "an action in the menu targets this card" highlight — the
+        cross-highlight partner of ActionList's option hover (see GameApp)."""
+        self.set_class(on, "action-linked")
+
     def on_click(self) -> None:
         self.post_message(CardClicked(self._card_idx, self._controller))
+
+
+class ActionList(OptionList):
+    """OptionList that reports which option the mouse is hovering over.
+
+    The base tracks the hovered row in the private `_mouse_hovering_over`
+    reactive (set by its `_on_mouse_move`, cleared by `_on_leave`); we watch it
+    and surface the change as an `ActionHovered` message so the app can
+    cross-highlight the battlefield permanent that option refers to."""
+
+    class ActionHovered(Message):
+        def __init__(self, index):
+            self.index = index          # hovered option index, or None
+            super().__init__()
+
+    def watch__mouse_hovering_over(self, _old, new) -> None:
+        self.post_message(self.ActionHovered(new))
 
 
 # ── Worker → UI messages ──────────────────────────────────────────────────────
@@ -215,6 +237,8 @@ class GameApp(App):
     CardButton  { width: auto; height: 100%; margin: 0 1; padding: 0 1;
                   border: round $surface; }
     CardButton:hover { background: $boost; }
+    /* A menu action targets this card (cross-highlight from action hover). */
+    CardButton.action-linked { background: $warning 40%; border: round $warning; }
     #bottom     { height: 1fr; min-height: 8; }
     #actions    { width: 35%; min-width: 24; border: round $primary; }
     #log        { width: 1fr; border: round $surface; }
@@ -244,6 +268,10 @@ class GameApp(App):
         self._actions = []
         self._awaiting = False
         self._reward = 0.0
+        # The CardButton the mouse is currently over (Enter/Leave tracked in
+        # on_enter/on_leave). Drives the action<->permanent cross-highlighting,
+        # and is the anchor a future card-inspect popup reads.
+        self._hovered_button = None
         # Autopass (the 'p' key): once engaged, the driver passes priority through
         # every optional window until the next UPKEEP step, stopping early for any
         # mandatory decision.
@@ -276,7 +304,7 @@ class GameApp(App):
         yield Static(id="graveyards")
         yield Static(id="prompt")
         with Horizontal(id="bottom"):
-            yield OptionList(id="actions")
+            yield ActionList(id="actions")
             yield RichLog(id="log", wrap=True, highlight=False, markup=True)
         yield Footer()
 
@@ -406,16 +434,16 @@ class GameApp(App):
         if not mirrored:
             await self._rebuild_hand(gs["self_hand"])
 
+        # A fresh menu/board: drop any stale hover so cross-highlights don't
+        # linger onto the newly-rebuilt permanents/options.
+        self._hovered_button = None
         self._actions = message.actions
         self._awaiting = message.human_turn
         opt = self.query_one("#actions", OptionList)
         opt.clear_options()
         if message.human_turn:
             for a in message.actions:
-                # Wrap in plain Content: a str prompt is parsed as Textual markup
-                # at render time, which swallows bracketed text like the [SELF]/
-                # [OPPONENT] tags (and any card text that parses as a style tag).
-                opt.add_option(Option(Content(f"{a['index']:>2}: {self._menu_label(a)}"),
+                opt.add_option(Option(self._option_prompt(a, False),
                                       id=str(a["index"])))
             if message.actions:
                 opt.highlighted = 0
@@ -445,19 +473,101 @@ class GameApp(App):
     def on_card_clicked(self, message: CardClicked) -> None:
         if not self._awaiting:
             return
-        want = "own" if message.controller == "self" else "opp"
-        strict = [a for a in self._actions
-                  if a["card_idx"] == message.card_idx and a["controller"] == want]
-        matches = strict or [a for a in self._actions if a["card_idx"] == message.card_idx]
+        matches = self._actions_for_card(message.card_idx, message.controller)
         if not matches:
             self._log("[yellow]No legal action for that card — use the numbered list.[/yellow]")
         elif len(matches) == 1:
+            # Exactly one legal action → clicking commits it immediately.
             self._submit(matches[0]["index"])
         else:
+            # Ambiguous → don't guess. Highlight every option this card feeds and
+            # move the cursor to the first; the human disambiguates from the menu.
             idxs = [a["index"] for a in matches]
+            self._set_action_highlights(idxs)
             self.query_one("#actions", OptionList).highlighted = idxs[0]
             self._log(f"[yellow]That card has {len(idxs)} options: "
                       f"{', '.join(str(i) for i in idxs)} — pick a number.[/yellow]")
+
+    # ----- action <-> permanent cross-highlighting -----
+
+    def on_enter(self, event: events.Enter) -> None:
+        """Mouse moved onto a widget. When it's a card, remember it (shared hover
+        anchor) and light up the menu actions that card can drive."""
+        node = event.node
+        if isinstance(node, CardButton):
+            self._hovered_button = node
+            idxs = [a["index"]
+                    for a in self._actions_for_card(node._card_idx, node._controller)]
+            self._set_action_highlights(idxs)
+
+    def on_leave(self, event: events.Leave) -> None:
+        """Mouse left a card — clear its cross-highlight (only if it's still the
+        tracked one; Enter of the next card may already have superseded it)."""
+        node = event.node
+        if isinstance(node, CardButton) and node is self._hovered_button:
+            self._hovered_button = None
+            self._set_action_highlights([])
+
+    def on_action_list_action_hovered(self, message: "ActionList.ActionHovered") -> None:
+        """Mouse moved over (or off) a menu option — highlight the battlefield
+        permanent(s) that option refers to."""
+        self._highlight_perms_for_action(message.index)
+
+    def _actions_for_card(self, card_idx: int, controller: str):
+        """Legal actions this card feeds. Prefer a controller-exact match; fall
+        back to card-id alone (some actions carry no controller flag). Mirrors
+        the click resolver so click and hover always agree on the same set."""
+        if card_idx < 0:
+            return []
+        want = "own" if controller == "self" else "opp"
+        strict = [a for a in self._actions
+                  if a["card_idx"] == card_idx and a["controller"] == want]
+        return strict or [a for a in self._actions if a["card_idx"] == card_idx]
+
+    def _highlight_perms_for_action(self, index) -> None:
+        """Highlight the permanent(s) the given menu-option index targets; a None
+        index (mouse left the list) clears all permanent highlights."""
+        buttons = list(self.query(CardButton))
+        for btn in buttons:
+            btn.set_action_highlight(False)
+        if index is None or not (0 <= index < len(self._actions)):
+            return
+        a = self._actions[index]
+        if a["card_idx"] < 0:
+            return
+        want_ctrl = a["controller"]
+        for btn in buttons:
+            if btn._card_idx != a["card_idx"]:
+                continue
+            if want_ctrl is not None:
+                btn_want = "own" if btn._controller == "self" else "opp"
+                if btn_want != want_ctrl:
+                    continue
+            btn.set_action_highlight(True)
+
+    def _option_prompt(self, a, highlight: bool):
+        """Build a menu option's prompt. Uses Content (not a str) so the label is
+        rendered literally — a str is parsed as Textual markup, which would
+        swallow bracketed text like the [SELF]/[OPPONENT] tags. `highlight`
+        applies the cross-highlight style used when a matching card is hovered."""
+        text = f"{a['index']:>2}: {self._menu_label(a)}"
+        if highlight:
+            return Content.styled(text, "bold black on yellow")
+        return Content(text)
+
+    def _set_action_highlights(self, indices) -> None:
+        """Restyle the menu so the options in `indices` show the cross-highlight
+        (OptionList highlights only one row natively; this marks a whole set)."""
+        if not self._awaiting:
+            return
+        hl = set(indices)
+        opt = self.query_one("#actions", OptionList)
+        for a in self._actions:
+            try:
+                opt.replace_option_prompt(str(a["index"]),
+                                          self._option_prompt(a, a["index"] in hl))
+            except OptionDoesNotExist:
+                pass
 
     def action_pick(self, digit: str) -> None:
         idx = int(digit)
