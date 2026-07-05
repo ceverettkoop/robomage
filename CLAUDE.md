@@ -109,6 +109,16 @@ instead of `$PIPESTATUS`.
  Use `--games N` for a multi-game regression pass (per-game results + W/L/D summary),
  `--verbose` for the full per-decision transcript (board state + action menu + narrative),
  and supply `--deck`/`--opponent` to test cards/decks relevant to recently implemented features.
+ **observe defaults to bo3 matches**; pass `--bo1` for single games (`--bo3` is a redundant no-op).
+-**Running games programmatically: `runner.run_match`.** For scripting games from Python
+ (agents, decks, bo1/bo3, seed, output mode as parameters), use
+ `runner.run_match(agent_a, agent_b, deck_a=…, deck_b=…, games=, bo3=True, seed=1,
+ transcript="compact|verbose|narrative|quiet", out=…)` — agent specs are scripted tiers
+ ("scripted"/"hard", "easy", "random", "explore"), "human", "auto", "play:<specs>",
+ "actions:<ints>", or a checkpoint path / deck shorthand ("league/bug"). All game-running
+ tools (harness, observe, baseline, play.py, fuzz, ci_check, analysis, bench) sit on the
+ same `runner.drive_game` loop — do not hand-roll new decision loops; see
+ [`docs/game_running.md`](docs/game_running.md).
 -**`observe` requires torch.** `train/train.py` imports `stable_baselines3`/`sb3-contrib`
  (hence torch) at module load, so `observe` is unavailable wherever torch isn't installed —
  notably headless cloud containers, whose ephemeral filesystem would re-pay torch's ~0.5–1 GB
@@ -544,15 +554,19 @@ train/.venv/bin/python train/train.py train --deck delver --opponent mav --load 
 train/.venv/bin/python train/train.py --self-play --deck delver --opponent mav     # self-play vs delver's frozen snapshots
 
 # Evaluation / inspection
-train/.venv/bin/python train/train.py baseline delver                                 # win rate vs scripted (deck shorthand → delver__final.zip)
+# baseline: model vs scripted HARD, mirror decks (deck inferred from the checkpoint's
+# deck-pilot filename; override with --deck), seats alternate per game, --seed reproducible.
+train/.venv/bin/python train/train.py baseline delver                                 # win rate vs scripted:hard (deck shorthand → delver__final.zip)
+train/.venv/bin/python train/train.py baseline --all --games 100                      # sweep every {deck}__final.zip on its own deck; appends checkpoints/baseline_report.log (--log to override)
 # observe: one command for any {scripted|model} vs {scripted|model} matchup
 # (replaced the old diag/watch commands). --games N for a multi-game pass + summary,
-# --verbose for the full per-decision transcript, --seed for reproducibility, --bo3 for matches.
-train/.venv/bin/python train/train.py observe --player-a delver --player-b scripted --deck delver --opponent mav  # watch one game (per-side controller + deck)
-train/.venv/bin/python train/train.py observe --deck delver --opponent mav                          # scripted vs scripted, one game (compact)
-train/.venv/bin/python train/train.py observe --deck delver --opponent mav --games 10               # verify env: 10 games + W/L/D summary
+# --verbose for the full per-decision transcript, --seed for reproducibility.
+# observe runs bo3 MATCHES BY DEFAULT; --bo1 for single games.
+train/.venv/bin/python train/train.py observe --player-a delver --player-b scripted --deck delver --opponent mav  # watch one match (per-side controller + deck)
+train/.venv/bin/python train/train.py observe --deck delver --opponent mav                          # scripted vs scripted, one bo3 match (compact)
+train/.venv/bin/python train/train.py observe --deck delver --opponent mav --games 10               # verify env: 10 matches + W/L/D summary
 train/.venv/bin/python train/train.py observe --deck delver --opponent mav --verbose                # full transcript (state + action menu + narrative)
-train/.venv/bin/python train/train.py observe --deck delver --opponent mav --games 10 --bo3         # verify bo3 env (10 matches)
+train/.venv/bin/python train/train.py observe --deck delver --opponent mav --games 10 --bo1         # 10 single (bo1) games
 
 # Bulk training (was --train-all / --train-deck)
 train/.venv/bin/python train/train.py sweep                                           # all deck×deck matchups
@@ -665,6 +679,8 @@ BQUERY: <N>\n
 ### Key files
 
 - `train/env.py` — `RoboMageEnv` gymnasium wrapper; `ModelVsScriptedEnv` scripted-opponent wrapper; `SelfPlayEnv` self-play wrapper; `scripted_action` rule-based agent
+- `train/runner.py` — THE game-running module: `drive_game` (the single decision loop, with per-decision hooks), `run_games` (env-per-game orchestration + transcripts), `run_match` (spec-based front door for scripting: agents/decks/bo3/seed/output as parameters). See `docs/game_running.md`.
+- `train/opponents.py` — the `Controller` agent abstraction and `make_controller` spec grammar (scripted tiers, model checkpoints via the shared `resolve_checkpoint`, `play:`/`actions:` scripts, `human`, `auto`), plus the training opponent pools
 - `train/extractor.py` — `CardGameExtractor` per-entity feature extractor for the policy network
 - `train/train.py` — `MaskablePPO` training, baseline evaluation, observe mode, self-play
 - `train/analysis.py` — model-analysis tool: loads a checkpoint, simulates games for a matchup, and inspects play (card importance, SHAP, value swings, regret, entropy, calibration, an interactive REPL). Charts save to PNG under `train/analysis_out/` (headless-safe; `--show` for a GUI window) with terminal sparkline/bar fallbacks. Checkpoints are **per-deck** (deck-pilot naming `{deck}__final.zip` / `{deck}__v{steps}.zip`): a model encodes only the deck it pilots, not its opponent, so the model arg accepts a deck shorthand (`delver`) and the model's own deck is inferred from the filename — but the **opponent deck must be given with `--deck-b`** (a model opponent's deck is inferred from *its* filename; a scripted opponent defaults to a mirror match). (The older offline `.rmrec` recording subsystem and `train.py --record` were removed.)
@@ -680,7 +696,7 @@ BQUERY: <N>\n
   are the two campaign modes. Example: `train/.venv/bin/python train/fuzz_campaign.py --deck-a
   league/ur_delver --deck-b league/gw_maverick --mode explore --games 100 --seed 1 --out out.txt`
   (decks resolve relative to `bin/resources/decks/`; W/L/D summary to stdout, any draw is a finding).
-- `train/action_spec.py` — shared semantic-action resolver: turns a `--play` spec string (`cast:Lightning Bolt`, `target:X@opp`, `pass`, …) into the matching legal action index against the current decision's decoded menu. Used by `PlayController` (test harness `--play`, `observe --play-a/--play-b`) and, later, by `play.py` for typed human input.
+- `train/action_spec.py` — shared semantic-action resolver: turns a `--play` spec string (`cast:Lightning Bolt`, `target:X@opp`, `pass`, …) into the matching legal action index against the current decision's decoded menu. Used by `PlayController` (test harness `--play`, `observe --play-a/--play-b`) and by `HumanController` (play.py text mode / `run_match(..., "human")`) for typed semantic input.
 - `train/card_costs.py` — auto-generated cast-cost and ability-cost matrices (do not edit manually)
 - `src/machine_io.h` — state vector layout documentation and constants
 - `src/input_logger.cpp` — machine mode BQUERY emission, replay, and CLI input handling

@@ -10,7 +10,8 @@ subprocess, the BQUERY binary protocol, and the attacker/blocker confirm-slot
 remapping all live there. This module is a front-end over that loop.
 
 The opponent is either a trained model (MaskablePPO checkpoint) or the rule-based
-scripted agent (env.scripted_action) when `model_path` is None or "scripted".
+scripted agent when `model_path` is None or "scripted" (any
+opponents.make_controller spec works — checkpoint shorthand or scripted tier).
 
 Invoked via `play.py --tui` (and the tui.py launcher's Play entry).
 """
@@ -30,7 +31,7 @@ from textual.message import Message
 from textual.widgets import Footer, Header, OptionList, RichLog, Static
 from textual.widgets.option_list import Option
 
-from env import NarrativeEnv, scripted_action, STATE_SIZE
+from env import NarrativeEnv, STATE_SIZE
 import decode
 
 # Abbreviations for the 13-step phase strip (index aligns with state[18:31]).
@@ -662,19 +663,17 @@ class GameApp(App):
 
 def run(binary_path, model_path, human_player=None,
         human_deck="delver", model_deck="delver"):
-    """Launch the TUI. `model_path` of None/"scripted" ⇒ rule-based opponent."""
-    is_model = model_path not in (None, "scripted")
+    """Launch the TUI. `model_path` of None/"scripted" ⇒ rule-based opponent.
 
-    if is_model:
-        try:
-            from sb3_contrib import MaskablePPO as _Algo
-            _maskable = True
-        except ImportError:
-            from stable_baselines3 import PPO as _Algo
-            _maskable = False
-        model = _Algo.load(model_path)
-    else:
-        model = None
+    Any agent spec ``opponents.make_controller`` accepts works here — a
+    checkpoint path / deck shorthand, or a scripted tier ("scripted:hard",
+    "explore", ...) — so the TUI opponent shares the one agent grammar.
+    """
+    from opponents import make_controller, is_scripted_spec
+
+    spec = "scripted" if model_path is None else model_path
+    ctrl = make_controller(spec, deterministic=True)
+    is_model = isinstance(spec, str) and not is_scripted_spec(spec)
 
     # Seat assignment mirrors play.py: opponent ("model") seat is A or B.
     if human_player in ("A", "B"):
@@ -693,11 +692,7 @@ def run(binary_path, model_path, human_player=None,
                  log_viewer=human_seat)
 
     def opp_act(obs, num):
-        if model is not None:
-            mask = env.action_masks() if _maskable else None
-            action, _ = model.predict(obs, action_masks=mask, deterministic=True)
-            return int(action)
-        return int(scripted_action(obs, num))
+        return int(ctrl.choose(obs, num, action_masks=env.action_masks()))
 
     GameApp(env, opp_act, opp_is_a, human_deck, model_deck, is_model).run()
     return 0

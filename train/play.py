@@ -1,9 +1,11 @@
 """
 Play interactively against a trained RoboMage model.
 
-The model is randomly assigned to Player A or B each game.
-The observation is always emitted from the priority player's perspective,
-so no manual mirroring is required.
+The model is randomly assigned to Player A or B each game (pin with --player).
+Text mode runs on the shared runner loop with a HumanController seat — enter
+an action number or a semantic spec ('cast:bolt', 'pass'); --seed reproduces a
+game. The --tui path delegates to tui_game.py; --gui drives the deprecated
+raylib front end.
 
 Usage:
     train/.venv/bin/python train/play.py --human-deck delver --model-deck burn
@@ -11,28 +13,15 @@ Usage:
 
 import argparse
 import subprocess
-import sys
 import numpy as np
 
-from env import (RoboMageEnv, STATE_SIZE, ACTION_CATEGORY_MAX, BINARY, MAX_ACTIONS,
-                 BIN_DIR, OBS_SIZE, _ACTION_CARD_ID_NULL, _ACTION_CTRL_NULL,
+from env import (ACTION_CATEGORY_MAX, BINARY, MAX_ACTIONS,
+                 BIN_DIR, _ACTION_CARD_ID_NULL,
                  _HAND_START, MAX_HAND_SLOTS,
                  _BQUERY_STATE_BYTES, _BQUERY_CATS_BYTES, _BQUERY_IDS_BYTES, _BQUERY_CTRL_BYTES,
                  _BQUERY_PUB_BYTES,
-                 _BF_START as _ENV_BF_START, _BF_SLOT_SIZE as _ENV_BF_SLOT_SIZE,
-                 _BF_CARD_OFF as _ENV_BF_CARD_OFF, _PERM_A_SLOTS as _ENV_PERM_A_SLOTS,
-                 _HAND_SLOT_SIZE, _BF_ID_IDX, _gather_costs, _slot_card_idx)
-import env as _env
-import decode
-from decode import card_from_id as _card_from_id, decode_step as _decode_step
-
-# play.py renders the human seat as "You"/"Model". decode speaks in viewer-
-# relative words ("own"/"opp"); this map substitutes play.py's vocabulary
-# through decode's shared formatters. The action-label *wording* below stays
-# play.py-specific (lowercase verbs), since routing it through decode's
-# describe_action would change decode's own output — only the card-name and
-# permanent-field decoding is shared with decode.
-_PLAY_LABELS = {"own": "you", "opp": "model", "self": "you", "opponent": "model"}
+                 _HAND_SLOT_SIZE, _BF_ID_IDX, _gather_costs)
+from decode import card_from_id as _card_from_id
 
 try:
     from card_costs import (_CARD_COST_MATRIX, _CARD_ABILITY_COST_MATRIX, N_CARD_TYPES, _N_COST_FEATS)
@@ -46,19 +35,7 @@ except ImportError:
     from stable_baselines3 import PPO as MaskablePPO
     USE_MASKABLE = False
 
-# ── State layout (mirrors env.py / machine_io.h) ──────────────────────────────
-_BF_START        = _ENV_BF_START       # 34
-_BF_SLOT_SIZE    = _ENV_BF_SLOT_SIZE   # 138 (10 status floats + 128 card one-hot)
-_BF_PERM_SLOTS   = _ENV_PERM_A_SLOTS  # 48 (self occupies slots 0-47; opponent slots 48-95)
-_BF_CARD_OFF     = _ENV_BF_CARD_OFF    # 10
-_OFF_POWER       = 0
-_OFF_TOUGHNESS   = 1
-_OFF_TAPPED      = 2
-_OFF_ATTACKING   = 3
-_OFF_SICKNESS    = 5
-_OFF_IS_CREATURE = 8
-_OFF_IS_LAND     = 9
-_HAND_SLOTS      = 10
+# Mana-tap action categories → produced color (used by the GUI action labels).
 _MANA_CAT_COLOR = {13: "W", 14: "U", 15: "B", 16: "R", 17: "G", 18: "C"}
 
 
@@ -86,216 +63,54 @@ def _action_label(cat: int, card_id_float: float) -> str:
     return f"action {cat}"
 
 
-def _perm_str(p) -> str:
-    """Format one decoded permanent dict (from decode._decode_permanents)."""
-    card = p["name"]
-    if "power" in p:  # creature
-        tags = []
-        if p.get("tapped"):         tags.append("tapped")
-        if p.get("attacking"):      tags.append("atk")
-        if p.get("summoning_sick"): tags.append("sick")
-        suffix = f"[{','.join(tags)}]" if tags else ""
-        return f"{card} {p['power']}/{p['toughness']}{suffix}"
-    # land or other permanent
-    return f"{card}{'*' if p.get('tapped') else ''}"
+# ── Main play loop (text mode) ────────────────────────────────────────────────
 
+def play(binary_path: str, model_path: str, human_deck: str = "delver",
+         model_deck: str = "delver", human_player: str = None, seed: int = None):
+    """Text-mode game against a trained model, on the shared runner loop.
 
-def _split_bf(perms):
-    """Return (creatures, lands) display lists from decoded permanent dicts.
-
-    Mirrors the original card-identity test: a slot is shown only when its
-    card-id resolves to a named vocab entry (decode.card_from_id is not None).
-    Tokens (whose vocab name is empty) and unnamed slots are skipped, exactly
-    as the pre-refactor raw-offset reader did.
+    The human seat is an :class:`opponents.HumanController` — it renders the
+    board and legal menu each decision and accepts an action number, a
+    semantic spec (``cast:bolt``, ``target:bears@opp``, ``pass`` — the same
+    grammar as the harness ``--play``), or 'quit'. The model's choices are
+    announced as they happen; game narrative comes from the engine.
     """
-    creatures, lands = [], []
-    for p in perms:
-        idx = p["card_idx"]
-        if not (0 <= idx < len(decode._CARD_NAMES) and decode._CARD_NAMES[idx]):
-            continue
-        if "power" in p:                 # creature
-            creatures.append(_perm_str(p))
-        elif p.get("is_land"):
-            lands.append(_perm_str(p))
-    return creatures, lands
+    import runner
+    from opponents import HumanController, ModelController
 
-
-def _format_state(obs) -> str:
-    """Format battlefield from the current priority player's (human's) perspective.
-
-    obs is always perspective-normalised: self occupies permanent slots 0-47,
-    opponent slots 48-95. Hand at _HAND_START is the priority player's hand.
-    Permanent / hand fields are decoded by decode.py (the shared decoder); this
-    function only lays the pieces out in play.py's "[You]"/"[Model]" format.
-    """
-    state = obs[:STATE_SIZE]
-    my_life  = int(round(float(obs[0]) * 20))
-    opp_life = int(round(float(obs[9]) * 20))
-
-    my_creatures,  my_lands  = _split_bf(
-        decode._decode_permanents(state, decode._SELF_PERM_START))
-    opp_creatures, opp_lands = _split_bf(
-        decode._decode_permanents(state, decode._OPP_PERM_START))
-    hand = [c["name"] for c in decode._decode_hand(state)
-            if 0 <= c["card_idx"] < len(decode._CARD_NAMES) and decode._CARD_NAMES[c["card_idx"]]]
-
-    return (
-        "--- Battlefield ---\n"
-        f"  [You]   {my_life} life | creatures: {', '.join(my_creatures) or '—'}"
-        f" | lands: {', '.join(my_lands) or '—'}\n"
-        f"  [Model] {opp_life} life | creatures: {', '.join(opp_creatures) or '—'}"
-        f" | lands: {', '.join(opp_lands) or '—'}\n"
-        f"  Your hand: {', '.join(hand) if hand else '—'}\n"
-        "-------------------"
-    )
-
-
-# ── Env subclass with filtered narrative output ───────────────────────────────
-
-class PlayEnv(RoboMageEnv):
-    """RoboMageEnv that prints narrative to stdout and suppresses library-search listings."""
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._in_search_block = False
-
-    def _print_narrative_line(self, line: str):
-        # Suppress both players' library-search option blocks — play.py shows
-        # them more clearly via the QUERY data.
-        if "Searching" in line and "library:" in line:
-            self._in_search_block = True
-            return
-        if self._in_search_block:
-            if line.startswith("  ") or not line.strip():
-                return
-            self._in_search_block = False
-        print(line, flush=True)
-
-
-# ── Main play loop ────────────────────────────────────────────────────────────
-
-def play(binary_path: str, model_path: str, human_deck: str = "delver", model_deck: str = "delver",
-         human_player: str = None):
     model = MaskablePPO.load(model_path)
 
     if human_player is None:
         model_is_a = bool(np.random.random() < 0.5)
     else:
         model_is_a = human_player == "B"
-    deck_a = model_deck if model_is_a else human_deck
-    deck_b = human_deck if model_is_a else model_deck
-    env = PlayEnv(binary_path=binary_path, render_mode="human", deck_a=deck_a, deck_b=deck_b)
-    obs, _ = env.reset()
-    done = False
-
     model_role = "A" if model_is_a else "B"
     human_role = "B" if model_is_a else "A"
-    print(f"=== Model (Player {model_role}, {model_deck}) vs You (Player {human_role}, {human_deck}) ===", flush=True)
-    print("(type 'quit' to exit)\n", flush=True)
 
-    while not done:
-        num_choices = env._num_choices
-        # obs[32]=1 means self (priority player) is Player A; obs[31]=1 means priority player is active player
-        a_has_priority = obs[32] > 0.5
-        model_has_priority = a_has_priority == model_is_a
+    bot = ModelController(model, label="Model", deterministic=True)
+    human = HumanController(label="You")
 
-        cats     = np.round(obs[STATE_SIZE : STATE_SIZE + num_choices] * ACTION_CATEGORY_MAX).astype(int)
-        card_ids = obs[STATE_SIZE + MAX_ACTIONS : STATE_SIZE + 2 * MAX_ACTIONS]
+    print(f"=== Model (Player {model_role}, {model_deck}) vs "
+          f"You (Player {human_role}, {human_deck}) ===", flush=True)
+    print("(enter an action number or a spec like 'cast:bolt'; 'quit' to exit)\n",
+          flush=True)
 
-        is_mulligan_q = num_choices > 0 and all(c == 11 for c in cats)
-        is_bottom_q   = num_choices > 0 and all(c == 12 for c in cats)
-        is_search_q   = num_choices > 0 and all(c == 19 for c in cats)
+    def announce(d, action):
+        if d.controller is bot:
+            menu = d.menu()
+            desc = (menu[action]["description"] if 0 <= action < len(menu)
+                    else f"action {action}")
+            print(f"[Model/{model_role}] {desc}", flush=True)
 
-        if model_has_priority:
-            masks = env.action_masks() if USE_MASKABLE else None
-            action, _ = model.predict(obs, action_masks=masks, deterministic=True)
-            action = int(action)
-            if is_mulligan_q:
-                label = "keep" if action == 0 else "mulligan"
-            else:
-                cat = int(cats[action]) if action < len(cats) else -1
-                cid = float(card_ids[action]) if action < MAX_ACTIONS else -1.0 / N_CARD_TYPES
-                label = _action_label(cat, cid)
-            print(f"[Model/{model_role}] {label}", flush=True)
-        else:
-            # Human's turn — obs is from human's perspective (priority player)
-            print(_format_state(obs), flush=True)
-            print()
-
-            if is_mulligan_q:
-                print("Mulligan decision:")
-                print("  0: keep")
-                print("  1: mulligan")
-            elif is_bottom_q:
-                print(f"Choose a card to put on the bottom ({num_choices} option(s)):")
-                for i, c in enumerate(cats):
-                    print(f"  {i}: {_action_label(int(c), float(card_ids[i]))}")
-            elif is_search_q:
-                print("Search your library:")
-                for i, c in enumerate(cats):
-                    print(f"  {i}: {_action_label(int(c), float(card_ids[i]))}")
-            else:
-                # obs[31]=1 means priority player is active; obs[32]=1 means priority player is A
-                priority_is_a = obs[32] > 0.5
-                active_is_a = (obs[31] > 0.5) == priority_is_a
-                active = "A" if active_is_a else "B"
-                step = _decode_step(obs)
-                print(f"[{active}'s turn — {step}]  {num_choices} option(s):")
-                for i, c in enumerate(cats):
-                    print(f"  {i}: {_action_label(int(c), float(card_ids[i]))}")
-
-            # FOLLOW-UP (semantic string input): this prompt accepts a numeric
-            # index today. To let a human type intent commands (e.g. "cast bolt",
-            # "target grizzly@opp", "pass") wire in the shared resolver — the same
-            # one PlayController uses — so numeric and semantic input are
-            # interchangeable:
-            #
-            #   import action_spec, decode
-            #   menu = decode.decode_actions_from_obs(
-            #       obs, num_choices, getattr(env, "_action_public", None),
-            #       descriptions=getattr(env, "_action_descriptions", None))
-            #   if raw.lstrip("#").isdigit():
-            #       action = int(raw.lstrip("#"))
-            #   else:
-            #       r = action_spec.resolve(raw, menu)
-            #       if not r.ok:
-            #           print(f"  {r.reason}\n  legal: {action_spec.format_menu(menu)}")
-            #           continue
-            #       action = r.index
-            #
-            # The resolution logic is identical to the harness; only the source of
-            # the spec differs (typed line vs. pre-baked --play list). The GUI
-            # input thread (play_gui) can reuse the same two lines.
-            while True:
-                try:
-                    raw = input("Choose> ").strip()
-                    if raw.lower() == "quit":
-                        env.close()
-                        sys.exit(0)
-                    action = int(raw)
-                    if 0 <= action < num_choices:
-                        break
-                    print(f"Enter a number between 0 and {num_choices - 1}.")
-                except EOFError:
-                    env.close()
-                    sys.exit(0)
-                except ValueError:
-                    print("Enter a number (or 'quit').")
-
-        obs, reward, terminated, truncated, _ = env.step(action)
-        done = terminated or truncated
-
-    env.close()
-    print()
-    # reward is +1.0 if A wins, -1.0 if B wins
-    model_wins = (reward > 0 and model_is_a) or (reward < 0 and not model_is_a)
-    human_wins = (reward > 0 and not model_is_a) or (reward < 0 and model_is_a)
-    if model_wins:
-        print(f"=== Model ({model_role}) wins! ===")
-    elif human_wins:
-        print("=== You win! ===")
-    else:
-        print("=== Draw ===")
+    runner.run_games(
+        bot if model_is_a else human,
+        human if model_is_a else bot,
+        label_a="Model" if model_is_a else "You",
+        label_b="You" if model_is_a else "Model",
+        binary_path=binary_path,
+        deck_a=model_deck if model_is_a else human_deck,
+        deck_b=human_deck if model_is_a else model_deck,
+        n_games=1, seed=seed, transcript="narrative", on_action=announce)
 
 
 def play_gui(binary_path: str, model_path: str, human_player: str = None,
@@ -459,7 +274,6 @@ def play_gui(binary_path: str, model_path: str, human_player: str = None,
 
 if __name__ == "__main__":
     import os as _os
-    _CHECKPOINT_DIR = _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), "checkpoints")
 
     # Flags come from cli_spec.PLAY_TOOL (single source shared with the TUI).
     from cli_spec import PLAY_TOOL, apply_to_parser
@@ -477,23 +291,14 @@ if __name__ == "__main__":
     elif model_path is None:
         # Checkpoints are per-deck (deck-pilot naming): one model pilots one deck
         # against any opponent, so the model the human faces is keyed on
-        # --model-deck only, not the matchup. Prefer '{model_deck}__final.zip',
-        # then the newest '{model_deck}__v{steps}.zip'; fall back to the legacy
-        # matchup name for older checkpoints.
-        import glob as _glob, re as _re
-        deck_final = _os.path.join(_CHECKPOINT_DIR, f"{args.model_deck}__final.zip")
-        legacy = _os.path.join(_CHECKPOINT_DIR, f"{args.model_deck}_{args.human_deck}_final.zip")
-        snaps = _glob.glob(_os.path.join(_CHECKPOINT_DIR, f"{args.model_deck}__v*.zip"))
-        if _os.path.exists(deck_final):
-            model_path = deck_final
-        elif snaps:
-            model_path = max(snaps, key=lambda p: int(m.group(1))
-                             if (m := _re.search(r"__v(\d+)\.zip$", p)) else -1)
-        elif _os.path.exists(legacy):
-            model_path = legacy
-        else:
+        # --model-deck only, not the matchup. The shared resolver prefers
+        # '{model_deck}__final.zip', then the newest '{model_deck}__v{steps}.zip'.
+        from opponents import resolve_checkpoint
+        model_path = resolve_checkpoint(args.model_deck)
+        if not _os.path.exists(model_path):
             parser.error(f"No checkpoint found for deck '{args.model_deck}' "
-                         f"(looked for {deck_final}, {args.model_deck}__v*.zip, and {legacy}). "
+                         f"(looked for {args.model_deck}__final.zip and "
+                         f"{args.model_deck}__v*.zip under train/checkpoints/). "
                          f"Train a model piloting {args.model_deck} first, "
                          f"or use --model to specify a path, or --scripted for a rule-based opponent (TUI).")
 
@@ -506,4 +311,4 @@ if __name__ == "__main__":
                  human_deck=args.human_deck, model_deck=args.model_deck)
     else:
         play(args.binary, model_path, human_deck=args.human_deck, model_deck=args.model_deck,
-             human_player=args.player)
+             human_player=args.player, seed=args.seed)

@@ -421,11 +421,26 @@ TRAIN_TOOL = Tool("train", "train/train.py", default_sub="train", subs=[
             help="RNG seed for reproducible games (game N uses seed+N; default: random)"),
         Arg("--verbose", "flag",
             help="Dump full board state (battlefield, hands, mana, stack, graveyards) at each decision"),
+        Arg("--bo1", "flag",
+            help="Single-game mode. observe defaults to bo3 matches; this opts back "
+                 "into one-off games (--bo3 is a redundant no-op here)"),
         *common_args(),
     ]),
-    Sub("baseline", "Evaluate a model's win rate vs the scripted agent", items=[
-        Arg("model", "str", required=True, suggest="checkpoint", help="Model .zip path or shorthand"),
+    Sub("baseline", "Evaluate model win rate vs the scripted HARD agent (mirror match)", items=[
+        Arg("model", "str", required=False, suggest="checkpoint",
+            help="Model .zip path or shorthand (omit with --all)"),
         Arg("--games", "int", default=100, help="Number of games (default: 100)"),
+        Arg("--all", "flag",
+            help="Sweep every {deck}__final.zip under checkpoints/ (recursive): each "
+                 "is evaluated on its own deck vs scripted:hard and the per-checkpoint "
+                 "win rates are appended to the report log"),
+        Arg("--log", "str", default=None,
+            help="Report file for --all (default: checkpoints/baseline_report.log, appended)"),
+        Arg("--deck", "str", default=None, suggest="deck",
+            help="Deck the model pilots (default: inferred from the checkpoint's "
+                 "deck-pilot filename). The scripted opponent mirrors it."),
+        Arg("--seed", "int", default=None,
+            help="RNG seed for reproducible runs (game N uses seed+N; default: random)"),
         Arg("--binary", "str", default=BINARY, help="Path to robomage binary"),
     ]),
 ])
@@ -473,6 +488,8 @@ PLAY_TOOL = Tool("play", "train/play.py", flat=True, subs=[
             help="Use the rule-based scripted agent as the opponent (no checkpoint needed; TUI only)"),
         Arg("--player", "choice", choices=("A", "B"), default=None,
             help="Which player the human controls, in both CLI and GUI modes (default: random)"),
+        Arg("--seed", "int", default=None,
+            help="Engine RNG seed for a reproducible game (CLI text mode; default: random)"),
         Arg("--binary", "str", default=BINARY, help="Path to robomage binary"),
     ]),
 ])

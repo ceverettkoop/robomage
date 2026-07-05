@@ -71,6 +71,47 @@ def latest_snapshot(deck: Optional[str], checkpoint_dir: Optional[str]) -> Optio
     snaps = deck_snapshots(deck, checkpoint_dir)
     return snaps[-1] if snaps else None
 
+
+_DEFAULT_CHECKPOINT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                       "checkpoints")
+
+
+def resolve_checkpoint(path: Optional[str],
+                       checkpoint_dir: str = _DEFAULT_CHECKPOINT_DIR) -> Optional[str]:
+    """Resolve a model shorthand to a full checkpoint path (the shared resolver).
+
+    Accepts (in priority order):
+      - Full path (returned as-is if it exists)
+      - Deck-pilot shorthand like 'delver' → checkpoints/delver__final.zip, else the
+        newest checkpoints/delver__v*.zip snapshot (v2 league naming). A subfolder
+        deck like 'league/ur_delver' looks in the mirrored checkpoints subfolder
+        first, then falls back to a flat top-level basename.
+      - Legacy matchup name like 'delver_mav' → checkpoints/{name}_final.zip
+      - Bare basename with '.zip' appended
+
+    Returns the input unchanged when nothing matches — downstream loading
+    reports the error with the original spec.
+    """
+    if path is None:
+        return None
+    if os.path.exists(path):
+        return path
+    stems = [path]
+    if os.path.basename(path) != path:
+        stems.append(os.path.basename(path))
+    for stem in stems:
+        deck_final = os.path.join(checkpoint_dir, f"{stem}__final.zip")
+        if os.path.exists(deck_final):
+            return deck_final
+        snap = latest_snapshot(stem, checkpoint_dir)
+        if snap:
+            return snap
+    for candidate in (os.path.join(checkpoint_dir, f"{path}_final.zip"),
+                      os.path.join(checkpoint_dir, f"{path}.zip")):
+        if os.path.exists(candidate):
+            return candidate
+    return path
+
 # Pool token standing for a random checkpoint compatible with the current
 # matchup — a generalist trained to pilot the opponent's deck. OpponentPool
 # expands it into the opponent deck's pilots ('{opp_deck}__v*.zip' /
@@ -293,6 +334,60 @@ class AutoPassController:
         return 0
 
 
+class HumanController:
+    """Interactive CLI seat: renders the board + legal menu, accepts an index
+    OR a semantic action spec (``cast:bolt``, ``target:bears@opp``, ``pass`` —
+    the same grammar as ``--play``), 'quit' to exit.
+
+    This is the "human plays at a terminal" agent for runner-driven games
+    (``play.py``'s text mode, ``run_match(..., 'human')``). It renders its own
+    decision view, so drive it with the runner's transcript set to
+    ``"narrative"`` (or quiet) — the verbose transcript would print the state
+    twice.
+    """
+
+    wants_decoded = True
+
+    def __init__(self, label: str = "You", show_state: bool = True):
+        self.label = label
+        self._show_state = show_state
+
+    def choose(self, obs, num_choices, action_masks=None, decoded_actions=None) -> int:
+        import action_spec
+        import decode
+        from env import STATE_SIZE
+
+        if decoded_actions is None:
+            decoded_actions = decode.decode_actions_from_obs(obs, num_choices)
+        if self._show_state:
+            gs = decode.decode_game_state(obs[:STATE_SIZE])
+            for ln in decode.format_state_lines(gs):
+                print(ln)
+        print(f"  Available actions ({num_choices}):")
+        for ln in decode.format_action_lines(decoded_actions):
+            print(ln)
+        while True:
+            try:
+                raw = input("Choose> ").strip()
+            except EOFError:
+                raise SystemExit(0)
+            if not raw:
+                continue
+            if raw.lower() in ("quit", "q", "exit"):
+                raise SystemExit(0)
+            if raw.lstrip("#").isdigit():
+                c = int(raw.lstrip("#"))
+                if 0 <= c < num_choices:
+                    return c
+                print(f"  Enter a number between 0 and {num_choices - 1}.")
+                continue
+            # Semantic spec — same resolver as --play.
+            r = action_spec.resolve(raw, decoded_actions)
+            if r.ok:
+                return r.index
+            print(f"  {r.reason}")
+
+
 def _load_model(path: str):
     """Load a checkpoint with MaskablePPO (falling back to PPO). Lazy sb3 import."""
     try:
@@ -302,20 +397,44 @@ def _load_model(path: str):
     return _PPO.load(path, device="cpu")
 
 
-def make_controller(spec: str, *,
+def make_controller(spec, *,
                     checkpoint_resolver: Optional[Callable[[str], str]] = None,
                     deterministic: bool = False) -> Controller:
-    """Resolve a spec string into a Controller.
+    """Resolve an agent spec into a Controller (the one agent grammar).
 
-    Scripted specs ("scripted", "scripted:hard", "random", ...) build a
-    ScriptedController; anything else is treated as a checkpoint path/shorthand,
-    resolved via ``checkpoint_resolver`` (identity if not given) and loaded as a
-    ModelController.
+    Accepts:
+      - a ``Controller`` instance — returned as-is (lets callers mix
+        pre-built controllers with spec strings);
+      - scripted specs ("scripted", "scripted:hard", "easy", "greedy",
+        "random", "explore", "explore:patient", ...) → ScriptedController;
+      - "auto" / "autopass" → AutoPassController (always action 0);
+      - "human" → HumanController (interactive CLI seat, index or semantic
+        input);
+      - "play:<spec,spec,...>" → PlayController (semantic action script,
+        same grammar as the test harness ``--play``);
+      - "actions:<i,i,...>" → ActionListController (positional indices);
+      - anything else → a model checkpoint path or deck shorthand, resolved
+        via ``checkpoint_resolver`` (default: :func:`resolve_checkpoint`) and
+        loaded as a ModelController.
     """
-    if is_scripted_spec(spec):
-        return ScriptedController(make_agent(spec), label=spec)
-    path = checkpoint_resolver(spec) if checkpoint_resolver else spec
-    return ModelController(_load_model(path), label=spec, deterministic=deterministic)
+    if not isinstance(spec, str):
+        return spec
+    s = spec.strip()
+    low = s.lower()
+    if is_scripted_spec(s):
+        return ScriptedController(make_agent(s), label=s)
+    if low in ("auto", "autopass"):
+        return AutoPassController()
+    if low == "human":
+        return HumanController()
+    if low.startswith("play:"):
+        return PlayController(s[len("play:"):])
+    if low.startswith("actions:"):
+        return ActionListController(
+            [int(a) for a in s[len("actions:"):].split(",") if a.strip()])
+    resolver = checkpoint_resolver or resolve_checkpoint
+    path = resolver(s)
+    return ModelController(_load_model(path), label=s, deterministic=deterministic)
 
 
 def parse_pool_spec(spec: Union[str, Sequence]) -> list[tuple[str, float]]:

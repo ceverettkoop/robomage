@@ -26,6 +26,7 @@ import argparse
 import datetime
 import json
 import os
+import re
 import sys
 from collections import deque
 
@@ -365,94 +366,46 @@ class ReplayLogCallback(BaseCallback):
 
     def _on_rollout_end(self) -> None:
         import numpy as np
+        import runner
+        from opponents import ModelController, ScriptedController
+        from scripted_agent import make_agent
+
         self._rollout += 1
         log_path = os.path.join(self.replay_dir, f"rollout_{self._rollout:05d}.txt")
 
-        env = NarrativeEnv(binary_path=self.binary_path,
-                           deck_a=self._model_deck, deck_b=self._opp_deck,
-                           bo3=self._bo3)
-        if USE_MASKABLE:
-            from sb3_contrib.common.wrappers import ActionMasker as _AM
-            masked = _AM(env, lambda e: e.action_masks())
+        model_is_a = bool(np.random.random() < 0.5)
+        ctrl_model = ModelController(self.model, label="Model", deterministic=True)
+        ctrl_scripted = ScriptedController(make_agent("scripted"), label="Scripted")
+        if self._model_deck is not None:
+            deck_a = self._model_deck if model_is_a else self._opp_deck
+            deck_b = self._opp_deck if model_is_a else self._model_deck
         else:
-            masked = env
+            deck_a = deck_b = None
+        ctrl_a, ctrl_b = ((ctrl_model, ctrl_scripted) if model_is_a
+                          else (ctrl_scripted, ctrl_model))
+        label_a, label_b = (("Model", "Scripted") if model_is_a
+                            else ("Scripted", "Model"))
 
         try:
-            model_is_a = bool(np.random.random() < 0.5)
-            if self._model_deck is not None:
-                env._deck_a = self._model_deck if model_is_a else self._opp_deck
-                env._deck_b = self._opp_deck if model_is_a else self._model_deck
-            obs, _ = masked.reset()
-            done = False
-            total_reward = 0.0
-            turn = 0   # last turn header shown (1-based, from the state vector)
-            known_hand = {"A": [], "B": []}
-
             with open(log_path, "w") as f:
                 model_side = "A" if model_is_a else "B"
                 scripted_side = "B" if model_is_a else "A"
-                f.write(f"=== Rollout {self._rollout}: Model ({model_side}) vs Scripted ({scripted_side}) ===\n\n")
-
-                while not done:
-                    for line in env.flush_lines():
-                        if line.strip():
-                            f.write(line + "\n")
-
-                    a_has_priority = obs[32] > 0.5
-                    model_has_priority = a_has_priority if model_is_a else not a_has_priority
-                    num_choices = env._num_choices
-                    cur_side = "A" if a_has_priority else "B"
-
-                    priority_is_a = a_has_priority
-                    active_is_a = (obs[31] > 0.5) == priority_is_a
-                    cats = np.round(obs[STATE_SIZE:STATE_SIZE + num_choices] * ACTION_CATEGORY_MAX).astype(int)
-                    card_ids = obs[STATE_SIZE + MAX_ACTIONS:STATE_SIZE + 2 * MAX_ACTIONS]
-                    is_mulligan = any(c == 11 for c in cats)
-
-                    known_hand[cur_side] = _decode_hand(obs)
-
-                    # Sequential 1-based turn from the state vector (matches the
-                    # engine's TURN headers); a flip counter drifts when a turn
-                    # yields no decision query.
-                    cur_turn = decode.decode_turn(obs)
-                    if not is_mulligan and cur_turn != turn:
-                        turn = cur_turn
-                        active_label = "A" if active_is_a else "B"
-                        f.write(f"--- Turn {turn} (Player {active_label}) ---\n")
-                        f.write(f"  PA: {', '.join(known_hand['A']) or '(empty)'}\n")
-                        f.write(f"  PB: {', '.join(known_hand['B']) or '(empty)'}\n")
-
-                    if model_has_priority:
-                        masks = env.action_masks() if USE_MASKABLE else None
-                        action, _ = self.model.predict(obs, action_masks=masks, deterministic=True)
-                        action = int(action)
-                        desc = _describe_action(cats, card_ids, action, num_choices)
-                        f.write(f"[Model/{cur_side}] {desc}  ({action + 1} of {num_choices})\n")
-                    else:
-                        action = scripted_action(obs, num_choices)
-                        desc = _describe_action(cats, card_ids, action, num_choices)
-                        f.write(f"[Scripted/{cur_side}] {desc}  ({action + 1} of {num_choices})\n")
-
-                    obs, reward, terminated, truncated, _ = masked.step(action)
-                    total_reward += reward
-                    done = terminated or truncated
-
-                for line in env.flush_lines():
-                    if line.strip():
-                        f.write(line + "\n")
-
-                model_reward = total_reward if model_is_a else -total_reward
-                if self._bo3:
-                    result = "Model wins match" if model_reward > 0 else "Scripted wins match" if model_reward < 0 else "Draw"
-                else:
-                    result = "Model wins" if model_reward > 0 else "Scripted wins" if model_reward < 0 else "Draw"
+                f.write(f"=== Rollout {self._rollout}: Model ({model_side}) "
+                        f"vs Scripted ({scripted_side}) ===\n\n")
+                wins, losses, _draws = runner.run_games(
+                    ctrl_a, ctrl_b, label_a=label_a, label_b=label_b,
+                    binary_path=self.binary_path, deck_a=deck_a, deck_b=deck_b,
+                    n_games=1, bo3=self._bo3, out=f)
+                model_won = wins if model_is_a else losses
+                model_lost = losses if model_is_a else wins
+                unit = " match" if self._bo3 else ""
+                result = (f"Model wins{unit}" if model_won
+                          else f"Scripted wins{unit}" if model_lost else "Draw")
                 f.write(f"\n=== {result} ===\n")
 
             print(f"[replay] rollout {self._rollout}: {result} -> {log_path}")
         except Exception as exc:
             print(f"[replay] rollout {self._rollout}: game failed ({exc})")
-        finally:
-            env.close()
 
 
 CHECKPOINT_DIR = "checkpoints"
@@ -571,45 +524,13 @@ def _rotation_target(learner: str, roster: list[str], deck_stats: dict,
 def _resolve_model(path: str) -> str:
     """Resolve a model shorthand to a full checkpoint path.
 
-    Accepts (in priority order):
-      - Full path (returned as-is if it exists)
-      - Deck-pilot shorthand like 'delver' → checkpoints/delver__final.zip, else the
-        newest checkpoints/delver__v*.zip snapshot (v2 league naming). A subfolder
-        deck like 'league/ur_delver' looks in the mirrored checkpoints subfolder
-        (checkpoints/league/ur_delver__*.zip — where training saves it) first, then
-        falls back to a flat top-level 'ur_delver__*.zip'
-      - Legacy matchup name like 'delver_mav' → checkpoints/delver_mav_final.zip
-      - Bare basename with '.zip' appended
+    Thin alias for :func:`opponents.resolve_checkpoint` (the shared resolver —
+    full path, deck-pilot shorthand like 'delver' or 'league/ur_delver', legacy
+    matchup name, bare basename with '.zip' appended) pinned to this module's
+    checkpoint dir.
     """
-    if path is None:
-        return None
-    # Already a real path
-    if os.path.exists(path):
-        return path
-    # v2 deck-pilot shorthand → '{deck}__final.zip' or newest '{deck}__v*.zip'.
-    # For a subfolder deck the join naturally lands in the mirrored checkpoints
-    # subfolder; a flat-layout basename lookup is the fallback.
-    from opponents import latest_snapshot
-    stems = [path]
-    if os.path.basename(path) != path:
-        stems.append(os.path.basename(path))
-    for stem in stems:
-        deck_final = os.path.join(_CHECKPOINT_ABS, f"{stem}__final.zip")
-        if os.path.exists(deck_final):
-            return deck_final
-        snap = latest_snapshot(stem, _CHECKPOINT_ABS)
-        if snap:
-            return snap
-    # Legacy matchup shorthand → checkpoints/{name}_final.zip
-    candidate = os.path.join(_CHECKPOINT_ABS, f"{path}_final.zip")
-    if os.path.exists(candidate):
-        return candidate
-    # Try with .zip appended (e.g. 'delver_mav_100000_steps')
-    candidate2 = os.path.join(_CHECKPOINT_ABS, f"{path}.zip")
-    if os.path.exists(candidate2):
-        return candidate2
-    # Return original — let downstream code report the error
-    return path
+    from opponents import resolve_checkpoint
+    return resolve_checkpoint(path, _CHECKPOINT_ABS)
 
 
 def _ensure_deck_ckpt_subdir(checkpoint_dir: str, deck: str) -> None:
@@ -1305,42 +1226,109 @@ def train_alternate(binary_path: str, deck_a: str, deck_b: str,
     print(f"\nAlternate training complete: {total_timesteps:,} total timesteps over {round_num} rounds.")
 
 
-def baseline(binary_path: str, model_path: str, n_games: int = 100):
-    """Evaluate win rate of the model against the scripted agent.
+def _deck_from_checkpoint(model_path: str) -> str | None:
+    """Infer the deck a checkpoint pilots from its deck-pilot filename.
 
-    The model is randomly assigned to Player A or B each game (matching training
-    conditions).  Reward is from the model's perspective so wins/losses are
-    counted directly.
+    Works on the v2 naming ('{deck}__final.zip' / '{deck}__v{steps}.zip'); a
+    checkpoint under a checkpoints/ subfolder keeps that subfolder as the deck
+    namespace ('checkpoints/league/bug__final.zip' → 'league/bug'). None when
+    the filename doesn't parse as deck-pilot naming.
     """
-    import numpy as np
+    rel = os.path.relpath(os.path.abspath(model_path), _CHECKPOINT_ABS)
+    if rel.startswith(".."):  # outside checkpoints/ — use the bare filename
+        rel = os.path.basename(model_path)
+    m = re.match(r"^(?P<deck>.+?)__(final|v\d+)\.zip$", rel)
+    return m.group("deck") if m else None
+
+
+def baseline(binary_path: str, model_path: str, n_games: int = 100,
+             deck: str | None = None, seed: int | None = None,
+             quiet: bool = False):
+    """Evaluate a model's win rate vs the scripted HARD agent (mirror match).
+
+    The model pilots ``deck`` (inferred from the checkpoint's deck-pilot
+    filename when not given) and faces scripted:hard on the same deck. Seats
+    alternate each game (model is Player A in even games) so neither side gets
+    a systematic on-the-play edge. ``seed`` makes the run reproducible (game
+    ``i`` uses ``seed + i``; None = random per game). Returns
+    ``(wins, losses, draws)`` from the model's perspective.
+    """
+    import runner
+    from opponents import ModelController, ScriptedController
+    from scripted_agent import make_agent
+
     model = MaskablePPO.load(model_path)
-    env = ModelVsScriptedEnv(binary_path=binary_path)
-    if USE_MASKABLE:
-        env = ActionMasker(env, lambda e: e.action_masks())
+    if deck is None:
+        deck = _deck_from_checkpoint(model_path)
+    ctrl_model = ModelController(model, label="Model", deterministic=True)
+    ctrl_scripted = ScriptedController(make_agent("scripted:hard"), label="Scripted")
     wins = losses = draws = 0
 
     for i in range(n_games):
-        obs, _ = env.reset()
-        done = False
-        total_reward = 0.0
-        while not done:
-            masks = env.action_masks() if USE_MASKABLE else None
-            action, _ = model.predict(obs, action_masks=masks, deterministic=True)
-            obs, reward, terminated, truncated, _ = env.step(int(action))
-            total_reward += reward
-            done = terminated or truncated
-        if total_reward > 0:
-            wins += 1
-        elif total_reward < 0:
-            losses += 1
-        else:
-            draws += 1
-        print(f"\rGame {i+1}/{n_games}  W:{wins} L:{losses} D:{draws}", end="", flush=True)
+        model_is_a = (i % 2 == 0)
+        ctrl_a, ctrl_b = ((ctrl_model, ctrl_scripted) if model_is_a
+                          else (ctrl_scripted, ctrl_model))
+        w, l, d = runner.run_games(
+            ctrl_a, ctrl_b,
+            label_a="Model" if model_is_a else "Scripted",
+            label_b="Scripted" if model_is_a else "Model",
+            binary_path=binary_path, deck_a=deck, deck_b=deck,
+            n_games=1, seed=(seed + i) if seed is not None else None,
+            transcript="quiet")
+        wins += w if model_is_a else l
+        losses += l if model_is_a else w
+        draws += d
+        if not quiet:
+            print(f"\rGame {i+1}/{n_games}  W:{wins} L:{losses} D:{draws}",
+                  end="", flush=True)
 
-    env.close()
-    print()
-    print(f"vs scripted over {n_games} games: {wins}W / {losses}L / {draws}D "
-          f"({100 * wins / n_games:.1f}% win rate)")
+    if not quiet:
+        print()
+        print(f"{os.path.basename(model_path)} ({deck or 'default deck'}) vs "
+              f"scripted:hard over {n_games} games: {wins}W / {losses}L / {draws}D "
+              f"({100 * wins / n_games:.1f}% win rate)")
+    return wins, losses, draws
+
+
+def baseline_all(binary_path: str, n_games: int = 100, seed: int | None = None,
+                 log_path: str | None = None):
+    """Run :func:`baseline` for every ``{deck}__final.zip`` checkpoint.
+
+    Discovers final checkpoints recursively under checkpoints/ (subfolder
+    checkpoints keep their namespace, e.g. 'league/bug'), evaluates each on its
+    own deck vs scripted:hard, and appends a timestamped summary to
+    ``log_path`` (default checkpoints/baseline_report.log) as well as stdout.
+    """
+    import glob as _glob
+
+    finals = sorted(_glob.glob(os.path.join(_CHECKPOINT_ABS, "**", "*__final.zip"),
+                               recursive=True))
+    if not finals:
+        print(f"No __final checkpoints found under {_CHECKPOINT_ABS}")
+        return
+    if log_path is None:
+        log_path = os.path.join(_CHECKPOINT_ABS, "baseline_report.log")
+
+    stamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    header = (f"=== baseline sweep vs scripted:hard — {stamp} — "
+              f"{n_games} games/checkpoint, seed={seed} ===")
+    lines = [header]
+    print(header, flush=True)
+    for path in finals:
+        deck = _deck_from_checkpoint(path)
+        rel = os.path.relpath(path, _CHECKPOINT_ABS)
+        print(f"\n--- {rel} (deck {deck or 'default'}) ---", flush=True)
+        w, l, d = baseline(binary_path, path, n_games=n_games, deck=deck,
+                           seed=seed)
+        total = w + l + d
+        line = (f"{rel:<40} deck={deck or 'default':<20} "
+                f"{w}W/{l}L/{d}D  {100 * w / total if total else 0:.1f}% win rate")
+        lines.append(line)
+
+    summary = "\n".join(lines)
+    with open(log_path, "a") as f:
+        f.write(summary + "\n\n")
+    print(f"\n{summary}\n\nreport appended to {log_path}", flush=True)
 
 
 def observe(binary_path: str,
@@ -1393,23 +1381,9 @@ def observe(binary_path: str,
 
 
 # _CAT_NAMES / _STEP_NAMES are imported from _enums at the top of this module.
-# Card-name and hand decoding route through decode.py (the single source of
-# truth) so vocab lookups, the Token sentinel and out-of-range handling stay
-# consistent with the rest of the tooling.
-
-def _decode_hand(obs):
-    """Return list of card names for the priority player's hand."""
-    return decode.decode_hand(obs)
-
-
-def _describe_action(cats, card_ids, action, num_choices):
-    """Return a human-readable string for the chosen action (CAT-token style)."""
-    cat = int(cats[action])
-    cat_name = _CAT_NAMES.get(cat, str(cat))
-    card_name = decode.card_from_id(card_ids[action])
-    if card_name:
-        return f"{cat_name} {card_name}"
-    return cat_name
+# (Per-decision transcript decoding lives in decode.py/runner.py — the shared
+# formatters — since the observe/baseline/rollout paths all run through
+# runner.run_games now.)
 
 
 def _is_debug_build(binary_path: str) -> bool | None:
@@ -1555,9 +1529,20 @@ if __name__ == "__main__":
                         n_envs_override=args.n_envs,
                         no_shaping=args.no_shaping, **env_kwargs)
     elif args.command == "observe":
+        # observe defaults to bo3 matches; --bo1 opts back into single games
+        # (--bo3 is accepted as a redundant no-op for backward compatibility).
         observe(args.binary, player_a=args.player_a, player_b=args.player_b,
                 deck_a=args.deck, deck_b=args.opponent,
-                n_games=args.games, bo3=args.bo3, seed=args.seed, verbose=args.verbose,
+                n_games=args.games, bo3=not args.bo1, seed=args.seed,
+                verbose=args.verbose,
                 play_a=args.play_a, play_b=args.play_b)
     elif args.command == "baseline":
-        baseline(args.binary, _resolve_model(args.model), args.games)
+        if args.all:
+            baseline_all(args.binary, n_games=args.games, seed=args.seed,
+                         log_path=args.log)
+        elif args.model is None:
+            parser.error("baseline: give a model checkpoint, or --all to sweep "
+                         "every __final checkpoint")
+        else:
+            baseline(args.binary, _resolve_model(args.model), args.games,
+                     deck=args.deck, seed=args.seed)
