@@ -63,6 +63,7 @@ from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv
 from stable_baselines3.common.callbacks import BaseCallback
 from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.utils import ConstantSchedule
+from stable_baselines3.common.logger import configure as sb3_configure_logger
 
 import numpy as np
 
@@ -476,13 +477,55 @@ class LRDecayCallback(BaseCallback):
 
 
 def _tb_log_name(deck: str) -> str:
-    """Rollout log folder name for a training session: '{deck}_{YYYY-MM-DD}'.
+    """Base rollout log name for a training session: '{deck}_{YYYY-MM-DD}'.
 
-    SB3 appends '_{run_number}' to this to disambiguate repeated runs on the
-    same day, so the final logs/ subfolder looks like 'delver_2026-07-03_1'
-    instead of the default 'MaskablePPO_1'.
+    A trailing '_{run_number}' is appended by _configure_run_logger so repeated
+    sessions on the same day land in distinct 'delver_2026-07-03_1',
+    '..._2', ... folders instead of overwriting one another.
     """
     return f"{deck}_{datetime.date.today().isoformat()}"
+
+
+def _next_run_id(base: str) -> int:
+    """Next free trailing run number for a '{base}_{n}' log folder under LOG_DIR.
+
+    Scans the (possibly nested — e.g. 'league/<deck>_<date>') parent directory
+    for existing '{leaf}_{n}' run folders and returns max(n) + 1, so a fresh
+    session always claims an unused number. We roll our own instead of SB3's
+    get_latest_run_id because that helper mis-parses names containing a path
+    separator (league decks like 'league/bug') and always returns 0 for them."""
+    parent = os.path.join(LOG_DIR, os.path.dirname(base))
+    leaf = os.path.basename(base)
+    max_id = 0
+    if os.path.isdir(parent):
+        prefix = leaf + "_"
+        for name in os.listdir(parent):
+            if name.startswith(prefix):
+                tail = name[len(prefix):]
+                if tail.isdigit():
+                    max_id = max(max_id, int(tail))
+    return max_id + 1
+
+
+def _configure_run_logger(model, deck: str) -> str:
+    """Give this session its own tensorboard run folder, incrementing the trailing
+    number so a resumed session (reset_num_timesteps=False) does NOT overwrite the
+    previous run's curve.
+
+    SB3 couples the log-dir suffix to reset_num_timesteps: on a resume it reuses
+    the last '{name}_{n}' folder ("continue the same curve"), which collides every
+    same-date session — the common case for auto-resuming per-deck generalists.
+    We need num_timesteps to keep counting (reset stays False) while the log dir
+    stays fresh, so we compute the next '{deck}_{date}_{n}' ourselves and install
+    the logger directly; set_logger marks it custom, so _setup_learn skips SB3's
+    reset-coupled auto-config and honours this folder verbatim. Returns the run
+    name for logging."""
+    base = _tb_log_name(deck)
+    run_name = f"{base}_{_next_run_id(base)}"
+    save_path = os.path.join(LOG_DIR, run_name)
+    fmt = ["stdout", "tensorboard"] if model.verbose >= 1 else ["tensorboard"]
+    model.set_logger(sb3_configure_logger(save_path, fmt))
+    return run_name
 
 # League resume: the driver's loop position (which deck is up, how many global steps
 # are done) lives outside any single model checkpoint, so we persist it to a small
@@ -806,9 +849,11 @@ def train(binary_path: str, load_path: str | None = None, total_timesteps: int =
                                            model_deck=model_deck, opp_deck=opp_deck,
                                            bo3=env_kwargs.get("bo3", False)))
 
-        print(f"Training for {total_timesteps:,} timesteps across {actual_n_envs} envs...")
+        run_name = _configure_run_logger(model, model_deck)
+        print(f"Training for {total_timesteps:,} timesteps across {actual_n_envs} envs... "
+              f"(logs/{run_name})")
         model.learn(total_timesteps=total_timesteps, callback=callbacks,
-                    reset_num_timesteps=load_path is None, tb_log_name=_tb_log_name(model_deck))
+                    reset_num_timesteps=load_path is None)
         model.save(os.path.join(checkpoint_dir, f"{model_deck}__final"))
         print(f"Saved final model as {model_deck}__final.")
     finally:
@@ -887,8 +932,9 @@ def _league_chunk(binary_path: str, learner_deck: str, roster: list[str],
         if not no_shaping:
             callbacks.append(ShapingScaleCallback(vec_env))
 
+        _configure_run_logger(model, learner_deck)
         model.learn(total_timesteps=chunk_steps, callback=callbacks,
-                    reset_num_timesteps=not resuming, tb_log_name=_tb_log_name(learner_deck))
+                    reset_num_timesteps=not resuming)
         model.save(os.path.join(checkpoint_dir, f"{learner_deck}__final"))
         print(f"[league] saved {learner_deck}__final")
         # PPO collects whole rollouts, so the chunk overshoots chunk_steps; return
@@ -1218,9 +1264,11 @@ def train_fixed_model(binary_path: str, model_deck: str, opp_deck: str,
                                            model_deck=model_deck, opp_deck=opp_deck,
                                            bo3=env_kwargs.get("bo3", False)))
 
-        print(f"Training for {total_timesteps:,} timesteps across {n_envs} envs...")
-        model.learn(total_timesteps=total_timesteps, callback=callbacks, reset_num_timesteps=False,
-                    tb_log_name=_tb_log_name(model_deck))
+        run_name = _configure_run_logger(model, model_deck)
+        print(f"Training for {total_timesteps:,} timesteps across {n_envs} envs... "
+              f"(logs/{run_name})")
+        model.learn(total_timesteps=total_timesteps, callback=callbacks,
+                    reset_num_timesteps=False)
         model.save(os.path.join(checkpoint_dir, f"{model_deck}__final"))
         print(f"Saved final model as {model_deck}__final.")
     finally:
