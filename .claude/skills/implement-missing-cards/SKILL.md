@@ -1,6 +1,6 @@
 ---
 name: implement-missing-cards
-description: Implement Magic cards a deck references but that are missing from the engine — triage ALL the user-specified cards together, front-load every implementation question in ONE up-front round, then implement them sequentially (batching cards that share one new mechanic), building/testing/committing each unit before the next. This is the INTERACTIVE sibling of autonomous-implement-missing-cards: it defers nothing by default, and — unless the user explicitly asks it to run "autonomously" — it PAUSES to ask the user whenever, even mid-run, it becomes unclear how to implement a card fully per the Comprehensive Rules using generalizable engine patterns. Use when adding cards from scraped metagame decks (bin/resources/decks/meta) or whenever a deck names a card not in src/card_vocab.h.
+description: Implement Magic cards a deck references but that are missing from the engine — triage ALL the user-specified cards together, front-load every implementation question in ONE up-front round, then implement them sequentially (batching cards that share one new mechanic), building/testing/committing each unit before the next, gated throughout by the project's `make check` CI suite. Defers nothing by default, and — unless the user explicitly asks it to run "autonomously" — PAUSES to ask the user whenever, even mid-run, it becomes unclear how to implement a card fully per the Comprehensive Rules using generalizable engine patterns. Use when adding cards from scraped metagame decks (bin/resources/decks/meta) or whenever a deck names a card not in src/card_vocab.h.
 ---
 
 # Implement missing cards
@@ -9,22 +9,22 @@ Adds cards the engine doesn't yet know about. The cards the user names are **tri
 **every implementation question is gathered up front in one round**, and the cards are then
 implemented **sequentially — one unit at a time** (a unit is a single card, or a small group that
 shares one new mechanic), each fully implemented, built, tested, and committed before the next
-begins.
+begins. Every unit's build and test step is the project's own CI gate (`make check` /
+`train/ci_check.py`, see `docs/ci.md`) — the same command CI runs on push — rather than a
+bespoke build/regression recipe, so a passing unit is provably CI-clean before it's committed.
 
-This is the **interactive sibling** of `autonomous-implement-missing-cards`. The engineering
-procedure for a single card is identical; the differences are operational:
+By default this skill runs **interactively**:
 
-- **A human is in the loop.** The autonomous run resolves every ambiguity by decide-and-document
-  or defer-and-document. This skill instead **asks the user** — front-loaded in one round, and
-  again mid-run for anything that round didn't anticipate (see *Stop-and-ask gates*).
+- **A human is in the loop.** Ambiguity is resolved by **asking the user** — front-loaded in one
+  round, and again mid-run for anything that round didn't anticipate (see *Stop-and-ask gates*).
 - **Nothing is deferred by default.** Every card the user selects is implemented to full rules
   functionality. There is no "triage → defer to a doc" step; a card that looks hard becomes a
   *question*, not a deferral.
 - **The user can opt into autonomous behavior.** If the user explicitly says to run
   "autonomously" (or "don't stop to ask", "just decide"), switch off the mid-run pauses and
-  resolve ambiguity exactly as `autonomous-implement-missing-cards` does — from the Comprehensive
-  Rules, or defer-and-document — without blocking on input. Absent that explicit instruction, the
-  default is to **pause and ask**.
+  resolve ambiguity per the *Autonomous decision policy* below — from the Comprehensive Rules, or
+  defer-and-document — without blocking on input. Absent that explicit instruction, the default is
+  to **pause and ask**.
 
 **The intent is always to implement the card with its full rules functionality.** Every mechanic a
 card has must work correctly per the Comprehensive Rules — we do **not** stub, skip, or simplify a
@@ -83,13 +83,20 @@ implementation; ask to clarify behavior, not to find an exit.
   ASCII `lorien_revealed` stem by hand.
 - `train/.venv/bin/python train/gen_card_costs.py` — regenerate `train/card_costs.py` after editing
   the vocab. Normally unnecessary to call directly: a `make HEADLESS=TRUE` regenerates it via `pygen`.
-- `train/test_harness.py` — exercise a card's behavior (see `CLAUDE.md` for full usage). Drive a
-  precise line with semantic `--play` specs; **never `--interactive`** (no TTY). Also the torch-free
-  way to run a scripted full-game regression: `--deck-a <a> --deck-b <b> --scripted --seed N` across
-  a few seeds drives the same C++ engine and rule-based agent as `observe`.
-- `train/.venv/bin/python train/train.py observe --deck <a> --opponent <b> --games N` — scripted
-  in-game regression. **Requires torch**; when torch is unavailable, fall back to the torch-free
-  harness scripted games above.
+- `train/test_harness.py` — exercise a card's exact behavior (see `CLAUDE.md` for full usage).
+  Drive a precise line with semantic `--play` specs; **never `--interactive`** (no TTY). This is
+  the isolation-test tool — it targets one card's modes/triggers, which the generic CI tiers below
+  don't check for a brand-new card.
+- **`make check`** (equivalently `train/.venv/bin/python train/ci_check.py`) — the project's CI
+  gate (see `docs/ci.md`): builds headless, then runs the `pygen` / `vocab` / `replay` / `smoke` /
+  `fuzz` tiers. This **is** the build-and-regression step for every unit in this skill — it is the
+  exact command CI runs on push, so a unit that passes it locally is provably CI-clean. Useful
+  flags for a faster per-unit pass: `--tier pygen,vocab,smoke` (skip the slower `replay`/`fuzz`
+  tiers mid-run; run the **full** `make check` at least once before Phase 4 handoff),
+  `--smoke-games N` / `--fuzz-games N` to scale depth, `--matchups "a:b"` to scope smoke/fuzz to a
+  deck containing the new card. `make check` requires the Forge scripts provisioned first
+  (`train/.venv/bin/python tools/forge_fetch/provision_decks.py`; the SessionStart hook does this
+  in a fresh cloud session).
 
 ## Workflow
 
@@ -102,7 +109,8 @@ each unit — the **reusable mechanics it added**: handler/effect names, helper 
 ### Phase 0 — Preflight (once)
 
 Confirm a clean tree (`git status --short` empty; commit/stash any stray pre-existing work so
-per-card commits stay isolated). Confirm a `make HEADLESS=TRUE` is green. Be on the working branch the user
+per-card commits stay isolated). Confirm a `make check` is green on the starting HEAD, so any
+later red run is attributable to this session's changes. Be on the working branch the user
 wants (create one off the development branch if the user asks), and **record its starting HEAD** as
 the "prior-to-this-branch" reference — it defines which mechanics already existed before the run
 (used to decide verification-skip eligibility and to scope the final review diff). Ensure
@@ -189,18 +197,23 @@ b. **Implement the mechanic (batch) or confirm coverage (covered card)** as a **
    by rule number and cover the whole mechanic, not just this card.
 c. **Register** `{"<Name>", <Index>}` in `src/card_vocab.h` (keep apostrophes; index already
    `< 1023`).
-d. **Build** with `make HEADLESS=TRUE` (this also regenerates `train/card_costs.py` via `pygen`). The build
-   MUST be clean; non-fatal errors are unacceptable. Fix any new error before continuing.
+d. **Build** with `make HEADLESS=TRUE` for the fast dev loop while iterating (this also
+   regenerates `train/card_costs.py` via `pygen`). The build MUST be clean; non-fatal errors are
+   unacceptable. Fix any new error before continuing.
 e. **Test** — UNLESS this card is `verify_skip` (mechanics already proven by a pre-existing
-   shipping card), in which case the clean build is sufficient. Otherwise: **isolation test** with
-   `train/test_harness.py` (inline `--hand-a/--library-a/--battlefield-a/...` or a `temp/` stacked
-   deck, driven by semantic `--play` specs), covering every mode/trigger; then **real-game
-   regression** with a deck that casts it (swap ~4 copies into a `temp/` deck if needed) — prefer
-   `observe --games 6`, else the torch-free harness scripted games across a few seeds. Expect **no
+   shipping card), in which case a clean `make check` (below) is sufficient. Otherwise: first
+   **isolation test** with `train/test_harness.py` (inline `--hand-a/--library-a/--battlefield-a/...`
+   or a `temp/` stacked deck, driven by semantic `--play` specs), covering every mode/trigger this
+   card has. Then run **`make check`** (or, mid-run, `train/ci_check.py --tier pygen,vocab,smoke`
+   scoped to a deck containing the new card via `--matchups` for a faster loop — but the **full**
+   `make check` must pass at least once for the unit before its commit). This is the same command
+   CI runs on push, so it doubles as the unit's regression gate: `pygen`/`vocab` catch codegen or
+   vocab drift, `smoke`/`fuzz` catch crashes, stalls, and draws in real games with the new card in
+   the mix (add it to a `league/`-style deck first if no existing deck plays it). Expect **no
    non-fatal errors and no draws**; only pre-existing cosmetic `WARNING: Unrecognized ability
    param` lines are acceptable. **Treat any draw as a bug** (a loop / stuck stack / unkillable
    board) — root-cause and fix it; the only pass-able draw is one the **user** has explicitly
-   accepted. Clean up temp decks.
+   accepted. Clean up any temp decks.
 f. **Document** `docs/card_implementations/<uid>.md` (uid = lowercased name, spaces→`_`, apostrophes
    dropped) per the design-doc template (Oracle text; script source + key tags; engine work + CR
    rule numbers; behavioral decisions and which were confirmed with the user; tests → results;
@@ -239,12 +252,15 @@ A mechanic the engine doesn't yet support is **not** itself a reason to stop —
 build a real, general handler for it. Stop to clarify *behavior* or *pattern*, never to find a
 shortcut. Never guess a card's behavior, and never silently drop a mechanic.
 
-**Autonomous override.** If the user explicitly asked to run autonomously, do not pause: resolve
-each gate per `autonomous-implement-missing-cards`' decision policy (resolve from the CR and
-document the CR rule number; defer-and-document only when two readings remain genuinely defensible
-and would change game results, no script exists, or the vocab would overflow). The tree is never
-left dirty or broken: a deferred card reverts its own changes (`git checkout -- . && git clean
--fd`).
+**Autonomous override / decision policy.** If the user explicitly asked to run autonomously, do
+not pause: resolve each gate yourself —
+- **Behavior/pattern ambiguity:** resolve from `docs/mtg_comprehensive_rules.txt`, choose the
+  reading consistent with the CR, and document the exact rule number in the design doc.
+- **Defer-and-document** (skip this card, do not implement it) only when: two readings remain
+  genuinely defensible *and* would change game results, no Forge script exists and none can be
+  confidently hand-authored, or implementing it would overflow the vocab (`N_CARD_TYPES`).
+- The tree is never left dirty or broken: a deferred card reverts its own changes (`git checkout
+  -- . && git clean -fd`) and is logged (with the reason) for the user instead of guessed at.
 
 ### Phase 4 — End-of-run review + handoff
 
@@ -253,13 +269,16 @@ When all selected units are committed (or the user's count is reached), while th
 1. Run the **`code-review`** skill at **medium** over the working branch's accumulated diff (vs the
    recorded starting HEAD).
 2. **Fix only low-risk findings** — clear, localized, re-verifiable with a quick build (and a
-   harness/regression check when behavior is touched). Anything risky or cross-cutting is raised
-   with the user, not patched silently; never destabilize the green branch. Each fix is its own
-   commit (or folded into the relevant card) with the usual trailers.
-3. **Final report:** tally implemented (each its own commit; note any verification-skips and why),
-   anything the user chose to set aside, and the review findings (fixed vs left-for-user). Confirm
-   the branch builds clean and `git status` is clean. Push only if the user asks; do **not** open a
-   PR unless asked.
+   harness/CI check when behavior is touched). Anything risky or cross-cutting is raised with the
+   user, not patched silently; never destabilize the green branch. Each fix is its own commit (or
+   folded into the relevant card) with the usual trailers.
+3. Run the **full `make check`** one final time over the accumulated diff (every tier, default
+   seed) — the same gate CI runs on push. It must be green before handoff; if any post-review fix
+   broke a tier, fix it and re-run.
+4. **Final report:** tally implemented (each its own commit; note any verification-skips and why),
+   anything the user chose to set aside, the review findings (fixed vs left-for-user), and the
+   final `make check` result. Confirm the branch builds clean and `git status` is clean. Push only
+   if the user asks; do **not** open a PR unless asked.
 
 ## Design-doc template (`docs/card_implementations/<uid>.md`)
 
@@ -285,7 +304,7 @@ When all selected units are committed (or the user's count is reached), while th
 ## Tests
 - Isolation (test_harness): <scenario → observed result> for each mode/trigger
   — OR "skipped: mechanics already proven by <pre-existing card(s)>"
-- Regression (observe, or torch-free harness scripted games, N games/seeds): <tool + deck used,
+- CI gate (`make check` / `train/ci_check.py`): <tiers run, deck(s) exercising the new card,
   result: no non-fatal errors / no draws> — OR "skipped (verify_skip)"
 
 ## Result
