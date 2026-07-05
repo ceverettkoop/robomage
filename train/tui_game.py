@@ -47,6 +47,14 @@ _STEP_UPKEEP_IDX = _STEP_ABBR.index("UPK")
 # can briefly observe it before the game moves on. Tweak freely.
 OPP_ACTION_OBSERVE_DELAY = 0.5
 
+# The card-inspect ("hold Q") banner auto-hides this many seconds after the last
+# 'q'. A terminal has no key-up event, so "hold" is emulated: OS key auto-repeat
+# fires the inspect action repeatedly while Q is down, each firing re-arming this
+# timer, so the banner stays up until the key is released (repeats stop) and the
+# timer lapses. Must comfortably exceed the auto-repeat interval; tune if a fast
+# release flickers or a slow keyboard's first-repeat gap lets it blink.
+ORACLE_HIDE_DELAY = 0.8
+
 # Controller-word substitution used when decoding an OPPONENT-perspective obs
 # (the opponent holds priority, so the state vector's "self" is them). Swapping
 # the labels keeps stack entries / announced targets worded from the human's
@@ -242,10 +250,20 @@ class GameApp(App):
     #bottom     { height: 1fr; min-height: 8; }
     #actions    { width: 35%; min-width: 24; border: round $primary; }
     #log        { width: 1fr; border: round $surface; }
+    /* Card-inspect popup: a floating banner over the board (see action_inspect).
+       Hidden until 'q' is held over a card. */
+    Screen { layers: base overlay; }
+    #oracle {
+        layer: overlay; display: none; dock: top;
+        width: auto; max-width: 70%; height: auto; max-height: 12;
+        margin: 1 2; padding: 0 1;
+        border: round $accent; background: $panel; color: $text;
+    }
     """
 
     BINDINGS = [
-        ("q", "quit", "Quit"),
+        ("ctrl+q", "quit", "Quit"),
+        ("q", "inspect", "Oracle (hold)"),
         ("space", "pass_zero", "Pass"),
         ("p", "autopass", "Autopass"),
         ("plus", "resize_log(1)", "Bigger log"),
@@ -270,8 +288,10 @@ class GameApp(App):
         self._reward = 0.0
         # The CardButton the mouse is currently over (Enter/Leave tracked in
         # on_enter/on_leave). Drives the action<->permanent cross-highlighting,
-        # and is the anchor a future card-inspect popup reads.
+        # and is the anchor the card-inspect popup reads.
         self._hovered_button = None
+        # One-shot auto-hide timer for the inspect banner (see action_inspect).
+        self._oracle_timer = None
         # Autopass (the 'p' key): once engaged, the driver passes priority through
         # every optional window until the next UPKEEP step, stopping early for any
         # mandatory decision.
@@ -306,6 +326,7 @@ class GameApp(App):
         with Horizontal(id="bottom"):
             yield ActionList(id="actions")
             yield RichLog(id="log", wrap=True, highlight=False, markup=True)
+        yield Static(id="oracle")
         yield Footer()
 
     def on_mount(self) -> None:
@@ -315,7 +336,8 @@ class GameApp(App):
         self.sub_title = (f"You (Player {human_seat}, {self._human_deck})  vs  "
                           f"{self._opp_label} (Player {opp_seat}, {self._opp_deck})")
         self._log("[b]Game starting…[/b]  Click a card or pick a numbered action. "
-                  "Keys: digits = pick, space = pass, p = autopass, q = quit.")
+                  "Keys: digits = pick, space = pass, p = autopass, "
+                  "hold q = show oracle text, ctrl+q = quit.")
         self._drive()
 
     # ----- the driver (background thread) -----
@@ -435,8 +457,10 @@ class GameApp(App):
             await self._rebuild_hand(gs["self_hand"])
 
         # A fresh menu/board: drop any stale hover so cross-highlights don't
-        # linger onto the newly-rebuilt permanents/options.
+        # linger onto the newly-rebuilt permanents/options, and close any
+        # inspect banner (its card may no longer be on the board).
         self._hovered_button = None
+        self._hide_oracle()
         self._actions = message.actions
         self._awaiting = message.human_turn
         opt = self.query_one("#actions", OptionList)
@@ -639,6 +663,37 @@ class GameApp(App):
             return
         if self._actions and self._actions[0]["category"] == 0:
             self._submit(0)
+
+    def action_inspect(self) -> None:
+        """'q' held over a card → show its oracle-text banner.
+
+        Fires once per keypress; OS auto-repeat while Q is held re-arms the
+        auto-hide timer, so the banner stays up until the key is released. With
+        no card under the mouse it's a no-op (the banner just times out)."""
+        btn = self._hovered_button
+        if btn is not None:
+            self._show_oracle(btn._card_idx)
+        if self._oracle_timer is not None:
+            self._oracle_timer.stop()
+        self._oracle_timer = self.set_timer(ORACLE_HIDE_DELAY, self._hide_oracle)
+
+    def _show_oracle(self, card_idx: int) -> None:
+        name = decode.card_index_to_name(card_idx)
+        oracle = decode.card_oracle_text(card_idx)
+        body = Text()
+        body.append(name, style="bold")
+        body.append("\n")
+        body.append(oracle or "(no oracle text)",
+                    style="" if oracle else "italic dim")
+        banner = self.query_one("#oracle", Static)
+        banner.update(body)
+        banner.display = True
+
+    def _hide_oracle(self) -> None:
+        if self._oracle_timer is not None:
+            self._oracle_timer.stop()
+            self._oracle_timer = None
+        self.query_one("#oracle", Static).display = False
 
     # Min/max row heights for each resizable board panel.
     _PANEL_LIMITS = {"#opp-bf": (6, 16), "#self-bf": (6, 16), "#self-hand": (3, 10)}

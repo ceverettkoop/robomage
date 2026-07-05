@@ -94,6 +94,65 @@ def card_index_to_name(idx):
     return f"?({idx})"
 
 
+# ── Oracle-text lookup (for the TUI card-inspect popup) ────────────────────────
+
+import os  # noqa: E402
+import re  # noqa: E402
+
+_CARDS_DIR = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+    "bin", "resources", "cardsfolder")
+
+
+def _name_to_uid(name):
+    """Mirror src/parse.cpp name_to_uid: lowercase, space/hyphen -> '_', drop the rest."""
+    return re.sub(r"[^a-z0-9_]", "", name.lower().replace(" ", "_").replace("-", "_"))
+
+
+def _resolve_script_path(uid):
+    """Script file the engine would load for `uid` (mirrors src/card_db.cpp):
+    the exact `<uid>.txt`, else a double-faced card's combined `<uid>_*.txt`."""
+    if not uid:
+        return None
+    direct = os.path.join(_CARDS_DIR, uid[0], f"{uid}.txt")
+    if os.path.exists(direct):
+        return direct
+    letter_dir = os.path.join(_CARDS_DIR, uid[0])
+    if os.path.isdir(letter_dir):
+        prefix = uid + "_"
+        for fn in sorted(os.listdir(letter_dir)):
+            if fn.startswith(prefix) and fn.endswith(".txt"):
+                return os.path.join(letter_dir, fn)
+    return None
+
+
+_ORACLE_CACHE = {}
+
+
+def card_oracle_text(card_idx):
+    r"""Oracle text for a vocab card id, or '' when unavailable.
+
+    Reads the card's Forge script `Oracle:` line (with `\n` expanded), resolving
+    DFC combined filenames the way the engine does; result cached per id. A token
+    (the shared TOKEN_SENTINEL id) has no named script, so returns ''."""
+    if card_idx in _ORACLE_CACHE:
+        return _ORACLE_CACHE[card_idx]
+    text = ""
+    if 0 <= card_idx < len(_CARD_NAMES) and card_idx != _TOKEN_IDX:
+        path = _resolve_script_path(_name_to_uid(_CARD_NAMES[card_idx]))
+        if path:
+            try:
+                with open(path) as f:
+                    for raw in f:
+                        if raw.startswith("Oracle:"):
+                            text = raw[len("Oracle:"):].strip().replace("\\n", "\n")
+                            break
+            except OSError:
+                pass
+    _ORACLE_CACHE[card_idx] = text
+    return text
+
+
 def onehot_to_card(state, base):
     """Decode the card-id float at `base` to a card name, or None if empty."""
     idx = _slot_card_idx(state, base)
