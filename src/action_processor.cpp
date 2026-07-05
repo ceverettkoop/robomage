@@ -504,6 +504,10 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
     // the cost), record it as x_paid, and add X generic to the mana cost paid below.
     size_t x_activation = 0;
     if (!is_mana_ability && ability.activation_has_x) {
+        // Name the ability making this X choice so the observation identifies it (the
+        // ability isn't on the stack yet — X is chosen during announcement). Mirrors the
+        // PendingDecisionScope select_single_target uses for the target prompt below.
+        PendingDecisionScope pending_scope(ability.source);
         ManaValue base_cost = effective_activation_mana_cost(ability, controller, orderer);
         size_t max_x = max_available_mana(controller, base_cost, orderer);
         game_log("Choose X value (0-%zu):\n", max_x);
