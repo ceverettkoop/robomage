@@ -16,6 +16,7 @@ Invoked via `play.py --tui` (and the tui.py launcher's Play entry).
 """
 
 import random
+import re
 import time
 
 import numpy as np
@@ -23,6 +24,7 @@ from rich.text import Text
 
 from textual import work
 from textual.app import App, ComposeResult
+from textual.content import Content
 from textual.containers import Horizontal, Vertical, VerticalScroll
 from textual.message import Message
 from textual.widgets import Footer, Header, OptionList, RichLog, Static
@@ -371,7 +373,11 @@ class GameApp(App):
         opt.clear_options()
         if message.human_turn:
             for a in message.actions:
-                opt.add_option(Option(f"{a['index']:>2}: {self._menu_label(a)}", id=str(a["index"])))
+                # Wrap in plain Content: a str prompt is parsed as Textual markup
+                # at render time, which swallows bracketed text like the [SELF]/
+                # [OPPONENT] tags (and any card text that parses as a style tag).
+                opt.add_option(Option(Content(f"{a['index']:>2}: {self._menu_label(a)}"),
+                                      id=str(a["index"])))
             if message.actions:
                 opt.highlighted = 0
             self.query_one("#prompt", Static).update(self._prompt_text(obs, message.num_choices, gs))
@@ -419,16 +425,21 @@ class GameApp(App):
         if self._awaiting and 0 <= idx < len(self._actions):
             self._submit(idx)
 
-    @staticmethod
-    def _menu_label(a) -> str:
-        """Action description for the menu, tagging player targets SELF/OPPONENT.
+    def _menu_label(self, a) -> str:
+        """Action description for the menu, tagging player choices SELF/OPPONENT.
 
-        A target action aimed at a player (category 8 TARGET with no card) gets a
-        trailing SELF/OPPONENT marker — relative to you — so it's unambiguous
-        which player (A or B) the target is."""
+        Any action whose description names a player seat ("Player A"/"Player B" —
+        target-a-player, choose-a-player mid-resolution, etc.) gets a trailing
+        SELF/OPPONENT marker — relative to you — so it's unambiguous which seat
+        it refers to. The per-action controller flag can't be used here: the
+        engine only emits it for actions with a zone_ref, and player choices
+        have none. The menu is only shown on the human's own decisions, so the
+        human's seat is fixed by _opp_is_a."""
         desc = a["description"]
-        if a["category"] == 8 and a["card_idx"] < 0 and a["controller"] in ("own", "opp"):
-            desc += "  [SELF]" if a["controller"] == "own" else "  [OPPONENT]"
+        m = re.search(r"\bPlayer ([AB])\b", desc)
+        if m:
+            human_seat = "B" if self._opp_is_a else "A"
+            desc += "  [SELF]" if m.group(1) == human_seat else "  [OPPONENT]"
         return desc
 
     @staticmethod
