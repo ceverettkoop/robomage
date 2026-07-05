@@ -26,7 +26,8 @@ from env import (STATE_SIZE, MAX_ACTIONS, ACTION_CATEGORY_MAX,
                  _LIBRARY_CTX_START, _CUR_TURN_IDX, MAX_HAND_SLOTS,
                  _PENDING_DECISION_START,
                  _slot_card_idx, _ACTION_CARD_ID_NULL)
-from card_costs import N_CARD_TYPES, _VOCAB_NAMES as _CARD_NAMES
+from card_costs import (N_CARD_TYPES, _VOCAB_NAMES as _CARD_NAMES,
+                        _CARD_COST_MATRIX, _LAND_VOCAB_IDS)
 
 # ── Engine constants (card identity is a single normalized id float per slot) ──
 STACK_SLOT_SIZE = _STACK_SLOT_SIZE                 # ctrl + card-id + is_spell + modes + targets (25)
@@ -103,6 +104,32 @@ def onehot_to_index(state, base):
     """Decode the card-id float at `base` to its vocab index, or -1 if empty."""
     idx = _slot_card_idx(state, base)
     return idx if idx >= 0 else -1
+
+
+# Border colors by MTG color, for TUI card rendering. Black renders as a muted
+# purple-grey (pure black is invisible on a dark terminal); lands are neutral
+# grey and colorless (nonland) cards brown, per the color-identity display.
+_COLOR_BORDER = {"W": "#efe6c8", "U": "#3f7fd6", "B": "#8a7fa0",
+                 "R": "#d64b3b", "G": "#42ae5a"}
+_LAND_BORDER = "#8a8a8a"
+_COLORLESS_BORDER = "#9a6a38"
+
+
+def card_border_colors(card_idx):
+    """Border color(s) for a card by its color identity (from its cast cost).
+
+    Lands → [grey]; a colorless nonland → [brown]; otherwise one entry per
+    colored pip (W,U,B,R,G) present in the mana cost, so a multicolor card
+    returns several colors for the caller to split across the border edges.
+    """
+    if card_idx in _LAND_VOCAB_IDS:
+        return [_LAND_BORDER]
+    if 0 <= card_idx < len(_CARD_COST_MATRIX):
+        cost = _CARD_COST_MATRIX[card_idx]
+        colors = [_COLOR_BORDER[c] for i, c in enumerate("WUBRG") if cost[i] > 0]
+        if colors:
+            return colors
+    return [_COLORLESS_BORDER]
 
 
 def card_from_id(val):

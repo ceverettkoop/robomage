@@ -22,7 +22,7 @@ from rich.text import Text
 
 from textual import work
 from textual.app import App, ComposeResult
-from textual.containers import Horizontal, VerticalScroll
+from textual.containers import Horizontal, Vertical, VerticalScroll
 from textual.message import Message
 from textual.widgets import Footer, Header, OptionList, RichLog, Static
 from textual.widgets.option_list import Option
@@ -83,6 +83,26 @@ class TuiEnv(NarrativeEnv):
         self.lines.append(line)
 
 
+# ── Color-identity border helpers ─────────────────────────────────────────────
+
+def _edge_colors(colors):
+    """Map a card's color-identity border colors to (top, right, bottom, left).
+
+    A monocolor/land/colorless card paints all four edges its one color; a
+    two-color card splits diagonally (top+left vs right+bottom); three or more
+    colors distribute round-robin across the edges so multicolor cards read as
+    visibly split rather than a single hue."""
+    if not colors:
+        return (None, None, None, None)
+    if len(colors) == 1:
+        c = colors[0]
+        return (c, c, c, c)
+    if len(colors) == 2:
+        a, b = colors
+        return (a, b, b, a)
+    return tuple(colors[i % len(colors)] for i in range(4))
+
+
 # ── Clickable card widget ─────────────────────────────────────────────────────
 
 class CardClicked(Message):
@@ -95,12 +115,31 @@ class CardClicked(Message):
 
 
 class CardButton(Static):
-    """A single clickable card (permanent or hand card)."""
+    """A single clickable card (permanent or hand card).
 
-    def __init__(self, label: str, card_idx: int, controller: str):
+    `edge_colors` is a (top, right, bottom, left) tuple of rich colors encoding
+    the card's color identity; each edge is painted its color at mount time so
+    multicolor cards show a split border (see `_edge_colors`)."""
+
+    def __init__(self, label: str, card_idx: int, controller: str,
+                 edge_colors=None):
         super().__init__(label)
         self._card_idx = card_idx
         self._controller = controller
+        self._edge_colors = edge_colors
+
+    def on_mount(self) -> None:
+        if not self._edge_colors:
+            return
+        top, right, bottom, left = self._edge_colors
+        if top:
+            self.styles.border_top = ("round", top)
+        if right:
+            self.styles.border_right = ("round", right)
+        if bottom:
+            self.styles.border_bottom = ("round", bottom)
+        if left:
+            self.styles.border_left = ("round", left)
 
     def on_click(self) -> None:
         self.post_message(CardClicked(self._card_idx, self._controller))
@@ -139,12 +178,13 @@ class GameApp(App):
     #self-info  { height: 1; color: green; }
     #graveyards { height: 2; color: $text-muted; }
     #stack      { height: 3; border: round $primary; }
-    #opp-bf, #self-bf { height: 6; border: round $surface; }
-    #self-hand  { height: 5; border: round green; }
-    #opp-bf, #self-bf, #self-hand { layout: horizontal; }
+    #opp-bf, #self-bf { height: 8; }
+    .bf-row     { height: 1fr; layout: horizontal; }
+    .bf-row.lands { background: $panel; }
+    #self-hand  { height: 5; border: round green; layout: horizontal; }
     CardButton  { width: auto; height: 100%; margin: 0 1; padding: 0 1;
                   border: round $surface; }
-    CardButton:hover { border: round $accent; }
+    CardButton:hover { background: $boost; }
     #bottom     { height: 1fr; min-height: 8; }
     #actions    { width: 35%; min-width: 24; border: round $primary; }
     #log        { width: 1fr; border: round $surface; }
@@ -176,7 +216,7 @@ class GameApp(App):
         # Live heights of the resizable board panels (must match the CSS
         # defaults above). Shrinking these frees rows that flow into the 1fr
         # #bottom region, growing the log/command area; see action_resize_log.
-        self._panel_h = {"#opp-bf": 6, "#self-bf": 6, "#self-hand": 5}
+        self._panel_h = {"#opp-bf": 8, "#self-bf": 8, "#self-hand": 5}
 
     @staticmethod
     def _make_queue():
@@ -189,9 +229,13 @@ class GameApp(App):
         yield Header(show_clock=False)
         yield Static(id="phase")
         yield Static(id="opp-info")
-        yield VerticalScroll(id="opp-bf")
+        with Vertical(id="opp-bf"):
+            yield VerticalScroll(id="opp-bf-perms", classes="bf-row")
+            yield VerticalScroll(id="opp-bf-lands", classes="bf-row lands")
         yield Static(id="stack")
-        yield VerticalScroll(id="self-bf")
+        with Vertical(id="self-bf"):
+            yield VerticalScroll(id="self-bf-perms", classes="bf-row")
+            yield VerticalScroll(id="self-bf-lands", classes="bf-row lands")
         yield VerticalScroll(id="self-hand")
         yield Static(id="self-info")
         yield Static(id="graveyards")
@@ -275,8 +319,8 @@ class GameApp(App):
             f"Your GY: {', '.join(gs['self_graveyard']) or '—'}\n"
             f"Opp GY:  {', '.join(gs['opp_graveyard']) or '—'}")
 
-        await self._rebuild("#opp-bf", gs["opp_battlefield"], "opp")
-        await self._rebuild("#self-bf", gs["self_battlefield"], "self")
+        await self._rebuild_bf("#opp-bf-perms", "#opp-bf-lands", gs["opp_battlefield"], "opp")
+        await self._rebuild_bf("#self-bf-perms", "#self-bf-lands", gs["self_battlefield"], "self")
         await self._rebuild_hand(gs["self_hand"])
 
         self._actions = message.actions
@@ -340,7 +384,7 @@ class GameApp(App):
                 return
 
     # Min/max row heights for each resizable board panel.
-    _PANEL_LIMITS = {"#opp-bf": (4, 12), "#self-bf": (4, 12), "#self-hand": (3, 10)}
+    _PANEL_LIMITS = {"#opp-bf": (6, 16), "#self-bf": (6, 16), "#self-hand": (3, 10)}
 
     def action_resize_log(self, delta: int) -> None:
         """Grow (delta>0) or shrink (delta<0) the bottom log/command area.
@@ -396,19 +440,35 @@ class GameApp(App):
         """Write a literal line (no markup parsing) — for action/narrative logs."""
         self.query_one("#log", RichLog).write(Text(line))
 
-    async def _rebuild(self, selector: str, perms, controller: str) -> None:
+    async def _rebuild_bf(self, perms_sel: str, lands_sel: str, perms,
+                          controller: str) -> None:
+        """Rebuild one player's battlefield, split into a non-land row (above)
+        and a land row (below)."""
+        await self._fill_row(perms_sel,
+                             [p for p in perms if not p.get("is_land")], controller)
+        await self._fill_row(lands_sel,
+                             [p for p in perms if p.get("is_land")], controller)
+
+    async def _fill_row(self, selector: str, perms, controller: str) -> None:
         box = self.query_one(selector, VerticalScroll)
         await box.remove_children()
-        widgets = [CardButton(decode.fmt_perm(p), p["card_idx"], controller) for p in perms]
+        widgets = [self._mk_card(decode.fmt_perm(p), p["card_idx"], controller)
+                   for p in perms]
         if widgets:
             await box.mount(*widgets)
 
     async def _rebuild_hand(self, hand) -> None:
         box = self.query_one("#self-hand", VerticalScroll)
         await box.remove_children()
-        widgets = [CardButton(c["name"], c["card_idx"], "self") for c in hand]
+        widgets = [self._mk_card(c["name"], c["card_idx"], "self") for c in hand]
         if widgets:
             await box.mount(*widgets)
+
+    @staticmethod
+    def _mk_card(label: str, card_idx: int, controller: str) -> "CardButton":
+        """Build a CardButton whose border edges encode the card's color identity."""
+        edges = _edge_colors(decode.card_border_colors(card_idx))
+        return CardButton(label, card_idx, controller, edges)
 
     @staticmethod
     def _phase_strip(obs, gs) -> str:

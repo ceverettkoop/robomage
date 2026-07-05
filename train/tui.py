@@ -487,6 +487,14 @@ class LauncherApp(App):
     def _script_abs(self):
         return os.path.join(REPO_ROOT, self._tool.script)
 
+    def _is_play_mode(self):
+        """True when the selected command is the interactive play board (play.py).
+
+        Play launches the full-screen Textual game board (tui_game.py); teeing it
+        through `script` would fill the log with terminal escape sequences, so
+        play mode runs without logging."""
+        return bool(self._tool) and os.path.basename(self._tool.script) == "play.py"
+
     def _collect(self):
         """Return (argv, missing_required_names)."""
         argv = [VENV_PY, self._script_abs()]
@@ -564,7 +572,9 @@ class LauncherApp(App):
         text = self._preview_text(argv)
         if missing:
             text += f"\n\nmissing required: {', '.join(missing)}"
-        self.query_one("#preview", Static).update(f"[runs in terminal — output logged]\n{text}")
+        banner = ("[runs in terminal]" if self._is_play_mode()
+                  else "[runs in terminal — output logged]")
+        self.query_one("#preview", Static).update(f"{banner}\n{text}")
 
     # ── actions ───────────────────────────────────────────────────────────
     def action_run(self):
@@ -583,8 +593,10 @@ class LauncherApp(App):
         `script` (util-linux) runs the command in a pty — keeping interactive
         commands interactive — while appending everything it shows to logpath
         after our header, so the file mirrors the terminal live. When `script`
-        is unavailable the command still runs, but only the header is logged."""
-        logf = _open_command_log(argv)
+        is unavailable the command still runs, but only the header is logged.
+        Play mode (the full-screen TUI game board) is exempt — it runs unlogged
+        (see _is_play_mode)."""
+        logf = _open_command_log(argv) if not self._is_play_mode() else None
         logpath = logf.name if logf else None
         if logf:
             logf.close()
