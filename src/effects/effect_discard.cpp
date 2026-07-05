@@ -13,6 +13,7 @@
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../input_logger.h"
+#include "../stable_rng.h"
 #include "../systems/orderer.h"
 
 extern Coordinator global_coordinator;
@@ -77,7 +78,9 @@ bool discard(Ability &ab, std::shared_ptr<Orderer> orderer) {
             game_log("No cards to discard at random.\n");
             return true;
         }
-        std::shuffle(hand.begin(), hand.end(), cur_game.gen);
+        // stable_shuffle, not std::shuffle: platform-stable given the seed
+        // (see stable_rng.h).
+        stable_shuffle(hand, cur_game.gen);
         for (size_t i = 0; i < count; ++i) {
             Entity chosen = hand[i];
             auto &cd = global_coordinator.GetComponent<CardData>(chosen);

@@ -15,6 +15,7 @@
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
 #include "../input_logger.h"
+#include "../stable_rng.h"
 #include "../svar_eval.h"
 #include "../systems/orderer.h"
 
@@ -171,12 +172,8 @@ bool dig(Ability &ab, std::shared_ptr<Orderer> orderer) {
         if (std::find(chosen_cards.begin(), chosen_cards.end(), e) == chosen_cards.end()) remaining.push_back(e);
     }
     if (ab.rest_random_order) {
-        // Shuffle remaining with game RNG
-        for (size_t i = remaining.size(); i > 1; --i) {
-            std::uniform_int_distribution<size_t> dist(0, i - 1);
-            size_t j = dist(cur_game.gen);
-            std::swap(remaining[i - 1], remaining[j]);
-        }
+        // Shuffle remaining with game RNG (platform-stable — see stable_rng.h)
+        stable_shuffle(remaining, cur_game.gen);
     }
     // Unchosen cards normally go to the bottom; LibraryPosition2$ 0 (Fateseal) keeps
     // them on top instead (i.e. you may bottom the looked-at card, else it stays put).

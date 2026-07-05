@@ -9,6 +9,7 @@
 #include "../components/player.h"
 #include "../components/zone.h"
 #include "../ecs/coordinator.h"
+#include "../stable_rng.h"
 #include "../systems/orderer.h"
 
 extern Coordinator global_coordinator;
@@ -90,13 +91,10 @@ bool change_zone_all(Ability &ab, std::shared_ptr<Orderer> orderer) {
     }
 
     // RandomOrder$ — randomize the moved cards with the seeded RNG (deterministic
-    // per game seed). Used for "in a random order" library placement (Endurance).
+    // per game seed, platform-stable — see stable_rng.h). Used for "in a random
+    // order" library placement (Endurance).
     if (ab.rest_random_order) {
-        for (size_t i = to_move.size(); i > 1; --i) {
-            std::uniform_int_distribution<size_t> dist(0, i - 1);
-            size_t j = dist(cur_game.gen);
-            std::swap(to_move[i - 1], to_move[j]);
-        }
+        stable_shuffle(to_move, cur_game.gen);
     }
 
     // Library destinations honor LibraryPosition$ (-1 / unset = bottom).
