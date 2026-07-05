@@ -97,7 +97,7 @@ all: pygen program
 # sources actually change (not on every build).
 pygen: $(PYGEN)
 
-train/_enums.py: src/classes/action.h src/classes/game.h train/gen_enums.py
+train/_enums.py: src/classes/action.h src/classes/game.h src/classes/gamestate.h train/gen_enums.py
 	$(PYTHON) train/gen_enums.py
 
 train/card_costs.py: src/card_vocab.h src/machine_io.h train/gen_card_costs.py

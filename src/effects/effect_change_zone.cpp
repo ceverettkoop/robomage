@@ -119,6 +119,7 @@ static bool search_reveals_card(const Ability &ab) {
 }
 
 bool change_zone(Ability &ab, std::shared_ptr<Orderer> orderer) {
+    PendingDecisionScope pending_scope(ab.source);
     // Same-name search/move (Surgical Extraction, Infernal Tutor, Secret Salvage, Pack
     // Hunt, ...): ChangeType$ Remembered.sameName / Targeted.sameName.
     if (ab.change_type.find("sameName") != std::string::npos)

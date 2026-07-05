@@ -62,7 +62,7 @@ import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 # Action-category display names come from the generated C++ enum tables
 # (train/gen_enums.py), the single source of truth.
-from _enums import _CAT_NAMES
+from _enums import _CAT_NAMES, _REF_NAMES, REF_ZONE_MAX
 from card_costs import _VOCAB_NAMES, N_CARD_TYPES
 import decode
 import viz
@@ -748,17 +748,21 @@ def _print_whatif_table(branches):
 
 def _action_desc(obs, i):
     """Human-readable description of legal-action slot i ("CAST (Lightning Bolt)").
-    Tokens render as "Token"; a target choice with no card entity is a player."""
+    Tokens render as "Token"; a target choice with no card entity is a player.
+    The action's zone_ref is appended when set ("TARGET (Wasteland @opp bf)")."""
     cat = int(round(obs[STATE_SIZE + i] * ACTION_CATEGORY_MAX))
     cat_name = _CAT_NAMES.get(cat, str(cat))
+
+    zone = int(round(obs[STATE_SIZE + 3 * MAX_ACTIONS + i] * REF_ZONE_MAX))
+    zone_str = f" @{_REF_NAMES.get(zone, zone)}" if zone > 0 else ""
 
     card_raw = obs[STATE_SIZE + MAX_ACTIONS + i]
     if card_raw < 0:
         if cat_name in ("TARGET", "ATK_TGT"):
-            return f"{cat_name} (Player)"
+            return f"{cat_name} (Player{zone_str})"
         return cat_name
     cid = int(round(card_raw * N_CARD_TYPES))
-    return f"{cat_name} ({decode.card_index_to_name(cid) or f'card#{cid}'})"
+    return f"{cat_name} ({decode.card_index_to_name(cid) or f'card#{cid}'}{zone_str})"
 
 
 def _decode_legal_actions(obs, num_choices, chosen_action):
@@ -1047,6 +1051,13 @@ def _decode_board_state(obs, value=None):
         print("  Stack (top first):")
         for ln in _stack_summaries(obs, self_label, opp_label):
             print(f"    {ln}")
+
+    # The spell/ability asking for the current mid-resolution choice (target
+    # select, dig/search pick, discard, modal, ...). May not be on the stack yet.
+    pending = decode._decode_pending_decision(obs)
+    if pending:
+        who = self_label if pending["is_self"] else opp_label
+        print(f"Pending choice from: {pending['name']} ({who})")
 
     print()
     print(f"  [{self_label}] Priority player  "

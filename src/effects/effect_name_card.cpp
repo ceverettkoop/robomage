@@ -41,6 +41,7 @@ static std::string prompt_name_card(Zone::Ownership chooser, const std::vector<s
 // builds that menu; the ValidCards$ filter (Card.nonLand / Land / …) is passed through and
 // applied by the unified matcher inside the builder.
 bool name_card(Ability &ab, std::shared_ptr<Orderer> orderer) {
+    PendingDecisionScope pending_scope(ab.source);
     // Defined$ You + ValidCards$ Land (Petrified Hamlet's ETB "choose a land card name"):
     // the SOURCE's controller names a land card. The choice persists for the source's
     // continuous Card.NamedCard static, so it is recorded on the source permanent's

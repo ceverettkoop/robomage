@@ -19,6 +19,7 @@ namespace effects {
 // read it via Count$ChosenNumber (here the DestroyAll's mana-value bound Y and its
 // PayEnergy<Y> unless-cost). General over any "choose a number up to N" effect.
 bool choose_number(Ability &ab, std::shared_ptr<Orderer> orderer) {
+    PendingDecisionScope pending_scope(ab.source);
     int max = 0;
     if (!ab.dynamic_amount_expr.empty())
         max = static_cast<int>(

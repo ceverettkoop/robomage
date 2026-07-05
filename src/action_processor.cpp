@@ -1335,6 +1335,7 @@ static size_t spell_xpaid_target_cap(const CardData &card_data, Entity spell_ent
 
 static void select_single_target(Ability &ability, const std::vector<Entity> &valid_targets,
                                   bool allow_done) {
+    PendingDecisionScope pending_scope(ability.source);
     game_log("Choose target:\n");
     std::vector<LegalAction> tgt_actions;
     if (ability.target_min == 0 || allow_done) {
@@ -1454,6 +1455,7 @@ static bool charm_mode_choosable(Ability &candidate, std::shared_ptr<Orderer> or
 // target legality at resolution (CR 608.2b).
 static void announce_charm_modes(Ability &ability, std::shared_ptr<Orderer> orderer,
                                  Zone::Ownership caster) {
+    PendingDecisionScope pending_scope(ability.source);
     int to_pick = ability.charm_num < 1 ? 1 : ability.charm_num;
     // Track which choice indices remain selectable.
     std::vector<bool> taken(ability.charm_choices.size(), false);

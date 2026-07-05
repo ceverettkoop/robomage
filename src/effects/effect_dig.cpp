@@ -24,6 +24,7 @@ extern Game cur_game;
 namespace effects {
 
 bool dig(Ability &ab, std::shared_ptr<Orderer> orderer) {
+    PendingDecisionScope pending_scope(ab.source);
     // Look at top N cards, player picks one matching filter, rest go to bottom.
     // When the ability targets a player (Fateseal, e.g. Jace +2), the dug library is
     // the TARGET player's, not the controller's.

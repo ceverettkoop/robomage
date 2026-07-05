@@ -9,7 +9,7 @@
 // followed immediately by a binary payload (see cli_emit_machine_query):
 //   float32[STATE_SIZE] state, int32[MAX_ACTIONS] cats,
 //   float32[MAX_ACTIONS] ids, float32[MAX_ACTIONS] ctrl,
-//   float32[MAX_ACTIONS] pub.
+//   float32[MAX_ACTIONS] pub, int32[MAX_ACTIONS] zone.
 // Per-action metadata is padded to MAX_ACTIONS; only the first num_choices
 // entries are meaningful.
 //
@@ -24,12 +24,17 @@
 //   - N card_is_public floats: 1.0 if the choice's card identity is public
 //     knowledge to all players (a revealed tutor, e.g. Personal Tutor), else 0.0.
 //     Lets observers show the card name for an otherwise-private choice.
+//   - N zone_ref integers (ActionRefZone enum): which zone/side the choice's
+//     entity lives in (self/opp battlefield, hand, stack, GY, exile, the
+//     player objects themselves; REF_NONE = no referenced entity). Lets the
+//     policy distinguish e.g. "target the opponent" from "target their creature".
 //
 // NOTE: ActionChoice.description is NOT emitted in the BQUERY payload.
 // It is stored in Query for human-readable display (GUI/CLI) only.
 //
-// The Python env pads all three arrays to MAX_ACTIONS slots so the full
-// observation is STATE_SIZE + 3*MAX_ACTIONS floats (plus cost features).
+// The Python env pads the per-action arrays to MAX_ACTIONS slots; cats, ids,
+// ctrl, and zone go into the observation (STATE_SIZE + 4*MAX_ACTIONS floats
+// plus cost features); pub stays a side-channel for observers.
 //
 // State is always serialized from the PRIORITY PLAYER'S perspective ("self").
 // "Self" refers to the player who currently holds priority.
@@ -115,8 +120,19 @@
 //                (Duress/Thoughtseize/tutor) and that are still in hand. Unlike
 //                the multi-hot above this tracks the exact card and a slot clears
 //                when that card leaves the hand for another zone.
+//
+//  [3183-3184]   Pending decision context: 2 floats.
+//                [3183] card_id of the spell/ability currently making a
+//                mid-resolution choice (target select, dig/scry/surveil pick,
+//                search, discard, modal, ...; sentinel = none). Set via
+//                PendingDecisionScope — the source may not be on the stack yet,
+//                since targets are announced before the spell moves there
+//                (CR 601.2b/c), so this is the only place the observation shows
+//                WHAT is asking for the current choice.
+//                [3184] 1.0 if that source's controller is the viewer, else 0.0
+//                (e.g. 0.0 while choosing a card for the opponent's Thoughtseize).
 
-static constexpr int STATE_SIZE             = 3183;
+static constexpr int STATE_SIZE             = 3185;
 static constexpr int N_CARD_TYPES      = 1024; // embedding vocab size (card identity is emitted as a normalized id, not a one-hot)
 static constexpr int PERM_SLOT_SIZE    = 12;   // 8 stat/combat + 2 type flags + loyalty + 1 card-id float
 static constexpr int STACK_MODE_SLOTS  = MAX_STACK_MODES; // chosen-mode multi-hot width per stack slot

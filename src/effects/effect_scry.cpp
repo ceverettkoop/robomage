@@ -28,6 +28,7 @@ namespace effects {
 // source's controller scries. After scrying, any SubAbility$ chains with the same target
 // (Kozilek's Command: "scries X, then draws a card" — DBDraw with Defined$ ParentTarget).
 bool scry(Ability &ab, std::shared_ptr<Orderer> orderer) {
+    PendingDecisionScope pending_scope(ab.source);
     Zone::Ownership owner;
     if (ab.target != 0 && global_coordinator.entity_has_component<Player>(ab.target))
         owner = (ab.target == cur_game.player_a_entity) ? Zone::PLAYER_A : Zone::PLAYER_B;

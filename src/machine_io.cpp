@@ -211,6 +211,22 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
     gs->viewer_has_priority = (viewer == priority_owner);
     gs->self_is_player_a    = (viewer == Zone::PLAYER_A);
 
+    // Pending decision context: the spell/ability currently making a mid-resolution choice
+    // (set via PendingDecisionScope). Controller derived from the source entity the same way
+    // populate_query derives per-action controller_is_self.
+    gs->pending_decision_card = -1;
+    gs->pending_decision_ctrl_is_self = false;
+    if (cur_game.pending_decision_source != 0) {
+        Entity pd = cur_game.pending_decision_source;
+        gs->pending_decision_card = action_card_vocab_idx(pd);
+        if (global_coordinator.entity_has_component<Permanent>(pd))
+            gs->pending_decision_ctrl_is_self =
+                (global_coordinator.GetComponent<Permanent>(pd).controller == viewer);
+        else if (global_coordinator.entity_has_component<Zone>(pd))
+            gs->pending_decision_ctrl_is_self =
+                (global_coordinator.GetComponent<Zone>(pd).owner == viewer);
+    }
+
     // Match context (extern globals from main.cpp)
     extern int match_game_number;
     extern int match_wins_a;
@@ -597,6 +613,11 @@ const std::vector<float>& serialize_state(const GameState* gs) {
     // exact card and clears when that card leaves the hand.
     for (int i = 0; i < MAX_HAND_SLOTS; i++)
         state.push_back(norm_card_id(gs->opp_known_hand[i]));
+
+    // Pending decision context (2 floats): card id of the spell/ability making the
+    // current mid-resolution choice (sentinel = none) + its controller-is-viewer flag.
+    state.push_back(norm_card_id(gs->pending_decision_card));
+    state.push_back(gs->pending_decision_ctrl_is_self ? 1.0f : 0.0f);
 
     assert(static_cast<int>(state.size()) == STATE_SIZE);
     return state;

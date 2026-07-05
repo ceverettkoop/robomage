@@ -51,6 +51,7 @@ static bool discard_filter_matches(Entity e, const std::string &discard_valid) {
 }
 
 bool discard(Ability &ab, std::shared_ptr<Orderer> orderer) {
+    PendingDecisionScope pending_scope(ab.source);
     // Target player reveals hand, then either the controller picks ONE matching card
     // (RevealYouChoose — Thoughtseize/Duress) or all matching cards are discarded
     // (RevealDiscardAll — Cabal Therapy).

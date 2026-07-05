@@ -94,6 +94,7 @@ class Driver:
                 ids   = np.frombuffer(self._read_exactly(_META_BYTES), dtype=np.float32).copy()
                 ctrl  = np.frombuffer(self._read_exactly(_META_BYTES), dtype=np.float32).copy()
                 _pub  = np.frombuffer(self._read_exactly(_META_BYTES), dtype=np.float32).copy()
+                _zone = np.frombuffer(self._read_exactly(_META_BYTES), dtype=np.int32).copy()
 
                 self.records.append({
                     "state": state,

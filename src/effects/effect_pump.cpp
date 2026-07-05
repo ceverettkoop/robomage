@@ -98,6 +98,7 @@ static void grant_player_protection_from_everything(Zone::Ownership ctrl, bool u
 }
 
 bool pump(Ability &ab, std::shared_ptr<Orderer> orderer) {
+    PendingDecisionScope pending_scope(ab.source);
     (void)orderer;
     // Pump used purely as a targeting vehicle for a graveyard card (Surgical Extraction's
     // SP$ Pump | TgtZone$ Graveyard): the target was already chosen at cast and the

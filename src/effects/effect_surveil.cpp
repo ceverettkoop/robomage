@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "../classes/action.h"
+#include "../classes/game.h"
 #include "../cli_output.h"
 #include "../components/carddata.h"
 #include "../components/permanent.h"
@@ -26,6 +27,7 @@ namespace effects {
 // distinguishable to the semantic action resolver (like scry's keep/bottom): on-top =
 // TOP_LIBRARY, into-graveyard = CHOOSE_CARD (a library -> graveyard non-library zone change).
 bool surveil(Ability &ab, std::shared_ptr<Orderer> orderer) {
+    PendingDecisionScope pending_scope(ab.source);
     Zone::Ownership controller;
     if (global_coordinator.entity_has_component<Permanent>(ab.source)) {
         controller = global_coordinator.GetComponent<Permanent>(ab.source).controller;

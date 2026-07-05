@@ -24,6 +24,7 @@ from env import (STATE_SIZE, MAX_ACTIONS, ACTION_CATEGORY_MAX,
                  _STACK_TGT_SLOTS, _STACK_TGT_FIELDS,
                  _GY_SLOT_SIZE, _HAND_SLOT_SIZE,
                  _LIBRARY_CTX_START, _CUR_TURN_IDX, MAX_HAND_SLOTS,
+                 _PENDING_DECISION_START,
                  _slot_card_idx, _ACTION_CARD_ID_NULL)
 from card_costs import N_CARD_TYPES, _VOCAB_NAMES as _CARD_NAMES
 
@@ -57,10 +58,10 @@ _TOKEN_IDX = N_CARD_TYPES - 1
 # Action-metadata categories that constitute a mandatory attacker/blocker loop.
 MANDATORY_CATS = frozenset({2, 3, 4, 5})
 
-# Action-category / step display names are generated from the C++ enums by
-# train/gen_enums.py — the single source of truth for both the integer values
-# and these names. Re-run that script after changing the C++ enums.
-from _enums import _CAT_NAMES, _STEP_NAMES  # noqa: E402
+# Action-category / step / zone-ref display names are generated from the C++
+# enums by train/gen_enums.py — the single source of truth for both the integer
+# values and these names. Re-run that script after changing the C++ enums.
+from _enums import _CAT_NAMES, _STEP_NAMES, _REF_NAMES, REF_ZONE_MAX  # noqa: E402
 
 _MANA_COLORS = ("W", "U", "B", "R", "G", "C")
 
@@ -269,7 +270,23 @@ def decode_game_state(state, labels=SELF_OPP_LABELS):
         "self_hand": _decode_hand(state),
         "self_graveyard": _decode_graveyard(state, _GY_START),
         "opp_graveyard": _decode_graveyard(state, _OPP_GY_START),
+        "pending_decision": _decode_pending_decision(state),
     }
+
+
+def _decode_pending_decision(state):
+    """The spell/ability currently making a mid-resolution choice, or None.
+
+    Returns {"name", "card_idx", "is_self"} for the source of the pending
+    target/dig/search/discard/modal choice. The source may not be on the stack
+    yet (targets are announced before the spell moves there), so this is the
+    only place the observation shows WHAT is asking for the current choice.
+    """
+    idx = _slot_card_idx(state, _PENDING_DECISION_START)
+    if idx < 0:
+        return None
+    return {"name": card_index_to_name(idx), "card_idx": idx,
+            "is_self": float(state[_PENDING_DECISION_START + 1]) > 0.5}
 
 
 # ── Action decoders ───────────────────────────────────────────────────────────
@@ -288,6 +305,15 @@ def action_card_ids(obs):
 def action_ctrls(obs):
     """controller_is_self float per action slot."""
     return obs[STATE_SIZE + 2 * MAX_ACTIONS: STATE_SIZE + 3 * MAX_ACTIONS]
+
+
+def action_zone_refs(obs, num_choices=MAX_ACTIONS):
+    """Integer ActionRefZone per legal action (0 = REF_NONE, no referenced entity).
+
+    Display names for the values live in _REF_NAMES.
+    """
+    raw = obs[STATE_SIZE + 3 * MAX_ACTIONS: STATE_SIZE + 3 * MAX_ACTIONS + num_choices]
+    return np.round(raw * REF_ZONE_MAX).astype(int)
 
 
 def _ctrl_str(ctrl_val, labels=SELF_OPP_LABELS):

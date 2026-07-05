@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "../classes/action.h"
+#include "../classes/game.h"
 #include "../cli_output.h"
 #include "../components/carddata.h"
 #include "../components/zone.h"
@@ -17,6 +18,7 @@ extern Coordinator global_coordinator;
 namespace effects {
 
 bool rearrange_top_of_library(Ability &ab, std::shared_ptr<Orderer> orderer) {
+    PendingDecisionScope pending_scope(ab.source);
     Zone::Ownership owner = global_coordinator.GetComponent<Zone>(ab.source).owner;
 
     size_t num_cards = ab.amount;

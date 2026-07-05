@@ -14,6 +14,7 @@ extern Game cur_game;
 namespace effects {
 
 bool add_mana(Ability &ab, std::shared_ptr<Orderer> orderer) {
+    PendingDecisionScope pending_scope(ab.source);
     // Non-mana-ability that adds mana on resolution (Dark Ritual, Lion's Eye Diamond)
     Zone::Ownership mana_controller = ab.controller;
     size_t mana_amount = (ab.amount > 0) ? ab.amount : 1;

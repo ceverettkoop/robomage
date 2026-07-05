@@ -36,7 +36,9 @@ Index layout must stay in sync with src/machine_io.h:
   obs[2144:2149]       5 known top-of-library slots × 1 float (card id, sentinel = unknown)
   obs[2149:3173]       opponent revealed-cards multi-hot (N_CARD_TYPES floats, accumulated across the match)
   obs[3173:3183]       10 known opponent-hand slots × 1 float (card id)
-  obs[3183:]           action metadata + cost features (appended by env.py)
+  obs[3183:3185]       pending-decision context (source card id + ctrl_is_self)
+  obs[3185:]           action metadata (cats|ids|ctrl|zone) + cost features
+                         (appended by env.py)
 """
 
 from functools import partial
@@ -125,18 +127,26 @@ _CARD_EMBED_DIM  = 32   # dimension of the learned card-identity embedding
 # The action block env.py appends after the state vector is, per action slot:
 #   cats[MAX_ACTIONS] (category/ACTION_CATEGORY_MAX) | ids[MAX_ACTIONS] (norm card
 #   id of the action's referenced entity — e.g. a target's card) | ctrl[MAX_ACTIONS]
-#   (controller_is_self). When per_action_head=True the extractor encodes each slot
-#   (category embed + target-card embed + ctrl) into a per-action feature so the
-#   policy can score "target my own permanent" against that action's OWN features
-#   instead of a flat positional Linear. See PerActionMaskablePolicy.
+#   (controller_is_self) | zone[MAX_ACTIONS] (ActionRefZone/REF_ZONE_MAX — which
+#   zone/side the entity lives in). When per_action_head=True the extractor encodes
+#   each slot (category embed + target-card embed + ctrl + zone embed) into a
+#   per-action feature so the policy can score "target my own permanent" against
+#   that action's OWN features instead of a flat positional Linear. See
+#   PerActionMaskablePolicy.
 # MAX_ACTIONS and STATE_SIZE come from env.py (single source of truth for the
 # action-block layout the engine emits).
 try:
     from env import MAX_ACTIONS as _MAX_ACTIONS, STATE_SIZE as _ENV_STATE_SIZE
 except ImportError:
     from train.env import MAX_ACTIONS as _MAX_ACTIONS, STATE_SIZE as _ENV_STATE_SIZE
+try:
+    from _enums import REF_ZONE_MAX, N_REF_ZONES
+except ImportError:
+    from train._enums import REF_ZONE_MAX, N_REF_ZONES
 _ACTION_CAT_EMBED  = 8    # learned embedding dim for the action category
+_REF_ZONE_EMBED    = 4    # learned embedding dim for the per-action zone_ref
 _PER_ACTION_DIM    = 32   # per-action feature width fed to the action scorer
+_HIST_RECENT_K     = 16   # most-recent history entries embedded per-entry
 
 _PERM_START  = _GLOBAL_SIZE                                    # 34
 _PERM_END    = _PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE     # 1186
@@ -160,7 +170,12 @@ _REVEALED_START       = _KNOWN_TOP_LIB_END                    # 2149
 _REVEALED_END         = _REVEALED_START + _REVEALED_SIZE      # 3173
 _OPP_KNOWN_HAND_START = _REVEALED_END
 _OPP_KNOWN_HAND_END   = _OPP_KNOWN_HAND_START + _OPP_KNOWN_HAND_SLOTS * _OPP_KNOWN_HAND_SLOT_SIZE
-_STATE_END            = _OPP_KNOWN_HAND_END
+# Pending decision context: card id of the spell/ability currently making a
+# mid-resolution choice (sentinel = none) + its controller-is-viewer flag.
+_PENDING_START        = _OPP_KNOWN_HAND_END
+_PENDING_SIZE         = 2
+_PENDING_END          = _PENDING_START + _PENDING_SIZE
+_STATE_END            = _PENDING_END
 # obs[_STATE_END:] = action metadata + cost features appended by env.py
 # Guard against the two layout mirrors drifting apart (env.py owns STATE_SIZE).
 assert _STATE_END == _ENV_STATE_SIZE, (_STATE_END, _ENV_STATE_SIZE)
@@ -186,9 +201,10 @@ class CardGameExtractor(BaseFeaturesExtractor):
     pooling so they neither dilute the mean nor pin the max.
 
     Output fed into the policy MLP head:
-      global(34) + hist(512) + meta_ctx(8) + known_top_lib_agg(embed) +
-      revealed_agg(embed) +
-      action_extras(match+lib+turn skipped; action metadata + cost feats) +
+      global(34) + hist(512 raw) + hist_recent(K × (cat_emb+card_emb+2) embedded) +
+      meta_ctx(8) + known_top_lib_agg(embed) + revealed_agg(embed) +
+      pending_feat(card_emb+1: what's asking for the current choice) +
+      action_extras(action metadata cats|ids|ctrl|zone + cost feats) +
       perm_agg(embed*2: masked mean+max) + stack_agg(embed//2 * 2) +
       graveyard_agg(embed*2: masked mean+max) + hand_agg(embed*2: masked mean+max) +
       opp_known_hand_agg(embed*2: masked mean+max)
@@ -204,12 +220,18 @@ class CardGameExtractor(BaseFeaturesExtractor):
         half = embed_dim // 2
         _hist_size = _HIST_ENTRIES * _HIST_ENTRY_SIZE     # 512
         _meta_ctx_size = _KNOWN_TOP_LIB_START - _HIST_END  # 8 (match+lib+turn)
+        # Embedded recent-history block: the K most recent action-history entries,
+        # each flattened as [cat_emb | card_emb | is_self | turn]. Positional
+        # (recency-ordered) on purpose.
+        _hist_recent_size = _HIST_RECENT_K * (_ACTION_CAT_EMBED + card_embed_dim + 2)
         base_features_dim = (
             _GLOBAL_SIZE                                 # 34
-            + _hist_size                                 # 512 action history
+            + _hist_size                                 # 512 action history (raw)
+            + _hist_recent_size                          # embedded recent-K history
             + _meta_ctx_size                             # 8 match + lib + turn
             + embed_dim                                  # known-top library mean
             + embed_dim                                  # opponent revealed-cards multi-hot
+            + card_embed_dim + 1                         # pending-decision source embed + ctrl flag
             + (observation_space.shape[0] - _STATE_END)  # action extras
             + embed_dim * 2                              # perm masked mean+max (creatures, lands, other)
             + half * 2                                   # stack mean+max
@@ -269,13 +291,20 @@ class CardGameExtractor(BaseFeaturesExtractor):
             nn.ReLU(),
         )
 
+        # Action-category embedding — shared by the embedded recent-history block
+        # (always) and the per-action encoder (when enabled). History and action
+        # slots use the same category/ACTION_CATEGORY_MAX normalization.
+        self.action_cat_emb = nn.Embedding(ACTION_CATEGORY_MAX + 1, _ACTION_CAT_EMBED)
+
         # Per-action encoder (opt-in): category embed + referenced-card embed +
-        # controller_is_self → a per-action feature. Shares self.card_emb for the
-        # target card identity so a target land's id is embedded, not a raw float.
+        # controller_is_self + zone_ref embed → a per-action feature. Shares
+        # self.card_emb for the target card identity so a target land's id is
+        # embedded, not a raw float.
         if per_action_head:
-            self.action_cat_emb = nn.Embedding(ACTION_CATEGORY_MAX + 1, _ACTION_CAT_EMBED)
+            self.zone_emb = nn.Embedding(N_REF_ZONES, _REF_ZONE_EMBED)
             self.action_encoder = nn.Sequential(
-                nn.Linear(_ACTION_CAT_EMBED + card_embed_dim + 1, embed_dim),
+                nn.Linear(_ACTION_CAT_EMBED + card_embed_dim + 1 + _REF_ZONE_EMBED,
+                          embed_dim),
                 nn.ReLU(),
                 nn.Linear(embed_dim, self.per_action_dim),
                 nn.ReLU(),
@@ -297,7 +326,26 @@ class CardGameExtractor(BaseFeaturesExtractor):
         hist_ctx      = obs[:, _HIST_START:_HIST_END]           # action history (128 × 4)
         meta_ctx      = obs[:, _HIST_END:_KNOWN_TOP_LIB_START]  # match ctx + library ctx + current turn (8)
         revealed      = obs[:, _REVEALED_START:_REVEALED_END]   # opponent revealed-cards multi-hot
+        pending       = obs[:, _PENDING_START:_PENDING_END]     # pending-decision source id + ctrl flag
         action_extras = obs[:, _STATE_END:]                     # action cats + card IDs + cost features
+
+        # Embedded recent history: card ids as raw floats are unlearnable (vocab
+        # order is meaningless), so the K most recent entries get their card id
+        # and category embedded per entry, flattened recency-ordered. The full
+        # raw block is still passed through below for the older tail.
+        hist_entries = hist_ctx.reshape(-1, _HIST_ENTRIES, _HIST_ENTRY_SIZE)
+        recent = hist_entries[:, :_HIST_RECENT_K]               # (B, K, 4) newest first
+        rec_cat_idx = torch.round(recent[:, :, 0] * ACTION_CATEGORY_MAX).long() \
+            .clamp_(0, ACTION_CATEGORY_MAX)
+        rec_cat_e = self.action_cat_emb(rec_cat_idx)            # (B, K, cat_embed)
+        rec_card_e, _ = self._embed_ids(recent[:, :, 1])        # (B, K, card_embed)
+        hist_recent = torch.cat([rec_cat_e, rec_card_e, recent[:, :, 2:4]], dim=-1) \
+            .reshape(recent.shape[0], -1)                       # (B, K*(cat+card+2))
+
+        # Pending-decision context: embed WHAT is asking for the current choice
+        # (may not be on the stack yet — targets are announced pre-push).
+        pending_emb, _ = self._embed_ids(pending[:, 0])         # (B, card_embed)
+        pending_feat = torch.cat([pending_emb, pending[:, 1:2]], dim=-1)
 
         perms     = obs[:, _PERM_START:_PERM_END].reshape(-1, _PERM_SLOTS, _PERM_SLOT_SIZE)
         stack     = obs[:, _STACK_START:_STACK_END].reshape(-1, _STACK_SLOTS, _STACK_SLOT_SIZE)
@@ -347,24 +395,29 @@ class CardGameExtractor(BaseFeaturesExtractor):
         top_lib_agg = top_lib_emb.mean(1)
         revealed_agg = self.revealed_encoder(revealed)  # (B, embed) dense multi-hot encoding
 
-        base = torch.cat([global_ctx, hist_ctx, meta_ctx, top_lib_agg, revealed_agg, action_extras,
+        base = torch.cat([global_ctx, hist_ctx, hist_recent, meta_ctx, top_lib_agg,
+                          revealed_agg, pending_feat, action_extras,
                           perm_agg, stk_agg, gy_agg, hand_agg, opp_hand_agg], dim=-1)
         if not self.per_action_head:
             return base
 
         # Encode each candidate action from its own (category, referenced-card,
-        # controller) triple. The action block is the first 3*MAX_ACTIONS floats of
-        # action_extras: cats | ids | ctrl. Appended flat; sliced back out by the
-        # policy's action scorer. Padded slots (beyond num_choices) are harmless —
-        # their logits are masked out by MaskablePPO's action mask downstream.
+        # controller, zone_ref) tuple. The action block is the first 4*MAX_ACTIONS
+        # floats of action_extras: cats | ids | ctrl | zone. Appended flat; sliced
+        # back out by the policy's action scorer. Padded slots (beyond num_choices)
+        # are harmless — their logits are masked out by MaskablePPO's action mask
+        # downstream.
         a0 = _STATE_END
         cats = obs[:, a0:a0 + _MAX_ACTIONS]
         act_ids = obs[:, a0 + _MAX_ACTIONS:a0 + 2 * _MAX_ACTIONS]
         ctrl = obs[:, a0 + 2 * _MAX_ACTIONS:a0 + 3 * _MAX_ACTIONS]
+        zone = obs[:, a0 + 3 * _MAX_ACTIONS:a0 + 4 * _MAX_ACTIONS]
         cat_idx = torch.round(cats * ACTION_CATEGORY_MAX).long().clamp_(0, ACTION_CATEGORY_MAX)
         cat_e = self.action_cat_emb(cat_idx)                 # (B, A, cat_embed)
         act_id_e, _ = self._embed_ids(act_ids)               # (B, A, card_embed)
-        pa_in = torch.cat([cat_e, act_id_e, ctrl.unsqueeze(-1)], dim=-1)
+        zone_idx = torch.round(zone * REF_ZONE_MAX).long().clamp_(0, REF_ZONE_MAX)
+        zone_e = self.zone_emb(zone_idx)                     # (B, A, zone_embed)
+        pa_in = torch.cat([cat_e, act_id_e, ctrl.unsqueeze(-1), zone_e], dim=-1)
         pa = self.action_encoder(pa_in)                      # (B, A, per_action_dim)
         return torch.cat([base, pa.reshape(pa.shape[0], -1)], dim=-1)
 

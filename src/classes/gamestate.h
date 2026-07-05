@@ -142,6 +142,14 @@ typedef struct GameState_tag {
     int  match_wins_self;
     int  match_wins_opp;
     bool is_sideboard_phase;
+
+    // Pending decision context: the spell/ability currently making a mid-resolution
+    // choice (target select, dig/scry/surveil pick, search, discard, modal, ...).
+    // The source may not be on the stack yet — targets are announced before the
+    // spell moves there (CR 601.2b/c) — so without this the observation cannot show
+    // WHAT is asking for the current choice. card_vocab_idx, -1 = no pending source.
+    int  pending_decision_card;
+    bool pending_decision_ctrl_is_self;  // pending source's controller == viewer
 } GameState;
 
 #ifdef __cplusplus

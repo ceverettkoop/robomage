@@ -203,6 +203,7 @@ void cli_emit_machine_query(const Query* q, const GameState* gs) {
     float   ids [MAX_ACTIONS];
     float   ctrl[MAX_ACTIONS];
     float   pub [MAX_ACTIONS]  = {};  // 1.0 = card identity publicly known (revealed), else 0.0
+    int32_t zone[MAX_ACTIONS]  = {};  // ActionRefZone of the choice's entity (REF_NONE = none)
     std::fill(ids,  ids  + MAX_ACTIONS, id_null);
     std::fill(ctrl, ctrl + MAX_ACTIONS, ctrl_null);
 
@@ -215,12 +216,14 @@ void cli_emit_machine_query(const Query* q, const GameState* gs) {
             ? (q->choices[i].controller_is_self ? 1.0f : 0.0f)
             : ctrl_null;
         pub[i]  = q->choices[i].card_is_public ? 1.0f : 0.0f;
+        zone[i] = static_cast<int32_t>(q->choices[i].zone_ref);
     }
 
     fwrite(cats, sizeof(int32_t), MAX_ACTIONS, stdout);
     fwrite(ids,  sizeof(float),   MAX_ACTIONS, stdout);
     fwrite(ctrl, sizeof(float),   MAX_ACTIONS, stdout);
     fwrite(pub,  sizeof(float),   MAX_ACTIONS, stdout);
+    fwrite(zone, sizeof(int32_t), MAX_ACTIONS, stdout);
 
     // Human-readable per-action descriptions (e.g. "Target Player B (20 life)",
     // "Pay 4 life", "Put on top"), only under --narrative so the ML training path

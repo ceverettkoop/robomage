@@ -25,6 +25,7 @@ extern Game cur_game;
 namespace effects {
 
 bool peek_and_reveal(Ability &ab, std::shared_ptr<Orderer> orderer) {
+    PendingDecisionScope pending_scope(ab.source);
     const PeekParams *pp = std::get_if<PeekParams>(&ab.params);
     if (pp && pp->no_reveal) {
         // Look at the top N cards of the target player's library privately, no reveal choice.

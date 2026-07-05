@@ -26,6 +26,7 @@ namespace effects {
 // chosen entity, or 0 if nothing was sacrificed (no legal permanent, or declined).
 static Entity sacrifice_one(const Ability &ab, Zone::Ownership sacrificer,
                             bool optional, std::shared_ptr<Orderer> orderer) {
+    PendingDecisionScope pending_scope(ab.source);
     std::vector<Entity> candidates;
     for (auto e : orderer->mEntities) {
         if (!is_battlefield_permanent(e, sacrificer)) continue;

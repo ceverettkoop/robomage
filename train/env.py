@@ -4,7 +4,7 @@ RoboMage gymnasium environment.
 The game runs as a subprocess with --machine mode. On each decision point it
 emits a BQUERY line to stdout:
 
-    BQUERY: <num_choices>\n<float32[STATE_SIZE] binary><int32[MAX_ACTIONS] cats><float32[MAX_ACTIONS] ids><float32[MAX_ACTIONS] ctrl>
+    BQUERY: <num_choices>\n<float32[STATE_SIZE] binary><int32[MAX_ACTIONS] cats><float32[MAX_ACTIONS] ids><float32[MAX_ACTIONS] ctrl><float32[MAX_ACTIONS] pub><int32[MAX_ACTIONS] zone>
 
 The environment sends back a single integer on stdin.
 
@@ -24,13 +24,13 @@ Observation space
 -----------------
 State is always emitted from the PRIORITY PLAYER'S perspective ("self").
 
-2813-float state vector. Card identity is a single normalized id float per slot
-(idx/N_CARD_TYPES, -1/N_CARD_TYPES = empty), NOT a one-hot — the policy network
-maps ids through a learned nn.Embedding. The opponent revealed-cards block is the
-only vocab-width block (N_CARD_TYPES multi-hot).
-State (2813) + 64 action-category floats + 64 action card-ID floats
-+ 64 action controller_is_self floats + 70 hand cost floats
-+ 336 battlefield ability cost floats = OBS_SIZE total.
+STATE_SIZE-float state vector. Card identity is a single normalized id float per
+slot (idx/N_CARD_TYPES, -1/N_CARD_TYPES = empty), NOT a one-hot — the policy
+network maps ids through a learned nn.Embedding. The opponent revealed-cards
+block is the only vocab-width block (N_CARD_TYPES multi-hot).
+State (STATE_SIZE) + 64 action-category floats + 64 action card-ID floats
++ 64 action controller_is_self floats + 64 action zone_ref floats
++ 70 hand cost floats + 336 battlefield ability cost floats = OBS_SIZE total.
 NOTE: ActionChoice.description is NOT part of the observation — it is for
 human-readable display only (GUI/CLI) and is never sent to the ML model.
 NOTE: Exile zones are tracked in GameState but not serialized to the observation.
@@ -64,22 +64,23 @@ except ImportError:
 # of truth) by train/gen_enums.py — import it so this module never drifts from the
 # engine's category normalization (used for both the action block and history).
 try:
-    from _enums import ACTION_CATEGORY_MAX
+    from _enums import ACTION_CATEGORY_MAX, REF_ZONE_MAX
 except ImportError:
-    from train._enums import ACTION_CATEGORY_MAX
+    from train._enums import ACTION_CATEGORY_MAX, REF_ZONE_MAX
 
-STATE_SIZE = 3183  # see src/machine_io.h; card identity is 1 id float/slot, not a one-hot
+STATE_SIZE = 3185  # see src/machine_io.h; card identity is 1 id float/slot, not a one-hot
 # NOTE: Exile zones are tracked in GameState but not serialized to the observation.
 # NOTE: ActionChoice.description is never emitted in the BQUERY payload — it is for
 #       human-readable display only and is not part of the ML observation.
 MAX_ACTIONS = 64         # practical upper bound on num_choices per step
 # Binary BQUERY payload sizes (bytes): state float32s + MAX_ACTIONS each of
-# cats(int32)/ids/ctrl(float32)/pub(float32)
+# cats(int32)/ids/ctrl(float32)/pub(float32)/zone(int32)
 _BQUERY_STATE_BYTES = STATE_SIZE * 4
 _BQUERY_CATS_BYTES  = MAX_ACTIONS * 4  # int32
 _BQUERY_IDS_BYTES   = MAX_ACTIONS * 4  # float32
 _BQUERY_CTRL_BYTES  = MAX_ACTIONS * 4  # float32
 _BQUERY_PUB_BYTES   = MAX_ACTIONS * 4  # float32 — card_is_public per action
+_BQUERY_ZONE_BYTES  = MAX_ACTIONS * 4  # int32 — ActionRefZone per action
 # Per-action human-readable descriptions, emitted ONLY under --narrative
 # (gated on the engine side too). Fixed [MAX_ACTIONS][MAX_CHOICE_DESC] NUL-padded
 # char block — must match MAX_CHOICE_DESC in src/classes/gamestate.h.
@@ -117,7 +118,9 @@ _ACTION_CTRL_NULL    = -1.0 / N_CARD_TYPES  # null sentinel for non-entity actio
 MAX_HAND_SLOTS = 10
 _HAND_COST_FEATS  = MAX_HAND_SLOTS * _N_COST_FEATS  # 10 * 7 = 70
 _BF_ABILITY_FEATS = 48 * _N_COST_FEATS              # 48 * 7 = 336
-OBS_SIZE = STATE_SIZE + 3 * MAX_ACTIONS + _HAND_COST_FEATS + _BF_ABILITY_FEATS  # 3781
+# Action metadata in the obs: cats | ids | ctrl | zone_ref (4 blocks of
+# MAX_ACTIONS). pub stays a side-channel (self._action_public), not in the obs.
+OBS_SIZE = STATE_SIZE + 4 * MAX_ACTIONS + _HAND_COST_FEATS + _BF_ABILITY_FEATS  # 3847
 
 # ── State layout offsets (mirror src/machine_io.h) ───────────────────────────
 # Creatures, lands, and other permanents share one unified section (no separate land slots).
@@ -163,8 +166,16 @@ _REVEALED_START      = _KNOWN_TOP_LIB_END                                       
 _REVEALED_END        = _REVEALED_START + _REVEALED_SIZE                              # 3173
 _OPP_KNOWN_HAND_START = _REVEALED_END                                                # 3173
 _OPP_KNOWN_HAND_END  = _OPP_KNOWN_HAND_START + _OPP_KNOWN_HAND_SLOTS * _OPP_KNOWN_HAND_SLOT_SIZE  # 3183
+# Pending decision context: card id of the spell/ability currently making a
+# mid-resolution choice (target select, dig/search/scry pick, discard, modal, ...;
+# sentinel = none) + its controller-is-viewer flag. The source may not be on the
+# stack yet (targets are announced before the spell moves there), so this is the
+# only place the observation shows WHAT is asking for the current choice.
+_PENDING_DECISION_START = _OPP_KNOWN_HAND_END                                        # 3183
+_PENDING_DECISION_SIZE  = 2                    # source card id + ctrl_is_self
+_PENDING_DECISION_END   = _PENDING_DECISION_START + _PENDING_DECISION_SIZE           # 3185
 
-assert _OPP_KNOWN_HAND_END == STATE_SIZE, (_OPP_KNOWN_HAND_END, STATE_SIZE)
+assert _PENDING_DECISION_END == STATE_SIZE, (_PENDING_DECISION_END, STATE_SIZE)
 
 # Offset of the card-id float within a permanent slot (after the 11 status floats).
 _PERM_CARD_OFF = 11
@@ -463,6 +474,8 @@ class RoboMageEnv(gym.Env):
                     self._read_exactly(_BQUERY_CTRL_BYTES), dtype=np.float32).copy()
                 pub_arr = np.frombuffer(
                     self._read_exactly(_BQUERY_PUB_BYTES), dtype=np.float32).copy()
+                zone_int = np.frombuffer(
+                    self._read_exactly(_BQUERY_ZONE_BYTES), dtype=np.int32)
 
                 # Per-action "card identity is public" flags (revealed tutors). Kept as a
                 # side-channel — observers (TUI) read it; not part of the ML observation
@@ -507,7 +520,9 @@ class RoboMageEnv(gym.Env):
                 o[STATE_SIZE:_act_end] = cats_int / ACTION_CATEGORY_MAX
                 o[_act_end:_act_end + MAX_ACTIONS] = id_arr
                 o[_act_end + MAX_ACTIONS:_act_end + 2 * MAX_ACTIONS] = ctrl_arr
-                _hc_start = _act_end + 2 * MAX_ACTIONS
+                o[_act_end + 2 * MAX_ACTIONS:_act_end + 3 * MAX_ACTIONS] = (
+                    zone_int / REF_ZONE_MAX)
+                _hc_start = _act_end + 3 * MAX_ACTIONS
                 o[_hc_start:_hc_start + _HAND_COST_FEATS] = hand_costs.ravel()
                 _bf_start = _hc_start + _HAND_COST_FEATS
                 o[_bf_start:_bf_start + _BF_ABILITY_FEATS] = bf_ability_costs.ravel()
@@ -640,7 +655,8 @@ def _gather_costs(matrix, ids):
     rows = matrix[safe]
     return np.where((ids >= 0)[:, None], rows, 0.0).astype(np.float32)
 # Start of bf_ability_costs block in the full obs vector
-_BF_COST_START    = STATE_SIZE + 3 * MAX_ACTIONS + _HAND_COST_FEATS  # 34056
+# (4 per-action blocks: cats | ids | ctrl | zone_ref)
+_BF_COST_START    = STATE_SIZE + 4 * MAX_ACTIONS + _HAND_COST_FEATS
 # Status offsets within a permanent slot
 _OFF_POWER        = 0
 _OFF_TOUGHNESS    = 1

@@ -24,6 +24,7 @@ extern Game cur_game;
 namespace effects {
 
 bool choose_card(Ability &ab, std::shared_ptr<Orderer> orderer) {
+    PendingDecisionScope pending_scope(ab.source);
     // ChooseEach (Ajani -4): each opponent keeps one of their nonland permanents of each
     // listed type; the kept permanents go into cur_game.chosen_cards and a SubAbility$
     // SacrificeAll then sacrifices the rest (ValidCards$ ...+nonChosenCard).

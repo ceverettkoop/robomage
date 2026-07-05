@@ -5,6 +5,7 @@
 
 #include "../action_processor.h"
 #include "../classes/action.h"
+#include "../classes/game.h"
 #include "../cli_output.h"
 #include "../input_logger.h"
 #include "../systems/orderer.h"
@@ -30,6 +31,7 @@ static void resolve_chosen_mode(Ability &parent, Ability &chosen, std::shared_pt
 // FALLBACK for a charm that reached the stack without an announcement (a cast path not
 // routed through announce_spell_targets).
 bool charm(Ability &ab, std::shared_ptr<Orderer> orderer) {
+    PendingDecisionScope pending_scope(ab.source);
     if (!ab.charm_chosen.empty()) {
         for (int idx : ab.charm_chosen) {
             if (idx < 0 || static_cast<size_t>(idx) >= ab.charm_choices.size()) continue;

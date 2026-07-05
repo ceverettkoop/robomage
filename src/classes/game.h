@@ -217,6 +217,13 @@ struct Game {
         std::map<Entity, int> payment_fail_counts;  // machine mode: block casting after 2 failed payments
         bool pending_cant_be_countered = false;  // set during mana payment when Cavern restricted mana used
         bool pending_gift_promised = false;  // Gift (CR 702.176): the spell currently being cast promised its gift; read by Count$PromisedGift while its targets are chosen
+        // The source entity of the spell/ability currently making a mid-resolution choice
+        // (target select, dig/scry/surveil pick, search, discard, modal, ...). Serialized into
+        // the state vector's pending-decision context block so the ML observation shows WHAT is
+        // asking for the current choice — the source may not be on the stack yet, since targets
+        // are announced before the spell moves there (CR 601.2b/c). Managed exclusively via
+        // PendingDecisionScope; 0 = no ability-driven choice pending.
+        Entity pending_decision_source = 0;
 
         // Turn-long "spells you control can't be countered" grant created by a resolving spell/
         // ability (Veil of Summer's DB$ Effect | ReplacementEffects$ AntiMagic, CR 614.13/
@@ -316,6 +323,19 @@ struct Game {
 
     private:
         Entity gen_player(const Deck &deck);
+};
+
+// RAII marker for Game::pending_decision_source: constructed at the top of an effect/target
+// handler that is about to prompt a choice on behalf of a spell/ability, so every get_input
+// within the scope serializes that ability's source card into the observation's
+// pending-decision context. Saves/restores the previous value, so nested choices (a
+// sub-ability's target chosen during a parent's resolution) unwind correctly.
+struct PendingDecisionScope {
+    Entity prev_source;
+    explicit PendingDecisionScope(Entity source) : prev_source(cur_game.pending_decision_source) {
+        cur_game.pending_decision_source = source;
+    }
+    ~PendingDecisionScope() { cur_game.pending_decision_source = prev_source; }
 };
 
 #endif // __cplusplus

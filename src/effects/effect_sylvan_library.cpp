@@ -20,6 +20,7 @@ extern Game cur_game;
 namespace effects {
 
 bool sylvan_library(Ability &ab, std::shared_ptr<Orderer> orderer) {
+    PendingDecisionScope pending_scope(ab.source);
     // Draw 2, then for each card drawn this turn still in hand, choose: pay 4 life or put on top
     Zone::Ownership ctrl = ab.controller;
     Entity ctrl_entity = (ctrl == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;

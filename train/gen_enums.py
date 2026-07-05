@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 """
-Run from repo root after changing the C++ ActionCategory or Step enums:
+Run from repo root after changing the C++ ActionCategory, Step, or
+ActionRefZone enums:
     python train/gen_enums.py
 Writes train/_enums.py with _CAT_NAMES (action-category int -> short display
-name), _STEP_NAMES (ordered step display names) and ACTION_CATEGORY_MAX.
+name), _STEP_NAMES (ordered step display names), ACTION_CATEGORY_MAX, and
+_REF_NAMES / REF_ZONE_MAX (per-action zone_ref block).
 
-The C++ enums in src/classes/action.h (ActionCategory) and src/classes/game.h
-(Step) are the single source of truth for the integer values and ordering. The
+The C++ enums in src/classes/action.h (ActionCategory), src/classes/game.h
+(Step), and src/classes/gamestate.h (ActionRefZone) are the single source of
+truth for the integer values and ordering. The
 short human-readable display strings live ONLY here, in _CAT_DISPLAY /
 _STEP_DISPLAY below. The generator fails loudly if the C++ enum and the display
 map drift apart (a new/renamed C++ category with no display string, or a stale
@@ -17,6 +20,7 @@ import re, os, sys
 REPO_ROOT = os.path.dirname(os.path.abspath(__file__)) + "/.."
 ACTION_H  = os.path.join(REPO_ROOT, "src/classes/action.h")
 GAME_H    = os.path.join(REPO_ROOT, "src/classes/game.h")
+GAMESTATE_H = os.path.join(REPO_ROOT, "src/classes/gamestate.h")
 OUT_FILE  = os.path.join(REPO_ROOT, "train/_enums.py")
 
 # C++ ActionCategory enum name -> short display abbreviation (the only place
@@ -45,6 +49,16 @@ _CAT_DISPLAY = {
     "PLAY_FREE": "PLAY_FREE", "SYLVAN_CHOICE": "SYLVAN",
     "CHOOSE_CARD": "CHOOSE_CARD", "ASSIGN_DAMAGE": "ASSIGN_DMG",
     "COMPANION": "COMPANION",
+}
+
+# C++ ActionRefZone enum name -> short display string for the per-action
+# zone_ref block (which zone/side the action's referenced entity lives in).
+_REF_DISPLAY = {
+    "REF_NONE": "-", "REF_SELF_BATTLEFIELD": "own bf",
+    "REF_OPP_BATTLEFIELD": "opp bf", "REF_SELF_HAND": "hand",
+    "REF_STACK": "stack", "REF_SELF_GY": "own gy", "REF_OPP_GY": "opp gy",
+    "REF_SELF_EXILE": "own ex", "REF_OPP_EXILE": "opp ex",
+    "REF_PLAYER_SELF": "you", "REF_PLAYER_OPP": "opp",
 }
 
 # C++ Step enum name -> display string (the only place these are defined).
@@ -90,6 +104,23 @@ def parse_steps():
     return [n for n in names if re.fullmatch(r"[A-Z_][A-Z0-9_]*", n)]
 
 
+def parse_ref_zones():
+    """Return the ordered list of ActionRefZone enum names.
+
+    Values are implicit sequential (only REF_NONE carries an explicit `= 0`),
+    so parse by order, stripping any `= N` initializer.
+    """
+    body = _enum_body(GAMESTATE_H, r"typedef\s+enum\s+ActionRefZone_tag")
+    names = []
+    for tok in body.split(","):
+        name = tok.split("=")[0].strip()
+        if re.fullmatch(r"[A-Z_][A-Z0-9_]*", name):
+            names.append(name)
+    if not names or names[0] != "REF_NONE":
+        raise RuntimeError("ActionRefZone parse failed (expected REF_NONE first)")
+    return names
+
+
 def _check_coverage(parsed_names, display, what):
     """Fail loudly if the C++ enum and the display map have drifted apart."""
     parsed, mapped = set(parsed_names), set(display)
@@ -108,8 +139,10 @@ def _check_coverage(parsed_names, display, what):
 def main():
     cats = parse_action_categories()
     steps = parse_steps()
+    refs = parse_ref_zones()
     _check_coverage(cats.keys(), _CAT_DISPLAY, "ActionCategory")
     _check_coverage(steps, _STEP_DISPLAY, "Step")
+    _check_coverage(refs, _REF_DISPLAY, "ActionRefZone")
 
     cat_by_int = sorted(cats.items(), key=lambda kv: kv[1])
     cat_max = max(cats.values())
@@ -136,11 +169,23 @@ def main():
     ]
     for name in steps:
         lines.append(f'    "{_STEP_DISPLAY[name]}",  # {name}')
-    lines += ["]", ""]
+    lines += [
+        "]",
+        "",
+        f"REF_ZONE_MAX = {len(refs) - 1}",
+        f"N_REF_ZONES = {len(refs)}",
+        "",
+        "# ActionRefZone value -> short display name (per-action zone_ref block).",
+        "_REF_NAMES = {",
+    ]
+    for val, name in enumerate(refs):
+        lines.append(f'    {val}: "{_REF_DISPLAY[name]}",  # {name}')
+    lines += ["}", ""]
 
     with open(OUT_FILE, "w") as f:
         f.write("\n".join(lines) + "\n")
-    print(f"Wrote {OUT_FILE}: {len(cats)} categories, {len(steps)} steps")
+    print(f"Wrote {OUT_FILE}: {len(cats)} categories, {len(steps)} steps, "
+          f"{len(refs)} ref zones")
 
 
 if __name__ == "__main__":
