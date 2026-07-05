@@ -186,8 +186,13 @@ def decode_step(state):
     return _STEP_NAMES[idx] if idx < len(_STEP_NAMES) else f"Step({idx})"
 
 
-def _decode_permanents(state, start, count=48):
-    """Decode permanent slots into a list of dicts (non-empty only)."""
+def _decode_permanents(state, start, count=48, counters=None):
+    """Decode permanent slots into a list of dicts (non-empty only).
+
+    `counters` is the per-slot typed-counter summary list the engine emits
+    under --narrative (env._perm_counters side-channel; slot-aligned with the
+    state vector). Loyalty entries are dropped — loyalty has a dedicated
+    serialized field and its own display."""
     perms = []
     for i in range(count):
         base = start + i * PERM_SLOT_SIZE
@@ -195,6 +200,11 @@ def _decode_permanents(state, start, count=48):
         if idx < 0:
             continue
         p = {"name": card_index_to_name(idx), "card_idx": idx}
+        if counters is not None and i < len(counters) and counters[i]:
+            parts = [c for c in (s.strip() for s in counters[i].split(","))
+                     if c and not c.startswith("loyalty:")]
+            if parts:
+                p["counters"] = ", ".join(parts)
         if state[base + _OFF_IS_CREATURE] > 0.5:
             p["power"] = int(round(state[base + _OFF_POWER] * 10))
             p["toughness"] = int(round(state[base + _OFF_TOUGHNESS] * 10))
@@ -271,11 +281,14 @@ def _decode_stack(state, labels=SELF_OPP_LABELS):
     return entries
 
 
-def decode_game_state(state, labels=SELF_OPP_LABELS):
+def decode_game_state(state, labels=SELF_OPP_LABELS, perm_counters=None):
     """Decode the full state vector into a human-readable dict.
 
     `labels` substitutes the controller words used in stack entries (and any
     other perspective-relative wording); the default keeps today's output.
+    `perm_counters` is the (self_slots, opp_slots) counter-summary side-channel
+    (env._perm_counters, narrative mode only); when given, battlefield dicts
+    gain a "counters" entry rendered by fmt_perm.
     """
     is_active = state[31] > 0.5
     is_player_a = state[32] > 0.5
@@ -291,8 +304,12 @@ def decode_game_state(state, labels=SELF_OPP_LABELS):
         "opponent": _decode_player(state, 9),
         "self_library": int(round(state[_IDX_SELF_LIB] * 60)),
         "opp_library": int(round(state[_IDX_OPP_LIB] * 60)),
-        "self_battlefield": _decode_permanents(state, _SELF_PERM_START),
-        "opp_battlefield": _decode_permanents(state, _OPP_PERM_START),
+        "self_battlefield": _decode_permanents(
+            state, _SELF_PERM_START,
+            counters=perm_counters[0] if perm_counters else None),
+        "opp_battlefield": _decode_permanents(
+            state, _OPP_PERM_START,
+            counters=perm_counters[1] if perm_counters else None),
         "stack": _decode_stack(state, labels),
         "self_hand": _decode_hand(state),
         "self_graveyard": _decode_graveyard(state, _GY_START),
@@ -586,6 +603,8 @@ def fmt_perm(p):
         s += "]"
     if "loyalty" in p:
         s += f" [loy {p['loyalty']}]"
+    if "counters" in p:
+        s += f" [{p['counters']}]"
     flags = []
     if p.get("tapped"):
         flags.append("T")

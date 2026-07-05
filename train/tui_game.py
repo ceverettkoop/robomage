@@ -46,6 +46,12 @@ _STEP_UPKEEP_IDX = _STEP_ABBR.index("UPK")
 # can briefly observe it before the game moves on. Tweak freely.
 OPP_ACTION_OBSERVE_DELAY = 0.5
 
+# Controller-word substitution used when decoding an OPPONENT-perspective obs
+# (the opponent holds priority, so the state vector's "self" is them). Swapping
+# the labels keeps stack entries / announced targets worded from the human's
+# point of view; the structural self/opp fields are swapped separately.
+_MIRROR_LABELS = {"own": "opp", "opp": "own", "self": "opponent", "opponent": "self"}
+
 # Opponent choices that reveal a hidden card identity (the card never becomes
 # public knowledge). When the opponent makes one of these, the log shows a
 # generic "a card" message instead of the actual name — e.g. Ponder/Brainstorm
@@ -160,11 +166,19 @@ class CardButton(Static):
 # ── Worker → UI messages ──────────────────────────────────────────────────────
 
 class StateUpdate(Message):
-    def __init__(self, obs, num_choices, actions, human_turn):
+    def __init__(self, obs, num_choices, actions, human_turn, opp_perspective=False,
+                 perm_counters=None):
         self.obs = obs
         self.num_choices = num_choices
         self.actions = actions            # decoded action dicts (human turn) or []
         self.human_turn = human_turn
+        # True when this obs was serialized from the OPPONENT's perspective
+        # (they hold priority): the renderer must mirror it back to the human's
+        # view and must not display the "self" hand (it's the opponent's).
+        self.opp_perspective = opp_perspective
+        # (self[48], opp[48]) typed-counter summaries (env._perm_counters
+        # side-channel), same perspective as obs — decode swaps them with it.
+        self.perm_counters = perm_counters
         super().__init__()
 
 
@@ -303,7 +317,9 @@ class GameApp(App):
 
                 self.post_message(StateUpdate(obs, num,
                                               actions if human_must_act else [],
-                                              human_turn=human_must_act))
+                                              human_turn=human_must_act,
+                                              opp_perspective=opp_turn,
+                                              perm_counters=getattr(env, "_perm_counters", None)))
 
                 opp_acted = False
                 autopass_acted = False
@@ -353,7 +369,21 @@ class GameApp(App):
 
     async def on_state_update(self, message: StateUpdate) -> None:
         obs = message.obs
-        gs = decode.decode_game_state(obs[:STATE_SIZE])
+        # The state vector is serialized from the PRIORITY player's perspective.
+        # When that's the opponent, mirror the decode back to the human's view
+        # (swapped controller labels + swapped self/opp fields) so the board
+        # never flips while a model/scripted opponent is acting or deciding.
+        mirrored = message.opp_perspective
+        gs = decode.decode_game_state(
+            obs[:STATE_SIZE],
+            labels=_MIRROR_LABELS if mirrored else decode.SELF_OPP_LABELS,
+            perm_counters=message.perm_counters)
+        if mirrored:
+            for a, b in (("self", "opponent"),
+                         ("self_library", "opp_library"),
+                         ("self_battlefield", "opp_battlefield"),
+                         ("self_graveyard", "opp_graveyard")):
+                gs[a], gs[b] = gs[b], gs[a]
 
         self.query_one("#phase", Static).update(self._phase_strip(obs, gs))
         self.query_one("#opp-info", Static).update(self._info_line("OPPONENT", gs["opponent"], gs["opp_library"]))
@@ -365,7 +395,10 @@ class GameApp(App):
 
         await self._rebuild_bf("#opp-bf-perms", "#opp-bf-lands", gs["opp_battlefield"], "opp")
         await self._rebuild_bf("#self-bf-perms", "#self-bf-lands", gs["self_battlefield"], "self")
-        await self._rebuild_hand(gs["self_hand"])
+        # A mirrored obs's "self_hand" is the OPPONENT's hand (private) — never
+        # render it; the human's hand keeps its last own-perspective contents.
+        if not mirrored:
+            await self._rebuild_hand(gs["self_hand"])
 
         self._actions = message.actions
         self._awaiting = message.human_turn

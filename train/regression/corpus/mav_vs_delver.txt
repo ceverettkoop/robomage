@@ -1075,7 +1075,7 @@
   Self:  10 life | mana: empty | hand(8): Collector Ouphe, Keen-Eyed Curator, Keen-Eyed Curator, Knight of the Reliquary, Once Upon a Time, Scythecat Cub, Scythecat Cub, Thalia, Guardian of Thraben
   Opp:   19 life | mana: empty | hand count: 2
   Self BF:  Forest
-  Opp BF:   Murktide Regent [8/8] (SICK) | Cori-Steel Cutter | Island (T) | Volcanic Island (T) | Volcanic Island
+  Opp BF:   Murktide Regent [8/8] [+1/+1:5] (SICK) | Cori-Steel Cutter | Island (T) | Volcanic Island (T) | Volcanic Island
   Self GY: Dryad Arbor, Green Sun's Zenith, Horizon Canopy, Noble Hierarch, Noble Hierarch, Swords to Plowshares, Windswept Heath
   Opp GY:  Scalding Tarn, Wasteland, Wasteland
   Actions:
@@ -1101,7 +1101,7 @@
   Step: Draw
   Self:  19 life | mana: empty | hand(3): Force of Will, Lightning Bolt, Daze
   Opp:   10 life | mana: empty | hand count: 7
-  Self BF:  Murktide Regent [8/8] | Cori-Steel Cutter | Island | Volcanic Island | Volcanic Island
+  Self BF:  Murktide Regent [8/8] [+1/+1:5] | Cori-Steel Cutter | Island | Volcanic Island | Volcanic Island
   Opp BF:   Forest
   Self GY: Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Collector Ouphe, Dryad Arbor, Green Sun's Zenith, Horizon Canopy, Noble Hierarch, Noble Hierarch, Swords to Plowshares, Windswept Heath
@@ -1117,7 +1117,7 @@
   Step: Draw
   Self:  19 life | mana: empty | hand(3): Force of Will, Lightning Bolt, Daze
   Opp:   10 life | mana: empty | hand count: 7
-  Self BF:  Murktide Regent [8/8] | Cori-Steel Cutter | Island | Volcanic Island | Volcanic Island
+  Self BF:  Murktide Regent [8/8] [+1/+1:5] | Cori-Steel Cutter | Island | Volcanic Island | Volcanic Island
   Opp BF:   Forest
   Self GY: Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Collector Ouphe, Dryad Arbor, Green Sun's Zenith, Horizon Canopy, Noble Hierarch, Noble Hierarch, Swords to Plowshares, Windswept Heath
@@ -1136,7 +1136,7 @@
   Step: Draw
   Self:  19 life | mana: empty | hand(2): Force of Will, Daze
   Opp:   10 life | mana: empty | hand count: 7
-  Self BF:  Murktide Regent [8/8] | Cori-Steel Cutter | Island | Volcanic Island (T) | Volcanic Island
+  Self BF:  Murktide Regent [8/8] [+1/+1:5] | Cori-Steel Cutter | Island | Volcanic Island (T) | Volcanic Island
   Opp BF:   Forest
   Stack: Lightning Bolt (spell, self) -> opponent (player)
   Self GY: Scalding Tarn, Wasteland, Wasteland
@@ -1156,7 +1156,7 @@
   Step: First Main
   Self:  19 life | mana: empty | hand(2): Force of Will, Daze
   Opp:   7 life | mana: empty | hand count: 7
-  Self BF:  Murktide Regent [8/8] | Cori-Steel Cutter | Island | Volcanic Island (T) | Volcanic Island
+  Self BF:  Murktide Regent [8/8] [+1/+1:5] | Cori-Steel Cutter | Island | Volcanic Island (T) | Volcanic Island
   Opp BF:   Forest
   Self GY: Lightning Bolt, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Collector Ouphe, Dryad Arbor, Green Sun's Zenith, Horizon Canopy, Noble Hierarch, Noble Hierarch, Swords to Plowshares, Windswept Heath
@@ -1174,7 +1174,7 @@
   Step: First Main
   Self:  19 life | mana: empty | hand(2): Force of Will, Daze
   Opp:   7 life | mana: empty | hand count: 7
-  Self BF:  Murktide Regent [8/8] | Cori-Steel Cutter | Island (T) | Volcanic Island (T) | Volcanic Island (T)
+  Self BF:  Murktide Regent [8/8] [+1/+1:5] | Cori-Steel Cutter | Island (T) | Volcanic Island (T) | Volcanic Island (T)
   Opp BF:   Forest
   Self GY: Lightning Bolt, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Collector Ouphe, Dryad Arbor, Green Sun's Zenith, Horizon Canopy, Noble Hierarch, Noble Hierarch, Swords to Plowshares, Windswept Heath
@@ -1191,7 +1191,7 @@
   Step: Declare Atk
   Self:  19 life | mana: empty | hand(2): Force of Will, Daze
   Opp:   7 life | mana: empty | hand count: 7
-  Self BF:  Murktide Regent [9/9] | Cori-Steel Cutter | Island (T) | Volcanic Island (T) | Volcanic Island (T)
+  Self BF:  Murktide Regent [9/9] [+1/+1:5] | Cori-Steel Cutter | Island (T) | Volcanic Island (T) | Volcanic Island (T)
   Opp BF:   Forest
   Self GY: Lightning Bolt, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Collector Ouphe, Dryad Arbor, Green Sun's Zenith, Horizon Canopy, Noble Hierarch, Noble Hierarch, Swords to Plowshares, Windswept Heath
@@ -1209,7 +1209,7 @@
   Step: Declare Atk
   Self:  19 life | mana: empty | hand(2): Force of Will, Daze
   Opp:   7 life | mana: empty | hand count: 7
-  Self BF:  Murktide Regent [9/9] (ATK) | Cori-Steel Cutter | Island (T) | Volcanic Island (T) | Volcanic Island (T)
+  Self BF:  Murktide Regent [9/9] [+1/+1:5] (ATK) | Cori-Steel Cutter | Island (T) | Volcanic Island (T) | Volcanic Island (T)
   Opp BF:   Forest
   Self GY: Lightning Bolt, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Collector Ouphe, Dryad Arbor, Green Sun's Zenith, Horizon Canopy, Noble Hierarch, Noble Hierarch, Swords to Plowshares, Windswept Heath

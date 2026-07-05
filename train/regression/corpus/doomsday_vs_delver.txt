@@ -2246,7 +2246,7 @@
   Step: Declare Atk
   Self:  17 life | mana: empty | hand(0): (empty)
   Opp:   8 life | mana: empty | hand count: 6
-  Self BF:  Delver of Secrets [1/1] | Murktide Regent [6/6] (SICK) | Dragon's Rage Channeler [1/1] | Island (T) | Mountain | Volcanic Island (T)
+  Self BF:  Delver of Secrets [1/1] | Murktide Regent [6/6] [+1/+1:3] (SICK) | Dragon's Rage Channeler [1/1] | Island (T) | Mountain | Volcanic Island (T)
   Self GY: Ponder, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Force of Will, Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
   Actions:
@@ -2264,7 +2264,7 @@
   Step: Declare Atk
   Self:  17 life | mana: empty | hand(0): (empty)
   Opp:   8 life | mana: empty | hand count: 6
-  Self BF:  Delver of Secrets [1/1] (ATK) | Murktide Regent [6/6] (SICK) | Dragon's Rage Channeler [1/1] | Island (T) | Mountain | Volcanic Island (T)
+  Self BF:  Delver of Secrets [1/1] (ATK) | Murktide Regent [6/6] [+1/+1:3] (SICK) | Dragon's Rage Channeler [1/1] | Island (T) | Mountain | Volcanic Island (T)
   Self GY: Ponder, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Force of Will, Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
   Actions:
@@ -2282,7 +2282,7 @@
   Step: Declare Atk
   Self:  17 life | mana: empty | hand(0): (empty)
   Opp:   8 life | mana: empty | hand count: 6
-  Self BF:  Delver of Secrets [1/1] (ATK) | Murktide Regent [6/6] (SICK) | Dragon's Rage Channeler [1/1] (ATK) | Island (T) | Mountain | Volcanic Island (T)
+  Self BF:  Delver of Secrets [1/1] (ATK) | Murktide Regent [6/6] [+1/+1:3] (SICK) | Dragon's Rage Channeler [1/1] (ATK) | Island (T) | Mountain | Volcanic Island (T)
   Self GY: Ponder, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Force of Will, Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
   Actions:
@@ -2308,7 +2308,7 @@
   Step: First Main
   Self:  6 life | mana: empty | hand(7): Dark Ritual, Dark Ritual, Thassa's Oracle, Ponder, Cavern of Souls, Dauthi Voidwalker, Deep Analysis
   Opp:   17 life | mana: empty | hand count: 0
-  Opp BF:   Delver of Secrets [1/1] (T) | Murktide Regent [6/6] (SICK) | Dragon's Rage Channeler [1/1] (T) | Island (T) | Mountain | Volcanic Island (T)
+  Opp BF:   Delver of Secrets [1/1] (T) | Murktide Regent [6/6] [+1/+1:3] (SICK) | Dragon's Rage Channeler [1/1] (T) | Island (T) | Mountain | Volcanic Island (T)
   Self GY: Force of Will, Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
   Opp GY:  Ponder, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
   Actions:
@@ -2325,7 +2325,7 @@
   Self:  6 life | mana: empty | hand(6): Dark Ritual, Dark Ritual, Thassa's Oracle, Ponder, Dauthi Voidwalker, Deep Analysis
   Opp:   17 life | mana: empty | hand count: 0
   Self BF:  Cavern of Souls
-  Opp BF:   Delver of Secrets [1/1] (T) | Murktide Regent [6/6] (SICK) | Dragon's Rage Channeler [1/1] (T) | Island (T) | Mountain | Volcanic Island (T)
+  Opp BF:   Delver of Secrets [1/1] (T) | Murktide Regent [6/6] [+1/+1:3] (SICK) | Dragon's Rage Channeler [1/1] (T) | Island (T) | Mountain | Volcanic Island (T)
   Self GY: Force of Will, Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
   Opp GY:  Ponder, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
   Actions:
@@ -2355,7 +2355,7 @@
   Step: Upkeep
   Self:  17 life | mana: empty | hand(0): (empty)
   Opp:   6 life | mana: empty | hand count: 6
-  Self BF:  Delver of Secrets [1/1] | Murktide Regent [6/6] | Dragon's Rage Channeler [1/1] | Island | Mountain | Volcanic Island
+  Self BF:  Delver of Secrets [1/1] | Murktide Regent [6/6] [+1/+1:3] | Dragon's Rage Channeler [1/1] | Island | Mountain | Volcanic Island
   Opp BF:   Cavern of Souls
   Stack: Delver of Secrets (ability, self)
   Self GY: Ponder, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
@@ -2374,7 +2374,7 @@
   Step: Draw
   Self:  17 life | mana: empty | hand(1): Brainstorm
   Opp:   6 life | mana: empty | hand count: 6
-  Self BF:  Insectile Aberration [3/2] | Murktide Regent [6/6] | Dragon's Rage Channeler [1/1] | Island | Mountain | Volcanic Island
+  Self BF:  Insectile Aberration [3/2] | Murktide Regent [6/6] [+1/+1:3] | Dragon's Rage Channeler [1/1] | Island | Mountain | Volcanic Island
   Opp BF:   Cavern of Souls
   Self GY: Ponder, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Force of Will, Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
@@ -2395,7 +2395,7 @@
   Step: Draw
   Self:  17 life | mana: empty | hand(0): (empty)
   Opp:   6 life | mana: empty | hand count: 6
-  Self BF:  Insectile Aberration [3/2] | Murktide Regent [6/6] | Dragon's Rage Channeler [1/1] | Island (T) | Mountain | Volcanic Island
+  Self BF:  Insectile Aberration [3/2] | Murktide Regent [6/6] [+1/+1:3] | Dragon's Rage Channeler [1/1] | Island (T) | Mountain | Volcanic Island
   Opp BF:   Cavern of Souls
   Stack: Dragon's Rage Channeler (ability, self) -> Brainstorm (spell, self)
   Self GY: Ponder, Ponder, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
@@ -2418,7 +2418,7 @@
   Step: Draw
   Self:  17 life | mana: empty | hand(3): Delver of Secrets, Dragon's Rage Channeler, Unholy Heat
   Opp:   6 life | mana: empty | hand count: 6
-  Self BF:  Insectile Aberration [3/2] | Murktide Regent [6/6] | Dragon's Rage Channeler [1/1] | Island (T) | Mountain | Volcanic Island
+  Self BF:  Insectile Aberration [3/2] | Murktide Regent [6/6] [+1/+1:3] | Dragon's Rage Channeler [1/1] | Island (T) | Mountain | Volcanic Island
   Opp BF:   Cavern of Souls
   Stack: Brainstorm (spell, self)
   Self GY: Ponder, Ponder, Wooded Foothills, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
@@ -2437,7 +2437,7 @@
   Step: Draw
   Self:  17 life | mana: empty | hand(2): Dragon's Rage Channeler, Unholy Heat
   Opp:   6 life | mana: empty | hand count: 6
-  Self BF:  Insectile Aberration [3/2] | Murktide Regent [6/6] | Dragon's Rage Channeler [1/1] | Island (T) | Mountain | Volcanic Island
+  Self BF:  Insectile Aberration [3/2] | Murktide Regent [6/6] [+1/+1:3] | Dragon's Rage Channeler [1/1] | Island (T) | Mountain | Volcanic Island
   Opp BF:   Cavern of Souls
   Stack: Brainstorm (spell, self)
   Self GY: Ponder, Ponder, Wooded Foothills, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
@@ -2454,7 +2454,7 @@
   Step: Draw
   Self:  17 life | mana: empty | hand(1): Unholy Heat
   Opp:   6 life | mana: empty | hand count: 6
-  Self BF:  Insectile Aberration [3/2] | Murktide Regent [6/6] | Dragon's Rage Channeler [1/1] | Island (T) | Mountain | Volcanic Island
+  Self BF:  Insectile Aberration [3/2] | Murktide Regent [6/6] [+1/+1:3] | Dragon's Rage Channeler [1/1] | Island (T) | Mountain | Volcanic Island
   Opp BF:   Cavern of Souls
   Self GY: Brainstorm, Ponder, Ponder, Wooded Foothills, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Force of Will, Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
@@ -2470,7 +2470,7 @@
   Step: Draw
   Self:  17 life | mana: empty | hand(1): Unholy Heat
   Opp:   6 life | mana: empty | hand count: 6
-  Self BF:  Insectile Aberration [3/2] | Murktide Regent [6/6] | Dragon's Rage Channeler [1/1] | Island (T) | Mountain | Volcanic Island
+  Self BF:  Insectile Aberration [3/2] | Murktide Regent [6/6] [+1/+1:3] | Dragon's Rage Channeler [1/1] | Island (T) | Mountain | Volcanic Island
   Opp BF:   Cavern of Souls
   Self GY: Brainstorm, Ponder, Ponder, Wooded Foothills, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Force of Will, Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
@@ -2493,7 +2493,7 @@
   Step: Draw
   Self:  17 life | mana: empty | hand(0): (empty)
   Opp:   6 life | mana: empty | hand count: 6
-  Self BF:  Insectile Aberration [3/2] | Murktide Regent [6/6] | Dragon's Rage Channeler [1/1] | Island (T) | Mountain (T) | Volcanic Island
+  Self BF:  Insectile Aberration [3/2] | Murktide Regent [6/6] [+1/+1:3] | Dragon's Rage Channeler [1/1] | Island (T) | Mountain (T) | Volcanic Island
   Opp BF:   Cavern of Souls
   Stack: Dragon's Rage Channeler (ability, self) -> Unholy Heat (spell, self) -> Insectile Aberration (self)
   Self GY: Brainstorm, Ponder, Ponder, Wooded Foothills, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
@@ -2517,7 +2517,7 @@
   Step: Declare Atk
   Self:  17 life | mana: empty | hand(0): (empty)
   Opp:   6 life | mana: empty | hand count: 6
-  Self BF:  Murktide Regent [6/6] | Dragon's Rage Channeler [3/3] (ATK) | Island (T) | Mountain (T) | Volcanic Island
+  Self BF:  Murktide Regent [6/6] [+1/+1:3] | Dragon's Rage Channeler [3/3] (ATK) | Island (T) | Mountain (T) | Volcanic Island
   Opp BF:   Cavern of Souls
   Self GY: Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Unholy Heat, Ponder, Ponder, Wooded Foothills, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Force of Will, Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea
@@ -2536,7 +2536,7 @@
   Step: Declare Atk
   Self:  17 life | mana: empty | hand(0): (empty)
   Opp:   6 life | mana: empty | hand count: 6
-  Self BF:  Murktide Regent [6/6] (ATK) | Dragon's Rage Channeler [3/3] (ATK) | Island (T) | Mountain (T) | Volcanic Island
+  Self BF:  Murktide Regent [6/6] [+1/+1:3] (ATK) | Dragon's Rage Channeler [3/3] (ATK) | Island (T) | Mountain (T) | Volcanic Island
   Opp BF:   Cavern of Souls
   Self GY: Delver of Secrets, Dragon's Rage Channeler, Brainstorm, Unholy Heat, Ponder, Ponder, Wooded Foothills, Volcanic Island, Scalding Tarn, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Force of Will, Thoughtseize, Lotus Petal, Lotus Petal, Edge of Autumn, Brainstorm, Ponder, Swamp, Polluted Delta, Underground Sea

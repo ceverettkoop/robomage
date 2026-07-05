@@ -1900,7 +1900,7 @@
   Self:  16 life | mana: empty | hand(4): Doomsday, Dark Ritual, Ponder, Deep Analysis
   Opp:   18 life | mana: empty | hand count: 5
   Self BF:  Swamp | Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Dryad Arbor [2/2] (T) | Forest | Savannah (T) | Scythecat Cub [2/2] (SICK)
+  Opp BF:   Dryad Arbor [2/2] [+1/+1:1] (T) | Forest | Savannah (T) | Scythecat Cub [2/2] (SICK)
   Stack: Scythecat Cub (ability, opponent) -> Dryad Arbor (opponent)
   Self GY: Thoughtseize, Lotus Petal, Personal Tutor, Brainstorm, Polluted Delta, Polluted Delta, Cavern of Souls
   Opp GY:  Green Sun's Zenith, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
@@ -1920,7 +1920,7 @@
   Self:  16 life | mana: empty | hand(4): Doomsday, Dark Ritual, Ponder, Deep Analysis
   Opp:   18 life | mana: empty | hand count: 5
   Self BF:  Swamp | Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Dryad Arbor [3/3] (T) | Forest | Savannah (T) | Scythecat Cub [2/2] (SICK)
+  Opp BF:   Dryad Arbor [3/3] [+1/+1:2] (T) | Forest | Savannah (T) | Scythecat Cub [2/2] (SICK)
   Self GY: Thoughtseize, Lotus Petal, Personal Tutor, Brainstorm, Polluted Delta, Polluted Delta, Cavern of Souls
   Opp GY:  Green Sun's Zenith, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
   Actions:
@@ -1934,7 +1934,7 @@
   Self:  16 life | mana: empty | hand(4): Doomsday, Dark Ritual, Ponder, Deep Analysis
   Opp:   18 life | mana: empty | hand count: 5
   Self BF:  Swamp | Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Dryad Arbor [3/3] (T) | Forest | Savannah (T) | Scythecat Cub [2/2] (SICK)
+  Opp BF:   Dryad Arbor [3/3] [+1/+1:2] (T) | Forest | Savannah (T) | Scythecat Cub [2/2] (SICK)
   Self GY: Thoughtseize, Lotus Petal, Personal Tutor, Brainstorm, Polluted Delta, Polluted Delta, Cavern of Souls
   Opp GY:  Green Sun's Zenith, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
   Actions:
@@ -1950,7 +1950,7 @@
   Self:  16 life | mana: empty | hand(4): Doomsday, Dark Ritual, Ponder, Deep Analysis
   Opp:   18 life | mana: empty | hand count: 5
   Self BF:  Swamp | Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Dryad Arbor [3/3] (T) | Forest | Savannah (T) | Scythecat Cub [2/2] (SICK)
+  Opp BF:   Dryad Arbor [3/3] [+1/+1:2] (T) | Forest | Savannah (T) | Scythecat Cub [2/2] (SICK)
   Self GY: Thoughtseize, Lotus Petal, Personal Tutor, Brainstorm, Polluted Delta, Polluted Delta, Cavern of Souls
   Opp GY:  Green Sun's Zenith, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
   Actions:
@@ -1966,7 +1966,7 @@
   Self:  16 life | mana: empty | hand(4): Doomsday, Dark Ritual, Ponder, Deep Analysis
   Opp:   18 life | mana: empty | hand count: 5
   Self BF:  Swamp | Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Dryad Arbor [3/3] (T) | Forest | Savannah (T) | Scythecat Cub [2/2] (SICK)
+  Opp BF:   Dryad Arbor [3/3] [+1/+1:2] (T) | Forest | Savannah (T) | Scythecat Cub [2/2] (SICK)
   Self GY: Thoughtseize, Lotus Petal, Personal Tutor, Brainstorm, Polluted Delta, Polluted Delta, Cavern of Souls
   Opp GY:  Green Sun's Zenith, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
   Actions:
@@ -1983,7 +1983,7 @@
   Self:  16 life | mana: empty | hand(4): Doomsday, Dark Ritual, Ponder, Deep Analysis
   Opp:   18 life | mana: empty | hand count: 5
   Self BF:  Swamp | Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Dryad Arbor [3/3] (T) | Forest | Savannah (T) | Scythecat Cub [2/2] (SICK)
+  Opp BF:   Dryad Arbor [3/3] [+1/+1:2] (T) | Forest | Savannah (T) | Scythecat Cub [2/2] (SICK)
   Self GY: Thoughtseize, Lotus Petal, Personal Tutor, Brainstorm, Polluted Delta, Polluted Delta, Cavern of Souls
   Opp GY:  Green Sun's Zenith, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
   Actions:
@@ -1997,7 +1997,7 @@
   Self:  16 life | mana: empty | hand(4): Doomsday, Dark Ritual, Ponder, Deep Analysis
   Opp:   18 life | mana: empty | hand count: 5
   Self BF:  Swamp | Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Dryad Arbor [3/3] (T) | Forest | Savannah (T) | Scythecat Cub [2/2] (SICK)
+  Opp BF:   Dryad Arbor [3/3] [+1/+1:2] (T) | Forest | Savannah (T) | Scythecat Cub [2/2] (SICK)
   Self GY: Thoughtseize, Lotus Petal, Personal Tutor, Brainstorm, Polluted Delta, Polluted Delta, Cavern of Souls
   Opp GY:  Green Sun's Zenith, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
   Actions:
@@ -2011,7 +2011,7 @@
   Self:  16 life | mana: empty | hand(4): Doomsday, Dark Ritual, Ponder, Deep Analysis
   Opp:   18 life | mana: empty | hand count: 5
   Self BF:  Swamp | Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Dryad Arbor [3/3] (T) | Forest | Savannah (T) | Scythecat Cub [2/2] (SICK)
+  Opp BF:   Dryad Arbor [3/3] [+1/+1:2] (T) | Forest | Savannah (T) | Scythecat Cub [2/2] (SICK)
   Self GY: Thoughtseize, Lotus Petal, Personal Tutor, Brainstorm, Polluted Delta, Polluted Delta, Cavern of Souls
   Opp GY:  Green Sun's Zenith, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
   Actions:
@@ -2025,7 +2025,7 @@
   Self:  16 life | mana: empty | hand(4): Doomsday, Dark Ritual, Ponder, Deep Analysis
   Opp:   18 life | mana: empty | hand count: 5
   Self BF:  Swamp | Undercity Sewers (T) | Underground Sea (T)
-  Opp BF:   Dryad Arbor [3/3] (T) | Forest | Savannah (T) | Scythecat Cub [2/2] (SICK)
+  Opp BF:   Dryad Arbor [3/3] [+1/+1:2] (T) | Forest | Savannah (T) | Scythecat Cub [2/2] (SICK)
   Self GY: Thoughtseize, Lotus Petal, Personal Tutor, Brainstorm, Polluted Delta, Polluted Delta, Cavern of Souls
   Opp GY:  Green Sun's Zenith, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
   Actions:
@@ -2044,7 +2044,7 @@
   Self:  16 life | mana: empty | hand(4): Doomsday, Dark Ritual, Ponder, Deep Analysis
   Opp:   18 life | mana: empty | hand count: 5
   Self BF:  Swamp | Undercity Sewers | Underground Sea
-  Opp BF:   Dryad Arbor [3/3] (T) | Forest | Savannah (T) | Scythecat Cub [2/2] (SICK)
+  Opp BF:   Dryad Arbor [3/3] [+1/+1:2] (T) | Forest | Savannah (T) | Scythecat Cub [2/2] (SICK)
   Self GY: Thoughtseize, Lotus Petal, Personal Tutor, Brainstorm, Polluted Delta, Polluted Delta, Cavern of Souls
   Opp GY:  Green Sun's Zenith, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
   Actions:
@@ -2064,7 +2064,7 @@
   Self:  16 life | mana: empty | hand(4): Doomsday, Force of Will, Ponder, Deep Analysis
   Opp:   18 life | mana: empty | hand count: 5
   Self BF:  Swamp (T) | Undercity Sewers | Underground Sea
-  Opp BF:   Dryad Arbor [3/3] (T) | Forest | Savannah (T) | Scythecat Cub [2/2] (SICK)
+  Opp BF:   Dryad Arbor [3/3] [+1/+1:2] (T) | Forest | Savannah (T) | Scythecat Cub [2/2] (SICK)
   Self GY: Thoughtseize, Dark Ritual, Lotus Petal, Personal Tutor, Brainstorm, Polluted Delta, Polluted Delta, Cavern of Souls
   Opp GY:  Green Sun's Zenith, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
   Actions:
@@ -2081,7 +2081,7 @@
   Self:  16 life | mana: empty | hand(3): Doomsday, Force of Will, Deep Analysis
   Opp:   18 life | mana: empty | hand count: 5
   Self BF:  Swamp (T) | Undercity Sewers (T) | Underground Sea
-  Opp BF:   Dryad Arbor [3/3] (T) | Forest | Savannah (T) | Scythecat Cub [2/2] (SICK)
+  Opp BF:   Dryad Arbor [3/3] [+1/+1:2] (T) | Forest | Savannah (T) | Scythecat Cub [2/2] (SICK)
   Stack: Ponder (spell, self)
   Self GY: Thoughtseize, Dark Ritual, Lotus Petal, Personal Tutor, Brainstorm, Polluted Delta, Polluted Delta, Cavern of Souls
   Opp GY:  Green Sun's Zenith, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
@@ -2100,7 +2100,7 @@
   Self:  16 life | mana: empty | hand(3): Doomsday, Force of Will, Deep Analysis
   Opp:   18 life | mana: empty | hand count: 5
   Self BF:  Swamp (T) | Undercity Sewers (T) | Underground Sea
-  Opp BF:   Dryad Arbor [3/3] (T) | Forest | Savannah (T) | Scythecat Cub [2/2] (SICK)
+  Opp BF:   Dryad Arbor [3/3] [+1/+1:2] (T) | Forest | Savannah (T) | Scythecat Cub [2/2] (SICK)
   Stack: Ponder (spell, self)
   Self GY: Thoughtseize, Dark Ritual, Lotus Petal, Personal Tutor, Brainstorm, Polluted Delta, Polluted Delta, Cavern of Souls
   Opp GY:  Green Sun's Zenith, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
@@ -2118,7 +2118,7 @@
   Self:  16 life | mana: empty | hand(3): Doomsday, Force of Will, Deep Analysis
   Opp:   18 life | mana: empty | hand count: 5
   Self BF:  Swamp (T) | Undercity Sewers (T) | Underground Sea
-  Opp BF:   Dryad Arbor [3/3] (T) | Forest | Savannah (T) | Scythecat Cub [2/2] (SICK)
+  Opp BF:   Dryad Arbor [3/3] [+1/+1:2] (T) | Forest | Savannah (T) | Scythecat Cub [2/2] (SICK)
   Stack: Ponder (spell, self)
   Self GY: Thoughtseize, Dark Ritual, Lotus Petal, Personal Tutor, Brainstorm, Polluted Delta, Polluted Delta, Cavern of Souls
   Opp GY:  Green Sun's Zenith, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
@@ -2133,7 +2133,7 @@
   Self:  16 life | mana: empty | hand(3): Doomsday, Force of Will, Deep Analysis
   Opp:   18 life | mana: empty | hand count: 5
   Self BF:  Swamp (T) | Undercity Sewers (T) | Underground Sea
-  Opp BF:   Dryad Arbor [3/3] (T) | Forest | Savannah (T) | Scythecat Cub [2/2] (SICK)
+  Opp BF:   Dryad Arbor [3/3] [+1/+1:2] (T) | Forest | Savannah (T) | Scythecat Cub [2/2] (SICK)
   Stack: Ponder (spell, self)
   Self GY: Thoughtseize, Dark Ritual, Lotus Petal, Personal Tutor, Brainstorm, Polluted Delta, Polluted Delta, Cavern of Souls
   Opp GY:  Green Sun's Zenith, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
@@ -2151,7 +2151,7 @@
   Self:  16 life | mana: empty | hand(4): Doomsday, Force of Will, Polluted Delta, Deep Analysis
   Opp:   18 life | mana: empty | hand count: 5
   Self BF:  Swamp (T) | Undercity Sewers (T) | Underground Sea
-  Opp BF:   Dryad Arbor [3/3] (T) | Forest | Savannah (T) | Scythecat Cub [2/2] (SICK)
+  Opp BF:   Dryad Arbor [3/3] [+1/+1:2] (T) | Forest | Savannah (T) | Scythecat Cub [2/2] (SICK)
   Self GY: Thoughtseize, Dark Ritual, Lotus Petal, Personal Tutor, Brainstorm, Ponder, Polluted Delta, Polluted Delta, Cavern of Souls
   Opp GY:  Green Sun's Zenith, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
   Actions:
@@ -2167,7 +2167,7 @@
   Self:  16 life | mana: empty | hand(3): Doomsday, Force of Will, Deep Analysis
   Opp:   18 life | mana: empty | hand count: 5
   Self BF:  Swamp (T) | Undercity Sewers (T) | Polluted Delta | Underground Sea
-  Opp BF:   Dryad Arbor [3/3] (T) | Forest | Savannah (T) | Scythecat Cub [2/2] (SICK)
+  Opp BF:   Dryad Arbor [3/3] [+1/+1:2] (T) | Forest | Savannah (T) | Scythecat Cub [2/2] (SICK)
   Self GY: Thoughtseize, Dark Ritual, Lotus Petal, Personal Tutor, Brainstorm, Ponder, Polluted Delta, Polluted Delta, Cavern of Souls
   Opp GY:  Green Sun's Zenith, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
   Actions:
@@ -2187,7 +2187,7 @@
   Self:  15 life | mana: empty | hand(3): Doomsday, Force of Will, Deep Analysis
   Opp:   18 life | mana: empty | hand count: 5
   Self BF:  Swamp (T) | Undercity Sewers (T) | Underground Sea
-  Opp BF:   Dryad Arbor [3/3] (T) | Forest | Savannah (T) | Scythecat Cub [2/2] (SICK)
+  Opp BF:   Dryad Arbor [3/3] [+1/+1:2] (T) | Forest | Savannah (T) | Scythecat Cub [2/2] (SICK)
   Stack: Polluted Delta (ability, self)
   Self GY: Thoughtseize, Dark Ritual, Lotus Petal, Personal Tutor, Brainstorm, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Cavern of Souls
   Opp GY:  Green Sun's Zenith, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
@@ -2215,7 +2215,7 @@
   Step: First Main
   Self:  18 life | mana: empty | hand(6): Knight of the Reliquary, Knight of the Reliquary, Knight of the Reliquary, Scythecat Cub, Wooded Foothills, Wooded Foothills
   Opp:   15 life | mana: empty | hand count: 3
-  Self BF:  Dryad Arbor [3/3] | Forest | Savannah | Scythecat Cub [2/2]
+  Self BF:  Dryad Arbor [3/3] [+1/+1:2] | Forest | Savannah | Scythecat Cub [2/2]
   Opp BF:   Swamp (T) | Undercity Sewers (T) | Underground Sea | Underground Sea
   Self GY: Green Sun's Zenith, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
   Opp GY:  Thoughtseize, Dark Ritual, Lotus Petal, Personal Tutor, Brainstorm, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Cavern of Souls
@@ -2240,7 +2240,7 @@
   Self:  15 life | mana: empty | hand(3): Doomsday, Force of Will, Deep Analysis
   Opp:   18 life | mana: empty | hand count: 5
   Self BF:  Swamp (T) | Undercity Sewers (T) | Underground Sea | Underground Sea
-  Opp BF:   Dryad Arbor [3/3] (T) | Forest (T) | Savannah (T) | Scythecat Cub [2/2]
+  Opp BF:   Dryad Arbor [3/3] [+1/+1:2] (T) | Forest (T) | Savannah (T) | Scythecat Cub [2/2]
   Stack: Knight of the Reliquary (spell, opponent)
   Self GY: Thoughtseize, Dark Ritual, Lotus Petal, Personal Tutor, Brainstorm, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Cavern of Souls
   Opp GY:  Green Sun's Zenith, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
@@ -2257,7 +2257,7 @@
   Self:  14 life | mana: empty | hand(3): Doomsday, Force of Will, Deep Analysis
   Opp:   18 life | mana: empty | hand count: 5
   Self BF:  Swamp (T) | Undercity Sewers (T) | Underground Sea | Underground Sea
-  Opp BF:   Dryad Arbor [3/3] (T) | Forest (T) | Savannah (T) | Scythecat Cub [2/2]
+  Opp BF:   Dryad Arbor [3/3] [+1/+1:2] (T) | Forest (T) | Savannah (T) | Scythecat Cub [2/2]
   Stack: Knight of the Reliquary (spell, opponent)
   Self GY: Thoughtseize, Dark Ritual, Lotus Petal, Personal Tutor, Brainstorm, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Cavern of Souls
   Opp GY:  Green Sun's Zenith, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
@@ -2274,7 +2274,7 @@
   Self:  14 life | mana: empty | hand(2): Doomsday, Force of Will
   Opp:   18 life | mana: empty | hand count: 5
   Self BF:  Swamp (T) | Undercity Sewers (T) | Underground Sea | Underground Sea
-  Opp BF:   Dryad Arbor [3/3] (T) | Forest (T) | Savannah (T) | Scythecat Cub [2/2]
+  Opp BF:   Dryad Arbor [3/3] [+1/+1:2] (T) | Forest (T) | Savannah (T) | Scythecat Cub [2/2]
   Stack: Knight of the Reliquary (spell, opponent)
   Self GY: Thoughtseize, Dark Ritual, Lotus Petal, Personal Tutor, Brainstorm, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Cavern of Souls
   Opp GY:  Green Sun's Zenith, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
@@ -2292,7 +2292,7 @@
   Step: First Main
   Self:  18 life | mana: empty | hand(5): Knight of the Reliquary, Knight of the Reliquary, Scythecat Cub, Wooded Foothills, Wooded Foothills
   Opp:   14 life | mana: empty | hand count: 1
-  Self BF:  Dryad Arbor [3/3] (T) | Forest (T) | Savannah (T) | Scythecat Cub [2/2]
+  Self BF:  Dryad Arbor [3/3] [+1/+1:2] (T) | Forest (T) | Savannah (T) | Scythecat Cub [2/2]
   Opp BF:   Swamp (T) | Undercity Sewers (T) | Underground Sea | Underground Sea
   Self GY: Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
   Opp GY:  Force of Will, Thoughtseize, Dark Ritual, Lotus Petal, Personal Tutor, Brainstorm, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Cavern of Souls
@@ -2310,7 +2310,7 @@
   Step: First Main
   Self:  18 life | mana: empty | hand(4): Knight of the Reliquary, Knight of the Reliquary, Scythecat Cub, Wooded Foothills
   Opp:   14 life | mana: empty | hand count: 1
-  Self BF:  Dryad Arbor [3/3] (T) | Forest (T) | Savannah (T) | Scythecat Cub [2/2] | Wooded Foothills
+  Self BF:  Dryad Arbor [3/3] [+1/+1:2] (T) | Forest (T) | Savannah (T) | Scythecat Cub [2/2] | Wooded Foothills
   Opp BF:   Swamp (T) | Undercity Sewers (T) | Underground Sea | Underground Sea
   Self GY: Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
   Opp GY:  Force of Will, Thoughtseize, Dark Ritual, Lotus Petal, Personal Tutor, Brainstorm, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Cavern of Souls
@@ -2327,7 +2327,7 @@
   Step: First Main
   Self:  18 life | mana: empty | hand(4): Knight of the Reliquary, Knight of the Reliquary, Scythecat Cub, Wooded Foothills
   Opp:   14 life | mana: empty | hand count: 1
-  Self BF:  Dryad Arbor [3/3] (T) | Forest (T) | Savannah (T) | Scythecat Cub [2/2] | Wooded Foothills
+  Self BF:  Dryad Arbor [3/3] [+1/+1:2] (T) | Forest (T) | Savannah (T) | Scythecat Cub [2/2] | Wooded Foothills
   Opp BF:   Swamp (T) | Undercity Sewers (T) | Underground Sea | Underground Sea
   Stack: Scythecat Cub (ability, self) -> Dryad Arbor (self)
   Self GY: Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
@@ -2348,7 +2348,7 @@
   Step: First Main
   Self:  17 life | mana: empty | hand(4): Knight of the Reliquary, Knight of the Reliquary, Scythecat Cub, Wooded Foothills
   Opp:   14 life | mana: empty | hand count: 1
-  Self BF:  Dryad Arbor [3/3] (T) | Forest (T) | Savannah (T) | Scythecat Cub [2/2]
+  Self BF:  Dryad Arbor [3/3] [+1/+1:2] (T) | Forest (T) | Savannah (T) | Scythecat Cub [2/2]
   Opp BF:   Swamp (T) | Undercity Sewers (T) | Underground Sea | Underground Sea
   Stack: Wooded Foothills (ability, self) -> Scythecat Cub (ability, self) -> Dryad Arbor (self)
   Self GY: Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
@@ -2369,7 +2369,7 @@
   Step: First Main
   Self:  17 life | mana: empty | hand(4): Knight of the Reliquary, Knight of the Reliquary, Scythecat Cub, Wooded Foothills
   Opp:   14 life | mana: empty | hand count: 1
-  Self BF:  Dryad Arbor [3/3] (T) | Forest (T) | Savannah | Savannah (T) | Scythecat Cub [2/2]
+  Self BF:  Dryad Arbor [3/3] [+1/+1:2] (T) | Forest (T) | Savannah | Savannah (T) | Scythecat Cub [2/2]
   Opp BF:   Swamp (T) | Undercity Sewers (T) | Underground Sea | Underground Sea
   Stack: Scythecat Cub (ability, self) -> Dryad Arbor (self)
   Self GY: Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
@@ -2396,7 +2396,7 @@
   Step: Declare Atk
   Self:  17 life | mana: empty | hand(4): Knight of the Reliquary, Knight of the Reliquary, Scythecat Cub, Wooded Foothills
   Opp:   14 life | mana: empty | hand count: 1
-  Self BF:  Dryad Arbor [7/7] (T) | Forest (T) | Savannah | Savannah (T) | Scythecat Cub [2/2]
+  Self BF:  Dryad Arbor [7/7] [+1/+1:6] (T) | Forest (T) | Savannah | Savannah (T) | Scythecat Cub [2/2]
   Opp BF:   Swamp (T) | Undercity Sewers (T) | Underground Sea | Underground Sea
   Self GY: Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
   Opp GY:  Force of Will, Thoughtseize, Dark Ritual, Lotus Petal, Personal Tutor, Brainstorm, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Cavern of Souls
@@ -2414,7 +2414,7 @@
   Step: Declare Atk
   Self:  17 life | mana: empty | hand(4): Knight of the Reliquary, Knight of the Reliquary, Scythecat Cub, Wooded Foothills
   Opp:   14 life | mana: empty | hand count: 1
-  Self BF:  Dryad Arbor [7/7] (T) | Forest (T) | Savannah | Savannah (T) | Scythecat Cub [2/2] (ATK)
+  Self BF:  Dryad Arbor [7/7] [+1/+1:6] (T) | Forest (T) | Savannah | Savannah (T) | Scythecat Cub [2/2] (ATK)
   Opp BF:   Swamp (T) | Undercity Sewers (T) | Underground Sea | Underground Sea
   Self GY: Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
   Opp GY:  Force of Will, Thoughtseize, Dark Ritual, Lotus Petal, Personal Tutor, Brainstorm, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Cavern of Souls
@@ -2440,7 +2440,7 @@
   Self:  12 life | mana: empty | hand(2): Doomsday, Dark Ritual
   Opp:   17 life | mana: empty | hand count: 4
   Self BF:  Swamp | Undercity Sewers | Underground Sea | Underground Sea
-  Opp BF:   Dryad Arbor [7/7] (T) | Forest (T) | Savannah | Savannah (T) | Scythecat Cub [2/2] (T)
+  Opp BF:   Dryad Arbor [7/7] [+1/+1:6] (T) | Forest (T) | Savannah | Savannah (T) | Scythecat Cub [2/2] (T)
   Self GY: Force of Will, Thoughtseize, Dark Ritual, Lotus Petal, Personal Tutor, Brainstorm, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Cavern of Souls
   Opp GY:  Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
   Actions:
@@ -2459,7 +2459,7 @@
   Self:  12 life | mana: empty | hand(1): Doomsday
   Opp:   17 life | mana: empty | hand count: 4
   Self BF:  Swamp (T) | Undercity Sewers | Underground Sea | Underground Sea
-  Opp BF:   Dryad Arbor [7/7] (T) | Forest (T) | Savannah | Savannah (T) | Scythecat Cub [2/2] (T)
+  Opp BF:   Dryad Arbor [7/7] [+1/+1:6] (T) | Forest (T) | Savannah | Savannah (T) | Scythecat Cub [2/2] (T)
   Self GY: Force of Will, Thoughtseize, Dark Ritual, Dark Ritual, Lotus Petal, Personal Tutor, Brainstorm, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Cavern of Souls
   Opp GY:  Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
   Actions:
@@ -2480,7 +2480,7 @@
   Self:  12 life | mana: empty | hand(0): (empty)
   Opp:   17 life | mana: empty | hand count: 4
   Self BF:  Swamp (T) | Undercity Sewers (T) | Underground Sea (T) | Underground Sea (T)
-  Opp BF:   Dryad Arbor [7/7] (T) | Forest (T) | Savannah | Savannah (T) | Scythecat Cub [2/2] (T)
+  Opp BF:   Dryad Arbor [7/7] [+1/+1:6] (T) | Forest (T) | Savannah | Savannah (T) | Scythecat Cub [2/2] (T)
   Stack: Doomsday (spell, self)
   Self GY: Force of Will, Thoughtseize, Dark Ritual, Dark Ritual, Lotus Petal, Personal Tutor, Brainstorm, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Cavern of Souls
   Opp GY:  Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
@@ -2550,7 +2550,7 @@
   Self:  12 life | mana: empty | hand(0): (empty)
   Opp:   17 life | mana: empty | hand count: 4
   Self BF:  Swamp (T) | Undercity Sewers (T) | Underground Sea (T) | Underground Sea (T)
-  Opp BF:   Dryad Arbor [7/7] (T) | Forest (T) | Savannah | Savannah (T) | Scythecat Cub [2/2] (T)
+  Opp BF:   Dryad Arbor [7/7] [+1/+1:6] (T) | Forest (T) | Savannah | Savannah (T) | Scythecat Cub [2/2] (T)
   Stack: Doomsday (spell, self)
   Self GY: Force of Will, Thoughtseize, Dark Ritual, Dark Ritual, Lotus Petal, Personal Tutor, Brainstorm, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Cavern of Souls
   Opp GY:  Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
@@ -2619,7 +2619,7 @@
   Self:  12 life | mana: empty | hand(0): (empty)
   Opp:   17 life | mana: empty | hand count: 4
   Self BF:  Swamp (T) | Undercity Sewers (T) | Underground Sea (T) | Underground Sea (T)
-  Opp BF:   Dryad Arbor [7/7] (T) | Forest (T) | Savannah | Savannah (T) | Scythecat Cub [2/2] (T)
+  Opp BF:   Dryad Arbor [7/7] [+1/+1:6] (T) | Forest (T) | Savannah | Savannah (T) | Scythecat Cub [2/2] (T)
   Stack: Doomsday (spell, self)
   Self GY: Force of Will, Thoughtseize, Dark Ritual, Dark Ritual, Lotus Petal, Personal Tutor, Brainstorm, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Cavern of Souls
   Opp GY:  Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
@@ -2687,7 +2687,7 @@
   Self:  12 life | mana: empty | hand(0): (empty)
   Opp:   17 life | mana: empty | hand count: 4
   Self BF:  Swamp (T) | Undercity Sewers (T) | Underground Sea (T) | Underground Sea (T)
-  Opp BF:   Dryad Arbor [7/7] (T) | Forest (T) | Savannah | Savannah (T) | Scythecat Cub [2/2] (T)
+  Opp BF:   Dryad Arbor [7/7] [+1/+1:6] (T) | Forest (T) | Savannah | Savannah (T) | Scythecat Cub [2/2] (T)
   Stack: Doomsday (spell, self)
   Self GY: Force of Will, Thoughtseize, Dark Ritual, Dark Ritual, Lotus Petal, Personal Tutor, Brainstorm, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Cavern of Souls
   Opp GY:  Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
@@ -2754,7 +2754,7 @@
   Self:  12 life | mana: empty | hand(0): (empty)
   Opp:   17 life | mana: empty | hand count: 4
   Self BF:  Swamp (T) | Undercity Sewers (T) | Underground Sea (T) | Underground Sea (T)
-  Opp BF:   Dryad Arbor [7/7] (T) | Forest (T) | Savannah | Savannah (T) | Scythecat Cub [2/2] (T)
+  Opp BF:   Dryad Arbor [7/7] [+1/+1:6] (T) | Forest (T) | Savannah | Savannah (T) | Scythecat Cub [2/2] (T)
   Stack: Doomsday (spell, self)
   Self GY: Force of Will, Thoughtseize, Dark Ritual, Dark Ritual, Lotus Petal, Personal Tutor, Brainstorm, Ponder, Polluted Delta, Polluted Delta, Polluted Delta, Cavern of Souls
   Opp GY:  Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
@@ -2873,7 +2873,7 @@
   Self:  12 life | mana: empty | hand(0): (empty)
   Opp:   17 life | mana: empty | hand count: 4
   Self BF:  Swamp (T) | Undercity Sewers (T) | Underground Sea (T) | Underground Sea (T)
-  Opp BF:   Dryad Arbor [7/7] (T) | Forest (T) | Savannah | Savannah (T) | Scythecat Cub [2/2] (T)
+  Opp BF:   Dryad Arbor [7/7] [+1/+1:6] (T) | Forest (T) | Savannah | Savannah (T) | Scythecat Cub [2/2] (T)
   Stack: Doomsday (spell, self)
   Opp GY:  Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
   Actions:
@@ -2892,7 +2892,7 @@
   Self:  12 life | mana: empty | hand(0): (empty)
   Opp:   17 life | mana: empty | hand count: 4
   Self BF:  Swamp (T) | Undercity Sewers (T) | Underground Sea (T) | Underground Sea (T)
-  Opp BF:   Dryad Arbor [7/7] (T) | Forest (T) | Savannah | Savannah (T) | Scythecat Cub [2/2] (T)
+  Opp BF:   Dryad Arbor [7/7] [+1/+1:6] (T) | Forest (T) | Savannah | Savannah (T) | Scythecat Cub [2/2] (T)
   Stack: Doomsday (spell, self)
   Opp GY:  Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
   Actions:
@@ -2910,7 +2910,7 @@
   Self:  12 life | mana: empty | hand(0): (empty)
   Opp:   17 life | mana: empty | hand count: 4
   Self BF:  Swamp (T) | Undercity Sewers (T) | Underground Sea (T) | Underground Sea (T)
-  Opp BF:   Dryad Arbor [7/7] (T) | Forest (T) | Savannah | Savannah (T) | Scythecat Cub [2/2] (T)
+  Opp BF:   Dryad Arbor [7/7] [+1/+1:6] (T) | Forest (T) | Savannah | Savannah (T) | Scythecat Cub [2/2] (T)
   Stack: Doomsday (spell, self)
   Opp GY:  Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
   Actions:
@@ -2927,7 +2927,7 @@
   Self:  12 life | mana: empty | hand(0): (empty)
   Opp:   17 life | mana: empty | hand count: 4
   Self BF:  Swamp (T) | Undercity Sewers (T) | Underground Sea (T) | Underground Sea (T)
-  Opp BF:   Dryad Arbor [7/7] (T) | Forest (T) | Savannah | Savannah (T) | Scythecat Cub [2/2] (T)
+  Opp BF:   Dryad Arbor [7/7] [+1/+1:6] (T) | Forest (T) | Savannah | Savannah (T) | Scythecat Cub [2/2] (T)
   Stack: Doomsday (spell, self)
   Opp GY:  Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
   Actions:
@@ -2953,7 +2953,7 @@
   Step: First Main
   Self:  17 life | mana: empty | hand(5): Knight of the Reliquary, Knight of the Reliquary, Noble Hierarch, Scythecat Cub, Wooded Foothills
   Opp:   6 life | mana: empty | hand count: 0
-  Self BF:  Dryad Arbor [7/7] | Forest | Savannah | Savannah | Scythecat Cub [2/2]
+  Self BF:  Dryad Arbor [7/7] [+1/+1:6] | Forest | Savannah | Savannah | Scythecat Cub [2/2]
   Opp BF:   Swamp (T) | Undercity Sewers (T) | Underground Sea (T) | Underground Sea (T)
   Self GY: Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
   Opp GY:  Doomsday
@@ -2978,7 +2978,7 @@
   Step: First Main
   Self:  17 life | mana: empty | hand(4): Knight of the Reliquary, Noble Hierarch, Scythecat Cub, Wooded Foothills
   Opp:   6 life | mana: empty | hand count: 0
-  Self BF:  Dryad Arbor [7/7] (T) | Forest (T) | Knight of the Reliquary [6/6] (SICK) | Savannah (T) | Savannah | Scythecat Cub [2/2]
+  Self BF:  Dryad Arbor [7/7] [+1/+1:6] (T) | Forest (T) | Knight of the Reliquary [6/6] (SICK) | Savannah (T) | Savannah | Scythecat Cub [2/2]
   Opp BF:   Swamp (T) | Undercity Sewers (T) | Underground Sea (T) | Underground Sea (T)
   Self GY: Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
   Opp GY:  Doomsday
@@ -2997,7 +2997,7 @@
   Step: First Main
   Self:  17 life | mana: empty | hand(3): Knight of the Reliquary, Scythecat Cub, Wooded Foothills
   Opp:   6 life | mana: empty | hand count: 0
-  Self BF:  Dryad Arbor [7/7] (T) | Forest (T) | Knight of the Reliquary [6/6] (SICK) | Noble Hierarch [0/1] (SICK) | Savannah (T) | Savannah (T) | Scythecat Cub [2/2]
+  Self BF:  Dryad Arbor [7/7] [+1/+1:6] (T) | Forest (T) | Knight of the Reliquary [6/6] (SICK) | Noble Hierarch [0/1] (SICK) | Savannah (T) | Savannah (T) | Scythecat Cub [2/2]
   Opp BF:   Swamp (T) | Undercity Sewers (T) | Underground Sea (T) | Underground Sea (T)
   Self GY: Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
   Opp GY:  Doomsday
@@ -3014,7 +3014,7 @@
   Step: First Main
   Self:  17 life | mana: empty | hand(2): Knight of the Reliquary, Scythecat Cub
   Opp:   6 life | mana: empty | hand count: 0
-  Self BF:  Dryad Arbor [7/7] (T) | Forest (T) | Knight of the Reliquary [6/6] (SICK) | Noble Hierarch [0/1] (SICK) | Savannah (T) | Savannah (T) | Scythecat Cub [2/2] | Wooded Foothills
+  Self BF:  Dryad Arbor [7/7] [+1/+1:6] (T) | Forest (T) | Knight of the Reliquary [6/6] (SICK) | Noble Hierarch [0/1] (SICK) | Savannah (T) | Savannah (T) | Scythecat Cub [2/2] | Wooded Foothills
   Opp BF:   Swamp (T) | Undercity Sewers (T) | Underground Sea (T) | Underground Sea (T)
   Self GY: Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
   Opp GY:  Doomsday
@@ -3033,7 +3033,7 @@
   Step: First Main
   Self:  17 life | mana: empty | hand(2): Knight of the Reliquary, Scythecat Cub
   Opp:   6 life | mana: empty | hand count: 0
-  Self BF:  Dryad Arbor [7/7] (T) | Forest (T) | Knight of the Reliquary [6/6] (SICK) | Noble Hierarch [0/1] (SICK) | Savannah (T) | Savannah (T) | Scythecat Cub [2/2] | Wooded Foothills
+  Self BF:  Dryad Arbor [7/7] [+1/+1:6] (T) | Forest (T) | Knight of the Reliquary [6/6] (SICK) | Noble Hierarch [0/1] (SICK) | Savannah (T) | Savannah (T) | Scythecat Cub [2/2] | Wooded Foothills
   Opp BF:   Swamp (T) | Undercity Sewers (T) | Underground Sea (T) | Underground Sea (T)
   Stack: Scythecat Cub (ability, self) -> Dryad Arbor (self)
   Self GY: Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
@@ -3054,7 +3054,7 @@
   Step: First Main
   Self:  16 life | mana: empty | hand(2): Knight of the Reliquary, Scythecat Cub
   Opp:   6 life | mana: empty | hand count: 0
-  Self BF:  Dryad Arbor [7/7] (T) | Forest (T) | Knight of the Reliquary [7/7] (SICK) | Noble Hierarch [0/1] (SICK) | Savannah (T) | Savannah (T) | Scythecat Cub [2/2]
+  Self BF:  Dryad Arbor [7/7] [+1/+1:6] (T) | Forest (T) | Knight of the Reliquary [7/7] (SICK) | Noble Hierarch [0/1] (SICK) | Savannah (T) | Savannah (T) | Scythecat Cub [2/2]
   Opp BF:   Swamp (T) | Undercity Sewers (T) | Underground Sea (T) | Underground Sea (T)
   Stack: Wooded Foothills (ability, self) -> Scythecat Cub (ability, self) -> Dryad Arbor (self)
   Self GY: Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills, Wooded Foothills
@@ -3074,7 +3074,7 @@
   Step: First Main
   Self:  16 life | mana: empty | hand(2): Knight of the Reliquary, Scythecat Cub
   Opp:   6 life | mana: empty | hand count: 0
-  Self BF:  Dryad Arbor [7/7] (T) | Forest (T) | Knight of the Reliquary [7/7] (SICK) | Noble Hierarch [0/1] (SICK) | Savannah (T) | Savannah (T) | Savannah | Scythecat Cub [2/2]
+  Self BF:  Dryad Arbor [7/7] [+1/+1:6] (T) | Forest (T) | Knight of the Reliquary [7/7] (SICK) | Noble Hierarch [0/1] (SICK) | Savannah (T) | Savannah (T) | Savannah | Scythecat Cub [2/2]
   Opp BF:   Swamp (T) | Undercity Sewers (T) | Underground Sea (T) | Underground Sea (T)
   Stack: Scythecat Cub (ability, self) -> Dryad Arbor (self)
   Self GY: Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills, Wooded Foothills
@@ -3103,7 +3103,7 @@
   Step: Declare Atk
   Self:  16 life | mana: empty | hand(2): Knight of the Reliquary, Scythecat Cub
   Opp:   6 life | mana: empty | hand count: 0
-  Self BF:  Dryad Arbor [15/15] (T) | Forest (T) | Knight of the Reliquary [7/7] (SICK) | Noble Hierarch [0/1] (SICK) | Savannah (T) | Savannah (T) | Savannah | Scythecat Cub [2/2]
+  Self BF:  Dryad Arbor [15/15] [+1/+1:14] (T) | Forest (T) | Knight of the Reliquary [7/7] (SICK) | Noble Hierarch [0/1] (SICK) | Savannah (T) | Savannah (T) | Savannah | Scythecat Cub [2/2]
   Opp BF:   Swamp (T) | Undercity Sewers (T) | Underground Sea (T) | Underground Sea (T)
   Self GY: Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills, Wooded Foothills
   Opp GY:  Doomsday
@@ -3121,7 +3121,7 @@
   Step: Declare Atk
   Self:  16 life | mana: empty | hand(2): Knight of the Reliquary, Scythecat Cub
   Opp:   6 life | mana: empty | hand count: 0
-  Self BF:  Dryad Arbor [15/15] (T) | Forest (T) | Knight of the Reliquary [7/7] (SICK) | Noble Hierarch [0/1] (SICK) | Savannah (T) | Savannah (T) | Savannah | Scythecat Cub [2/2] (ATK)
+  Self BF:  Dryad Arbor [15/15] [+1/+1:14] (T) | Forest (T) | Knight of the Reliquary [7/7] (SICK) | Noble Hierarch [0/1] (SICK) | Savannah (T) | Savannah (T) | Savannah | Scythecat Cub [2/2] (ATK)
   Opp BF:   Swamp (T) | Undercity Sewers (T) | Underground Sea (T) | Underground Sea (T)
   Self GY: Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills, Wooded Foothills
   Opp GY:  Doomsday
@@ -3150,7 +3150,7 @@
   Self:  3 life | mana: empty | hand(1): Street Wraith
   Opp:   16 life | mana: empty | hand count: 2
   Self BF:  Swamp | Undercity Sewers | Underground Sea | Underground Sea
-  Opp BF:   Dryad Arbor [15/15] (T) | Forest (T) | Knight of the Reliquary [7/7] (SICK) | Noble Hierarch [0/1] (SICK) | Savannah (T) | Savannah (T) | Savannah | Scythecat Cub [2/2] (T)
+  Opp BF:   Dryad Arbor [15/15] [+1/+1:14] (T) | Forest (T) | Knight of the Reliquary [7/7] (SICK) | Noble Hierarch [0/1] (SICK) | Savannah (T) | Savannah (T) | Savannah | Scythecat Cub [2/2] (T)
   Self GY: Doomsday
   Opp GY:  Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills, Wooded Foothills
   Actions:
@@ -3176,7 +3176,7 @@
   Step: Upkeep
   Self:  16 life | mana: empty | hand(2): Knight of the Reliquary, Scythecat Cub
   Opp:   1 life | mana: empty | hand count: 1
-  Self BF:  Dryad Arbor [15/15] | Forest | Knight of the Reliquary [7/7] | Noble Hierarch [0/1] | Savannah | Savannah | Savannah | Scythecat Cub [2/2]
+  Self BF:  Dryad Arbor [15/15] [+1/+1:14] | Forest | Knight of the Reliquary [7/7] | Noble Hierarch [0/1] | Savannah | Savannah | Savannah | Scythecat Cub [2/2]
   Opp BF:   Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Self GY: Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills, Wooded Foothills
   Opp GY:  Doomsday, Street Wraith
@@ -3192,7 +3192,7 @@
   Step: Draw
   Self:  16 life | mana: empty | hand(3): Knight of the Reliquary, Scythecat Cub, Windswept Heath
   Opp:   1 life | mana: empty | hand count: 1
-  Self BF:  Dryad Arbor [15/15] | Forest | Knight of the Reliquary [7/7] | Noble Hierarch [0/1] | Savannah | Savannah | Savannah | Scythecat Cub [2/2]
+  Self BF:  Dryad Arbor [15/15] [+1/+1:14] | Forest | Knight of the Reliquary [7/7] | Noble Hierarch [0/1] | Savannah | Savannah | Savannah | Scythecat Cub [2/2]
   Opp BF:   Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Self GY: Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills, Wooded Foothills
   Opp GY:  Doomsday, Street Wraith
@@ -3206,7 +3206,7 @@
   Step: First Main
   Self:  16 life | mana: empty | hand(3): Knight of the Reliquary, Scythecat Cub, Windswept Heath
   Opp:   1 life | mana: empty | hand count: 1
-  Self BF:  Dryad Arbor [15/15] | Forest | Knight of the Reliquary [7/7] | Noble Hierarch [0/1] | Savannah | Savannah | Savannah | Scythecat Cub [2/2]
+  Self BF:  Dryad Arbor [15/15] [+1/+1:14] | Forest | Knight of the Reliquary [7/7] | Noble Hierarch [0/1] | Savannah | Savannah | Savannah | Scythecat Cub [2/2]
   Opp BF:   Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Self GY: Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills, Wooded Foothills
   Opp GY:  Doomsday, Street Wraith
@@ -3228,7 +3228,7 @@
   Step: First Main
   Self:  16 life | mana: empty | hand(2): Scythecat Cub, Windswept Heath
   Opp:   1 life | mana: empty | hand count: 1
-  Self BF:  Dryad Arbor [15/15] (T) | Forest (T) | Knight of the Reliquary [7/7] | Noble Hierarch [0/1] (T) | Savannah | Savannah | Savannah | Scythecat Cub [2/2]
+  Self BF:  Dryad Arbor [15/15] [+1/+1:14] (T) | Forest (T) | Knight of the Reliquary [7/7] | Noble Hierarch [0/1] (T) | Savannah | Savannah | Savannah | Scythecat Cub [2/2]
   Opp BF:   Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Stack: Knight of the Reliquary (spell, self)
   Self GY: Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills, Wooded Foothills
@@ -3243,7 +3243,7 @@
   Step: First Main
   Self:  16 life | mana: empty | hand(2): Scythecat Cub, Windswept Heath
   Opp:   1 life | mana: empty | hand count: 1
-  Self BF:  Dryad Arbor [15/15] (T) | Forest (T) | Knight of the Reliquary [7/7] (T) | Noble Hierarch [0/1] (T) | Savannah | Savannah | Savannah | Scythecat Cub [2/2]
+  Self BF:  Dryad Arbor [15/15] [+1/+1:14] (T) | Forest (T) | Knight of the Reliquary [7/7] (T) | Noble Hierarch [0/1] (T) | Savannah | Savannah | Savannah | Scythecat Cub [2/2]
   Opp BF:   Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Stack: Knight of the Reliquary (spell, self)
   Self GY: Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills, Wooded Foothills
@@ -3321,7 +3321,7 @@
   Step: First Main
   Self:  16 life | mana: empty | hand(2): Scythecat Cub, Windswept Heath
   Opp:   1 life | mana: empty | hand count: 1
-  Self BF:  Forest (T) | Gaea's Cradle | Knight of the Reliquary [9/9] (T) | Knight of the Reliquary [8/8] (SICK) | Noble Hierarch [0/1] (T) | Savannah | Savannah | Savannah | Scythecat Cub [2/2]
+  Self BF:  Forest (T) | Gaea's Cradle | Knight of the Reliquary [9/9] [+1/+1:1] (T) | Knight of the Reliquary [8/8] (SICK) | Noble Hierarch [0/1] (T) | Savannah | Savannah | Savannah | Scythecat Cub [2/2]
   Opp BF:   Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Self GY: Dryad Arbor, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills, Wooded Foothills
   Opp GY:  Doomsday, Street Wraith
@@ -3340,7 +3340,7 @@
   Step: First Main
   Self:  16 life | mana: 2G | hand(1): Windswept Heath
   Opp:   1 life | mana: empty | hand count: 1
-  Self BF:  Forest (T) | Gaea's Cradle (T) | Knight of the Reliquary [9/9] (T) | Knight of the Reliquary [8/8] (SICK) | Noble Hierarch [0/1] (T) | Savannah | Savannah | Savannah | Scythecat Cub [2/2] | Scythecat Cub [2/2] (SICK)
+  Self BF:  Forest (T) | Gaea's Cradle (T) | Knight of the Reliquary [9/9] [+1/+1:1] (T) | Knight of the Reliquary [8/8] (SICK) | Noble Hierarch [0/1] (T) | Savannah | Savannah | Savannah | Scythecat Cub [2/2] | Scythecat Cub [2/2] (SICK)
   Opp BF:   Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Self GY: Dryad Arbor, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills, Wooded Foothills
   Opp GY:  Doomsday, Street Wraith
@@ -3357,7 +3357,7 @@
   Step: First Main
   Self:  16 life | mana: 2G | hand(0): (empty)
   Opp:   1 life | mana: empty | hand count: 1
-  Self BF:  Forest (T) | Gaea's Cradle (T) | Knight of the Reliquary [9/9] (T) | Knight of the Reliquary [8/8] (SICK) | Noble Hierarch [0/1] (T) | Savannah | Savannah | Savannah | Scythecat Cub [2/2] | Scythecat Cub [2/2] (SICK) | Windswept Heath
+  Self BF:  Forest (T) | Gaea's Cradle (T) | Knight of the Reliquary [9/9] [+1/+1:1] (T) | Knight of the Reliquary [8/8] (SICK) | Noble Hierarch [0/1] (T) | Savannah | Savannah | Savannah | Scythecat Cub [2/2] | Scythecat Cub [2/2] (SICK) | Windswept Heath
   Opp BF:   Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Self GY: Dryad Arbor, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills, Wooded Foothills
   Opp GY:  Doomsday, Street Wraith
@@ -3373,7 +3373,7 @@
   Step: First Main
   Self:  16 life | mana: 2G | hand(0): (empty)
   Opp:   1 life | mana: empty | hand count: 1
-  Self BF:  Forest (T) | Gaea's Cradle (T) | Knight of the Reliquary [9/9] (T) | Knight of the Reliquary [8/8] (SICK) | Noble Hierarch [0/1] (T) | Savannah | Savannah | Savannah | Scythecat Cub [2/2] | Scythecat Cub [2/2] (SICK) | Windswept Heath
+  Self BF:  Forest (T) | Gaea's Cradle (T) | Knight of the Reliquary [9/9] [+1/+1:1] (T) | Knight of the Reliquary [8/8] (SICK) | Noble Hierarch [0/1] (T) | Savannah | Savannah | Savannah | Scythecat Cub [2/2] | Scythecat Cub [2/2] (SICK) | Windswept Heath
   Opp BF:   Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Self GY: Dryad Arbor, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills, Wooded Foothills
   Opp GY:  Doomsday, Street Wraith
@@ -3394,7 +3394,7 @@
   Step: First Main
   Self:  16 life | mana: 2G | hand(0): (empty)
   Opp:   1 life | mana: empty | hand count: 1
-  Self BF:  Forest (T) | Gaea's Cradle (T) | Knight of the Reliquary [9/9] (T) | Knight of the Reliquary [8/8] (SICK) | Noble Hierarch [0/1] (T) | Savannah | Savannah | Savannah | Scythecat Cub [2/2] | Scythecat Cub [2/2] (SICK) | Windswept Heath
+  Self BF:  Forest (T) | Gaea's Cradle (T) | Knight of the Reliquary [9/9] [+1/+1:1] (T) | Knight of the Reliquary [8/8] (SICK) | Noble Hierarch [0/1] (T) | Savannah | Savannah | Savannah | Scythecat Cub [2/2] | Scythecat Cub [2/2] (SICK) | Windswept Heath
   Opp BF:   Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Stack: Scythecat Cub (ability, self) -> Knight of the Reliquary (self)
   Self GY: Dryad Arbor, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills, Wooded Foothills
@@ -3415,7 +3415,7 @@
   Step: First Main
   Self:  16 life | mana: 2G | hand(0): (empty)
   Opp:   1 life | mana: empty | hand count: 1
-  Self BF:  Forest (T) | Gaea's Cradle (T) | Knight of the Reliquary [9/9] (T) | Knight of the Reliquary [8/8] (SICK) | Noble Hierarch [0/1] (T) | Savannah | Savannah | Savannah | Scythecat Cub [2/2] | Scythecat Cub [2/2] (SICK) | Windswept Heath
+  Self BF:  Forest (T) | Gaea's Cradle (T) | Knight of the Reliquary [9/9] [+1/+1:1] (T) | Knight of the Reliquary [8/8] (SICK) | Noble Hierarch [0/1] (T) | Savannah | Savannah | Savannah | Scythecat Cub [2/2] | Scythecat Cub [2/2] (SICK) | Windswept Heath
   Opp BF:   Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Stack: Scythecat Cub (ability, self) -> Knight of the Reliquary (self) -> Scythecat Cub (ability, self) -> Knight of the Reliquary (self)
   Self GY: Dryad Arbor, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills, Wooded Foothills
@@ -3436,7 +3436,7 @@
   Step: First Main
   Self:  15 life | mana: 2G | hand(0): (empty)
   Opp:   1 life | mana: empty | hand count: 1
-  Self BF:  Forest (T) | Gaea's Cradle (T) | Knight of the Reliquary [10/10] (T) | Knight of the Reliquary [9/9] (SICK) | Noble Hierarch [0/1] (T) | Savannah | Savannah | Savannah | Scythecat Cub [2/2] | Scythecat Cub [2/2] (SICK)
+  Self BF:  Forest (T) | Gaea's Cradle (T) | Knight of the Reliquary [10/10] [+1/+1:1] (T) | Knight of the Reliquary [9/9] (SICK) | Noble Hierarch [0/1] (T) | Savannah | Savannah | Savannah | Scythecat Cub [2/2] | Scythecat Cub [2/2] (SICK)
   Opp BF:   Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Stack: Windswept Heath (ability, self) -> Scythecat Cub (ability, self) -> Knight of the Reliquary (self) -> Scythecat Cub (ability, self) -> Knight of the Reliquary (self)
   Self GY: Dryad Arbor, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills, Wooded Foothills
@@ -3456,7 +3456,7 @@
   Step: First Main
   Self:  15 life | mana: 2G | hand(0): (empty)
   Opp:   1 life | mana: empty | hand count: 1
-  Self BF:  Forest (T) | Gaea's Cradle (T) | Knight of the Reliquary [10/10] (T) | Knight of the Reliquary [9/9] (SICK) | Noble Hierarch [0/1] (T) | Plains | Savannah | Savannah | Savannah | Scythecat Cub [2/2] | Scythecat Cub [2/2] (SICK)
+  Self BF:  Forest (T) | Gaea's Cradle (T) | Knight of the Reliquary [10/10] [+1/+1:1] (T) | Knight of the Reliquary [9/9] (SICK) | Noble Hierarch [0/1] (T) | Plains | Savannah | Savannah | Savannah | Scythecat Cub [2/2] | Scythecat Cub [2/2] (SICK)
   Opp BF:   Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Stack: Scythecat Cub (ability, self) -> Knight of the Reliquary (self) -> Scythecat Cub (ability, self) -> Knight of the Reliquary (self)
   Self GY: Dryad Arbor, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills, Wooded Foothills
@@ -3473,7 +3473,7 @@
   Step: First Main
   Self:  15 life | mana: 2G | hand(0): (empty)
   Opp:   1 life | mana: empty | hand count: 1
-  Self BF:  Forest (T) | Gaea's Cradle (T) | Knight of the Reliquary [10/10] (T) | Knight of the Reliquary [9/9] (SICK) | Noble Hierarch [0/1] (T) | Plains | Savannah | Savannah | Savannah | Scythecat Cub [2/2] | Scythecat Cub [2/2] (SICK)
+  Self BF:  Forest (T) | Gaea's Cradle (T) | Knight of the Reliquary [10/10] [+1/+1:1] (T) | Knight of the Reliquary [9/9] (SICK) | Noble Hierarch [0/1] (T) | Plains | Savannah | Savannah | Savannah | Scythecat Cub [2/2] | Scythecat Cub [2/2] (SICK)
   Opp BF:   Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Stack: Scythecat Cub (ability, self) -> Knight of the Reliquary (self) -> Scythecat Cub (ability, self) -> Knight of the Reliquary (self)
   Self GY: Dryad Arbor, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills, Wooded Foothills
@@ -3495,7 +3495,7 @@
   Step: First Main
   Self:  15 life | mana: 2G | hand(0): (empty)
   Opp:   1 life | mana: empty | hand count: 1
-  Self BF:  Forest (T) | Gaea's Cradle (T) | Knight of the Reliquary [10/10] (T) | Knight of the Reliquary [9/9] (SICK) | Noble Hierarch [0/1] (T) | Plains | Savannah | Savannah | Savannah | Scythecat Cub [2/2] | Scythecat Cub [2/2] (SICK)
+  Self BF:  Forest (T) | Gaea's Cradle (T) | Knight of the Reliquary [10/10] [+1/+1:1] (T) | Knight of the Reliquary [9/9] (SICK) | Noble Hierarch [0/1] (T) | Plains | Savannah | Savannah | Savannah | Scythecat Cub [2/2] | Scythecat Cub [2/2] (SICK)
   Opp BF:   Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Stack: Scythecat Cub (ability, self) -> Knight of the Reliquary (self) -> Scythecat Cub (ability, self) -> Knight of the Reliquary (self) -> Scythecat Cub (ability, self) -> Knight of the Reliquary (self)
   Self GY: Dryad Arbor, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills, Wooded Foothills
@@ -3533,7 +3533,7 @@
   Step: Declare Atk
   Self:  15 life | mana: empty | hand(0): (empty)
   Opp:   1 life | mana: empty | hand count: 1
-  Self BF:  Forest (T) | Gaea's Cradle (T) | Knight of the Reliquary [18/18] (T) | Knight of the Reliquary [9/9] (SICK) | Noble Hierarch [0/1] (T) | Plains | Savannah | Savannah | Savannah | Scythecat Cub [2/2] | Scythecat Cub [2/2] (SICK)
+  Self BF:  Forest (T) | Gaea's Cradle (T) | Knight of the Reliquary [18/18] [+1/+1:9] (T) | Knight of the Reliquary [9/9] (SICK) | Noble Hierarch [0/1] (T) | Plains | Savannah | Savannah | Savannah | Scythecat Cub [2/2] | Scythecat Cub [2/2] (SICK)
   Opp BF:   Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Self GY: Dryad Arbor, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills, Wooded Foothills
   Opp GY:  Doomsday, Street Wraith
@@ -3551,7 +3551,7 @@
   Step: Declare Atk
   Self:  15 life | mana: empty | hand(0): (empty)
   Opp:   1 life | mana: empty | hand count: 1
-  Self BF:  Forest (T) | Gaea's Cradle (T) | Knight of the Reliquary [18/18] (T) | Knight of the Reliquary [9/9] (SICK) | Noble Hierarch [0/1] (T) | Plains | Savannah | Savannah | Savannah | Scythecat Cub [2/2] (ATK) | Scythecat Cub [2/2] (SICK)
+  Self BF:  Forest (T) | Gaea's Cradle (T) | Knight of the Reliquary [18/18] [+1/+1:9] (T) | Knight of the Reliquary [9/9] (SICK) | Noble Hierarch [0/1] (T) | Plains | Savannah | Savannah | Savannah | Scythecat Cub [2/2] (ATK) | Scythecat Cub [2/2] (SICK)
   Opp BF:   Swamp | Undercity Sewers | Underground Sea | Underground Sea
   Self GY: Dryad Arbor, Green Sun's Zenith, Knight of the Reliquary, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath, Windswept Heath, Wooded Foothills, Wooded Foothills
   Opp GY:  Doomsday, Street Wraith

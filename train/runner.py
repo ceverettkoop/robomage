@@ -169,7 +169,9 @@ def run_games(controller_a, controller_b, *,
                 coverage.record(cats.tolist(), ids.tolist(), int(action))
 
             if verbose:
-                gs = decode.decode_game_state(obs[:STATE_SIZE])
+                gs = decode.decode_game_state(
+                    obs[:STATE_SIZE],
+                    perm_counters=getattr(env, "_perm_counters", None))
                 for ln in decode.format_decision_block(decision + 1, gs, decoded):
                     emit(ln)
                 emit(decode.format_chosen_action(f"{label}/{player}", action, decoded))

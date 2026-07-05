@@ -969,7 +969,7 @@
   Step: First Main
   Self:  12 life | mana: empty | hand(4): Knight of the Reliquary, Knight of the Reliquary, Wooded Foothills, Wooded Foothills
   Opp:   18 life | mana: empty | hand count: 5
-  Self BF:  Forest | Karakas | Savannah | Scythecat Cub [3/3]
+  Self BF:  Forest | Karakas | Savannah | Scythecat Cub [3/3] [+1/+1:1]
   Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
   Self GY: Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
   Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland
@@ -992,7 +992,7 @@
   Step: Declare Atk
   Self:  12 life | mana: empty | hand(3): Knight of the Reliquary, Wooded Foothills, Wooded Foothills
   Opp:   18 life | mana: empty | hand count: 5
-  Self BF:  Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (SICK) | Savannah (T) | Scythecat Cub [3/3]
+  Self BF:  Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (SICK) | Savannah (T) | Scythecat Cub [3/3] [+1/+1:1]
   Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
   Self GY: Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
   Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland
@@ -1010,7 +1010,7 @@
   Step: Declare Atk
   Self:  12 life | mana: empty | hand(3): Knight of the Reliquary, Wooded Foothills, Wooded Foothills
   Opp:   18 life | mana: empty | hand count: 5
-  Self BF:  Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (SICK) | Savannah (T) | Scythecat Cub [3/3] (ATK)
+  Self BF:  Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (SICK) | Savannah (T) | Scythecat Cub [3/3] [+1/+1:1] (ATK)
   Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
   Self GY: Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
   Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland
@@ -1036,7 +1036,7 @@
   Self:  15 life | mana: empty | hand(6): Cori-Steel Cutter, Lightning Bolt, Unholy Heat, Ponder, Ponder, Volcanic Island
   Opp:   12 life | mana: empty | hand count: 3
   Self BF:  Dragon's Rage Channeler [3/3] | Island
-  Opp BF:   Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (SICK) | Savannah (T) | Scythecat Cub [3/3] (T)
+  Opp BF:   Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (SICK) | Savannah (T) | Scythecat Cub [3/3] [+1/+1:1] (T)
   Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland
   Opp GY:  Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
   Actions:
@@ -1059,7 +1059,7 @@
   Self:  15 life | mana: empty | hand(5): Cori-Steel Cutter, Lightning Bolt, Unholy Heat, Ponder, Volcanic Island
   Opp:   12 life | mana: empty | hand count: 3
   Self BF:  Dragon's Rage Channeler [3/3] | Island (T)
-  Opp BF:   Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (SICK) | Savannah (T) | Scythecat Cub [3/3] (T)
+  Opp BF:   Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (SICK) | Savannah (T) | Scythecat Cub [3/3] [+1/+1:1] (T)
   Stack: Dragon's Rage Channeler (ability, self) -> Ponder (spell, self)
   Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland
   Opp GY:  Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
@@ -1079,7 +1079,7 @@
   Self:  15 life | mana: empty | hand(5): Cori-Steel Cutter, Lightning Bolt, Unholy Heat, Ponder, Volcanic Island
   Opp:   12 life | mana: empty | hand count: 3
   Self BF:  Dragon's Rage Channeler [3/3] | Island (T)
-  Opp BF:   Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (SICK) | Savannah (T) | Scythecat Cub [3/3] (T)
+  Opp BF:   Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (SICK) | Savannah (T) | Scythecat Cub [3/3] [+1/+1:1] (T)
   Stack: Ponder (spell, self)
   Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
@@ -1097,7 +1097,7 @@
   Self:  15 life | mana: empty | hand(5): Cori-Steel Cutter, Lightning Bolt, Unholy Heat, Ponder, Volcanic Island
   Opp:   12 life | mana: empty | hand count: 3
   Self BF:  Dragon's Rage Channeler [3/3] | Island (T)
-  Opp BF:   Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (SICK) | Savannah (T) | Scythecat Cub [3/3] (T)
+  Opp BF:   Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (SICK) | Savannah (T) | Scythecat Cub [3/3] [+1/+1:1] (T)
   Stack: Ponder (spell, self)
   Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
@@ -1112,7 +1112,7 @@
   Self:  15 life | mana: empty | hand(5): Cori-Steel Cutter, Lightning Bolt, Unholy Heat, Ponder, Volcanic Island
   Opp:   12 life | mana: empty | hand count: 3
   Self BF:  Dragon's Rage Channeler [3/3] | Island (T)
-  Opp BF:   Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (SICK) | Savannah (T) | Scythecat Cub [3/3] (T)
+  Opp BF:   Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (SICK) | Savannah (T) | Scythecat Cub [3/3] [+1/+1:1] (T)
   Stack: Ponder (spell, self)
   Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
@@ -1130,7 +1130,7 @@
   Self:  15 life | mana: empty | hand(6): Mishra's Bauble, Cori-Steel Cutter, Lightning Bolt, Unholy Heat, Ponder, Volcanic Island
   Opp:   12 life | mana: empty | hand count: 3
   Self BF:  Dragon's Rage Channeler [3/3] | Island (T)
-  Opp BF:   Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (SICK) | Savannah (T) | Scythecat Cub [3/3] (T)
+  Opp BF:   Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (SICK) | Savannah (T) | Scythecat Cub [3/3] [+1/+1:1] (T)
   Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Ponder, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
   Actions:
@@ -1151,7 +1151,7 @@
   Self:  15 life | mana: empty | hand(5): Cori-Steel Cutter, Lightning Bolt, Unholy Heat, Ponder, Volcanic Island
   Opp:   12 life | mana: empty | hand count: 3
   Self BF:  Dragon's Rage Channeler [3/3] | Island (T)
-  Opp BF:   Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (SICK) | Savannah (T) | Scythecat Cub [3/3] (T)
+  Opp BF:   Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (SICK) | Savannah (T) | Scythecat Cub [3/3] [+1/+1:1] (T)
   Stack: Dragon's Rage Channeler (ability, self) -> Mishra's Bauble (spell, self)
   Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Ponder, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
@@ -1169,7 +1169,7 @@
   Self:  15 life | mana: empty | hand(5): Cori-Steel Cutter, Lightning Bolt, Unholy Heat, Ponder, Volcanic Island
   Opp:   12 life | mana: empty | hand count: 3
   Self BF:  Dragon's Rage Channeler [3/3] | Mishra's Bauble | Island (T)
-  Opp BF:   Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (SICK) | Savannah (T) | Scythecat Cub [3/3] (T)
+  Opp BF:   Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (SICK) | Savannah (T) | Scythecat Cub [3/3] [+1/+1:1] (T)
   Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Daze, Ponder, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
   Actions:
@@ -1186,7 +1186,7 @@
   Self:  15 life | mana: empty | hand(4): Cori-Steel Cutter, Lightning Bolt, Unholy Heat, Ponder
   Opp:   12 life | mana: empty | hand count: 3
   Self BF:  Dragon's Rage Channeler [3/3] | Mishra's Bauble | Island (T) | Volcanic Island
-  Opp BF:   Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (SICK) | Savannah (T) | Scythecat Cub [3/3] (T)
+  Opp BF:   Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (SICK) | Savannah (T) | Scythecat Cub [3/3] [+1/+1:1] (T)
   Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Daze, Ponder, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
   Actions:
@@ -1205,7 +1205,7 @@
   Self:  15 life | mana: empty | hand(4): Cori-Steel Cutter, Lightning Bolt, Unholy Heat, Ponder
   Opp:   12 life | mana: empty | hand count: 3
   Self BF:  Dragon's Rage Channeler [3/3] | Mishra's Bauble | Island (T) | Volcanic Island
-  Opp BF:   Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (SICK) | Savannah (T) | Scythecat Cub [3/3] (T)
+  Opp BF:   Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (SICK) | Savannah (T) | Scythecat Cub [3/3] [+1/+1:1] (T)
   Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Daze, Ponder, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
   Actions:
@@ -1227,7 +1227,7 @@
   Self:  15 life | mana: empty | hand(3): Cori-Steel Cutter, Unholy Heat, Ponder
   Opp:   12 life | mana: empty | hand count: 3
   Self BF:  Dragon's Rage Channeler [3/3] | Mishra's Bauble | Island (T) | Volcanic Island (T)
-  Opp BF:   Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (SICK) | Savannah (T) | Scythecat Cub [3/3] (T)
+  Opp BF:   Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (SICK) | Savannah (T) | Scythecat Cub [3/3] [+1/+1:1] (T)
   Stack: Dragon's Rage Channeler (ability, self) -> Lightning Bolt (spell, self) -> opponent (player)
   Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Daze, Ponder, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
@@ -1244,7 +1244,7 @@
   Self:  15 life | mana: empty | hand(3): Cori-Steel Cutter, Unholy Heat, Ponder
   Opp:   12 life | mana: empty | hand count: 3
   Self BF:  Dragon's Rage Channeler [3/3] | Mishra's Bauble | Island (T) | Volcanic Island (T)
-  Opp BF:   Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (SICK) | Savannah (T) | Scythecat Cub [3/3] (T)
+  Opp BF:   Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (SICK) | Savannah (T) | Scythecat Cub [3/3] [+1/+1:1] (T)
   Stack: Dragon's Rage Channeler (ability, self) -> Lightning Bolt (spell, self) -> opponent (player)
   Self GY: Dragon's Rage Channeler, Mishra's Bauble, Force of Will, Daze, Ponder, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
@@ -1270,7 +1270,7 @@
   Self:  15 life | mana: empty | hand(3): Cori-Steel Cutter, Unholy Heat, Ponder
   Opp:   12 life | mana: empty | hand count: 3
   Self BF:  Dragon's Rage Channeler [3/3] | Island (T) | Volcanic Island (T)
-  Opp BF:   Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (SICK) | Savannah (T) | Scythecat Cub [3/3] (T)
+  Opp BF:   Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (SICK) | Savannah (T) | Scythecat Cub [3/3] [+1/+1:1] (T)
   Stack: Dragon's Rage Channeler (ability, self) -> Lightning Bolt (spell, self) -> opponent (player)
   Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Daze, Ponder, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
@@ -1292,7 +1292,7 @@
   Self:  15 life | mana: empty | hand(3): Cori-Steel Cutter, Unholy Heat, Ponder
   Opp:   9 life | mana: empty | hand count: 3
   Self BF:  Dragon's Rage Channeler [3/3] (ATK) | Island (T) | Volcanic Island (T)
-  Opp BF:   Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (SICK) | Savannah (T) | Scythecat Cub [3/3] (T)
+  Opp BF:   Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (SICK) | Savannah (T) | Scythecat Cub [3/3] [+1/+1:1] (T)
   Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
   Actions:
@@ -1316,7 +1316,7 @@
   Step: Upkeep
   Self:  6 life | mana: empty | hand(3): Knight of the Reliquary, Wooded Foothills, Wooded Foothills
   Opp:   15 life | mana: empty | hand count: 3
-  Self BF:  Forest | Karakas | Knight of the Reliquary [6/6] | Savannah | Scythecat Cub [3/3]
+  Self BF:  Forest | Karakas | Knight of the Reliquary [6/6] | Savannah | Scythecat Cub [3/3] [+1/+1:1]
   Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T) | Volcanic Island (T)
   Stack: Mishra's Bauble (ability, opponent)
   Self GY: Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
@@ -1334,7 +1334,7 @@
   Step: Upkeep
   Self:  6 life | mana: empty | hand(3): Knight of the Reliquary, Wooded Foothills, Wooded Foothills
   Opp:   15 life | mana: empty | hand count: 4
-  Self BF:  Forest | Karakas | Knight of the Reliquary [6/6] | Savannah | Scythecat Cub [3/3]
+  Self BF:  Forest | Karakas | Knight of the Reliquary [6/6] | Savannah | Scythecat Cub [3/3] [+1/+1:1]
   Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T) | Volcanic Island (T)
   Self GY: Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
   Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
@@ -1350,7 +1350,7 @@
   Step: Draw
   Self:  6 life | mana: empty | hand(4): Knight of the Reliquary, Wasteland, Wooded Foothills, Wooded Foothills
   Opp:   15 life | mana: empty | hand count: 4
-  Self BF:  Forest | Karakas | Knight of the Reliquary [6/6] | Savannah | Scythecat Cub [3/3]
+  Self BF:  Forest | Karakas | Knight of the Reliquary [6/6] | Savannah | Scythecat Cub [3/3] [+1/+1:1]
   Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T) | Volcanic Island (T)
   Self GY: Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
   Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
@@ -1364,7 +1364,7 @@
   Step: First Main
   Self:  6 life | mana: empty | hand(4): Knight of the Reliquary, Wasteland, Wooded Foothills, Wooded Foothills
   Opp:   15 life | mana: empty | hand count: 4
-  Self BF:  Forest | Karakas | Knight of the Reliquary [6/6] | Savannah | Scythecat Cub [3/3]
+  Self BF:  Forest | Karakas | Knight of the Reliquary [6/6] | Savannah | Scythecat Cub [3/3] [+1/+1:1]
   Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T) | Volcanic Island (T)
   Self GY: Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
   Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
@@ -1387,7 +1387,7 @@
   Step: First Main
   Self:  6 life | mana: empty | hand(3): Wasteland, Wooded Foothills, Wooded Foothills
   Opp:   15 life | mana: empty | hand count: 4
-  Self BF:  Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] | Savannah (T) | Scythecat Cub [3/3]
+  Self BF:  Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] | Savannah (T) | Scythecat Cub [3/3] [+1/+1:1]
   Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T) | Volcanic Island (T)
   Stack: Knight of the Reliquary (spell, self)
   Self GY: Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
@@ -1402,7 +1402,7 @@
   Step: First Main
   Self:  6 life | mana: empty | hand(3): Wasteland, Wooded Foothills, Wooded Foothills
   Opp:   15 life | mana: empty | hand count: 4
-  Self BF:  Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (T) | Savannah (T) | Scythecat Cub [3/3]
+  Self BF:  Forest (T) | Karakas (T) | Knight of the Reliquary [6/6] (T) | Savannah (T) | Scythecat Cub [3/3] [+1/+1:1]
   Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T) | Volcanic Island (T)
   Stack: Knight of the Reliquary (spell, self)
   Self GY: Dryad Arbor, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
@@ -1422,7 +1422,7 @@
   Step: First Main
   Self:  6 life | mana: empty | hand(3): Wasteland, Wooded Foothills, Wooded Foothills
   Opp:   15 life | mana: empty | hand count: 4
-  Self BF:  Karakas (T) | Knight of the Reliquary [7/7] (T) | Savannah (T) | Scythecat Cub [3/3]
+  Self BF:  Karakas (T) | Knight of the Reliquary [7/7] (T) | Savannah (T) | Scythecat Cub [3/3] [+1/+1:1]
   Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T) | Volcanic Island (T)
   Stack: Knight of the Reliquary (ability, self) -> Knight of the Reliquary (spell, self)
   Self GY: Dryad Arbor, Forest, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
@@ -1453,7 +1453,7 @@
   Step: First Main
   Self:  6 life | mana: empty | hand(3): Wasteland, Wooded Foothills, Wooded Foothills
   Opp:   15 life | mana: empty | hand count: 4
-  Self BF:  Gaea's Cradle | Karakas (T) | Knight of the Reliquary [7/7] (T) | Savannah (T) | Scythecat Cub [3/3]
+  Self BF:  Gaea's Cradle | Karakas (T) | Knight of the Reliquary [7/7] (T) | Savannah (T) | Scythecat Cub [3/3] [+1/+1:1]
   Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T) | Volcanic Island (T)
   Stack: Knight of the Reliquary (spell, self)
   Self GY: Dryad Arbor, Forest, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
@@ -1477,7 +1477,7 @@
   Step: First Main
   Self:  6 life | mana: empty | hand(3): Wasteland, Wooded Foothills, Wooded Foothills
   Opp:   15 life | mana: empty | hand count: 4
-  Self BF:  Gaea's Cradle | Karakas (T) | Knight of the Reliquary [8/8] (T) | Knight of the Reliquary [7/7] (SICK) | Savannah (T) | Scythecat Cub [3/3]
+  Self BF:  Gaea's Cradle | Karakas (T) | Knight of the Reliquary [8/8] [+1/+1:1] (T) | Knight of the Reliquary [7/7] (SICK) | Savannah (T) | Scythecat Cub [3/3] [+1/+1:1]
   Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T) | Volcanic Island (T)
   Self GY: Dryad Arbor, Forest, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
   Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
@@ -1496,7 +1496,7 @@
   Step: First Main
   Self:  6 life | mana: empty | hand(2): Wooded Foothills, Wooded Foothills
   Opp:   15 life | mana: empty | hand count: 4
-  Self BF:  Gaea's Cradle | Karakas (T) | Knight of the Reliquary [8/8] (T) | Knight of the Reliquary [7/7] (SICK) | Savannah (T) | Scythecat Cub [3/3] | Wasteland
+  Self BF:  Gaea's Cradle | Karakas (T) | Knight of the Reliquary [8/8] [+1/+1:1] (T) | Knight of the Reliquary [7/7] (SICK) | Savannah (T) | Scythecat Cub [3/3] [+1/+1:1] | Wasteland
   Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T) | Volcanic Island (T)
   Self GY: Dryad Arbor, Forest, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
   Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Flooded Strand, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
@@ -1514,7 +1514,7 @@
   Step: First Main
   Self:  6 life | mana: empty | hand(2): Wooded Foothills, Wooded Foothills
   Opp:   15 life | mana: empty | hand count: 4
-  Self BF:  Gaea's Cradle | Karakas (T) | Knight of the Reliquary [8/8] (T) | Knight of the Reliquary [7/7] (SICK) | Savannah (T) | Scythecat Cub [3/3] | Wasteland
+  Self BF:  Gaea's Cradle | Karakas (T) | Knight of the Reliquary [8/8] [+1/+1:1] (T) | Knight of the Reliquary [7/7] (SICK) | Savannah (T) | Scythecat Cub [3/3] [+1/+1:1] | Wasteland
   Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T) | Volcanic Island (T)
   Stack: Scythecat Cub (ability, self) -> Knight of the Reliquary (self)
   Self GY: Dryad Arbor, Forest, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
@@ -1531,7 +1531,7 @@
   Step: First Main
   Self:  6 life | mana: empty | hand(2): Wooded Foothills, Wooded Foothills
   Opp:   15 life | mana: empty | hand count: 4
-  Self BF:  Gaea's Cradle | Karakas (T) | Knight of the Reliquary [8/8] (T) | Knight of the Reliquary [7/7] (SICK) | Savannah (T) | Scythecat Cub [3/3] | Wasteland
+  Self BF:  Gaea's Cradle | Karakas (T) | Knight of the Reliquary [8/8] [+1/+1:1] (T) | Knight of the Reliquary [7/7] (SICK) | Savannah (T) | Scythecat Cub [3/3] [+1/+1:1] | Wasteland
   Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T) | Volcanic Island (T)
   Stack: Scythecat Cub (ability, self) -> Knight of the Reliquary (self)
   Self GY: Dryad Arbor, Forest, Once Upon a Time, Wasteland, Windswept Heath, Windswept Heath
@@ -1560,7 +1560,7 @@
   Step: Declare Atk
   Self:  6 life | mana: empty | hand(2): Wooded Foothills, Wooded Foothills
   Opp:   15 life | mana: empty | hand count: 4
-  Self BF:  Gaea's Cradle | Karakas (T) | Knight of the Reliquary [10/10] (T) | Knight of the Reliquary [8/8] (SICK) | Savannah (T) | Scythecat Cub [3/3]
+  Self BF:  Gaea's Cradle | Karakas (T) | Knight of the Reliquary [10/10] [+1/+1:2] (T) | Knight of the Reliquary [8/8] (SICK) | Savannah (T) | Scythecat Cub [3/3] [+1/+1:1]
   Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
   Self GY: Dryad Arbor, Forest, Once Upon a Time, Wasteland, Wasteland, Windswept Heath, Windswept Heath
   Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Flooded Strand, Volcanic Island, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
@@ -1578,7 +1578,7 @@
   Step: Declare Atk
   Self:  6 life | mana: empty | hand(2): Wooded Foothills, Wooded Foothills
   Opp:   15 life | mana: empty | hand count: 4
-  Self BF:  Gaea's Cradle | Karakas (T) | Knight of the Reliquary [10/10] (T) | Knight of the Reliquary [8/8] (SICK) | Savannah (T) | Scythecat Cub [3/3] (ATK)
+  Self BF:  Gaea's Cradle | Karakas (T) | Knight of the Reliquary [10/10] [+1/+1:2] (T) | Knight of the Reliquary [8/8] (SICK) | Savannah (T) | Scythecat Cub [3/3] [+1/+1:1] (ATK)
   Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
   Self GY: Dryad Arbor, Forest, Once Upon a Time, Wasteland, Wasteland, Windswept Heath, Windswept Heath
   Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Flooded Strand, Volcanic Island, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
@@ -1604,7 +1604,7 @@
   Self:  12 life | mana: empty | hand(5): Murktide Regent, Mishra's Bauble, Cori-Steel Cutter, Unholy Heat, Ponder
   Opp:   6 life | mana: empty | hand count: 2
   Self BF:  Dragon's Rage Channeler [3/3] | Island
-  Opp BF:   Gaea's Cradle | Karakas (T) | Knight of the Reliquary [10/10] (T) | Knight of the Reliquary [8/8] (SICK) | Savannah (T) | Scythecat Cub [3/3] (T)
+  Opp BF:   Gaea's Cradle | Karakas (T) | Knight of the Reliquary [10/10] [+1/+1:2] (T) | Knight of the Reliquary [8/8] (SICK) | Savannah (T) | Scythecat Cub [3/3] [+1/+1:1] (T)
   Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Flooded Strand, Volcanic Island, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Dryad Arbor, Forest, Once Upon a Time, Wasteland, Wasteland, Windswept Heath, Windswept Heath
   Actions:
@@ -1625,7 +1625,7 @@
   Self:  12 life | mana: empty | hand(4): Murktide Regent, Cori-Steel Cutter, Unholy Heat, Ponder
   Opp:   6 life | mana: empty | hand count: 2
   Self BF:  Dragon's Rage Channeler [3/3] | Island
-  Opp BF:   Gaea's Cradle | Karakas (T) | Knight of the Reliquary [10/10] (T) | Knight of the Reliquary [8/8] (SICK) | Savannah (T) | Scythecat Cub [3/3] (T)
+  Opp BF:   Gaea's Cradle | Karakas (T) | Knight of the Reliquary [10/10] [+1/+1:2] (T) | Knight of the Reliquary [8/8] (SICK) | Savannah (T) | Scythecat Cub [3/3] [+1/+1:1] (T)
   Stack: Dragon's Rage Channeler (ability, self) -> Mishra's Bauble (spell, self)
   Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Flooded Strand, Volcanic Island, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Dryad Arbor, Forest, Once Upon a Time, Wasteland, Wasteland, Windswept Heath, Windswept Heath
@@ -1643,7 +1643,7 @@
   Self:  12 life | mana: empty | hand(4): Murktide Regent, Cori-Steel Cutter, Unholy Heat, Ponder
   Opp:   6 life | mana: empty | hand count: 2
   Self BF:  Dragon's Rage Channeler [3/3] | Mishra's Bauble | Island
-  Opp BF:   Gaea's Cradle | Karakas (T) | Knight of the Reliquary [10/10] (T) | Knight of the Reliquary [8/8] (SICK) | Savannah (T) | Scythecat Cub [3/3] (T)
+  Opp BF:   Gaea's Cradle | Karakas (T) | Knight of the Reliquary [10/10] [+1/+1:2] (T) | Knight of the Reliquary [8/8] (SICK) | Savannah (T) | Scythecat Cub [3/3] [+1/+1:1] (T)
   Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Dryad Arbor, Forest, Once Upon a Time, Wasteland, Wasteland, Windswept Heath, Windswept Heath
   Actions:
@@ -1662,7 +1662,7 @@
   Self:  12 life | mana: empty | hand(3): Murktide Regent, Cori-Steel Cutter, Unholy Heat
   Opp:   6 life | mana: empty | hand count: 2
   Self BF:  Dragon's Rage Channeler [3/3] | Mishra's Bauble | Island (T)
-  Opp BF:   Gaea's Cradle | Karakas (T) | Knight of the Reliquary [10/10] (T) | Knight of the Reliquary [8/8] (SICK) | Savannah (T) | Scythecat Cub [3/3] (T)
+  Opp BF:   Gaea's Cradle | Karakas (T) | Knight of the Reliquary [10/10] [+1/+1:2] (T) | Knight of the Reliquary [8/8] (SICK) | Savannah (T) | Scythecat Cub [3/3] [+1/+1:1] (T)
   Stack: Dragon's Rage Channeler (ability, self) -> Ponder (spell, self)
   Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Dryad Arbor, Forest, Once Upon a Time, Wasteland, Wasteland, Windswept Heath, Windswept Heath
@@ -1679,7 +1679,7 @@
   Self:  12 life | mana: empty | hand(3): Murktide Regent, Cori-Steel Cutter, Unholy Heat
   Opp:   6 life | mana: empty | hand count: 2
   Self BF:  Dragon's Rage Channeler [3/3] | Mishra's Bauble | Island (T)
-  Opp BF:   Gaea's Cradle | Karakas (T) | Knight of the Reliquary [10/10] (T) | Knight of the Reliquary [8/8] (SICK) | Savannah (T) | Scythecat Cub [3/3] (T)
+  Opp BF:   Gaea's Cradle | Karakas (T) | Knight of the Reliquary [10/10] [+1/+1:2] (T) | Knight of the Reliquary [8/8] (SICK) | Savannah (T) | Scythecat Cub [3/3] [+1/+1:1] (T)
   Stack: Dragon's Rage Channeler (ability, self) -> Ponder (spell, self)
   Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Dryad Arbor, Forest, Once Upon a Time, Wasteland, Wasteland, Windswept Heath, Windswept Heath
@@ -1705,7 +1705,7 @@
   Self:  12 life | mana: empty | hand(3): Murktide Regent, Cori-Steel Cutter, Unholy Heat
   Opp:   6 life | mana: empty | hand count: 2
   Self BF:  Dragon's Rage Channeler [3/3] | Island (T)
-  Opp BF:   Gaea's Cradle | Karakas (T) | Knight of the Reliquary [10/10] (T) | Knight of the Reliquary [8/8] (SICK) | Savannah (T) | Scythecat Cub [3/3] (T)
+  Opp BF:   Gaea's Cradle | Karakas (T) | Knight of the Reliquary [10/10] [+1/+1:2] (T) | Knight of the Reliquary [8/8] (SICK) | Savannah (T) | Scythecat Cub [3/3] [+1/+1:1] (T)
   Stack: Dragon's Rage Channeler (ability, self) -> Ponder (spell, self)
   Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Dryad Arbor, Forest, Once Upon a Time, Wasteland, Wasteland, Windswept Heath, Windswept Heath
@@ -1725,7 +1725,7 @@
   Self:  12 life | mana: empty | hand(3): Murktide Regent, Cori-Steel Cutter, Unholy Heat
   Opp:   6 life | mana: empty | hand count: 2
   Self BF:  Dragon's Rage Channeler [3/3] | Island (T)
-  Opp BF:   Gaea's Cradle | Karakas (T) | Knight of the Reliquary [10/10] (T) | Knight of the Reliquary [8/8] (SICK) | Savannah (T) | Scythecat Cub [3/3] (T)
+  Opp BF:   Gaea's Cradle | Karakas (T) | Knight of the Reliquary [10/10] [+1/+1:2] (T) | Knight of the Reliquary [8/8] (SICK) | Savannah (T) | Scythecat Cub [3/3] [+1/+1:1] (T)
   Stack: Ponder (spell, self)
   Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Dryad Arbor, Forest, Once Upon a Time, Wasteland, Wasteland, Windswept Heath, Windswept Heath
@@ -1743,7 +1743,7 @@
   Self:  12 life | mana: empty | hand(3): Murktide Regent, Cori-Steel Cutter, Unholy Heat
   Opp:   6 life | mana: empty | hand count: 2
   Self BF:  Dragon's Rage Channeler [3/3] | Island (T)
-  Opp BF:   Gaea's Cradle | Karakas (T) | Knight of the Reliquary [10/10] (T) | Knight of the Reliquary [8/8] (SICK) | Savannah (T) | Scythecat Cub [3/3] (T)
+  Opp BF:   Gaea's Cradle | Karakas (T) | Knight of the Reliquary [10/10] [+1/+1:2] (T) | Knight of the Reliquary [8/8] (SICK) | Savannah (T) | Scythecat Cub [3/3] [+1/+1:1] (T)
   Stack: Ponder (spell, self)
   Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Dryad Arbor, Forest, Once Upon a Time, Wasteland, Wasteland, Windswept Heath, Windswept Heath
@@ -1758,7 +1758,7 @@
   Self:  12 life | mana: empty | hand(3): Murktide Regent, Cori-Steel Cutter, Unholy Heat
   Opp:   6 life | mana: empty | hand count: 2
   Self BF:  Dragon's Rage Channeler [3/3] | Island (T)
-  Opp BF:   Gaea's Cradle | Karakas (T) | Knight of the Reliquary [10/10] (T) | Knight of the Reliquary [8/8] (SICK) | Savannah (T) | Scythecat Cub [3/3] (T)
+  Opp BF:   Gaea's Cradle | Karakas (T) | Knight of the Reliquary [10/10] [+1/+1:2] (T) | Knight of the Reliquary [8/8] (SICK) | Savannah (T) | Scythecat Cub [3/3] [+1/+1:1] (T)
   Stack: Ponder (spell, self)
   Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Dryad Arbor, Forest, Once Upon a Time, Wasteland, Wasteland, Windswept Heath, Windswept Heath
@@ -1779,7 +1779,7 @@
   Self:  12 life | mana: empty | hand(4): Murktide Regent, Cori-Steel Cutter, Lightning Bolt, Unholy Heat
   Opp:   6 life | mana: empty | hand count: 2
   Self BF:  Dragon's Rage Channeler [3/3] (ATK) | Island (T)
-  Opp BF:   Gaea's Cradle | Karakas (T) | Knight of the Reliquary [10/10] (T) | Knight of the Reliquary [8/8] (SICK) | Savannah (T) | Scythecat Cub [3/3] (T)
+  Opp BF:   Gaea's Cradle | Karakas (T) | Knight of the Reliquary [10/10] [+1/+1:2] (T) | Knight of the Reliquary [8/8] (SICK) | Savannah (T) | Scythecat Cub [3/3] [+1/+1:1] (T)
   Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Dryad Arbor, Forest, Once Upon a Time, Wasteland, Wasteland, Windswept Heath, Windswept Heath
   Actions:
@@ -1803,7 +1803,7 @@
   Step: Upkeep
   Self:  3 life | mana: empty | hand(2): Wooded Foothills, Wooded Foothills
   Opp:   12 life | mana: empty | hand count: 4
-  Self BF:  Gaea's Cradle | Karakas | Knight of the Reliquary [10/10] | Knight of the Reliquary [8/8] | Savannah | Scythecat Cub [3/3]
+  Self BF:  Gaea's Cradle | Karakas | Knight of the Reliquary [10/10] [+1/+1:2] | Knight of the Reliquary [8/8] | Savannah | Scythecat Cub [3/3] [+1/+1:1]
   Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
   Stack: Mishra's Bauble (ability, opponent)
   Self GY: Dryad Arbor, Forest, Once Upon a Time, Wasteland, Wasteland, Windswept Heath, Windswept Heath
@@ -1822,7 +1822,7 @@
   Step: Upkeep
   Self:  3 life | mana: empty | hand(2): Wooded Foothills, Wooded Foothills
   Opp:   12 life | mana: empty | hand count: 5
-  Self BF:  Gaea's Cradle | Karakas | Knight of the Reliquary [10/10] | Knight of the Reliquary [8/8] | Savannah | Scythecat Cub [3/3]
+  Self BF:  Gaea's Cradle | Karakas | Knight of the Reliquary [10/10] [+1/+1:2] | Knight of the Reliquary [8/8] | Savannah | Scythecat Cub [3/3] [+1/+1:1]
   Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
   Self GY: Dryad Arbor, Forest, Once Upon a Time, Wasteland, Wasteland, Windswept Heath, Windswept Heath
   Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
@@ -1839,7 +1839,7 @@
   Step: Draw
   Self:  3 life | mana: empty | hand(3): Green Sun's Zenith, Wooded Foothills, Wooded Foothills
   Opp:   12 life | mana: empty | hand count: 5
-  Self BF:  Gaea's Cradle | Karakas | Knight of the Reliquary [10/10] | Knight of the Reliquary [8/8] | Savannah | Scythecat Cub [3/3]
+  Self BF:  Gaea's Cradle | Karakas | Knight of the Reliquary [10/10] [+1/+1:2] | Knight of the Reliquary [8/8] | Savannah | Scythecat Cub [3/3] [+1/+1:1]
   Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
   Self GY: Dryad Arbor, Forest, Once Upon a Time, Wasteland, Wasteland, Windswept Heath, Windswept Heath
   Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
@@ -1854,7 +1854,7 @@
   Step: First Main
   Self:  3 life | mana: empty | hand(3): Green Sun's Zenith, Wooded Foothills, Wooded Foothills
   Opp:   12 life | mana: empty | hand count: 5
-  Self BF:  Gaea's Cradle | Karakas | Knight of the Reliquary [10/10] | Knight of the Reliquary [8/8] | Savannah | Scythecat Cub [3/3]
+  Self BF:  Gaea's Cradle | Karakas | Knight of the Reliquary [10/10] [+1/+1:2] | Knight of the Reliquary [8/8] | Savannah | Scythecat Cub [3/3] [+1/+1:1]
   Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
   Self GY: Dryad Arbor, Forest, Once Upon a Time, Wasteland, Wasteland, Windswept Heath, Windswept Heath
   Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
@@ -1874,7 +1874,7 @@
   Step: First Main
   Self:  3 life | mana: empty | hand(3): Green Sun's Zenith, Wooded Foothills, Wooded Foothills
   Opp:   12 life | mana: empty | hand count: 5
-  Self BF:  Gaea's Cradle | Karakas | Knight of the Reliquary [10/10] | Knight of the Reliquary [8/8] | Savannah | Scythecat Cub [3/3]
+  Self BF:  Gaea's Cradle | Karakas | Knight of the Reliquary [10/10] [+1/+1:2] | Knight of the Reliquary [8/8] | Savannah | Scythecat Cub [3/3] [+1/+1:1]
   Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
   Self GY: Dryad Arbor, Forest, Once Upon a Time, Wasteland, Wasteland, Windswept Heath, Windswept Heath
   Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
@@ -1895,7 +1895,7 @@
   Step: First Main
   Self:  3 life | mana: 2G | hand(2): Wooded Foothills, Wooded Foothills
   Opp:   12 life | mana: empty | hand count: 5
-  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [10/10] | Knight of the Reliquary [8/8] | Savannah | Scythecat Cub [3/3]
+  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [10/10] [+1/+1:2] | Knight of the Reliquary [8/8] | Savannah | Scythecat Cub [3/3] [+1/+1:1]
   Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
   Stack: Green Sun's Zenith (spell, self)
   Self GY: Dryad Arbor, Forest, Once Upon a Time, Wasteland, Wasteland, Windswept Heath, Windswept Heath
@@ -1911,7 +1911,7 @@
   Step: First Main
   Self:  3 life | mana: 2G | hand(2): Wooded Foothills, Wooded Foothills
   Opp:   12 life | mana: empty | hand count: 5
-  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [10/10] (T) | Knight of the Reliquary [8/8] | Savannah | Scythecat Cub [3/3]
+  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [10/10] [+1/+1:2] (T) | Knight of the Reliquary [8/8] | Savannah | Scythecat Cub [3/3] [+1/+1:1]
   Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
   Stack: Green Sun's Zenith (spell, self)
   Self GY: Dryad Arbor, Forest, Once Upon a Time, Wasteland, Wasteland, Windswept Heath, Windswept Heath
@@ -1930,7 +1930,7 @@
   Step: First Main
   Self:  3 life | mana: 2G | hand(2): Wooded Foothills, Wooded Foothills
   Opp:   12 life | mana: empty | hand count: 5
-  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [11/11] (T) | Knight of the Reliquary [9/9] | Scythecat Cub [3/3]
+  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [11/11] [+1/+1:2] (T) | Knight of the Reliquary [9/9] | Scythecat Cub [3/3] [+1/+1:1]
   Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
   Stack: Knight of the Reliquary (ability, self) -> Green Sun's Zenith (spell, self)
   Self GY: Dryad Arbor, Forest, Once Upon a Time, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath
@@ -1960,7 +1960,7 @@
   Step: First Main
   Self:  3 life | mana: 2G | hand(2): Wooded Foothills, Wooded Foothills
   Opp:   12 life | mana: empty | hand count: 5
-  Self BF:  Gaea's Cradle (T) | Horizon Canopy | Karakas | Knight of the Reliquary [11/11] (T) | Knight of the Reliquary [9/9] | Scythecat Cub [3/3]
+  Self BF:  Gaea's Cradle (T) | Horizon Canopy | Karakas | Knight of the Reliquary [11/11] [+1/+1:2] (T) | Knight of the Reliquary [9/9] | Scythecat Cub [3/3] [+1/+1:1]
   Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
   Stack: Green Sun's Zenith (spell, self)
   Self GY: Dryad Arbor, Forest, Once Upon a Time, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath
@@ -1979,7 +1979,7 @@
   Step: First Main
   Self:  3 life | mana: 2G | hand(2): Wooded Foothills, Wooded Foothills
   Opp:   12 life | mana: empty | hand count: 5
-  Self BF:  Gaea's Cradle (T) | Horizon Canopy | Karakas | Knight of the Reliquary [11/11] (T) | Knight of the Reliquary [9/9] | Scythecat Cub [3/3]
+  Self BF:  Gaea's Cradle (T) | Horizon Canopy | Karakas | Knight of the Reliquary [11/11] [+1/+1:2] (T) | Knight of the Reliquary [9/9] | Scythecat Cub [3/3] [+1/+1:1]
   Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
   Stack: Scythecat Cub (ability, self) -> Knight of the Reliquary (self) -> Green Sun's Zenith (spell, self)
   Self GY: Dryad Arbor, Forest, Once Upon a Time, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath
@@ -2005,7 +2005,7 @@
   Step: First Main
   Self:  3 life | mana: 1G | hand(3): Noble Hierarch, Wooded Foothills, Wooded Foothills
   Opp:   12 life | mana: empty | hand count: 5
-  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [13/13] (T) | Knight of the Reliquary [10/10] | Scythecat Cub [3/3]
+  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [13/13] [+1/+1:3] (T) | Knight of the Reliquary [10/10] | Scythecat Cub [3/3] [+1/+1:1]
   Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
   Stack: Green Sun's Zenith (spell, self)
   Self GY: Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath
@@ -2023,7 +2023,7 @@
   Step: First Main
   Self:  3 life | mana: 1G | hand(3): Noble Hierarch, Wooded Foothills, Wooded Foothills
   Opp:   12 life | mana: empty | hand count: 5
-  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [13/13] (T) | Knight of the Reliquary [10/10] | Scythecat Cub [3/3]
+  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [13/13] [+1/+1:3] (T) | Knight of the Reliquary [10/10] | Scythecat Cub [3/3] [+1/+1:1]
   Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
   Self GY: Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath
   Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
@@ -2042,7 +2042,7 @@
   Step: First Main
   Self:  3 life | mana: empty | hand(2): Wooded Foothills, Wooded Foothills
   Opp:   12 life | mana: empty | hand count: 5
-  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [13/13] (T) | Knight of the Reliquary [10/10] | Noble Hierarch [0/1] (SICK) | Scythecat Cub [3/3]
+  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [13/13] [+1/+1:3] (T) | Knight of the Reliquary [10/10] | Noble Hierarch [0/1] (SICK) | Scythecat Cub [3/3] [+1/+1:1]
   Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
   Self GY: Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath
   Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
@@ -2060,7 +2060,7 @@
   Step: First Main
   Self:  3 life | mana: empty | hand(1): Wooded Foothills
   Opp:   12 life | mana: empty | hand count: 5
-  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [13/13] (T) | Knight of the Reliquary [10/10] | Noble Hierarch [0/1] (SICK) | Scythecat Cub [3/3] | Wooded Foothills
+  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [13/13] [+1/+1:3] (T) | Knight of the Reliquary [10/10] | Noble Hierarch [0/1] (SICK) | Scythecat Cub [3/3] [+1/+1:1] | Wooded Foothills
   Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
   Self GY: Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath
   Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
@@ -2079,7 +2079,7 @@
   Step: First Main
   Self:  3 life | mana: empty | hand(1): Wooded Foothills
   Opp:   12 life | mana: empty | hand count: 5
-  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [13/13] (T) | Knight of the Reliquary [10/10] | Noble Hierarch [0/1] (SICK) | Scythecat Cub [3/3] | Wooded Foothills
+  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [13/13] [+1/+1:3] (T) | Knight of the Reliquary [10/10] | Noble Hierarch [0/1] (SICK) | Scythecat Cub [3/3] [+1/+1:1] | Wooded Foothills
   Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
   Stack: Scythecat Cub (ability, self) -> Knight of the Reliquary (self)
   Self GY: Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath
@@ -2100,7 +2100,7 @@
   Step: First Main
   Self:  2 life | mana: empty | hand(1): Wooded Foothills
   Opp:   12 life | mana: empty | hand count: 5
-  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [14/14] (T) | Knight of the Reliquary [11/11] | Noble Hierarch [0/1] (SICK) | Scythecat Cub [3/3]
+  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [14/14] [+1/+1:3] (T) | Knight of the Reliquary [11/11] | Noble Hierarch [0/1] (SICK) | Scythecat Cub [3/3] [+1/+1:1]
   Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
   Stack: Wooded Foothills (ability, self) -> Scythecat Cub (ability, self) -> Knight of the Reliquary (self)
   Self GY: Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
@@ -2121,7 +2121,7 @@
   Step: First Main
   Self:  2 life | mana: empty | hand(1): Wooded Foothills
   Opp:   12 life | mana: empty | hand count: 5
-  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [14/14] (T) | Knight of the Reliquary [11/11] | Noble Hierarch [0/1] (SICK) | Savannah | Scythecat Cub [3/3]
+  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [14/14] [+1/+1:3] (T) | Knight of the Reliquary [11/11] | Noble Hierarch [0/1] (SICK) | Savannah | Scythecat Cub [3/3] [+1/+1:1]
   Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
   Stack: Scythecat Cub (ability, self) -> Knight of the Reliquary (self)
   Self GY: Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
@@ -2141,7 +2141,7 @@
   Step: First Main
   Self:  2 life | mana: empty | hand(1): Wooded Foothills
   Opp:   12 life | mana: empty | hand count: 5
-  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [14/14] (T) | Knight of the Reliquary [11/11] | Noble Hierarch [0/1] (SICK) | Savannah | Scythecat Cub [3/3]
+  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [14/14] [+1/+1:3] (T) | Knight of the Reliquary [11/11] | Noble Hierarch [0/1] (SICK) | Savannah | Scythecat Cub [3/3] [+1/+1:1]
   Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
   Stack: Scythecat Cub (ability, self) -> Knight of the Reliquary (self) -> Scythecat Cub (ability, self) -> Knight of the Reliquary (self)
   Self GY: Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
@@ -2156,7 +2156,7 @@
   Step: First Main
   Self:  2 life | mana: empty | hand(1): Wooded Foothills
   Opp:   12 life | mana: empty | hand count: 5
-  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [14/14] (T) | Knight of the Reliquary [11/11] (T) | Noble Hierarch [0/1] (SICK) | Savannah | Scythecat Cub [3/3]
+  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [14/14] [+1/+1:3] (T) | Knight of the Reliquary [11/11] (T) | Noble Hierarch [0/1] (SICK) | Savannah | Scythecat Cub [3/3] [+1/+1:1]
   Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
   Stack: Scythecat Cub (ability, self) -> Knight of the Reliquary (self) -> Scythecat Cub (ability, self) -> Knight of the Reliquary (self)
   Self GY: Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
@@ -2175,7 +2175,7 @@
   Step: First Main
   Self:  2 life | mana: empty | hand(1): Wooded Foothills
   Opp:   12 life | mana: empty | hand count: 5
-  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [15/15] (T) | Knight of the Reliquary [12/12] (T) | Noble Hierarch [0/1] (SICK) | Scythecat Cub [3/3]
+  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [15/15] [+1/+1:3] (T) | Knight of the Reliquary [12/12] (T) | Noble Hierarch [0/1] (SICK) | Scythecat Cub [3/3] [+1/+1:1]
   Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
   Stack: Knight of the Reliquary (ability, self) -> Scythecat Cub (ability, self) -> Knight of the Reliquary (self) -> Scythecat Cub (ability, self) -> Knight of the Reliquary (self)
   Self GY: Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
@@ -2203,7 +2203,7 @@
   Step: First Main
   Self:  2 life | mana: empty | hand(1): Wooded Foothills
   Opp:   12 life | mana: empty | hand count: 5
-  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [15/15] (T) | Knight of the Reliquary [12/12] (T) | Noble Hierarch [0/1] (SICK) | Plains | Scythecat Cub [3/3]
+  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [15/15] [+1/+1:3] (T) | Knight of the Reliquary [12/12] (T) | Noble Hierarch [0/1] (SICK) | Plains | Scythecat Cub [3/3] [+1/+1:1]
   Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
   Stack: Scythecat Cub (ability, self) -> Knight of the Reliquary (self) -> Scythecat Cub (ability, self) -> Knight of the Reliquary (self)
   Self GY: Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
@@ -2236,7 +2236,7 @@
   Step: Declare Atk
   Self:  2 life | mana: empty | hand(1): Wooded Foothills
   Opp:   12 life | mana: empty | hand count: 5
-  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [20/20] (T) | Knight of the Reliquary [12/12] (T) | Noble Hierarch [0/1] (SICK) | Plains | Scythecat Cub [3/3]
+  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [20/20] [+1/+1:8] (T) | Knight of the Reliquary [12/12] (T) | Noble Hierarch [0/1] (SICK) | Plains | Scythecat Cub [3/3] [+1/+1:1]
   Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
   Self GY: Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
   Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
@@ -2254,7 +2254,7 @@
   Step: Declare Atk
   Self:  2 life | mana: empty | hand(1): Wooded Foothills
   Opp:   12 life | mana: empty | hand count: 5
-  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [20/20] (T) | Knight of the Reliquary [12/12] (T) | Noble Hierarch [0/1] (SICK) | Plains | Scythecat Cub [3/3] (ATK)
+  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [20/20] [+1/+1:8] (T) | Knight of the Reliquary [12/12] (T) | Noble Hierarch [0/1] (SICK) | Plains | Scythecat Cub [3/3] [+1/+1:1] (ATK)
   Opp BF:   Dragon's Rage Channeler [3/3] (T) | Island (T)
   Self GY: Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
   Opp GY:  Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
@@ -2283,7 +2283,7 @@
   Self:  8 life | mana: empty | hand(6): Murktide Regent, Cori-Steel Cutter, Lightning Bolt, Unholy Heat, Polluted Delta, Thundering Falls
   Opp:   2 life | mana: empty | hand count: 1
   Self BF:  Dragon's Rage Channeler [3/3] | Island
-  Opp BF:   Gaea's Cradle (T) | Karakas | Knight of the Reliquary [20/20] (T) | Knight of the Reliquary [12/12] (T) | Noble Hierarch [0/1] (SICK) | Plains | Scythecat Cub [3/3] (T)
+  Opp BF:   Gaea's Cradle (T) | Karakas | Knight of the Reliquary [20/20] [+1/+1:8] (T) | Knight of the Reliquary [12/12] (T) | Noble Hierarch [0/1] (SICK) | Plains | Scythecat Cub [3/3] [+1/+1:1] (T)
   Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
   Actions:
@@ -2300,7 +2300,7 @@
   Self:  8 life | mana: empty | hand(5): Murktide Regent, Cori-Steel Cutter, Lightning Bolt, Unholy Heat, Thundering Falls
   Opp:   2 life | mana: empty | hand count: 1
   Self BF:  Dragon's Rage Channeler [3/3] | Island | Polluted Delta
-  Opp BF:   Gaea's Cradle (T) | Karakas | Knight of the Reliquary [20/20] (T) | Knight of the Reliquary [12/12] (T) | Noble Hierarch [0/1] (SICK) | Plains | Scythecat Cub [3/3] (T)
+  Opp BF:   Gaea's Cradle (T) | Karakas | Knight of the Reliquary [20/20] [+1/+1:8] (T) | Knight of the Reliquary [12/12] (T) | Noble Hierarch [0/1] (SICK) | Plains | Scythecat Cub [3/3] [+1/+1:1] (T)
   Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
   Actions:
@@ -2320,7 +2320,7 @@
   Self:  7 life | mana: empty | hand(5): Murktide Regent, Cori-Steel Cutter, Lightning Bolt, Unholy Heat, Thundering Falls
   Opp:   2 life | mana: empty | hand count: 1
   Self BF:  Dragon's Rage Channeler [3/3] | Island
-  Opp BF:   Gaea's Cradle (T) | Karakas | Knight of the Reliquary [20/20] (T) | Knight of the Reliquary [12/12] (T) | Noble Hierarch [0/1] (SICK) | Plains | Scythecat Cub [3/3] (T)
+  Opp BF:   Gaea's Cradle (T) | Karakas | Knight of the Reliquary [20/20] [+1/+1:8] (T) | Knight of the Reliquary [12/12] (T) | Noble Hierarch [0/1] (SICK) | Plains | Scythecat Cub [3/3] [+1/+1:1] (T)
   Stack: Polluted Delta (ability, self)
   Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Polluted Delta, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
@@ -2339,7 +2339,7 @@
   Self:  7 life | mana: empty | hand(5): Murktide Regent, Cori-Steel Cutter, Lightning Bolt, Unholy Heat, Thundering Falls
   Opp:   2 life | mana: empty | hand count: 1
   Self BF:  Dragon's Rage Channeler [3/3] | Island | Volcanic Island
-  Opp BF:   Gaea's Cradle (T) | Karakas | Knight of the Reliquary [20/20] (T) | Knight of the Reliquary [12/12] (T) | Noble Hierarch [0/1] (SICK) | Plains | Scythecat Cub [3/3] (T)
+  Opp BF:   Gaea's Cradle (T) | Karakas | Knight of the Reliquary [20/20] [+1/+1:8] (T) | Knight of the Reliquary [12/12] (T) | Noble Hierarch [0/1] (SICK) | Plains | Scythecat Cub [3/3] [+1/+1:1] (T)
   Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Polluted Delta, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
   Actions:
@@ -2358,7 +2358,7 @@
   Self:  7 life | mana: empty | hand(5): Murktide Regent, Cori-Steel Cutter, Lightning Bolt, Unholy Heat, Thundering Falls
   Opp:   2 life | mana: empty | hand count: 1
   Self BF:  Dragon's Rage Channeler [3/3] | Island | Volcanic Island
-  Opp BF:   Gaea's Cradle (T) | Karakas | Knight of the Reliquary [20/20] (T) | Knight of the Reliquary [12/12] (T) | Noble Hierarch [0/1] (SICK) | Plains | Scythecat Cub [3/3] (T)
+  Opp BF:   Gaea's Cradle (T) | Karakas | Knight of the Reliquary [20/20] [+1/+1:8] (T) | Knight of the Reliquary [12/12] (T) | Noble Hierarch [0/1] (SICK) | Plains | Scythecat Cub [3/3] [+1/+1:1] (T)
   Self GY: Dragon's Rage Channeler, Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Polluted Delta, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
   Actions:
@@ -2393,7 +2393,7 @@
   Self:  7 life | mana: empty | hand(5): Murktide Regent, Cori-Steel Cutter, Lightning Bolt, Unholy Heat, Thundering Falls
   Opp:   2 life | mana: empty | hand count: 1
   Self BF:  Dragon's Rage Channeler [3/3] | Island | Volcanic Island
-  Opp BF:   Gaea's Cradle (T) | Karakas | Knight of the Reliquary [20/20] (T) | Knight of the Reliquary [12/12] (T) | Noble Hierarch [0/1] (SICK) | Plains | Scythecat Cub [3/3] (T)
+  Opp BF:   Gaea's Cradle (T) | Karakas | Knight of the Reliquary [20/20] [+1/+1:8] (T) | Knight of the Reliquary [12/12] (T) | Noble Hierarch [0/1] (SICK) | Plains | Scythecat Cub [3/3] [+1/+1:1] (T)
   Self GY: Mishra's Bauble, Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Polluted Delta, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
   Actions:
@@ -2427,7 +2427,7 @@
   Self:  7 life | mana: empty | hand(5): Murktide Regent, Cori-Steel Cutter, Lightning Bolt, Unholy Heat, Thundering Falls
   Opp:   2 life | mana: empty | hand count: 1
   Self BF:  Dragon's Rage Channeler [3/3] | Island | Volcanic Island
-  Opp BF:   Gaea's Cradle (T) | Karakas | Knight of the Reliquary [20/20] (T) | Knight of the Reliquary [12/12] (T) | Noble Hierarch [0/1] (SICK) | Plains | Scythecat Cub [3/3] (T)
+  Opp BF:   Gaea's Cradle (T) | Karakas | Knight of the Reliquary [20/20] [+1/+1:8] (T) | Knight of the Reliquary [12/12] (T) | Noble Hierarch [0/1] (SICK) | Plains | Scythecat Cub [3/3] [+1/+1:1] (T)
   Self GY: Mishra's Bauble, Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Polluted Delta, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
   Actions:
@@ -2460,7 +2460,7 @@
   Self:  7 life | mana: empty | hand(5): Murktide Regent, Cori-Steel Cutter, Lightning Bolt, Unholy Heat, Thundering Falls
   Opp:   2 life | mana: empty | hand count: 1
   Self BF:  Dragon's Rage Channeler [3/3] | Island | Volcanic Island
-  Opp BF:   Gaea's Cradle (T) | Karakas | Knight of the Reliquary [20/20] (T) | Knight of the Reliquary [12/12] (T) | Noble Hierarch [0/1] (SICK) | Plains | Scythecat Cub [3/3] (T)
+  Opp BF:   Gaea's Cradle (T) | Karakas | Knight of the Reliquary [20/20] [+1/+1:8] (T) | Knight of the Reliquary [12/12] (T) | Noble Hierarch [0/1] (SICK) | Plains | Scythecat Cub [3/3] [+1/+1:1] (T)
   Self GY: Mishra's Bauble, Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Polluted Delta, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
   Actions:
@@ -2492,7 +2492,7 @@
   Self:  7 life | mana: empty | hand(5): Murktide Regent, Cori-Steel Cutter, Lightning Bolt, Unholy Heat, Thundering Falls
   Opp:   2 life | mana: empty | hand count: 1
   Self BF:  Dragon's Rage Channeler [3/3] | Island | Volcanic Island
-  Opp BF:   Gaea's Cradle (T) | Karakas | Knight of the Reliquary [20/20] (T) | Knight of the Reliquary [12/12] (T) | Noble Hierarch [0/1] (SICK) | Plains | Scythecat Cub [3/3] (T)
+  Opp BF:   Gaea's Cradle (T) | Karakas | Knight of the Reliquary [20/20] [+1/+1:8] (T) | Knight of the Reliquary [12/12] (T) | Noble Hierarch [0/1] (SICK) | Plains | Scythecat Cub [3/3] [+1/+1:1] (T)
   Self GY: Force of Will, Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Polluted Delta, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
   Actions:
@@ -2528,8 +2528,8 @@
   Step: Declare Atk
   Self:  7 life | mana: empty | hand(4): Cori-Steel Cutter, Lightning Bolt, Unholy Heat, Thundering Falls
   Opp:   2 life | mana: empty | hand count: 1
-  Self BF:  Murktide Regent [4/4] (SICK) | Dragon's Rage Channeler [1/1] | Island (T) | Volcanic Island (T)
-  Opp BF:   Gaea's Cradle (T) | Karakas | Knight of the Reliquary [20/20] (T) | Knight of the Reliquary [12/12] (T) | Noble Hierarch [0/1] (SICK) | Plains | Scythecat Cub [3/3] (T)
+  Self BF:  Murktide Regent [4/4] [+1/+1:1] (SICK) | Dragon's Rage Channeler [1/1] | Island (T) | Volcanic Island (T)
+  Opp BF:   Gaea's Cradle (T) | Karakas | Knight of the Reliquary [20/20] [+1/+1:8] (T) | Knight of the Reliquary [12/12] (T) | Noble Hierarch [0/1] (SICK) | Plains | Scythecat Cub [3/3] [+1/+1:1] (T)
   Self GY: Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Polluted Delta, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
   Actions:
@@ -2546,8 +2546,8 @@
   Step: Declare Atk
   Self:  7 life | mana: empty | hand(4): Cori-Steel Cutter, Lightning Bolt, Unholy Heat, Thundering Falls
   Opp:   2 life | mana: empty | hand count: 1
-  Self BF:  Murktide Regent [4/4] (SICK) | Dragon's Rage Channeler [1/1] (ATK) | Island (T) | Volcanic Island (T)
-  Opp BF:   Gaea's Cradle (T) | Karakas | Knight of the Reliquary [20/20] (T) | Knight of the Reliquary [12/12] (T) | Noble Hierarch [0/1] (SICK) | Plains | Scythecat Cub [3/3] (T)
+  Self BF:  Murktide Regent [4/4] [+1/+1:1] (SICK) | Dragon's Rage Channeler [1/1] (ATK) | Island (T) | Volcanic Island (T)
+  Opp BF:   Gaea's Cradle (T) | Karakas | Knight of the Reliquary [20/20] [+1/+1:8] (T) | Knight of the Reliquary [12/12] (T) | Noble Hierarch [0/1] (SICK) | Plains | Scythecat Cub [3/3] [+1/+1:1] (T)
   Self GY: Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Polluted Delta, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
   Opp GY:  Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
   Actions:
@@ -2566,8 +2566,8 @@
   Step: Declare Blk
   Self:  2 life | mana: empty | hand(1): Wooded Foothills
   Opp:   7 life | mana: empty | hand count: 4
-  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [20/20] (T) | Knight of the Reliquary [12/12] (T) | Noble Hierarch [0/1] (SICK) | Plains | Scythecat Cub [3/3] (T)
-  Opp BF:   Murktide Regent [4/4] (SICK) | Dragon's Rage Channeler [1/1] (T,ATK) | Island (T) | Volcanic Island (T)
+  Self BF:  Gaea's Cradle (T) | Karakas | Knight of the Reliquary [20/20] [+1/+1:8] (T) | Knight of the Reliquary [12/12] (T) | Noble Hierarch [0/1] (SICK) | Plains | Scythecat Cub [3/3] [+1/+1:1] (T)
+  Opp BF:   Murktide Regent [4/4] [+1/+1:1] (SICK) | Dragon's Rage Channeler [1/1] (T,ATK) | Island (T) | Volcanic Island (T)
   Self GY: Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
   Opp GY:  Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Polluted Delta, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
   Actions:
@@ -2590,8 +2590,8 @@
   Step: Upkeep
   Self:  1 life | mana: empty | hand(1): Wooded Foothills
   Opp:   7 life | mana: empty | hand count: 4
-  Self BF:  Gaea's Cradle | Karakas | Knight of the Reliquary [20/20] | Knight of the Reliquary [12/12] | Noble Hierarch [0/1] | Plains | Scythecat Cub [3/3]
-  Opp BF:   Murktide Regent [4/4] (SICK) | Dragon's Rage Channeler [1/1] (T) | Island (T) | Volcanic Island (T)
+  Self BF:  Gaea's Cradle | Karakas | Knight of the Reliquary [20/20] [+1/+1:8] | Knight of the Reliquary [12/12] | Noble Hierarch [0/1] | Plains | Scythecat Cub [3/3] [+1/+1:1]
+  Opp BF:   Murktide Regent [4/4] [+1/+1:1] (SICK) | Dragon's Rage Channeler [1/1] (T) | Island (T) | Volcanic Island (T)
   Self GY: Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
   Opp GY:  Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Polluted Delta, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
   Actions:
@@ -2607,8 +2607,8 @@
   Step: Draw
   Self:  1 life | mana: empty | hand(2): Wooded Foothills, Wooded Foothills
   Opp:   7 life | mana: empty | hand count: 4
-  Self BF:  Gaea's Cradle | Karakas | Knight of the Reliquary [20/20] | Knight of the Reliquary [12/12] | Noble Hierarch [0/1] | Plains | Scythecat Cub [3/3]
-  Opp BF:   Murktide Regent [4/4] (SICK) | Dragon's Rage Channeler [1/1] (T) | Island (T) | Volcanic Island (T)
+  Self BF:  Gaea's Cradle | Karakas | Knight of the Reliquary [20/20] [+1/+1:8] | Knight of the Reliquary [12/12] | Noble Hierarch [0/1] | Plains | Scythecat Cub [3/3] [+1/+1:1]
+  Opp BF:   Murktide Regent [4/4] [+1/+1:1] (SICK) | Dragon's Rage Channeler [1/1] (T) | Island (T) | Volcanic Island (T)
   Self GY: Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
   Opp GY:  Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Polluted Delta, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
   Actions:
@@ -2622,8 +2622,8 @@
   Step: First Main
   Self:  1 life | mana: empty | hand(2): Wooded Foothills, Wooded Foothills
   Opp:   7 life | mana: empty | hand count: 4
-  Self BF:  Gaea's Cradle | Karakas | Knight of the Reliquary [20/20] | Knight of the Reliquary [12/12] | Noble Hierarch [0/1] | Plains | Scythecat Cub [3/3]
-  Opp BF:   Murktide Regent [4/4] (SICK) | Dragon's Rage Channeler [1/1] (T) | Island (T) | Volcanic Island (T)
+  Self BF:  Gaea's Cradle | Karakas | Knight of the Reliquary [20/20] [+1/+1:8] | Knight of the Reliquary [12/12] | Noble Hierarch [0/1] | Plains | Scythecat Cub [3/3] [+1/+1:1]
+  Opp BF:   Murktide Regent [4/4] [+1/+1:1] (SICK) | Dragon's Rage Channeler [1/1] (T) | Island (T) | Volcanic Island (T)
   Self GY: Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
   Opp GY:  Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Polluted Delta, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
   Actions:
@@ -2642,8 +2642,8 @@
   Step: First Main
   Self:  1 life | mana: empty | hand(1): Wooded Foothills
   Opp:   7 life | mana: empty | hand count: 4
-  Self BF:  Gaea's Cradle | Karakas | Knight of the Reliquary [20/20] | Knight of the Reliquary [12/12] | Noble Hierarch [0/1] | Plains | Scythecat Cub [3/3] | Wooded Foothills
-  Opp BF:   Murktide Regent [4/4] (SICK) | Dragon's Rage Channeler [1/1] (T) | Island (T) | Volcanic Island (T)
+  Self BF:  Gaea's Cradle | Karakas | Knight of the Reliquary [20/20] [+1/+1:8] | Knight of the Reliquary [12/12] | Noble Hierarch [0/1] | Plains | Scythecat Cub [3/3] [+1/+1:1] | Wooded Foothills
+  Opp BF:   Murktide Regent [4/4] [+1/+1:1] (SICK) | Dragon's Rage Channeler [1/1] (T) | Island (T) | Volcanic Island (T)
   Self GY: Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
   Opp GY:  Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Polluted Delta, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
   Actions:
@@ -2661,8 +2661,8 @@
   Step: First Main
   Self:  1 life | mana: empty | hand(1): Wooded Foothills
   Opp:   7 life | mana: empty | hand count: 4
-  Self BF:  Gaea's Cradle | Karakas | Knight of the Reliquary [20/20] | Knight of the Reliquary [12/12] | Noble Hierarch [0/1] | Plains | Scythecat Cub [3/3] | Wooded Foothills
-  Opp BF:   Murktide Regent [4/4] (SICK) | Dragon's Rage Channeler [1/1] (T) | Island (T) | Volcanic Island (T)
+  Self BF:  Gaea's Cradle | Karakas | Knight of the Reliquary [20/20] [+1/+1:8] | Knight of the Reliquary [12/12] | Noble Hierarch [0/1] | Plains | Scythecat Cub [3/3] [+1/+1:1] | Wooded Foothills
+  Opp BF:   Murktide Regent [4/4] [+1/+1:1] (SICK) | Dragon's Rage Channeler [1/1] (T) | Island (T) | Volcanic Island (T)
   Stack: Scythecat Cub (ability, self) -> Knight of the Reliquary (self)
   Self GY: Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
   Opp GY:  Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Polluted Delta, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
@@ -2678,8 +2678,8 @@
   Step: First Main
   Self:  1 life | mana: empty | hand(1): Wooded Foothills
   Opp:   7 life | mana: empty | hand count: 4
-  Self BF:  Gaea's Cradle | Karakas | Knight of the Reliquary [20/20] (T) | Knight of the Reliquary [12/12] | Noble Hierarch [0/1] | Plains | Scythecat Cub [3/3] | Wooded Foothills
-  Opp BF:   Murktide Regent [4/4] (SICK) | Dragon's Rage Channeler [1/1] (T) | Island (T) | Volcanic Island (T)
+  Self BF:  Gaea's Cradle | Karakas | Knight of the Reliquary [20/20] [+1/+1:8] (T) | Knight of the Reliquary [12/12] | Noble Hierarch [0/1] | Plains | Scythecat Cub [3/3] [+1/+1:1] | Wooded Foothills
+  Opp BF:   Murktide Regent [4/4] [+1/+1:1] (SICK) | Dragon's Rage Channeler [1/1] (T) | Island (T) | Volcanic Island (T)
   Stack: Scythecat Cub (ability, self) -> Knight of the Reliquary (self)
   Self GY: Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Savannah, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
   Opp GY:  Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Polluted Delta, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland
@@ -2695,8 +2695,8 @@
   Step: First Main
   Self:  1 life | mana: empty | hand(1): Wooded Foothills
   Opp:   7 life | mana: empty | hand count: 4
-  Self BF:  Gaea's Cradle | Karakas | Knight of the Reliquary [21/21] (T) | Knight of the Reliquary [13/13] | Noble Hierarch [0/1] | Scythecat Cub [3/3] | Wooded Foothills
-  Opp BF:   Murktide Regent [4/4] (SICK) | Dragon's Rage Channeler [1/1] (T) | Island (T) | Volcanic Island (T)
+  Self BF:  Gaea's Cradle | Karakas | Knight of the Reliquary [21/21] [+1/+1:8] (T) | Knight of the Reliquary [13/13] | Noble Hierarch [0/1] | Scythecat Cub [3/3] [+1/+1:1] | Wooded Foothills
+  Opp BF:   Murktide Regent [4/4] [+1/+1:1] (SICK) | Dragon's Rage Channeler [1/1] (T) | Island (T) | Volcanic Island (T)
   Stack: Knight of the Reliquary (ability, self) -> Scythecat Cub (ability, self) -> Knight of the Reliquary (self)
   Self GY: Dryad Arbor, Forest, Horizon Canopy, Once Upon a Time, Plains, Savannah, Savannah, Wasteland, Wasteland, Windswept Heath, Windswept Heath, Wooded Foothills
   Opp GY:  Lightning Bolt, Daze, Daze, Ponder, Ponder, Ponder, Mountain, Flooded Strand, Polluted Delta, Volcanic Island, Volcanic Island, Misty Rainforest, Scalding Tarn, Wasteland, Wasteland

@@ -236,6 +236,20 @@ void cli_emit_machine_query(const Query* q, const GameState* gs) {
         for (int i = 0; i < q->num_choices; i++)
             snprintf(descs[i], MAX_CHOICE_DESC, "%s", q->choices[i].description);
         fwrite(descs, MAX_CHOICE_DESC, MAX_ACTIONS, stdout);
+
+        // Per-permanent typed-counter summaries ("+1/+1:2, time:3, loyalty:4"),
+        // narrative-only like the descriptions above — display info for observers
+        // (TUI/harness board labels); the ML training path stays binary-only and
+        // OBS-unaffected. Slot order matches the state vector's permanent blocks
+        // (48 self slots, then 48 opp slots), so slot i's summary labels the
+        // permanent serialized in slot i. Fixed-size NUL-padded char block.
+        char ctrs[2 * MAX_BATTLEFIELD_SLOTS][PERM_COUNTERS_LEN] = {};
+        for (int i = 0; i < MAX_BATTLEFIELD_SLOTS; i++) {
+            snprintf(ctrs[i], PERM_COUNTERS_LEN, "%s", gs->self_permanents[i].counters);
+            snprintf(ctrs[MAX_BATTLEFIELD_SLOTS + i], PERM_COUNTERS_LEN, "%s",
+                     gs->opp_permanents[i].counters);
+        }
+        fwrite(ctrs, PERM_COUNTERS_LEN, 2 * MAX_BATTLEFIELD_SLOTS, stdout);
     }
     fflush(stdout);
 }

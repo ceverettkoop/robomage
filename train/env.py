@@ -86,7 +86,26 @@ _BQUERY_ZONE_BYTES  = MAX_ACTIONS * 4  # int32 — ActionRefZone per action
 # char block — must match MAX_CHOICE_DESC in src/classes/gamestate.h.
 MAX_CHOICE_DESC     = 128
 _BQUERY_DESC_BYTES  = MAX_ACTIONS * MAX_CHOICE_DESC
+# Per-permanent typed-counter summaries ("+1/+1:2, time:3"), also narrative-only.
+# Fixed [2*N_PERM_SLOTS][PERM_COUNTERS_LEN] NUL-padded char block (48 self slots
+# then 48 opp slots, aligned with the state vector's permanent blocks) — must
+# match PERM_COUNTERS_LEN / MAX_BATTLEFIELD_SLOTS in src/classes/gamestate.h.
+PERM_COUNTERS_LEN   = 64
+N_PERM_SLOTS        = 48
+_BQUERY_PERM_CTRS_BYTES = 2 * N_PERM_SLOTS * PERM_COUNTERS_LEN
 # ACTION_CATEGORY_MAX imported from _enums above (mirrors src/classes/action.h).
+
+
+def _decode_char_block(raw, count, width):
+    """Decode a fixed-size NUL-padded char block into `count` strings."""
+    out = []
+    for k in range(count):
+        chunk = raw[k * width:(k + 1) * width]
+        end = chunk.find(b"\x00")
+        if end >= 0:
+            chunk = chunk[:end]
+        out.append(chunk.decode("utf-8", errors="replace"))
+    return out
 
 # ── Shaping reward magnitudes ─────────────────────────────────────────────────
 SHAPING_MANA_WASTED      = -0.00  # per drain event with mana remaining in pool; commented out because we aren't letting it float anymore
@@ -271,6 +290,7 @@ class RoboMageEnv(gym.Env):
         self._obs = np.zeros(OBS_SIZE, dtype=np.float32)
         self._action_public = np.zeros(MAX_ACTIONS, dtype=np.float32)  # card_is_public per action
         self._action_descriptions = None  # list[str] per action under --narrative, else None
+        self._perm_counters = None        # (self[48], opp[48]) counter summaries under --narrative, else None
         self._pending_confirm = False  # True when last query used the -1 convention
         self._step_count = 0
         self.last_engine_seed = None  # engine --seed of the most recent reset()
@@ -488,17 +508,19 @@ class RoboMageEnv(gym.Env):
                 # etc. — things the numeric metadata can't express. Off the
                 # training path (narrative=False), so OBS is unaffected.
                 if self._narrative:
-                    desc_bytes = self._read_exactly(_BQUERY_DESC_BYTES)
-                    descs = []
-                    for k in range(MAX_ACTIONS):
-                        chunk = desc_bytes[k * MAX_CHOICE_DESC:(k + 1) * MAX_CHOICE_DESC]
-                        end = chunk.find(b"\x00")
-                        if end >= 0:
-                            chunk = chunk[:end]
-                        descs.append(chunk.decode("utf-8", errors="replace"))
-                    self._action_descriptions = descs
+                    self._action_descriptions = _decode_char_block(
+                        self._read_exactly(_BQUERY_DESC_BYTES),
+                        MAX_ACTIONS, MAX_CHOICE_DESC)
+                    # Per-permanent counter summaries (side-channel, like the
+                    # descriptions): (self_slots, opp_slots), aligned with the
+                    # state vector's permanent blocks.
+                    ctrs = _decode_char_block(
+                        self._read_exactly(_BQUERY_PERM_CTRS_BYTES),
+                        2 * N_PERM_SLOTS, PERM_COUNTERS_LEN)
+                    self._perm_counters = (ctrs[:N_PERM_SLOTS], ctrs[N_PERM_SLOTS:])
                 else:
                     self._action_descriptions = None
+                    self._perm_counters = None
 
                 # The -1 confirm convention applies to mandatory attacker/blocker queries.
                 self._pending_confirm = any(
