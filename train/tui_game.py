@@ -16,6 +16,7 @@ Invoked via `play.py --tui` (and the tui.py launcher's Play entry).
 """
 
 import random
+import time
 
 import numpy as np
 from rich.text import Text
@@ -33,6 +34,15 @@ import decode
 # Abbreviations for the 13-step phase strip (index aligns with state[18:31]).
 _STEP_ABBR = ["UNT", "UPK", "DRW", "M1", "BGC", "ATK", "BLK",
               "FSD", "DMG", "EOC", "M2", "END", "CLN"]
+
+# Index of the UPKEEP step in the 13-step one-hot (state[18:31]); autopass stops
+# once it reaches this step (its "next turn" mark).
+_STEP_UPKEEP_IDX = _STEP_ABBR.index("UPK")
+
+# While the human is only auto-passing priority (spectating the opponent's turn),
+# pause this many seconds after the opponent takes a non-pass action so the user
+# can briefly observe it before the game moves on. Tweak freely.
+OPP_ACTION_OBSERVE_DELAY = 0.5
 
 # Opponent choices that reveal a hidden card identity (the card never becomes
 # public knowledge). When the opponent makes one of these, the log shows a
@@ -192,7 +202,8 @@ class GameApp(App):
 
     BINDINGS = [
         ("q", "quit", "Quit"),
-        ("p", "pass_priority", "Pass"),
+        ("space", "pass_zero", "Pass"),
+        ("p", "autopass", "Autopass"),
         ("plus", "resize_log(1)", "Bigger log"),
         ("minus", "resize_log(-1)", "Smaller log"),
         ("0", "pick('0')", "Pick"),
@@ -213,6 +224,10 @@ class GameApp(App):
         self._actions = []
         self._awaiting = False
         self._reward = 0.0
+        # Autopass (the 'p' key): once engaged, the driver passes priority through
+        # every optional window until the next UPKEEP step, stopping early for any
+        # mandatory decision.
+        self._autopass = False
         # Live heights of the resizable board panels (must match the CSS
         # defaults above). Shrinking these frees rows that flow into the 1fr
         # #bottom region, growing the log/command area; see action_resize_log.
@@ -252,7 +267,7 @@ class GameApp(App):
         self.sub_title = (f"You (Player {human_seat}, {self._human_deck})  vs  "
                           f"{self._opp_label} (Player {opp_seat}, {self._opp_deck})")
         self._log("[b]Game starting…[/b]  Click a card or pick a numbered action. "
-                  "Keys: digits = pick, p = pass, q = quit.")
+                  "Keys: digits = pick, space = pass, p = autopass, q = quit.")
         self._drive()
 
     # ----- the driver (background thread) -----
@@ -272,14 +287,33 @@ class GameApp(App):
                     obs, num, env._action_public,
                     descriptions=getattr(env, "_action_descriptions", None))
 
-                self.post_message(StateUpdate(obs, num, [] if opp_turn else actions,
-                                              human_turn=not opp_turn))
+                # Resolve who drives this decision BEFORE posting the state, so
+                # the UI shows the action menu exactly when the human must act.
+                # Autopass keeps passing until it reaches the next turn's upkeep;
+                # a mandatory decision (no pass option) always stops it.
+                pass_idx = None if opp_turn else self._pass_index(actions)
+                autopass_now = (not opp_turn and self._autopass
+                                and pass_idx is not None
+                                and not self._autopass_should_stop(obs))
+                if not opp_turn and not autopass_now:
+                    self._autopass = False            # stop autopass; human acts
+                human_must_act = not opp_turn and not autopass_now
 
+                self.post_message(StateUpdate(obs, num,
+                                              actions if human_must_act else [],
+                                              human_turn=human_must_act))
+
+                opp_acted = False
+                autopass_acted = False
                 if opp_turn:
                     action = int(self._opp_act(obs, num))
                     if 0 <= action < len(actions) and actions[action]["category"] != 0:
                         self.post_message(LogLines(
                             [_opp_event_text(actions[action], self._opp_label)]))
+                        opp_acted = True
+                elif autopass_now:
+                    action = pass_idx
+                    autopass_acted = True
                 else:
                     action = self._human_q.get()       # blocks until UI delivers
                     if action is None:                 # quit signalled
@@ -289,7 +323,15 @@ class GameApp(App):
                 if reward:
                     self._reward = reward
                 done = terminated or truncated
-                self.post_message(LogLines(env.flush_lines()))
+                flushed = env.flush_lines()
+                self.post_message(LogLines(flushed))
+
+                # Give the human a beat to observe game changes they didn't drive:
+                # the opponent acting, or a stack resolution an auto-pass triggered.
+                observed = opp_acted or (autopass_acted
+                                         and any(ln.strip() for ln in flushed))
+                if observed and not done:
+                    time.sleep(OPP_ACTION_OBSERVE_DELAY)
 
             self.post_message(GameOver(self._winner_text()))
         except EOFError:
@@ -329,10 +371,12 @@ class GameApp(App):
         opt.clear_options()
         if message.human_turn:
             for a in message.actions:
-                opt.add_option(Option(f"{a['index']:>2}: {a['description']}", id=str(a["index"])))
+                opt.add_option(Option(f"{a['index']:>2}: {self._menu_label(a)}", id=str(a["index"])))
             if message.actions:
                 opt.highlighted = 0
             self.query_one("#prompt", Static).update(self._prompt_text(obs, message.num_choices, gs))
+        elif self._autopass:
+            self.query_one("#prompt", Static).update("Autopass — passing to next upkeep…")
         else:
             self.query_one("#prompt", Static).update(f"{self._opp_label} is thinking…")
 
@@ -375,13 +419,66 @@ class GameApp(App):
         if self._awaiting and 0 <= idx < len(self._actions):
             self._submit(idx)
 
-    def action_pass_priority(self) -> None:
+    @staticmethod
+    def _menu_label(a) -> str:
+        """Action description for the menu, tagging player targets SELF/OPPONENT.
+
+        A target action aimed at a player (category 8 TARGET with no card) gets a
+        trailing SELF/OPPONENT marker — relative to you — so it's unambiguous
+        which player (A or B) the target is."""
+        desc = a["description"]
+        if a["category"] == 8 and a["card_idx"] < 0 and a["controller"] in ("own", "opp"):
+            desc += "  [SELF]" if a["controller"] == "own" else "  [OPPONENT]"
+        return desc
+
+    @staticmethod
+    def _pass_index(actions):
+        """Index of the 'pass priority' action (category 0) in a menu, else None."""
+        for a in actions:
+            if a["category"] == 0:
+                return a["index"]
+        return None
+
+    def _autopass_should_stop(self, obs) -> bool:
+        """True once autopass reaches an UPKEEP step — its stop mark.
+
+        Autopass otherwise only halts for mandatory decisions, which the driver
+        detects separately by the absence of a pass option."""
+        return int(np.argmax(obs[18:31])) == _STEP_UPKEEP_IDX
+
+    def action_autopass(self) -> None:
+        """Engage autopass: pass priority every optional window until the next
+        UPKEEP step, stopping early for any mandatory decision (declare
+        attackers/blockers, discard, targeting, mulligan — anything with no
+        'pass priority' option). The driver auto-drives once engaged."""
         if not self._awaiting:
             return
-        for a in self._actions:
-            if a["category"] == 0:        # PASS
-                self._submit(a["index"])
-                return
+        idx = self._pass_index(self._actions)
+        if idx is None:                    # nothing to pass right now
+            return
+        self._autopass = True
+        self._write_event("[You] Autopass to next upkeep")
+        # Unblock the driver's current get with a pass; it takes over from there.
+        # Bypass _submit (which re-enables input) so no stray keypress is queued
+        # while the driver auto-drives — input stays disabled until autopass stops.
+        self._awaiting = False
+        self.query_one("#actions", OptionList).clear_options()
+        self.query_one("#prompt", Static).update("Autopass — passing to next upkeep…")
+        try:
+            self._human_q.put_nowait(idx)
+        except Exception:
+            self._human_q.put(idx)
+
+    def action_pass_zero(self) -> None:
+        """Spacebar = pass, but only when action 0 is the pass option.
+
+        If index 0 is 'Pass priority' (category 0), submitting it is equivalent
+        to entering 0; otherwise (index 0 is some other action) spacebar is a
+        no-op, so it can never fire a non-pass action."""
+        if not self._awaiting:
+            return
+        if self._actions and self._actions[0]["category"] == 0:
+            self._submit(0)
 
     # Min/max row heights for each resizable board panel.
     _PANEL_LIMITS = {"#opp-bf": (6, 16), "#self-bf": (6, 16), "#self-hand": (3, 10)}
