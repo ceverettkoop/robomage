@@ -326,17 +326,25 @@ def _decode_stack(state, labels=SELF_OPP_LABELS):
             continue
         modes = [m for m in range(_STACK_MODE_SLOTS) if state[base + 3 + m] > 0.5]
         targets = []
+        target_refs = []
         for t in range(_STACK_TGT_SLOTS):
             tbase = base + 3 + _STACK_MODE_SLOTS + t * _STACK_TGT_FIELDS
             if state[tbase] < 0.5:  # present flag
                 continue
-            ctrl = labels["self"] if state[tbase + 2] > 0.5 else labels["opponent"]
-            if state[tbase + 1] > 0.5:  # is_player
+            is_self = state[tbase + 2] > 0.5
+            is_player = state[tbase + 1] > 0.5
+            ctrl = labels["self"] if is_self else labels["opponent"]
+            tidx = -1 if is_player else onehot_to_index(state, tbase + 3)
+            if is_player:
                 targets.append(f"{ctrl} (player)")
             else:
-                tidx = onehot_to_index(state, tbase + 3)
                 tname = card_index_to_name(tidx) if tidx >= 0 else "?"
                 targets.append(f"{tname} ({ctrl})")
+            # Structured form for UIs that highlight the target on the board.
+            # `is_self` is viewer-relative (like the rest of the state vector); a
+            # mirrored decode must flip it to the human frame at the call site.
+            target_refs.append({"is_player": is_player, "is_self": is_self,
+                                "card_idx": tidx})
         entries.append({
             "name": card_index_to_name(idx),
             "card_idx": idx,
@@ -344,6 +352,7 @@ def _decode_stack(state, labels=SELF_OPP_LABELS):
             "is_spell": state[base + 2] > 0.5,
             "modes": modes,       # chosen modal mode indices (empty = not modal)
             "targets": targets,   # announced targets, human-readable
+            "target_refs": target_refs,  # structured targets (see note above)
         })
     return entries
 

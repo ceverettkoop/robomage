@@ -26,7 +26,7 @@ from rich.text import Text
 from textual import events, work
 from textual.app import App, ComposeResult
 from textual.content import Content
-from textual.containers import Horizontal, Vertical, VerticalScroll
+from textual.containers import Horizontal, HorizontalScroll, Vertical, VerticalScroll
 from textual.message import Message
 from textual.widgets import Footer, Header, OptionList, RichLog, Static
 from textual.widgets.option_list import Option, OptionDoesNotExist
@@ -177,6 +177,18 @@ class CardButton(Static):
         self.post_message(CardClicked(self._card_idx, self._controller))
 
 
+class StackItem(Static):
+    """One delineated object on the stack. Carries its announced targets so the
+    app can highlight them on the board when the item is hovered (see GameApp).
+
+    `target_refs` are already in the human's frame: each is
+    {"is_player", "is_self", "card_idx"} where is_self means the human (YOU)."""
+
+    def __init__(self, label: str, target_refs):
+        super().__init__(label)
+        self._target_refs = target_refs
+
+
 class ActionList(OptionList):
     """OptionList that reports which option the mouse is hovering over.
 
@@ -238,6 +250,17 @@ class GameApp(App):
     #self-info  { height: 1; color: green; }
     #graveyards { height: 2; color: $text-muted; }
     #stack      { height: 3; border: round $primary; }
+    /* Each stack object is delineated by a left bar + margin (a full box border
+       would not fit the 1-row inner height). */
+    StackItem   { width: auto; height: 100%; margin: 0 1; padding: 0 1;
+                  border-left: thick $secondary; }
+    StackItem:hover { background: $boost; }
+    .stack-empty { width: auto; height: 100%; color: $text-muted; }
+    /* Hovering a stack item paints its targets red: permanents on the board and
+       the YOU/OPPONENT info line for a player target. */
+    CardButton.stack-target { background: $error 40%; border: round $error; }
+    #self-info.stack-target-player, #opp-info.stack-target-player {
+        background: $error; color: $text; text-style: bold; }
     #opp-bf, #self-bf { height: 8; }
     .bf-row     { height: 1fr; layout: horizontal; }
     .bf-row.lands { background: $panel; }
@@ -315,7 +338,7 @@ class GameApp(App):
         with Vertical(id="opp-bf"):
             yield VerticalScroll(id="opp-bf-perms", classes="bf-row")
             yield VerticalScroll(id="opp-bf-lands", classes="bf-row lands")
-        yield Static(id="stack")
+        yield HorizontalScroll(id="stack")
         with Vertical(id="self-bf"):
             yield VerticalScroll(id="self-bf-perms", classes="bf-row")
             yield VerticalScroll(id="self-bf-lands", classes="bf-row lands")
@@ -444,11 +467,11 @@ class GameApp(App):
         self.query_one("#phase", Static).update(self._phase_strip(obs, gs))
         self.query_one("#opp-info", Static).update(self._info_line("OPPONENT", gs["opponent"], gs["opp_library"]))
         self.query_one("#self-info", Static).update(self._info_line("YOU", gs["self"], gs["self_library"]))
-        self.query_one("#stack", Static).update(self._stack_text(gs["stack"]))
         self.query_one("#graveyards", Static).update(
             f"Your GY: {', '.join(gs['self_graveyard']) or '—'}\n"
             f"Opp GY:  {', '.join(gs['opp_graveyard']) or '—'}")
 
+        await self._rebuild_stack(gs["stack"], mirrored)
         await self._rebuild_bf("#opp-bf-perms", "#opp-bf-lands", gs["opp_battlefield"], "opp")
         await self._rebuild_bf("#self-bf-perms", "#self-bf-lands", gs["self_battlefield"], "self")
         # A mirrored obs's "self_hand" is the OPPONENT's hand (private) — never
@@ -461,6 +484,7 @@ class GameApp(App):
         # inspect banner (its card may no longer be on the board).
         self._hovered_button = None
         self._hide_oracle()
+        self._clear_stack_target_highlights()
         self._actions = message.actions
         self._awaiting = message.human_turn
         opt = self.query_one("#actions", OptionList)
@@ -515,22 +539,27 @@ class GameApp(App):
     # ----- action <-> permanent cross-highlighting -----
 
     def on_enter(self, event: events.Enter) -> None:
-        """Mouse moved onto a widget. When it's a card, remember it (shared hover
-        anchor) and light up the menu actions that card can drive."""
+        """Mouse moved onto a widget. A card → remember it (shared hover anchor)
+        and light up the menu actions it can drive; a stack item → paint its
+        announced targets red on the board."""
         node = event.node
         if isinstance(node, CardButton):
             self._hovered_button = node
             idxs = [a["index"]
                     for a in self._actions_for_card(node._card_idx, node._controller)]
             self._set_action_highlights(idxs)
+        elif isinstance(node, StackItem):
+            self._highlight_stack_targets(node._target_refs)
 
     def on_leave(self, event: events.Leave) -> None:
-        """Mouse left a card — clear its cross-highlight (only if it's still the
-        tracked one; Enter of the next card may already have superseded it)."""
+        """Mouse left a card/stack item — clear its highlight (for a card only if
+        it's still the tracked one; Enter of the next may have superseded it)."""
         node = event.node
         if isinstance(node, CardButton) and node is self._hovered_button:
             self._hovered_button = None
             self._set_action_highlights([])
+        elif isinstance(node, StackItem):
+            self._clear_stack_target_highlights()
 
     def on_action_list_action_hovered(self, message: "ActionList.ActionHovered") -> None:
         """Mouse moved over (or off) a menu option — highlight the battlefield
@@ -592,6 +621,29 @@ class GameApp(App):
                                           self._option_prompt(a, a["index"] in hl))
             except OptionDoesNotExist:
                 pass
+
+    # ----- stack item -> target highlighting -----
+
+    def _highlight_stack_targets(self, refs) -> None:
+        """Paint a hovered stack object's announced targets red: matching
+        battlefield permanent(s), and the YOU/OPPONENT info line for a player
+        target. `refs` are already in the human frame (is_self == YOU)."""
+        self._clear_stack_target_highlights()
+        for ref in refs:
+            if ref["is_player"]:
+                sel = "#self-info" if ref["is_self"] else "#opp-info"
+                self.query_one(sel, Static).add_class("stack-target-player")
+            elif ref["card_idx"] >= 0:
+                want = "self" if ref["is_self"] else "opp"
+                for btn in self.query(CardButton):
+                    if btn._card_idx == ref["card_idx"] and btn._controller == want:
+                        btn.add_class("stack-target")
+
+    def _clear_stack_target_highlights(self) -> None:
+        for btn in self.query(CardButton):
+            btn.remove_class("stack-target")
+        for sel in ("#self-info", "#opp-info"):
+            self.query_one(sel, Static).remove_class("stack-target-player")
 
     def action_pick(self, digit: str) -> None:
         idx = int(digit)
@@ -799,15 +851,39 @@ class GameApp(App):
                 f"mana [{decode.fmt_mana(p['mana'])}]  "
                 f"hand {p['hand_count']}  lib {library}")
 
-    @staticmethod
-    def _stack_text(stack) -> str:
+    async def _rebuild_stack(self, stack, mirrored: bool) -> None:
+        """Rebuild the stack as one hoverable, delineated StackItem per object
+        (top of stack first). Each carries its human-frame targets so hovering
+        it can highlight them on the board."""
+        box = self.query_one("#stack", HorizontalScroll)
+        await box.remove_children()
         if not stack:
-            return "Stack: (empty)"
-        parts = []
-        for e in stack:
-            kind = "spell" if e["is_spell"] else "ability"
-            parts.append(f"{e['name']} ({kind}, {e['controller']})")
-        return "Stack: " + "  ◄  ".join(parts)
+            await box.mount(Static("Stack: (empty)", classes="stack-empty"))
+            return
+        widgets = [StackItem(self._stack_item_label(e),
+                             self._stack_target_refs(e, mirrored))
+                   for e in stack]
+        await box.mount(*widgets)
+
+    @staticmethod
+    def _stack_item_label(e) -> str:
+        kind = "spell" if e["is_spell"] else "ability"
+        label = f"{e['name']} ({kind}, {e['controller']})"
+        if e.get("targets"):
+            label += " → " + "; ".join(e["targets"])
+        return label
+
+    @staticmethod
+    def _stack_target_refs(e, mirrored: bool):
+        """Stack-entry targets converted to the human frame. The decoded is_self
+        is viewer-relative; when the obs is the opponent's perspective (mirrored)
+        it must be flipped so is_self means the human (YOU)."""
+        refs = []
+        for t in e.get("target_refs", []):
+            refs.append({"is_player": t["is_player"],
+                         "is_self": (t["is_self"] != mirrored),
+                         "card_idx": t["card_idx"]})
+        return refs
 
     @staticmethod
     def _prompt_text(obs, num, gs) -> str:
