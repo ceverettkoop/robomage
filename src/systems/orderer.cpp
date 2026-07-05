@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <numeric>
 
+#include "../stable_rng.h"
+
 #include "../card_db.h"
 #include "../card_vocab.h"
 #include "../classes/deck.h"
@@ -290,7 +292,9 @@ void Orderer::shuffle_library(Zone::Ownership owner) {
     size_t n = contents.size();
     std::vector<int> placements(n);
     std::iota(placements.begin(), placements.end(), 0);
-    std::shuffle(placements.begin(), placements.end(), cur_game.gen);
+    // stable_shuffle, not std::shuffle: std::shuffle output differs between
+    // libstdc++ and libc++ for the same seed (see stable_rng.h).
+    stable_shuffle(placements, cur_game.gen);
 
     size_t i = 0;
     for (auto &&card : contents) {

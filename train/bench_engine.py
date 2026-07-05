@@ -1,9 +1,10 @@
 """Lean engine throughput benchmark (no narrative decoding / printing).
 
-Drives RoboMageEnv with the scripted agent for the priority seat each decision,
-which exercises the same C++ engine path training uses (subprocess + --machine
-BQUERY serialize + full SBA/legal-action computation). Reports wall time,
-games/sec and decisions/sec. Deterministic per --seed.
+Drives RoboMageEnv through runner.drive_game (the shared loop) with the
+scripted HARD agent on both seats, which exercises the same C++ engine path
+training uses (subprocess + --machine BQUERY serialize + full SBA/legal-action
+computation). Reports wall time, games/sec and decisions/sec. Deterministic
+per --seed.
 """
 import sys
 import time
@@ -12,7 +13,9 @@ import argparse
 sys.path.insert(0, __import__("os").path.dirname(__import__("os").path.realpath(__file__)))
 
 from env import RoboMageEnv  # noqa: E402
-from scripted_agent import scripted_action  # noqa: E402
+from opponents import ScriptedController  # noqa: E402
+from scripted_agent import make_agent  # noqa: E402
+import runner  # noqa: E402
 
 
 def main():
@@ -24,22 +27,17 @@ def main():
     ap.add_argument("--max-decisions", type=int, default=4000)
     args = ap.parse_args()
 
+    ctrl = ScriptedController(make_agent("scripted"))
     total_decisions = 0
     completed = 0
     t0 = time.perf_counter()
     for g in range(args.games):
         env = RoboMageEnv(deck_a=args.deck_a, deck_b=args.deck_b)
         obs, info = env.reset(seed=args.seed + g)
-        done = False
-        d = 0
-        while not done and d < args.max_decisions:
-            n = int(env._num_choices)
-            a = scripted_action(obs, n)
-            obs, reward, terminated, truncated, info = env.step(a)
-            done = terminated or truncated
-            d += 1
-        total_decisions += d
-        if done:
+        rec = runner.drive_game(env, obs, ctrl, ctrl,
+                                max_decisions=args.max_decisions)
+        total_decisions += rec.decisions
+        if not rec.capped:
             completed += 1
         try:
             env.close()

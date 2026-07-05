@@ -7,6 +7,7 @@
 
 #include "../classes/game.h"
 #include "../cli_output.h"
+#include "../stable_rng.h"
 #include "../components/carddata.h"
 #include "../components/player.h"
 #include "../components/zone.h"
@@ -47,9 +48,9 @@ bool reveal(Ability &ab, std::shared_ptr<Orderer> orderer) {
     }
 
     // Choose one card at random using the game's seeded RNG (cur_game.gen) so replays are
-    // deterministic — the same generator used for library shuffling in orderer.cpp.
-    std::uniform_int_distribution<size_t> pick(0, hand.size() - 1);
-    Entity chosen = hand[pick(cur_game.gen)];
+    // deterministic — the same generator used for library shuffling in orderer.cpp,
+    // drawn platform-stably (see stable_rng.h).
+    Entity chosen = hand[stable_rand_below(cur_game.gen, hand.size())];
     auto &cd = global_coordinator.GetComponent<CardData>(chosen);
     game_log_private(ab.controller, "%s looks at a random card in %s's hand: %s\n",
         player_name(ab.controller).c_str(), player_name(hand_owner).c_str(), cd.name.c_str());

@@ -68,7 +68,7 @@ import decode
 import viz
 # CLI definitions come from cli_spec.py (single source shared with the TUI).
 from cli_spec import ANALYSIS_TOOL, apply_to_parser
-from env import (ACTION_CATEGORY_MAX, RoboMageEnv, scripted_action,
+from env import (ACTION_CATEGORY_MAX, RoboMageEnv,
                  STATE_SIZE, MAX_ACTIONS, BINARY,
                  _HAND_START, _MATCH_CTX_START, _LIBRARY_CTX_START,
                  _SELF_PERM_START, _PERM_SLOTS as _ENV_PERM_SLOTS, _PERM_SLOT_SIZE,
@@ -465,6 +465,26 @@ def _reset_for_game(env, model_is_a, engine_seed=None):
     return obs, env.last_engine_seed
 
 
+def _controllers_for(model, opp_model, model_is_a):
+    """Build (ctrl_a, ctrl_b, ctrl_model) for a model-vs-opponent game.
+
+    The opponent is a deterministic ModelController when ``opp_model`` is
+    given, else the scripted HARD agent — the same seats the hand-rolled loops
+    used before this moved onto runner.drive_game.
+    """
+    from opponents import ModelController, ScriptedController
+    from scripted_agent import make_agent
+
+    ctrl_model = ModelController(model, label="Model", deterministic=True)
+    if opp_model is not None:
+        ctrl_opp = ModelController(opp_model, label="Opp", deterministic=True)
+    else:
+        ctrl_opp = ScriptedController(make_agent("scripted"), label="Scripted")
+    ctrl_a, ctrl_b = ((ctrl_model, ctrl_opp) if model_is_a
+                      else (ctrl_opp, ctrl_model))
+    return ctrl_a, ctrl_b, ctrl_model
+
+
 def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
     """Play n_games and collect per-step (obs, value, action) traces.
 
@@ -491,13 +511,18 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
     replayable (see _replay_to_step / the interactive `whatif` command): reset
     with the recorded seed and feed full_actions[:prefix_len[step]] to land back
     in the state where the model made decision `step`.
+
+    The game loop itself is runner.drive_game (the shared loop); the trace
+    recording rides its on_query/on_action hooks.
     """
     import torch
+    import runner
 
     games = []
     for g in range(n_games):
         model_is_a = bool(np.random.random() < 0.5)
         obs, engine_seed = _reset_for_game(env, model_is_a)
+        ctrl_a, ctrl_b, ctrl_model = _controllers_for(model, opp_model, model_is_a)
 
         trace_obs = []
         trace_vals = []
@@ -506,55 +531,38 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
         trace_num_choices = []
         trace_probs = []
         trace_opp_actions = []
-        full_actions = []
         prefix_len = []
-        done = False
-        total_reward = 0.0
 
-        while not done:
-            a_has_priority = obs[32] > 0.5
-            model_has_priority = a_has_priority if model_is_a else not a_has_priority
-            num_choices = env._num_choices
+        def on_query(d):
+            # Record observation, value and policy probs for MODEL decisions
+            # (before the controller acts; the obs is unchanged by choosing).
+            if d.controller is not ctrl_model:
+                return
+            obs_t = torch.as_tensor(d.obs, dtype=torch.float32).unsqueeze(0)
+            with torch.no_grad():
+                value = model.policy.predict_values(obs_t).item()
+            trace_obs.append(d.obs.copy())
+            trace_vals.append(value)
+            trace_interp.append(_extract_interpretable(d.obs))
+            trace_num_choices.append(d.num_choices)
+            trace_probs.append(_get_policy_probs(model, d.obs, d.num_choices))
+            prefix_len.append(d.index)   # actions fed before this model step
 
-            if model_has_priority:
-                # Record observation and value for model's decisions
-                obs_t = torch.as_tensor(obs, dtype=torch.float32).unsqueeze(0)
-                with torch.no_grad():
-                    value = model.policy.predict_values(obs_t).item()
-                probs = _get_policy_probs(model, obs, num_choices)
-                trace_obs.append(obs.copy())
-                trace_vals.append(value)
-                trace_interp.append(_extract_interpretable(obs))
-                trace_num_choices.append(num_choices)
-                trace_probs.append(probs)
-                prefix_len.append(len(full_actions))
-
-                mask = np.zeros(MAX_ACTIONS, dtype=bool)
-                mask[:num_choices] = True
-                action, _ = model.predict(obs, action_masks=mask, deterministic=True)
-                action = int(action)
-                trace_actions.append(action)
+        def on_action(d, action):
+            if d.controller is ctrl_model:
+                trace_actions.append(int(action))
             else:
-                if opp_model is not None:
-                    mask = np.zeros(MAX_ACTIONS, dtype=bool)
-                    mask[:num_choices] = True
-                    action, _ = opp_model.predict(obs, action_masks=mask, deterministic=True)
-                    action = int(action)
-                else:
-                    action = scripted_action(obs, num_choices)
                 # Decode now (obs is from the opponent's perspective and is not
                 # kept) so the replay can interleave opponent actions later.
                 trace_opp_actions.append({
-                    "desc": _action_desc(obs, action),
+                    "desc": _action_desc(d.obs, action),
                     "before_model_step": len(trace_obs),
                 })
 
-            full_actions.append(action)
-            obs, reward, terminated, truncated, _ = env.step(action)
-            total_reward += reward
-            done = terminated or truncated
-
-        model_reward = total_reward if model_is_a else -total_reward
+        rec = runner.drive_game(env, obs, ctrl_a, ctrl_b,
+                                on_query=on_query, on_action=on_action)
+        full_actions = rec.actions
+        model_reward = rec.reward if model_is_a else -rec.reward
         games.append({
             "observations": trace_obs,
             "values": trace_vals,
@@ -616,41 +624,30 @@ def _replay_to_step(env, game, step):
 
 def _rollout_from(model, env, opp_model, obs, model_is_a, first_action):
     """Play a branch to completion: take `first_action`, then let the model and
-    opponent finish the game. Returns a dict with the branch's model V(s)
-    trajectory, final result (+1/-1/0 from the model's perspective), and the
-    number of model decisions after the branch.
+    opponent finish the game (via runner.drive_game). Returns a dict with the
+    branch's model V(s) trajectory, final result (+1/-1/0 from the model's
+    perspective), and the number of model decisions after the branch.
     """
     import torch
+    import runner
 
     branch_vals = []
     total_reward = 0.0
     obs, reward, terminated, truncated, _ = env.step(first_action)
     total_reward += reward
-    done = terminated or truncated
 
-    while not done:
-        a_has_priority = obs[32] > 0.5
-        model_has_priority = a_has_priority if model_is_a else not a_has_priority
-        num_choices = env._num_choices
-        mask = np.zeros(MAX_ACTIONS, dtype=bool)
-        mask[:num_choices] = True
+    if not (terminated or truncated):
+        ctrl_a, ctrl_b, ctrl_model = _controllers_for(model, opp_model, model_is_a)
 
-        if model_has_priority:
-            obs_t = torch.as_tensor(obs, dtype=torch.float32).unsqueeze(0)
+        def on_query(d):
+            if d.controller is not ctrl_model:
+                return
+            obs_t = torch.as_tensor(d.obs, dtype=torch.float32).unsqueeze(0)
             with torch.no_grad():
                 branch_vals.append(model.policy.predict_values(obs_t).item())
-            action, _ = model.predict(obs, action_masks=mask, deterministic=True)
-            action = int(action)
-        else:
-            if opp_model is not None:
-                action, _ = opp_model.predict(obs, action_masks=mask, deterministic=True)
-                action = int(action)
-            else:
-                action = scripted_action(obs, num_choices)
 
-        obs, reward, terminated, truncated, _ = env.step(action)
-        total_reward += reward
-        done = terminated or truncated
+        rec = runner.drive_game(env, obs, ctrl_a, ctrl_b, on_query=on_query)
+        total_reward += rec.reward
 
     result = total_reward if model_is_a else -total_reward
     return {

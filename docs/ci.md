@@ -91,6 +91,14 @@ the same commit (the diff is part of the review):
   ```bash
   train/.venv/bin/python train/regression/replay_diff.py record
   ```
+  The corpus is **platform-portable**: all gameplay randomness goes through
+  `src/stable_rng.h` (hand-rolled Fisher–Yates + rejection sampling over the
+  raw mt19937 stream), so Mac and Linux produce byte-identical transcripts
+  from the same seed. Keep it that way — never call `std::shuffle`,
+  `std::uniform_int_distribution`, or `rand()` with `cur_game.gen` (or for any
+  gameplay decision); their output is implementation-defined and differs
+  between libstdc++ (CI) and libc++ (macOS), which silently re-locks the
+  corpus, RMLOG replays, and bug-repro seeds to one platform.
 - **`pygen` staleness** after editing `src/card_vocab.h` (or a C++ codegen
   input): regenerate and commit the outputs (provision the full card set first so
   `card_costs.py` is complete).
