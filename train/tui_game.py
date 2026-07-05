@@ -820,6 +820,12 @@ class GameApp(App):
             return "Search your library (pick a card, or 'fail to find')."
         cset = set(int(c) for c in cats)
         if 8 in cset:
+            # Name the spell/ability asking for the target (its source may not be
+            # on the stack yet — targets are announced first), so the prompt says
+            # WHAT you're targeting for, not just "Choose a target."
+            pend = gs.get("pending_decision")
+            if pend and pend.get("name"):
+                return f"Choose a target for {pend['name']}."
             return "Choose a target."
         if cset & {2, 3}:
             return "Declare attackers — pick creatures, then Confirm attackers."
