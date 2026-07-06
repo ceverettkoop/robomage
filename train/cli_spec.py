@@ -525,6 +525,8 @@ PLAY_TOOL = Tool("play", "train/play.py", flat=True, subs=[
         Arg("--tui", "flag", default=True, help="Launch the TUI game board (train/tui_game.py)"),
         Arg("--scripted", "flag",
             help="Use the rule-based scripted agent as the opponent (no checkpoint needed; TUI only)"),
+        Arg("--bo1", "flag",
+            help="Play a single game instead of the default best-of-three match (TUI only)"),
         Arg("--player", "choice", choices=("A", "B"), default=None,
             help="Which player the human controls, in both CLI and GUI modes (default: random)"),
         Arg("--seed", "int", default=None,

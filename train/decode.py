@@ -24,7 +24,7 @@ from env import (STATE_SIZE, MAX_ACTIONS, ACTION_CATEGORY_MAX,
                  _STACK_TGT_SLOTS, _STACK_TGT_FIELDS,
                  _GY_SLOT_SIZE, _HAND_SLOT_SIZE,
                  _LIBRARY_CTX_START, _CUR_TURN_IDX, MAX_HAND_SLOTS,
-                 _PENDING_DECISION_START,
+                 _PENDING_DECISION_START, _MATCH_CTX_START,
                  _slot_card_idx, _ACTION_CARD_ID_NULL)
 from card_costs import (N_CARD_TYPES, _VOCAB_NAMES as _CARD_NAMES,
                         _CARD_COST_MATRIX, _LAND_VOCAB_IDS)
@@ -38,6 +38,12 @@ _OPP_GY_START = _GY_START + 64 * GY_SLOT_SIZE      # opp graveyard begins after 
 _IDX_SELF_LIB = _LIBRARY_CTX_START                 # self_library_ct / 60
 _IDX_OPP_LIB = _LIBRARY_CTX_START + 1              # opp_library_ct  / 60
 _IDX_TURN = _CUR_TURN_IDX                          # turn / 50
+
+# Bo3 match-context indices (self-perspective; see src/machine_io.h layout).
+_IDX_GAME_NUMBER = _MATCH_CTX_START                # game_number / 3
+_IDX_SELF_WINS   = _MATCH_CTX_START + 1            # self_match_wins / 2
+_IDX_OPP_WINS    = _MATCH_CTX_START + 2            # opp_match_wins  / 2
+_IDX_SIDEBOARD   = _MATCH_CTX_START + 3            # is_sideboard_phase (0/1)
 
 # Permanent slot field offsets
 _OFF_POWER = 0
@@ -397,6 +403,22 @@ def decode_game_state(state, labels=SELF_OPP_LABELS, perm_counters=None,
         "self_graveyard": _decode_graveyard(state, _GY_START),
         "opp_graveyard": _decode_graveyard(state, _OPP_GY_START),
         "pending_decision": _decode_pending_decision(state),
+        "match": _decode_match_context(state),
+    }
+
+
+def _decode_match_context(state):
+    """Decode the bo3 match-context block (self-perspective).
+
+    Returns {"game_number", "self_wins", "opp_wins", "is_sideboard"}. In a
+    single-game (bo1) match every field is 0 / False, so callers can treat a
+    game_number of 0 as "not a bo3 match". self_wins/opp_wins are viewer-relative
+    (like the rest of the state vector) — a mirrored decode must swap them."""
+    return {
+        "game_number": int(round(float(state[_IDX_GAME_NUMBER]) * 3)),
+        "self_wins": int(round(float(state[_IDX_SELF_WINS]) * 2)),
+        "opp_wins": int(round(float(state[_IDX_OPP_WINS]) * 2)),
+        "is_sideboard": float(state[_IDX_SIDEBOARD]) > 0.5,
     }
 
 

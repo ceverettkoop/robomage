@@ -307,13 +307,19 @@ class GameApp(App):
         ("7", "pick('7')", ""), ("8", "pick('8')", ""), ("9", "pick('9')", ""),
     ]
 
-    def __init__(self, env, opp_act, opp_is_a, human_deck, opp_deck, is_model):
+    def __init__(self, env, opp_act, opp_is_a, human_deck, opp_deck, is_model,
+                 bo3=True):
         super().__init__()
         self._env = env
         self._opp_act = opp_act              # callable(obs, num_choices) -> int
         self._opp_is_a = opp_is_a
         self._human_deck = human_deck
         self._opp_deck = opp_deck
+        self._bo3 = bo3
+        # Latest decoded bo3 match context ({game_number, self_wins, opp_wins,
+        # is_sideboard}, human-frame) — drives the score line and the winner
+        # text. Populated on every StateUpdate; None until the first one.
+        self._match = None
         self._opp_label = "Model" if is_model else "Scripted"
         self._human_q = self._make_queue()
         self._actions = []
@@ -368,7 +374,8 @@ class GameApp(App):
     def on_mount(self) -> None:
         human_seat = "B" if self._opp_is_a else "A"
         opp_seat = "A" if self._opp_is_a else "B"
-        self.title = "RoboMage"
+        fmt = "Best of 3" if self._bo3 else "Single game"
+        self.title = f"RoboMage · {fmt}"
         self.sub_title = (f"You (Player {human_seat}, {self._human_deck})  vs  "
                           f"{self._opp_label} (Player {opp_seat}, {self._opp_deck})")
         self._log("[b]Game starting…[/b]  Click a card or pick a numbered action. "
@@ -428,12 +435,17 @@ class GameApp(App):
                     if action is None:                 # quit signalled
                         return
 
-                obs, reward, terminated, truncated, _ = env.step(action)
+                obs, reward, terminated, truncated, info = env.step(action)
                 if reward:
                     self._reward = reward
                 done = terminated or truncated
                 flushed = env.flush_lines()
                 self.post_message(LogLines(flushed))
+
+                # Announce each bo3 game result as it lands (the running score is
+                # only in the next obs, so report from this obs's match context).
+                if self._bo3 and info.get("game_result") and not done:
+                    self.post_message(LogLines([self._game_break_text(obs)]))
 
                 # Give the human a beat to observe game changes they didn't drive:
                 # the opponent acting, or a stack resolution an auto-pass triggered.
@@ -449,11 +461,42 @@ class GameApp(App):
             self.post_message(LogLines([f"[red]driver error: {exc!r}[/red]"]))
             self.post_message(GameOver(self._winner_text()))
 
+    def _game_break_text(self, obs) -> str:
+        """A '=== Game N over — You lead 2–1 ===' banner between bo3 games.
+
+        Reads the running match score from the *next* game's obs (its match
+        context already reflects the just-finished game), mirroring self/opp when
+        that obs is serialized from the opponent's perspective."""
+        mctx = decode._decode_match_context(obs[:STATE_SIZE])
+        opp_perspective = (obs[32] > 0.5) == self._opp_is_a
+        you, opp = mctx["self_wins"], mctx["opp_wins"]
+        if opp_perspective:
+            you, opp = opp, you
+        if you > opp:
+            lead = f"You lead {you}–{opp}"
+        elif opp > you:
+            lead = f"{self._opp_label} leads {opp}–{you}"
+        else:
+            lead = f"Tied {you}–{opp}"
+        return f"=== Game over — {lead} ==="
+
     def _winner_text(self) -> str:
         human_is_a = not self._opp_is_a
         human_wins = (self._reward > 0 and human_is_a) or (self._reward < 0 and not human_is_a)
         if self._reward == 0:
             return "Game over — no winner detected (draw?)."
+        # In bo3 the terminal reward is the MATCH result; report it with the
+        # final game score. The match ends the instant the deciding game does, so
+        # no fresh obs follows: the stored match context reflects the score
+        # *entering* that last game — the winner takes it, so add 1 to their tally.
+        if self._bo3:
+            score = ""
+            if self._match:
+                you = self._match["self_wins"] + (1 if human_wins else 0)
+                opp = self._match["opp_wins"] + (0 if human_wins else 1)
+                score = f" ({you}–{opp})"
+            return (f"=== You win the match!{score} ===" if human_wins
+                    else f"=== {self._opp_label} wins the match{score}. ===")
         return "=== You win! ===" if human_wins else f"=== {self._opp_label} wins. ==="
 
     # ----- message handlers (UI thread) -----
@@ -476,6 +519,12 @@ class GameApp(App):
                          ("self_battlefield", "opp_battlefield"),
                          ("self_graveyard", "opp_graveyard")):
                 gs[a], gs[b] = gs[b], gs[a]
+            # Match wins are viewer-relative too — swap so self_wins == YOU.
+            m = gs["match"]
+            m["self_wins"], m["opp_wins"] = m["opp_wins"], m["self_wins"]
+
+        # Remember the human-frame match context for the score line + winner text.
+        self._match = gs["match"]
 
         self.query_one("#phase", Static).update(self._phase_strip(obs, gs))
         self.query_one("#opp-info", Static).update(self._info_line("OPPONENT", gs["opponent"], gs["opp_library"]))
@@ -869,15 +918,33 @@ class GameApp(App):
         edges = _edge_colors(decode.card_border_colors(card_idx))
         return CardButton(label, card_idx, controller, edges, zone)
 
-    @staticmethod
-    def _phase_strip(obs, gs) -> str:
+    def _match_strip(self, match) -> str:
+        """Compact bo3 score prefix ("Game 2 · You 1–0 · ") for the phase line, or
+        "" outside a best-of-three match.
+
+        The human "Game N" is derived from the games played so far
+        (self_wins + opp_wins + 1), NOT the engine's serialized game_number: that
+        field is 0-based and, at 0.0, is indistinguishable between bo3 game 1 and
+        a single game (see src/classes/gamestate.h). Gating on the app's own
+        _bo3 flag is the reliable signal that a match is in progress."""
+        if not self._bo3 or not match:
+            return ""
+        you, opp = match["self_wins"], match["opp_wins"]
+        game_n = you + opp + 1
+        prefix = f"Game {game_n} · You {you}–{opp}"
+        if match.get("is_sideboard"):
+            prefix += " · [b yellow]SIDEBOARD[/b yellow]"
+        return prefix + "   "
+
+    def _phase_strip(self, obs, gs) -> str:
         cur = int(np.argmax(obs[18:31]))
         cells = []
         for i, abbr in enumerate(_STEP_ABBR):
             cells.append(f"[reverse b]{abbr}[/reverse b]" if i == cur else f"[dim]{abbr}[/dim]")
         active = "A" if gs["active_is_a"] else "B"
         prio = gs["priority_player"]
-        return (f"Turn {gs['turn']} · Active {active} · Priority {prio}   "
+        return (self._match_strip(gs.get("match"))
+                + f"Turn {gs['turn']} · Active {active} · Priority {prio}   "
                 + " ".join(cells))
 
     @staticmethod
@@ -923,6 +990,11 @@ class GameApp(App):
     @staticmethod
     def _prompt_text(obs, num, gs) -> str:
         cats = decode.action_categories(obs, num)
+        match = gs.get("match")
+        if match and match.get("is_sideboard"):
+            # Sideboard between games of a bo3: swap cards in/out, then finish.
+            return ("Sideboarding — add/remove cards for the next game, "
+                    "then choose 'Done'.")
         if decode.is_mulligan(cats):
             return "Mulligan decision — keep or mulligan?"
         if decode.is_bottom(cats):
@@ -949,12 +1021,15 @@ class GameApp(App):
 # ── Entry point (called by play.py --tui) ─────────────────────────────────────
 
 def run(binary_path, model_path, human_player=None,
-        human_deck="delver", model_deck="delver"):
+        human_deck="delver", model_deck="delver", bo3=True):
     """Launch the TUI. `model_path` of None/"scripted" ⇒ rule-based opponent.
 
     Any agent spec ``opponents.make_controller`` accepts works here — a
     checkpoint path / deck shorthand, or a scripted tier ("scripted:hard",
     "explore", ...) — so the TUI opponent shares the one agent grammar.
+
+    `bo3` (default True) plays a best-of-three match — with sideboarding between
+    games — in a single engine process; pass ``bo3=False`` for a single game.
     """
     from opponents import make_controller, is_scripted_spec
 
@@ -976,10 +1051,10 @@ def run(binary_path, model_path, human_player=None,
     # tutored/top-of-library cards) — not the opponent's hidden information.
     human_seat = "B" if opp_is_a else "A"
     env = TuiEnv(binary_path=binary_path, deck_a=deck_a, deck_b=deck_b,
-                 log_viewer=human_seat)
+                 log_viewer=human_seat, bo3=bo3)
 
     def opp_act(obs, num):
         return int(ctrl.choose(obs, num, action_masks=env.action_masks()))
 
-    GameApp(env, opp_act, opp_is_a, human_deck, model_deck, is_model).run()
+    GameApp(env, opp_act, opp_is_a, human_deck, model_deck, is_model, bo3=bo3).run()
     return 0
