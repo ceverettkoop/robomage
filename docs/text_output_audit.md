@@ -15,16 +15,16 @@ everywhere.
 | # | Surface | Language | Entry point | Selected by |
 |---|---------|----------|-------------|-------------|
 | 1 | CLI / interactive console | C++ | `cli_output.cpp` (`print_game_state`, `print_query`, `game_log`) | default (no flag) |
-| 2 | GUI (raylib) | C99 | `gui.c` reading shared buffers / `GameState` | `--gui` |
-| 3 | Machine / BQUERY (binary) | C++ | `cli_emit_machine_query` | `--machine` |
-| 4 | Narrative log (overlays 1–3) | C++ | `game_log()` dispatch in `cli_output.cpp` | `--narrative` (implicit in CLI/GUI) |
-| 5 | Python decoders — `test_harness.py`, `tui_game.py` | Python | `train/decode.py` | running those tools |
-| 6 | Python ad-hoc renderers — `train.py` (observe/watch/diag/replay), `analysis.py`, `play.py` | Python | private tables in each file | running those tools |
+| 2 | Machine / BQUERY (binary) | C++ | `cli_emit_machine_query` | `--machine` |
+| 3 | Narrative log (overlays 1–2) | C++ | `game_log()` dispatch in `cli_output.cpp` | `--narrative` (implicit in CLI) |
+| 4 | Python decoders — `test_harness.py`, `tui_game.py` | Python | `train/decode.py` | running those tools |
+| 5 | Python ad-hoc renderers — `train.py` (observe/watch/diag/replay), `analysis.py`, `play.py` | Python | private tables in each file | running those tools |
 
 There is **no separate TUI in C++** — "TUI" means either the CLI console
-(surface 1) or the Python `tui_game.py` Textual app (a surface-5 consumer). The
-raylib GUI is the only graphical mode. `make HEADLESS=TRUE` drops `-DGUI` and
-`-lraylib`; `gui.c`'s body is entirely behind `#ifdef GUI`.
+(surface 1) or the Python `tui_game.py` Textual app (a surface-4 consumer).
+There used to be a graphical raylib GUI surface (`gui.c`, `--gui`) here too;
+it was removed entirely, so the CLI console is now the only interactive
+front end and every row below that referenced it is resolved-by-removal.
 
 ## 2. What is already well-factored
 
@@ -284,9 +284,10 @@ side-channel so observers label choices exactly as the CLI/GUI do:
 
 ### Remaining unification opportunities (not done)
 
-- **Variation D — shared C++ CLI/GUI state-line formatter:** `print_game_state`
-  (`cli_output.cpp`) and `gui.c`'s `draw_perm_card`/info-bars still format the same
-  `GameState` fields independently.
+- **Variation D — shared C++ CLI/GUI state-line formatter:** resolved by removal.
+  The raylib GUI (`gui.c`, `draw_perm_card`/info-bars) was deleted entirely, so
+  `print_game_state` (`cli_output.cpp`) is now the sole formatter of `GameState`
+  fields — there is nothing left to unify with.
 - **Residual framing:** `analysis.py`'s absolute "Player A/B" rendering and the
   guarded vocab sites listed above, and train.py's absolute-seat framing, are not
   routed through decode (by design — see the data-limitation note).

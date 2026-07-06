@@ -21,7 +21,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   Add similar shared accessors (next to these) when a new entity-scan pattern starts repeating.
 - Static (local) functions should be forward declared at top of source file for clarity
 - C++17 with exceptions disabled (`-fno-exceptions`)
-- GUI is written in C99 with raylib; GUI is deprecated for now but left as-is, TUI is focus for UI
+- TUI is the only front end; the raylib GUI front end was removed
 - Uses clang-format configuration in `.clang-format`
 - DO NOT MODIFY CARD SCRIPTS
 - When given a long list of tasks or bugs to fix, do them one at a time (unless it is sensible to batch some)
@@ -56,13 +56,10 @@ this version current if a newer Comprehensive Rules release supersedes it.
 - **Build the project**: `make clean && make`
 - **Clean build artifacts**: `make clean`
 - **Build for release**: `make BUILD=RELEASE`
-- **Enable the GUI**: `make GUI=TRUE`
 
-**Builds are headless (TUI) by default** — no flag needed. Only pass `make GUI=TRUE` when the
-user explicitly asks for the GUI. The GUI (raylib) front end is **deprecated** and no longer
-actively maintained (and requires raylib, often unavailable); the text/CLI (TUI) interface is
-the actively maintained front end. The GUI code is retained in the tree in case it is revived.
-(`make HEADLESS=TRUE` is still accepted as a redundant no-op for backward compatibility.)
+**The TUI is the only front end** — the deprecated raylib GUI has been removed from the tree
+entirely; there is no `GUI=TRUE` build option anymore. (`make HEADLESS=TRUE` is still accepted
+as a redundant no-op for backward compatibility.)
 
 The compiled binary is output to `bin/robomage`.
 

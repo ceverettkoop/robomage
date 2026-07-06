@@ -9,7 +9,7 @@ State is always from the PRIORITY PLAYER'S perspective ("self").
 
 NOTE: Exile zones are tracked in GameState but not serialized to the observation.
 NOTE: ActionChoice.description is never part of the observation — it is for
-      human-readable display only (GUI/CLI) and is not passed to the ML model.
+      human-readable display only (CLI) and is not passed to the ML model.
 
 Card identity is a single normalized id float per slot (idx/N_CARD_TYPES, or
 -1/N_CARD_TYPES for empty/unknown), decoded with round(val*N_CARD_TYPES) and

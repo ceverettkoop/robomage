@@ -7,7 +7,11 @@
 #include "classes/action.h"
 #include "classes/deck.h"
 #include "components/zone.h"
-#include "gui_flags.h"
+
+// Out-of-band flag values returned by get_input() / get_int_input(). Negative
+// integers that do not correspond to any legal action index.
+#define PASS_TURN_CMD -2
+#define FLAG_QUIT -3
 
 // Everything the RMLOG v2 decision-log header records beyond the seed: the
 // state-affecting launch flags and both decklists (verbatim file text), so a

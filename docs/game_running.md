@@ -10,9 +10,10 @@ provides, where agents live, and the one Python API to script games with.
 point — for **both** seats, interleaved in priority order — and reads a single
 integer choice back on stdin. Who picks that integer is entirely the driver's
 concern. The only engine-side seat distinction is `--player A|B` (diverts one
-seat to the legacy C++ stdin/GUI prompt; used only by the deprecated raylib
-GUI) and `--log-viewer A|B` (redacts the private narrative to one seat's view
-without rerouting input; used by the TUI).
+seat to the CLI's interactive stdin prompt, a blocking `getchar`/`scanf` read;
+used by direct interactive play, not by any Python-driven mode) and
+`--log-viewer A|B` (redacts the private narrative to one seat's view without
+rerouting input; used by the TUI).
 
 Engine-level knobs (see `src/main.cpp` argv parsing for the full list):
 decks (`--deck-a/-b`), `--seed`, `--no-shuffle`, zone presets
@@ -112,8 +113,7 @@ benchmarks; there is no other decision loop in the tree.
   under `checkpoints/` (recursive) and appends per-checkpoint win rates to
   `checkpoints/baseline_report.log` (override with `--log`).
 - **`play.py`** — human vs model. Text mode = runner + `HumanController`
-  (semantic input, `--seed`); `--tui` = Textual board; `--gui` = deprecated
-  raylib path (left as-is).
+  (semantic input, `--seed`); `--tui` = Textual board.
 - **`fuzz_campaign.py`** — explore-tier fuzz sweeps for one matchup;
   `run_games` verbose transcripts to a file.
 - **`ci_check.py`** — the `make check` gate; league smoke + fuzz tiers run

@@ -1,2 +1,2 @@
 CompileFlags:
-  Add: [-fno-exceptions, -DGUI=TRUE, -I../include, -I/opt/homebrew/opt/raylib/include]
+  Add: [-fno-exceptions, -I../include]
