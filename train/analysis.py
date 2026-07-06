@@ -28,13 +28,16 @@ Interactive session commands (via 'interactive'):
     boardstate <N> [step] full board + decision detail; enters GDB-style stepping mode
     summary               win/loss/draw stats
     cardvalue [N]         rank cards by importance (ΔV, priority, win-rate)
-    swings [N]            top N value-function swings
+    swings [N]            top N in-game value-function swings (bo3 boundaries excluded)
+    boundaries            V(s) across bo3 game transitions (result-pricing vs re-anchoring)
+    matchcal              per match/game: V at game start vs empirical remaining return by score
     shap                  run SHAP analysis on collected data
     regret [N]            policy regret analysis (top N high-regret decisions)
     entropy               policy entropy by game phase and board state
     consistency [N]       decision consistency for similar states (top N pairs)
     targeting             self vs opp targeting, hold vs cast analysis
     sideboard             sideboard decisions by each agent (bo3)
+    sbvalue               sideboard preference: take-rate, confidence, ΔV, ΔWR per card (bo3)
     whatif <N> <step> [k] counterfactual: branch chosen + top-k actions from the
                           same seed, roll each to the end, compare result/V(s)
     calibration           V(s) at game start vs actual win rate
@@ -69,7 +72,7 @@ import viz
 # CLI definitions come from cli_spec.py (single source shared with the TUI).
 from cli_spec import ANALYSIS_TOOL, apply_to_parser
 from env import (ACTION_CATEGORY_MAX, RoboMageEnv,
-                 STATE_SIZE, MAX_ACTIONS, BINARY,
+                 STATE_SIZE, MAX_ACTIONS, BINARY, BO3_GAME_WIN_REWARD,
                  _HAND_START, _MATCH_CTX_START, _LIBRARY_CTX_START,
                  _SELF_PERM_START, _PERM_SLOTS as _ENV_PERM_SLOTS, _PERM_SLOT_SIZE,
                  _GY_START, _GY_SLOTS_TOTAL, _GY_SLOT_SIZE,
@@ -906,19 +909,44 @@ def _sim_summary(games):
     print(f"  Decisions/game: mean={arr.mean():.1f}  min={arr.min()}  max={arr.max()}")
 
 
+def _match_meta(obs):
+    """Decode (game_number, self_wins, opp_wins, is_sideboard) match context
+    from a stored observation. game_number is 0-based; all fields are zero in
+    single-game (bo1) mode. During the sideboard phase game_number still holds
+    the finished game's number (the convention the `sideboard` report uses)."""
+    return (int(round(obs[_MATCH_CTX_START] * 3.0)),
+            int(round(obs[_MATCH_CTX_START + 1] * 2.0)),
+            int(round(obs[_MATCH_CTX_START + 2] * 2.0)),
+            bool(obs[_MATCH_CTX_START + 3] > 0.5))
+
+
 def _compute_swings(games):
-    """Return swing_data list sorted by magnitude."""
+    """Return swing_data list sorted by magnitude.
+
+    Only in-game deltas count: consecutive model decisions inside the SAME game
+    of a bo3 match, neither of them a sideboard decision. The V(s)
+    discontinuities at match boundaries (the board context resetting between
+    games) are a separate signal — see the `boundaries` command."""
     swing_data = []
     for g_idx, game in enumerate(games):
         vals = game["values"]
         if len(vals) < 2:
             continue
-        deltas = [abs(vals[i + 1] - vals[i]) for i in range(len(vals) - 1)]
-        max_delta_idx = int(np.argmax(deltas))
-        max_delta = deltas[max_delta_idx]
+        metas = [_match_meta(o) for o in game["observations"]]
+        max_delta_idx, max_delta = None, -1.0
+        for i in range(len(vals) - 1):
+            (ga, _, _, sba), (gb, _, _, sbb) = metas[i], metas[i + 1]
+            if sba or sbb or ga != gb:
+                continue
+            d = abs(vals[i + 1] - vals[i])
+            if d > max_delta:
+                max_delta_idx, max_delta = i, d
+        if max_delta_idx is None:
+            continue
         swing_data.append({
             "game_idx": g_idx,
             "swing_step": max_delta_idx,
+            "match_game": metas[max_delta_idx][0] + 1,
             "swing_magnitude": max_delta,
             "swing_from": vals[max_delta_idx],
             "swing_to": vals[max_delta_idx + 1],
@@ -931,13 +959,144 @@ def _compute_swings(games):
 
 
 def _print_swing_table(top_swings):
-    print(f"{'Game':<6} {'Step':<6} {'From':>8} {'To':>8} {'Delta':>8} {'Result':<8} {'Decisions':<10}")
-    print("-" * 60)
+    print(f"{'Game':<6} {'Step':<6} {'MG':<4} {'From':>8} {'To':>8} {'Delta':>8} {'Result':<8} {'Decisions':<10}")
+    print("-" * 64)
     for s in top_swings:
         result_str = "WIN" if s["result"] > 0 else ("LOSS" if s["result"] < 0 else "DRAW")
         side = "A" if s["model_is_a"] else "B"
-        print(f"  {s['game_idx']:<4}   {s['swing_step']:<4}   {s['swing_from']:>+7.3f} {s['swing_to']:>+7.3f}"
+        print(f"  {s['game_idx']:<4}   {s['swing_step']:<4}   {s.get('match_game', 1):<2} "
+              f"{s['swing_from']:>+7.3f} {s['swing_to']:>+7.3f}"
               f" {s['swing_to'] - s['swing_from']:>+7.3f}   {result_str:<6}({side}) {s['n_decisions']}")
+
+
+def _compute_boundaries(games):
+    """Per bo3 match boundary: V(s) at the end of the finished game, through
+    the sideboard block, and at the next game's first decision. Splits each
+    boundary into a result-pricing component (end of game → first sideboard
+    decision, where the match-score features update) and a re-anchoring
+    component (last sideboard decision → fresh game, where the board context
+    resets). Boundaries the model crossed without a sideboard decision of its
+    own (game_number changes between consecutive in-game steps) are reported
+    with the sideboard columns empty."""
+    rows = []
+    for g_idx, game in enumerate(games):
+        vals = game["values"]
+        metas = [_match_meta(o) for o in game["observations"]]
+        i = 0
+        while i < len(metas) - 1:
+            if metas[i][3]:  # sideboard block
+                j = i
+                while j < len(metas) and metas[j][3]:
+                    j += 1
+                rows.append({
+                    "game_idx": g_idx,
+                    "after_game": metas[i][0] + 1,
+                    "score": (metas[i][1], metas[i][2]),
+                    "v_pre": vals[i - 1] if i > 0 else None,
+                    "v_sb_first": vals[i],
+                    "v_sb_last": vals[j - 1],
+                    "v_post": vals[j] if j < len(vals) else None,
+                    "result": game["result"],
+                })
+                i = j
+            elif metas[i][0] != metas[i + 1][0]:  # boundary with no model sb step
+                rows.append({
+                    "game_idx": g_idx,
+                    "after_game": metas[i][0] + 1,
+                    "score": (metas[i + 1][1], metas[i + 1][2]),
+                    "v_pre": vals[i],
+                    "v_sb_first": None,
+                    "v_sb_last": None,
+                    "v_post": vals[i + 1],
+                    "result": game["result"],
+                })
+                i += 1
+            else:
+                i += 1
+    return rows
+
+
+def _print_boundaries(rows):
+    def fmt(v):
+        return f"{v:+7.3f}" if v is not None else "     — "
+
+    if not rows:
+        print("  No bo3 match boundaries in the sample (bo1 games, or every "
+              "match ended 2-0 inside its trace).")
+        return
+    print("\nMatch boundaries — V(s) across bo3 game transitions:")
+    print("  ΔV result   = end of game → first sideboard decision (match-score features update)")
+    print("  ΔV reanchor = last sideboard decision → next game's first decision (board context resets)")
+    print(f"\n  {'Game':<5} {'After':<6} {'Score':<6} {'V end':>7} {'V sb1':>7} {'V sbN':>7} "
+          f"{'V next':>7} {'ΔV result':>10} {'ΔV reanchor':>12} {'Result':<6}")
+    print("  " + "-" * 84)
+    for r in rows:
+        d_res = (r["v_sb_first"] - r["v_pre"]
+                 if r["v_sb_first"] is not None and r["v_pre"] is not None else None)
+        d_re = (r["v_post"] - r["v_sb_last"]
+                if r["v_post"] is not None and r["v_sb_last"] is not None else None)
+        if d_res is None and d_re is None and r["v_pre"] is not None and r["v_post"] is not None:
+            d_re = r["v_post"] - r["v_pre"]  # no sb steps: whole delta is the re-anchor
+        result_str = "WIN" if r["result"] > 0 else ("LOSS" if r["result"] < 0 else "DRAW")
+        score = f"{r['score'][0]}-{r['score'][1]}"
+        print(f"  {r['game_idx']:<5} g{r['after_game']:<5} {score:<6} {fmt(r['v_pre'])} "
+              f"{fmt(r['v_sb_first'])} {fmt(r['v_sb_last'])} {fmt(r['v_post'])} "
+              f"{fmt(d_res):>10} {fmt(d_re):>12} {result_str:<6}")
+
+
+def _print_match_calibration(games):
+    """Per (match, game) score-conditioned value calibration: V(s) at each
+    game's first decision vs the empirical mean REMAINING match return for
+    that score across the sample (remaining = final result minus the ±0.3
+    intermediates already accrued at that score)."""
+    # Collect one row per (match, game-within-match).
+    rows = []
+    for g_idx, game in enumerate(games):
+        vals = game["values"]
+        metas = [_match_meta(o) for o in game["observations"]]
+        seen = set()
+        for i, (gno, sw, ow, sb) in enumerate(metas):
+            if sb or gno in seen:
+                continue
+            seen.add(gno)
+            accrued = BO3_GAME_WIN_REWARD * (sw - ow)
+            rows.append({
+                "game_idx": g_idx,
+                "match_game": gno + 1,
+                "score": (sw, ow),
+                "v_start": vals[i],
+                "remaining": game["result"] - accrued,
+                "result": game["result"],
+            })
+    if not rows:
+        print("  No games.")
+        return
+
+    buckets = {}
+    for r in rows:
+        buckets.setdefault(r["score"], []).append(r)
+
+    print("\nMatch-score calibration — V(s) at each game's first decision vs the")
+    print("empirical mean remaining return for that match score (gap >0 = optimistic):")
+    print(f"\n  By score entering the game:")
+    print(f"  {'Score':<6} {'n':>4} {'mean V start':>13} {'mean remaining':>15} {'gap':>8}")
+    print("  " + "-" * 50)
+    for score in sorted(buckets):
+        rs = buckets[score]
+        mv = float(np.mean([r["v_start"] for r in rs]))
+        mr = float(np.mean([r["remaining"] for r in rs]))
+        print(f"  {score[0]}-{score[1]:<4} {len(rs):>4} {mv:>+13.3f} {mr:>+15.3f} {mv - mr:>+8.3f}")
+
+    print(f"\n  Per match, per game (gap vs that score's empirical mean):")
+    print(f"  {'Match':<6} {'Game':<5} {'Score':<6} {'V start':>8} {'empirical':>10} "
+          f"{'gap':>8} {'Result':<6}")
+    print("  " + "-" * 56)
+    for r in rows:
+        emp = float(np.mean([b["remaining"] for b in buckets[r["score"]]]))
+        result_str = "WIN" if r["result"] > 0 else ("LOSS" if r["result"] < 0 else "DRAW")
+        score = f"{r['score'][0]}-{r['score'][1]}"
+        print(f"  {r['game_idx']:<6} g{r['match_game']:<4} {score:<6} {r['v_start']:>+8.3f} "
+              f"{emp:>+10.3f} {r['v_start'] - emp:>+8.3f} {result_str:<6}")
 
 
 def _card_name_at(obs, base):
@@ -1420,6 +1579,153 @@ def _sim_sideboard_report(games):
             print(f"        OUT: {_count_str(c_out)}")
 
 
+_CAT_SB_IN, _CAT_SB_OUT, _CAT_SB_DONE = 24, 25, 26
+
+
+def _analyze_sbvalue(games):
+    """Cardvalue-style report for sideboard decisions: what the model prefers
+    to bring in / take out, how confident it is, and whether it pays off.
+
+    The `sideboard` report only counts swaps the model actually made; here the
+    full legal menu and the recorded policy distribution at every sideboard
+    decision are used, so preference over the options the model did NOT take
+    is measured too:
+
+      * off   — sideboard phases where the swap was on the menu
+      * taken — times the swap was chosen (extra copies count)
+      * rate  — phases with ≥1 take / phases offered
+      * conf  — mean policy probability on the swap when offered (probability
+                mass summed over duplicate copies within one decision)
+      * ΔV    — mean change in V(s) across a taken swap
+      * ΔWR   — match win rate when taken at least once minus offered-but-
+                never-taken (conditions on availability, unlike cardvalue)
+    """
+    # key = (category, card name); phase key = (match idx, phase ordinal)
+    prob_sum, prob_n = {}, {}
+    offered_phases, taken_phases = {}, {}
+    taken_ct, taken_matches, offered_matches = {}, {}, {}
+    dv = {}
+    n_phases = 0
+    phases_no_swaps = 0
+    done_first_probs = []   # P(SB_DONE) at the first decision of each phase
+
+    for gi, g in enumerate(games):
+        obs_list = g["observations"]
+        actions = g["actions"]
+        vals = g.get("values", [])
+        probs_list = g.get("action_probs", [])
+        ncs = g["num_choices"]
+        in_phase = False
+        phase_id = -1
+        phase_swaps = 0
+
+        for si in range(len(obs_list)):
+            obs = obs_list[si]
+            if not _match_meta(obs)[3]:
+                if in_phase:
+                    n_phases += 1
+                    phases_no_swaps += (phase_swaps == 0)
+                    in_phase = False
+                continue
+            if not in_phase:
+                in_phase = True
+                phase_id += 1
+                phase_swaps = 0
+            pkey = (gi, phase_id)
+            probs = probs_list[si] if si < len(probs_list) else None
+
+            # Menu scan: per-card probability mass on each direction.
+            dec_mass = {}
+            for k in range(ncs[si]):
+                cat = _obs_action_cat(obs, k)
+                if cat in (_CAT_SB_IN, _CAT_SB_OUT):
+                    cid = _obs_card_id(obs, k)
+                    if 0 <= cid < len(_VOCAB_NAMES):
+                        key = (cat, decode.card_index_to_name(cid))
+                        p = float(probs[k]) if probs is not None and k < len(probs) else 0.0
+                        dec_mass[key] = dec_mass.get(key, 0.0) + p
+            # P(done) at the phase's first decision = confidence in the current 60.
+            if probs is not None and (si == 0 or not _match_meta(obs_list[si - 1])[3]):
+                for k in range(ncs[si]):
+                    if _obs_action_cat(obs, k) == _CAT_SB_DONE and k < len(probs):
+                        done_first_probs.append(float(probs[k]))
+                        break
+            for key, mass in dec_mass.items():
+                prob_sum[key] = prob_sum.get(key, 0.0) + mass
+                prob_n[key] = prob_n.get(key, 0) + 1
+                offered_phases.setdefault(key, set()).add(pkey)
+                offered_matches.setdefault(key, set()).add(gi)
+
+            # Chosen-swap attribution.
+            action = actions[si]
+            cat = _obs_action_cat(obs, action)
+            if cat in (_CAT_SB_IN, _CAT_SB_OUT):
+                cid = _obs_card_id(obs, action)
+                if 0 <= cid < len(_VOCAB_NAMES):
+                    key = (cat, decode.card_index_to_name(cid))
+                    taken_ct[key] = taken_ct.get(key, 0) + 1
+                    taken_phases.setdefault(key, set()).add(pkey)
+                    taken_matches.setdefault(key, set()).add(gi)
+                    phase_swaps += 1
+                    if si + 1 < len(vals):
+                        dv.setdefault(key, []).append(vals[si + 1] - vals[si])
+        if in_phase:  # trace ended inside a sideboard phase
+            n_phases += 1
+            phases_no_swaps += (phase_swaps == 0)
+
+    if n_phases == 0:
+        print("  No sideboard phases found. (Are these bo3 games?)")
+        return
+
+    print(f"\nSideboard preference — {n_phases} phases across {len(games)} matches")
+    print(f"  Phases with no swaps: {phases_no_swaps}/{n_phases}", end="")
+    if done_first_probs:
+        print(f"  |  mean P(done) at first sideboard decision: "
+              f"{np.mean(done_first_probs):.0%}")
+    else:
+        print()
+    print("  conf = mean policy prob on the swap when offered.  "
+          "ΔWR = taken-at-least-once minus offered-but-never-taken.")
+
+    for direction, label in ((_CAT_SB_IN, "Boarded IN"), (_CAT_SB_OUT, "Boarded OUT")):
+        keys = [k for k in offered_phases if k[0] == direction]
+        if not keys:
+            continue
+        rows = []
+        for key in keys:
+            off = len(offered_phases[key])
+            t_phases = taken_phases.get(key, set())
+            t_matches = taken_matches.get(key, set())
+            not_taken = offered_matches[key] - t_matches
+            wr_taken = (sum(1 for i in t_matches if games[i]["result"] > 0) / len(t_matches)
+                        if t_matches else None)
+            wr_not = (sum(1 for i in not_taken if games[i]["result"] > 0) / len(not_taken)
+                      if not_taken else None)
+            deltas = dv.get(key, [])
+            rows.append({
+                "card": key[1],
+                "off": off,
+                "taken": taken_ct.get(key, 0),
+                "rate": len(t_phases) / off if off else None,
+                "conf": prob_sum[key] / prob_n[key] if prob_n.get(key) else None,
+                "dv": float(np.mean(deltas)) if deltas else None,
+                "wr_lift": (wr_taken - wr_not
+                            if wr_taken is not None and wr_not is not None else None),
+            })
+        rows.sort(key=lambda r: (-(r["conf"] or 0.0), -r["taken"]))
+
+        print(f"\n  {label:<26} {'off':>4} {'taken':>6} {'rate':>6} {'conf':>6} "
+              f"{'ΔV':>8} {'ΔWR':>6}")
+        print(f"  {'-'*26} {'-'*4} {'-'*6} {'-'*6} {'-'*6} {'-'*8} {'-'*6}")
+        for r in rows:
+            rate_str = f"{r['rate']*100:5.0f}%" if r["rate"] is not None else "    —"
+            conf_str = f"{r['conf']*100:5.0f}%" if r["conf"] is not None else "    —"
+            dv_str = f"{r['dv']:+8.3f}" if r["dv"] is not None else "      — "
+            lift_str = f"{r['wr_lift']*100:+5.0f}%" if r["wr_lift"] is not None else "    —"
+            print(f"  {r['card'][:26]:<26} {r['off']:>4} {r['taken']:>6} "
+                  f"{rate_str} {conf_str} {dv_str} {lift_str}")
+
+
 def _interactive_session(ctx):
     """Interactive REPL for inspecting simulation results.
 
@@ -1440,8 +1746,9 @@ def _interactive_session(ctx):
         print("\n" + "=" * 60)
         print(f"Interactive session — {len(games)} games in memory.")
         cmds = ["list", "replay <N> [-v]", "boardstate <N> <step>", "summary",
-                "cardvalue [N]", "targeting", "sideboard",
-                "swings [N]", "shap", "regret [N]", "entropy", "consistency [N]",
+                "cardvalue [N]", "targeting", "sideboard", "sbvalue",
+                "swings [N]", "boundaries", "matchcal",
+                "shap", "regret [N]", "entropy", "consistency [N]",
                 "calibration", "turning", "clusters", "whatif <N> <step> [k]",
                 "chart <N>", "chart swings [N]", "chart cardvalue [N]", "chart shap",
                 "chart calibration", "chart turning", "chart clusters", "chart whatif"]
@@ -1477,7 +1784,12 @@ def _interactive_session(ctx):
             print("  boardstate <N> [step]     — full board + decision at step in game N (default 0)")
             print("  bs <N> [step]             — alias; enters GDB-style stepping mode")
             print("  summary                   — win/loss/draw stats for all simulated games")
-            print("  swings [N]                — show top N value-function swings (default 10)")
+            print("  swings [N]                — show top N in-game value-function swings (default 10;")
+            print("                              same bo3 game, sideboard steps excluded)")
+            print("  boundaries                — V(s) across bo3 game transitions: result-pricing vs")
+            print("                              board re-anchoring components per boundary")
+            print("  matchcal                  — per match/game: V at each game's first decision vs the")
+            print("                              empirical remaining return for that match score")
             print("  shap [n_bg N] [n_smp N]   — run SHAP analysis on collected game data")
             print("  regret [N]                — policy regret analysis (top N high-regret decisions)")
             print("  entropy                   — policy entropy by phase and board state")
@@ -1485,6 +1797,8 @@ def _interactive_session(ctx):
             print("  cardvalue [N]             — rank cards by importance (ΔV, priority, win-rate lift)")
             print("  targeting                 — self vs opp targeting, hold vs cast analysis")
             print("  sideboard                 — sideboard decisions by each agent (bo3)")
+            print("  sbvalue                   — sideboard preference: take-rate, policy confidence,")
+            print("                              ΔV and win-rate lift per boarded-in/out card (bo3)")
             print("  whatif <N> <step> [k]     — counterfactual: branch the chosen action + top-k")
             print("                              alternatives from the same seed, roll each to the end,")
             print("                              and compare final result / V(s) (k default 3)")
@@ -1654,8 +1968,15 @@ def _interactive_session(ctx):
                 print("  Computing value swings...")
                 ctx["swing_data"] = _compute_swings(games)
             top = ctx["swing_data"][:top_n]
-            print(f"\nTop {min(top_n, len(top))} value swings:")
+            print(f"\nTop {min(top_n, len(top))} value swings (in-game only; "
+                  f"see 'boundaries' for bo3 game transitions):")
             _print_swing_table(top)
+
+        elif cmd in ("boundaries", "boundary"):
+            _print_boundaries(_compute_boundaries(games))
+
+        elif cmd == "matchcal":
+            _print_match_calibration(games)
 
         elif cmd == "shap":
             n_background = 50
@@ -2015,6 +2336,9 @@ def _interactive_session(ctx):
 
         elif cmd == "sideboard":
             _sim_sideboard_report(games)
+
+        elif cmd == "sbvalue":
+            _analyze_sbvalue(games)
 
         elif cmd == "whatif":
             if len(parts) < 3:
