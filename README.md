@@ -4,17 +4,7 @@ Card game rules engine built for reinforcement learning. Games run are determini
 
 ## Prereqs
 
-**C++ toolchain** — to build the engine binary (`make`). No external libraries are
-required (the old raylib GUI dependency was removed; the engine is pure C++17 + the
-standard library).
-
-| | Linux | macOS |
-|---|---|---|
-| C++17 compiler + GNU Make | `g++` (default) | `clang++` (default) |
-| Install | `sudo apt-get install build-essential` | `xcode-select --install` |
-
-Any reasonably recent compiler works (GCC 8+ / Apple Clang 10+ comfortably support
-C++17); CI builds with the `g++`/`make` that ship on `ubuntu-latest`.
+**C++ toolchain** — to build the engine binary (`make`). Engine is C++17 + standard library.
 
 **Python toolchain** — for the RL training stack, the TUI, and the test harness.
 Python 3.10+ (CI is tested on 3.12).
