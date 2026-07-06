@@ -2,19 +2,32 @@
 
 Card game rules engine built for reinforcement learning. Games run are deterministic, based on random seed. Agent (human, scripted or ML model) is presented with finite options for every decision point.
 
-## Prereqs:
-Game engine and CLI:
+## Prereqs
 
-C++17
+**C++ toolchain** — to build the engine binary (`make`). No external libraries are
+required (the old raylib GUI dependency was removed; the engine is pure C++17 + the
+standard library).
 
-Machine learning:
+| | Linux | macOS |
+|---|---|---|
+| C++17 compiler + GNU Make | `g++` (default) | `clang++` (default) |
+| Install | `sudo apt-get install build-essential` | `xcode-select --install` |
 
-Python venv and packages per below commands:
+Any reasonably recent compiler works (GCC 8+ / Apple Clang 10+ comfortably support
+C++17); CI builds with the `g++`/`make` that ship on `ubuntu-latest`.
+
+**Python toolchain** — for the RL training stack, the TUI, and the test harness.
+Python 3.10+ (CI is tested on 3.12).
 ```bash
-python -m venv train/.venv
-train/.venv/bin/pip install gymnasium stable-baselines3 sb3-contrib shap
-train/.venv/bin/pip install -r train/requirements-tui.txt   # textual, needed by ./tui.sh
+python3 -m venv train/.venv
+train/.venv/bin/pip install --upgrade pip
+train/.venv/bin/pip install numpy gymnasium                     # minimum: test harness / env only
+train/.venv/bin/pip install stable-baselines3 sb3-contrib shap  # full RL training + analysis
+train/.venv/bin/pip install -r train/requirements-tui.txt       # textual, needed by ./tui.sh
 ```
+`stable-baselines3` pulls in PyTorch, which is a large, slow install — skip that line
+if you only need the test harness or plain CLI play (numpy + gymnasium are all those
+need). Install it once you actually want to train, observe a model, or run `analysis.py`.
 
 ## Building
 
