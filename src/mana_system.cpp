@@ -1,8 +1,10 @@
 #include "mana_system.h"
 
 #include <algorithm>
+#include <array>
 #include <cstddef>
 #include <cstdio>
+#include <map>
 #include <tuple>
 
 #include "classes/action.h"
@@ -49,6 +51,8 @@ static void fire_taps_for_mana_triggers(Entity tapped_source, Zone::Ownership co
                                         bool log);
 static bool mana_ability_is_painful(const Ability &ab);
 static bool has_nonmana_activated_ability(Entity entity);
+static std::array<int, 6> hand_color_demand(Zone::Ownership controller, Entity paid_for,
+                                            std::shared_ptr<Orderer> orderer);
 
 Entity get_player_entity(Zone::Ownership player) {
     return (player == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
@@ -803,6 +807,29 @@ static bool has_nonmana_activated_ability(Entity entity) {
     return false;
 }
 
+// Colored-pip demand of the controller's remaining hand: how many pips of each color
+// (indexed by the Colors enum, WHITE..COLORLESS) the OTHER cards in hand ask for. Used to
+// steer the auto-payer away from tapping a source whose color those cards still need.
+// Counts raw CardData::mana_cost pips plus each hybrid pip's colored options; the spell
+// being paid for (`paid_for`) is excluded. Deliberately simple — no affordability filter
+// on the counted cards and no weighting — so simulate (can_pay_mana) and the real payment
+// derive the identical ordering from public, side-effect-free state.
+static std::array<int, 6> hand_color_demand(Zone::Ownership controller, Entity paid_for,
+                                            std::shared_ptr<Orderer> orderer) {
+    std::array<int, 6> demand{};
+    for (Entity e : orderer->get_hand(controller)) {
+        if (e == paid_for) continue;
+        if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+        auto &cd = global_coordinator.GetComponent<CardData>(e);
+        for (Colors c : cd.mana_cost)
+            if (c >= WHITE && c <= COLORLESS) demand[static_cast<size_t>(c)]++;
+        for (const auto &pip : cd.hybrid_mana)
+            for (Colors c : pip.colors)
+                if (c >= WHITE && c <= COLORLESS) demand[static_cast<size_t>(c)]++;
+    }
+    return demand;
+}
+
 // Greedily tap sources to cover the remaining cost. This is the single mana-payment
 // algorithm used by BOTH the machine-mode payer (commit=true, mutates real ECS state)
 // and the legality check via can_pay_mana (commit=false, operates on a copied pool with
@@ -896,15 +923,39 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
         valid_sources.push_back({entity, ab, ab.color, is_multi});
     }
 
-    // Utility-averse ordering: within every preference tier below, a source whose only
-    // activated abilities are mana abilities is engaged before one that also carries a
-    // utility ability (Karakas's bounce, Wasteland's destroy, a man-land's animation) —
-    // tapping the utility land for mana would cost its controller the option to use that
-    // ability. stable_partition keeps the original order inside each group, and
-    // cover_activation_cost's payer scan reads the same ordering, so simulate
-    // (can_pay_mana) and the real payment stay in lockstep.
-    std::stable_partition(valid_sources.begin(), valid_sources.end(),
-        [](const SourceInfo &s) { return !has_nonmana_activated_ability(s.entity); });
+    // Candidate ordering: within every preference tier below, engage first the source
+    // whose tap gives up the least. Two ranked criteria, applied by a stable sort (ties
+    // keep entity order), read uniformly by all tiers and cover_activation_cost's payer
+    // scan, so simulate (can_pay_mana) and the real payment stay in lockstep:
+    //   1. HAND COLOR DEMAND — prefer a source whose producible colors the other cards in
+    //      hand need least (with Lightning Bolt in hand, a generic pip taps Wasteland's
+    //      {C} before a Mountain, keeping red open). A multi-color source is scored by
+    //      the MOST-demanded color it could produce — any of its entries taps the whole
+    //      permanent, giving up its best option.
+    //   2. UTILITY — prefer a source whose only activated abilities are mana abilities
+    //      over one that also carries a utility ability (Karakas's bounce, Wasteland's
+    //      destroy, a man-land's animation).
+    {
+        std::array<int, 6> demand = hand_color_demand(controller, paid_for, orderer);
+        std::map<Entity, int> entity_demand;
+        for (const auto &si : valid_sources) {
+            int d = (si.color >= WHITE && si.color <= COLORLESS)
+                        ? demand[static_cast<size_t>(si.color)] : 0;
+            auto it = entity_demand.find(si.entity);
+            if (it == entity_demand.end()) entity_demand[si.entity] = d;
+            else it->second = std::max(it->second, d);
+        }
+        std::map<Entity, bool> entity_utility;
+        for (const auto &si : valid_sources)
+            if (!entity_utility.count(si.entity))
+                entity_utility[si.entity] = has_nonmana_activated_ability(si.entity);
+        std::stable_sort(valid_sources.begin(), valid_sources.end(),
+            [&](const SourceInfo &a, const SourceInfo &b) {
+                int da = entity_demand[a.entity], db = entity_demand[b.entity];
+                if (da != db) return da < db;
+                return entity_utility[a.entity] < entity_utility[b.entity];
+            });
+    }
 
     // Helper: activate a source (tap, sacrifice, pay costs, add mana). si.color always
     // equals si.ability.color (set when the SourceInfo was built), so the shared
