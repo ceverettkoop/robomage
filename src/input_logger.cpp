@@ -1,7 +1,5 @@
 #include "input_logger.h"
 
-#include <pthread.h>
-
 #include <cstdio>
 #include <iostream>
 
@@ -13,20 +11,11 @@
 #include "components/zone.h"
 #include "ecs/coordinator.h"
 #include "error.h"
-#include "gui_flags.h"
 #include "machine_io.h"
 
 extern std::string RESOURCE_DIR;
 extern Coordinator global_coordinator;
 extern Game cur_game;
-extern bool gui_mode;
-extern volatile bool gui_input_requested;
-extern volatile bool gui_input_sent;
-extern volatile int gui_cmd;
-extern pthread_mutex_t input_mutex;
-extern pthread_cond_t input_cond;
-extern volatile bool gui_killed;
-extern volatile bool quit_gui;
 
 static int get_int_input();
 static void record_chosen_action(const std::vector<LegalAction> &actions, int choice);
@@ -35,43 +24,25 @@ static std::string read_header_field(std::ifstream &file, const std::string &key
 static std::string read_embedded_deck(std::ifstream &file, const std::string &deck_key);
 
 static int get_int_input() {
-    // GUI will only pass ints, but does not filter for range
-    if (gui_mode) {
-        gui_input_requested = true;
-        pthread_mutex_lock(&input_mutex);
-        while (!gui_input_sent && !gui_killed) {
-            pthread_cond_wait(&input_cond, &input_mutex);
-        }
-        if (gui_killed) {
-            pthread_mutex_unlock(&input_mutex);
-            game_log("User exited GUI, quitting\n");
-            exit(0);
-        }
-        gui_input_sent = false;
-        pthread_mutex_unlock(&input_mutex);
-        gui_input_requested = false;
-        return gui_cmd;
-    } else {
-        int c;
-        while ((c = getchar()) == ' ' || c == '\t');
-        if (c == EOF || c == '\n') return -1;
-        if (c == 'q' || c == 'Q') {
-            game_log("Quitting.\n");
-            exit(0);
-        }
-        if (c == 'z' || c == 'Z') {
-            while ((c = getchar()) != '\n' && c != EOF);
-            return PASS_TURN_CMD;
-        }
-        ungetc(c, stdin);
-        int choice = -1;
-        if (scanf("%d", &choice) != 1) {
-            while ((c = getchar()) != '\n' && c != EOF);
-            return -1;
-        }
-        while ((c = getchar()) != '\n' && c != EOF);
-        return choice;
+    int c;
+    while ((c = getchar()) == ' ' || c == '\t');
+    if (c == EOF || c == '\n') return -1;
+    if (c == 'q' || c == 'Q') {
+        game_log("Quitting.\n");
+        exit(0);
     }
+    if (c == 'z' || c == 'Z') {
+        while ((c = getchar()) != '\n' && c != EOF);
+        return PASS_TURN_CMD;
+    }
+    ungetc(c, stdin);
+    int choice = -1;
+    if (scanf("%d", &choice) != 1) {
+        while ((c = getchar()) != '\n' && c != EOF);
+        return -1;
+    }
+    while ((c = getchar()) != '\n' && c != EOF);
+    return choice;
 }
 
 void DecisionLogHeader::add_flag(const std::string &token) {
@@ -356,7 +327,7 @@ int InputLogger::get_input(const std::vector<LegalAction> &actions) {
         auto_pass_until_turn = -1;
     }
 
-    // CLI/GUI input loop: print query, validate, log
+    // CLI input loop: print query, validate, log
     Zone::Ownership viewer = (has_human_player)
         ? (human_player_is_a ? Zone::PLAYER_A : Zone::PLAYER_B)
         : Zone::UNKNOWN;
@@ -376,11 +347,7 @@ int InputLogger::get_input(const std::vector<LegalAction> &actions) {
                 return 0;
                 break;
             case FLAG_QUIT:
-                if(gui_mode){
-                    quit_gui = true;
-                }else{
-                    pthread_exit(NULL);
-                }
+                exit(0);
                 break;
             default:
                 break;

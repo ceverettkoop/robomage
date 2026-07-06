@@ -30,7 +30,7 @@ void cli_error(const std::string& msg);
 const char* step_to_string(Step step);
 std::string player_name(Zone::Ownership owner);
 
-// Logging: routes to GUI buffer in GUI mode, printf in CLI; no-op in machine mode
+// Logging: printf in CLI; no-op in machine mode
 void game_log(const char* fmt, ...);
 // Like game_log, but suppressed when a human player is designated and private_to is their opponent
 void game_log_private(Zone::Ownership private_to, const char* fmt, ...);
@@ -43,18 +43,5 @@ bool resolve_narrative_viewer(Zone::Ownership* owner);
 
 // Machine query emitter: BQUERY header line + binary payload (called only in machine mode)
 void cli_emit_machine_query(const Query* q, const GameState* gs);
-
-// C-API buffer accessors (callable from C, including gui.c)
-#ifdef __cplusplus
-extern "C" {
-#endif
-int gui_log_line_count(void);
-const char* gui_log_get_line(int idx);
-void gui_query_clear(void);
-int gui_query_line_count(void);
-const char* gui_query_get_line(int idx);
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* CLI_OUTPUT_H */

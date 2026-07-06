@@ -1,7 +1,6 @@
 #ifndef GAME_H
 #define GAME_H
 
-//passing Step enum to C for GUI
 #define ACTION_HISTORY_SIZE 128
 #define KNOWN_TOP_LIBRARY_SIZE 5
 

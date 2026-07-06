@@ -30,9 +30,6 @@ BINNAME=robomage
 PYTHON := $(shell [ -x train/.venv/bin/python ] && echo train/.venv/bin/python || echo python3)
 # Auto-generated Python files kept in sync with the C++ sources at build time.
 PYGEN := train/_enums.py train/card_costs.py
-# Headless (TUI-only) is the default build. The raylib GUI front end is
-# deprecated; opt into it explicitly with `make GUI=TRUE`.
-GUI:=FALSE
 DEBUGFLAGS = -ggdb
 CXXFLAGS = -std=c++17 -fno-exceptions
 CFLAGS =
@@ -44,15 +41,6 @@ CHECKFLAGS = -Wall -Wformat -Wformat=2 -Wconversion -Wimplicit-fallthrough \
 -fstack-protector-strong
 C_CHECKFLAGS = -Werror=implicit -Werror=incompatible-pointer-types -Werror=int-conversion -Wno-sign-conversion -Wno-conversion
 
-ifeq ($(HEADLESS), TRUE)
-	GUI=FALSE
-endif
-
-ifeq ($(GUI),TRUE)
-	CXXFLAGS += -DGUI=TRUE
-	CFLAGS += -DGUI=TRUE
-endif
-
 ifeq ($(BUILD),RELEASE)
 	CFLAGS += -O2 -flto -march=native -DNDEBUG
 	CXXFLAGS += -O2 -flto -march=native -DNDEBUG
@@ -60,14 +48,6 @@ else
 	CFLAGS += $(DEBUGFLAGS) $(CHECKFLAGS) $(C_CHECKFLAGS)
 	CXXFLAGS += $(DEBUGFLAGS) $(CHECKFLAGS)
 	LDFLAGS += -rdynamic
-endif
-
-ifeq ($(GUI),TRUE)
-	LDLIBS += -lraylib
-	ifeq ($(PLATFORM),OSX)
-		IFLAGS += -I`brew --prefix raylib`/include
-		LDFLAGS += -framework CoreVideo -framework IOKit -framework Cocoa -framework GLUT -framework OpenGL
-	endif
 endif
 
 C_SRCS := $(wildcard $(SRCDIR)/*.c)

@@ -40,11 +40,10 @@ implementation; ask to clarify behavior, not to find an exit.
 
 ## Background
 
-- **Build headless:** every `make` in this skill means `make HEADLESS=TRUE` — the preferred
-  development build (the raylib GUI front end is deprecated/unmaintained and often unavailable, so
-  a plain `make` can fail at link). The headless build still runs `pygen` (regenerating
-  `train/card_costs.py`) and produces the same `bin/robomage` the test harness drives, so it
-  satisfies every build/regen step below.
+- **Build:** every `make` in this skill is a plain `make` — the raylib GUI front end has been
+  removed, so there's no separate headless build to opt into anymore. `make` runs `pygen`
+  (regenerating `train/card_costs.py`) and produces the same `bin/robomage` the test harness
+  drives, so it satisfies every build/regen step below.
 - Cards are registered in `src/card_vocab.h` as `{"Card Name", N}` (next free index `N`). The
   embedding refactor raised the cap to `N_CARD_TYPES = 1024`, so indices up to 1022 are free (1023
   is the token sentinel). A card absent from this file is "unimplemented". **Never grow
@@ -82,7 +81,7 @@ implementation; ask to clarify behavior, not to find an exit.
   Loading System"). Accented names aren't transliterated — fetch e.g. "Lórien Revealed" by its
   ASCII `lorien_revealed` stem by hand.
 - `train/.venv/bin/python train/gen_card_costs.py` — regenerate `train/card_costs.py` after editing
-  the vocab. Normally unnecessary to call directly: a `make HEADLESS=TRUE` regenerates it via `pygen`.
+  the vocab. Normally unnecessary to call directly: a plain `make` regenerates it via `pygen`.
 - `train/test_harness.py` — exercise a card's exact behavior (see `CLAUDE.md` for full usage).
   Drive a precise line with semantic `--play` specs; **never `--interactive`** (no TTY). This is
   the isolation-test tool — it targets one card's modes/triggers, which the generic CI tiers below
@@ -197,7 +196,7 @@ b. **Implement the mechanic (batch) or confirm coverage (covered card)** as a **
    by rule number and cover the whole mechanic, not just this card.
 c. **Register** `{"<Name>", <Index>}` in `src/card_vocab.h` (keep apostrophes; index already
    `< 1023`).
-d. **Build** with `make HEADLESS=TRUE` for the fast dev loop while iterating (this also
+d. **Build** with `make` for the fast dev loop while iterating (this also
    regenerates `train/card_costs.py` via `pygen`). The build MUST be clean; non-fatal errors are
    unacceptable. Fix any new error before continuing.
 e. **Test** — UNLESS this card is `verify_skip` (mechanics already proven by a pre-existing

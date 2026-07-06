@@ -1,6 +1,6 @@
 """Interactive RoboMage game board as a full-screen Textual TUI.
 
-Reimplements the human-vs-opponent play loop (see play.py's CLI / raylib GUI) as
+Reimplements the human-vs-opponent play loop (see play.py's CLI mode) as
 a terminal UI: rendered battlefield, hand, stack, graveyards, life/mana, phase
 strip, and a numbered action list. The human acts either by clicking a card/zone
 or by choosing a numbered option.

@@ -32,7 +32,7 @@ State (STATE_SIZE) + 64 action-category floats + 64 action card-ID floats
 + 64 action controller_is_self floats + 64 action zone_ref floats
 + 70 hand cost floats + 336 battlefield ability cost floats = OBS_SIZE total.
 NOTE: ActionChoice.description is NOT part of the observation — it is for
-human-readable display only (GUI/CLI) and is never sent to the ML model.
+human-readable display only (CLI) and is never sent to the ML model.
 NOTE: Exile zones are tracked in GameState but not serialized to the observation.
 See src/machine_io.h for the full state layout.
 
@@ -558,7 +558,7 @@ class RoboMageEnv(gym.Env):
                 self._action_public = pub_arr
 
                 # Under --narrative the engine appends a fixed char block of
-                # per-action descriptions (the exact CLI/GUI labels). Read and
+                # per-action descriptions (the exact CLI labels). Read and
                 # decode it so observers can show "Target Player B", "Pay 4 life",
                 # etc. — things the numeric metadata can't express. Off the
                 # training path (narrative=False), so OBS is unaffected.

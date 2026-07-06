@@ -12,13 +12,9 @@ Card scripts live in `bin/resources/cardsfolder/`. See the card-forge repository
 ```bash
 make                  # default build is headless; with debug symbols
 make BUILD=RELEASE    # optimized
-make GUI=TRUE         # with raylib gui, deprecated
 ```
 
 The binary is written to `bin/robomage`.
-
-> **Note:** The GUI (raylib) front end is **deprecated** and no longer actively maintained. The
-> text/CLI (TUI) interface is the actively maintained front end.
 
 ## Running
 
@@ -40,7 +36,6 @@ cd bin
 ./robomage                                         # interactive (you play both sides)
 ./robomage --replay resources/logs/game_12345.log  # replay a saved game
 ./robomage --machine                               # machine mode for RL training
-./robomage --gui                                   # gui (deprecated, not actively maintained)
 ```
 
 In interactive mode, numbers select a choice (every choice is logged), z passes priority, q quits.
@@ -51,10 +46,6 @@ In interactive mode, numbers select a choice (every choice is logged), z passes 
 Game engine and CLI:
 
 C++17
-
-GUI:
-
-Raylib
 
 Machine learning:
 
@@ -134,8 +125,7 @@ so the pool collects genuinely stronger snapshots instead of near-duplicates.
 #### Play against model
 
 ```bash
-train/.venv/bin/python train/play.py --human-deck (deck) --model-deck (deck)         # TUI game board (default); loads the deck's checkpoint if present
-train/.venv/bin/python train/play.py --human-deck (deck) --model-deck (deck) --gui   # raylib GUI instead (deprecated)
+train/.venv/bin/python train/play.py --human-deck (deck) --model-deck (deck)   # TUI game board (default); loads the deck's checkpoint if present
 ```
 
 ### Run N games and analyze them

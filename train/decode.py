@@ -560,7 +560,7 @@ def decode_actions(cats_int, card_ids, ctrl, num_choices, public_flags=None,
 
     `descriptions` is the per-action text the engine emits under --narrative
     (env._action_descriptions). When present and non-empty it is the exact
-    CLI/GUI label and is used verbatim — so player targets, Sylvan Library
+    CLI label and is used verbatim — so player targets, Sylvan Library
     pay-vs-return, charm modes, etc. read correctly. When absent, the label is
     reconstructed from the numeric metadata via `describe_action`.
     """

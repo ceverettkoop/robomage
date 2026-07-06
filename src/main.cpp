@@ -35,19 +35,11 @@
 #define VERSION_NUMBER "0.001"
 #endif
 
-#ifdef GUI
-extern "C" {
-#include "gui.h"
-#include "pthread.h"
-}
-#endif
-
 std::string RESOURCE_DIR;
 Coordinator global_coordinator = Coordinator();
 Deck DEFAULT_DECK_ONE;
 Deck DEFAULT_DECK_TWO;
 Game cur_game;
-bool gui_mode = false;
 bool has_human_player = false;
 bool human_player_is_a = false;
 // Narrative spectator: pins game_log_private output to one player's view even
@@ -55,8 +47,6 @@ bool human_player_is_a = false;
 // one-sided narrative without routing input through the human-keyboard path).
 bool log_viewer_set = false;
 Zone::Ownership log_viewer_owner = Zone::UNKNOWN;
-extern volatile bool gui_killed;
-pthread_t game_loop_thread;
 
 GameState gs;
 const GameState *gs_ptr = &gs;
@@ -199,7 +189,6 @@ static int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &dec
 
     size_t prev_turn = (size_t)-1;
     while (cur_game.ended != true) {
-        if (gui_killed) return 0;
         if ((!InputLogger::instance().is_machine_mode() || narrative_mode) && cur_game.turn != prev_turn) {
             cli_print_turn_header(cur_game.turn, cur_game.player_a_turn);
             prev_turn = cur_game.turn;
@@ -266,8 +255,6 @@ static void run_sideboard_phase(Deck &deck, Zone::Ownership player) {
     std::vector<size_t> out_action_to_md_idx;
 
     while (true) {
-        if (gui_killed) break;
-
         // build action list: index 0 = done, 1..N = sideboard cards to bring in
         std::vector<LegalAction> actions;
         actions.emplace_back(ActionType::SPECIAL_ACTION, "Done sideboarding");
@@ -400,8 +387,7 @@ static std::vector<std::string> split_card_list(const std::string &csv) {
     return result;
 }
 
-//runs in thread seperate from gui
-static void *game_loop(void *args) {
+static void game_loop() {
 
     cli_print_version(VERSION_NUMBER);
 
@@ -544,7 +530,6 @@ static void *game_loop(void *args) {
         auto sys = init_ecs();
         play_single_game(sys, DEFAULT_DECK_ONE, DEFAULT_DECK_TWO, true, seed);
     }
-    return NULL;
 }
 
 int main(int argc, char const *argv[]) {
@@ -560,8 +545,6 @@ int main(int argc, char const *argv[]) {
             i++;
         } else if (std::string(argv[i]) == "--machine") {
             machine_mode = true;
-        } else if (std::string(argv[i]) == "--gui") {
-            gui_mode = true;
         } else if (std::string(argv[i]) == "--player" && i + 1 < argc) {
             has_human_player = true;
             std::string p = argv[i + 1];
@@ -632,20 +615,6 @@ int main(int argc, char const *argv[]) {
         }
     }
 
-    if (pthread_create(&game_loop_thread, NULL, game_loop, NULL) != 0) {
-        perror("pthread_create");
-        exit(1);
-    }
-
-    if (gui_mode) {
-#ifdef GUI
-        gui_set_resource_dir(RESOURCE_DIR.c_str());
-        init_gui();
-#else
-        fatal_error("NOTE TO USE GUI; MUST BE COMPILED WITH FLAG GUI==TRUE, RUN AGAIN WITHOUT --gui FLAG OR RECOMPILE");
-#endif
-    }
-
-    pthread_join(game_loop_thread, NULL);
+    game_loop();
     return 0;
 }

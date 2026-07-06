@@ -30,7 +30,7 @@
 //     policy distinguish e.g. "target the opponent" from "target their creature".
 //
 // NOTE: ActionChoice.description is NOT emitted in the BQUERY payload.
-// It is stored in Query for human-readable display (GUI/CLI) only.
+// It is stored in Query for human-readable display (CLI) only.
 //
 // The Python env pads the per-action arrays to MAX_ACTIONS slots; cats, ids,
 // ctrl, and zone go into the observation (STATE_SIZE + 4*MAX_ACTIONS floats

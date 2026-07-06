@@ -38,7 +38,7 @@ Entity load_card(std::string card_name) {
     //success
     card_db.emplace(uid, parsed_card_eid);
 
-    // For DFCs, also store aliases so front/back face names resolve in GUI lookups
+    // For DFCs, also store aliases so front/back face names resolve in name lookups
     if (global_coordinator.entity_has_component<CardData>(parsed_card_eid)) {
         const auto& cd = global_coordinator.GetComponent<CardData>(parsed_card_eid);
         auto front_uid = name_to_uid(cd.name);

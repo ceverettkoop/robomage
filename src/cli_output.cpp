@@ -5,30 +5,11 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <pthread.h>
 
 #include "card_vocab.h"
 #include "classes/colors.h"
 #include "input_logger.h"
 #include "machine_io.h"
-
-extern bool gui_mode;
-
-// ── GUI log ring buffer ───────────────────────────────────────────────────────
-
-#define GUI_LOG_CAPACITY 512
-#define GUI_LOG_LINE_LEN 512
-
-static char g_gui_log[GUI_LOG_CAPACITY][GUI_LOG_LINE_LEN];
-static int  g_gui_log_head  = 0;
-static int  g_gui_log_count = 0;
-
-#define GUI_QUERY_CAPACITY 64
-
-static char g_query_buf[GUI_QUERY_CAPACITY][GUI_LOG_LINE_LEN];
-static int  g_query_count = 0;
-
-static pthread_mutex_t g_buf_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 // ── Utility ───────────────────────────────────────────────────────────────────
 
@@ -58,34 +39,13 @@ std::string player_name(Zone::Ownership owner) {
 // ── game_log ──────────────────────────────────────────────────────────────────
 
 static void game_log_va(const char* fmt, va_list ap) {
-    if (gui_mode) {
-        char buf[GUI_LOG_LINE_LEN];
-        vsnprintf(buf, sizeof(buf), fmt, ap);
-        pthread_mutex_lock(&g_buf_mutex);
-        char* p = buf;
-        while (true) {
-            char* nl = strchr(p, '\n');
-            if (nl) *nl = '\0';
-            // store segment if it has content, or if there's a following newline (blank line)
-            if (nl != NULL || *p != '\0') {
-                strncpy(g_gui_log[g_gui_log_head], p, GUI_LOG_LINE_LEN - 1);
-                g_gui_log[g_gui_log_head][GUI_LOG_LINE_LEN - 1] = '\0';
-                g_gui_log_head = (g_gui_log_head + 1) % GUI_LOG_CAPACITY;
-                if (g_gui_log_count < GUI_LOG_CAPACITY) g_gui_log_count++;
-            }
-            if (!nl) break;
-            p = nl + 1;
-        }
-        pthread_mutex_unlock(&g_buf_mutex);
-    } else {
-        vprintf(fmt, ap);
-    }
+    vprintf(fmt, ap);
 }
 
 extern bool narrative_mode;
 
 void game_log(const char* fmt, ...) {
-    if (InputLogger::instance().is_machine_mode() && !gui_mode && !narrative_mode) return;
+    if (InputLogger::instance().is_machine_mode() && !narrative_mode) return;
     va_list ap;
     va_start(ap, fmt);
     game_log_va(fmt, ap);
@@ -114,7 +74,7 @@ bool resolve_narrative_viewer(Zone::Ownership* owner) {
 }
 
 void game_log_private(Zone::Ownership private_to, const char* fmt, ...) {
-    if (InputLogger::instance().is_machine_mode() && !gui_mode && !narrative_mode) return;
+    if (InputLogger::instance().is_machine_mode() && !narrative_mode) return;
     Zone::Ownership viewer;
     if (resolve_narrative_viewer(&viewer) && private_to != viewer) return;
     va_list ap;
@@ -129,7 +89,7 @@ void game_log_private(Zone::Ownership private_to, const char* fmt, ...) {
 // unrestricted or the viewer IS the owner, so pairing it with game_log_private
 // on the same event yields exactly one line in every perspective.
 void game_log_redacted(Zone::Ownership owner, const char* fmt, ...) {
-    if (InputLogger::instance().is_machine_mode() && !gui_mode && !narrative_mode) return;
+    if (InputLogger::instance().is_machine_mode() && !narrative_mode) return;
     Zone::Ownership viewer;
     if (!resolve_narrative_viewer(&viewer) || viewer == owner) return;
     va_list ap;
@@ -137,52 +97,6 @@ void game_log_redacted(Zone::Ownership owner, const char* fmt, ...) {
     game_log_va(fmt, ap);
     va_end(ap);
 }
-
-// ── C-API buffer accessors ────────────────────────────────────────────────────
-
-extern "C" {
-
-int gui_log_line_count(void) {
-    pthread_mutex_lock(&g_buf_mutex);
-    int c = g_gui_log_count;
-    pthread_mutex_unlock(&g_buf_mutex);
-    return c;
-}
-
-const char* gui_log_get_line(int idx) {
-    pthread_mutex_lock(&g_buf_mutex);
-    int actual;
-    if (g_gui_log_count < GUI_LOG_CAPACITY) {
-        actual = idx;
-    } else {
-        actual = (g_gui_log_head + idx) % GUI_LOG_CAPACITY;
-    }
-    const char* result = (idx >= 0 && idx < g_gui_log_count) ? g_gui_log[actual] : "";
-    pthread_mutex_unlock(&g_buf_mutex);
-    return result;
-}
-
-void gui_query_clear(void) {
-    pthread_mutex_lock(&g_buf_mutex);
-    g_query_count = 0;
-    pthread_mutex_unlock(&g_buf_mutex);
-}
-
-int gui_query_line_count(void) {
-    pthread_mutex_lock(&g_buf_mutex);
-    int c = g_query_count;
-    pthread_mutex_unlock(&g_buf_mutex);
-    return c;
-}
-
-const char* gui_query_get_line(int idx) {
-    pthread_mutex_lock(&g_buf_mutex);
-    const char* result = (idx >= 0 && idx < g_query_count) ? g_query_buf[idx] : "";
-    pthread_mutex_unlock(&g_buf_mutex);
-    return result;
-}
-
-} // extern "C"
 
 // ── Machine query emitter ─────────────────────────────────────────────────────
 
@@ -285,7 +199,6 @@ void cli_print_help(const char* program, const char* version) {
     printf("  --machine           Machine mode: emit BQUERY lines for AI input\n");
     printf("  --log-decisions     Write the decision log in machine mode (off by default\n");
     printf("                      there; CLI/interactive games always log)\n");
-    printf("  --gui               Launch with GUI\n");
     printf("  --bo3               Best-of-three match mode\n");
     printf("  --help, -h          Show this help message\n");
     printf("\nDeck names are filenames without .dk, relative to resources/decks/.\n");
@@ -315,7 +228,7 @@ void cli_print_invalid_action() {
 // ── Game state display ────────────────────────────────────────────────────────
 
 void print_game_state(const GameState* gs) {
-    if (InputLogger::instance().is_machine_mode() && !gui_mode) return;
+    if (InputLogger::instance().is_machine_mode()) return;
 
     const char* self_name   = gs->self_is_player_a ? "Player A" : "Player B";
     const char* opp_name    = gs->self_is_player_a ? "Player B" : "Player A";
@@ -336,35 +249,33 @@ void print_game_state(const GameState* gs) {
         }
     }
 
-    if (!gui_mode) {
-        game_log("\n--- BATTLEFIELD ---\n");
+    game_log("\n--- BATTLEFIELD ---\n");
 
-        const PermanentState* perm_arrays[2] = { gs->self_permanents, gs->opp_permanents };
-        const char* perm_names[2] = { self_name, opp_name };
+    const PermanentState* perm_arrays[2] = { gs->self_permanents, gs->opp_permanents };
+    const char* perm_names[2] = { self_name, opp_name };
 
-        for (int p = 0; p < 2; p++) {
-            game_log("%s:\n", perm_names[p]);
-            bool found_any = false;
-            for (int i = 0; i < MAX_BATTLEFIELD_SLOTS; i++) {
-                const PermanentState* slot = &perm_arrays[p][i];
-                if (slot->card_vocab_idx < 0) continue;
-                found_any = true;
-                char line[512];
-                int len = snprintf(line, sizeof(line), "  %s", card_index_to_name(slot->card_vocab_idx));
-                if (slot->is_creature && len < (int)sizeof(line))
-                    len += snprintf(line + len, (size_t)((int)sizeof(line) - len), " [%d/%d]", slot->power, slot->toughness);
-                if (slot->is_tapped && len < (int)sizeof(line))
-                    len += snprintf(line + len, (size_t)((int)sizeof(line) - len), " (TAPPED)");
-                if (slot->has_summoning_sickness && len < (int)sizeof(line))
-                    len += snprintf(line + len, (size_t)((int)sizeof(line) - len), " (SICK)");
-                if (slot->damage > 0 && len < (int)sizeof(line))
-                    len += snprintf(line + len, (size_t)((int)sizeof(line) - len), " (%d damage)", slot->damage);
-                if (slot->counters[0] != '\0' && len < (int)sizeof(line))
-                    snprintf(line + len, (size_t)((int)sizeof(line) - len), " {%s}", slot->counters);
-                game_log("%s\n", line);
-            }
-            if (!found_any) game_log("  (no permanents)\n");
+    for (int p = 0; p < 2; p++) {
+        game_log("%s:\n", perm_names[p]);
+        bool found_any = false;
+        for (int i = 0; i < MAX_BATTLEFIELD_SLOTS; i++) {
+            const PermanentState* slot = &perm_arrays[p][i];
+            if (slot->card_vocab_idx < 0) continue;
+            found_any = true;
+            char line[512];
+            int len = snprintf(line, sizeof(line), "  %s", card_index_to_name(slot->card_vocab_idx));
+            if (slot->is_creature && len < (int)sizeof(line))
+                len += snprintf(line + len, (size_t)((int)sizeof(line) - len), " [%d/%d]", slot->power, slot->toughness);
+            if (slot->is_tapped && len < (int)sizeof(line))
+                len += snprintf(line + len, (size_t)((int)sizeof(line) - len), " (TAPPED)");
+            if (slot->has_summoning_sickness && len < (int)sizeof(line))
+                len += snprintf(line + len, (size_t)((int)sizeof(line) - len), " (SICK)");
+            if (slot->damage > 0 && len < (int)sizeof(line))
+                len += snprintf(line + len, (size_t)((int)sizeof(line) - len), " (%d damage)", slot->damage);
+            if (slot->counters[0] != '\0' && len < (int)sizeof(line))
+                snprintf(line + len, (size_t)((int)sizeof(line) - len), " {%s}", slot->counters);
+            game_log("%s\n", line);
         }
+        if (!found_any) game_log("  (no permanents)\n");
     }
 
     bool header_printed = false;
@@ -392,49 +303,29 @@ void print_game_state(const GameState* gs) {
         game_log("%s\n", line);
     }
 
-    if (!gui_mode) {
-        extern bool has_human_player;
-        extern bool human_player_is_a;
-        bool show_hand = !has_human_player || (human_player_is_a == gs->self_is_player_a);
-        if (show_hand) {
-            game_log("\n%s hand:\n", self_name);
-            bool hand_empty = true;
-            for (int i = 0; i < MAX_HAND_SLOTS; i++) {
-                if (gs->self_hand[i] < 0) continue;
-                hand_empty = false;
-                game_log("  %s\n", card_index_to_name(gs->self_hand[i]));
-            }
-            if (hand_empty) game_log("  (empty)\n");
+    extern bool has_human_player;
+    extern bool human_player_is_a;
+    bool show_hand = !has_human_player || (human_player_is_a == gs->self_is_player_a);
+    if (show_hand) {
+        game_log("\n%s hand:\n", self_name);
+        bool hand_empty = true;
+        for (int i = 0; i < MAX_HAND_SLOTS; i++) {
+            if (gs->self_hand[i] < 0) continue;
+            hand_empty = false;
+            game_log("  %s\n", card_index_to_name(gs->self_hand[i]));
         }
+        if (hand_empty) game_log("  (empty)\n");
     }
 }
 
 // ── Choice display ────────────────────────────────────────────────────────────
 
 void print_query(const Query* q, bool player_a_has_priority) {
-    if (InputLogger::instance().is_machine_mode() && !gui_mode) return;
+    if (InputLogger::instance().is_machine_mode()) return;
     const char* pname = player_a_has_priority ? "Player A" : "Player B";
-    if (gui_mode) {
-        pthread_mutex_lock(&g_buf_mutex);
-        g_query_count = 0;
-        char header[256];
-        snprintf(header, sizeof(header), "%s has priority. Legal actions:", pname);
-        strncpy(g_query_buf[0], header, GUI_LOG_LINE_LEN - 1);
-        g_query_buf[0][GUI_LOG_LINE_LEN - 1] = '\0';
-        g_query_count = 1;
-        for (int i = 0; i < q->num_choices && g_query_count < GUI_QUERY_CAPACITY; i++) {
-            char line[512];
-            snprintf(line, sizeof(line), "  %d: %s", i, q->choices[i].description);
-            strncpy(g_query_buf[g_query_count], line, GUI_LOG_LINE_LEN - 1);
-            g_query_buf[g_query_count][GUI_LOG_LINE_LEN - 1] = '\0';
-            g_query_count++;
-        }
-        pthread_mutex_unlock(&g_buf_mutex);
-    } else {
-        game_log("\n%s has priority. Legal actions:\n", pname);
-        for (int i = 0; i < q->num_choices; i++) {
-            game_log("  %d: %s\n", i, q->choices[i].description);
-        }
+    game_log("\n%s has priority. Legal actions:\n", pname);
+    for (int i = 0; i < q->num_choices; i++) {
+        game_log("  %d: %s\n", i, q->choices[i].description);
     }
 }
 

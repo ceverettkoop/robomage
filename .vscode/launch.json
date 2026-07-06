@@ -9,7 +9,7 @@
             "type": "lldb",
             "request": "launch",
             "program": "${workspaceFolder}/bin/robomage",
-            "args": ["--gui", "--deck", "doomsday", "--bo3"],
+            "args": ["--deck", "doomsday", "--bo3"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/bin/",
             "environment": [],
@@ -29,11 +29,11 @@
             ]
         },
         {
-            "name": "(lldb) ARM Launch GUI",
+            "name": "(lldb) ARM Launch bo3",
             "type": "lldb",
             "request": "launch",
             "program": "${workspaceFolder}/bin/robomage",
-            "args": ["--gui", "--deck", "doomsday", "--bo3"],
+            "args": ["--deck", "doomsday", "--bo3"],
             "cwd": "${workspaceFolder}/bin",
             "terminal": "integrated"
         },
