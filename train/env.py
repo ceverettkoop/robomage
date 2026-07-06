@@ -206,6 +206,54 @@ assert _PENDING_DECISION_END == STATE_SIZE, (_PENDING_DECISION_END, STATE_SIZE)
 _PERM_CARD_OFF = 11
 
 
+# ── Sideboard observation mask ───────────────────────────────────────────────
+# At bo3 sideboard time the engine keeps the ended game's ECS alive, so the
+# state vector describes the STALE terminal board of the previous game — noise
+# for a sideboarding decision. When is_sideboard_phase (state[_MATCH_CTX_START+3])
+# is set we zero every block except the ones that actually inform sideboarding:
+# graveyards ("how the game went"), action history (last-game tempo + in-phase
+# swap context), match/library/turn context (game number => play/draw), the
+# opponent revealed-cards multi-hot (the primary signal), and the pending-decision
+# context (which IN card the OUT query is cutting for). Card-id slots must be
+# filled with the empty sentinel (-1/N_CARD_TYPES), NOT 0.0 — 0.0 decodes to a
+# real vocab index 0 and defeats the extractor's empty-slot masking.
+def _build_sideboard_mask():
+    keep = np.zeros(STATE_SIZE, dtype=bool)
+    for lo, hi in (
+        (_GY_START, _HAND_START),                   # graveyards (self + opp)
+        (_HIST_START, _HIST_END),                   # action history ring
+        (_MATCH_CTX_START, _KNOWN_TOP_LIB_START),   # match + library ctx + current turn
+        (_REVEALED_START, _REVEALED_END),           # opponent revealed multi-hot
+        (_PENDING_DECISION_START, _PENDING_DECISION_END),  # pending-decision context
+    ):
+        keep[lo:hi] = True
+    fill = np.zeros(STATE_SIZE, dtype=np.float32)
+    # Card-id positions inside masked blocks must decode to "empty", not vocab 0.
+    card_id_idx = []
+    for s in range(_PERM_SLOTS):                     # self + opp permanent slots
+        card_id_idx.append(_SELF_PERM_START + s * _PERM_SLOT_SIZE + _PERM_CARD_OFF)
+        card_id_idx.append(_OPP_PERM_START + s * _PERM_SLOT_SIZE + _PERM_CARD_OFF)
+    for s in range(_STACK_SLOTS):                    # stack object id + target sub-slot ids
+        base = _STACK_START + s * _STACK_SLOT_SIZE
+        card_id_idx.append(base + 1)                 # object card id
+        tgt0 = base + 3 + _STACK_MODE_SLOTS          # first target sub-slot
+        for t in range(_STACK_TGT_SLOTS):
+            card_id_idx.append(tgt0 + t * _STACK_TGT_FIELDS + (_STACK_TGT_FIELDS - 1))
+    for i in range(_HAND_START, _HAND_START + _HAND_SLOTS_TOTAL):      # self hand
+        card_id_idx.append(i)
+    for i in range(_KNOWN_TOP_LIB_START, _KNOWN_TOP_LIB_END):          # known top-5 library
+        card_id_idx.append(i)
+    for i in range(_OPP_KNOWN_HAND_START, _OPP_KNOWN_HAND_END):        # known opp hand
+        card_id_idx.append(i)
+    for i in card_id_idx:
+        if not keep[i]:
+            fill[i] = _ACTION_CARD_ID_NULL
+    return keep, fill
+
+
+_SB_MASK_KEEP, _SB_MASK_FILL = _build_sideboard_mask()
+
+
 def _slot_card_idx(obs, i):
     """Decode the vocab index from a single normalized id float at obs[i] (-1 = empty)."""
     return int(round(float(obs[i]) * N_CARD_TYPES))
@@ -540,6 +588,13 @@ class RoboMageEnv(gym.Env):
                 # The -1 confirm convention applies to mandatory attacker/blocker queries.
                 self._pending_confirm = any(
                     c in _MANDATORY_CATS for c in cats_int[:self._num_choices])
+
+                # Sideboard decisions observe the stale terminal board of the
+                # previous game — mask it down to the sideboard-relevant blocks
+                # (see _build_sideboard_mask). Applied before the cost gathers so
+                # derived hand/bf cost features zero out consistently.
+                if state_arr[_MATCH_CTX_START + 3] > 0.5:
+                    np.copyto(state_arr, _SB_MASK_FILL, where=~_SB_MASK_KEEP)
 
                 # Hand cast costs: gather cost rows by hand-slot card id
                 hand_ids = np.rint(
