@@ -596,9 +596,12 @@ def _replay_to_step(env, game, step):
 
     Resets with the game's recorded engine seed and deck arrangement, then feeds
     the recorded interleaved action log until the model is on the clock for
-    decision `step`. Returns (obs, ok): `ok` is False (with a printed warning) if
-    replay diverged from the stored observation, so callers never present a
-    counterfactual built on a desynced state.
+    decision `step`. Returns (obs, ok, prefix_reward): `ok` is False (with a
+    printed warning) if replay diverged from the stored observation, so callers
+    never present a counterfactual built on a desynced state. `prefix_reward` is
+    the cumulative Player-A reward accrued during the prefix — nonzero when the
+    branch point is in game 2+ of a bo3 match (the ±0.3 intermediates from
+    earlier games land here, not after the branch).
     """
     engine_seed = game["engine_seed"]
     model_is_a = game["model_is_a"]
@@ -606,11 +609,13 @@ def _replay_to_step(env, game, step):
     full_actions = game["full_actions"]
 
     obs, _ = _reset_for_game(env, model_is_a, engine_seed)
+    prefix_reward = 0.0
     for a in full_actions[:prefix]:
-        obs, _r, terminated, truncated, _ = env.step(a)
+        obs, r, terminated, truncated, _ = env.step(a)
+        prefix_reward += r
         if terminated or truncated:
             print(f"  Replay ended early at prefix action; cannot reach step {step}.")
-            return obs, False
+            return obs, False, prefix_reward
 
     expected = game["observations"][step]
     if not np.allclose(obs, expected, atol=1e-4):
@@ -618,8 +623,8 @@ def _replay_to_step(env, game, step):
         print(f"  WARNING: replay diverged from recorded state at step {step} "
               f"({n_diff} obs floats differ). Engine nondeterminism? "
               f"Counterfactual results may be unreliable.")
-        return obs, False
-    return obs, True
+        return obs, False, prefix_reward
+    return obs, True, prefix_reward
 
 
 def _rollout_from(model, env, opp_model, obs, model_is_a, first_action):
@@ -695,11 +700,14 @@ def _run_whatif(model, env, opp_model, game, game_idx, step, k):
 
     branches = []
     for ci, act in enumerate(candidates):
-        obs, ok = _replay_to_step(env, game, step)
+        obs, ok, prefix_reward = _replay_to_step(env, game, step)
         if not ok:
             # Divergence already warned; abort the whole whatif — every branch
             # would share the same bad prefix.
             return None
+        # Rewards accrued before the branch (earlier bo3 games) belong to every
+        # branch's match total, from the model's perspective like roll["result"].
+        prefix_result = prefix_reward if game["model_is_a"] else -prefix_reward
         desc = _action_desc(obs0, act)
         p = probs[act] if probs is not None else None
         roll = _rollout_from(model, env, opp_model, obs, game["model_is_a"], act)
@@ -709,7 +717,7 @@ def _run_whatif(model, env, opp_model, game, game_idx, step, k):
             "prob": p,
             "is_chosen": act == chosen,
             "v_after": roll["values"][0] if roll["values"] else None,
-            "result": roll["result"],
+            "result": roll["result"] + prefix_result,
             "n_decisions": roll["n_decisions"],
             "values": roll["values"],
         }
