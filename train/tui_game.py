@@ -61,6 +61,12 @@ ORACLE_HIDE_DELAY = 0.8
 # point of view; the structural self/opp fields are swapped separately.
 _MIRROR_LABELS = {"own": "opp", "opp": "own", "self": "opponent", "opponent": "self"}
 
+# ActionRefZone (src/classes/gamestate.h) -> board zone a CardButton lives in.
+# Only battlefield/hand have widgets; other zones (stack/gy/exile/player) map to
+# None. Lets cross-highlighting tell a hand card from a same-named battlefield
+# permanent, which card_idx + controller alone cannot.
+_ZONE_REF_TO_ZONE = {1: "battlefield", 2: "battlefield", 3: "hand"}
+
 # Opponent choices that reveal a hidden card identity (the card never becomes
 # public knowledge). When the opponent makes one of these, the log shows a
 # generic "a card" message instead of the actual name — e.g. Ponder/Brainstorm
@@ -135,9 +141,10 @@ def _edge_colors(colors):
 class CardClicked(Message):
     """A battlefield permanent or hand card was clicked."""
 
-    def __init__(self, card_idx: int, controller: str):
+    def __init__(self, card_idx: int, controller: str, zone: str):
         self.card_idx = card_idx
         self.controller = controller          # "self" | "opp"
+        self.zone = zone                      # "battlefield" | "hand"
         super().__init__()
 
 
@@ -146,14 +153,17 @@ class CardButton(Static):
 
     `edge_colors` is a (top, right, bottom, left) tuple of rich colors encoding
     the card's color identity; each edge is painted its color at mount time so
-    multicolor cards show a split border (see `_edge_colors`)."""
+    multicolor cards show a split border (see `_edge_colors`). `zone`
+    ("battlefield"/"hand") distinguishes a card from a same-named copy in the
+    other zone so cross-highlighting doesn't spill between them."""
 
     def __init__(self, label: str, card_idx: int, controller: str,
-                 edge_colors=None):
+                 edge_colors=None, zone: str = "battlefield"):
         super().__init__(label)
         self._card_idx = card_idx
         self._controller = controller
         self._edge_colors = edge_colors
+        self._zone = zone
 
     def on_mount(self) -> None:
         if not self._edge_colors:
@@ -174,7 +184,7 @@ class CardButton(Static):
         self.set_class(on, "action-linked")
 
     def on_click(self) -> None:
-        self.post_message(CardClicked(self._card_idx, self._controller))
+        self.post_message(CardClicked(self._card_idx, self._controller, self._zone))
 
 
 class StackItem(Static):
@@ -521,7 +531,8 @@ class GameApp(App):
     def on_card_clicked(self, message: CardClicked) -> None:
         if not self._awaiting:
             return
-        matches = self._actions_for_card(message.card_idx, message.controller)
+        matches = self._actions_for_card(message.card_idx, message.controller,
+                                         message.zone)
         if not matches:
             self._log("[yellow]No legal action for that card — use the numbered list.[/yellow]")
         elif len(matches) == 1:
@@ -545,8 +556,8 @@ class GameApp(App):
         node = event.node
         if isinstance(node, CardButton):
             self._hovered_button = node
-            idxs = [a["index"]
-                    for a in self._actions_for_card(node._card_idx, node._controller)]
+            idxs = [a["index"] for a in self._actions_for_card(
+                node._card_idx, node._controller, node._zone)]
             self._set_action_highlights(idxs)
         elif isinstance(node, StackItem):
             self._highlight_stack_targets(node._target_refs)
@@ -566,20 +577,35 @@ class GameApp(App):
         permanent(s) that option refers to."""
         self._highlight_perms_for_action(message.index)
 
-    def _actions_for_card(self, card_idx: int, controller: str):
+    @staticmethod
+    def _action_zone(a):
+        """The board zone the action's referenced card lives in ("battlefield" /
+        "hand"), or None when it names no board card (or carries no zone info)."""
+        return _ZONE_REF_TO_ZONE.get(a.get("zone_ref", 0))
+
+    def _actions_for_card(self, card_idx: int, controller: str, zone: str):
         """Legal actions this card feeds. Prefer a controller-exact match; fall
-        back to card-id alone (some actions carry no controller flag). Mirrors
-        the click resolver so click and hover always agree on the same set."""
+        back to card-id alone (some actions carry no controller flag). An action
+        whose zone_ref names a DIFFERENT board zone is excluded, so a hand card
+        and a same-named battlefield permanent don't cross-match. Mirrors the
+        click resolver so click and hover always agree on the same set."""
         if card_idx < 0:
             return []
+
+        def zone_ok(a):
+            az = self._action_zone(a)
+            return az is None or az == zone   # no zone info → don't exclude
         want = "own" if controller == "self" else "opp"
         strict = [a for a in self._actions
-                  if a["card_idx"] == card_idx and a["controller"] == want]
-        return strict or [a for a in self._actions if a["card_idx"] == card_idx]
+                  if a["card_idx"] == card_idx and a["controller"] == want and zone_ok(a)]
+        return strict or [a for a in self._actions
+                          if a["card_idx"] == card_idx and zone_ok(a)]
 
     def _highlight_perms_for_action(self, index) -> None:
-        """Highlight the permanent(s) the given menu-option index targets; a None
-        index (mouse left the list) clears all permanent highlights."""
+        """Highlight the card(s) the given menu-option index refers to; a None
+        index (mouse left the list) clears all highlights. Matches on card id,
+        controller, and — when the action carries a zone_ref — the exact board
+        zone, so a hand card never lights up its same-named battlefield twin."""
         buttons = list(self.query(CardButton))
         for btn in buttons:
             btn.set_action_highlight(False)
@@ -589,6 +615,7 @@ class GameApp(App):
         if a["card_idx"] < 0:
             return
         want_ctrl = a["controller"]
+        want_zone = self._action_zone(a)
         for btn in buttons:
             if btn._card_idx != a["card_idx"]:
                 continue
@@ -596,6 +623,8 @@ class GameApp(App):
                 btn_want = "own" if btn._controller == "self" else "opp"
                 if btn_want != want_ctrl:
                     continue
+            if want_zone is not None and btn._zone != want_zone:
+                continue
             btn.set_action_highlight(True)
 
     def _option_prompt(self, a, highlight: bool):
@@ -816,7 +845,8 @@ class GameApp(App):
     async def _fill_row(self, selector: str, perms, controller: str) -> None:
         box = self.query_one(selector, VerticalScroll)
         await box.remove_children()
-        widgets = [self._mk_card(decode.fmt_perm(p), p["card_idx"], controller)
+        widgets = [self._mk_card(decode.fmt_perm(p), p["card_idx"], controller,
+                                 "battlefield")
                    for p in perms]
         if widgets:
             await box.mount(*widgets)
@@ -824,15 +854,17 @@ class GameApp(App):
     async def _rebuild_hand(self, hand) -> None:
         box = self.query_one("#self-hand", VerticalScroll)
         await box.remove_children()
-        widgets = [self._mk_card(c["name"], c["card_idx"], "self") for c in hand]
+        widgets = [self._mk_card(c["name"], c["card_idx"], "self", "hand")
+                   for c in hand]
         if widgets:
             await box.mount(*widgets)
 
     @staticmethod
-    def _mk_card(label: str, card_idx: int, controller: str) -> "CardButton":
+    def _mk_card(label: str, card_idx: int, controller: str,
+                 zone: str) -> "CardButton":
         """Build a CardButton whose border edges encode the card's color identity."""
         edges = _edge_colors(decode.card_border_colors(card_idx))
-        return CardButton(label, card_idx, controller, edges)
+        return CardButton(label, card_idx, controller, edges, zone)
 
     @staticmethod
     def _phase_strip(obs, gs) -> str:

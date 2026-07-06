@@ -519,12 +519,18 @@ def describe_action(cat, card_name, ctrl_str, labels=SELF_OPP_LABELS):
 
 
 def decode_actions(cats_int, card_ids, ctrl, num_choices, public_flags=None,
-                   labels=SELF_OPP_LABELS, descriptions=None):
+                   labels=SELF_OPP_LABELS, descriptions=None, zone_refs=None):
     """Decode the per-action arrays into a list of dicts.
 
     Each dict: index, category (int), category_name, card (name or None),
     card_idx (vocab index or -1), controller ('own'|'opp'|None), description,
-    card_is_public (bool — card identity publicly known, e.g. a revealed tutor).
+    card_is_public (bool — card identity publicly known, e.g. a revealed tutor),
+    zone_ref (int ActionRefZone of the referenced entity, 0 = none).
+
+    `zone_refs` is the per-action ActionRefZone array (decode.action_zone_refs /
+    env side-channel); it disambiguates a card that appears in two zones at once
+    (e.g. a hand card being discarded vs. a same-named battlefield permanent),
+    which card_idx + controller alone cannot tell apart.
 
     `public_flags` is the per-action card_is_public array (env._action_public);
     None means "unknown", treated as not-public. `labels` substitutes the
@@ -561,6 +567,7 @@ def decode_actions(cats_int, card_ids, ctrl, num_choices, public_flags=None,
             "controller": ctrl_str,
             "description": desc,
             "card_is_public": is_public,
+            "zone_ref": int(zone_refs[i]) if zone_refs is not None and i < len(zone_refs) else 0,
         })
     return actions
 
@@ -576,7 +583,8 @@ def decode_actions_from_obs(obs, num_choices, public_flags=None,
     """
     return decode_actions(action_categories(obs, num_choices),
                           action_card_ids(obs), action_ctrls(obs), num_choices,
-                          public_flags, labels, descriptions)
+                          public_flags, labels, descriptions,
+                          zone_refs=action_zone_refs(obs, num_choices))
 
 
 # ── Decision-type classification (all read the integer category array) ────────
