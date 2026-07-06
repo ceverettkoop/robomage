@@ -273,7 +273,13 @@ void StateManager::state_based_effects(Game &game, std::shared_ptr<Orderer> orde
                     }
                     game_log("Legend rule: %s controls %zu copies of %s; choose one to keep.\n",
                              player_name(owner).c_str(), grp.second.size(), grp.first.c_str());
+                    // The controller of the duplicates chooses which to keep; point
+                    // priority at them so the query routes/observes/records from their
+                    // perspective (SBAs run regardless of who currently holds priority).
+                    bool prev_priority = game.player_a_has_priority;
+                    game.player_a_has_priority = (owner == Zone::PLAYER_A);
                     int keep = InputLogger::instance().get_input(choices);
+                    game.player_a_has_priority = prev_priority;
                     Entity kept = grp.second[static_cast<size_t>(keep)];
                     for (auto e : grp.second) {
                         if (e == kept) continue;

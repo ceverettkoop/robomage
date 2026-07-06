@@ -465,7 +465,12 @@ size_t choose_one(Zone::Ownership chooser, const std::vector<Candidate> &cands) 
     }
     game_log("%s chooses which replacement effect applies next (%zu applicable).\n",
              player_name(chooser).c_str(), eligible.size());
+    // Point priority at the chooser so the query routes/observes/records from
+    // their perspective (they may not be the priority holder).
+    bool prev_priority = cur_game.player_a_has_priority;
+    cur_game.player_a_has_priority = (chooser == Zone::PLAYER_A);
     int pick = InputLogger::instance().get_input(choices);
+    cur_game.player_a_has_priority = prev_priority;
     return eligible[static_cast<size_t>(pick)];
 }
 
@@ -502,7 +507,13 @@ void dispatch_draw(ReplacementEvent &ev) {
         la.category = ActionCategory::CHOOSE_REPLACEMENT;
         actions.push_back(la);
     }
+    // The drawing player makes the dredge decision — route/observe/record from
+    // their perspective, which may differ from the current priority holder (a
+    // draw can be forced by an opponent's effect).
+    bool prev_priority = cur_game.player_a_has_priority;
+    cur_game.player_a_has_priority = (ev.affected_player == Zone::PLAYER_A);
     int choice = InputLogger::instance().get_input(actions);
+    cur_game.player_a_has_priority = prev_priority;
     if (choice == 0) return;  // chose to draw normally
 
     const Candidate &chosen = dredges[static_cast<size_t>(choice - 1)];
