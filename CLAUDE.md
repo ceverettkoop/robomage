@@ -675,7 +675,8 @@ BQUERY: <N>\n
 
 ### Key files
 
-- `train/env.py` — `RoboMageEnv` gymnasium wrapper; `ModelVsScriptedEnv` scripted-opponent wrapper; `SelfPlayEnv` self-play wrapper; `scripted_action` rule-based agent
+- `train/env.py` — `RoboMageEnv` gymnasium wrapper; `ModelVsScriptedEnv` scripted-opponent wrapper; `SelfPlayEnv` self-play wrapper. Lazily re-exports `scripted_action` for back-compat callers; the real rule-based agent logic lives in `train/scripted_agent.py`.
+- `train/scripted_agent.py` — the rule-based `ScriptedAgent`/`scripted_action` implementation (smart mulligan, combat simulation, evaluation-based targeting, deck-specific combo lines); imported by `opponents.py`, `train.py`, `bench_engine.py`, `analysis.py`, and re-exported from `env.py`
 - `train/runner.py` — THE game-running module: `drive_game` (the single decision loop, with per-decision hooks), `run_games` (env-per-game orchestration + transcripts), `run_match` (spec-based front door for scripting: agents/decks/bo3/seed/output as parameters). See `docs/game_running.md`.
 - `train/opponents.py` — the `Controller` agent abstraction and `make_controller` spec grammar (scripted tiers, model checkpoints via the shared `resolve_checkpoint`, `play:`/`actions:` scripts, `human`, `auto`), plus the training opponent pools
 - `train/extractor.py` — `CardGameExtractor` per-entity feature extractor for the policy network
@@ -695,6 +696,17 @@ BQUERY: <N>\n
   (decks resolve relative to `bin/resources/decks/`; W/L/D summary to stdout, any draw is a finding).
 - `train/action_spec.py` — shared semantic-action resolver: turns a `--play` spec string (`cast:Lightning Bolt`, `target:X@opp`, `pass`, …) into the matching legal action index against the current decision's decoded menu. Used by `PlayController` (test harness `--play`, `observe --play-a/--play-b`) and by `HumanController` (play.py text mode / `run_match(..., "human")`) for typed semantic input.
 - `train/card_costs.py` — auto-generated cast-cost and ability-cost matrices (do not edit manually)
+- `train/test_sideboard_mask.py` — standalone regression script for the bo3 sideboard-observation
+  fixes: env-side masking of the stale prior game's board (`RoboMageEnv`), the pending-decision
+  context slots identifying the chosen IN card during the OUT query, and the history/action
+  controller-flag repoint to the sideboarding seat. Not wired into `ci_check.py` or the Makefile —
+  run manually after touching bo3 sideboard handling: `train/.venv/bin/python train/test_sideboard_mask.py`
+- `train/test_revealed_accumulator.py` — standalone regression script for the opponent
+  revealed-cards multi-hot accumulator (the engine's belief-state tracking of cards the opponent
+  has ever revealed): empty-start, single-game reveal-and-persist, negative (library-only) case,
+  tutor reveal to a hidden zone, and cross-game persistence across a bo3 reset. Not wired into
+  `ci_check.py` or the Makefile — run manually after touching revealed-card tracking:
+  `train/.venv/bin/python train/test_revealed_accumulator.py`
 - `src/machine_io.h` — state vector layout documentation and constants
 - `src/input_logger.cpp` — machine mode BQUERY emission, replay, and CLI input handling
 - `src/card_vocab.h` — card name → vocab index mapping for one-hot encoding
