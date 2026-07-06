@@ -111,7 +111,7 @@
    4: Activate Edge of Autumn from hand (Draw)
   >> A/A: 1 (Cast Thoughtseize)
 --- Narrative ---
-  Choose target:
+  Choose target for Thoughtseize:
 
 --- Decision 7 ---
   Priority: Player A (active)
@@ -410,7 +410,7 @@
    2: Activate Polluted Delta (ChangeZone)
   >> B/B: 1 (Activate Mishra's Bauble (PeekAndReveal))
 --- Narrative ---
-  Choose target:
+  Choose target for Mishra's Bauble:
 
 --- Decision 27 ---
   Priority: Player B (active)
@@ -838,7 +838,7 @@
   >> B/B: 0 (Return Island)
 --- Narrative ---
   Player B returns Island to hand
-  Choose target:
+  Choose target for Daze:
 
 --- Decision 53 ---
   Priority: Player B (non-active)
@@ -1917,7 +1917,7 @@
    2: Activate Street Wraith from hand (Draw)
   >> A/A: 1 (Cast Thoughtseize)
 --- Narrative ---
-  Choose target:
+  Choose target for Thoughtseize:
 
 --- Decision 120 ---
   Priority: Player A (active)
@@ -2189,7 +2189,7 @@
   >> A/A: 0 (Exile Thassa's Oracle)
 --- Narrative ---
   Player A exiles Thassa's Oracle
-  Choose target:
+  Choose target for Force of Will:
 
 --- Decision 136 ---
   Priority: Player A (non-active)
@@ -2665,7 +2665,7 @@
    2: Activate Street Wraith from hand (Draw)
   >> A/A: 1 (Cast Thoughtseize)
 --- Narrative ---
-  Choose target:
+  Choose target for Thoughtseize:
 
 --- Decision 164 ---
   Priority: Player A (active)
@@ -3288,7 +3288,7 @@
    1: Cast Lightning Bolt
   >> B/B: 1 (Cast Lightning Bolt)
 --- Narrative ---
-  Choose target:
+  Choose target for Lightning Bolt:
 
 --- Decision 202 ---
   Priority: Player B (active)

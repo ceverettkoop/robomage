@@ -244,7 +244,7 @@
   >> A/A: 0 (Return Island)
 --- Narrative ---
   Player A returns Island to hand
-  Choose target:
+  Choose target for Daze:
 
 --- Decision 14 ---
   Priority: Player A (non-active)
@@ -512,7 +512,7 @@
   >> A/A: 0 (Return Island)
 --- Narrative ---
   Player A returns Island to hand
-  Choose target:
+  Choose target for Daze:
 
 --- Decision 28 ---
   Priority: Player A (non-active)
@@ -558,7 +558,7 @@
   >> B/B: 0 (Return Island)
 --- Narrative ---
   Player B returns Island to hand
-  Choose target:
+  Choose target for Daze:
 
 --- Decision 31 ---
   Priority: Player B (active)
@@ -1106,7 +1106,7 @@
    1: Cast Unholy Heat
   >> A/A: 1 (Cast Unholy Heat)
 --- Narrative ---
-  Choose target:
+  Choose target for Unholy Heat:
 
 --- Decision 58 ---
   Priority: Player A (active)
@@ -1222,7 +1222,7 @@
    1: Activate Wasteland (Destroy)
   >> A/A: 1 (Activate Wasteland (Destroy))
 --- Narrative ---
-  Choose target:
+  Choose target for Wasteland:
 
 --- Decision 64 ---
   Priority: Player A (active)

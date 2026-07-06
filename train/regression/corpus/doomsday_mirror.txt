@@ -111,7 +111,7 @@
    4: Activate Edge of Autumn from hand (Draw)
   >> A/A: 1 (Cast Thoughtseize)
 --- Narrative ---
-  Choose target:
+  Choose target for Thoughtseize:
 
 --- Decision 7 ---
   Priority: Player A (active)
@@ -194,7 +194,7 @@
   >> B/B: 0 (Exile Personal Tutor)
 --- Narrative ---
   Player B exiles Personal Tutor
-  Choose target:
+  Choose target for Force of Will:
 
 --- Decision 13 ---
   Priority: Player B (non-active)
@@ -2103,7 +2103,7 @@
    3: Activate Street Wraith from hand (Draw)
   >> A/A: 1 (Cast Thoughtseize)
 --- Narrative ---
-  Choose target:
+  Choose target for Thoughtseize:
 
 --- Decision 138 ---
   Priority: Player A (active)
@@ -2156,7 +2156,7 @@
    4: Cast Dark Ritual
   >> B/B: 1 (Cast Daze)
 --- Narrative ---
-  Choose target:
+  Choose target for Daze:
 
 --- Decision 141 ---
   Priority: Player B (non-active)
@@ -3676,7 +3676,7 @@
   >> A/A: 0 (Exile Daze)
 --- Narrative ---
   Player A exiles Daze
-  Choose target:
+  Choose target for Force of Will:
 
 --- Decision 236 ---
   Priority: Player A (non-active)

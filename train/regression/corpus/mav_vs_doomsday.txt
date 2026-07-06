@@ -443,7 +443,7 @@
   >> B/B: 0 (Exile Ponder)
 --- Narrative ---
   Player B exiles Ponder
-  Choose target:
+  Choose target for Force of Will:
 
 --- Decision 26 ---
   Priority: Player B (non-active)
@@ -503,7 +503,7 @@
    2: Cast Dark Ritual
   >> B/B: 1 (Cast Thoughtseize)
 --- Narrative ---
-  Choose target:
+  Choose target for Thoughtseize:
 
 --- Decision 29 ---
   Priority: Player B (active)
@@ -610,7 +610,7 @@
    1: Activate Scryb Ranger (Untap)
   >> A/A: 1 (Activate Scryb Ranger (Untap))
 --- Narrative ---
-  Choose target:
+  Choose target for Scryb Ranger:
 
 --- Decision 34 ---
   Priority: Player A (active)
@@ -1047,7 +1047,7 @@
    1: Activate Scryb Ranger (Untap)
   >> A/A: 1 (Activate Scryb Ranger (Untap))
 --- Narrative ---
-  Choose target:
+  Choose target for Scryb Ranger:
 
 --- Decision 60 ---
   Priority: Player A (active)
@@ -1613,7 +1613,7 @@
    1: Activate Scryb Ranger (Untap)
   >> A/A: 1 (Activate Scryb Ranger (Untap))
 --- Narrative ---
-  Choose target:
+  Choose target for Scryb Ranger:
 
 --- Decision 94 ---
   Priority: Player A (active)
@@ -2267,7 +2267,7 @@
    2: Activate Scryb Ranger (Untap)
   >> A/A: 1 (Activate Keen-Eyed Curator (ChangeZone))
 --- Narrative ---
-  Choose target:
+  Choose target for Keen-Eyed Curator:
 
 --- Decision 133 ---
   Priority: Player A (active)
@@ -2315,7 +2315,7 @@
    2: Activate Scryb Ranger (Untap)
   >> A/A: 2 (Activate Scryb Ranger (Untap))
 --- Narrative ---
-  Choose target:
+  Choose target for Scryb Ranger:
 
 --- Decision 135 ---
   Priority: Player A (active)
@@ -2433,7 +2433,7 @@
    1: Activate Keen-Eyed Curator (ChangeZone)
   >> A/A: 1 (Activate Keen-Eyed Curator (ChangeZone))
 --- Narrative ---
-  Choose target:
+  Choose target for Keen-Eyed Curator:
 
 --- Decision 142 ---
   Priority: Player A (active)
@@ -2511,7 +2511,7 @@
    1: Activate Keen-Eyed Curator (ChangeZone)
   >> A/A: 1 (Activate Keen-Eyed Curator (ChangeZone))
 --- Narrative ---
-  Choose target:
+  Choose target for Keen-Eyed Curator:
 
 --- Decision 146 ---
   Priority: Player A (active)
@@ -3025,7 +3025,7 @@
    2: Activate Scryb Ranger (Untap)
   >> A/A: 1 (Activate Keen-Eyed Curator (ChangeZone))
 --- Narrative ---
-  Choose target:
+  Choose target for Keen-Eyed Curator:
 
 --- Decision 177 ---
   Priority: Player A (active)
@@ -3070,7 +3070,7 @@
    2: Activate Scryb Ranger (Untap)
   >> A/A: 2 (Activate Scryb Ranger (Untap))
 --- Narrative ---
-  Choose target:
+  Choose target for Scryb Ranger:
 
 --- Decision 179 ---
   Priority: Player A (active)
@@ -3188,7 +3188,7 @@
    1: Activate Keen-Eyed Curator (ChangeZone)
   >> A/A: 1 (Activate Keen-Eyed Curator (ChangeZone))
 --- Narrative ---
-  Choose target:
+  Choose target for Keen-Eyed Curator:
 
 --- Decision 186 ---
   Priority: Player A (active)
@@ -3722,7 +3722,7 @@
    2: Activate Scryb Ranger (Untap)
   >> A/A: 1 (Activate Keen-Eyed Curator (ChangeZone))
 --- Narrative ---
-  Choose target:
+  Choose target for Keen-Eyed Curator:
 
 --- Decision 218 ---
   Priority: Player A (active)
@@ -3766,7 +3766,7 @@
    2: Activate Scryb Ranger (Untap)
   >> A/A: 2 (Activate Scryb Ranger (Untap))
 --- Narrative ---
-  Choose target:
+  Choose target for Scryb Ranger:
 
 --- Decision 220 ---
   Priority: Player A (active)
@@ -3884,7 +3884,7 @@
    1: Activate Keen-Eyed Curator (ChangeZone)
   >> A/A: 1 (Activate Keen-Eyed Curator (ChangeZone))
 --- Narrative ---
-  Choose target:
+  Choose target for Keen-Eyed Curator:
 
 --- Decision 227 ---
   Priority: Player A (active)
@@ -4437,7 +4437,7 @@
    2: Activate Scryb Ranger (Untap)
   >> A/A: 1 (Activate Keen-Eyed Curator (ChangeZone))
 --- Narrative ---
-  Choose target:
+  Choose target for Keen-Eyed Curator:
 
 --- Decision 260 ---
   Priority: Player A (active)
@@ -4480,7 +4480,7 @@
    2: Activate Scryb Ranger (Untap)
   >> A/A: 2 (Activate Scryb Ranger (Untap))
 --- Narrative ---
-  Choose target:
+  Choose target for Scryb Ranger:
 
 --- Decision 262 ---
   Priority: Player A (active)
@@ -4598,7 +4598,7 @@
    1: Activate Keen-Eyed Curator (ChangeZone)
   >> A/A: 1 (Activate Keen-Eyed Curator (ChangeZone))
 --- Narrative ---
-  Choose target:
+  Choose target for Keen-Eyed Curator:
 
 --- Decision 269 ---
   Priority: Player A (active)

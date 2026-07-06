@@ -171,7 +171,7 @@
   >> B/B: 0 (Exile Personal Tutor)
 --- Narrative ---
   Player B exiles Personal Tutor
-  Choose target:
+  Choose target for Force of Will:
 
 --- Decision 10 ---
   Priority: Player B (non-active)
@@ -215,7 +215,7 @@
   >> A/A: 0 (Return Island)
 --- Narrative ---
   Player A returns Island to hand
-  Choose target:
+  Choose target for Daze:
 
 --- Decision 13 ---
   Priority: Player A (active)
@@ -789,7 +789,7 @@
   >> B/B: 0 (Return Underground Sea)
 --- Narrative ---
   Player B returns Underground Sea to hand
-  Choose target:
+  Choose target for Daze:
 
 --- Decision 46 ---
   Priority: Player B (non-active)
@@ -835,7 +835,7 @@
   >> A/A: 0 (Return Island)
 --- Narrative ---
   Player A returns Island to hand
-  Choose target:
+  Choose target for Daze:
 
 --- Decision 49 ---
   Priority: Player A (active)
@@ -1043,7 +1043,7 @@
    1: Cast Unholy Heat
   >> A/A: 1 (Cast Unholy Heat)
 --- Narrative ---
-  Choose target:
+  Choose target for Unholy Heat:
 
 --- Decision 61 ---
   Priority: Player A (active)
@@ -1639,7 +1639,7 @@
    1: Cast Lightning Bolt
   >> A/A: 1 (Cast Lightning Bolt)
 --- Narrative ---
-  Choose target:
+  Choose target for Lightning Bolt:
 
 --- Decision 96 ---
   Priority: Player A (active)
@@ -1721,7 +1721,7 @@
    1: Activate Wasteland (Destroy)
   >> A/A: 1 (Activate Wasteland (Destroy))
 --- Narrative ---
-  Choose target:
+  Choose target for Wasteland:
 
 --- Decision 101 ---
   Priority: Player A (active)
@@ -3661,7 +3661,7 @@
    1: Cast Unholy Heat
   >> A/A: 1 (Cast Unholy Heat)
 --- Narrative ---
-  Choose target:
+  Choose target for Unholy Heat:
 
 --- Decision 219 ---
   Priority: Player A (active)
