@@ -1,11 +1,6 @@
 TODO:
 
--tui_play bo3 not working
-
-
 ## Open engine correctness issues
-
-- surveil not correct for surveil more than 2 - it does them one at a time, agent should be offered X cards and decide to put on top or in graveyard one at a time, in user desired order
 
 - Dauthi Voidwalker (vocab 88) does not work exactly as written — casts immediately (should be
   the exile-a-card-then-cast-from-exile ability with its "can't be cast unless" restriction).
