@@ -2417,13 +2417,19 @@ def _board_bucket_from_feat(feat):
 
 
 def _analyze_regret(games, top_n=20, verbose=True):
-    """Compute policy-based regret proxy from collected game traces.
+    """Compute policy-based regret/uncertainty proxies from collected game traces.
 
-    Regret proxy = 1 - P(chosen action). High values mean the model spread
-    probability across alternatives — it was uncertain about its choice.
-    Also computes margin = P(chosen) - P(second best).
+    Per decision it reports raw regret plus five menu-size-aware metrics (A-E) so
+    large menus (e.g. sideboarding, N up to ~40) don't top the ranking purely
+    because raw regret floors at 1 - 1/N for a uniform policy:
+      Raw = 1 - P(chosen)                menu-size biased
+      A   = regret / (1 - 1/N)           uniform-normalized; 1.0 == uniform policy
+      B   = H(policy) / ln(N)            normalized entropy, 0 (decisive)..1 (uniform)
+      C   = (exp(H) - 1) / (N - 1)       normalized perplexity, 0..1
+      D   = P(chosen) - P(2nd best)      top-2 margin (high == decisive)
+      E   = -ln P(chosen) / ln(N)        normalized log-loss; 1.0 == uniform policy
 
-    Returns list of regret entries sorted by descending regret.
+    Entries are sorted by descending A (the uniform-normalized regret).
     """
     entries = []
     for g_idx, game in enumerate(games):
@@ -2436,8 +2442,23 @@ def _analyze_regret(games, top_n=20, verbose=True):
             chosen_prob = probs[action]
             sorted_probs = np.sort(probs)[::-1]
             second_best = sorted_probs[1] if len(sorted_probs) > 1 else 0.0
-            regret = 1.0 - chosen_prob
-            margin = chosen_prob - second_best
+            regret = 1.0 - chosen_prob            # raw: 1 - P(chosen)
+            margin = chosen_prob - second_best    # D: gap from chosen to runner-up
+            # Menu-size-normalized variants (A/B/C/E) so large menus (e.g.
+            # sideboarding) don't dominate the ranking purely because raw regret
+            # floors at 1 - 1/N for a uniform policy. For nc<=1 there's no real
+            # decision, so all normalized metrics are 0.
+            if nc > 1:
+                ln_n = np.log(nc)
+                p = np.asarray(probs[:nc], dtype=float)
+                p_safe = p[p > 1e-10]
+                entropy = float(-np.sum(p_safe * np.log(p_safe)))    # policy entropy (nats)
+                reg_unif  = regret / (1.0 - 1.0 / nc)                # A: 1.0 == uniform policy
+                ent_norm  = entropy / ln_n                           # B: H/ln(N), 0..1
+                perp_norm = (np.exp(entropy) - 1.0) / (nc - 1.0)     # C: (perplexity-1)/(N-1), 0..1
+                ll_norm   = -np.log(max(chosen_prob, 1e-12)) / ln_n  # E: -lnP(chosen)/ln(N), 1.0==uniform
+            else:
+                reg_unif = ent_norm = perp_norm = ll_norm = 0.0
             best_alt_idx = -1
             if nc > 1:
                 alt_probs = probs.copy()
@@ -2446,13 +2467,15 @@ def _analyze_regret(games, top_n=20, verbose=True):
             entries.append({
                 "game_idx": g_idx, "step": step,
                 "regret": regret, "margin": margin,
+                "reg_unif": reg_unif, "ent_norm": ent_norm,
+                "perp_norm": perp_norm, "ll_norm": ll_norm,
                 "chosen_prob": chosen_prob, "chosen_action": action,
                 "best_alt_idx": best_alt_idx, "best_alt_prob": second_best,
                 "num_choices": nc, "obs": obs, "feat": feat,
                 "result": game["result"],
             })
 
-    entries.sort(key=lambda e: -e["regret"])
+    entries.sort(key=lambda e: -e["reg_unif"])
 
     if not entries:
         print("No decisions with action probabilities found.")
@@ -2464,11 +2487,19 @@ def _analyze_regret(games, top_n=20, verbose=True):
     n_decisions = len(entries)
     mean_regret = np.mean([e["regret"] for e in entries])
     mean_margin = np.mean([e["margin"] for e in entries])
+    mean_a = np.mean([e["reg_unif"] for e in entries])
+    mean_b = np.mean([e["ent_norm"] for e in entries])
+    mean_c = np.mean([e["perp_norm"] for e in entries])
+    mean_e = np.mean([e["ll_norm"] for e in entries])
 
     print(f"\nPolicy regret analysis — {len(games)} games, {n_decisions} model decisions")
-    print(f"  NOTE: Regret proxy = 1 - P(chosen). High = model spread probability")
-    print(f"        across alternatives. Margin = P(chosen) - P(2nd best).")
-    print(f"\n  Overall: mean regret={mean_regret:.3f}  mean margin={mean_margin:.3f}")
+    print(f"  Metrics per decision (menu size N):")
+    print(f"    Raw = 1-P(chosen) [menu-size biased]   A = regret/(1-1/N) [1.0==uniform policy]")
+    print(f"    B = H(policy)/ln(N) [0..1]              C = (perplexity-1)/(N-1) [0..1]")
+    print(f"    D = P(chosen)-P(2nd) [margin, high=decisive]   E = -lnP(chosen)/ln(N) [1.0==uniform]")
+    print(f"  Ranked by A (uniform-normalized regret).")
+    print(f"\n  Overall means: Raw={mean_regret:.3f}  A={mean_a:.3f}  B={mean_b:.3f}  "
+          f"C={mean_c:.3f}  D(margin)={mean_margin:.3f}  E={mean_e:.3f}")
 
     # By game outcome
     win_regrets = [e["regret"] for e in entries if e["result"] > 0]
@@ -2487,17 +2518,21 @@ def _analyze_regret(games, top_n=20, verbose=True):
         phase_regrets.setdefault(step_name, []).append(e["regret"])
 
     print(f"\n  By game phase:")
-    print(f"    {'Phase':<14} {'Mean Regret':>12} {'Mean Margin':>12} {'N':>6}")
+    print(f"    {'Phase':<14} {'Raw':>8} {'A':>8} {'D(marg)':>9} {'N':>6}")
     phase_margins = {}
+    phase_a = {}
     for e in entries:
         step_name = _step_name_from_feat(e["feat"])
         phase_margins.setdefault(step_name, []).append(e["margin"])
+        phase_a.setdefault(step_name, []).append(e["reg_unif"])
     for phase in _INTERP_STEP_NAMES:
         if phase not in phase_regrets:
             continue
         regs = phase_regrets[phase]
         mars = phase_margins[phase]
-        print(f"    {phase:<14} {np.mean(regs):12.3f} {np.mean(mars):12.3f} {len(regs):6d}")
+        aa = phase_a[phase]
+        print(f"    {phase:<14} {np.mean(regs):8.3f} {np.mean(aa):8.3f} "
+              f"{np.mean(mars):9.3f} {len(regs):6d}")
 
     # By board state
     bucket_regrets = {}
@@ -2513,19 +2548,23 @@ def _analyze_regret(games, top_n=20, verbose=True):
             continue
         print(f"    {key:<16} regret={np.mean(regs):.3f}  (n={len(regs)})")
 
-    # Top regret decisions
+    # Top decisions, ranked by A (uniform-normalized regret)
     top = entries[:min(top_n, len(entries))]
-    print(f"\n  Top {len(top)} highest-regret decisions:")
-    print(f"    {'Game':<6} {'Step':<6} {'Phase':<14} {'Regret':>7} {'Margin':>7} "
-          f"{'Chosen':>7} {'2nd Best':>9} {'#Acts':>5} {'Result':<6}")
-    print(f"    {'-'*6} {'-'*6} {'-'*14} {'-'*7} {'-'*7} {'-'*7} {'-'*9} {'-'*5} {'-'*6}")
+    print(f"\n  Top {len(top)} decisions by A (uniform-normalized regret):")
+    print(f"    (Raw=1-P(chosen)  A=regret/(1-1/N)  B=H/lnN  C=(perp-1)/(N-1)  "
+          f"D=margin  E=-lnP(chosen)/lnN  P(ch)=P(chosen))")
+    print(f"    {'Game':<5} {'Step':<5} {'Phase':<13} {'#A':>4} "
+          f"{'Raw':>6} {'A':>6} {'B':>6} {'C':>6} {'D':>6} {'E':>6} "
+          f"{'P(ch)':>6} {'Res':<3}")
+    print(f"    {'-'*5} {'-'*5} {'-'*13} {'-'*4} "
+          f"{'-'*6} {'-'*6} {'-'*6} {'-'*6} {'-'*6} {'-'*6} {'-'*6} {'-'*3}")
     for e in top:
         phase = _step_name_from_feat(e["feat"])
         result_str = "W" if e["result"] > 0 else ("L" if e["result"] < 0 else "D")
-        print(f"    {e['game_idx']:<6} {e['step']:<6} {phase:<14} "
-              f"{e['regret']:7.3f} {e['margin']:7.3f} "
-              f"{e['chosen_prob']:7.3f} {e['best_alt_prob']:9.3f} "
-              f"{e['num_choices']:5d} {result_str:<6}")
+        print(f"    {e['game_idx']:<5} {e['step']:<5} {phase:<13} {e['num_choices']:>4} "
+              f"{e['regret']:6.3f} {e['reg_unif']:6.3f} {e['ent_norm']:6.3f} "
+              f"{e['perp_norm']:6.3f} {e['margin']:6.3f} {e['ll_norm']:6.3f} "
+              f"{e['chosen_prob']:6.3f} {result_str:<3}")
 
     # Detailed board states for top 5
     print(f"\n  Detailed board states for top {min(5, len(top))} regret decisions:\n")
