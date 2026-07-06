@@ -15,9 +15,7 @@ train/.venv/bin/pip install numpy gymnasium                     # minimum: test 
 train/.venv/bin/pip install stable-baselines3 sb3-contrib shap  # full RL training + analysis
 train/.venv/bin/pip install -r train/requirements-tui.txt       # textual, needed by ./tui.sh
 ```
-`stable-baselines3` pulls in PyTorch, which is a large, slow install — skip that line
-if you only need the test harness or plain CLI play (numpy + gymnasium are all those
-need). Install it once you actually want to train, observe a model, or run `analysis.py`.
+`stable-baselines3` pulls in PyTorch, technically not required for play vs scripted (dumb) agents built into the engine, or for self-play.
 
 ## Building
 
