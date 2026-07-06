@@ -1,5 +1,8 @@
 TODO:
 
+-tui_play bo3 not working
+
+
 ## Open engine correctness issues
 
 - surveil not correct for surveil more than 2 - it does them one at a time, agent should be offered X cards and decide to put on top or in graveyard one at a time, in user desired order
@@ -41,23 +44,14 @@ part of our rules model, per project scope):
   `ValidTgtsDesc`, `ValidDescription`, `ChangeTypeDesc`, `ChangeValidDesc`,
   `GiftDescription`, `VoteMessage`, `SacMessage`, `PrecostDesc`, `Name`, `Image`.
 
-**Justified as cosmetic/redundant in code — spot-check the reasoning holds:**
+**TO CHECK**
 `Duration`, `Hidden`, `ForgetOtherTargets`, `ForgetOnMoved`, `Choices`,
 `ControlledByPlayer`, `Reveal`, `Ultimate`, `Triggers`, `Stackable`,
 `ForgetOtherRemembered`, `DamageMap`, `Announce`, `ValidCards`, `Imprint`,
 `ClearImprinted`, `ShuffleNonMandatory`, `ForceRevealToController`.
-
-**Known unimplemented — currently no-ops, need a real handler** (the affected
-cards still play via their other tags; drop each from `ignored_keys` when done):
-- **Reorder$ True** (Brainstorm): let the player choose the order of the cards put
-  back on top of the library. Currently the returned cards keep a default order.
-- **TriggerAmount$ Remembered$Amount** and **RememberOriginalTokens$ True**
-  (Ajani, Nacatl Avenger): carry the number of tokens created to the transform
-  trigger, and remember the original token set it references.
-- **LockTokenScript$ True** (Into the Flood Maw): pin the gifted tapped-Fish
-  token's script for the gift clause.
-- **ExileOnMoved$ Battlefield** (Manifold Key): exile the permanent when it moves
-  off the battlefield.
+- **Reorder$ True** -- brainstorm works with out it? maybe reorder false is unimplemented?
+- **LockTokenScript$ True** unknown intent
+- **ExileOnMoved$ Battlefield**  unknown intent
 
 ## Cosmetic / logging
 
@@ -69,22 +63,6 @@ cards still play via their other tags; drop each from `ignored_keys` when done):
 
 
 ## Deferred — bigger, needs its own session
-
-### Modal spell mode & target selection at CAST (CR 601.2b/c) — FIXED 2026-07-02
-
-Modes + targets are now announced at cast (`announce_spell_targets` in src/action_processor.cpp;
-picks recorded in `Ability::charm_chosen`), `effects::charm` is a resolver only (per-mode CR 608.2b
-re-verification; choose-at-resolution loop kept as a fallback for unrouted cast paths), copies keep
-modes and may re-target (effect_copy_spell.cpp), and `spell_has_castable_targets` requires
-CharmNum$ choosable modes. The state vector also grew (STATE_SIZE 2919 → 3183): every stack slot
-now serializes its announced targets (all spells/abilities) and chosen-mode multi-hot — a shape
-change that invalidates ALL pre-existing checkpoints (retrain from scratch). Engine-internal
-ordering note: X is chosen before modes (strict 601.2b says modes first) because mode choosability
-can depend on X (Kozilek's Command `Creature.cmcLEX`); not opponent-observable.
-
-Remaining acceptable gaps: mode multi-hot capped at 6, serialized targets capped at 4 per stack
-object; an all-modes-untargetable charm COPY is still created and fizzles at resolution
-(CR 707.10c pruning not applied per-mode).
 
 
 ### T3.2 cleanup-step trigger priority (rule 514.3a) — DEFERRED
