@@ -48,6 +48,7 @@ static void fire_taps_for_mana_triggers(Entity tapped_source, Zone::Ownership co
                                         std::shared_ptr<Orderer> orderer, ManaValue &pool,
                                         bool log);
 static bool mana_ability_is_painful(const Ability &ab);
+static bool has_nonmana_activated_ability(Entity entity);
 
 Entity get_player_entity(Zone::Ownership player) {
     return (player == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
@@ -790,6 +791,18 @@ static bool mana_ability_is_painful(const Ability &ab) {
     return false;
 }
 
+// True if the battlefield permanent has a non-mana ACTIVATED ability (Karakas's bounce,
+// Wasteland's destroy, a man-land's animation): tapping it for mana costs its controller
+// the option to use that ability, so the auto-payer prefers plain sources when otherwise
+// equal. Loyalty abilities count too (ability_is_mana excludes them), which only matters
+// if a planeswalker ever taps for mana — also a "save it for its other ability" case.
+static bool has_nonmana_activated_ability(Entity entity) {
+    auto &perm = global_coordinator.GetComponent<Permanent>(entity);
+    for (const auto &ab : perm.abilities)
+        if (ab.ability_type == Ability::ACTIVATED && !ability_is_mana(ab)) return true;
+    return false;
+}
+
 // Greedily tap sources to cover the remaining cost. This is the single mana-payment
 // algorithm used by BOTH the machine-mode payer (commit=true, mutates real ECS state)
 // and the legality check via can_pay_mana (commit=false, operates on a copied pool with
@@ -882,6 +895,16 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
         if (replaced) continue;
         valid_sources.push_back({entity, ab, ab.color, is_multi});
     }
+
+    // Utility-averse ordering: within every preference tier below, a source whose only
+    // activated abilities are mana abilities is engaged before one that also carries a
+    // utility ability (Karakas's bounce, Wasteland's destroy, a man-land's animation) —
+    // tapping the utility land for mana would cost its controller the option to use that
+    // ability. stable_partition keeps the original order inside each group, and
+    // cover_activation_cost's payer scan reads the same ordering, so simulate
+    // (can_pay_mana) and the real payment stay in lockstep.
+    std::stable_partition(valid_sources.begin(), valid_sources.end(),
+        [](const SourceInfo &s) { return !has_nonmana_activated_ability(s.entity); });
 
     // Helper: activate a source (tap, sacrifice, pay costs, add mana). si.color always
     // equals si.ability.color (set when the SourceInfo was built), so the shared
