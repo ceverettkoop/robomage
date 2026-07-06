@@ -628,7 +628,10 @@ class NarrativeEnv(RoboMageEnv):
 
 # ── Action category constants (mirror ActionCategory enum in classes/action.h) ─
 _CAT_PASS       = 0
-_CAT_MANA       = 1   # legacy, no longer emitted by the game
+_CAT_MANA       = 1   # legacy, no longer emitted by the game (mana activations arrive
+                      # as the per-color MANA_W..MANA_C categories — see _MANA_CATS)
+_MANA_CATS      = frozenset(range(13, 19))  # MANA_W..MANA_C — mana-source activations
+                      # (in machine mode only instant-speed cracks, e.g. LED, at priority)
 _CAT_SEL_ATK    = 2
 _MANDATORY_CATS = frozenset({2, 3, 4, 5})  # attacker/blocker confirm categories
 _CAT_CONF_ATK   = 3
@@ -957,8 +960,10 @@ class ModelVsScriptedEnv(gym.Env):
                     and "strip_counter" not in self._dd_fired):
                 self._dd_pending_shaping += SHAPING_DD_STRIP_COUNTER
                 self._dd_fired.add("strip_counter")
-            # Reward cracking LED with a draw/cycling ability on the stack (once per game)
-            if cat == _CAT_ACTIVATE and card == _LED_VOCAB_IDX:
+            # Reward cracking LED with a draw/cycling ability on the stack (once per game).
+            # LED cracks are mana-ability activations, emitted with the per-color MANA_*
+            # categories (13-18) — never ACTIVATE_ABILITY (6).
+            if cat in _MANA_CATS and card == _LED_VOCAB_IDX:
                 if _self_has_draw_on_stack(self._last_obs) and "led_draw" not in self._dd_fired:
                     self._dd_pending_shaping += SHAPING_DD_LED_WITH_DRAW
                     self._dd_fired.add("led_draw")

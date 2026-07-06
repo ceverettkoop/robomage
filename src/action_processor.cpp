@@ -571,38 +571,16 @@ static void process_activate_ability(const LegalAction &action, Game &game, std:
     pay_secondary_activation_costs(ability, permanent_entity, controller, orderer);
     // MANA ABILITY
     if (is_mana_ability) {
-        // Evaluate dynamic amount (e.g. Gaea's Cradle: Count$Valid Creature.YouCtrl)
-        size_t mana_amount = ability.amount;
-        if (!ability.dynamic_amount_expr.empty() &&
-            ability.dynamic_amount_expr.find("Count$Valid Creature.YouCtrl") != std::string::npos) {
-            mana_amount = 0;
-            for (auto e : orderer->mEntities) {
-                if (!global_coordinator.entity_has_component<Permanent>(e)) continue;
-                if (!global_coordinator.entity_has_component<Creature>(e)) continue;
-                auto &sz = global_coordinator.GetComponent<Zone>(e);
-                if (sz.location != Zone::BATTLEFIELD) continue;
-                if (global_coordinator.GetComponent<Permanent>(e).controller == controller)
-                    mana_amount++;
-            }
-        }
-        Colors mana_color = ability.color;
-        add_mana(controller, mana_color, mana_amount);
-        game_log("%s tapped %s for %zu(%s)\n", player_name(controller).c_str(), permanent.name.c_str(),
-            mana_amount, mana_symbol_str(mana_color));
+        // Costs were already paid above: tap at the generic tap-cost step, activation mana
+        // via prompt_mana_payment, life/sacrifice/discard via pay_secondary_activation_costs.
+        // The shared production core handles the rest: amount eval (dynamic amounts like
+        // Gaea's Cradle / Urza's Workshop), ProduceMana replacement, pool insert, TapsForMana
+        // triggers, uncounterability flag, narrative, SubAbility$ riders (Ancient Tomb's
+        // damage), and the activation counter.
+        auto &pl = global_coordinator.GetComponent<Player>(get_player_entity(controller));
+        produce_mana_from_ability(permanent_entity, ability, controller, orderer, pl.mana,
+                                  /*commit=*/true, ManaLogStyle::TAPPED_AMOUNT);
         // priority does not pass
-
-        // A mana ability may carry a SubAbility$ rider that is part of the same mana ability
-        // and resolves immediately (off-stack) as the ability resolves — e.g. Ancient Tomb's
-        // "Ancient Tomb deals 2 damage to you" (CR 605.1a, 606.3). Resolve each sub-ability
-        // here with the source/controller of the mana ability.
-        for (auto sub_ab : ability.subabilities) {
-            sub_ab.source = permanent_entity;
-            sub_ab.controller = controller;
-            sub_ab.resolve(orderer);
-        }
-
-        // Increment activation counter if this ability has a limit
-        increment_activation_count(permanent, ability);
     } else {  // ACTIVATED ABILITY THAT IS NOT A MANA ABILITY - GOES ON STACK
         // puts on stack; we have targets from earlier
         stack_ab.source = permanent_entity;

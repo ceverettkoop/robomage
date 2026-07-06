@@ -1131,7 +1131,8 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         }
     }
 
-    // not filtering mana abilities based on if they contribute to a spell- will revisit this if it makes ML harder
+    // CLI mode lists every collected mana ability so a human can float mana manually,
+    // whether or not it contributes to a castable spell.
     bool machine = InputLogger::instance().is_machine_schedule();
     for (auto &ma : legal_mana_abilities) {
         // In machine mode, normal mana sources stay hidden and are auto-paid during cost
