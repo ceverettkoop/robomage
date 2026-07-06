@@ -217,6 +217,8 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
     gs->pending_decision_card = -1;
     gs->pending_decision_ctrl_is_self = false;
     if (cur_game.pending_decision_source != 0) {
+        extern bool sideboard_phase;
+        extern Zone::Ownership sideboard_phase_player;
         Entity pd = cur_game.pending_decision_source;
         gs->pending_decision_card = action_card_vocab_idx(pd);
         if (global_coordinator.entity_has_component<Permanent>(pd))
@@ -225,6 +227,10 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
         else if (global_coordinator.entity_has_component<Zone>(pd))
             gs->pending_decision_ctrl_is_self =
                 (global_coordinator.GetComponent<Zone>(pd).owner == viewer);
+        else if (sideboard_phase)
+            // A sideboard IN/OUT source is a bare load_card template entity with
+            // neither Permanent nor Zone; the sideboarding player owns it.
+            gs->pending_decision_ctrl_is_self = (sideboard_phase_player == viewer);
     }
 
     // Match context (extern globals from main.cpp)

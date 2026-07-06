@@ -110,15 +110,17 @@ class Driver:
                 _zone = np.frombuffer(self._read_exactly(_META_BYTES), dtype=np.int32).copy()
 
                 catl = [int(c) for c in cats[:num]]
-                self.records.append({
+                rec = {
                     "state": state, "cats": catl, "ids": ids, "ctrl": ctrl,
                     "num": num, "self_is_a": bool(state[_SELF_IS_A_IDX] > 0.5),
                     "is_sb": bool(state[_IS_SB_IDX] > 0.5),
-                })
+                }
+                self.records.append(rec)
 
                 choice = action_fn(state, catl, ids, ctrl, num)
                 if choice is None:
                     choice = 0  # default: pass / take first choice
+                rec["choice"] = choice
                 self.proc.stdin.write(f"{choice}\n".encode())
                 self.proc.stdin.flush()
                 decisions += 1
@@ -223,9 +225,36 @@ def test_masking(records):
     check(np.allclose(hand, _ACTION_CARD_ID_NULL), "self-hand card-id slots -> empty sentinel")
 
 
+# ── Test 2: pending-decision context at the OUT query ────────────────────────
+
+def test_pending_decision(records):
+    print("\n=== Test: pending-decision context at OUT query ===")
+    checked = 0
+    for i, r in enumerate(records):
+        if not (r["is_sb"] and _CAT_SB_OUT in r["cats"]):
+            continue
+        prev = records[i - 1]
+        # The OUT menu is always preceded by the IN-menu pick that opened it.
+        if not (prev["is_sb"] and _CAT_SB_IN in prev["cats"]
+                and prev["cats"][prev["choice"]] == _CAT_SB_IN):
+            continue
+        chosen_in_id = float(prev["ids"][prev["choice"]])
+        pend_id = float(r["state"][_PENDING_DECISION_START])
+        pend_ctrl = float(r["state"][_PENDING_DECISION_START + 1])
+        check(np.isclose(pend_id, chosen_in_id),
+              f"OUT-query pending card id = chosen IN card "
+              f"(state[3183]={pend_id:.5f}, in-card={chosen_in_id:.5f})")
+        check(pend_ctrl == 1.0,
+              f"OUT-query pending ctrl_is_self == 1.0 for the sideboarding seat "
+              f"(state[3184]={pend_ctrl})")
+        checked += 1
+    check(checked > 0, f"exercised at least one OUT query ({checked})")
+
+
 def main():
     records = _drive_bo3(_make_sb_action())
     test_masking(records)
+    test_pending_decision(records)
     print("\n" + "=" * 60)
     if _failures:
         print(f"FAILED ({len(_failures)}):")
