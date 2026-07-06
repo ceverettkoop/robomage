@@ -44,9 +44,6 @@ static void delve_exile_one(Entity e, Zone::Ownership controller,
                             std::shared_ptr<Orderer> orderer, ManaValue &remaining);
 static bool is_improvise_eligible(Entity e, Zone::Ownership controller, Entity paid_for);
 static void improvise_tap_one(Entity e, Zone::Ownership controller, ManaValue &remaining);
-static bool activate_mana_source(Entity entity, const Ability &ab, Zone::Ownership controller,
-                                 std::shared_ptr<Orderer> orderer, ManaValue &pool,
-                                 Player &player, bool commit);
 static void fire_taps_for_mana_triggers(Entity tapped_source, Zone::Ownership controller,
                                         std::shared_ptr<Orderer> orderer, ManaValue &pool,
                                         bool log);
@@ -645,21 +642,76 @@ void increment_activation_count(Permanent &perm, const Ability &ability) {
     }
 }
 
-// Activate one mana source: tap/sacrifice it, pay its activation mana + life cost, add the
-// mana it produces to `pool`, and (when committing) flag uncounterability, log, and bump the
-// activation counter. Pool changes (activation cost paid, mana produced) always apply to the
-// working `pool`; the write-only ECS side effects are skipped when !commit (simulate mode).
-// Shared by the auto-payer (commit toggles per simulate/real) and the interactive payer
-// (always commit, with pool == the player's real mana pool).
-// Returns false — with NO side effects (no tap, no sacrifice, no mana produced, pool
-// untouched) — when the ability's activation mana cost (Talon Gates' {1}{T}) cannot be paid
-// from the working pool. The cost is paid FIRST, before any other effect, so a refusal
-// cancels cleanly; the auto-payer pre-covers the cost by tapping other sources into the
-// pool (cover_activation_cost), and the interactive payer relies on this check to refuse.
-static bool activate_mana_source(Entity entity, const Ability &ab, Zone::Ownership controller,
-                                 std::shared_ptr<Orderer> orderer, ManaValue &pool,
-                                 Player &player, bool commit) {
-    auto &perm = global_coordinator.GetComponent<Permanent>(entity);
+// The production half of a mana-ability activation — everything AFTER costs are paid.
+// See mana_system.h for the contract. Shared by activate_mana_source (payer paths and
+// the pay-unless loop) and the priority-menu activation path, whose costs are paid by
+// the generic activated-ability code before it produces.
+void produce_mana_from_ability(Entity source, const Ability &ab, Zone::Ownership controller,
+                               std::shared_ptr<Orderer> orderer, ManaValue &pool,
+                               bool commit, ManaLogStyle log_style) {
+    auto &perm = global_coordinator.GetComponent<Permanent>(source);
+    size_t amount = eval_mana_amount(ab, controller, orderer);
+    // ProduceMana replacement effects (CR 614.1, Damping Sphere): a land tapped for 2+ mana
+    // produces that much {C} instead. Consult active replacements before the produced mana enters
+    // the pool, so a colored producer can be rewritten to colorless. Runs in both commit and
+    // simulate mode so affordability (can_pay_mana) and the real payment agree on the colors.
+    Colors produced_color = ab.color;
+    if (amount >= 2) {
+        ReplacementEvent ev;
+        ev.type = ReplacementEvent::PRODUCE_MANA;
+        ev.entity = source;
+        ev.affected_player = controller;
+        ev.produced_color = ab.color;
+        ev.produced_amount = amount;
+        replacement::dispatch(ev);
+        produced_color = ev.produced_color;
+    }
+    for (size_t i = 0; i < amount; i++) pool.insert(produced_color);
+    // Mana-additional "whenever you tap a <permanent> for mana" triggers (Badgermole Cub's
+    // TapsForMana, CR 605.1a): resolve immediately as part of the tap, adding their extra mana
+    // to the working pool. Fired in BOTH commit and simulate modes so affordability/legality
+    // (can_pay_mana) and the real payment agree on the available mana; the narrative line is
+    // emitted only on the real activation (commit).
+    fire_taps_for_mana_triggers(source, controller, orderer, pool, commit);
+    if (commit && ab.adds_no_counter) cur_game.pending_cant_be_countered = true;
+    if (commit) {
+        switch (log_style) {
+            case ManaLogStyle::ACTIVATED:
+                game_log("%s activated %s for %zu(%s)\n", player_name(controller).c_str(),
+                         perm.name.c_str(), amount, mana_symbol_str(produced_color));
+                break;
+            case ManaLogStyle::TAPPED_AMOUNT:
+                game_log("%s tapped %s for %zu(%s)\n", player_name(controller).c_str(),
+                         perm.name.c_str(), amount, mana_symbol_str(produced_color));
+                break;
+            case ManaLogStyle::TAPPED_SYMBOL:
+                game_log("%s tapped %s for {%s}\n", player_name(controller).c_str(),
+                         perm.name.c_str(), mana_symbol(produced_color).c_str());
+                break;
+        }
+    }
+    // A mana ability may carry a SubAbility$ rider that is part of the mana ability and
+    // resolves off-stack with it — e.g. Ancient Tomb's "deals 2 damage to you" (CR 605.1a,
+    // 606.3). Only fire it when committing the activation (not during legality simulation).
+    if (commit) {
+        for (auto sub_ab : ab.subabilities) {
+            sub_ab.source = source;
+            sub_ab.controller = controller;
+            sub_ab.resolve(orderer);
+        }
+    }
+    if (commit) increment_activation_count(perm, ab);
+}
+
+// Activate one mana source: pay its costs, then produce (see mana_system.h). The cost half
+// lives here; the production half is produce_mana_from_ability. A refusal (unpayable
+// activation mana cost) cancels cleanly with no side effects; the auto-payer pre-covers the
+// cost by tapping other sources into the pool (cover_activation_cost), and the interactive
+// payer / pay-unless loop rely on this check to refuse.
+bool activate_mana_source(Entity source, const Ability &ab, Zone::Ownership controller,
+                          std::shared_ptr<Orderer> orderer, ManaValue &pool,
+                          Player &player, bool commit, ManaLogStyle log_style) {
+    auto &perm = global_coordinator.GetComponent<Permanent>(source);
     if (!ab.activation_mana_cost.empty()) {
         // pay_from_pool returns the unpayable remainder and drains the pool even on a
         // partial payment, so snapshot the pool and restore it when the cost bounces.
@@ -673,50 +725,13 @@ static bool activate_mana_source(Entity entity, const Ability &ab, Zone::Ownersh
     if (commit && ab.tap_cost) perm.is_tapped = true;
     if (commit && ab.sac_self) {
         game_log("%s sacrifices %s\n", player_name(controller).c_str(), perm.name.c_str());
-        orderer->add_to_zone(false, entity, Zone::GRAVEYARD);
+        orderer->add_to_zone(false, source, Zone::GRAVEYARD);
     }
     if (commit && ab.life_cost > 0) {
         player.life_total -= ab.life_cost;
         game_log("%s pays %d life\n", player_name(controller).c_str(), ab.life_cost);
     }
-    size_t amount = eval_mana_amount(ab, controller, orderer);
-    // ProduceMana replacement effects (CR 614.1, Damping Sphere): a land tapped for 2+ mana
-    // produces that much {C} instead. Consult active replacements before the produced mana enters
-    // the pool, so a colored producer can be rewritten to colorless. Runs in both commit and
-    // simulate mode so affordability (can_pay_mana) and the real payment agree on the colors.
-    Colors produced_color = ab.color;
-    if (amount >= 2) {
-        ReplacementEvent ev;
-        ev.type = ReplacementEvent::PRODUCE_MANA;
-        ev.entity = entity;
-        ev.affected_player = controller;
-        ev.produced_color = ab.color;
-        ev.produced_amount = amount;
-        replacement::dispatch(ev);
-        produced_color = ev.produced_color;
-    }
-    for (size_t i = 0; i < amount; i++) pool.insert(produced_color);
-    // Mana-additional "whenever you tap a <permanent> for mana" triggers (Badgermole Cub's
-    // TapsForMana, CR 605.1a): resolve immediately as part of the tap, adding their extra mana
-    // to the working pool. Fired in BOTH commit and simulate modes so affordability/legality
-    // (can_pay_mana) and the real payment agree on the available mana; the narrative line is
-    // emitted only on the real activation (commit).
-    fire_taps_for_mana_triggers(entity, controller, orderer, pool, commit);
-    if (commit && ab.adds_no_counter) cur_game.pending_cant_be_countered = true;
-    if (commit)
-        game_log("%s activated %s for %zu(%s)\n", player_name(controller).c_str(),
-                 perm.name.c_str(), amount, mana_symbol_str(produced_color));
-    // A mana ability may carry a SubAbility$ rider that is part of the mana ability and
-    // resolves off-stack with it — e.g. Ancient Tomb's "deals 2 damage to you" (CR 605.1a,
-    // 606.3). Only fire it when committing the activation (not during legality simulation).
-    if (commit) {
-        for (auto sub_ab : ab.subabilities) {
-            sub_ab.source = entity;
-            sub_ab.controller = controller;
-            sub_ab.resolve(orderer);
-        }
-    }
-    if (commit) increment_activation_count(perm, ab);
+    produce_mana_from_ability(source, ab, controller, orderer, pool, commit, log_style);
     return true;
 }
 
@@ -873,7 +888,7 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
     // activate_mana_source reads the produced color straight off the ability.
     auto activate_source = [&](const SourceInfo &si) {
         return activate_mana_source(si.entity, si.ability, controller, orderer, pool, player,
-                                    commit);
+                                    commit, ManaLogStyle::ACTIVATED);
     };
 
     std::set<Entity> tapped_entities;
@@ -1226,7 +1241,8 @@ bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,
             // can't cover its activation cost: nothing is tapped and no mana is produced, and
             // the loop re-prompts so the player can float mana from another source first.
             if (!activate_mana_source(chosen.source_entity, chosen.ability, controller, orderer,
-                                      player.mana, player, /*commit=*/true))
+                                      player.mana, player, /*commit=*/true,
+                                      ManaLogStyle::ACTIVATED))
                 game_log("Cannot pay that ability's activation cost — tap another source for mana first.\n");
         }
     }
