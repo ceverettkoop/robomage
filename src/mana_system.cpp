@@ -1,8 +1,10 @@
 #include "mana_system.h"
 
 #include <algorithm>
+#include <array>
 #include <cstddef>
 #include <cstdio>
+#include <map>
 #include <tuple>
 
 #include "classes/action.h"
@@ -44,13 +46,13 @@ static void delve_exile_one(Entity e, Zone::Ownership controller,
                             std::shared_ptr<Orderer> orderer, ManaValue &remaining);
 static bool is_improvise_eligible(Entity e, Zone::Ownership controller, Entity paid_for);
 static void improvise_tap_one(Entity e, Zone::Ownership controller, ManaValue &remaining);
-static bool activate_mana_source(Entity entity, const Ability &ab, Zone::Ownership controller,
-                                 std::shared_ptr<Orderer> orderer, ManaValue &pool,
-                                 Player &player, bool commit);
 static void fire_taps_for_mana_triggers(Entity tapped_source, Zone::Ownership controller,
                                         std::shared_ptr<Orderer> orderer, ManaValue &pool,
                                         bool log);
 static bool mana_ability_is_painful(const Ability &ab);
+static bool has_nonmana_activated_ability(Entity entity);
+static std::array<int, 6> hand_color_demand(Zone::Ownership controller, Entity paid_for,
+                                            std::shared_ptr<Orderer> orderer);
 
 Entity get_player_entity(Zone::Ownership player) {
     return (player == Zone::PLAYER_A) ? cur_game.player_a_entity : cur_game.player_b_entity;
@@ -645,21 +647,76 @@ void increment_activation_count(Permanent &perm, const Ability &ability) {
     }
 }
 
-// Activate one mana source: tap/sacrifice it, pay its activation mana + life cost, add the
-// mana it produces to `pool`, and (when committing) flag uncounterability, log, and bump the
-// activation counter. Pool changes (activation cost paid, mana produced) always apply to the
-// working `pool`; the write-only ECS side effects are skipped when !commit (simulate mode).
-// Shared by the auto-payer (commit toggles per simulate/real) and the interactive payer
-// (always commit, with pool == the player's real mana pool).
-// Returns false — with NO side effects (no tap, no sacrifice, no mana produced, pool
-// untouched) — when the ability's activation mana cost (Talon Gates' {1}{T}) cannot be paid
-// from the working pool. The cost is paid FIRST, before any other effect, so a refusal
-// cancels cleanly; the auto-payer pre-covers the cost by tapping other sources into the
-// pool (cover_activation_cost), and the interactive payer relies on this check to refuse.
-static bool activate_mana_source(Entity entity, const Ability &ab, Zone::Ownership controller,
-                                 std::shared_ptr<Orderer> orderer, ManaValue &pool,
-                                 Player &player, bool commit) {
-    auto &perm = global_coordinator.GetComponent<Permanent>(entity);
+// The production half of a mana-ability activation — everything AFTER costs are paid.
+// See mana_system.h for the contract. Shared by activate_mana_source (payer paths and
+// the pay-unless loop) and the priority-menu activation path, whose costs are paid by
+// the generic activated-ability code before it produces.
+void produce_mana_from_ability(Entity source, const Ability &ab, Zone::Ownership controller,
+                               std::shared_ptr<Orderer> orderer, ManaValue &pool,
+                               bool commit, ManaLogStyle log_style) {
+    auto &perm = global_coordinator.GetComponent<Permanent>(source);
+    size_t amount = eval_mana_amount(ab, controller, orderer);
+    // ProduceMana replacement effects (CR 614.1, Damping Sphere): a land tapped for 2+ mana
+    // produces that much {C} instead. Consult active replacements before the produced mana enters
+    // the pool, so a colored producer can be rewritten to colorless. Runs in both commit and
+    // simulate mode so affordability (can_pay_mana) and the real payment agree on the colors.
+    Colors produced_color = ab.color;
+    if (amount >= 2) {
+        ReplacementEvent ev;
+        ev.type = ReplacementEvent::PRODUCE_MANA;
+        ev.entity = source;
+        ev.affected_player = controller;
+        ev.produced_color = ab.color;
+        ev.produced_amount = amount;
+        replacement::dispatch(ev);
+        produced_color = ev.produced_color;
+    }
+    for (size_t i = 0; i < amount; i++) pool.insert(produced_color);
+    // Mana-additional "whenever you tap a <permanent> for mana" triggers (Badgermole Cub's
+    // TapsForMana, CR 605.1a): resolve immediately as part of the tap, adding their extra mana
+    // to the working pool. Fired in BOTH commit and simulate modes so affordability/legality
+    // (can_pay_mana) and the real payment agree on the available mana; the narrative line is
+    // emitted only on the real activation (commit).
+    fire_taps_for_mana_triggers(source, controller, orderer, pool, commit);
+    if (commit && ab.adds_no_counter) cur_game.pending_cant_be_countered = true;
+    if (commit) {
+        switch (log_style) {
+            case ManaLogStyle::ACTIVATED:
+                game_log("%s activated %s for %zu(%s)\n", player_name(controller).c_str(),
+                         perm.name.c_str(), amount, mana_symbol_str(produced_color));
+                break;
+            case ManaLogStyle::TAPPED_AMOUNT:
+                game_log("%s tapped %s for %zu(%s)\n", player_name(controller).c_str(),
+                         perm.name.c_str(), amount, mana_symbol_str(produced_color));
+                break;
+            case ManaLogStyle::TAPPED_SYMBOL:
+                game_log("%s tapped %s for {%s}\n", player_name(controller).c_str(),
+                         perm.name.c_str(), mana_symbol(produced_color).c_str());
+                break;
+        }
+    }
+    // A mana ability may carry a SubAbility$ rider that is part of the mana ability and
+    // resolves off-stack with it — e.g. Ancient Tomb's "deals 2 damage to you" (CR 605.1a,
+    // 606.3). Only fire it when committing the activation (not during legality simulation).
+    if (commit) {
+        for (auto sub_ab : ab.subabilities) {
+            sub_ab.source = source;
+            sub_ab.controller = controller;
+            sub_ab.resolve(orderer);
+        }
+    }
+    if (commit) increment_activation_count(perm, ab);
+}
+
+// Activate one mana source: pay its costs, then produce (see mana_system.h). The cost half
+// lives here; the production half is produce_mana_from_ability. A refusal (unpayable
+// activation mana cost) cancels cleanly with no side effects; the auto-payer pre-covers the
+// cost by tapping other sources into the pool (cover_activation_cost), and the interactive
+// payer / pay-unless loop rely on this check to refuse.
+bool activate_mana_source(Entity source, const Ability &ab, Zone::Ownership controller,
+                          std::shared_ptr<Orderer> orderer, ManaValue &pool,
+                          Player &player, bool commit, ManaLogStyle log_style) {
+    auto &perm = global_coordinator.GetComponent<Permanent>(source);
     if (!ab.activation_mana_cost.empty()) {
         // pay_from_pool returns the unpayable remainder and drains the pool even on a
         // partial payment, so snapshot the pool and restore it when the cost bounces.
@@ -673,50 +730,13 @@ static bool activate_mana_source(Entity entity, const Ability &ab, Zone::Ownersh
     if (commit && ab.tap_cost) perm.is_tapped = true;
     if (commit && ab.sac_self) {
         game_log("%s sacrifices %s\n", player_name(controller).c_str(), perm.name.c_str());
-        orderer->add_to_zone(false, entity, Zone::GRAVEYARD);
+        orderer->add_to_zone(false, source, Zone::GRAVEYARD);
     }
     if (commit && ab.life_cost > 0) {
         player.life_total -= ab.life_cost;
         game_log("%s pays %d life\n", player_name(controller).c_str(), ab.life_cost);
     }
-    size_t amount = eval_mana_amount(ab, controller, orderer);
-    // ProduceMana replacement effects (CR 614.1, Damping Sphere): a land tapped for 2+ mana
-    // produces that much {C} instead. Consult active replacements before the produced mana enters
-    // the pool, so a colored producer can be rewritten to colorless. Runs in both commit and
-    // simulate mode so affordability (can_pay_mana) and the real payment agree on the colors.
-    Colors produced_color = ab.color;
-    if (amount >= 2) {
-        ReplacementEvent ev;
-        ev.type = ReplacementEvent::PRODUCE_MANA;
-        ev.entity = entity;
-        ev.affected_player = controller;
-        ev.produced_color = ab.color;
-        ev.produced_amount = amount;
-        replacement::dispatch(ev);
-        produced_color = ev.produced_color;
-    }
-    for (size_t i = 0; i < amount; i++) pool.insert(produced_color);
-    // Mana-additional "whenever you tap a <permanent> for mana" triggers (Badgermole Cub's
-    // TapsForMana, CR 605.1a): resolve immediately as part of the tap, adding their extra mana
-    // to the working pool. Fired in BOTH commit and simulate modes so affordability/legality
-    // (can_pay_mana) and the real payment agree on the available mana; the narrative line is
-    // emitted only on the real activation (commit).
-    fire_taps_for_mana_triggers(entity, controller, orderer, pool, commit);
-    if (commit && ab.adds_no_counter) cur_game.pending_cant_be_countered = true;
-    if (commit)
-        game_log("%s activated %s for %zu(%s)\n", player_name(controller).c_str(),
-                 perm.name.c_str(), amount, mana_symbol_str(produced_color));
-    // A mana ability may carry a SubAbility$ rider that is part of the mana ability and
-    // resolves off-stack with it — e.g. Ancient Tomb's "deals 2 damage to you" (CR 605.1a,
-    // 606.3). Only fire it when committing the activation (not during legality simulation).
-    if (commit) {
-        for (auto sub_ab : ab.subabilities) {
-            sub_ab.source = entity;
-            sub_ab.controller = controller;
-            sub_ab.resolve(orderer);
-        }
-    }
-    if (commit) increment_activation_count(perm, ab);
+    produce_mana_from_ability(source, ab, controller, orderer, pool, commit, log_style);
     return true;
 }
 
@@ -773,6 +793,41 @@ static bool mana_ability_is_painful(const Ability &ab) {
         if ((sub.category == "DealDamage" || sub.category == "LoseLife") && sub.defined_you)
             return true;
     return false;
+}
+
+// True if the battlefield permanent has a non-mana ACTIVATED ability (Karakas's bounce,
+// Wasteland's destroy, a man-land's animation): tapping it for mana costs its controller
+// the option to use that ability, so the auto-payer prefers plain sources when otherwise
+// equal. Loyalty abilities count too (ability_is_mana excludes them), which only matters
+// if a planeswalker ever taps for mana — also a "save it for its other ability" case.
+static bool has_nonmana_activated_ability(Entity entity) {
+    auto &perm = global_coordinator.GetComponent<Permanent>(entity);
+    for (const auto &ab : perm.abilities)
+        if (ab.ability_type == Ability::ACTIVATED && !ability_is_mana(ab)) return true;
+    return false;
+}
+
+// Colored-pip demand of the controller's remaining hand: how many pips of each color
+// (indexed by the Colors enum, WHITE..COLORLESS) the OTHER cards in hand ask for. Used to
+// steer the auto-payer away from tapping a source whose color those cards still need.
+// Counts raw CardData::mana_cost pips plus each hybrid pip's colored options; the spell
+// being paid for (`paid_for`) is excluded. Deliberately simple — no affordability filter
+// on the counted cards and no weighting — so simulate (can_pay_mana) and the real payment
+// derive the identical ordering from public, side-effect-free state.
+static std::array<int, 6> hand_color_demand(Zone::Ownership controller, Entity paid_for,
+                                            std::shared_ptr<Orderer> orderer) {
+    std::array<int, 6> demand{};
+    for (Entity e : orderer->get_hand(controller)) {
+        if (e == paid_for) continue;
+        if (!global_coordinator.entity_has_component<CardData>(e)) continue;
+        auto &cd = global_coordinator.GetComponent<CardData>(e);
+        for (Colors c : cd.mana_cost)
+            if (c >= WHITE && c <= COLORLESS) demand[static_cast<size_t>(c)]++;
+        for (const auto &pip : cd.hybrid_mana)
+            for (Colors c : pip.colors)
+                if (c >= WHITE && c <= COLORLESS) demand[static_cast<size_t>(c)]++;
+    }
+    return demand;
 }
 
 // Greedily tap sources to cover the remaining cost. This is the single mana-payment
@@ -868,12 +923,46 @@ static bool auto_pay_mana(Zone::Ownership controller, ManaValue &remaining,
         valid_sources.push_back({entity, ab, ab.color, is_multi});
     }
 
+    // Candidate ordering: within every preference tier below, engage first the source
+    // whose tap gives up the least. Two ranked criteria, applied by a stable sort (ties
+    // keep entity order), read uniformly by all tiers and cover_activation_cost's payer
+    // scan, so simulate (can_pay_mana) and the real payment stay in lockstep:
+    //   1. HAND COLOR DEMAND — prefer a source whose producible colors the other cards in
+    //      hand need least (with Lightning Bolt in hand, a generic pip taps Wasteland's
+    //      {C} before a Mountain, keeping red open). A multi-color source is scored by
+    //      the MOST-demanded color it could produce — any of its entries taps the whole
+    //      permanent, giving up its best option.
+    //   2. UTILITY — prefer a source whose only activated abilities are mana abilities
+    //      over one that also carries a utility ability (Karakas's bounce, Wasteland's
+    //      destroy, a man-land's animation).
+    {
+        std::array<int, 6> demand = hand_color_demand(controller, paid_for, orderer);
+        std::map<Entity, int> entity_demand;
+        for (const auto &si : valid_sources) {
+            int d = (si.color >= WHITE && si.color <= COLORLESS)
+                        ? demand[static_cast<size_t>(si.color)] : 0;
+            auto it = entity_demand.find(si.entity);
+            if (it == entity_demand.end()) entity_demand[si.entity] = d;
+            else it->second = std::max(it->second, d);
+        }
+        std::map<Entity, bool> entity_utility;
+        for (const auto &si : valid_sources)
+            if (!entity_utility.count(si.entity))
+                entity_utility[si.entity] = has_nonmana_activated_ability(si.entity);
+        std::stable_sort(valid_sources.begin(), valid_sources.end(),
+            [&](const SourceInfo &a, const SourceInfo &b) {
+                int da = entity_demand[a.entity], db = entity_demand[b.entity];
+                if (da != db) return da < db;
+                return entity_utility[a.entity] < entity_utility[b.entity];
+            });
+    }
+
     // Helper: activate a source (tap, sacrifice, pay costs, add mana). si.color always
     // equals si.ability.color (set when the SourceInfo was built), so the shared
     // activate_mana_source reads the produced color straight off the ability.
     auto activate_source = [&](const SourceInfo &si) {
         return activate_mana_source(si.entity, si.ability, controller, orderer, pool, player,
-                                    commit);
+                                    commit, ManaLogStyle::ACTIVATED);
     };
 
     std::set<Entity> tapped_entities;
@@ -1226,7 +1315,8 @@ bool prompt_mana_payment(Zone::Ownership controller, const ManaValue &cost,
             // can't cover its activation cost: nothing is tapped and no mana is produced, and
             // the loop re-prompts so the player can float mana from another source first.
             if (!activate_mana_source(chosen.source_entity, chosen.ability, controller, orderer,
-                                      player.mana, player, /*commit=*/true))
+                                      player.mana, player, /*commit=*/true,
+                                      ManaLogStyle::ACTIVATED))
                 game_log("Cannot pay that ability's activation cost — tap another source for mana first.\n");
         }
     }

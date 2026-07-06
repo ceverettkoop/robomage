@@ -540,22 +540,19 @@ bool run_unless_loop(
         if (choice >= 0 && choice < static_cast<int>(pay_idx)) {
             auto &chosen = unless_actions[static_cast<size_t>(choice)];
             Entity land = chosen.source_entity;
-            auto &perm = global_coordinator.GetComponent<Permanent>(land);
-            // A cost-bearing mana source (Talon Gates' {1}{T}) must pay its activation cost
-            // from the floating pool before producing; refuse the activation (no tap, no
-            // mana) while the pool can't cover it, and re-prompt so the player can float
-            // mana from a cost-free source first.
-            if (!chosen.ability.activation_mana_cost.empty()) {
-                if (!can_afford(controller, chosen.ability.activation_mana_cost)) {
-                    game_log("Cannot pay that ability's activation cost — tap another source for mana first.\n");
-                    continue;
-                }
-                spend_mana(controller, chosen.ability.activation_mana_cost, land);
+            auto &pl = global_coordinator.GetComponent<Player>(get_player_entity(controller));
+            // Canonical activation against the player's real (floating) pool: pays a
+            // cost-bearing source's activation cost (Talon Gates' {1}{T}) from the pool —
+            // refusing cleanly (no tap, no mana) while the pool can't cover it, so the
+            // re-prompt lets the player float mana from a cost-free source first — and
+            // applies the full mana-ability semantics: tap only tap-cost sources, sac_self
+            // (Lotus Petal), life costs, dynamic amounts, SubAbility$ riders (Ancient
+            // Tomb's damage), ProduceMana replacements, and activation counters.
+            if (!activate_mana_source(land, chosen.ability, controller, orderer, pl.mana, pl,
+                                      /*commit=*/true, ManaLogStyle::TAPPED_SYMBOL)) {
+                game_log("Cannot pay that ability's activation cost — tap another source for mana first.\n");
+                continue;
             }
-            perm.is_tapped = true;
-            add_mana(controller, chosen.ability.color, chosen.ability.amount);
-            game_log("%s tapped %s for {%s}\n", player_name(controller).c_str(), perm.name.c_str(),
-                mana_symbol(chosen.ability.color).c_str());
         }
     }
 }

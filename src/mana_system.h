@@ -16,6 +16,7 @@ class Orderer;
 struct Permanent;
 struct Ability;
 struct HybridPip;
+struct Player;
 
 // Get player entity from ownership
 Entity get_player_entity(Zone::Ownership player);
@@ -35,6 +36,40 @@ bool ability_is_mana(const Ability &ab);
 // payers so the (formerly four-times duplicated) match rule lives in one place.
 void increment_activation_count(Permanent &perm, const Ability &ability);
 
+// Narrative style for the mana-production line each activation path emits. The three
+// call paths historically log slightly different strings (verb, printed amount, symbol
+// braces); the style keeps each path's output byte-identical while the logic is shared.
+enum class ManaLogStyle {
+    ACTIVATED,      // "%s activated %s for %zu(%s)\n"  — auto-payer / interactive payer
+    TAPPED_AMOUNT,  // "%s tapped %s for %zu(%s)\n"     — priority-menu activation
+    TAPPED_SYMBOL,  // "%s tapped %s for {%s}\n"        — pay-unless payment loop
+};
+
+// The production half of a mana-ability activation, assuming ALL costs are already
+// paid: evaluate the produced amount (dynamic amounts included), apply ProduceMana
+// replacement effects, add the mana to `pool`, resolve TapsForMana mana-additional
+// triggers, set the uncounterable flag for adds_no_counter sources, log (commit only),
+// resolve SubAbility$ riders (commit only), and bump the activation counter.
+// Replacements and triggers run in simulate mode (!commit) too, so affordability
+// (can_pay_mana) and the real payment always agree on the mana produced.
+void produce_mana_from_ability(Entity source, const Ability& ab, Zone::Ownership controller,
+                               std::shared_ptr<Orderer> orderer, ManaValue& pool,
+                               bool commit, ManaLogStyle log_style);
+
+// Activate one mana source: pay its activation mana cost from the working `pool`,
+// tap/sacrifice it, pay its life cost, then produce via produce_mana_from_ability.
+// Pool changes (activation cost paid, mana produced) always apply to the working
+// `pool`; the write-only ECS side effects are skipped when !commit (simulate mode).
+// Returns false — with NO side effects (no tap, no sacrifice, no mana produced, pool
+// untouched) — when the ability's activation mana cost (Talon Gates' {1}{T}) cannot be
+// paid from the working pool. The cost is paid FIRST, before any other effect, so a
+// refusal cancels cleanly. Shared by the auto-payer (commit per simulate/real), the
+// interactive payer, and the pay-unless loop (both always commit, with pool == the
+// player's real mana pool).
+bool activate_mana_source(Entity source, const Ability& ab, Zone::Ownership controller,
+                          std::shared_ptr<Orderer> orderer, ManaValue& pool, Player& player,
+                          bool commit, ManaLogStyle log_style);
+
 // Check if a given mana pool can afford a cost (does not read player state)
 bool can_afford_pool(const std::multiset<Colors>& pool, const std::multiset<Colors>& cost);
 
@@ -46,12 +81,18 @@ bool can_afford(Zone::Ownership player, const std::multiset<Colors>& cost);
 // the ability being checked will tap the source as part of its own cost)
 // paid_for: if nonzero, only count restricted mana sources (Cavern of Souls) when the
 // spell matches the restriction (creature of chosen type)
+// NOTE: this is a hypothetical-pool HEURISTIC (flexible-count accounting for multi-color
+// sources), not the simulate-mode payer. can_pay_mana is the exact predicate; this one is
+// kept for the cost-bearing-source gates, where changing it would shift legality menus.
 bool can_afford_with_sources(Zone::Ownership player, const std::multiset<Colors>& cost,
                              std::shared_ptr<Orderer> orderer, Entity exclude_entity = 0,
                              Entity paid_for = 0);
 
 // Return the maximum total mana producible (pool + untapped sources) minus colored base cost
 // obligations; used for computing max X value
+// NOTE: a coarse upper bound — ignores color feasibility of the base cost's pips and counts
+// one ability per source entity. An overestimated X fails at payment and is absorbed by the
+// payment_fail_counts rewind, so the bound is deliberately cheap rather than exact.
 size_t max_available_mana(Zone::Ownership player, const ManaValue& base_cost,
                           std::shared_ptr<Orderer> orderer);
 

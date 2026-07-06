@@ -1131,7 +1131,13 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
         }
     }
 
-    // not filtering mana abilities based on if they contribute to a spell- will revisit this if it makes ML harder
+    // CLI mode lists every collected mana ability so a human can float mana manually,
+    // whether or not it contributes to a castable spell.
+    // TODO(float-when-targeted): in machine mode, also offer a source's MANA_* actions
+    // when that source is a chosen target of a Destroy/ChangeZone on the stack (scan
+    // orderer->get_stack() entities' Ability target/targets), so an agent can float the
+    // mana in response to removal (e.g. Wasteland) before the source leaves the
+    // battlefield. Expose-only: no scripted-agent rule; categories/encodings unchanged.
     bool machine = InputLogger::instance().is_machine_schedule();
     for (auto &ma : legal_mana_abilities) {
         // In machine mode, normal mana sources stay hidden and are auto-paid during cost
