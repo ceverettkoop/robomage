@@ -1,6 +1,43 @@
-MIT License
+LICENSE
+=======
 
-Copyright (c) 2024 Sean McBride
+This project is licensed under the MIT License (below), with the exception
+described in the "Card Script Data" section.
+
+Card Script Data
+----------------
+
+The card behavior scripts used by this engine are NOT part of this project
+and are NOT covered by the MIT License. They are fetched at setup/build time
+from the Forge project:
+
+    https://github.com/Card-Forge/forge
+
+and are placed into the following directories:
+
+    bin/resources/cardsfolder/
+    bin/resources/tokenscripts/
+
+These files are the work of the Forge project and its contributors, and are
+licensed under the GNU General Public License, version 3.0 (GPL-3.0). A copy
+of the GPL-3.0 is available at:
+
+    https://www.gnu.org/licenses/gpl-3.0.txt
+
+If you redistribute this project together with the fetched card scripts, the
+contents of the directories listed above remain subject to the GPL-3.0. The
+engine itself reads these files as data at runtime; it does not incorporate
+them, and it remains available under the MIT License.
+
+Magic: The Gathering is a trademark of Wizards of the Coast LLC. This project
+is unofficial fan content and is not affiliated with or endorsed by Wizards
+of the Coast. Card names, card text, and game mechanics referenced by the
+card scripts are the property of Wizards of the Coast.
+
+MIT License
+-----------
+
+Copyright (c) 2026 Sean McBride
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
