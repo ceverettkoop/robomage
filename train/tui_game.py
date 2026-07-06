@@ -345,9 +345,12 @@ class GameApp(App):
         yield Header(show_clock=False)
         yield Static(id="phase")
         yield Static(id="opp-info")
+        # The opponent's rows are flipped (lands on top, battlefield below) so the
+        # two players' battlefields sit adjacent across the stack — a mirror-
+        # symmetric board with each side's lands on the outer edge.
         with Vertical(id="opp-bf"):
-            yield VerticalScroll(id="opp-bf-perms", classes="bf-row")
             yield VerticalScroll(id="opp-bf-lands", classes="bf-row lands")
+            yield VerticalScroll(id="opp-bf-perms", classes="bf-row")
         yield HorizontalScroll(id="stack")
         with Vertical(id="self-bf"):
             yield VerticalScroll(id="self-bf-perms", classes="bf-row")
