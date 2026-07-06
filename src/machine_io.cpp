@@ -471,6 +471,11 @@ void populate_query(Query* q, const std::vector<LegalAction>& actions) {
                 ac.controller_is_self = true;
             else if (global_coordinator.entity_has_component<Zone>(src))
                 ac.controller_is_self = (global_coordinator.GetComponent<Zone>(src).owner == priority_owner);
+            // A sideboard IN/OUT source is a bare load_card template entity with
+            // neither Permanent nor Zone, so controller_is_self stays false; the
+            // emitter (cli_output) then writes the ctrl-null sentinel because its
+            // zone_ref is REF_NONE. That's the correct "zone-less/unknown" encoding
+            // — the card id is still emitted, so the choice's identity is visible.
         }
 
         // Zone reference

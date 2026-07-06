@@ -247,6 +247,13 @@ static int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &dec
 static void run_sideboard_phase(Deck &deck, Zone::Ownership player) {
     sideboard_phase = true;
     sideboard_phase_player = player;
+    // Repoint priority to the sideboarding player (the established engine pattern:
+    // every prompt is issued with player_a_has_priority pointing at the chooser).
+    // record_chosen_action's actor stamp and populate_query's per-action
+    // controller_is_self flags both read this flag, so without the repoint both
+    // would carry whatever the just-ended game left behind. cur_game is discarded
+    // (replaced by Game(seed)) when the next game starts, so nothing to restore.
+    cur_game.player_a_has_priority = (player == Zone::PLAYER_A);
     const char *player_name = (player == Zone::PLAYER_A) ? "Player A" : "Player B";
     int sb_swaps = 0;
     // Each card is a one-shot decision per phase: once moved, it cannot be

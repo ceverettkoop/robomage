@@ -35,7 +35,7 @@ from env import (STATE_SIZE, MAX_ACTIONS, _MATCH_CTX_START,  # noqa: E402
                  _PERM_SLOT_SIZE, _PERM_CARD_OFF, _HAND_START, _HAND_SLOTS_TOTAL,
                  _GY_START, _HIST_START, _HIST_END, _REVEALED_START, _REVEALED_END,
                  _PENDING_DECISION_START, _KNOWN_TOP_LIB_START,
-                 _ACTION_HISTORY_ENTRY)
+                 _ACTION_HISTORY_ENTRY, ACTION_CATEGORY_MAX)
 from card_costs import N_CARD_TYPES  # noqa: E402
 from test_harness import (_card_to_deck_name, _TEMP_DECKS_DIR,  # noqa: E402
                           _DECKS_DIR, _BINARY, _BIN_DIR)
@@ -251,10 +251,63 @@ def test_pending_decision(records):
     check(checked > 0, f"exercised at least one OUT query ({checked})")
 
 
+# ── Test 3: chooser repoint (history seat stamp + controller metadata) ───────
+
+def _hist_entry(state, k):
+    base = _HIST_START + k * _ACTION_HISTORY_ENTRY
+    return (int(round(float(state[base]) * ACTION_CATEGORY_MAX)),  # category
+            float(state[base + 2]))                                # is_self
+
+
+def test_seat_flags(records):
+    print("\n=== Test: sideboard chooser repoint (history + controller flags) ===")
+
+    # (a) After a completed swap, the sideboarding seat's own IN/OUT actions must
+    #     be stamped is_self=1.0 in its own action history (the repoint fixes the
+    #     otherwise-stale actor stamp from the ended game).
+    found = 0
+    for i in range(1, len(records)):
+        r, prev = records[i], records[i - 1]
+        if not (r["is_sb"] and _CAT_SB_DONE in r["cats"]):
+            continue                      # r must be an IN menu (offers "done")
+        if not (prev["is_sb"] and _CAT_SB_OUT in prev["cats"]):
+            continue                      # preceded by the OUT pick of a swap
+        if prev["self_is_a"] != r["self_is_a"]:
+            continue
+        cat0, self0 = _hist_entry(r["state"], 0)   # newest: the OUT just chosen
+        cat1, self1 = _hist_entry(r["state"], 1)   # next: the IN just chosen
+        check(cat0 == _CAT_SB_OUT and self0 == 1.0,
+              f"newest history = own SIDEBOARD_OUT, is_self=1.0 (cat={cat0}, self={self0})")
+        check(cat1 == _CAT_SB_IN and self1 == 1.0,
+              f"prior history = own SIDEBOARD_IN, is_self=1.0 (cat={cat1}, self={self1})")
+        found += 1
+    check(found > 0, f"found a post-swap sideboard observation ({found})")
+
+    # (b) Per-action metadata: SB_IN/SB_OUT sources are zone-less template
+    #     entities, so the controller flag is the null sentinel (not 1.0/0.0) —
+    #     but the card id IS emitted, so the choice's card identity stays visible.
+    id_ok, ctrl_null_ok, n_checked = True, True, 0
+    for r in records:
+        if not r["is_sb"]:
+            continue
+        for j, c in enumerate(r["cats"]):
+            if c in (_CAT_SB_IN, _CAT_SB_OUT):
+                n_checked += 1
+                if float(r["ids"][j]) < 0.0:            # emitted, not id-null
+                    id_ok = False
+                if not np.isclose(float(r["ctrl"][j]), _ACTION_CARD_ID_NULL):
+                    ctrl_null_ok = False
+    check(n_checked > 0 and id_ok,
+          f"every SB_IN/SB_OUT action emits its card id ({n_checked} actions)")
+    check(n_checked > 0 and ctrl_null_ok,
+          "SB_IN/SB_OUT controller flag is the null sentinel (zone-less source)")
+
+
 def main():
     records = _drive_bo3(_make_sb_action())
     test_masking(records)
     test_pending_decision(records)
+    test_seat_flags(records)
     print("\n" + "=" * 60)
     if _failures:
         print(f"FAILED ({len(_failures)}):")
