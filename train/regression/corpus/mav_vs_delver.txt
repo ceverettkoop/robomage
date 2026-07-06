@@ -189,7 +189,7 @@
    2: Activate Polluted Delta (ChangeZone)
   >> B/B: 1 (Activate Mishra's Bauble (PeekAndReveal))
 --- Narrative ---
-  Choose target:
+  Choose target for Mishra's Bauble:
 
 --- Decision 11 ---
   Priority: Player B (active)
@@ -504,7 +504,7 @@
   >> B/B: 0 (Return Island)
 --- Narrative ---
   Player B returns Island to hand
-  Choose target:
+  Choose target for Daze:
 
 --- Decision 28 ---
   Priority: Player B (non-active)
@@ -698,7 +698,7 @@
    1: Activate Scryb Ranger (Untap)
   >> A/A: 1 (Activate Scryb Ranger (Untap))
 --- Narrative ---
-  Choose target:
+  Choose target for Scryb Ranger:
 
 --- Decision 38 ---
   Priority: Player A (active)
@@ -882,7 +882,7 @@
    2: Activate Scryb Ranger (Untap)
   >> A/A: 1 (Cast Swords to Plowshares)
 --- Narrative ---
-  Choose target:
+  Choose target for Swords to Plowshares:
 
 --- Decision 47 ---
   Priority: Player A (active)
@@ -987,7 +987,7 @@
    2: Activate Scryb Ranger (Untap)
   >> A/A: 2 (Activate Scryb Ranger (Untap))
 --- Narrative ---
-  Choose target:
+  Choose target for Scryb Ranger:
 
 --- Decision 53 ---
   Priority: Player A (active)
@@ -1080,7 +1080,7 @@
    1: Cast Lightning Bolt
   >> B/B: 1 (Cast Lightning Bolt)
 --- Narrative ---
-  Choose target:
+  Choose target for Lightning Bolt:
 
 --- Decision 58 ---
   Priority: Player B (active)
@@ -1161,7 +1161,7 @@
    1: Activate Mishra's Bauble (PeekAndReveal)
   >> B/B: 1 (Activate Mishra's Bauble (PeekAndReveal))
 --- Narrative ---
-  Choose target:
+  Choose target for Mishra's Bauble:
 
 --- Decision 62 ---
   Priority: Player B (active)
@@ -1294,7 +1294,7 @@
    2: Activate Scalding Tarn (ChangeZone)
   >> B/B: 1 (Activate Mishra's Bauble (PeekAndReveal))
 --- Narrative ---
-  Choose target:
+  Choose target for Mishra's Bauble:
 
 --- Decision 69 ---
   Priority: Player B (active)
@@ -1509,7 +1509,7 @@
    1: Activate Scryb Ranger (Untap)
   >> A/A: 1 (Activate Scryb Ranger (Untap))
 --- Narrative ---
-  Choose target:
+  Choose target for Scryb Ranger:
 
 --- Decision 80 ---
   Priority: Player A (active)
@@ -1637,7 +1637,7 @@
    1: Cast Lightning Bolt
   >> B/B: 1 (Cast Lightning Bolt)
 --- Narrative ---
-  Choose target:
+  Choose target for Lightning Bolt:
 
 --- Decision 87 ---
   Priority: Player B (active)
@@ -1857,7 +1857,7 @@
    1: Activate Scryb Ranger (Untap)
   >> A/A: 1 (Activate Scryb Ranger (Untap))
 --- Narrative ---
-  Choose target:
+  Choose target for Scryb Ranger:
 
 --- Decision 98 ---
   Priority: Player A (active)
@@ -2143,7 +2143,7 @@
    1: Activate Scryb Ranger (Untap)
   >> A/A: 1 (Activate Scryb Ranger (Untap))
 --- Narrative ---
-  Choose target:
+  Choose target for Scryb Ranger:
 
 --- Decision 112 ---
   Priority: Player A (active)

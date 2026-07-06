@@ -300,7 +300,8 @@ def run_games(controller_a, controller_b, *,
                 if is_verbose:
                     gs = decode.decode_game_state(
                         obs_[:STATE_SIZE],
-                        perm_counters=getattr(d.env, "_perm_counters", None))
+                        perm_counters=getattr(d.env, "_perm_counters", None),
+                        perm_token_names=getattr(d.env, "_perm_token_names", None))
                     for ln in decode.format_decision_block(d.index + 1, gs, d.menu()):
                         emit(ln)
                     emit(decode.format_chosen_action(f"{label}/{player}", action,

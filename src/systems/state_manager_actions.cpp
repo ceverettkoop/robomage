@@ -38,6 +38,20 @@ static bool present_condition_raw(const Ability &ab, Zone::Ownership caster, std
 static void offer_modal_back_face_casts(std::vector<LegalAction> &actions, const Game &game,
                                         Zone::Ownership priority_player,
                                         std::shared_ptr<Orderer> orderer, bool stack_empty);
+static std::string loyalty_cost_label(const Ability &ab);
+
+// A planeswalker loyalty ability's cost as an MTG-notation suffix (" [+1]",
+// " [0]", " [-3]", " [-X]"); empty for a non-loyalty ability. Shown in the
+// action menu so the player sees each ability's loyalty cost, not just its
+// effect category.
+static std::string loyalty_cost_label(const Ability &ab) {
+    if (!ab.is_loyalty_ability) return "";
+    if (ab.loyalty_cost_is_x) return ab.loyalty_cost < 0 ? " [-X]" : " [+X]";
+    if (ab.loyalty_cost == 0) return " [0]";
+    int magnitude = ab.loyalty_cost < 0 ? -ab.loyalty_cost : ab.loyalty_cost;
+    std::string sign = ab.loyalty_cost < 0 ? "-" : "+";
+    return " [" + sign + std::to_string(magnitude) + "]";
+}
 
 static bool can_afford_alt(const CardData& card_data, const AltCost& alt_cost,
                            Zone::Ownership priority_player,
@@ -1042,7 +1056,8 @@ std::vector<LegalAction> StateManager::determine_legal_actions(
                 { auto it = cur_game.payment_fail_counts.find(ab.source);
                   if (it != cur_game.payment_fail_counts.end() && it->second >= 2) continue; }
                 std::string src_name = entity_name(ab.source);
-                std::string desc = "Activate " + src_name + " (" + ab.category + ")";
+                std::string desc = "Activate " + src_name + loyalty_cost_label(ab)
+                                   + " (" + ab.category + ")";
                 LegalAction non_mana_la(ACTIVATE_ABILITY, ab.source, ab, desc);
                 non_mana_la.category = ActionCategory::ACTIVATE_ABILITY;
                 actions.push_back(non_mana_la);

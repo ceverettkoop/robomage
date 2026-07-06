@@ -1340,7 +1340,12 @@ static size_t spell_xpaid_target_cap(const CardData &card_data, Entity spell_ent
 static void select_single_target(Ability &ability, const std::vector<Entity> &valid_targets,
                                   bool allow_done) {
     PendingDecisionScope pending_scope(ability.source);
-    game_log("Choose target:\n");
+    // Name the spell/ability asking for the target so the prompt is meaningful
+    // before it resolves — otherwise the log only reveals what it was after the
+    // target is chosen and the object goes on the stack.
+    std::string src_name = ability.source != 0 ? entity_name(ability.source)
+                                                : std::string("this ability");
+    game_log("Choose target for %s:\n", src_name.c_str());
     std::vector<LegalAction> tgt_actions;
     if (ability.target_min == 0 || allow_done) {
         std::string label = allow_done ? "Done selecting targets" : "No target";
@@ -2474,7 +2479,16 @@ void proc_mandatory_choice(Game &game, std::shared_ptr<Orderer> orderer) {
                 la.category = ActionCategory::DISCARD;
                 discard_actions.push_back(la);
             }
+            // The discarding player is the active player (CR 514.1), who is not
+            // necessarily the current priority holder. Point the input query at
+            // them (the shared chooser-scope pattern) so machine-mode serializes
+            // the state from their perspective and routes the decision to them —
+            // otherwise the opponent could be asked to choose the active player's
+            // discard.
+            bool prev_priority = game.player_a_has_priority;
+            game.player_a_has_priority = (active_player == Zone::PLAYER_A);
             int choice = InputLogger::instance().get_input(discard_actions);
+            game.player_a_has_priority = prev_priority;
             Entity card = discard_actions[static_cast<size_t>(choice)].source_entity;
             auto &cd = global_coordinator.GetComponent<CardData>(card);
             orderer->add_to_zone(false, card, Zone::GRAVEYARD);

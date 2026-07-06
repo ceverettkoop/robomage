@@ -317,7 +317,7 @@
    1: Endurance (evoke: sacrifice)
   >> A/A: 0 (Endurance (ChangeZoneAll, targeted))
 --- Narrative ---
-  Choose target:
+  Choose target for Endurance:
 
 --- Decision 18 ---
   Priority: Player A (active)
@@ -353,7 +353,7 @@
    1: Cast Swords to Plowshares
   >> B/B: 1 (Cast Swords to Plowshares)
 --- Narrative ---
-  Choose target:
+  Choose target for Swords to Plowshares:
 
 --- Decision 20 ---
   Priority: Player B (non-active)
@@ -408,7 +408,7 @@
   >> B/B: 1 (Play Talon Gates of Madara)
 --- Narrative ---
   Player B played Talon Gates of Madara
-  Choose target:
+  Choose target for Talon Gates of Madara:
 
 --- Decision 22 ---
   Priority: Player B (active)
@@ -504,7 +504,7 @@
    1: Cast Swords to Plowshares
   >> A/A: 1 (Cast Swords to Plowshares)
 --- Narrative ---
-  Choose target:
+  Choose target for Swords to Plowshares:
 
 --- Decision 27 ---
   Priority: Player A (active)
@@ -610,7 +610,7 @@
    1: Activate Wasteland (Destroy)
   >> B/B: 1 (Activate Wasteland (Destroy))
 --- Narrative ---
-  Choose target:
+  Choose target for Wasteland:
 
 --- Decision 32 ---
   Priority: Player B (active)
@@ -714,7 +714,7 @@
    1: Activate Wasteland (Destroy)
   >> A/A: 1 (Activate Wasteland (Destroy))
 --- Narrative ---
-  Choose target:
+  Choose target for Wasteland:
 
 --- Decision 37 ---
   Priority: Player A (active)
@@ -1009,7 +1009,7 @@
    2: Activate Windswept Heath (ChangeZone)
   >> A/A: 1 (Activate Scryb Ranger (Untap))
 --- Narrative ---
-  Choose target:
+  Choose target for Scryb Ranger:
 
 --- Decision 52 ---
   Priority: Player A (active)
@@ -1127,7 +1127,7 @@
    1: Cast Swords to Plowshares
   >> B/B: 1 (Cast Swords to Plowshares)
 --- Narrative ---
-  Choose target:
+  Choose target for Swords to Plowshares:
 
 --- Decision 58 ---
   Priority: Player B (active)
@@ -1317,7 +1317,7 @@
    1: Activate Scryb Ranger (Untap)
   >> A/A: 1 (Activate Scryb Ranger (Untap))
 --- Narrative ---
-  Choose target:
+  Choose target for Scryb Ranger:
 
 --- Decision 68 ---
   Priority: Player A (active)

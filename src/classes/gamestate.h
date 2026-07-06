@@ -19,6 +19,7 @@ extern "C" {
 #define MAX_ACTIONS 64
 #define MAX_CHOICE_DESC 128
 #define PERM_COUNTERS_LEN 64  // PermanentState.counters summary width (mirrored in train/env.py)
+#define PERM_TOKEN_NAME_LEN 32  // PermanentState.token_name width (mirrored in train/env.py)
 #define REVEALED_CARD_TYPES 1024  // mirror N_CARD_TYPES in machine_io.h / REVEALED_SIZE in match_state.h
 
 typedef struct PlayerState_tag {
@@ -42,7 +43,7 @@ typedef struct PermanentState_tag {
     bool has_summoning_sickness;
     int  damage;
     int  loyalty;                // loyalty counters for planeswalkers (0 for non-planeswalkers)
-    char token_name[32];         // non-empty for tokens (card_vocab_idx == TOKEN_SENTINEL)
+    char token_name[PERM_TOKEN_NAME_LEN]; // non-empty for tokens (card_vocab_idx == TOKEN_SENTINEL)
     char counters[PERM_COUNTERS_LEN]; // compact typed-counter summary ("charge:2, +1/+1:3"), empty = none
                                  // (display only — NOT serialized to the ML state vector; emitted as a
                                  // narrative-mode BQUERY side block for observers, like descriptions)

@@ -170,7 +170,7 @@
    4: Activate Edge of Autumn from hand (Draw)
   >> A/A: 1 (Cast Thoughtseize)
 --- Narrative ---
-  Choose target:
+  Choose target for Thoughtseize:
 
 --- Decision 11 ---
   Priority: Player A (active)
@@ -847,7 +847,7 @@
   >> B/B: 1 (Play Talon Gates of Madara)
 --- Narrative ---
   Player B played Talon Gates of Madara
-  Choose target:
+  Choose target for Talon Gates of Madara:
 
 --- Decision 55 ---
   Priority: Player B (active)
@@ -1372,7 +1372,7 @@
    2: Activate Wasteland (Destroy)
   >> B/B: 1 (Cast Swords to Plowshares)
 --- Narrative ---
-  Choose target:
+  Choose target for Swords to Plowshares:
 
 --- Decision 87 ---
   Priority: Player B (active)
@@ -1583,7 +1583,7 @@
    3: Activate Street Wraith from hand (Draw)
   >> A/A: 1 (Cast Thoughtseize)
 --- Narrative ---
-  Choose target:
+  Choose target for Thoughtseize:
 
 --- Decision 100 ---
   Priority: Player A (active)
@@ -2349,7 +2349,7 @@
    2: Activate Wasteland (Destroy)
   >> B/B: 1 (Activate Wasteland (Destroy))
 --- Narrative ---
-  Choose target:
+  Choose target for Wasteland:
 
 --- Decision 145 ---
   Priority: Player B (active)
@@ -2387,7 +2387,7 @@
    1: Activate Wasteland (Destroy)
   >> B/B: 1 (Activate Wasteland (Destroy))
 --- Narrative ---
-  Choose target:
+  Choose target for Wasteland:
 
 --- Decision 147 ---
   Priority: Player B (active)
@@ -2445,7 +2445,7 @@
   >> A/A: 0 (Exile Daze)
 --- Narrative ---
   Player A exiles Daze
-  Choose target:
+  Choose target for Force of Will:
 
 --- Decision 150 ---
   Priority: Player A (non-active)
@@ -4108,7 +4108,7 @@
    3: Activate Street Wraith from hand (Draw)
   >> A/A: 1 (Cast Thoughtseize)
 --- Narrative ---
-  Choose target:
+  Choose target for Thoughtseize:
 
 --- Decision 245 ---
   Priority: Player A (active)
@@ -5420,7 +5420,7 @@
    3: Activate Knight of the Reliquary (ChangeZone)
   >> B/B: 1 (Cast Life from the Loam)
 --- Narrative ---
-  Choose target:
+  Choose target for Life from the Loam:
 
 --- Decision 302 ---
   Priority: Player B (active)
@@ -5557,7 +5557,7 @@
    1: Activate Wasteland (Destroy)
   >> B/B: 1 (Activate Wasteland (Destroy))
 --- Narrative ---
-  Choose target:
+  Choose target for Wasteland:
 
 --- Decision 309 ---
   Priority: Player B (active)
@@ -5623,7 +5623,7 @@
    1: Activate Wasteland (Destroy)
   >> B/B: 1 (Activate Wasteland (Destroy))
 --- Narrative ---
-  Choose target:
+  Choose target for Wasteland:
 
 --- Decision 312 ---
   Priority: Player B (active)

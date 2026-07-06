@@ -94,6 +94,65 @@ def card_index_to_name(idx):
     return f"?({idx})"
 
 
+# ── Oracle-text lookup (for the TUI card-inspect popup) ────────────────────────
+
+import os  # noqa: E402
+import re  # noqa: E402
+
+_CARDS_DIR = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+    "bin", "resources", "cardsfolder")
+
+
+def _name_to_uid(name):
+    """Mirror src/parse.cpp name_to_uid: lowercase, space/hyphen -> '_', drop the rest."""
+    return re.sub(r"[^a-z0-9_]", "", name.lower().replace(" ", "_").replace("-", "_"))
+
+
+def _resolve_script_path(uid):
+    """Script file the engine would load for `uid` (mirrors src/card_db.cpp):
+    the exact `<uid>.txt`, else a double-faced card's combined `<uid>_*.txt`."""
+    if not uid:
+        return None
+    direct = os.path.join(_CARDS_DIR, uid[0], f"{uid}.txt")
+    if os.path.exists(direct):
+        return direct
+    letter_dir = os.path.join(_CARDS_DIR, uid[0])
+    if os.path.isdir(letter_dir):
+        prefix = uid + "_"
+        for fn in sorted(os.listdir(letter_dir)):
+            if fn.startswith(prefix) and fn.endswith(".txt"):
+                return os.path.join(letter_dir, fn)
+    return None
+
+
+_ORACLE_CACHE = {}
+
+
+def card_oracle_text(card_idx):
+    r"""Oracle text for a vocab card id, or '' when unavailable.
+
+    Reads the card's Forge script `Oracle:` line (with `\n` expanded), resolving
+    DFC combined filenames the way the engine does; result cached per id. A token
+    (the shared TOKEN_SENTINEL id) has no named script, so returns ''."""
+    if card_idx in _ORACLE_CACHE:
+        return _ORACLE_CACHE[card_idx]
+    text = ""
+    if 0 <= card_idx < len(_CARD_NAMES) and card_idx != _TOKEN_IDX:
+        path = _resolve_script_path(_name_to_uid(_CARD_NAMES[card_idx]))
+        if path:
+            try:
+                with open(path) as f:
+                    for raw in f:
+                        if raw.startswith("Oracle:"):
+                            text = raw[len("Oracle:"):].strip().replace("\\n", "\n")
+                            break
+            except OSError:
+                pass
+    _ORACLE_CACHE[card_idx] = text
+    return text
+
+
 def onehot_to_card(state, base):
     """Decode the card-id float at `base` to a card name, or None if empty."""
     idx = _slot_card_idx(state, base)
@@ -186,20 +245,28 @@ def decode_step(state):
     return _STEP_NAMES[idx] if idx < len(_STEP_NAMES) else f"Step({idx})"
 
 
-def _decode_permanents(state, start, count=48, counters=None):
+def _decode_permanents(state, start, count=48, counters=None, token_names=None):
     """Decode permanent slots into a list of dicts (non-empty only).
 
     `counters` is the per-slot typed-counter summary list the engine emits
     under --narrative (env._perm_counters side-channel; slot-aligned with the
     state vector). Loyalty entries are dropped — loyalty has a dedicated
-    serialized field and its own display."""
+    serialized field and its own display.
+
+    `token_names` is the per-slot token-name list (env._perm_token_names,
+    also narrative-only, slot-aligned). Every token shares the generic
+    TOKEN_SENTINEL card id in the state vector, so when a slot names a token
+    its "name" comes from here instead of the generic "Token"."""
     perms = []
     for i in range(count):
         base = start + i * PERM_SLOT_SIZE
         idx = onehot_to_index(state, base + _OFF_CARD_ID)
         if idx < 0:
             continue
-        p = {"name": card_index_to_name(idx), "card_idx": idx}
+        name = card_index_to_name(idx)
+        if token_names is not None and i < len(token_names) and token_names[i]:
+            name = token_names[i]
+        p = {"name": name, "card_idx": idx}
         if counters is not None and i < len(counters) and counters[i]:
             parts = [c for c in (s.strip() for s in counters[i].split(","))
                      if c and not c.startswith("loyalty:")]
@@ -259,17 +326,25 @@ def _decode_stack(state, labels=SELF_OPP_LABELS):
             continue
         modes = [m for m in range(_STACK_MODE_SLOTS) if state[base + 3 + m] > 0.5]
         targets = []
+        target_refs = []
         for t in range(_STACK_TGT_SLOTS):
             tbase = base + 3 + _STACK_MODE_SLOTS + t * _STACK_TGT_FIELDS
             if state[tbase] < 0.5:  # present flag
                 continue
-            ctrl = labels["self"] if state[tbase + 2] > 0.5 else labels["opponent"]
-            if state[tbase + 1] > 0.5:  # is_player
+            is_self = state[tbase + 2] > 0.5
+            is_player = state[tbase + 1] > 0.5
+            ctrl = labels["self"] if is_self else labels["opponent"]
+            tidx = -1 if is_player else onehot_to_index(state, tbase + 3)
+            if is_player:
                 targets.append(f"{ctrl} (player)")
             else:
-                tidx = onehot_to_index(state, tbase + 3)
                 tname = card_index_to_name(tidx) if tidx >= 0 else "?"
                 targets.append(f"{tname} ({ctrl})")
+            # Structured form for UIs that highlight the target on the board.
+            # `is_self` is viewer-relative (like the rest of the state vector); a
+            # mirrored decode must flip it to the human frame at the call site.
+            target_refs.append({"is_player": is_player, "is_self": is_self,
+                                "card_idx": tidx})
         entries.append({
             "name": card_index_to_name(idx),
             "card_idx": idx,
@@ -277,11 +352,13 @@ def _decode_stack(state, labels=SELF_OPP_LABELS):
             "is_spell": state[base + 2] > 0.5,
             "modes": modes,       # chosen modal mode indices (empty = not modal)
             "targets": targets,   # announced targets, human-readable
+            "target_refs": target_refs,  # structured targets (see note above)
         })
     return entries
 
 
-def decode_game_state(state, labels=SELF_OPP_LABELS, perm_counters=None):
+def decode_game_state(state, labels=SELF_OPP_LABELS, perm_counters=None,
+                      perm_token_names=None):
     """Decode the full state vector into a human-readable dict.
 
     `labels` substitutes the controller words used in stack entries (and any
@@ -289,6 +366,9 @@ def decode_game_state(state, labels=SELF_OPP_LABELS, perm_counters=None):
     `perm_counters` is the (self_slots, opp_slots) counter-summary side-channel
     (env._perm_counters, narrative mode only); when given, battlefield dicts
     gain a "counters" entry rendered by fmt_perm.
+    `perm_token_names` is the (self_slots, opp_slots) token-name side-channel
+    (env._perm_token_names, narrative mode only); when given, a token
+    permanent's "name" is its real token name instead of the generic "Token".
     """
     is_active = state[31] > 0.5
     is_player_a = state[32] > 0.5
@@ -306,10 +386,12 @@ def decode_game_state(state, labels=SELF_OPP_LABELS, perm_counters=None):
         "opp_library": int(round(state[_IDX_OPP_LIB] * 60)),
         "self_battlefield": _decode_permanents(
             state, _SELF_PERM_START,
-            counters=perm_counters[0] if perm_counters else None),
+            counters=perm_counters[0] if perm_counters else None,
+            token_names=perm_token_names[0] if perm_token_names else None),
         "opp_battlefield": _decode_permanents(
             state, _OPP_PERM_START,
-            counters=perm_counters[1] if perm_counters else None),
+            counters=perm_counters[1] if perm_counters else None,
+            token_names=perm_token_names[1] if perm_token_names else None),
         "stack": _decode_stack(state, labels),
         "self_hand": _decode_hand(state),
         "self_graveyard": _decode_graveyard(state, _GY_START),
@@ -437,12 +519,18 @@ def describe_action(cat, card_name, ctrl_str, labels=SELF_OPP_LABELS):
 
 
 def decode_actions(cats_int, card_ids, ctrl, num_choices, public_flags=None,
-                   labels=SELF_OPP_LABELS, descriptions=None):
+                   labels=SELF_OPP_LABELS, descriptions=None, zone_refs=None):
     """Decode the per-action arrays into a list of dicts.
 
     Each dict: index, category (int), category_name, card (name or None),
     card_idx (vocab index or -1), controller ('own'|'opp'|None), description,
-    card_is_public (bool — card identity publicly known, e.g. a revealed tutor).
+    card_is_public (bool — card identity publicly known, e.g. a revealed tutor),
+    zone_ref (int ActionRefZone of the referenced entity, 0 = none).
+
+    `zone_refs` is the per-action ActionRefZone array (decode.action_zone_refs /
+    env side-channel); it disambiguates a card that appears in two zones at once
+    (e.g. a hand card being discarded vs. a same-named battlefield permanent),
+    which card_idx + controller alone cannot tell apart.
 
     `public_flags` is the per-action card_is_public array (env._action_public);
     None means "unknown", treated as not-public. `labels` substitutes the
@@ -479,6 +567,7 @@ def decode_actions(cats_int, card_ids, ctrl, num_choices, public_flags=None,
             "controller": ctrl_str,
             "description": desc,
             "card_is_public": is_public,
+            "zone_ref": int(zone_refs[i]) if zone_refs is not None and i < len(zone_refs) else 0,
         })
     return actions
 
@@ -494,7 +583,8 @@ def decode_actions_from_obs(obs, num_choices, public_flags=None,
     """
     return decode_actions(action_categories(obs, num_choices),
                           action_card_ids(obs), action_ctrls(obs), num_choices,
-                          public_flags, labels, descriptions)
+                          public_flags, labels, descriptions,
+                          zone_refs=action_zone_refs(obs, num_choices))
 
 
 # ── Decision-type classification (all read the integer category array) ────────

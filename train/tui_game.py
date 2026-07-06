@@ -23,13 +23,13 @@ import time
 import numpy as np
 from rich.text import Text
 
-from textual import work
+from textual import events, work
 from textual.app import App, ComposeResult
 from textual.content import Content
-from textual.containers import Horizontal, Vertical, VerticalScroll
+from textual.containers import Horizontal, HorizontalScroll, Vertical, VerticalScroll
 from textual.message import Message
 from textual.widgets import Footer, Header, OptionList, RichLog, Static
-from textual.widgets.option_list import Option
+from textual.widgets.option_list import Option, OptionDoesNotExist
 
 from env import NarrativeEnv, STATE_SIZE
 import decode
@@ -47,11 +47,25 @@ _STEP_UPKEEP_IDX = _STEP_ABBR.index("UPK")
 # can briefly observe it before the game moves on. Tweak freely.
 OPP_ACTION_OBSERVE_DELAY = 0.5
 
+# The card-inspect ("hold Q") banner auto-hides this many seconds after the last
+# 'q'. A terminal has no key-up event, so "hold" is emulated: OS key auto-repeat
+# fires the inspect action repeatedly while Q is down, each firing re-arming this
+# timer, so the banner stays up until the key is released (repeats stop) and the
+# timer lapses. Must comfortably exceed the auto-repeat interval; tune if a fast
+# release flickers or a slow keyboard's first-repeat gap lets it blink.
+ORACLE_HIDE_DELAY = 0.8
+
 # Controller-word substitution used when decoding an OPPONENT-perspective obs
 # (the opponent holds priority, so the state vector's "self" is them). Swapping
 # the labels keeps stack entries / announced targets worded from the human's
 # point of view; the structural self/opp fields are swapped separately.
 _MIRROR_LABELS = {"own": "opp", "opp": "own", "self": "opponent", "opponent": "self"}
+
+# ActionRefZone (src/classes/gamestate.h) -> board zone a CardButton lives in.
+# Only battlefield/hand have widgets; other zones (stack/gy/exile/player) map to
+# None. Lets cross-highlighting tell a hand card from a same-named battlefield
+# permanent, which card_idx + controller alone cannot.
+_ZONE_REF_TO_ZONE = {1: "battlefield", 2: "battlefield", 3: "hand"}
 
 # Opponent choices that reveal a hidden card identity (the card never becomes
 # public knowledge). When the opponent makes one of these, the log shows a
@@ -127,9 +141,10 @@ def _edge_colors(colors):
 class CardClicked(Message):
     """A battlefield permanent or hand card was clicked."""
 
-    def __init__(self, card_idx: int, controller: str):
+    def __init__(self, card_idx: int, controller: str, zone: str):
         self.card_idx = card_idx
         self.controller = controller          # "self" | "opp"
+        self.zone = zone                      # "battlefield" | "hand"
         super().__init__()
 
 
@@ -138,14 +153,17 @@ class CardButton(Static):
 
     `edge_colors` is a (top, right, bottom, left) tuple of rich colors encoding
     the card's color identity; each edge is painted its color at mount time so
-    multicolor cards show a split border (see `_edge_colors`)."""
+    multicolor cards show a split border (see `_edge_colors`). `zone`
+    ("battlefield"/"hand") distinguishes a card from a same-named copy in the
+    other zone so cross-highlighting doesn't spill between them."""
 
     def __init__(self, label: str, card_idx: int, controller: str,
-                 edge_colors=None):
+                 edge_colors=None, zone: str = "battlefield"):
         super().__init__(label)
         self._card_idx = card_idx
         self._controller = controller
         self._edge_colors = edge_colors
+        self._zone = zone
 
     def on_mount(self) -> None:
         if not self._edge_colors:
@@ -160,15 +178,49 @@ class CardButton(Static):
         if left:
             self.styles.border_left = ("round", left)
 
+    def set_action_highlight(self, on: bool) -> None:
+        """Toggle the "an action in the menu targets this card" highlight — the
+        cross-highlight partner of ActionList's option hover (see GameApp)."""
+        self.set_class(on, "action-linked")
+
     def on_click(self) -> None:
-        self.post_message(CardClicked(self._card_idx, self._controller))
+        self.post_message(CardClicked(self._card_idx, self._controller, self._zone))
+
+
+class StackItem(Static):
+    """One delineated object on the stack. Carries its announced targets so the
+    app can highlight them on the board when the item is hovered (see GameApp).
+
+    `target_refs` are already in the human's frame: each is
+    {"is_player", "is_self", "card_idx"} where is_self means the human (YOU)."""
+
+    def __init__(self, label: str, target_refs):
+        super().__init__(label)
+        self._target_refs = target_refs
+
+
+class ActionList(OptionList):
+    """OptionList that reports which option the mouse is hovering over.
+
+    The base tracks the hovered row in the private `_mouse_hovering_over`
+    reactive (set by its `_on_mouse_move`, cleared by `_on_leave`); we watch it
+    and surface the change as an `ActionHovered` message so the app can
+    cross-highlight the battlefield permanent that option refers to."""
+
+    class ActionHovered(Message):
+        def __init__(self, index):
+            self.index = index          # hovered option index, or None
+            super().__init__()
+
+    def watch__mouse_hovering_over(self, _old, new) -> None:
+        self.post_message(self.ActionHovered(new))
 
 
 # ── Worker → UI messages ──────────────────────────────────────────────────────
 
 class StateUpdate(Message):
     def __init__(self, obs, num_choices, actions, human_turn, opp_perspective=False,
-                 perm_counters=None):
+                 perm_counters=None, perm_token_names=None):
         self.obs = obs
         self.num_choices = num_choices
         self.actions = actions            # decoded action dicts (human turn) or []
@@ -180,6 +232,9 @@ class StateUpdate(Message):
         # (self[48], opp[48]) typed-counter summaries (env._perm_counters
         # side-channel), same perspective as obs — decode swaps them with it.
         self.perm_counters = perm_counters
+        # (self[48], opp[48]) token names (env._perm_token_names side-channel),
+        # same perspective as obs — decode swaps them with it.
+        self.perm_token_names = perm_token_names
         super().__init__()
 
 
@@ -205,6 +260,17 @@ class GameApp(App):
     #self-info  { height: 1; color: green; }
     #graveyards { height: 2; color: $text-muted; }
     #stack      { height: 3; border: round $primary; }
+    /* Each stack object is delineated by a left bar + margin (a full box border
+       would not fit the 1-row inner height). */
+    StackItem   { width: auto; height: 100%; margin: 0 1; padding: 0 1;
+                  border-left: thick $secondary; }
+    StackItem:hover { background: $boost; }
+    .stack-empty { width: auto; height: 100%; color: $text-muted; }
+    /* Hovering a stack item paints its targets red: permanents on the board and
+       the YOU/OPPONENT info line for a player target. */
+    CardButton.stack-target { background: $error 40%; border: round $error; }
+    #self-info.stack-target-player, #opp-info.stack-target-player {
+        background: $error; color: $text; text-style: bold; }
     #opp-bf, #self-bf { height: 8; }
     .bf-row     { height: 1fr; layout: horizontal; }
     .bf-row.lands { background: $panel; }
@@ -212,13 +278,25 @@ class GameApp(App):
     CardButton  { width: auto; height: 100%; margin: 0 1; padding: 0 1;
                   border: round $surface; }
     CardButton:hover { background: $boost; }
+    /* A menu action targets this card (cross-highlight from action hover). */
+    CardButton.action-linked { background: $warning 40%; border: round $warning; }
     #bottom     { height: 1fr; min-height: 8; }
     #actions    { width: 35%; min-width: 24; border: round $primary; }
     #log        { width: 1fr; border: round $surface; }
+    /* Card-inspect popup: a floating banner over the board (see action_inspect).
+       Hidden until 'q' is held over a card. */
+    Screen { layers: base overlay; }
+    #oracle {
+        layer: overlay; display: none; dock: top;
+        width: auto; max-width: 70%; height: auto; max-height: 12;
+        margin: 1 2; padding: 0 1;
+        border: round $accent; background: $panel; color: $text;
+    }
     """
 
     BINDINGS = [
-        ("q", "quit", "Quit"),
+        ("ctrl+q", "quit", "Quit"),
+        ("q", "inspect", "Oracle (hold)"),
         ("space", "pass_zero", "Pass"),
         ("p", "autopass", "Autopass"),
         ("plus", "resize_log(1)", "Bigger log"),
@@ -241,6 +319,12 @@ class GameApp(App):
         self._actions = []
         self._awaiting = False
         self._reward = 0.0
+        # The CardButton the mouse is currently over (Enter/Leave tracked in
+        # on_enter/on_leave). Drives the action<->permanent cross-highlighting,
+        # and is the anchor the card-inspect popup reads.
+        self._hovered_button = None
+        # One-shot auto-hide timer for the inspect banner (see action_inspect).
+        self._oracle_timer = None
         # Autopass (the 'p' key): once engaged, the driver passes priority through
         # every optional window until the next UPKEEP step, stopping early for any
         # mandatory decision.
@@ -261,10 +345,13 @@ class GameApp(App):
         yield Header(show_clock=False)
         yield Static(id="phase")
         yield Static(id="opp-info")
+        # The opponent's rows are flipped (lands on top, battlefield below) so the
+        # two players' battlefields sit adjacent across the stack — a mirror-
+        # symmetric board with each side's lands on the outer edge.
         with Vertical(id="opp-bf"):
-            yield VerticalScroll(id="opp-bf-perms", classes="bf-row")
             yield VerticalScroll(id="opp-bf-lands", classes="bf-row lands")
-        yield Static(id="stack")
+            yield VerticalScroll(id="opp-bf-perms", classes="bf-row")
+        yield HorizontalScroll(id="stack")
         with Vertical(id="self-bf"):
             yield VerticalScroll(id="self-bf-perms", classes="bf-row")
             yield VerticalScroll(id="self-bf-lands", classes="bf-row lands")
@@ -273,8 +360,9 @@ class GameApp(App):
         yield Static(id="graveyards")
         yield Static(id="prompt")
         with Horizontal(id="bottom"):
-            yield OptionList(id="actions")
+            yield ActionList(id="actions")
             yield RichLog(id="log", wrap=True, highlight=False, markup=True)
+        yield Static(id="oracle")
         yield Footer()
 
     def on_mount(self) -> None:
@@ -284,7 +372,8 @@ class GameApp(App):
         self.sub_title = (f"You (Player {human_seat}, {self._human_deck})  vs  "
                           f"{self._opp_label} (Player {opp_seat}, {self._opp_deck})")
         self._log("[b]Game starting…[/b]  Click a card or pick a numbered action. "
-                  "Keys: digits = pick, space = pass, p = autopass, q = quit.")
+                  "Keys: digits = pick, space = pass, p = autopass, "
+                  "hold q = show oracle text, ctrl+q = quit.")
         self._drive()
 
     # ----- the driver (background thread) -----
@@ -320,7 +409,8 @@ class GameApp(App):
                                               actions if human_must_act else [],
                                               human_turn=human_must_act,
                                               opp_perspective=opp_turn,
-                                              perm_counters=getattr(env, "_perm_counters", None)))
+                                              perm_counters=getattr(env, "_perm_counters", None),
+                                              perm_token_names=getattr(env, "_perm_token_names", None)))
 
                 opp_acted = False
                 autopass_acted = False
@@ -378,7 +468,8 @@ class GameApp(App):
         gs = decode.decode_game_state(
             obs[:STATE_SIZE],
             labels=_MIRROR_LABELS if mirrored else decode.SELF_OPP_LABELS,
-            perm_counters=message.perm_counters)
+            perm_counters=message.perm_counters,
+            perm_token_names=message.perm_token_names)
         if mirrored:
             for a, b in (("self", "opponent"),
                          ("self_library", "opp_library"),
@@ -389,11 +480,11 @@ class GameApp(App):
         self.query_one("#phase", Static).update(self._phase_strip(obs, gs))
         self.query_one("#opp-info", Static).update(self._info_line("OPPONENT", gs["opponent"], gs["opp_library"]))
         self.query_one("#self-info", Static).update(self._info_line("YOU", gs["self"], gs["self_library"]))
-        self.query_one("#stack", Static).update(self._stack_text(gs["stack"]))
         self.query_one("#graveyards", Static).update(
             f"Your GY: {', '.join(gs['self_graveyard']) or '—'}\n"
             f"Opp GY:  {', '.join(gs['opp_graveyard']) or '—'}")
 
+        await self._rebuild_stack(gs["stack"], mirrored)
         await self._rebuild_bf("#opp-bf-perms", "#opp-bf-lands", gs["opp_battlefield"], "opp")
         await self._rebuild_bf("#self-bf-perms", "#self-bf-lands", gs["self_battlefield"], "self")
         # A mirrored obs's "self_hand" is the OPPONENT's hand (private) — never
@@ -401,16 +492,19 @@ class GameApp(App):
         if not mirrored:
             await self._rebuild_hand(gs["self_hand"])
 
+        # A fresh menu/board: drop any stale hover so cross-highlights don't
+        # linger onto the newly-rebuilt permanents/options, and close any
+        # inspect banner (its card may no longer be on the board).
+        self._hovered_button = None
+        self._hide_oracle()
+        self._clear_stack_target_highlights()
         self._actions = message.actions
         self._awaiting = message.human_turn
         opt = self.query_one("#actions", OptionList)
         opt.clear_options()
         if message.human_turn:
             for a in message.actions:
-                # Wrap in plain Content: a str prompt is parsed as Textual markup
-                # at render time, which swallows bracketed text like the [SELF]/
-                # [OPPONENT] tags (and any card text that parses as a style tag).
-                opt.add_option(Option(Content(f"{a['index']:>2}: {self._menu_label(a)}"),
+                opt.add_option(Option(self._option_prompt(a, False),
                                       id=str(a["index"])))
             if message.actions:
                 opt.highlighted = 0
@@ -440,19 +534,148 @@ class GameApp(App):
     def on_card_clicked(self, message: CardClicked) -> None:
         if not self._awaiting:
             return
-        want = "own" if message.controller == "self" else "opp"
-        strict = [a for a in self._actions
-                  if a["card_idx"] == message.card_idx and a["controller"] == want]
-        matches = strict or [a for a in self._actions if a["card_idx"] == message.card_idx]
+        matches = self._actions_for_card(message.card_idx, message.controller,
+                                         message.zone)
         if not matches:
             self._log("[yellow]No legal action for that card — use the numbered list.[/yellow]")
         elif len(matches) == 1:
+            # Exactly one legal action → clicking commits it immediately.
             self._submit(matches[0]["index"])
         else:
+            # Ambiguous → don't guess. Highlight every option this card feeds and
+            # move the cursor to the first; the human disambiguates from the menu.
             idxs = [a["index"] for a in matches]
+            self._set_action_highlights(idxs)
             self.query_one("#actions", OptionList).highlighted = idxs[0]
             self._log(f"[yellow]That card has {len(idxs)} options: "
                       f"{', '.join(str(i) for i in idxs)} — pick a number.[/yellow]")
+
+    # ----- action <-> permanent cross-highlighting -----
+
+    def on_enter(self, event: events.Enter) -> None:
+        """Mouse moved onto a widget. A card → remember it (shared hover anchor)
+        and light up the menu actions it can drive; a stack item → paint its
+        announced targets red on the board."""
+        node = event.node
+        if isinstance(node, CardButton):
+            self._hovered_button = node
+            idxs = [a["index"] for a in self._actions_for_card(
+                node._card_idx, node._controller, node._zone)]
+            self._set_action_highlights(idxs)
+        elif isinstance(node, StackItem):
+            self._highlight_stack_targets(node._target_refs)
+
+    def on_leave(self, event: events.Leave) -> None:
+        """Mouse left a card/stack item — clear its highlight (for a card only if
+        it's still the tracked one; Enter of the next may have superseded it)."""
+        node = event.node
+        if isinstance(node, CardButton) and node is self._hovered_button:
+            self._hovered_button = None
+            self._set_action_highlights([])
+        elif isinstance(node, StackItem):
+            self._clear_stack_target_highlights()
+
+    def on_action_list_action_hovered(self, message: "ActionList.ActionHovered") -> None:
+        """Mouse moved over (or off) a menu option — highlight the battlefield
+        permanent(s) that option refers to."""
+        self._highlight_perms_for_action(message.index)
+
+    @staticmethod
+    def _action_zone(a):
+        """The board zone the action's referenced card lives in ("battlefield" /
+        "hand"), or None when it names no board card (or carries no zone info)."""
+        return _ZONE_REF_TO_ZONE.get(a.get("zone_ref", 0))
+
+    def _actions_for_card(self, card_idx: int, controller: str, zone: str):
+        """Legal actions this card feeds. Prefer a controller-exact match; fall
+        back to card-id alone (some actions carry no controller flag). An action
+        whose zone_ref names a DIFFERENT board zone is excluded, so a hand card
+        and a same-named battlefield permanent don't cross-match. Mirrors the
+        click resolver so click and hover always agree on the same set."""
+        if card_idx < 0:
+            return []
+
+        def zone_ok(a):
+            az = self._action_zone(a)
+            return az is None or az == zone   # no zone info → don't exclude
+        want = "own" if controller == "self" else "opp"
+        strict = [a for a in self._actions
+                  if a["card_idx"] == card_idx and a["controller"] == want and zone_ok(a)]
+        return strict or [a for a in self._actions
+                          if a["card_idx"] == card_idx and zone_ok(a)]
+
+    def _highlight_perms_for_action(self, index) -> None:
+        """Highlight the card(s) the given menu-option index refers to; a None
+        index (mouse left the list) clears all highlights. Matches on card id,
+        controller, and — when the action carries a zone_ref — the exact board
+        zone, so a hand card never lights up its same-named battlefield twin."""
+        buttons = list(self.query(CardButton))
+        for btn in buttons:
+            btn.set_action_highlight(False)
+        if index is None or not (0 <= index < len(self._actions)):
+            return
+        a = self._actions[index]
+        if a["card_idx"] < 0:
+            return
+        want_ctrl = a["controller"]
+        want_zone = self._action_zone(a)
+        for btn in buttons:
+            if btn._card_idx != a["card_idx"]:
+                continue
+            if want_ctrl is not None:
+                btn_want = "own" if btn._controller == "self" else "opp"
+                if btn_want != want_ctrl:
+                    continue
+            if want_zone is not None and btn._zone != want_zone:
+                continue
+            btn.set_action_highlight(True)
+
+    def _option_prompt(self, a, highlight: bool):
+        """Build a menu option's prompt. Uses Content (not a str) so the label is
+        rendered literally — a str is parsed as Textual markup, which would
+        swallow bracketed text like the [SELF]/[OPPONENT] tags. `highlight`
+        applies the cross-highlight style used when a matching card is hovered."""
+        text = f"{a['index']:>2}: {self._menu_label(a)}"
+        if highlight:
+            return Content.styled(text, "bold black on yellow")
+        return Content(text)
+
+    def _set_action_highlights(self, indices) -> None:
+        """Restyle the menu so the options in `indices` show the cross-highlight
+        (OptionList highlights only one row natively; this marks a whole set)."""
+        if not self._awaiting:
+            return
+        hl = set(indices)
+        opt = self.query_one("#actions", OptionList)
+        for a in self._actions:
+            try:
+                opt.replace_option_prompt(str(a["index"]),
+                                          self._option_prompt(a, a["index"] in hl))
+            except OptionDoesNotExist:
+                pass
+
+    # ----- stack item -> target highlighting -----
+
+    def _highlight_stack_targets(self, refs) -> None:
+        """Paint a hovered stack object's announced targets red: matching
+        battlefield permanent(s), and the YOU/OPPONENT info line for a player
+        target. `refs` are already in the human frame (is_self == YOU)."""
+        self._clear_stack_target_highlights()
+        for ref in refs:
+            if ref["is_player"]:
+                sel = "#self-info" if ref["is_self"] else "#opp-info"
+                self.query_one(sel, Static).add_class("stack-target-player")
+            elif ref["card_idx"] >= 0:
+                want = "self" if ref["is_self"] else "opp"
+                for btn in self.query(CardButton):
+                    if btn._card_idx == ref["card_idx"] and btn._controller == want:
+                        btn.add_class("stack-target")
+
+    def _clear_stack_target_highlights(self) -> None:
+        for btn in self.query(CardButton):
+            btn.remove_class("stack-target")
+        for sel in ("#self-info", "#opp-info"):
+            self.query_one(sel, Static).remove_class("stack-target-player")
 
     def action_pick(self, digit: str) -> None:
         idx = int(digit)
@@ -525,6 +748,37 @@ class GameApp(App):
         if self._actions and self._actions[0]["category"] == 0:
             self._submit(0)
 
+    def action_inspect(self) -> None:
+        """'q' held over a card → show its oracle-text banner.
+
+        Fires once per keypress; OS auto-repeat while Q is held re-arms the
+        auto-hide timer, so the banner stays up until the key is released. With
+        no card under the mouse it's a no-op (the banner just times out)."""
+        btn = self._hovered_button
+        if btn is not None:
+            self._show_oracle(btn._card_idx)
+        if self._oracle_timer is not None:
+            self._oracle_timer.stop()
+        self._oracle_timer = self.set_timer(ORACLE_HIDE_DELAY, self._hide_oracle)
+
+    def _show_oracle(self, card_idx: int) -> None:
+        name = decode.card_index_to_name(card_idx)
+        oracle = decode.card_oracle_text(card_idx)
+        body = Text()
+        body.append(name, style="bold")
+        body.append("\n")
+        body.append(oracle or "(no oracle text)",
+                    style="" if oracle else "italic dim")
+        banner = self.query_one("#oracle", Static)
+        banner.update(body)
+        banner.display = True
+
+    def _hide_oracle(self) -> None:
+        if self._oracle_timer is not None:
+            self._oracle_timer.stop()
+            self._oracle_timer = None
+        self.query_one("#oracle", Static).display = False
+
     # Min/max row heights for each resizable board panel.
     _PANEL_LIMITS = {"#opp-bf": (6, 16), "#self-bf": (6, 16), "#self-hand": (3, 10)}
 
@@ -594,7 +848,8 @@ class GameApp(App):
     async def _fill_row(self, selector: str, perms, controller: str) -> None:
         box = self.query_one(selector, VerticalScroll)
         await box.remove_children()
-        widgets = [self._mk_card(decode.fmt_perm(p), p["card_idx"], controller)
+        widgets = [self._mk_card(decode.fmt_perm(p), p["card_idx"], controller,
+                                 "battlefield")
                    for p in perms]
         if widgets:
             await box.mount(*widgets)
@@ -602,15 +857,17 @@ class GameApp(App):
     async def _rebuild_hand(self, hand) -> None:
         box = self.query_one("#self-hand", VerticalScroll)
         await box.remove_children()
-        widgets = [self._mk_card(c["name"], c["card_idx"], "self") for c in hand]
+        widgets = [self._mk_card(c["name"], c["card_idx"], "self", "hand")
+                   for c in hand]
         if widgets:
             await box.mount(*widgets)
 
     @staticmethod
-    def _mk_card(label: str, card_idx: int, controller: str) -> "CardButton":
+    def _mk_card(label: str, card_idx: int, controller: str,
+                 zone: str) -> "CardButton":
         """Build a CardButton whose border edges encode the card's color identity."""
         edges = _edge_colors(decode.card_border_colors(card_idx))
-        return CardButton(label, card_idx, controller, edges)
+        return CardButton(label, card_idx, controller, edges, zone)
 
     @staticmethod
     def _phase_strip(obs, gs) -> str:
@@ -629,15 +886,39 @@ class GameApp(App):
                 f"mana [{decode.fmt_mana(p['mana'])}]  "
                 f"hand {p['hand_count']}  lib {library}")
 
-    @staticmethod
-    def _stack_text(stack) -> str:
+    async def _rebuild_stack(self, stack, mirrored: bool) -> None:
+        """Rebuild the stack as one hoverable, delineated StackItem per object
+        (top of stack first). Each carries its human-frame targets so hovering
+        it can highlight them on the board."""
+        box = self.query_one("#stack", HorizontalScroll)
+        await box.remove_children()
         if not stack:
-            return "Stack: (empty)"
-        parts = []
-        for e in stack:
-            kind = "spell" if e["is_spell"] else "ability"
-            parts.append(f"{e['name']} ({kind}, {e['controller']})")
-        return "Stack: " + "  ◄  ".join(parts)
+            await box.mount(Static("Stack: (empty)", classes="stack-empty"))
+            return
+        widgets = [StackItem(self._stack_item_label(e),
+                             self._stack_target_refs(e, mirrored))
+                   for e in stack]
+        await box.mount(*widgets)
+
+    @staticmethod
+    def _stack_item_label(e) -> str:
+        kind = "spell" if e["is_spell"] else "ability"
+        label = f"{e['name']} ({kind}, {e['controller']})"
+        if e.get("targets"):
+            label += " → " + "; ".join(e["targets"])
+        return label
+
+    @staticmethod
+    def _stack_target_refs(e, mirrored: bool):
+        """Stack-entry targets converted to the human frame. The decoded is_self
+        is viewer-relative; when the obs is the opponent's perspective (mirrored)
+        it must be flipped so is_self means the human (YOU)."""
+        refs = []
+        for t in e.get("target_refs", []):
+            refs.append({"is_player": t["is_player"],
+                         "is_self": (t["is_self"] != mirrored),
+                         "card_idx": t["card_idx"]})
+        return refs
 
     @staticmethod
     def _prompt_text(obs, num, gs) -> str:
@@ -650,6 +931,12 @@ class GameApp(App):
             return "Search your library (pick a card, or 'fail to find')."
         cset = set(int(c) for c in cats)
         if 8 in cset:
+            # Name the spell/ability asking for the target (its source may not be
+            # on the stack yet — targets are announced first), so the prompt says
+            # WHAT you're targeting for, not just "Choose a target."
+            pend = gs.get("pending_decision")
+            if pend and pend.get("name"):
+                return f"Choose a target for {pend['name']}."
             return "Choose a target."
         if cset & {2, 3}:
             return "Declare attackers — pick creatures, then Confirm attackers."

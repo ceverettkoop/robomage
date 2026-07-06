@@ -277,7 +277,7 @@
    1: Activate Mishra's Bauble (PeekAndReveal)
   >> A/A: 1 (Activate Mishra's Bauble (PeekAndReveal))
 --- Narrative ---
-  Choose target:
+  Choose target for Mishra's Bauble:
 
 --- Decision 16 ---
   Priority: Player A (active)
@@ -479,7 +479,7 @@
    1: Cast Swords to Plowshares
   >> B/B: 1 (Cast Swords to Plowshares)
 --- Narrative ---
-  Choose target:
+  Choose target for Swords to Plowshares:
 
 --- Decision 26 ---
   Priority: Player B (non-active)
@@ -529,7 +529,7 @@
   >> A/A: 0 (Return Island)
 --- Narrative ---
   Player A returns Island to hand
-  Choose target:
+  Choose target for Daze:
 
 --- Decision 29 ---
   Priority: Player A (active)
@@ -616,7 +616,7 @@
   >> B/B: 1 (Play Talon Gates of Madara)
 --- Narrative ---
   Player B played Talon Gates of Madara
-  Choose target:
+  Choose target for Talon Gates of Madara:
 
 --- Decision 33 ---
   Priority: Player B (active)
@@ -713,7 +713,7 @@
    1: Cast Unholy Heat
   >> A/A: 1 (Cast Unholy Heat)
 --- Narrative ---
-  Choose target:
+  Choose target for Unholy Heat:
 
 --- Decision 38 ---
   Priority: Player A (active)
@@ -874,7 +874,7 @@
   >> A/A: 0 (Return Island)
 --- Narrative ---
   Player A returns Island to hand
-  Choose target:
+  Choose target for Daze:
 
 --- Decision 46 ---
   Priority: Player A (non-active)
@@ -1076,7 +1076,7 @@
    1: Endurance (evoke: sacrifice)
   >> B/B: 0 (Endurance (ChangeZoneAll, targeted))
 --- Narrative ---
-  Choose target:
+  Choose target for Endurance:
 
 --- Decision 56 ---
   Priority: Player B (active)
@@ -1393,7 +1393,7 @@
    2: Cast Lightning Bolt
   >> A/A: 1 (Cast Lightning Bolt)
 --- Narrative ---
-  Choose target:
+  Choose target for Lightning Bolt:
 
 --- Decision 74 ---
   Priority: Player A (active)
@@ -1573,7 +1573,7 @@
    1: Cast Lightning Bolt
   >> A/A: 1 (Cast Lightning Bolt)
 --- Narrative ---
-  Choose target:
+  Choose target for Lightning Bolt:
 
 --- Decision 84 ---
   Priority: Player A (active)
@@ -1610,7 +1610,7 @@
    1: Activate Wasteland (Destroy)
   >> B/B: 1 (Activate Wasteland (Destroy))
 --- Narrative ---
-  Choose target:
+  Choose target for Wasteland:
 
 --- Decision 86 ---
   Priority: Player B (non-active)
@@ -1890,7 +1890,7 @@
    1: Activate Wasteland (Destroy)
   >> B/B: 1 (Activate Wasteland (Destroy))
 --- Narrative ---
-  Choose target:
+  Choose target for Wasteland:
 
 --- Decision 102 ---
   Priority: Player B (non-active)
