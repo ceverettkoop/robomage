@@ -77,8 +77,8 @@ PPO_KWARGS = dict(
     n_steps=4096,       # steps per env per update
     batch_size=1024,
     n_epochs=8,
-    gamma=0.99,
-    gae_lambda=0.95,
+    gamma=0.9975,     # 1/(1-γ) = 400-step horizon; episodes run 100-400 decisions with mostly terminal reward
+    gae_lambda=0.97,  # keep γλ high enough that terminal reward reaches back directly in GAE
     clip_range=0.25,
     ent_coef=ENT_COEF,
     target_kl=TARGET_KL,

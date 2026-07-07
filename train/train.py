@@ -424,6 +424,9 @@ def _reassert_hparams(model, label: str):
       * ent_coef — a stale 0.12 rode along in old checkpoints (see cli_spec).
       * target_kl — checkpoints predating the KL early-stop were saved with
         target_kl=None and would never early-stop without this.
+      * gamma / gae_lambda — the credit horizon was extended to 400 steps
+        (gamma 0.99 -> 0.9975, gae_lambda 0.95 -> 0.97); older checkpoints
+        would otherwise keep the short horizon forever.
     The learning rate is NOT set here: it is driven every rollout by
     LRDecayCallback (keyed to num_timesteps), which overrides whatever LR the
     checkpoint restored. Each override is logged when the stored value differs."""
@@ -435,6 +438,20 @@ def _reassert_hparams(model, label: str):
         print(f"[hyperparam] {label}: overriding stale target_kl "
               f"{model.target_kl} -> {TARGET_KL}")
         model.target_kl = TARGET_KL
+    # gamma/gae_lambda live in TWO places: on the model (timeout bootstrapping)
+    # and inside the rollout buffer, which computes GAE from its own copies set
+    # at _setup_model time — both must be overridden or the buffer keeps the
+    # checkpoint's old horizon.
+    if model.gamma != PPO_KWARGS["gamma"]:
+        print(f"[hyperparam] {label}: overriding stale gamma "
+              f"{model.gamma} -> {PPO_KWARGS['gamma']}")
+        model.gamma = PPO_KWARGS["gamma"]
+        model.rollout_buffer.gamma = PPO_KWARGS["gamma"]
+    if model.gae_lambda != PPO_KWARGS["gae_lambda"]:
+        print(f"[hyperparam] {label}: overriding stale gae_lambda "
+              f"{model.gae_lambda} -> {PPO_KWARGS['gae_lambda']}")
+        model.gae_lambda = PPO_KWARGS["gae_lambda"]
+        model.rollout_buffer.gae_lambda = PPO_KWARGS["gae_lambda"]
     return model
 
 
