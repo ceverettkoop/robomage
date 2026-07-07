@@ -183,7 +183,11 @@ class CardButton(Static):
         cross-highlight partner of ActionList's option hover (see GameApp)."""
         self.set_class(on, "action-linked")
 
-    def on_click(self) -> None:
+    def on_click(self, event: events.Click) -> None:
+        # Left button only — right button is reserved for the oracle-text hold
+        # (see GameApp.on_mouse_down / on_mouse_up).
+        if event.button != 1:
+            return
         self.post_message(CardClicked(self._card_idx, self._controller, self._zone))
 
 
@@ -283,13 +287,19 @@ class GameApp(App):
     #bottom     { height: 1fr; min-height: 8; }
     #actions    { width: 35%; min-width: 24; border: round $primary; }
     #log        { width: 1fr; border: round $surface; }
-    /* Card-inspect popup: a floating banner over the board (see action_inspect).
-       Hidden until 'q' is held over a card. */
+    /* Card-inspect popup: a floating banner over the board (see action_inspect
+       / on_mouse_down). Hidden until 'q' or right-click is held over a card.
+       #oracle-layer is a full-screen, out-of-flow overlay whose only job is
+       centering #oracle within the screen. */
     Screen { layers: base overlay; }
-    #oracle {
+    #oracle-layer {
         layer: overlay; display: none; dock: top;
+        width: 100%; height: 100%;
+        align: center middle;
+    }
+    #oracle {
         width: auto; max-width: 70%; height: auto; max-height: 12;
-        margin: 1 2; padding: 0 1;
+        padding: 0 1;
         border: round $accent; background: $panel; color: $text;
     }
     """
@@ -368,7 +378,8 @@ class GameApp(App):
         with Horizontal(id="bottom"):
             yield ActionList(id="actions")
             yield RichLog(id="log", wrap=True, highlight=False, markup=True)
-        yield Static(id="oracle")
+        with Vertical(id="oracle-layer"):
+            yield Static(id="oracle")
         yield Footer()
 
     def on_mount(self) -> None:
@@ -380,7 +391,7 @@ class GameApp(App):
                           f"{self._opp_label} (Player {opp_seat}, {self._opp_deck})")
         self._log("[b]Game starting…[/b]  Click a card or pick a numbered action. "
                   "Keys: digits = pick, space = pass, p = autopass, "
-                  "hold q = show oracle text, ctrl+q = quit.")
+                  "hold q or right-click a card = show oracle text, ctrl+q = quit.")
         self._drive()
 
     # ----- the driver (background thread) -----
@@ -624,6 +635,23 @@ class GameApp(App):
         elif isinstance(node, StackItem):
             self._clear_stack_target_highlights()
 
+    def on_mouse_down(self, event: events.MouseDown) -> None:
+        """Right mouse button pressed over a card -> show its oracle-text
+        banner, the mouse analog of holding 'q' (see action_inspect). Unlike Q
+        (no real key-up; emulated via OS auto-repeat, see ORACLE_HIDE_DELAY),
+        MouseDown/MouseUp are real press/release events, so the banner shows
+        and hides exactly on press/release with no timer needed."""
+        if event.button != 3:
+            return
+        btn = self._hovered_button
+        if btn is not None:
+            self._show_oracle(btn._card_idx)
+
+    def on_mouse_up(self, event: events.MouseUp) -> None:
+        if event.button != 3:
+            return
+        self._hide_oracle()
+
     def on_action_list_action_hovered(self, message: "ActionList.ActionHovered") -> None:
         """Mouse moved over (or off) a menu option — highlight the battlefield
         permanent(s) that option refers to."""
@@ -820,13 +848,13 @@ class GameApp(App):
                     style="" if oracle else "italic dim")
         banner = self.query_one("#oracle", Static)
         banner.update(body)
-        banner.display = True
+        self.query_one("#oracle-layer", Vertical).display = True
 
     def _hide_oracle(self) -> None:
         if self._oracle_timer is not None:
             self._oracle_timer.stop()
             self._oracle_timer = None
-        self.query_one("#oracle", Static).display = False
+        self.query_one("#oracle-layer", Vertical).display = False
 
     # Min/max row heights for each resizable board panel.
     _PANEL_LIMITS = {"#opp-bf": (6, 16), "#self-bf": (6, 16), "#self-hand": (3, 10)}
