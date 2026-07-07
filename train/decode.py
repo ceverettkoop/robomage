@@ -172,22 +172,111 @@ def onehot_to_index(state, base):
 
 
 # Border colors by MTG color, for TUI card rendering. Black renders as a muted
-# purple-grey (pure black is invisible on a dark terminal); lands are neutral
-# grey and colorless (nonland) cards brown, per the color-identity display.
+# purple-grey (pure black is invisible on a dark terminal); a colorless nonland
+# card is brown, per the color-identity display. A mana-producing land is painted
+# in the colors it can make (see _LAND_COLOR_BORDER below); a colorless/utility
+# land that makes no colored mana falls back to neutral grey.
 _COLOR_BORDER = {"W": "#efe6c8", "U": "#3f7fd6", "B": "#8a7fa0",
                  "R": "#d64b3b", "G": "#42ae5a"}
 _LAND_BORDER = "#8a8a8a"
 _COLORLESS_BORDER = "#9a6a38"
 
+# Brighter, more saturated palette used for a land's produced colors, so a land
+# that taps for a color reads in that color yet still stands apart from a
+# same-color nonland card (which uses the muted _COLOR_BORDER above).
+_LAND_COLOR_BORDER = {"W": "#fff4b0", "U": "#5aa9ff", "B": "#b98fd9",
+                      "R": "#ff6a4d", "G": "#5ee06a"}
+
+# Basic land subtype -> the color of mana it taps for.
+_LAND_SUBTYPE_COLOR = {"Plains": "W", "Island": "U", "Swamp": "B",
+                       "Mountain": "R", "Forest": "G"}
+
+_LAND_COLOR_CACHE = {}
+
+
+def _mana_spec_to_colors(spec):
+    """WUBRG letters from a `Produced$` value (`G`, `Combo G W`, `Any`, `C`).
+
+    `Any` yields all five colors; bare `C`, `Combo`, and numeric tokens
+    contribute nothing (colorless mana carries no border color)."""
+    out = set()
+    for tok in spec.replace(",", " ").split():
+        if tok == "Any":
+            return set("WUBRG")
+        if tok in _LAND_SUBTYPE_COLOR.values():
+            out.add(tok)
+    return out
+
+
+def _fetch_spec_to_colors(spec):
+    """WUBRG letters a fetch `ChangeType$` can retrieve. Basic subtypes map to
+    their color; an any-basic target (`Land.Basic`) contributes all five."""
+    out = set()
+    for tok in spec.split(","):
+        tok = tok.strip()
+        if tok.split(".")[0] == "Land" and "Basic" in tok:
+            return set("WUBRG")
+        if tok in _LAND_SUBTYPE_COLOR:
+            out.add(_LAND_SUBTYPE_COLOR[tok])
+    return out
+
+
+def _land_color_letters(card_idx):
+    """Colors of mana a land can supply, in WUBRG order (empty if colorless).
+
+    Unions three script signals so basics, duals, and fetchlands all read
+    correctly: an `AB$ Mana` `Produced$` clause, the land's basic land subtypes
+    on its `Types:` line (duals like Tundra and the surveil lands read from
+    their subtypes), and a fetch ability's `ChangeType$` targets (so a fetchland
+    shows the colors it can fetch)."""
+    if card_idx in _LAND_COLOR_CACHE:
+        return _LAND_COLOR_CACHE[card_idx]
+    found = set()
+    if 0 <= card_idx < len(_CARD_NAMES) and card_idx != _TOKEN_IDX:
+        path = _resolve_script_path(_name_to_uid(_CARD_NAMES[card_idx]))
+        if path:
+            try:
+                with open(path) as f:
+                    for raw in f:
+                        line = raw.rstrip("\n")
+                        if line.startswith("Types:"):
+                            for tok in line[len("Types:"):].split():
+                                if tok in _LAND_SUBTYPE_COLOR:
+                                    found.add(_LAND_SUBTYPE_COLOR[tok])
+                        m = re.search(r"Produced\$\s*([^|]+)", line)
+                        if m:
+                            found |= _mana_spec_to_colors(m.group(1))
+                        # Only a genuine fetchland ability fixes colors: it puts
+                        # the land onto its controller's battlefield. Skip a
+                        # ChangeType that fetches for someone else (a
+                        # DefinedPlayer, e.g. Ghost Quarter destroying a land and
+                        # letting its controller search a basic) or that doesn't
+                        # reach the battlefield.
+                        if ("Destination$ Battlefield" in line
+                                and "DefinedPlayer$" not in line):
+                            m = re.search(r"ChangeType\$\s*([^|]+)", line)
+                            if m:
+                                found |= _fetch_spec_to_colors(m.group(1))
+            except OSError:
+                pass
+    letters = [c for c in "WUBRG" if c in found]
+    _LAND_COLOR_CACHE[card_idx] = letters
+    return letters
+
 
 def card_border_colors(card_idx):
-    """Border color(s) for a card by its color identity (from its cast cost).
+    """Border color(s) for a card by its color identity.
 
-    Lands → [grey]; a colorless nonland → [brown]; otherwise one entry per
-    colored pip (W,U,B,R,G) present in the mana cost, so a multicolor card
-    returns several colors for the caller to split across the border edges.
+    A mana-producing land → the bright colors it can make/fetch (see
+    _land_color_letters), one entry per color so the caller can split them
+    across the border edges; a colorless/utility land → [grey]; a colorless
+    nonland → [brown]; otherwise one entry per colored pip (W,U,B,R,G) present
+    in the mana cost.
     """
     if card_idx in _LAND_VOCAB_IDS:
+        letters = _land_color_letters(card_idx)
+        if letters:
+            return [_LAND_COLOR_BORDER[c] for c in letters]
         return [_LAND_BORDER]
     if 0 <= card_idx < len(_CARD_COST_MATRIX):
         cost = _CARD_COST_MATRIX[card_idx]
