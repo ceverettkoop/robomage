@@ -164,6 +164,10 @@ class ScriptedController:
         """Reset the agent's per-game state (EXPLORE novelty set) at game start."""
         self._agent.new_game()
 
+    def set_deck_names(self, deck_a, deck_b) -> None:
+        """Push per-seat deck names to the agent (unified deck identification)."""
+        self._agent.set_deck_names(deck_a, deck_b)
+
     def choose(self, obs, num_choices, action_masks=None, decoded_actions=None) -> int:
         return self._agent.act(obs, num_choices)
 
