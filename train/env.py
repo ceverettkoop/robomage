@@ -253,6 +253,12 @@ def _build_sideboard_mask():
         (_PENDING_DECISION_START, _PENDING_DECISION_END),  # pending-decision context
     ):
         keep[lo:hi] = True
+    # The "self is Player A" flag MUST survive the mask: it is the seat-routing
+    # signal for every obs consumer (runner.drive_game's controller pick, the
+    # training envs' opponent-turn gate, decode's seat labels). The engine sets
+    # it from sideboard_phase_player during sideboarding, so it is live, not
+    # stale; masking it to 0 routed BOTH players' sideboard decisions to seat B.
+    keep[_SELF_IS_A_IDX] = True
     fill = np.zeros(STATE_SIZE, dtype=np.float32)
     # Card-id positions inside masked blocks must decode to "empty", not vocab 0.
     card_id_idx = []

@@ -37,7 +37,8 @@ Interactive session commands (via 'interactive'):
     consistency [N]       decision consistency for similar states (top N pairs)
     targeting             self vs opp targeting, hold vs cast analysis
     sideboard             sideboard decisions by each agent (bo3)
-    sbvalue               sideboard preference: take-rate, confidence, ΔV, ΔWR per card (bo3)
+    sbvalue               sideboard preference: take-rate, confidence, ΔV, ΔWR per card,
+                          + net per-match impact with fetchlands fungible (bo3)
     whatif <N> <step> [k] counterfactual: branch chosen + top-k actions from the
                           same seed, roll each to the end, compare result/V(s)
     calibration           V(s) at game start vs actual win rate
@@ -1587,6 +1588,20 @@ def _sim_sideboard_report(games):
 
 _CAT_SB_IN, _CAT_SB_OUT, _CAT_SB_DONE = 24, 25, 26
 
+# Fungible card classes for the NET sideboard-impact table: swapping one
+# fetchland for another is mana-base tuning, not a card-choice signal, so all
+# fetches pool into one class (a fetch-for-fetch swap nets to zero). Applies
+# only to the net-impact section of sbvalue — the per-swap preference tables
+# above it stay per-name.
+_SB_FUNGIBLE = {
+    name: "Fetchland (any)"
+    for name in (
+        "Scalding Tarn", "Flooded Strand", "Polluted Delta", "Wooded Foothills",
+        "Misty Rainforest", "Windswept Heath", "Bloodstained Mire",
+        "Verdant Catacombs", "Arid Mesa", "Marsh Flats", "Prismatic Vista",
+    )
+}
+
 
 def _analyze_sbvalue(games):
     """Cardvalue-style report for sideboard decisions: what the model prefers
@@ -1605,12 +1620,20 @@ def _analyze_sbvalue(games):
       * ΔV    — mean change in V(s) across a taken swap
       * ΔWR   — match win rate when taken at least once minus offered-but-
                 never-taken (conditions on availability, unlike cardvalue)
+
+    A final NET-impact table aggregates per match: net = copies boarded in
+    minus copies boarded out across all of the match's sideboard phases, with
+    fetchlands pooled as one fungible class (`_SB_FUNGIBLE`), and compares the
+    match win rate when a card net-entered vs net-left vs stayed net-zero.
     """
     # key = (category, card name); phase key = (match idx, phase ordinal)
     prob_sum, prob_n = {}, {}
     offered_phases, taken_phases = {}, {}
     taken_ct, taken_matches, offered_matches = {}, {}, {}
     dv = {}
+    # Net-impact accumulators (fungibility-pooled class names).
+    net_by_match = {}   # match idx -> {class: net copies (in - out)}
+    offered_cls = {}    # class -> set of match idx where offered in either direction
     n_phases = 0
     phases_no_swaps = 0
     done_first_probs = []   # P(SB_DONE) at the first decision of each phase
@@ -1647,9 +1670,11 @@ def _analyze_sbvalue(games):
                 if cat in (_CAT_SB_IN, _CAT_SB_OUT):
                     cid = _obs_card_id(obs, k)
                     if 0 <= cid < len(_VOCAB_NAMES):
-                        key = (cat, decode.card_index_to_name(cid))
+                        name = decode.card_index_to_name(cid)
+                        key = (cat, name)
                         p = float(probs[k]) if probs is not None and k < len(probs) else 0.0
                         dec_mass[key] = dec_mass.get(key, 0.0) + p
+                        offered_cls.setdefault(_SB_FUNGIBLE.get(name, name), set()).add(gi)
             # P(done) at the phase's first decision = confidence in the current 60.
             if probs is not None and (si == 0 or not _match_meta(obs_list[si - 1])[3]):
                 for k in range(ncs[si]):
@@ -1668,13 +1693,17 @@ def _analyze_sbvalue(games):
             if cat in (_CAT_SB_IN, _CAT_SB_OUT):
                 cid = _obs_card_id(obs, action)
                 if 0 <= cid < len(_VOCAB_NAMES):
-                    key = (cat, decode.card_index_to_name(cid))
+                    name = decode.card_index_to_name(cid)
+                    key = (cat, name)
                     taken_ct[key] = taken_ct.get(key, 0) + 1
                     taken_phases.setdefault(key, set()).add(pkey)
                     taken_matches.setdefault(key, set()).add(gi)
                     phase_swaps += 1
                     if si + 1 < len(vals):
                         dv.setdefault(key, []).append(vals[si + 1] - vals[si])
+                    cls = _SB_FUNGIBLE.get(name, name)
+                    m = net_by_match.setdefault(gi, {})
+                    m[cls] = m.get(cls, 0) + (1 if cat == _CAT_SB_IN else -1)
         if in_phase:  # trace ended inside a sideboard phase
             n_phases += 1
             phases_no_swaps += (phase_swaps == 0)
@@ -1730,6 +1759,51 @@ def _analyze_sbvalue(games):
             lift_str = f"{r['wr_lift']*100:+5.0f}%" if r["wr_lift"] is not None else "    —"
             print(f"  {r['card'][:26]:<26} {r['off']:>4} {r['taken']:>6} "
                   f"{rate_str} {conf_str} {dv_str} {lift_str}")
+
+    # ---- Net impact per match ------------------------------------------------
+    # net = copies boarded in minus copies boarded out over the whole match
+    # (both sideboard phases of a 3-game match combined). Fungible classes:
+    # a fetch swapped for another fetch nets to zero under "Fetchland (any)".
+    def _wr(match_set):
+        return (sum(1 for i in match_set if games[i]["result"] > 0) / len(match_set)
+                if match_set else None)
+
+    net_rows = []
+    for cls, offered in offered_cls.items():
+        m_in, m_out, m_zero = set(), set(), set()
+        for gi in offered:
+            net = net_by_match.get(gi, {}).get(cls, 0)
+            (m_in if net > 0 else m_out if net < 0 else m_zero).add(gi)
+        if not (m_in or m_out):
+            continue  # offered but never net-moved in any match
+        wr_in, wr_out, wr_zero = _wr(m_in), _wr(m_out), _wr(m_zero)
+        net_rows.append({
+            "card": cls,
+            "n_in": len(m_in), "n_out": len(m_out), "n_zero": len(m_zero),
+            "wr_in": wr_in, "wr_out": wr_out, "wr_zero": wr_zero,
+            "dwr_in": (wr_in - wr_zero
+                       if wr_in is not None and wr_zero is not None else None),
+            "dwr_out": (wr_out - wr_zero
+                        if wr_out is not None and wr_zero is not None else None),
+        })
+    if net_rows:
+        net_rows.sort(key=lambda r: -(r["n_in"] + r["n_out"]))
+        print(f"\n  Net impact (matches where the card net-entered / net-left the deck;")
+        print(f"  fetchlands pooled as one fungible class — fetch-for-fetch swaps net to zero)")
+        print(f"  ΔWR columns are relative to offered-but-net-zero matches of the same card.")
+        print(f"\n  {'card':<26} {'in':>4} {'out':>4} {'zero':>5} "
+              f"{'WR(in)':>7} {'WR(out)':>8} {'WR(0)':>7} {'ΔWR(in)':>8} {'ΔWR(out)':>9}")
+        print(f"  {'-'*26} {'-'*4} {'-'*4} {'-'*5} {'-'*7} {'-'*8} {'-'*7} {'-'*8} {'-'*9}")
+        for r in net_rows:
+            def _pct(v, w):
+                return f"{v*100:{w-1}.0f}%" if v is not None else " " * (w - 1) + "—"
+            def _spct(v, w):
+                return f"{v*100:+{w-1}.0f}%" if v is not None else " " * (w - 1) + "—"
+            print(f"  {r['card'][:26]:<26} {r['n_in']:>4} {r['n_out']:>4} {r['n_zero']:>5} "
+                  f"{_pct(r['wr_in'], 7)} {_pct(r['wr_out'], 8)} {_pct(r['wr_zero'], 7)} "
+                  f"{_spct(r['dwr_in'], 8)} {_spct(r['dwr_out'], 9)}")
+    else:
+        print("\n  Net impact: no card ever net-entered or net-left the deck.")
 
 
 def _interactive_session(ctx):
@@ -1804,7 +1878,9 @@ def _interactive_session(ctx):
             print("  targeting                 — self vs opp targeting, hold vs cast analysis")
             print("  sideboard                 — sideboard decisions by each agent (bo3)")
             print("  sbvalue                   — sideboard preference: take-rate, policy confidence,")
-            print("                              ΔV and win-rate lift per boarded-in/out card (bo3)")
+            print("                              ΔV and win-rate lift per boarded-in/out card, plus")
+            print("                              per-match NET impact (in − out) with fetchlands")
+            print("                              pooled as one fungible class (bo3)")
             print("  whatif <N> <step> [k]     — counterfactual: branch the chosen action + top-k")
             print("                              alternatives from the same seed, roll each to the end,")
             print("                              and compare final result / V(s) (k default 3)")
