@@ -57,10 +57,14 @@ from env import (
     _KARN_GREAT_CREATOR_VOCAB_IDX, _CITYSCAPE_LEVELER_VOCAB_IDX,
     _CANDELABRA_VOCAB_IDX, _MULTI_MANA_LAND_IDS,
     _SOLITUDE_VOCAB_IDX, _THE_ONE_RING_VOCAB_IDX,
+    # Lion's Eye Diamond crack: blue-mana category + LED vocab id + draw-on-stack test
+    _CAT_MANA_U, _LED_VOCAB_IDX, _self_has_draw_on_stack,
     # pending-decision source index (obs[_PENDING_DECISION_START] == source card id)
     _PENDING_DECISION_START,
     # library-count context index (obs[_LIBRARY_CTX_START] == self_library_ct / 60)
     _LIBRARY_CTX_START,
+    # known top-of-library slot 0 (obs[_KNOWN_TOP_LIB_START] == top card id, sentinel=unknown)
+    _KNOWN_TOP_LIB_START,
     # shared helpers (also used by env's reward shaping, so they stay in env.py)
     _hand_has_card, _stack_is_empty,
 )
@@ -393,6 +397,32 @@ _BLUE_SOURCE_IDS = frozenset({
 })
 
 
+def _led_crack_choice(obs: np.ndarray, cats, card_ids) -> int | None:
+    """Lion's Eye Diamond: crack it for blue only in the Doomsday kill window. All of:
+
+      1. a self-controlled draw/cycling spell or ability is on the stack, AND
+      2. Thassa's Oracle is the known top card of the library (Doomsday has resolved
+         and laid the pile — RearrangeTopOfLibrary sets the known-top slots), AND
+      3. the library is down to <= 2 cards (the pile is drawn down to the win).
+
+    In that window the resolving draw puts Oracle into hand and the library hits the
+    Oracle-win size; cracking LED floats UUU that outlives the draw and pays Oracle's
+    UU. Gated this tightly, LED's "discard your hand" cost never sheds a card that
+    still matters, so no empty-hand check is needed. Returns the MANA_U action index
+    for LED, or None when the window / the offer isn't present.
+    """
+    if not _self_has_draw_on_stack(obs):
+        return None
+    if _slot_card_idx(obs, _KNOWN_TOP_LIB_START) != _THASSAS_ORACLE_VOCAB_IDX:
+        return None
+    if _self_library_count(obs) > _ORACLE_WIN_LIBRARY:
+        return None
+    for i, c in enumerate(cats):
+        if c == _CAT_MANA_U and _action_card_id(card_ids, i) == _LED_VOCAB_IDX:
+            return i
+    return None
+
+
 def _self_library_count(obs: np.ndarray) -> int:
     """Cards in the priority player's library (obs stores it as count / 60)."""
     return int(round(float(obs[_LIBRARY_CTX_START]) * 60))
@@ -670,6 +700,14 @@ def _greedy_action(obs: np.ndarray, num_choices: int,
         for i, c in enumerate(cats):
             if c == _CAT_CAST and _action_card_id(card_ids, i) == _COUNTERSPELL_VOCAB_IDX:
                 return i
+
+    # Crack Lion's Eye Diamond in the Doomsday kill window — a self draw is resolving,
+    # Oracle is the known top card, and library <= 2 — to float UUU for the Thassa's
+    # Oracle win. LED is offered as instant-speed MANA_* actions at priority (unlike
+    # ordinary mana sources, which stay hidden and auto-pay), so it is picked here.
+    led = _led_crack_choice(obs, cats, card_ids)
+    if led is not None:
+        return led
 
     # --- Doomsday deck rules ---
     has_doomsday_in_hand = _hand_has_card(obs, _DOOMSDAY_VOCAB_IDX)
