@@ -64,6 +64,28 @@ def lr_for_timesteps(num_timesteps: int) -> float:
     frac = max(0, num_timesteps) / LR_DECAY_STEPS  # 0.0 at step 0 → 1.0 at floor
     return LR_PEAK + (LR_FLOOR - LR_PEAK) * frac
 
+
+# Shaping-reward anneal, keyed to ABSOLUTE cumulative num_timesteps like the LR
+# decay above (SB3's progress_remaining resets every learn(), so a per-deck
+# generalist resumed across many short sessions would restart the anneal each
+# time). Scale falls linearly from 1.0 at step 0 to 0.0 at SHAPING_DECAY_STEPS
+# and stays there, so past that point the objective is pure win/loss. The old
+# win-rate-keyed anneal (scale = 1 - win_rate) could never reach 0 in hard
+# matchups — exactly where the PFSP league concentrates games — leaving shaping
+# in the asymptotic objective forever, and made the reward scale depend on the
+# opponent pool (unobservable to the value function). Applied by train.py's
+# ShapingScaleCallback on every shaped training path.
+SHAPING_DECAY_STEPS = 5_000_000
+
+
+def shaping_scale_for_timesteps(num_timesteps: int) -> float:
+    """Linear shaping-scale anneal from 1.0 to 0.0 over [0, SHAPING_DECAY_STEPS]
+    cumulative timesteps, clamped at 0.0 beyond that.
+
+    Keyed to the model's absolute num_timesteps so the schedule is continuous
+    across checkpoint resumes (same rationale as lr_for_timesteps)."""
+    return max(0.0, 1.0 - max(0, num_timesteps) / SHAPING_DECAY_STEPS)
+
 # PPO hyperparameters for newly constructed models — single home so the
 # single-opponent train() path and the league path can never drift apart (the
 # stale-ent_coef bug survived one fix precisely because these were duplicated

@@ -217,6 +217,14 @@ def run_games(controller_a, controller_b, *,
     wins = losses = draws = incomplete = 0
     unit = "match" if bo3 else "game"
 
+    # Push per-seat deck names to scripted controllers so their doomsday/tron
+    # identification uses the shared name rule (duck-typed; decks are fixed
+    # across the n_games loop, so once up front is enough).
+    for ctrl in (controller_a, controller_b):
+        set_names = getattr(ctrl, "set_deck_names", None)
+        if set_names is not None:
+            set_names(deck_a, deck_b)
+
     for i in range(n_games):
         env = NarrativeEnv(binary_path=binary_path, deck_a=deck_a, deck_b=deck_b,
                            bo3=bo3, battlefield_a=battlefield_a,

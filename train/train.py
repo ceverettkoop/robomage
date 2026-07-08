@@ -42,7 +42,8 @@ import decode
 from _enums import _CAT_NAMES, _STEP_NAMES
 # CLI definitions + training defaults live in cli_spec.py (single source shared with the TUI).
 from cli_spec import (TOTAL_TIMESTEPS, N_ENVS, N_ENVS_SELF_PLAY, EMBED_DIM,
-                      ENT_COEF, TARGET_KL, lr_for_timesteps, PPO_KWARGS, NET_ARCH,
+                      ENT_COEF, TARGET_KL, lr_for_timesteps,
+                      shaping_scale_for_timesteps, PPO_KWARGS, NET_ARCH,
                       LEAGUE_SELF_PLAY_FRAC, LEAGUE_SCRIPTED_ANCHOR_FRAC,
                       LEAGUE_PFSP_P, LEAGUE_SOFTMAX_ETA, LEAGUE_SNAPSHOT_EVERY,
                       LEAGUE_PROMOTE_MARGIN, LEAGUE_ROTATE_EVERY,
@@ -310,42 +311,41 @@ class SnapshotCallback(BaseCallback):
 
 
 class ShapingScaleCallback(BaseCallback):
-    """After each rollout, sets shaping_scale on all envs to (1 - win_rate).
+    """Anneal the shaping scale on a schedule keyed to ABSOLUTE num_timesteps.
 
-    A 25% win rate → 75% shaping; 100% win rate → 0% shaping.
-    Requires at least one completed game before it takes effect; scale
-    stays at 1.0 until then.
+    Linear 1.0 → 0.0 over SHAPING_DECAY_STEPS cumulative timesteps (see
+    cli_spec.shaping_scale_for_timesteps), continuous across checkpoint resumes
+    like LRDecayCallback. Replaces the old win-rate-keyed anneal
+    (scale = 1 - win_rate), which never reached 0 in hard matchups — exactly
+    where the PFSP league concentrates games — so shaping stayed in the
+    asymptotic objective forever, and which tied the reward scale to the
+    opponent pool (unobservable to the value function).
     """
 
     def __init__(self, vec_env):
         super().__init__()
         self._vec_env = vec_env
-        self._wins = 0
-        self._losses = 0
 
-    def _on_step(self) -> bool:
-        for info in self.locals["infos"]:
-            if "episode" not in info:
-                continue
-            r = info["episode"]["r"]
-            if r > 0:
-                self._wins += 1
-            elif r < 0:
-                self._losses += 1
-        return True
-
-    def _on_rollout_end(self) -> None:
-        total = self._wins + self._losses
-        if total == 0:
-            return
-        win_rate = self._wins / total
-        scale = 1.0 - win_rate
+    def _apply(self) -> float:
+        scale = shaping_scale_for_timesteps(self.model.num_timesteps)
         # env_method (not set_attr): set_attr only sets the outer Monitor wrapper
         # and never reaches the inner env's shaping_scale. See env.set_shaping_scale.
         self._vec_env.env_method("set_shaping_scale", scale)
-        print(f"[shaping] win_rate={win_rate:.2f}  shaping_scale={scale:.2f}")
-        self._wins = 0
-        self._losses = 0
+        return scale
+
+    def _on_training_start(self) -> None:
+        scale = self._apply()
+        print(f"[shaping] start num_timesteps={self.model.num_timesteps:,} "
+              f"-> shaping_scale={scale:.2f}")
+
+    def _on_rollout_end(self) -> None:
+        # Fires after each rollout's collection (num_timesteps updated), so the
+        # next rollout is collected with the step-appropriate scale.
+        scale = self._apply()
+        print(f"[shaping] num_timesteps={self.num_timesteps:,}  shaping_scale={scale:.2f}")
+
+    def _on_step(self) -> bool:
+        return True
 
 
 class ReplayLogCallback(BaseCallback):

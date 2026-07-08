@@ -71,6 +71,8 @@ from env import (
     _SELF_BLOCK_START, _PB_LIFE,
     # shared helpers (also used by env's reward shaping, so they stay in env.py)
     _hand_has_card, _stack_is_empty,
+    # unified deck-name identification (same rule as env's shaping opt-outs)
+    _deck_named,
 )
 from decode import decode_game_state
 from card_costs import _LAND_VOCAB_IDS, _CARD_COST_MATRIX
@@ -990,6 +992,11 @@ class ScriptedAgent:
 
     def __init__(self, config: AgentConfig = AgentConfig()):
         self.config = config
+        # Per-seat deck names (keyed by seat-is-A), pushed by callers that know
+        # them via set_deck_names(); None = unknown, fall back to content-based
+        # identification. Per-seat because one shared instance may drive both
+        # players, each piloting a different deck.
+        self._deck_names: dict[bool, str | None] = {True: None, False: None}
         # Per-agent generator: only consulted by the RANDOM tier.
         self._rng = np.random.default_rng(config.rng_seed)
         # Card ids already cast/activated this game: only touched by the EXPLORE
@@ -1016,6 +1023,41 @@ class ScriptedAgent:
         """
         self._explore_seen.clear()
         self._fruitless_activations.clear()
+
+    def set_deck_names(self, deck_a: str | None, deck_b: str | None) -> None:
+        """Tell the agent which deck each seat pilots.
+
+        Callers that know the decks (runner.run_games, ModelVsScriptedEnv, the
+        self-play scripted fallback) push the names here so deck identification
+        uses the same name rule as the env's shaping opt-outs (_deck_named:
+        'doomsday'/'tron' anywhere in the name — league/car_doomsday and
+        league/tron count). A matching name is authoritative; a missing or
+        non-matching name falls back to content-based identification, so
+        sculpted temp decks in the test harness keep working."""
+        self._deck_names = {True: deck_a, False: deck_b}
+
+    def _seat_deck(self, obs: np.ndarray) -> str | None:
+        """Deck name piloted by the seat this obs belongs to (None if unknown)."""
+        return self._deck_names[bool(obs[_SELF_IS_A_IDX] > 0.5)]
+
+    def _deck_is_doomsday(self, obs: np.ndarray) -> bool:
+        """Unified doomsday identification: deck name first, hand contents fallback."""
+        deck = self._seat_deck(obs)
+        if deck is not None and _deck_named(deck, "doomsday"):
+            return True
+        return _is_doomsday_deck(obs)
+
+    def _deck_is_tron(self, obs: np.ndarray) -> bool:
+        """Unified tron identification: deck name first, content fallback.
+
+        With no name known the synergy stays available (the historical
+        behaviour — each tron block self-gates on the obs anyway); with a
+        non-matching name, a Tron land controlled or in hand still counts."""
+        deck = self._seat_deck(obs)
+        if deck is None or _deck_named(deck, "tron"):
+            return True
+        return (bool(_controlled_tron_pieces(obs))
+                or any(_hand_has_card(obs, cid) for cid in _TRON_LAND_IDS))
 
     def act(self, obs: np.ndarray, num_choices: int) -> int:
         if self.config.skill is Skill.RANDOM:
@@ -1083,6 +1125,9 @@ class ScriptedAgent:
     def _heuristic_action(self, obs: np.ndarray, num_choices: int,
                           fruitless: set[int] | None = None) -> int:
         cfg = self.config
+        # Tron-synergy gating uses the unified deck identification (name rule,
+        # content fallback) — computed once per decision for all blocks below.
+        tron_synergy = cfg.use_tron_synergy and self._deck_is_tron(obs)
         cats = np.round(obs[STATE_SIZE:STATE_SIZE + num_choices]
                         * ACTION_CATEGORY_MAX).astype(int)
         card_ids = obs[STATE_SIZE + MAX_ACTIONS:STATE_SIZE + 2 * MAX_ACTIONS]
@@ -1117,7 +1162,7 @@ class ScriptedAgent:
         # picker choose X=0 / the first land. The pending-decision source names the
         # ability making each choice even before it hits the stack, so it can't be
         # confused with any other X ability or land-targeting effect.
-        if (cfg.use_tron_synergy
+        if (tron_synergy
                 and _slot_card_idx(obs, _PENDING_DECISION_START) == _CANDELABRA_VOCAB_IDX):
             # X value: untap as many of our tapped >1-mana lands as X allows.
             if all(c == _CAT_CHOOSE_X for c in cats):
@@ -1140,7 +1185,7 @@ class ScriptedAgent:
 
         # Eval-based targeting — skipped for combo decks (R1: never disturb Doomsday).
         if (cfg.use_eval_targeting and any(c == _CAT_TARGET for c in cats)
-                and not _is_doomsday_deck(obs)):
+                and not self._deck_is_doomsday(obs)):
             return self._target_choice(g(), cats, card_ids, ctrl_arr)
 
         # Tron synergy: Karn, the Great Creator's -2 wishes an artifact from the
@@ -1150,7 +1195,7 @@ class ScriptedAgent:
         # already in hand/play (so no longer offered from the wishboard). Its fetch is a
         # hidden reveal, so the choice can arrive as a search or a choose-card menu;
         # match by pending source + card id across either.
-        if (cfg.use_tron_synergy
+        if (tron_synergy
                 and _slot_card_idx(obs, _PENDING_DECISION_START) == _KARN_GREAT_CREATOR_VOCAB_IDX):
             for wish_id in (_MYCOSYNTH_LATTICE_VOCAB_IDX, _CITYSCAPE_LEVELER_VOCAB_IDX):
                 for i in range(num_choices):
@@ -1160,7 +1205,7 @@ class ScriptedAgent:
         # Tron synergy: prioritize casting the Karn payoffs ahead of any other affordable
         # spell — Mycosynth Lattice first (completes the Karn lock), then Cityscape Leveler
         # (the premier threat / artifact-and-land destruction beater).
-        if cfg.use_tron_synergy and any(c == _CAT_CAST for c in cats):
+        if tron_synergy and any(c == _CAT_CAST for c in cats):
             for cast_id in (_MYCOSYNTH_LATTICE_VOCAB_IDX, _CITYSCAPE_LEVELER_VOCAB_IDX):
                 for i, c in enumerate(cats):
                     if c == _CAT_CAST and _action_card_id(card_ids, i) == cast_id:
@@ -1173,7 +1218,7 @@ class ScriptedAgent:
         # engine emits them in script order, +1 Animate then -2 ChangeZone, so the LAST
         # Karn activation offered is the wish. Only force it when both are on the menu
         # (Karn has the 2 loyalty to spend); with just +1 left, greedy takes it.
-        if cfg.use_tron_synergy:
+        if tron_synergy:
             karn_acts = [i for i, c in enumerate(cats)
                          if c == _CAT_ACTIVATE
                          and _action_card_id(card_ids, i) == _KARN_GREAT_CREATOR_VOCAB_IDX]
@@ -1183,7 +1228,7 @@ class ScriptedAgent:
         # Tron synergy: once we control at least one of Urza's Mine/Power-Plant/
         # Tower, prefer playing a hand land that completes the set (a missing
         # real piece, else Planar Nexus) over any other offered land drop.
-        if cfg.use_tron_synergy and any(c == _CAT_LAND for c in cats):
+        if tron_synergy and any(c == _CAT_LAND for c in cats):
             controlled = _controlled_tron_pieces(obs)
             if controlled:
                 pick = _tron_choice(cats, card_ids, _CAT_LAND, controlled)
@@ -1193,7 +1238,7 @@ class ScriptedAgent:
         # Tron synergy: a library search (Expedition Map, fetch effects) finds
         # the Tron piece we're missing, or Planar Nexus as a substitute, ahead
         # of any other offered card.
-        if cfg.use_tron_synergy and any(c == _CAT_SEARCH for c in cats):
+        if tron_synergy and any(c == _CAT_SEARCH for c in cats):
             pick = _tron_choice(cats, card_ids, _CAT_SEARCH, _controlled_tron_pieces(obs))
             if pick is not None:
                 return pick

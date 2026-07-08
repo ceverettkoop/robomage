@@ -298,6 +298,27 @@ def _board_power_advantage(obs):
     opp_power = np.sum(obs[_OPP_PERM_POWER_IDX[opp_mask]]) * 10.0
     return self_power - opp_power
 
+
+def _shaping_potential(obs):
+    """Shaping potential Φ(s): weighted hand-count + board-power advantage.
+
+    Applied as the delta Φ(s') - Φ(s) between consecutive model decision
+    points, with Φ = 0 past the end of a game, so the per-game sum telescopes
+    to zero and the shaping cannot change which policies are optimal."""
+    hand_adv = max(0.0, obs[_SELF_BLOCK_START + _PB_HAND_CT]
+                   - obs[_OPP_BLOCK_START + _PB_HAND_CT]) * 10.0
+    return (SHAPING_HAND_ADV_PER_CARD * hand_adv
+            + SHAPING_POWER_ADV_PER_PT * _board_power_advantage(obs))
+
+
+def _deck_named(deck, key):
+    """True if `key` occurs anywhere in the deck name (e.g. 'league/car_doomsday').
+
+    The uniform way archetype-specific training behavior is keyed: doomsday
+    (combo) and tron (big-mana ramp that hoards its hand by design) both opt
+    out of the potential-based shaping this way."""
+    return deck is not None and key in deck.lower()
+
 # CLI constants live in cli_spec.py (the single source shared with the TUI).
 from cli_spec import REPO_ROOT as _REPO_ROOT, BINARY, BIN_DIR  # noqa: E402
 
@@ -984,11 +1005,21 @@ class ModelVsScriptedEnv(gym.Env):
         if self._model_deck is not None:
             self._env._deck_a = self._model_deck if self._training_is_a else self._opp_deck
             self._env._deck_b = self._opp_deck if self._training_is_a else self._model_deck
+        # Push this episode's per-seat deck names to a scripted opponent so its
+        # doomsday/tron identification uses the same name rule as the shaping
+        # opt-outs above (duck-typed: model/index controllers have no use for it).
+        set_names = getattr(self._opp_controller, "set_deck_names", None)
+        if set_names is not None:
+            set_names(self._env._deck_a, self._env._deck_b)
         self._opponent_below_10 = False
         self._last_obs = None
         self._decision_idx = 0
         self._episode_shaping = 0.0
-        self._is_doomsday = self._model_deck is not None and "doomsday" in self._model_deck
+        self._is_doomsday = _deck_named(self._model_deck, "doomsday")
+        # Potential-based shaping opt-outs, keyed on the deck name: doomsday
+        # (combo gameplan) and tron (hoards its hand and plays few creatures by
+        # design, so the potentials would penalize its actual game plan).
+        self._skip_potentials = self._is_doomsday or _deck_named(self._model_deck, "tron")
         self._dd_placed_doomsday = False  # set when agent picks Doomsday in a TOP_LIBRARY choice
         self._dd_fired = set()  # tracks which DD shaping rewards have fired this game
         self._game_meta = {
@@ -1076,18 +1107,9 @@ class ModelVsScriptedEnv(gym.Env):
         # Doomsday deck shaping (computed above from pre-step obs)
         shaping += self._dd_pending_shaping
 
-        # Shaping: +0.2 the first time the opponent's life drops below 10.
-        # obs is always from the priority player's perspective:
-        #   model has priority → opponent life is the opp block's life slot
-        #   opponent has priority → opponent ("self") life is the self block's life slot
-        if not (terminated or truncated) and not self._opponent_below_10:
-            a_has_priority = obs[_SELF_IS_A_IDX] > 0.5
-            model_has_priority = a_has_priority if self._training_is_a else not a_has_priority
-            scripted_life = (obs[_OPP_BLOCK_START + _PB_LIFE] if model_has_priority
-                             else obs[_SELF_BLOCK_START + _PB_LIFE]) * 20.0
-            if scripted_life < 10.0:
-                self._opponent_below_10 = True
-                shaping += SHAPING_OPPONENT_BELOW10
+        # Shaping: one-time bonus when the opponent's life first drops below 10.
+        if not (terminated or truncated):
+            shaping += self._below10_shaping(obs)
 
         if not (terminated or truncated):
             obs, reward, terminated, truncated, info, opp_shaping = self._skip_opponent_turns(
@@ -1095,18 +1117,20 @@ class ModelVsScriptedEnv(gym.Env):
             )
             shaping += opp_shaping
 
-        # Potential-based hand/power advantage (skip for doomsday — not relevant to combo gameplan)
-        if not self._is_doomsday and not (terminated or truncated) and self._last_obs is not None:
-            _self_hand = _SELF_BLOCK_START + _PB_HAND_CT
-            _opp_hand = _OPP_BLOCK_START + _PB_HAND_CT
-            phi_prev = max(0.0, self._last_obs[_self_hand] - self._last_obs[_opp_hand]) * 10.0
-            phi_curr = max(0.0, obs[_self_hand] - obs[_opp_hand]) * 10.0
-            shaping += SHAPING_HAND_ADV_PER_CARD * (phi_curr - phi_prev)
-
-            # Potential-based board power advantage
-            power_prev = _board_power_advantage(self._last_obs)
-            power_curr = _board_power_advantage(obs)
-            shaping += SHAPING_POWER_ADV_PER_PT * (power_curr - power_prev)
+        # Potential-based hand/power advantage (skipped for doomsday/tron — see
+        # _skip_potentials in reset()). Φ = 0 past the end of a game: on the
+        # episode-ending step AND at each bo3 game boundary the accumulated
+        # potential is settled (-Φ(s_last)) so the per-game sum telescopes to
+        # zero — otherwise the episode nets Φ(s_last) - Φ(s_0) and the policy is
+        # rewarded for ending games hoarding cards/board instead of spending
+        # them to win. Between a bo3 game's end and the next game's first
+        # decision the sideboard mask zeroes the hand and permanent blocks, so
+        # intermediate deltas read 0 and the next game re-baselines cleanly
+        # from its opening state.
+        if not self._skip_potentials and self._last_obs is not None:
+            game_over = terminated or truncated or info.get("game_result", False)
+            phi_curr = 0.0 if game_over else _shaping_potential(obs)
+            shaping += phi_curr - _shaping_potential(self._last_obs)
 
         shaping *= self.shaping_scale
         # In bo3, scale per-game shaping to 1/3 so total across 3 games
@@ -1119,11 +1143,13 @@ class ModelVsScriptedEnv(gym.Env):
         floor = -(ep_cap + self._episode_shaping)
         shaping = max(floor, min(remaining, shaping))
         self._episode_shaping += shaping
-        # Reset shaping budget and DD flags per game in bo3
+        # Reset per-game shaping state at a bo3 game boundary: budget, DD flags,
+        # and the opponent-below-10 once-flag (life totals reset with the game).
         if self._bo3 and info.get("game_result", False):
             self._episode_shaping = 0.0
             self._dd_fired.clear()
             self._dd_placed_doomsday = False
+            self._opponent_below_10 = False
         self._last_obs = obs.copy() if not (terminated or truncated) else None
 
         if not self._training_is_a:
@@ -1136,29 +1162,58 @@ class ModelVsScriptedEnv(gym.Env):
             info["opp_deck"] = self._opp_deck or "unknown"
         return obs, reward, terminated, truncated, info
 
+    def _below10_shaping(self, obs) -> float:
+        """One-time bonus the first time the opponent's life drops below 10.
+
+        obs is always from the priority player's perspective:
+          model has priority → opponent life is the opp block's life slot
+          opponent has priority → opponent ("self") life is the self block's life slot
+        Skipped on the masked bo3 sideboard observation — the player blocks are
+        zeroed there, so the life slot reads 0 and would fire spuriously. The
+        once-flag resets at each bo3 game boundary (life totals reset with it).
+        """
+        if self._opponent_below_10 or obs[_MATCH_CTX_START + 3] > 0.5:
+            return 0.0
+        a_has_priority = obs[_SELF_IS_A_IDX] > 0.5
+        model_has_priority = a_has_priority if self._training_is_a else not a_has_priority
+        scripted_life = (obs[_OPP_BLOCK_START + _PB_LIFE] if model_has_priority
+                         else obs[_SELF_BLOCK_START + _PB_LIFE]) * 20.0
+        if scripted_life < 10.0:
+            self._opponent_below_10 = True
+            return SHAPING_OPPONENT_BELOW10
+        return 0.0
+
     def _skip_opponent_turns(self, obs, reward, terminated, truncated, info):
         """Resolve consecutive opponent turns with the scripted agent.
 
         Returns the updated (obs, reward, terminated, truncated, info) tuple plus
-        the shaping reward accumulated across all opponent steps.
+        the shaping reward accumulated across all opponent steps. Two values are
+        ACCUMULATED across the loop rather than taken from the last step, because
+        a bo3 game boundary may fall on any step in it:
+          * ``reward`` — game results (±0.3) earned on the incoming step or on an
+            intermediate opponent step would otherwise be silently overwritten by
+            the last step's (usually zero) reward and never reach the learner.
+            All engine rewards are Player-A-perspective, so plain summation is
+            correct; the caller negates the total for seat B.
+          * ``game_result`` — OR-ed into the returned ``info`` so the caller's Φ
+            settlement and per-game budget reset can't miss a boundary that
+            arrived while the opponent held priority.
         """
         shaping_key = "shaping_a" if self._training_is_a else "shaping_b"
         shaping = 0.0
+        game_result = info.get("game_result", False)
         while not (terminated or truncated) and (obs[_SELF_IS_A_IDX] > 0.5) != self._training_is_a:
             action = self._opp_controller.choose(obs, self._env._num_choices)
-            obs, reward, terminated, truncated, info = self._env.step(action)
+            obs, step_reward, terminated, truncated, info = self._env.step(action)
+            reward += step_reward
+            game_result = game_result or info.get("game_result", False)
 
             shaping += info.get(shaping_key, 0.0)
 
-            if not (terminated or truncated) and not self._opponent_below_10:
-                a_has_priority = obs[_SELF_IS_A_IDX] > 0.5
-                model_has_priority = a_has_priority if self._training_is_a else not a_has_priority
-                scripted_life = (obs[_OPP_BLOCK_START + _PB_LIFE] if model_has_priority
-                                 else obs[_SELF_BLOCK_START + _PB_LIFE]) * 20.0
-                if scripted_life < 10.0:
-                    self._opponent_below_10 = True
-                    shaping += SHAPING_OPPONENT_BELOW10
+            if not (terminated or truncated):
+                shaping += self._below10_shaping(obs)
 
+        info["game_result"] = game_result
         return obs, reward, terminated, truncated, info, shaping
 
     def action_masks(self) -> np.ndarray:
@@ -1248,6 +1303,9 @@ class SelfPlayEnv(gym.Env):
         if self._model_deck is not None:
             self._env._deck_a = self._model_deck if self._training_is_a else self._opp_deck
             self._env._deck_b = self._opp_deck if self._training_is_a else self._model_deck
+        # Per-seat deck names for the scripted fallback's unified deck
+        # identification (only consulted when it actually drives the opponent).
+        self._fallback_controller.set_deck_names(self._env._deck_a, self._env._deck_b)
         self._decision_idx = 0
         opp_name = "scripted"
         if self._opponent is not None:
@@ -1309,7 +1367,15 @@ class SelfPlayEnv(gym.Env):
         return obs
 
     def _handle_opponent_turns(self, obs, reward, terminated, truncated, info):
-        """Step with the frozen opponent until it is the training model's turn."""
+        """Step with the frozen opponent until it is the training model's turn.
+
+        ``reward`` is accumulated and ``game_result`` OR-ed across the loop (not
+        taken from the last step): in bo3 a game result (±0.3) may arrive on the
+        incoming step or on an intermediate opponent step, and would otherwise be
+        silently dropped. Rewards are Player-A-perspective, so summation is
+        correct; the caller negates the total for seat B.
+        """
+        game_result = info.get("game_result", False)
         while not (terminated or truncated) and not self._training_has_priority(obs):
             num_choices = self._env._num_choices
             # Opponent receives the state as emitted (already from its perspective)
@@ -1322,7 +1388,10 @@ class SelfPlayEnv(gym.Env):
             else:
                 # No compatible checkpoint — pilot the opponent with the scripted agent.
                 action = self._fallback_controller.choose(opp_obs, num_choices)
-            obs, reward, terminated, truncated, info = self._env.step(action)
+            obs, step_reward, terminated, truncated, info = self._env.step(action)
+            reward += step_reward
+            game_result = game_result or info.get("game_result", False)
+        info["game_result"] = game_result
         return obs, reward, terminated, truncated, info
 
     def _reload_opponent(self):
@@ -1441,13 +1510,20 @@ class FixedModelEnv(gym.Env):
         return a_has_priority if self._training_is_a else not a_has_priority
 
     def _handle_opponent_turns(self, obs, reward, terminated, truncated, info):
+        # Same accumulation contract as SelfPlayEnv._handle_opponent_turns: bo3
+        # game rewards may land on any step in the loop, so sum them (A's
+        # perspective) and OR game_result instead of keeping only the last step's.
+        game_result = info.get("game_result", False)
         while not (terminated or truncated) and not self._training_has_priority(obs):
             num_choices = self._env._num_choices
             self._opp_mask[:] = False
             self._opp_mask[:num_choices] = True
             action, _ = self._opponent.predict(obs, action_masks=self._opp_mask, deterministic=False)
             action = int(action)
-            obs, reward, terminated, truncated, info = self._env.step(action)
+            obs, step_reward, terminated, truncated, info = self._env.step(action)
+            reward += step_reward
+            game_result = game_result or info.get("game_result", False)
+        info["game_result"] = game_result
         return obs, reward, terminated, truncated, info
 
 
