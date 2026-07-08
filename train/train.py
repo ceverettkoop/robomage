@@ -139,6 +139,12 @@ def _softmax(x: np.ndarray) -> np.ndarray:
     return e / e.sum()
 
 
+def _deck_tag(deck: str) -> str:
+    """Flatten a deck path ('league/bug' -> 'bug') for use in a TB scalar tag,
+    so the slash doesn't create a spurious extra nesting level in TensorBoard."""
+    return deck.rsplit("/", 1)[-1]
+
+
 class PFSPCallback(BaseCallback):
     """Win-rate feedback loop for the PFSP league.
 
@@ -232,6 +238,8 @@ class PFSPCallback(BaseCallback):
             print(f"[pfsp] WARNING: failed to broadcast weights ({exc})")
         # Matchup win-rate matrix for visibility (extends --tally).
         by_deck: dict[str, list[int]] = {}
+        scripted_by_deck: dict[str, list[int]] = {}       # pooled W/L vs scripted pilots
+        model_rates_by_deck: dict[str, list[float]] = {}  # per-snapshot win-rates
         for (deck, label), (w, l) in sorted(self._stats.items()):
             total = w + l
             pct = 100.0 * w / total if total else 0.0
@@ -240,6 +248,12 @@ class PFSPCallback(BaseCallback):
             d = by_deck.setdefault(deck, [0, 0])
             d[0] += w
             d[1] += l
+            if str(label).endswith(".zip"):
+                model_rates_by_deck.setdefault(deck, []).append(w / total)
+            else:
+                s = scripted_by_deck.setdefault(deck, [0, 0])
+                s[0] += w
+                s[1] += l
         for deck in sorted(by_deck):
             w, l = by_deck[deck]
             total = w + l
@@ -248,6 +262,16 @@ class PFSPCallback(BaseCallback):
         rwr, rn = self.recent_winrate()
         print(f"[pfsp] overall win-rate: {100.0 * self.overall_winrate():.1f}%  "
               f"recent (n={rn}): {100.0 * rwr:.1f}%")
+        # TensorBoard: per-opponent-deck win rates split by pilot type. Scripted
+        # games pool W/L per deck; model games average the per-snapshot win rates
+        # so one heavily-sampled snapshot doesn't dominate its deck's curve.
+        for deck, (w, l) in scripted_by_deck.items():
+            self.logger.record(f"pfsp_scripted/winrate_vs_{_deck_tag(deck)}", w / (w + l))
+        for deck, rates in model_rates_by_deck.items():
+            self.logger.record(f"pfsp_model/winrate_vs_{_deck_tag(deck)}",
+                               sum(rates) / len(rates))
+        self.logger.record("pfsp/winrate_overall", self.overall_winrate())
+        self.logger.record("pfsp/winrate_recent", rwr)
 
 
 class SnapshotCallback(BaseCallback):
