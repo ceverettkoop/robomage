@@ -713,6 +713,8 @@ _CAT_MANA       = 1   # legacy, no longer emitted by the game (mana activations 
                       # as the per-color MANA_W..MANA_C categories — see _MANA_CATS)
 _MANA_CATS      = frozenset(range(13, 19))  # MANA_W..MANA_C — mana-source activations
                       # (in machine mode only instant-speed cracks, e.g. LED, at priority)
+_CAT_MANA_U     = 14  # tap for blue mana (MANA_U) — the color the scripted Doomsday
+                      # agent floats off a Lion's Eye Diamond crack (Oracle's UU)
 _CAT_SEL_ATK    = 2
 _MANDATORY_CATS = frozenset({2, 3, 4, 5})  # attacker/blocker confirm categories
 _CAT_CONF_ATK   = 3
@@ -817,6 +819,7 @@ _PONDER_VOCAB_IDX        = 11
 _FORCE_OF_WILL_VOCAB_IDX = 12
 _DAZE_VOCAB_IDX          = 13
 _BRAINSTORM_VOCAB_IDX    = 24
+_MISHRAS_BAUBLE_VOCAB_IDX = 27
 _ONCE_UPON_A_TIME_VOCAB_IDX = 43
 
 # Maverick (green/white) deck card vocab indices (mirror src/card_vocab.h)
@@ -833,9 +836,15 @@ _KEEP_ONE_LANDER_IDS     = frozenset({_PONDER_VOCAB_IDX, _BRAINSTORM_VOCAB_IDX,
                                       _ONCE_UPON_A_TIME_VOCAB_IDX})
 _DISCARD_SPELL_IDS       = frozenset({_THOUGHTSEIZE_VOCAB_IDX, _DURESS_VOCAB_IDX})
 _COUNTER_STRIP_IDS       = frozenset({_FORCE_OF_WILL_VOCAB_IDX, _DAZE_VOCAB_IDX})
+# Self-controlled draw/cycling spells or abilities that, once on the stack, make it
+# correct to crack Lion's Eye Diamond in response (float 3 mana that outlives the
+# resolving draw, which then refills the discarded hand). Brainstorm is the canonical
+# LED-response cantrip — crack LED, discard hand, then Brainstorm draws 3 fresh cards.
+# Mishra's Bauble's sac-to-draw activation counts as the on-stack draw marker too.
 _LED_DRAW_STACK_IDS      = frozenset({_STREET_WRAITH_VOCAB_IDX, _EDGE_OF_AUTUMN_VOCAB_IDX,
                                       _CONSIDER_VOCAB_IDX, _DEEP_ANALYSIS_VOCAB_IDX,
-                                      _PONDER_VOCAB_IDX})
+                                      _PONDER_VOCAB_IDX, _BRAINSTORM_VOCAB_IDX,
+                                      _MISHRAS_BAUBLE_VOCAB_IDX})
 _DOOMSDAY_DECK_IDS       = frozenset({53, 54, 55, 56, 57, 58, 59, 60, 61, 67, 68, 69, 70})
 
 # Tron deck card vocab indices (mirror src/card_vocab.h). The three Urza lands
@@ -851,9 +860,13 @@ _EXPEDITION_MAP_VOCAB_IDX    = 246
 _TRON_LAND_IDS           = frozenset({_URZAS_MINE_VOCAB_IDX, _URZAS_POWER_PLANT_VOCAB_IDX,
                                       _URZAS_TOWER_VOCAB_IDX})
 # Karn, the Great Creator wishes an artifact from the sideboard/exile into hand
-# (-2), and Cityscape Leveler is the Tron wishboard's marquee target.
+# (-2). Mycosynth Lattice is the priority wish — with Karn in play it turns every
+# opponent permanent into an artifact whose abilities Karn's static shuts off (the
+# hard lock, incl. lands not tapping for mana). Cityscape Leveler is the follow-up
+# beater once the lock (or a lack of Lattice) leaves nothing better to grab.
 _KARN_GREAT_CREATOR_VOCAB_IDX = 280
 _CITYSCAPE_LEVELER_VOCAB_IDX  = 287
+_MYCOSYNTH_LATTICE_VOCAB_IDX  = 290
 # Candelabra of Tawnos untaps X target lands; it's a mana engine only when it
 # untaps lands that make MORE THAN ONE mana, so we bias its targets to those.
 # Ancient Tomb ({C}{C}) and Urza's Workshop (metalcraft: {C} per Urza's land)
@@ -1040,9 +1053,10 @@ class ModelVsScriptedEnv(gym.Env):
                     and "strip_counter" not in self._dd_fired):
                 self._dd_pending_shaping += SHAPING_DD_STRIP_COUNTER
                 self._dd_fired.add("strip_counter")
-            # Reward cracking LED with a draw/cycling ability on the stack (once per game).
-            # LED cracks are mana-ability activations, emitted with the per-color MANA_*
-            # categories (13-18) — never ACTIVATE_ABILITY (6).
+            # Reward cracking LED with a draw/cycling ability on the stack (once per game);
+            # penalize cracking it with nothing on the stack (wastes the discard). LED cracks
+            # are mana-ability activations, emitted with the per-color MANA_* categories
+            # (13-18) — never ACTIVATE_ABILITY (6).
             if cat in _MANA_CATS and card == _LED_VOCAB_IDX:
                 if _self_has_draw_on_stack(self._last_obs) and "led_draw" not in self._dd_fired:
                     self._dd_pending_shaping += SHAPING_DD_LED_WITH_DRAW

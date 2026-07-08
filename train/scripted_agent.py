@@ -55,12 +55,17 @@ from env import (
     _URZAS_MINE_VOCAB_IDX, _URZAS_POWER_PLANT_VOCAB_IDX, _URZAS_TOWER_VOCAB_IDX,
     _PLANAR_NEXUS_VOCAB_IDX, _TRON_LAND_IDS,
     _KARN_GREAT_CREATOR_VOCAB_IDX, _CITYSCAPE_LEVELER_VOCAB_IDX,
+    _MYCOSYNTH_LATTICE_VOCAB_IDX,
     _CANDELABRA_VOCAB_IDX, _MULTI_MANA_LAND_IDS,
     _SOLITUDE_VOCAB_IDX, _THE_ONE_RING_VOCAB_IDX,
+    # Lion's Eye Diamond crack: blue-mana category + LED vocab id + draw-on-stack test
+    _CAT_MANA_U, _LED_VOCAB_IDX, _self_has_draw_on_stack,
     # pending-decision source index (obs[_PENDING_DECISION_START] == source card id)
     _PENDING_DECISION_START,
     # library-count context index (obs[_LIBRARY_CTX_START] == self_library_ct / 60)
     _LIBRARY_CTX_START,
+    # known top-of-library slot 0 (obs[_KNOWN_TOP_LIB_START] == top card id, sentinel=unknown)
+    _KNOWN_TOP_LIB_START,
     # header flag / step one-hot indices + self player-block offsets
     _SELF_IS_A_IDX, _STEP_FIRST_MAIN_IDX, _STEP_SECOND_MAIN_IDX,
     _SELF_BLOCK_START, _PB_LIFE,
@@ -396,6 +401,32 @@ _BLUE_SOURCE_IDS = frozenset({
 })
 
 
+def _led_crack_choice(obs: np.ndarray, cats, card_ids) -> int | None:
+    """Lion's Eye Diamond: crack it for blue only in the Doomsday kill window. All of:
+
+      1. a self-controlled draw/cycling spell or ability is on the stack, AND
+      2. Thassa's Oracle is the known top card of the library (Doomsday has resolved
+         and laid the pile — RearrangeTopOfLibrary sets the known-top slots), AND
+      3. the library is down to <= 2 cards (the pile is drawn down to the win).
+
+    In that window the resolving draw puts Oracle into hand and the library hits the
+    Oracle-win size; cracking LED floats UUU that outlives the draw and pays Oracle's
+    UU. Gated this tightly, LED's "discard your hand" cost never sheds a card that
+    still matters, so no empty-hand check is needed. Returns the MANA_U action index
+    for LED, or None when the window / the offer isn't present.
+    """
+    if not _self_has_draw_on_stack(obs):
+        return None
+    if _slot_card_idx(obs, _KNOWN_TOP_LIB_START) != _THASSAS_ORACLE_VOCAB_IDX:
+        return None
+    if _self_library_count(obs) > _ORACLE_WIN_LIBRARY:
+        return None
+    for i, c in enumerate(cats):
+        if c == _CAT_MANA_U and _action_card_id(card_ids, i) == _LED_VOCAB_IDX:
+            return i
+    return None
+
+
 def _self_library_count(obs: np.ndarray) -> int:
     """Cards in the priority player's library (obs stores it as count / 60)."""
     return int(round(float(obs[_LIBRARY_CTX_START]) * 60))
@@ -671,6 +702,14 @@ def _greedy_action(obs: np.ndarray, num_choices: int,
         for i, c in enumerate(cats):
             if c == _CAT_CAST and _action_card_id(card_ids, i) == _COUNTERSPELL_VOCAB_IDX:
                 return i
+
+    # Crack Lion's Eye Diamond in the Doomsday kill window — a self draw is resolving,
+    # Oracle is the known top card, and library <= 2 — to float UUU for the Thassa's
+    # Oracle win. LED is offered as instant-speed MANA_* actions at priority (unlike
+    # ordinary mana sources, which stay hidden and auto-pay), so it is picked here.
+    led = _led_crack_choice(obs, cats, card_ids)
+    if led is not None:
+        return led
 
     # --- Doomsday deck rules ---
     has_doomsday_in_hand = _hand_has_card(obs, _DOOMSDAY_VOCAB_IDX)
@@ -1105,25 +1144,30 @@ class ScriptedAgent:
             return self._target_choice(g(), cats, card_ids, ctrl_arr)
 
         # Tron synergy: Karn, the Great Creator's -2 wishes an artifact from the
-        # sideboard/exile into hand — grab Cityscape Leveler, Tron's marquee wish
-        # target. Its fetch is a hidden reveal, so the choice can arrive as a search
-        # or a choose-card menu; match by pending source + card id across either.
+        # sideboard/exile into hand. Grab Mycosynth Lattice first — with Karn in play
+        # it locks the opponent out (every permanent becomes an artifact Karn's static
+        # silences) — and fall back to Cityscape Leveler as the beater once Lattice is
+        # already in hand/play (so no longer offered from the wishboard). Its fetch is a
+        # hidden reveal, so the choice can arrive as a search or a choose-card menu;
+        # match by pending source + card id across either.
         if (cfg.use_tron_synergy
                 and _slot_card_idx(obs, _PENDING_DECISION_START) == _KARN_GREAT_CREATOR_VOCAB_IDX):
-            for i in range(num_choices):
-                if _action_card_id(card_ids, i) == _CITYSCAPE_LEVELER_VOCAB_IDX:
-                    return i
+            for wish_id in (_MYCOSYNTH_LATTICE_VOCAB_IDX, _CITYSCAPE_LEVELER_VOCAB_IDX):
+                for i in range(num_choices):
+                    if _action_card_id(card_ids, i) == wish_id:
+                        return i
 
-        # Tron synergy: once Cityscape Leveler is in hand (typically off a Karn wish),
-        # prioritize casting it — it's the deck's premier threat/artifact-and-land
-        # destruction payoff, so cast it ahead of any other affordable spell.
+        # Tron synergy: prioritize casting the Karn payoffs ahead of any other affordable
+        # spell — Mycosynth Lattice first (completes the Karn lock), then Cityscape Leveler
+        # (the premier threat / artifact-and-land destruction beater).
         if cfg.use_tron_synergy and any(c == _CAT_CAST for c in cats):
-            for i, c in enumerate(cats):
-                if c == _CAT_CAST and _action_card_id(card_ids, i) == _CITYSCAPE_LEVELER_VOCAB_IDX:
-                    return i
+            for cast_id in (_MYCOSYNTH_LATTICE_VOCAB_IDX, _CITYSCAPE_LEVELER_VOCAB_IDX):
+                for i, c in enumerate(cats):
+                    if c == _CAT_CAST and _action_card_id(card_ids, i) == cast_id:
+                        return i
 
         # Tron synergy: when activating Karn, the Great Creator, prefer his -2 (wish an
-        # artifact — Cityscape Leveler — from the sideboard into hand) over the +1
+        # artifact — Mycosynth Lattice, then Cityscape Leveler — from the sideboard into hand) over the +1
         # (Animate). The two loyalty abilities are indistinguishable in the observation
         # (same ACTIVATE category + Karn card id), differing only in menu order: the
         # engine emits them in script order, +1 Animate then -2 ChangeZone, so the LAST
