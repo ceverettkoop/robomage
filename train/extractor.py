@@ -200,8 +200,8 @@ class CardGameExtractor(BaseFeaturesExtractor):
                      stack items with their announced modes/targets
       entity_encoder (card_embed → embed_dim): graveyard, hand, known top-library
 
-    Empty slots (id sentinel) are masked out of the perm / graveyard / hand
-    pooling so they neither dilute the mean nor pin the max.
+    Empty slots (id sentinel) are masked out of the perm / stack / graveyard /
+    hand pooling so they neither dilute the mean nor pin the max.
 
     Output fed into the policy MLP head:
       global(34) + hist(512 raw) + hist_recent(K × (cat_emb+card_emb+2) embedded) +
@@ -363,7 +363,7 @@ class CardGameExtractor(BaseFeaturesExtractor):
         perm_card_emb, perm_present = self._embed_ids(perms[:, :, _PERM_CARD_OFF])
         perm_in = torch.cat([perms[:, :, :_PERM_CARD_OFF], perm_card_emb], dim=-1)
 
-        stk_card_emb, _ = self._embed_ids(stack[:, :, 1])
+        stk_card_emb, stk_present = self._embed_ids(stack[:, :, 1])
         # Announced-target sub-slots: (B, 12, 4, 4) of [present, is_player, ctrl, card id].
         stk_tgts = stack[:, :, _STACK_TGT_OFF:].reshape(
             -1, _STACK_SLOTS, _STACK_TGT_SLOTS, _STACK_TGT_FIELDS)
@@ -388,10 +388,12 @@ class CardGameExtractor(BaseFeaturesExtractor):
         opp_hand_emb = self.entity_encoder(opp_hand_emb_in)  # (B, 10, embed)  — shared weights
         top_lib_emb = self.entity_encoder(top_lib_emb_in)  # (B, 5, embed)  — shared weights
 
-        # Aggregate: masked mean+max for perms, graveyard, and hand (skip empty
-        # slots); mean+max for stack; mean for top-library.
+        # Aggregate: masked mean+max for perms, stack, graveyard, and hand (skip
+        # empty slots — an unmasked mean over the 12 stack slots diluted a lone
+        # real spell 1:12 against the empty-slot bias encodings); mean for
+        # top-library.
         perm_agg    = _masked_mean_max(perm_emb, perm_present)
-        stk_agg     = torch.cat([stk_emb.mean(1),  stk_emb.max(1).values],  dim=-1)
+        stk_agg     = _masked_mean_max(stk_emb, stk_present)
         gy_agg      = _masked_mean_max(gy_emb,   gy_present)
         hand_agg    = _masked_mean_max(hand_emb, hand_present)
         opp_hand_agg = _masked_mean_max(opp_hand_emb, opp_hand_present)

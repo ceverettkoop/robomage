@@ -45,7 +45,9 @@ public:
     std::vector<Entity> mill(Zone::Ownership player, size_t ct);
     std::vector<Entity> get_graveyard(Zone::Ownership owner);
     std::vector<Entity> get_stack();
-    void do_london_mulligan();
+    // CR 103.5: keep/mulligan decisions are announced in turn order each round,
+    // starting player first (matters in bo3 games 2-3 where B may be on the play).
+    void do_london_mulligan(bool player_a_goes_first);
     // CR 103.6/103.6b opening-hand actions: after mulligans resolve (each player has kept and
     // bottomed), each player in APNAP order — starting player first — may run the
     // MayEffectFromOpeningHand ability of each such card in their kept hand (Leyline of the

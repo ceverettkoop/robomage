@@ -105,13 +105,13 @@ class WinTallyCallback(BaseCallback):
         for info in self.locals["infos"]:
             if "episode" not in info:
                 continue
-            r = info["episode"]["r"]
-            if r == 0:
+            outcome = _episode_outcome(info)
+            if outcome == 0:
                 continue
             deck = info.get("opp_deck", "unknown")
             if deck not in self._matchups:
                 self._matchups[deck] = [0, 0]
-            if r > 0:
+            if outcome > 0:
                 self._matchups[deck][0] += 1
             else:
                 self._matchups[deck][1] += 1
@@ -131,6 +131,24 @@ class WinTallyCallback(BaseCallback):
         grand = total_w + total_l
         print(f"[tally] overall: {total_w}W {total_l}L ({100.0 * total_w / grand:.1f}%)")
         self._matchups.clear()
+
+
+def _episode_outcome(info: dict) -> int:
+    """Decisive result of a finished episode: +1 win, -1 loss, 0 undecided.
+
+    Prefers the env's explicit ``info['outcome']`` flag (set by the training
+    envs from the pure game reward, before shaping). Classifying by the sign of
+    ``info['episode']['r']`` is wrong with shaping on: a step-cap-truncated
+    (stalled) episode has game reward 0 but a nonzero shaped return, so it
+    would be miscounted as a decisive result in the PFSP weights and the
+    snapshot promotion gate. The reward-sign fallback only serves env types
+    that don't emit the flag.
+    """
+    outcome = info.get("outcome")
+    if outcome is not None:
+        return int(outcome)
+    r = info["episode"]["r"]
+    return 1 if r > 0 else (-1 if r < 0 else 0)
 
 
 def _softmax(x: np.ndarray) -> np.ndarray:
@@ -183,8 +201,8 @@ class PFSPCallback(BaseCallback):
         for info in self.locals["infos"]:
             if "episode" not in info:
                 continue
-            r = info["episode"]["r"]
-            if r == 0:
+            outcome = _episode_outcome(info)
+            if outcome == 0:
                 continue
             meta = info.get("game_meta") or {}
             key = (meta.get("opp_deck", "unknown"), meta.get("opp_type", "scripted"))
@@ -192,8 +210,8 @@ class PFSPCallback(BaseCallback):
             if key not in self._q:
                 # New entry: init quality to the current max so it gets sampled.
                 self._q[key] = max(self._q.values()) if self._q else 0.0
-            self._recent.append(1.0 if r > 0 else 0.0)
-            if r > 0:
+            self._recent.append(1.0 if outcome > 0 else 0.0)
+            if outcome > 0:
                 wl[0] += 1
                 if self._mode == "softmax":
                     keys = list(self._q)

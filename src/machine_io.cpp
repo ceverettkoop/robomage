@@ -444,6 +444,14 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
 void populate_query(Query* q, const std::vector<LegalAction>& actions) {
     memset(q, 0, sizeof(*q));
     int n = std::min(static_cast<int>(actions.size()), MAX_ACTIONS);
+    if (static_cast<int>(actions.size()) > MAX_ACTIONS)
+        // Machine-mode agents can never pick a truncated action, so an
+        // over-wide menu silently restricts the policy — make it observable.
+        fprintf(stderr,
+                "WARNING: legal-action menu has %zu entries; machine query "
+                "truncated to MAX_ACTIONS=%d — choices beyond that are "
+                "unreachable for machine-mode agents\n",
+                actions.size(), MAX_ACTIONS);
     q->num_choices = n;
 
     Zone::Ownership priority_owner = cur_game.player_a_has_priority ? Zone::PLAYER_A : Zone::PLAYER_B;

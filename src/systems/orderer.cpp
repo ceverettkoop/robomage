@@ -549,7 +549,7 @@ std::vector<Entity> Orderer::get_stack() {
 }
 
 
-void Orderer::do_london_mulligan() {
+void Orderer::do_london_mulligan(bool player_a_goes_first) {
     int mulligans_a = 0;
     int mulligans_b = 0;
     bool a_kept = false;
@@ -628,12 +628,18 @@ void Orderer::do_london_mulligan() {
         }
     };
 
+    // CR 103.5: each round of keep/mulligan decisions is announced in turn
+    // order, starting player first. That matters in bo3 games 2-3, where the
+    // loser of the previous game (possibly B) is on the play — always letting
+    // A decide first handed B a systematic information edge in those games.
     while (!a_kept || !b_kept) {
-        // Player A decides
-        if (!a_kept) decide_for(Zone::PLAYER_A, a_kept, mulligans_a, true);
-
-        // Player B decides
-        if (!b_kept) decide_for(Zone::PLAYER_B, b_kept, mulligans_b, false);
+        if (player_a_goes_first) {
+            if (!a_kept) decide_for(Zone::PLAYER_A, a_kept, mulligans_a, true);
+            if (!b_kept) decide_for(Zone::PLAYER_B, b_kept, mulligans_b, false);
+        } else {
+            if (!b_kept) decide_for(Zone::PLAYER_B, b_kept, mulligans_b, false);
+            if (!a_kept) decide_for(Zone::PLAYER_A, a_kept, mulligans_a, true);
+        }
     }
 }
 

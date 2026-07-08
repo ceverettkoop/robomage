@@ -97,8 +97,13 @@ check: all
 
 .PHONY: all pygen check clean
 
+# Remove everything under the object tree (the compile rules mkdir -p subdirs
+# back on demand), not per-level globs that silently miss deeper nesting, plus
+# the linked binary so a failed build can't leave a stale bin/robomage for the
+# harness/CI to use. $(ODIR)/* (not $(ODIR)) keeps the git-tracked
+# obj/.gitphony placeholder; bin/ is kept — it holds resources/ and decks.
 clean:
-	rm -f $(ODIR)/*/*.o $(ODIR)/*/*.d
-	rm -f $(ODIR)/*.o $(ODIR)/*.d
+	rm -rf $(ODIR)/*
+	rm -f $(BINDIR)/$(BINNAME)
 
 -include $(DEPS)
