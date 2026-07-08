@@ -37,7 +37,8 @@ Interactive session commands (via 'interactive'):
     consistency [N]       decision consistency for similar states (top N pairs)
     targeting             self vs opp targeting, hold vs cast analysis
     sideboard             sideboard decisions by each agent (bo3)
-    sbvalue               sideboard preference: take-rate, confidence, ΔV, ΔWR per card (bo3)
+    sbvalue               sideboard preference: take-rate, confidence, ΔV, ΔWR per card,
+                          + net post-board game-WR impact, fetchlands fungible (bo3)
     whatif <N> <step> [k] counterfactual: branch chosen + top-k actions from the
                           same seed, roll each to the end, compare result/V(s)
     calibration           V(s) at game start vs actual win rate
@@ -46,6 +47,7 @@ Interactive session commands (via 'interactive'):
     chart <N>             value curve plot for game N
     chart swings [N]      value curve plots for top N swing games
     chart cardvalue [N]   diverging bar chart of per-card ΔV
+    chart sbvalue [N]     sideboard swap preference + net ΔWR bars (bo3)
     chart shap            SHAP summary plot
     chart calibration     calibration curve plot
     chart turning         turning point distribution plot
@@ -588,6 +590,9 @@ def _collect_game_traces(model, env, opp_model, n_games, verbose=True):
         })
         if verbose:
             result_str = "W" if model_reward > 0 else ("L" if model_reward < 0 else "D")
+            score = _match_score(games[-1])
+            if score is not None:
+                result_str += f" {score[0]}-{score[1]}"
             print(f"  game {g}/{n_games - 1}: {len(trace_obs)} decisions, {result_str}",
                   flush=True)
     return games
@@ -914,6 +919,27 @@ def _sim_summary(games):
     print(f"  {total} games: {wins}W / {losses}L / {draws}D  ({100 * wins / total:.1f}% win rate)")
     print(f"  Decisions/game: mean={arr.mean():.1f}  min={arr.min()}  max={arr.max()}")
 
+    # Bo3 breakdown: per-match game scores and the individual-game record.
+    score_dist = {}
+    game_w = game_l = 0
+    for g in games:
+        sc = _match_score(g)
+        if sc is None:
+            continue
+        r = "W" if g["result"] > 0 else ("L" if g["result"] < 0 else "D")
+        score_dist[f"{r} {sc[0]}-{sc[1]}"] = score_dist.get(f"{r} {sc[0]}-{sc[1]}", 0) + 1
+        game_w += sc[0]
+        game_l += sc[1]
+    if score_dist:
+        order = {"W 2-0": 0, "W 2-1": 1, "L 1-2": 2, "L 0-2": 3}
+        parts = [f"{k}: {n}" for k, n in
+                 sorted(score_dist.items(), key=lambda kv: (order.get(kv[0], 9), kv[0]))]
+        gt = game_w + game_l
+        print(f"  Bo3 match scores: " + "   ".join(parts))
+        if gt:
+            print(f"  Individual games: {game_w}W / {game_l}L"
+                  f"  ({100 * game_w / gt:.1f}% game win rate)")
+
 
 def _match_meta(obs):
     """Decode (game_number, self_wins, opp_wins, is_sideboard) match context
@@ -924,6 +950,29 @@ def _match_meta(obs):
             int(round(obs[_MATCH_CTX_START + 1] * 2.0)),
             int(round(obs[_MATCH_CTX_START + 2] * 2.0)),
             bool(obs[_MATCH_CTX_START + 3] > 0.5))
+
+
+def _match_score(game):
+    """Final bo3 game score (self_wins, opp_wins) from the model's perspective,
+    or None for a bo1 trace (match context all-zero at every decision). The
+    obs win counters never include the final game — the match ends on it — so
+    the match winner (sign of result) gets one added to the highest observed
+    counts. Draws (result 0) return the counters as observed."""
+    hi_self = hi_opp = 0
+    bo3 = False
+    for obs in game["observations"]:
+        gn, sw, ow, sb = _match_meta(obs)
+        if gn or sw or ow or sb:
+            bo3 = True
+        hi_self = max(hi_self, sw)
+        hi_opp = max(hi_opp, ow)
+    if not bo3:
+        return None
+    if game["result"] > 0:
+        hi_self += 1
+    elif game["result"] < 0:
+        hi_opp += 1
+    return hi_self, hi_opp
 
 
 def _compute_swings(games):
@@ -1587,10 +1636,25 @@ def _sim_sideboard_report(games):
 
 _CAT_SB_IN, _CAT_SB_OUT, _CAT_SB_DONE = 24, 25, 26
 
+# Fungible card classes for the NET sideboard-impact table: swapping one
+# fetchland for another is mana-base tuning, not a card-choice signal, so all
+# fetches pool into one class (a fetch-for-fetch swap nets to zero). Applies
+# only to the net-impact section of sbvalue — the per-swap preference tables
+# above it stay per-name.
+_SB_FUNGIBLE = {
+    name: "Fetchland (any)"
+    for name in (
+        "Scalding Tarn", "Flooded Strand", "Polluted Delta", "Wooded Foothills",
+        "Misty Rainforest", "Windswept Heath", "Bloodstained Mire",
+        "Verdant Catacombs", "Arid Mesa", "Marsh Flats", "Prismatic Vista",
+    )
+}
 
-def _analyze_sbvalue(games):
+
+def _analyze_sbvalue(games, verbose=True):
     """Cardvalue-style report for sideboard decisions: what the model prefers
     to bring in / take out, how confident it is, and whether it pays off.
+    Returns {"in": rows, "out": rows, "net": rows} for charting/reporting.
 
     The `sideboard` report only counts swaps the model actually made; here the
     full legal menu and the recorded policy distribution at every sideboard
@@ -1605,12 +1669,24 @@ def _analyze_sbvalue(games):
       * ΔV    — mean change in V(s) across a taken swap
       * ΔWR   — match win rate when taken at least once minus offered-but-
                 never-taken (conditions on availability, unlike cardvalue)
+
+    A final NET-impact table works at GAME granularity: every post-board game
+    is bucketed, per card class, by the class's cumulative net copies in the
+    deck for that game (boarded in minus out over the phases played so far in
+    the match; fetchlands pooled as one fungible class per `_SB_FUNGIBLE`),
+    and compares the post-board GAME win rate when the card was net-in vs
+    net-out vs net-zero. Per-game outcomes are reconstructed from the match
+    win counters at each game's first decision (the match winner takes the
+    final game).
     """
     # key = (category, card name); phase key = (match idx, phase ordinal)
     prob_sum, prob_n = {}, {}
     offered_phases, taken_phases = {}, {}
     taken_ct, taken_matches, offered_matches = {}, {}, {}
     dv = {}
+    # Net-impact accumulators (fungibility-pooled class names).
+    offered_cls = {}     # class -> set of match idx where offered in either direction
+    net_cls_games = {}   # class -> {"in"/"out"/"zero": [post-board game outcomes]}
     n_phases = 0
     phases_no_swaps = 0
     done_first_probs = []   # P(SB_DONE) at the first decision of each phase
@@ -1624,10 +1700,15 @@ def _analyze_sbvalue(games):
         in_phase = False
         phase_id = -1
         phase_swaps = 0
+        swap_events = []   # (after_game_number, class, ±1) for this match
+        game_starts = {}   # game_number -> (self_wins, opp_wins) at first decision
 
         for si in range(len(obs_list)):
             obs = obs_list[si]
-            if not _match_meta(obs)[3]:
+            meta = _match_meta(obs)
+            if not meta[3]:
+                if meta[0] not in game_starts:
+                    game_starts[meta[0]] = (meta[1], meta[2])
                 if in_phase:
                     n_phases += 1
                     phases_no_swaps += (phase_swaps == 0)
@@ -1647,9 +1728,11 @@ def _analyze_sbvalue(games):
                 if cat in (_CAT_SB_IN, _CAT_SB_OUT):
                     cid = _obs_card_id(obs, k)
                     if 0 <= cid < len(_VOCAB_NAMES):
-                        key = (cat, decode.card_index_to_name(cid))
+                        name = decode.card_index_to_name(cid)
+                        key = (cat, name)
                         p = float(probs[k]) if probs is not None and k < len(probs) else 0.0
                         dec_mass[key] = dec_mass.get(key, 0.0) + p
+                        offered_cls.setdefault(_SB_FUNGIBLE.get(name, name), set()).add(gi)
             # P(done) at the phase's first decision = confidence in the current 60.
             if probs is not None and (si == 0 or not _match_meta(obs_list[si - 1])[3]):
                 for k in range(ncs[si]):
@@ -1668,32 +1751,61 @@ def _analyze_sbvalue(games):
             if cat in (_CAT_SB_IN, _CAT_SB_OUT):
                 cid = _obs_card_id(obs, action)
                 if 0 <= cid < len(_VOCAB_NAMES):
-                    key = (cat, decode.card_index_to_name(cid))
+                    name = decode.card_index_to_name(cid)
+                    key = (cat, name)
                     taken_ct[key] = taken_ct.get(key, 0) + 1
                     taken_phases.setdefault(key, set()).add(pkey)
                     taken_matches.setdefault(key, set()).add(gi)
                     phase_swaps += 1
                     if si + 1 < len(vals):
                         dv.setdefault(key, []).append(vals[si + 1] - vals[si])
+                    cls = _SB_FUNGIBLE.get(name, name)
+                    swap_events.append((meta[0], cls,
+                                        1 if cat == _CAT_SB_IN else -1))
         if in_phase:  # trace ended inside a sideboard phase
             n_phases += 1
             phases_no_swaps += (phase_swaps == 0)
 
+        # Per-game outcomes: a game was won iff self_wins ticked up by the next
+        # game's start; the final game goes to the match winner. Then bucket
+        # each POST-BOARD game by every offered class's cumulative net copies
+        # in the deck for that game (swaps after game k apply to games > k).
+        gns = sorted(game_starts)
+        outcomes = {}
+        for idx, gn in enumerate(gns):
+            if idx + 1 < len(gns):
+                outcomes[gn] = 1 if game_starts[gns[idx + 1]][0] > game_starts[gn][0] else 0
+            elif g["result"] != 0:
+                outcomes[gn] = 1 if g["result"] > 0 else 0
+        match_classes = {cls for cls, ms in offered_cls.items() if gi in ms}
+        for gn in gns:
+            if gn == 0 or gn not in outcomes:
+                continue  # game 1 is pre-board; an unfinished draw has no outcome
+            for cls in match_classes:
+                net = sum(d for agn, c, d in swap_events if c == cls and agn < gn)
+                bucket = "in" if net > 0 else ("out" if net < 0 else "zero")
+                net_cls_games.setdefault(
+                    cls, {"in": [], "out": [], "zero": []})[bucket].append(outcomes[gn])
+
+    result = {"in": [], "out": [], "net": []}
     if n_phases == 0:
-        print("  No sideboard phases found. (Are these bo3 games?)")
-        return
+        if verbose:
+            print("  No sideboard phases found. (Are these bo3 games?)")
+        return result
 
-    print(f"\nSideboard preference — {n_phases} phases across {len(games)} matches")
-    print(f"  Phases with no swaps: {phases_no_swaps}/{n_phases}", end="")
-    if done_first_probs:
-        print(f"  |  mean P(done) at first sideboard decision: "
-              f"{np.mean(done_first_probs):.0%}")
-    else:
-        print()
-    print("  conf = mean policy prob on the swap when offered.  "
-          "ΔWR = taken-at-least-once minus offered-but-never-taken.")
+    if verbose:
+        print(f"\nSideboard preference — {n_phases} phases across {len(games)} matches")
+        print(f"  Phases with no swaps: {phases_no_swaps}/{n_phases}", end="")
+        if done_first_probs:
+            print(f"  |  mean P(done) at first sideboard decision: "
+                  f"{np.mean(done_first_probs):.0%}")
+        else:
+            print()
+        print("  conf = mean policy prob on the swap when offered.  "
+              "ΔWR = taken-at-least-once minus offered-but-never-taken.")
 
-    for direction, label in ((_CAT_SB_IN, "Boarded IN"), (_CAT_SB_OUT, "Boarded OUT")):
+    for direction, dkey, label in ((_CAT_SB_IN, "in", "Boarded IN"),
+                                   (_CAT_SB_OUT, "out", "Boarded OUT")):
         keys = [k for k in offered_phases if k[0] == direction]
         if not keys:
             continue
@@ -1719,7 +1831,10 @@ def _analyze_sbvalue(games):
                             if wr_taken is not None and wr_not is not None else None),
             })
         rows.sort(key=lambda r: (-(r["conf"] or 0.0), -r["taken"]))
+        result[dkey] = rows
 
+        if not verbose:
+            continue
         print(f"\n  {label:<26} {'off':>4} {'taken':>6} {'rate':>6} {'conf':>6} "
               f"{'ΔV':>8} {'ΔWR':>6}")
         print(f"  {'-'*26} {'-'*4} {'-'*6} {'-'*6} {'-'*6} {'-'*8} {'-'*6}")
@@ -1730,6 +1845,52 @@ def _analyze_sbvalue(games):
             lift_str = f"{r['wr_lift']*100:+5.0f}%" if r["wr_lift"] is not None else "    —"
             print(f"  {r['card'][:26]:<26} {r['off']:>4} {r['taken']:>6} "
                   f"{rate_str} {conf_str} {dv_str} {lift_str}")
+
+    # ---- Net impact per post-board GAME ---------------------------------------
+    # Each post-board game was bucketed above by the class's cumulative net
+    # copies in the deck for that game. Fungible classes: a fetch swapped for
+    # another fetch nets to zero under "Fetchland (any)".
+    def _gwr(outcome_list):
+        return (sum(outcome_list) / len(outcome_list)) if outcome_list else None
+
+    net_rows = []
+    for cls, buckets in net_cls_games.items():
+        if not (buckets["in"] or buckets["out"]):
+            continue  # offered but never net-moved for any post-board game
+        wr_in, wr_out, wr_zero = (_gwr(buckets["in"]), _gwr(buckets["out"]),
+                                  _gwr(buckets["zero"]))
+        net_rows.append({
+            "card": cls,
+            "n_in": len(buckets["in"]), "n_out": len(buckets["out"]),
+            "n_zero": len(buckets["zero"]),
+            "wr_in": wr_in, "wr_out": wr_out, "wr_zero": wr_zero,
+            "dwr_in": (wr_in - wr_zero
+                       if wr_in is not None and wr_zero is not None else None),
+            "dwr_out": (wr_out - wr_zero
+                        if wr_out is not None and wr_zero is not None else None),
+        })
+    net_rows.sort(key=lambda r: -(r["n_in"] + r["n_out"]))
+    result["net"] = net_rows
+
+    if verbose and net_rows:
+        print(f"\n  Net impact — post-board GAME win rate, bucketed by whether the card")
+        print(f"  was net-in / net-out of the deck for that game (fetchlands pooled as")
+        print(f"  one fungible class — fetch-for-fetch swaps net to zero). Counts are")
+        print(f"  post-board games. ΔWR columns are relative to that card's net-zero games.")
+        print(f"\n  {'card':<26} {'in':>4} {'out':>4} {'zero':>5} "
+              f"{'WR(in)':>7} {'WR(out)':>8} {'WR(0)':>7} {'ΔWR(in)':>8} {'ΔWR(out)':>9}")
+        print(f"  {'-'*26} {'-'*4} {'-'*4} {'-'*5} {'-'*7} {'-'*8} {'-'*7} {'-'*8} {'-'*9}")
+        for r in net_rows:
+            def _pct(v, w):
+                return f"{v*100:{w-1}.0f}%" if v is not None else " " * (w - 1) + "—"
+            def _spct(v, w):
+                return f"{v*100:+{w-1}.0f}%" if v is not None else " " * (w - 1) + "—"
+            print(f"  {r['card'][:26]:<26} {r['n_in']:>4} {r['n_out']:>4} {r['n_zero']:>5} "
+                  f"{_pct(r['wr_in'], 7)} {_pct(r['wr_out'], 8)} {_pct(r['wr_zero'], 7)} "
+                  f"{_spct(r['dwr_in'], 8)} {_spct(r['dwr_out'], 9)}")
+    elif verbose:
+        print("\n  Net impact: no card ever net-entered or net-left the deck.")
+    return result
 
 
 def _interactive_session(ctx):
@@ -1756,7 +1917,8 @@ def _interactive_session(ctx):
                 "swings [N]", "boundaries", "matchcal",
                 "shap", "regret [N]", "entropy", "consistency [N]",
                 "calibration", "turning", "clusters", "whatif <N> <step> [k]",
-                "chart <N>", "chart swings [N]", "chart cardvalue [N]", "chart shap",
+                "chart <N>", "chart swings [N]", "chart cardvalue [N]",
+                "chart sbvalue [N]", "chart shap",
                 "chart calibration", "chart turning", "chart clusters", "chart whatif"]
         if can_run:
             cmds.append("run <N>")
@@ -1804,7 +1966,9 @@ def _interactive_session(ctx):
             print("  targeting                 — self vs opp targeting, hold vs cast analysis")
             print("  sideboard                 — sideboard decisions by each agent (bo3)")
             print("  sbvalue                   — sideboard preference: take-rate, policy confidence,")
-            print("                              ΔV and win-rate lift per boarded-in/out card (bo3)")
+            print("                              ΔV and win-rate lift per boarded-in/out card, plus")
+            print("                              NET impact on post-board GAME win rate with")
+            print("                              fetchlands pooled as one fungible class (bo3)")
             print("  whatif <N> <step> [k]     — counterfactual: branch the chosen action + top-k")
             print("                              alternatives from the same seed, roll each to the end,")
             print("                              and compare final result / V(s) (k default 3)")
@@ -1814,6 +1978,7 @@ def _interactive_session(ctx):
             print("  chart <N>                 — value curve plot for game N")
             print("  chart swings [N]          — value curve plots for top N swing games")
             print("  chart cardvalue [N]       — diverging bar chart of per-card ΔV")
+            print("  chart sbvalue [N]         — sideboard swap preference + net ΔWR bars")
             print("  chart shap                — SHAP summary plot (requires shap run first)")
             print("  chart calibration         — calibration curve plot")
             print("  chart turning             — turning point distribution plot")
@@ -1824,12 +1989,14 @@ def _interactive_session(ctx):
             print("  quit / exit               — leave interactive session")
 
         elif cmd in ("list", "games", "ls"):
-            print(f"  {'Game':<6} {'Result':<8} {'Decisions':<12} {'Side'}")
-            print(f"  {'-'*6} {'-'*8} {'-'*12} {'-'*4}")
+            print(f"  {'Game':<6} {'Result':<8} {'Score':<7} {'Decisions':<12} {'Side'}")
+            print(f"  {'-'*6} {'-'*8} {'-'*7} {'-'*12} {'-'*4}")
             for i, g in enumerate(games):
                 r = "WIN" if g["result"] > 0 else ("LOSS" if g["result"] < 0 else "DRAW")
+                sc = _match_score(g)
+                sc_str = f"{sc[0]}-{sc[1]}" if sc is not None else "—"
                 side = "A" if g["model_is_a"] else "B"
-                print(f"  {i:<6} {r:<8} {len(g['values']):<12} {side}")
+                print(f"  {i:<6} {r:<8} {sc_str:<7} {len(g['values']):<12} {side}")
 
         elif cmd == "summary":
             _sim_summary(games)
@@ -2045,6 +2212,17 @@ def _interactive_session(ctx):
                     rows = _analyze_cardvalue(games, verbose=False)
                     ctx["cardvalue_rows"] = rows
                 _chart_cardvalue(rows, args=args, top_n=top_n)
+
+            elif sub == "sbvalue":
+                top_n = 20
+                if len(parts) >= 3:
+                    try: top_n = int(parts[2])
+                    except ValueError: pass
+                sbrows = ctx.get("sbvalue_rows")
+                if sbrows is None:
+                    sbrows = _analyze_sbvalue(games, verbose=False)
+                    ctx["sbvalue_rows"] = sbrows
+                _chart_sbvalue(sbrows, args=args, top_n=top_n)
 
             elif sub == "shap":
                 if ctx["shap_values"] is None or ctx["shap_samples"] is None:
@@ -2273,8 +2451,8 @@ def _interactive_session(ctx):
                     gn = int(sub)
                 except ValueError:
                     print("  Usage: chart <game_index> | chart swings [N] | chart cardvalue [N] "
-                          "| chart shap | chart calibration | chart turning | chart clusters "
-                          "| chart whatif")
+                          "| chart sbvalue [N] | chart shap | chart calibration | chart turning "
+                          "| chart clusters | chart whatif")
                     continue
                 if gn < 0 or gn >= len(games):
                     print(f"  Game index out of range. Valid range: 0–{len(games) - 1}")
@@ -2344,7 +2522,7 @@ def _interactive_session(ctx):
             _sim_sideboard_report(games)
 
         elif cmd == "sbvalue":
-            _analyze_sbvalue(games)
+            ctx["sbvalue_rows"] = _analyze_sbvalue(games)
 
         elif cmd == "whatif":
             if len(parts) < 3:
@@ -3349,6 +3527,72 @@ def _chart_cardvalue(rows, args=None, top_n=20):
     return viz.save_or_show(plt, fig, "cardvalue", args)
 
 
+def _chart_sbvalue(sbrows, args=None, top_n=20):
+    """Three-panel sideboard chart: per-direction swap preference — mean policy
+    prob on each swap when offered, one panel for boarded-IN and one for
+    boarded-OUT so a bar's direction is never ambiguous — plus net-impact ΔWR
+    per card class (fetchlands fungible): the post-board GAME win-rate delta
+    vs that card's net-zero games. Mirrors _chart_cardvalue's conventions
+    (green/red poles, gray zero line, horizontal bars)."""
+    pref_in = [(r["card"], r["conf"] or 0.0) for r in sbrows["in"]][:top_n]
+    pref_out = [(r["card"], r["conf"] or 0.0) for r in sbrows["out"]][:top_n]
+    # Only chart classes with a non-zero win-rate delta — an all-zero row is
+    # visually indistinguishable from missing data and just pads the panel.
+    net = [(r["card"], r["dwr_in"], r["dwr_out"]) for r in sbrows["net"]
+           if any(d is not None and abs(d) > 1e-9 for d in (r["dwr_in"], r["dwr_out"]))]
+    net = sorted(net, key=lambda t: -max(abs(d) for d in t[1:] if d is not None))[:top_n]
+    panels = ([("Boarded IN — swap preference", "seagreen", pref_in)] if pref_in else []) + \
+             ([("Boarded OUT — swap preference", "firebrick", pref_out)] if pref_out else [])
+    if not panels and not net:
+        print("  No sideboard swaps to chart.")
+        return None
+    plt = viz.pyplot(show=viz.want_show(args))
+    if plt is None:
+        print("  matplotlib unavailable; skipping chart.")
+        return None
+
+    n_rows = len(panels) + (1 if net else 0)
+    heights = [max(2.0, len(p[2]) * 0.35) for p in panels]
+    if net:
+        heights.append(max(2.5, len(net) * 0.35))
+    fig, axes = plt.subplots(n_rows, 1,
+                             figsize=(9, sum(heights) + 0.9 * n_rows),
+                             squeeze=False,
+                             gridspec_kw={"height_ratios": heights}
+                             if n_rows > 1 else None)
+    row = 0
+    for title, color, pref in panels:
+        ax = axes[row, 0]; row += 1
+        pref = list(reversed(pref))  # barh plots bottom-up
+        names = [c[:28] for c, _ in pref]
+        vals = [v for _, v in pref]
+        ax.barh(range(len(names)), vals, color=color)
+        ax.set_yticks(range(len(names)))
+        ax.set_yticklabels(names, fontsize=8)
+        ax.set_xlabel("Mean policy prob on the swap when offered")
+        ax.set_title(title)
+        ax.grid(True, axis="x", alpha=0.3)
+    if net:
+        ax = axes[row, 0]
+        net = list(reversed(net))
+        names = [c[:28] for c, _, _ in net]
+        ys = np.arange(len(names))
+        h = 0.38
+        ax.barh(ys + h / 2, [d if d is not None else 0.0 for _, d, _ in net],
+                height=h, color="seagreen", label="ΔWR when net-IN")
+        ax.barh(ys - h / 2, [d if d is not None else 0.0 for _, _, d in net],
+                height=h, color="firebrick", label="ΔWR when net-OUT")
+        ax.axvline(0, color="gray", linewidth=0.8)
+        ax.set_yticks(ys)
+        ax.set_yticklabels(names, fontsize=8)
+        ax.set_xlabel("Post-board game win-rate delta vs net-zero games")
+        ax.set_title("Net sideboard impact (fetchlands fungible)")
+        ax.legend(loc="lower right", fontsize=8)
+        ax.grid(True, axis="x", alpha=0.3)
+    fig.tight_layout()
+    return viz.save_or_show(plt, fig, "sbvalue", args)
+
+
 def _chart_value_overview(games, args=None):
     """Faint V(s) curve per game plus the mean curve, on a shared 0–1 x-axis."""
     curves = [g["values"] for g in games if len(g.get("values", [])) >= 2]
@@ -3405,22 +3649,39 @@ def cmd_report(args):
     deck_a = getattr(args, "deck_a", None) or "?"
     deck_b = getattr(args, "deck_b", None) or args.opponent
 
-    # Text sections (captured from the verbose analyzers).
+    # Text sections (captured from the verbose analyzers). Bo3-only analyzers
+    # (sideboard, boundaries, match calibration) print a one-line "no data"
+    # note on bo1 traces, so they are safe to include unconditionally.
+    is_bo3 = any(_match_score(g) is not None for g in games)
     sections = [
         ("Summary", _capture(_sim_summary, games)),
         ("Card importance", _capture(_analyze_cardvalue, games, args.top if hasattr(args, "top") else 30)),
+        ("Targeting / hold-vs-cast", _capture(_sim_targeting, games)),
         ("Value calibration", _capture(_analyze_calibration, games)),
         ("Turning points", _capture(_analyze_turning_points, games)),
         ("Trajectory archetypes", _capture(_analyze_clusters, games)),
-        ("Targeting / hold-vs-cast", _capture(_sim_targeting, games)),
+        ("Top value swings", _capture(lambda g: _print_swing_table(_compute_swings(g)[:10]), games)),
+        ("Policy regret", _capture(_analyze_regret, games, 20)),
+        ("Policy entropy", _capture(_analyze_entropy, games)),
+        ("Decision consistency", _capture(_analyze_consistency, games, 10)),
     ]
+    if is_bo3:
+        sections[2:2] = [
+            ("Sideboard decisions", _capture(_sim_sideboard_report, games)),
+            ("Sideboard preference & net impact", _capture(_analyze_sbvalue, games)),
+            ("Match boundaries (V(s) across games)",
+             _capture(lambda g: _print_boundaries(_compute_boundaries(g)), games)),
+            ("Match-score calibration", _capture(_print_match_calibration, games)),
+        ]
 
     # Charts (saved as PNGs alongside the report; referenced by basename).
     rows = _analyze_cardvalue(games, verbose=False)
-    imgs = []
-    for path in (_chart_cardvalue(rows, args=args), _chart_value_overview(games, args=args)):
-        if path:
-            imgs.append(os.path.basename(path))
+    chart_paths = [_chart_cardvalue(rows, args=args),
+                   _chart_value_overview(games, args=args)]
+    if is_bo3:
+        chart_paths.append(_chart_sbvalue(_analyze_sbvalue(games, verbose=False),
+                                          args=args))
+    imgs = [os.path.basename(p) for p in chart_paths if p]
 
     parts = ["<!doctype html><meta charset='utf-8'>",
              "<style>body{font-family:system-ui,sans-serif;margin:2rem;max-width:1000px}"

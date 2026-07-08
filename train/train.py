@@ -105,13 +105,13 @@ class WinTallyCallback(BaseCallback):
         for info in self.locals["infos"]:
             if "episode" not in info:
                 continue
-            r = info["episode"]["r"]
-            if r == 0:
+            outcome = _episode_outcome(info)
+            if outcome == 0:
                 continue
             deck = info.get("opp_deck", "unknown")
             if deck not in self._matchups:
                 self._matchups[deck] = [0, 0]
-            if r > 0:
+            if outcome > 0:
                 self._matchups[deck][0] += 1
             else:
                 self._matchups[deck][1] += 1
@@ -133,10 +133,34 @@ class WinTallyCallback(BaseCallback):
         self._matchups.clear()
 
 
+def _episode_outcome(info: dict) -> int:
+    """Decisive result of a finished episode: +1 win, -1 loss, 0 undecided.
+
+    Prefers the env's explicit ``info['outcome']`` flag (set by the training
+    envs from the pure game reward, before shaping). Classifying by the sign of
+    ``info['episode']['r']`` is wrong with shaping on: a step-cap-truncated
+    (stalled) episode has game reward 0 but a nonzero shaped return, so it
+    would be miscounted as a decisive result in the PFSP weights and the
+    snapshot promotion gate. The reward-sign fallback only serves env types
+    that don't emit the flag.
+    """
+    outcome = info.get("outcome")
+    if outcome is not None:
+        return int(outcome)
+    r = info["episode"]["r"]
+    return 1 if r > 0 else (-1 if r < 0 else 0)
+
+
 def _softmax(x: np.ndarray) -> np.ndarray:
     x = x - x.max()
     e = np.exp(x)
     return e / e.sum()
+
+
+def _deck_tag(deck: str) -> str:
+    """Flatten a deck path ('league/bug' -> 'bug') for use in a TB scalar tag,
+    so the slash doesn't create a spurious extra nesting level in TensorBoard."""
+    return deck.rsplit("/", 1)[-1]
 
 
 class PFSPCallback(BaseCallback):
@@ -177,8 +201,8 @@ class PFSPCallback(BaseCallback):
         for info in self.locals["infos"]:
             if "episode" not in info:
                 continue
-            r = info["episode"]["r"]
-            if r == 0:
+            outcome = _episode_outcome(info)
+            if outcome == 0:
                 continue
             meta = info.get("game_meta") or {}
             key = (meta.get("opp_deck", "unknown"), meta.get("opp_type", "scripted"))
@@ -186,8 +210,8 @@ class PFSPCallback(BaseCallback):
             if key not in self._q:
                 # New entry: init quality to the current max so it gets sampled.
                 self._q[key] = max(self._q.values()) if self._q else 0.0
-            self._recent.append(1.0 if r > 0 else 0.0)
-            if r > 0:
+            self._recent.append(1.0 if outcome > 0 else 0.0)
+            if outcome > 0:
                 wl[0] += 1
                 if self._mode == "softmax":
                     keys = list(self._q)
@@ -232,6 +256,8 @@ class PFSPCallback(BaseCallback):
             print(f"[pfsp] WARNING: failed to broadcast weights ({exc})")
         # Matchup win-rate matrix for visibility (extends --tally).
         by_deck: dict[str, list[int]] = {}
+        scripted_by_deck: dict[str, list[int]] = {}       # pooled W/L vs scripted pilots
+        model_rates_by_deck: dict[str, list[float]] = {}  # per-snapshot win-rates
         for (deck, label), (w, l) in sorted(self._stats.items()):
             total = w + l
             pct = 100.0 * w / total if total else 0.0
@@ -240,6 +266,12 @@ class PFSPCallback(BaseCallback):
             d = by_deck.setdefault(deck, [0, 0])
             d[0] += w
             d[1] += l
+            if str(label).endswith(".zip"):
+                model_rates_by_deck.setdefault(deck, []).append(w / total)
+            else:
+                s = scripted_by_deck.setdefault(deck, [0, 0])
+                s[0] += w
+                s[1] += l
         for deck in sorted(by_deck):
             w, l = by_deck[deck]
             total = w + l
@@ -248,6 +280,16 @@ class PFSPCallback(BaseCallback):
         rwr, rn = self.recent_winrate()
         print(f"[pfsp] overall win-rate: {100.0 * self.overall_winrate():.1f}%  "
               f"recent (n={rn}): {100.0 * rwr:.1f}%")
+        # TensorBoard: per-opponent-deck win rates split by pilot type. Scripted
+        # games pool W/L per deck; model games average the per-snapshot win rates
+        # so one heavily-sampled snapshot doesn't dominate its deck's curve.
+        for deck, (w, l) in scripted_by_deck.items():
+            self.logger.record(f"pfsp_scripted/winrate_vs_{_deck_tag(deck)}", w / (w + l))
+        for deck, rates in model_rates_by_deck.items():
+            self.logger.record(f"pfsp_model/winrate_vs_{_deck_tag(deck)}",
+                               sum(rates) / len(rates))
+        self.logger.record("pfsp/winrate_overall", self.overall_winrate())
+        self.logger.record("pfsp/winrate_recent", rwr)
 
 
 class SnapshotCallback(BaseCallback):

@@ -138,6 +138,14 @@ BO3_GAME_WIN_REWARD   =  0.3   # intermediate reward for winning a game in bo3
 BO3_GAME_LOSS_REWARD  = -0.3   # intermediate penalty for losing a game in bo3
 BO3_MATCH_WIN_REWARD  =  1.0   # terminal reward for winning the match
 BO3_MATCH_LOSS_REWARD = -1.0   # terminal penalty for losing the match
+
+# The total shaping an episode can accumulate must stay strictly below the
+# smallest decisive terminal reward magnitude, or shaping could flip the SIGN of
+# a finished episode's return — a lost game netting positive reward. The bo1
+# terminal is ±1.0; in bo3 the per-game budget is ep_cap/3 (see step()), so a
+# full match is also bounded by the cap. Keep the caps under 1.0.
+assert SHAPING_EPISODE_CAP < 1.0, SHAPING_EPISODE_CAP
+assert SHAPING_EPISODE_CAP_DOOMSDAY < 1.0, SHAPING_EPISODE_CAP_DOOMSDAY
 _ACTION_CARD_ID_NULL = -1.0 / N_CARD_TYPES  # null sentinel for non-card slots
 _ACTION_CTRL_NULL    = -1.0 / N_CARD_TYPES  # null sentinel for non-entity actions
 MAX_HAND_SLOTS = 10
@@ -253,6 +261,12 @@ def _build_sideboard_mask():
         (_PENDING_DECISION_START, _PENDING_DECISION_END),  # pending-decision context
     ):
         keep[lo:hi] = True
+    # The "self is Player A" flag MUST survive the mask: it is the seat-routing
+    # signal for every obs consumer (runner.drive_game's controller pick, the
+    # training envs' opponent-turn gate, decode's seat labels). The engine sets
+    # it from sideboard_phase_player during sideboarding, so it is live, not
+    # stale; masking it to 0 routed BOTH players' sideboard decisions to seat B.
+    keep[_SELF_IS_A_IDX] = True
     fill = np.zeros(STATE_SIZE, dtype=np.float32)
     # Card-id positions inside masked blocks must decode to "empty", not vocab 0.
     card_id_idx = []
@@ -468,7 +482,12 @@ class RoboMageEnv(gym.Env):
         max_steps = self.MAX_STEPS_BO3 if self._bo3 else self.MAX_STEPS
         if self._step_count >= max_steps:
             self._kill_proc()
-            return np.zeros(OBS_SIZE, dtype=np.float32), 0.0, False, True, {}
+            # Return the last real observation, not zeros: SB3 bootstraps
+            # V(terminal_observation) on truncation, and an all-zero vector is
+            # not even a valid empty encoding (card-id 0.0 decodes to vocab
+            # index 0, not the -1/N empty sentinel), so its value estimate
+            # would be garbage. The pre-action state is a faithful stand-in.
+            return self._obs.copy(), 0.0, False, True, {}
 
         # Remap: if the last query included a confirm slot (num_choices had +1),
         # and the agent chose the last index, send -1 to the game.
@@ -1135,10 +1154,14 @@ class ModelVsScriptedEnv(gym.Env):
         shaping *= self.shaping_scale
         # In bo3, scale per-game shaping to 1/3 so total across 3 games
         # stays proportional to the match reward (1.0)
+        ep_cap = SHAPING_EPISODE_CAP_DOOMSDAY if self._is_doomsday else SHAPING_EPISODE_CAP
         if self._bo3:
             shaping /= 3.0
+            # Scale the per-game budget too, so the whole-match shaping total is
+            # bounded by ep_cap (< the 1.3 minimum decisive match |reward|) —
+            # otherwise 3 full per-game budgets could outweigh a match loss.
+            ep_cap /= 3.0
         # Clamp to remaining episode budget
-        ep_cap = SHAPING_EPISODE_CAP_DOOMSDAY if self._is_doomsday else SHAPING_EPISODE_CAP
         remaining = ep_cap - self._episode_shaping
         floor = -(ep_cap + self._episode_shaping)
         shaping = max(floor, min(remaining, shaping))
@@ -1154,6 +1177,13 @@ class ModelVsScriptedEnv(gym.Env):
 
         if not self._training_is_a:
             reward = -reward
+        if terminated or truncated:
+            # Decisive outcome from the model's perspective, taken from the pure
+            # game reward BEFORE shaping is added: +1 win, -1 loss, 0 undecided
+            # (a step-cap truncation). Win-rate consumers (WinTallyCallback,
+            # PFSPCallback, the snapshot promotion gate) classify by this flag,
+            # not by the sign of the shaping-contaminated episode return.
+            info["outcome"] = 1 if reward > 0 else (-1 if reward < 0 else 0)
         reward += shaping
         info["game_meta"] = self._game_meta
         info["decision_idx"] = self._decision_idx
@@ -1334,6 +1364,10 @@ class SelfPlayEnv(gym.Env):
         # Reward is from Player A's perspective; negate if training model plays as B.
         if not self._training_is_a:
             reward = -reward
+        if terminated or truncated:
+            # Decisive outcome from the model's perspective (see ModelVsScriptedEnv):
+            # +1 win, -1 loss, 0 undecided (a step-cap truncation).
+            info["outcome"] = 1 if reward > 0 else (-1 if reward < 0 else 0)
         info["game_meta"] = self._game_meta
         info["decision_idx"] = self._decision_idx
         info["num_choices"] = self._env._num_choices
@@ -1491,6 +1525,10 @@ class FixedModelEnv(gym.Env):
             )
         if not self._training_is_a:
             reward = -reward
+        if terminated or truncated:
+            # Decisive outcome from the model's perspective (see ModelVsScriptedEnv):
+            # +1 win, -1 loss, 0 undecided (a step-cap truncation).
+            info["outcome"] = 1 if reward > 0 else (-1 if reward < 0 else 0)
         info["game_meta"] = self._game_meta
         info["decision_idx"] = self._decision_idx
         return obs, reward, terminated, truncated, info

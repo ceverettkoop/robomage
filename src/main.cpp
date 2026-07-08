@@ -135,7 +135,7 @@ static int play_single_game(EcsSystems &sys, const Deck &deck_a, const Deck &dec
     // opening-hand actions below all print under PREGAME, before the first turn header.
     cli_print_pregame_header();
     sys.orderer->draw_hands();
-    sys.orderer->do_london_mulligan();
+    sys.orderer->do_london_mulligan(player_a_goes_first);
 
     // place pre-set battlefield permanents
     std::vector<Entity> preplaced;
@@ -498,6 +498,12 @@ static void game_loop() {
 
             auto sys = init_ecs();
             int winner = play_single_game(sys, deck_a, deck_b, a_goes_first, seed + static_cast<unsigned int>(game_num));
+
+            // Every end-of-game path must have set a winner; the else-branch
+            // below would otherwise silently credit a winnerless game to B.
+            if (winner != Zone::PLAYER_A && winner != Zone::PLAYER_B)
+                fatal_error("bo3 game " + std::to_string(game_num + 1) +
+                            " ended with no winner (Game::winner unset)");
 
             if (winner == Zone::PLAYER_A) {
                 match_wins_a++;
