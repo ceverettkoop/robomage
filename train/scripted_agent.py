@@ -55,6 +55,7 @@ from env import (
     _URZAS_MINE_VOCAB_IDX, _URZAS_POWER_PLANT_VOCAB_IDX, _URZAS_TOWER_VOCAB_IDX,
     _PLANAR_NEXUS_VOCAB_IDX, _TRON_LAND_IDS,
     _KARN_GREAT_CREATOR_VOCAB_IDX, _CITYSCAPE_LEVELER_VOCAB_IDX,
+    _MYCOSYNTH_LATTICE_VOCAB_IDX,
     _CANDELABRA_VOCAB_IDX, _MULTI_MANA_LAND_IDS,
     _SOLITUDE_VOCAB_IDX, _THE_ONE_RING_VOCAB_IDX,
     # Lion's Eye Diamond crack: blue-mana category + LED vocab id + draw-on-stack test
@@ -1142,25 +1143,30 @@ class ScriptedAgent:
             return self._target_choice(g(), cats, card_ids, ctrl_arr)
 
         # Tron synergy: Karn, the Great Creator's -2 wishes an artifact from the
-        # sideboard/exile into hand — grab Cityscape Leveler, Tron's marquee wish
-        # target. Its fetch is a hidden reveal, so the choice can arrive as a search
-        # or a choose-card menu; match by pending source + card id across either.
+        # sideboard/exile into hand. Grab Mycosynth Lattice first — with Karn in play
+        # it locks the opponent out (every permanent becomes an artifact Karn's static
+        # silences) — and fall back to Cityscape Leveler as the beater once Lattice is
+        # already in hand/play (so no longer offered from the wishboard). Its fetch is a
+        # hidden reveal, so the choice can arrive as a search or a choose-card menu;
+        # match by pending source + card id across either.
         if (cfg.use_tron_synergy
                 and _slot_card_idx(obs, _PENDING_DECISION_START) == _KARN_GREAT_CREATOR_VOCAB_IDX):
-            for i in range(num_choices):
-                if _action_card_id(card_ids, i) == _CITYSCAPE_LEVELER_VOCAB_IDX:
-                    return i
+            for wish_id in (_MYCOSYNTH_LATTICE_VOCAB_IDX, _CITYSCAPE_LEVELER_VOCAB_IDX):
+                for i in range(num_choices):
+                    if _action_card_id(card_ids, i) == wish_id:
+                        return i
 
-        # Tron synergy: once Cityscape Leveler is in hand (typically off a Karn wish),
-        # prioritize casting it — it's the deck's premier threat/artifact-and-land
-        # destruction payoff, so cast it ahead of any other affordable spell.
+        # Tron synergy: prioritize casting the Karn payoffs ahead of any other affordable
+        # spell — Mycosynth Lattice first (completes the Karn lock), then Cityscape Leveler
+        # (the premier threat / artifact-and-land destruction beater).
         if cfg.use_tron_synergy and any(c == _CAT_CAST for c in cats):
-            for i, c in enumerate(cats):
-                if c == _CAT_CAST and _action_card_id(card_ids, i) == _CITYSCAPE_LEVELER_VOCAB_IDX:
-                    return i
+            for cast_id in (_MYCOSYNTH_LATTICE_VOCAB_IDX, _CITYSCAPE_LEVELER_VOCAB_IDX):
+                for i, c in enumerate(cats):
+                    if c == _CAT_CAST and _action_card_id(card_ids, i) == cast_id:
+                        return i
 
         # Tron synergy: when activating Karn, the Great Creator, prefer his -2 (wish an
-        # artifact — Cityscape Leveler — from the sideboard into hand) over the +1
+        # artifact — Mycosynth Lattice, then Cityscape Leveler — from the sideboard into hand) over the +1
         # (Animate). The two loyalty abilities are indistinguishable in the observation
         # (same ACTIVATE category + Karn card id), differing only in menu order: the
         # engine emits them in script order, +1 Animate then -2 ChangeZone, so the LAST

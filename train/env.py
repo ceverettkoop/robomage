@@ -834,9 +834,13 @@ _EXPEDITION_MAP_VOCAB_IDX    = 246
 _TRON_LAND_IDS           = frozenset({_URZAS_MINE_VOCAB_IDX, _URZAS_POWER_PLANT_VOCAB_IDX,
                                       _URZAS_TOWER_VOCAB_IDX})
 # Karn, the Great Creator wishes an artifact from the sideboard/exile into hand
-# (-2), and Cityscape Leveler is the Tron wishboard's marquee target.
+# (-2). Mycosynth Lattice is the priority wish — with Karn in play it turns every
+# opponent permanent into an artifact whose abilities Karn's static shuts off (the
+# hard lock, incl. lands not tapping for mana). Cityscape Leveler is the follow-up
+# beater once the lock (or a lack of Lattice) leaves nothing better to grab.
 _KARN_GREAT_CREATOR_VOCAB_IDX = 280
 _CITYSCAPE_LEVELER_VOCAB_IDX  = 287
+_MYCOSYNTH_LATTICE_VOCAB_IDX  = 290
 # Candelabra of Tawnos untaps X target lands; it's a mana engine only when it
 # untaps lands that make MORE THAN ONE mana, so we bias its targets to those.
 # Ancient Tomb ({C}{C}) and Urza's Workshop (metalcraft: {C} per Urza's land)
