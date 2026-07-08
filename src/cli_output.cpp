@@ -11,6 +11,11 @@
 #include "input_logger.h"
 #include "machine_io.h"
 
+// Formats a player's non-mana resource counters (poison, energy) into `buf` as a
+// " poison N, energy N" suffix, listing only the counters that are nonzero. Writes
+// an empty string when the player has neither. Display only.
+static void format_player_resources(const PlayerState& ps, char* buf, size_t buf_len);
+
 // ── Utility ───────────────────────────────────────────────────────────────────
 
 const char* step_to_string(Step in_step) {
@@ -227,6 +232,20 @@ void cli_print_invalid_action() {
 
 // ── Game state display ────────────────────────────────────────────────────────
 
+static void format_player_resources(const PlayerState& ps, char* buf, size_t buf_len) {
+    buf[0] = '\0';
+    size_t off = 0;
+    const char* sep = " ";
+    if (ps.poison_counters > 0) {
+        off += snprintf(buf + off, buf_len - off, "%spoison %d", sep, ps.poison_counters);
+        sep = ", ";
+    }
+    if (ps.energy > 0) {
+        off += snprintf(buf + off, buf_len - off, "%senergy %d", sep, ps.energy);
+        sep = ", ";
+    }
+}
+
 void print_game_state(const GameState* gs) {
     if (InputLogger::instance().is_machine_mode()) return;
 
@@ -238,6 +257,15 @@ void print_game_state(const GameState* gs) {
     game_log("Life: Player A=%d, Player B=%d\n",
              gs->self_is_player_a ? gs->self.life : gs->opponent.life,
              gs->self_is_player_a ? gs->opponent.life : gs->self.life);
+
+    // Non-mana resources (poison, energy) shown only when a player actually has some.
+    const PlayerState& player_a = gs->self_is_player_a ? gs->self : gs->opponent;
+    const PlayerState& player_b = gs->self_is_player_a ? gs->opponent : gs->self;
+    char res_buf[64];
+    format_player_resources(player_a, res_buf, sizeof(res_buf));
+    if (res_buf[0]) game_log("  Player A:%s\n", res_buf);
+    format_player_resources(player_b, res_buf, sizeof(res_buf));
+    if (res_buf[0]) game_log("  Player B:%s\n", res_buf);
 
     if (gs->stack_size > 0) {
         game_log("STACK:\n");

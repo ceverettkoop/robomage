@@ -78,7 +78,11 @@ from env import (ACTION_CATEGORY_MAX, RoboMageEnv,
                  _GY_START, _GY_SLOTS_TOTAL, _GY_SLOT_SIZE,
                  _STACK_START as _ENV_STACK_START, _STACK_SLOTS as _ENV_STACK_SLOTS,
                  _STACK_SLOT_SIZE, _HAND_SLOT_SIZE, _slot_card_idx,
-                 _PERM_CARD_OFF, _CUR_TURN_IDX)
+                 _PERM_CARD_OFF, _CUR_TURN_IDX,
+                 _SELF_BLOCK_START, _OPP_BLOCK_START,
+                 _PB_LIFE, _PB_HAND_CT, _PB_POISON, _PB_MANA, _PB_ENERGY,
+                 _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE,
+                 _IS_ACTIVE_IDX, _SELF_IS_A_IDX, _STACK_SIZE_IDX)
 
 
 def _resolve_card_name(cid):
@@ -163,21 +167,23 @@ def _extract_interpretable(obs):
     i = 0
 
     # Player stats (denormalize: life * 20, mana * 10)
-    self_life = obs[0] * 20.0
-    opp_life  = obs[9] * 20.0
+    self_life = obs[_SELF_BLOCK_START + _PB_LIFE] * 20.0
+    opp_life  = obs[_OPP_BLOCK_START + _PB_LIFE] * 20.0
     f[i] = self_life;     i += 1  # self_life
     f[i] = opp_life;      i += 1  # opp_life
     f[i] = self_life - opp_life; i += 1  # life_diff
 
-    # Self mana (obs[3:9]) — player block is life(0), hand_ct(1), poison(2), mana[W,U,B,R,G,C](3-8)
+    # Self mana — player block is life, hand_ct, poison, mana[W,U,B,R,G,C], energy
+    _self_mana = _SELF_BLOCK_START + _PB_MANA
     for j in range(6):
-        f[i] = obs[3 + j] * 10.0; i += 1
-    f[i] = sum(obs[3 + j] * 10.0 for j in range(6)); i += 1  # total mana
+        f[i] = obs[_self_mana + j] * 10.0; i += 1
+    f[i] = sum(obs[_self_mana + j] * 10.0 for j in range(6)); i += 1  # total mana
 
-    # Opp mana (obs[12:18]) — opp block starts at 9: life(9), hand_ct(10), poison(11), mana(12-17)
+    # Opp mana (same block layout, offset by _OPP_BLOCK_START)
+    _opp_mana = _OPP_BLOCK_START + _PB_MANA
     for j in range(6):
-        f[i] = obs[12 + j] * 10.0; i += 1
-    f[i] = sum(obs[12 + j] * 10.0 for j in range(6)); i += 1  # total mana
+        f[i] = obs[_opp_mana + j] * 10.0; i += 1
+    f[i] = sum(obs[_opp_mana + j] * 10.0 for j in range(6)); i += 1  # total mana
 
     # Hand size (count non-empty hand slots for self; opp comes from player block)
     hand_count = 0
@@ -185,7 +191,7 @@ def _extract_interpretable(obs):
         if _slot_card_idx(obs, _HAND_START + slot * _HAND_SLOT_SIZE) >= 0:
             hand_count += 1
     f[i] = hand_count;        i += 1  # self_hand_size
-    f[i] = obs[10] * 10.0;    i += 1  # opp_hand_size
+    f[i] = obs[_OPP_BLOCK_START + _PB_HAND_CT] * 10.0;    i += 1  # opp_hand_size
 
     # Permanent counts and stats
     self_creatures = self_lands = self_other = 0
@@ -269,7 +275,7 @@ def _extract_interpretable(obs):
     f[i] = opp_gy;  i += 1
 
     # Stack size
-    f[i] = obs[33] * 10.0; i += 1
+    f[i] = obs[_STACK_SIZE_IDX] * 10.0; i += 1
 
     # Stack contents (12 slots: controller_is_self, card id, is_spell, modes, targets)
     self_stack = opp_stack = 0
@@ -293,11 +299,11 @@ def _extract_interpretable(obs):
     f[i] = stack_abilities; i += 1
 
     # Is active player
-    f[i] = 1.0 if obs[31] > 0.5 else 0.0; i += 1
+    f[i] = 1.0 if obs[_IS_ACTIVE_IDX] > 0.5 else 0.0; i += 1
 
-    # Step one-hot (obs[18:31])
-    for j in range(13):
-        f[i] = obs[18 + j]; i += 1
+    # Step one-hot
+    for j in range(_STEP_ONEHOT_SIZE):
+        f[i] = obs[_STEP_ONEHOT_START + j]; i += 1
 
     # Library counts and post-board flag (mirror env.py _LIBRARY_CTX_START)
     f[i] = obs[_LIBRARY_CTX_START]     * 60.0; i += 1  # self_library_size
@@ -1170,19 +1176,19 @@ def _gy_card_names(obs, self_side):
 
 def _decode_board_state(obs, value=None):
     """Print a detailed board state decoded from a raw observation vector."""
-    # obs[32] = 1.0 if "self" (priority player) is Player A
-    priority_is_a    = obs[32] > 0.5
-    priority_is_active = obs[31] > 0.5
+    # _SELF_IS_A_IDX = 1.0 if "self" (priority player) is Player A
+    priority_is_a    = obs[_SELF_IS_A_IDX] > 0.5
+    priority_is_active = obs[_IS_ACTIVE_IDX] > 0.5
     self_label = "A" if priority_is_a else "B"
     opp_label  = "B" if priority_is_a else "A"
 
-    self_life    = obs[0] * 20.0
-    opp_life     = obs[9] * 20.0
-    self_hand_ct = obs[1] * 10.0
-    opp_hand_ct  = obs[10] * 10.0
-    self_mana    = [obs[2 + j] * 10.0 for j in range(6)]
-    opp_mana     = [obs[11 + j] * 10.0 for j in range(6)]
-    stack_size   = int(round(obs[33] * 10.0))
+    self_life    = obs[_SELF_BLOCK_START + _PB_LIFE] * 20.0
+    opp_life     = obs[_OPP_BLOCK_START + _PB_LIFE] * 20.0
+    self_hand_ct = obs[_SELF_BLOCK_START + _PB_HAND_CT] * 10.0
+    opp_hand_ct  = obs[_OPP_BLOCK_START + _PB_HAND_CT] * 10.0
+    self_mana    = [obs[_SELF_BLOCK_START + _PB_MANA + j] * 10.0 for j in range(6)]
+    opp_mana     = [obs[_OPP_BLOCK_START + _PB_MANA + j] * 10.0 for j in range(6)]
+    stack_size   = int(round(obs[_STACK_SIZE_IDX] * 10.0))
 
     # Match context (_MATCH_CTX_START .. +4) and library/post-board (_LIBRARY_CTX_START .. +3)
     game_number      = int(round(obs[_MATCH_CTX_START]     * 3.0))
@@ -1193,7 +1199,7 @@ def _decode_board_state(obs, value=None):
     opp_library_ct   = int(round(obs[_LIBRARY_CTX_START + 1] * 60.0))
     is_post_board    = obs[_LIBRARY_CTX_START + 2] > 0.5
 
-    step_idx  = int(np.argmax(obs[18:31]))
+    step_idx  = int(np.argmax(obs[_STEP_ONEHOT_START:_STEP_ONEHOT_START + _STEP_ONEHOT_SIZE]))
     step_name = _INTERP_STEP_NAMES[step_idx] if step_idx < len(_INTERP_STEP_NAMES) else f"?{step_idx}"
     val_str   = f"  V={value:+.3f}" if value is not None else ""
 

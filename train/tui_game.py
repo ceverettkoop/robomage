@@ -31,15 +31,16 @@ from textual.message import Message
 from textual.widgets import Footer, Header, OptionList, RichLog, Static
 from textual.widgets.option_list import Option, OptionDoesNotExist
 
-from env import NarrativeEnv, STATE_SIZE
+from env import (NarrativeEnv, STATE_SIZE, _SELF_IS_A_IDX,
+                 _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE)
 import decode
 
-# Abbreviations for the 13-step phase strip (index aligns with state[18:31]).
+# Abbreviations for the step phase strip (index aligns with the step one-hot).
 _STEP_ABBR = ["UNT", "UPK", "DRW", "M1", "BGC", "ATK", "BLK",
               "FSD", "DMG", "EOC", "M2", "END", "CLN"]
 
-# Index of the UPKEEP step in the 13-step one-hot (state[18:31]); autopass stops
-# once it reaches this step (its "next turn" mark).
+# Index of the UPKEEP step WITHIN the step one-hot (argmax result, not an absolute
+# obs offset); autopass stops once it reaches this step (its "next turn" mark).
 _STEP_UPKEEP_IDX = _STEP_ABBR.index("UPK")
 
 # While the human is only auto-passing priority (spectating the opponent's turn),
@@ -405,7 +406,7 @@ class GameApp(App):
             done = False
             while not done:
                 num = env._num_choices
-                a_has_priority = obs[32] > 0.5
+                a_has_priority = obs[_SELF_IS_A_IDX] > 0.5
                 opp_turn = (a_has_priority == self._opp_is_a)
                 actions = decode.decode_actions_from_obs(
                     obs, num, env._action_public,
@@ -479,7 +480,7 @@ class GameApp(App):
         context already reflects the just-finished game), mirroring self/opp when
         that obs is serialized from the opponent's perspective."""
         mctx = decode._decode_match_context(obs[:STATE_SIZE])
-        opp_perspective = (obs[32] > 0.5) == self._opp_is_a
+        opp_perspective = (obs[_SELF_IS_A_IDX] > 0.5) == self._opp_is_a
         you, opp = mctx["self_wins"], mctx["opp_wins"]
         if opp_perspective:
             you, opp = opp, you
@@ -789,7 +790,8 @@ class GameApp(App):
 
         Autopass otherwise only halts for mandatory decisions, which the driver
         detects separately by the absence of a pass option."""
-        return int(np.argmax(obs[18:31])) == _STEP_UPKEEP_IDX
+        return int(np.argmax(
+            obs[_STEP_ONEHOT_START:_STEP_ONEHOT_START + _STEP_ONEHOT_SIZE])) == _STEP_UPKEEP_IDX
 
     def action_autopass(self) -> None:
         """Engage autopass: pass priority every optional window until the next
@@ -965,7 +967,7 @@ class GameApp(App):
         return prefix + "   "
 
     def _phase_strip(self, obs, gs) -> str:
-        cur = int(np.argmax(obs[18:31]))
+        cur = int(np.argmax(obs[_STEP_ONEHOT_START:_STEP_ONEHOT_START + _STEP_ONEHOT_SIZE]))
         cells = []
         for i, abbr in enumerate(_STEP_ABBR):
             cells.append(f"[reverse b]{abbr}[/reverse b]" if i == cur else f"[dim]{abbr}[/dim]")
@@ -977,7 +979,13 @@ class GameApp(App):
 
     @staticmethod
     def _info_line(label, p, library) -> str:
-        return (f"{label}  ♥ {p['life']}  ☠ {p['poison']}  "
+        # Poison (☠) and energy (⚡) shown only when the player actually has some.
+        counters = ""
+        if p.get("poison", 0) > 0:
+            counters += f"  ☠ {p['poison']}"
+        if p.get("energy", 0) > 0:
+            counters += f"  ⚡ {p['energy']}"
+        return (f"{label}  ♥ {p['life']}{counters}  "
                 f"mana [{decode.fmt_mana(p['mana'])}]  "
                 f"hand {p['hand_count']}  lib {library}")
 

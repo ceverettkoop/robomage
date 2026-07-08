@@ -25,6 +25,10 @@ from env import (STATE_SIZE, MAX_ACTIONS, ACTION_CATEGORY_MAX,
                  _GY_SLOT_SIZE, _HAND_SLOT_SIZE,
                  _LIBRARY_CTX_START, _CUR_TURN_IDX, MAX_HAND_SLOTS,
                  _PENDING_DECISION_START, _MATCH_CTX_START,
+                 _SELF_BLOCK_START, _OPP_BLOCK_START,
+                 _PB_LIFE, _PB_HAND_CT, _PB_POISON, _PB_MANA, _PB_ENERGY,
+                 _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE,
+                 _IS_ACTIVE_IDX, _SELF_IS_A_IDX, _STACK_SIZE_IDX,
                  _slot_card_idx, _ACTION_CARD_ID_NULL)
 from card_costs import (N_CARD_TYPES, _VOCAB_NAMES as _CARD_NAMES,
                         _CARD_COST_MATRIX, _LAND_VOCAB_IDS)
@@ -307,13 +311,14 @@ def decode_hand(obs):
 # ── State decoders (operate on `state` = obs[:STATE_SIZE]) ─────────────────────
 
 def _decode_player(state, offset):
-    """Decode a 9-float player block into a dict."""
+    """Decode a player block (env._PLAYER_BLOCK_SIZE floats) into a dict."""
     return {
-        "life": int(round(state[offset] * 20)),
-        "hand_count": int(round(state[offset + 1] * 10)),
-        "poison": int(round(state[offset + 2] * 10)),
-        "mana": {c: int(round(state[offset + 3 + i] * 10))
+        "life": int(round(state[offset + _PB_LIFE] * 20)),
+        "hand_count": int(round(state[offset + _PB_HAND_CT] * 10)),
+        "poison": int(round(state[offset + _PB_POISON] * 10)),
+        "mana": {c: int(round(state[offset + _PB_MANA + i] * 10))
                  for i, c in enumerate(_MANA_COLORS)},
+        "energy": int(round(state[offset + _PB_ENERGY] * 10)),
     }
 
 
@@ -332,8 +337,8 @@ def decode_turn(state):
 
 
 def decode_step(state):
-    """Decode the current step from the one-hot at state[18:31]."""
-    step_vec = state[18:31]
+    """Decode the current step from the step one-hot."""
+    step_vec = state[_STEP_ONEHOT_START:_STEP_ONEHOT_START + _STEP_ONEHOT_SIZE]
     idx = int(np.argmax(step_vec))
     if step_vec[idx] < 0.5:
         return "Unknown"
@@ -465,8 +470,8 @@ def decode_game_state(state, labels=SELF_OPP_LABELS, perm_counters=None,
     (env._perm_token_names, narrative mode only); when given, a token
     permanent's "name" is its real token name instead of the generic "Token".
     """
-    is_active = state[31] > 0.5
-    is_player_a = state[32] > 0.5
+    is_active = state[_IS_ACTIVE_IDX] > 0.5
+    is_player_a = state[_SELF_IS_A_IDX] > 0.5
     return {
         "priority_player": "Player A" if is_player_a else "Player B",
         "priority_is_a": bool(is_player_a),
@@ -474,9 +479,9 @@ def decode_game_state(state, labels=SELF_OPP_LABELS, perm_counters=None,
         "active_is_a": (is_active == is_player_a),
         "step": decode_step(state),
         "turn": decode_turn(state),
-        "stack_size": int(round(state[33] * 10)),
-        "self": _decode_player(state, 0),
-        "opponent": _decode_player(state, 9),
+        "stack_size": int(round(state[_STACK_SIZE_IDX] * 10)),
+        "self": _decode_player(state, _SELF_BLOCK_START),
+        "opponent": _decode_player(state, _OPP_BLOCK_START),
         "self_library": int(round(state[_IDX_SELF_LIB] * 60)),
         "opp_library": int(round(state[_IDX_OPP_LIB] * 60)),
         "self_battlefield": _decode_permanents(
@@ -720,6 +725,18 @@ def fmt_mana(mana):
     return ", ".join(parts) if parts else "empty"
 
 
+def fmt_resources(player):
+    """Format a player's non-mana resource counters (poison, energy) as a
+    " | poison N | energy N" suffix, listing only counters that are nonzero.
+    Returns an empty string when the player has neither."""
+    suffix = ""
+    if player.get("poison", 0) > 0:
+        suffix += f" | poison {player['poison']}"
+    if player.get("energy", 0) > 0:
+        suffix += f" | energy {player['energy']}"
+    return suffix
+
+
 def fmt_stack_entry(e):
     """Format a decoded stack-entry dict (from _decode_stack)."""
     kind = "spell" if e["is_spell"] else "ability"
@@ -746,9 +763,11 @@ def format_state_lines(gs):
     hand_names = [c["name"] for c in gs["self_hand"]]
     lines.append(f"Self:  {gs['self']['life']} life"
                  f" | mana: {fmt_mana(gs['self']['mana'])}"
+                 f"{fmt_resources(gs['self'])}"
                  f" | hand({gs['self']['hand_count']}): {', '.join(hand_names) or '(empty)'}")
     lines.append(f"Opp:   {gs['opponent']['life']} life"
                  f" | mana: {fmt_mana(gs['opponent']['mana'])}"
+                 f"{fmt_resources(gs['opponent'])}"
                  f" | hand count: {gs['opponent']['hand_count']}")
     if gs["self_battlefield"]:
         lines.append(f"Self BF:  {' | '.join(fmt_perm(p) for p in gs['self_battlefield'])}")

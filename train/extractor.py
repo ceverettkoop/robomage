@@ -17,27 +17,27 @@ looked up in a learned nn.Embedding. This decouples the observation size from th
 vocab size — growing N_CARD_TYPES costs one embedding row, not 252 one-hot slots.
 
 Index layout must stay in sync with src/machine_io.h:
-  obs[0:34]            global context (player stats, step, flags, stack size)
-  obs[34:1186]         96 permanent slots × 12 floats  (11 status + 1 card id)
+  obs[0:36]            global context (player stats, step, flags, stack size)
+  obs[36:1188]         96 permanent slots × 12 floats  (11 status + 1 card id)
                          slots 0-47: self; slots 48-95: opponent
                          status: power, toughness, tapped, attacking, blocking,
                                  sickness, damage, controller_is_self, is_creature, is_land, loyalty
-  obs[1186:1486]       12 stack slots   × 25 floats (controller_is_self + card id + is_spell +
+  obs[1188:1488]       12 stack slots   × 25 floats (controller_is_self + card id + is_spell +
                          chosen-mode multi-hot(6) + 4 announced-target sub-slots ×
                          [present, is_player, controller_is_self, card id])
-  obs[1486:1614]      128 graveyard slots × 1 float (card id)
+  obs[1488:1616]      128 graveyard slots × 1 float (card id)
                          slots 0-63: self; slots 64-127: opponent
-  obs[1614:1624]       10 hand slots    × 1 float  (card id)
-  obs[1624:2136]      128 action history entries × 4 floats (newest first)
+  obs[1616:1626]       10 hand slots    × 1 float  (card id)
+  obs[1626:2138]      128 action history entries × 4 floats (newest first)
                          per entry: category_norm, card_id_norm, is_self, turn/50
-  obs[2136:2140]       match context (4 floats: game_number, self_wins, opp_wins, sideboard_phase)
-  obs[2140:2143]       library counts & post-board (self_lib/60, opp_lib/60, is_post_board)
-  obs[2143]            current game turn / 50
-  obs[2144:2149]       5 known top-of-library slots × 1 float (card id, sentinel = unknown)
-  obs[2149:3173]       opponent revealed-cards multi-hot (N_CARD_TYPES floats, accumulated across the match)
-  obs[3173:3183]       10 known opponent-hand slots × 1 float (card id)
-  obs[3183:3185]       pending-decision context (source card id + ctrl_is_self)
-  obs[3185:]           action metadata (cats|ids|ctrl|zone) + cost features
+  obs[2138:2142]       match context (4 floats: game_number, self_wins, opp_wins, sideboard_phase)
+  obs[2142:2145]       library counts & post-board (self_lib/60, opp_lib/60, is_post_board)
+  obs[2145]            current game turn / 50
+  obs[2146:2151]       5 known top-of-library slots × 1 float (card id, sentinel = unknown)
+  obs[2151:3175]       opponent revealed-cards multi-hot (N_CARD_TYPES floats, accumulated across the match)
+  obs[3175:3185]       10 known opponent-hand slots × 1 float (card id)
+  obs[3185:3187]       pending-decision context (source card id + ctrl_is_self)
+  obs[3187:]           action metadata (cats|ids|ctrl|zone) + cost features
                          (appended by env.py)
 """
 
@@ -92,7 +92,7 @@ def _masked_mean_max(emb: torch.Tensor, present: torch.Tensor) -> torch.Tensor:
 # ── Layout constants (mirror src/machine_io.h) ──────────────────────────────
 # Card identity is a single normalized id float per slot; decode via
 # round(val * N_CARD_TYPES) and look up in self.card_emb.
-_GLOBAL_SIZE     = 34
+# (_GLOBAL_SIZE is derived from env._GLOBAL_SIZE just below, after that import.)
 
 _PERM_SLOTS      = 96   # 48 self + 48 opponent (unified: creatures, lands, other)
 _PERM_SLOT_SIZE  = 12   # 11 status floats (incl. loyalty) + 1 card id
@@ -136,9 +136,12 @@ _CARD_EMBED_DIM  = 32   # dimension of the learned card-identity embedding
 # MAX_ACTIONS and STATE_SIZE come from env.py (single source of truth for the
 # action-block layout the engine emits).
 try:
-    from env import MAX_ACTIONS as _MAX_ACTIONS, STATE_SIZE as _ENV_STATE_SIZE
+    from env import (MAX_ACTIONS as _MAX_ACTIONS, STATE_SIZE as _ENV_STATE_SIZE,
+                     _GLOBAL_SIZE as _ENV_GLOBAL_SIZE)
 except ImportError:
-    from train.env import MAX_ACTIONS as _MAX_ACTIONS, STATE_SIZE as _ENV_STATE_SIZE
+    from train.env import (MAX_ACTIONS as _MAX_ACTIONS, STATE_SIZE as _ENV_STATE_SIZE,
+                           _GLOBAL_SIZE as _ENV_GLOBAL_SIZE)
+_GLOBAL_SIZE = _ENV_GLOBAL_SIZE   # header width (single source of truth: env.py)
 try:
     from _enums import REF_ZONE_MAX, N_REF_ZONES
 except ImportError:
@@ -148,26 +151,26 @@ _REF_ZONE_EMBED    = 4    # learned embedding dim for the per-action zone_ref
 _PER_ACTION_DIM    = 32   # per-action feature width fed to the action scorer
 _HIST_RECENT_K     = 16   # most-recent history entries embedded per-entry
 
-_PERM_START  = _GLOBAL_SIZE                                    # 34
-_PERM_END    = _PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE     # 1186
-_STACK_START = _PERM_END                                       # 1186
-_STACK_END   = _STACK_START + _STACK_SLOTS * _STACK_SLOT_SIZE  # 1486
-_GY_START    = _STACK_END                                      # 1486
-_GY_END      = _GY_START + _GY_SLOTS * _GY_SLOT_SIZE           # 1614
-_HAND_START  = _GY_END                                         # 1614
-_HAND_END    = _HAND_START + _HAND_SLOTS * _HAND_SLOT_SIZE     # 1624
-_HIST_START  = _HAND_END                                       # 1624
-_HIST_END    = _HIST_START + _HIST_ENTRIES * _HIST_ENTRY_SIZE  # 2136
-# obs[2136:2140] = match context (4 floats: game_number, self_wins, opp_wins, sideboard_phase)
-# obs[2140:2143] = library counts & post-board (self_lib/60, opp_lib/60, is_post_board)
-_MATCH_CTX_START      = _HIST_END                              # 2136
-_MATCH_CTX_END        = _MATCH_CTX_START + 4                   # 2140 (library ctx start)
-_LIBRARY_CTX_END      = _MATCH_CTX_END + 3                     # 2143 (current turn idx)
-_CUR_TURN_IDX         = _LIBRARY_CTX_END                       # 2143
-_KNOWN_TOP_LIB_START  = _CUR_TURN_IDX + 1                      # 2144
-_KNOWN_TOP_LIB_END    = _KNOWN_TOP_LIB_START + _KNOWN_TOP_LIB_SLOTS * _KNOWN_TOP_LIB_SLOT_SIZE  # 2149
-_REVEALED_START       = _KNOWN_TOP_LIB_END                    # 2149
-_REVEALED_END         = _REVEALED_START + _REVEALED_SIZE      # 3173
+_PERM_START  = _GLOBAL_SIZE                                    # 36
+_PERM_END    = _PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE     # 1188
+_STACK_START = _PERM_END                                       # 1188
+_STACK_END   = _STACK_START + _STACK_SLOTS * _STACK_SLOT_SIZE  # 1488
+_GY_START    = _STACK_END                                      # 1488
+_GY_END      = _GY_START + _GY_SLOTS * _GY_SLOT_SIZE           # 1616
+_HAND_START  = _GY_END                                         # 1616
+_HAND_END    = _HAND_START + _HAND_SLOTS * _HAND_SLOT_SIZE     # 1626
+_HIST_START  = _HAND_END                                       # 1626
+_HIST_END    = _HIST_START + _HIST_ENTRIES * _HIST_ENTRY_SIZE  # 2138
+# obs[2138:2142] = match context (4 floats: game_number, self_wins, opp_wins, sideboard_phase)
+# obs[2142:2145] = library counts & post-board (self_lib/60, opp_lib/60, is_post_board)
+_MATCH_CTX_START      = _HIST_END                              # 2138
+_MATCH_CTX_END        = _MATCH_CTX_START + 4                   # 2142 (library ctx start)
+_LIBRARY_CTX_END      = _MATCH_CTX_END + 3                     # 2145 (current turn idx)
+_CUR_TURN_IDX         = _LIBRARY_CTX_END                       # 2145
+_KNOWN_TOP_LIB_START  = _CUR_TURN_IDX + 1                      # 2146
+_KNOWN_TOP_LIB_END    = _KNOWN_TOP_LIB_START + _KNOWN_TOP_LIB_SLOTS * _KNOWN_TOP_LIB_SLOT_SIZE  # 2151
+_REVEALED_START       = _KNOWN_TOP_LIB_END                    # 2151
+_REVEALED_END         = _REVEALED_START + _REVEALED_SIZE      # 3175
 _OPP_KNOWN_HAND_START = _REVEALED_END
 _OPP_KNOWN_HAND_END   = _OPP_KNOWN_HAND_START + _OPP_KNOWN_HAND_SLOTS * _OPP_KNOWN_HAND_SLOT_SIZE
 # Pending decision context: card id of the spell/ability currently making a
@@ -225,7 +228,7 @@ class CardGameExtractor(BaseFeaturesExtractor):
         # (recency-ordered) on purpose.
         _hist_recent_size = _HIST_RECENT_K * (_ACTION_CAT_EMBED + card_embed_dim + 2)
         base_features_dim = (
-            _GLOBAL_SIZE                                 # 34
+            _GLOBAL_SIZE                                 # 36
             + _hist_size                                 # 512 action history (raw)
             + _hist_recent_size                          # embedded recent-K history
             + _meta_ctx_size                             # 8 match + lib + turn

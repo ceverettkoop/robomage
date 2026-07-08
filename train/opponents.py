@@ -18,7 +18,7 @@ from typing import Callable, Optional, Protocol, Sequence, Union
 
 import numpy as np
 
-from env import MAX_ACTIONS
+from env import MAX_ACTIONS, _SELF_IS_A_IDX
 from scripted_agent import ScriptedAgent, make_agent
 
 # Bare suffixes (and the "scripted" prefix) that denote a scripted controller.
@@ -223,7 +223,7 @@ class PlayController:
     players by hand is error-prone. So a spec may be pinned to a seat with a
     leading ``A:`` / ``B:`` key (see :mod:`action_spec`). Before applying the next
     spec this controller checks the seat that currently holds priority
-    (``obs[32]`` — true = Player A): if the next spec is keyed to the *other*
+    (``obs[_SELF_IS_A_IDX]`` — true = Player A): if the next spec is keyed to the *other*
     seat, the current priority holder passes (the spec is **not** consumed) and
     play advances until the keyed seat is on the clock. Unkeyed specs are applied
     to whoever has priority (the legacy behaviour), so existing scripts are
@@ -277,7 +277,7 @@ class PlayController:
         # priority holder passes (spec left for later) so we advance to the keyed
         # seat's decision instead of mis-applying its action to this player.
         seat = self._action_spec.spec_seat(spec)
-        if seat is not None and seat != ("A" if obs[32] > 0.5 else "B"):
+        if seat is not None and seat != ("A" if obs[_SELF_IS_A_IDX] > 0.5 else "B"):
             idx = self._action_spec.resolve_to_index("pass", decoded_actions)
             self.resolved.append(idx)
             return idx
