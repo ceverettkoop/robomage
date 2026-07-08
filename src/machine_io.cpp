@@ -157,6 +157,7 @@ static void push_player_block(std::vector<float>& out, const PlayerState& ps) {
     out.push_back(static_cast<float>(ps.hand_ct) / 10.0f);
     out.push_back(static_cast<float>(ps.poison_counters) / 10.0f);
     for (int i = 0; i < 6; i++) out.push_back(static_cast<float>(ps.mana[i]) / 10.0f);
+    out.push_back(static_cast<float>(ps.energy) / 10.0f);
 }
 
 // Pushes PERM_SLOT_SIZE floats (11 status + 1 card-id). Empty slot
@@ -265,6 +266,7 @@ void populate_gamestate(GameState* gs, Zone::Ownership viewer) {
         auto& p = global_coordinator.GetComponent<Player>(ent);
         ps.life = p.life_total;
         ps.poison_counters = p.counter_count("POISON");
+        ps.energy = player_energy(p);
         ps.lands_played_this_turn = static_cast<int>(p.lands_played_this_turn);
         int mana_counts[6] = {};
         for (Colors c : p.mana) {

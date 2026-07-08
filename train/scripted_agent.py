@@ -61,6 +61,9 @@ from env import (
     _PENDING_DECISION_START,
     # library-count context index (obs[_LIBRARY_CTX_START] == self_library_ct / 60)
     _LIBRARY_CTX_START,
+    # header flag / step one-hot indices + self player-block offsets
+    _SELF_IS_A_IDX, _STEP_FIRST_MAIN_IDX, _STEP_SECOND_MAIN_IDX,
+    _SELF_BLOCK_START, _PB_LIFE,
     # shared helpers (also used by env's reward shaping, so they stay in env.py)
     _hand_has_card, _stack_is_empty,
 )
@@ -375,7 +378,7 @@ _GSZ_MIN_MANA_SOURCES = 2
 # Street Wraith cycling costs 2 life; never pay it below this so the agent can't
 # cycle itself to death digging through the pile.
 _STREET_WRAITH_MIN_LIFE = 3
-_SELF_LIFE_IDX = 0   # obs[0] == priority player's life / 20
+_SELF_LIFE_IDX = _SELF_BLOCK_START + _PB_LIFE   # priority player's life / 20
 
 # Permanents that can produce blue mana for Thassa's Oracle (UU). Cavern of Souls
 # counts because Oracle is a creature spell; Lotus Petal makes any colour when
@@ -558,9 +561,7 @@ def _greedy_action(obs: np.ndarray, num_choices: int,
     card_ids = obs[STATE_SIZE + MAX_ACTIONS     : STATE_SIZE + 2 * MAX_ACTIONS]
     ctrl_arr = obs[STATE_SIZE + 2 * MAX_ACTIONS : STATE_SIZE + 3 * MAX_ACTIONS]
 
-    _STEP_FIRST_MAIN  = 21   # obs[18 + 3]
-    _STEP_SECOND_MAIN = 28   # obs[18 + 10] (shifted +1 by FIRST_STRIKE_DAMAGE step)
-    in_main_phase = obs[_STEP_FIRST_MAIN] > 0.5 or obs[_STEP_SECOND_MAIN] > 0.5
+    in_main_phase = obs[_STEP_FIRST_MAIN_IDX] > 0.5 or obs[_STEP_SECOND_MAIN_IDX] > 0.5
 
     # 0a. Sideboarding: scripted agent never sideboards — always pick done (index 0)
     if any(c == _CAT_SB_DONE for c in cats):
@@ -957,7 +958,7 @@ class ScriptedAgent:
         self._explore_seen: set[int] = set()
         # Stall guard (GREEDY/HEURISTIC only): per-seat map of card id ->
         # [failed_search_count, turn_of_last_fail] for activated abilities whose
-        # search found NOTHING. Keyed by seat (obs[32] > 0.5) so one shared
+        # search found NOTHING. Keyed by seat (obs[_SELF_IS_A_IDX] > 0.5) so one shared
         # instance driving both players (e.g. _DEFAULT_AGENT via scripted_action)
         # can't leak one seat's dead activation to the other. Reset per game via
         # new_game(). See _SEARCH_MENU_CATS / _hard_act.
@@ -1020,14 +1021,14 @@ class ScriptedAgent:
             cid = _slot_card_idx(obs, _STACK_START + 1)
             if (cid >= 0 and obs[_STACK_START] > 0.5          # self-controlled
                     and obs[_STACK_START + 2] < 0.5):         # ability, not spell
-                seat = bool(obs[32] > 0.5)
+                seat = bool(obs[_SELF_IS_A_IDX] > 0.5)
                 turn = int(round(float(obs[_CUR_TURN_IDX]) * 50))
                 entry = self._fruitless_activations.setdefault(
                     seat, {}).setdefault(cid, [0, -1])
                 entry[0] += 1
                 entry[1] = turn
         fruitless = None
-        seat_fails = self._fruitless_activations.get(bool(obs[32] > 0.5))
+        seat_fails = self._fruitless_activations.get(bool(obs[_SELF_IS_A_IDX] > 0.5))
         if seat_fails:
             turn = int(round(float(obs[_CUR_TURN_IDX]) * 50))
             fruitless = {cid for cid, (n, t) in seat_fails.items()
