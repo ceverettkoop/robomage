@@ -10,8 +10,8 @@ game. Three fixes are covered here:
                              match/library/turn ctx, opponent revealed multi-hot,
                              pending-decision ctx). Card-id slots go to the empty
                              sentinel, not vocab 0. (train/env.py)
-  2. Pending-decision ctx  — during the OUT query, state[3183]/[3184] identify
-                             the chosen IN card (which card the cut is FOR).
+  2. Pending-decision ctx  — during the OUT query, the pending-decision context
+                             slots identify the chosen IN card (which card the cut is FOR).
   3. Chooser repoint       — during sideboarding the history actor stamp and the
                              per-action controller_is_self flags name the
                              sideboarding seat, not whatever the ended game left.
@@ -35,13 +35,12 @@ from env import (STATE_SIZE, MAX_ACTIONS, _MATCH_CTX_START,  # noqa: E402
                  _PERM_SLOT_SIZE, _PERM_CARD_OFF, _HAND_START, _HAND_SLOTS_TOTAL,
                  _GY_START, _HIST_START, _HIST_END, _REVEALED_START, _REVEALED_END,
                  _PENDING_DECISION_START, _KNOWN_TOP_LIB_START,
-                 _ACTION_HISTORY_ENTRY, ACTION_CATEGORY_MAX)
+                 _ACTION_HISTORY_ENTRY, ACTION_CATEGORY_MAX, _SELF_IS_A_IDX)
 from card_costs import N_CARD_TYPES  # noqa: E402
 from test_harness import (_card_to_deck_name, _TEMP_DECKS_DIR,  # noqa: E402
                           _DECKS_DIR, _BINARY, _BIN_DIR)
 
 # ── Layout / enum constants ──────────────────────────────────────────────────
-_SELF_IS_A_IDX = 32                 # state[32] == 1.0 when viewer is Player A
 _IS_SB_IDX     = _MATCH_CTX_START + 3
 _CAT_SB_IN, _CAT_SB_OUT, _CAT_SB_DONE = 24, 25, 26
 
@@ -205,7 +204,7 @@ def test_masking(records):
         check(np.array_equal(masked[lo:hi], raw[lo:hi]), f"kept unchanged: {label}")
 
     # Globals fully zeroed.
-    check(np.all(masked[:_GLOBAL_SIZE] == 0.0), "globals [0:34] zeroed")
+    check(np.all(masked[:_GLOBAL_SIZE] == 0.0), "globals [0:36] zeroed")
 
     # Permanent card-id slots -> empty sentinel; permanent scalar slots -> 0.
     sent_ok = scal_ok = True
@@ -243,10 +242,10 @@ def test_pending_decision(records):
         pend_ctrl = float(r["state"][_PENDING_DECISION_START + 1])
         check(np.isclose(pend_id, chosen_in_id),
               f"OUT-query pending card id = chosen IN card "
-              f"(state[3183]={pend_id:.5f}, in-card={chosen_in_id:.5f})")
+              f"(state[{_PENDING_DECISION_START}]={pend_id:.5f}, in-card={chosen_in_id:.5f})")
         check(pend_ctrl == 1.0,
               f"OUT-query pending ctrl_is_self == 1.0 for the sideboarding seat "
-              f"(state[3184]={pend_ctrl})")
+              f"(state[{_PENDING_DECISION_START + 1}]={pend_ctrl})")
         checked += 1
     check(checked > 0, f"exercised at least one OUT query ({checked})")
 

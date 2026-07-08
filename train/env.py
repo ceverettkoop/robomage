@@ -68,7 +68,7 @@ try:
 except ImportError:
     from train._enums import ACTION_CATEGORY_MAX, REF_ZONE_MAX
 
-STATE_SIZE = 3185  # see src/machine_io.h; card identity is 1 id float/slot, not a one-hot
+STATE_SIZE = 3187  # see src/machine_io.h; card identity is 1 id float/slot, not a one-hot
 # NOTE: Exile zones are tracked in GameState but not serialized to the observation.
 # NOTE: ActionChoice.description is never emitted in the BQUERY payload — it is for
 #       human-readable display only and is not part of the ML observation.
@@ -145,13 +145,39 @@ _HAND_COST_FEATS  = MAX_HAND_SLOTS * _N_COST_FEATS  # 10 * 7 = 70
 _BF_ABILITY_FEATS = 48 * _N_COST_FEATS              # 48 * 7 = 336
 # Action metadata in the obs: cats | ids | ctrl | zone_ref (4 blocks of
 # MAX_ACTIONS). pub stays a side-channel (self._action_public), not in the obs.
-OBS_SIZE = STATE_SIZE + 4 * MAX_ACTIONS + _HAND_COST_FEATS + _BF_ABILITY_FEATS  # 3847
+OBS_SIZE = STATE_SIZE + 4 * MAX_ACTIONS + _HAND_COST_FEATS + _BF_ABILITY_FEATS  # 3849
 
 # ── State layout offsets (mirror src/machine_io.h) ───────────────────────────
 # Creatures, lands, and other permanents share one unified section (no separate land slots).
 # Card identity is a single normalized id float per slot (idx/N_CARD_TYPES, or
 # -1/N_CARD_TYPES for empty/unknown). Decode with round(val * N_CARD_TYPES).
-_GLOBAL_SIZE            = 34                   # header: player blocks, step one-hot, flags, stack size
+# ── Header field offsets (the first _GLOBAL_SIZE floats) ─────────────────────
+# The header is two player blocks, the step one-hot, and three scalar flags.
+# Define every offset ONCE here (deriving _GLOBAL_SIZE from them) so that adding
+# a player-block field or a header flag only requires editing these constants —
+# every consumer that reads the header (decode.py, runner.py, analysis.py,
+# scripted_agent.py, opponents.py, this module) imports these names instead of
+# hardcoding a literal index. Must mirror push_player_block + the header pushes
+# in src/machine_io.h / src/machine_io.cpp serialize_state().
+_PLAYER_BLOCK_SIZE = 10                        # floats per player block
+# Sub-offsets within one player block:
+_PB_LIFE    = 0
+_PB_HAND_CT = 1
+_PB_POISON  = 2
+_PB_MANA    = 3                                # 6 floats: W, U, B, R, G, C
+_PB_ENERGY  = 9
+_SELF_BLOCK_START  = 0
+_OPP_BLOCK_START   = _SELF_BLOCK_START + _PLAYER_BLOCK_SIZE          # 10
+_STEP_ONEHOT_START = _OPP_BLOCK_START + _PLAYER_BLOCK_SIZE           # 20
+_STEP_ONEHOT_SIZE  = 13                        # UNTAP..CLEANUP, incl. FIRST_STRIKE_DAMAGE
+# Step one-hot sub-indices (main phases; SECOND_MAIN is +1 vs. tabletop order
+# because FIRST_STRIKE_DAMAGE occupies its own one-hot slot):
+_STEP_FIRST_MAIN_IDX  = _STEP_ONEHOT_START + 3                       # 23
+_STEP_SECOND_MAIN_IDX = _STEP_ONEHOT_START + 10                      # 30
+_IS_ACTIVE_IDX  = _STEP_ONEHOT_START + _STEP_ONEHOT_SIZE            # 33: priority player is active
+_SELF_IS_A_IDX  = _IS_ACTIVE_IDX + 1                                # 34: "self" is Player A
+_STACK_SIZE_IDX = _SELF_IS_A_IDX + 1                                # 35: stack size / 10
+_GLOBAL_SIZE    = _STACK_SIZE_IDX + 1                               # 36: full header width
 _PERM_SLOTS             = 48                   # per-player; 96 total (self + opp)
 _PERM_SLOT_SIZE         = 12                   # 11 status (incl. loyalty) + 1 card id
 _STACK_SLOTS            = 12
@@ -175,30 +201,30 @@ _REVEALED_SIZE          = N_CARD_TYPES         # opponent revealed-cards multi-h
 _OPP_KNOWN_HAND_SLOTS   = 10                   # known opponent-hand card identities
 _OPP_KNOWN_HAND_SLOT_SIZE = 1                  # card id per slot
 
-_SELF_PERM_START     = _GLOBAL_SIZE                                                  # 34
-_OPP_PERM_START      = _SELF_PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE              # 610
-_STACK_START         = _OPP_PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE               # 1186
-_GY_START            = _STACK_START + _STACK_SLOTS * _STACK_SLOT_SIZE                # 1486
-_HAND_START          = _GY_START + _GY_SLOTS_TOTAL * _GY_SLOT_SIZE                   # 1614
-_HIST_START          = _HAND_START + _HAND_SLOTS_TOTAL * _HAND_SLOT_SIZE             # 1624
-_HIST_END            = _HIST_START + _ACTION_HISTORY_SIZE * _ACTION_HISTORY_ENTRY    # 2136
-_MATCH_CTX_START     = _HIST_END                                                     # 2136
-_LIBRARY_CTX_START   = _MATCH_CTX_START + _MATCH_CTX_SIZE                            # 2140
-_CUR_TURN_IDX        = _LIBRARY_CTX_START + _LIBRARY_CTX_SIZE                        # 2143
-_KNOWN_TOP_LIB_START = _CUR_TURN_IDX + _CUR_TURN_SIZE                                # 2144
-_KNOWN_TOP_LIB_END   = _KNOWN_TOP_LIB_START + _KNOWN_TOP_LIB_SLOTS * _KNOWN_TOP_LIB_SLOT_SIZE  # 2149
-_REVEALED_START      = _KNOWN_TOP_LIB_END                                            # 2149
-_REVEALED_END        = _REVEALED_START + _REVEALED_SIZE                              # 3173
-_OPP_KNOWN_HAND_START = _REVEALED_END                                                # 3173
-_OPP_KNOWN_HAND_END  = _OPP_KNOWN_HAND_START + _OPP_KNOWN_HAND_SLOTS * _OPP_KNOWN_HAND_SLOT_SIZE  # 3183
+_SELF_PERM_START     = _GLOBAL_SIZE                                                  # 36
+_OPP_PERM_START      = _SELF_PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE              # 612
+_STACK_START         = _OPP_PERM_START + _PERM_SLOTS * _PERM_SLOT_SIZE               # 1188
+_GY_START            = _STACK_START + _STACK_SLOTS * _STACK_SLOT_SIZE                # 1488
+_HAND_START          = _GY_START + _GY_SLOTS_TOTAL * _GY_SLOT_SIZE                   # 1616
+_HIST_START          = _HAND_START + _HAND_SLOTS_TOTAL * _HAND_SLOT_SIZE             # 1626
+_HIST_END            = _HIST_START + _ACTION_HISTORY_SIZE * _ACTION_HISTORY_ENTRY    # 2138
+_MATCH_CTX_START     = _HIST_END                                                     # 2138
+_LIBRARY_CTX_START   = _MATCH_CTX_START + _MATCH_CTX_SIZE                            # 2142
+_CUR_TURN_IDX        = _LIBRARY_CTX_START + _LIBRARY_CTX_SIZE                        # 2145
+_KNOWN_TOP_LIB_START = _CUR_TURN_IDX + _CUR_TURN_SIZE                                # 2146
+_KNOWN_TOP_LIB_END   = _KNOWN_TOP_LIB_START + _KNOWN_TOP_LIB_SLOTS * _KNOWN_TOP_LIB_SLOT_SIZE  # 2151
+_REVEALED_START      = _KNOWN_TOP_LIB_END                                            # 2151
+_REVEALED_END        = _REVEALED_START + _REVEALED_SIZE                              # 3175
+_OPP_KNOWN_HAND_START = _REVEALED_END                                                # 3175
+_OPP_KNOWN_HAND_END  = _OPP_KNOWN_HAND_START + _OPP_KNOWN_HAND_SLOTS * _OPP_KNOWN_HAND_SLOT_SIZE  # 3185
 # Pending decision context: card id of the spell/ability currently making a
 # mid-resolution choice (target select, dig/search/scry pick, discard, modal, ...;
 # sentinel = none) + its controller-is-viewer flag. The source may not be on the
 # stack yet (targets are announced before the spell moves there), so this is the
 # only place the observation shows WHAT is asking for the current choice.
-_PENDING_DECISION_START = _OPP_KNOWN_HAND_END                                        # 3183
+_PENDING_DECISION_START = _OPP_KNOWN_HAND_END                                        # 3185
 _PENDING_DECISION_SIZE  = 2                    # source card id + ctrl_is_self
-_PENDING_DECISION_END   = _PENDING_DECISION_START + _PENDING_DECISION_SIZE           # 3185
+_PENDING_DECISION_END   = _PENDING_DECISION_START + _PENDING_DECISION_SIZE           # 3187
 
 assert _PENDING_DECISION_END == STATE_SIZE, (_PENDING_DECISION_END, STATE_SIZE)
 
@@ -773,7 +799,7 @@ _COUNTERSPELL_VOCAB_IDX  = 22
 # opponent creature to hit. The One Ring's {T} draws a card per burden counter.
 _SOLITUDE_VOCAB_IDX      = 141
 _THE_ONE_RING_VOCAB_IDX  = 285
-_BLUE_POOL_IDX           = 4   # obs[3 + 1]; mana pool is at obs[3:9], W/U/B/R/G/C, /10
+_BLUE_POOL_IDX           = _SELF_BLOCK_START + _PB_MANA + 1   # self U pool; mana is W/U/B/R/G/C, /10
 
 # Doomsday deck card vocab indices (mirror src/card_vocab.h)
 _DOOMSDAY_VOCAB_IDX      = 53
@@ -876,8 +902,7 @@ def _obs_action_card_id(obs: np.ndarray, action: int) -> int:
 
 def _obs_is_main_phase(obs: np.ndarray) -> bool:
     """Check if the current step is a main phase (FIRST_MAIN or SECOND_MAIN)."""
-    # Step one-hot at obs[18:31], FIRST_MAIN=index 3 (obs[21]), SECOND_MAIN=index 10 (obs[28])
-    return obs[21] > 0.5 or obs[28] > 0.5
+    return obs[_STEP_FIRST_MAIN_IDX] > 0.5 or obs[_STEP_SECOND_MAIN_IDX] > 0.5
 
 
 def _self_has_draw_on_stack(obs: np.ndarray) -> bool:
@@ -1053,12 +1078,13 @@ class ModelVsScriptedEnv(gym.Env):
 
         # Shaping: +0.2 the first time the opponent's life drops below 10.
         # obs is always from the priority player's perspective:
-        #   model has priority → obs[9] = opponent life / 20
-        #   opponent has priority → obs[0] = opponent ("self") life / 20
+        #   model has priority → opponent life is the opp block's life slot
+        #   opponent has priority → opponent ("self") life is the self block's life slot
         if not (terminated or truncated) and not self._opponent_below_10:
-            a_has_priority = obs[32] > 0.5
+            a_has_priority = obs[_SELF_IS_A_IDX] > 0.5
             model_has_priority = a_has_priority if self._training_is_a else not a_has_priority
-            scripted_life = (obs[9] if model_has_priority else obs[0]) * 20.0
+            scripted_life = (obs[_OPP_BLOCK_START + _PB_LIFE] if model_has_priority
+                             else obs[_SELF_BLOCK_START + _PB_LIFE]) * 20.0
             if scripted_life < 10.0:
                 self._opponent_below_10 = True
                 shaping += SHAPING_OPPONENT_BELOW10
@@ -1071,8 +1097,10 @@ class ModelVsScriptedEnv(gym.Env):
 
         # Potential-based hand/power advantage (skip for doomsday — not relevant to combo gameplan)
         if not self._is_doomsday and not (terminated or truncated) and self._last_obs is not None:
-            phi_prev = max(0.0, self._last_obs[1] - self._last_obs[10]) * 10.0
-            phi_curr = max(0.0, obs[1] - obs[10]) * 10.0
+            _self_hand = _SELF_BLOCK_START + _PB_HAND_CT
+            _opp_hand = _OPP_BLOCK_START + _PB_HAND_CT
+            phi_prev = max(0.0, self._last_obs[_self_hand] - self._last_obs[_opp_hand]) * 10.0
+            phi_curr = max(0.0, obs[_self_hand] - obs[_opp_hand]) * 10.0
             shaping += SHAPING_HAND_ADV_PER_CARD * (phi_curr - phi_prev)
 
             # Potential-based board power advantage
@@ -1116,16 +1144,17 @@ class ModelVsScriptedEnv(gym.Env):
         """
         shaping_key = "shaping_a" if self._training_is_a else "shaping_b"
         shaping = 0.0
-        while not (terminated or truncated) and (obs[32] > 0.5) != self._training_is_a:
+        while not (terminated or truncated) and (obs[_SELF_IS_A_IDX] > 0.5) != self._training_is_a:
             action = self._opp_controller.choose(obs, self._env._num_choices)
             obs, reward, terminated, truncated, info = self._env.step(action)
 
             shaping += info.get(shaping_key, 0.0)
 
             if not (terminated or truncated) and not self._opponent_below_10:
-                a_has_priority = obs[32] > 0.5
+                a_has_priority = obs[_SELF_IS_A_IDX] > 0.5
                 model_has_priority = a_has_priority if self._training_is_a else not a_has_priority
-                scripted_life = (obs[9] if model_has_priority else obs[0]) * 20.0
+                scripted_life = (obs[_OPP_BLOCK_START + _PB_LIFE] if model_has_priority
+                                 else obs[_SELF_BLOCK_START + _PB_LIFE]) * 20.0
                 if scripted_life < 10.0:
                     self._opponent_below_10 = True
                     shaping += SHAPING_OPPONENT_BELOW10
@@ -1268,7 +1297,7 @@ class SelfPlayEnv(gym.Env):
 
     def _training_has_priority(self, obs: np.ndarray) -> bool:
         """True when it is the training model's turn to act (raw obs)."""
-        a_has_priority = obs[32] > 0.5
+        a_has_priority = obs[_SELF_IS_A_IDX] > 0.5
         return a_has_priority if self._training_is_a else not a_has_priority
 
     def _training_obs(self, obs: np.ndarray) -> np.ndarray:
@@ -1408,7 +1437,7 @@ class FixedModelEnv(gym.Env):
         self.shaping_scale = float(value)
 
     def _training_has_priority(self, obs: np.ndarray) -> bool:
-        a_has_priority = obs[32] > 0.5
+        a_has_priority = obs[_SELF_IS_A_IDX] > 0.5
         return a_has_priority if self._training_is_a else not a_has_priority
 
     def _handle_opponent_turns(self, obs, reward, terminated, truncated, info):

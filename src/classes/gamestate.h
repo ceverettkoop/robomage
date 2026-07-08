@@ -25,6 +25,7 @@ extern "C" {
 typedef struct PlayerState_tag {
     int life;
     int poison_counters;
+    int energy;                // energy ({E}) counters (CR 122.1c)
     int mana[6];               // WUBRGC
     int lands_played_this_turn;
     int hand_ct;               // actual hand size

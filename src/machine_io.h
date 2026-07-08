@@ -42,26 +42,26 @@
 // NOTE: Exile zones are populated in GameState but NOT serialized.
 // Add them back once cards that use exile are implemented.
 //
-// Fixed-size state vector layout (STATE_SIZE = 3183 floats):
+// Fixed-size state vector layout (STATE_SIZE = 3187 floats):
 // Card identity is a single normalized id float per slot (see norm_card_id):
 // idx/N_CARD_TYPES, or -1/N_CARD_TYPES for empty/unknown. The id is NOT a one-hot.
 //
-//  [0-8]      Self player block (9 floats):
-//               life/20, hand_ct/10, poison/10, mana[W,U,B,R,G,C]/10
-//  [9-17]     Opponent player block (9 floats, same layout)
-//  [18-30]    Current step one-hot (13 steps: UNTAP..CLEANUP, includes FIRST_STRIKE_DAMAGE)
-//  [31]       1.0 if priority player is the active player (self's turn), 0.0 otherwise
-//  [32]       1.0 if self is Player A, 0.0 if self is Player B
-//  [33]       Stack size / 10.0
+//  [0-9]      Self player block (10 floats):
+//               life/20, hand_ct/10, poison/10, mana[W,U,B,R,G,C]/10, energy/10
+//  [10-19]    Opponent player block (10 floats, same layout)
+//  [20-32]    Current step one-hot (13 steps: UNTAP..CLEANUP, includes FIRST_STRIKE_DAMAGE)
+//  [33]       1.0 if priority player is the active player (self's turn), 0.0 otherwise
+//  [34]       1.0 if self is Player A, 0.0 if self is Player B
+//  [35]       Stack size / 10.0
 //
-//  [34-609]      Self permanents: 48 slots x 12 floats = 576
-//  [610-1185]    Opp permanents:  48 slots x 12 floats = 576
+//  [36-611]      Self permanents: 48 slots x 12 floats = 576
+//  [612-1187]    Opp permanents:  48 slots x 12 floats = 576
 //                Per slot: power/10, toughness/10, is_tapped, is_attacking,
 //                          is_blocking, has_summoning_sickness, damage/10,
 //                          controller_is_self, is_creature, is_land, loyalty/10, card_id
 //                Empty slots: 11 zeros + card_id sentinel (-1/N_CARD_TYPES).
 //
-//  [1186-1485]   Stack: 12 slots x 25 floats = 300
+//  [1188-1487]   Stack: 12 slots x 25 floats = 300
 //                Per slot: controller_is_self(1), card_id(1), is_spell(1),
 //                          chosen-mode multi-hot(6), 4 target sub-slots x 4 floats(16)
 //                is_spell=1.0 for a cast spell; 0.0 for a triggered/activated ability.
@@ -78,61 +78,61 @@
 //                  target_card_id(1: norm_card_id; -1 sentinel for players).
 //                Empty sub-slots: 3 zeros + card_id sentinel.
 //
-//  [1486-1549]   Self graveyard: 64 slots x 1 float = 64
-//  [1550-1613]   Opp graveyard:  64 slots x 1 float = 64
+//  [1488-1551]   Self graveyard: 64 slots x 1 float = 64
+//  [1552-1615]   Opp graveyard:  64 slots x 1 float = 64
 //                Per slot: card_id (sentinel = empty)
 //
-//  [1614-1623]   Self hand: 10 slots x 1 float = 10
+//  [1616-1625]   Self hand: 10 slots x 1 float = 10
 //                Per slot: card_id (sentinel = empty)
 //
-//  [1624-2135]   Action history: 128 entries x 4 floats = 512 (newest first)
+//  [1626-2137]   Action history: 128 entries x 4 floats = 512 (newest first)
 //                Per entry: category / ACTION_CATEGORY_MAX,
 //                           card_vocab_idx / N_CARD_TYPES (or -1/N_CARD_TYPES sentinel),
 //                           is_self (1.0 = viewer's action, 0.0 = opponent's),
 //                           turn / 50.0 (the game turn when the action was taken)
 //                Empty entries (beyond action_history_len) are all zeros.
 //
-//  [2136-2139]   Match context (4 floats, all 0.0 in single-game mode):
+//  [2138-2141]   Match context (4 floats, all 0.0 in single-game mode):
 //                game_number / 3.0, self_match_wins / 2.0,
 //                opp_match_wins / 2.0, is_sideboard_phase (0.0 or 1.0)
 //
-//  [2140-2142]   Library & post-board context (3 floats):
+//  [2142-2144]   Library & post-board context (3 floats):
 //                self_library_ct / 60.0, opp_library_ct / 60.0,
 //                is_post_board (1.0 if game 2+ of bo3, else 0.0)
 //
-//  [2143]        Current game turn / 50.0
+//  [2145]        Current game turn / 50.0
 //
-//  [2144-2148]   Known top-5 library cards for the viewer: 5 slots x 1 float = 5
+//  [2146-2150]   Known top-5 library cards for the viewer: 5 slots x 1 float = 5
 //                Per slot: card_id (sentinel = unknown). Index 0 is the top of
 //                the library. Entries are set when a card is placed on top (e.g.
 //                Ponder, Brainstorm, Rearrange) and cleared when shuffled.
 //
-//  [2149-3172]   Opponent revealed-cards multi-hot (N_CARD_TYPES floats, zeros =
+//  [2151-3174]   Opponent revealed-cards multi-hot (N_CARD_TYPES floats, zeros =
 //                none seen yet). Binary "has the opponent-of-viewer ever revealed
 //                card X this match"; accumulated across the games of a bo3 and
 //                persists over the per-game ECS reset. Set whenever an opponent
 //                card enters a public zone (battlefield/stack/graveyard/exile) or
 //                is revealed by a tutor. This is the only vocab-width block.
 //
-//  [3173-3182]   Known opponent-hand cards: 10 slots x 1 float = 10
+//  [3175-3184]   Known opponent-hand cards: 10 slots x 1 float = 10
 //                Per slot: card_id (sentinel = empty/unknown). The specific
 //                identities of opponent-hand cards the viewer has had revealed
 //                (Duress/Thoughtseize/tutor) and that are still in hand. Unlike
 //                the multi-hot above this tracks the exact card and a slot clears
 //                when that card leaves the hand for another zone.
 //
-//  [3183-3184]   Pending decision context: 2 floats.
-//                [3183] card_id of the spell/ability currently making a
+//  [3185-3186]   Pending decision context: 2 floats.
+//                [3185] card_id of the spell/ability currently making a
 //                mid-resolution choice (target select, dig/scry/surveil pick,
 //                search, discard, modal, ...; sentinel = none). Set via
 //                PendingDecisionScope — the source may not be on the stack yet,
 //                since targets are announced before the spell moves there
 //                (CR 601.2b/c), so this is the only place the observation shows
 //                WHAT is asking for the current choice.
-//                [3184] 1.0 if that source's controller is the viewer, else 0.0
+//                [3186] 1.0 if that source's controller is the viewer, else 0.0
 //                (e.g. 0.0 while choosing a card for the opponent's Thoughtseize).
 
-static constexpr int STATE_SIZE             = 3185;
+static constexpr int STATE_SIZE             = 3187;
 static constexpr int N_CARD_TYPES      = 1024; // embedding vocab size (card identity is emitted as a normalized id, not a one-hot)
 static constexpr int PERM_SLOT_SIZE    = 12;   // 8 stat/combat + 2 type flags + loyalty + 1 card-id float
 static constexpr int STACK_MODE_SLOTS  = MAX_STACK_MODES; // chosen-mode multi-hot width per stack slot

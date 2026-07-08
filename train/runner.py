@@ -16,7 +16,7 @@ sits on top of it:
 
 Callers supply :class:`opponents.Controller` objects (scripted / model /
 action-list / interactive / human / auto-pass) or spec strings; the seat with
-priority (``obs[32]``) picks which controller acts each decision.
+priority (``obs[_SELF_IS_A_IDX]``) picks which controller acts each decision.
 
 Dependency-light on purpose (numpy + env + decode + the generated enum tables);
 torch is only pulled in if a caller passes a model ``Controller`` / checkpoint.
@@ -30,7 +30,8 @@ import numpy as np
 
 import decode
 from env import (NarrativeEnv, STATE_SIZE, ACTION_CATEGORY_MAX, MAX_ACTIONS,
-                 N_CARD_TYPES, BINARY)
+                 N_CARD_TYPES, BINARY, _IS_ACTIVE_IDX, _SELF_IS_A_IDX,
+                 _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE)
 from _enums import _CAT_NAMES, _STEP_NAMES
 
 
@@ -87,7 +88,7 @@ def drive_game(env, obs, controller_a, controller_b, *,
                max_decisions=None, coverage=None):
     """Drive one game (or bo3 match) on an already-reset env to completion.
 
-    The seat holding priority (``obs[32]``) picks the controller each decision;
+    The seat holding priority (``obs[_SELF_IS_A_IDX]``) picks the controller each decision;
     pass the same object twice for a single global decision-maker.
 
     Hooks (all optional):
@@ -121,7 +122,7 @@ def drive_game(env, obs, controller_a, controller_b, *,
             capped = True
             break
 
-        priority_is_a = obs[32] > 0.5
+        priority_is_a = obs[_SELF_IS_A_IDX] > 0.5
         controller = controller_a if priority_is_a else controller_b
         d = Decision(env, obs, env._num_choices, priority_is_a, controller,
                      decisions)
@@ -273,7 +274,7 @@ def run_games(controller_a, controller_b, *,
             if show_decisions:
                 obs_ = d.obs
                 player = "A" if d.priority_is_a else "B"
-                active_is_a = (obs_[31] > 0.5) == d.priority_is_a
+                active_is_a = (obs_[_IS_ACTIVE_IDX] > 0.5) == d.priority_is_a
                 cats = np.round(obs_[STATE_SIZE:STATE_SIZE + d.num_choices]
                                 * ACTION_CATEGORY_MAX).astype(int)
                 is_pregame = decode.is_mulligan(cats) or decode.is_bottom(cats)
@@ -309,7 +310,8 @@ def run_games(controller_a, controller_b, *,
                 else:
                     cats = np.round(obs_[STATE_SIZE:STATE_SIZE + d.num_choices]
                                     * ACTION_CATEGORY_MAX).astype(int)
-                    step_name = _STEP_NAMES[int(np.argmax(obs_[18:31]))]
+                    step_name = _STEP_NAMES[int(np.argmax(
+                        obs_[_STEP_ONEHOT_START:_STEP_ONEHOT_START + _STEP_ONEHOT_SIZE]))]
                     emit(_compact_line(d.index, player, label, step_name, cats,
                                        action))
             if on_action is not None:
