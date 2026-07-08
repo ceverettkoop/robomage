@@ -131,7 +131,7 @@ SHAPING_DD_STRIP_COUNTER    = 0.00 # reward for selecting Force of Will or Daze 
 SHAPING_DD_TUTOR_DOOMSDAY   = 0.05 # reward for selecting Doomsday with Personal Tutor
 SHAPING_DD_KEEP_DOOMSDAY    = 0.00  # reward for not shuffling after placed Doomsday on top (Ponder)
 SHAPING_DD_LED_WITH_DRAW    = 0.03 # reward for cracking LED with a cycling/draw ability on the stack
-                                   # (the only LED shaping signal — no empty-stack penalty)
+SHAPING_DD_LED_EMPTY_STACK  = -0.02 # penalty for cracking LED with nothing on the stack
 
 # ── Bo3 match rewards ────────────────────────────────────────────────────────
 BO3_GAME_WIN_REWARD   =  0.3   # intermediate reward for winning a game in bo3
@@ -1024,14 +1024,17 @@ class ModelVsScriptedEnv(gym.Env):
                     and "strip_counter" not in self._dd_fired):
                 self._dd_pending_shaping += SHAPING_DD_STRIP_COUNTER
                 self._dd_fired.add("strip_counter")
-            # Reward cracking LED only with a draw/cycling ability on the stack (once per
-            # game) — the sole LED shaping signal. LED cracks are mana-ability activations,
-            # emitted with the per-color MANA_* categories (13-18), never ACTIVATE_ABILITY (6).
-            if (cat in _MANA_CATS and card == _LED_VOCAB_IDX
-                    and _self_has_draw_on_stack(self._last_obs)
-                    and "led_draw" not in self._dd_fired):
-                self._dd_pending_shaping += SHAPING_DD_LED_WITH_DRAW
-                self._dd_fired.add("led_draw")
+            # Reward cracking LED with a draw/cycling ability on the stack (once per game);
+            # penalize cracking it with nothing on the stack (wastes the discard). LED cracks
+            # are mana-ability activations, emitted with the per-color MANA_* categories
+            # (13-18) — never ACTIVATE_ABILITY (6).
+            if cat in _MANA_CATS and card == _LED_VOCAB_IDX:
+                if _self_has_draw_on_stack(self._last_obs) and "led_draw" not in self._dd_fired:
+                    self._dd_pending_shaping += SHAPING_DD_LED_WITH_DRAW
+                    self._dd_fired.add("led_draw")
+                elif _stack_is_empty(self._last_obs) and "led_empty" not in self._dd_fired:
+                    self._dd_pending_shaping += SHAPING_DD_LED_EMPTY_STACK
+                    self._dd_fired.add("led_empty")
         else:
             self._dd_pending_shaping = 0.0
 
