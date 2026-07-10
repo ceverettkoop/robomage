@@ -14,7 +14,14 @@ class Orderer : public System, public std::enable_shared_from_this<Orderer>{
 
 public:
     static void init();
-    void add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destination);
+    // top_seen_by_owner (only meaningful for a non-bottom LIBRARY placement): does the library's
+    // OWNER see the identity of the card being placed on top? True for self-facing effects
+    // (Brainstorm/Ponder put-backs, surveil, own dig) where the actor IS the owner. False for a
+    // fateseal-class dig on an OPPONENT's library (Jace +2), where the looker is the controller and
+    // the owner must NOT learn the card. When false the owner's known-top cache still shifts down
+    // (positions stay honest) but records an UNKNOWN marker at slot 0 instead of the real identity.
+    void add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destination,
+                     bool top_seen_by_owner = true);
     // Place a freshly-created entity directly on top of the stack (CR 707.10: a spell copy is
     // *created* on the stack, it does not move there from another zone). Adds a STACK Zone owned
     // by `controller`, sets it as the new top (distance_from_top 0, shifting the rest down), and

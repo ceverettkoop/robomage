@@ -69,7 +69,8 @@ void Orderer::place_created_on_stack(Entity target, Zone::Ownership controller) 
     mark_card_revealed(target, controller);
 }
 
-void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destination) {
+void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destination,
+                          bool top_seen_by_owner) {
     size_t back = 0;
     auto &target_zone = global_coordinator.GetComponent<Zone>(target);
 
@@ -192,9 +193,13 @@ void Orderer::add_to_zone(bool on_bottom, Entity target, Zone::ZoneValue destina
     }
 
     // If a card is being placed on top of a library, it becomes the new known top.
+    // The push is unconditional even for a fateseal (top_seen_by_owner == false): the owner's
+    // previously-known top entries must still shift one position deeper. But when the owner does
+    // NOT see the card (the looker is the opponent), record an UNKNOWN marker (-1) instead of the
+    // real identity, so the cache positions stay honest without leaking a card they never saw.
     if (!on_bottom && destination == Zone::LIBRARY) {
         int vocab_idx = -1;
-        if (global_coordinator.entity_has_component<CardData>(target)) {
+        if (top_seen_by_owner && global_coordinator.entity_has_component<CardData>(target)) {
             vocab_idx = card_name_to_index(
                 global_coordinator.GetComponent<CardData>(target).name);
         }

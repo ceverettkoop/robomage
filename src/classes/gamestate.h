@@ -102,6 +102,7 @@ typedef enum ActionRefZone_tag {
     REF_SELF_BATTLEFIELD,
     REF_OPP_BATTLEFIELD,
     REF_SELF_HAND,
+    REF_OPP_HAND,
     REF_STACK,
     REF_SELF_GY,
     REF_OPP_GY,

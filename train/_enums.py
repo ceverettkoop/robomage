@@ -181,8 +181,8 @@ _OBS_KEYWORDS = [
     "Flash",
 ]
 
-REF_ZONE_MAX = 10
-N_REF_ZONES = 11
+REF_ZONE_MAX = 11
+N_REF_ZONES = 12
 
 # ActionRefZone value -> short display name (per-action zone_ref block).
 _REF_NAMES = {
@@ -190,12 +190,13 @@ _REF_NAMES = {
     1: "own bf",  # REF_SELF_BATTLEFIELD
     2: "opp bf",  # REF_OPP_BATTLEFIELD
     3: "hand",  # REF_SELF_HAND
-    4: "stack",  # REF_STACK
-    5: "own gy",  # REF_SELF_GY
-    6: "opp gy",  # REF_OPP_GY
-    7: "own ex",  # REF_SELF_EXILE
-    8: "opp ex",  # REF_OPP_EXILE
-    9: "you",  # REF_PLAYER_SELF
-    10: "opp",  # REF_PLAYER_OPP
+    4: "opp hand",  # REF_OPP_HAND
+    5: "stack",  # REF_STACK
+    6: "own gy",  # REF_SELF_GY
+    7: "opp gy",  # REF_OPP_GY
+    8: "own ex",  # REF_SELF_EXILE
+    9: "opp ex",  # REF_OPP_EXILE
+    10: "you",  # REF_PLAYER_SELF
+    11: "opp",  # REF_PLAYER_OPP
 }
 

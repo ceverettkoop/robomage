@@ -64,7 +64,7 @@ _CAT_DISPLAY = {
 _REF_DISPLAY = {
     "REF_NONE": "-", "REF_SELF_BATTLEFIELD": "own bf",
     "REF_OPP_BATTLEFIELD": "opp bf", "REF_SELF_HAND": "hand",
-    "REF_STACK": "stack", "REF_SELF_GY": "own gy", "REF_OPP_GY": "opp gy",
+    "REF_OPP_HAND": "opp hand", "REF_STACK": "stack", "REF_SELF_GY": "own gy", "REF_OPP_GY": "opp gy",
     "REF_SELF_EXILE": "own ex", "REF_OPP_EXILE": "opp ex",
     "REF_PLAYER_SELF": "you", "REF_PLAYER_OPP": "opp",
 }

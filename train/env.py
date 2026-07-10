@@ -376,14 +376,19 @@ def _slot_card_idx(obs, i):
 
 _SELF_PERM_POWER_IDX = np.arange(_PERM_SLOTS) * _PERM_SLOT_SIZE + _SELF_PERM_START
 _SELF_PERM_CREATURE_IDX = _SELF_PERM_POWER_IDX + 8
+_SELF_PERM_PHASED_IDX = _SELF_PERM_POWER_IDX + 18
 _OPP_PERM_POWER_IDX = np.arange(_PERM_SLOTS) * _PERM_SLOT_SIZE + _OPP_PERM_START
 _OPP_PERM_CREATURE_IDX = _OPP_PERM_POWER_IDX + 8
+_OPP_PERM_PHASED_IDX = _OPP_PERM_POWER_IDX + 18
 
 def _board_power_advantage(obs):
-    """Return self_power - opp_power from the observation vector."""
-    self_mask = obs[_SELF_PERM_CREATURE_IDX] > 0.5
+    """Return self_power - opp_power from the observation vector.
+
+    Phased-out permanents (CR 702.26e) are serialized with real power and
+    is_creature=1 but count as nonexistent, so exclude them from the sum."""
+    self_mask = (obs[_SELF_PERM_CREATURE_IDX] > 0.5) & (obs[_SELF_PERM_PHASED_IDX] < 0.5)
     self_power = np.sum(obs[_SELF_PERM_POWER_IDX[self_mask]]) * 10.0
-    opp_mask = obs[_OPP_PERM_CREATURE_IDX] > 0.5
+    opp_mask = (obs[_OPP_PERM_CREATURE_IDX] > 0.5) & (obs[_OPP_PERM_PHASED_IDX] < 0.5)
     opp_power = np.sum(obs[_OPP_PERM_POWER_IDX[opp_mask]]) * 10.0
     return self_power - opp_power
 

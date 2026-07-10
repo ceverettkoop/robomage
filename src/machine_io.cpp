@@ -657,7 +657,7 @@ void populate_query(Query* q, const std::vector<LegalAction>& actions) {
                     ac.zone_ref = is_self_owned ? REF_SELF_BATTLEFIELD : REF_OPP_BATTLEFIELD;
                     break;
                 case Zone::HAND:
-                    ac.zone_ref = is_self_owned ? REF_SELF_HAND : REF_NONE;
+                    ac.zone_ref = is_self_owned ? REF_SELF_HAND : REF_OPP_HAND;
                     break;
                 case Zone::STACK:
                     ac.zone_ref = REF_STACK;
