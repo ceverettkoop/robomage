@@ -6,9 +6,12 @@ opponent in a background thread (the same per-decision traces analysis.py
 collects: observations, V(s), policy probs, actions), and then lets you:
 
   * pick a game from the sidebar and PAGE THROUGH its board states — the
-    decoded board (life/mana/battlefields/hand/GYs/stack), the opponent's
-    interleaved actions, and the legal-action menu with the model's chosen
-    action marked, one decision step at a time;
+    board rendered in tui_game.py's style (bordered card widgets with
+    color-identity edges, battlefield/land rows, stack, the model's hand,
+    life/mana info lines), one decision step at a time, with a decision
+    panel showing the model's full policy distribution at that step (every
+    legal action with its probability, chosen action marked) and the
+    opponent's interleaved actions;
   * seek by CLICKING the V(s) histogram docked at the bottom — one bar per
     decision step (bucketed when the game is wider than the terminal),
     positive V above the zero line, negative below, cursor column highlighted;
@@ -33,19 +36,26 @@ import threading
 import traceback
 from contextlib import redirect_stdout
 
+import numpy as np
 from rich.text import Text
 
 from textual import events, work
 from textual.app import App, ComposeResult
 from textual.binding import Binding
-from textual.containers import Horizontal, Vertical, VerticalScroll
+from textual.containers import (Horizontal, HorizontalScroll, Vertical,
+                                VerticalScroll)
 from textual.message import Message
 from textual.widgets import (Footer, Header, OptionList, RichLog, Static,
                              TabbedContent, TabPane)
 from textual.widgets.option_list import Option
 
 import analysis as an
+import decode
 from cli_spec import ANALYSIS_TUI_TOOL, apply_to_parser
+from env import STATE_SIZE, _STEP_ONEHOT_START, _STEP_ONEHOT_SIZE
+# Board building blocks shared with the play board: the bordered card widget
+# (color-identity edges) and the step-strip abbreviations.
+from tui_game import CardButton, CardClicked, _edge_colors, _STEP_ABBR
 
 # ── V(s) histogram colors ─────────────────────────────────────────────────────
 # Diverging encoding: sign is carried by POSITION (above/below the zero line),
@@ -412,10 +422,33 @@ class AnalysisApp(App):
     .head       { height: 1; padding: 0 1; color: $accent; text-style: bold; }
     #games      { height: 1fr; border: round $primary; }
     #analyses   { height: auto; max-height: 45%; border: round $surface; }
-    #board-scroll { height: 1fr; }
-    #board      { padding: 0 1; }
     #output     { height: 1fr; }
     #vhist      { height: 15; border: round $primary; }
+    /* Board tab: the played board rendered like tui_game (opponent's rows
+       flipped so the two battlefields sit adjacent across the stack). */
+    #board-col  { height: 1fr; }
+    #phase      { height: 1; background: $panel; color: $text; }
+    #opp-info   { height: 1; color: red; }
+    #self-info  { height: 1; color: green; }
+    #opp-bf, #self-bf { height: 7; }
+    .bf-row     { height: 1fr; layout: horizontal; }
+    .bf-row.lands { background: $panel; }
+    #stack      { height: 3; border: round $primary; }
+    .stack-item { width: auto; height: 100%; margin: 0 1; padding: 0 1;
+                  border-left: thick $secondary; }
+    .stack-empty { width: auto; height: 100%; color: $text-muted; }
+    /* Height 5 = 2 border rows + 3 inner rows, so a bordered card keeps a
+       text row (at 4 the cards render as empty rectangles). */
+    #self-hand  { height: 5; border: round green; layout: horizontal; }
+    #graveyards { height: 3; color: $text-muted; }
+    CardButton  { width: auto; height: 100%; margin: 0 1; padding: 0 1;
+                  border: round $surface; }
+    CardButton:hover { background: $boost; }
+    /* Decision panel: full-width strip between the board and the histogram
+       (a right-hand column clipped off narrow terminals). */
+    #decision   { height: 9; border: round $accent; }
+    #decision-scroll { height: 1fr; }
+    #decision-body { padding: 0 1; }
     """
 
     BINDINGS = [
@@ -454,8 +487,26 @@ class AnalysisApp(App):
                 yield OptionList(id="analyses")
             with TabbedContent(id="tabs"):
                 with TabPane("Board", id="tab-board"):
-                    with VerticalScroll(id="board-scroll"):
-                        yield Static(id="board")
+                    with VerticalScroll(id="board-col"):
+                        yield Static(id="phase")
+                        yield Static(id="opp-info")
+                        with Vertical(id="opp-bf"):
+                            yield VerticalScroll(id="opp-bf-lands",
+                                                 classes="bf-row lands")
+                            yield VerticalScroll(id="opp-bf-perms",
+                                                 classes="bf-row")
+                        yield HorizontalScroll(id="stack")
+                        with Vertical(id="self-bf"):
+                            yield VerticalScroll(id="self-bf-perms",
+                                                 classes="bf-row")
+                            yield VerticalScroll(id="self-bf-lands",
+                                                 classes="bf-row lands")
+                        yield VerticalScroll(id="self-hand")
+                        yield Static(id="self-info")
+                        yield Static(id="graveyards")
+                    with Vertical(id="decision"):
+                        with VerticalScroll(id="decision-scroll"):
+                            yield Static(id="decision-body")
                 with TabPane("Analysis output", id="tab-output"):
                     yield RichLog(id="output", wrap=True, highlight=False, markup=False)
         yield ValueHistogram(id="vhist")
@@ -472,8 +523,10 @@ class AnalysisApp(App):
             menu.add_option(Option(label, id=key))
         hist = self.query_one("#vhist", ValueHistogram)
         hist.border_title = "V(s) over game — click a bar to jump to that decision"
-        self.query_one("#board", Static).update(
-            Text("Waiting for the first simulated game…", style="dim"))
+        self.query_one("#decision", Vertical).border_title = \
+            "Decision — legal actions with policy P(a)"
+        self.query_one("#phase", Static).update(
+            "[dim]Waiting for the first simulated game…[/dim]")
         self._load_and_collect(self._args.n_games)
 
     # ----- engine worker (owns the env; one job at a time) -----
@@ -548,7 +601,7 @@ class AnalysisApp(App):
         self.query_one("#summary", Static).update(Text(message.text, style="red"))
         self._log_output("error", message.text)
 
-    def on_game_added(self, message: GameAdded) -> None:
+    async def on_game_added(self, message: GameAdded) -> None:
         self._games.append(message.game)
         g = message.game
         i = len(self._games) - 1
@@ -559,7 +612,7 @@ class AnalysisApp(App):
         self.query_one("#games", OptionList).add_option(Option(label, id=str(i)))
         self._refresh_summary(loading=self._engine_busy)
         if self._cur_game is None:
-            self._select_game(0)
+            await self._select_game(0)
 
     def on_engine_idle(self, message: EngineIdle) -> None:
         self._engine_busy = False
@@ -571,14 +624,14 @@ class AnalysisApp(App):
 
     # ----- selection / stepping -----
 
-    def on_option_list_option_selected(self, event: OptionList.OptionSelected) -> None:
+    async def on_option_list_option_selected(self, event: OptionList.OptionSelected) -> None:
         if event.option_list.id == "games":
-            self._select_game(int(event.option.id))
+            await self._select_game(int(event.option.id))
         elif event.option_list.id == "analyses":
             self._run_menu_entry(event.option.id)
 
-    def on_value_histogram_step_picked(self, message: ValueHistogram.StepPicked) -> None:
-        self._set_step(message.step)
+    async def on_value_histogram_step_picked(self, message: ValueHistogram.StepPicked) -> None:
+        await self._set_step(message.step)
 
     def on_value_histogram_step_hovered(self, message: ValueHistogram.StepHovered) -> None:
         hist = self.query_one("#vhist", ValueHistogram)
@@ -587,21 +640,21 @@ class AnalysisApp(App):
         else:
             hist.border_subtitle = f"step {message.step} · V={message.value:+.3f}"
 
-    def action_step(self, delta: int) -> None:
+    async def action_step(self, delta: int) -> None:
         if self._cur_game is not None:
-            self._set_step(self._cur_step + delta)
+            await self._set_step(self._cur_step + delta)
 
-    def action_step_home(self) -> None:
-        self._set_step(0)
+    async def action_step_home(self) -> None:
+        await self._set_step(0)
 
-    def action_step_end(self) -> None:
+    async def action_step_end(self) -> None:
         if self._cur_game is not None:
-            self._set_step(len(self._games[self._cur_game]["values"]) - 1)
+            await self._set_step(len(self._games[self._cur_game]["values"]) - 1)
 
     def action_whatif(self) -> None:
         self._run_menu_entry("whatif")
 
-    def _select_game(self, gn: int) -> None:
+    async def _select_game(self, gn: int) -> None:
         if not (0 <= gn < len(self._games)):
             return
         self._cur_game = gn
@@ -609,10 +662,10 @@ class AnalysisApp(App):
         g = self._games[gn]
         hist = self.query_one("#vhist", ValueHistogram)
         hist.set_data(g["values"], cursor=0)
-        self._show_step()
+        await self._show_step()
         self.query_one("#tabs", TabbedContent).active = "tab-board"
 
-    def _set_step(self, step: int) -> None:
+    async def _set_step(self, step: int) -> None:
         if self._cur_game is None:
             return
         n = len(self._games[self._cur_game]["observations"])
@@ -621,17 +674,167 @@ class AnalysisApp(App):
             return
         self._cur_step = step
         self.query_one("#vhist", ValueHistogram).set_cursor(step)
-        self._show_step()
+        await self._show_step()
         self.query_one("#tabs", TabbedContent).active = "tab-board"
 
-    # ----- board pane -----
+    # ----- board pane (tui_game-style card objects) -----
 
-    def _show_step(self) -> None:
+    async def _show_step(self) -> None:
+        """Render the current game/step: the board as card widgets plus the
+        decision panel. The recorded obs is always from the MODEL's perspective
+        (traces cover model decisions only), so 'self' is the model — no
+        mirroring is ever needed."""
         gn, step = self._cur_game, self._cur_step
         g = self._games[gn]
-        self.query_one("#board", Static).update(self._board_text(g, gn, step))
-        self.query_one("#board-scroll", VerticalScroll).scroll_home(animate=False)
+        obs = g["observations"][step]
+        gs = decode.decode_game_state(obs[:STATE_SIZE],
+                                      labels=decode.SELF_OPP_LABELS)
+
+        self.query_one("#phase", Static).update(self._phase_strip(g, gn, step, obs, gs))
+        self.query_one("#opp-info", Static).update(
+            self._info_line("OPPONENT", gs["opponent"], gs["opp_library"]))
+        self.query_one("#self-info", Static).update(
+            self._info_line("MODEL   ", gs["self"], gs["self_library"]))
+        self.query_one("#graveyards", Static).update(
+            f"Model GY: {', '.join(gs['self_graveyard']) or '—'}\n"
+            f"Opp GY:   {', '.join(gs['opp_graveyard']) or '—'}")
+
+        await self._rebuild_stack(gs["stack"])
+        await self._rebuild_bf("#opp-bf-perms", "#opp-bf-lands",
+                               gs["opp_battlefield"], "opp")
+        await self._rebuild_bf("#self-bf-perms", "#self-bf-lands",
+                               gs["self_battlefield"], "self")
+        await self._rebuild_hand(gs["self_hand"])
+        self.query_one("#decision-body", Static).update(
+            self._decision_text(g, step, obs))
+        num_ch = g["num_choices"][step] if step < len(g["num_choices"]) else 0
+        self.query_one("#decision", Vertical).border_subtitle = \
+            f"{num_ch} legal · scroll for more"
+        self.query_one("#decision-scroll", VerticalScroll).scroll_home(animate=False)
         self._refresh_hist_subtitle()
+
+    def _phase_strip(self, g, gn, step, obs, gs) -> str:
+        """One-line header: game/decision/V context plus the step strip."""
+        cur = int(np.argmax(
+            obs[_STEP_ONEHOT_START:_STEP_ONEHOT_START + _STEP_ONEHOT_SIZE]))
+        cells = " ".join(f"[reverse b]{a}[/reverse b]" if i == cur else f"[dim]{a}[/dim]"
+                         for i, a in enumerate(_STEP_ABBR))
+        val = g["values"][step] if step < len(g["values"]) else None
+        vstr = f" · V={val:+.3f}" if val is not None else ""
+        m = gs.get("match") or {}
+        mstr = ""
+        if any(m.get(k) for k in ("self_wins", "opp_wins", "is_sideboard")):
+            mstr = f" · match {m['self_wins']}–{m['opp_wins']}"
+            if m.get("is_sideboard"):
+                mstr += " [b yellow]SIDEBOARD[/b yellow]"
+        active = "A" if gs["active_is_a"] else "B"
+        return (f"[b]G{gn} ({_result_str(g)}) · decision {step}/"
+                f"{len(g['observations']) - 1}{vstr}[/b]{mstr}   "
+                f"Turn {gs['turn']} · Active {active} · "
+                f"Priority {gs['priority_player']}   " + cells)
+
+    @staticmethod
+    def _info_line(label, p, library) -> str:
+        # Mirrors tui_game's info line: poison (☠) / energy (⚡) only when set.
+        counters = ""
+        if p.get("poison", 0) > 0:
+            counters += f"  ☠ {p['poison']}"
+        if p.get("energy", 0) > 0:
+            counters += f"  ⚡ {p['energy']}"
+        return (f"{label}  ♥ {p['life']}{counters}  "
+                f"mana [{decode.fmt_mana(p['mana'])}]  "
+                f"hand {p['hand_count']}  lib {library}")
+
+    async def _rebuild_bf(self, perms_sel: str, lands_sel: str, perms,
+                          controller: str) -> None:
+        """One player's battlefield, split into non-land and land rows."""
+        await self._fill_row(perms_sel,
+                             [p for p in perms if not p.get("is_land")], controller)
+        await self._fill_row(lands_sel,
+                             [p for p in perms if p.get("is_land")], controller)
+
+    async def _fill_row(self, selector: str, perms, controller: str) -> None:
+        box = self.query_one(selector, VerticalScroll)
+        await box.remove_children()
+        widgets = [self._mk_card(decode.fmt_perm(p), p["card_idx"], controller,
+                                 "battlefield")
+                   for p in perms]
+        if widgets:
+            await box.mount(*widgets)
+
+    async def _rebuild_hand(self, hand) -> None:
+        box = self.query_one("#self-hand", VerticalScroll)
+        await box.remove_children()
+        widgets = [self._mk_card(c["name"], c["card_idx"], "self", "hand")
+                   for c in hand]
+        if widgets:
+            await box.mount(*widgets)
+
+    async def _rebuild_stack(self, stack) -> None:
+        box = self.query_one("#stack", HorizontalScroll)
+        await box.remove_children()
+        if not stack:
+            await box.mount(Static("Stack: (empty)", classes="stack-empty"))
+            return
+        widgets = []
+        for e in stack:
+            kind = "spell" if e["is_spell"] else "ability"
+            label = f"{e['name']} ({kind}, {e['controller']})"
+            if e.get("targets"):
+                label += " → " + "; ".join(e["targets"])
+            widgets.append(Static(label, classes="stack-item"))
+        await box.mount(*widgets)
+
+    @staticmethod
+    def _mk_card(label: str, card_idx: int, controller: str,
+                 zone: str) -> CardButton:
+        """CardButton whose border edges encode the card's color identity
+        (same builder as the play board)."""
+        edges = _edge_colors(decode.card_border_colors(card_idx))
+        return CardButton(label, card_idx, controller, edges, zone)
+
+    def on_card_clicked(self, message: CardClicked) -> None:
+        """Clicking a card in the replay shows its oracle text."""
+        name = decode.card_index_to_name(message.card_idx)
+        oracle = decode.card_oracle_text(message.card_idx)
+        self.notify(oracle or "(no oracle text)", title=name or "card", timeout=8)
+
+    # ----- decision panel -----
+
+    def _decision_text(self, g, step, obs) -> Text:
+        """The model's decision at this step: every legal action with its
+        recorded policy probability (sorted most-likely first, chosen action
+        marked), then the opponent's actions since the previous decision."""
+        out = Text()
+        num_ch = g["num_choices"][step] if step < len(g["num_choices"]) else 0
+        chosen = g["actions"][step] if step < len(g.get("actions", [])) else None
+        probs = None
+        if g.get("action_probs") and step < len(g["action_probs"]):
+            probs = g["action_probs"][step]
+
+        order = range(num_ch)
+        if probs is not None:
+            order = sorted(order, key=lambda k: -probs[k])
+        for k in order:
+            p = float(probs[k]) if probs is not None else None
+            desc = an._action_desc(obs, k)
+            is_chosen = (k == chosen)
+            style = f"bold {_CURSOR_COLOR}" if is_chosen else ""
+            if p is not None:
+                bar = "▮" * max(1 if p > 0.005 else 0, round(p * 10))
+                out.append(f"{p * 100:5.1f}% ", style=style or "dim")
+                out.append(f"{bar:<10}", style=style or _POS_COLOR)
+            out.append(f"[{k}] {desc}", style=style)
+            if is_chosen:
+                out.append("  ◀ chosen", style=style)
+            out.append("\n")
+
+        opp_lines = self._opp_actions_before(g, step)
+        if opp_lines:
+            out.append(f"\nOpponent since decision {step - 1}:\n", style="italic")
+            for ln in opp_lines:
+                out.append(f"  opp → {ln}\n", style="dim")
+        return out
 
     def _refresh_hist_subtitle(self) -> None:
         hist = self.query_one("#vhist", ValueHistogram)
@@ -643,44 +846,6 @@ class AnalysisApp(App):
         vs = f" · V={v:+.3f}" if v is not None else ""
         hist.border_subtitle = (f"game {self._cur_game} [{_result_str(g)}] · "
                                 f"step {self._cur_step}/{len(g['values']) - 1}{vs}")
-
-    def _board_text(self, g, gn, step) -> Text:
-        """The full decision view: header, opponent actions since the previous
-        model decision, the legal-action menu with the chosen action marked,
-        then the decoded board state (analysis.py's boardstate view)."""
-        n = len(g["observations"])
-        obs = g["observations"][step]
-        val = g["values"][step] if step < len(g["values"]) else None
-
-        out = Text()
-        out.append(f"Game {gn} [{_result_str(g)}] — decision {step}/{n - 1}",
-                   style="bold")
-        if val is not None:
-            out.append(f"   V={val:+.3f}",
-                       style=f"bold {_POS_COLOR if val >= 0 else _NEG_COLOR}")
-        out.append("\n\n")
-
-        opp_lines = self._opp_actions_before(g, step)
-        if opp_lines:
-            out.append(f"Opponent actions since decision {step - 1}:\n", style="italic")
-            for ln in opp_lines:
-                out.append(f"    opp --> {ln}\n", style="dim")
-            out.append("\n")
-
-        if step < len(g.get("actions", [])):
-            chosen = g["actions"][step]
-            num_ch = g["num_choices"][step]
-            out.append(f"Legal actions ({num_ch}):\n")
-            for i in range(num_ch):
-                desc = an._action_desc(obs, i)
-                if i == chosen:
-                    out.append(f"  [{i}] {desc}  ◀ chosen\n", style=f"bold {_CURSOR_COLOR}")
-                else:
-                    out.append(f"  [{i}] {desc}\n")
-            out.append("\n")
-
-        out.append(_capture(an._decode_board_state, obs, value=val))
-        return out
 
     @staticmethod
     def _opp_actions_before(g, step):
