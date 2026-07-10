@@ -20,7 +20,12 @@ collects: observations, V(s), policy probs, actions), and then lets you:
     clusters, sideboard, sbvalue, shap) from the sidebar menu — output lands
     in the "Analysis output" tab;
   * branch a counterfactual `whatif` at the current game/step (w key), and
-    simulate more games, both on the live env.
+    simulate more games, both on the live env. Each whatif ALTERNATIVE is
+    grafted onto the source game's prefix and added to the games list as a
+    full trace (marked ↳g<src>@<step>), so the counterfactual line can be
+    selected, stepped through, and even re-branched — while staying excluded
+    from the analysis/summary statistics pools (it is not an independent
+    sample).
 
 The matplotlib `chart *` commands and the HTML `report` battery stay in
 analysis.py — this front end covers the text/interactive tools.
@@ -164,7 +169,8 @@ _ANALYSES = [
 
 # Live-env entries appended after the analyses (they need the engine worker).
 _ENGINE_MENU = [
-    ("whatif", "whatif — branch alternatives at current step (w)"),
+    ("whatif", "whatif — branch alternatives at current step (w); "
+               "adds each branch as a steppable ↳trace"),
     ("run5", "run +5 — simulate 5 more games"),
     ("run20", "run +20 — simulate 20 more games"),
 ]
@@ -446,7 +452,7 @@ class AnalysisApp(App):
     CardButton:hover { background: $boost; }
     /* Decision panel: full-width strip between the board and the histogram
        (a right-hand column clipped off narrow terminals). */
-    #decision   { height: 9; border: round $accent; }
+    #decision   { height: 16; border: round $accent; }
     #decision-scroll { height: 1fr; }
     #decision-body { padding: 0 1; }
     """
@@ -565,8 +571,23 @@ class AnalysisApp(App):
     @work(thread=True, group="engine")
     def _whatif_worker(self, gn: int, step: int, k: int) -> None:
         try:
-            text = _capture(an._run_whatif, self._model, self._env, self._opp_model,
-                            self._games[gn], gn, step, k)
+            buf = io.StringIO()
+            with _CAPTURE_LOCK, redirect_stdout(buf):
+                branches = an._run_whatif(self._model, self._env, self._opp_model,
+                                          self._games[gn], gn, step, k,
+                                          make_traces=True)
+            text = buf.getvalue()
+            # Each alternative branch arrives as a full game trace — add it to
+            # the games list so the counterfactual line can be selected and
+            # stepped through (the chosen branch's line IS the source game).
+            added = 0
+            for b in branches or []:
+                if b.get("trace_game") is not None:
+                    self.post_message(GameAdded(b["trace_game"]))
+                    added += 1
+            if added:
+                text += (f"\n  Added {added} branch trace(s) to the games list "
+                         f"(marked ↳g{gn}@{step}) — select one to step through it.")
             self.post_message(AnalysisDone(f"whatif — game {gn}, step {step}", text))
         except Exception:
             self.post_message(AnalysisDone("whatif error", traceback.format_exc()))
@@ -578,7 +599,11 @@ class AnalysisApp(App):
     @work(thread=True, group="analysis")
     def _analysis_worker(self, title: str, fn) -> None:
         try:
-            text = _capture(fn, list(self._games))
+            # Whatif branch traces are counterfactual lines sharing their
+            # source game's prefix, not independent samples — pooling them
+            # would bias every statistic, so analyses run on real games only.
+            games = [g for g in self._games if not g.get("whatif")]
+            text = _capture(fn, games)
             self.post_message(AnalysisDone(title, text))
         except Exception:
             self.post_message(AnalysisDone(f"{title} error", traceback.format_exc()))
@@ -605,10 +630,17 @@ class AnalysisApp(App):
         self._games.append(message.game)
         g = message.game
         i = len(self._games) - 1
-        sc = an._match_score(g)
-        sc_str = f"{sc[0]}-{sc[1]}" if sc is not None else " — "
-        side = "A" if g["model_is_a"] else "B"
-        label = f"{i:>3}  {_result_str(g):<4} {sc_str:<4} {len(g['values']):>4}d  {side}"
+        w = g.get("whatif")
+        if w:
+            # A whatif branch trace: mark its origin instead of the bo3 score.
+            label = (f"{i:>3}  {_result_str(g):<4} {len(g['values']):>4}d  "
+                     f"↳g{w['src_game']}@{w['step']}")
+        else:
+            sc = an._match_score(g)
+            sc_str = f"{sc[0]}-{sc[1]}" if sc is not None else " — "
+            side = "A" if g["model_is_a"] else "B"
+            label = (f"{i:>3}  {_result_str(g):<4} {sc_str:<4} "
+                     f"{len(g['values']):>4}d  {side}")
         self.query_one("#games", OptionList).add_option(Option(label, id=str(i)))
         self._refresh_summary(loading=self._engine_busy)
         if self._cur_game is None:
@@ -914,10 +946,14 @@ class AnalysisApp(App):
     # ----- misc -----
 
     def _refresh_summary(self, loading=False) -> None:
-        w = sum(1 for g in self._games if g["result"] > 0)
-        l = sum(1 for g in self._games if g["result"] < 0)
-        d = len(self._games) - w - l
-        line = f"{len(self._games)} games · {w}W/{l}L/{d}D"
+        real = [g for g in self._games if not g.get("whatif")]
+        w = sum(1 for g in real if g["result"] > 0)
+        l = sum(1 for g in real if g["result"] < 0)
+        d = len(real) - w - l
+        line = f"{len(real)} games · {w}W/{l}L/{d}D"
+        n_wf = len(self._games) - len(real)
+        if n_wf:
+            line += f" · +{n_wf} whatif"
         if loading:
             line += "  (simulating…)"
         self.query_one("#summary", Static).update(line)
